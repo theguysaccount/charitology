@@ -2,9 +2,9 @@
 title: The Charitology Prize
 group: Funding
 order: 4
-summary: A planned yearly award for published work that changed where generosity goes or how well it is aimed, with a category for the best published failure.
-status: partners
-statusNote: An award needs prize money, an independent jury and a legal home. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+summary: Prepare public-work nominations, criteria, conflicts and jury discussion packets with reasons, uncertainty and dissent.
+status: live
+statusNote: Live local nomination and jury-packet software is available. No independent jury, funded prize, announced award or approved organization ranking is established.
 conditions: [prestige-economy, silence-about-failure]
 firstMilestone: Published categories, judging criteria and an independent jury, with the criteria tested in a public red-team review.
 help:
@@ -18,6 +18,14 @@ sources:
     url: https://www.briljantemislukkingen.nl/
     note: In Dutch.
 ---
+
+## Use the operational planning software
+
+Use the [prize desk](#partner-workspace-the-charitology-prize) to challenge criteria, nominate a specific published contribution and record conflicts, reasons and dissent. The unit is a piece of public work, not the worth of an organization or a person. A local decision packet is not an awarded prize.
+
+The workspace includes separate institutional-readiness records. Those records track what responsible people still need to establish; they do not grant approval or verify a legal, funded program. The longer-term charter below remains an institutional proposal.
+
+Save each form, inspect the generated kit and export a backup. Your records stay in this browser. Imports are validated, destructive changes offer undo and newer work from another tab is protected. Fictional examples contain no real commitments, participants or results.
 
 ## What it is
 

@@ -2,7 +2,17 @@
 
 Read this first, then `STYLE.md`. The full original brief is preserved; do not replace it with a list of what is already built.
 
-## Latest implementation pass: the 31 remaining software/publication items
+## Latest pass: nine program workspaces, OS research and email setup
+
+All **nine formerly partner-only programs now have usable local workflows**. The original roadmap now has **66 available software/publication functions**; this is not a claim that all original institutional operations exist. Every new program page separates its software from the people, funding, authority and independent review required to operate it.
+
+- Fund proposals/conflicts/conditional allocations/nonpayment authorization records; incubation hypotheses/experiments/launch gates; bounty specifications/conditional pledges/claim reviews; prize nominations/jury reasons/dissent; fellowship curriculum/project codes/milestones; donor deliberation; nonprofit improvement experiments; tentative summit program/calendar; field-protocol planning and nonpersonal findings.
+- Shared namespaced engine: `src/components/programs/PartnerWorkspace.astro`, `src/lib/client/partner-programs.ts` and `src/data/partner-*.ts`. Nine wrappers, 46 domain collections, 68 clearly fictional example records. JSON/CSV/Markdown and selected transparency/tentative UTC ICS exports. Model checks run from `scripts/check-partner-programs.mjs`.
+- **Charity OS is planned first**, as requested: [the implementation plan](docs/CHARITY_OS_PLAN.md), [provider synthesis](docs/research/charity-os/PROVIDERS.md) and `/for-charities/os-plan/`. Ten official-source provider dossiers, twenty public user discussions, an explicit feature universe, two architecture spikes, proposed data/access model and Phases 0–5 with acceptance gates. All draft. No providers installed for the OS, no pilot interviews or shared OS service claimed.
+- New public research datasets: `os-providers` and `os-user-needs`; 31 static datasets in total.
+- **Email implementation is present; launch awaits sender setup and actual delivery tests.** The owner authorized the existing Resend account through Vercel Connect and approved its USD20/month upgrade; the payment checkout is open in Chrome. No charge has been verified. Dedicated Vercel project `charitology-mail`, private production-only Neon database/schema, native opt-out-by-default newsletter topic and empty dedicated segment are provisioned. `mail.charitology.org` has correct Vercel DNS. The owner-supplied `hello` forwarding destination is configured privately; its actual receipt remains unverified. The complete postal footer is confirmed. Sending stays disabled until domain authentication, deployment and controlled inbox tests pass. See [the exact setup state](docs/EMAIL_DELIVERY.md) and [service operation guide](services/newsletter/README.md).
+
+## Earlier implementation pass: the 31 software/publication items
 
 All **21 seeded and 10 designed** original items now have working browser experiences or substantive published editions. The original roadmap has **57 live functions and 9 institutional programs needing partners**. Live describes the scope on the page; it does not claim a funded institution, independent human review, professional accreditation or an approved charity ranking.
 
@@ -46,16 +56,16 @@ Read [the item-by-item implementation and validation record](docs/IMPLEMENTATION
 
 ## What is built
 
-The completion pass builds **444 HTML pages**. Counts below distinguish working software from charters and starter collections.
+The completion pass builds **447 HTML pages**. Counts below distinguish working software from charters and starter collections.
 
 - **Diagnosis:** 15 conditions in `src/content/conditions/`.
 - **Open Problems:** 23 questions in `src/content/problems/`, with progress tracked in public.
-- **Programs:** all 26 original charters in `src/content/programs/`. Seventeen have live browser functions and nine need institutional partners. Publishing a charter does not establish a funded institution.
+- **Programs:** all 26 original charters in `src/content/programs/`. All 26 have live functions; nine retain distinct institutional-readiness requirements. Publishing a charter does not establish a funded institution.
 - **Tools:** the original 19 browser tools plus **Charity OS**, for 20 catalog tools. The original set includes the Values Compass, Portfolio Builder, Charity Lookup, extension, Impact Calculator, Compare Tool, Giving Dashboard, Wrapped, split planner, Legacy Planner, Disaster Response Guide, Gift Giving, Impact Measurement Toolkit, Model Kit, Grant Evaluator, Due Diligence Checklist, retrieval-only AI Charitologist, API and forecasting platform.
 - **Charity OS:** `/tools/charity-os/`; local organization context, projects, grant pipeline/deadlines, tasks and observations. Edit/delete/undo, filters, validated JSON import/export, CSV export, storage-failure/corruption notices. No shared accounts, cloud sync, reminders, grant submission, accounting certification or money handling.
 - **For charities:** `/for-charities/` links OS and the directories. `/for-charities/tools/` has 15 external tools; `/for-charities/benefits/` has 16 offers. JSON files contain cost models, official sources, eligibility/limits, check dates and draft review status. These are sourced starting points, not independent product tests or guaranteed eligibility.
 - **Record:** all 21 original information-base pages, with 26 encyclopedia entries, 15 interventions, 13 cases, 8 myths, 8 disagreements, 8 traditions, a complete 10-chapter textbook, 49-term lexicon, three journal pieces and starter Index of 16 organizations.
-- **Data and API:** `src/data/`; 29 static JSON API datasets, including the journal, original roadmap and new directories. Directory citations feed the Evidence Library.
+- **Data and API:** `src/data/`; 31 static JSON API datasets, including the journal, original roadmap and new directories. Directory citations feed the Evidence Library.
 - **Review queue:** `/contribute/review/` covers every content collection. The old count of 103 drafts counted only eight collections. There are now **217 draft content entries**, plus **31 directory listings** labeled editorial drafts. The 217 includes catalog/program/forecast/charity entries that default to draft under the schema. No AI-assisted audit changed them to reviewed.
 - **Brand:** original compass/open-C geometry stays in `src/lib/mark.mjs`. Complete SVG/PNG/ICO/touch icon set, 1200×630 `public/og.jpg`, and a real 10-second H.264 video at `public/social/charitology-intro.mp4`. The homepage emits `og:video` and all pages have OG/Twitter image fallbacks. Platforms choose whether to show video; metadata does not guarantee autoplay.
 - **Extension:** Manifest V3, version 0.1.1. Separate Chrome and Firefox ZIPs plus a developer ZIP. The search name travels in a URL fragment (`#q=`), not the HTTP query. Firefox data declarations and desktop/Android minimums are present. No analytics or background data transmission. Privacy is at `/tools/browser-extension/privacy/`.

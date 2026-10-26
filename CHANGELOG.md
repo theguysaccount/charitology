@@ -1,5 +1,13 @@
 # Changelog
 
+## October 26, 2026: nine program workspaces and OS research
+
+- Added usable local workflows for the nine formerly partner-only programs: the Fund, Incubator, Question Bounties, Prize, Fellowship, Donor Advisory, Nonprofit Advisory, Summit and Field Verification. All 26 program pages now have live functions; institutional authority, partners, resources and independent review remain separate requirements.
+- Added 46 dedicated collections and 68 fictional example records, editing, filtering, one-step undo, guarded local persistence, validated JSON backups, CSV and complete Markdown kits. The Fund has a selected-field transparency draft; the Summit has tentative UTC calendar export and overlap checks. No funding, award, selection, advisory engagement, event or field verification is established by this software.
+- Published the draft shared Charity OS plan: ten system dossiers, twenty public discussions, a 26-module feature universe and Phases 0–5 with architecture comparisons and acceptance gates. Added the two research JSON datasets and links from the local OS, charities hub and roadmap. No shared OS service, installed integration or pilot result is claimed.
+- Added 16 passing model/type scenario groups and separate agent adversarial review. Desktop checks covered all nine routes; mobile and browser file import/export checks remain pending computer-use access. See [program scope, recovery and verification evidence](docs/PROGRAM_WORKSPACES.md).
+- Recorded email setup and its remaining authorization/delivery work in [EMAIL_DELIVERY.md](docs/EMAIL_DELIVERY.md). Email delivery remains pending; the public letter and RSS are separate working publications.
+
 ## October 25, 2026: 31-item implementation pass
 
 - Completed software/publication implementations for all 21 seeded and 10 designed original items; the roadmap now distinguishes 57 available functions from 9 institutional programs needing partners.

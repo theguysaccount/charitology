@@ -1,0 +1,53 @@
+name: Newsletter checks
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  newsletter:
+    name: Unit and isolated Postgres tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: services/newsletter
+    env:
+      NEWSLETTER_SEND_ENABLED: "false"
+      NEWSLETTER_TEST_ONLY: "true"
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: charitology_newsletter_ci
+          POSTGRES_USER: newsletter_test
+          # Disposable service-container credentials, never a provider secret.
+          POSTGRES_PASSWORD: ci-only-test-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U newsletter_test -d charitology_newsletter_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: services/newsletter/package-lock.json
+      - name: Install locked newsletter dependencies
+        run: npm ci
+      - name: Run isolated unit tests with mocked provider transports
+        run: npm test
+      - name: Run actual Postgres consent and campaign-state tests
+        # The test creates/drops a synthetic schema and mocks every mail call.
+        # Do not use test:db here: that local command loads a private env file.
+        run: node --test test-db/*.test.mjs
+        env:
+          DATABASE_URL: postgresql://newsletter_test:ci-only-test-password@127.0.0.1:5432/charitology_newsletter_ci

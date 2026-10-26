@@ -1,0 +1,166 @@
+---
+import delivery from "../data/email-status.json";
+import { url } from "../lib/site";
+const { id = "newsletter-signup" } = Astro.props;
+---
+
+<section class="letter-signup" aria-labelledby={`${id}-title`}>
+  <h2 id={`${id}-title`}>Receive The Charitology Letter</h2>
+  <p>
+    A letter when there is substantive new work: research, practical tools,
+    corrections and questions worth testing. No promised schedule and no
+    fundraising list sharing.
+  </p>
+  {
+    delivery.enabled ? (
+      <form
+        action={delivery.subscribeUrl}
+        method="post"
+        class="letter-form"
+        data-letter-signup
+      >
+        <div class="field">
+          <>
+            <label for={`${id}-email`}>Email address</label>
+            <input
+              type="email"
+              id={`${id}-email`}
+              name="email"
+              required
+              maxlength="254"
+              autocomplete="email"
+              inputmode="email"
+            />
+          </>
+        </div>
+        <div class="letter-trap" aria-hidden="true">
+          <>
+            <label for={`${id}-website`}>Leave this field empty</label>
+            <input
+              type="text"
+              id={`${id}-website`}
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </>
+        </div>
+        <label class="letter-consent">
+          <input type="checkbox" name="consent" value="yes" required />{" "}
+          <span>
+            I want to receive The Charitology Letter by email. I can unsubscribe
+            whenever I choose.
+          </span>
+        </label>
+        <p class="note">
+          We’ll send a confirmation email first. You join only after confirming.{" "}
+          <a href={url("/newsletter/privacy/")}>How we use your address</a>.
+        </p>
+        <>
+          <button type="submit" class="btn">
+            Send confirmation email
+          </button>
+          <p class="letter-status note" role="status" aria-live="polite" />
+        </>
+        <noscript>
+          <p class="note">
+            Submitting opens a confirmation notice on our mail service.
+            JavaScript is optional.
+          </p>
+        </noscript>
+      </form>
+    ) : (
+      <p class="callout">{delivery.message}</p>
+    )
+  }
+  <p class="note">
+    <a href={url("/newsletter.xml")}>Subscribe by RSS</a> or <a
+      href={url("/record/podcast-and-newsletter/")}
+      >browse the letters and podcast</a
+    >.
+  </p>
+</section>
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>(
+    "[data-letter-signup]",
+  )) {
+    const button = form.querySelector<HTMLButtonElement>(
+      'button[type="submit"]',
+    )!;
+    const status = form.querySelector<HTMLElement>(".letter-status")!;
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (button.disabled) return;
+      button.disabled = true;
+      status.textContent = "Requesting your confirmation email…";
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+          signal: AbortSignal.timeout(20000),
+        });
+        const data = await response.json();
+        if (!response.ok || data.ok !== true)
+          throw new Error(
+            typeof data.message === "string"
+              ? data.message
+              : "The request could not be completed. Please try again.",
+          );
+        status.textContent =
+          typeof data.message === "string"
+            ? data.message
+            : "If the address can receive the letter, check its inbox for a confirmation email.";
+        form.reset();
+      } catch (error) {
+        status.textContent =
+          error instanceof Error && error.name !== "TimeoutError"
+            ? error.message
+            : "The request could not be confirmed. Please try again shortly; RSS remains available.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
+<style>
+  .letter-signup {
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-block: 2rem;
+    max-width: 70ch;
+  }
+  .letter-signup h2 {
+    font-size: 1.6rem;
+  }
+  .letter-form {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .letter-form .btn {
+    justify-self: start;
+  }
+  .letter-consent {
+    display: flex;
+    align-items: start;
+    gap: 0.65rem;
+    line-height: 1.5;
+  }
+  .letter-consent input {
+    width: auto;
+    flex: none;
+    margin-top: 0.3rem;
+  }
+  .letter-trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .letter-status:empty {
+    display: none;
+  }
+</style>

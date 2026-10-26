@@ -1,0 +1,789 @@
+{
+  "schema_version": 1,
+  "title": "Charity OS provider landscape",
+  "checked_at": "2026-10-25",
+  "timezone": "America/Los_Angeles",
+  "review": "draft",
+  "method": "AI-assisted review of official documentation, source repositories and public GitHub metadata. Stripe Directory was attempted by the root agent with the official current CLI but rejected its user agent; authoritative web fallback was used. This is a bounded planning sample, not a complete market census or product endorsement.",
+  "maintenance_note": "GitHub default-branch commits and pushed_at are dated observations only. A push may be a branch or automation update and does not establish a supported production release. UTC commit dates are preserved.",
+  "status_vocabulary": {
+    "documented": "Explicitly described by a source read for this review; not independently tested.",
+    "code-observed": "Source file/tree inspected; supported product contract not established.",
+    "unverified": "No adequate evidence checked; does not mean the feature is absent."
+  },
+  "providers": [
+    {
+      "id": "civicrm",
+      "name": "CiviCRM",
+      "category": "Constituent relationship management",
+      "model": "Open source; self-hosted or separately hosted",
+      "license": "AGPL-3.0 (repository metadata; inspect the selected distribution and extensions before reuse)",
+      "maintenance": [
+        {
+          "repository": "civicrm/civicrm-core",
+          "url": "https://github.com/civicrm/civicrm-core",
+          "default_branch": "master",
+          "archived": false,
+          "license_spdx": "AGPL-3.0",
+          "pushed_at": "2026-10-26T06:12:09Z",
+          "latest_commit": {
+            "sha": "ed0b0e8af10ede04f8ae4efcda1c70834dd79d21",
+            "date": "2026-10-26T06:12:09Z",
+            "url": "https://github.com/civicrm/civicrm-core/commit/ed0b0e8af10ede04f8ae4efcda1c70834dd79d21"
+          },
+          "description": "CiviCRM (Core Application and Framework)"
+        }
+      ],
+      "capabilities": [
+        "Contacts, relationships and activities",
+        "Contributions and pledges",
+        "Memberships and events",
+        "Bulk mail and reminders",
+        "Case and grant management components",
+        "Search, reports and CSV export"
+      ],
+      "api": "APIv4 exposes entity actions; action coverage varies. The documented default validates the logged-in user permissions. Test the exact entities, ACLs and release before connecting.",
+      "access": "CMS roles plus native CiviCRM ACLs can limit components, contact groups, custom fields and events. Broad view-all rights override some granular restrictions.",
+      "tenancy": "The sources checked describe permissions inside an installation. An isolated multi-organization Charitology hosting boundary was not verified; do not equate ACL groups with tenants.",
+      "export": "Contact/component CSV exports support field selection and reusable mappings. A successful full export/restore including files and extensions was not tested.",
+      "cost": "Downloadable code has no license fee. Hosting, implementation, security updates, mail transport and support need budgets. Spark has separate hosted plans and feature limits; current quotes must be checked.",
+      "limits": [
+        "Install and patch a supported release; the official advisory page records API permission fixes in August 2026. No security clearance is claimed.",
+        "The component list does not establish a full nonprofit accounting ledger or restricted-fund compliance.",
+        "No Charitology connector has been built or tested."
+      ],
+      "reuse": "Evaluate as a separate donor/member CRM and consent system connected to Charitology through a narrow service account.",
+      "sources": [
+        {
+          "title": "CiviCRM user guide",
+          "url": "https://docs.civicrm.org/user/en/latest/introduction/what-is-civicrm/",
+          "scope": "Component scope"
+        },
+        {
+          "title": "APIv4 usage",
+          "url": "https://docs.civicrm.org/dev/en/latest/api/v4/usage/",
+          "scope": "Entity actions and permission defaults"
+        },
+        {
+          "title": "Permissions and access control",
+          "url": "https://docs.civicrm.org/user/en/latest/initial-set-up/permissions-and-access-control/",
+          "scope": "Role and ACL behavior"
+        },
+        {
+          "title": "Exporting contacts",
+          "url": "https://docs.civicrm.org/user/en/latest/common-workflows/exporting-your-contacts/",
+          "scope": "CSV export"
+        },
+        {
+          "title": "Security advisories",
+          "url": "https://civicrm.org/advisory",
+          "scope": "Dated API authorization advisories"
+        },
+        {
+          "title": "Spark",
+          "url": "https://civicrm.com/spark/",
+          "scope": "Hosted product is limited and priced separately"
+        },
+        {
+          "title": "Core repository",
+          "url": "https://github.com/civicrm/civicrm-core",
+          "scope": "License and maintenance snapshot"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "erpnext-frappe",
+      "name": "ERPNext and Frappe",
+      "category": "ERP and configurable operations platform",
+      "model": "Open source; self-hosted or Frappe Cloud",
+      "license": "ERPNext GPL-3.0; archived non_profit GPL-3.0; check other apps separately",
+      "maintenance": [
+        {
+          "repository": "frappe/erpnext",
+          "url": "https://github.com/frappe/erpnext",
+          "default_branch": "develop",
+          "archived": false,
+          "license_spdx": "GPL-3.0",
+          "pushed_at": "2026-10-26T06:43:43Z",
+          "latest_commit": {
+            "sha": "76d3190f3da303d35887eee5dab5be11e604d6cf",
+            "date": "2026-10-26T03:10:41Z",
+            "url": "https://github.com/frappe/erpnext/commit/76d3190f3da303d35887eee5dab5be11e604d6cf"
+          },
+          "description": "Free and Open Source Enterprise Resource Planning (ERP)"
+        },
+        {
+          "repository": "frappe/non_profit",
+          "url": "https://github.com/frappe/non_profit",
+          "default_branch": "develop",
+          "archived": true,
+          "license_spdx": "GPL-3.0",
+          "pushed_at": "2024-07-12T07:35:19Z",
+          "latest_commit": {
+            "sha": "ea2c88ddb04d60e7a81bfae58a1307d5f6496487",
+            "date": "2024-06-12T14:51:49Z",
+            "url": "https://github.com/frappe/non_profit/commit/ea2c88ddb04d60e7a81bfae58a1307d5f6496487"
+          },
+          "description": "Non Profit module for Frappe/ERPNext"
+        }
+      ],
+      "capabilities": [
+        "ERP core with accounting, assets, stock, buying, selling and projects",
+        "Configurable DocTypes, forms and workflows",
+        "Role, document and field permission controls",
+        "REST document APIs",
+        "CSV/Excel data export"
+      ],
+      "api": "Frappe generates REST interfaces for DocTypes and supports token/session authentication. API access must use a constrained user and versioned mappings.",
+      "access": "Roles control DocType operations; permission levels can restrict groups of fields, and user permissions can constrain linked records.",
+      "tenancy": "Frappe documents one database per site, with each site a tenant. Shared hosts and operators still require deployment controls and isolation tests.",
+      "export": "Data Export selects DocType, fields and filters and outputs CSV/Excel. Site backup/restore and all attachments need a separate pilot test.",
+      "cost": "Open-source code; hosting, administration, implementation and support remain costs. No current managed-hosting quote was verified.",
+      "limits": [
+        "frappe/non_profit was archived July 31, 2025. Its observed default-branch commit is June 12, 2024. The repository points to v14 documentation.",
+        "The nonprofit marketing page still advertises donation, grant and volunteer features; this is not evidence that the archived addon supports current ERPNext.",
+        "Do not install the archived addon as the default foundation without a maintained fork, compatibility tests and an owner for updates."
+      ],
+      "reuse": "Evaluate current ERPNext accounting/operations independently of the archived nonprofit addon. Prototype missing nonprofit workflows as a separate maintained Frappe app only after fit testing.",
+      "sources": [
+        {
+          "title": "ERPNext repository",
+          "url": "https://github.com/frappe/erpnext",
+          "scope": "Core scope, license and activity"
+        },
+        {
+          "title": "Archived nonprofit addon",
+          "url": "https://github.com/frappe/non_profit",
+          "scope": "Archive date, v14 documentation and install instructions"
+        },
+        {
+          "title": "Nonprofit marketing page",
+          "url": "https://frappe.io/erpnext/for-non-profits",
+          "scope": "Shows advertised scope; conflicts with archive status"
+        },
+        {
+          "title": "Frappe REST API",
+          "url": "https://docs.frappe.io/framework/user/en/api/rest",
+          "scope": "REST interfaces"
+        },
+        {
+          "title": "Users and permissions",
+          "url": "https://docs.frappe.io/framework/user/en/basics/users-and-permissions",
+          "scope": "Authorization model"
+        },
+        {
+          "title": "Sites",
+          "url": "https://docs.frappe.io/framework/user/en/basics/sites",
+          "scope": "Tenant database boundary"
+        },
+        {
+          "title": "Data Export",
+          "url": "https://docs.frappe.io/erpnext/data-export",
+          "scope": "CSV/Excel export"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "tendenci",
+      "name": "Tendenci",
+      "category": "Association and membership operations",
+      "model": "Open source; self-hosted with separately offered hosting/services",
+      "license": "GPL-3.0-or-later stated in README and LICENSE; GitHub automatic license detection returns NOASSERTION",
+      "maintenance": [
+        {
+          "repository": "tendenci/tendenci",
+          "url": "https://github.com/tendenci/tendenci",
+          "default_branch": "main",
+          "archived": false,
+          "license_spdx": "NOASSERTION",
+          "pushed_at": "2026-10-25T20:24:59Z",
+          "latest_commit": {
+            "sha": "02e05e976451de66941a2aa36779cfa80c60294a",
+            "date": "2026-10-25T20:23:41Z",
+            "url": "https://github.com/tendenci/tendenci/commit/02e05e976451de66941a2aa36779cfa80c60294a"
+          },
+          "description": "Tendenci - The Open Source Association Management System (AMS)"
+        }
+      ],
+      "capabilities": [
+        "Memberships and chapters",
+        "Event registration",
+        "Donations and payments",
+        "Newsletters, CRM and website content",
+        "Chapter membership import, search, export and invoices"
+      ],
+      "api": "Documented Django REST Framework API is read-only and limited to entities, events, memberships, users and groups. It must be enabled; API keys travel in the Authorization header.",
+      "access": "Chapter leaders can manage their own chapter memberships while administrators can manage all. This is a documented scoped workflow, not a full security audit.",
+      "tenancy": "Chapter scope is documented. Hard tenant isolation between unrelated organizations was not verified.",
+      "export": "Chapter membership export/import is documented. Whole-site restore and preservation of every relationship/file were not tested.",
+      "cost": "Code is open source. Self-hosting needs a server and administration; current hosted plan pricing was not checked.",
+      "limits": [
+        "Read-only API limits synchronization; write integration would require extension or another supported interface.",
+        "Association workflows are not a substitute for program outcomes, grant accounting or sensitive case-management controls.",
+        "No independent accessibility, restore or permission test was performed."
+      ],
+      "reuse": "Evaluate for membership-led organizations and chapters; link through exports or the documented read API before considering a write connector.",
+      "sources": [
+        {
+          "title": "README",
+          "url": "https://github.com/tendenci/tendenci/blob/main/README.md",
+          "scope": "Feature summary and GPLv3+ statement"
+        },
+        {
+          "title": "LICENSE",
+          "url": "https://github.com/tendenci/tendenci/blob/main/LICENSE",
+          "scope": "License text"
+        },
+        {
+          "title": "API guide",
+          "url": "https://tendenci.readthedocs.io/en/latest/topic-guides/api.html",
+          "scope": "Read-only endpoint scope"
+        },
+        {
+          "title": "Chapter memberships",
+          "url": "https://tendenci.readthedocs.io/en/latest/topic-guides/chapters.html",
+          "scope": "Scoped membership management and export"
+        },
+        {
+          "title": "Installation",
+          "url": "https://tendenci.readthedocs.io/en/latest/installation/installation.html",
+          "scope": "Self-hosted operational requirements"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "odoo-oca",
+      "name": "Odoo Community and OCA association addons",
+      "category": "Modular ERP with membership extensions",
+      "model": "Community self-hosting; proprietary Enterprise/Online plans are separate",
+      "license": "Odoo Community LGPL-3.0; OCA repositories AGPL-3.0 with per-module manifest licenses; Enterprise is a separate commercial license",
+      "maintenance": [
+        {
+          "repository": "odoo/odoo",
+          "url": "https://github.com/odoo/odoo",
+          "default_branch": "20.0",
+          "archived": false,
+          "license_spdx": "NOASSERTION",
+          "pushed_at": "2026-10-26T06:01:35Z",
+          "latest_commit": {
+            "sha": "0af7f93d7b4e81895545bd1ed3db85099e7fa32b",
+            "date": "2026-10-24T23:33:08Z",
+            "url": "https://github.com/odoo/odoo/commit/0af7f93d7b4e81895545bd1ed3db85099e7fa32b"
+          }
+        },
+        {
+          "repository": "OCA/vertical-association",
+          "url": "https://github.com/OCA/vertical-association",
+          "default_branch": "19.0",
+          "archived": false,
+          "license_spdx": "AGPL-3.0",
+          "pushed_at": "2026-09-28T10:21:29Z",
+          "latest_commit": {
+            "sha": "9a657cefb5b4f2cd090fececfc7e3db65017c3b7",
+            "date": "2026-09-28T07:33:39Z",
+            "url": "https://github.com/OCA/vertical-association/commit/9a657cefb5b4f2cd090fececfc7e3db65017c3b7"
+          },
+          "description": "Odoo addons for membership related tasks"
+        },
+        {
+          "repository": "OCA/vertical-ngo",
+          "url": "https://github.com/OCA/vertical-ngo",
+          "default_branch": "19.0",
+          "archived": false,
+          "license_spdx": "AGPL-3.0",
+          "pushed_at": "2026-09-28T10:22:02Z",
+          "latest_commit": {
+            "sha": "34982a85552831837068fe21e86f28893e6c057c",
+            "date": "2025-09-30T14:32:04Z",
+            "url": "https://github.com/OCA/vertical-ngo/commit/34982a85552831837068fe21e86f28893e6c057c"
+          },
+          "description": "Odoo for NGO's and humanitarian organization"
+        }
+      ],
+      "capabilities": [
+        "Modular business platform",
+        "OCA 19.0 membership, delegated membership, variable periods and website member directory addons",
+        "OCA 18.0 has a different migration/feature set",
+        "Model access rights, record rules and restricted fields",
+        "CSV/Excel import/export"
+      ],
+      "api": "External API documentation states Odoo Online API access requires the Custom plan; do not assume a Standard subscription includes it. Selected self-hosted version/protocol and module compatibility need testing.",
+      "access": "Groups grant model operations. Record rules filter records after model checks and default to allow when no applicable rule restricts access; configure and test every boundary.",
+      "tenancy": "Multi-company or membership groups must not be presumed equivalent to isolated Charitology organizations. Separate-database deployment and operational boundaries need evaluation.",
+      "export": "Official import/export docs cover CSV/Excel and stable External IDs for updates. A complete migration of custom modules, files and permissions was not tested.",
+      "cost": "Community code has no software license fee; hosting, migration, addon support and implementation are separate. Enterprise/Online terms and API plan costs require a current quote.",
+      "limits": [
+        "OCA/vertical-ngo 18.0 and default 19.0 had repository scaffolding but no addon directories in the observed trees. Do not market them as a ready NGO suite.",
+        "OCA/vertical-association has real addons, but migration coverage differs by branch; never promise all modules across all Odoo versions.",
+        "The observed Odoo default branch is not a recommendation to deploy that branch. Select a supported release with matching modules."
+      ],
+      "reuse": "Evaluate for organizations with broad ERP/membership needs. Prefer API/export integration with a supported deployment over importing OCA code into the MIT Charitology site.",
+      "sources": [
+        {
+          "title": "Odoo license guide",
+          "url": "https://www.odoo.com/documentation/18.0/legal/licenses.html",
+          "scope": "Community/Enterprise distinction"
+        },
+        {
+          "title": "OCA association 19.0",
+          "url": "https://github.com/OCA/vertical-association/tree/19.0",
+          "scope": "Actual addon set and license caveat"
+        },
+        {
+          "title": "OCA association 18.0",
+          "url": "https://github.com/OCA/vertical-association/tree/18.0",
+          "scope": "Different branch coverage"
+        },
+        {
+          "title": "OCA NGO 19.0",
+          "url": "https://github.com/OCA/vertical-ngo/tree/19.0",
+          "scope": "Scaffolding observation"
+        },
+        {
+          "title": "OCA NGO 18.0",
+          "url": "https://github.com/OCA/vertical-ngo/tree/18.0",
+          "scope": "Scaffolding observation"
+        },
+        {
+          "title": "External API",
+          "url": "https://www.odoo.com/documentation/18.0/developer/reference/external_api.html",
+          "scope": "Hosted API plan restriction; versioned documentation"
+        },
+        {
+          "title": "Security model",
+          "url": "https://www.odoo.com/documentation/19.0/developer/reference/backend/security.html",
+          "scope": "Groups and record-rule semantics"
+        },
+        {
+          "title": "Import/export",
+          "url": "https://www.odoo.com/documentation/18.0/applications/essentials/export_import_data.html",
+          "scope": "CSV/Excel and External IDs"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "openproject",
+      "name": "OpenProject",
+      "category": "Projects, tasks and collaborative execution",
+      "model": "Open-source Community self-hosting; paid Enterprise cloud/on-premises additions",
+      "license": "GPL-3.0 repository; compare Enterprise terms before using additions",
+      "maintenance": [
+        {
+          "repository": "opf/openproject",
+          "url": "https://github.com/opf/openproject",
+          "default_branch": "dev",
+          "archived": false,
+          "license_spdx": "GPL-3.0",
+          "pushed_at": "2026-10-26T06:36:43Z",
+          "latest_commit": {
+            "sha": "02e83b30f2812d9ad6f3d9fc6fbfa95d2fd1a037",
+            "date": "2026-10-26T03:17:22Z",
+            "url": "https://github.com/opf/openproject/commit/02e83b30f2812d9ad6f3d9fc6fbfa95d2fd1a037"
+          },
+          "description": "OpenProject is the leading open source project management software for product, project and portfolio management. A powerful Jira alternative with agile planning, issue tracking, roadmaps, Gantt charts, time tracking, collaboration features, and more. Available on premises or in the cloud. ⭐ Star us on GitHub"
+        }
+      ],
+      "capabilities": [
+        "Work packages with assignee, status, priority and dates",
+        "Project plans, dependencies and Gantt views",
+        "Time/cost reporting",
+        "Configurable project roles and permissions",
+        "REST API and CSV/XLS/PDF exports"
+      ],
+      "api": "Hypermedia REST API v3 is documented. Endpoint coverage and authorization must be tested for the connector; an API is not proof every UI operation is supported.",
+      "access": "Configurable project and global roles govern permissions. Work-package export requires its own permission; external work-package sharing is labeled an Enterprise addon.",
+      "tenancy": "Project boundaries are documented, not independent tenant isolation. An OS deployment serving unrelated charities requires a separate tenant design.",
+      "export": "Work-package lists export to CSV/XLS/PDF; single records have PDF/Atom export. XLS does not preserve hierarchy as displayed; export limits and long-text coverage need checking.",
+      "cost": "Community is free with no minimum users. The current pricing page showed Basic EUR5.95/user/month with a 25-user minimum; locale, hosting and term selection can change the quote.",
+      "limits": [
+        "It is a project tool, not a donor CRM, grants disbursement service or full accounting system.",
+        "Feature inclusion differs between Community and Enterprise; compare the selected plan.",
+        "No deployment or data restore test was performed."
+      ],
+      "reuse": "Candidate project execution backend or optional connector for teams already using it; preserve stable external IDs and link Charitology observations to work packages.",
+      "sources": [
+        {
+          "title": "Repository",
+          "url": "https://github.com/opf/openproject",
+          "scope": "License and maintenance"
+        },
+        {
+          "title": "Community edition",
+          "url": "https://www.openproject.org/community-edition/",
+          "scope": "Self-hosting and API"
+        },
+        {
+          "title": "Work packages",
+          "url": "https://www.openproject.org/docs/user-guide/work-packages/",
+          "scope": "Task fields and Enterprise-sharing boundary"
+        },
+        {
+          "title": "Roles and permissions",
+          "url": "https://www.openproject.org/docs/system-admin-guide/users-permissions/roles-permissions/",
+          "scope": "Authorization model"
+        },
+        {
+          "title": "Exports",
+          "url": "https://www.openproject.org/docs/user-guide/work-packages/exporting/",
+          "scope": "Formats and export permission"
+        },
+        {
+          "title": "XLS export",
+          "url": "https://www.openproject.org/docs/user-guide/work-packages/exporting/xls-excel/",
+          "scope": "Flat hierarchy and field/export limitations"
+        },
+        {
+          "title": "Pricing",
+          "url": "https://www.openproject.org/pricing/",
+          "scope": "Plan and user-floor snapshot"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "kobotoolbox",
+      "name": "KoboToolbox",
+      "category": "Field data collection and program evidence",
+      "model": "Open source; hosted plans or self-hosted deployment",
+      "license": "KPI server AGPL-3.0; verify other components separately",
+      "maintenance": [
+        {
+          "repository": "kobotoolbox/kpi",
+          "url": "https://github.com/kobotoolbox/kpi",
+          "default_branch": "main",
+          "archived": false,
+          "license_spdx": "AGPL-3.0",
+          "pushed_at": "2026-10-24T23:33:20Z",
+          "latest_commit": {
+            "sha": "32537fe5b9891d2418574d81b2b9107b4012603f",
+            "date": "2026-10-23T13:24:24Z",
+            "url": "https://github.com/kobotoolbox/kpi/commit/32537fe5b9891d2418574d81b2b9107b4012603f"
+          },
+          "description": "kpi is the server for KoboToolbox. It includes an API for users to access data and manage their forms, question library, sharing settings, create reports, and export data. "
+        }
+      ],
+      "capabilities": [
+        "Form design and deployment",
+        "Offline browser forms and Android KoboCollect",
+        "Submission review, validation, reports and maps",
+        "Project and submission-level sharing permissions",
+        "API data export and external dashboard connections"
+      ],
+      "api": "KPI v2 API supports projects, submissions, permissions and exports; v1 endpoints are deprecated. JSON, CSV and XLSX data retrieval is documented.",
+      "access": "Project sharing permissions distinguish form access and submission actions, including restrictions to submissions by specified users. Test a collector/validator/admin scenario before rollout.",
+      "tenancy": "Hosted Global and EU servers are documented. Project sharing and account/organization features must be tested against the chosen plan; no isolation audit was conducted.",
+      "export": "CSV/XLSX synchronous exports and raw JSON are documented. Preserve form version, field definitions and attachment references alongside submissions.",
+      "cost": "A free Community plan exists; submission, storage and AI-service quotas apply. The pricing page returned 403 during this review, so numeric quotas/prices were not treated as current verified facts.",
+      "limits": [
+        "Offline use needs the form loaded/downloaded before losing connectivity; later sync still requires a network.",
+        "This is data collection infrastructure, not by itself a constituent CRM or financial ledger.",
+        "Do not collect identifying beneficiary records in the current public/local Charitology OS."
+      ],
+      "reuse": "Strong candidate for an optional field-evidence connector: import authorized aggregate/anonymized observations with form version, source and collection date.",
+      "sources": [
+        {
+          "title": "KPI repository",
+          "url": "https://github.com/kobotoolbox/kpi",
+          "scope": "Server scope, license and maintenance"
+        },
+        {
+          "title": "API guide",
+          "url": "https://support.kobotoolbox.org/api",
+          "scope": "API v2 and export formats"
+        },
+        {
+          "title": "Sharing projects",
+          "url": "https://support.kobotoolbox.org/managing_permissions.html",
+          "scope": "Sharing controls"
+        },
+        {
+          "title": "Collection tools",
+          "url": "https://support.kobotoolbox.org/data-collection-tools.html",
+          "scope": "Offline prerequisites"
+        },
+        {
+          "title": "Account setup",
+          "url": "https://support.kobotoolbox.org/creating_account.html",
+          "scope": "Community plan and server locations"
+        },
+        {
+          "title": "Usage limits",
+          "url": "https://support.kobotoolbox.org/account_usage_limits.html",
+          "scope": "Quota categories and effects"
+        },
+        {
+          "title": "Pricing page (fetch denied)",
+          "url": "https://www.kobotoolbox.org/pricing/",
+          "scope": "Not used for numeric claims"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "oscar",
+      "name": "OSCaR",
+      "category": "Case management and program records",
+      "model": "Open-source private hosting; separately offered hosted subscription",
+      "license": "README states AGPL without an exact version; GitHub metadata did not identify a license. Confirm the selected distribution license before reuse.",
+      "maintenance": [
+        {
+          "repository": "children-in-families/oscar-web",
+          "url": "https://github.com/Children-in-Families/oscar-web",
+          "default_branch": "master",
+          "archived": false,
+          "license_spdx": null,
+          "pushed_at": "2026-10-05T06:07:59Z",
+          "latest_commit": {
+            "sha": "9dd3a12e18eecc8a5848c44cbb332a6887969ff0",
+            "date": "2026-06-24T05:14:41Z",
+            "url": "https://github.com/Children-in-Families/oscar-web/commit/9dd3a12e18eecc8a5848c44cbb332a6887969ff0"
+          },
+          "description": "OSCaR Open Source Case Management and Reporting System"
+        }
+      ],
+      "capabilities": [
+        "Client, family, community and partner records",
+        "Assessments, care plans, tasks and case notes",
+        "Custom forms and program streams",
+        "Search and report builder",
+        "Change logging and permission sets"
+      ],
+      "api": "The observed repository contains API v1 controllers and request tests. A supported public integration contract and endpoint coverage were not verified.",
+      "access": "Official feature page describes four permission sets and change logs. Fine-grained isolation, deployment configuration and real-data suitability were not independently tested.",
+      "tenancy": "Repository and private-hosting guides use organization/tenant concepts. Isolation behavior was not tested.",
+      "export": "Repository contains export tasks and the product documents reporting/data manipulation. Full, supported portability and restore procedures were not verified.",
+      "cost": "README describes open-source use and hosted subscription. Current numeric subscription pricing was not established in this review.",
+      "limits": [
+        "At the recorded commit, .ruby-version is 2.3.7 and Gemfile pins Rails 4.2.5. Do not confuse a recent push with a modern runtime or a security review.",
+        "Sensitive case data requires a dedicated organizational safety/privacy assessment; the current Charitology OS is unsuitable for it.",
+        "Mobile/API support cannot be inferred from controller files alone."
+      ],
+      "reuse": "Study casework data models and practitioner workflows. Do not select this upstream deployment by default without a supported modernization and operational owner.",
+      "sources": [
+        {
+          "title": "Repository and README",
+          "url": "https://github.com/Children-in-Families/oscar-web",
+          "scope": "AGPL statement, subscription and private hosting"
+        },
+        {
+          "title": "Feature set",
+          "url": "https://oscarhq.com/features-set",
+          "scope": "Documented casework capabilities"
+        },
+        {
+          "title": "Recorded Ruby version",
+          "url": "https://github.com/Children-in-Families/oscar-web/blob/9dd3a12e18eecc8a5848c44cbb332a6887969ff0/.ruby-version",
+          "scope": "Pinned runtime"
+        },
+        {
+          "title": "Recorded Gemfile",
+          "url": "https://github.com/Children-in-Families/oscar-web/blob/9dd3a12e18eecc8a5848c44cbb332a6887969ff0/Gemfile",
+          "scope": "Pinned Rails"
+        },
+        {
+          "title": "API controller tree",
+          "url": "https://github.com/Children-in-Families/oscar-web/tree/9dd3a12e18eecc8a5848c44cbb332a6887969ff0/app/controllers/api/v1",
+          "scope": "Code-level API evidence, not verified public contract"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "caselight",
+      "name": "CaseLight",
+      "category": "Modernized OSCaR-derived casework pilot",
+      "model": "Open-source containerized self-hosting",
+      "license": "AGPL-3.0",
+      "maintenance": [
+        {
+          "repository": "Lighthouse-Nonprofit/caselight",
+          "url": "https://github.com/Lighthouse-Nonprofit/caselight",
+          "default_branch": "main",
+          "archived": false,
+          "license_spdx": "AGPL-3.0",
+          "pushed_at": "2026-10-24T18:25:19Z",
+          "latest_commit": {
+            "sha": "f30578c3b828f45fba5d33cdb8097457edfda901",
+            "date": "2026-10-24T18:25:10Z",
+            "url": "https://github.com/Lighthouse-Nonprofit/caselight/commit/f30578c3b828f45fba5d33cdb8097457edfda901"
+          }
+        }
+      ],
+      "capabilities": [
+        "Individuals and households",
+        "Configurable forms, program streams and assessments",
+        "Case notes, tasks, documents and shared calendar",
+        "Role/field authorization and emergency-access workflow claimed by maintainer",
+        "Audit and portability workflows documented by maintainer"
+      ],
+      "api": "README says the upstream v1 mobile API was intentionally not carried into its pilot scope. Do not assume the OSCaR connector works with this fork.",
+      "access": "Maintainer documents MFA, role/field authorization, encryption and audit controls. These are maintainer claims, not an independent assurance or certification.",
+      "tenancy": "Whole-tenant portability and per-organization controls are described. No tenant-boundary penetration test or production assessment was performed here.",
+      "export": "Maintainer documents subject-access export and an encrypted tenant portability bundle. Restore-drill evidence exists in the repository; it was not independently rerun.",
+      "cost": "No software subscription charge was established; infrastructure, patching, administration and production preparation need budgets. No hosted-support quote was checked.",
+      "limits": [
+        "SECURITY.md explicitly limits the evaluation pilot to synthetic/representative data and lists separate production gates.",
+        "The production checklist includes retention policy, independent keys, network controls, backups and named incident owners. A polished compliance folder does not establish certification.",
+        "Case management is outside the first proposed Charitology shared-operations pilot."
+      ],
+      "reuse": "Run only a synthetic-data evaluation if casework becomes a confirmed need. Reuse its concepts and test cases as references; keep any AGPL-derived implementation separate and license-reviewed.",
+      "sources": [
+        {
+          "title": "Recorded README",
+          "url": "https://github.com/Lighthouse-Nonprofit/caselight/blob/f30578c3b828f45fba5d33cdb8097457edfda901/README.md",
+          "scope": "Capabilities and removed mobile API"
+        },
+        {
+          "title": "Security and production gate",
+          "url": "https://github.com/Lighthouse-Nonprofit/caselight/blob/f30578c3b828f45fba5d33cdb8097457edfda901/SECURITY.md",
+          "scope": "Synthetic-only pilot and remaining production decisions"
+        },
+        {
+          "title": "Repository",
+          "url": "https://github.com/Lighthouse-Nonprofit/caselight",
+          "scope": "License and maintenance snapshot"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "givebutter",
+      "name": "Givebutter",
+      "category": "Hosted fundraising and donor engagement",
+      "model": "Proprietary hosted service",
+      "license": "No open-source application license verified; integrate through documented interfaces and account terms",
+      "maintenance": [],
+      "capabilities": [
+        "Donation forms and fundraising campaigns",
+        "Donor/contact CRM",
+        "Events, tickets, auctions and peer-to-peer fundraising",
+        "Email/supporter engagement",
+        "Paid workflow/task/reporting additions",
+        "API, webhooks and transaction export"
+      ],
+      "api": "Official help describes API keys and public developer access. Webhooks include campaign/contact/transaction/refund events; contact.created explicitly does not fire for CSV imports. Exact endpoints and rate limits need a connector spike.",
+      "access": "Preset Admin, Finance, Campaign Editor and CRM Manager roles plus campaign scoping and separate mobile permissions are documented.",
+      "tenancy": "Hosted account boundary; data residency, backup recovery and tenant isolation were not independently assessed.",
+      "export": "Transaction CSV export is documented. A complete contact/history/consent/attachment round trip was not tested.",
+      "cost": "Pricing page currently states optional tips enabled: 0% platform fees with a processor-fee guarantee for nonprofits. Tips off: 3% platform fee plus standard processing (cards 2.9% + USD0.30; ACH 1.9% + USD0.30). Plus starts at USD29/month and is contact-tiered; recheck eligibility and channel-specific fees.",
+      "limits": [
+        "Mobile app fees have a separate published treatment; do not generalize the web tip guarantee to every channel.",
+        "Do not label fundraising CRM as complete program, case-management or nonprofit accounting functionality.",
+        "Provider statement and pricing review are not an independent product test or endorsement."
+      ],
+      "reuse": "Offer an optional external fundraising connector with signed-webhook verification, idempotency and reconciliation/export; keep payment credentials and card data out of Charitology.",
+      "sources": [
+        {
+          "title": "Pricing",
+          "url": "https://givebutter.com/pricing",
+          "scope": "Current tip, processing and paid-tier treatment"
+        },
+        {
+          "title": "Account roles",
+          "url": "https://help.givebutter.com/en/articles/2118934-how-to-manage-account-users",
+          "scope": "Roles and campaign scope"
+        },
+        {
+          "title": "API access",
+          "url": "https://help.givebutter.com/en/articles/5489015-how-to-access-the-givebutter-public-api-key",
+          "scope": "API key lifecycle"
+        },
+        {
+          "title": "Webhooks",
+          "url": "https://help.givebutter.com/en/articles/8828428-how-to-automate-workflows-and-data-using-webhooks",
+          "scope": "Events, import exception and verification"
+        },
+        {
+          "title": "Transaction export",
+          "url": "https://help.givebutter.com/en/articles/2219206-how-to-export-download-transaction-details",
+          "scope": "CSV portability"
+        },
+        {
+          "title": "Mobile app",
+          "url": "https://help.givebutter.com/en/articles/6868930-how-to-use-the-givebutter-mobile-app",
+          "scope": "Mobile permission and channel fee caveat"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    },
+    {
+      "id": "salesforce-nonprofit",
+      "name": "Salesforce Nonprofit Cloud",
+      "category": "Hosted nonprofit CRM, fundraising, programs and grantmaking",
+      "model": "Proprietary hosted platform; nonprofit entitlements and addons vary",
+      "license": "Commercial subscription; no open-source license for Nonprofit Cloud core was verified",
+      "maintenance": [],
+      "capabilities": [
+        "Nonprofit relationship/data model",
+        "Fundraising",
+        "Program management and outcomes",
+        "Volunteer management",
+        "Accounting subledger",
+        "Grantmaking opportunities, reviews, budgets and grantee experiences through selected products"
+      ],
+      "api": "Salesforce REST access requires both an API-enabled organization/edition and a user with API Enabled permission. Edition, object entitlement and limits need contract-specific verification.",
+      "access": "API user permissions are documented. This review did not independently test Nonprofit Cloud sharing, permission sets, field security or portal boundaries.",
+      "tenancy": "Provider-hosted Salesforce organization; chosen residency, tenant controls and backup commitments need procurement review.",
+      "export": "Data Export produces CSV sets and optional files on edition-dependent schedules. Formula/roll-up fields are excluded; export is not proof of complete metadata/configuration restore.",
+      "cost": "Canonical U.S. pricing page opened October 25, 2026 showed Core USD70/user/month, Advanced USD125 and Sales/Service Max USD285, billed annually. Eligible nonprofits may receive 10 Core licenses at no cost; eligibility is not established for Charitology. Older indexed regional variants still show USD60/100. Grantmaking has separate product/pricing pages; obtain a written scope/quote.",
+      "limits": [
+        "A discounted license is not an implementation, migration, administrator or support budget.",
+        "Do not apply older Nonprofit Success Pack tutorials or older price cards automatically to current Nonprofit Cloud.",
+        "Portals, marketing, integrations and usage limits can add distinct entitlements/costs."
+      ],
+      "reuse": "Support organizations that already use Salesforce through scoped export/API adapters. Do not make a commercial platform mandatory for the public Charitology OS.",
+      "sources": [
+        {
+          "title": "Canonical current pricing",
+          "url": "https://www.salesforce.com/nonprofit/pricing/",
+          "scope": "Current plan snapshot and eligibility"
+        },
+        {
+          "title": "Grantmaking help",
+          "url": "https://help.salesforce.com/s/articleView?id=sfdo.NPC_Nonprofit_Cloud_for_Grantmaking.htm&language=en_US&type=5",
+          "scope": "Grantmaking workflow and Experience Cloud dependency"
+        },
+        {
+          "title": "Grantmaking pricing",
+          "url": "https://www.salesforce.com/nonprofit/grantmaking-pricing/",
+          "scope": "Separate product/edition scope"
+        },
+        {
+          "title": "API editions and permissions",
+          "url": "https://developer.salesforce.com/docs/platform/api-rest/guide/intro-rest-compatible-editions.html",
+          "scope": "API authorization/edition requirements"
+        },
+        {
+          "title": "Data Export",
+          "url": "https://help.salesforce.com/s/articleView?id=admin_exportdata.htm&language=en_US&type=0",
+          "scope": "CSV export, cadence and exclusions"
+        }
+      ],
+      "checked_at": "2026-10-25",
+      "review": "draft",
+      "tested": "Documentation and repository inspection only; no installation, account purchase, product security audit or end-to-end integration test."
+    }
+  ]
+}

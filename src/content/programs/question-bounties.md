@@ -2,9 +2,9 @@
 title: Question Bounties
 group: Funding
 order: 3
-summary: Cash prizes for answering specific Open Problems of Charitology, paid when a result meets the test each problem states. No prizes are funded yet.
-status: partners
-statusNote: Prize money needs a legal home, either a legal entity or a fiscal sponsor, and independent judges. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+summary: Draft research questions and acceptance rules, record unverified conditional pledges and prepare evidence claims and award-discussion packets.
+status: live
+statusNote: Live local bounty-planning software is available. No prize is funded, announced, contractually promised or paid; judging, legal readiness and resources remain separate requirements.
 conditions: [missing-profession, measurement-gap]
 firstMilestone: Published prize rules and an independent judging panel, with a legal home in place to hold prize money, before any prize is announced.
 help:
@@ -17,6 +17,14 @@ sources:
     publisher: Clay Mathematics Institute
     url: https://www.claymath.org/millennium-problems/
 ---
+
+## Use the operational planning software
+
+Use the [bounty desk](#partner-workspace-question-bounties) to write acceptance, partial-result and appeal rules before considering a public call. Record conditional pledges, evidence claims and reasoned review packets separately. A conditional pledge is not money received. The software selects no winner and pays no award.
+
+The workspace includes separate institutional-readiness records. Those records track what responsible people still need to establish; they do not grant approval or verify a legal, funded program. The longer-term charter below remains an institutional proposal.
+
+Save each form, inspect the generated kit and export a backup. Your records stay in this browser. Imports are validated, destructive changes offer undo and newer work from another tab is protected. Fictional examples contain no real commitments, participants or results.
 
 ## What it is
 

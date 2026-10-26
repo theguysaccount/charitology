@@ -2,9 +2,9 @@
 title: Nonprofit Advisory
 group: People and education
 order: 6
-summary: Planned practical help for nonprofits to measure what their work changes and explain what it really costs, so they can be judged by results rather than overhead.
-status: partners
-statusNote: Advising needs trained advisors, evaluation partners and independent funding. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+summary: A self-guided workspace for nonprofit diagnostic questions, evidence and full costs, proportionate actions and learning checkpoints, alongside the advisory-service charter.
+status: live
+statusNote: The local planning workspace is live. It provides no consulting engagement, financial audit, evaluation finding or certification. A staffed advisory service and its volunteer trial still need trained advisors, evaluation partners, independent funding and governance.
 conditions: [measurement-gap, overhead-myth]
 firstMilestone: A free, self-guided version of the advisory process, published alongside the Impact Measurement Toolkit and tried with five small nonprofits.
 help:
@@ -13,6 +13,12 @@ help:
   - Try the Impact Measurement Toolkit with your organization and report what was missing.
 related: [/tools/impact-measurement-toolkit/, /tools/cost-effectiveness-model-kit/, /open-problems/the-overhead-replacement/, /record/myths/]
 ---
+
+## Build an organization learning plan
+
+[Open the nonprofit workspace](#partner-workspace-nonprofit-advisory) to define a decision, inspect evidence and full-cost gaps, assign proportionate actions and plan a learning checkpoint. A fictional example shows the workflow without claiming results from a real organization. Save and edit records, then export a plan for discussion.
+
+Use public, aggregate information and role names. Do not enter beneficiary records, personnel details or confidential documents. No advisor receives the plan, and no evaluation is performed automatically. The self-guided software is available; the five-organization trial and staffed service in the charter still require real partners and review.
 
 ## What it is
 

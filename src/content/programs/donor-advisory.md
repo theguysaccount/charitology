@@ -2,9 +2,9 @@
 title: Donor Advisory
 group: People and education
 order: 5
-summary: Planned independent help for donors, families and foundations to work out what they value, when their money should move and how to weigh giving near and far.
-status: partners
-statusNote: Advising needs trained advisors, a legal home and partners licensed for tax, legal and investment questions. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+summary: A local workspace for donors to prepare values, constraints, giving alternatives, evidence questions and follow-up, alongside the charter for an independent advisory service.
+status: live
+statusNote: The self-guided planning workspace is live. No advisor is engaged, recommendation issued or money handled. A staffed service still needs trained advisors, a legal home, independent funding and qualified professional partners.
 conditions: [parked-money, single-lens, proximity-pull]
 firstMilestone: A published advising protocol and conflict-of-interest policy, tried with ten volunteer donors whose anonymized feedback is published.
 help:
@@ -13,6 +13,12 @@ help:
   - Try the Values Compass and the Portfolio Builder, then report where they fell short of the help you needed.
 related: [/tools/values-compass/, /tools/portfolio-builder/, /tools/legacy-planner/, /open-problems/the-payout-question/]
 ---
+
+## Prepare a donor discussion
+
+[Open the donor workspace](#partner-workspace-donor-advisory) to record values and constraints, unresolved intake questions, alternative giving scenarios, evidence notes and decision checkpoints. Load a clearly fictional example or start from your own project alias. Save, edit and export a discussion packet in this browser. Scenarios do not produce charity scores or a recommended allocation.
+
+Keep private financial information and personal details out. Nothing is sent to an advisor, submitted publicly or paid through the workspace. The service described below remains a charter for partners; the volunteer pilot in its first milestone has not been conducted by publishing this software.
 
 ## What it is
 

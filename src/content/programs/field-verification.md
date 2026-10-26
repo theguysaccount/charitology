@@ -2,9 +2,9 @@
 title: Field Verification
 group: Research
 order: 7
-summary: Planned independent, on-the-ground checks that programs do what they report, including asking the people served what changed, with findings published in the open.
-status: partners
-statusNote: Field work needs funding, local research partners and ethics review. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+summary: A protocol workspace for defining field checks, evidence limits, safeguards, responses and corrective actions, alongside the charter for an independent field-verification service.
+status: live
+statusNote: Local protocol-writing software is live. No field visit, interview, audit or independent verification has occurred through it. Actual fieldwork still needs funded local partners, ethics review, consent, safeguards and governance.
 conditions: [missing-feedback-loop, measurement-gap, missing-voice]
 firstMilestone: A published verification protocol, reviewed by field researchers and community organizations, and one pilot check run with a local research partner.
 help:
@@ -17,6 +17,12 @@ sources:
     publisher: Feedback Labs
     url: https://feedbacklabs.org/
 ---
+
+## Prepare a verification protocol
+
+[Open the field-verification workspace](#partner-workspace-field-verification) to define a claim, site scope and sampling limits, then draft evidence checks, safeguards, findings notes, a response process and corrective actions. A fictional example makes the unresolved permissions explicit. Save and export the protocol for qualified local review.
+
+The workspace conducts no visit, interview or audit and contacts nobody. User-entered findings remain unverified notes. Keep participant details, precise site locations and confidential material out. A completed checklist supplies no approval or consent for fieldwork; the reviewed protocol and local pilot in the charter remain institutional milestones.
 
 ## What it is
 

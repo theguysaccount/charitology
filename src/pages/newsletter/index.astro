@@ -1,0 +1,44 @@
+---
+import Base from "../../layouts/Base.astro";
+import Crumbs from "../../components/Crumbs.astro";
+import NewsletterSignup from "../../components/NewsletterSignup.astro";
+import newsletter from "../../data/newsletter.json";
+import { url } from "../../lib/site";
+---
+
+<Base
+  title="The Charitology Letter"
+  description="Research, practical tools, corrections and open questions about charity as a system. Read every edition freely and subscribe by email or RSS."
+>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: "The Charitology Letter" }]} /><span
+        class="eyebrow">An open letter about doing good</span
+      ><h1>The Charitology Letter</h1><p class="lede">
+        Follow the work as it develops. Read the evidence, try an instrument,
+        challenge an assumption and help decide what comes next.
+      </p>
+    </div>
+  </header>
+  <section class="wrap section-tight prose">
+    <NewsletterSignup /><h2>Every edition, freely available</h2><ul>
+      {
+        newsletter.issues.map((issue) => (
+          <li>
+            <a href={url(issue.path)}>{issue.title}</a> · {issue.date}
+            <p>{issue.summary}</p>
+          </li>
+        ))
+      }
+    </ul><p>
+      The letter studies the systems around generosity. Depth describes where an
+      activity acts; it never grades the people doing it. Each edition keeps the
+      limits of its evidence visible.
+    </p><p>
+      <a href={url("/record/podcast-and-newsletter/")}
+        >Listen to the textbook readings</a
+      > or <a href={url("/contribute/")}>contribute a correction or question</a
+      >.
+    </p>
+  </section>
+</Base>
