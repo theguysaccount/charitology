@@ -73,11 +73,22 @@ export async function syncSubscriber(db, mail, settings, email, { confirmedOnly 
     await durable("UPDATE newsletter_subscribers SET state='active',contact_id=$2,sync_pending=false,updated_at=now() WHERE email=$1", [email, contact.id]);
   });
 }
-export async function reconcileSubscribers(db, mail, settings) {
-  const pending = await db.tx(async client => (await client.query('SELECT email FROM newsletter_subscribers WHERE sync_pending ORDER BY updated_at LIMIT 20')).rows);
-  let completed = 0;
-  for (const person of pending) { await syncSubscriber(db, mail, settings, person.email); completed++; }
-  return { completed };
+export async function reconcileSubscribers(db, mail, settings, { limit = 20, deadline = Infinity, continueOnError = false } = {}) {
+  if (Date.now() >= deadline) return { completed: 0, failed: 0, stoppedForBudget: true };
+  const count = Math.min(20, Math.max(1, Number.isInteger(limit) ? limit : 20));
+  const pending = await db.tx(async client => (await client.query('SELECT email FROM newsletter_subscribers WHERE sync_pending ORDER BY updated_at LIMIT $1', [count])).rows);
+  let completed = 0; let failed = 0;
+  for (const person of pending) {
+    if (Date.now() >= deadline) break;
+    try { await syncSubscriber(db, mail, settings, person.email); completed++; }
+    catch (error) {
+      if (!continueOnError) throw error;
+      failed++;
+      // One permanently bad job must not occupy the first page every day.
+      if (Date.now() < deadline) await db.tx(client => client.query('UPDATE newsletter_subscribers SET updated_at=now() WHERE email=$1 AND sync_pending', [person.email])).catch(() => {});
+    }
+  }
+  return { completed, failed, stoppedForBudget: Date.now() >= deadline };
 }
 export async function recipientSafety(client, mail, settings) {
   const { rows: pending } = await client.query('SELECT count(*)::int AS count FROM newsletter_subscribers WHERE sync_pending');

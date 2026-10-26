@@ -56,3 +56,11 @@ test('New contact path uses native multipart skip import and never unsafe global
   assert.equal(await call.body.get('file').text(), 'Email\na@example.invalid\n');
   assert.equal(call.body.has('topics'), false); assert.equal(call.body.has('segments'), false); assert.equal(call.body.has('unsubscribed'), false);
 });
+test('Provider maintenance deadline bounds credential retrieval and prevents calls after expiry', async () => {
+  let fetched = 0;
+  const mail = provider(settings, { credential: async () => new Promise(() => {}), fetcher: async () => { fetched++; return Response.json({}); } });
+  await assert.rejects(mail.withDeadline(Date.now()+15).ready(), /time budget/);
+  assert.equal(fetched, 0);
+  await assert.rejects(mail.withDeadline(Date.now()-1).ready(), /time budget/);
+  assert.equal(fetched, 0);
+});

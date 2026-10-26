@@ -8,11 +8,12 @@ import { hashToken } from '../lib/security.mjs';
 import { campaign, syncSubscriber } from '../lib/operations.mjs';
 import { edition } from '../lib/content.mjs';
 import { applyWebhook } from '../lib/webhook.mjs';
+import { verifiedNeonConnectionString } from '../lib/connection.mjs';
 
 test('Actual Postgres: isolated-schema DOI races, expiry, replacement, withdrawal, durable limits and rollback', async () => {
   assert.ok(process.env.DATABASE_URL, 'Private DATABASE_URL is required');
   const schema = 'newsletter_test_'+randomBytes(8).toString('hex');
-  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
+  const client = new pg.Client({ connectionString: verifiedNeonConnectionString(process.env.DATABASE_URL) });
   let db;
   try {
     await client.connect();
@@ -20,6 +21,11 @@ test('Actual Postgres: isolated-schema DOI races, expiry, replacement, withdrawa
     await client.query(`BEGIN; SET LOCAL search_path TO ${schema}; ${await readFile(new URL('../schema.sql', import.meta.url), 'utf8')} COMMIT;`);
     db = database(process.env.DATABASE_URL, { schema });
     const query = (sql, values) => db.tx(c => c.query(sql, values));
+    await assert.rejects(db.withDeadline(Date.now()-1).tx(() => { throw new Error('must not enter expired transaction'); }), /time budget/);
+    const budgetStart = Date.now();
+    await assert.rejects(db.withDeadline(Date.now()+300).tx(c => c.query('SELECT pg_sleep(2)')));
+    assert.ok(Date.now()-budgetStart < 2500, 'database maintenance deadline cannot wait for a full slow statement');
+    await query('SELECT 1');
     const attempt = await db.pending('race@example.invalid');
     const snapshots = await query('SELECT * FROM newsletter_tokens');
     assert.ok(!JSON.stringify(snapshots.rows).includes(attempt.confirm));

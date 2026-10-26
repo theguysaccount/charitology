@@ -3,34 +3,55 @@ import { attachDatabasePool } from '@vercel/functions';
 import { randomUUID } from 'node:crypto';
 import { CONSENT_VERSION } from './config.mjs';
 import { hashToken, newToken } from './security.mjs';
+import { verifiedNeonConnectionString } from './connection.mjs';
 // Transactions always use one checked-out client. No subscriber data is logged.
 export function database(connectionString, { schema } = {}) {
   const providerLockKey = schema ? parseInt(hashToken(schema).slice(0, 12), 16) : 716231430;
-  const pool = new pg.Pool({ connectionString, max: 3, idleTimeoutMillis: 1000, connectionTimeoutMillis: 10000, application_name: 'charitology-newsletter' });
+  const pool = new pg.Pool({ connectionString: verifiedNeonConnectionString(connectionString), max: 3, idleTimeoutMillis: 1000, connectionTimeoutMillis: 10000, application_name: 'charitology-newsletter' });
   if (process.env.VERCEL) attachDatabasePool(pool);
-  const tx = async (action, { providerLock = false } = {}) => {
+  const tx = async (action, { providerLock = false, deadline = Infinity } = {}) => {
+    const remaining = () => {
+      const milliseconds = Math.floor(deadline - Date.now());
+      if (milliseconds <= 0) throw new Error('Maintenance time budget reached');
+      return milliseconds;
+    };
+    if (Number.isFinite(deadline)) remaining();
     const client = await pool.connect();
+    let broken = false;
+    const run = (text, values) => Number.isFinite(deadline) ? client.query({ text, values, query_timeout: remaining() }) : client.query(text, values);
+    const budgetClient = Number.isFinite(deadline) ? { query: async (text, values) => {
+      await run("SELECT set_config('statement_timeout',$1,true)", [String(Math.min(45000, remaining()))]);
+      return run(text, values);
+    } } : client;
     try {
-      await client.query('BEGIN');
-      await client.query("SET LOCAL statement_timeout = '45000'");
+      await run('BEGIN');
+      await run("SELECT set_config('statement_timeout',$1,true)", [String(Number.isFinite(deadline) ? Math.min(45000, remaining()) : 45000)]);
       if (schema) {
         if (!/^newsletter_test_[a-f0-9]+$/.test(schema)) throw new Error('Invalid test schema');
-        await client.query(`SET LOCAL search_path TO ${schema}`);
+        await run(`SET LOCAL search_path TO ${schema}`);
       }
       if (providerLock) {
-        const { rows } = await client.query('SELECT pg_try_advisory_xact_lock($1::bigint) AS acquired', [providerLockKey]);
+        const { rows } = await run('SELECT pg_try_advisory_xact_lock($1::bigint) AS acquired', [providerLockKey]);
         if (!rows[0].acquired) throw new Error('Another preference or campaign operation is in progress; retry later');
       }
-      const result = await action(client);
-      await client.query('COMMIT');
+      const result = await action(budgetClient);
+      await run('COMMIT');
       return result;
-    } catch (error) { await client.query('ROLLBACK').catch(() => {}); throw error; }
-    finally { client.release(); }
+    } catch (error) {
+      if (Number.isFinite(deadline)) await client.query({ text: 'ROLLBACK', query_timeout: 1000 }).catch(() => { broken = true; });
+      else await client.query('ROLLBACK').catch(() => {});
+      throw error;
+    }
+    finally { client.release(broken ? new Error('Timed-out maintenance connection') : undefined); }
   };
   return {
     tx,
     // Transaction-scoped locks work through Neon's transaction-mode pooler.
     exclusive: action => tx(action, { providerLock: true }),
+    withDeadline: deadline => ({
+      tx: (action, options) => tx(action, { ...options, deadline }),
+      exclusive: action => tx(action, { providerLock: true, deadline }),
+    }),
     close: () => pool.end(),
     rate: keys => tx(async client => {
       let allowed = true;
@@ -78,12 +99,12 @@ export function database(connectionString, { schema } = {}) {
       const { rows: imports } = await client.query("SELECT contact_import_status AS status,count(*)::int AS count FROM newsletter_subscribers WHERE contact_import_status<>'none' GROUP BY contact_import_status");
       return { states: Object.fromEntries(rows.map(x => [x.state, x.count])), syncPending: sync[0].count, contactImports: Object.fromEntries(imports.map(x => [x.status, x.count])), campaigns };
     }),
-    cleanup: () => tx(async client => {
+    cleanup: (options = {}) => tx(async client => {
       await client.query('DELETE FROM newsletter_rate_limits WHERE expires_at<now()');
       await client.query("DELETE FROM newsletter_subscribers WHERE state='pending' AND updated_at<now()-interval '7 days'");
       await client.query("DELETE FROM newsletter_tokens WHERE kind='confirm' AND expires_at<now()-interval '7 days'");
       await client.query("DELETE FROM newsletter_webhook_events WHERE created_at<now()-interval '90 days'");
       return { ok: true };
-    }),
+    }, options),
   };
 }

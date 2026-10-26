@@ -6,7 +6,7 @@ October 26, 2026. The real mail service is implemented, but **public email deliv
 
 The owner selected Vercel team `jacksonjezio-7345s-projects`, sender and reply address `hello@charitology.org`, and public postal footer `938 Peacock Station Rd, McLean, VA 22102`. The destination inbox and controlled test recipient are configured privately. Never copy them or subscriber data into this repository, the static site or public API.
 
-The dedicated Vercel project `charitology-mail` is linked to `services/newsletter/`. The static Astro website remains on GitHub Pages. `mail.charitology.org` points to the exact Vercel-assigned CNAME, and Vercel reports its DNS configuration correct. HTTPS and actual service behavior still require deployment verification.
+The dedicated Vercel project `charitology-mail` is linked to `services/newsletter/`. The static Astro website remains on GitHub Pages. `mail.charitology.org` points to the exact Vercel-assigned CNAME, and Vercel reports its DNS configuration correct. The deployed service is reachable over HTTPS. Actual checks verified database health, disabled sending, protected administrative routes, exact-origin CORS, invalid-link handling, authenticated first-issue preview and authenticated maintenance. Production subscriber, import and campaign tables remain empty.
 
 The existing Resend account is authorized through Vercel Connect connector `resend/charitology-mail`, attached to this project for development and production. The service obtains short-lived server credentials at use time; no provider key is embedded in the app. A dedicated native topic, **The Charitology Letter**, requires explicit subscription (`default_subscription=opt_out`). A dedicated empty segment, **Charitology confirmed newsletter**, is provisioned. Setup sent no email and changed no contact preferences. A read-only inspection found no unrelated Topics at that time; the shared account's global preferences remain an explicit boundary.
 
@@ -30,17 +30,23 @@ Independent AI review and automated checks assist implementation; they are not h
 
 ## Verification so far
 
-Twenty-eight service unit tests and real isolated-schema Neon integration tests pass. The integration covers simultaneous single-use confirmation, expiry, replacement, withdrawal, concurrent limits, saved import recovery, native Topic withdrawal, late-event handling and concurrent campaign state changes. Provider boundaries in those automated tests are test doubles; they send no email.
+Thirty-seven service unit tests and real isolated-schema Neon integration tests pass. The integration covers simultaneous single-use confirmation, expiry, replacement, withdrawal, concurrent limits, saved import recovery, native Topic withdrawal, late-event handling and concurrent campaign state changes. Provider boundaries in those automated tests are test doubles; they send no email.
 
 Separate bounded real-provider tests used disposable synthetic addresses only. Ordinary duplicate Contact creation unexpectedly reset a global unsubscribe. The service therefore uses native one-row imports with `on_conflict=skip`; an actual new import created one Contact, and a conflicting import skipped it while preserving the unsubscribe and identity. Synthetic Contacts were identity-checked and removed. Completed import-job diagnostics remain at the provider. No real recipient, membership or delivery was involved.
 
-A secret-free GitHub job runs unit tests and real Postgres tests against a disposable container. Pages deployment depends on that job. The configured daily authenticated mail-service task only cleans expired records; it never queues a campaign. These deployment jobs still need their actual first successful run recorded.
+A secret-free GitHub job runs unit tests and real Postgres tests against a disposable container. Pages deployment depends on that job. The configured daily authenticated mail-service task cleans expired records and, only after delivery is enabled and readiness checks pass, recovers up to 20 pending preference/import updates within a shared 45-second budget. It never prepares or sends a campaign. CSV imports do not guarantee `contact.created` events, so recovery does not depend on that webhook. The branch and pull-request jobs both passed on GitHub, including disposable Postgres integration. Production Pages publication remains gated on those checks.
+
+## Disabled production deployment
+
+The initial service code at commit `4a7c4cc` was staged, checked and promoted as Vercel deployment `dpl_7QYsYQHv28teE7VRnJtnfea2mzD6`. Public endpoint: `https://mail.charitology.org/api/health`; it reports `sendingFlagEnabled:false` and `controlledTestMode:true`. Successful preview/health/maintenance responses are not delivery claims. A dedicated nine-event Resend webhook is configured; its signing credential is private, and actual signed callback verification remains pending deployment of that credential.
+
+A runtime log scan identified one PostgreSQL SSL-mode compatibility warning, while the corresponding health request returned 200. The connection now explicitly requires certificate and hostname verification for Neon. Actual database integration reran successfully without the warning; local test connections retain their existing settings. No verification is disabled.
 
 ## Remaining launch acceptance
 
 1. Verify the approved upgrade actually completed, check the domain allowance and keep transactional pay-as-you-go disabled. Do not create a second subscription or remove another domain.
 2. Create `charitology.org` in the authorized account, disable both tracking settings, publish its exact returned DKIM and sending-domain records without replacing website or receiving records, then confirm verified sender status.
-3. Finish the reviewed service configuration, rerun the idempotent migration after any schema addition, deploy and verify custom-domain HTTPS, database access and disabled-send health.
+3. Finish the reviewed service configuration and final deployment, preserving the verified custom-domain HTTPS, private database access and disabled-send health.
 4. Configure and verify the signed Resend webhook. Keep credentials server-only and out of public build logs and artifacts.
 5. Enable controlled delivery and use the owner-authorized inbox: request, receive, inspect, deliberately confirm, reject replay, inspect native membership, send only the reviewed first issue and verify provider events separately from inbox receipt.
 6. Verify native and local unsubscribe, durable future-send exclusion, expired links and the `hello` reply forwarding route.

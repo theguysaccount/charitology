@@ -59,14 +59,32 @@ test('Webhook verifies original raw bytes and rejects tampering before DB access
   assert.equal((await handler(make(payload))).status, 200); assert.equal(writes, 1);
   assert.equal((await handler(make(payload+' '))).status, 400); assert.equal(writes, 1);
 });
-test('Daily maintenance requires its independent bearer and only performs cleanup', async () => {
+test('Disabled sending maintenance requires its independent bearer and only performs cleanup', async () => {
   let cleaned = 0;
   const cronSecret = 'c'.repeat(40);
-  const handler = createHandler({ db: { cleanup: async () => { cleaned++; return { ok: true }; } }, mail: new Proxy({}, { get: () => { throw new Error('maintenance must not access provider'); } }), settings: { ...settings, cronSecret } });
+  const handler = createHandler({ db: { cleanup: async () => { cleaned++; return { ok: true }; } }, mail: new Proxy({}, { get: () => { throw new Error('disabled maintenance must not access provider'); } }), settings: { ...settings, cronSecret, enabled: false } });
   const make = token => new Request('https://mail.charitology.org/api/cron/maintenance', { headers: token ? { authorization: `Bearer ${token}` } : {} });
   assert.equal((await handler(make())).status, 401);
   assert.equal((await handler(make(settings.adminToken))).status, 401);
   assert.equal((await handler(make(cronSecret))).status, 200); assert.equal(cleaned, 1);
+});
+test('Enabled daily maintenance verifies readiness and bounds preference recovery without campaign calls', async () => {
+  const cronSecret = 'c'.repeat(40); let cleaned = 0; let ready = 0; let requestedRows; let cutoff;
+  const boundedDb = { tx: async action => action({ query: async (_sql, values) => { requestedRows = values[0]; return { rows: [{ email: 'a@example.invalid' }, { email: 'b@example.invalid' }] }; } }), exclusive: async () => {} };
+  const db = { cleanup: async options => { cleaned++; cutoff = options.deadline; return { ok: true }; }, withDeadline: deadline => { assert.equal(deadline, cutoff); return boundedDb; } };
+  const mail = { withDeadline: deadline => { assert.equal(deadline, cutoff); return { ready: async options => { assert.deepEqual(options, { campaign: true }); ready++; } }; } };
+  const handler = createHandler({ db, mail, settings: { ...settings, cronSecret }, logger: () => {} });
+  const before = Date.now();
+  const response = await handler(new Request('https://mail.charitology.org/api/cron/maintenance', { headers: { authorization: `Bearer ${cronSecret}` } }));
+  assert.equal(response.status, 200); assert.equal(cleaned, 1); assert.equal(ready, 1); assert.equal(requestedRows, 20);
+  assert.ok(cutoff >= before+44000 && cutoff <= Date.now()+45000);
+  assert.deepEqual((await response.json()).reconciliation, { completed: 2, failed: 0, stoppedForBudget: false });
+});
+test('Unready daily maintenance stops after cleanup without mutating preferences', async () => {
+  const cronSecret = 'c'.repeat(40); let reconciled = false;
+  const handler = createHandler({ db: { cleanup: async () => ({}), withDeadline: () => { reconciled = true; } }, mail: { withDeadline: () => ({ ready: async () => { throw new Error('unverified sender'); } }) }, settings: { ...settings, cronSecret }, logger: () => {} });
+  const response = await handler(new Request('https://mail.charitology.org/api/cron/maintenance', { headers: { authorization: `Bearer ${cronSecret}` } }));
+  assert.equal(response.status, 503); assert.equal((await response.json()).cleanup, true); assert.equal(reconciled, false);
 });
 test('Signed contact.created resumes only an existing confirmed pending record, never new consent or mail', async () => {
   const secret = 'whsec_'+Buffer.alloc(32, 7).toString('base64');

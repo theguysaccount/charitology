@@ -6,13 +6,24 @@ export class ProviderError extends Error {
 export function provider(settings, { credential = () => {
   if (!settings.subjectId) throw new Error('Authorized server-side Connect subject is required');
   return getToken(settings.connector, { subject: { type: 'user', id: settings.subjectId } });
-}, fetcher = fetch } = {}) {
+}, fetcher = fetch, deadline = Infinity } = {}) {
+  const remaining = () => {
+    const milliseconds = Math.floor(deadline - Date.now());
+    if (milliseconds <= 0) throw new Error('Maintenance time budget reached');
+    return Math.min(8000, milliseconds);
+  };
   const call = async (method, path, body, key) => {
-    const token = await credential();
+    let token;
+    if (Number.isFinite(deadline)) {
+      const timeout = remaining(); let timer;
+      try {
+        token = await Promise.race([credential(), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Credential time budget reached')), timeout); })]);
+      } finally { clearTimeout(timer); }
+    } else token = await credential();
     let response;
     try {
       response = await fetcher(`https://api.resend.com${path}`, {
-        method, signal: AbortSignal.timeout(8000),
+        method, signal: AbortSignal.timeout(remaining()),
         headers: { authorization: `Bearer ${token}`, ...(body instanceof FormData ? {} : { 'content-type': 'application/json' }), ...(key ? { 'Idempotency-Key': key } : {}) },
         ...(body ? { body: body instanceof FormData ? body : JSON.stringify(body) } : {}),
       });
@@ -35,6 +46,7 @@ export function provider(settings, { credential = () => {
   };
   return {
     call,
+    withDeadline: value => provider(settings, { credential, fetcher, deadline: value }),
     async ready({ campaign = false } = {}) {
       if (!settings.enabled || !settings.domainId || (campaign && (!settings.segmentId || !settings.topicId))) throw new Error('Newsletter delivery is not enabled');
       const domain = await call('GET', `/domains/${e(settings.domainId)}`);

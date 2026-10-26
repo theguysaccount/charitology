@@ -32,7 +32,21 @@ export function createHandler({ db, mail, settings = config(), logger = () => co
       }
       if (request.method === 'GET' && path === '/api/cron/maintenance') {
         if (!authorized(request, settings.cronSecret)) return json({ ok: false, message: 'Authentication required.' }, 401);
-        return json(await db.cleanup());
+        const deadline = Date.now() + 45000;
+        await db.cleanup({ deadline });
+        if (!settings.enabled) return json({ ok: true, cleanup: true, reconciliation: 'disabled' });
+        // CSV contact imports do not emit contact.created. This independent
+        // bounded recovery path makes their eventual activation recoverable.
+        try {
+          const boundedMail = mail.withDeadline(deadline);
+          await boundedMail.ready({ campaign: true });
+          const result = await reconcileSubscribers(db.withDeadline(deadline), boundedMail, settings, { limit: 20, deadline, continueOnError: true });
+          const ok = result.failed === 0 && !result.stoppedForBudget;
+          return json({ ok, cleanup: true, reconciliation: result }, ok ? 200 : 503);
+        } catch {
+          logger();
+          return json({ ok: false, cleanup: true, message: 'Cleanup completed; preference recovery needs an operational retry.' }, 503);
+        }
       }
       if (request.method === 'GET' && path === '/') return page('The Charitology Letter', `<p>Updates from Charitology, with evidence, uncertainty and ways to contribute.</p><p><a href="https://charitology.org/record/podcast-and-newsletter/">Read and subscribe at Charitology</a> · <a href="/privacy">Email privacy</a></p>`);
       if (request.method === 'GET' && path === '/privacy') return page('Email privacy', `<p>Charitology uses your email address to send The Charitology Letter after you explicitly confirm. We store your address, consent-copy version and confirmation time, subscription state and the provider contact reference in a private Postgres database. Resend processes confirmation messages and newsletter delivery. Vercel hosts this service; Neon hosts the database.</p><p>Confirmation tokens are stored as hashes and expire after 24 hours. Unconfirmed requests are removed by the maintenance command after seven days. Request-limit keys use a secret-key hash rather than storing a raw IP address and expire after two days. Hosting and email providers also maintain their own operational logs.</p><p>Every newsletter uses Resend's native subscription preferences and suppression controls. You may unsubscribe using its footer. A cancellation link in signup mail also records a durable Charitology suppression. We keep the minimum address and consent/withdrawal history needed to avoid sending again by accident. A new deliberate signup and confirmation can renew Charitology consent; it cannot clear a provider-wide unsubscribe or suppression.</p><p>A campaign already queued may be in transit when you unsubscribe. We do not publish subscriber lists or add tracking links in this service. Provider delivery diagnostics do not prove that a person read a message. Ask about access, deletion or an email problem at <a href="mailto:hello@charitology.org">hello@charitology.org</a>. Removing records must preserve enough suppression information to honor withdrawal.</p><p>Charitology · 938 Peacock Station Rd, McLean, VA 22102. <a href="https://charitology.org/">Return to Charitology</a>.</p>`);
