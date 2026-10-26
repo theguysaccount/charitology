@@ -316,3 +316,38 @@ test("private review routes require administrators before any queue read", async
     error("role"),
   );
 });
+
+test("review metadata cannot push the pending queue beyond its actual row-byte cap", async () => {
+  const row = {
+    id: "request",
+    revision: 1,
+    status: "pending",
+    answers: {},
+    consent_at: new Date(),
+    created_at: new Date(),
+    converted_ids: [],
+  };
+  const c = {
+    query: async (sql) => {
+      if (sql.startsWith("SELECT * FROM os_intake")) return { rows: [row] };
+      if (sql.startsWith("UPDATE os_intake"))
+        return { rows: [{ ...row, revision: 2, status: "reviewed" }] };
+      if (sql.startsWith("SELECT COALESCE(sum(octet_length(to_jsonb(i)"))
+        return { rows: [{ bytes: 8 * 1024 * 1024 + 1 }] };
+      throw new Error("The failed review must not append an audit event.");
+    },
+  };
+  await assert.rejects(
+    intakeRoutes({
+      c,
+      org: "org",
+      user: "admin",
+      member: { role: "admin" },
+      tail: "intake/submissions/request/review",
+      method: "POST",
+      input: { revision: 1, action: "review" },
+      settings,
+    }),
+    error("intake_quota"),
+  );
+});

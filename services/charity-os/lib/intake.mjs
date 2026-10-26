@@ -859,6 +859,20 @@ export async function intakeRoutes({
       [org, row.id, next, user, JSON.stringify(conversionIds)],
     )
   ).rows[0];
+  if (next === "reviewed") {
+    const pending = (
+      await c.query(
+        "SELECT COALESCE(sum(octet_length(to_jsonb(i)::text)),0) AS bytes FROM os_intake i WHERE org_id=$1 AND status IN ('pending','reviewed')",
+        [org],
+      )
+    ).rows[0];
+    if (Number(pending.bytes) > INTAKE_LIMITS.pendingBytes)
+      fail(
+        422,
+        "intake_quota",
+        "This review queue reached its 8 MiB limit. Dismiss or erase older requests before continuing.",
+      );
+  }
   await audit(c, org, user, `intake.${next}`, null, {
     intakeId: row.id,
     publicationId: row.publication_id,
