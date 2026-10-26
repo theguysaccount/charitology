@@ -2,9 +2,9 @@
 title: Evidence Reviews
 group: Research
 order: 5
-summary: Systematic reviews of every major intervention, graded the same way and written in plain language, so anyone can see what is known, what is mixed and what nobody has tested.
-status: seeded
-statusNote: The Intervention Database is open and its first entries are published. New reviews are added by pull request and checked by a second contributor.
+summary: Plan a review, inspect linked intervention sources and save study extractions, bias appraisals and an evidence synthesis.
+status: live
+statusNote: Live protocol and study-extraction software links the draft Intervention Database. The workspace does not run literature searches or publish independently reviewed systematic reviews.
 conditions: [measurement-gap]
 firstMilestone: Reviews of 25 widely funded interventions, each graded and checked against its sources by a second contributor.
 help:
@@ -20,6 +20,12 @@ sources:
     publisher: The Campbell Collaboration
     url: https://www.campbellcollaboration.org/
 ---
+
+## Use the live research desk
+
+Choose an intervention and inspect its linked sources, then use the [review desk](#workspace-evidence-reviews) to define a question, search and selection rules. Save an extraction for each study, record bias and uncertainty, and write a synthesis that preserves disagreement. A completed form is a research note, not an independent evidence review.
+
+Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 
 ## What it is
 

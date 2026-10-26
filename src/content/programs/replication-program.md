@@ -2,9 +2,9 @@
 title: Replication Program
 group: Research
 order: 6
-summary: Re-tests the most influential charity impact studies, publishes every result, including the ones that hold up, and reports how often headline findings survive.
-status: designed
-statusNote: The charter is written. Re-analysis of public data can start with volunteers. New field studies need funding and partners, and wait on a proper legal and governance setup.
+summary: Write and freeze local replication protocols, fork amendments and export the design, analysis rules and review plan.
+status: live
+statusNote: Live replication-planning software saves immutable local versions and exports protocols. Browser timestamps are not public registration; studies, participant safeguards and independent replications still need people and resources.
 conditions: [silence-about-failure, measurement-gap]
 firstMilestone: A list of 20 influential charity impact findings, chosen by published rules, with a replication plan for each registered before any results are known.
 help:
@@ -26,6 +26,12 @@ sources:
     year: 2015
     url: https://europepmc.org/article/MED/26203170
 ---
+
+## Use the live research desk
+
+Choose a claim from a primary study and fill in the [replication planner](#workspace-replication-program). State the population, outcome, analysis, exclusions and stopping rule before inspecting the result. Freeze a local version, fork any amendment and export it for independent review or an external registry. This software does not conduct experiments or independently timestamp a preregistration.
+
+Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 
 ## What it is
 

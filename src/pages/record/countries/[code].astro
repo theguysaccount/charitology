@@ -1,0 +1,130 @@
+---
+import Entry from "../../../layouts/Entry.astro";
+import countries from "../../../data/countries.json";
+import { url } from "../../../lib/site";
+export function getStaticPaths() {
+  return countries.countries.map((country) => ({
+    params: { code: country.id.toLowerCase() },
+    props: { country },
+  }));
+}
+const { country } = Astro.props;
+---
+
+<Entry
+  title={`${country.name}: country data`}
+  eyebrow="Country data profiles"
+  summary={`${country.region} · World Bank statistical snapshot. Local interpretation remains open for coauthors.`}
+  crumbs={[
+    { label: "Record", href: "/record/" },
+    { label: "Country profiles", href: "/record/country-profiles/" },
+    { label: country.name },
+  ]}
+  sources={countries.indicators.map((i) => ({
+    title: i.label,
+    url: i.url,
+    publisher: "World Bank World Development Indicators and original producers",
+  }))}
+>
+  <p>
+    This page describes national indicators. It does not identify the best
+    charity, estimate the impact of a gift or speak for people living here. A
+    locally authored narrative profile has not been published.
+  </p>
+  <h2>What the snapshot records</h2>
+  <dl class="country-facts">
+    {
+      countries.indicators.map((i) => {
+        const v = (country.values as any)[i.id];
+        return (
+          <>
+            <>
+              <dt>{i.label}</dt>
+              <dd>
+                {v ? (
+                  <>
+                    <strong>
+                      {v.value.toLocaleString("en-US", {
+                        maximumFractionDigits: i.unit === "people" ? 0 : 2,
+                      })}{" "}
+                      {i.unit}
+                    </strong>{" "}
+                    · {v.year}
+                    {v.footnote && <p class="note">{v.footnote}</p>}
+                    {v.status && <span> · observation status: {v.status}</span>}
+                  </>
+                ) : (
+                  <strong>Unknown in the 2020–2025 snapshot</strong>
+                )}
+                <p class="note">{i.note}</p>
+              </dd>
+            </>
+          </>
+        );
+      })
+    }
+  </dl>
+  <p class="note">
+    Retrieved {countries.retrieved}. Each series uses its latest non-empty
+    observation in 2020–2025; the years can differ. National averages may hide
+    differences by region, wealth, gender, disability or other circumstances.
+    These figures do not measure charitable funding or unmet need.
+  </p>
+  <h2>Build an accountable local profile</h2><ol>
+    <li>
+      Invite local coauthors to define priorities and correct the framing.
+    </li><li>
+      Compare national figures with local statistical publications and
+      community-led evidence.
+    </li><li>
+      Map public, philanthropic and informal resources separately. Record dates,
+      coverage and unknown amounts.
+    </li><li>
+      Ask who decides, whose experience is missing and how people can safely
+      challenge the work.
+    </li><li>
+      Publish disagreements and source limits alongside the narrative. Obtain
+      independent review.
+    </li>
+  </ol>
+  <p>
+    <a class="btn" href={url(`/record/country-profiles/#country=${country.id}`)}
+      >Compare data and write a research brief</a>
+  </p>
+  <h2>Where work may act</h2><p>
+    For a water question, for example, emergency supply can provide relief;
+    infrastructure repairs can restore service; maintenance and treatment can
+    prevent interruptions; utility rules and accountability can change
+    structures; and coordination or shared information may address a proposed
+    source. This is an illustrative way to ask questions, not a classification
+    of this country or a claim that one depth is superior.
+  </p>
+  <p>
+    Country and economy names follow the data source. Their inclusion does not
+    imply a position on sovereignty or borders.
+  </p>
+</Entry>
+<style>
+  .country-facts {
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr) 2fr;
+    gap: 0.5rem 1rem;
+  }
+  .country-facts dt {
+    font-weight: 600;
+  }
+  .country-facts dd {
+    margin: 0 0 0.7rem;
+  }
+  .country-facts p {
+    margin: 0.2rem 0;
+  }
+  @media (max-width: 520px) {
+    .country-facts {
+      display: block;
+    }
+    .country-facts dd {
+      margin: 0.3rem 0 1rem;
+    }
+  }
+</style>

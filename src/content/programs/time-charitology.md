@@ -3,10 +3,10 @@ title: Time Charitology
 group: Reach
 order: 3
 summary: Studies the best use of volunteer hours, so people who give time can see which roles help most and organizations can see what each kind of help is worth to them.
-status: designed
-statusNote: The charter is written. The first survey of organizations needs researchers and partner nonprofits.
+status: live
+statusNote: A working volunteer planner compares direct service, travel, preparation, skills and staff support, checks weekly capacity and logs actual hours and observations. Optional personal-cost arithmetic never estimates social value. An organization survey and placements are not operating.
 conditions: [measurement-gap, missing-feedback-loop]
-firstMilestone: A published survey of at least 50 organizations on what an hour of each kind of volunteer help is worth to them, including the cost of managing it.
+firstMilestone: Build and review one realistic volunteer plan with an organization. The proposed survey of at least 50 organizations remains a research milestone.
 help:
   - If you manage volunteers, open an issue labeled program describing which roles help most and which cost more than they return.
   - Help design the organization survey for Open Problem 19.
@@ -23,6 +23,14 @@ sources:
     url: https://independentsector.org/research/value-of-volunteer-time/
     note: The 2025 figure uses preliminary data and may be revised.
 ---
+
+## Use the volunteer planner
+
+[Jump to the working workspace](#pw-title).
+
+Enter available hours and skills, then compare possible roles below. The planner counts direct service, travel and preparation in your weekly commitment. It shows staff support separately and flags commitments above your capacity. Skills matching is a literal text prompt for a conversation, not a qualification check.
+
+Mark roles Planned or Active to include them in the weekly plan. Confirm requirements with the organization and log actual hours and observations after volunteering. An optional hourly input illustrates your own opportunity cost; it does not estimate impact or rank organizations. Export the plan and review questions as Markdown, records as CSV or an editable JSON backup. No openings, placements or messages are arranged. The research program below remains proposed.
 
 ## What it is
 

@@ -3,7 +3,8 @@ title: "Principles of Charitology"
 group: "Thought and teaching"
 order: 3
 summary: "The field’s open textbook, written chapter by chapter in public."
-status: seeded
+status: live
+statusNote: "The complete ten-chapter textbook, full reading and print edition, download, search and private reading notebooks."
 conditions: ["missing-profession"]
 help:
   - "Improve a chapter with a pull request."
@@ -12,4 +13,4 @@ help:
 related: ["/programs/principles-course/", "/programs/certified-charitologist/", "/record/encyclopedia/"]
 ---
 
-A profession needs a book its practitioners share. *Principles of Charitology* is that book, written in the open. Read it in order or by chapter. Every claim links to its source, and every chapter can be improved by anyone.
+Read ten substantive chapters in order or by topic. Use the complete reading and print edition, download the Markdown book or keep private questions in each chapter’s notebook. The self-paced course adds exercises and assessment; reading alone does not certify competence.

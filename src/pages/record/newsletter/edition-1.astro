@@ -1,0 +1,81 @@
+---
+import Entry from "../../../layouts/Entry.astro";
+import { url } from "../../../lib/site";
+---
+
+<Entry
+  title="A system we can question"
+  eyebrow="The Charitology Letter · Edition 1 · October 25, 2026"
+  summary="The complete brief, working research desks, an open course and a way to keep uncertainty visible."
+  crumbs={[
+    { label: "Record", href: "/record/" },
+    {
+      label: "Podcast and newsletter",
+      href: "/record/podcast-and-newsletter/",
+    },
+    { label: "Edition 1" },
+  ]}
+>
+  <p>
+    Generosity is already here. Charitology asks how its signals, channels, work
+    and feedback can help it reach the outcomes people value. This letter is an
+    invitation to use the tools, challenge the assumptions and improve the
+    record. It is an editorial draft, produced with AI assistance.
+  </p>
+  <h2>The full ambition is public</h2><p>
+    The <a href={url("/roadmap/")}>66-item original brief</a> includes research programs,
+    donor tools and information bases. Every item has a public page. Its software
+    status describes the function available on that page; a research desk does not
+    establish a staffed institute, a fund or a professional credential.
+  </p>
+  <h2>Try one concrete piece of work</h2><ul>
+    <li>
+      Use the <a href={url("/programs/evidence-reviews/")}
+        >Evidence Reviews desk</a
+      > to define a question, track inclusion decisions and extract study results.
+    </li><li>
+      Read the <a href={url("/record/principles/read/")}>complete textbook</a>,
+      then work through the <a href={url("/programs/principles-course/")}
+        >self-paced course</a
+      >. Completion records describe self-study.
+    </li><li>
+      Compare dated indicators in the <a href={url("/record/country-profiles/")}
+        >country data desk</a
+      >, keeping national statistics separate from local interpretation.
+    </li><li>
+      Make a <a href={url("/record/charitology-100/")}>nomination packet</a> that
+      includes the strongest objection, funding limits and missing voices. The tool
+      does not publish a ranking.
+    </li><li>
+      Listen to <a href={url("/record/podcast-and-newsletter/")}
+        >Principles read aloud</a
+      >. Each episode discloses computer narration and links to its transcript
+      and sources.
+    </li>
+  </ul>
+  <h2>What would make this useful?</h2><p>
+    A page is useful if it improves a real decision or makes an assumption
+    easier to challenge. It is not useful merely because it exists. If a form
+    omits a crucial question, a classification hides a disagreement or a claim
+    outruns its source, open a correction. Public contributions should avoid
+    personal details about people receiving support.
+  </p>
+  <h2>A question for your next meeting</h2><blockquote>
+    What evidence would change the decision we are about to make?
+  </blockquote><p>
+    Write the answer before seeing the next result. Record who can act on it and
+    how people affected by the work can challenge it. Then return to that record
+    after the decision. This is a proposed learning practice; its effectiveness
+    still needs testing.
+  </p>
+  <p>
+    <a href={url("/contribute/review/")}>Review an entry</a> · <a
+      href={url("/newsletter.xml")}>Subscribe to this letter by RSS</a
+    >. Email delivery is not configured.
+  </p><button class="btn" id="print-letter">Print or save this letter</button>
+</Entry>
+<script>
+  document
+    .querySelector("#print-letter")
+    ?.addEventListener("click", () => window.print());
+</script>

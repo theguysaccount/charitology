@@ -1,17 +1,89 @@
 ---
-import { url } from '../../lib/site';
+import podcast from "../../data/podcast.json";
+import newsletter from "../../data/newsletter.json";
+import { url } from "../../lib/site";
 ---
 
-<div class="callout feed-box">
-  <p><strong>Subscribe to the feed.</strong> Paste this address into any feed reader:</p>
-  <p><a href={url('/feed.xml')}><code>{url('/feed.xml')}</code></a></p>
-</div>
-
+<section>
+  <h2>Principles read aloud: Season 1</h2><p>
+    Six complete readings, about {
+      Math.round(podcast.episodes.reduce((n, e) => n + e.seconds, 0) / 60)
+    } minutes in total. The audio uses computer narration from the standard macOS
+    Samantha voice, without voice cloning. These are textbook readings, not interviews;
+    the text remains an editorial draft.
+  </p><p>
+    <a class="btn" href={url("/podcast.xml")}>Subscribe to the podcast RSS</a>
+  </p><ol class="episodes">
+    {
+      podcast.episodes.map((e) => (
+        <li>
+          <>
+            <h3>
+              <a href={url(`/record/podcast/${e.id}/`)}>{e.title}</a>
+            </h3>
+            <p>{e.description}</p>
+            <audio
+              controls
+              preload="none"
+              src={url(e.audio)}
+              aria-label={`Episode ${e.number}: ${e.title}`}
+            />
+            <p class="note">
+              {Math.floor(e.seconds / 60)}:
+              {String(e.seconds % 60).padStart(2, "0")} ·{" "}
+              <a href={url(e.audio)} download>
+                Download MP3
+              </a>{" "}
+              ·{" "}
+              <a href={url(`/record/podcast/${e.id}/`)}>
+                Transcript and sources
+              </a>
+            </p>
+          </>
+        </li>
+      ))
+    }
+  </ol><h2>The Charitology Letter</h2><p>
+    Read and subscribe without an account. The dedicated RSS feed publishes
+    actual letters; the site-wide feed below also includes other pages. Email
+    delivery is not configured.
+  </p><a class="btn" href={url("/newsletter.xml")}
+    >Subscribe to the letter by RSS</a
+  ><ul>
+    {
+      newsletter.issues.map((i) => (
+        <li>
+          <a href={url(i.path)}>{i.title}</a> · {i.date}
+          <p>{i.summary}</p>
+        </li>
+      ))
+    }
+  </ul><details>
+    <summary>Feed addresses to copy into your reader</summary><p>
+      Podcast: <a href={url("/podcast.xml")}
+        >https://charitology.org/podcast.xml</a>
+    </p><p>
+      Newsletter: <a href={url("/newsletter.xml")}
+        >https://charitology.org/newsletter.xml</a>
+    </p><p>
+      All pages: <a href={url("/feed.xml")}>https://charitology.org/feed.xml</a>
+    </p>
+  </details>
+</section>
 <style>
-  .feed-box {
-    margin-top: 2rem;
+  .episodes {
+    padding-left: 1.4rem;
   }
-  .feed-box p {
-    margin: 0 0 0.5rem;
+  .episodes li {
+    margin-block: 1.6rem;
+  }
+  audio {
+    width: 100%;
+  }
+  .episodes h3 {
+    margin-bottom: 0.3rem;
+  }
+  .episodes p {
+    margin-block: 0.4rem;
   }
 </style>

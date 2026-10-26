@@ -1,0 +1,122 @@
+---
+const { id, title } = Astro.props;
+---
+
+<section class="reader-notebook" data-reader={id} data-title={title}>
+  <h2>Reading notebook</h2><p class="note">
+    Private notes and reading progress stay in this browser. This is a reading
+    marker, separate from course assessment.
+  </p><label><input type="checkbox" data-read /> Mark this chapter read</label
+  ><label
+    >Questions, objections and connections<textarea
+      data-notes
+      rows="5"
+      maxlength="20000"></textarea></label
+  ><div class="reader-actions">
+    <button type="button" class="btn btn-small" data-export
+      >Download notes</button
+    ><button type="button" class="btn btn-small btn-ghost" data-clear
+      >Clear this chapter’s notes</button>
+  </div><p data-status role="status"></p>
+</section>
+<script>
+  import { download } from "../lib/client/files";
+  import { guardedDraft } from "../lib/client/guarded-draft";
+  for (const root of document.querySelectorAll<HTMLElement>("[data-reader]")) {
+    const id = root.dataset.reader!;
+    const key = "charitology-reading-" + id;
+    const draft = guardedDraft(key);
+    const read = root.querySelector<HTMLInputElement>("[data-read]")!;
+    const notes = root.querySelector<HTMLTextAreaElement>("[data-notes]")!;
+    const status = root.querySelector<HTMLElement>("[data-status]")!;
+    let writable = true;
+    try {
+      const raw = draft.read();
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (
+          typeof saved.read !== "boolean" ||
+          typeof saved.notes !== "string" ||
+          saved.notes.length > 20000
+        )
+          throw Error();
+        read.checked = saved.read;
+        notes.value = saved.notes;
+      }
+    } catch {
+      writable = false;
+      status.textContent =
+        "Stored notes could not be read or storage is blocked. Existing data is left untouched. Download new notes before leaving.";
+    }
+    function save() {
+      try {
+        if (!writable) throw Error();
+        draft.write(JSON.stringify({ read: read.checked, notes: notes.value }));
+        status.textContent = "Saved in this browser.";
+      } catch (error) {
+        status.textContent =
+          error instanceof Error
+            ? error.message + " Download your notes before leaving."
+            : "Saving unavailable. Download your notes before leaving.";
+      }
+    }
+    read.addEventListener("change", save);
+    notes.addEventListener("input", save);
+    root
+      .querySelector("[data-export]")!
+      .addEventListener("click", () =>
+        download(
+          "reading-" + id + ".md",
+          `# ${root.dataset.title}\n\nRead: ${read.checked ? "Yes" : "Not marked"}\n\n${notes.value}\n\nPrivate reading notes; not independent review or course certification.`,
+        ),
+      );
+    let armed = false;
+    root
+      .querySelector<HTMLButtonElement>("[data-clear]")!
+      .addEventListener("click", (e) => {
+        const button = e.currentTarget as HTMLButtonElement;
+        if (!armed) {
+          armed = true;
+          button.textContent = "Confirm clear notes";
+          return;
+        }
+        notes.value = "";
+        save();
+        armed = false;
+        button.textContent = "Clear this chapter’s notes";
+      });
+    notes.addEventListener("input", () => {
+      armed = false;
+      root.querySelector("[data-clear]")!.textContent =
+        "Clear this chapter’s notes";
+    });
+  }
+</script>
+<style>
+  .reader-notebook {
+    border: 1px solid var(--rule);
+    padding: 1rem;
+    margin: 2rem 0;
+    border-radius: var(--radius);
+  }
+  .reader-notebook label {
+    display: block;
+    margin: 0.6rem 0;
+    font: 0.9rem var(--font-sans);
+  }
+  textarea {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .reader-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  @media print {
+    button {
+      display: none;
+    }
+  }
+</style>

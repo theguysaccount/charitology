@@ -2,8 +2,9 @@
 title: "Podcast and Newsletter"
 group: "Thought and teaching"
 order: 7
-summary: "The field’s outward voice. The feed of new and updated pages is live. The show is designed."
-status: seeded
+summary: "Six narrated textbook episodes with transcripts, a podcast feed and the first issue of The Charitology Letter."
+status: live
+statusNote: "Six actual MP3 episodes, transcripts and podcast RSS; a published letter and dedicated RSS. Email delivery is not configured."
 conditions: ["story-bias", "missing-profession"]
 firstMilestone: "A first season of six episodes, one per group of conditions in the Diagnosis."
 help:
@@ -12,10 +13,4 @@ help:
 related: ["/record/journal/", "/contribute/", "/feed.xml"]
 ---
 
-## The feed
-
-Every page on Charitology is in an RSS feed. Subscribe in any feed reader to follow the field as it grows.
-
-## The show (designed)
-
-Each episode takes one condition of the charity system or one open problem and talks with the people closest to it: researchers, practitioners and the people a program serves. The rule for every episode is the same as for every page, which is no judgment of the good being done. The subject is the system.
+The first audio season contains six complete readings from the open textbook, openly labeled computer narration. Each has an MP3, transcript, sources and a podcast feed. The Charitology Letter has a published first issue and its own RSS feed. Neither a guest interview series nor email delivery is claimed.

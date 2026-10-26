@@ -8,7 +8,7 @@ summary: Charitology is the science of doing the most good. It studies charity a
 
 Charitology is the science of doing the most good. Its subject is not any one cause, method or charity, but the system that connects them all: the people and institutions who give, the signals they see, the channels money passes through, the work it pays for and the results that come back, or don’t.
 
-A field can define a subject to study and improve. Medicine studies the body, economics studies markets and ecology studies ecosystems. Charity is a system too. It moves more than $617 billion a year in the United States alone ([Giving USA 2026](https://thenonprofittimes.com/npt_articles/giving-usa-617-2-b-was-given-to-nonprofits-during-2025/)), and like any system it produces the results it is built to produce. Charitology asks what those results are, why the system produces them, and how to change it.
+A field can define a subject to study and improve. Medicine studies the body, economics studies markets and ecology studies ecosystems. Charity is a system too. It moves more than $617 billion a year in the United States alone ([Giving USA 2026](https://givingusa.org/giving-usa-charitable-giving-rose-to-617-20-billion-in-2025-surpassing-the-600-billion-mark-for-the-first-time/)), and like any system it produces the results it is built to produce. Charitology asks what those results are, why the system produces them, and how to change it.
 
 ## Three commitments
 

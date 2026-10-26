@@ -1,12 +1,35 @@
 ---
-import { getCollection } from 'astro:content';
-import { url } from '../../lib/site';
+import { getCollection } from "astro:content";
+import { url } from "../../lib/site";
 
-const terms = (await getCollection('lexicon')).sort((a, b) => a.data.term.localeCompare(b.data.term));
+const terms = (await getCollection("lexicon")).sort((a, b) =>
+  a.data.term.localeCompare(b.data.term),
+);
 const byId = new Map(terms.map((t) => [t.id, t.data.term]));
 const letters = [...new Set(terms.map((t) => t.data.term[0].toUpperCase()))];
 ---
 
+<div id="lexicon-desk">
+  <label
+    >Search terms and definitions<input
+      id="lexicon-search"
+      type="search"
+    /></label
+  ><p id="lexicon-count" role="status"></p><div class="lexicon-actions">
+    <button id="lexicon-reset" class="btn btn-ghost">Reset search</button
+    ><button id="lexicon-download" class="btn">Download glossary CSV</button
+    ><button id="lexicon-study" class="btn btn-ghost" aria-pressed="false"
+      >Study definitions</button>
+  </div><p id="lexicon-empty" hidden>No matching terms.</p>
+</div>
+<script
+  type="application/json"
+  id="lexicon-data"
+  set:html={JSON.stringify(terms.map((t) => ({ id: t.id, ...t.data }))).replace(
+    /</g,
+    "\\u003c",
+  )}
+/>
 <nav class="az" aria-label="Jump to letter">
   {letters.map((l) => <a href={`#letter-${l}`}>{l}</a>)}
 </nav>
@@ -14,24 +37,38 @@ const letters = [...new Set(terms.map((t) => t.data.term[0].toUpperCase()))];
   {
     terms.map((t, i) => (
       <>
-        {(i === 0 || terms[i - 1].data.term[0].toUpperCase() !== t.data.term[0].toUpperCase()) && (
+        {(i === 0 ||
+          terms[i - 1].data.term[0].toUpperCase() !==
+            t.data.term[0].toUpperCase()) && (
           <div class="letter" id={`letter-${t.data.term[0].toUpperCase()}`}>
             {t.data.term[0].toUpperCase()}
           </div>
         )}
-        <div class="term" id={t.id}>
+        <div
+          class="term"
+          id={t.id}
+          data-term={`${t.data.term} ${t.data.definition}`.toLowerCase()}
+        >
           <dt>{t.data.term}</dt>
           <dd>
-            {t.data.definition}
+            <>
+              <details class="study-definition">
+                <>
+                  <summary>Reveal definition</summary>
+                  <span>{t.data.definition}</span>
+                </>
+              </details>
+              <span class="normal-definition">{t.data.definition}</span>
+            </>
             {t.data.see.length > 0 && (
               <span class="see">
-                {' '}
-                See:{' '}
+                {" "}
+                See:{" "}
                 {t.data.see
                   .filter((s) => byId.has(s))
                   .map((s, j) => (
                     <>
-                      {j > 0 && ', '}
+                      {j > 0 && ", "}
                       <a href={url(`/record/lexicon/#${s}`)}>{byId.get(s)}</a>
                     </>
                   ))}
@@ -94,5 +131,95 @@ const letters = [...new Set(terms.map((t) => t.data.term[0].toUpperCase()))];
   .see {
     font-family: var(--font-sans);
     font-size: 0.82rem;
+  }
+</style>
+
+<script>
+  import { download, toCsv } from "../../lib/client/files";
+  const root = document.querySelector("#lexicon-desk");
+  if (root) {
+    const q = root.querySelector<HTMLInputElement>("#lexicon-search")!;
+    const cards = [...document.querySelectorAll<HTMLElement>("[data-term]")];
+    let study = false;
+    function filter() {
+      let n = 0;
+      const words = q.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      cards.forEach((el) => {
+        el.hidden = !words.every((w) => el.dataset.term!.includes(w));
+        if (!el.hidden) n++;
+      });
+      document.querySelector("#lexicon-count")!.textContent =
+        `${n} of ${cards.length} terms`;
+      document.querySelector<HTMLElement>("#lexicon-empty")!.hidden = n > 0;
+      document.querySelectorAll<HTMLElement>(".letter").forEach((el) => {
+        const letter = el.id.replace("letter-", "").toLowerCase();
+        el.hidden = !cards.some(
+          (c) => !c.hidden && c.dataset.term!.startsWith(letter),
+        );
+      });
+    }
+    q.addEventListener("input", filter);
+    root.querySelector("#lexicon-reset")!.addEventListener("click", () => {
+      q.value = "";
+      filter();
+    });
+    root.querySelector("#lexicon-study")!.addEventListener("click", (e) => {
+      study = !study;
+      document.querySelector(".lexicon")!.classList.toggle("study", study);
+      (e.currentTarget as HTMLElement).setAttribute(
+        "aria-pressed",
+        String(study),
+      );
+      document
+        .querySelectorAll<HTMLDetailsElement>(".study-definition")
+        .forEach((el) => (el.open = false));
+    });
+    root.querySelector("#lexicon-download")!.addEventListener("click", () => {
+      const terms = JSON.parse(
+        document.querySelector("#lexicon-data")!.textContent!,
+      );
+      download(
+        "charitology-lexicon.csv",
+        toCsv(
+          terms.map((t: any) => ({
+            term: t.term,
+            definition: t.definition,
+            see: t.see.join("; "),
+            url: location.origin + location.pathname + "#" + t.id,
+          })),
+        ),
+        "text/csv;charset=utf-8",
+      );
+    });
+    filter();
+  }
+</script>
+<style>
+  .lexicon-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  label {
+    display: grid;
+    gap: 0.3rem;
+    margin: 1rem 0;
+  }
+  .term[hidden],
+  .letter[hidden] {
+    display: none;
+  }
+  .study-definition {
+    display: none;
+  }
+  .study .study-definition {
+    display: block;
+  }
+  .study .normal-definition {
+    display: none;
+  }
+  .study-definition summary {
+    cursor: pointer;
+    color: var(--accent);
   }
 </style>

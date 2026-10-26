@@ -1,0 +1,453 @@
+---
+import ResearchWorkspace from "./ResearchWorkspace.astro";
+import { url } from "../../lib/site";
+const methods = [
+  {
+    value: "cash",
+    label: "Direct cash",
+    question:
+      "What can recipients choose for themselves, and which shared goods need another route?",
+  },
+  {
+    value: "advocacy",
+    label: "Policy advocacy",
+    question:
+      "Which rule could change, who else must act and how would you assess contribution?",
+  },
+  {
+    value: "research",
+    label: "Research",
+    question:
+      "Whose decision would an answer change, and what happens if the result is negative?",
+  },
+  {
+    value: "mutual-aid",
+    label: "Mutual aid",
+    question:
+      "Who belongs to the network, who is missed and how are decisions shared?",
+  },
+  {
+    value: "volunteering",
+    label: "Volunteering",
+    question:
+      "Which skill is needed and what does coordination cost the organization?",
+  },
+  {
+    value: "investing",
+    label: "Impact investing",
+    question:
+      "What changes because of this capital that an ordinary investor would not fund?",
+  },
+  {
+    value: "prizes",
+    label: "Prizes",
+    question:
+      "What result can be judged fairly and who can afford to work before payment?",
+  },
+];
+const fields = [
+  {
+    key: "title",
+    label: "Approach or scenario name",
+    required: true,
+    group: "Shared comparison",
+  },
+  {
+    key: "problem",
+    label: "Specific problem and population",
+    required: true,
+    group: "Shared comparison",
+  },
+  {
+    key: "unit",
+    label: "One common outcome unit",
+    required: true,
+    group: "Shared comparison",
+    hint: "Use the same exact unit, population, time horizon and currency to group records for comparison.",
+  },
+  {
+    key: "horizon",
+    label: "Outcome horizon",
+    required: true,
+    group: "Shared comparison",
+  },
+  {
+    key: "currency",
+    label: "Cost currency and price year",
+    required: true,
+    group: "Shared comparison",
+  },
+  {
+    key: "method",
+    label: "Method",
+    type: "select" as const,
+    required: true,
+    group: "Approach",
+    options: methods,
+  },
+  {
+    key: "chain",
+    label: "How the method reaches the outcome",
+    type: "textarea" as const,
+    required: true,
+    group: "Approach",
+  },
+  {
+    key: "costLow",
+    label: "Total cost: lower scenario",
+    type: "number" as const,
+    min: 0,
+    group: "Assumption ranges",
+  },
+  {
+    key: "costHigh",
+    label: "Total cost: upper scenario",
+    type: "number" as const,
+    min: 0,
+    group: "Assumption ranges",
+  },
+  {
+    key: "probabilityLow",
+    label: "Chance of success: lower (%)",
+    type: "number" as const,
+    min: 0,
+    max: 100,
+    group: "Assumption ranges",
+  },
+  {
+    key: "probabilityHigh",
+    label: "Chance of success: upper (%)",
+    type: "number" as const,
+    min: 0,
+    max: 100,
+    group: "Assumption ranges",
+  },
+  {
+    key: "unitsLow",
+    label: "Outcome units if successful: lower",
+    type: "number" as const,
+    min: 0,
+    group: "Assumption ranges",
+  },
+  {
+    key: "unitsHigh",
+    label: "Outcome units if successful: upper",
+    type: "number" as const,
+    min: 0,
+    group: "Assumption ranges",
+  },
+  {
+    key: "assumptions",
+    label: "Why these bounds, and what is missing?",
+    type: "textarea" as const,
+    required: true,
+    group: "Evidence and limits",
+  },
+  {
+    key: "source",
+    label: "Primary evidence URL (optional for a hypothetical plan)",
+    type: "url" as const,
+    group: "Evidence and limits",
+  },
+  {
+    key: "harm",
+    label: "Possible harms, displacement and outcomes outside the chosen unit",
+    type: "textarea" as const,
+    required: true,
+    group: "Evidence and limits",
+  },
+  {
+    key: "next",
+    label: "Cheapest useful test before acting",
+    type: "textarea" as const,
+    group: "Evidence and limits",
+  },
+];
+---
+
+<section class="tool" id="ml-intro" data-methods={JSON.stringify(methods)}>
+  <h2>Compare ways of approaching one problem</h2><p>
+    Design alternatives across seven methods. Give them the same outcome unit,
+    population, currency and time horizon. Record evidence and missing
+    information before interpreting the numerical scenarios.
+  </p><div class="ml-questions">
+    {
+      methods.map((method) => (
+        <details>
+          <>
+            <summary>{method.label}</summary>
+            <p>{method.question}</p>
+          </>
+        </details>
+      ))
+    }
+  </div><p class="note">
+    No method is assigned an effectiveness score by Charitology. All numerical
+    inputs below are your assumptions. Source depth describes where the proposed
+    work acts; it does not decide which method is better.
+  </p><p>
+    <a href={url("/record/interventions/cash-transfers/")}
+      >Read an intervention example</a
+    > · <a href={url("/record/encyclopedia/counterfactual-impact/")}
+      >Check the counterfactual</a>
+  </p>
+</section>
+<section class="tool" id="ml-results">
+  <h2>Scenario comparison</h2><p>
+    Save approaches below, then compare only records sharing the same scope. A
+    current draft is shown separately when it matches.
+  </p><div class="field">
+    <label for="ml-group">Comparison scope</label><select id="ml-group"
+      ><option value="">Save an approach to create a comparison</option
+      ></select>
+  </div><div id="ml-output" class="result" aria-live="polite"></div><button
+    class="btn btn-ghost btn-small"
+    id="ml-export"
+    type="button">Export this scenario table CSV</button
+  ><p class="note">
+    <strong>Model:</strong> expected outcome units = chance of success × units if
+    successful. Failure is assumed to produce zero of the chosen outcome; harms and
+    other outcomes stay in the written appraisal. Cost per expected unit runs from
+    lower cost ÷ upper expected units to upper cost ÷ lower expected units. A zero
+    lower expected outcome makes the upper cost unbounded. These are assumption bounds,
+    not confidence intervals or forecasts validated by data.
+  </p>
+</section>
+<ResearchWorkspace
+  id="methods-lab"
+  title="Methods experiment workspace"
+  description="Write a testable approach, preserve uncertainty and save several alternatives. Blank numeric fields stay unknown, and a reported zero stays zero. The comparison is a planning model, not a published finding about the methods."
+  fields={fields}
+/>
+<style>
+  .ml-questions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+  }
+  .ml-questions details {
+    border-top: 1px solid var(--rule);
+    padding: 0.6rem 0;
+  }
+  .ml-questions summary {
+    font-weight: 650;
+    cursor: pointer;
+  }
+  @media (max-width: 650px) {
+    .ml-questions {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+<script>
+  import { h, clear } from "../../lib/client/dom";
+  import { download } from "../../lib/client/files";
+  import {
+    methodRange,
+    mountResearchWorkspaces,
+    researchCrossError,
+    researchCsv,
+    fieldError,
+  } from "../../lib/client/research-programs";
+  import type { ResearchState } from "../../lib/client/research-programs";
+  mountResearchWorkspaces();
+  const methods = JSON.parse(
+      document.getElementById("ml-intro")!.dataset.methods!,
+    ),
+    workspace = document.getElementById("workspace-methods-lab")!,
+    select = document.getElementById("ml-group") as HTMLSelectElement,
+    output = document.getElementById("ml-output")!;
+  let state: ResearchState | null = null,
+    exportRows: Record<string, unknown>[] = [];
+  const groupKey = (values: Record<string, string>) =>
+    JSON.stringify(
+      ["problem", "unit", "horizon", "currency"].map((key) =>
+        (values[key] ?? "").trim().toLowerCase(),
+      ),
+    );
+  const completeScope = (values: Record<string, string>) =>
+    ["problem", "unit", "horizon", "currency"].every((key) =>
+      values[key]?.trim(),
+    );
+  const fmt = (n: number) =>
+    n.toLocaleString(undefined, { maximumFractionDigits: 3 });
+  function render() {
+    clear(output);
+    exportRows = [];
+    if (!state) return;
+    const rows = [
+      ...state.records.map((record) => ({
+        values: record.values,
+        draft: false,
+      })),
+      ...(completeScope(state.draft)
+        ? [{ values: state.draft, draft: true }]
+        : []),
+    ];
+    const groups = [
+      ...new Map(
+        rows
+          .filter((row) => completeScope(row.values))
+          .map((row) => [groupKey(row.values), row.values]),
+      ).entries(),
+    ];
+    const previous = select.value;
+    clear(select);
+    groups.forEach(([key, values]) =>
+      select.append(
+        h(
+          "option",
+          { value: key },
+          `${values.problem} · ${values.unit} · ${values.horizon} · ${values.currency}`,
+        ),
+      ),
+    );
+    if (groups.some(([key]) => key === previous)) select.value = previous;
+    if (!groups.length) {
+      select.append(
+        h(
+          "option",
+          { value: "" },
+          "Save an approach or complete the draft scope",
+        ),
+      );
+      output.append(
+        h(
+          "p",
+          {},
+          "No common scope yet. Define a problem, outcome unit, horizon and currency below.",
+        ),
+      );
+      return;
+    }
+    const shown = rows.filter((row) => groupKey(row.values) === select.value),
+      scope = groups.find(([key]) => key === select.value)![1];
+    const table = h(
+      "table",
+      { class: "data" },
+      h("caption", {}, `${scope.problem}: assumption scenarios`),
+    );
+    table.append(
+      h(
+        "thead",
+        {},
+        h(
+          "tr",
+          {},
+          [
+            "Method / record",
+            "Expected outcome units",
+            "Cost per expected unit",
+            "Status",
+          ].map((label) => h("th", { scope: "col" }, label)),
+        ),
+      ),
+    );
+    const body = h("tbody");
+    for (const row of shown) {
+      const v = row.values,
+        keys = [
+          "costLow",
+          "costHigh",
+          "probabilityLow",
+          "probabilityHigh",
+          "unitsLow",
+          "unitsHigh",
+        ];
+      const has = keys.every((key) => v[key] != null && v[key].trim() !== "");
+      const cross = researchCrossError(
+        { id: "methods-lab", title: "Methods", fields: [] },
+        v,
+      );
+      const invalid = keys
+        .map((key) =>
+          fieldError(
+            {
+              key,
+              label: key,
+              type: "number",
+              min: 0,
+              ...(key.startsWith("probability") ? { max: 100 } : {}),
+            },
+            v[key] ?? "",
+          ),
+        )
+        .find(Boolean);
+      const result =
+        has && !cross && !invalid
+          ? methodRange(
+              ...(keys.map((key) => Number(v[key])) as [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number,
+              ]),
+            )
+          : null;
+      const label =
+        methods.find((method: any) => method.value === v.method)?.label ??
+        "Method not chosen";
+      const expected = result
+        ? `${fmt(result.expectedLow)}–${fmt(result.expectedHigh)}`
+        : has && !cross && !invalid
+          ? "No positive outcome or numeric range too wide"
+          : "Unknown";
+      const ratio = result
+        ? `${fmt(result.costPerLow)}–${result.costPerHigh == null ? "unbounded" : fmt(result.costPerHigh)}`
+        : "Not estimated";
+      const status =
+        cross ??
+        invalid ??
+        (row.draft ? "Current draft assumptions" : "Saved assumptions");
+      body.append(
+        h(
+          "tr",
+          {},
+          h(
+            "th",
+            { scope: "row" },
+            label,
+            h("p", { class: "note" }, v.title || "Untitled draft"),
+          ),
+          h("td", {}, expected),
+          h("td", {}, ratio),
+          h("td", {}, status),
+        ),
+      );
+      exportRows.push({
+        method: label,
+        title: v.title,
+        problem: v.problem,
+        unit: v.unit,
+        horizon: v.horizon,
+        currency: v.currency,
+        expectedUnits: expected,
+        costPerExpectedUnit: ratio,
+        status,
+        assumptions: v.assumptions ?? "",
+        harms: v.harm ?? "",
+      });
+    }
+    table.append(body);
+    output.append(h("div", { class: "table-wrap" }, table));
+  }
+  workspace.addEventListener("research:state", ((
+    event: CustomEvent<ResearchState>,
+  ) => {
+    state = event.detail;
+    render();
+  }) as EventListener);
+  select.addEventListener("change", render);
+  workspace.dispatchEvent(new Event("research:inspect"));
+  document
+    .getElementById("ml-export")!
+    .addEventListener("click", () =>
+      download(
+        "methods-lab-scenarios.csv",
+        researchCsv(exportRows),
+        "text/csv;charset=utf-8",
+      ),
+    );
+</script>

@@ -1,32 +1,90 @@
 ---
-import causesData from '../../data/causes.json';
-import sourceMap from '../../data/sources-map.json';
-import compass from '../../data/compass.json';
-import { url } from '../../lib/site';
+import causesData from "../../data/causes.json";
+import sourceMap from "../../data/sources-map.json";
+import compass from "../../data/compass.json";
+import { getCollection } from "astro:content";
+const interventions = await getCollection("interventions");
+import { url } from "../../lib/site";
 
 const problems = causesData.problems;
-const touches = (s: (typeof sourceMap.sources)[number], pid: string) => s.problems === 'all' || (s.problems as string[]).includes(pid);
-const problemLabel = (id: string) => problems.find((p) => p.id === id)?.label ?? id;
+const touches = (s: (typeof sourceMap.sources)[number], pid: string) =>
+  s.problems === "all" || (s.problems as string[]).includes(pid);
+const problemLabel = (id: string) =>
+  problems.find((p) => p.id === id)?.label ?? id;
 ---
 
 <section class="atlas">
   <h2>Cause areas</h2>
   <p class="note">
-    Positions on each dimension run from left to right and are editorial judgments (<code>src/data/causes.json</code>).
+    Positions on each dimension run from left to right and are editorial
+    judgments (<code>src/data/causes.json</code>).
+  </p>
+  <div class="atlas-controls">
+    <label>Search causes<input type="search" id="atlas-search" /></label><label
+      >World problem<select id="atlas-problem"
+        ><option value="">All problems</option>{
+          problems.map((p) => <option value={p.id}>{p.label}</option>)
+        }</select
+      ></label
+    ><label
+      >Proposed source<select id="atlas-source"
+        ><option value="">All sources</option>{
+          sourceMap.sources.map((s) => <option value={s.id}>{s.label}</option>)
+        }</select
+      ></label
+    ><button class="btn btn-ghost" id="atlas-reset">Reset</button>
+  </div><p id="atlas-count" role="status"></p><p id="atlas-empty" hidden>
+    No matching causes. Try fewer filters.
   </p>
   <div class="grid">
     {
       causesData.causes.map((c) => (
-        <article class="card cause" id={c.id}>
+        <article
+          class="card cause"
+          id={c.id}
+          data-cause={c.id}
+          data-search={`${c.name} ${c.summary}`.toLowerCase()}
+          data-problems={c.problems.join(" ")}
+          data-upstream={c.upstream.join(" ")}
+        >
           <h3>{c.name}</h3>
-          <p>{c.summary}</p>
+          <>
+            <p>{c.summary}</p>
+            <p class="note">
+              {
+                interventions.filter((i) => i.data.causes.includes(c.id as any))
+                  .length
+              }{" "}
+              recorded interventions · worldwide funding and unmet need not
+              estimated here.
+            </p>
+            <ul>
+              {interventions
+                .filter((i) => i.data.causes.includes(c.id as any))
+                .map((i) => (
+                  <li>
+                    <a href={url(`/record/interventions/${i.id}/`)}>
+                      {i.data.title}
+                    </a>{" "}
+                    · {i.data.evidence} evidence
+                  </li>
+                ))}
+            </ul>
+          </>
           <dl class="dims">
             {compass.dimensions.map((d) => (
               <>
                 <dt>{d.prompt}</dt>
                 <dd>
-                  <span class="track" role="img" aria-label={`${Math.round((c.dims as any)[d.id] * 100)} of 100, from ${d.left} to ${d.right}`}>
-                    <span class="dot" style={`left:${(c.dims as any)[d.id] * 100}%`} />
+                  <span
+                    class="track"
+                    role="img"
+                    aria-label={`${Math.round((c.dims as any)[d.id] * 100)} of 100, from ${d.left} to ${d.right}`}
+                  >
+                    <span
+                      class="dot"
+                      style={`left:${(c.dims as any)[d.id] * 100}%`}
+                    />
                   </span>
                   <span class="ends">
                     <span>{d.left}</span>
@@ -38,7 +96,10 @@ const problemLabel = (id: string) => problems.find((p) => p.id === id)?.label ??
           </dl>
           {c.problems.length > 0 && (
             <p class="note">
-              Problems it touches: {c.problems[0] === 'all' ? 'every problem downstream' : c.problems.map(problemLabel).join(', ')}
+              Problems it touches:{" "}
+              {c.problems[0] === "all"
+                ? "every problem downstream"
+                : c.problems.map(problemLabel).join(", ")}
             </p>
           )}
         </article>
@@ -48,12 +109,15 @@ const problemLabel = (id: string) => problems.find((p) => p.id === id)?.label ??
 
   <h2 class="map-title">The source map</h2>
   <p class="note">
-    Which sources <a href={sourceMap.source.url}>Humanity’s Checklist</a> links to which world problems. A filled dot means the
-    checklist says that source feeds that problem. Charitology treats this map as a hypothesis to test.
+    Which sources <a href={sourceMap.source.url}>Humanity’s Checklist</a> links to
+    which world problems. A filled dot means the checklist says that source feeds
+    that problem. Charitology treats this map as a hypothesis to test.
   </p>
   <div class="table-wrap">
     <table class="data smap">
-      <caption class="visually-hidden">Sources (columns) and the problems they feed (rows)</caption>
+      <caption class="visually-hidden"
+        >Sources (columns) and the problems they feed (rows)</caption
+      >
       <thead>
         <tr>
           <th scope="col">Problem</th>
@@ -85,7 +149,9 @@ const problemLabel = (id: string) => problems.find((p) => p.id === id)?.label ??
     </table>
   </div>
   <p class="note">
-    Find the causes that fit your values with the <a href={url('/tools/values-compass/')}>Values Compass</a>.
+    Find the causes that fit your values with the <a
+      href={url("/tools/values-compass/")}>Values Compass</a
+    >.
   </p>
 </section>
 
@@ -146,7 +212,7 @@ const problemLabel = (id: string) => problems.find((p) => p.id === id)?.label ??
   .smap .cell {
     text-align: center;
   }
-  .smap th[scope='col'] {
+  .smap th[scope="col"] {
     text-align: center;
   }
   .smap .on {
@@ -155,5 +221,61 @@ const problemLabel = (id: string) => problems.find((p) => p.id === id)?.label ??
   }
   .smap .off {
     color: var(--ink-3);
+  }
+</style>
+
+<script>
+  const root = document.querySelector(".atlas");
+  if (root) {
+    const q = root.querySelector<HTMLInputElement>("#atlas-search")!;
+    const problem = root.querySelector<HTMLSelectElement>("#atlas-problem")!;
+    const source = root.querySelector<HTMLSelectElement>("#atlas-source")!;
+    const cards = [...root.querySelectorAll<HTMLElement>("[data-cause]")];
+    function filter() {
+      const words = q.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      let n = 0;
+      cards.forEach((c) => {
+        const ps = c.dataset.problems!.split(" ");
+        c.hidden = !(
+          words.every((w) => c.dataset.search!.includes(w)) &&
+          (!problem.value ||
+            ps.includes(problem.value) ||
+            ps.includes("all")) &&
+          (!source.value ||
+            c.dataset.upstream!.split(" ").includes(source.value))
+        );
+        if (!c.hidden) n++;
+      });
+      root!.querySelector("#atlas-count")!.textContent =
+        `${n} of ${cards.length} cause areas`;
+      root!.querySelector<HTMLElement>("#atlas-empty")!.hidden = n > 0;
+    }
+    q.addEventListener("input", filter);
+    problem.addEventListener("change", filter);
+    source.addEventListener("change", filter);
+    root.querySelector("#atlas-reset")!.addEventListener("click", () => {
+      q.value = "";
+      problem.value = "";
+      source.value = "";
+      filter();
+    });
+    filter();
+  }
+</script><style>
+  .atlas-controls {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: end;
+  }
+  .atlas-controls label {
+    flex: 1;
+    min-width: min(100%, 150px);
+    display: grid;
+    gap: 0.3rem;
+    font: 0.85rem var(--font-sans);
+  }
+  .cause[hidden] {
+    display: none;
   }
 </style>

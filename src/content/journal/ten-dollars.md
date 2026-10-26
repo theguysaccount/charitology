@@ -1,7 +1,7 @@
 ---
 title: Ten Dollars
 author: Charitology
-date: 2026-10-26
+date: 2026-10-25
 summary: The founding poem uses a ten-dollar domain registration as an image for Charitology’s invitation to study how generosity is aimed.
 volume: 0
 issue: 1

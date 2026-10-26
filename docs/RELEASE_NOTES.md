@@ -1,5 +1,7 @@
 # Edition 0 completion pass
 
+**Superseded for software scope by [the 31-item implementation pass](IMPLEMENTATION_NOTES.md).** The institutional, human-review, store and dependency limits below still apply.
+
 Date: October 25, 2026 (America/Los_Angeles). AI assistance was used for implementation, source checking, copy, artwork and review. This report distinguishes implemented software from human review and external institutions.
 
 ## What changed

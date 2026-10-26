@@ -1,0 +1,210 @@
+---
+import type { ResearchField } from "../../lib/client/research-programs";
+interface Props {
+  id: string;
+  title: string;
+  description: string;
+  fields: ResearchField[];
+  freeze?: boolean;
+}
+const { id, title, description, fields, freeze = false } = Astro.props;
+const groups = [
+  ...new Set(fields.map((field) => field.group || "Research record")),
+];
+const config = { id, title, fields, freeze };
+---
+
+<section
+  class="tool rp-workspace"
+  data-research-workspace
+  data-config={JSON.stringify(config)}
+  id={`workspace-${id}`}
+  aria-labelledby={`${id}-workspace-title`}
+>
+  <div class="tool-head">
+    <h2 id={`${id}-workspace-title`}>{title}</h2><span class="note" data-editing
+      >New record</span>
+  </div>
+  <p>{description}</p>
+  <p class="note">
+    Your work stays in this browser. Export a backup to move it elsewhere.
+    Entries are your research notes, not verified findings or ratings.
+  </p>
+  {
+    freeze && (
+      <p class="note">
+        <strong>Freeze a version before collecting results.</strong> A saved
+        version can be forked, but this workspace does not edit it in place.
+        Browser timestamps are not independent public registration.
+      </p>
+    )
+  }
+  <form novalidate>
+    {
+      groups.map((group) => (
+        <fieldset>
+          <>
+            <legend>{group}</legend>
+            <div class="rp-fields">
+              {fields
+                .filter((field) => (field.group || "Research record") === group)
+                .map((field) => (
+                  <div
+                    class:list={[
+                      "field",
+                      { "rp-wide": field.type === "textarea" },
+                    ]}
+                  >
+                    <label for={`${id}-${field.key}`}>
+                      {field.label}
+                      {field.required ? " *" : ""}
+                    </label>
+                    {field.type === "textarea" ? (
+                      <textarea
+                        id={`${id}-${field.key}`}
+                        name={field.key}
+                        rows="3"
+                        maxlength={field.maxLength ?? 8000}
+                        required={field.required}
+                        aria-describedby={
+                          field.hint ? `${id}-${field.key}-hint` : undefined
+                        }
+                      />
+                    ) : field.type === "select" ? (
+                      <select
+                        id={`${id}-${field.key}`}
+                        name={field.key}
+                        required={field.required}
+                      >
+                        <option value="">Choose / unknown</option>
+                        {field.options?.map((option) => (
+                          <option value={option.value}>{option.label}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        id={`${id}-${field.key}`}
+                        name={field.key}
+                        type={field.type ?? "text"}
+                        required={field.required}
+                        min={field.min}
+                        max={field.max}
+                        step={field.step ?? "any"}
+                        maxlength={field.maxLength ?? 8000}
+                        aria-describedby={
+                          field.hint ? `${id}-${field.key}-hint` : undefined
+                        }
+                      />
+                    )}
+                    {field.hint && (
+                      <span class="hint" id={`${id}-${field.key}-hint`}>
+                        {field.hint}
+                      </span>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </>
+        </fieldset>
+      ))
+    }
+    <p class="note" data-completion></p>
+    <div class="btn-row">
+      <button class="btn" type="submit"
+        >{freeze ? "Freeze version" : "Save record"}</button
+      ><button class="btn btn-ghost" type="button" data-new>New draft</button>
+    </div>
+  </form>
+  <p role="status" aria-live="polite" data-status class="note"></p>
+  <div class="btn-row">
+    <button class="btn btn-ghost btn-small" type="button" data-json
+      >Export JSON</button
+    ><button class="btn btn-ghost btn-small" type="button" data-markdown
+      >Export research memo</button
+    ><button class="btn btn-ghost btn-small" type="button" data-csv
+      >Export saved CSV</button>
+  </div>
+  <details class="rp-transfer">
+    <summary>Import, undo and clear</summary><div class="field">
+      <label for={`${id}-import`}>Import this program’s JSON export</label
+      ><input
+        id={`${id}-import`}
+        data-import
+        type="file"
+        accept="application/json,.json"
+      />
+    </div><button class="btn" type="button" data-confirm-import hidden
+      >Replace with imported workspace</button
+    ><div class="btn-row">
+      <button class="btn btn-ghost btn-small" type="button" data-undo disabled
+        >Undo last change</button
+      ><button class="btn btn-ghost btn-small" type="button" data-clear
+        >Clear workspace</button>
+    </div>
+  </details>
+  <h3>Saved records (<span data-count>0</span>)</h3><div data-records></div>
+  <noscript
+    ><p>
+      This workspace needs JavaScript for local editing and export. The program
+      charter and linked sources remain readable.
+    </p></noscript
+  >
+</section>
+<style>
+  fieldset {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    padding: 1rem 0;
+    margin: 1.2rem 0 0;
+    min-width: 0;
+  }
+  legend {
+    font: 600 1.1rem var(--font-display);
+    padding: 0 0.5rem 0 0;
+  }
+  .rp-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+  }
+  .rp-wide {
+    grid-column: 1/-1;
+  }
+  .rp-transfer {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid var(--rule);
+  }
+  summary {
+    cursor: pointer;
+  }
+  .rp-workspace :global(.rp-record) {
+    border-top: 1px solid var(--rule);
+    padding: 1rem 0;
+  }
+  .rp-workspace :global(.rp-record summary) {
+    font-weight: 650;
+  }
+  .rp-workspace :global(dt) {
+    font-weight: 650;
+    margin-top: 0.7rem;
+  }
+  .rp-workspace :global(dd) {
+    margin-left: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--ink-2);
+  }
+  .rp-workspace input[type="file"] {
+    max-width: 100%;
+  }
+  @media (max-width: 650px) {
+    .rp-fields {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+<script>
+  import { mountResearchWorkspaces } from "../../lib/client/research-programs";
+  mountResearchWorkspaces();
+</script>

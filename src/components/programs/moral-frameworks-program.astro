@@ -1,0 +1,267 @@
+---
+import frameworksData from "../../data/frameworks.json";
+import causesData from "../../data/causes.json";
+import ResearchWorkspace from "./ResearchWorkspace.astro";
+import { url } from "../../lib/site";
+const frameworks = frameworksData.frameworks,
+  causes = causesData.causes;
+const options = causes.map((cause) => ({ value: cause.id, label: cause.name }));
+const fields = [
+  {
+    key: "title",
+    label: "Deliberation or review title",
+    required: true,
+    group: "Decision",
+  },
+  {
+    key: "first",
+    label: "First cause",
+    type: "select" as const,
+    required: true,
+    group: "Decision",
+    options,
+  },
+  {
+    key: "second",
+    label: "Second cause",
+    type: "select" as const,
+    required: true,
+    group: "Decision",
+    options,
+  },
+  ...frameworks.map((framework) => ({
+    key: `weight_${framework.id}`,
+    label: `Weight for ${framework.name}`,
+    type: "number" as const,
+    min: 0,
+    max: 5,
+    group: "Your weights",
+    hint: "0 leaves this lens out. Blank means not yet considered. These weights express your choices, not a measured moral truth.",
+  })),
+  {
+    key: "reasons",
+    label: "Reasons for your weights, objections and missing views",
+    type: "textarea" as const,
+    required: true,
+    group: "Deliberation record",
+  },
+  {
+    key: "disagreement",
+    label: "Where do the lenses disagree, and what would change your decision?",
+    type: "textarea" as const,
+    required: true,
+    group: "Deliberation record",
+  },
+  {
+    key: "source",
+    label: "Source supporting a proposed correction (optional)",
+    type: "url" as const,
+    group: "Deliberation record",
+  },
+  {
+    key: "correction",
+    label: "Proposed edit to a framework sketch, with reasoning",
+    type: "textarea" as const,
+    group: "Deliberation record",
+  },
+];
+---
+
+<section
+  class="tool"
+  id="mf-comparison"
+  data-frameworks={JSON.stringify(frameworks)}
+  data-causes={JSON.stringify(causes)}
+>
+  <h2>Compare the same choice through eight lenses</h2><p>
+    Change the two causes and your weights in the workspace below. The table
+    shows where the project’s framework sketches agree or part. Scores are
+    editorial priorities from 0 to 5, not findings about moral truth or charity
+    effectiveness.
+  </p><button class="btn btn-ghost" type="button" id="mf-example"
+    >Load an equal-weight example</button
+  ><p class="note">
+    The example compares global health with arts and culture. Its equal weights
+    are an illustration you can change.
+  </p><div id="mf-output" class="result" aria-live="polite"></div><button
+    class="btn btn-ghost btn-small"
+    id="mf-csv"
+    type="button">Export the current comparison CSV</button
+  ><p class="note">
+    A weighted index assumes these editorial priorities can be averaged. That
+    assumption is contestable. Unweighted averages use all eight lenses; custom
+    averages use only entered positive weights. Blank and zero weights are
+    reported separately.
+  </p><p>
+    <a href={url("/record/encyclopedia/moral-uncertainty/")}
+      >Ways to reason under moral uncertainty</a
+    > · <a href={url("/open-problems/moral-parliament-in-practice/")}
+      >What remains open</a>
+  </p>
+</section>
+<ResearchWorkspace
+  id="moral-frameworks-program"
+  title="Moral-lens deliberation workspace"
+  description="Save a choice, its lens weights, the disagreements you found and a reasoned correction. Exports preserve your reasoning so a contributor can challenge or improve the shared sketches."
+  fields={fields}
+/>
+<script>
+  import { h, clear } from "../../lib/client/dom";
+  import { download, toCsv } from "../../lib/client/files";
+  import {
+    mountResearchWorkspaces,
+    weightedLensComparison,
+  } from "../../lib/client/research-programs";
+  mountResearchWorkspaces();
+  const root = document.getElementById("mf-comparison")!,
+    frameworks = JSON.parse(root.dataset.frameworks!),
+    causes = JSON.parse(root.dataset.causes!),
+    workspace = document.getElementById("workspace-moral-frameworks-program")!,
+    output = document.getElementById("mf-output")!;
+  let rows: any[] = [];
+  function render(values: Record<string, string>) {
+    clear(output);
+    const first = causes.find((cause: any) => cause.id === values.first),
+      second = causes.find((cause: any) => cause.id === values.second);
+    rows = [];
+    if (!first || !second) {
+      output.append(
+        h("p", {}, "Choose two causes in the workspace to compare the lenses."),
+      );
+      return;
+    }
+    if (first.id === second.id) {
+      output.append(
+        h("p", {}, "Choose two different causes to examine a real trade-off."),
+      );
+      return;
+    }
+    const weights = Object.fromEntries(
+      frameworks.map((framework: any) => [
+        framework.id,
+        values[`weight_${framework.id}`] ?? "",
+      ]),
+    );
+    const model = weightedLensComparison(
+      frameworks,
+      weights,
+      first.id,
+      second.id,
+    );
+    rows = frameworks.map((framework: any) => ({
+      lens: framework.name,
+      question: framework.question,
+      firstCause: first.name,
+      firstPriority: framework.priorities[first.id],
+      secondCause: second.name,
+      secondPriority: framework.priorities[second.id],
+      weight:
+        weights[framework.id] === "" ? "Not considered" : weights[framework.id],
+      scope: "Editorial cause priorities, not charity ratings",
+    }));
+    const table = h(
+      "table",
+      { class: "data" },
+      h(
+        "caption",
+        {},
+        `${first.name} and ${second.name}: editorial priorities`,
+      ),
+    );
+    table.append(
+      h(
+        "thead",
+        {},
+        h(
+          "tr",
+          {},
+          ["Lens and question", first.name, second.name, "Your weight"].map(
+            (label) => h("th", { scope: "col" }, label),
+          ),
+        ),
+      ),
+    );
+    const body = h("tbody");
+    rows.forEach((row) =>
+      body.append(
+        h(
+          "tr",
+          {},
+          h(
+            "th",
+            { scope: "row" },
+            row.lens,
+            h("p", { class: "note" }, row.question),
+          ),
+          h("td", {}, String(row.firstPriority)),
+          h("td", {}, String(row.secondPriority)),
+          h("td", {}, String(row.weight)),
+        ),
+      ),
+    );
+    table.append(body);
+    output.append(h("div", { class: "table-wrap" }, table));
+    if (model) {
+      const fmt = (n: number) => n.toFixed(2);
+      output.append(
+        h(
+          "p",
+          {},
+          `Your illustrative priority index: ${first.name} ${fmt(model.first)} / 5; ${second.name} ${fmt(model.second)} / 5. ${model.included} positive lens weights included; ${model.unknown} blank weights.`,
+        ),
+        h(
+          "p",
+          { class: "note" },
+          `With all lenses weighted equally: ${first.name} ${fmt(model.equalFirst)}; ${second.name} ${fmt(model.equalSecond)}. A different answer reflects different editorial assumptions and weights, not a measured difference in impact.`,
+        ),
+      );
+    } else
+      output.append(
+        h(
+          "p",
+          {},
+          "Enter at least one positive weight to calculate a custom index. All eight lenses remain visible.",
+        ),
+      );
+  }
+  workspace.addEventListener("research:change", ((
+    event: CustomEvent<Record<string, string>>,
+  ) => render(event.detail)) as EventListener);
+  render(
+    Object.fromEntries(
+      [
+        ...workspace.querySelectorAll<
+          HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        >("form [name]"),
+      ].map((input) => [input.name, input.value]),
+    ),
+  );
+  document
+    .getElementById("mf-example")!
+    .addEventListener("click", () =>
+      workspace.dispatchEvent(
+        new CustomEvent("research:prefill", {
+          detail: {
+            title: "Illustration: global health and arts",
+            first: "global-health",
+            second: "arts",
+            ...Object.fromEntries(
+              frameworks.map((framework: any) => [
+                `weight_${framework.id}`,
+                "1",
+              ]),
+            ),
+          },
+        }),
+      ),
+    );
+  document
+    .getElementById("mf-csv")!
+    .addEventListener("click", () =>
+      download(
+        "moral-lens-comparison.csv",
+        toCsv(rows),
+        "text/csv;charset=utf-8",
+      ),
+    );
+</script>

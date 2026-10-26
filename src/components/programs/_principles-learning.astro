@@ -1,0 +1,566 @@
+---
+import { getCollection, render } from "astro:content";
+import { courseLessons } from "../../data/program-course";
+import { url } from "../../lib/site";
+import SourceList from "../SourceList.astro";
+const { certificate = false } = Astro.props;
+const chapters = (await getCollection("principles")).sort(
+  (a, b) => a.data.chapter - b.data.chapter,
+);
+const readings = await Promise.all(
+  chapters.map(async (entry) => ({ entry, ...(await render(entry)) })),
+);
+---
+
+<section class="tool pc-tool" aria-labelledby="pc-title">
+  <h2 id="pc-title">
+    {
+      certificate
+        ? "Your course completion record"
+        : "Learn and practice, one chapter at a time"
+    }
+  </h2>
+  <p class="note">
+    Free self-study. Progress stays in this browser. This is not an accredited
+    qualification or an independently reviewed professional credential.
+  </p>
+  <p id="pc-storage" class="callout" hidden>
+    Saving is blocked or full. Export your progress before leaving this page.
+  </p>
+  <div id="pc-conflict" class="callout" hidden>
+    <p id="pc-conflict-message"></p><button
+      id="pc-reload"
+      class="btn btn-small btn-ghost"
+      type="button">Load stored progress</button
+    ><button id="pc-raw" class="btn btn-small btn-ghost" type="button"
+      >Download original progress data</button>
+  </div>
+  <p>
+    <a href={url("/record/principles/read/")}
+      >Read or print the complete textbook</a>
+  </p>
+  <div class="kpis">
+    <div class="kpi">
+      <div class="k-label">Units complete</div><div
+        class="k-value"
+        id="pc-count"
+      >
+        0 / 10
+      </div>
+    </div><div class="kpi">
+      <div class="k-label">Capstone</div><div
+        class="k-value"
+        id="pc-capstone-status"
+      >
+        To write
+      </div>
+    </div>
+  </div>
+  <p id="pc-status" role="status" class="note"></p>
+  {
+    !certificate &&
+      readings.map(({ entry, Content }, index) => {
+        const lesson = courseLessons[index];
+        return (
+          <details class="pc-lesson" data-lesson={index} open={index === 0}>
+            <summary>
+              <>
+                <span>
+                  {entry.data.chapter}. {entry.data.title}
+                </span>
+                <span data-progress={index}>To do</span>
+              </>
+            </summary>
+            <div class="pc-body">
+              <>
+                <p>{lesson.takeaway}</p>
+                <p>
+                  <a href={url(`/record/principles/${entry.id}/`)}>
+                    Open the textbook chapter
+                  </a>
+                </p>
+              </>
+              <details class="pc-reading">
+                <>
+                  <summary>Read the full chapter here</summary>
+                  <div class="prose">
+                    <>
+                      <Content />
+                      <SourceList
+                        sources={entry.data.sources ?? []}
+                        heading={`Sources for chapter ${entry.data.chapter}`}
+                      />
+                      <p class="note">
+                        Edition 0 draft reading. Sources and framing remain open
+                        to correction and independent human review.
+                      </p>
+                    </>
+                  </div>
+                </>
+              </details>
+              <form data-unit={index}>
+                <label class="pc-check">
+                  <input type="checkbox" name="read" /> I have read the chapter.
+                </label>
+                <div class="field">
+                  <>
+                    <label for={`pc-practice-${index}`}>
+                      Practice: {lesson.exercise}
+                    </label>
+                    <textarea
+                      id={`pc-practice-${index}`}
+                      name="practice"
+                      rows="4"
+                      maxlength="5000"
+                      required
+                      minlength="30"
+                    />
+                    <span class="hint">
+                      At least 30 characters. This length check cannot judge the
+                      quality of your reasoning.
+                    </span>
+                  </>
+                </div>
+                <details>
+                  <>
+                    <summary>See a worked example</summary>
+                    <p>{lesson.worked}</p>
+                  </>
+                </details>
+                {lesson.questions.map((q, qi) => (
+                  <fieldset>
+                    <legend>{q.prompt}</legend>
+                    {q.options.map((option, oi) => (
+                      <label class="pc-answer">
+                        <input
+                          type="radio"
+                          name={`q${qi}`}
+                          value={oi}
+                          required
+                        />{" "}
+                        {option}
+                      </label>
+                    ))}
+                    <p
+                      class="pc-explanation"
+                      data-explanation={`${index}-${qi}`}
+                      hidden
+                    />
+                  </fieldset>
+                ))}
+                <>
+                  <button class="btn btn-small" type="submit">
+                    Check and save this unit
+                  </button>
+                  <p class="note" data-result={index} role="status" />
+                </>
+              </form>
+            </div>
+          </details>
+        );
+      })
+  }
+  {
+    certificate && (
+      <p>
+        Complete all ten units in the{" "}
+        <a href={url("/programs/principles-course/")}>Principles course</a>.
+        This page reads the same local progress. It does not award the proposed
+        professional credential or claim that reviewers assessed your work.
+      </p>
+    )
+  }
+  <form id="pc-capstone-form">
+    <h3>Your capstone decision</h3><p class="note">
+      Use a hypothetical decision if you prefer. State the choice and
+      alternative, depth, causal chain, evidence and its limits, moral lenses,
+      community voice, counterfactual and follow-up date. Do not include private
+      information about people served.
+    </p><div class="field">
+      <label for="pc-name">Name on your completion record (optional)</label
+      ><input id="pc-name" maxlength="120" />
+    </div><div class="field">
+      <label for="pc-capstone">Decision and reasoning</label><textarea
+        id="pc-capstone"
+        rows="8"
+        maxlength="12000"
+        minlength="200"
+        required></textarea><span class="hint"
+        >At least 200 characters. This is a self-study exercise; nobody
+        independently reviews this text here.</span>
+    </div><button class="btn btn-small" type="submit">Save capstone</button>
+  </form>
+  <section
+    class="pc-certificate"
+    id="pc-certificate"
+    hidden
+    aria-labelledby="pc-cert-title"
+  >
+    <p class="note">Charitology · Principles of Charitology</p><h2
+      id="pc-cert-title"
+    >
+      Certificate of course completion
+    </h2><p id="pc-cert-name"></p><p>
+      Completed the ten-unit self-study course, its knowledge checks, practice
+      notes and capstone.
+    </p><p id="pc-cert-date"></p><p class="note">
+      Nonaccredited · Self-study record · Identity and reasoning not
+      independently assessed · No professional certification or permission to
+      rate charities is conferred.
+    </p><button type="button" class="btn btn-small" id="pc-print"
+      >Print completion record</button>
+  </section>
+  <p id="pc-unfinished" class="callout">
+    The completion record unlocks after all ten units pass and the capstone is
+    saved. Each unit needs both correct answers, a reading confirmation and
+    practice notes.
+  </p>
+  <div class="btn-row pc-actions">
+    <button type="button" class="btn btn-ghost btn-small" id="pc-export"
+      >Export progress JSON</button
+    ><button type="button" class="btn btn-ghost btn-small" id="pc-notes"
+      >Export study notes</button
+    ><button type="button" class="btn btn-ghost btn-small" id="pc-import"
+      >Import progress JSON</button
+    ><button type="button" class="btn btn-ghost btn-small" id="pc-reset"
+      >Reset course progress</button
+    ><input type="file" id="pc-file" accept=".json,application/json" hidden />
+  </div>
+</section>
+<style>
+  .pc-tool :global([hidden]) {
+    display: none !important;
+  }
+  .pc-lesson {
+    border-block-end: 1px solid var(--rule);
+    padding: 1rem 0;
+  }
+  .pc-lesson > summary {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-weight: 700;
+  }
+  .pc-lesson > summary span:last-child {
+    font-size: 0.8rem;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+  .pc-body {
+    padding: 1rem 0;
+  }
+  .pc-reading {
+    background: var(--bg-2);
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .pc-reading .prose {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+  .pc-check,
+  .pc-answer {
+    display: flex;
+    align-items: start;
+    gap: 0.7rem;
+    margin: 0.65rem 0;
+  }
+  .pc-answer input,
+  .pc-check input {
+    width: auto;
+    margin-top: 0.35rem;
+    flex-shrink: 0;
+  }
+  .pc-tool fieldset {
+    border: 1px solid var(--rule);
+    margin: 1.2rem 0;
+    padding: 1rem;
+    min-width: 0;
+  }
+  .pc-tool legend {
+    font-weight: 600;
+    max-width: 100%;
+  }
+  .pc-explanation {
+    border-left: 3px solid var(--accent);
+    padding-left: 0.75rem;
+  }
+  .pc-certificate {
+    text-align: center;
+    border: 3px double var(--rule);
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+  .pc-certificate h2 {
+    margin: 0.5rem 0;
+  }
+  .pc-actions {
+    margin-top: 1.5rem;
+  }
+  #pc-capstone-form {
+    border-top: 1px solid var(--rule);
+    margin-top: 2rem;
+    padding-top: 1rem;
+  }
+  @media print {
+    :global(body.pc-printing *) {
+      display: none !important;
+    }
+    :global(body.pc-printing .pc-print-path) {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+    :global(body.pc-printing #pc-certificate),
+    :global(body.pc-printing #pc-certificate *) {
+      display: revert !important;
+      color: black !important;
+    }
+    :global(body.pc-printing #pc-certificate) {
+      display: block !important;
+      width: 100%;
+      margin: 0;
+      padding: 2rem;
+      background: white !important;
+      border-color: black;
+      break-inside: avoid;
+    }
+    :global(body.pc-printing #pc-print) {
+      display: none !important;
+    }
+  }
+</style>
+<script>
+  import { $, $$ } from "../../lib/client/dom";
+  import { courseLessons } from "../../data/program-course";
+  import {
+    COURSE_KEY,
+    readCourse,
+    writeCourse,
+    validCourse,
+    lessonPassed,
+    completedLessons,
+    coursePassed,
+    emptyCourse,
+  } from "../../lib/client/program-course";
+  import { canPersist } from "../../lib/client/persist";
+  import { download } from "../../lib/client/files";
+  import { mdBlock, localDay } from "../../lib/client/markdown";
+  import { confirmTwice } from "../../lib/client/confirm";
+  let progress = readCourse();
+  let conflict = false;
+  let originalRaw = "";
+  const status = $("#pc-status");
+  const say = (s: string) =>
+    (status.textContent =
+      s +
+      ($("#pc-storage").hidden
+        ? ""
+        : " Browser saving is unavailable; export JSON before leaving."));
+  $("#pc-storage").hidden = canPersist();
+  function loadLatest() {
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem(`charitology.${COURSE_KEY}`);
+    } catch {
+      $("#pc-storage").hidden = false;
+      return;
+    }
+    originalRaw = raw ?? "";
+    try {
+      progress = raw ? validCourse(JSON.parse(raw)) : emptyCourse();
+      conflict = false;
+      $("#pc-conflict").hidden = true;
+    } catch {
+      conflict = true;
+      $("#pc-conflict").hidden = false;
+      $("#pc-conflict-message").textContent =
+        "Stored progress could not be read. Editing is paused to protect it. Download the original data, then import a valid backup or use the confirmed reset.";
+    }
+  }
+  function editable() {
+    if (!conflict) return true;
+    say(
+      "Editing is paused. Load the stored progress, import a valid backup or reset before saving.",
+    );
+    return false;
+  }
+  function persist() {
+    if (coursePassed(progress) && !progress.completedAt)
+      progress.completedAt = localDay();
+    if (!coursePassed(progress)) progress.completedAt = "";
+    $("#pc-storage").hidden = writeCourse(progress);
+  }
+  function render(refreshForms = true) {
+    $("#pc-count").textContent = `${completedLessons(progress)} / 10`;
+    $("#pc-capstone-status").textContent =
+      progress.capstone.trim().length >= 200 ? "Saved" : "To write";
+    $$<HTMLFormElement>("[data-unit]").forEach((form) => {
+      const index = Number(form.dataset.unit);
+      const unit = progress.lessons[index];
+      if (refreshForms) {
+        ($("[name=read]", form) as HTMLInputElement).checked = unit.read;
+        ($("[name=practice]", form) as HTMLTextAreaElement).value =
+          unit.practice;
+        unit.answers.forEach((answer, qi) => {
+          $$<HTMLInputElement>(`[name=q${qi}]`, form).forEach(
+            (radio) => (radio.checked = Number(radio.value) === answer),
+          );
+        });
+      }
+      $(`[data-progress="${index}"]`).textContent = lessonPassed(
+        progress,
+        index,
+      )
+        ? "Complete"
+        : "To do";
+    });
+    if (refreshForms) {
+      $<HTMLInputElement>("#pc-name").value = progress.name;
+      $<HTMLTextAreaElement>("#pc-capstone").value = progress.capstone;
+    }
+    $("#pc-certificate").hidden = !coursePassed(progress);
+    $("#pc-unfinished").hidden = coursePassed(progress);
+    $("#pc-cert-name").textContent = progress.name || "The learner";
+    $("#pc-cert-date").textContent =
+      `Local completion date: ${progress.completedAt || localDay()}`;
+  }
+  $$<HTMLFormElement>("[data-unit]").forEach((form) => {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!editable()) return;
+      const index = Number(form.dataset.unit);
+      const answers = courseLessons[index].questions.map((_, qi) =>
+        Number(
+          ($(`input[name=q${qi}]:checked`, form) as HTMLInputElement).value,
+        ),
+      );
+      progress.lessons[index] = {
+        read: ($("[name=read]", form) as HTMLInputElement).checked,
+        practice: ($("[name=practice]", form) as HTMLTextAreaElement).value,
+        answers,
+      };
+      courseLessons[index].questions.forEach((question, qi) => {
+        const el = $(`[data-explanation="${index}-${qi}"]`);
+        el.textContent = `${answers[qi] === question.correct ? "Correct." : `Try again. The answer is: ${question.options[question.correct]}.`} ${question.explanation}`;
+        el.hidden = false;
+      });
+      persist();
+      render(false);
+      $(`[data-result="${index}"]`).textContent = lessonPassed(progress, index)
+        ? "Unit complete. Continue to the next chapter."
+        : "Saved. Check both answers, confirm the reading and complete your practice notes.";
+      say("Progress saved in this browser. Export a copy to keep a backup.");
+    });
+  });
+  $("#pc-capstone-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!editable()) return;
+    progress.name = $<HTMLInputElement>("#pc-name").value.trim();
+    progress.capstone = $<HTMLTextAreaElement>("#pc-capstone").value.trim();
+    persist();
+    render(false);
+    say(
+      coursePassed(progress)
+        ? "Course complete. Your nonaccredited completion record is ready to print."
+        : "Capstone saved. Finish the remaining course units to unlock the completion record.",
+    );
+  });
+  $("#pc-export").addEventListener("click", () =>
+    download(
+      "charitology-course-progress.json",
+      JSON.stringify(progress, null, 2),
+      "application/json",
+    ),
+  );
+  $("#pc-notes").addEventListener("click", () =>
+    download(
+      "charitology-study-notes.md",
+      `# Principles study notes\n\nSelf-study draft; not independently assessed.\n\n${courseLessons.map((l, i) => `## Unit ${i + 1}\n\n${mdBlock(progress.lessons[i].practice)}`).join("\n\n")}\n\n## Capstone\n\n${mdBlock(progress.capstone)}`,
+    ),
+  );
+  const file = $<HTMLInputElement>("#pc-file");
+  $("#pc-import").addEventListener("click", () => file.click());
+  file.addEventListener("change", async () => {
+    const selected = file.files?.[0];
+    file.value = "";
+    if (!selected) return;
+    if (selected.size > 200000)
+      return void say("Choose a course export under 200 KB.");
+    try {
+      const next = validCourse(JSON.parse(await selected.text()));
+      if (
+        !confirm(
+          "Replace this browser’s course progress with this file? Export a backup first if needed.",
+        )
+      )
+        return;
+      progress = next;
+      conflict = false;
+      $("#pc-conflict").hidden = true;
+      persist();
+      render();
+      say(
+        "Imported progress. Completion is recalculated from the answers and exercises.",
+      );
+    } catch (error) {
+      say(
+        error instanceof Error
+          ? error.message
+          : "The file could not be read. Nothing changed.",
+      );
+    }
+  });
+  confirmTwice($<HTMLButtonElement>("#pc-reset"), {
+    prompt: "Confirm reset",
+    announce: say,
+    action: () => {
+      progress = emptyCourse();
+      conflict = false;
+      $("#pc-conflict").hidden = true;
+      persist();
+      render();
+      say("Course progress reset.");
+    },
+  });
+  $("#pc-reload").addEventListener("click", () => {
+    loadLatest();
+    render();
+    if (!conflict) say("Stored course progress loaded.");
+  });
+  $("#pc-raw").addEventListener("click", () =>
+    download("charitology-course-original.txt", originalRaw),
+  );
+  $("#pc-print").addEventListener("click", () => {
+    if (!coursePassed(progress)) return;
+    let ancestor = $("#pc-certificate").parentElement;
+    while (ancestor && ancestor !== document.body) {
+      ancestor.classList.add("pc-print-path");
+      ancestor = ancestor.parentElement;
+    }
+    document.body.classList.add("pc-printing");
+    window.print();
+  });
+  window.addEventListener("afterprint", () => {
+    document.body.classList.remove("pc-printing");
+    $$(".pc-print-path").forEach((el) => el.classList.remove("pc-print-path"));
+  });
+  window.addEventListener("storage", (e) => {
+    if (e.key === `charitology.${COURSE_KEY}` || e.key === null) {
+      conflict = true;
+      $("#pc-conflict").hidden = false;
+      $("#pc-conflict-message").textContent =
+        "Course progress changed in another tab. Export your version, then load stored progress before editing.";
+      say(
+        "Course progress changed in another tab. Editing is paused until you load the stored version.",
+      );
+    }
+  });
+  loadLatest();
+  render();
+</script>

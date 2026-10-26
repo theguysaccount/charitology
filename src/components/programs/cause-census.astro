@@ -1,0 +1,283 @@
+---
+import causesData from "../../data/causes.json";
+import { researchProgramCatalog } from "../../lib/research-program-catalog";
+import ResearchWorkspace from "./ResearchWorkspace.astro";
+import { url } from "../../lib/site";
+const { interventions } = await researchProgramCatalog();
+const causes = causesData.causes;
+const sources = [...new Set(causes.flatMap((cause) => cause.upstream))];
+const fields = [
+  {
+    key: "title",
+    label: "Estimate or census observation",
+    required: true,
+    group: "Scope",
+  },
+  {
+    key: "cause",
+    label: "Cause area",
+    type: "select" as const,
+    required: true,
+    group: "Scope",
+    options: causes.map((cause) => ({ value: cause.id, label: cause.name })),
+  },
+  {
+    key: "scope",
+    label: "Country, population and coverage",
+    required: true,
+    group: "Scope",
+  },
+  {
+    key: "metric",
+    label: "What was measured?",
+    type: "select" as const,
+    required: true,
+    group: "Estimate",
+    options: [
+      { value: "scale", label: "Scale of the need" },
+      { value: "spending", label: "Resources or annual spending" },
+      { value: "solvability", label: "Progress from additional effort" },
+      { value: "depth", label: "Distribution across source depths" },
+      { value: "other", label: "Other / define below" },
+    ],
+  },
+  {
+    key: "value",
+    label: "Reported value (optional)",
+    type: "number" as const,
+    min: 0,
+    group: "Estimate",
+    hint: "Leave blank for unknown. Zero is a reported zero, not missing data.",
+  },
+  {
+    key: "unit",
+    label: "Unit and denominator",
+    required: true,
+    group: "Estimate",
+    hint: "For money, state currency and price year. For people, state the population and reference period.",
+  },
+  {
+    key: "year",
+    label: "Reference year",
+    type: "number" as const,
+    min: 1900,
+    max: 2200,
+    step: "1",
+    required: true,
+    group: "Estimate",
+  },
+  {
+    key: "uncertainty",
+    label: "Range, uncertainty and missing coverage",
+    type: "textarea" as const,
+    required: true,
+    group: "Evidence",
+  },
+  {
+    key: "source",
+    label: "Primary source URL",
+    type: "url" as const,
+    required: true,
+    group: "Evidence",
+  },
+  {
+    key: "location",
+    label: "Table, page and method",
+    type: "textarea" as const,
+    required: true,
+    group: "Evidence",
+  },
+  {
+    key: "framework",
+    label: "Moral framework and value assumptions",
+    type: "textarea" as const,
+    required: true,
+    group: "Interpretation",
+  },
+  {
+    key: "depth",
+    label: "Depth classification and why it is uncertain",
+    type: "textarea" as const,
+    group: "Interpretation",
+    hint: "0 relief, 1 repair, 2 prevention, 3 structure, 4 source. Describe activities, not organizational worth.",
+  },
+  {
+    key: "check",
+    label: "Independent check or next evidence needed",
+    type: "textarea" as const,
+    group: "Interpretation",
+  },
+];
+---
+
+<section class="tool" id="cc-browser">
+  <h2>Explore the census starting frame</h2><p>
+    The {causes.length} cause areas below link to interventions already in the Record.
+    These are a map of this project’s coverage, not estimates of global funding or
+    proof that a missing intervention does not exist.
+  </p><div class="cc-controls">
+    <div class="field">
+      <label for="cc-search">Search cause or intervention</label><input
+        id="cc-search"
+        type="search"
+      />
+    </div><div class="field">
+      <label for="cc-source">Proposed upstream source</label><select
+        id="cc-source"
+        ><option value="">All sources</option>{
+          sources.map((source) => <option value={source}>{source}</option>)
+        }</select>
+    </div>
+  </div><p class="note" id="cc-count" role="status"></p><div class="cc-cards">
+    {
+      causes.map((cause) => {
+        const entries = interventions.filter((entry) =>
+          entry.causes.includes(cause.id as any),
+        );
+        return (
+          <article
+            class="cc-card"
+            data-cause={cause.id}
+            data-search={`${cause.name} ${cause.summary} ${entries.map((entry) => entry.title).join(" ")}`.toLowerCase()}
+            data-sources={cause.upstream.join(" ")}
+          >
+            <ul>
+              {entries.map((entry) => (
+                <li>
+                  <a href={url(entry.href)}>{entry.title}</a> — {entry.evidence}
+                  , depth {entry.depth}, draft
+                </li>
+              ))}
+            </ul>
+            {!entries.length && (
+              <p class="note">
+                No intervention entry is linked here yet. This is a coverage gap
+                in the Record.
+              </p>
+            )}
+            <button
+              class="btn btn-ghost btn-small"
+              type="button"
+              data-capture={cause.id}
+            >
+              Record an estimate for this cause
+            </button>
+          </article>
+        );
+      })
+    }
+  </div><p id="cc-empty" hidden>
+    No cause matches these filters. Clear the search or choose all sources.
+  </p><div class="btn-row">
+    <button class="btn btn-ghost btn-small" id="cc-reset" type="button"
+      >Reset filters</button
+    ><button class="btn btn-ghost btn-small" id="cc-export" type="button"
+      >Export visible cause coverage CSV</button>
+  </div><p class="note">
+    The existing Atlas’s numeric dimensions are editorial sketches, so they are
+    not used as census measurements here. Add a source, unit, year, coverage and
+    uncertainty for each estimate below.
+  </p>
+</section>
+<ResearchWorkspace
+  id="cause-census"
+  title="Census evidence capture"
+  description="Build a source-linked set of estimates with explicit units and boundaries. Different causes, years, currencies and denominators are kept separate rather than added into an unsupported global total."
+  fields={fields}
+/>
+<style>
+  .cc-controls {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+  }
+  .cc-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .cc-card {
+    padding: 1rem;
+    border: 1px solid var(--rule);
+    min-width: 0;
+  }
+  .cc-card[hidden] {
+    display: none;
+  }
+  .cc-card h3 {
+    margin-top: 0;
+  }
+  .cc-card ul {
+    padding-left: 1.2rem;
+  }
+  @media (max-width: 700px) {
+    .cc-controls,
+    .cc-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+<script>
+  import { download, toCsv } from "../../lib/client/files";
+  const search = document.getElementById("cc-search") as HTMLInputElement,
+    source = document.getElementById("cc-source") as HTMLSelectElement,
+    cards = [...document.querySelectorAll<HTMLElement>("[data-cause]")];
+  const filter = () => {
+    const q = search.value.trim().toLowerCase();
+    let count = 0;
+    cards.forEach((card) => {
+      card.hidden = !(
+        (card.dataset.search ?? "").includes(q) &&
+        (!source.value ||
+          (card.dataset.sources ?? "").split(" ").includes(source.value))
+      );
+      if (!card.hidden) count++;
+    });
+    document.getElementById("cc-count")!.textContent =
+      `${count} of ${cards.length} cause areas shown.`;
+    document.getElementById("cc-empty")!.hidden = count > 0;
+  };
+  search.addEventListener("input", filter);
+  source.addEventListener("change", filter);
+  filter();
+  document.getElementById("cc-reset")!.addEventListener("click", () => {
+    search.value = "";
+    source.value = "";
+    filter();
+  });
+  document
+    .getElementById("cc-export")!
+    .addEventListener("click", () =>
+      download(
+        "cause-census-record-coverage.csv",
+        toCsv(
+          cards
+            .filter((card) => !card.hidden)
+            .map((card) => ({
+              cause: card.querySelector("h3")!.textContent,
+              upstream: card.dataset.sources,
+              recordedInterventions: card.querySelectorAll("li").length,
+              scope:
+                "Coverage of the Charitology Record only; upstream mappings are editorial hypotheses",
+            })),
+        ),
+        "text/csv;charset=utf-8",
+      ),
+    );
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-capture]")
+    .forEach((button) =>
+      button.addEventListener("click", () => {
+        const workspace = document.getElementById("workspace-cause-census")!;
+        workspace.dispatchEvent(
+          new CustomEvent("research:prefill", {
+            detail: {
+              cause: button.dataset.capture!,
+              title: `Estimate: ${button.closest("article")!.querySelector("h3")!.textContent}`,
+            },
+          }),
+        );
+        workspace.scrollIntoView({ block: "start" });
+      }),
+    );
+</script>

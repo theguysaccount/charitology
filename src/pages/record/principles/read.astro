@@ -1,0 +1,86 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+import { url } from "../../../lib/site";
+import SourceList from "../../../components/SourceList.astro";
+const chapters = await Promise.all(
+  (await getCollection("principles"))
+    .sort((a, b) => a.data.chapter - b.data.chapter)
+    .map(async (e) => ({ ...e, ...(await render(e)) })),
+);
+---
+
+<Base
+  title="Principles of Charitology · complete reading edition"
+  description="The complete ten-chapter open textbook in one printable reading edition."
+>
+  <main class="wrap book">
+    <p class="eyebrow">Open textbook · Edition 0 · editorial draft</p><h1>
+      Principles of Charitology
+    </h1><p>
+      Ten chapters on studying charity as a system. Content is CC BY 4.0.
+      Sources and disagreements belong with the text. This reading edition does
+      not certify anyone or establish a scientific consensus.
+    </p><nav aria-label="Book contents">
+      <ol>
+        {
+          chapters.map((c) => (
+            <li>
+              <a href={`#${c.id}`}>{c.data.title}</a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav><button class="btn" id="print-book">Print or save PDF</button><p>
+      <a href={url("/programs/principles-course/")}
+        >Study with the course, exercises and knowledge checks →</a>
+    </p>{
+      chapters.map((c) => (
+        <section class="book-chapter prose" id={c.id}>
+          <>
+            <h2>
+              Chapter {c.data.chapter}: {c.data.title}
+            </h2>
+            <p class="lede">{c.data.summary}</p>
+            <c.Content />
+            <SourceList sources={c.data.sources} />
+            <p>
+              <a href={url(`/record/principles/${c.id}/`)}>
+                Chapter page, notebook and correction links
+              </a>
+            </p>
+          </>
+        </section>
+      ))
+    }
+  </main>
+</Base>
+<script>
+  document
+    .querySelector("#print-book")
+    ?.addEventListener("click", () => window.print());
+</script>
+<style>
+  .book {
+    max-width: 850px;
+    padding-block: 3rem;
+  }
+  .book-chapter {
+    border-top: 1px solid var(--rule);
+    margin-top: 3rem;
+    padding-top: 2rem;
+    scroll-margin-top: 6rem;
+  }
+  @media print {
+    button,
+    nav {
+      display: none;
+    }
+    .book-chapter {
+      break-before: page;
+    }
+    .book {
+      padding: 0;
+    }
+  }
+</style>

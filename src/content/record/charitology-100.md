@@ -2,8 +2,9 @@
 title: "The Charitology 100"
 group: "Annual publications"
 order: 2
-summary: "A future list of the hundred most promising places to give, across every lens. It won’t be published until its method survives public red-team review."
-status: designed
+summary: "A working nomination and method-review lab for a proposed future list. No named ranking is approved or published."
+status: live
+statusNote: "A working nomination and method-review lab. No named-charity ranking is approved or published."
 conditions: ["single-lens", "story-bias", "overhead-myth"]
 firstMilestone: "Draft method published and red-teamed in public."
 help:
@@ -12,15 +13,14 @@ help:
 related: ["/programs/red-team/", "/record/methodology/", "/record/charity-index/"]
 ---
 
-## Why it doesn’t exist yet
+## The method lab is open
 
-A ranked list would steer attention and money. Charitology won’t publish one until its method has been challenged in public and survived. The draft below is a proposal for that review, not an approved rating method.
+Build a complete nomination packet with an activity, mechanism, moral lenses, depth rationale, source evidence, additional-funding limits, affected-community agency, conflicts and the strongest objection. Save several packets locally, edit them, undo deletion and export or restore a validated backup.
 
-## Draft criteria
+## The public rating gate
 
-- **Every lens gets seats.** The list is assembled per moral framework, then combined, so no single framework decides it. See [the Single Lens](/diagnosis/single-lens/).
-- **Every depth level is represented.** Relief, repair, prevention, structure and source each have places.
-- **Evidence is shown, not hidden.** Each entry carries its evidence grade and the strongest argument against it.
-- **Room for more funding.** Only organizations that can use more money well are listed.
-- **No overhead ratios.** Results per dollar and quality of learning count. Cost splits don’t.
-- **Conflicts declared.** Anyone involved in choosing declares their ties to listed organizations.
+A ranked list can steer attention and money. The website does not publish one before independent public red-team review. A complete packet is ready for discussion, not an approved recommendation. No browser checklist can stand in for that review.
+
+## Questions the review must settle
+
+Every lens and depth level deserves a fair hearing. Evidence and uncertainty must remain visible. Reviewers must address additional funding, harms, conflicts, agency, appeals and correction procedures. They must also decide whether a ranked list is justified at all when values and outcome units differ.

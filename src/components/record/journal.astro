@@ -1,11 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
-import EntryList from '../EntryList.astro';
-import { formatDate } from '../../lib/site';
+import { getCollection } from "astro:content";
+import EntryList from "../EntryList.astro";
+import { formatDate } from "../../lib/site";
 
-const issues = (await getCollection('journal')).sort((a, b) => a.data.volume - b.data.volume || a.data.issue - b.data.issue);
+const issues = (await getCollection("journal")).sort(
+  (a, b) => a.data.volume - b.data.volume || a.data.issue - b.data.issue,
+);
 const items = issues.map((j) => ({
-  href: j.id === 'ten-dollars' ? '/manifesto/' : `/record/journal/${j.id}/`,
+  href: j.id === "ten-dollars" ? "/manifesto/" : `/record/journal/${j.id}/`,
   title: j.data.title,
   summary: j.data.summary,
   kicker: `Vol. ${j.data.volume}, No. ${j.data.issue}`,
@@ -14,3 +16,245 @@ const items = issues.map((j) => ({
 ---
 
 <EntryList items={items} layout="cards" />
+<section id="journal-desk">
+  <h2>Prepare a submission</h2><p>
+    This browser desk produces a manuscript and review checklist. Nothing is
+    sent automatically. Download the file, then open a pull request through the
+    contributor guide. Publication and peer review are separate states; the
+    current Volume 0 essays are editorial drafts.
+  </p><form id="manuscript-form">
+    <label>Title<input name="title" required maxlength="200" /></label><label
+      >Public author or project name<input
+        name="author"
+        required
+        maxlength="150"
+      /></label
+    ><label
+      >One-paragraph summary<textarea
+        name="summary"
+        required
+        maxlength="1500"
+        rows="3"></textarea></label
+    ><label
+      >Article type<select name="kind"
+        ><option>Proposed method</option><option>Research result</option><option
+          >Replication</option
+        ><option>Null result or failure report</option><option>Essay</option
+        ></select
+      ></label
+    ><label
+      >Question and why it matters<textarea
+        name="question"
+        required
+        maxlength="10000"
+        rows="3"></textarea></label
+    ><label
+      >Methods, sampling, data and reproducibility<textarea
+        name="methods"
+        required
+        maxlength="20000"
+        rows="5"></textarea></label
+    ><label
+      >Results or explicitly untested proposal<textarea
+        name="results"
+        required
+        maxlength="20000"
+        rows="5"></textarea></label
+    ><label
+      >Limitations, harms, missing voices and strongest objections<textarea
+        name="limits"
+        required
+        maxlength="10000"
+        rows="4"></textarea></label
+    ><label
+      >Public source links, conflicts and funding disclosures<textarea
+        name="sources"
+        required
+        maxlength="10000"
+        rows="4"></textarea></label
+    ><button class="btn" type="submit">Download manuscript draft</button><button
+      class="btn btn-ghost"
+      id="manuscript-backup"
+      type="button">Download form backup</button>
+  </form><details>
+    <summary>Restore a form backup</summary><label
+      >Choose a manuscript JSON backup<input
+        type="file"
+        id="manuscript-import"
+        accept="application/json,.json"
+      /></label
+    ><p id="manuscript-preview"></p><button
+      class="btn"
+      id="manuscript-replace"
+      hidden>Replace form with previewed draft</button
+    ><button class="btn btn-ghost" id="manuscript-cancel" hidden
+      >Cancel restore</button>
+  </details><p id="manuscript-status" role="status"></p><p>
+    <a
+      href="https://github.com/theguysaccount/charitology/blob/main/CONTRIBUTING.md"
+      >Open the contribution instructions</a
+    >. Two independent human approvals and the public review thread are required
+    before a manuscript can be described as peer-reviewed. The browser form
+    cannot grant those approvals.
+  </p>
+</section>
+<script>
+  import { download } from "../../lib/client/files";
+  import { guardedDraft } from "../../lib/client/guarded-draft";
+  import {
+    validateManuscript as valid,
+    manuscriptFields as fields,
+  } from "../../lib/client/completion-models";
+  const root = document.querySelector("#journal-desk");
+  if (root) {
+    const draft = guardedDraft("charitology-manuscript-v1");
+    const form = root.querySelector<HTMLFormElement>("form")!;
+    const status = root.querySelector<HTMLElement>("#manuscript-status")!;
+    let writable = true;
+    let pending: Record<string, string> | null = null;
+    try {
+      const saved = draft.read();
+      if (saved) {
+        const values = JSON.parse(saved);
+        if (!valid(values)) throw Error();
+        for (const f of fields)
+          (form.elements.namedItem(f) as HTMLInputElement).value = values[f];
+      }
+    } catch {
+      writable = false;
+      status.textContent =
+        "Saving unavailable or stored draft unreadable. Existing data is untouched; use a form backup.";
+    }
+    function values() {
+      return Object.fromEntries(
+        fields.map((f) => [
+          f,
+          (form.elements.namedItem(f) as HTMLInputElement).value,
+        ]),
+      );
+    }
+    form.addEventListener("input", () => {
+      try {
+        if (!writable) throw Error();
+        draft.write(JSON.stringify(values()));
+        status.textContent = "Draft saved in this browser. No submission sent.";
+      } catch (err) {
+        status.textContent =
+          (err instanceof Error && err.message
+            ? err.message + " "
+            : "Draft is not saved. ") +
+          "Download a backup of this tab before leaving. Existing stored data is untouched.";
+      }
+    });
+    root
+      .querySelector("#manuscript-backup")!
+      .addEventListener("click", () =>
+        download(
+          "manuscript-form.json",
+          JSON.stringify(values(), null, 2),
+          "application/json",
+        ),
+      );
+    root
+      .querySelector<HTMLInputElement>("#manuscript-import")!
+      .addEventListener("change", async (e) => {
+        const input = e.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+        try {
+          if (file.size > 1000000) throw Error("Backup exceeds 1 MB.");
+          const v = JSON.parse(await file.text());
+          if (!valid(v))
+            throw Error(
+              "Invalid manuscript fields, article type or excessive lengths.",
+            );
+          pending = v;
+          root!.querySelector("#manuscript-preview")!.textContent =
+            "Preview: " +
+            (v.title || "Untitled draft") +
+            ". This replaces the form; download the current backup first.";
+          root!.querySelector<HTMLButtonElement>(
+            "#manuscript-replace",
+          )!.hidden = false;
+          root!.querySelector<HTMLButtonElement>("#manuscript-cancel")!.hidden =
+            false;
+        } catch (err) {
+          pending = null;
+          status.textContent =
+            err instanceof Error ? err.message : "Invalid backup";
+        }
+        input.value = "";
+      });
+    root.querySelector("#manuscript-replace")!.addEventListener("click", () => {
+      if (!pending) return;
+      for (const f of fields)
+        (form.elements.namedItem(f) as HTMLInputElement).value = pending[f];
+      pending = null;
+      root!.querySelector("#manuscript-preview")!.textContent =
+        "Draft restored. No submission sent.";
+      root!.querySelector<HTMLButtonElement>("#manuscript-replace")!.hidden =
+        true;
+      root!.querySelector<HTMLButtonElement>("#manuscript-cancel")!.hidden =
+        true;
+      try {
+        if (!writable) throw Error();
+        draft.write(JSON.stringify(values()));
+        status.textContent = "Restored and saved locally.";
+      } catch (err) {
+        status.textContent =
+          "Restored in this tab only. " +
+          (err instanceof Error && err.message
+            ? err.message + " "
+            : "Saving unavailable. ") +
+          "Download a backup; existing stored data is untouched.";
+      }
+    });
+    root.querySelector("#manuscript-cancel")!.addEventListener("click", () => {
+      pending = null;
+      root!.querySelector("#manuscript-preview")!.textContent =
+        "Restore canceled.";
+      root!.querySelector<HTMLButtonElement>("#manuscript-replace")!.hidden =
+        true;
+      root!.querySelector<HTMLButtonElement>("#manuscript-cancel")!.hidden =
+        true;
+    });
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const v = values();
+      if (fields.some((f) => !v[f].trim())) {
+        status.textContent =
+          "Complete every section, explicitly recording unknowns where needed.";
+        return;
+      }
+      const now = new Date();
+      const date = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0"),
+        String(now.getDate()).padStart(2, "0"),
+      ].join("-");
+      const text = `---\ntitle: ${JSON.stringify(v.title)}\nauthor: ${JSON.stringify(v.author)}\ndate: ${date}\nsummary: ${JSON.stringify(v.summary)}\nvolume: 0\nissue: 4\nreview: draft\n---\n\n**Article type: ${v.kind}. Not peer-reviewed.**\n\n## Question\n\n${v.question}\n\n## Methods and reproducibility\n\n${v.methods}\n\n## Results or proposed method\n\n${v.results}\n\n## Limitations and objections\n\n${v.limits}\n\n## Sources, conflicts and funding\n\n${v.sources}\n\n<!-- Maintainers assign the final volume and issue after review. Disclose AI assistance in the PR. -->\n`;
+      download("manuscript-draft.md", text);
+      status.textContent =
+        "Manuscript downloaded. Nothing sent. Maintainers assign the final issue number; include source checks and AI disclosure in your pull request.";
+    });
+  }
+</script>
+<style>
+  #journal-desk {
+    margin-top: 2rem;
+  }
+  #journal-desk form {
+    display: grid;
+    gap: 1rem;
+  }
+  #journal-desk label {
+    display: grid;
+    gap: 0.35rem;
+    font: 0.9rem var(--font-sans);
+  }
+  #journal-desk input,
+  #journal-desk textarea,
+  #journal-desk select {
+    width: 100%;
+  }
+</style>

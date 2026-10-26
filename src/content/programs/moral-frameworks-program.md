@@ -2,9 +2,9 @@
 title: Moral Frameworks Program
 group: Research
 order: 2
-summary: Compares how eight moral frameworks rank the same causes, so givers can see where values agree, where they part and what each one leaves out.
-status: seeded
-statusNote: Eight frameworks and 17 cause areas are sketched in an open data file that drives the Values Compass and the Portfolio Builder. Each sketch still needs review by people who hold that view.
+summary: Compare editorial cause priorities through eight moral lenses, test your own weights and keep a reasoned deliberation record.
+status: live
+statusNote: Live comparison and deliberation software uses eight draft framework sketches and 17 cause areas. Independent review by people who hold each view remains a milestone.
 conditions: [single-lens]
 firstMilestone: Every framework sketch reviewed by at least two people who hold that framework, with their changes merged and credited.
 help:
@@ -13,6 +13,12 @@ help:
   - Write up a disagreement between two frameworks for the Disagreement Register.
 related: [/tools/values-compass/, /tools/portfolio-builder/, /record/disagreements/, /open-problems/moral-parliament-in-practice/]
 ---
+
+## Use the live research desk
+
+Compare two cause areas through every lens, change the weights and inspect the equal-weight baseline. Save your reasons, disagreements and proposed corrections in the [deliberation workspace](#workspace-moral-frameworks-program). Its indices average editorial sketches; they do not measure moral truth or charity effectiveness.
+
+Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 
 ## What it is
 

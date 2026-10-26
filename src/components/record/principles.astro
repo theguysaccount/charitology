@@ -1,14 +1,124 @@
 ---
-import { getCollection } from 'astro:content';
-import EntryList from '../EntryList.astro';
-
-const chapters = (await getCollection('principles')).sort((a, b) => a.data.chapter - b.data.chapter);
-const items = chapters.map((c) => ({
-  href: `/record/principles/${c.id}/`,
-  title: c.data.title,
-  summary: c.data.summary,
-  kicker: String(c.data.chapter).padStart(2, '0'),
-}));
+import { getCollection } from "astro:content";
+import { url } from "../../lib/site";
+const chapters = (await getCollection("principles")).sort(
+  (a, b) => a.data.chapter - b.data.chapter,
+);
 ---
 
-<EntryList items={items} layout="rows" />
+<section
+  id="book-index"
+  data-book={JSON.stringify(
+    chapters.map((c) => ({
+      id: c.id,
+      title: c.data.title,
+      body: c.body,
+      sources: c.data.sources,
+    })),
+  )}
+>
+  <h2>Read the book</h2><p>
+    Ten chapters, with source links, worked examples, questions and a practical
+    path through the method. Reading markers and notes are private to this
+    browser.
+  </p><div class="book-actions">
+    <a class="btn" href={url("/record/principles/read/")}
+      >Complete reading and print edition</a
+    ><button class="btn btn-ghost" id="book-download"
+      >Download Markdown book</button>
+  </div><label
+    >Search chapters<input
+      id="book-search"
+      type="search"
+      placeholder="Evidence, feedback, uncertainty…"
+    /></label
+  ><p id="book-count" role="status"></p><ol class="chapters">
+    {
+      chapters.map((c) => (
+        <li
+          data-chapter={c.id}
+          data-search={`${c.data.title} ${c.body}`.toLowerCase()}
+        >
+          <>
+            <span data-marker />
+            <a href={url(`/record/principles/${c.id}/`)}>{c.data.title}</a>
+            <p>{c.data.summary}</p>
+          </>
+        </li>
+      ))
+    }
+  </ol><p id="book-empty" hidden>No matching chapters. Try another term.</p><p>
+    <a href={url("/programs/principles-course/")}
+      >Take the self-paced course with assessment and practice exercises.</a>
+  </p>
+</section>
+<script>
+  import { download } from "../../lib/client/files";
+  const root = document.querySelector<HTMLElement>("#book-index");
+  if (root) {
+    const book = JSON.parse(root.dataset.book!);
+    const q = root.querySelector<HTMLInputElement>("#book-search")!;
+    function filter() {
+      let n = 0;
+      const words = q.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      root!.querySelectorAll<HTMLElement>("[data-chapter]").forEach((el) => {
+        el.hidden = !words.every((w) => el.dataset.search!.includes(w));
+        if (!el.hidden) n++;
+        try {
+          const saved = JSON.parse(
+            localStorage.getItem("charitology-reading-" + el.dataset.chapter) ||
+              "null",
+          );
+          el.querySelector("[data-marker]")!.textContent = saved?.read
+            ? "✓ Read · "
+            : "";
+        } catch {}
+      });
+      root!.querySelector("#book-count")!.textContent =
+        `${n} of ${book.length} chapters`;
+      root!.querySelector<HTMLElement>("#book-empty")!.hidden = n > 0;
+    }
+    q.addEventListener("input", filter);
+    root
+      .querySelector("#book-download")!
+      .addEventListener("click", () =>
+        download(
+          "principles-of-charitology.md",
+          "# Principles of Charitology\n\nEdition 0 · editorial draft · CC BY 4.0\n\n" +
+            book
+              .map(
+                (c: any) =>
+                  `# ${c.title}\n\n${c.body}\n\n## Sources\n${c.sources.map((s: any) => `- ${s.title}: ${s.url}`).join("\n")}`,
+              )
+              .join("\n\n---\n\n"),
+        ),
+      );
+    filter();
+  }
+</script>
+<style>
+  label {
+    display: grid;
+    gap: 0.3rem;
+    margin: 1rem 0;
+  }
+  .book-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .chapters {
+    padding-left: 1.4rem;
+  }
+  .chapters li {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .chapters li[hidden] {
+    display: none;
+  }
+  .chapters p {
+    font-size: 0.95rem;
+    margin: 0.3rem 0;
+  }
+</style>

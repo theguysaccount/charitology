@@ -2,9 +2,9 @@
 title: "Global Charity Index"
 group: "Flagship references"
 order: 2
-summary: "A depth layer on top of the open registries: what an organization does, where its work sits from relief to source, and where to check its filings."
-status: seeded
-statusNote: "A first set of organizations is classified. The Index grows by contribution."
+summary: "A searchable working index with descriptive depth hypotheses, cause filters, public-registry links, source lists and research dossiers."
+status: live
+statusNote: "16 transparent classification records with multi-filter browsing, registry links and research dossiers. Classifications remain draft hypotheses, not charity ratings."
 conditions: ["overhead-myth", "symptom-trap"]
 firstMilestone: "Five hundred organizations classified by depth, each classification checked by two contributors."
 help:
@@ -25,3 +25,11 @@ The Index is not a rating. Depth describes where work acts, not how good it is. 
 ## How it’s built
 
 Each entry is a small file in `src/content/charities/` with the organization’s name, website, a one-line description of what it does, a depth classification, its cause areas and the interventions it delivers. Finances, filings and funders stay in the registries that already publish them, linked from every entry.
+
+## Use this reference base
+
+Filter by cause area, depth hypothesis or review status. Inspect the cited description of an organization’s work, follow its website or public-registry links, and keep a source-linked reading dossier for your own research. Registry searches may return several organizations with similar names; check the identity before interpreting a filing.
+
+## Coverage and review
+
+This is a small working index, not a worldwide census. Selecting an organization adds it to a research reading list. It does not recommend a donation, compare its worth with another organization or validate a depth hypothesis.
