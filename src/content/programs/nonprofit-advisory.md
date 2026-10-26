@@ -1,0 +1,39 @@
+---
+title: Nonprofit Advisory
+group: People and education
+order: 6
+summary: Planned practical help for nonprofits to measure what their work changes and explain what it really costs, so they can be judged by results rather than overhead.
+status: partners
+statusNote: Advising needs trained advisors, evaluation partners and independent funding. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+conditions: [measurement-gap, overhead-myth]
+firstMilestone: A free, self-guided version of the advisory process, published alongside the Impact Measurement Toolkit and tried with five small nonprofits.
+help:
+  - Open an issue labeled program:nonprofit-advisory describing a measurement method that worked for a small organization.
+  - If you evaluate programs professionally and could advise pro bono, open an issue labeled program:nonprofit-advisory.
+  - Try the Impact Measurement Toolkit with your organization and report what was missing.
+related: [/tools/impact-measurement-toolkit/, /tools/cost-effectiveness-model-kit/, /open-problems/the-overhead-replacement/, /record/myths/]
+---
+
+## What it is
+
+Nonprofit Advisory would help charities, especially small ones, answer the questions donors should be asking: what changed because of this work, and what did it really cost? It would be the other side of [Donor Advisory](/programs/donor-advisory/). One would help givers ask better questions. This one would help organizations answer them.
+
+## How it works
+
+An advisor would work with an organization’s staff for a few months. Together they would name the outcomes that matter, choose the simplest credible way to check them and borrow from [Evidence Reviews](/programs/evidence-reviews/) wherever existing research already covers the work. They would also build an honest picture of costs, including the staff, systems and evaluation that results depend on, using the [Impact Measurement Toolkit](/tools/impact-measurement-toolkit/) and the [Cost-Effectiveness Model Kit](/tools/cost-effectiveness-model-kit/).
+
+Everything the advisor helps produce would belong to the organization, and the method would be published so others can follow it without an advisor. Advisors would be funded independently of the organizations they help and of those organizations’ funders, so the advice serves the mission rather than a sale.
+
+## Why it matters for the system
+
+The [Measurement Gap](/diagnosis/measurement-gap/) exists partly because measuring outcomes is expensive and few funders pay for it. A charity with three staff can’t run a study of its own. A shared advisory service, backed by a published method, would bring that skill within reach.
+
+The [Overhead Myth](/diagnosis/overhead-myth/) survives because the overhead ratio is easy to find and results aren’t. An organization that can show what it achieved per dollar, and explain what its systems cost, gives donors a better number to look at and a reason to stop starving the systems that make results possible.
+
+## Risks and limits
+
+Measurement takes staff time away from the work itself. Advisors would match the method to the size of the decision it informs, and sometimes the honest advice is that a small program should borrow evidence rather than run its own study. Until partners, funding and a proper legal and governance setup are in place, the program accepts no money.
+
+## What success looks like
+
+Within five years, the self-guided version is widely used, and organizations that used it publish outcomes and full costs that donors can compare.
