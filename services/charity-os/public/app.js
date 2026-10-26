@@ -648,6 +648,7 @@ function renderCreateOrganization() {
               throw new ApiError(
                 "The organization was saved but its response is incomplete. Reload to find it.",
               );
+            state.pageDirty = false;
             const refreshed = await api.session();
             state.session = refreshed;
             setCsrfToken(refreshed.csrfToken);
