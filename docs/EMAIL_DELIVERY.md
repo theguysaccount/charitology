@@ -1,6 +1,6 @@
 # Email delivery: implementation and launch record
 
-October 26, 2026. **Controlled confirmation, first-issue inbox delivery and withdrawal checks passed for one owner-authorized recipient.** Production Vercel Connect authorization is complete, and the production backend is enabled for normal confirmed signup. This activation release adds the public website form; its publication is gated by exact-head CI and the Pages rollout below. A prepared source flag alone does not establish a completed website rollout.
+October 26, 2026. **Public confirmed email signup is live** on [the newsletter page](https://charitology.org/newsletter/) and [the podcast/newsletter page](https://charitology.org/record/podcast-and-newsletter/). Production authorization, controlled confirmation, first-issue inbox delivery and withdrawal checks passed for one owner-authorized recipient. The normal-signup backend is promoted, and the public website rollout passed exact-head CI, Pages deployment and live HTTP verification.
 
 ## Identity, plan and infrastructure
 
@@ -48,7 +48,7 @@ Actual no-send provider testing also showed that ordinary duplicate Contact crea
 
 The secret-free GitHub newsletter job runs unit tests and actual Postgres tests in a disposable container, without provider secrets. Pages publication waits for that job and the static build/check. Daily authenticated maintenance cleans expired records, then recovers at most 20 pending preference/import records within a shared 45-second budget when sending is enabled and readiness passes. It never prepares or sends an issue. CSV imports do not guarantee `contact.created` callbacks, so recovery does not depend on one. See [the service operation guide](../services/newsletter/README.md) and [CI boundary](NEWSLETTER_CI.md).
 
-## Deployment and publication gate
+## Production deployment and public release
 
 The final service code is `420342a8fe2fd0ac3ade99140f59d4bb9857e41e`, deployed as **`dpl_E7dxWwGAksASY5ydxo91Px1GxeHV`** at [the immutable deployment](https://charitology-mail-zovoa8qns-jacksonjezio-7345s-projects.vercel.app) and promoted to `https://mail.charitology.org`.
 
@@ -60,7 +60,9 @@ Actual post-promotion checks returned:
 - Authenticated maintenance HTTP200: cleanup true, reconciliation completed zero, failed zero, `stoppedForBudget:false`.
 - Production test-recipient setting removed. Public website CORS permits only `https://charitology.org`, alongside the mail service's own origin; a localhost preflight returned403. Unauthenticated administration returned401. The temporary authorization endpoint returned404.
 
-Public Pages publication must pass exact-head static and newsletter/Postgres CI, then the main deployment. After rollout, verify the actual form, consent checkbox, endpoint, privacy links and RSS on both signup pages. Do not send another issue as a deployment check.
+[PR #6](https://github.com/theguysaccount/charitology/pull/6) activated the public website. Both push and pull-request runs passed the static checks and newsletter unit/disposable Postgres tests on exact head `23ea3f9834507cf40f6a107ca8c443b11cebcf6f`. The guarded merge produced `19d73b5b9fbec03c7416afd754ae5a0548d758ac`. [Main Pages run 40293848095](https://github.com/theguysaccount/charitology/actions/runs/40293848095) passed its build, newsletter and deploy jobs; GitHub Pages deployment **`7327484750`** succeeded at **08:40:51 UTC on October 26, 2026**.
+
+Live HTTP verification after that deployment returned200 for `/newsletter/`, `/record/podcast-and-newsletter/`, `/newsletter/privacy/`, `/record/newsletter/edition-1/` and `/newsletter.xml`. Each signup page had exactly one real POST form targeting `https://mail.charitology.org/api/subscribe`, a required email field, required explicit `consent=yes`, privacy and RSS links, and no pending/unconfigured copy. The first issue retained its editorial-draft and AI disclosures. RSS parsed with one issue, and both referenced Astro assets returned200. An independent public backend health check again reported sending enabled and controlled-test mode false. These HTTP checks submitted no signup, sent no mail and changed no recipient.
 
 For history, the disabled service deployment was code `0ece039`, Vercel deployment `dpl_EwJJBZ8FQRLoAhmQhmExswMuTe6X`. PR #5 merged as `97f03fafba1f4697fd49e3a52023fe862cacc275`; its [Pages deployment](https://github.com/theguysaccount/charitology/actions/runs/40288691818) published the earlier pending-email message. These are historical records, not the normal-signup service deployment above.
 
