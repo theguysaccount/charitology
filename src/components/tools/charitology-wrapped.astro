@@ -1,0 +1,668 @@
+---
+// Charitology Wrapped: a year-in-review card made from the Giving
+// Dashboard's gift log (src/lib/client/gifts.ts). The preview is HTML in
+// the page's theme; the PNG is drawn on canvas in a fixed light palette.
+import Mark from '../Mark.astro';
+import { url } from '../../lib/site';
+---
+
+<section class="tool wr-tool" aria-labelledby="wr-title">
+  <div class="tool-head">
+    <h2 id="wr-title">Your year in giving</h2>
+    <span class="note">Made from your Giving Dashboard. Nothing leaves your browser.</span>
+  </div>
+
+  <div id="wr-none" hidden>
+    <p class="empty">
+      No gifts logged yet. Wrapped is made from the gifts you log in the
+      <a href={url('/tools/giving-dashboard/')}>Giving Dashboard</a>.
+    </p>
+    <div class="btn-row wr-gap">
+      <a class="btn" href={url('/tools/giving-dashboard/')}>Log your gifts</a>
+      <button class="btn btn-ghost" type="button" id="wr-try">Try sample data</button>
+    </div>
+    <p class="note wr-gap" id="wr-blocked" hidden>
+      This browser is blocking storage, so Wrapped can’t see gifts saved by the dashboard. Sample data still works on this page.
+    </p>
+  </div>
+
+  <div id="wr-main" class="wr-main" hidden>
+    <div class="wr-side">
+      <div class="wr-controls">
+        <div class="field wr-year">
+          <label for="wr-year">Year</label>
+          <select id="wr-year"></select>
+        </div>
+        <label class="option wr-toggle">
+          <input type="checkbox" id="wr-hide" />
+          <span>
+            <strong>Hide dollar amounts</strong>
+            <span class="hint">Show shares and counts instead.</span>
+          </span>
+        </label>
+      </div>
+      <p class="note wr-sample" id="wr-sample" hidden>
+        This year includes fictional sample gifts.
+        <button class="btn btn-ghost btn-small" type="button" id="wr-unsample">Remove sample gifts</button>
+      </p>
+    </div>
+
+    <div class="wr-stage">
+      <article class="wr-card" id="wr-card" aria-labelledby="wr-c-tag">
+        <header class="wr-top">
+          <span class="wr-brand"><Mark size={30} /><span>Charitology</span></span>
+          <span class="wr-tag" id="wr-c-tag">Wrapped <span id="wr-c-year"></span></span>
+        </header>
+        <div class="wr-hero">
+          <p class="wr-big" id="wr-c-big"></p>
+          <p class="wr-sub" id="wr-c-sub"></p>
+        </div>
+        <div>
+          <p class="wr-label">Top cause</p>
+          <p class="wr-cause" id="wr-c-cause"></p>
+          <p class="wr-small" id="wr-c-cause-note"></p>
+        </div>
+        <div>
+          <p class="wr-label" id="wr-mix-label">Depth mix</p>
+          <div class="wr-mix" id="wr-c-mix" role="list" aria-labelledby="wr-mix-label"></div>
+          <ol class="wr-legend" id="wr-c-legend"></ol>
+          <p class="wr-small"><strong id="wr-c-source"></strong> of dollars at structure and source</p>
+        </div>
+        <div class="wr-arch">
+          <p class="wr-label">Your giving archetype</p>
+          <p class="wr-arch-name" id="wr-c-arch"></p>
+          <p class="wr-arch-line" id="wr-c-line"></p>
+          <p class="wr-frontier"><span class="wr-frontier-label">Next frontier:</span> <span id="wr-c-frontier"></span></p>
+        </div>
+        <footer class="wr-foot">
+          <span id="wr-c-url"></span>
+          <span>Depth describes. It doesn’t grade.</span>
+        </footer>
+      </article>
+    </div>
+
+    <div class="wr-out">
+      <div class="btn-row">
+        <button class="btn" type="button" id="wr-png">Download PNG</button>
+        <button class="btn btn-ghost" type="button" id="wr-copy">Copy summary text</button>
+        <a class="btn btn-ghost" href={url('/tools/giving-dashboard/')}>Edit gifts in the dashboard</a>
+      </div>
+      <p class="note wr-status" id="wr-status" role="status"></p>
+      <p class="note">The image is 1080 × 1350 pixels, drawn in your browser in light colors whichever theme you use.</p>
+    </div>
+    <p class="visually-hidden" id="wr-live" aria-live="polite"></p>
+  </div>
+</section>
+
+<style>
+  /* The global .btn, .field and grid classes set display, which would otherwise override [hidden]. */
+  .wr-tool :global([hidden]) {
+    display: none !important;
+  }
+  .wr-gap {
+    margin-top: 1rem;
+  }
+  .wr-main {
+    display: grid;
+    gap: 1.5rem 2.25rem;
+    align-items: start;
+  }
+  /* Phones: options, card, then the buttons. Wide screens: the card on the left, the rest beside it. */
+  @media (min-width: 1000px) {
+    .wr-main {
+      grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+    }
+    .wr-stage {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+    .wr-side {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .wr-out {
+      grid-column: 2;
+      grid-row: 2;
+    }
+  }
+  .wr-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    align-items: flex-end;
+  }
+  .wr-year {
+    margin: 0;
+    min-width: min(100%, 10rem);
+  }
+  .wr-toggle {
+    align-items: center;
+  }
+  .wr-toggle .hint {
+    display: block;
+  }
+  .wr-sample {
+    margin: 1rem 0 0;
+  }
+  .wr-sample button {
+    margin-left: 0.4rem;
+  }
+  .wr-status {
+    min-height: 1.2em;
+    margin: 0.75rem 0 0;
+  }
+
+  /* The card. Sizes follow the stage width so the preview keeps the PNG's
+     proportions, with floors so it stays readable on a phone. */
+  .wr-stage {
+    container-type: inline-size;
+    max-width: 540px;
+  }
+  .wr-card {
+    aspect-ratio: 4 / 5;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.85rem, 4.2cqi, 1.6rem);
+    padding: clamp(1.1rem, 7.5cqi, 2.6rem);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .wr-card p {
+    margin: 0;
+  }
+  .wr-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: clamp(0.6rem, 3cqi, 1.1rem);
+    border-bottom: 1px solid var(--rule);
+  }
+  .wr-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-family: var(--font-display);
+    font-weight: 620;
+    font-size: clamp(1.05rem, 4.2cqi, 1.5rem);
+    letter-spacing: -0.015em;
+  }
+  .wr-brand :global(svg) {
+    width: 1.25em;
+    height: 1.25em;
+  }
+  .wr-tag {
+    font: 700 clamp(0.68rem, 2.3cqi, 0.86rem) var(--font-sans);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .wr-big {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.6rem, 14cqi, 5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+  }
+  .wr-sub {
+    font-family: var(--font-serif);
+    font-size: clamp(1rem, 3.6cqi, 1.32rem);
+    color: var(--ink-2);
+    margin-top: 0.35em !important;
+  }
+  .wr-label {
+    font: 700 clamp(0.68rem, 2.1cqi, 0.8rem) var(--font-sans);
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.3em !important;
+  }
+  .wr-cause {
+    font-family: var(--font-display);
+    font-weight: 560;
+    font-size: clamp(1.4rem, 5.6cqi, 2.15rem);
+    line-height: 1.1;
+  }
+  .wr-small {
+    font-family: var(--font-serif);
+    font-size: clamp(0.9rem, 2.9cqi, 1.08rem);
+    color: var(--ink-2);
+    margin-top: 0.25em !important;
+  }
+  .wr-small strong {
+    color: var(--ink);
+  }
+  .wr-mix {
+    position: relative;
+    display: flex;
+    gap: 3px;
+    height: clamp(18px, 4.8cqi, 28px);
+    border-radius: 6px;
+  }
+  .wr-mix :global(.wr-seg) {
+    height: 100%;
+    min-width: 3px;
+  }
+  .wr-mix :global(.wr-seg:first-of-type) {
+    border-radius: 6px 0 0 6px;
+  }
+  .wr-mix :global(.wr-seg:last-of-type) {
+    border-radius: 0 6px 6px 0;
+  }
+  .wr-mix :global(.wr-seg:only-of-type) {
+    border-radius: 6px;
+  }
+  .wr-mix :global(.wr-seg:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .wr-legend {
+    list-style: none;
+    margin: 0.7em 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(4.6rem, 1fr));
+    gap: 0.5rem 0.75rem;
+  }
+  .wr-legend :global(li) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 0.4em;
+    font: 600 clamp(0.7rem, 2.1cqi, 0.82rem) var(--font-sans);
+    color: var(--ink-2);
+  }
+  .wr-legend :global(.wr-sw) {
+    width: 0.85em;
+    height: 0.85em;
+    border-radius: 3px;
+  }
+  .wr-legend :global(.wr-pct) {
+    grid-column: 1 / -1;
+    font-family: var(--font-display);
+    font-weight: 560;
+    font-size: clamp(1rem, 3.4cqi, 1.35rem);
+    color: var(--ink);
+  }
+  .wr-arch {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: clamp(0.85rem, 4cqi, 1.5rem);
+  }
+  .wr-arch-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.45rem, 5.6cqi, 2.15rem);
+    line-height: 1.1;
+  }
+  .wr-arch-line {
+    font-family: var(--font-serif);
+    font-size: clamp(0.95rem, 2.9cqi, 1.08rem);
+    margin-top: 0.45em !important;
+  }
+  .wr-frontier {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(0.9rem, 2.75cqi, 1.02rem);
+    color: var(--ink-2);
+    margin-top: 0.5em !important;
+  }
+  .wr-frontier-label {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .wr-foot {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    font: 600 clamp(0.68rem, 2cqi, 0.8rem) var(--font-sans);
+    color: var(--ink-3);
+    overflow-wrap: anywhere;
+  }
+</style>
+
+<script>
+  import { ARCHETYPES, archetypeFor, type Archetype } from '../../lib/client/archetype';
+  import { PAPER, canvas, drawWordmark, fitLines, font, fontsReady, roundRect, siteLabel, siteUrl, sizes, spacing, toPng } from '../../lib/client/canvas';
+  import { $, clear, h } from '../../lib/client/dom';
+  import { copy, download, flash } from '../../lib/client/files';
+  import { money } from '../../lib/client/format';
+  import { LEVELS, OTHER, depthName, hasSamples, inYear, loadGifts, mergeGifts, plural, sampleGifts, saveGifts, summarize, yearsOf, type Gift } from '../../lib/client/gifts';
+  import { canPersist } from '../../lib/client/persist';
+  import { splitWhole } from '../../lib/client/split';
+  import { load, save } from '../../lib/client/store';
+
+  const PAGE = '/tools/charitology-wrapped/';
+  const yearEl = $<HTMLSelectElement>('#wr-year');
+  const hideEl = $<HTMLInputElement>('#wr-hide');
+  const statusEl = $('#wr-status');
+
+  let gifts: Gift[] = loadGifts();
+  const prefs = load<{ year?: string; hide?: boolean }>('wrapped', {});
+  let year = typeof prefs.year === 'string' ? prefs.year : '';
+  hideEl.checked = prefs.hide === true;
+
+  interface Wrap {
+    year: string;
+    hide: boolean;
+    total: number;
+    count: number;
+    orgs: number;
+    top?: { name: string; amount: number; share: number; count: number };
+    /** Whole percentages at each depth level that add up to 100. */
+    percents: number[];
+    amounts: number[];
+    source: number;
+    arch: Archetype;
+    sample: boolean;
+  }
+
+  function build(): Wrap {
+    const list = inYear(gifts, year);
+    const s = summarize(list);
+    const named = s.byCause.find((c) => c.id !== OTHER.id);
+    const top = named ?? s.byCause[0];
+    const percents = s.total > 0 ? splitWhole(100, s.shares) : [0, 0, 0, 0, 0];
+    return {
+      year,
+      hide: hideEl.checked,
+      total: s.total,
+      count: s.count,
+      orgs: s.organizations,
+      top: top && { name: top.id === OTHER.id ? 'Not set yet' : top.name, amount: top.amount, share: top.amount / s.total, count: top.count },
+      percents,
+      amounts: s.byDepth,
+      source: percents[3] + percents[4],
+      arch: s.total > 0 ? archetypeFor(s.shares) : ARCHETYPES.balance,
+      sample: hasSamples(list),
+    };
+  }
+
+  const bigText = (w: Wrap) => (w.hide ? plural(w.count, 'gift') : money(w.total));
+  const subText = (w: Wrap) =>
+    w.hide ? `to ${plural(w.orgs, 'organization')}` : `given to ${plural(w.orgs, 'organization')} in ${plural(w.count, 'gift')}`;
+  const causeNote = (w: Wrap) => {
+    if (!w.top) return '';
+    const share = `${Math.round(w.top.share * 100)}% of your giving`;
+    return w.hide ? `${share} · ${plural(w.top.count, 'gift')}` : `${money(w.top.amount)} · ${share}`;
+  };
+
+  function say(text: string) {
+    statusEl.textContent = text;
+  }
+
+  function renderYears() {
+    const years = yearsOf(gifts);
+    if (!years.includes(year)) year = years[0] ?? '';
+    clear(yearEl);
+    for (const y of years) yearEl.append(h('option', { value: y }, y));
+    yearEl.value = year;
+  }
+
+  function renderMix(w: Wrap) {
+    const mix = $('#wr-c-mix');
+    clear(mix);
+    const tip = h('div', { class: 'chart-tip', role: 'tooltip', hidden: true });
+    LEVELS.filter((l) => w.amounts[l] > 0).forEach((l) => {
+      const detail = w.hide ? `${w.percents[l]}%` : `${w.percents[l]}% · ${money(w.amounts[l])}`;
+      const seg = h('div', {
+        class: `wr-seg d${l}`,
+        role: 'listitem',
+        tabindex: 0,
+        'aria-label': `${depthName(l)}: ${detail}`,
+      });
+      seg.style.flex = `${w.amounts[l]} 1 0`;
+      const show = () => {
+        tip.textContent = `${depthName(l)} · ${detail}`;
+        tip.hidden = false;
+        const box = seg.getBoundingClientRect();
+        const host = mix.getBoundingClientRect();
+        tip.style.left = `${box.left - host.left + box.width / 2}px`;
+        tip.style.top = '0px';
+      };
+      seg.addEventListener('pointerenter', show);
+      seg.addEventListener('focus', show);
+      seg.addEventListener('pointerleave', () => (tip.hidden = true));
+      seg.addEventListener('blur', () => (tip.hidden = true));
+      mix.append(seg);
+    });
+    mix.append(tip);
+
+    const legend = $('#wr-c-legend');
+    clear(legend);
+    for (const l of LEVELS) {
+      legend.append(
+        h('li', {}, h('span', { class: `wr-sw d${l}`, 'aria-hidden': 'true' }), h('span', {}, depthName(l)), ' ', h('span', { class: 'wr-pct' }, `${w.percents[l]}%`)),
+      );
+    }
+  }
+
+  function render() {
+    const any = gifts.length > 0;
+    $('#wr-none').hidden = any;
+    $('#wr-main').hidden = !any;
+    if (!any) return;
+    renderYears();
+    const w = build();
+    $('#wr-c-year').textContent = w.year;
+    $('#wr-c-big').textContent = bigText(w);
+    $('#wr-c-sub').textContent = subText(w);
+    $('#wr-c-cause').textContent = w.top?.name ?? '–';
+    $('#wr-c-cause-note').textContent = causeNote(w);
+    $('#wr-c-source').textContent = `${w.source}%`;
+    $('#wr-c-arch').textContent = w.arch.name;
+    $('#wr-c-line').textContent = w.arch.line;
+    $('#wr-c-frontier').textContent = w.arch.frontier;
+    $('#wr-c-url').textContent = siteLabel(PAGE);
+    renderMix(w);
+    $('#wr-sample').hidden = !w.sample;
+    $('#wr-live').textContent = `${w.year}: ${bigText(w)} ${subText(w)}. Top cause: ${w.top?.name ?? 'none'}. Source share ${w.source}%. Archetype: ${w.arch.name}.`;
+    save('wrapped', { year: w.year, hide: w.hide });
+  }
+
+  function summary(w: Wrap): string {
+    const mix = LEVELS.map((l) => `${depthName(l)} ${w.percents[l]}%`).join(' · ');
+    const topShare = w.top ? `${Math.round(w.top.share * 100)}% of my giving` : '';
+    return [
+      `My ${w.year} in giving, from Charitology Wrapped`,
+      `${bigText(w)} ${subText(w)}`,
+      w.top ? `Top cause: ${w.top.name} (${w.hide ? topShare : `${money(w.top.amount)}, ${topShare}`})` : '',
+      `Depth mix: ${mix}`,
+      `Source share: ${w.source}% at structure and source`,
+      `Archetype: ${w.arch.name}. ${w.arch.line}`,
+      `Next frontier: ${w.arch.frontier}`,
+      `Make yours: ${siteUrl(PAGE)}`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  async function drawCard(w: Wrap): Promise<HTMLCanvasElement> {
+    const W = 1080;
+    const H = 1350;
+    const L = 100;
+    const R = 980;
+    const CW = R - L;
+    const { el, ctx } = canvas(W, H);
+    await fontsReady(summary(w));
+
+    ctx.fillStyle = PAPER.bg;
+    ctx.fillRect(0, 0, W, H);
+    roundRect(ctx, 40, 40, W - 80, H - 80, 32);
+    ctx.fillStyle = PAPER.surface;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = PAPER.rule;
+    ctx.stroke();
+
+    // Wordmark and year
+    drawWordmark(ctx, L, 122, 44);
+    ctx.font = font(24, 'sans', 700);
+    ctx.fillStyle = PAPER.accent;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    const undo = spacing(ctx, 4);
+    ctx.fillText(`WRAPPED ${w.year}`, R, 122);
+    undo();
+    ctx.fillStyle = PAPER.rule;
+    ctx.fillRect(L, 182, CW, 2);
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    const line = (text: string, x: number, y: number, f: string, color: string) => {
+      ctx.font = f;
+      ctx.fillStyle = color;
+      ctx.fillText(text, x, y);
+    };
+    const label = (text: string, x: number, y: number) => {
+      ctx.font = font(22, 'sans', 700);
+      ctx.fillStyle = PAPER.ink3;
+      const restore = spacing(ctx, 3);
+      ctx.fillText(text.toUpperCase(), x, y);
+      restore();
+    };
+
+    // Total (or count)
+    const big = fitLines(ctx, bigText(w), CW, 1, (s) => font(s, 'display', 600), sizes(150, 72, 4));
+    line(big.lines[0], L - 4, 330, big.font, PAPER.ink);
+    const sub = fitLines(ctx, subText(w), CW, 1, (s) => font(s, 'serif', 400), sizes(38, 26));
+    line(sub.lines[0], L, 392, sub.font, PAPER.ink2);
+
+    // Top cause
+    label('Top cause', L, 480);
+    const cause = fitLines(ctx, w.top?.name ?? '–', CW, 1, (s) => font(s, 'display', 560), sizes(60, 40));
+    line(cause.lines[0], L, 544, cause.font, PAPER.ink);
+    const note = fitLines(ctx, causeNote(w), CW, 1, (s) => font(s, 'serif', 400), sizes(30, 24));
+    line(note.lines[0], L, 590, note.font, PAPER.ink2);
+
+    // Depth mix: one segment per level with money, in depth colors, labeled below
+    label('Depth mix', L, 668);
+    const barY = 688;
+    const barH = 52;
+    const active = LEVELS.filter((l) => w.amounts[l] > 0);
+    const gap = 4;
+    const usable = CW - gap * Math.max(0, active.length - 1);
+    const sum = active.reduce((s, l) => s + w.amounts[l], 0) || 1;
+    ctx.save();
+    roundRect(ctx, L, barY, CW, barH, 12);
+    ctx.clip();
+    let x = L;
+    for (const l of active) {
+      const segW = (usable * w.amounts[l]) / sum;
+      ctx.fillStyle = PAPER.depth[l];
+      ctx.fillRect(x, barY, segW, barH);
+      x += segW + gap;
+    }
+    ctx.restore();
+    const colW = CW / 5;
+    LEVELS.forEach((l, i) => {
+      const x0 = L + i * colW;
+      roundRect(ctx, x0, 768, 22, 22, 5);
+      ctx.fillStyle = PAPER.depth[l];
+      ctx.fill();
+      ctx.textBaseline = 'middle';
+      line(depthName(l), x0 + 32, 780, font(22, 'sans', 600), PAPER.ink2);
+      ctx.textBaseline = 'alphabetic';
+      line(`${w.percents[l]}%`, x0, 830, font(36, 'display', 560), PAPER.ink);
+    });
+    ctx.font = font(32, 'display', 600);
+    const srcText = `${w.source}%`;
+    line(srcText, L, 884, ctx.font, PAPER.ink);
+    const srcW = ctx.measureText(`${srcText} `).width;
+    line('of dollars at structure and source', L + srcW, 884, font(30, 'serif', 400), PAPER.ink2);
+
+    // Archetype
+    roundRect(ctx, L - 28, 918, CW + 56, 318, 22);
+    ctx.fillStyle = PAPER.bg;
+    ctx.fill();
+    label('Your giving archetype', L, 962);
+    const name = fitLines(ctx, w.arch.name, CW, 1, (s) => font(s, 'display', 600), sizes(58, 40));
+    line(name.lines[0], L, 1026, name.font, PAPER.ink);
+    const desc = fitLines(ctx, w.arch.line, CW, 2, (s) => font(s, 'serif', 400), sizes(29, 23));
+    desc.lines.forEach((t, i) => line(t, L, 1074 + i * Math.round(desc.size * 1.38), desc.font, PAPER.ink));
+    const next = fitLines(ctx, `Next frontier: ${w.arch.frontier}`, CW, 2, (s) => font(s, 'serif', 400, true), sizes(27, 22));
+    next.lines.forEach((t, i) => line(t, L, 1162 + i * Math.round(next.size * 1.4), next.font, PAPER.ink2));
+
+    // Footer: the site, and the house rule about depth
+    const site = siteLabel(PAGE);
+    const motto = 'Depth describes. It doesn’t grade.';
+    ctx.font = font(22, 'sans', 600);
+    const siteW = ctx.measureText(site).width;
+    ctx.font = font(22, 'sans', 400);
+    const mottoW = ctx.measureText(motto).width;
+    line(site, L, 1290, font(22, 'sans', 600), PAPER.ink3);
+    ctx.textAlign = 'right';
+    if (siteW + mottoW + 40 <= CW) line(motto, R, 1290, font(22, 'sans', 400), PAPER.ink3);
+    else line(motto, R, 1262, font(22, 'sans', 400), PAPER.ink3);
+    ctx.textAlign = 'left';
+    return el;
+  }
+
+  yearEl.addEventListener('change', () => {
+    year = yearEl.value;
+    render();
+  });
+  hideEl.addEventListener('change', render);
+
+  $('#wr-try').addEventListener('click', () => {
+    gifts = mergeGifts(gifts, sampleGifts()).gifts;
+    saveGifts(gifts);
+    year = '';
+    render();
+    say('Added fictional sample gifts. They also appear in the Giving Dashboard, marked Sample.');
+    yearEl.focus();
+  });
+
+  $('#wr-unsample').addEventListener('click', () => {
+    gifts = gifts.filter((g) => !g.sample);
+    saveGifts(gifts);
+    render();
+    if (gifts.length) {
+      say('Removed the sample gifts.');
+      yearEl.focus();
+    } else {
+      ($('#wr-try') as HTMLButtonElement).focus();
+    }
+  });
+
+  $('#wr-png').addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    btn.disabled = true;
+    say('Drawing your card…');
+    try {
+      const w = build();
+      const blob = await toPng(await drawCard(w));
+      const filename = `charitology-wrapped-${w.year}${w.hide ? '-no-amounts' : ''}.png`;
+      download(filename, blob);
+      say(`Downloaded ${filename}, 1080 × 1350 pixels.`);
+    } catch {
+      say('This browser couldn’t draw the image. Copy summary text still works.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('#wr-copy').addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    const ok = await copy(summary(build()));
+    flash(btn, ok ? 'Copied' : 'Copy failed');
+    say(ok ? 'Copied a plain-text summary of your year.' : 'Your browser blocked copying.');
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'charitology.gifts') {
+      gifts = loadGifts();
+      render();
+    }
+  });
+
+  $('#wr-blocked').hidden = canPersist();
+  render();
+</script>

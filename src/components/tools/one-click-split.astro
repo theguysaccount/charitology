@@ -1,0 +1,778 @@
+---
+// One-Click Split: an honest planner. It splits a total across charities in
+// whole dollars that add up exactly (src/lib/client/split.ts) and lists one
+// step per charity. It never takes payment: every gift is made on the
+// charity's own donation page. Reads the Portfolio Builder's saved
+// "portfolio" and saves its own plan as "split".
+import { url } from '../../lib/site';
+---
+
+<section class="tool ocs-tool" aria-labelledby="ocs-title">
+  <div class="tool-head">
+    <h2 id="ocs-title">Plan your split</h2>
+    <span class="note" id="ocs-loaded"></span>
+  </div>
+
+  <div class="callout ocs-space">
+    <strong>Charitology never touches your money.</strong> This plans how to split one giving decision. You give on each charity’s
+    own donation page, one at a time. <a href="#why-payment-isnt-built-in">Why payment isn’t built in</a>
+  </div>
+  <div id="ocs-storage" class="callout ocs-space" hidden>
+    <strong>This browser isn’t saving your plan.</strong> Storage is blocked or full, so the plan will be gone when you close this page.
+    Download it as CSV or Markdown to keep a copy.
+  </div>
+
+  <div id="ocs-portfolio" class="ocs-portfolio ocs-space" hidden>
+    <p id="ocs-portfolio-text"></p>
+    <div class="ocs-portfolio-row">
+      <div class="field">
+        <label for="ocs-method">Use the split from</label>
+        <select id="ocs-method">
+          <option value="allocation">Each lens spends its share</option>
+          <option value="alternative">Best on average</option>
+        </select>
+      </div>
+      <button class="btn btn-ghost btn-small" type="button" id="ocs-use">Load my portfolio</button>
+    </div>
+  </div>
+  <p class="note ocs-space" id="ocs-no-portfolio" hidden>
+    Want a starting point? Build a portfolio across causes in the <a href={url('/tools/portfolio-builder/')}>Portfolio Builder</a>,
+    then come back.
+  </p>
+
+  <div class="field ocs-total">
+    <label for="ocs-total">Total to give, in whole dollars</label>
+    <input type="text" id="ocs-total" inputmode="numeric" autocomplete="off" placeholder="500" aria-describedby="ocs-total-hint" />
+    <span class="hint" id="ocs-total-hint">Amounts are rounded to whole dollars and always add up to this total.</span>
+  </div>
+
+  <h3>Where it goes</h3>
+  <div id="ocs-rows" class="ocs-rows"></div>
+  <div class="btn-row">
+    <button class="btn btn-ghost btn-small" type="button" id="ocs-add">Add a charity</button>
+    <button class="btn btn-ghost btn-small" type="button" id="ocs-even">Split evenly</button>
+    <button class="btn btn-ghost btn-small" type="button" id="ocs-scale">Scale shares to 100%</button>
+  </div>
+  <p id="ocs-check" class="ocs-check" aria-live="polite"></p>
+
+  <div class="result">
+    <h3>Your steps</h3>
+    <p class="note">Give one at a time. Each button opens that charity’s own page in a new tab, and your Done marks are saved here.</p>
+    <p id="ocs-steps-empty" class="empty">Your steps appear here once there’s a total and the shares add up to 100%.</p>
+    <ol id="ocs-steps" class="ocs-steps" hidden></ol>
+    <p id="ocs-progress" class="ocs-progress" aria-live="polite"></p>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-small" type="button" id="ocs-csv">Download CSV</button>
+      <button class="btn btn-ghost btn-small" type="button" id="ocs-md">Download Markdown</button>
+      <button class="btn btn-ghost btn-small" type="button" id="ocs-reset">Start over</button>
+    </div>
+    <p id="ocs-status" class="note ocs-status" role="status"></p>
+  </div>
+</section>
+
+<style>
+  /* The global .btn, .field and grid classes set display, which would otherwise override [hidden]. */
+  .ocs-tool :global([hidden]) {
+    display: none !important;
+  }
+  .ocs-space {
+    margin-bottom: 1.25rem;
+  }
+  .ocs-portfolio {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    padding: 0.9rem 1rem 0.2rem;
+  }
+  .ocs-portfolio-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0 0.75rem;
+  }
+  .ocs-portfolio-row .field {
+    flex: 1 1 14rem;
+  }
+  .ocs-portfolio-row .btn {
+    margin-bottom: 1rem;
+  }
+  .ocs-total {
+    max-width: 22rem;
+  }
+  .ocs-rows {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+  }
+  .ocs-rows :global(.ocs-row) {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    padding: 0.75rem 0.9rem 0.1rem;
+    margin: 0;
+  }
+  .ocs-rows :global(.ocs-row > legend) {
+    padding: 0 0.3rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+  }
+  /* Phones: cause and name full width, share and amount side by side. Wide screens: one line, address below. */
+  .ocs-rows :global(.ocs-grid) {
+    display: grid;
+    gap: 0 0.9rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .ocs-rows :global(.ocs-wide),
+  .ocs-rows :global(.ocs-url) {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 900px) {
+    .ocs-rows :global(.ocs-grid) {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr) minmax(0, 0.6fr) minmax(0, 0.6fr);
+    }
+    .ocs-rows :global(.ocs-wide) {
+      grid-column: auto;
+    }
+    .ocs-rows :global(.ocs-url) {
+      grid-column: 1 / 4;
+    }
+  }
+  .ocs-rows :global(.ocs-amount) {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+  .ocs-rows :global(.ocs-amount-label) {
+    font-weight: 650;
+    font-size: 0.88rem;
+  }
+  .ocs-rows :global(.ocs-amount output) {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    line-height: 44px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ocs-rows :global(.ocs-remove) {
+    align-self: start;
+    justify-self: start;
+    margin: 0 0 1rem;
+  }
+  @media (min-width: 900px) {
+    .ocs-rows :global(.ocs-remove) {
+      margin-top: 1.65rem;
+    }
+  }
+  .ocs-rows :global(.ocs-msg) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .ocs-rows :global(.ocs-msg::before) {
+    content: '⚠ ';
+  }
+  .ocs-rows :global(input[aria-invalid='true']) {
+    border-color: var(--critical);
+  }
+  .ocs-check {
+    font-weight: 600;
+    margin: 0.75rem 0 0;
+  }
+  .ocs-steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .ocs-steps :global(.ocs-step) {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+    gap: 0.4rem 0.75rem;
+    align-items: start;
+    padding: 0.85rem 0.9rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+  .ocs-steps :global(.ocs-step::before) {
+    content: counter(step);
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--ink-3);
+    line-height: 1.3;
+  }
+  .ocs-steps :global(.ocs-step-main p) {
+    margin: 0;
+  }
+  .ocs-steps :global(.ocs-step-title) {
+    font-weight: 650;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+  .ocs-steps :global(.ocs-step-actions) {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .ocs-steps :global(.ocs-done-box) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    font-size: 0.86rem;
+    min-height: 34px;
+    padding: 0 0.4rem;
+    cursor: pointer;
+  }
+  .ocs-steps :global(.ocs-step.is-done) {
+    background: var(--bg);
+  }
+  .ocs-steps :global(.ocs-step.is-done .ocs-step-title) {
+    text-decoration: line-through;
+    text-decoration-color: var(--ink-3);
+    color: var(--ink-2);
+  }
+  .ocs-progress {
+    font-weight: 600;
+  }
+  .ocs-status {
+    min-height: 1.2em;
+    margin: 0.75rem 0 0;
+  }
+</style>
+
+<script>
+  import { $, clear, h } from '../../lib/client/dom';
+  import { copy, download, flash, toCsv } from '../../lib/client/files';
+  import { money, parseAmount } from '../../lib/client/format';
+  import { CAUSES, OTHER, causeName, displayDate, isoDate, localToday, newId, plural } from '../../lib/client/gifts';
+  import { canPersist } from '../../lib/client/persist';
+  import { checkUrl, shareTotal, sharesComplete, splitWhole } from '../../lib/client/split';
+  import { load, save } from '../../lib/client/store';
+
+  interface Row {
+    id: string;
+    cause: string;
+    name: string;
+    url: string;
+    share: number | null;
+    done: boolean;
+  }
+  interface Plan {
+    total: number | null;
+    rows: Row[];
+    source: string;
+    savedAt?: string;
+  }
+  interface Portfolio {
+    allocation?: Record<string, number>;
+    alternative?: Record<string, number>;
+    budget?: number;
+    method?: string;
+    savedAt?: string;
+  }
+
+  const totalEl = $<HTMLInputElement>('#ocs-total');
+  const rowsEl = $('#ocs-rows');
+  const statusEl = $('#ocs-status');
+  const methodEl = $<HTMLSelectElement>('#ocs-method');
+  const CAUSE_IDS = new Set(CAUSES.map((c) => c.id));
+
+  const str = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '');
+  const safeId = (v: unknown) => (typeof v === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(v) ? v : newId());
+
+  function blankRow(share: number | null = null): Row {
+    return { id: newId(), cause: OTHER.id, name: '', url: '', share, done: false };
+  }
+
+  function cleanPlan(raw: unknown): Plan | undefined {
+    if (!raw || typeof raw !== 'object') return undefined;
+    const p = raw as Record<string, unknown>;
+    if (!Array.isArray(p.rows)) return undefined;
+    const rows: Row[] = p.rows
+      .filter((r): r is Record<string, unknown> => !!r && typeof r === 'object')
+      .map((r) => ({
+        id: safeId(r.id),
+        cause: typeof r.cause === 'string' && CAUSE_IDS.has(r.cause) ? r.cause : OTHER.id,
+        name: str(r.name, 120),
+        url: str(r.url, 2000),
+        share: typeof r.share === 'number' && Number.isFinite(r.share) && r.share >= 0 ? r.share : null,
+        done: r.done === true,
+      }));
+    if (!rows.length) return undefined;
+    const total = typeof p.total === 'number' && p.total > 0 && p.total < 1e10 ? Math.round(p.total) : null;
+    return { total, rows, source: str(p.source, 200), savedAt: str(p.savedAt, 40) || undefined };
+  }
+
+  function cleanPortfolio(raw: unknown): Portfolio | undefined {
+    if (!raw || typeof raw !== 'object') return undefined;
+    const p = raw as Portfolio;
+    const ok = (a: unknown) => !!a && typeof a === 'object' && Object.values(a as object).some((v) => typeof v === 'number' && v > 0);
+    if (!ok(p.allocation)) return undefined;
+    return { ...p, alternative: ok(p.alternative) ? p.alternative : undefined };
+  }
+
+  /** A stored timestamp as a date in the viewer's time zone. */
+  const day = (iso: string) => {
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? '' : displayDate(isoDate(d));
+  };
+
+  const METHOD_NAMES: Record<string, string> = { allocation: 'Each lens spends its share', alternative: 'Best on average' };
+
+  function rowsFromPortfolio(p: Portfolio, which: string): Row[] {
+    const alloc = (which === 'alternative' && p.alternative) || p.allocation || {};
+    const entries = Object.entries(alloc)
+      .filter(([id, v]) => CAUSE_IDS.has(id) && typeof v === 'number' && v >= 0.01)
+      .sort((a, b) => b[1] - a[1]);
+    const shares = splitWhole(100, entries.map(([, v]) => v));
+    return entries.map(([cause], i) => ({ ...blankRow(shares[i]), cause })).filter((r) => (r.share ?? 0) > 0);
+  }
+
+  const portfolio = cleanPortfolio(load<unknown>('portfolio', null));
+  const savedPlan = cleanPlan(load<unknown>('split', null));
+  let plan: Plan;
+  if (savedPlan) {
+    plan = savedPlan;
+  } else if (portfolio) {
+    const which = portfolio.method === 'best' ? 'alternative' : 'allocation';
+    plan = {
+      total: portfolio.budget && portfolio.budget > 0 ? Math.round(portfolio.budget) : null,
+      rows: rowsFromPortfolio(portfolio, which),
+      source: `From your Portfolio Builder portfolio: ${METHOD_NAMES[which]}.`,
+    };
+    if (!plan.rows.length) plan.rows = [blankRow(50), blankRow(50)];
+  } else {
+    plan = { total: null, rows: [blankRow(50), blankRow(50)], source: 'Started from a blank plan.' };
+  }
+
+  function loadedNote() {
+    const saved = plan.savedAt ? ` Saved ${day(plan.savedAt)}.` : '';
+    $('#ocs-loaded').textContent = `${plan.source || 'Your plan.'}${saved}`;
+  }
+
+  function persist() {
+    plan.savedAt = new Date().toISOString();
+    $('#ocs-storage').hidden = save('split', plan);
+  }
+
+  // ---------- Rows ----------
+
+  function rowEl(r: Row, i: number): HTMLElement {
+    const id = `ocs-${r.id}`;
+    const select = h('select', { id: `${id}-cause`, 'data-field': 'cause' }, CAUSES.map((c) => h('option', { value: c.id }, c.name)));
+    select.value = r.cause;
+    const nameInput = h('input', { type: 'text', id: `${id}-name`, 'data-field': 'name', maxlength: 120, autocomplete: 'off', value: r.name });
+    const urlInput = h('input', {
+      type: 'url',
+      id: `${id}-url`,
+      'data-field': 'url',
+      inputmode: 'url',
+      autocomplete: 'off',
+      spellcheck: 'false',
+      placeholder: 'https://',
+      'aria-describedby': `${id}-url-msg`,
+      value: r.url,
+    });
+    const shareInput = h('input', {
+      type: 'number',
+      id: `${id}-share`,
+      'data-field': 'share',
+      min: 0,
+      max: 100,
+      step: 'any',
+      inputmode: 'decimal',
+      value: r.share ?? '',
+    });
+    const label = r.name.trim() || `charity ${i + 1}`;
+    return h(
+      'fieldset',
+      { class: 'ocs-row', 'data-row': r.id },
+      h('legend', {}, `Charity ${i + 1}`),
+      h(
+        'div',
+        { class: 'ocs-grid' },
+        h('div', { class: 'field ocs-wide' }, h('label', { for: `${id}-cause` }, 'Cause'), select),
+        h('div', { class: 'field ocs-wide' }, h('label', { for: `${id}-name` }, 'Charity name'), nameInput),
+        h('div', { class: 'field' }, h('label', { for: `${id}-share` }, 'Share %'), shareInput),
+        h(
+          'div',
+          { class: 'ocs-amount' },
+          h('span', { class: 'ocs-amount-label', id: `${id}-amount-label` }, 'Amount'),
+          h('output', { id: `${id}-amount`, for: `${id}-share`, 'aria-labelledby': `${id}-amount-label` }, '–'),
+        ),
+        h(
+          'div',
+          { class: 'field ocs-url' },
+          h('label', { for: `${id}-url` }, 'Donation page address'),
+          urlInput,
+          h('span', { class: 'hint', id: `${id}-url-msg` }, 'Copy it from the charity’s own website. Only https:// pages are accepted.'),
+        ),
+        h('button', { class: 'btn btn-ghost btn-small ocs-remove', type: 'button', 'data-remove': r.id, 'aria-label': `Remove ${label}` }, 'Remove'),
+      ),
+    );
+  }
+
+  function renderRows() {
+    clear(rowsEl);
+    plan.rows.forEach((r, i) => rowsEl.append(rowEl(r, i)));
+    plan.rows.forEach((r) => showUrlState(r));
+    ($('#ocs-even') as HTMLButtonElement).disabled = plan.rows.length === 0;
+    ($('#ocs-scale') as HTMLButtonElement).disabled = plan.rows.length === 0;
+  }
+
+  function showUrlState(r: Row) {
+    const input = document.getElementById(`ocs-${r.id}-url`) as HTMLInputElement | null;
+    const msg = document.getElementById(`ocs-${r.id}-url-msg`);
+    if (!input || !msg) return;
+    const checked = checkUrl(r.url);
+    if (checked.error) {
+      input.setAttribute('aria-invalid', 'true');
+      msg.className = 'hint ocs-msg';
+      msg.textContent = checked.error;
+    } else {
+      input.removeAttribute('aria-invalid');
+      msg.className = 'hint';
+      msg.textContent = 'Copy it from the charity’s own website. Only https:// pages are accepted.';
+    }
+  }
+
+  // ---------- Totals, checks and steps ----------
+
+  function totalValue(): number {
+    const n = parseAmount(totalEl.value);
+    return Number.isFinite(n) && n > 0 && n < 1e10 ? Math.round(n) : NaN;
+  }
+
+  function amounts(): number[] | null {
+    const total = totalValue();
+    const shares = plan.rows.map((r) => r.share ?? 0);
+    if (!Number.isFinite(total) || !plan.rows.length || !sharesComplete(shares)) return null;
+    return splitWhole(total, shares);
+  }
+
+  function update() {
+    const total = totalValue();
+    plan.total = Number.isFinite(total) ? total : null;
+    const shares = plan.rows.map((r) => r.share ?? 0);
+    const sum = shareTotal(shares);
+    const exact = amounts();
+    plan.rows.forEach((r, i) => {
+      const out = document.getElementById(`ocs-${r.id}-amount`);
+      if (!out) return;
+      const value = exact ? exact[i] : Number.isFinite(total) && r.share ? Math.round((total * r.share) / 100) : NaN;
+      out.textContent = Number.isFinite(value) ? money(value) : '–';
+    });
+
+    const badUrls = plan.rows.filter((r) => checkUrl(r.url).error).length;
+    const messages: string[] = [];
+    if (!plan.rows.length) messages.push('Add at least one charity.');
+    else if (!Number.isFinite(total)) messages.push('Enter a total to see the amounts.');
+    if (plan.rows.length && Math.abs(sum - 100) >= 0.001) {
+      const gap = Math.round(Math.abs(100 - sum) * 1000) / 1000;
+      messages.push(sum < 100 ? `Shares add up to ${sum}%. Add ${gap}% to reach 100%.` : `Shares add up to ${sum}%. Take away ${gap}% to reach 100%.`);
+    } else if (exact) {
+      messages.push(`Shares add up to 100%. The amounts are whole dollars and add up to exactly ${money(total)}.`);
+    }
+    if (badUrls) messages.push(`${plural(badUrls, 'donation page address', 'donation page addresses')} need${badUrls === 1 ? 's' : ''} fixing.`);
+    $('#ocs-check').textContent = messages.join(' ');
+    renderSteps(exact);
+  }
+
+  function stepName(r: Row, i: number) {
+    return r.name.trim() || `Charity ${i + 1}`;
+  }
+
+  function renderSteps(exact: number[] | null) {
+    const list = $('#ocs-steps');
+    clear(list);
+    const ready = !!exact && exact.some((a) => a > 0);
+    $('#ocs-steps-empty').hidden = ready;
+    list.hidden = !ready;
+    for (const id of ['#ocs-csv', '#ocs-md']) ($(id) as HTMLButtonElement).disabled = !ready;
+    if (!exact || !ready) {
+      $('#ocs-progress').textContent = '';
+      return;
+    }
+    plan.rows.forEach((r, i) => {
+      if (exact[i] <= 0) return;
+      const name = stepName(r, i);
+      const link = checkUrl(r.url).url;
+      const done = h('input', { type: 'checkbox', 'data-done': r.id });
+      done.checked = r.done;
+      list.append(
+        h(
+          'li',
+          { class: r.done ? 'ocs-step is-done' : 'ocs-step', 'data-step': r.id },
+          h(
+            'div',
+            { class: 'ocs-step-main' },
+            h('p', { class: 'ocs-step-title' }, `Give ${money(exact[i])} to ${name}`),
+            h('p', { class: 'note' }, `${causeName(r.cause)} · ${r.share}% of ${money(plan.total ?? 0)}`),
+          ),
+          h(
+            'div',
+            { class: 'ocs-step-actions' },
+            link
+              ? h(
+                  'a',
+                  { class: 'btn btn-small', href: link, target: '_blank', rel: 'noopener noreferrer', referrerpolicy: 'no-referrer' },
+                  'Open donation page',
+                  h('span', { class: 'visually-hidden' }, ` for ${name} (opens in a new tab)`),
+                )
+              : h('span', { class: 'note' }, 'Add its donation page address above to open it from here.'),
+            h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'data-copy': String(exact[i]), 'aria-label': `Copy the amount for ${name}, ${exact[i]} dollars` }, 'Copy amount'),
+            h('label', { class: 'ocs-done-box' }, done, h('span', {}, 'Done'), h('span', { class: 'visually-hidden' }, `: ${name}`)),
+          ),
+        ),
+      );
+    });
+    progress(exact);
+  }
+
+  function progress(exact = amounts()) {
+    if (!exact) return;
+    const steps = plan.rows.map((r, i) => ({ r, amount: exact[i] })).filter((s) => s.amount > 0);
+    const done = steps.filter((s) => s.r.done);
+    const given = done.reduce((a, s) => a + s.amount, 0);
+    const total = steps.reduce((a, s) => a + s.amount, 0);
+    $('#ocs-progress').textContent =
+      done.length === steps.length
+        ? `All ${plural(steps.length, 'gift')} done: ${money(total)} given. Thank you.`
+        : `${done.length} of ${plural(steps.length, 'gift')} done · ${money(given)} of ${money(total)} given.`;
+  }
+
+  // ---------- Events ----------
+
+  rowsEl.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement | HTMLSelectElement;
+    const rowId = el.closest<HTMLElement>('[data-row]')?.dataset.row;
+    const r = plan.rows.find((x) => x.id === rowId);
+    if (!r) return;
+    const field = el.dataset.field;
+    if (field === 'cause') r.cause = el.value;
+    if (field === 'name') {
+      r.name = el.value;
+      const i = plan.rows.indexOf(r);
+      document.querySelector(`[data-remove="${r.id}"]`)?.setAttribute('aria-label', `Remove ${r.name.trim() || `charity ${i + 1}`}`);
+    }
+    if (field === 'url') {
+      r.url = el.value.trim();
+      if (!checkUrl(r.url).error) showUrlState(r);
+    }
+    if (field === 'share') {
+      const n = (el as HTMLInputElement).valueAsNumber;
+      r.share = Number.isFinite(n) && n >= 0 ? n : null;
+    }
+    update();
+    persist();
+  });
+
+  rowsEl.addEventListener('change', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (el.dataset.field !== 'url') return;
+    const r = plan.rows.find((x) => x.id === el.closest<HTMLElement>('[data-row]')?.dataset.row);
+    if (!r) return;
+    const checked = checkUrl(el.value);
+    if (checked.url) {
+      r.url = checked.url;
+      el.value = checked.url;
+    }
+    showUrlState(r);
+    update();
+    persist();
+  });
+
+  rowsEl.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-remove]');
+    if (!btn) return;
+    const i = plan.rows.findIndex((r) => r.id === btn.dataset.remove);
+    if (i < 0) return;
+    const [removed] = plan.rows.splice(i, 1);
+    renderRows();
+    update();
+    persist();
+    statusEl.textContent = `Removed ${removed.name.trim() || `charity ${i + 1}`}. Shares now add up to ${shareTotal(plan.rows.map((r) => r.share ?? 0))}%.`;
+    const next = plan.rows[i] ?? plan.rows[i - 1];
+    (next ? (document.getElementById(`ocs-${next.id}-cause`) as HTMLElement) : $('#ocs-add')).focus();
+  });
+
+  totalEl.addEventListener('input', () => {
+    update();
+    persist();
+  });
+  totalEl.addEventListener('change', () => {
+    const total = totalValue();
+    if (Number.isFinite(total)) totalEl.value = String(total);
+  });
+
+  $('#ocs-add').addEventListener('click', () => {
+    const left = Math.max(0, Math.round((100 - shareTotal(plan.rows.map((r) => r.share ?? 0))) * 1000) / 1000);
+    const r = blankRow(left > 0 ? left : null);
+    plan.rows.push(r);
+    renderRows();
+    update();
+    persist();
+    (document.getElementById(`ocs-${r.id}-cause`) as HTMLElement).focus();
+  });
+
+  function setShares(shares: number[], message: string) {
+    plan.rows.forEach((r, i) => {
+      r.share = shares[i];
+      const input = document.getElementById(`ocs-${r.id}-share`) as HTMLInputElement | null;
+      if (input) input.value = String(shares[i]);
+    });
+    update();
+    persist();
+    statusEl.textContent = message;
+  }
+
+  $('#ocs-even').addEventListener('click', () => {
+    if (!plan.rows.length) return;
+    setShares(splitWhole(100, plan.rows.map(() => 1)), `Split evenly across ${plural(plan.rows.length, 'charity', 'charities')}.`);
+  });
+
+  $('#ocs-scale').addEventListener('click', () => {
+    const shares = plan.rows.map((r) => r.share ?? 0);
+    if (!shares.some((s) => s > 0)) {
+      statusEl.textContent = 'Give at least one charity a share first, or use Split evenly.';
+      return;
+    }
+    setShares(splitWhole(1000, shares).map((x) => x / 10), 'Scaled the shares so they add up to 100%, keeping their proportions.');
+  });
+
+  $('#ocs-steps').addEventListener('change', (e) => {
+    const box = e.target as HTMLInputElement;
+    const r = plan.rows.find((x) => x.id === box.dataset.done);
+    if (!r) return;
+    r.done = box.checked;
+    box.closest('li')?.classList.toggle('is-done', r.done);
+    progress();
+    persist();
+  });
+
+  $('#ocs-steps').addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-copy]');
+    if (!btn) return;
+    const ok = await copy(btn.dataset.copy ?? '');
+    flash(btn, ok ? 'Copied' : 'Copy failed');
+    statusEl.textContent = ok ? `Copied ${btn.dataset.copy}. Paste it into the donation form.` : 'Your browser blocked copying.';
+  });
+
+  $('#ocs-use').addEventListener('click', () => {
+    if (!portfolio) return;
+    const filled = plan.rows.some((r) => r.name.trim() || r.url.trim());
+    if (filled && !confirm('Replace the charities in this plan with the causes from your portfolio? Names and addresses you typed will be cleared.')) return;
+    const which = methodEl.value;
+    const rows = rowsFromPortfolio(portfolio, which);
+    if (!rows.length) {
+      statusEl.textContent = 'That portfolio has no causes with a share of 1% or more.';
+      return;
+    }
+    plan = {
+      total: portfolio.budget && portfolio.budget > 0 ? Math.round(portfolio.budget) : plan.total,
+      rows,
+      source: `From your Portfolio Builder portfolio: ${METHOD_NAMES[which]}.`,
+    };
+    totalEl.value = plan.total ? String(plan.total) : '';
+    renderRows();
+    update();
+    persist();
+    loadedNote();
+    statusEl.textContent = `Loaded ${plural(rows.length, 'cause')} from your portfolio. Add a charity and its donation page for each.`;
+    (document.getElementById(`ocs-${rows[0].id}-name`) as HTMLElement).focus();
+  });
+
+  $('#ocs-reset').addEventListener('click', () => {
+    if (!confirm('Start a new plan? This clears the charities, shares and Done marks saved in this browser.')) return;
+    plan = { total: null, rows: [blankRow(50), blankRow(50)], source: 'Started from a blank plan.' };
+    totalEl.value = '';
+    renderRows();
+    update();
+    persist();
+    loadedNote();
+    statusEl.textContent = 'Started a new plan.';
+    totalEl.focus();
+  });
+
+  // ---------- Exports ----------
+
+  function exportRows() {
+    const exact = amounts();
+    if (!exact) return [];
+    return plan.rows
+      .map((r, i) => ({ r, i, amount: exact[i] }))
+      .filter((x) => x.amount > 0)
+      .map((x, n) => ({
+        step: n + 1,
+        charity: stepName(x.r, x.i),
+        cause: causeName(x.r.cause),
+        share_percent: x.r.share ?? 0,
+        amount_usd: x.amount,
+        donation_page: checkUrl(x.r.url).url ?? '',
+        done: x.r.done ? 'yes' : 'no',
+      }));
+  }
+
+  const md = (text: string) => text.replace(/([\\`*_[\]<>|#])/g, '\\$1').replace(/\s+/g, ' ').trim();
+
+  $('#ocs-csv').addEventListener('click', () => {
+    const rows = exportRows();
+    if (!rows.length) return;
+    const name = `charitology-split-plan-${localToday()}.csv`;
+    download(name, toCsv(rows, ['step', 'charity', 'cause', 'share_percent', 'amount_usd', 'donation_page', 'done']), 'text/csv;charset=utf-8');
+    statusEl.textContent = `Downloaded ${name}.`;
+  });
+
+  $('#ocs-md').addEventListener('click', () => {
+    const rows = exportRows();
+    if (!rows.length) return;
+    const total = rows.reduce((a, r) => a + r.amount_usd, 0);
+    const lines = [
+      '# My giving plan',
+      '',
+      `${money(total)} split across ${plural(rows.length, 'charity', 'charities')}. Made with Charitology One-Click Split on ${displayDate(localToday())}.`,
+      '',
+      'Charitology never touches the money. Each gift is made on the charity’s own donation page.',
+      '',
+      '| Step | Charity | Cause | Share | Amount |',
+      '| ---: | --- | --- | ---: | ---: |',
+      ...rows.map((r) => `| ${r.step} | ${md(r.charity)} | ${md(r.cause)} | ${r.share_percent}% | ${money(r.amount_usd)} |`),
+      '',
+      '## Steps',
+      '',
+      ...rows.map((r) => `- [${r.done === 'yes' ? 'x' : ' '}] Give ${money(r.amount_usd)} to ${md(r.charity)}${r.donation_page ? `: <${r.donation_page}>` : ''}`),
+      '',
+    ];
+    const name = `charitology-split-plan-${localToday()}.md`;
+    download(name, lines.join('\n'), 'text/markdown;charset=utf-8');
+    statusEl.textContent = `Downloaded ${name}.`;
+  });
+
+  // ---------- Start ----------
+
+  if (portfolio) {
+    $('#ocs-portfolio').hidden = false;
+    const count = Object.values(portfolio.allocation ?? {}).filter((v) => typeof v === 'number' && v >= 0.01).length;
+    const when = portfolio.savedAt ? ` from ${day(portfolio.savedAt)}` : '';
+    const budget = portfolio.budget && portfolio.budget > 0 ? `, a budget of ${money(portfolio.budget)}` : '';
+    $('#ocs-portfolio-text').textContent = `You have a Portfolio Builder portfolio${when}: ${plural(count, 'cause')}${budget}.`;
+    methodEl.value = portfolio.method === 'best' ? 'alternative' : 'allocation';
+    const best = methodEl.querySelector<HTMLOptionElement>('option[value="alternative"]');
+    if (best && !portfolio.alternative) best.disabled = true;
+  } else {
+    $('#ocs-no-portfolio').hidden = false;
+  }
+
+  if (!canPersist()) $('#ocs-storage').hidden = false;
+  totalEl.value = plan.total ? String(plan.total) : '';
+  loadedNote();
+  renderRows();
+  update();
+</script>
