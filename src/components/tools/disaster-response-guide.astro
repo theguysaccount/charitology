@@ -1,0 +1,393 @@
+---
+// Disaster Response Guide: six sourced points on giving after a disaster, a
+// planner that splits one gift across relief, recovery and preparedness, and a
+// calendar reminder for recovery built in the browser (src/lib/client/ics.ts).
+// Guidance and planner defaults live in src/data/disaster-guide.json.
+import guide from '../../data/disaster-guide.json';
+import { DEPTH } from '../../lib/labels';
+import { url } from '../../lib/site';
+
+type See = { label: string; path: string };
+const points = guide.points.map((p) => ({ ...p, see: ((p as { see?: See[] }).see ?? []) as See[] }));
+const { buckets, defaults } = guide.planner;
+const depthName = (level: number) => DEPTH.find((d) => d.level === level)?.name ?? '';
+---
+
+<section class="tool" aria-labelledby="dr-title">
+  <div class="tool-head">
+    <h2 id="dr-title">Give well after a disaster</h2>
+    <span class="note">Six things to know, a gift planner and a recovery reminder.</span>
+  </div>
+
+  <h3>What responders and researchers advise</h3>
+  <ol class="dr-points">
+    {
+      points.map((p, i) => (
+        <li class="dr-point" id={`dr-${p.id}`}>
+          <div class="dr-point-head">
+            <span class="dr-n" aria-hidden="true">
+              {i + 1}
+            </span>
+            <h4>{p.title}</h4>
+          </div>
+          <p>{p.body}</p>
+          {/* Kept on one line so no stray spaces appear before the commas and the period. */}
+          <p class="note dr-src">Sources: {p.sources.map((s, j) => <>{j > 0 ? ', ' : ''}<a href={s.url} rel="noopener">{s.label}</a></>)}{p.see.length > 0 ? '. See also: ' : ''}{p.see.map((s, j) => <>{j > 0 ? ', ' : ''}<a href={url(s.path)}>{s.label}</a></>)}.</p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="result" id="dr-planner">
+    <h3>Plan your gift</h3>
+    <p class="note">
+      Split one amount across the three phases of a disaster. Moving one slider rebalances the other two so the total stays at
+      100%. The defaults are a starting point, not a rule: they put more toward recovery than disaster giving does today and keep a
+      share for preparedness.
+    </p>
+    <div class="tool-grid">
+      <div>
+        <div class="field">
+          <label for="dr-amount">Amount to give (US dollars)</label>
+          <input type="number" id="dr-amount" min="0" step="any" inputmode="decimal" value="100" />
+        </div>
+        {
+          buckets.map((b) => (
+            <div class="field dr-slider">
+              <label for={`dr-s-${b.id}`}>
+                <span>{b.name}</span> <output id={`dr-s-${b.id}-out`} for={`dr-s-${b.id}`} class="dr-out" />
+              </label>
+              <input
+                type="range"
+                id={`dr-s-${b.id}`}
+                data-bucket={b.id}
+                min="0"
+                max="100"
+                step="1"
+                value={defaults[b.id as keyof typeof defaults]}
+                aria-describedby={`dr-s-${b.id}-hint`}
+              />
+              <span class="hint" id={`dr-s-${b.id}-hint`}>
+                {b.when}. Depth: {depthName(b.depth)}.
+              </span>
+            </div>
+          ))
+        }
+        <button class="btn btn-ghost btn-small" type="button" id="dr-reset">Reset to the defaults</button>
+      </div>
+      <div>
+        <div class="dr-stack" id="dr-stack" role="img" aria-label="Your split">
+          {buckets.map((b) => <span class={`dr-seg d${b.depth}`} data-seg={b.id} />)}
+        </div>
+        <p class="dr-summary" id="dr-summary" role="status" aria-live="polite"></p>
+        <ul class="dr-buckets">
+          {
+            buckets.map((b) => (
+              <li class="dr-bucket">
+                <div class="dr-bucket-head">
+                  <span class={`dr-swatch d${b.depth}`} aria-hidden="true" />
+                  <strong>{b.name}</strong>
+                  <span class="dr-amt" data-amount={b.id} />
+                </div>
+                <p class="note">{b.where}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="result" id="dr-remind">
+    <h3>Remind me to give to recovery</h3>
+    <p class="note">
+      Recovery needs money long after the news moves on. Choose a date and download a calendar file. It is made in your browser,
+      and opening it adds the reminder to your calendar app.
+    </p>
+    <div class="tool-grid">
+      <div class="field">
+        <label for="dr-date">Remind me on</label>
+        <input type="date" id="dr-date" aria-describedby="dr-date-hint" />
+        <span class="hint" id="dr-date-hint">Six months from today unless you change it.</span>
+      </div>
+      <div class="field">
+        <label for="dr-what">Which disaster? (optional)</label>
+        <input type="text" id="dr-what" maxlength="120" autocomplete="off" placeholder="For example, the spring floods" />
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" type="button" id="dr-ics">Download reminder (.ics)</button>
+    </div>
+    <p class="note dr-ics-status" id="dr-ics-status" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<style>
+  .dr-points {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  }
+  .dr-point {
+    background: var(--bg);
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius-sm);
+    padding: 0.95rem 1.1rem 0.9rem;
+  }
+  .dr-point-head {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    margin-bottom: 0.45rem;
+  }
+  .dr-n {
+    flex: none;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    line-height: 1;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .dr-point h4 {
+    font-size: 1.05rem;
+    margin: 0;
+  }
+  .dr-point p {
+    margin: 0 0 0.5rem;
+    color: var(--ink-2);
+  }
+  .dr-point .dr-src {
+    margin: 0;
+    color: var(--ink-3);
+  }
+  .dr-slider label {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .dr-out {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+    font-weight: 650;
+    text-align: right;
+  }
+  .dr-stack {
+    display: flex;
+    height: 18px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--rule-2);
+    gap: 2px;
+    margin-bottom: 0.75rem;
+  }
+  .dr-seg {
+    height: 100%;
+    transition: width 0.2s ease;
+  }
+  .dr-summary {
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .dr-buckets {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .dr-bucket {
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 0.85rem;
+    background: var(--bg);
+  }
+  .dr-bucket p {
+    margin: 0.25rem 0 0;
+  }
+  .dr-bucket-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .dr-amt {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+    font-weight: 650;
+  }
+  .dr-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex: none;
+  }
+  .dr-ics-status {
+    margin-top: 0.75rem;
+    min-height: 1.2em;
+  }
+</style>
+
+<script>
+  import guide from '../../data/disaster-guide.json';
+  import { $, $$ } from '../../lib/client/dom';
+  import { download } from '../../lib/client/files';
+  import { money } from '../../lib/client/format';
+  import { addMonthsISO, buildAllDayIcs, localISODate, parseISODate } from '../../lib/client/ics';
+  import { load, save } from '../../lib/client/store';
+
+  type BucketId = 'relief' | 'recovery' | 'preparedness';
+  type Shares = Record<BucketId, number>;
+  type Plan = { amount: number; shares: Shares; what: string };
+
+  const KEY = 'disaster-plan';
+  const buckets = guide.planner.buckets as { id: BucketId; name: string }[];
+  const ids = buckets.map((b) => b.id);
+  const defaults = guide.planner.defaults as Shares;
+
+  const amountEl = $<HTMLInputElement>('#dr-amount');
+  const sliders = $$<HTMLInputElement>('input[data-bucket]');
+  const summary = $('#dr-summary');
+  const stack = $('#dr-stack');
+  const dateEl = $<HTMLInputElement>('#dr-date');
+  const whatEl = $<HTMLInputElement>('#dr-what');
+  const icsStatus = $('#dr-ics-status');
+
+  function validShares(s: unknown): s is Shares {
+    if (!s || typeof s !== 'object') return false;
+    const values = ids.map((id) => (s as Record<string, unknown>)[id]);
+    return values.every((v) => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 100) && values.reduce<number>((a, v) => a + (v as number), 0) === 100;
+  }
+
+  const saved = load<Partial<Plan> | null>(KEY, null);
+  let shares: Shares = validShares(saved?.shares) ? { ...saved!.shares! } : { ...defaults };
+  if (saved && typeof saved.amount === 'number' && Number.isFinite(saved.amount) && saved.amount >= 0) amountEl.value = String(saved.amount);
+  if (saved && typeof saved.what === 'string') whatEl.value = saved.what.slice(0, 120);
+
+  const amount = () => {
+    const n = Number(amountEl.value);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
+
+  /** Whole percents that sum to exactly 100 (largest-remainder rounding). */
+  function percents(): Shares {
+    const floors = ids.map((id) => Math.floor(shares[id] + 1e-9));
+    let rest = 100 - floors.reduce((a, n) => a + n, 0);
+    const order = ids.map((id, i) => ({ i, frac: shares[id] - floors[i] })).sort((a, b) => b.frac - a.frac);
+    for (const o of order) {
+      if (rest <= 0) break;
+      floors[o.i] += 1;
+      rest -= 1;
+    }
+    return Object.fromEntries(ids.map((id, i) => [id, floors[i]])) as Shares;
+  }
+
+  /** Split the amount to the cent, with any rounding left over going to the largest share. */
+  function amounts(total: number, pct: Shares): Record<BucketId, number> {
+    const cents = Math.round(total * 100);
+    const out = Object.fromEntries(ids.map((id) => [id, Math.floor((cents * pct[id]) / 100)])) as Record<BucketId, number>;
+    const rest = cents - ids.reduce((a, id) => a + out[id], 0);
+    const largest = ids.reduce((a, id) => (pct[id] > pct[a] ? id : a), ids[0]);
+    out[largest] += rest;
+    return Object.fromEntries(ids.map((id) => [id, out[id] / 100])) as Record<BucketId, number>;
+  }
+
+  const show = (n: number) => money(n, { cents: !Number.isInteger(n) });
+
+  /**
+   * Set one share and spread the rest over the others in proportion to their
+   * current sizes. Shares stay fractional inside, so repeated small moves keep
+   * the proportions instead of drifting; only the display is rounded.
+   */
+  function rebalance(changed: BucketId, value: number) {
+    const v = Math.max(0, Math.min(100, Math.round(value)));
+    const others = ids.filter((id) => id !== changed);
+    const remaining = 100 - v;
+    const otherTotal = others.reduce((a, id) => a + shares[id], 0);
+    const next = { ...shares, [changed]: v };
+    for (const id of others) next[id] = otherTotal > 0 ? (remaining * shares[id]) / otherTotal : remaining / others.length;
+    shares = next;
+  }
+
+  let announce: number | undefined;
+  function render(speak = true) {
+    const pct = percents();
+    const split = amounts(amount(), pct);
+    for (const el of sliders) {
+      const id = el.dataset.bucket as BucketId;
+      el.value = String(pct[id]);
+      el.setAttribute('aria-valuetext', `${pct[id]} percent, ${show(split[id])}`);
+      const out = document.getElementById(`${el.id}-out`);
+      if (out) out.textContent = `${pct[id]}% · ${show(split[id])}`;
+    }
+    for (const seg of $$<HTMLElement>('[data-seg]', stack)) seg.style.width = `${pct[seg.dataset.seg as BucketId]}%`;
+    for (const el of $$<HTMLElement>('[data-amount]')) {
+      const id = el.dataset.amount as BucketId;
+      el.textContent = `${show(split[id])} (${pct[id]}%)`;
+    }
+    const line = buckets.map((b) => `${b.name}: ${show(split[b.id])} (${pct[b.id]}%)`).join('. ') + '.';
+    stack.setAttribute('aria-label', `Your split. ${line}`);
+    window.clearTimeout(announce);
+    if (speak) announce = window.setTimeout(() => (summary.textContent = line), 350);
+    else summary.textContent = line;
+    save(KEY, { amount: amount(), shares: pct, what: whatEl.value.trim() });
+  }
+
+  for (const el of sliders) {
+    el.addEventListener('input', () => {
+      rebalance(el.dataset.bucket as BucketId, Number(el.value));
+      render();
+    });
+  }
+  amountEl.addEventListener('input', () => render());
+  $('#dr-reset').addEventListener('click', () => {
+    shares = { ...defaults };
+    render();
+  });
+  render(false);
+
+  // Reminder
+  const today = localISODate();
+  dateEl.min = today;
+  dateEl.value = addMonthsISO(new Date(), 6);
+  whatEl.addEventListener('input', () => save(KEY, { amount: amount(), shares: percents(), what: whatEl.value.trim() }));
+
+  function formatDate(iso: string) {
+    const d = parseISODate(iso)!;
+    return new Date(d.y, d.m - 1, d.d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  $('#dr-ics').addEventListener('click', () => {
+    const date = dateEl.value;
+    if (!parseISODate(date) || date < today) {
+      // Clear first so a repeated message is announced again.
+      icsStatus.textContent = '';
+      window.requestAnimationFrame(() => (icsStatus.textContent = 'Choose a date from today onward, then try again.'));
+      dateEl.focus();
+      return;
+    }
+    const what = whatEl.value.trim().replace(/\s+/g, ' ');
+    const recovery = amounts(amount(), percents()).recovery;
+    const page = location.origin + location.pathname;
+    const description = [
+      `Time to give to recovery${what ? ` after ${what}` : ''}.`,
+      recovery > 0 ? `You planned to give ${show(recovery)} to recovery.` : '',
+      'Recovery can take months or even years. Look for local organizations rebuilding homes, livelihoods and services, and check that they are registered before you give: https://apps.irs.gov/app/eos/',
+      `Charitology Disaster Response Guide: ${page}`,
+    ]
+      .filter(Boolean)
+      .join('\n\n');
+    const ics = buildAllDayIcs({
+      date,
+      summary: what ? `Give to recovery: ${what}` : 'Give to disaster recovery',
+      description,
+      url: page,
+      alarmHour: 9,
+      prodId: '-//Charitology//Disaster Response Guide//EN',
+    });
+    download(`charitology-recovery-reminder-${date}.ics`, ics, 'text/calendar;charset=utf-8');
+    icsStatus.textContent = `Reminder for ${formatDate(date)} downloaded. Open the file to add it to your calendar.`;
+  });
+</script>
