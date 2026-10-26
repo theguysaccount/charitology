@@ -5,9 +5,9 @@ Read this first to continue the project in a new session without losing context.
 ## Where everything is
 
 - **Repo (public):** https://github.com/theguysaccount/charitology (branch `main`)
-- **Live site:** https://theguysaccount.github.io/charitology/
+- **Live site:** https://charitology.org/ (custom domain, HTTPS enforced). The old address https://theguysaccount.github.io/charitology/ redirects there.
 - **Deploy:** every push to `main` runs `.github/workflows/deploy.yml`, which builds, checks and publishes to GitHub Pages. Pull requests run `.github/workflows/check.yml`.
-- **Domains:** `charitology.org` and `charitology.com` were registered at Namecheap on 26 Oct 2026. They are **not yet pointed** at the site (see Next steps).
+- **Domains:** `charitology.org` and `charitology.com` are registered at Namecheap. charitology.org DNS is done: four A records for `@` (185.199.108–111.153) and a CNAME `www` → `theguysaccount.github.io.`. GitHub Pages has the custom domain set, with a certificate approved through 2027-01-23. charitology.com isn’t pointed anywhere yet.
 - **Related repos (same owner):** humanityschecklist, systemic-altruism, charity-impact-media, whofunds-open-grant-graph. Charitology links to them as its "open instruments".
 
 ## What Charitology is (the frame)
@@ -58,11 +58,7 @@ npm run check     # content cross-references + every internal link
 
 ## Next steps
 
-1. **Point charitology.org at the site.** In Namecheap DNS for charitology.org:
-   - Add A records for `@` → 185.199.108.153, 185.199.109.153, 185.199.110.153 and 185.199.111.153.
-   - Add a CNAME for `www` → `theguysaccount.github.io`.
-   - In GitHub, go to repo Settings → Pages → Custom domain, enter `charitology.org`, then tick “Enforce HTTPS”.
-   - Redeploy (Actions → Deploy → Run workflow). The workflow picks up the new domain automatically.
+1. **Optional: point charitology.com.** Add a URL Redirect for `@` in Namecheap to https://charitology.org/ (permanent 301).
 2. **Review the drafts.** 103 pages are `review: draft`. A human should check their sources and flip them to `reviewed`.
 3. **Create the GitHub labels** the site links to: correction, red-team, idea, open-problem, question, extension, built-with, myth, methodology, program.
 4. **Optional:** submit the extension to the Chrome Web Store and Firefox Add-ons, add a CHANGELOG, and recruit reviewers.
