@@ -1,0 +1,535 @@
+---
+// Compare Tool: two or three interventions from the Intervention Database side by
+// side, with the rows where they differ flagged in words. Deliberately no overall
+// score: the trade-offs are the reader's to weigh.
+import { getCollection } from 'astro:content';
+import causesData from '../../data/causes.json';
+import { url } from '../../lib/site';
+
+const conditions = new Map((await getCollection('conditions')).map((c) => [c.id, { title: c.data.title, number: c.data.number }]));
+const causeName = (id: string) => causesData.causes.find((c) => c.id === id)?.name ?? id;
+const entries = (await getCollection('interventions')).sort((a, b) => a.data.title.localeCompare(b.data.title));
+const items = entries.map((e) => ({
+  id: e.id,
+  title: e.data.title,
+  depth: e.data.depth,
+  evidence: e.data.evidence,
+  mechanism: e.data.mechanism,
+  timeToEffect: e.data.timeToEffect,
+  durability: e.data.durability,
+  feedback: e.data.feedback,
+  agency: e.data.agency,
+  cost: e.data.cost ?? null,
+  causes: e.data.causes.map((id) => ({ id, name: causeName(id) })),
+  conditions: e.data.conditions
+    .map((r) => ({ id: r.id, title: conditions.get(r.id)?.title ?? r.id, number: conditions.get(r.id)?.number ?? 0 }))
+    .sort((a, b) => a.number - b.number),
+}));
+const json = JSON.stringify(items).replace(/</g, '\\u003c');
+const slots = [
+  { n: 1, label: 'First intervention', empty: 'Choose an intervention' },
+  { n: 2, label: 'Second intervention', empty: 'Choose an intervention' },
+  { n: 3, label: 'Third (optional)', empty: 'None' },
+];
+---
+
+<section class="tool" aria-labelledby="ct-title">
+  <div class="tool-head">
+    <h2 id="ct-title">Compare interventions</h2>
+    <span class="note" id="ct-loaded">Pick two or three. No overall score, on purpose.</span>
+  </div>
+
+  <form id="ct-form" novalidate>
+    <div class="ct-picks">
+      {
+        slots.map((s) => (
+          <div class="field">
+            <label for={`ct-pick-${s.n}`}>{s.label}</label>
+            <select id={`ct-pick-${s.n}`} class="ct-pick" disabled={items.length === 0}>
+              <option value="">{s.empty}</option>
+              {items.map((i) => (
+                <option value={i.id}>{i.title}</option>
+              ))}
+            </select>
+          </div>
+        ))
+      }
+    </div>
+    <label class="ct-only">
+      <input type="checkbox" id="ct-diff-only" />
+      <span>Hide the rows where they’re the same</span>
+    </label>
+  </form>
+
+  {
+    items.length < 2 && (
+      <p class="empty ct-few">
+        {items.length === 0
+          ? 'The Intervention Database has no entries yet, so there is nothing to compare.'
+          : 'The Intervention Database has only one entry so far, so there is nothing to compare it with yet. New entries appear here as they are added.'}
+      </p>
+    )
+  }
+
+  <div class="result">
+    <p id="ct-summary" class="ct-summary" role="status" aria-live="polite"></p>
+    <div id="ct-table" class="ct-table-box"></div>
+    <div id="ct-stack" class="ct-stack-box"></div>
+    <div id="ct-notes"></div>
+    <div class="btn-row ct-actions">
+      <button class="btn btn-ghost" type="button" id="ct-share">Copy share link</button>
+    </div>
+    <div class="callout ct-why">
+      <p>
+        <strong>No overall score, on purpose.</strong> A deeper intervention isn’t better than a shallower one: depth describes where work
+        acts, and every level is needed. Strong evidence matters, but so do how long results last, whether results reach the people steering
+        the work, and who steers it. How much each counts depends on your values, so the trade-offs are yours to weigh. The
+        <a href={url('/tools/values-compass/')}>Values Compass</a> shows which moral lenses you lean on, and looking through more than one is
+        the treatment for <a href={url('/diagnosis/single-lens/')}>the Single Lens</a>.
+      </p>
+      <p>
+        There is no overhead column either. The share a charity spends on staff and systems says little about what its work achieves: see
+        <a href={url('/diagnosis/overhead-myth/')}>the Overhead Myth</a>.
+      </p>
+    </div>
+  </div>
+
+  <script type="application/json" id="ct-data" set:html={json} />
+</section>
+
+<style>
+  .ct-picks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    gap: 0 1rem;
+  }
+  .ct-only {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .ct-few {
+    margin-top: 1rem;
+  }
+  .ct-summary {
+    max-width: 72ch;
+    margin-bottom: 1rem;
+  }
+  .ct-summary:empty {
+    display: none;
+  }
+  .ct-stack-box {
+    display: block;
+  }
+  .ct-table-box {
+    display: none;
+  }
+  @media (min-width: 760px) {
+    .ct-table-box {
+      display: block;
+    }
+    .ct-stack-box {
+      display: none;
+    }
+  }
+  /* Contain the visually hidden labels, so they scroll with the table instead of widening the page. */
+  .result :global(.table-wrap) {
+    position: relative;
+  }
+  .result :global(.ct-table) {
+    table-layout: fixed;
+  }
+  .result :global(.ct-table thead th:first-child) {
+    width: 12.5rem;
+  }
+  .result :global(.ct-table thead th a) {
+    font-family: var(--font-display);
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: var(--ink);
+  }
+  .result :global(.ct-table tbody th) {
+    font-weight: 650;
+  }
+  .result :global(.ct-differs > th),
+  .result :global(.ct-differs > td) {
+    background: color-mix(in srgb, var(--accent-wash) 70%, transparent);
+  }
+  .result :global(.ct-differs > th) {
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+  .result :global(.ct-attr) {
+    display: block;
+    color: var(--ink);
+  }
+  .result :global(.ct-tag) {
+    display: inline-block;
+    margin-top: 0.3rem;
+    padding: 0.12rem 0.5rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    background: var(--surface);
+  }
+  .result :global(.ct-tag-diff) {
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .result :global(.ct-hint) {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.76rem;
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .result :global(.ct-sub) {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--ink-2);
+  }
+  .result :global(.ct-unknown) {
+    font-style: italic;
+    color: var(--ink-3);
+  }
+  .result :global(.ct-list),
+  .result :global(.ct-plain) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .result :global(.ct-list) {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .result :global(.ct-block) {
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius-sm);
+    padding: 0.85rem 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+  .result :global(.ct-block.ct-differs) {
+    background: color-mix(in srgb, var(--accent-wash) 70%, transparent);
+    border-left: 3px solid var(--accent);
+  }
+  .result :global(.ct-block-head) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem 0.75rem;
+  }
+  .result :global(.ct-block-head h3) {
+    font-size: 1.02rem;
+    margin: 0;
+  }
+  .result :global(.ct-block-head .ct-tag) {
+    margin-top: 0;
+  }
+  .result :global(.ct-block dl) {
+    margin: 0.6rem 0 0;
+    display: grid;
+    gap: 0.65rem;
+  }
+  .result :global(.ct-block dt) {
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .result :global(.ct-block dd) {
+    margin: 0.15rem 0 0;
+  }
+  #ct-notes :global(.note) {
+    margin: 0.25rem 0 0.5rem;
+  }
+  .ct-actions {
+    margin-top: 1rem;
+  }
+  .ct-why {
+    margin-top: 1.5rem;
+  }
+</style>
+
+<script>
+  import { $, $$, clear, h, readJson } from '../../lib/client/dom';
+  import { copy, flash } from '../../lib/client/files';
+  import { readHash, writeHash } from '../../lib/client/store';
+  import { dollars } from '../../lib/client/models';
+  import { depthBadge, depthInfo, gradeBadge, gradeInfo } from '../../lib/client/badges';
+
+  interface Cost {
+    outcome: string;
+    low: number;
+    high: number;
+    asOf: string;
+    source: { title: string; url: string; publisher?: string; year?: string | number };
+    note?: string;
+  }
+  interface Item {
+    id: string;
+    title: string;
+    depth: number;
+    evidence: string;
+    mechanism: string;
+    timeToEffect: string;
+    durability: string;
+    feedback: string;
+    agency: string;
+    cost: Cost | null;
+    causes: { id: string; name: string }[];
+    conditions: { id: string; title: string; number: number }[];
+  }
+  interface Row {
+    key: string;
+    label: string;
+    hint: string;
+    /** Rows with a fixed set of values get a Differs or Same flag; free text doesn't. */
+    compare: boolean;
+    value: (x: Item) => string;
+    cell: (x: Item) => Node | (Node | string | null)[];
+  }
+
+  const items = readJson<Item[]>('ct-data');
+  const byId = new Map(items.map((x) => [x.id, x]));
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const link = (path: string) => base + path;
+  const picks = $$<HTMLSelectElement>('.ct-pick');
+  const diffOnly = $<HTMLInputElement>('#ct-diff-only');
+
+  const word = (v: string) =>
+    v === 'unknown' ? h('span', { class: 'ct-unknown' }, 'Unknown') : h('span', {}, v.charAt(0).toUpperCase() + v.slice(1));
+
+  const ROWS: Row[] = [
+    {
+      key: 'depth',
+      label: 'Depth',
+      hint: 'Where on the chain from symptom to source the work acts.',
+      compare: true,
+      value: (x) => String(x.depth),
+      cell: (x) => [depthBadge(x.depth), h('span', { class: 'ct-sub' }, depthInfo(x.depth)?.verb ?? '')],
+    },
+    {
+      key: 'evidence',
+      label: 'Evidence',
+      hint: 'How strong the published evidence is.',
+      compare: true,
+      value: (x) => x.evidence,
+      cell: (x) => [gradeBadge(x.evidence), h('span', { class: 'ct-sub' }, gradeInfo(x.evidence)?.note ?? '')],
+    },
+    {
+      key: 'mechanism',
+      label: 'Mechanism',
+      hint: 'How it works, in words. Read these side by side.',
+      compare: false,
+      value: (x) => x.mechanism,
+      cell: (x) => h('span', {}, x.mechanism),
+    },
+    { key: 'timeToEffect', label: 'Time to effect', hint: 'How soon results appear.', compare: true, value: (x) => x.timeToEffect, cell: (x) => word(x.timeToEffect) },
+    { key: 'durability', label: 'Durability', hint: 'How long results last.', compare: true, value: (x) => x.durability, cell: (x) => word(x.durability) },
+    {
+      key: 'feedback',
+      label: 'Feedback',
+      hint: 'How clearly results travel back to the people steering the work.',
+      compare: true,
+      value: (x) => x.feedback,
+      cell: (x) => word(x.feedback),
+    },
+    { key: 'agency', label: 'Who steers', hint: 'Who decides what the work does.', compare: true, value: (x) => x.agency, cell: (x) => word(x.agency) },
+    {
+      key: 'cost',
+      label: 'Cost data',
+      hint: 'A published cost per outcome, if there is one.',
+      compare: true,
+      value: (x) => (x.cost ? `${x.cost.outcome}|${x.cost.low}|${x.cost.high}` : 'none'),
+      cell: (x) => {
+        const c = x.cost;
+        if (!c) return h('span', { class: 'ct-unknown' }, 'No reliable per-dollar estimate published');
+        const by = c.source.publisher ?? c.source.title;
+        return [
+          h('span', {}, h('strong', {}, c.low === c.high ? dollars(c.low) : `${dollars(c.low)}–${dollars(c.high)}`), ` per ${c.outcome}`),
+          h('span', { class: 'ct-sub' }, `As of ${c.asOf}. Source: `, h('a', { href: c.source.url, rel: 'noopener' }, by), '.'),
+          c.note ? h('span', { class: 'ct-sub' }, c.note) : null,
+        ];
+      },
+    },
+    {
+      key: 'causes',
+      label: 'Causes',
+      hint: 'The cause areas it serves.',
+      compare: true,
+      value: (x) => x.causes.map((c) => c.id).sort().join(','),
+      cell: (x) => h('ul', { class: 'chips ct-plain' }, x.causes.map((c) => h('li', {}, h('span', { class: 'chip' }, c.name)))),
+    },
+    {
+      key: 'conditions',
+      label: 'Related conditions',
+      hint: 'Conditions of the charity system it connects to.',
+      compare: true,
+      value: (x) => x.conditions.map((c) => c.id).sort().join(','),
+      cell: (x) =>
+        x.conditions.length
+          ? h(
+              'ul',
+              { class: 'ct-list' },
+              x.conditions.map((c) => h('li', {}, h('a', { href: link(`/diagnosis/${c.id}/`) }, c.number ? `C${String(c.number).padStart(2, '0')} ${c.title}` : c.title))),
+            )
+          : h('span', { class: 'ct-unknown' }, 'None listed'),
+    },
+  ];
+
+  /** Selected ids in slot order, without blanks or repeats. */
+  function selected(): string[] {
+    const out: string[] = [];
+    for (const s of picks) if (s.value && byId.has(s.value) && !out.includes(s.value)) out.push(s.value);
+    return out;
+  }
+
+  /** Each intervention can sit in only one slot at a time. */
+  function syncOptions() {
+    picks.forEach((s, i) => {
+      const elsewhere = new Set(picks.filter((_, j) => j !== i).map((p) => p.value).filter(Boolean));
+      for (const o of s.options) if (o.value) o.disabled = elsewhere.has(o.value);
+    });
+  }
+
+  function joinWords(words: string[]): string {
+    if (words.length <= 1) return words.join('');
+    if (words.length === 2) return `${words[0]} and ${words[1]}`;
+    return `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
+  }
+
+  const nameLink = (x: Item) => h('a', { href: link(`/record/interventions/${x.id}/`) }, x.title);
+
+  function tag(row: Row, differs: boolean, many: boolean) {
+    if (!row.compare || !many) return null;
+    return h('span', { class: differs ? 'ct-tag ct-tag-diff' : 'ct-tag' }, differs ? 'Differs' : 'Same');
+  }
+
+  function render() {
+    syncOptions();
+    const ids = selected();
+    const chosen = ids.map((id) => byId.get(id)!);
+    writeHash('v', ids.length ? ids.join(',') : undefined);
+    writeHash('d', diffOnly.checked ? '1' : undefined);
+    const tableBox = $('#ct-table');
+    const stackBox = $('#ct-stack');
+    const notes = $('#ct-notes');
+    const summary = $('#ct-summary');
+    clear(tableBox);
+    clear(stackBox);
+    clear(notes);
+
+    if (!chosen.length) {
+      summary.textContent = items.length ? 'Pick two or three interventions to compare.' : '';
+      return;
+    }
+    const many = chosen.length > 1;
+    const flags = new Map(ROWS.map((r) => [r.key, r.compare && new Set(chosen.map(r.value)).size > 1]));
+    const rated = ROWS.filter((r) => r.compare);
+    const differ = rated.filter((r) => flags.get(r.key));
+    const same = rated.filter((r) => !flags.get(r.key));
+    const titles = chosen.map((x) => x.title);
+
+    if (!many) {
+      summary.textContent = `Showing ${titles[0]}. Pick at least one more intervention to compare it with.`;
+    } else {
+      const lower = (rows: Row[]) => joinWords(rows.map((r) => r.label.toLowerCase()));
+      summary.textContent =
+        `Comparing ${joinWords(titles)}. ` +
+        (differ.length ? `They differ on ${differ.length} of ${rated.length} rated attributes: ${lower(differ)}.` : `They match on all ${rated.length} rated attributes.`) +
+        (differ.length && same.length ? ` They’re the same on ${lower(same)}.` : '') +
+        ' The mechanisms are described in words, so read them side by side.';
+    }
+
+    const shown = ROWS.filter((r) => !(many && diffOnly.checked && r.compare && !flags.get(r.key)));
+
+    const table = h(
+      'table',
+      { class: 'data ct-table' },
+      h('caption', { class: 'visually-hidden' }, `Comparison of ${joinWords(titles)}`),
+      h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Attribute'), chosen.map((x) => h('th', { scope: 'col' }, nameLink(x))))),
+      h(
+        'tbody',
+        {},
+        shown.map((r) =>
+          h(
+            'tr',
+            { class: flags.get(r.key) ? 'ct-differs' : null },
+            h('th', { scope: 'row' }, h('span', { class: 'ct-attr' }, r.label), tag(r, !!flags.get(r.key), many), h('span', { class: 'ct-hint' }, r.hint)),
+            chosen.map((x) => h('td', {}, r.cell(x))),
+          ),
+        ),
+      ),
+    );
+    tableBox.append(h('div', { class: 'table-wrap' }, table));
+
+    stackBox.append(
+      ...shown.map((r) =>
+        h(
+          'div',
+          { class: flags.get(r.key) ? 'ct-block ct-differs' : 'ct-block' },
+          h('div', { class: 'ct-block-head' }, h('h3', {}, r.label), tag(r, !!flags.get(r.key), many)),
+          h('span', { class: 'ct-hint' }, r.hint),
+          h(
+            'dl',
+            {},
+            chosen.map((x) => h('div', {}, h('dt', {}, nameLink(x)), h('dd', {}, r.cell(x)))),
+          ),
+        ),
+      ),
+    );
+
+    if (many && diffOnly.checked && !differ.length) {
+      notes.append(h('p', { class: 'note' }, 'Every rated attribute is the same, so only the mechanisms are shown.'));
+    }
+    const costed = chosen.filter((x) => x.cost);
+    if (many && costed.length === 1) {
+      notes.append(
+        h('p', { class: 'note' }, `Only ${costed[0].title} has a published cost per outcome. A missing figure means nobody has measured it, not that the work is expensive.`),
+      );
+    } else if (costed.length > 1 && new Set(costed.map((x) => x.cost!.outcome)).size > 1) {
+      notes.append(h('p', { class: 'note' }, 'The cost figures count different outcomes, so they can’t be compared with each other directly.'));
+    }
+  }
+
+  function fill(ids: string[]) {
+    picks.forEach((s, i) => (s.value = ids[i] ?? ''));
+  }
+
+  /** Apply the selections in a share link, if the address has any. */
+  function fromLink(): boolean {
+    const ids = (readHash('v') ?? '')
+      .split(',')
+      .filter((id, i, all) => byId.has(id) && all.indexOf(id) === i)
+      .slice(0, 3);
+    diffOnly.checked = readHash('d') === '1';
+    if (!ids.length) return false;
+    fill(ids);
+    $('#ct-loaded').textContent = 'Loaded from a share link. No overall score, on purpose.';
+    return true;
+  }
+
+  if (!fromLink()) fill(items.slice(0, 2).map((x) => x.id));
+  // A link pasted into the address bar of an open page changes only the hash.
+  window.addEventListener('hashchange', () => {
+    fromLink();
+    render();
+  });
+
+  $('#ct-form').addEventListener('submit', (e) => e.preventDefault());
+  picks.forEach((s) => s.addEventListener('change', render));
+  diffOnly.addEventListener('change', render);
+  $('#ct-share').addEventListener('click', async (e) => {
+    const ok = await copy(location.href);
+    flash(e.currentTarget as HTMLElement, ok ? 'Link copied' : 'Copy failed');
+  });
+  render();
+</script>

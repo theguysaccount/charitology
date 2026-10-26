@@ -1,0 +1,880 @@
+---
+// Grant Evaluator: a rubric for reviewing a proposal on nine dimensions, each
+// scored 0 to 4 or left unknown. Unknowns stay unknown: the weighted result is a
+// missing-data range. Rubric, math and memo in src/lib/client/rubric.ts.
+import { DEFAULT_WEIGHT, DIMENSIONS, MAX_WEIGHT, UNKNOWN_GUIDE } from '../../lib/client/rubric';
+import { url } from '../../lib/site';
+
+const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+---
+
+<section class="tool" aria-labelledby="ge-title">
+  <div class="tool-head">
+    <h2 id="ge-title">Review a proposal</h2>
+    <span class="note" id="ge-status">New proposal.</span>
+  </div>
+
+  <form id="ge-form" novalidate>
+    <div class="ge-layout">
+      <div class="ge-main">
+        <div class="field">
+          <label for="ge-name">Proposal name</label>
+          <input type="text" id="ge-name" maxlength="120" autocomplete="off" aria-describedby="ge-name-hint ge-name-err" />
+          <span class="hint" id="ge-name-hint">For your own records. Everything stays in this browser.</span>
+          <span class="ge-err" id="ge-name-err"></span>
+        </div>
+        <p class="note">
+          Score each dimension from 0 to 4, or leave it unknown. Unknown is an honest answer: it marks what you still need to find out.
+        </p>
+
+        {
+          DIMENSIONS.map((d, i) => (
+            <fieldset class="ge-dim" id={`ge-dim-${d.id}`} aria-describedby={`ge-${d.id}-q`}>
+              <legend>
+                <span class="ge-n" aria-hidden="true">
+                  {i + 1}
+                </span>
+                {d.name}
+              </legend>
+              <p class="hint ge-q" id={`ge-${d.id}-q`}>
+                {d.question}
+              </p>
+              <div class="ge-scale">
+                {d.guides.map((g, v) => (
+                  <label class="ge-opt" title={`${v}: ${g}`}>
+                    <input type="radio" name={`ge-${d.id}`} value={String(v)} />
+                    <span class="ge-pill" aria-hidden="true">
+                      {v}
+                    </span>
+                    <span class="visually-hidden">{`${v}: ${g}`}</span>
+                  </label>
+                ))}
+                <label class="ge-opt ge-opt-unknown">
+                  <input type="radio" name={`ge-${d.id}`} value="unknown" checked />
+                  <span class="ge-pill">Unknown</span>
+                </label>
+              </div>
+              <p class="ge-guide" id={`ge-${d.id}-guide`}>
+                {UNKNOWN_GUIDE}
+              </p>
+              <details class="ge-all">
+                <summary>Guide for every score</summary>
+                <ol start="0">
+                  {d.guides.map((g) => (
+                    <li>{g}</li>
+                  ))}
+                </ol>
+              </details>
+              {(d.note || d.link) && (
+                <p class="note ge-dim-note">
+                  {d.note}{d.note && d.link ? ' ' : ''}{d.link && <a href={url(d.link.href)}>{d.link.text}</a>}{d.link ? '.' : ''}
+                </p>
+              )}
+              <div class="field ge-notes">
+                <label for={`ge-${d.id}-notes`}>Notes on {lowerFirst(d.name)}</label>
+                <textarea id={`ge-${d.id}-notes`} data-dim={d.id} rows="2" maxlength="4000" />
+              </div>
+            </fieldset>
+          ))
+        }
+      </div>
+
+      <div class="ge-side">
+        <div class="ge-panel">
+          <h3>Weighted score</h3>
+          <div id="ge-range" class="ge-range" aria-hidden="true"></div>
+          <p id="ge-summary" class="ge-summary" role="status" aria-live="polite"></p>
+          <p class="note ge-plain">
+            <strong>This is a missing-data range, not a confidence interval.</strong> The low end counts every unknown as 0 and the high end counts
+            it as 4. Scoring an unknown narrows the range. It says nothing about how sure you are of the scores you gave.
+          </p>
+          <div id="ge-unknowns" class="ge-unknowns"></div>
+          <div class="btn-row ge-buttons">
+            <button class="btn" type="button" id="ge-save">Save proposal</button>
+            <button class="btn btn-ghost" type="button" id="ge-new">New proposal</button>
+          </div>
+          <div class="btn-row ge-buttons">
+            <button class="btn btn-ghost btn-small" type="button" id="ge-memo">Download memo (Markdown)</button>
+            <button class="btn btn-ghost btn-small" type="button" id="ge-json">Download JSON</button>
+          </div>
+          <p id="ge-msg" class="note ge-msg" role="status"></p>
+          <details class="ge-weights">
+            <summary>Weights <span id="ge-weights-state">(all equal)</span></summary>
+            <p class="hint">
+              How much each dimension counts. They start equal. Set one to 0 to leave it out. The weights apply to every saved proposal, so their
+              scores stay comparable.
+            </p>
+            {
+              DIMENSIONS.map((d) => (
+                <div class="field ge-w">
+                  <div class="ge-w-head">
+                    <label for={`ge-w-${d.id}`}>{d.name}</label>
+                    <output id={`ge-w-${d.id}-out`} for={`ge-w-${d.id}`} aria-hidden="true">
+                      11%
+                    </output>
+                  </div>
+                  <input type="range" id={`ge-w-${d.id}`} data-dim={d.id} min="0" max={MAX_WEIGHT} step="1" value={DEFAULT_WEIGHT} />
+                </div>
+              ))
+            }
+            <button class="btn btn-ghost btn-small" type="button" id="ge-w-reset">Reset to equal</button>
+          </details>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="result">
+    <h3>Saved proposals</h3>
+    <p class="note">Every saved proposal is scored with the current weights, so the ranges compare like with like.</p>
+    <div id="ge-saved"></div>
+    <div class="btn-row ge-buttons">
+      <button class="btn btn-ghost btn-small" type="button" id="ge-export-all">Download all as JSON</button>
+    </div>
+    <div class="callout ge-restrict">
+      <p>
+        <strong>Restricted or unrestricted?</strong> A good review is a reason to trust the team’s judgment. Tying a grant to specific line items
+        and short timelines can keep an organization from adapting, investing in itself or going after root causes. If a proposal scores well,
+        consider flexible, multi-year support, and hold it accountable for results rather than line items. See
+        <a href={url('/diagnosis/restriction-reflex/')}>the Restriction Reflex</a>. When restriction helps is still an open question:
+        <a href={url('/open-problems/the-optimal-restriction/')}>Open Problem 8, the Optimal Restriction</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ge-layout {
+    display: grid;
+    gap: 1.5rem 2rem;
+  }
+  @media (min-width: 980px) {
+    .ge-layout {
+      grid-template-columns: minmax(0, 1fr) 330px;
+      align-items: start;
+    }
+    .ge-side {
+      position: sticky;
+      top: calc(var(--header-h) + 16px);
+      max-height: calc(100vh - var(--header-h) - 32px);
+      overflow: auto;
+    }
+  }
+  .ge-err {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .ge-err:empty {
+    display: none;
+  }
+  .tool input[aria-invalid='true'] {
+    border-color: var(--accent);
+  }
+  .ge-dim {
+    border-top: 1px solid var(--rule-2);
+    padding-top: 1rem;
+    margin: 0 0 1.1rem;
+  }
+  .ge-dim legend {
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: 1.12rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .ge-n {
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-right: 0.45rem;
+    border-radius: 50%;
+    background: var(--bg-2);
+    font: 700 0.78rem var(--font-sans);
+    color: var(--ink-2);
+    vertical-align: 0.12em;
+  }
+  .ge-q {
+    margin: 0.3rem 0 0;
+  }
+  .ge-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.55rem 0 0.35rem;
+  }
+  .ge-opt {
+    position: relative;
+    cursor: pointer;
+  }
+  .ge-opt input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .ge-pill {
+    display: inline-grid;
+    place-items: center;
+    min-width: 44px;
+    min-height: 40px;
+    padding: 0 0.8rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--ink-2);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+  .ge-opt-unknown .ge-pill {
+    border-style: dashed;
+  }
+  .ge-opt:hover .ge-pill {
+    border-color: var(--ink-3);
+  }
+  .ge-opt input:checked + .ge-pill {
+    background: var(--ink);
+    border-color: var(--ink);
+    border-style: solid;
+    color: var(--bg);
+  }
+  .ge-opt input:focus-visible + .ge-pill {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .ge-guide {
+    font-size: 0.88rem;
+    color: var(--ink-2);
+    margin: 0.25rem 0 0.35rem;
+  }
+  .ge-all {
+    font-size: 0.84rem;
+    margin-bottom: 0.4rem;
+  }
+  .ge-all summary {
+    cursor: pointer;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .ge-all ol {
+    margin: 0.4rem 0 0.5rem;
+    padding-left: 1.6rem;
+    color: var(--ink-2);
+  }
+  .ge-dim-note {
+    margin: 0.2rem 0 0.6rem;
+  }
+  .ge-notes {
+    margin: 0.5rem 0 0;
+  }
+  .ge-notes textarea {
+    min-height: 64px;
+  }
+  .ge-panel {
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    padding: 1rem;
+  }
+  .ge-panel h3 {
+    margin-bottom: 0.4rem;
+  }
+  .ge-summary {
+    margin: 0.75rem 0 0.5rem;
+  }
+  .ge-plain {
+    margin-bottom: 0.75rem;
+  }
+  .ge-buttons {
+    margin-top: 0.75rem;
+  }
+  .ge-msg {
+    margin: 0.6rem 0 0;
+  }
+  .ge-msg:empty {
+    display: none;
+  }
+  .ge-weights {
+    margin-top: 1rem;
+    border-top: 1px solid var(--rule-2);
+    padding-top: 0.75rem;
+  }
+  .ge-weights summary {
+    cursor: pointer;
+    font-weight: 650;
+    min-height: 32px;
+  }
+  .ge-weights summary span {
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .ge-w {
+    margin-bottom: 0.4rem;
+  }
+  .ge-w-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+  }
+  .ge-w-head output {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .ge-restrict {
+    margin-top: 1.5rem;
+  }
+
+  .ge-range :global(.ge-big) {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1.1;
+    margin: 0 0 0.6rem;
+  }
+  .ge-range :global(.ge-big span) {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--ink-3);
+  }
+  .ge-range :global(.ge-track) {
+    position: relative;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--rule-2);
+  }
+  .ge-range :global(.ge-fill) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    min-width: 4px;
+    border-radius: 999px;
+    background: var(--series-1);
+  }
+  .ge-range :global(.ge-dot) {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--series-1);
+    border: 2px solid var(--surface);
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  .ge-range :global(.ge-tick) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--bg);
+    z-index: 1;
+  }
+  .ge-range :global(.ge-axis) {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .ge-unknowns :global(h4) {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-3);
+    margin: 0.5rem 0 0.4rem;
+  }
+  .ge-unknowns :global(ul) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ge-unknowns :global(button.chip) {
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+    min-height: 32px;
+  }
+
+  /* Contain the visually hidden labels, so they scroll with the table instead of widening the page. */
+  #ge-saved :global(.table-wrap) {
+    position: relative;
+  }
+  #ge-saved :global(.ge-table th small) {
+    display: block;
+    color: var(--ink-3);
+    font-weight: 400;
+    font-size: 0.75rem;
+  }
+  #ge-saved :global(.ge-table tbody th) {
+    min-width: 9rem;
+  }
+  #ge-saved :global(tr.ge-current > *) {
+    background: var(--bg-2);
+  }
+  #ge-saved :global(.ge-mini-cell) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  #ge-saved :global(.ge-mini) {
+    position: relative;
+    display: inline-block;
+    width: 64px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--rule-2);
+  }
+  #ge-saved :global(.ge-mini-fill) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    min-width: 4px;
+    border-radius: 999px;
+    background: var(--series-1);
+  }
+  #ge-saved :global(.ge-row-actions) {
+    display: flex;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  import { $, $$, clear, h } from '../../lib/client/dom';
+  import { download } from '../../lib/client/files';
+  import { slugify } from '../../lib/client/format';
+  import { load, remove, save } from '../../lib/client/store';
+  import { confirmTwice } from '../../lib/client/confirm';
+  import {
+    DEFAULT_WEIGHT,
+    DIMENSIONS,
+    MAX_WEIGHT,
+    equalWeights,
+    fmtScore,
+    guideFor,
+    rangeText,
+    toMemo,
+    weightShares,
+    weightedRange,
+  } from '../../lib/client/rubric';
+  import type { Proposal, Range, Score, Weights } from '../../lib/client/rubric';
+
+  const KEY = 'grant-proposals';
+  const WEIGHTS_KEY = 'grant-weights';
+  const DRAFT_KEY = 'grant-draft';
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const absolute = (path: string) => new URL(base + path, location.origin).href;
+
+  const form = $<HTMLFormElement>('#ge-form');
+  const nameEl = $<HTMLInputElement>('#ge-name');
+  const msg = $('#ge-msg');
+  const sliders = $$<HTMLInputElement>('.ge-w input[type="range"]');
+  const pct = (share: number) => `${Math.round(share * 100)}%`;
+  const say = (text: string) => (msg.textContent = text);
+  const localDate = (iso: string | undefined, month: 'short' | 'long' = 'short') => {
+    const d = new Date(iso ?? '');
+    return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month, day: 'numeric' });
+  };
+
+  // ---------- Stored data, checked on the way in ----------
+
+  function clean(p: unknown, allowNew = false): Proposal | null {
+    if (!p || typeof p !== 'object') return null;
+    const o = p as Record<string, any>;
+    if (typeof o.id !== 'string' || (!o.id && !allowNew)) return null;
+    const scores: Record<string, Score> = {};
+    const notes: Record<string, string> = {};
+    for (const d of DIMENSIONS) {
+      const s = o.scores?.[d.id];
+      scores[d.id] = Number.isInteger(s) && s >= 0 && s <= 4 ? (s as Score) : null;
+      notes[d.id] = typeof o.notes?.[d.id] === 'string' ? o.notes[d.id].slice(0, 4000) : '';
+    }
+    return {
+      id: o.id,
+      name: typeof o.name === 'string' ? o.name.slice(0, 120) : '',
+      savedAt: typeof o.savedAt === 'string' ? o.savedAt : undefined,
+      scores,
+      notes,
+    };
+  }
+
+  function cleanWeights(w: unknown): Weights {
+    const out = equalWeights();
+    if (w && typeof w === 'object') {
+      for (const d of DIMENSIONS) {
+        const v = (w as Record<string, unknown>)[d.id];
+        if (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= MAX_WEIGHT) out[d.id] = v;
+      }
+    }
+    return out;
+  }
+
+  const blank = (): Proposal => ({
+    id: '',
+    name: '',
+    scores: Object.fromEntries(DIMENSIONS.map((d) => [d.id, null])),
+    notes: Object.fromEntries(DIMENSIONS.map((d) => [d.id, ''])),
+  });
+
+  const stored = load<unknown>(KEY, []);
+  let proposals: Proposal[] = Array.isArray(stored) ? stored.map((p) => clean(p)).filter((p): p is Proposal => p !== null) : [];
+  let weights: Weights = cleanWeights(load<unknown>(WEIGHTS_KEY, null));
+  let current: Proposal = clean(load<unknown>(DRAFT_KEY, null), true) ?? blank();
+  if (current.id && !proposals.some((p) => p.id === current.id)) current.id = '';
+  let storageOk = true;
+
+  const content = (p: Proposal) => JSON.stringify([p.name.trim(), DIMENSIONS.map((d) => [p.scores[d.id], (p.notes[d.id] ?? '').trim()])]);
+  const hasContent = (p: Proposal) => content(p) !== content(blank());
+  const isDirty = () => {
+    const saved = proposals.find((p) => p.id === current.id);
+    return saved ? content(saved) !== content(current) : hasContent(current);
+  };
+
+  // ---------- Form ----------
+
+  function readForm(): Proposal {
+    const scores: Record<string, Score> = {};
+    const notes: Record<string, string> = {};
+    for (const d of DIMENSIONS) {
+      const v = form.querySelector<HTMLInputElement>(`input[name="ge-${d.id}"]:checked`)?.value;
+      scores[d.id] = v == null || v === 'unknown' ? null : (Number(v) as Score);
+      notes[d.id] = $<HTMLTextAreaElement>(`#ge-${d.id}-notes`).value;
+    }
+    return { ...current, name: nameEl.value, scores, notes };
+  }
+
+  function fillForm(p: Proposal) {
+    nameEl.value = p.name;
+    for (const d of DIMENSIONS) {
+      const s = p.scores[d.id];
+      const radio = form.querySelector<HTMLInputElement>(`input[name="ge-${d.id}"][value="${s == null ? 'unknown' : s}"]`);
+      if (radio) radio.checked = true;
+      $<HTMLTextAreaElement>(`#ge-${d.id}-notes`).value = p.notes[d.id] ?? '';
+    }
+    $('#ge-name-err').textContent = '';
+    nameEl.setAttribute('aria-invalid', 'false');
+  }
+
+  // ---------- Rendering ----------
+
+  function renderGuides() {
+    for (const d of DIMENSIONS) $(`#ge-${d.id}-guide`).textContent = guideFor(d, current.scores[d.id] ?? null);
+  }
+
+  function renderWeights() {
+    const shares = weightShares(weights);
+    for (const el of sliders) {
+      const id = el.dataset.dim!;
+      el.value = String(weights[id] ?? DEFAULT_WEIGHT);
+      $(`#ge-w-${id}-out`).textContent = pct(shares[id]);
+      el.setAttribute('aria-valuetext', `${weights[id]} of ${MAX_WEIGHT}, ${pct(shares[id])} of the total`);
+    }
+    const values = DIMENSIONS.map((d) => weights[d.id]);
+    $('#ge-weights-state').textContent = values.every((v) => v === values[0]) ? (values[0] ? '(all equal)' : '(all zero)') : '(custom)';
+  }
+
+  function rangeVisual(r: Range | null) {
+    const box = $('#ge-range');
+    clear(box);
+    const track = h('div', { class: 'ge-track' });
+    for (const i of [1, 2, 3]) {
+      const tick = h('span', { class: 'ge-tick' });
+      tick.style.left = `${i * 25}%`;
+      track.append(tick);
+    }
+    if (r) {
+      if (r.high > r.low) {
+        const fill = h('span', { class: 'ge-fill' });
+        fill.style.left = `${(r.low / 4) * 100}%`;
+        fill.style.width = `${((r.high - r.low) / 4) * 100}%`;
+        track.append(fill);
+      } else {
+        const dot = h('span', { class: 'ge-dot' });
+        dot.style.left = `${(r.low / 4) * 100}%`;
+        track.append(dot);
+      }
+    }
+    box.append(
+      h('p', { class: 'ge-big' }, r ? (r.high === r.low ? fmtScore(r.low) : `${fmtScore(r.low)} to ${fmtScore(r.high)}`) : '—', h('span', {}, ' out of 4')),
+      track,
+      h('div', { class: 'ge-axis' }, [0, 1, 2, 3, 4].map((n) => h('span', {}, String(n)))),
+    );
+  }
+
+  function renderResult() {
+    const r = weightedRange(current.scores, weights);
+    rangeVisual(r);
+    const shares = weightShares(weights);
+    const open = r ? r.unknown.filter((d) => shares[d.id] > 0) : [];
+    const summary = $('#ge-summary');
+    clear(summary);
+    if (r) {
+      summary.append(
+        h('span', { class: 'visually-hidden' }, `Weighted score: ${rangeText(r)}. `),
+        `${r.known} of ${DIMENSIONS.length} dimensions scored, carrying ${pct(r.knownWeight)} of the weight.` +
+          (open.length ? ` ${open.length} still unknown.` : ' Nothing that counts is unknown, so the score is a single value.'),
+      );
+    } else {
+      summary.textContent = 'Every weight is zero, so there is no score. Give at least one dimension some weight.';
+    }
+
+    const box = $('#ge-unknowns');
+    clear(box);
+    if (open.length) {
+      box.append(
+        h('h4', {}, 'Still unknown'),
+        h(
+          'ul',
+          { class: 'chips' },
+          open.map((d) => {
+            const b = h('button', { type: 'button', class: 'chip', title: d.question }, d.name);
+            b.addEventListener('click', () => {
+              const radio = form.querySelector<HTMLInputElement>(`input[name="ge-${d.id}"]:checked`);
+              $(`#ge-dim-${d.id}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+              radio?.focus({ preventScroll: true });
+            });
+            return h('li', {}, b);
+          }),
+        ),
+      );
+    }
+  }
+
+  function renderStatus() {
+    const saved = proposals.find((p) => p.id === current.id);
+    const dirty = isDirty();
+    let text: string;
+    if (saved) text = dirty ? `Editing “${saved.name}”: unsaved changes.` : `Editing “${saved.name}”, saved ${localDate(saved.savedAt)}.`;
+    else text = dirty ? 'New proposal, not saved yet.' : 'New proposal.';
+    if (!storageOk) text += ' Storage is blocked, so nothing outlasts this page.';
+    $('#ge-status').textContent = text;
+  }
+
+  const scoreCell = (s: Score) =>
+    s == null ? h('span', { title: 'Unknown' }, h('span', { 'aria-hidden': 'true' }, '?'), h('span', { class: 'visually-hidden' }, 'unknown')) : String(s);
+
+  function miniRange(r: Range | null) {
+    const bar = h('span', { class: 'ge-mini', 'aria-hidden': 'true' });
+    if (r) {
+      const fill = h('span', { class: 'ge-mini-fill' });
+      fill.style.left = `${(r.low / 4) * 100}%`;
+      fill.style.width = `${((r.high - r.low) / 4) * 100}%`;
+      bar.append(fill);
+    }
+    const text = r ? (r.high === r.low ? fmtScore(r.low) : `${fmtScore(r.low)} to ${fmtScore(r.high)}`) : 'No score';
+    return h('span', { class: 'ge-mini-cell' }, bar, text);
+  }
+
+  function renderSaved() {
+    const box = $('#ge-saved');
+    clear(box);
+    if (!proposals.length) {
+      box.append(h('p', { class: 'empty' }, 'No saved proposals yet. Score one and press Save proposal to compare it here.'));
+      return;
+    }
+    const rows = [...proposals].sort((a, b) => (b.savedAt ?? '').localeCompare(a.savedAt ?? ''));
+    const table = h(
+      'table',
+      { class: 'data ge-table' },
+      h('caption', { class: 'visually-hidden' }, 'Saved proposals, scored with the current weights'),
+      h(
+        'thead',
+        {},
+        h(
+          'tr',
+          {},
+          h('th', { scope: 'col' }, 'Proposal'),
+          h('th', { scope: 'col' }, 'Weighted score'),
+          h('th', { scope: 'col', class: 'num' }, 'Unknown'),
+          DIMENSIONS.map((d) => h('th', { scope: 'col', class: 'num', title: d.name }, d.short)),
+          h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Actions')),
+        ),
+      ),
+      h(
+        'tbody',
+        {},
+        rows.map((p) => {
+          const r = weightedRange(p.scores, weights);
+          const openBtn = h('button', { type: 'button', class: 'btn btn-ghost btn-small', 'aria-label': `Open ${p.name}` }, 'Open');
+          const delBtn = h('button', { type: 'button', class: 'btn btn-ghost btn-small', 'aria-label': `Delete ${p.name}` }, 'Delete');
+          confirmTwice(openBtn, {
+            prompt: 'Discard changes?',
+            message: `You have unsaved changes. Click Open again to open “${p.name}” without saving them.`,
+            needed: () => isDirty() && current.id !== p.id,
+            announce: say,
+            action: () => {
+              current = { ...p };
+              fillForm(current);
+              save(DRAFT_KEY, current);
+              say(`Opened “${p.name}”.`);
+              renderAll();
+              nameEl.focus();
+            },
+          });
+          confirmTwice(delBtn, {
+            prompt: 'Confirm delete',
+            message: `Click again to delete “${p.name}”.`,
+            announce: say,
+            action: () => {
+              proposals = proposals.filter((x) => x.id !== p.id);
+              storageOk = save(KEY, proposals) && storageOk;
+              if (current.id === p.id) current = { ...current, id: '', savedAt: undefined };
+              save(DRAFT_KEY, current);
+              say(`Deleted “${p.name}”.`);
+              renderAll();
+            },
+          });
+          return h(
+            'tr',
+            { class: p.id === current.id ? 'ge-current' : null },
+            h('th', { scope: 'row' }, p.name, h('small', {}, `${p.id === current.id ? 'Open now · ' : ''}Saved ${localDate(p.savedAt)}`)),
+            h('td', {}, miniRange(r)),
+            h('td', { class: 'num' }, String(r ? r.unknown.length : DIMENSIONS.filter((d) => p.scores[d.id] == null).length)),
+            DIMENSIONS.map((d) => h('td', { class: 'num' }, scoreCell(p.scores[d.id] ?? null))),
+            h('td', {}, h('div', { class: 'ge-row-actions' }, openBtn, delBtn)),
+          );
+        }),
+      ),
+    );
+    box.append(h('div', { class: 'table-wrap' }, table));
+  }
+
+  function renderAll() {
+    renderGuides();
+    renderWeights();
+    renderResult();
+    renderStatus();
+    renderSaved();
+  }
+
+  // ---------- Actions ----------
+
+  function onEdit() {
+    current = readForm();
+    storageOk = save(DRAFT_KEY, current) && storageOk;
+    renderGuides();
+    renderResult();
+    renderStatus();
+  }
+
+  form.addEventListener('submit', (e) => e.preventDefault());
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLElement).matches('input[type="radio"]')) onEdit();
+  });
+  form.addEventListener('input', (e) => {
+    const t = e.target as HTMLInputElement;
+    if (t.matches('.ge-w input[type="range"]')) {
+      weights = { ...weights, [t.dataset.dim!]: Number(t.value) };
+      storageOk = save(WEIGHTS_KEY, weights) && storageOk;
+      renderWeights();
+      renderResult();
+      renderSaved();
+    } else if (t.matches('input[type="text"], textarea')) {
+      if (t === nameEl && nameEl.value.trim()) {
+        $('#ge-name-err').textContent = '';
+        nameEl.setAttribute('aria-invalid', 'false');
+      }
+      onEdit();
+    }
+  });
+
+  $('#ge-w-reset').addEventListener('click', () => {
+    weights = equalWeights();
+    storageOk = save(WEIGHTS_KEY, weights) && storageOk;
+    renderAll();
+    say('Weights reset to equal.');
+  });
+
+  $('#ge-save').addEventListener('click', () => {
+    current = readForm();
+    const name = current.name.trim();
+    if (!name) {
+      $('#ge-name-err').textContent = 'Give the proposal a name before saving it.';
+      nameEl.setAttribute('aria-invalid', 'true');
+      nameEl.focus();
+      say('Give the proposal a name before saving it.');
+      return;
+    }
+    const entry: Proposal = {
+      ...current,
+      id: current.id || `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+      name,
+      savedAt: new Date().toISOString(),
+    };
+    const exists = proposals.some((p) => p.id === entry.id);
+    proposals = exists ? proposals.map((p) => (p.id === entry.id ? entry : p)) : [...proposals, entry];
+    current = entry;
+    nameEl.value = name;
+    const ok = save(KEY, proposals);
+    storageOk = ok && save(DRAFT_KEY, current);
+    say(
+      ok
+        ? `${exists ? 'Updated' : 'Saved'} “${name}” in this browser.`
+        : `Your browser is blocking storage, so “${name}” is kept only until you leave this page. Download the JSON to keep it.`,
+    );
+    renderAll();
+  });
+
+  confirmTwice($<HTMLButtonElement>('#ge-new'), {
+    prompt: 'Discard unsaved changes?',
+    message: 'You have unsaved changes. Click New proposal again to discard them and start over.',
+    needed: isDirty,
+    announce: say,
+    action: () => {
+      current = blank();
+      fillForm(current);
+      remove(DRAFT_KEY);
+      say('Started a new proposal.');
+      renderAll();
+      nameEl.focus();
+    },
+  });
+
+  const withResult = (p: Proposal) => {
+    const r = weightedRange(p.scores, weights);
+    const round = (n: number) => Math.round(n * 100) / 100;
+    return { ...p, result: r ? { low: round(r.low), high: round(r.high), unknown: r.unknown.map((d) => d.id) } : null };
+  };
+  const exportMeta = () => ({
+    tool: 'Charitology Grant Evaluator',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    scale: 'Scores run from 0 to 4. null means unknown. Risk of harm is scored so that higher means safer.',
+    range: 'low counts unknowns as 0 and high counts them as 4: a missing-data range, not a confidence interval.',
+    dimensions: DIMENSIONS.map((d) => ({ id: d.id, name: d.name, question: d.question, guides: d.guides })),
+    weights,
+  });
+  const fileName = (p: Proposal, ext: string) => `grant-review-${slugify(p.name) || 'untitled'}.${ext}`;
+
+  $('#ge-memo').addEventListener('click', () => {
+    current = readForm();
+    download(fileName(current, 'md'), toMemo(current, weights, absolute, localDate(new Date().toISOString(), 'long')), 'text/markdown;charset=utf-8');
+  });
+  $('#ge-json').addEventListener('click', () => {
+    current = readForm();
+    download(fileName(current, 'json'), JSON.stringify({ ...exportMeta(), proposal: withResult(current) }, null, 2), 'application/json');
+  });
+  $('#ge-export-all').addEventListener('click', () => {
+    if (!proposals.length) {
+      say('There are no saved proposals to download yet.');
+      return;
+    }
+    download('grant-reviews.json', JSON.stringify({ ...exportMeta(), proposals: proposals.map(withResult) }, null, 2), 'application/json');
+  });
+
+  // ---------- Start ----------
+
+  fillForm(current);
+  renderAll();
+  if (isDirty()) say(current.id ? 'Restored your unsaved changes to this proposal.' : 'Restored your unsaved draft.');
+</script>
