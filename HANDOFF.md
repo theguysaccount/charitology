@@ -7,7 +7,7 @@ Read this first to continue the project in a new session without losing context.
 - **Repo (public):** https://github.com/theguysaccount/charitology (branch `main`)
 - **Live site:** https://charitology.org/ (custom domain, HTTPS enforced). The old address https://theguysaccount.github.io/charitology/ redirects there.
 - **Deploy:** every push to `main` runs `.github/workflows/deploy.yml`, which builds, checks and publishes to GitHub Pages. Pull requests run `.github/workflows/check.yml`.
-- **Domains:** `charitology.org` and `charitology.com` are registered at Namecheap. charitology.org DNS is done: four A records for `@` (185.199.108–111.153) and a CNAME `www` → `theguysaccount.github.io.`. GitHub Pages has the custom domain set, with a certificate approved through 2027-01-23. charitology.com isn’t pointed anywhere yet.
+- **Domains:** `charitology.org` and `charitology.com` are registered at Namecheap. charitology.org DNS is done: four A records for `@` (185.199.108–111.153) and a CNAME `www` → `theguysaccount.github.io.`. GitHub Pages has the custom domain set, with a certificate approved through 2027-01-23. charitology.com and www.charitology.com 301-redirect to https://charitology.org/ through Namecheap URL Redirect records. Those redirects work over HTTP only; making https://charitology.com work too would mean moving its DNS to a host that serves HTTPS redirects, such as Cloudflare.
 - **Related repos (same owner):** humanityschecklist, systemic-altruism, charity-impact-media, whofunds-open-grant-graph. Charitology links to them as its "open instruments".
 
 ## What Charitology is (the frame)
@@ -58,7 +58,6 @@ npm run check     # content cross-references + every internal link
 
 ## Next steps
 
-1. **Optional: point charitology.com.** Add a URL Redirect for `@` in Namecheap to https://charitology.org/ (permanent 301).
 2. **Review the drafts.** 103 pages are `review: draft`. A human should check their sources and flip them to `reviewed`.
 3. **Create the GitHub labels** the site links to: correction, red-team, idea, open-problem, question, extension, built-with, myth, methodology, program.
 4. **Optional:** submit the extension to the Chrome Web Store and Firefox Add-ons, add a CHANGELOG, and recruit reviewers.
