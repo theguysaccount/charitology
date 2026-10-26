@@ -51,3 +51,14 @@ CREATE TABLE IF NOT EXISTS newsletter_webhook_events (
  type text NOT NULL,
  created_at timestamptz NOT NULL DEFAULT now()
 );
+-- Transactional OS mail stores hashes and provider IDs, never addresses or bearer URLs.
+CREATE TABLE IF NOT EXISTS newsletter_os_mail_intents (
+ key_hash text PRIMARY KEY CHECK(length(key_hash)=64),
+ payload_hash text NOT NULL CHECK(length(payload_hash)=64),
+ purpose text NOT NULL CHECK(purpose IN ('login','invitation','reminder')),
+ recipient_hash text NOT NULL CHECK(length(recipient_hash)=64),
+ state text NOT NULL CHECK(state IN ('creating','accepted','unknown','failed','limited')),
+ provider_id text,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);

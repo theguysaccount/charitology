@@ -4,6 +4,11 @@ export const FROM = 'Charitology <hello@charitology.org>';
 export function config(env = process.env) {
   const origin = env.NEWSLETTER_ORIGIN || 'https://mail.charitology.org';
   if (!/^https:\/\/[^/]+$/.test(origin) && !/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin)) throw new Error('Invalid newsletter origin');
+  const osOrigin = env.OS_ORIGIN || 'https://os.charitology.org';
+  let parsedOsOrigin;
+  try { parsedOsOrigin = new URL(osOrigin); } catch { throw new Error('Invalid OS origin'); }
+  const localOs = env.NODE_ENV !== 'production' && parsedOsOrigin.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(parsedOsOrigin.hostname) && parsedOsOrigin.port;
+  if ((!localOs && parsedOsOrigin.protocol !== 'https:') || parsedOsOrigin.username || parsedOsOrigin.password || parsedOsOrigin.search || parsedOsOrigin.hash || parsedOsOrigin.pathname !== '/' || parsedOsOrigin.origin !== osOrigin) throw new Error('Invalid OS origin');
   return {
     databaseUrl: env.DATABASE_URL,
     origin,
@@ -20,5 +25,7 @@ export function config(env = process.env) {
     segmentId: env.RESEND_SEGMENT_ID || '',
     topicId: env.RESEND_TOPIC_ID || '',
     webhookSecret: env.RESEND_WEBHOOK_SECRET || '',
+    osOrigin,
+    osMailSecret: env.OS_MAIL_RELAY_SECRET || '',
   };
 }

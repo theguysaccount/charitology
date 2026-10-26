@@ -53,6 +53,32 @@ export function database(connectionString, { schema } = {}) {
       exclusive: action => tx(action, { providerLock: true, deadline }),
     }),
     close: () => pool.end(),
+    reserveOsMail: ({ keyHash, payloadHash, purpose, recipientHash, rateKeys }) => tx(async client => {
+      // Duplicate callers fail busy before waiting on the unique INSERT. They
+      // must not occupy every pooled client while the reservation commits.
+      const lockKey = BigInt('0x' + hashToken(`${schema || 'public'}:os-mail:${keyHash}`).slice(0, 15)).toString();
+      const locked = await client.query('SELECT pg_try_advisory_xact_lock($1::bigint) AS acquired', [lockKey]);
+      if (!locked.rows[0].acquired) return { state: 'creating', reserved: false };
+      const inserted = await client.query("INSERT INTO newsletter_os_mail_intents(key_hash,payload_hash,purpose,recipient_hash,state) VALUES($1,$2,$3,$4,'creating') ON CONFLICT DO NOTHING RETURNING key_hash", [keyHash, payloadHash, purpose, recipientHash]);
+      if (!inserted.rowCount) {
+        const { rows } = await client.query('SELECT payload_hash,state FROM newsletter_os_mail_intents WHERE key_hash=$1', [keyHash]);
+        return { state: rows[0]?.payload_hash === payloadHash ? rows[0].state : 'conflict', reserved: false };
+      }
+      let limited = false;
+      for (const { key, limit } of [...rateKeys].sort((a, b) => a.key.localeCompare(b.key))) {
+        const { rows } = await client.query("INSERT INTO newsletter_rate_limits(key,hits,expires_at) VALUES($1,1,now()+interval '2 days') ON CONFLICT(key) DO UPDATE SET hits=newsletter_rate_limits.hits+1 RETURNING hits", [key]);
+        if (rows[0].hits > limit) limited = true;
+      }
+      if (limited) {
+        await client.query("UPDATE newsletter_os_mail_intents SET state='limited',updated_at=now() WHERE key_hash=$1", [keyHash]);
+        return { state: 'limited', reserved: false };
+      }
+      return { state: 'creating', reserved: true };
+    }),
+    finishOsMail: (keyHash, payloadHash, state, providerId = null) => tx(async client => {
+      if (!['accepted','unknown','failed'].includes(state)) throw new Error('Invalid transactional mail state');
+      return client.query("UPDATE newsletter_os_mail_intents SET state=$3,provider_id=$4,updated_at=now() WHERE key_hash=$1 AND payload_hash=$2 AND state='creating'", [keyHash, payloadHash, state, providerId]);
+    }),
     rate: keys => tx(async client => {
       let allowed = true;
       for (const { key, limit } of keys) {
