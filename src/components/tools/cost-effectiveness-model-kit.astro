@@ -1,0 +1,840 @@
+---
+// Cost-Effectiveness Model Kit: a Monte Carlo cost-per-outcome model that runs in
+// the browser. Triangular distributions, a seeded generator so runs repeat
+// exactly, a histogram and a one-at-a-time sensitivity chart.
+// Math in src/lib/client/models.ts and montecarlo.ts, charts in charts.ts.
+import { url } from '../../lib/site';
+
+const rows = [
+  { key: 'cost', label: 'Total program cost', unit: '$', hint: 'Everything the program spends, including staff, systems and overhead.' },
+  { key: 'people', label: 'People reached', unit: 'people', hint: 'How many people the program reaches.' },
+  { key: 'works', label: 'Chance it works as intended', unit: '%', hint: 'From 0 to 100. Your estimate that the program has its effect at all.' },
+  { key: 'effect', label: 'Effect per person, per year', unit: 'outcome units', hint: 'Units of the outcome each person gains in each year the effect lasts.' },
+  { key: 'years', label: 'Years the effect lasts', unit: 'years', hint: 'For a one-time outcome, enter 1 in all three boxes.' },
+  { key: 'anyway', label: 'Share that would have happened anyway', unit: '%', hint: 'From 0 to 99. How much of the outcome would have happened without the program.' },
+];
+const parts = [
+  { id: 'low', label: 'Low' },
+  { id: 'likely', label: 'Likely' },
+  { id: 'high', label: 'High' },
+];
+---
+
+<section class="tool" aria-labelledby="ce-title">
+  <div class="tool-head">
+    <h2 id="ce-title">Build a cost-effectiveness model</h2>
+    <span class="note">5,000 simulated draws, run in your browser. Nothing is sent anywhere.</span>
+  </div>
+
+  <div class="ce-bar">
+    <div class="btn-row">
+      <button type="button" class="btn btn-ghost btn-small" id="ce-example">Load the example</button>
+      <button type="button" class="btn btn-ghost btn-small" id="ce-clear">Clear all inputs</button>
+    </div>
+    <div class="ce-saved">
+      <label for="ce-saved">Saved models</label>
+      <div class="ce-saved-row">
+        <select id="ce-saved"><option value="">No saved models yet</option></select>
+        <button type="button" class="btn btn-ghost btn-small" id="ce-load">Load</button>
+        <button type="button" class="btn btn-ghost btn-small" id="ce-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+  <p id="ce-store-msg" class="note ce-store-msg" role="status"></p>
+  <div id="ce-example-note" class="callout ce-example-note" hidden>
+    <p>
+      <strong>Illustrative numbers.</strong> The example is made up to show how the kit works. It describes no real program, and its results
+      say nothing about school meals.
+    </p>
+  </div>
+
+  <form id="ce-form" novalidate>
+    <div class="tool-grid ce-top">
+      <div class="field">
+        <label for="ce-name">Model name</label>
+        <input type="text" id="ce-name" maxlength="120" autocomplete="off" placeholder="Untitled model" />
+      </div>
+      <div class="field">
+        <label for="ce-unit">Outcome unit</label>
+        <input type="text" id="ce-unit" maxlength="80" autocomplete="off" aria-describedby="ce-unit-hint" />
+        <span class="hint" id="ce-unit-hint">Name one unit of the outcome, like “meal served” or “extra school day attended”.</span>
+      </div>
+    </div>
+
+    <div class="ce-rows">
+      {
+        rows.map((r) => (
+          <fieldset class="ce-row" id={`ce-row-${r.key}`}>
+            <legend>
+              {r.label} <span class="ce-unit-tag" data-unit-for={r.key}>({r.unit})</span>
+            </legend>
+            <div class="ce-row-body">
+              <div class="ce-triple">
+                {parts.map((p) => (
+                  <div class="field">
+                    <label for={`ce-${r.key}-${p.id}`}>{p.label}</label>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id={`ce-${r.key}-${p.id}`}
+                      data-key={r.key}
+                      data-part={p.id}
+                      autocomplete="off"
+                      aria-label={`${r.label}, ${p.label.toLowerCase()}`}
+                      aria-describedby={`ce-${r.key}-hint ce-${r.key}-err`}
+                    />
+                  </div>
+                ))}
+              </div>
+              <p class="hint" id={`ce-${r.key}-hint`}>
+                {r.hint}
+              </p>
+            </div>
+            <p class="ce-err" id={`ce-${r.key}-err`} />
+          </fieldset>
+        ))
+      }
+    </div>
+
+    <div class="tool-grid ce-more">
+      <div class="field">
+        <label for="ce-discount">Annual discount rate (%)</label>
+        <input type="text" inputmode="decimal" id="ce-discount" autocomplete="off" aria-describedby="ce-discount-hint ce-discount-err" />
+        <span class="hint" id="ce-discount-hint">
+          One value. How much less each later year of effect counts: at 4%, the second year counts about 96% as much as the first. Enter 0 to
+          count every year the same. Whether the future should count less at all is
+          <a href={url('/open-problems/discounting-the-future/')}>Open Problem 13</a>.
+        </span>
+        <span class="ce-err" id="ce-discount-err"></span>
+      </div>
+      <div class="field">
+        <label for="ce-seed">Random seed</label>
+        <input type="text" inputmode="numeric" id="ce-seed" value="1" autocomplete="off" aria-describedby="ce-seed-hint ce-seed-err" />
+        <span class="hint" id="ce-seed-hint">The same seed always gives the same draws. Change it to see how much the results move by chance alone.</span>
+        <span class="ce-err" id="ce-seed-err"></span>
+      </div>
+    </div>
+
+    <div class="btn-row ce-actions">
+      <button class="btn" type="submit">Run the model</button>
+      <button class="btn btn-ghost" type="button" id="ce-save">Save model</button>
+    </div>
+  </form>
+
+  <div class="result">
+    <p id="ce-summary" class="ce-summary" role="status" aria-live="polite">
+      Enter a low, likely and high value for every input, or load the example, then run the model.
+    </p>
+    <div id="ce-out" class="ce-out" hidden>
+      <div class="kpis ce-kpis" id="ce-kpis"></div>
+
+      <h3>How the draws spread</h3>
+      <p class="note" id="ce-hist-note"></p>
+      <div id="ce-hist" class="ce-hist"></div>
+      <details class="ce-twin">
+        <summary>Show the chart as a table</summary>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+              <tr>
+                <th scope="col">Cost per outcome</th>
+                <th scope="col" class="num">Draws</th>
+                <th scope="col" class="num">Share of draws</th>
+              </tr>
+            </thead>
+            <tbody id="ce-hist-rows"></tbody>
+          </table>
+        </div>
+      </details>
+
+      <h3 class="ce-gap">What moves the result</h3>
+      <p class="note">
+        Each bar varies one input from its low to its high value, with every other input at likely. The longest bar is the input the result
+        depends on most. The vertical line marks every input at likely.
+      </p>
+      <div id="ce-sens" class="ce-sens"></div>
+      <p id="ce-driver" class="ce-driver"></p>
+
+      <div class="btn-row ce-actions">
+        <button class="btn btn-ghost" type="button" id="ce-csv">Download CSV</button>
+      </div>
+    </div>
+
+    <div class="callout ce-limits">
+      <p>
+        <strong>How it works.</strong> Cost per outcome = total cost ÷ (people reached × chance it works × effect per person per year ×
+        discounted years × the share that would not have happened anyway). Each draw picks every ranged input from a triangular distribution
+        between your low and high values, peaking at likely. The first year of effect counts in full and each later year counts 1 ÷ (1 +
+        discount rate) as much as the one before.
+      </p>
+      <p><strong>Its limits.</strong></p>
+      <ul>
+        <li>The interval only reflects the uncertainty you entered. Ranges that are too narrow give an interval that is too narrow.</li>
+        <li>
+          Inputs are drawn independently. In real programs some move together, such as cost and people reached, which can make the true
+          range wider or narrower.
+        </li>
+        <li>The chance it works scales the outcome, so the result is an expected value. It hides the real chance of achieving nothing.</li>
+        <li>It counts one outcome. Side effects, harms and benefits to people the program doesn’t reach directly are left out.</li>
+        <li>
+          Work at the source end of the depth scale rarely fits a model like this:
+          <a href={url('/open-problems/measuring-the-source/')}>Open Problem 3, Measuring the Source</a>.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ce-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .ce-saved {
+    display: grid;
+    gap: 0.35rem;
+    flex: 1 1 320px;
+    max-width: 520px;
+  }
+  .ce-saved label {
+    font-weight: 650;
+    font-size: 0.88rem;
+  }
+  .ce-saved-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .ce-saved-row select {
+    flex: 1;
+    min-width: 0;
+  }
+  .ce-store-msg:empty {
+    display: none;
+  }
+  .ce-example-note {
+    margin: 0.5rem 0 1.25rem;
+  }
+  .ce-rows {
+    margin-top: 0.5rem;
+  }
+  .ce-row {
+    border-top: 1px solid var(--rule-2);
+    padding-top: 0.85rem;
+    margin: 0 0 0.6rem;
+  }
+  .ce-row legend {
+    padding: 0;
+    margin-bottom: 0.4rem;
+  }
+  .ce-unit-tag {
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+  .ce-row-body {
+    display: grid;
+    gap: 0.35rem 1.5rem;
+  }
+  @media (min-width: 760px) {
+    .ce-row-body {
+      grid-template-columns: minmax(0, 470px) minmax(0, 1fr);
+      align-items: start;
+    }
+    .ce-row-body .hint {
+      padding-top: 1.55rem;
+      margin: 0;
+    }
+  }
+  .ce-row-body .hint {
+    margin: 0;
+  }
+  .ce-triple {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .ce-triple .field {
+    margin-bottom: 0;
+  }
+  .ce-triple label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .ce-triple input,
+  .ce-more input {
+    font-variant-numeric: tabular-nums;
+  }
+  .ce-err {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0.35rem 0 0;
+  }
+  .ce-err:empty {
+    display: none;
+  }
+  .tool input[aria-invalid='true'] {
+    border-color: var(--accent);
+  }
+  .ce-top,
+  .ce-more {
+    align-items: start;
+  }
+  .ce-more {
+    margin-top: 1rem;
+  }
+  .ce-actions {
+    margin-top: 1rem;
+  }
+  .ce-summary {
+    font-size: 1rem;
+    max-width: 72ch;
+  }
+  .ce-out[hidden] {
+    display: none;
+  }
+  .ce-out {
+    transition: opacity 0.2s;
+  }
+  .ce-out.ce-stale {
+    opacity: 0.55;
+  }
+  .ce-kpis :global(.k-value) {
+    font-size: 1.5rem;
+  }
+  .ce-hist {
+    margin: 0.5rem 0 0.75rem;
+    border-radius: var(--radius-sm);
+  }
+  .ce-twin {
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+  }
+  .ce-twin summary {
+    cursor: pointer;
+    color: var(--ink-2);
+    font-weight: 600;
+    min-height: 32px;
+  }
+  .ce-gap {
+    margin-top: 1.5rem;
+  }
+  .ce-driver {
+    margin-top: 1rem;
+    max-width: 72ch;
+  }
+  .ce-limits {
+    margin-top: 1.75rem;
+  }
+  .ce-limits ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  /* One-at-a-time sensitivity bars, drawn by renderRangeBars in charts.ts */
+  .ce-sens :global(.rb-row) {
+    display: grid;
+    grid-template-columns: minmax(110px, 28%) minmax(0, 1fr) minmax(8.5rem, auto);
+    gap: 0.75rem;
+    align-items: center;
+    font-size: 0.86rem;
+    padding: 0.2rem 0.25rem;
+    border-radius: 4px;
+  }
+  .ce-sens :global(.rb-row:hover),
+  .ce-sens :global(.rb-row:focus-visible) {
+    background: var(--bg-2);
+  }
+  .ce-sens :global(.rb-label) {
+    color: var(--ink-2);
+  }
+  .ce-sens :global(.rb-track) {
+    position: relative;
+    height: 22px;
+  }
+  .ce-sens :global(.rb-fill) {
+    position: absolute;
+    top: 5px;
+    height: 12px;
+    min-width: 2px;
+    border-radius: 4px;
+    background: var(--series-1);
+  }
+  .ce-sens :global(.rb-base) {
+    position: absolute;
+    top: -7px;
+    bottom: -7px;
+    width: 0;
+    border-left: 1.5px solid var(--ink);
+    z-index: 1;
+  }
+  .ce-sens :global(.rb-value) {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--ink);
+    text-align: right;
+  }
+  .ce-sens :global(.rb-axis) {
+    display: grid;
+    grid-template-columns: minmax(110px, 28%) minmax(0, 1fr) minmax(8.5rem, auto);
+    gap: 0.75rem;
+    padding: 0 0.25rem;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--ink-3);
+  }
+  .ce-sens :global(.rb-ticks) {
+    position: relative;
+    height: 1.5em;
+    border-top: 1px solid var(--axis);
+  }
+  .ce-sens :global(.rb-ticks span) {
+    position: absolute;
+    top: 0.25rem;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .ce-sens :global(.rb-ticks span:first-child) {
+    transform: none;
+  }
+  .ce-sens :global(.rb-ticks span:last-child) {
+    transform: translateX(-100%);
+  }
+  @media (max-width: 640px) {
+    .ce-sens :global(.rb-row) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: 'label value' 'track track';
+      row-gap: 0.15rem;
+    }
+    .ce-sens :global(.rb-label) {
+      grid-area: label;
+    }
+    .ce-sens :global(.rb-value) {
+      grid-area: value;
+    }
+    .ce-sens :global(.rb-track) {
+      grid-area: track;
+    }
+    .ce-sens :global(.rb-base) {
+      top: 0;
+      bottom: 0;
+    }
+    .ce-sens :global(.rb-axis) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .ce-sens :global(.rb-axis > span) {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { $, clear, h } from '../../lib/client/dom';
+  import { download, toCsv } from '../../lib/client/files';
+  import { num, parseAmount, slugify } from '../../lib/client/format';
+  import { load, save } from '../../lib/client/store';
+  import { histogram, quantile } from '../../lib/client/montecarlo';
+  import { RANGED, dollars, dollarsTick, runModel, sensitivity, sig } from '../../lib/client/models';
+  import type { ModelInputs, ModelRun, RangedKey } from '../../lib/client/models';
+  import { renderHistogram, renderRangeBars } from '../../lib/client/charts';
+  import { confirmTwice } from '../../lib/client/confirm';
+
+  const DRAWS = 5000;
+  const PARTS = ['low', 'likely', 'high'] as const;
+  type Three = [string, string, string];
+  interface Raw {
+    name: string;
+    unit: string;
+    values: Record<RangedKey, Three>;
+    discount: string;
+    seed: string;
+  }
+  interface Saved extends Raw {
+    id: string;
+    savedAt: string;
+  }
+  type Field = RangedKey | 'discount' | 'seed';
+
+  const LABELS: Record<RangedKey, string> = {
+    cost: 'Total program cost',
+    people: 'People reached',
+    works: 'Chance it works as intended',
+    effect: 'Effect per person, per year',
+    years: 'Years the effect lasts',
+    anyway: 'Share that would have happened anyway',
+  };
+  const PERCENT = new Set<RangedKey>(['works', 'anyway']);
+
+  const EXAMPLE: Raw = {
+    name: 'Example: school meals program, illustrative numbers',
+    unit: 'extra school day attended',
+    values: {
+      cost: ['400,000', '500,000', '650,000'],
+      people: ['4,000', '5,000', '5,500'],
+      works: ['50', '70', '85'],
+      effect: ['3', '6', '10'],
+      years: ['1', '2', '3'],
+      anyway: ['5', '15', '30'],
+    },
+    discount: '4',
+    seed: '1',
+  };
+
+  const form = $<HTMLFormElement>('#ce-form');
+  const nameEl = $<HTMLInputElement>('#ce-name');
+  const unitEl = $<HTMLInputElement>('#ce-unit');
+  const discountEl = $<HTMLInputElement>('#ce-discount');
+  const seedEl = $<HTMLInputElement>('#ce-seed');
+  const summary = $('#ce-summary');
+  const out = $('#ce-out');
+  const storeMsg = $('#ce-store-msg');
+  const savedSel = $<HTMLSelectElement>('#ce-saved');
+  const loadBtn = $<HTMLButtonElement>('#ce-load');
+  const deleteBtn = $<HTMLButtonElement>('#ce-delete');
+  const cell = (key: RangedKey, part: (typeof PARTS)[number]) => $<HTMLInputElement>(`#ce-${key}-${part}`);
+
+  // ---------- Reading and writing the form ----------
+
+  function readRaw(): Raw {
+    const values = Object.fromEntries(RANGED.map((k) => [k, PARTS.map((p) => cell(k, p).value) as Three])) as Record<RangedKey, Three>;
+    return { name: nameEl.value, unit: unitEl.value, values, discount: discountEl.value, seed: seedEl.value };
+  }
+
+  function fillRaw(r: Partial<Raw>) {
+    nameEl.value = String(r.name ?? '').slice(0, 120);
+    unitEl.value = String(r.unit ?? '').slice(0, 80);
+    for (const k of RANGED) PARTS.forEach((p, i) => (cell(k, p).value = String(r.values?.[k]?.[i] ?? '').slice(0, 40)));
+    discountEl.value = String(r.discount ?? '').slice(0, 20);
+    seedEl.value = String(r.seed ?? '1').slice(0, 12);
+    syncLabels();
+  }
+
+  const unitName = () => unitEl.value.trim() || 'outcome';
+
+  function syncLabels() {
+    const u = unitEl.value.trim();
+    const tag = document.querySelector('[data-unit-for="effect"]');
+    if (tag) tag.textContent = u ? `(in “${u}”)` : '(outcome units)';
+    $('#ce-example-note').hidden = nameEl.value !== EXAMPLE.name;
+  }
+
+  const hasInput = () => {
+    const r = readRaw();
+    return Boolean(r.name.trim() || r.unit.trim() || r.discount.trim() || RANGED.some((k) => r.values[k].some((v) => v.trim())));
+  };
+
+  // ---------- Checking ----------
+
+  /** A typed number, or NaN when the box holds no digits. */
+  const parse = (raw: string) => (/\d/.test(raw) ? parseAmount(raw.trim()) : NaN);
+
+  function rowError(k: RangedKey, raw: Three, [lo, mid, hi]: number[]): string {
+    if (raw.some((s) => !s.trim())) return 'Enter a low, likely and high value. If you know it exactly, enter the same number in all three.';
+    if ([lo, mid, hi].some(Number.isNaN)) return 'Use plain numbers, like 2,500 or 0.5.';
+    if (k === 'cost' && lo <= 0) return 'Costs must be above zero.';
+    if (k === 'people' && lo <= 0) return 'Enter a number of people above zero.';
+    if (k === 'works' && (lo < 0 || hi > 100)) return 'Use percentages from 0 to 100.';
+    if (k === 'anyway' && (lo < 0 || hi > 99)) return 'Use percentages from 0 to 99. At 100%, nothing would be the program’s doing.';
+    if (k === 'effect' && lo < 0) return 'Use 0 or more. This kit can’t model harm; see its limits below.';
+    if (k === 'years' && lo < 0) return 'Use 0 or more years.';
+    if (!(lo <= mid && mid <= hi)) return 'Put the values in order: low, then likely, then high.';
+    if ((k === 'works' || k === 'effect' || k === 'years') && !(mid > 0)) return 'The likely value must be above zero, or the likely case has no outcome to count.';
+    return '';
+  }
+
+  function check(raw: Raw): { model?: ModelInputs; seed: number; errors: Partial<Record<Field, string>> } {
+    const errors: Partial<Record<Field, string>> = {};
+    const model = {} as ModelInputs;
+    for (const k of RANGED) {
+      const n = raw.values[k].map(parse);
+      const err = rowError(k, raw.values[k], n);
+      if (err) errors[k] = err;
+      else model[k] = (PERCENT.has(k) ? n.map((x) => x / 100) : n) as [number, number, number];
+    }
+    const d = parse(raw.discount);
+    if (!raw.discount.trim()) errors.discount = 'Enter a discount rate. Use 0 to count every year the same.';
+    else if (!(d >= 0 && d < 100)) errors.discount = 'Use a rate from 0% to 99%.';
+    else model.discount = d / 100;
+    const seed = Number(raw.seed.trim());
+    if (!Number.isInteger(seed) || seed < 1 || seed > 4294967295) errors.seed = 'Use a whole number of 1 or more.';
+    return { model: Object.keys(errors).length ? undefined : model, seed, errors };
+  }
+
+  function showErrors(errors: Partial<Record<Field, string>>) {
+    for (const k of RANGED) {
+      $(`#ce-${k}-err`).textContent = errors[k] ?? '';
+      PARTS.forEach((p) => cell(k, p).setAttribute('aria-invalid', errors[k] ? 'true' : 'false'));
+    }
+    for (const f of ['discount', 'seed'] as const) {
+      $(`#ce-${f}-err`).textContent = errors[f] ?? '';
+      $(`#ce-${f}`).setAttribute('aria-invalid', errors[f] ? 'true' : 'false');
+    }
+  }
+
+  const fieldName = (f: Field) => (f === 'discount' ? 'Annual discount rate' : f === 'seed' ? 'Random seed' : LABELS[f]);
+
+  // ---------- Running and drawing ----------
+
+  interface Last {
+    raw: Raw;
+    model: ModelInputs;
+    run: ModelRun;
+    sens: ReturnType<typeof sensitivity>;
+    unit: string;
+  }
+  let last: Last | undefined;
+
+  function run(focusOnError = false): boolean {
+    const raw = readRaw();
+    const c = check(raw);
+    showErrors(c.errors);
+    const bad = Object.keys(c.errors) as Field[];
+    if (!c.model) {
+      summary.textContent = `Fix ${bad.length === 1 ? 'one input' : `${bad.length} inputs`} to run the model: ${bad.map(fieldName).join(', ')}.`;
+      if (last) out.classList.add('ce-stale');
+      if (focusOnError) {
+        const first = bad[0];
+        const target =
+          first === 'discount' || first === 'seed'
+            ? $<HTMLInputElement>(`#ce-${first}`)
+            : (PARTS.map((p) => cell(first, p)).find((el) => !el.value.trim()) ?? cell(first, 'low'));
+        target.focus();
+      }
+      return false;
+    }
+    last = { raw, model: c.model, run: runModel(c.model, DRAWS, c.seed), sens: sensitivity(c.model), unit: unitName() };
+    // Show the results first, so the charts measure their real width.
+    out.hidden = false;
+    out.classList.remove('ce-stale');
+    draw(last);
+    return true;
+  }
+
+  function show(k: RangedKey, v: number, unit: string): string {
+    if (k === 'cost') return dollars(v);
+    if (PERCENT.has(k)) return `${sig(v * 100)}%`;
+    if (k === 'years') return `${sig(v)} ${v === 1 ? 'year' : 'years'}`;
+    if (k === 'effect') return `${sig(v)} “${unit}”`;
+    return sig(v);
+  }
+
+  function kpi(label: string, value: string, note: string) {
+    return h('div', { class: 'kpi' }, h('div', { class: 'k-label' }, label), h('div', { class: 'k-value' }, value), h('div', { class: 'k-note' }, note));
+  }
+
+  function draw({ model, run: r, sens, unit }: Last) {
+    const per = `per “${unit}”`;
+    const top = sens.rows[0];
+    const moves = top && top.swing > 0;
+    summary.textContent =
+      `Median cost ${per}: ${dollars(r.cost.median)}. 90% of the ${num(r.draws)} draws fall between ${dollars(r.cost.p5)} and ${dollars(r.cost.p95)}.` +
+      (moves ? ` The result depends most on ${LABELS[top.key].toLowerCase()}.` : '');
+
+    const kpis = $('#ce-kpis');
+    clear(kpis);
+    kpis.append(
+      kpi(`Median cost ${per}`, dollars(r.cost.median), `90% interval: ${dollars(r.cost.p5)} to ${dollars(r.cost.p95)}`),
+      kpi('All inputs at likely', dollars(sens.base), 'One calculation with no uncertainty, for comparison'),
+      kpi(`Total “${unit}”, median`, sig(r.outcome.median), `90% interval: ${sig(r.outcome.p5)} to ${sig(r.outcome.p95)}`),
+    );
+
+    // Histogram of the middle of the distribution; the far tails are reported, not drawn.
+    const finite = r.costs.subarray(0, r.draws - r.none);
+    const { bins, below, above } = histogram(finite, quantile(finite, 0.005), quantile(finite, 0.995), 28);
+    const share = (n: number) => `${(Math.round((n / r.draws) * 1000) / 10).toFixed(1)}%`;
+    renderHistogram($('#ce-hist'), bins, {
+      total: r.draws,
+      label: `Histogram of cost ${per} across ${num(r.draws)} draws. Median ${dollars(r.cost.median)}; 90% of draws between ${dollars(r.cost.p5)} and ${dollars(r.cost.p95)}.`,
+      xTitle: `Cost ${per}`,
+      yTitle: 'Share of draws',
+      tick: dollarsTick,
+      tip: (b) => `${dollars(b.x0)} to ${dollars(b.x1)}: ${num(b.count)} ${b.count === 1 ? 'draw' : 'draws'} (${share(b.count)})`,
+      marker: { value: r.cost.median, label: `Median ${dollars(r.cost.median)}` },
+    });
+    const left = below + above;
+    $('#ce-hist-note').textContent =
+      `Each bar is the share of the ${num(r.draws)} draws whose cost ${per} landed in that range. The line marks the median.` +
+      (left && bins.length
+        ? ` ${num(left)} ${left === 1 ? 'draw falls' : 'draws fall'} outside ${dollars(bins[0].x0)} to ${dollars(bins[bins.length - 1].x1)}, so ${left === 1 ? 'it is' : 'they are'} left out of the chart but not out of the numbers.`
+        : '') +
+      (r.none ? ` ${num(r.none)} ${r.none === 1 ? 'draw' : 'draws'} produced no outcome at all.` : '');
+    const tbody = $('#ce-hist-rows');
+    clear(tbody);
+    for (const b of bins) {
+      tbody.append(h('tr', {}, h('td', {}, `${dollars(b.x0)} to ${dollars(b.x1)}`), h('td', { class: 'num' }, num(b.count)), h('td', { class: 'num' }, share(b.count))));
+    }
+
+    renderRangeBars(
+      $('#ce-sens'),
+      sens.rows.map((row) => ({
+        label: LABELS[row.key],
+        lo: row.lo,
+        hi: row.hi,
+        display: row.swing > 0 ? `${dollars(row.lo)} to ${dollars(row.hi)}` : `${dollars(row.lo)}, no range`,
+        tip: `${LABELS[row.key]}: at low (${show(row.key, model[row.key][0], unit)}), ${dollars(row.atLow)} ${per}; at high (${show(row.key, model[row.key][2], unit)}), ${dollars(row.atHigh)}`,
+      })),
+      { label: `Cost ${per} as each input moves from low to high, biggest swing first`, tick: dollarsTick, base: sens.base },
+    );
+    $('#ce-driver').textContent = moves
+      ? `The result moves most with ${LABELS[top.key].toLowerCase()}: from its low to its high value, the cost ${per} goes from ${dollars(top.atLow)} to ${dollars(top.atHigh)}. Better evidence on that input would narrow the result the most.`
+      : 'None of the inputs has a range, so nothing moves the result. Add low and high values to see what it depends on.';
+  }
+
+  // ---------- Saved models ----------
+
+  const KEY = 'ce-models';
+  const localDate = (iso: string) => {
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  };
+  const isSaved = (m: unknown): m is Saved =>
+    !!m && typeof m === 'object' && typeof (m as Saved).id === 'string' && typeof (m as Saved).name === 'string' && typeof (m as Saved).values === 'object';
+  let models: Saved[] = (() => {
+    const stored = load<unknown>(KEY, []);
+    return Array.isArray(stored) ? stored.filter(isSaved) : [];
+  })();
+
+  function refreshSaved(selectId?: string) {
+    clear(savedSel);
+    if (!models.length) savedSel.append(h('option', { value: '' }, 'No saved models yet'));
+    for (const m of [...models].sort((a, b) => String(b.savedAt).localeCompare(String(a.savedAt)))) {
+      const when = localDate(m.savedAt);
+      savedSel.append(h('option', { value: m.id }, when ? `${m.name} (${when})` : m.name));
+    }
+    savedSel.disabled = loadBtn.disabled = deleteBtn.disabled = !models.length;
+    if (selectId) savedSel.value = selectId;
+  }
+
+  const tell = (text: string) => (storeMsg.textContent = text);
+
+  $('#ce-save').addEventListener('click', () => {
+    const raw = readRaw();
+    const name = raw.name.trim() || 'Untitled model';
+    nameEl.value = name;
+    raw.name = name;
+    const existing = models.find((m) => m.name.toLowerCase() === name.toLowerCase());
+    const entry: Saved = { ...raw, id: existing?.id ?? `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, savedAt: new Date().toISOString() };
+    models = existing ? models.map((m) => (m.id === existing.id ? entry : m)) : [...models, entry];
+    const ok = save(KEY, models);
+    refreshSaved(entry.id);
+    storeMsg.textContent = ok
+      ? `${existing ? 'Updated' : 'Saved'} “${name}” in this browser.`
+      : `Your browser is blocking storage, so “${name}” is kept only until you leave this page. Download the CSV to keep a copy.`;
+    syncLabels();
+  });
+
+  loadBtn.addEventListener('click', () => {
+    const m = models.find((x) => x.id === savedSel.value);
+    if (!m) return;
+    fillRaw(m);
+    storeMsg.textContent = `Loaded “${m.name}”.`;
+    run();
+  });
+
+  const resetDelete = confirmTwice(deleteBtn, {
+    prompt: 'Click again to delete',
+    message: 'Click Delete again to delete the selected model.',
+    announce: tell,
+    action: () => {
+      const m = models.find((x) => x.id === savedSel.value);
+      if (!m) return;
+      models = models.filter((x) => x.id !== m.id);
+      const ok = save(KEY, models);
+      refreshSaved();
+      storeMsg.textContent = `Deleted “${m.name}”.${ok ? '' : ' Storage is blocked, so this lasts only until you leave the page.'}`;
+    },
+  });
+  savedSel.addEventListener('change', resetDelete);
+
+  confirmTwice($<HTMLButtonElement>('#ce-example'), {
+    prompt: 'Click again to replace your inputs',
+    message: 'The example will replace your inputs. Click again to load it.',
+    needed: hasInput,
+    announce: tell,
+    action: () => {
+      fillRaw(EXAMPLE);
+      storeMsg.textContent = 'Loaded the example. Its numbers are made up.';
+      run();
+    },
+  });
+
+  confirmTwice($<HTMLButtonElement>('#ce-clear'), {
+    prompt: 'Click again to clear',
+    message: 'Click again to clear every input. Saved models are kept.',
+    needed: hasInput,
+    announce: tell,
+    action: () => {
+      fillRaw({ seed: '1' });
+      showErrors({});
+      last = undefined;
+      out.hidden = true;
+      storeMsg.textContent = '';
+      summary.textContent = 'Inputs cleared. Enter a low, likely and high value for every input, then run the model.';
+    },
+  });
+
+  $('#ce-csv').addEventListener('click', () => {
+    if (!last) return;
+    const { raw, model, run: r, sens, unit } = last;
+    const n = (v: number) => (Number.isFinite(v) ? Number(v.toPrecision(6)) : 'no outcome');
+    const row = (section: string, item: string, value: unknown = '', unitLabel = '', low: unknown = '', likely: unknown = '', high: unknown = '') => ({
+      section,
+      item,
+      low,
+      likely,
+      high,
+      value,
+      unit: unitLabel,
+    });
+    const natural = (k: RangedKey, i: number) => n(PERCENT.has(k) ? model[k][i] * 100 : model[k][i]);
+    const units: Record<RangedKey, string> = { cost: '$', people: 'people', works: '%', effect: `${unit} per person per year`, years: 'years', anyway: '%' };
+    const data = [
+      row('model', 'Name', raw.name.trim() || 'Untitled model'),
+      row('model', 'Outcome unit', unit),
+      row('model', 'Draws', r.draws),
+      row('model', 'Random seed', r.seed),
+      row('model', 'Method', 'Monte Carlo; triangular distributions; inputs drawn independently; first year undiscounted'),
+      row('model', 'Annual discount rate', n(model.discount * 100), '%'),
+      ...RANGED.map((k) => row('input', LABELS[k], '', units[k], natural(k, 0), natural(k, 1), natural(k, 2))),
+      row('summary', 'Cost per outcome, median', n(r.cost.median), '$'),
+      row('summary', 'Cost per outcome, 5th percentile', n(r.cost.p5), '$'),
+      row('summary', 'Cost per outcome, 95th percentile', n(r.cost.p95), '$'),
+      row('summary', 'Cost per outcome, all inputs at likely', n(sens.base), '$'),
+      row('summary', 'Total outcomes, median', n(r.outcome.median), unit),
+      row('summary', 'Total outcomes, 5th percentile', n(r.outcome.p5), unit),
+      row('summary', 'Total outcomes, 95th percentile', n(r.outcome.p95), unit),
+      row('summary', 'Draws with no outcome', r.none),
+      ...sens.rows.map((s) => row('sensitivity', LABELS[s.key], n(s.swing), '$ per outcome: input at low, input at high, swing', n(s.atLow), '', n(s.atHigh))),
+    ];
+    const file = `charitology-model-${slugify(raw.name) || 'untitled'}.csv`;
+    download(file, toCsv(data, ['section', 'item', 'low', 'likely', 'high', 'value', 'unit']), 'text/csv;charset=utf-8');
+  });
+
+  // ---------- Wiring ----------
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (run(true)) $('#ce-kpis').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+  form.addEventListener('input', () => {
+    syncLabels();
+    let note = '';
+    if (last && !out.hidden) {
+      out.classList.add('ce-stale');
+      note = 'You changed the inputs. Run the model again to update the results.';
+    } else if (document.querySelector('.ce-err:not(:empty)')) {
+      note = 'Run the model again to check your changes.';
+    }
+    if (note && summary.textContent !== note) summary.textContent = note;
+  });
+  refreshSaved();
+  syncLabels();
+</script>

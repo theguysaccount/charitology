@@ -1,0 +1,552 @@
+---
+// Impact Calculator: what a gift could achieve, as a range, for interventions in
+// the Intervention Database that publish a cost per outcome. Entries without one
+// are listed as such, because that gap is itself the Measurement Gap.
+// Math in src/lib/client/models.ts.
+import { getCollection } from 'astro:content';
+import { url } from '../../lib/site';
+
+const entries = (await getCollection('interventions')).sort((a, b) => a.data.title.localeCompare(b.data.title));
+const items = entries.map((e) => ({
+  id: e.id,
+  title: e.data.title,
+  depth: e.data.depth,
+  evidence: e.data.evidence,
+  cost: e.data.cost ?? null,
+}));
+const priced = items.filter((i) => i.cost);
+const unpriced = items.filter((i) => !i.cost);
+const json = JSON.stringify(items).replace(/</g, '\\u003c');
+---
+
+<section class="tool" aria-labelledby="ic-title">
+  <div class="tool-head">
+    <h2 id="ic-title">What could a gift do?</h2>
+    <span class="note" id="ic-loaded">Nothing you type leaves your browser.</span>
+  </div>
+
+  <form id="ic-form" novalidate>
+    <div class="tool-grid">
+      <div>
+        <fieldset>
+          <legend>1. Where the cost figures come from</legend>
+          <div class="ic-modes">
+            <label class="option">
+              <input type="radio" name="mode" value="db" checked />
+              <span><strong>The Intervention Database</strong><span class="hint">Published costs per outcome, with sources.</span></span>
+            </label>
+            <label class="option">
+              <input type="radio" name="mode" value="own" />
+              <span><strong>Your own numbers</strong><span class="hint">A cost per outcome from a source you trust.</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="ic-db">
+          <div class="field">
+            <label for="ic-intervention">Intervention</label>
+            <select id="ic-intervention" name="intervention" disabled={items.length === 0} aria-describedby="ic-intervention-hint">
+              {items.length === 0 && <option value="">No entries yet</option>}
+              {
+                priced.length > 0 && (
+                  <optgroup label="With a published cost per outcome">
+                    {priced.map((i) => (
+                      <option value={i.id}>{i.title}</option>
+                    ))}
+                  </optgroup>
+                )
+              }
+              {
+                unpriced.length > 0 && (
+                  <optgroup label="No reliable per-dollar estimate published">
+                    {unpriced.map((i) => (
+                      <option value={i.id}>{i.title}</option>
+                    ))}
+                  </optgroup>
+                )
+              }
+            </select>
+            <span class="hint" id="ic-intervention-hint">
+              Only entries with a published cost per outcome allow per-dollar math.
+              {priced.length} of {items.length} {items.length === 1 ? 'entry has' : 'entries have'} one.
+            </span>
+          </div>
+          {
+            unpriced.length > 0 && (
+              <div class="ic-gap">
+                <p class="note">
+                  <strong>No reliable per-dollar estimate published:</strong> that gap is itself a finding, called{' '}
+                  <a href={url('/diagnosis/measurement-gap/')}>the Measurement Gap</a>.
+                </p>
+                <ul class="chips" aria-label="Interventions with no reliable per-dollar estimate published">
+                  {unpriced.map((i) => (
+                    <li>
+                      <a class="chip" href={url(`/record/interventions/${i.id}/`)}>
+                        {i.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+        </div>
+
+        <div id="ic-own" hidden>
+          <div class="field">
+            <label for="ic-outcome">Outcome</label>
+            <input type="text" id="ic-outcome" name="outcome" maxlength="120" autocomplete="off" aria-describedby="ic-outcome-hint ic-outcome-err" />
+            <span class="hint" id="ic-outcome-hint">One unit of what the money achieves, like “child vaccinated” or “year of schooling”.</span>
+            <span class="ic-err" id="ic-outcome-err"></span>
+          </div>
+          <div class="ic-pair">
+            <div class="field">
+              <label for="ic-low">Cost per outcome, low ($)</label>
+              <input type="text" inputmode="decimal" id="ic-low" name="low" autocomplete="off" aria-describedby="ic-low-err" />
+              <span class="ic-err" id="ic-low-err"></span>
+            </div>
+            <div class="field">
+              <label for="ic-high">Cost per outcome, high ($)</label>
+              <input type="text" inputmode="decimal" id="ic-high" name="high" autocomplete="off" aria-describedby="ic-high-err" />
+              <span class="ic-err" id="ic-high-err"></span>
+            </div>
+          </div>
+          <p class="hint">Use the range your source gives. If it gives one number, enter it in both boxes.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="field">
+          <label for="ic-amount">2. Amount to give ($)</label>
+          <input type="text" inputmode="decimal" id="ic-amount" name="amount" value="1,000" autocomplete="off" aria-describedby="ic-amount-err" />
+          <span class="ic-err" id="ic-amount-err"></span>
+        </div>
+        <div class="field">
+          <div class="ic-cf-head">
+            <label for="ic-cf">3. Share that would have happened anyway</label>
+            <output id="ic-cf-out" for="ic-cf" aria-hidden="true">0%</output>
+          </div>
+          <input type="range" id="ic-cf" name="cf" min="0" max="90" step="5" value="0" aria-describedby="ic-cf-hint" />
+          <div class="range-labels"><span>0%: none of it</span><span>90%: nearly all of it</span></div>
+          <p class="hint" id="ic-cf-hint">
+            Some of what your gift pays for might have happened without you, because the charity raised the money elsewhere or another funder
+            stepped in. The calculator counts only the rest as your impact. Nobody knows this share for most gifts: that is
+            <a href={url('/open-problems/the-counterfactual-problem/')}>Open Problem 4</a>. Some published estimates already allow for it, so
+            check the source before you count it twice.
+          </p>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="result">
+    <div id="ic-summary" class="ic-summary" role="status" aria-live="polite"></div>
+    <div id="ic-kpis" class="kpis ic-kpis"></div>
+    <div id="ic-source"></div>
+    <div class="btn-row ic-actions">
+      <button class="btn btn-ghost" type="button" id="ic-share">Copy share link</button>
+    </div>
+    <div class="callout ic-cant">
+      <p>
+        <strong>What this can’t tell you.</strong> A cost per outcome is an average from someone’s model, not a promise about your gift. Work
+        near the source end of the depth scale, such as changing a story, a norm or an institution, rarely has a per-dollar number at all,
+        because its effects are diffuse, shared and delayed. Unmeasured is not the same as small: see
+        <a href={url('/open-problems/measuring-the-source/')}>Open Problem 3, Measuring the Source</a>.
+      </p>
+      <p>
+        It also can’t tell you whether a charity can put more money to good use, or how your gift changes what others give. To weigh
+        interventions on more than cost, use the <a href={url('/tools/compare-tool/')}>Compare Tool</a>.
+      </p>
+    </div>
+  </div>
+
+  <script type="application/json" id="ic-data" set:html={json} />
+</section>
+
+<style>
+  .ic-modes {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .ic-modes .option > span {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .ic-gap {
+    margin-bottom: 1rem;
+  }
+  .ic-gap ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ic-pair {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    gap: 0 0.75rem;
+  }
+  .ic-cf-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .ic-cf-head label {
+    font-weight: 650;
+    font-size: 0.88rem;
+  }
+  .ic-cf-head output {
+    font-variant-numeric: tabular-nums;
+    font-weight: 650;
+    color: var(--ink-2);
+  }
+  .ic-err {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .ic-err:empty {
+    display: none;
+  }
+  .ic-summary {
+    margin-bottom: 1.25rem;
+  }
+  .ic-summary :global(.ic-big) {
+    font-family: var(--font-display);
+    font-size: clamp(1.55rem, 4vw, 2.25rem);
+    line-height: 1.15;
+    margin: 0;
+  }
+  .ic-summary :global(.ic-msg) {
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+  }
+  .ic-summary :global(.ic-big strong) {
+    font-weight: 650;
+  }
+  .ic-summary :global(.ic-unit) {
+    font-size: 1rem;
+    color: var(--ink-2);
+    margin: 0.25rem 0 0.6rem;
+  }
+  .ic-summary :global(.ic-explain) {
+    color: var(--ink-2);
+    margin: 0;
+    max-width: 68ch;
+  }
+  .ic-kpis :global(.k-value) {
+    font-size: 1.35rem;
+  }
+  .ic-kpis:empty {
+    display: none;
+  }
+  #ic-source :global(.ic-src) {
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+    background: var(--bg);
+  }
+  #ic-source :global(.ic-src .badges) {
+    margin-bottom: 0.65rem;
+  }
+  #ic-source :global(.ic-src p) {
+    margin: 0 0 0.45rem;
+  }
+  #ic-source :global(.ic-src p:last-child) {
+    margin-bottom: 0;
+  }
+  .ic-actions {
+    margin-top: 1rem;
+  }
+  .ic-cant {
+    margin-top: 1.5rem;
+  }
+</style>
+
+<script>
+  import { $, $$, clear, h, readJson } from '../../lib/client/dom';
+  import { copy, flash } from '../../lib/client/files';
+  import { parseAmount } from '../../lib/client/format';
+  import { decodeState, encodeState, readHash, writeHash } from '../../lib/client/store';
+  import { dollars, impactRange, sig } from '../../lib/client/models';
+  import { depthBadge, depthInfo, gradeBadge } from '../../lib/client/badges';
+
+  interface Source {
+    title: string;
+    url: string;
+    publisher?: string;
+    year?: string | number;
+  }
+  interface Cost {
+    outcome: string;
+    low: number;
+    high: number;
+    asOf: string;
+    source: Source;
+    note?: string;
+  }
+  interface Item {
+    id: string;
+    title: string;
+    depth: number;
+    evidence: string;
+    cost: Cost | null;
+  }
+  /** Everything a share link carries. Typed values stay as typed. */
+  interface State {
+    m: 'db' | 'own';
+    i: string;
+    a: string;
+    cf: number;
+    o: string;
+    l: string;
+    h: string;
+  }
+
+  const items = readJson<Item[]>('ic-data');
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const link = (path: string) => base + path;
+
+  const form = $<HTMLFormElement>('#ic-form');
+  const select = $<HTMLSelectElement>('#ic-intervention');
+  const amountEl = $<HTMLInputElement>('#ic-amount');
+  const cfEl = $<HTMLInputElement>('#ic-cf');
+  const outcomeEl = $<HTMLInputElement>('#ic-outcome');
+  const lowEl = $<HTMLInputElement>('#ic-low');
+  const highEl = $<HTMLInputElement>('#ic-high');
+  const summary = $('#ic-summary');
+  const kpis = $('#ic-kpis');
+  const sourceBox = $('#ic-source');
+  const touched = new Set<string>();
+
+  /** A typed number, or NaN when the box is empty or holds no digits. */
+  function parse(raw: string): number {
+    const t = raw.trim();
+    return t && /\d/.test(t) ? parseAmount(t) : NaN;
+  }
+
+  function showError(input: HTMLInputElement, message: string) {
+    const out = document.getElementById(`${input.id}-err`);
+    if (out) out.textContent = message;
+    input.setAttribute('aria-invalid', message ? 'true' : 'false');
+  }
+
+  function read(): State {
+    const mode = form.querySelector<HTMLInputElement>('input[name="mode"]:checked')?.value === 'own' ? 'own' : 'db';
+    return { m: mode, i: select.value, a: amountEl.value, cf: Number(cfEl.value) || 0, o: outcomeEl.value, l: lowEl.value, h: highEl.value };
+  }
+
+  function apply(s: Partial<State>) {
+    const mode = s.m === 'own' ? 'own' : 'db';
+    const radio = form.querySelector<HTMLInputElement>(`input[name="mode"][value="${mode}"]`);
+    if (radio) radio.checked = true;
+    if (s.i && items.some((x) => x.id === s.i)) select.value = s.i;
+    if (typeof s.a === 'string') amountEl.value = s.a.slice(0, 40);
+    if (Number.isFinite(s.cf)) cfEl.value = String(Math.min(90, Math.max(0, Math.round(Number(s.cf) / 5) * 5)));
+    if (typeof s.o === 'string') outcomeEl.value = s.o.slice(0, 120);
+    if (typeof s.l === 'string') lowEl.value = s.l.slice(0, 40);
+    if (typeof s.h === 'string') highEl.value = s.h.slice(0, 40);
+  }
+
+  function amountError(raw: string, n: number): string {
+    if (!raw.trim()) return 'Enter an amount to give.';
+    if (Number.isNaN(n)) return 'Use a number, like 500 or $1,250.';
+    if (!(n > 0)) return 'Enter an amount above zero, like 500.';
+    return '';
+  }
+
+  function costError(raw: string, n: number): string {
+    if (!raw.trim()) return 'Enter a cost per outcome.';
+    if (Number.isNaN(n)) return 'Use a number, like 25 or $1,200.';
+    if (!(n > 0)) return 'Enter a cost above zero.';
+    return '';
+  }
+
+  function sourceLine(src: Source) {
+    const by = [src.publisher, src.year].filter(Boolean).join(', ');
+    return h('p', {}, h('strong', {}, 'Source: '), h('a', { href: src.url, rel: 'noopener' }, src.title), by ? `, ${by}.` : '.');
+  }
+
+  function profile(item: Item) {
+    const d = depthInfo(item.depth);
+    return [
+      h('div', { class: 'badges' }, depthBadge(item.depth), gradeBadge(item.evidence)),
+      d && h('p', { class: 'note' }, `Depth ${d.level} of 4, ${d.name}: ${d.verb.toLowerCase()}. Depth describes where work acts; it isn’t a grade.`),
+    ];
+  }
+
+  function entryLink(item: Item) {
+    return h('p', {}, 'Full entry: ', h('a', { href: link(`/record/interventions/${item.id}/`) }, item.title), '.');
+  }
+
+  function kpi(label: string, value: string, note: string) {
+    return h('div', { class: 'kpi' }, h('div', { class: 'k-label' }, label), h('div', { class: 'k-value' }, value), h('div', { class: 'k-note' }, note));
+  }
+
+  function message(main: string, detail?: Node | string) {
+    summary.append(h('p', { class: 'ic-big ic-msg' }, main));
+    if (detail) summary.append(h('p', { class: 'ic-explain' }, detail));
+  }
+
+  function render() {
+    const st = read();
+    $('#ic-db').hidden = st.m !== 'db';
+    $('#ic-own').hidden = st.m !== 'own';
+    $('#ic-cf-out').textContent = `${st.cf}%`;
+    cfEl.setAttribute('aria-valuetext', `${st.cf}% would have happened anyway`);
+    writeHash('ic', encodeState(st));
+    clear(summary);
+    clear(kpis);
+    clear(sourceBox);
+
+    const amount = parse(st.a);
+    const aErr = amountError(st.a, amount);
+    showError(amountEl, touched.has('amount') || st.a.trim() ? aErr : '');
+
+    let item: Item | undefined;
+    let cost: { outcome: string; low: number; high: number } | undefined;
+
+    if (st.m === 'db') {
+      item = items.find((x) => x.id === st.i);
+      if (!item) {
+        message('The Intervention Database has no entries yet.', 'Switch to your own numbers to run the math with a cost per outcome you trust.');
+        return;
+      }
+      if (!item.cost) {
+        message(
+          'No reliable per-dollar estimate published',
+          h(
+            'span',
+            {},
+            `${item.title} has no published cost per outcome in the Intervention Database, so there is no per-dollar math to do. That gap is itself a finding: `,
+            h('a', { href: link('/diagnosis/measurement-gap/') }, 'the Measurement Gap'),
+            '.',
+          ),
+        );
+        const useOwn = h('button', { class: 'btn btn-ghost btn-small', type: 'button' }, 'Use your own numbers');
+        useOwn.addEventListener('click', () => {
+          apply({ ...read(), m: 'own' });
+          render();
+          outcomeEl.focus();
+        });
+        sourceBox.append(
+          h('div', { class: 'ic-src' }, profile(item), h('p', {}, 'If you have an estimate from a source you trust, you can enter it yourself.'), h('p', {}, useOwn), entryLink(item)),
+        );
+        return;
+      }
+      cost = item.cost;
+    } else {
+      const outcome = st.o.trim();
+      const low = parse(st.l);
+      const high = parse(st.h);
+      const errs = {
+        outcome: outcome ? '' : 'Name the outcome, for example “child vaccinated”.',
+        low: costError(st.l, low),
+        high: costError(st.h, high),
+      };
+      showError(outcomeEl, touched.has('outcome') || st.o ? errs.outcome : '');
+      showError(lowEl, touched.has('low') || st.l ? errs.low : '');
+      showError(highEl, touched.has('high') || st.h ? errs.high : '');
+      sourceBox.append(
+        h(
+          'div',
+          { class: 'ic-src' },
+          h('p', {}, h('strong', {}, 'Source: your own numbers. '), 'A cost per outcome is only as good as the study behind it, so keep a note of where yours came from.'),
+        ),
+      );
+      if (errs.outcome || errs.low || errs.high) {
+        message('Add your numbers to see an estimate.', 'Name the outcome and enter a cost per outcome, low and high.');
+        return;
+      }
+      cost = { outcome, low, high };
+    }
+
+    if (item) sourceBox.append(costSource(item));
+
+    if (aErr) {
+      message('Enter an amount above zero to see an estimate.');
+      return;
+    }
+
+    const share = st.cf / 100;
+    const r = impactRange(amount, share, cost.low, cost.high);
+    const cheap = Math.min(cost.low, cost.high);
+    const dear = Math.max(cost.low, cost.high);
+    const single = cheap === dear;
+    summary.append(
+      h('p', { class: 'ic-big' }, single ? ['About ', h('strong', {}, sig(r.most))] : ['Between ', h('strong', {}, sig(r.fewest)), ' and ', h('strong', {}, sig(r.most))]),
+      h('p', { class: 'ic-unit' }, cost.outcome),
+      h(
+        'p',
+        { class: 'ic-explain' },
+        (st.cf
+          ? `${dollars(r.counted)} of your ${dollars(amount)} counts as your impact, because you set ${st.cf}% as what would have happened anyway. `
+          : `All of your ${dollars(amount)} counts as your impact. `) +
+          `At ${single ? dollars(cheap) : `${dollars(cheap)} to ${dollars(dear)}`} per outcome, that pays for ${single ? `about ${sig(r.most)}` : `between ${sig(r.fewest)} and ${sig(r.most)}`}.` +
+          (cost.low > cost.high ? ' The low and high costs were entered the other way round, so they were swapped.' : ''),
+      ),
+    );
+    kpis.append(
+      kpi('Counted as yours', dollars(r.counted), st.cf ? `${100 - st.cf}% of ${dollars(amount)}` : `All of ${dollars(amount)}`),
+      kpi('Cost per outcome', single ? dollars(cheap) : `${dollars(cheap)}–${dollars(dear)}`, item ? `As of ${item.cost?.asOf}` : 'Your numbers'),
+      kpi(
+        'Gift for one outcome',
+        single ? dollars(r.perOutcomeLow) : `${dollars(r.perOutcomeLow)}–${dollars(r.perOutcomeHigh)}`,
+        st.cf ? `With ${st.cf}% that would have happened anyway` : 'With nothing counted as “anyway”',
+      ),
+    );
+  }
+
+  function costSource(item: Item) {
+    const c = item.cost;
+    return h(
+      'div',
+      { class: 'ic-src' },
+      profile(item),
+      c && sourceLine(c.source),
+      c && h('p', {}, h('strong', {}, 'As of: '), `${c.asOf}.`),
+      c?.note && h('p', {}, h('strong', {}, 'Note: '), c.note),
+      entryLink(item),
+    );
+  }
+
+  form.addEventListener('submit', (e) => e.preventDefault());
+  form.addEventListener('input', (e) => {
+    const t = e.target as HTMLInputElement;
+    if (t.name) touched.add(t.name);
+    render();
+  });
+  form.addEventListener('change', render);
+  $$<HTMLInputElement>('#ic-form input[type="text"]').forEach((el) =>
+    el.addEventListener('blur', () => {
+      touched.add(el.name);
+      render();
+    }),
+  );
+
+  $('#ic-share').addEventListener('click', async (e) => {
+    const ok = await copy(location.href);
+    flash(e.currentTarget as HTMLElement, ok ? 'Link copied' : 'Copy failed');
+  });
+
+  /** Apply the state in a share link, if the address has a valid one. */
+  function fromLink(): boolean {
+    const shared = readHash('ic');
+    const st = shared ? decodeState<Partial<State>>(shared) : undefined;
+    if (!st || typeof st !== 'object') return false;
+    apply(st);
+    const missing = st.m === 'db' && st.i && !items.some((x) => x.id === st.i);
+    $('#ic-loaded').textContent = missing
+      ? 'Loaded from a share link, but its intervention isn’t in the database any more, so another one is shown.'
+      : 'Loaded from a share link.';
+    return true;
+  }
+
+  // Start from a share link if there is one, otherwise from the first entry with cost data.
+  const first = items.find((x) => x.cost) ?? items[0];
+  if (first) select.value = first.id;
+  if (!items.length) apply({ m: 'own' });
+  fromLink();
+  render();
+  // A link pasted into the address bar of an open page changes only the hash.
+  window.addEventListener('hashchange', () => fromLink() && render());
+</script>
