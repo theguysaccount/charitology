@@ -2,9 +2,9 @@
 title: Charitology Summit
 group: Reach
 order: 1
-summary: A planned yearly working gathering of researchers, funders, nonprofits and the people they serve, across every cause and framework, built around shared problems rather than speeches.
-status: partners
-statusNote: A summit needs a host, a venue, funding and a legal home. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+summary: Prepare provisional working sessions, role placeholders, access and production checks, follow-up outputs and tentative UTC calendar drafts.
+status: live
+statusNote: Live local summit-planning software is available. No event, host, venue, confirmed speaker, invitation or recording permission is established by a planning record.
 conditions: [fragmentation, missing-profession]
 firstMilestone: A free online pilot with sessions on three Open Problems, a red-team session and a failure session, all recorded and published.
 help:
@@ -13,6 +13,14 @@ help:
   - Suggest ways to bring in people from the communities charity serves, not only funders and experts.
 related: [/open-problems/, /open-problems/the-fragmentation-question/, /record/progress-report/, /programs/red-team/]
 ---
+
+## Use the operational planning software
+
+Use the [summit desk](#partner-workspace-charitology-summit) to design sessions around research questions and written outputs. Record role placeholders, access needs, consent and follow-up. Calendar export includes complete noncancelled UTC planning slots, marks them tentative and flags schedule overlaps. It sends no invitation and announces no event.
+
+The workspace includes separate institutional-readiness records. Those records track what responsible people still need to establish; they do not grant approval or verify a legal, funded program. The longer-term charter below remains an institutional proposal.
+
+Save each form, inspect the generated kit and export a backup. Your records stay in this browser. Imports are validated, destructive changes offer undo and newer work from another tab is protected. Fictional examples contain no real commitments, participants or results.
 
 ## What it is
 

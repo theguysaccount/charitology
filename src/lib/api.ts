@@ -15,6 +15,8 @@ import podcast from "../data/podcast.json";
 import newsletter from "../data/newsletter.json";
 import nonprofitTools from "../data/nonprofit-tools.json";
 import nonprofitBenefits from "../data/nonprofit-benefits.json";
+import osProviders from "../data/os-providers.json";
+import osUserNeeds from "../data/os-user-needs.json";
 
 export interface Endpoint {
   name: string;
@@ -50,6 +52,18 @@ function flattenRefs(value: unknown): unknown {
 }
 
 export const ENDPOINTS: Endpoint[] = [
+  {
+    name: "os-providers",
+    description:
+      "Dated Charity OS provider dossiers, licenses, scope, limits and primary sources; draft research, not tested integrations.",
+    build: async () => osProviders,
+  },
+  {
+    name: "os-user-needs",
+    description:
+      "Twenty primary public user discussions, observed needs, constraints and proposed OS requirements; a purposive draft research sample.",
+    build: async () => osUserNeeds,
+  },
   {
     name: "conditions",
     description:

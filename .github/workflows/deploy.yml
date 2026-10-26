@@ -15,6 +15,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  newsletter:
+    name: Newsletter safety checks
+    permissions:
+      contents: read
+    uses: ./.github/workflows/newsletter-check.yml
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +46,7 @@ jobs:
           path: dist
 
   deploy:
-    needs: build
+    needs: [build, newsletter]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

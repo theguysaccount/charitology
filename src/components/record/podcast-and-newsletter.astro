@@ -1,6 +1,7 @@
 ---
 import podcast from "../../data/podcast.json";
 import newsletter from "../../data/newsletter.json";
+import NewsletterSignup from "../NewsletterSignup.astro";
 import { url } from "../../lib/site";
 ---
 
@@ -45,8 +46,7 @@ import { url } from "../../lib/site";
     }
   </ol><h2>The Charitology Letter</h2><p>
     Read and subscribe without an account. The dedicated RSS feed publishes
-    actual letters; the site-wide feed below also includes other pages. Email
-    delivery is not configured.
+    actual letters; the site-wide feed below also includes other pages.
   </p><a class="btn" href={url("/newsletter.xml")}
     >Subscribe to the letter by RSS</a
   ><ul>
@@ -58,13 +58,15 @@ import { url } from "../../lib/site";
         </li>
       ))
     }
-  </ul><details>
+  </ul><NewsletterSignup id="record-letter-signup" /><details>
     <summary>Feed addresses to copy into your reader</summary><p>
       Podcast: <a href={url("/podcast.xml")}
-        >https://charitology.org/podcast.xml</a>
+        >https://charitology.org/podcast.xml</a
+      >
     </p><p>
       Newsletter: <a href={url("/newsletter.xml")}
-        >https://charitology.org/newsletter.xml</a>
+        >https://charitology.org/newsletter.xml</a
+      >
     </p><p>
       All pages: <a href={url("/feed.xml")}>https://charitology.org/feed.xml</a>
     </p>

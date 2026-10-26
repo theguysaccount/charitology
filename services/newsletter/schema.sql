@@ -1,0 +1,53 @@
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+ email text PRIMARY KEY CHECK(length(email) <= 254),
+ state text NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','confirmed','active','unsubscribed','blocked')),
+ generation text NOT NULL,
+ contact_id text,
+ consent_version text,
+ consent_at timestamptz,
+ unsubscribed_at timestamptz,
+ sync_pending boolean NOT NULL DEFAULT false,
+ mail_status text NOT NULL DEFAULT 'none',
+ created_at timestamptz NOT NULL DEFAULT now(),
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS newsletter_tokens (
+ token_hash text PRIMARY KEY CHECK(length(token_hash)=64),
+ email text NOT NULL REFERENCES newsletter_subscribers(email) ON DELETE CASCADE,
+ generation text NOT NULL,
+ kind text NOT NULL CHECK(kind IN ('confirm','unsubscribe')),
+ expires_at timestamptz,
+ used_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS newsletter_tokens_email_idx ON newsletter_tokens(email);
+ALTER TABLE newsletter_subscribers ADD COLUMN IF NOT EXISTS topic_attempted_generation text;
+ALTER TABLE newsletter_subscribers ADD COLUMN IF NOT EXISTS consent_generation text;
+ALTER TABLE newsletter_subscribers ADD COLUMN IF NOT EXISTS contact_import_id text;
+ALTER TABLE newsletter_subscribers ADD COLUMN IF NOT EXISTS contact_import_status text NOT NULL DEFAULT 'none';
+CREATE TABLE IF NOT EXISTS newsletter_consent_events (
+ id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ email text NOT NULL REFERENCES newsletter_subscribers(email) ON DELETE CASCADE,
+ kind text NOT NULL,
+ version text,
+ created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS newsletter_rate_limits (
+ key text PRIMARY KEY,
+ hits integer NOT NULL,
+ expires_at timestamptz NOT NULL
+);
+CREATE TABLE IF NOT EXISTS newsletter_campaigns (
+ edition text PRIMARY KEY,
+ content_hash text NOT NULL,
+ state text NOT NULL,
+ broadcast_id text,
+ provider_status text,
+ operation_id text NOT NULL,
+ updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS newsletter_webhook_events (
+ id text PRIMARY KEY,
+ type text NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now()
+);

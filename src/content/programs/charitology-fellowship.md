@@ -2,9 +2,9 @@
 title: Charitology Fellowship
 group: People and education
 order: 2
-summary: Paid fellowships that would let researchers and practitioners spend a year working full-time on the field’s open problems, with everything they produce published openly.
-status: partners
-statusNote: Fellowships need funding and host institutions. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+summary: Plan public research projects, a cohort curriculum, milestones, supervision and transparent work-related review discussions.
+status: live
+statusNote: Live local fellowship-planning software is available. It recruits or selects no people, offers no stipend and grants no fellowship, employment or credential.
 conditions: [missing-profession]
 firstMilestone: A host institution, a legal home and published selection criteria in place for a pilot cohort of three fellows.
 help:
@@ -13,6 +13,14 @@ help:
   - Suggest how fellows should be chosen so the program reaches people outside the usual institutions.
 related: [/open-problems/, /open-problems/the-profession-question/, /programs/question-bounties/, /programs/certified-charitologist/]
 ---
+
+## Use the operational planning software
+
+Use the [fellowship desk](#partner-workspace-charitology-fellowship) to plan research projects, facilitated learning, supervision and deliverables. Review public work through project codes and explicit criteria. Keep private applicant information and sensitive personal attributes out of the notebook. The software makes no individual selection or eligibility decision.
+
+The workspace includes separate institutional-readiness records. Those records track what responsible people still need to establish; they do not grant approval or verify a legal, funded program. The longer-term charter below remains an institutional proposal.
+
+Save each form, inspect the generated kit and export a backup. Your records stay in this browser. Imports are validated, destructive changes offer undo and newer work from another tab is protected. Fictional examples contain no real commitments, participants or results.
 
 ## What it is
 

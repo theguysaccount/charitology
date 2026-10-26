@@ -6,6 +6,8 @@ import { createRequire } from "node:module";
 const require = createRequire(path.resolve("package.json"));
 const ts = require("typescript");
 const files = [
+  "src/components/NewsletterSignup.astro",
+  "src/pages/for-charities/os-plan.astro",
   "src/components/DepthCensus.astro",
   "src/components/ReaderNotebook.astro",
   ...[

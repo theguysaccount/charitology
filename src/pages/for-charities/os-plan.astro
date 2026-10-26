@@ -1,0 +1,320 @@
+---
+import Base from "../../layouts/Base.astro";
+import Crumbs from "../../components/Crumbs.astro";
+import { Content as Plan } from "../../../docs/CHARITY_OS_PLAN.md";
+import providers from "../../data/os-providers.json";
+import needs from "../../data/os-user-needs.json";
+import { url } from "../../lib/site";
+const tags = [...new Set(needs.entries.flatMap((e) => e.tags))].sort();
+---
+
+<Base
+  title="Charity OS: plan and research"
+  description="An open plan for a shared Charity OS, with ten provider dossiers, twenty public user discussions and a phased implementation proposal."
+>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs
+        items={[
+          { label: "For charities", href: "/for-charities/" },
+          { label: "OS plan and research" },
+        ]}
+      /><span class="eyebrow">Research before the shared build</span><h1>
+        A working system for the work.
+      </h1><p class="lede">
+        Connect the promise, the work, the evidence and the next decision. Begin
+        with a complete workflow, learn with charities and keep a clear way to
+        leave.
+      </p><p class="note">
+        Editorial draft · October 25, 2026 · AI-assisted research. Shared
+        features are proposals. No pilot organizations have tested this plan.
+      </p><div class="btn-row">
+        <a class="btn" href={url("/tools/charity-os/")}
+          >Use the current local OS</a
+        ><a class="btn btn-ghost" href="#implementation"
+          >Read the implementation plan</a>
+      </div>
+    </div>
+  </header>
+  <section class="wrap section-tight" aria-labelledby="research-title">
+    <h2 id="research-title">What we checked</h2><div class="grid">
+      <article class="card">
+        <h3>{providers.providers.length} existing systems</h3><p>
+          Official documentation, repositories, licenses, API scope, exports,
+          operating limits and dated maintenance observations.
+        </p><a
+          href={url("/api/v1/os-providers.json")}
+          download="charity-os-providers.json">Download provider dossiers</a>
+      </article><article class="card">
+        <h3>{needs.entries.length} public discussions</h3><p>
+          Needs reported in nonprofit and technical communities. A purposive
+          sample, with no claim to represent all charities.
+        </p><a
+          href={url("/api/v1/os-user-needs.json")}
+          download="charity-os-user-needs.json">Download the needs register</a>
+      </article><article class="card">
+        <h3>One first workflow</h3><p>
+          Proposed pilot: program → grant application → obligations → work →
+          evidence → report. Architecture comparison and user validation come
+          first.
+        </p><a
+          href="https://github.com/theguysaccount/charitology/blob/main/docs/CHARITY_OS_PLAN.md"
+          >Read or propose changes on GitHub</a>
+      </article>
+    </div>
+  </section>
+  <section class="wrap section-tight" aria-labelledby="providers-title">
+    <h2 id="providers-title">Provider and open-source landscape</h2><p>
+      AI-assisted review of official documentation, source repositories and
+      public maintenance records. This is a bounded planning sample of ten
+      systems, not a complete market census or a product endorsement.
+    </p><p class="note">
+      A documented feature has not been tested here. Unknown does not mean
+      absent. Source-code licenses and supported versions need checking before
+      reuse.
+    </p><div class="landscape">
+      {
+        providers.providers.map((p) => (
+          <details class="provider">
+            <>
+              <summary>
+                <>
+                  <strong>{p.name}</strong>
+                  <span>{p.category}</span>
+                </>
+              </summary>
+              <div class="provider-body">
+                <ul>
+                  {p.limits.map((l) => (
+                    <li>{l}</li>
+                  ))}
+                </ul>
+                {p.maintenance.length > 0 && (
+                  <>
+                    <h3>Repository observations</h3>
+                    <ul>
+                      {p.maintenance.map((m) => (
+                        <li>
+                          <a href={m.url}>{m.repository}</a>:{" "}
+                          {m.archived
+                            ? "archived"
+                            : "not archived when checked"}
+                          ; branch {m.default_branch}.{" "}
+                          <a href={m.latest_commit.url}>Observed commit</a>{" "}
+                          dated {m.latest_commit.date} (UTC). A commit is not a
+                          supported-release guarantee.
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                <h3>Sources read</h3>
+                <>
+                  <ul>
+                    {p.sources.map((s) => (
+                      <li>
+                        <a href={s.url}>{s.title}</a> · {s.scope}
+                      </li>
+                    ))}
+                  </ul>
+                  <p class="note">
+                    {p.tested} Checked {p.checked_at}. Review: {p.review}.
+                  </p>
+                </>
+              </div>
+            </>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+  <section class="wrap section-tight" aria-labelledby="needs-title">
+    <h2 id="needs-title">Public user-needs register</h2><p>
+      {needs.method}
+    </p><div class="need-filters">
+      <div class="field">
+        <label for="need-search">Search the discussions</label><input
+          id="need-search"
+          type="search"
+          placeholder="Grant, shift, report, migration…"
+        />
+      </div><div class="field">
+        <label for="need-topic">Topic</label><select id="need-topic"
+          ><option value="all">All topics</option>{
+            tags.map((t) => <option value={t}>{t}</option>)
+          }</select>
+      </div><button
+        class="btn btn-ghost btn-small"
+        id="need-reset"
+        type="button">Clear filters</button>
+    </div><p id="need-count" role="status" aria-live="polite">
+      Showing {needs.entries.length} discussions.
+    </p><div class="grid" id="need-list">
+      {
+        needs.entries.map((n) => (
+          <article
+            class="card need"
+            data-tags={n.tags.join(" ")}
+            data-search={[
+              n.id,
+              n.title,
+              n.context,
+              n.need,
+              n.constraint,
+              n.implication,
+              ...n.tags,
+            ]
+              .join(" ")
+              .toLowerCase()}
+          >
+            <>
+              <span class="eyebrow">
+                {n.id} · {n.venue}
+              </span>
+              <h3>
+                <a href={n.url}>{n.title}</a>
+              </h3>
+              <p class="note">
+                {n.date || "Exact publication date not established"} · Checked{" "}
+                {needs.checked}
+              </p>
+              <p>{n.context}</p>
+              <dl>
+                <>
+                  <dt>Reported need</dt>
+                  <dd>{n.need}</dd>
+                  <dt>Constraint</dt>
+                  <dd>{n.constraint}</dd>
+                  <dt>Proposed response</dt>
+                  <dd>{n.implication}</dd>
+                </>
+              </dl>
+              <p class="note">{n.tags.join(" · ")}</p>
+            </>
+          </article>
+        ))
+      }
+    </div><p id="need-empty" hidden>
+      No discussions match these filters. Try another topic or clear the search.
+    </p><details>
+      <summary>Exclusions and dating notes</summary><ul>
+        {needs.exclusions.map((e) => <li>{e}</li>)}
+      </ul>
+    </details>
+  </section>
+  <section class="wrap section-tight" id="implementation">
+    <div class="prose plan"><Plan /></div><p>
+      <a
+        class="btn btn-ghost"
+        href="https://github.com/theguysaccount/charitology/issues/new?labels=idea&title=Charity%20OS%20planning%20feedback"
+        >Suggest a workflow or challenge the plan</a>
+    </p><p class="note">
+      Please describe workflows with fictional or redacted examples. Public
+      issues are not a place for personal service records.
+    </p>
+  </section>
+</Base>
+<script>
+  const search = document.querySelector<HTMLInputElement>("#need-search")!;
+  const topic = document.querySelector<HTMLSelectElement>("#need-topic")!;
+  const cards = [...document.querySelectorAll<HTMLElement>(".need")];
+  function filter() {
+    const q = search.value.trim().toLowerCase(),
+      tag = topic.value;
+    let count = 0;
+    for (const card of cards) {
+      const show =
+        (!q || card.dataset.search?.includes(q)) &&
+        (tag === "all" || card.dataset.tags?.split(" ").includes(tag));
+      card.hidden = !show;
+      if (show) count++;
+    }
+    document.querySelector("#need-count")!.textContent =
+      `Showing ${count} of ${cards.length} discussions.`;
+    document.querySelector<HTMLElement>("#need-empty")!.hidden = count !== 0;
+  }
+  search.addEventListener("input", filter);
+  topic.addEventListener("change", filter);
+  document.querySelector("#need-reset")!.addEventListener("click", () => {
+    search.value = "";
+    topic.value = "all";
+    filter();
+  });
+</script>
+<style>
+  .landscape {
+    display: grid;
+    gap: 0.65rem;
+  }
+  .provider {
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--paper);
+  }
+  .provider summary {
+    padding: 1rem;
+    cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1rem;
+    align-items: baseline;
+  }
+  .provider summary span {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .provider-body {
+    padding: 0 1.2rem 1.2rem;
+  }
+  .provider-body h3 {
+    font-size: 1.15rem;
+  }
+  .provider-body dd,
+  .need dd {
+    margin: 0 0 0.8rem;
+  }
+  .provider-body dt,
+  .need dt {
+    font-weight: 650;
+  }
+  .need-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .need-filters .field {
+    flex: 1;
+    min-width: 190px;
+  }
+  .need {
+    font-size: 0.95rem;
+  }
+  .need h3 {
+    font-size: 1.3rem;
+  }
+  .need[hidden] {
+    display: none;
+  }
+  .plan {
+    max-width: 78ch;
+  }
+  .plan :global(table) {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+    font-size: 0.9rem;
+  }
+  .plan :global(h1) {
+    font-size: 2.2rem;
+  }
+  .plan :global(h2) {
+    scroll-margin-top: 6rem;
+  }
+  .plan :global(td),
+  .plan :global(th) {
+    min-width: 140px;
+    vertical-align: top;
+  }
+</style>

@@ -2,9 +2,9 @@
 title: Charity Incubator
 group: Funding
 order: 2
-summary: A planned incubator that would launch new organizations to fill gaps the research finds, but only after checking that no existing organization could fill them instead.
-status: partners
-statusNote: Incubation needs funding, a legal home and experienced mentors. The program waits on partners and a proper legal and governance setup, and it accepts no money now.
+summary: Investigate gaps and existing work, plan a cohort of projects and track experiments, milestones and hand-off decisions.
+status: live
+statusNote: Live local incubation software is available. No organization, funded cohort, recruited founder or independently verified result is created by using it.
 conditions: [symptom-trap, fragmentation]
 firstMilestone: A published gap report naming three gaps the research has found, each checked for whether an existing organization could fill it.
 help:
@@ -18,6 +18,14 @@ sources:
     url: https://www.ambitiousimpact.com/
     note: The launch count is the organization’s own figure, from its home page.
 ---
+
+## Use the operational planning software
+
+Use the [incubator desk](#partner-workspace-charity-incubator) to document a gap search, existing organizations and partnership alternatives before proposing a new project. Move project codes through discovery, design and learning; record experiment rules before results and preserve a route to hand-off, merger or closure.
+
+The workspace includes separate institutional-readiness records. Those records track what responsible people still need to establish; they do not grant approval or verify a legal, funded program. The longer-term charter below remains an institutional proposal.
+
+Save each form, inspect the generated kit and export a backup. Your records stay in this browser. Imports are validated, destructive changes offer undo and newer work from another tab is protected. Fictional examples contain no real commitments, participants or results.
 
 ## What it is
 

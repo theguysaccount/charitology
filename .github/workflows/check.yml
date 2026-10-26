@@ -9,6 +9,12 @@ permissions:
   contents: read
 
 jobs:
+  newsletter:
+    name: Newsletter safety checks
+    permissions:
+      contents: read
+    uses: ./.github/workflows/newsletter-check.yml
+
   check:
     runs-on: ubuntu-latest
     steps:

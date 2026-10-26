@@ -2,9 +2,9 @@
 title: The Charitology Fund
 group: Funding
 order: 1
-summary: One pooled fund that would always give to the field’s current best estimate of where money does the most good. It does not exist yet and accepts no money.
-status: partners
-statusNote: The fund needs a legal entity, a fiscal sponsor and independent governance before it can exist. It accepts nothing now, so please don’t send money.
+summary: Prepare grant proposals, conflicts, conditional allocation plans and a nonpayment authorization ledger with a selected-field transparency draft.
+status: live
+statusNote: Live local fund-planning software is available. No legal fund, cash custody, funded grant, payment or independently approved allocation method is established.
 conditions: [symptom-trap, story-bias, single-lens]
 firstMilestone: A published governance charter, a legal entity and fiscal sponsor in place and an allocation method that has passed public red-team review, all before a single gift is accepted.
 help:
@@ -17,6 +17,14 @@ sources:
     publisher: Candid Learning
     url: https://learning.candid.org/resources/knowledge-base/fiscal-sponsorship/
 ---
+
+## Use the operational planning software
+
+Work through proposals, evidence, conflicts and conditional allocations in the [fund desk](#partner-workspace-the-charitology-fund). Keep the nonpayment authorization ledger separate from cash, receipts and disbursements. Export the complete internal kit or a selected-field transparency draft for review. Proposal asks, allocation plans and ledger entries are separate stages and are not added together.
+
+The workspace includes separate institutional-readiness records. Those records track what responsible people still need to establish; they do not grant approval or verify a legal, funded program. The longer-term charter below remains an institutional proposal.
+
+Save each form, inspect the generated kit and export a backup. Your records stay in this browser. Imports are validated, destructive changes offer undo and newer work from another tab is protected. Fictional examples contain no real commitments, participants or results.
 
 ## What it is
 

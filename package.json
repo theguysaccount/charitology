@@ -20,7 +20,7 @@
     "check:social": "node scripts/check-social.mjs",
     "check:extension": "node scripts/check-extension.mjs",
     "check:roadmap": "node scripts/check-roadmap.mjs",
-    "check:completion": "node scripts/check-completion.mjs && node scripts/check-research-programs.mjs && node scripts/check-learning-programs.mjs",
+    "check:completion": "node scripts/check-completion.mjs && node scripts/check-research-programs.mjs && node scripts/check-learning-programs.mjs && node scripts/check-partner-programs.mjs",
     "data:countries": "node scripts/update-country-data.mjs",
     "audio:podcast": "node scripts/make-podcast.mjs",
     "check:references": "node scripts/check-reference-libraries.mjs",

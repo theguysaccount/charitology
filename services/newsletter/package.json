@@ -1,0 +1,25 @@
+{
+  "name": "charitology-newsletter",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "test:db": "node --env-file=.env.local --test test-db/*.test.mjs",
+    "migrate": "node --env-file=.env.local scripts/migrate.mjs",
+    "dev": "node --env-file=.env.local scripts/dev.mjs"
+  },
+  "dependencies": {
+    "@vercel/connect": "2.5.5",
+    "@vercel/functions": "3.10.3",
+    "pg": "8.23.1",
+    "svix": "2.9.0"
+  },
+  "overrides": {
+    "@vercel/cli-config": {
+      "zod": "4.6.7"
+    }
+  }
+}

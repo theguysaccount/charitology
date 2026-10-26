@@ -1,0 +1,63 @@
+---
+import Entry from "../../layouts/Entry.astro";
+import { url } from "../../lib/site";
+---
+
+<Entry
+  title="Newsletter privacy"
+  eyebrow="The Charitology Letter"
+  summary="What subscribing shares, how confirmation works and how to stop receiving the letter."
+  crumbs={[
+    { label: "The Charitology Letter", href: "/newsletter/" },
+    { label: "Privacy" },
+  ]}
+>
+  <h2>Your choice</h2><p>
+    We ask for an email address and explicit newsletter consent. A confirmation
+    email verifies that you control the inbox. A request alone does not join the
+    newsletter. Opening a confirmation page alone does not subscribe you;
+    confirmation requires a deliberate action.
+  </p>
+  <h2>What the mail service keeps</h2><p>
+    When email sign-up is available, the mail service keeps your address,
+    subscription state, consent version and request/confirmation times.
+    Confirmation credentials expire and are stored as hashes. Limited request
+    records support abuse prevention. Delivery events help us handle failed
+    addresses, complaints and unsubscribe requests.
+  </p>
+  <p>
+    The website is hosted on GitHub Pages. The separate mail service uses
+    Vercel, a private Neon database and Resend to process subscriptions and
+    deliver emails. These providers process the data necessary for those
+    functions under their service agreements. Their privacy notices describe
+    their own practices: <a href="https://vercel.com/legal/privacy-notice">Vercel</a>,
+    <a href="https://neon.com/privacy-policy">Neon</a> and
+    <a href="https://resend.com/legal/privacy-policy">Resend</a>. Subscriber
+    records are not published in the website, public API, search index or GitHub
+    repository.
+  </p>
+  <h2>What we use it for</h2><p>
+    Your newsletter address is for The Charitology Letter and messages needed to
+    manage that subscription. We do not sell it, publish it or add it to a donor
+    or volunteer list. Subscribing does not authorize another program to contact
+    you. We do not use tracking pixels or tracked links in the letter.
+  </p>
+  <h2>Unsubscribe and requests</h2><p>
+    Use the unsubscribe or preferences link in a letter to stop receiving it.
+    Minimal suppression information may remain to prevent accidental
+    resubscription. For an access, correction or deletion request, email <a
+      href="mailto:hello@charitology.org">hello@charitology.org</a
+    > from the subscribed address. We may need to verify control before disclosing
+    or changing a record.
+  </p>
+  <p>
+    If your address is already unsubscribed across the shared Resend account, a
+    Charitology signup must not silently reverse that preference. The
+    confirmation flow will explain any additional step needed.
+  </p>
+  <h2>Keep reading without subscribing</h2><p>
+    All editions remain available on the website and through the <a
+      href={url("/newsletter.xml")}>newsletter RSS feed</a
+    >. Read <a href={url("/newsletter/")}>The Charitology Letter</a>.
+  </p>
+</Entry>
