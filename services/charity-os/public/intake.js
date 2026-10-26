@@ -9,6 +9,13 @@ let publication,
   receiptBusy = false,
   formBusy = false;
 const controls = new Map();
+document.querySelector(".skip")?.addEventListener("click", (event) => {
+  const main = $("#intake-main");
+  if (!main) return;
+  event.preventDefault();
+  main.focus({ preventScroll: true });
+  main.scrollIntoView({ block: "start" });
+});
 function node(tag, attributes = {}, ...children) {
   const element = document.createElement(tag);
   for (const [key, value] of Object.entries(attributes)) {
@@ -341,9 +348,75 @@ const statusLabels = {
   converted: "Reviewed and linked for follow-up",
   cancelled: "Cancelled",
 };
-async function checkReceipt(parts, action = "status") {
+function confirmCancellation(target, trigger, parts) {
   if (receiptBusy) return;
+  const existing = target.querySelector("#receipt-cancel-panel");
+  if (existing) {
+    existing.focus();
+    return;
+  }
+  const keep = node(
+    "button",
+    { type: "button", class: "button" },
+    "Keep request",
+  );
+  const confirmButton = node(
+    "button",
+    { type: "button", class: "button danger" },
+    "Confirm cancellation",
+  );
+  const panel = node(
+    "section",
+    {
+      id: "receipt-cancel-panel",
+      class: "notice section-gap",
+      role: "region",
+      "aria-labelledby": "receipt-cancel-title",
+      tabindex: "-1",
+    },
+    node("h3", { id: "receipt-cancel-title" }, "Cancel this request?"),
+    node(
+      "p",
+      {},
+      "The organization will see that you withdrew this request. Submitted answers and previously prepared contacts and drafts remain for separate retention review. Earlier archives and downloaded backups are not changed.",
+    ),
+    node("div", { class: "actions" }, confirmButton, keep),
+  );
+  trigger.disabled = true;
+  trigger.setAttribute("aria-expanded", "true");
+  trigger.setAttribute("aria-controls", "receipt-cancel-panel");
+  keep.addEventListener("click", () => {
+    if (receiptBusy) return;
+    panel.remove();
+    if (trigger.isConnected) {
+      trigger.disabled = false;
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.removeAttribute("aria-controls");
+      trigger.focus();
+    }
+  });
+  confirmButton.addEventListener("click", async () => {
+    if (receiptBusy || confirmButton.disabled) return;
+    confirmButton.disabled = true;
+    keep.disabled = true;
+    const completed = await checkReceipt(parts, "cancel");
+    if (!completed && panel.isConnected) {
+      confirmButton.disabled = false;
+      keep.disabled = false;
+      keep.textContent = "Close confirmation";
+      confirmButton.focus();
+    }
+  });
+  target.append(panel);
+  panel.focus();
+}
+async function checkReceipt(parts, action = "status") {
+  if (receiptBusy) return false;
   receiptBusy = true;
+  const activeButtons = [
+    ...$("#receipt-result").querySelectorAll("button"),
+  ].map((button) => ({ button, disabled: button.disabled }));
+  for (const { button } of activeButtons) button.disabled = true;
   const output = $("#receipt-status");
   const entryButton = $("#receipt-entry-form button");
   entryButton.disabled = true;
@@ -363,7 +436,11 @@ async function checkReceipt(parts, action = "status") {
     $("#receipt-entry").value = "";
     const target = $("#receipt-result");
     target.replaceChildren(
-      node("h2", {}, statusLabels[result.status] || "Status received"),
+      node(
+        "h2",
+        { tabindex: "-1" },
+        statusLabels[result.status] || "Status received",
+      ),
       node(
         "p",
         {},
@@ -389,21 +466,11 @@ async function checkReceipt(parts, action = "status") {
           {
             type: "button",
             class: "button danger",
-            onclick: async (event) => {
-              if (
-                !confirm(
-                  "Cancel this request? The organization will see that you withdrew it. Submitted answers and any previously prepared records remain for the organization’s separate retention review.",
-                )
-              )
-                return;
-              const button = event.currentTarget;
-              button.disabled = true;
-              try {
-                await checkReceipt(receiptScope, "cancel");
-              } finally {
-                if (button.isConnected) button.disabled = false;
-              }
-            },
+            "aria-expanded": "false",
+            onclick: (event) =>
+              confirmCancellation(target, event.currentTarget, [
+                ...receiptScope,
+              ]),
           },
           "Cancel this request",
         ),
@@ -422,11 +489,22 @@ async function checkReceipt(parts, action = "status") {
         ? "The service recorded the cancellation."
         : "Status checked.",
     );
+    if (action === "cancel") target.querySelector("h2").focus();
+    return true;
   } catch (error) {
-    status(output, error.message, true);
+    status(
+      output,
+      action === "cancel" && !error.status
+        ? "The cancellation response was interrupted. The service may have recorded it. Refresh status before deciding whether to confirm cancellation again; repeating cancellation does not create another request."
+        : error.message,
+      true,
+    );
+    return false;
   } finally {
     receiptBusy = false;
     entryButton.disabled = false;
+    for (const { button, disabled } of activeButtons)
+      if (button.isConnected) button.disabled = disabled;
   }
 }
 $("#receipt-entry-form").addEventListener("submit", async (event) => {
