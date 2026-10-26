@@ -1,0 +1,103 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import SystemMap from '../../components/SystemMap.astro';
+import Badges from '../../components/Badges.astro';
+import { conditionsInOrder } from '../../lib/content';
+import { EVIDENCE, NODES } from '../../lib/labels';
+import { pad, url } from '../../lib/site';
+
+const conditions = await conditionsInOrder();
+const byEvidence = Object.fromEntries(
+  (Object.keys(EVIDENCE) as (keyof typeof EVIDENCE)[]).map((k) => [k, conditions.filter((c) => c.data.evidence === k).length]),
+);
+---
+
+<Base
+  title="The Diagnosis"
+  description="Fifteen conditions of the charity system, each with its evidence labeled. None of them is anyone’s fault. All of them can be fixed."
+>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'Diagnosis' }]} />
+      <span class="eyebrow">The Diagnosis</span>
+      <h1>Charity is a system. This is what’s wrong with it.</h1>
+      <p class="lede">
+        Fifteen conditions of the charity system, each placed where it acts and labeled with how strong the evidence is. None
+        of them is anyone’s fault. All of them can be fixed.
+      </p>
+    </div>
+  </header>
+
+  <section class="wrap section-tight">
+    <SystemMap />
+  </section>
+
+  <section class="wrap section-tight">
+    <div class="principles">
+      <div>
+        <h2>No judgment of the good being done</h2>
+        <p>
+          Every food bank, clinic and volunteer on Earth is doing real good. Charitology doesn’t grade anyone’s heart. It
+          studies the system that decides where their generosity lands.
+        </p>
+      </div>
+      <div>
+        <h2>The system is the subject</h2>
+        <p>
+          “Every system is perfectly designed to get the results it gets,” goes a line from improvement science, usually
+          credited to <a href="https://www.ihi.org/insights/magic-every-system-perfectly-designed">Paul Batalden</a>. If
+          generosity keeps landing on symptoms, look at the system that aims it.
+        </p>
+      </div>
+      <div>
+        <h2>Unknown stays unknown</h2>
+        <p>
+          A science says what it doesn’t know. Of the fifteen conditions, {byEvidence.established} are established, {
+            byEvidence.documented
+          } documented, {byEvidence.debated} debated and {byEvidence.hypothesis} are Charitology’s own hypotheses, waiting to
+          be tested.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section-tight" aria-labelledby="all-conditions">
+    <h2 id="all-conditions" class="visually-hidden">All fifteen conditions</h2>
+    <div class="list-rows">
+      {
+        conditions.map((c) => (
+          <a class="list-row" href={url(`/diagnosis/${c.id}/`)}>
+            <span class="numeral">C{pad(c.data.number)}</span>
+            <div>
+              <h3>{c.data.title}</h3>
+              <p>{c.data.summary}</p>
+            </div>
+            <div class="row-meta">
+              <Badges evidence={c.data.evidence} extra={[NODES[c.data.node].label]} />
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .principles {
+    display: grid;
+    gap: 1.5rem 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    padding-block: 1rem;
+    border-block: 1px solid var(--rule);
+  }
+  .principles h2 {
+    font-size: 1.2rem;
+    margin: 0.75rem 0 0.4rem;
+  }
+  .principles p {
+    margin: 0 0 0.75rem;
+    color: var(--ink-2);
+    font-size: 1rem;
+  }
+</style>

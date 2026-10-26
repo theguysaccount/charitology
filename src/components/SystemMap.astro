@@ -1,0 +1,294 @@
+---
+// The charity system as a flow: givers → signals → channels → the work → outcomes,
+// with the feedback loop that should carry results back, and the field around it all.
+// Each condition of the Diagnosis is pinned where it acts.
+import { conditionsInOrder } from '../lib/content';
+import { DEPTH } from '../lib/labels';
+import { pad, url } from '../lib/site';
+import figures from '../data/figures.json';
+
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+const conditions = await conditionsInOrder();
+const at = (node: string) => conditions.filter((c) => c.data.node === node);
+
+const STAGES = [
+  {
+    node: 'givers',
+    label: 'Givers',
+    text: figures.bySource.rows.map((r) => `${r.name} ${r.share}%`).join(' · '),
+    note: `U.S. giving by source, ${figures.bySource.year}`,
+  },
+  { node: 'signals', label: 'Signals', text: 'Stories, faces, overhead ratios, rankings, prestige, tax breaks' },
+  { node: 'channels', label: 'Channels', text: 'Charities, foundations, donor-advised funds, giving platforms' },
+  { node: 'work', label: 'The work', text: '' },
+  { node: 'outcomes', label: 'Outcomes', text: 'Lives, institutions, futures' },
+];
+---
+
+<figure class={compact ? 'sysmap compact' : 'sysmap'} aria-labelledby="sysmap-cap">
+  <ol class="stages">
+    {
+      STAGES.map((s, i) => (
+        <li class="stage" data-node={s.node}>
+          <span class="stage-num">{i + 1}</span>
+          <h3>{s.label}</h3>
+          {s.node === 'work' ? (
+            <ol class="ladder" aria-label="Source depth, from relief to source">
+              {[...DEPTH].reverse().map((d) => (
+                <li>
+                  <span class={`swatch d${d.level}`} aria-hidden="true" />
+                  {d.name}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p>{s.text}</p>
+          )}
+          {s.note && <p class="stage-note">{s.note}</p>}
+          <ul class="pins">
+            {at(s.node).map((c) => (
+              <li>
+                <a href={url(`/diagnosis/${c.id}/`)}>
+                  <span class="pin-num">C{pad(c.data.number)}</span>
+                  {!compact && <span class="pin-title">{c.data.title.replace(/^The /, '')}</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="loop">
+    <div class="loop-line" aria-hidden="true">
+      <span class="loop-arrow">←</span>
+      <span class="loop-dash"></span>
+      <span class="loop-break">×</span>
+      <span class="loop-dash"></span>
+    </div>
+    <div class="loop-body">
+      <strong>Feedback, back to givers.</strong> Mostly missing: results rarely travel back to the people who pay.
+      <ul class="pins">
+        {
+          at('feedback').map((c) => (
+            <li>
+              <a href={url(`/diagnosis/${c.id}/`)}>
+                <span class="pin-num">C{pad(c.data.number)}</span>
+                {!compact && <span class="pin-title">{c.data.title.replace(/^The /, '')}</span>}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+  <div class="field-ring">
+    <strong>Around all of it, the field.</strong> Nobody is trained to steer the whole system.
+    <ul class="pins">
+      {
+        at('field').map((c) => (
+          <li>
+            <a href={url(`/diagnosis/${c.id}/`)}>
+              <span class="pin-num">C{pad(c.data.number)}</span>
+              {!compact && <span class="pin-title">{c.data.title.replace(/^The /, '')}</span>}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <figcaption id="sysmap-cap" class="note">
+    The charity system, left to right. Each pin is a condition from the Diagnosis, placed where it acts. Source: {figures.usGiving.sources[0].publisher}.
+  </figcaption>
+</figure>
+
+<style>
+  .sysmap {
+    margin: 0;
+    font-family: var(--font-sans);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+  }
+  .stages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 900px) {
+    .stages {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+  }
+  .stage {
+    position: relative;
+    background: var(--bg);
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 0.95rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+  .stage::after {
+    content: '↓';
+    position: absolute;
+    left: 50%;
+    bottom: -0.78rem;
+    transform: translateX(-50%);
+    color: var(--ink-3);
+    font-size: 0.9rem;
+    line-height: 1;
+    background: var(--surface);
+    padding: 0 0.2rem;
+  }
+  .stage:last-child::after {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .stage::after {
+      content: '→';
+      left: auto;
+      right: -1.2rem;
+      bottom: auto;
+      top: 1.1rem;
+      transform: none;
+    }
+  }
+  .stage-num {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    color: var(--ink-3);
+  }
+  .stage h3 {
+    font-size: 1.08rem;
+    margin: 0;
+  }
+  .stage p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    line-height: 1.45;
+  }
+  .stage .stage-note {
+    font-size: 0.72rem;
+    color: var(--ink-3);
+  }
+  .ladder {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 3px;
+    font-size: 0.8rem;
+    color: var(--ink-2);
+  }
+  .ladder li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .swatch {
+    width: 22px;
+    height: 10px;
+    border-radius: 2px;
+    flex: none;
+  }
+  .pins {
+    list-style: none;
+    margin: auto 0 0;
+    padding: 0.3rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .pins a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.28rem 0.6rem 0.28rem 0.32rem;
+  }
+  .compact .pins a {
+    padding: 0.28rem 0.5rem;
+  }
+  .pins a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .pin-num {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    background: var(--accent);
+    color: var(--on-accent);
+    border-radius: 999px;
+    padding: 0.08rem 0.42rem;
+    font-size: 0.72rem;
+  }
+  .compact .pin-num {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+  .loop {
+    margin-top: 1.25rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .loop-line {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .loop-dash {
+    flex: 1;
+    border-top: 2px dashed color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  .loop-break {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+  .loop-body,
+  .field-ring {
+    font-size: 0.86rem;
+    color: var(--ink-2);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+  }
+  .loop-body strong,
+  .field-ring strong {
+    color: var(--ink);
+  }
+  .loop-body .pins,
+  .field-ring .pins {
+    margin: 0;
+    padding: 0;
+  }
+  .field-ring {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule-2);
+  }
+  figcaption {
+    margin-top: 1rem;
+  }
+</style>

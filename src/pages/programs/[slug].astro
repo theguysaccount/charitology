@@ -1,0 +1,28 @@
+---
+import { getCollection, render } from 'astro:content';
+import Entry from '../../layouts/Entry.astro';
+import Badges from '../../components/Badges.astro';
+import CatalogAside from '../../components/CatalogAside.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('programs');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Entry
+  title={entry.data.title}
+  eyebrow={`Program · ${entry.data.group}`}
+  summary={entry.data.summary}
+  crumbs={[{ label: 'Programs', href: '/programs/' }, { label: entry.data.title }]}
+  filePath={entry.filePath}
+  review={entry.data.review}
+  sources={entry.data.sources}
+>
+  <Badges slot="badges" status={entry.data.status} />
+  <Content />
+  <CatalogAside slot="aside" entry={entry} />
+</Entry>

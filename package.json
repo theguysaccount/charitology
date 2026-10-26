@@ -1,0 +1,28 @@
+{
+  "name": "charitology",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Charitology: the science of doing the most good. An open field that studies charity as a system.",
+  "license": "MIT",
+  "homepage": "https://charitology.org",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site dist --silent",
+    "preview": "astro preview",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs",
+    "test": "npm run build && npm run check",
+    "extension:zip": "node scripts/zip-extension.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "5.3.0",
+    "@fontsource-variable/source-serif-4": "5.3.0",
+    "astro": "5.18.2"
+  },
+  "devDependencies": {
+    "pagefind": "1.5.2"
+  }
+}

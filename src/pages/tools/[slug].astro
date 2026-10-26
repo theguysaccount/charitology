@@ -1,0 +1,34 @@
+---
+import { getCollection, render } from 'astro:content';
+import Entry from '../../layouts/Entry.astro';
+import Badges from '../../components/Badges.astro';
+import CatalogAside from '../../components/CatalogAside.astro';
+
+// Each live tool is a component at src/components/tools/<entry id>.astro.
+// Adding a tool means adding that file and a matching src/content/tools/<id>.md.
+const tools = import.meta.glob<{ default: any }>('../../components/tools/*.astro', { eager: true });
+
+export async function getStaticPaths() {
+  const entries = await getCollection('tools');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const Tool = tools[`../../components/tools/${entry.id}.astro`]?.default;
+---
+
+<Entry
+  title={entry.data.title}
+  eyebrow={`Tool · ${entry.data.group}`}
+  summary={entry.data.summary}
+  crumbs={[{ label: 'Tools', href: '/tools/' }, { label: entry.data.title }]}
+  filePath={entry.filePath}
+  review={entry.data.review}
+  sources={entry.data.sources}
+>
+  <Badges slot="badges" status={entry.data.status} />
+  {Tool && <Tool slot="top" />}
+  <Content />
+  <CatalogAside slot="aside" entry={entry} />
+</Entry>

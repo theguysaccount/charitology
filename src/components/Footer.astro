@@ -1,0 +1,92 @@
+---
+import Seal from './Seal.astro';
+import { SITE, url } from '../lib/site';
+
+const COLUMNS = [
+  {
+    title: 'The science',
+    links: [
+      ['Manifesto', '/manifesto/'],
+      ['Diagnosis', '/diagnosis/'],
+      ['Method', '/method/'],
+      ['Open Problems', '/open-problems/'],
+    ],
+  },
+  {
+    title: 'The field',
+    links: [
+      ['Programs', '/programs/'],
+      ['Tools', '/tools/'],
+      ['Record', '/record/'],
+      ['Journal', '/record/journal/'],
+    ],
+  },
+  {
+    title: 'Take part',
+    links: [
+      ['Contribute', '/contribute/'],
+      ['Report a correction', `${SITE.repo}/issues/new?labels=correction`],
+      ['Challenge a claim', `${SITE.repo}/issues/new?labels=red-team`],
+      ['Source on GitHub', SITE.repo],
+    ],
+  },
+  {
+    title: 'About',
+    links: [
+      ['About Charitology', '/about/'],
+      ['Search', '/search/'],
+      ['Public API', '/tools/public-api/'],
+      ['RSS feed', '/feed.xml'],
+    ],
+  },
+];
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <Seal id="footer-seal" size={112} />
+        <p>
+          Charitology is an open science of doing the most good. It studies charity as a system, and anyone can
+          contribute.
+        </p>
+      </div>
+      {
+        COLUMNS.map((col) => (
+          <div>
+            <h2>{col.title}</h2>
+            <ul>
+              {col.links.map(([label, href]) => (
+                <li>
+                  <a href={url(href)}>{label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+    <div class="footer-base">
+      <span>{SITE.name} · {SITE.edition} · {SITE.established}</span>
+      <span>
+        Code <a href={`${SITE.repo}/blob/main/LICENSE`}>MIT</a> · Content <a href={`${SITE.repo}/blob/main/CONTENT-LICENSE.md`}
+          >CC BY 4.0</a
+        > · No tracking, no ads, no accounts
+      </span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer-brand {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    max-width: 34ch;
+  }
+  .footer-brand p {
+    margin: 0;
+    line-height: 1.5;
+  }
+</style>

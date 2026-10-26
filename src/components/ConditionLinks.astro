@@ -1,0 +1,29 @@
+---
+// Lists the Diagnosis conditions an entry treats, as "C03 The Story Bias".
+import { getEntries } from 'astro:content';
+import { url, pad } from '../lib/site';
+
+interface Props {
+  refs: { collection: 'conditions'; id: string }[];
+  heading?: string;
+}
+const { refs, heading = 'Conditions it treats' } = Astro.props;
+const items = refs.length ? (await getEntries(refs)).sort((a, b) => a.data.number - b.data.number) : [];
+---
+
+{
+  items.length > 0 && (
+    <div>
+      <h2>{heading}</h2>
+      <ul>
+        {items.map((c) => (
+          <li>
+            <a href={url(`/diagnosis/${c.id}/`)}>
+              <span class="numeral">C{pad(c.data.number)}</span> {c.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

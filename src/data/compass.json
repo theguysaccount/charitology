@@ -1,0 +1,21 @@
+{
+  "_note": "Questions for the Values Compass. Dimensions match causes.json; statements match frameworks.json.",
+  "dimensions": [
+    { "id": "horizon", "prompt": "Who should your giving protect?", "left": "People alive now", "right": "People not yet born" },
+    { "id": "circle", "prompt": "Whose suffering counts?", "left": "Humans first", "right": "All living things" },
+    { "id": "reach", "prompt": "Where should your giving go?", "left": "My community", "right": "Wherever it goes furthest" },
+    { "id": "certainty", "prompt": "How much uncertainty can you live with?", "left": "Proven, measurable results", "right": "Long shots with huge upside" },
+    { "id": "depth", "prompt": "Where on the chain should you act?", "left": "Relieve suffering today", "right": "Change the systems behind it" }
+  ],
+  "statements": [
+    { "framework": "welfare", "text": "The best gift reduces the most suffering, wherever it is." },
+    { "framework": "rights", "text": "Some things are owed to every person, and giving should secure them." },
+    { "framework": "justice", "text": "Giving should fix what is unfair, not just soften it." },
+    { "framework": "care", "text": "I owe the most to the people and places close to me." },
+    { "framework": "tradition", "text": "My faith or tradition tells me how and what to give." },
+    { "framework": "future", "text": "The people of the future count as much as people today." },
+    { "framework": "nature", "text": "Animals and the living world matter in their own right." },
+    { "framework": "flourishing", "text": "The point is to help people become who they could be." }
+  ],
+  "scale": ["Not me", "A little", "Somewhat", "Mostly", "Exactly me"]
+}

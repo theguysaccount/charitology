@@ -1,0 +1,34 @@
+---
+interface Props {
+  id?: string;
+  size?: number;
+}
+const { id = 'seal', size = 160 } = Astro.props;
+const r = 78;
+const circumference = 2 * Math.PI * r;
+---
+
+<svg class="seal" viewBox="0 0 200 200" width={size} height={size} role="img" aria-label="Charitology seal: the science of doing the most good, established 2026">
+  <defs>
+    <path id={`${id}-ring`} d={`M100,100 m-${r},0 a${r},${r} 0 1,1 ${r * 2},0 a${r},${r} 0 1,1 -${r * 2},0`}></path>
+  </defs>
+  <circle cx="100" cy="100" r="97" fill="none" stroke="currentColor" stroke-width="1.4"></circle>
+  <circle cx="100" cy="100" r="92" fill="none" stroke="currentColor" stroke-width="0.6"></circle>
+  <circle cx="100" cy="100" r="62" fill="none" stroke="currentColor" stroke-width="0.8"></circle>
+  <text fill="currentColor" font-size="10.4" font-weight="560" style="font-family: var(--font-display); letter-spacing: 0.08em">
+    <textPath href={`#${id}-ring`} textLength={circumference - 6} lengthAdjust="spacing">
+      CHARITOLOGY · THE SCIENCE OF DOING THE MOST GOOD · EST. MMXXVI ·
+    </textPath>
+  </text>
+  <g transform="translate(64 64) scale(2.25)">
+    <path d="M25.83 9.12A12 12 0 1 0 25.83 22.88" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+    <circle cx="16" cy="16" r="3.4" fill="var(--accent)"></circle>
+  </g>
+</svg>
+
+<style>
+  .seal {
+    color: var(--ink);
+    display: block;
+  }
+</style>

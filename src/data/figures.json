@@ -1,0 +1,94 @@
+{
+  "_note": "Headline figures used across the site. Every figure carries its source. Update a figure here and every page that uses it changes.",
+  "usGiving": {
+    "year": 2025,
+    "billions": 617.2,
+    "growth": "5.7% over 2024 in current dollars",
+    "label": "Given to U.S. charities in 2025",
+    "sources": [
+      {
+        "title": "Giving USA: $617.2B Was Given To Nonprofits During 2025",
+        "publisher": "The NonProfit Times, reporting Giving USA 2026",
+        "year": 2026,
+        "url": "https://thenonprofittimes.com/npt_articles/giving-usa-617-2-b-was-given-to-nonprofits-during-2025/"
+      },
+      {
+        "title": "Key takeaways from Giving USA’s 2026 report on philanthropy",
+        "publisher": "Foundation Source",
+        "year": 2026,
+        "url": "https://foundationsource.com/blog/key-takeaways-from-giving-usas-2026-report-on-philanthropy/"
+      }
+    ]
+  },
+  "bySource": {
+    "year": 2025,
+    "rows": [
+      { "name": "Individuals", "billions": 394.2, "share": 64 },
+      { "name": "Foundations", "billions": 117.15, "share": 19 },
+      { "name": "Bequests", "billions": 62.19, "share": 10 },
+      { "name": "Corporations", "billions": 43.67, "share": 7 }
+    ],
+    "note": "Giving USA 2026 estimates. Shares are rounded by Giving USA."
+  },
+  "byRecipient": {
+    "year": 2025,
+    "rows": [
+      { "name": "Religion", "billions": 151.58 },
+      { "name": "Education", "billions": 92.01 },
+      { "name": "Public-society benefit", "billions": 72.06 },
+      { "name": "Environment and animals", "billions": 24.57 }
+    ],
+    "note": "Giving USA reports nine recipient subsectors by type of organization. These four are the 2025 figures published in the coverage cited here. The other subsectors are left out rather than guessed."
+  },
+  "dafs": {
+    "year": 2024,
+    "assetsBillions": 326,
+    "grantsBillions": 64.9,
+    "contributionsBillions": 89.6,
+    "payoutRate": 25.3,
+    "sources": [
+      {
+        "title": "DAF Assets Soar 30% to $326 Billion",
+        "publisher": "The Chronicle of Philanthropy, reporting the Annual DAF Report 2025 by the DAF Research Collaborative",
+        "year": 2025,
+        "url": "https://www.philanthropy.com/news/daf-assets-soar-30-to-326-billion/"
+      },
+      {
+        "title": "The Annual DAF Report 2025",
+        "publisher": "Johnson Center for Philanthropy",
+        "year": 2025,
+        "url": "https://johnsoncenter.org/resource/report-annual-daf-report-2025/"
+      }
+    ]
+  },
+  "costPerLife": {
+    "low": 3000,
+    "high": 5500,
+    "label": "GiveWell’s typical modeled cost to save a life at its top charities",
+    "asOf": "February 2024 version",
+    "sources": [
+      {
+        "title": "How Much Does It Cost to Save a Life?",
+        "publisher": "GiveWell",
+        "year": 2024,
+        "url": "https://www.givewell.org/how-much-does-it-cost-to-save-a-life"
+      }
+    ]
+  },
+  "registered": {
+    "label": "IRS-listed 501(c)(3) organizations in the U.S.",
+    "text": "more than a million",
+    "sources": [
+      {
+        "title": "Exempt Organizations Business Master File Extract",
+        "publisher": "Internal Revenue Service",
+        "url": "https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf"
+      },
+      {
+        "title": "Systemic Altruism registry (built from the IRS Business Master File)",
+        "publisher": "Systemic Altruism",
+        "url": "https://charities.systemicaltruism.com/"
+      }
+    ]
+  }
+}

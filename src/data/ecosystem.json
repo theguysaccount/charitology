@@ -1,0 +1,83 @@
+{
+  "instruments": [
+    {
+      "name": "Humanity’s Checklist",
+      "url": "https://humanityschecklist.org/",
+      "role": "The source map",
+      "summary": "Six root causes that sit upstream of every world problem, each with one beachhead project. Charitology’s source level comes from here.",
+      "repo": "https://github.com/theguysaccount/humanityschecklist"
+    },
+    {
+      "name": "Systemic Altruism",
+      "url": "https://charities.systemicaltruism.com/",
+      "role": "Structural-change evidence",
+      "summary": "A beta tracker of charities working on structural change, with inspectable judgments, uncertainty ranges and a searchable IRS registry.",
+      "repo": "https://github.com/theguysaccount/systemic-altruism"
+    },
+    {
+      "name": "Charity Impact Media",
+      "url": "https://theguysaccount.github.io/charity-impact-media/",
+      "role": "Where the money goes",
+      "summary": "Sourced Form 990 spending breakdowns for about 25,000 U.S. charities with $10 million or more in revenue. No ratings.",
+      "repo": "https://github.com/theguysaccount/charity-impact-media"
+    },
+    {
+      "name": "WHOFUNDS",
+      "url": "https://theguysaccount.github.io/whofunds-open-grant-graph/",
+      "role": "Who funds whom",
+      "summary": "The open grant graph of U.S. private foundations, built from Form 990-PF filings, with its own miss rate on the page.",
+      "repo": "https://github.com/theguysaccount/whofunds-open-grant-graph"
+    }
+  ],
+  "registries": [
+    {
+      "name": "ProPublica Nonprofit Explorer",
+      "url": "https://projects.propublica.org/nonprofits/",
+      "search": "https://projects.propublica.org/nonprofits/search?q=",
+      "summary": "Tax filings for U.S. tax-exempt organizations."
+    },
+    {
+      "name": "WHOFUNDS search",
+      "url": "https://theguysaccount.github.io/whofunds-open-grant-graph/",
+      "search": "https://theguysaccount.github.io/whofunds-open-grant-graph/search/?q=",
+      "summary": "Which private foundations fund an organization."
+    },
+    {
+      "name": "IRS Tax Exempt Organization Search",
+      "url": "https://apps.irs.gov/app/eos/",
+      "summary": "Official IRS record of whether an organization can receive tax-deductible gifts."
+    },
+    {
+      "name": "IRS Business Master File",
+      "url": "https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf",
+      "summary": "The IRS list of every registered U.S. tax-exempt organization."
+    },
+    {
+      "name": "GivingTuesday 990 Data Lake",
+      "url": "https://990data.givingtuesday.org/",
+      "summary": "Machine-readable Form 990 e-file data."
+    }
+  ],
+  "evaluators": [
+    {
+      "name": "GiveWell",
+      "url": "https://www.givewell.org/",
+      "summary": "Cost-effectiveness research on global health and poverty programs."
+    },
+    {
+      "name": "Giving Green",
+      "url": "https://www.givinggreen.earth/",
+      "summary": "Research on climate giving, including policy and systemic work."
+    },
+    {
+      "name": "Animal Charity Evaluators",
+      "url": "https://animalcharityevaluators.org/",
+      "summary": "Research on charities that help animals."
+    },
+    {
+      "name": "Our World in Data",
+      "url": "https://ourworldindata.org/",
+      "summary": "Open data and research on the world’s largest problems."
+    }
+  ]
+}

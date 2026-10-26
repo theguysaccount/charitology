@@ -1,0 +1,116 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import { problemsInOrder } from '../../lib/content';
+import { pad, url, SITE } from '../../lib/site';
+
+const problems = await problemsInOrder();
+const open = problems.filter((p) => p.data.status === 'open').length;
+const solved = problems.filter((p) => p.data.status === 'solved').length;
+---
+
+<Base
+  title="The Open Problems of Charitology"
+  description="Twenty-three unanswered questions at the heart of doing the most good. Solve one and you change where billions of dollars go."
+>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'Open Problems' }]} />
+      <span class="eyebrow">The Open Problems</span>
+      <h1>Twenty-three questions nobody has answered</h1>
+      <p class="lede">
+        In 1900 the mathematician David Hilbert published a list of 23 unsolved problems, and it steered mathematics for a
+        century. These are charitology’s. Each turns a condition of the charity system into a question precise enough to
+        work on. Solve one and you change where billions of dollars go.
+      </p>
+      <p class="meta tally">{open} open · {problems.length - open - solved} partly answered · {solved} solved</p>
+    </div>
+  </header>
+
+  <section class="wrap section-tight">
+    <ol class="problems">
+      {
+        problems.map((p) => (
+          <li>
+            <a href={url(`/open-problems/${p.id}/`)}>
+              <span class="pnum">{pad(p.data.number)}</span>
+              <span class="pbody">
+                <span class="ptitle">{p.data.title}</span>
+                <span class="pstatement">{p.data.statement}</span>
+              </span>
+              <span class="pstatus">{p.data.status}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="wrap section-tight">
+    <div class="callout">
+      <strong>Work on one.</strong> Open an issue or a pull request on <a href={SITE.repo}>GitHub</a> with your approach,
+      data or partial result. Progress is published in the <a href={url('/record/progress-report/')}>Open Problems Progress Report</a>.
+      Prizes will come through <a href={url('/programs/question-bounties/')}>Question Bounties</a> once that program is funded.
+    </div>
+  </section>
+</Base>
+
+<style>
+  .tally {
+    margin-top: 1.25rem;
+  }
+  .problems {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .problems li {
+    border-bottom: 1px solid var(--rule);
+  }
+  .problems a {
+    display: grid;
+    grid-template-columns: 3.4rem 1fr auto;
+    gap: 0.9rem;
+    padding: 1.15rem 0.5rem 1.15rem 0;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+  .problems a:hover .ptitle {
+    color: var(--accent);
+  }
+  .pnum {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .pbody {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .ptitle {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 580;
+    line-height: 1.2;
+  }
+  .pstatement {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .pstatus {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    padding-top: 0.3rem;
+  }
+</style>

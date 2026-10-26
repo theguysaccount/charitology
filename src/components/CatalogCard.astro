@@ -1,0 +1,19 @@
+---
+import Badges from './Badges.astro';
+import { url } from '../lib/site';
+import type { CatalogEntry } from '../lib/content';
+
+interface Props {
+  entry: CatalogEntry;
+  base: string;
+}
+const { entry, base } = Astro.props;
+---
+
+<a class="card" href={url(`${base}${entry.id}/`)}>
+  <h3>{entry.data.title}</h3>
+  <p>{entry.data.summary}</p>
+  <div class="card-meta">
+    <Badges status={entry.data.status} />
+  </div>
+</a>

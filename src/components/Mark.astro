@@ -1,0 +1,13 @@
+---
+// The Charitology mark: an open circle (the whole of the problem) around
+// a single point (the place where a gift does the most good).
+interface Props {
+  size?: number;
+}
+const { size = 28 } = Astro.props;
+---
+
+<svg class="mark" viewBox="0 0 32 32" width={size} height={size} aria-hidden="true" focusable="false">
+  <path d="M25.83 9.12A12 12 0 1 0 25.83 22.88" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"></path>
+  <circle cx="16" cy="16" r="3.6" fill="var(--accent)"></circle>
+</svg>

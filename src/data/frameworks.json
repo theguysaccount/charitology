@@ -1,0 +1,101 @@
+{
+  "_note": "Moral frameworks used by the Values Compass and the Portfolio Builder. Priorities run from 0 (not a concern of this framework) to 5 (a central concern) and are editorial sketches of how each framework tends to rank causes. Real philosophers disagree inside every framework. Improve these with a pull request that cites your reasoning.",
+  "frameworks": [
+    {
+      "id": "welfare",
+      "name": "Welfare",
+      "question": "What reduces the most suffering and adds the most wellbeing?",
+      "summary": "Counts everyone’s wellbeing equally and looks for the gift that does the most good per dollar.",
+      "thinkers": ["Jeremy Bentham", "John Stuart Mill", "Peter Singer"],
+      "priorities": {
+        "global-health": 5, "extreme-poverty": 5, "hunger": 4, "climate": 3, "nature": 2, "animals": 5,
+        "education": 3, "mental-health": 4, "housing": 3, "democracy": 2, "peace": 3, "catastrophic-risk": 3,
+        "science": 3, "community": 1, "arts": 1, "faith": 1, "charity-system": 4
+      }
+    },
+    {
+      "id": "rights",
+      "name": "Rights and duties",
+      "question": "What do we owe each other, whatever the cost?",
+      "summary": "Some things are owed to every person: rescue from danger, basic dignity, freedom. Giving secures them.",
+      "thinkers": ["Immanuel Kant", "W. D. Ross", "Onora O’Neill"],
+      "priorities": {
+        "global-health": 4, "extreme-poverty": 4, "hunger": 5, "climate": 3, "nature": 2, "animals": 2,
+        "education": 4, "mental-health": 3, "housing": 4, "democracy": 5, "peace": 5, "catastrophic-risk": 2,
+        "science": 2, "community": 3, "arts": 2, "faith": 3, "charity-system": 3
+      }
+    },
+    {
+      "id": "justice",
+      "name": "Justice",
+      "question": "What is unfair, and how do we fix it rather than soften it?",
+      "summary": "Looks at who holds power and how institutions distribute advantage, and gives to change them.",
+      "thinkers": ["John Rawls", "Iris Marion Young"],
+      "priorities": {
+        "global-health": 4, "extreme-poverty": 5, "hunger": 4, "climate": 4, "nature": 2, "animals": 2,
+        "education": 5, "mental-health": 3, "housing": 5, "democracy": 5, "peace": 3, "catastrophic-risk": 1,
+        "science": 2, "community": 3, "arts": 2, "faith": 1, "charity-system": 5
+      }
+    },
+    {
+      "id": "care",
+      "name": "Care",
+      "question": "Who depends on me, and how do I show up for them?",
+      "summary": "Starts from relationships. The people and places close to us have a real claim on our care.",
+      "thinkers": ["Carol Gilligan", "Nel Noddings", "Virginia Held"],
+      "priorities": {
+        "global-health": 3, "extreme-poverty": 3, "hunger": 4, "climate": 2, "nature": 2, "animals": 3,
+        "education": 3, "mental-health": 5, "housing": 4, "democracy": 1, "peace": 2, "catastrophic-risk": 1,
+        "science": 1, "community": 5, "arts": 3, "faith": 4, "charity-system": 2
+      }
+    },
+    {
+      "id": "tradition",
+      "name": "Faith and tradition",
+      "question": "What does my tradition ask me to give, and to whom?",
+      "summary": "Zakat, tzedakah, dāna, tithing and seva carry centuries of thought about who to give to and how.",
+      "thinkers": ["Maimonides", "Religious and community traditions worldwide"],
+      "priorities": {
+        "global-health": 3, "extreme-poverty": 5, "hunger": 5, "climate": 2, "nature": 2, "animals": 2,
+        "education": 3, "mental-health": 2, "housing": 4, "democracy": 1, "peace": 3, "catastrophic-risk": 1,
+        "science": 1, "community": 4, "arts": 2, "faith": 5, "charity-system": 2
+      }
+    },
+    {
+      "id": "future",
+      "name": "Future generations",
+      "question": "What protects the people who aren’t born yet?",
+      "summary": "Most people who will ever live haven’t been born. Protecting their future may be the largest good available.",
+      "thinkers": ["Derek Parfit", "Hans Jonas", "Toby Ord"],
+      "priorities": {
+        "global-health": 2, "extreme-poverty": 2, "hunger": 1, "climate": 5, "nature": 4, "animals": 2,
+        "education": 3, "mental-health": 1, "housing": 1, "democracy": 4, "peace": 4, "catastrophic-risk": 5,
+        "science": 5, "community": 1, "arts": 2, "faith": 1, "charity-system": 4
+      }
+    },
+    {
+      "id": "nature",
+      "name": "All life",
+      "question": "What protects animals and the living world for their own sake?",
+      "summary": "Widens the circle of concern beyond humans to animals, species and ecosystems.",
+      "thinkers": ["Aldo Leopold", "Arne Næss"],
+      "priorities": {
+        "global-health": 2, "extreme-poverty": 2, "hunger": 2, "climate": 5, "nature": 5, "animals": 5,
+        "education": 2, "mental-health": 1, "housing": 1, "democracy": 2, "peace": 2, "catastrophic-risk": 3,
+        "science": 3, "community": 2, "arts": 2, "faith": 2, "charity-system": 3
+      }
+    },
+    {
+      "id": "flourishing",
+      "name": "Flourishing",
+      "question": "What helps people become who they could be?",
+      "summary": "Good lives need more than survival: health, learning, meaning, culture and the freedom to choose.",
+      "thinkers": ["Aristotle", "Amartya Sen", "Martha Nussbaum"],
+      "priorities": {
+        "global-health": 4, "extreme-poverty": 4, "hunger": 3, "climate": 2, "nature": 2, "animals": 1,
+        "education": 5, "mental-health": 4, "housing": 3, "democracy": 3, "peace": 3, "catastrophic-risk": 2,
+        "science": 4, "community": 4, "arts": 5, "faith": 3, "charity-system": 3
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+---
+import ConditionLinks from './ConditionLinks.astro';
+import { STATUS } from '../lib/labels';
+import { editUrl, url } from '../lib/site';
+import { titleForPath, type CatalogEntry } from '../lib/content';
+
+interface Props {
+  entry: CatalogEntry;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const related = await Promise.all(
+  d.related.map(async (path) => ({ path, title: (await titleForPath(path)) ?? path })),
+);
+---
+
+<div class="aside-box">
+  <h2>Status</h2>
+  <p><strong>{STATUS[d.status].label}.</strong> {d.statusNote ?? STATUS[d.status].note}</p>
+</div>
+<ConditionLinks refs={d.conditions} />
+{
+  d.firstMilestone && (
+    <div>
+      <h2>First milestone</h2>
+      <p>{d.firstMilestone}</p>
+    </div>
+  )
+}
+{
+  d.help.length > 0 && (
+    <div>
+      <h2>How to help</h2>
+      <ul class="help">
+        {d.help.map((h) => (
+          <li>{h}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+{
+  related.length > 0 && (
+    <div>
+      <h2>Related</h2>
+      <ul>
+        {related.map((r) => (
+          <li>
+            <a href={url(r.path)}>{r.title}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+<div>
+  <a class="btn btn-ghost btn-small" href={editUrl(entry.filePath)}>Edit this page on GitHub</a>
+</div>
+
+<style>
+  .help li {
+    padding-left: 1rem;
+    position: relative;
+  }
+  .help li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--ink-3);
+  }
+</style>

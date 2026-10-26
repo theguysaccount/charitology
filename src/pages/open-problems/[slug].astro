@@ -1,0 +1,119 @@
+---
+import { getCollection, render } from 'astro:content';
+import Entry from '../../layouts/Entry.astro';
+import Badges from '../../components/Badges.astro';
+import ConditionLinks from '../../components/ConditionLinks.astro';
+import { problemsInOrder } from '../../lib/content';
+import { SITE, pad, url } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('problems');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const all = await problemsInOrder();
+const i = all.findIndex((p) => p.id === entry.id);
+const prev = all[i - 1];
+const next = all[i + 1];
+const workUrl = `${SITE.repo}/issues/new?${new URLSearchParams({
+  title: `Open Problem ${d.number}: ${d.title}`,
+  labels: 'open-problem',
+  body: 'Approach, data or partial result:\n\n',
+}).toString()}`;
+---
+
+<Entry
+  title={d.title}
+  eyebrow={`Open Problem ${pad(d.number)}`}
+  summary={d.statement}
+  crumbs={[{ label: 'Open Problems', href: '/open-problems/' }, { label: `${pad(d.number)} ${d.title}` }]}
+  filePath={entry.filePath}
+  review={d.review}
+  sources={d.sources}
+>
+  <Badges slot="badges" extra={[`Status: ${d.status}`]} />
+
+  <div class="progress-box">
+    <span class="eyebrow">What would count as progress</span>
+    <p>{d.progress}</p>
+  </div>
+
+  <Content />
+
+  <nav class="prob-nav" aria-label="Other open problems">
+    {
+      prev ? (
+        <a href={url(`/open-problems/${prev.id}/`)}>
+          <span class="meta">← {pad(prev.data.number)}</span>
+          {prev.data.title}
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    {
+      next && (
+        <a class="next" href={url(`/open-problems/${next.id}/`)}>
+          <span class="meta">{pad(next.data.number)} →</span>
+          {next.data.title}
+        </a>
+      )
+    }
+  </nav>
+
+  <Fragment slot="aside">
+    <div class="aside-box">
+      <h2>Work on it</h2>
+      <p>Share an approach, a dataset or a partial result. Everything is public.</p>
+      <p style="margin-top: 0.75rem"><a class="btn btn-small" href={workUrl}>Open an issue</a></p>
+    </div>
+    <ConditionLinks refs={d.conditions} heading="Conditions it would treat" />
+    {
+      d.bounty && (
+        <div>
+          <h2>Prize</h2>
+          <p>{d.bounty}</p>
+        </div>
+      )
+    }
+  </Fragment>
+</Entry>
+
+<style>
+  .progress-box {
+    margin: 0 0 2rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+  .progress-box .eyebrow {
+    margin-bottom: 0.35rem;
+  }
+  .progress-box p {
+    margin: 0;
+  }
+  .prob-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+  }
+  .prob-nav a {
+    display: grid;
+    gap: 0.15rem;
+    text-decoration: none;
+    max-width: 46%;
+    font-family: var(--font-display);
+  }
+  .prob-nav .next {
+    text-align: right;
+    margin-left: auto;
+  }
+</style>

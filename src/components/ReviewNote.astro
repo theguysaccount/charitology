@@ -1,0 +1,28 @@
+---
+import { editUrl, issueUrl } from '../lib/site';
+
+interface Props {
+  filePath?: string;
+  review?: 'draft' | 'reviewed';
+  title: string;
+}
+const { filePath, review = 'draft', title } = Astro.props;
+const page = Astro.url.pathname;
+---
+
+<aside class="review-note no-print" aria-label="Review status">
+  {
+    review === 'draft' ? (
+      <span>
+        <strong>Draft, Edition 0.</strong> A second charitologist hasn’t reviewed this page yet.
+      </span>
+    ) : (
+      <span>
+        <strong>Reviewed.</strong> Checked by a second charitologist.
+      </span>
+    )
+  }
+  {filePath && <a href={editUrl(filePath)}>Improve this page</a>}
+  <a href={issueUrl('correction', `Correction: ${title}`, page)}>Report an error</a>
+  <a href={issueUrl('challenge', `Challenge: ${title}`, page)}>Challenge a claim</a>
+</aside>

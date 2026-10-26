@@ -1,0 +1,154 @@
+---
+import { getCollection, render } from 'astro:content';
+import Entry from '../../layouts/Entry.astro';
+import Badges from '../../components/Badges.astro';
+import { conditionsInOrder, problemsInOrder, treatmentsFor } from '../../lib/content';
+import { NODES, UPSTREAM } from '../../lib/labels';
+import { pad, url } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('conditions');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const all = await conditionsInOrder();
+const i = all.findIndex((c) => c.id === entry.id);
+const prev = all[i - 1];
+const next = all[i + 1];
+const treatments = await treatmentsFor(entry.id);
+const problems = (await problemsInOrder()).filter((p) => p.data.conditions.some((c) => c.id === entry.id));
+const upstream = d.upstream ? UPSTREAM[d.upstream] : undefined;
+const KIND = { programs: 'Program', tools: 'Tool', record: 'Record' } as const;
+---
+
+<Entry
+  title={d.title}
+  eyebrow={`Condition C${pad(d.number)} · ${NODES[d.node].label}`}
+  summary={d.summary}
+  crumbs={[{ label: 'Diagnosis', href: '/diagnosis/' }, { label: `C${pad(d.number)} ${d.title}` }]}
+  filePath={entry.filePath}
+  review={d.review}
+  sources={d.sources}
+>
+  <Badges slot="badges" evidence={d.evidence} extra={[`Acts on: ${NODES[d.node].label}`]} />
+
+  <Content />
+
+  <div class="flip">
+    <span class="eyebrow">The flip</span>
+    <p>{d.flip}</p>
+  </div>
+
+  <nav class="cond-nav" aria-label="Other conditions">
+    {
+      prev ? (
+        <a href={url(`/diagnosis/${prev.id}/`)}>
+          <span class="meta">← C{pad(prev.data.number)}</span>
+          {prev.data.title}
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    {
+      next && (
+        <a class="next" href={url(`/diagnosis/${next.id}/`)}>
+          <span class="meta">C{pad(next.data.number)} →</span>
+          {next.data.title}
+        </a>
+      )
+    }
+  </nav>
+
+  <Fragment slot="aside">
+    <div class="aside-box">
+      <h2>Where it acts</h2>
+      <p><strong>{NODES[d.node].label}.</strong> {NODES[d.node].note}</p>
+    </div>
+    {
+      upstream && (
+        <div>
+          <h2>Upstream source</h2>
+          <p>
+            <a href="https://humanityschecklist.org/">{upstream.label}</a>: {upstream.title}. One of the six sources on
+            Humanity’s Checklist.
+          </p>
+        </div>
+      )
+    }
+    {
+      treatments.length > 0 && (
+        <div>
+          <h2>What treats it</h2>
+          <ul>
+            {treatments.map((t) => (
+              <li>
+                <a href={url(`/${t.collection}/${t.entry.id}/`)}>{t.entry.data.title}</a>{' '}
+                <span class="meta">{KIND[t.collection]}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+    {
+      problems.length > 0 && (
+        <div>
+          <h2>Open problems</h2>
+          <ul>
+            {problems.map((p) => (
+              <li>
+                <a href={url(`/open-problems/${p.id}/`)}>
+                  <span class="numeral">{pad(p.data.number)}</span> {p.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </Fragment>
+</Entry>
+
+<style>
+  .flip {
+    margin: 2.5rem 0 0;
+    padding: 1.25rem 1.4rem;
+    border-radius: var(--radius);
+    background: var(--accent-wash);
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--rule));
+  }
+  .flip .eyebrow {
+    margin-bottom: 0.4rem;
+  }
+  .flip p {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .cond-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+  }
+  .cond-nav a {
+    display: grid;
+    gap: 0.15rem;
+    text-decoration: none;
+    max-width: 46%;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+  }
+  .cond-nav .next {
+    text-align: right;
+    margin-left: auto;
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+// Status, evidence and depth badges in one place so every page labels things the same way.
+import { DEPTH, EVIDENCE, GRADE, STATUS } from '../lib/labels';
+
+interface Props {
+  status?: keyof typeof STATUS;
+  evidence?: keyof typeof EVIDENCE;
+  grade?: keyof typeof GRADE;
+  depth?: number;
+  extra?: string[];
+}
+
+const { status, evidence, grade, depth, extra = [] } = Astro.props;
+const s = status ? STATUS[status] : undefined;
+const e = evidence ? EVIDENCE[evidence] : undefined;
+const g = grade ? GRADE[grade] : undefined;
+const d = depth != null ? DEPTH.find((x) => x.level === depth) : undefined;
+---
+
+<span class="badges">
+  {
+    s && (
+      <span class={`badge status-${status}`} title={s.note}>
+        <span class="glyph" aria-hidden="true">
+          {s.glyph}
+        </span>
+        {s.label}
+      </span>
+    )
+  }
+  {
+    e && (
+      <span class="badge" title={e.note}>
+        <span class="glyph" aria-hidden="true">
+          {e.glyph}
+        </span>
+        {e.label}
+      </span>
+    )
+  }
+  {g && <span class="badge" title={g.note}>{g.label}</span>}
+  {
+    d && (
+      <span class="badge" title={`Source depth ${d.level} of 4: ${d.verb}`}>
+        <span class="depth">
+          <span class="cells" aria-hidden="true">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <span class={i <= d.level ? `cell on d${i}` : 'cell'} />
+            ))}
+          </span>
+          {d.name}
+        </span>
+      </span>
+    )
+  }
+  {extra.map((x) => <span class="badge">{x}</span>)}
+</span>

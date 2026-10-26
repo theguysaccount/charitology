@@ -1,0 +1,168 @@
+{
+  "_note": "Cause areas used by the Values Compass, the Portfolio Builder and the Cause Atlas. Dimension positions run from 0 to 1 and are editorial judgments, not measurements. Challenge any of them with a pull request that explains why.",
+  "dimensions": {
+    "horizon": "0 = helps people alive now, 1 = protects people not yet born",
+    "circle": "0 = centered on humans, 1 = all living things",
+    "reach": "0 = local, 1 = global",
+    "certainty": "0 = proven and measurable, 1 = speculative with large upside",
+    "depth": "0 = most work is relief, 1 = most work targets structures and sources"
+  },
+  "causes": [
+    {
+      "id": "global-health",
+      "name": "Global health",
+      "summary": "Preventing and treating disease where health systems are weakest.",
+      "dims": { "horizon": 0.2, "circle": 0.1, "reach": 0.9, "certainty": 0.15, "depth": 0.45 },
+      "problems": ["disease"],
+      "upstream": ["coordination"]
+    },
+    {
+      "id": "extreme-poverty",
+      "name": "Extreme poverty",
+      "summary": "Raising the incomes and security of people living on the least.",
+      "dims": { "horizon": 0.3, "circle": 0.1, "reach": 0.9, "certainty": 0.3, "depth": 0.5 },
+      "problems": ["poverty", "inequality", "hunger"],
+      "upstream": ["status", "coordination"]
+    },
+    {
+      "id": "hunger",
+      "name": "Hunger and food security",
+      "summary": "Making sure people have enough to eat, today and through bad years.",
+      "dims": { "horizon": 0.2, "circle": 0.1, "reach": 0.6, "certainty": 0.3, "depth": 0.35 },
+      "problems": ["hunger"],
+      "upstream": ["coordination"]
+    },
+    {
+      "id": "climate",
+      "name": "Climate change",
+      "summary": "Cutting emissions and helping people adapt to a warming world.",
+      "dims": { "horizon": 0.8, "circle": 0.5, "reach": 1, "certainty": 0.6, "depth": 0.75 },
+      "problems": ["climate", "pollution"],
+      "upstream": ["vision", "coordination"]
+    },
+    {
+      "id": "nature",
+      "name": "Nature and biodiversity",
+      "summary": "Protecting species, ecosystems, water and land.",
+      "dims": { "horizon": 0.8, "circle": 0.9, "reach": 0.8, "certainty": 0.6, "depth": 0.65 },
+      "problems": ["biodiversity", "water", "pollution"],
+      "upstream": ["vision", "story"]
+    },
+    {
+      "id": "animals",
+      "name": "Animal welfare",
+      "summary": "Reducing the suffering of animals, wild and farmed.",
+      "dims": { "horizon": 0.4, "circle": 1, "reach": 0.7, "certainty": 0.5, "depth": 0.6 },
+      "problems": [],
+      "upstream": ["story", "status"]
+    },
+    {
+      "id": "education",
+      "name": "Education",
+      "summary": "Helping people learn, from early childhood to adult skills.",
+      "dims": { "horizon": 0.5, "circle": 0.1, "reach": 0.5, "certainty": 0.35, "depth": 0.55 },
+      "problems": ["education", "inequality"],
+      "upstream": ["gatekeepers", "vision"]
+    },
+    {
+      "id": "mental-health",
+      "name": "Mental health",
+      "summary": "Treating and preventing mental illness, loneliness and addiction.",
+      "dims": { "horizon": 0.3, "circle": 0.1, "reach": 0.4, "certainty": 0.45, "depth": 0.4 },
+      "problems": ["mental", "loneliness", "addiction"],
+      "upstream": ["attention", "story"]
+    },
+    {
+      "id": "housing",
+      "name": "Housing and homelessness",
+      "summary": "Keeping people housed and making homes affordable.",
+      "dims": { "horizon": 0.3, "circle": 0.1, "reach": 0.2, "certainty": 0.35, "depth": 0.45 },
+      "problems": ["housing", "poverty"],
+      "upstream": ["coordination", "gatekeepers"]
+    },
+    {
+      "id": "democracy",
+      "name": "Democracy and good government",
+      "summary": "Fair elections, honest institutions, a healthy information ecosystem.",
+      "dims": { "horizon": 0.6, "circle": 0.1, "reach": 0.5, "certainty": 0.7, "depth": 0.85 },
+      "problems": ["corruption", "polarization", "distrust", "misinformation"],
+      "upstream": ["attention", "story", "gatekeepers"]
+    },
+    {
+      "id": "peace",
+      "name": "Peace and security",
+      "summary": "Preventing war and violence and helping people recover from them.",
+      "dims": { "horizon": 0.6, "circle": 0.2, "reach": 0.8, "certainty": 0.7, "depth": 0.7 },
+      "problems": ["war"],
+      "upstream": ["story", "coordination"]
+    },
+    {
+      "id": "catastrophic-risk",
+      "name": "Catastrophic risks",
+      "summary": "Reducing the chance of pandemics, nuclear war and other disasters that could set civilization back.",
+      "dims": { "horizon": 1, "circle": 0.3, "reach": 1, "certainty": 0.9, "depth": 0.8 },
+      "problems": ["war", "disease"],
+      "upstream": ["coordination", "vision"]
+    },
+    {
+      "id": "science",
+      "name": "Science and knowledge",
+      "summary": "Research, open data and the public understanding of what is true.",
+      "dims": { "horizon": 0.8, "circle": 0.3, "reach": 1, "certainty": 0.75, "depth": 0.8 },
+      "problems": ["misinformation", "disease", "education"],
+      "upstream": ["gatekeepers", "vision"]
+    },
+    {
+      "id": "community",
+      "name": "Local community",
+      "summary": "The neighborhood institutions that make a place work.",
+      "dims": { "horizon": 0.2, "circle": 0.1, "reach": 0, "certainty": 0.3, "depth": 0.35 },
+      "problems": ["loneliness", "distrust"],
+      "upstream": ["coordination"]
+    },
+    {
+      "id": "arts",
+      "name": "Arts and culture",
+      "summary": "The stories, art and shared culture a society uses to understand itself.",
+      "dims": { "horizon": 0.5, "circle": 0.1, "reach": 0.3, "certainty": 0.5, "depth": 0.6 },
+      "problems": ["loneliness", "distrust"],
+      "upstream": ["story", "vision"]
+    },
+    {
+      "id": "faith",
+      "name": "Faith and spiritual life",
+      "summary": "Religious communities and the care they provide.",
+      "dims": { "horizon": 0.4, "circle": 0.2, "reach": 0.2, "certainty": 0.4, "depth": 0.6 },
+      "problems": ["loneliness"],
+      "upstream": ["story", "status"]
+    },
+    {
+      "id": "charity-system",
+      "name": "The charity system itself",
+      "summary": "Research, infrastructure and incentives that change where all the other money goes.",
+      "dims": { "horizon": 0.7, "circle": 0.5, "reach": 1, "certainty": 0.7, "depth": 1 },
+      "problems": ["all"],
+      "upstream": ["story", "coordination", "vision", "attention", "status", "gatekeepers"]
+    }
+  ],
+  "problems": [
+    { "id": "climate", "label": "Climate change" },
+    { "id": "war", "label": "War" },
+    { "id": "poverty", "label": "Poverty" },
+    { "id": "hunger", "label": "Hunger" },
+    { "id": "disease", "label": "Disease" },
+    { "id": "water", "label": "Water scarcity" },
+    { "id": "pollution", "label": "Pollution" },
+    { "id": "biodiversity", "label": "Biodiversity loss" },
+    { "id": "housing", "label": "Housing" },
+    { "id": "education", "label": "Education gaps" },
+    { "id": "inequality", "label": "Inequality" },
+    { "id": "corruption", "label": "Corruption" },
+    { "id": "distrust", "label": "Distrust" },
+    { "id": "polarization", "label": "Polarization" },
+    { "id": "misinformation", "label": "Misinformation" },
+    { "id": "loneliness", "label": "Loneliness" },
+    { "id": "mental", "label": "Mental health" },
+    { "id": "addiction", "label": "Addiction" }
+  ]
+}

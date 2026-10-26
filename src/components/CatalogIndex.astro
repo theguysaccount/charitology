@@ -1,0 +1,73 @@
+---
+// Index page for Programs, Tools and the Record: grouped cards with status counts.
+import Base from '../layouts/Base.astro';
+import Crumbs from './Crumbs.astro';
+import CatalogCard from './CatalogCard.astro';
+import { STATUS } from '../lib/labels';
+import { catalogGroups, statusCounts } from '../lib/content';
+
+interface Props {
+  collection: 'programs' | 'tools' | 'record';
+  title: string;
+  eyebrow: string;
+  lede: string;
+  description?: string;
+}
+const { collection, title, eyebrow, lede, description } = Astro.props;
+const groups = await catalogGroups(collection);
+const counts = await statusCounts(collection);
+const total = Object.values(counts).reduce((a, b) => a + b, 0);
+const base = `/${collection}/`;
+---
+
+<Base title={title} description={description ?? lede}>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: title }]} />
+      <span class="eyebrow">{eyebrow}</span>
+      <h1>{title}</h1>
+      <p class="lede">{lede}</p>
+      <p class="meta status-line">
+        {total} in all ·{' '}
+        {
+          (Object.keys(STATUS) as (keyof typeof STATUS)[])
+            .filter((k) => counts[k] > 0)
+            .map((k, i) => (
+              <span title={STATUS[k].note}>
+                {i > 0 && ' · '}
+                {counts[k]} {STATUS[k].label.toLowerCase()}
+              </span>
+            ))
+        }
+      </p>
+      <slot name="intro" />
+    </div>
+  </header>
+  {
+    groups.map((g) => (
+      <section class="wrap section-tight" aria-labelledby={`g-${g.group}`}>
+        <h2 id={`g-${g.group}`} class="group-title">
+          {g.group}
+        </h2>
+        <div class="grid">
+          {g.entries.map((entry) => (
+            <CatalogCard entry={entry} base={base} />
+          ))}
+        </div>
+      </section>
+    ))
+  }
+  <slot />
+</Base>
+
+<style>
+  .status-line {
+    margin-top: 1.25rem;
+  }
+  .group-title {
+    font-size: 1.35rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+  }
+</style>
