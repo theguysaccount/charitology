@@ -120,12 +120,17 @@ test('Actual Postgres: isolated-schema DOI races, expiry, replacement, withdrawa
     await applyWebhook(db, nativeEvent, 'native-withdrawal', settings);
     await applyWebhook(db, nativeEvent, 'native-withdrawal', settings);
     assert.equal((await query("SELECT count(*)::int AS n FROM newsletter_consent_events WHERE kind='native_topic_unsubscribed'")).rows[0].n, 1, 'signed native withdrawal is durably deduplicated');
+    const topicPatchesBeforeWithdrawalSync = calls.filter(x => Array.isArray(x) && x[0] === 'topic').length;
     await syncSubscriber(db, mail, settings, settings.testRecipient);
     assert.equal(topicStates.get(settings.testRecipient), 'opt_out');
+    assert.equal(calls.filter(x => Array.isArray(x) && x[0] === 'topic').length, topicPatchesBeforeWithdrawalSync, 'native opt-out sync does not PATCH unchanged preferences and trigger another webhook');
+    assert.equal((await query('SELECT sync_pending FROM newsletter_subscribers WHERE email=$1', [settings.testRecipient])).rows[0].sync_pending, false, 'native withdrawal drains its durable pending state');
     await db.unsubscribe(member.unsubscribe);
     assert.equal((await query('SELECT state,sync_pending FROM newsletter_subscribers WHERE email=$1', [settings.testRecipient])).rows[0].state, 'unsubscribed');
     await syncSubscriber(db, mail, settings, settings.testRecipient);
     assert.equal(members.size, 0, 'withdrawal removes only own segment and own topic');
+    assert.equal(calls.filter(x => Array.isArray(x) && x[0] === 'topic').length, topicPatchesBeforeWithdrawalSync, 'repeat local unsubscribe also avoids an unchanged opt-out PATCH');
+    assert.equal((await query('SELECT sync_pending FROM newsletter_subscribers WHERE email=$1', [settings.testRecipient])).rows[0].sync_pending, false);
     let importsStarted = 0;
     const delayed = await db.pending('queued@example.invalid'); await db.confirm(delayed.confirm);
     const delayedMail = { ...mail, contact: async () => null, startContactImport: async () => { importsStarted++; return { id: 'saved-queued-import' }; }, getContactImport: async () => ({ status: 'queued' }) };

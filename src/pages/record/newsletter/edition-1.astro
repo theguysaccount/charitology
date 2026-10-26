@@ -68,10 +68,12 @@ import { url } from "../../../lib/site";
     after the decision. This is a proposed learning practice; its effectiveness
     still needs testing.
   </p>
-  <p>
+  <p data-letter-delivery-footer>
     <a href={url("/contribute/review/")}>Review an entry</a> · <a
-      href={url("/newsletter.xml")}>Subscribe to this letter by RSS</a
-    >. Email delivery is not configured.
+      href={url("/newsletter/")}>Get future letters by email</a
+    > · <a href={url("/newsletter.xml")}>Subscribe by RSS</a>.
+    Email signup requires confirmation; each letter includes an unsubscribe link.
+    Read <a href={url("/newsletter/privacy/")}>how we use your address</a>.
   </p><button class="btn" id="print-letter">Print or save this letter</button>
 </Entry>
 <script>

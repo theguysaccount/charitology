@@ -79,7 +79,9 @@ export function createHandler({ db, mail, settings = config(), logger = () => co
         return reply(true, generic, 202);
       }
       if (request.method === 'POST' && (path === '/confirm' || path === '/unsubscribe')) {
-        if (path === '/confirm' && origin && origin !== settings.origin) return reply(false, 'Open the confirmation page and use its button.', 403);
+        // The no-referrer confirmation page can submit an opaque Origin: null.
+        // The single-use bearer token, rather than a cookie, authorizes this POST.
+        if (path === '/confirm' && origin && origin !== 'null' && origin !== settings.origin) return reply(false, 'Open the confirmation page and use its button.', 403);
         const input = await fields(request);
         const token = input.token || url.searchParams.get('token') || '';
         if (!validToken(token)) return reply(false, 'The link is incomplete or invalid.', 400);
@@ -93,6 +95,21 @@ export function createHandler({ db, mail, settings = config(), logger = () => co
       if (path.startsWith('/api/admin/')) {
         if (!authorized(request, settings.adminToken)) return json({ ok: false, message: 'Authentication required.' }, 401);
         if (origin && origin !== settings.origin) return json({ ok: false, message: 'Origin is not allowed.' }, 403);
+        if (path === '/api/admin/readiness' && request.method === 'GET') {
+          try {
+            await mail.ready({ campaign: true });
+            return json({ ok: true, providerReady: true });
+          } catch (error) {
+            // Operational diagnostics never include provider messages, payloads,
+            // credentials or addresses, including in the request logger.
+            logger();
+            const safe = { ok: false, providerReady: false, errorType: 'Error' };
+            if (typeof error?.name === 'string' && /^[A-Za-z][A-Za-z0-9]{0,63}$/.test(error.name)) safe.errorType = error.name;
+            if (typeof error?.code === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(error.code)) safe.code = error.code;
+            if (Number.isSafeInteger(error?.status)) safe.providerStatus = error.status;
+            return json(safe, 503);
+          }
+        }
         if (path === '/api/admin/status' && request.method === 'GET') return json({ ok: true, ...await db.status() });
         if (path === '/api/admin/preview' && request.method === 'GET') return json({ ok: true, ...edition });
         if (path === '/api/admin/reconcile' && request.method === 'POST') return json({ ok: true, ...await reconcileSubscribers(db, mail, settings) });
@@ -124,7 +141,7 @@ export function createHandler({ db, mail, settings = config(), logger = () => co
     } catch (error) {
       if (error instanceof InputError) return reply(false, error.message, error.status);
       logger(error);
-      return reply(false, 'This operation is temporarily unavailable. No automatic campaign retry will occur. Please try later or contact hello@charitology.org.', 503);
+      return reply(false, 'This operation is temporarily unavailable. Please try later or contact hello@charitology.org.', 503);
     }
   };
 }

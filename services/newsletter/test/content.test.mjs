@@ -47,9 +47,12 @@ test('Edition 1 preserves every editorial section and its scope labels', async (
   }
   assert.match(edition.text, /What evidence would change the decision we are about to make\?/);
   const normalize = value => value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-  const originalBlocks = [...original.matchAll(/<(p|li|blockquote)>([\s\S]*?)<\/\1>/g)]
-    .map(match => normalize(match[2]))
-    .filter(block => !block.includes('Subscribe to this letter by RSS'));
+  // The published page has signup/RSS/privacy controls; the sent edition has
+  // its native unsubscribe footer. All editorial body blocks must still match.
+  assert.ok(original.includes("<p data-letter-delivery-footer>"));
+  const editorialSource = original.replace(/<p data-letter-delivery-footer>[\s\S]*?<\/p>/, "");
+  const originalBlocks = [...editorialSource.matchAll(/<(p|li|blockquote)>([\s\S]*?)<\/\1>/g)]
+    .map(match => normalize(match[2]));
   assert.ok(originalBlocks.length >= 10, 'The source has substantive paragraphs, activities and a meeting question.');
   for (const block of originalBlocks) {
     assert.ok(normalize(edition.html).includes(block), `Full HTML block: ${block}`);

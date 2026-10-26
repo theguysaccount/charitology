@@ -78,7 +78,8 @@ export function provider(settings, { credential = () => {
       const topics = await all('/topics');
       if (topics.some(x => x.id !== settings.topicId && x.default_subscription !== 'opt_out')) throw new Error('Unrelated default-subscription topics prevent safely creating a shared-team contact');
     },
-    setTopic: (id, subscription) => call('PATCH', `/contacts/${e(id)}/topics`, { topics: [{ id: settings.topicId, subscription }] }),
+    // HTTP accepts the array itself; the SDK's topics wrapper is not its wire shape.
+    setTopic: (id, subscription) => call('PATCH', `/contacts/${e(id)}/topics`, [{ id: settings.topicId, subscription }]),
     addSegment: id => call('POST', `/contacts/${e(id)}/segments/${e(settings.segmentId)}`),
     removeSegment: async id => {
       try { await call('DELETE', `/contacts/${e(id)}/segments/${e(settings.segmentId)}`); }
