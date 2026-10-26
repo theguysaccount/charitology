@@ -1,0 +1,79 @@
+name: Charity OS checks
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - services/charity-os/**
+      - src/lib/irs-registry.mjs
+      - scripts/update-irs-registry.mjs
+      - .github/workflows/charity-os-check.yml
+      - .nvmrc
+  push:
+    branches: [main]
+    paths:
+      - services/charity-os/**
+      - src/lib/irs-registry.mjs
+      - scripts/update-irs-registry.mjs
+      - .github/workflows/charity-os-check.yml
+      - .nvmrc
+
+permissions:
+  contents: read
+
+jobs:
+  charity-os:
+    name: Unit, browser-model and isolated Postgres tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: services/charity-os
+    env:
+      # Disposable service-container credentials. No provider or production secrets.
+      DATABASE_URL: postgresql://os_test_owner:ci-owner-only-password@127.0.0.1:5432/charitology_os_ci
+      OS_DATABASE_URL: postgresql://os_test_app:ci-app-only-password@127.0.0.1:5432/charitology_os_ci
+      NODE_ENV: test
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: charitology_os_ci
+          POSTGRES_USER: os_test_owner
+          POSTGRES_PASSWORD: ci-owner-only-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U os_test_owner -d charitology_os_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: services/charity-os/package-lock.json
+      - name: Install locked OS dependencies
+        run: npm ci
+      - name: Check browser entry syntax and execute server/browser-model regressions
+        run: |
+          node --check public/app.js
+          node --test test/*.test.mjs public/*.test.js
+      - name: Create a separate constrained application role
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE os_test_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD 'ci-app-only-password';
+          REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+          GRANT CONNECT ON DATABASE charitology_os_ci TO os_test_app;
+          SQL
+      - name: Exercise real Postgres, Better Auth and tenant workflows
+        # The fixture migrates a random temporary schema with the owner, grants
+        # only data/sequence access to os_test_app, asserts no superuser/BYPASSRLS,
+        # uses synthetic recipients and a mocked mailer, and drops its schema.
+        # Do not use npm run test:db: that local command loads private .env.local.
+        run: node --test --test-concurrency=1 test-db/*.test.mjs

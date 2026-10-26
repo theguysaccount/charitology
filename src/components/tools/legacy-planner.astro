@@ -385,7 +385,7 @@ import { url } from '../../lib/site';
     type LegacyPlan,
   } from '../../lib/client/legacy';
   import { canPersist } from '../../lib/client/persist';
-  import { load, remove, save } from '../../lib/client/store';
+  import { load, remove, save, validateToolStorage, sameToolValue } from '../../lib/client/durable-store';
 
   const giftsEl = $('#lp-gifts');
   const nameEl = $<HTMLInputElement>('#lp-name');
@@ -432,6 +432,7 @@ import { url } from '../../lib/site';
     };
   }
 
+  validateToolStorage('legacy', value => sameToolValue(value, cleanPlan(value)));
   let plan = cleanPlan(load<unknown>('legacy', null));
 
   function persist() {

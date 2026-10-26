@@ -1,6 +1,6 @@
 # Charity OS: research and implementation plan
 
-Editorial draft · October 25, 2026 · AI-assisted desktop research. No pilot organizations have tested this plan. The existing browser workspace is live; the shared service described here is proposed.
+Editorial draft · Research dated October 25, 2026; implementation update October 26, 2026. AI-assisted research and engineering. No pilot organizations have tested the system. The original proposal remains below so its acceptance gates stay visible.
 
 ## The decision
 
@@ -12,9 +12,15 @@ Charitology studies charity as a system. The OS should connect a program's resou
 
 ## What exists today
 
+The [shared Charity OS](https://os.charitology.org) now implements the organization foundation and grant-to-report workflow in `services/charity-os/`: passwordless accounts, invitations, eight roles, program scopes, 26 typed modules, linked records, revision checks, independent approvals, approved reader snapshots, files, reports, recoverable trash and validated export/restore. Read-only CiviCRM, OpenProject, Kobo and CSV connections require explicit setup and import previews. Personal reminders run after their due time in a daily dispatch.
+
+The implementation has domain and browser-model regressions and a real Postgres/Better Auth scenario using separate owner and constrained runtime roles, synthetic recipients and mocked delivery. Those checks do not establish user adoption, independent security review, successful connections to a pilot’s actual systems or improved charitable outcomes. The [service guide](https://github.com/theguysaccount/charitology/blob/main/services/charity-os/README.md) describes exact behavior and limits.
+
+The typed modules provide back-office records. Public intake, participant self-service, automatic recurring gifts, a certified ledger/payroll system, two-way provider synchronization and specialist case handling are not completed by naming a module. Phases 3–5 below retain those gates. No consented pilot or architecture comparison with an operating CiviCRM installation has occurred.
+
 The [current Charity OS](https://charitology.org/tools/charity-os/) stores organization context, projects, grant stages, tasks and observations in one browser. It supports editing, deletion, undo, search, filters and validated JSON backups plus CSV export. It has storage-error and conflicting-tab notices.
 
-It has no shared accounts, server database, organization permissions, email reminders, payment handling, accounting ledger or individual case-management system. A JSON backup is a useful transfer format, not cloud synchronization. Browser data must remain recoverable when the shared product is introduced.
+The local workspace has no shared accounts or background reminders. Its JSON export can be previewed in an empty shared organization. Conversion preserves the source file privately and creates draft records; descriptive owner labels and local evidence labels do not become accounts or independent approvals. Neither workspace moves money, posts an accounting ledger or stores private case narratives.
 
 ## Research and limits
 
@@ -103,7 +109,7 @@ The spike comparison uses the same records, roles and report. Record installatio
 
 ## Proposed shared architecture
 
-This is a proposal rather than a deployed service. Keep the public Astro site on its current static host. Put the shared application and API behind a separate deployment so private data cannot enter the public build, search index, feeds or static API.
+The implemented foundation uses a separate Node service, Postgres and Better Auth, with a constrained database role and row-level security. The public Astro site stays on its current static host. Put the shared application and API behind a separate deployment so private data cannot enter the public build, search index, feeds or static API.
 
 Use a relational store for relationships and transactions, a private object store for files and a durable job queue for notifications and connectors. Exact providers remain undecided pending the spikes and operating budget. Use managed identity rather than building password security. Enforce organization scope on the server and database, not only through hidden buttons.
 
@@ -196,4 +202,4 @@ Before a shared pilot, name a technical maintainer and an organization administr
 5. Which integrations are genuinely required for the first report, with whose API access?
 6. Who conducts independent source, security, accessibility and domain review?
 
-The next OS build should follow the approved Phase 0 scope. This plan preserves the larger feature universe while making the first implementation testable.
+The shared implementation is available for controlled evaluation. Continue the uncompleted pilot, provider-connection, public-participation and independent-review gates above; do not mark an entire phase complete from the presence of typed record forms alone.

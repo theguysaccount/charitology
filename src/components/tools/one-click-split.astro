@@ -254,7 +254,7 @@ import { url } from '../../lib/site';
   import { CAUSES, OTHER, causeName, displayDate, isoDate, localToday, newId, plural } from '../../lib/client/gifts';
   import { canPersist } from '../../lib/client/persist';
   import { checkUrl, shareTotal, sharesComplete, splitWhole } from '../../lib/client/split';
-  import { load, save } from '../../lib/client/store';
+  import { load, save, validateToolStorage, sameToolValue } from '../../lib/client/durable-store';
 
   interface Row {
     id: string;
@@ -335,6 +335,8 @@ import { url } from '../../lib/site';
     return entries.map(([cause], i) => ({ ...blankRow(shares[i]), cause })).filter((r) => (r.share ?? 0) > 0);
   }
 
+  validateToolStorage('portfolio', value => sameToolValue(value, cleanPortfolio(value)));
+  validateToolStorage('split', value => sameToolValue(value, cleanPlan(value)));
   const portfolio = cleanPortfolio(load<unknown>('portfolio', null));
   const savedPlan = cleanPlan(load<unknown>('split', null));
   let plan: Plan;

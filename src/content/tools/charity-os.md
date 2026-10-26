@@ -2,9 +2,9 @@
 title: Charity OS
 group: For nonprofits and funders
 order: 20
-summary: Keep your mission, programs, grant pipeline, tasks and evidence in a private browser workspace, with clear owners and next steps.
+summary: Coordinate programs, grants, people and learning in a shared organization workspace, or start with a private browser notebook.
 status: live
-statusNote: A working browser workspace. Records stay on this device; export JSON to keep a backup or move them.
+statusNote: Shared accounts and 26 typed modules, plus the smaller local workspace below. Live software does not imply accounting certification or independently verified impact.
 conditions: [fragmentation, missing-feedback-loop, measurement-gap, missing-voice]
 review: draft
 help:
@@ -14,7 +14,17 @@ help:
 related: [/tools/impact-measurement-toolkit/, /tools/grant-evaluator/, /tools/due-diligence-checklist/, /record/encyclopedia/theory-of-change/]
 ---
 
-## Start with the work
+## Work together
+
+[Open the shared Charity OS](https://os.charitology.org) to create an organization and invite your team. Its 26 modules connect programs, projects, grant seeking and delivery, budgets, contacts, volunteers, events, evidence, governance and documents. Roles and optional program assignments control access. Record ownership names responsibility; it does not grant permission.
+
+Keep working drafts, comments and decisions together. Another authorized reviewer must approve a revision before it can become an approved snapshot. Board and external readers see permitted approved snapshots. Frozen reports retain the source revisions and a checksum so later edits do not quietly rewrite a past report.
+
+Read-only CiviCRM, OpenProject, Kobo and CSV connections have an explicit preview before import. Configure your own credentials; a connection is not automatic two-way synchronization. Files, revision checks, recoverable trash and private JSON backups support handover and recovery. Original import archives can be downloaded separately. Personal reminders run in the daily dispatch after their due time.
+
+Accounting records hold external references and reconciliation controls. The OS does not post a ledger, run payroll, move money or issue tax receipts. Casework and safeguarding hold opaque codes and specialist-system references rather than private case narratives. Public intake and participant portals remain in the [implementation plan](/for-charities/os-plan/).
+
+## Start with the local workspace
 
 Write down your mission and the community's role in shaping it. Add each program or project with its intended change, owner, budget, spending and target date. Depth is an optional working description, from relief to source. It does not grade the work, and unknown can stay unknown.
 
@@ -26,10 +36,10 @@ The evidence log records what was observed, when, in what units and with what su
 
 Every record can be edited or deleted. Deleting a project keeps its grants, tasks and observations without a project link. Undo restores the previous workspace until the next change or reload. Search, project filters and status filters help find what needs attention.
 
-## Keep a copy
+## Keep a copy of your local work
 
-Records are saved only in this browser. This version has no shared accounts or team synchronization. Owners are labels for organizing the work, not invitations or notifications. It does not send reminders or submit grant applications.
+The smaller workspace on this page saves only in this browser. Owners are labels for organizing the work, not invitations or notifications. It does not send reminders or submit grant applications.
 
-Export **JSON** to keep all fields and restore the workspace on this or another device. Import validates the whole file and shows a preview before replacing anything. **CSV** gives you the records for a spreadsheet; use JSON for a full restore. The fictional example is clearly marked and replaces your current workspace only after confirmation when there is existing work.
+Export **JSON** to keep all fields and restore the local workspace on this or another device. The shared OS can also preview this local file and convert its records into drafts in an empty organization. It preserves the original file privately; owner labels do not become accounts, and observations do not become verified measurements. Import validates the whole file and shows a preview before replacing anything. **CSV** gives you the records for a spreadsheet; use JSON for a full restore. The fictional example is clearly marked and replaces your current workspace only after confirmation when there is existing work.
 
 If browser storage is blocked or full, the workspace keeps working on the open page and shows a notice to export before leaving. Clearing browser data removes the saved copy. Use program-level records, and keep private case files in the systems your organization uses for them.

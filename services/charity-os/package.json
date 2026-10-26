@@ -1,0 +1,18 @@
+{
+  "name": "charitology-os",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs public/*.test.js",
+    "test:db": "node --env-file=.env.local --test test-db/*.test.mjs",
+    "migrate": "node --env-file=.env.local scripts/migrate.mjs",
+    "dev": "node --env-file=.env.local scripts/dev.mjs"
+  },
+  "dependencies": {
+    "better-auth": "1.7.13",
+    "pg": "8.23.1"
+  }
+}

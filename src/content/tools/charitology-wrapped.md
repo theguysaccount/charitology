@@ -2,7 +2,7 @@
 title: Charitology Wrapped
 group: For donors
 order: 8
-summary: Turn a year of logged gifts into a card you can share, showing where your giving acted and the kind of giver it makes you, with or without the dollar amounts.
+summary: Turn a year of logged gifts into a card you can share, showing your recorded depth mix and how it is described, with or without the dollar amounts.
 status: live
 conditions: [prestige-economy, story-bias]
 help:
@@ -22,7 +22,9 @@ The card is a small experiment toward [Open Problem 15, the Status Flip](/open-p
 
 ## The archetypes
 
-Your archetype comes from your depth mix, measured in dollars. When one level carries at least 40 percent of your giving and leads the next level by at least five points, it names you:
+If any gift in the selected year has no depth description, the card says **Still to describe**. Those gifts remain in your total and appear as **Unclassified** in the depth mix. The card also shows the share of logged dollars with a depth description. Unknown depth is not relief or a balanced mix.
+
+Once every gift has a depth description, your archetype comes from your depth mix, measured in dollars. When one level carries at least 40 percent of your giving and leads the next level by at least five points, it names the mix:
 
 | Most of your giving at | Your archetype |
 | --- | --- |
@@ -32,7 +34,7 @@ Your archetype comes from your depth mix, measured in dollars. When one level ca
 | Structure | The Architect |
 | Source | The Root-Seeker |
 
-When no level leads like that, you are the Balancer. Each archetype comes with one line about what that kind of giving does and one next frontier, a suggestion for something to try next year. No archetype is better than another. Depth describes where a gift acts. It doesn’t grade it, and every level is needed.
+When every gift has a depth description and no level leads like that, the card names the mix **The Balancer**. Each archetype comes with one line about what that kind of giving does and one next frontier, a suggestion for something to try next year. No archetype is better than another. Depth describes where a gift acts. It doesn’t grade it, and every level is needed.
 
 ## What it isn’t
 

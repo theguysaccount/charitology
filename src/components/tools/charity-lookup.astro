@@ -7,6 +7,7 @@ import causesData from '../../data/causes.json';
 import checklist from '../../data/checklist.json';
 import ecosystem from '../../data/ecosystem.json';
 import { url } from '../../lib/site';
+import RegistrySearch from '../RegistrySearch.astro';
 
 const causeName = new Map(causesData.causes.map((c) => [c.id, c.name]));
 const index = (await getCollection('charities'))
@@ -64,7 +65,7 @@ const count = index.length;
 <section class="tool" aria-labelledby="cl-title">
   <div class="tool-head">
     <h2 id="cl-title">Look up a charity</h2>
-    <span class="note">The search runs in your browser.</span>
+    <span class="note">Search runs in your browser; registry data loads only on request.</span>
   </div>
 
   <form id="cl-form" class="cl-form" role="search" aria-label="Search the Charity Index" novalidate>
@@ -88,7 +89,7 @@ const count = index.length;
   </form>
 
   <div class="cl-index">
-    <h3>In the Charity Index</h3>
+    <h3>In the editorial Charity Index</h3>
     <p id="cl-status" class="cl-status" role="status" aria-live="polite">
       {
         count
@@ -98,11 +99,13 @@ const count = index.length;
     </p>
     <ul id="cl-matches" class="cl-matches" aria-label="Matches in the Charity Index"></ul>
     <p class="note">
-      Each entry carries a <strong>depth hypothesis</strong>: Charitology’s working description of where on the
+      These {count} starter profiles are editorial drafts awaiting human review. Each carries a <strong>depth hypothesis</strong>: Charitology’s working description of where on the
       <a href={url('/method/#depth')}>chain from symptom to source</a> the charity’s work acts. It is not a rating, and every
       level of depth is needed.
     </p>
   </div>
+
+  <RegistrySearch id="lookup" />
 
   <div class="result">
     <h3>Look it up in the open registries</h3>
@@ -135,7 +138,7 @@ const count = index.length;
     </div>
     <div class="callout cl-privacy">
       <p>
-        <strong>Privacy.</strong> The name you type stays in your browser until you click a registry button. ProPublica and
+        <strong>Privacy.</strong> The name you type stays in your browser. The IRS snapshot search downloads a name-initial shard or EIN-prefix directory only when you press its search button; the host receives that shard request, rather than your full query. External links send information when clicked. ProPublica and
         WHOFUNDS open with the name in their address, so clicking one sends the name to that site. The other three open without
         it. The extension passes the name after <code>#q=</code>, which stays in your browser. Older links using
         <code>?q=</code> still work, but include the name in the request for this page.

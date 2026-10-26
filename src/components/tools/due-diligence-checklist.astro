@@ -374,7 +374,7 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
   } from '../../lib/client/diligence';
   import { copy, download, flash } from '../../lib/client/files';
   import { fileSlug } from '../../lib/client/markdown';
-  import { load, readHash, save, writeHash } from '../../lib/client/store';
+  import { load, readHash, save, writeHash, validateToolStorage, sameToolValue } from '../../lib/client/durable-store';
 
   const KEY = 'due-diligence';
   const groups = data.groups as Group[];
@@ -388,6 +388,10 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
   const radios = $$<HTMLInputElement>('#dd-form input[type="radio"]');
   const notes = $$<HTMLTextAreaElement>('#dd-form textarea[data-note]');
 
+  validateToolStorage(KEY, value => {
+    const v = value as DiligenceState;
+    return !!v && v.v === 1 && typeof v.current === 'string' && Array.isArray(v.orgs) && v.orgs.length <= 100 && v.orgs.every(o => !!o && typeof o.id === 'string' && typeof o.name === 'string' && !!o.answers && typeof o.answers === 'object' && !Array.isArray(o.answers) && !!o.notes && typeof o.notes === 'object' && !Array.isArray(o.notes) && Object.entries(o.answers).every(([id, s]) => itemIds.includes(id) && ['yes', 'no', 'unknown', 'na'].includes(s)) && Object.entries(o.notes).every(([id, note]) => itemIds.includes(id) && typeof note === 'string' && note.length <= 2000) && [o.createdAt, o.updatedAt].every(t => typeof t === 'string' && !Number.isNaN(Date.parse(t)))) && new Set(v.orgs.map(o => o.id)).size === v.orgs.length && (!v.current || v.orgs.some(o => o.id === v.current));
+  });
   let state: DiligenceState = cleanState(load<unknown>(KEY, null), itemIds);
   if (!state.orgs.length) {
     const first = newOrg();

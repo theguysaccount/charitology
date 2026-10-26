@@ -2,9 +2,9 @@
 title: AI Charitologist
 group: For everyone
 order: 1
-summary: Ask any question about giving and get answers drawn only from what Charitology has published, grouped by where they come from, with every passage linked.
+summary: Search Charitology’s published Record with a question, then read matching passages grouped by section and linked to their pages. This version retrieves text rather than generating answers.
 status: live
-statusNote: Live as retrieval over the Record. The generative layer is designed and will cite the Record for every sentence.
+statusNote: Browser retrieval over the Record is available. Conversational AI and provider activation are deferred; no language-model backend is connected.
 conditions: [missing-profession, measurement-gap]
 help:
   - Report a question it answered badly in an issue labeled question.
@@ -19,9 +19,9 @@ Your question is matched against the site’s search index, and matching passage
 
 The search index is built when the site is built and runs in your browser. Your question isn’t sent anywhere.
 
-## The generative layer (designed)
+## A future conversational version (deferred)
 
-A language model will eventually write short answers on top of these passages. It will be held to rules stricter than most AI systems:
+A conversational version would need a separately configured provider and tests of its actual answers. The owner has deferred that setup. Before activation, it must satisfy these proposed requirements:
 
 1. **Answer only from the Record.** No outside knowledge, and no guessing.
 2. **Cite every sentence** with a link to the passage it came from.
@@ -29,7 +29,7 @@ A language model will eventually write short answers on top of these passages. I
 4. **Keep the evidence labels**: a hypothesis is never presented as established.
 5. **No ratings or recommendations of named charities.**
 
-Until a model can meet those rules reliably, and that has been tested in public, the tool stays retrieval-only.
+These are acceptance requirements, not claims that a model has passed them. The current tool stays retrieval-only; no model credentials or conversation backend are provisioned by using it.
 
 ## What it isn’t
 

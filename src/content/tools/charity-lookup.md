@@ -2,8 +2,9 @@
 title: Charity Lookup
 group: For donors
 order: 3
-summary: Search the Charitology Charity Index by name, see where on the chain from symptom to source a charity’s work is thought to act, and open the public registries in one click.
+summary: Search a dated IRS snapshot by primary name or EIN, read the editorial Charity Index’s draft depth hypotheses, and deliberately open external filing registries.
 status: live
+statusNote: "Local search of 1,975,975 IRS EO BMF identities posted 2026-10-13, plus 16 editorial draft profiles. No charity ratings, live tax-status guarantee or worldwide coverage."
 conditions: [overhead-myth, missing-feedback-loop]
 help:
   - Add a charity to the Charity Index with a pull request to src/content/charities/ that cites the sources for its depth hypothesis.
@@ -11,6 +12,16 @@ help:
   - Suggest another open registry for the lookup in src/data/ecosystem.json.
 related: [/tools/due-diligence-checklist/, /diagnosis/overhead-myth/, /record/myths/low-overhead-means-a-good-charity/]
 sources:
+  - title: Exempt Organizations Business Master File Extract
+    publisher: Internal Revenue Service
+    year: 2026
+    url: https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf
+    note: Four regional CSVs posted 2026-10-13; source hashes, retrieval times and row counts are in the downloadable provenance manifest.
+  - title: EO BMF information sheet
+    publisher: Internal Revenue Service
+    year: 2026
+    url: https://www.irs.gov/pub/foia/ig/tege/eo-info.pdf
+    note: Field definitions, status and deductibility codes, filing-address geography and coverage limitations.
   - title: Search for tax exempt organizations
     publisher: Internal Revenue Service
     year: 2026
@@ -46,7 +57,17 @@ sources:
 
 Type a charity’s name, or arrive from the Charitology browser extension, which opens this page with the name already filled in. The lookup searches the [Charity Index](/record/charity-index/) in your browser and shows each match with its depth hypothesis.
 
-Below the matches are five open registries, always shown, because the Charity Index is young and the public record is large:
+## Search public IRS identities
+
+The separate **Search public registry** button searches a local copy of the four IRS EO BMF regional files: **1,975,975 organization identities posted on 2026-10-13**. Enter the beginning of the IRS primary name or all nine EIN digits, including leading zeros. An optional filter uses the filing state or territory. Search does not match aliases or words in the middle of a name.
+
+Only the needed compressed shards download when you press the button. The host receives a name-initial or EIN-prefix request, rather than your full query. Results include source codes and date; JSON/CSV exports retain raw-file source URLs, hashes and retrieval times. Keep EIN columns as text when opening CSV in a spreadsheet.
+
+This is US federal registry coverage, including some non-domestic addresses, not a worldwide census. Filing addresses do not show service geography. The extract omits some self-declared organizations and churches that did not apply for recognition; absence establishes neither revocation nor ineligibility. Check current IRS records before relying on a dated code. No financial health, impact or depth conclusion is inferred from these identities.
+
+## Open external records deliberately
+
+Five external registries remain available:
 
 - **ProPublica Nonprofit Explorer** has millions of annual returns filed by U.S. tax-exempt organizations.
 - **WHOFUNDS** records what U.S. private foundations reported paying on Form 990-PF, with an estimate of which registered organization each payee is.
@@ -54,7 +75,7 @@ Below the matches are five open registries, always shown, because the Charity In
 - **The Systemic Altruism tracker** is a beta directory of charities working on structural change, with a searchable registry of IRS-listed charities.
 - **IRS Tax Exempt Organization Search** is the official record of whether an organization can receive tax-deductible gifts and whether its exemption was automatically revoked.
 
-ProPublica and WHOFUNDS open with your search already run. The other three open their home pages, where you can search. The name you type stays in your browser until you click one of them.
+ProPublica and WHOFUNDS open with the editorial lookup name in their address. The other three open their home pages, where you can search. IRS result cards also offer an explicit ProPublica filing link by EIN. Clicking an external link sends its address to that service; the IRS snapshot search itself does not call their APIs.
 
 ## Depth is a hypothesis, not a grade
 
@@ -64,4 +85,4 @@ The lookup deliberately shows no overhead ratio. In 2013 the leaders of GuideSta
 
 ## What it isn’t
 
-It isn’t a rating, a ranking or a recommendation, and a charity missing from the Charity Index tells you nothing about it. The registries are run by other organizations, and Charitology doesn’t control or vouch for what they show. For a fuller check of one organization, use the [Due Diligence Checklist](/tools/due-diligence-checklist/).
+It isn’t a rating, a ranking or a recommendation. The 16 editorial profiles remain drafts awaiting human review, separate from the public IRS identities. A charity missing from that small editorial collection tells you nothing about it. External registries are run by other organizations; Charitology doesn’t control or vouch for their results. For a fuller check of one organization, use the [Due Diligence Checklist](/tools/due-diligence-checklist/).

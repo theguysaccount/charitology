@@ -9,6 +9,12 @@ permissions:
   contents: read
 
 jobs:
+  charity-os:
+    name: Shared OS checks
+    permissions:
+      contents: read
+    uses: ./.github/workflows/charity-os-check.yml
+
   newsletter:
     name: Newsletter safety checks
     permissions:

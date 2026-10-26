@@ -453,7 +453,7 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
   import { $, $$, clear, h } from '../../lib/client/dom';
   import { download } from '../../lib/client/files';
   import { slugify } from '../../lib/client/format';
-  import { load, remove, save } from '../../lib/client/store';
+  import { load, remove, save, validateToolStorage, sameToolValue } from '../../lib/client/durable-store';
   import { confirmTwice } from '../../lib/client/confirm';
   import {
     DEFAULT_WEIGHT,
@@ -526,6 +526,9 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
     notes: Object.fromEntries(DIMENSIONS.map((d) => [d.id, ''])),
   });
 
+  validateToolStorage(KEY, value => Array.isArray(value) && value.every(p => sameToolValue(p, clean(p))) && new Set(value.map(p => p.id)).size === value.length);
+  validateToolStorage(WEIGHTS_KEY, value => sameToolValue(value, cleanWeights(value)));
+  validateToolStorage(DRAFT_KEY, value => sameToolValue(value, clean(value, true)));
   const stored = load<unknown>(KEY, []);
   let proposals: Proposal[] = Array.isArray(stored) ? stored.map((p) => clean(p)).filter((p): p is Proposal => p !== null) : [];
   let weights: Weights = cleanWeights(load<unknown>(WEIGHTS_KEY, null));

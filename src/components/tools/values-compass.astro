@@ -185,7 +185,7 @@ import { url } from '../../lib/site';
   import { $, clear, h } from '../../lib/client/dom';
   import { renderBars } from '../../lib/client/bars';
   import { copy, flash } from '../../lib/client/files';
-  import { decodeState, encodeState, readHash, save, writeHash } from '../../lib/client/store';
+  import { decodeState, encodeState, load, readHash, save, writeHash, validateToolStorage } from '../../lib/client/durable-store';
 
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   const link = (path: string) => base + path;
@@ -299,8 +299,11 @@ import { url } from '../../lib/site';
   });
 
   const shared = readHash('c');
-  const answers = shared ? decodeState<Answers>(shared) : undefined;
-  if (answers?.d?.length === compass.dimensions.length && answers?.s?.length === compass.statements.length) {
+  const validAnswers = (a: Answers) => !!a && Array.isArray(a.d) && a.d.length === compass.dimensions.length && a.d.every(n => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 100) && Array.isArray(a.s) && a.s.length === compass.statements.length && a.s.every(n => Number.isInteger(n) && n >= 0 && n < compass.scale.length);
+  validateToolStorage('compass', value => !!value && typeof value === 'object' && validAnswers((value as { answers: Answers }).answers));
+  const saved = load<{ answers: Answers } | null>('compass', null);
+  const answers = shared ? decodeState<Answers>(shared) : saved?.answers;
+  if (answers && validAnswers(answers)) {
     fill(answers);
     show(answers);
   }

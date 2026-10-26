@@ -10,6 +10,12 @@ export interface Archetype {
 }
 
 export const ARCHETYPES: Record<string, Archetype> = {
+  unclassified: {
+    id: 'unclassified',
+    name: 'Still to describe',
+    line: 'Some gifts do not yet have a depth description. They still count in your giving.',
+    frontier: 'Keep unknowns visible. Add a description when you have evidence about the work.',
+  },
   relief: {
     id: 'relief',
     name: 'The First Responder',

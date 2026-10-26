@@ -15,8 +15,7 @@ const causes = causesData.causes;
   </div>
 
   <div id="gd-storage" class="callout gd-space" hidden>
-    <strong>This browser isn’t saving your gifts.</strong> Storage is blocked or full, so the log will be gone when you close
-    this page. Export a JSON file to keep a copy.
+    <strong>Some changes are not saved.</strong> The local-copy controls explain whether storage failed, another tab saved newer work or a saved copy needs recovery. Download current work before leaving this page.
   </div>
 
   <form id="gd-form" class="gd-form" novalidate>
@@ -44,8 +43,8 @@ const causes = causesData.causes;
       </div>
       <div class="field gd-wide">
         <label for="gd-depth">Depth: where the gift acts</label>
-        <select id="gd-depth" name="depth" required aria-describedby="gd-depth-hint">
-          <option value="" disabled selected>Choose a level</option>
+        <select id="gd-depth" name="depth" aria-describedby="gd-depth-hint">
+          <option value="" selected>Unclassified or not yet known</option>
           {
             depthScale.map((d) => (
               <option value={d.level}>
@@ -55,7 +54,7 @@ const causes = causesData.causes;
           }
         </select>
         <span class="hint" id="gd-depth-hint">
-          Every level is needed. Pick the one most of the gift’s work sits at.
+          Every level is needed. Leave it unclassified until you can describe the work.
           <a href={url('/record/encyclopedia/symptoms-and-sources/')}>How to tell them apart</a>
         </span>
       </div>
@@ -153,8 +152,8 @@ const causes = causesData.causes;
     </div>
     <p id="gd-io-status" class="note gd-status" role="status"></p>
     <p class="note">
-      A CSV needs a header row with <code>date</code>, <code>organization</code>, <code>amount</code> and <code>depth</code> (0–4
-      or a level name). <code>cause</code> and <code>note</code> are optional. Importing a file you exported updates those gifts
+      A CSV needs a header row with <code>date</code>, <code>organization</code> and <code>amount</code>. Optional <code>depth</code> is 0–4
+      or a level name; blank/unknown stays unclassified. <code>cause</code> and <code>note</code> are optional. Importing a file you exported updates those gifts
       instead of adding them twice. See your year as a card in
       <a href={url('/tools/charitology-wrapped/')}>Charitology Wrapped</a>.
     </p>
@@ -353,7 +352,8 @@ const causes = causesData.causes;
     depthHint.textContent = `Ask: ${d.question} For example: ${d.example}`;
   }
 
-  function depthCell(level: number) {
+  function depthCell(level: number | null) {
+    if (level === null) return h('span', { class: 'note' }, 'Unclassified');
     return h(
       'span',
       { class: 'depth' },
@@ -391,7 +391,7 @@ const causes = causesData.causes;
     $('#gd-count-note').textContent = s.count ? `average ${money(s.total / s.count)}` : ' ';
     $('#gd-orgs').textContent = s.count ? num(s.organizations) : '–';
     // Whole percentages that add up to 100, so the depth bars and source share agree with Wrapped.
-    const depthPct = s.total > 0 ? splitWhole(100, s.shares) : [0, 0, 0, 0, 0];
+    const depthPct = s.total > 0 ? splitWhole(100, [...s.shares, s.unclassified / s.total]) : [0, 0, 0, 0, 0, 0];
     $('#gd-source').textContent = s.count ? `${depthPct[3] + depthPct[4]}%` : '–';
 
     const charts = $('#gd-charts');
@@ -409,13 +409,13 @@ const causes = causesData.causes;
       );
       renderBars(
         $('#gd-depths'),
-        LEVELS.map((level) => ({
+        [...LEVELS.map((level) => ({
           label: `${level} ${depthName(level)}`,
           value: s.byDepth[level],
           display: `${money(s.byDepth[level])} · ${depthPct[level]}%`,
           color: `var(--depth-${level})`,
           note: `${DEPTHS[level].verb} · ${plural(s.depthCounts[level], 'gift')}`,
-        })),
+        })), { label: 'Unclassified', value: s.unclassified, display: `${money(s.unclassified)} · ${depthPct[5]}%`, color: 'var(--ink-3)', note: `${plural(s.unclassifiedCount, 'gift')} · percentages use all logged dollars; unclassified is not depth 0` }],
         { ariaLabel: `Giving by depth ${when}` },
       );
     }
@@ -480,7 +480,6 @@ const causes = causesData.causes;
     const amount = parseAmount(amountEl.value);
     if (!(amount > 0) || amount >= 1e10) return void fieldError(amountEl, 'Enter an amount greater than zero, like 50 or 1,250.');
     if (!causeEl.value) return void fieldError(causeEl, 'Choose a cause, or “Other or not sure”.');
-    if (depthEl.value === '') return void fieldError(depthEl, 'Choose where the gift acts, from relief to source.');
     const current = editing ? gifts.find((g) => g.id === editing) : undefined;
     return sanitizeGift({
       id: editing ?? newId(),
@@ -488,7 +487,7 @@ const causes = causesData.causes;
       organization: orgEl.value,
       amount,
       cause: causeEl.value,
-      depth: Number(depthEl.value),
+      depth: depthEl.value === '' ? null : Number(depthEl.value),
       note: noteEl.value,
       sample: current?.sample ?? false,
     });
@@ -515,7 +514,7 @@ const causes = causesData.causes;
     orgEl.value = g.organization;
     amountEl.value = String(g.amount);
     causeEl.value = g.cause;
-    depthEl.value = String(g.depth);
+    depthEl.value = g.depth === null ? '' : String(g.depth);
     noteEl.value = g.note ?? '';
     showDepthHint();
     $('#gd-form-title').textContent = `Edit the gift to ${g.organization}`;
@@ -636,7 +635,7 @@ const causes = causesData.causes;
     if (!parsed.gifts.length) {
       return say(
         ioStatusEl,
-        `No gifts could be read from ${file.name}. Each row needs a date, an organization, an amount above zero and a depth from 0 to 4.`,
+        `No gifts could be read from ${file.name}. Each row needs a date, an organization and an amount above zero. Depth may be blank or 0–4.`,
       );
     }
     const merged = mergeGifts(gifts, parsed.gifts);
@@ -649,7 +648,7 @@ const causes = causesData.causes;
     if (merged.same) parts.push(`${num(merged.same)} already logged`);
     let text2 = `From ${file.name}: ${parts.join(', ')}.`;
     if (parsed.skipped) {
-      text2 += ` ${plural(parsed.skipped, 'row')} couldn’t be read: each needs a date, an organization, an amount above zero and a depth from 0 to 4.`;
+      text2 += ` ${plural(parsed.skipped, 'row')} couldn’t be read: each needs a date, an organization, an amount above zero and an optional valid depth from 0 to 4.`;
     }
     say(ioStatusEl, text2);
   });
@@ -665,13 +664,7 @@ const causes = causesData.causes;
     say(ioStatusEl, 'Deleted every gift from this browser.');
   });
 
-  // Keep in step with Charitology Wrapped (or another tab) adding sample data.
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'charitology.gifts') {
-      gifts = loadGifts();
-      render();
-    }
-  });
+  // Durable storage shows a conflict notice instead of replacing an open draft.
 
   showDepthHint();
   render();

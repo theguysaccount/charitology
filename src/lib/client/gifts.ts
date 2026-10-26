@@ -8,7 +8,7 @@ import depthScale from '../../data/depth.json';
 import { csvRecords } from './csv';
 import { toCsv } from './files';
 import { parseAmount } from './format';
-import { load, save } from './store';
+import { load, save, validateToolStorage, sameToolValue } from './durable-store';
 
 export interface Gift {
   id: string;
@@ -20,7 +20,7 @@ export interface Gift {
   /** A cause id from src/data/causes.json, or "other". */
   cause: string;
   /** Source depth: 0 Relief, 1 Repair, 2 Prevention, 3 Structure, 4 Source. */
-  depth: number;
+  depth: number | null;
   note?: string;
   /** Fictional gifts added by "Try sample data". */
   sample?: boolean;
@@ -35,8 +35,8 @@ export function causeName(id: string): string {
   return CAUSES.find((c) => c.id === id)?.name ?? OTHER.name;
 }
 
-export function depthName(level: number): string {
-  return DEPTHS.find((d) => d.level === level)?.name ?? 'Unknown';
+export function depthName(level: number | null): string {
+  return DEPTHS.find((d) => d.level === level)?.name ?? 'Unclassified';
 }
 
 export function newId(): string {
@@ -90,7 +90,9 @@ function toCause(v: unknown): string {
   return CAUSES.find((c) => c.id === s || c.name.toLowerCase() === s)?.id ?? OTHER.id;
 }
 
-function toDepth(v: unknown): number {
+function toDepth(v: unknown): number | null {
+  if (v === null || v === undefined || (typeof v === 'string' && (v.trim() === '' || /^(unknown|unclassified|not set)$/i.test(v.trim())))) return null;
+  if (typeof v !== 'number' && typeof v !== 'string') return NaN;
   if (typeof v === 'number') return Number.isInteger(v) && v >= 0 && v <= 4 ? v : NaN;
   const s = clean(v, 60).toLowerCase();
   const lead = /^([0-4])(?![0-9.])/.exec(s);
@@ -107,7 +109,7 @@ export function sanitizeGift(raw: unknown): Gift | undefined {
   const organization = clean(pick('organization', 'organisation', 'org', 'charity', 'recipient', 'name'), 120);
   const amount = toAmount(pick('amount', 'usd', 'value'));
   const depth = toDepth(pick('depth', 'depth_level', 'level', 'depth_name'));
-  if (!date || !organization || !Number.isFinite(amount) || !Number.isFinite(depth)) return undefined;
+  if (!date || !organization || !Number.isFinite(amount) || (depth !== null && !Number.isFinite(depth))) return undefined;
   const cause = toCause(pick('cause', 'cause_id', 'cause_name')) || OTHER.id;
   const note = clean(pick('note', 'notes', 'memo'), 200);
   const id = clean(pick('id'), 64) || newId();
@@ -116,6 +118,7 @@ export function sanitizeGift(raw: unknown): Gift | undefined {
 }
 
 export function loadGifts(): Gift[] {
+  validateToolStorage('gifts', value => Array.isArray(value) && value.every(item => { const clean = sanitizeGift(item); return clean !== undefined && sameToolValue(item, clean); }));
   const raw = load<unknown>('gifts', []);
   if (!Array.isArray(raw)) return [];
   const seen = new Set<string>();
@@ -174,6 +177,10 @@ export interface Summary {
   shares: number[];
   /** Fraction of dollars at structure and source (levels 3 and 4). NaN with no gifts. */
   sourceShare: number;
+  /** All gifts count in totals; these amounts have no depth classification yet. */
+  unclassified: number;
+  unclassifiedCount: number;
+  classified: number;
 }
 
 const orgKey = (name: string) => name.toLowerCase().replace(/\s+/g, ' ').trim();
@@ -185,11 +192,12 @@ export function summarize(gifts: Gift[]): Summary {
   const causes = new Map<string, { id: string; cents: number; count: number }>();
   const orgs = new Set<string>();
   let cents = 0;
+  let unclassifiedCents = 0, unclassifiedCount = 0;
   for (const g of gifts) {
     const c = Math.round(g.amount * 100);
     cents += c;
-    depthCents[g.depth] += c;
-    depthCounts[g.depth] += 1;
+    if (g.depth === null) { unclassifiedCents += c; unclassifiedCount++; }
+    else { depthCents[g.depth] += c; depthCounts[g.depth] += 1; }
     orgs.add(orgKey(g.organization));
     const row = causes.get(g.cause) ?? { id: g.cause, cents: 0, count: 0 };
     row.cents += c;
@@ -208,6 +216,9 @@ export function summarize(gifts: Gift[]): Summary {
     depthCounts,
     shares: depthCents.map((c) => (cents > 0 ? c / cents : 0)),
     sourceShare: cents > 0 ? (depthCents[3] + depthCents[4]) / cents : NaN,
+    unclassified: unclassifiedCents / 100,
+    unclassifiedCount,
+    classified: (cents - unclassifiedCents) / 100,
   };
 }
 

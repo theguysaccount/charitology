@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import ForecastDrafter from '../ForecastDrafter.astro';
-import { leaderboard, summarize } from '../../lib/forecasts';
+import { leaderboard, summarize, cutoffText } from '../../lib/forecasts';
 import { formatDate, url } from '../../lib/site';
 
 const questions = (await getCollection('forecasts')).sort((a, b) => a.data.closes.getTime() - b.data.closes.getTime());
@@ -18,7 +18,7 @@ const pctText = (p?: number) => (p == null ? '–' : `${Math.round(p * 100)}%`);
   <div class="table-wrap">
     <table class="data">
       <thead>
-        <tr><th>Question</th><th>Closes</th><th class="num">Forecasters</th><th class="num">Median</th><th>Status</th></tr>
+        <tr><th>Question</th><th>Closes (UTC)</th><th class="num">Forecasters</th><th class="num">Median</th><th>Status</th></tr>
       </thead>
       <tbody>
         {
@@ -27,10 +27,10 @@ const pctText = (p?: number) => (p == null ? '–' : `${Math.round(p * 100)}%`);
               <td>
                 <a href={url(`/forecasts/${q.id}/`)}>{q.data.title}</a>
               </td>
-              <td>{formatDate(q.data.closes)}</td>
+              <td><time datetime={q.data.closes.toISOString()}>{q.data.closes.toISOString()}</time></td>
               <td class="num">{s.forecasters}</td>
               <td class="num">{pctText(s.median)}</td>
-              <td>{s.resolved ? `Resolved ${q.data.outcome ? 'YES' : 'NO'}` : s.open ? 'Open' : 'Closed, awaiting result'}</td>
+              <td>{s.status}</td>
             </tr>
           ))
         }
@@ -63,7 +63,7 @@ const pctText = (p?: number) => (p == null ? '–' : `${Math.round(p * 100)}%`);
   }
 </section>
 
-<ForecastDrafter questions={questions.map((q) => ({ id: q.id, title: q.data.title, filePath: q.filePath }))} />
+<ForecastDrafter questions={questions.map((q) => ({ id: q.id, title: q.data.title, filePath: q.filePath, cutoff: cutoffText(q.data), settled: q.data.annulled || q.data.outcome !== null }))} />
 
 <style>
   .fp-gap {

@@ -11,10 +11,10 @@ Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025
 | **[The Diagnosis](src/content/conditions/)**   | Fifteen conditions of the charity system, each labeled established, documented, debated or hypothesis. No judgment of the good being done; the system is the subject.                             |
 | **[The Method](src/pages/method.astro)**       | Nine instruments a charitologist uses, from the five-level depth scale (relief → repair → prevention → structure → source) to the Giver’s Checklist.                                              |
 | **[The Open Problems](src/content/problems/)** | Twenty-three unanswered questions, Hilbert-style, each with a test for what counts as progress.                                                                                                   |
-| **[Programs](src/content/programs/)**          | 26 programs: 17 have working browser functions, while 9 need institutional partners. Each page states its exact scope.                                                                            |
-| **[Tools](src/content/tools/)**                | 20 free tools that run in the browser, including Charity OS: Values Compass, Portfolio Builder, Impact Calculator, Cost-Effectiveness Model Kit, Giving Dashboard, Forecasting Platform and more. |
+| **[Programs](src/content/programs/)**          | 26 programs have usable browser functions. Institutional operations still need people, resources and governance. Each page states its exact scope.                                                                            |
+| **[Tools](src/content/tools/)**                | 20 catalog tools, including the shared and local Charity OS: Values Compass, Portfolio Builder, Impact Calculator, Cost-Effectiveness Model Kit, Giving Dashboard, Forecasting Platform and more. |
 | **[The Record](src/content/record/)**          | 21 information bases: Encyclopedia, Intervention Database, Cause Atlas, Gap Map, Failure Archive, Disagreement Register, Principles textbook, Lexicon and more.                                   |
-| **[Public API](src/lib/api.ts)**               | 29 datasets as static JSON at `/api/v1/*.json`, CC BY 4.0.                                                                                                                                        |
+| **[Public API](src/lib/api.ts)**               | 31 datasets as static JSON at `/api/v1/*.json`, CC BY 4.0.                                                                                                                                        |
 | **[Browser extension](extension/)**            | The Giver’s Checklist on supported donation pages, without analytics or background data transmission.                                                                                             |
 
 Every page follows [the Charitology Standard](STYLE.md): a source for every factual claim, honest evidence labels, unknowns left unknown, and no ratings of named charities until a rating method has survived public red-team review.
@@ -35,13 +35,13 @@ npm run check    # content cross-references and every internal link
 npm run preview  # serve dist/ (search works here, not in dev)
 ```
 
-There are no services, keys or databases. The site is static HTML with browser-local TypeScript workspaces.
+The public site is static HTML with browser-local TypeScript workspaces and requires no keys or database to build. Separate services run [newsletter delivery](services/newsletter/README.md) and the [shared Charity OS](services/charity-os/README.md); their private configuration is not part of the public build.
 
 ## How it’s built
 
 - [Astro](https://astro.build) 5 with content collections. Every collection is validated by a schema in [`src/content.config.ts`](src/content.config.ts), so a malformed entry fails the build.
 - Content is Markdown with YAML front matter in `src/content/`. Shared data (causes, moral frameworks, the depth scale, the checklist, headline figures with sources) is JSON in `src/data/`.
-- Tools are plain TypeScript in `src/components/tools/`, with a small shared kit in `src/lib/client/`. They store nothing outside the browser.
+- Tools are plain TypeScript in `src/components/tools/`, with a small shared kit in `src/lib/client/`. Browser-local tools keep their records on the device; the shared OS uses its own authenticated API and private database.
 - Search is [Pagefind](https://pagefind.app), built at deploy time.
 - `npm run check` runs content, link, media, extension, original-brief, model, reference-export and publication TypeScript checks in CI on every pull request.
 
@@ -64,4 +64,4 @@ Charitology links independent open projects that already measure parts of the sy
 
 ## License
 
-Code: [MIT](LICENSE). Content and data: [CC BY 4.0](CONTENT-LICENSE.md). Cite as “Charitology (charitology.org)”. Cited sources keep their own rights.
+Code: [MIT](LICENSE). Content and data: [CC BY 4.0](CONTENT-LICENSE.md). Cite as “Charitology (charitology.org)”. Cited sources keep their own rights. The IRS identity snapshot retains its government-source attribution and provenance; the content license does not relicense third-party source records.
