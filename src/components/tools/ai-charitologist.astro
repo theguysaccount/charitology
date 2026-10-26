@@ -1,0 +1,159 @@
+---
+import { url, SITE } from '../../lib/site';
+const EXAMPLES = [
+  'Why is overhead a bad way to judge a charity?',
+  'What is the difference between a symptom and a source?',
+  'How strong is the evidence for bed nets?',
+  'Should I give near or far?',
+  'What happens to money in donor-advised funds?',
+];
+---
+
+<section class="tool" aria-labelledby="ask-title">
+  <div class="tool-head">
+    <h2 id="ask-title">Ask the Record</h2>
+    <span class="note">Answers come only from what Charitology has published, with links.</span>
+  </div>
+  <form id="ask-form" class="ask-form" role="search">
+    <label for="ask-q" class="visually-hidden">Your question</label>
+    <input class="input" id="ask-q" type="search" placeholder="Ask anything about giving" autocomplete="off" />
+    <button class="btn" type="submit">Ask</button>
+  </form>
+  <div class="chips ask-examples">
+    {EXAMPLES.map((q) => <button type="button" class="chip" data-q={q}>{q}</button>)}
+  </div>
+  <div id="ask-answer" class="result" hidden aria-live="polite">
+    <div id="ask-body"></div>
+  </div>
+  <div id="ask-gap" class="callout ask-gap" hidden>
+    <p><strong>The Record doesn’t have a good answer yet.</strong> That may be a gap worth filling.</p>
+    <div class="btn-row">
+      <a class="btn btn-small" id="ask-issue" href={`${SITE.repo}/issues/new`}>Suggest it as a question</a>
+      <a class="btn btn-ghost btn-small" href={url('/open-problems/')}>See the open problems</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ask-form {
+    display: flex;
+    gap: 0.6rem;
+  }
+  .ask-form .input {
+    flex: 1;
+    min-width: 0;
+  }
+  .ask-examples {
+    margin-top: 0.85rem;
+  }
+  .ask-examples .chip {
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+  }
+  .ask-gap {
+    margin-top: 1.25rem;
+  }
+  .ask-gap p {
+    margin: 0 0 0.75rem;
+  }
+  :global(.ask-group) {
+    margin-bottom: 1.5rem;
+  }
+  :global(.ask-group h3) {
+    font-family: var(--font-sans);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.6rem;
+  }
+  :global(.ask-hit) {
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--rule-2);
+  }
+  :global(.ask-hit a) {
+    font-family: var(--font-display);
+    font-size: 1.08rem;
+    font-weight: 580;
+    text-decoration: none;
+  }
+  :global(.ask-hit p) {
+    margin: 0.25rem 0 0;
+    color: var(--ink-2);
+    font-family: var(--font-serif);
+    font-size: 0.98rem;
+  }
+  :global(.ask-hit mark) {
+    background: var(--highlight);
+    color: inherit;
+  }
+</style>
+
+<script>
+  import { $, clear, h } from '../../lib/client/dom';
+  import { searchSite, type Hit } from '../../lib/client/search';
+
+  const form = $<HTMLFormElement>('#ask-form');
+  const input = $<HTMLInputElement>('#ask-q');
+  const answer = $('#ask-answer');
+  const body = $('#ask-body');
+  const gap = $('#ask-gap');
+  const issue = $<HTMLAnchorElement>('#ask-issue');
+  const repoIssue = issue.href;
+
+  // Questions are matched on their meaningful words, so "why is overhead bad"
+  // searches like "overhead bad" instead of failing on "why" and "is".
+  const STOP = new Set(
+    'a an and are as at be but by can do does for from how i if in is it me my of on or should so than that the their them there these this to was we what when where which who why will with would you your'.split(' '),
+  );
+  const keywords = (q: string) =>
+    q
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s-]/gu, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 1 && !STOP.has(w))
+      .join(' ');
+
+  async function ask(q: string) {
+    if (!q.trim()) return;
+    input.value = q;
+    clear(body);
+    answer.hidden = false;
+    gap.hidden = true;
+    body.append(h('p', { class: 'note' }, 'Reading the Record…'));
+    const hits = await searchSite(keywords(q) || q, 12);
+    clear(body);
+    if (hits === null) {
+      body.append(h('p', { class: 'note' }, 'The Record’s index is built at deploy time. Run npm run build, then npm run preview.'));
+      return;
+    }
+    const groups = new Map<string, Hit[]>();
+    for (const hit of hits) groups.set(hit.section, [...(groups.get(hit.section) ?? []), hit]);
+    if (hits.length) {
+      body.append(h('p', { class: 'note' }, `Here is what the Record says, in ${groups.size} part${groups.size === 1 ? '' : 's'} of the site:`));
+    }
+    for (const [section, items] of groups) {
+      const group = h('div', { class: 'ask-group' }, h('h3', {}, section));
+      for (const it of items.slice(0, 3)) {
+        const p = h('p');
+        p.innerHTML = it.excerpt;
+        group.append(h('div', { class: 'ask-hit' }, h('a', { href: it.url }, it.title), p));
+      }
+      body.append(group);
+    }
+    if (hits.length < 3) {
+      gap.hidden = false;
+      issue.href = `${repoIssue}?${new URLSearchParams({ title: `Question for the Record: ${q}`, labels: 'question' })}`;
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    ask(input.value);
+  });
+  document.querySelectorAll<HTMLButtonElement>('.ask-examples [data-q]').forEach((b) => b.addEventListener('click', () => ask(b.dataset.q!)));
+  const initial = new URLSearchParams(location.search).get('q');
+  if (initial) ask(initial);
+</script>

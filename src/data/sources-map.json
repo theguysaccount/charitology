@@ -1,0 +1,33 @@
+{
+  "_note": "Which of the six sources Humanity's Checklist links to which world problems, from the checklist's published list (humanityschecklist.org, Rev. 1, October 2026). Charitology treats this map as a hypothesis to test.",
+  "source": {
+    "title": "Humanity’s Checklist, Rev. 1",
+    "publisher": "Humanity’s Checklist",
+    "year": 2026,
+    "url": "https://humanityschecklist.org/"
+  },
+  "sources": [
+    { "id": "story", "label": "Story", "problems": "all" },
+    {
+      "id": "coordination",
+      "label": "Coordination",
+      "problems": ["climate", "war", "poverty", "hunger", "disease", "water", "housing", "education", "corruption", "loneliness"]
+    },
+    {
+      "id": "vision",
+      "label": "Vision",
+      "problems": ["climate", "war", "pollution", "biodiversity", "housing", "distrust", "polarization"]
+    },
+    {
+      "id": "attention",
+      "label": "Attention",
+      "problems": ["polarization", "misinformation", "loneliness", "mental", "addiction", "distrust"]
+    },
+    { "id": "status", "label": "Status", "problems": ["poverty", "hunger", "disease", "water", "inequality", "education"] },
+    {
+      "id": "gatekeepers",
+      "label": "Gatekeepers",
+      "problems": ["education", "inequality", "poverty", "corruption", "distrust", "misinformation"]
+    }
+  ]
+}

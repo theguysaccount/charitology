@@ -1,0 +1,87 @@
+---
+import { ENDPOINTS } from '../../lib/api';
+import { absolute, url } from '../../lib/site';
+const site = Astro.site;
+const example = absolute('/api/v1/conditions.json', site);
+---
+
+<section class="tool" aria-labelledby="api-title">
+  <div class="tool-head">
+    <h2 id="api-title">Endpoints</h2>
+    <span class="note">Static JSON · no key · CC BY 4.0</span>
+  </div>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Endpoint</th><th>What it holds</th><th></th></tr></thead>
+      <tbody>
+        {
+          ENDPOINTS.map((e) => (
+            <tr>
+              <td>
+                <a href={url(`/api/v1/${e.name}.json`)}>
+                  <code>/api/v1/{e.name}.json</code>
+                </a>
+              </td>
+              <td>{e.description}</td>
+              <td>
+                <button class="btn btn-ghost btn-small" type="button" data-try={url(`/api/v1/${e.name}.json`)}>
+                  Try it
+                </button>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="result" id="api-result" hidden>
+    <p class="note" id="api-status" aria-live="polite"></p>
+    <pre class="api-out"><code id="api-out"></code></pre>
+  </div>
+  <h3 class="api-gap">Example</h3>
+  <pre class="api-out"><code>{`const res = await fetch('${example}');
+const { data } = await res.json();
+console.log(data.map((c) => c.title));`}</code></pre>
+  <p class="note">
+    Every response has the shape <code>{'{ name, description, license, generated, data }'}</code>. The index of all endpoints
+    is at <a href={url('/api/v1/index.json')}><code>/api/v1/index.json</code></a>.
+  </p>
+</section>
+
+<style>
+  .api-out {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    overflow: auto;
+    max-height: 420px;
+  }
+  .api-gap {
+    margin-top: 1.5rem;
+  }
+</style>
+
+<script>
+  import { $ } from '../../lib/client/dom';
+  const result = $('#api-result');
+  const out = $('#api-out');
+  const status = $('#api-status');
+  document.querySelectorAll<HTMLButtonElement>('[data-try]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      result.hidden = false;
+      status.textContent = `GET ${b.dataset.try}`;
+      out.textContent = 'Loading…';
+      try {
+        const res = await fetch(b.dataset.try!);
+        const text = JSON.stringify(await res.json(), null, 2);
+        out.textContent = text.length > 6000 ? `${text.slice(0, 6000)}\n…` : text;
+      } catch {
+        out.textContent = 'Could not load this endpoint.';
+      }
+    }),
+  );
+</script>

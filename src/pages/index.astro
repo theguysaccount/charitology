@@ -1,7 +1,531 @@
 ---
 import Base from '../layouts/Base.astro';
+import Seal from '../components/Seal.astro';
+import SystemMap from '../components/SystemMap.astro';
+import { EVIDENCE, DEPTH } from '../lib/labels';
+import { conditionsInOrder, problemsInOrder, statusCounts } from '../lib/content';
+import { SITE, pad, url } from '../lib/site';
+import { getCollection } from 'astro:content';
+import figures from '../data/figures.json';
+import ecosystem from '../data/ecosystem.json';
+
+const conditions = await conditionsInOrder();
+const problems = (await problemsInOrder()).slice(0, 6);
+const totalProblems = (await getCollection('problems')).length;
+const field = await Promise.all(
+  (
+    [
+      ['programs', 'Programs', 'Research to find out what works, funding to act on it, training to grow the field.'],
+      ['tools', 'Tools', 'Free instruments that put the method in anyone’s hands. Everything runs in your browser.'],
+      ['record', 'The Record', 'What the field knows, and what it doesn’t yet, with every claim sourced and labeled.'],
+    ] as const
+  ).map(async ([key, title, text]) => {
+    const counts = await statusCounts(key);
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+    return { key, title, text, counts, total };
+  }),
+);
+const giving = figures.usGiving;
 ---
 
 <Base>
-  <section class="wrap section"><h1 class="display">Charitology</h1></section>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">An open science · Est. {SITE.established}</span>
+        <h1 class="display">Charitology</h1>
+        <p class="hero-sub">The science of doing the most good.</p>
+        <p class="lede">
+          Americans gave <strong>${giving.billions} billion</strong> to charity in {giving.year}. The generosity is real, and so
+          is the good it does. But the system that aims it, meaning the signals, incentives and habits that decide where the
+          money goes, has never had a science of its own. Until now it didn’t even have a name.
+        </p>
+        <div class="btn-row hero-actions">
+          <a class="btn" href={url('/diagnosis/')}>Read the diagnosis</a>
+          <a class="btn btn-ghost" href={url('/tools/values-compass/')}>Find your compass</a>
+        </div>
+        <p class="note hero-src">
+          Figure: <a href={giving.sources[0].url}>{giving.sources[0].publisher}</a>.
+        </p>
+      </div>
+      <div class="hero-seal" aria-hidden="true">
+        <Seal id="hero-seal" size={300} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section discovery">
+    <div class="wrap discovery-grid">
+      <div class="ten">$10</div>
+      <div>
+        <span class="eyebrow">The ten-dollar discovery</span>
+        <h2>The most obvious name for the most important field was never taken</h2>
+        <p>
+          In October {SITE.established}, <em>charitology.org</em> was available to register for about ten dollars. We have
+          words for the study of bells, of flags and of mixing cocktails. The science of doing the most good, harder than
+          rocket science and more important, had never been named, let alone practiced as a craft.
+        </p>
+        <p>
+          That isn’t a story about a domain. It’s a finding about the field: the hardest problem we have was never stamped
+          as a trade.
+        </p>
+        <a href={url('/manifesto/')}>Read the manifesto, “Ten Dollars” →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">The subject</span>
+        <h2>Charity is a system</h2>
+        <p>
+          Money moves from givers, through the signals they see and the channels that hold it, into work that ranges from
+          relief to source, and on to outcomes. Results rarely travel back. Each pin below is a condition of the system,
+          placed where it acts.
+        </p>
+      </div>
+      <SystemMap />
+      <div class="principles">
+        <div>
+          <h3>No judgment of the good being done</h3>
+          <p>Every food bank, clinic and volunteer is doing real good. Charitology studies the system that aims them, not their hearts.</p>
+        </div>
+        <div>
+          <h3>Symptoms and sources</h3>
+          <p>
+            Most problems keep coming back until their sources change. Charitology asks every gift where it acts, and asks
+            the system whether its mix is right.
+          </p>
+        </div>
+        <div>
+          <h3>Unknown stays unknown</h3>
+          <p>A science says what it doesn’t know. Every claim here is labeled established, documented, debated or hypothesis.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">The core instrument</span>
+        <h2>From relief to source</h2>
+        <p>
+          Every piece of work acts somewhere on the chain from symptom to source. Depth describes the work. It never grades
+          it: every level is needed. The question is always the mix.
+        </p>
+      </div>
+      <ol class="depth-scale">
+        {
+          DEPTH.map((d) => (
+            <li>
+              <span class={`depth-bar d${d.level}`} aria-hidden="true" />
+              <span class="depth-level">{d.level}</span>
+              <strong>{d.name}</strong>
+              <span class="depth-verb">{d.verb}</span>
+              <span class="depth-ex">{d.example}</span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="more"><a href={url('/method/')}>The full Charitology Method →</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">The Diagnosis</span>
+        <h2>Fifteen conditions of the charity system</h2>
+        <p>None of them is anyone’s fault. All of them can be fixed. Each is labeled with how strong its evidence is.</p>
+      </div>
+      <ol class="cond-grid">
+        {
+          conditions.map((c) => (
+            <li>
+              <a href={url(`/diagnosis/${c.id}/`)}>
+                <span class="numeral">C{pad(c.data.number)}</span>
+                <span class="cond-title">{c.data.title}</span>
+                <span class="cond-ev" title={EVIDENCE[c.data.evidence].note}>
+                  <span aria-hidden="true">{EVIDENCE[c.data.evidence].glyph}</span> {EVIDENCE[c.data.evidence].label}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section problems-band">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">The Open Problems</span>
+        <h2>{totalProblems} questions nobody has answered</h2>
+        <p>
+          In 1900 David Hilbert’s list of 23 unsolved problems steered a century of mathematics. These are charitology’s.
+          Solve one and you change where billions of dollars go.
+        </p>
+      </div>
+      <ol class="prob-grid">
+        {
+          problems.map((p) => (
+            <li>
+              <a href={url(`/open-problems/${p.id}/`)}>
+                <span class="pnum">{pad(p.data.number)}</span>
+                <span class="ptitle">{p.data.title}</span>
+                <span class="pstatement">{p.data.statement}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="more"><a href={url('/open-problems/')}>All {totalProblems} open problems →</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">The field</span>
+        <h2>Everything a science needs, built in the open</h2>
+        <p>Each piece is honest about its status: live, seeded, designed, or waiting on partners.</p>
+      </div>
+      <div class="field-grid">
+        {
+          field.map((f) => (
+            <a class="card field-card" href={url(`/${f.key}/`)}>
+              <span class="field-total">{f.total}</span>
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+              <p class="note">
+                {f.counts.live} live · {f.counts.seeded} seeded · {f.counts.designed} designed · {f.counts.partners} need partners
+              </p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Instruments already running</span>
+        <h2>Open projects charitology builds on</h2>
+        <p>Independent, open tools that already measure parts of the system. Charitology links them into one field.</p>
+      </div>
+      <div class="grid">
+        {
+          ecosystem.instruments.map((i) => (
+            <a class="card" href={i.url}>
+              <span class="eyebrow eco-role">{i.role}</span>
+              <h3>{i.name}</h3>
+              <p>{i.summary}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section join">
+    <div class="wrap join-grid">
+      <div>
+        <span class="eyebrow">Take part</span>
+        <h2>Become a charitologist</h2>
+        <p class="lede">
+          The field is open. Study it, question it, test it, teach it. Prove a claim wrong and make it better. Every page here
+          is a file anyone can improve.
+        </p>
+        <div class="btn-row">
+          <a class="btn" href={url('/contribute/')}>Start contributing</a>
+          <a class="btn btn-ghost" href={SITE.repo}>See the source on GitHub</a>
+        </div>
+      </div>
+      <ul class="roles">
+        <li><strong>Researchers</strong> take on an open problem.</li>
+        <li><strong>Builders</strong> ship a designed tool or program.</li>
+        <li><strong>Writers</strong> grow the Record, with sources.</li>
+        <li><strong>Critics</strong> red-team any claim on the site.</li>
+        <li><strong>Givers</strong> try the tools and tell us what broke.</li>
+      </ul>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 9vw, 7rem) clamp(2.5rem, 6vw, 4.5rem);
+    border-bottom: 1px solid var(--rule);
+    background:
+      radial-gradient(1200px 400px at 80% -10%, var(--accent-wash), transparent 70%),
+      var(--bg);
+  }
+  .hero-grid {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 900px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    }
+  }
+  .hero-sub {
+    font-family: var(--font-display);
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    font-style: italic;
+    font-weight: 400;
+    margin: 0.5rem 0 1.5rem;
+    color: var(--ink-2);
+  }
+  .hero-actions {
+    margin-top: 1.75rem;
+  }
+  .hero-src {
+    margin-top: 1rem;
+  }
+  .hero-seal {
+    display: none;
+    justify-self: center;
+  }
+  @media (min-width: 900px) {
+    .hero-seal {
+      display: block;
+    }
+  }
+  .hero-seal :global(.seal) {
+    width: min(300px, 100%);
+    height: auto;
+  }
+
+  .discovery {
+    background: var(--surface);
+  }
+  .discovery-grid {
+    display: grid;
+    gap: 1.5rem 3rem;
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+  @media (min-width: 820px) {
+    .discovery-grid {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+  }
+  .ten {
+    font-family: var(--font-display);
+    font-size: clamp(5rem, 16vw, 11rem);
+    line-height: 0.9;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    color: var(--accent);
+  }
+  .discovery h2 {
+    max-width: 22ch;
+  }
+  .discovery p {
+    max-width: 62ch;
+    color: var(--ink-2);
+  }
+
+  .principles {
+    display: grid;
+    gap: 1.5rem 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    margin-top: 2rem;
+  }
+  .principles h3 {
+    font-size: 1.12rem;
+    margin-bottom: 0.4rem;
+  }
+  .principles p {
+    margin: 0;
+    color: var(--ink-2);
+    font-size: 1rem;
+  }
+
+  .depth-scale {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  }
+  .depth-scale li {
+    display: grid;
+    gap: 0.3rem;
+    align-content: start;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    padding: 0 1rem 1rem;
+    overflow: hidden;
+  }
+  .depth-bar {
+    display: block;
+    height: 8px;
+    margin: 0 -1rem 0.75rem;
+  }
+  .depth-level {
+    font-family: var(--font-display);
+    color: var(--ink-3);
+    font-size: 0.85rem;
+  }
+  .depth-scale strong {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 580;
+  }
+  .depth-verb {
+    font-family: var(--font-sans);
+    font-size: 0.86rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .depth-ex {
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    line-height: 1.45;
+  }
+  .more {
+    margin-top: 1.5rem;
+    font-family: var(--font-sans);
+    font-weight: 600;
+  }
+  .more a {
+    text-decoration: none;
+  }
+
+  .cond-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  .cond-grid li {
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .cond-grid a {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem;
+    text-decoration: none;
+    height: 100%;
+  }
+  .cond-grid a:hover {
+    background: var(--surface);
+  }
+  .cond-grid a:hover .cond-title {
+    color: var(--accent);
+  }
+  .cond-title {
+    font-family: var(--font-display);
+    font-size: 1.12rem;
+    font-weight: 580;
+    line-height: 1.2;
+  }
+  .cond-ev {
+    font-family: var(--font-sans);
+    font-size: 0.76rem;
+    color: var(--ink-3);
+  }
+
+  .problems-band {
+    background: var(--surface);
+  }
+  .prob-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  }
+  .prob-grid a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem 0.9rem;
+    text-decoration: none;
+    padding: 1rem 0;
+    border-top: 1px solid var(--rule);
+  }
+  .pnum {
+    grid-row: span 2;
+    font-family: var(--font-display);
+    font-size: 2.1rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .ptitle {
+    font-family: var(--font-display);
+    font-size: 1.12rem;
+    font-weight: 580;
+  }
+  .pstatement {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .prob-grid a:hover .ptitle {
+    color: var(--accent);
+  }
+
+  .field-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  }
+  .field-total {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .field-card h3 {
+    font-size: 1.4rem;
+  }
+  .eco-role {
+    margin-bottom: 0;
+  }
+
+  .join {
+    background: var(--surface);
+  }
+  .join-grid {
+    display: grid;
+    gap: 2rem 4rem;
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .join-grid {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+  }
+  .join .lede {
+    margin-bottom: 1.5rem;
+  }
+  .roles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+    font-size: 1.02rem;
+  }
+  .roles li {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+  }
+</style>

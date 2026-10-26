@@ -1,5 +1,6 @@
 import { defineCollection, reference, z } from 'astro:content';
 import { file, glob } from 'astro/loaders';
+import causesData from './data/causes.json';
 
 // Every collection is validated here. A pull request with a missing field,
 // a misspelled status or a link to a condition that doesn't exist fails the build.
@@ -18,6 +19,8 @@ const source = z.object({
 });
 const sources = z.array(source).default([]);
 const conditions = z.array(reference('conditions')).default([]);
+/** Cause ids must exist in src/data/causes.json. */
+const causeId = z.enum(causesData.causes.map((c) => c.id) as [string, ...string[]]);
 
 const md = (dir: string) => glob({ pattern: '**/[^_]*.md', base: `./src/content/${dir}` });
 
@@ -105,7 +108,7 @@ const interventions = defineCollection({
     depth,
     evidence: z.enum(['strong', 'moderate', 'mixed', 'weak', 'unknown']),
     mechanism: z.string(),
-    causes: z.array(z.string()).min(1),
+    causes: z.array(causeId).min(1),
     timeToEffect: z.enum(['immediate', 'months', 'years', 'decades', 'unknown']),
     durability: z.enum(['while funded', 'years', 'generations', 'permanent', 'unknown']),
     feedback: z.enum(['strong', 'some', 'weak', 'unknown']),
@@ -242,7 +245,7 @@ const charities = defineCollection({
     website: z.string().url(),
     summary: z.string(),
     depth,
-    causes: z.array(z.string()).min(1),
+    causes: z.array(causeId).min(1),
     interventions: z.array(reference('interventions')).default([]),
     note: z.string().optional(),
     sources,

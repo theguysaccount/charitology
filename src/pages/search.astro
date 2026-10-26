@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import { url } from '../lib/site';
+---
+
+<Base title="Search" description="Search everything Charitology has published." nosearch>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'Search' }]} />
+      <h1>Search the field</h1>
+      <form class="search-form" role="search" id="search-form">
+        <label for="q" class="visually-hidden">Search Charitology</label>
+        <input class="input" id="q" name="q" type="search" placeholder="Try “overhead”, “bed nets” or “future generations”" autocomplete="off" />
+        <button class="btn" type="submit">Search</button>
+      </form>
+    </div>
+  </header>
+  <section class="wrap section-tight">
+    <p class="meta" id="search-status" aria-live="polite"></p>
+    <ol class="results" id="results"></ol>
+    <p class="note">
+      Looking for something the field hasn’t covered? <a href={url('/contribute/')}>Add it</a>, or ask the <a
+        href={url('/tools/ai-charitologist/')}>AI Charitologist</a
+      >.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .search-form {
+    display: flex;
+    gap: 0.6rem;
+    max-width: 720px;
+    margin-top: 1.25rem;
+  }
+  .search-form .input {
+    flex: 1;
+    min-width: 0;
+  }
+  .results {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 2rem;
+    display: grid;
+    gap: 0;
+    max-width: 820px;
+  }
+  .results :global(li) {
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .results :global(.r-section) {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .results :global(a.r-title) {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 580;
+    text-decoration: none;
+    margin: 0.2rem 0;
+  }
+  .results :global(.r-excerpt) {
+    margin: 0;
+    color: var(--ink-2);
+    font-size: 0.98rem;
+  }
+  .results :global(mark) {
+    background: var(--highlight);
+    color: inherit;
+    padding: 0 0.1em;
+  }
+</style>
+
+<script>
+  import { $, clear, h } from '../lib/client/dom';
+  import { searchSite } from '../lib/client/search';
+
+  const form = $<HTMLFormElement>('#search-form');
+  const input = $<HTMLInputElement>('#q');
+  const list = $('#results');
+  const status = $('#search-status');
+
+  async function run(q: string) {
+    clear(list);
+    if (!q.trim()) {
+      status.textContent = '';
+      return;
+    }
+    status.textContent = 'Searching…';
+    const hits = await searchSite(q, 20);
+    if (hits === null) {
+      status.textContent = 'Search runs on the built site. Run npm run build, then npm run preview.';
+      return;
+    }
+    status.textContent = hits.length ? `${hits.length} result${hits.length === 1 ? '' : 's'} for “${q}”` : `Nothing yet for “${q}”.`;
+    for (const hit of hits) {
+      const excerpt = h('p', { class: 'r-excerpt' });
+      excerpt.innerHTML = hit.excerpt;
+      list.append(h('li', {}, h('span', { class: 'r-section' }, hit.section), h('a', { class: 'r-title', href: hit.url }, hit.title), excerpt));
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    const params = new URLSearchParams(location.search);
+    if (q) params.set('q', q);
+    else params.delete('q');
+    history.replaceState(null, '', `${location.pathname}${params.toString() ? `?${params}` : ''}`);
+    run(q);
+  });
+
+  const initial = new URLSearchParams(location.search).get('q') ?? '';
+  input.value = initial;
+  if (initial) run(initial);
+  else input.focus();
+</script>

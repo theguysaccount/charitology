@@ -1,0 +1,16 @@
+---
+import { getCollection } from 'astro:content';
+import EntryList from '../EntryList.astro';
+import { formatDate } from '../../lib/site';
+
+const issues = (await getCollection('journal')).sort((a, b) => a.data.volume - b.data.volume || a.data.issue - b.data.issue);
+const items = issues.map((j) => ({
+  href: j.id === 'ten-dollars' ? '/manifesto/' : `/record/journal/${j.id}/`,
+  title: j.data.title,
+  summary: j.data.summary,
+  kicker: `Vol. ${j.data.volume}, No. ${j.data.issue}`,
+  tags: [j.data.author, formatDate(j.data.date)],
+}));
+---
+
+<EntryList items={items} layout="cards" />

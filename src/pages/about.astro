@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import { SITE, url } from '../lib/site';
+import ecosystem from '../data/ecosystem.json';
+---
+
+<Base title="About Charitology" description="What Charitology is, how it works, how it stays honest, and the open instruments it builds on.">
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'About' }]} />
+      <span class="eyebrow">About</span>
+      <h1>An open science of doing the most good</h1>
+      <p class="lede">
+        Charitology studies charity as a system: where generosity flows, why it flows there, and how to route it from the
+        symptoms of the world’s problems to their sources.
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap section-tight">
+    <div class="prose">
+      <h2>What it is</h2>
+      <p>
+        Charitology is a field, not a charity. It doesn’t run programs on the ground, rate organizations or ask for money. It
+        publishes a <a href={url('/diagnosis/')}>diagnosis</a> of the charity system, a <a href={url('/method/')}>method</a>
+        anyone can use, <a href={url('/open-problems/')}>open problems</a> for researchers, free <a href={url('/tools/')}>tools</a
+        > for givers and organizations, and a growing <a href={url('/record/')}>Record</a> of what is known and what isn’t.
+      </p>
+
+      <h2>Why now</h2>
+      <p>
+        In October 2026 the obvious name for the science of doing the most good was available to register for about ten
+        dollars. Read the founding manifesto, <a href={url('/manifesto/')}>“Ten Dollars”</a>.
+      </p>
+
+      <h2>How it stays honest</h2>
+      <ul>
+        <li><strong>No judgment of the good being done.</strong> The subject is the system, not the people in it.</li>
+        <li><strong>Every claim is sourced and labeled</strong> established, documented, debated or hypothesis.</li>
+        <li><strong>No ratings of named charities</strong> until a rating method has survived public red-team review.</li>
+        <li><strong>Corrections and challenges are public.</strong> Every page links to both.</li>
+        <li>
+          <strong>Edition 0 was drafted with AI assistance</strong> and is being reviewed in public. Pages say whether a second
+          contributor has reviewed them yet.
+        </li>
+      </ul>
+
+      <h2>The open instruments it builds on</h2>
+      <p>
+        Charitology links independent open projects that already measure parts of the system. Each keeps its own method and
+        license.
+      </p>
+      <ul>
+        {
+          ecosystem.instruments.map((i) => (
+            <li>
+              <a href={i.url}>{i.name}</a>: {i.summary}
+            </li>
+          ))
+        }
+      </ul>
+
+      <h2>Privacy</h2>
+      <p>
+        No cookies, analytics, ads or accounts. The tools run in your browser, and anything you save stays in your browser’s
+        storage. The site is a set of static files hosted on GitHub Pages.
+      </p>
+
+      <h2>Licenses</h2>
+      <p>
+        Code is MIT-licensed. Content and data are <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>: use
+        them for anything, with credit to “Charitology (charitology.org)”. Sources quoted or cited keep their own rights.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Everything happens in the open on <a href={SITE.repo}>GitHub</a>: issues for corrections and ideas, pull requests for
+        changes, discussions for everything else.
+      </p>
+    </div>
+  </div>
+</Base>

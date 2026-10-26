@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import EntryList from '../EntryList.astro';
+import { CASE_KIND } from '../../lib/labels';
+
+const cases = (await getCollection('cases'))
+  .filter((c) => c.data.kind !== 'success')
+  .sort((a, b) => a.data.era.localeCompare(b.data.era));
+const items = cases.map((c) => ({
+  href: `/record/case-studies/${c.id}/`,
+  title: c.data.title,
+  summary: c.data.summary,
+  kicker: c.data.era,
+  depth: c.data.depth,
+  tags: [CASE_KIND[c.data.kind]],
+}));
+---
+
+<EntryList items={items} layout="rows" empty="No failures archived yet. Publishing one is an act of leadership." />

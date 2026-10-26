@@ -1,0 +1,72 @@
+---
+import { getCollection } from 'astro:content';
+import ForecastDrafter from '../ForecastDrafter.astro';
+import { leaderboard, summarize } from '../../lib/forecasts';
+import { formatDate, url } from '../../lib/site';
+
+const questions = (await getCollection('forecasts')).sort((a, b) => a.data.closes.getTime() - b.data.closes.getTime());
+const rows = questions.map((q) => ({ q, s: summarize(q) }));
+const board = await leaderboard();
+const pctText = (p?: number) => (p == null ? '–' : `${Math.round(p * 100)}%`);
+---
+
+<section class="tool" aria-labelledby="fp-title">
+  <div class="tool-head">
+    <h2 id="fp-title">Questions</h2>
+    <span class="note">{questions.length} questions · scored with Brier scores when they resolve</span>
+  </div>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>Question</th><th>Closes</th><th class="num">Forecasters</th><th class="num">Median</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {
+          rows.map(({ q, s }) => (
+            <tr>
+              <td>
+                <a href={url(`/forecasts/${q.id}/`)}>{q.data.title}</a>
+              </td>
+              <td>{formatDate(q.data.closes)}</td>
+              <td class="num">{s.forecasters}</td>
+              <td class="num">{pctText(s.median)}</td>
+              <td>{s.resolved ? `Resolved ${q.data.outcome ? 'YES' : 'NO'}` : s.open ? 'Open' : 'Closed, awaiting result'}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="fp-gap">Leaderboard</h3>
+  {
+    board.length === 0 ? (
+      <p class="empty">No question has resolved yet. The first scores appear when one does.</p>
+    ) : (
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Forecaster</th><th class="num">Mean Brier score</th><th class="num">Questions</th></tr>
+          </thead>
+          <tbody>
+            {board.map((b) => (
+              <tr>
+                <td>{b.by}</td>
+                <td class="num">{b.mean.toFixed(3)}</td>
+                <td class="num">{b.n}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</section>
+
+<ForecastDrafter questions={questions.map((q) => ({ id: q.id, title: q.data.title, filePath: q.filePath }))} />
+
+<style>
+  .fp-gap {
+    margin-top: 1.75rem;
+  }
+</style>

@@ -1,0 +1,52 @@
+---
+import { ENDPOINTS } from '../../lib/api';
+import { url } from '../../lib/site';
+import ecosystem from '../../data/ecosystem.json';
+---
+
+<section class="ds">
+  <h2>Charitology datasets</h2>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th>Dataset</th><th>What it holds</th></tr></thead>
+      <tbody>
+        {
+          ENDPOINTS.map((e) => (
+            <tr>
+              <td>
+                <a href={url(`/api/v1/${e.name}.json`)}><code>{e.name}.json</code></a>
+              </td>
+              <td>{e.description}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Open data the field builds on</h2>
+  <ul class="ext">
+    {
+      [...ecosystem.instruments, ...ecosystem.registries, ...ecosystem.evaluators].map((x) => (
+        <li>
+          <a href={x.url}>{x.name}</a> · {x.summary}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .ds {
+    margin-top: 2rem;
+  }
+  .ds h2 {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+  }
+  .ext {
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.45rem;
+  }
+</style>

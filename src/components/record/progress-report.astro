@@ -1,0 +1,53 @@
+---
+import { getEntries } from 'astro:content';
+import { problemsInOrder } from '../../lib/content';
+import { pad, url } from '../../lib/site';
+
+const problems = await problemsInOrder();
+const rows = await Promise.all(
+  problems.map(async (p) => ({ p, conds: p.data.conditions.length ? await getEntries(p.data.conditions) : [] })),
+);
+const count = (s: string) => problems.filter((p) => p.data.status === s).length;
+---
+
+<section class="pr">
+  <div class="kpis">
+    <div class="kpi"><div class="k-label">Open</div><div class="k-value">{count('open')}</div></div>
+    <div class="kpi"><div class="k-label">Partly answered</div><div class="k-value">{count('partial')}</div></div>
+    <div class="kpi"><div class="k-label">Solved</div><div class="k-value">{count('solved')}</div></div>
+  </div>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>No.</th><th>Problem</th><th>Status</th><th>Conditions it would treat</th></tr>
+      </thead>
+      <tbody>
+        {
+          rows.map(({ p, conds }) => (
+            <tr>
+              <td class="num">{pad(p.data.number)}</td>
+              <td>
+                <a href={url(`/open-problems/${p.id}/`)}>{p.data.title}</a>
+              </td>
+              <td>{p.data.status}</td>
+              <td>
+                {conds.map((c, i) => (
+                  <>
+                    {i > 0 && ', '}
+                    <a href={url(`/diagnosis/${c.id}/`)}>{c.data.title}</a>
+                  </>
+                ))}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .pr {
+    margin-top: 2rem;
+  }
+</style>

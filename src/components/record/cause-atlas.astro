@@ -1,0 +1,159 @@
+---
+import causesData from '../../data/causes.json';
+import sourceMap from '../../data/sources-map.json';
+import compass from '../../data/compass.json';
+import { url } from '../../lib/site';
+
+const problems = causesData.problems;
+const touches = (s: (typeof sourceMap.sources)[number], pid: string) => s.problems === 'all' || (s.problems as string[]).includes(pid);
+const problemLabel = (id: string) => problems.find((p) => p.id === id)?.label ?? id;
+---
+
+<section class="atlas">
+  <h2>Cause areas</h2>
+  <p class="note">
+    Positions on each dimension run from left to right and are editorial judgments (<code>src/data/causes.json</code>).
+  </p>
+  <div class="grid">
+    {
+      causesData.causes.map((c) => (
+        <article class="card cause" id={c.id}>
+          <h3>{c.name}</h3>
+          <p>{c.summary}</p>
+          <dl class="dims">
+            {compass.dimensions.map((d) => (
+              <>
+                <dt>{d.prompt}</dt>
+                <dd>
+                  <span class="track" role="img" aria-label={`${Math.round((c.dims as any)[d.id] * 100)} of 100, from ${d.left} to ${d.right}`}>
+                    <span class="dot" style={`left:${(c.dims as any)[d.id] * 100}%`} />
+                  </span>
+                  <span class="ends">
+                    <span>{d.left}</span>
+                    <span>{d.right}</span>
+                  </span>
+                </dd>
+              </>
+            ))}
+          </dl>
+          {c.problems.length > 0 && (
+            <p class="note">
+              Problems it touches: {c.problems[0] === 'all' ? 'every problem downstream' : c.problems.map(problemLabel).join(', ')}
+            </p>
+          )}
+        </article>
+      ))
+    }
+  </div>
+
+  <h2 class="map-title">The source map</h2>
+  <p class="note">
+    Which sources <a href={sourceMap.source.url}>Humanity’s Checklist</a> links to which world problems. A filled dot means the
+    checklist says that source feeds that problem. Charitology treats this map as a hypothesis to test.
+  </p>
+  <div class="table-wrap">
+    <table class="data smap">
+      <caption class="visually-hidden">Sources (columns) and the problems they feed (rows)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Problem</th>
+          {sourceMap.sources.map((s) => <th scope="col">{s.label}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {
+          problems.map((p) => (
+            <tr>
+              <th scope="row">{p.label}</th>
+              {sourceMap.sources.map((s) => (
+                <td class="cell">
+                  {touches(s, p.id) ? (
+                    <span class="on" title={`${s.label} feeds ${p.label}`}>
+                      ●<span class="visually-hidden">yes</span>
+                    </span>
+                  ) : (
+                    <span class="off" aria-label="no">
+                      ·
+                    </span>
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="note">
+    Find the causes that fit your values with the <a href={url('/tools/values-compass/')}>Values Compass</a>.
+  </p>
+</section>
+
+<style>
+  .atlas {
+    margin-top: 2rem;
+  }
+  .atlas h2 {
+    font-size: 1.35rem;
+  }
+  .cause {
+    scroll-margin-top: calc(var(--header-h) + 16px);
+  }
+  .cause:target {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-wash);
+  }
+  .dims {
+    margin: 0.5rem 0 0;
+    display: grid;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+  }
+  .dims dt {
+    font-size: 0.74rem;
+    color: var(--ink-3);
+  }
+  .dims dd {
+    margin: 0;
+  }
+  .track {
+    display: block;
+    position: relative;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--rule-2);
+    margin: 0.3rem 0 0.15rem;
+  }
+  .dot {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--surface);
+    transform: translate(-50%, -50%);
+  }
+  .ends {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    color: var(--ink-3);
+  }
+  .map-title {
+    margin-top: 2.5rem;
+  }
+  .smap .cell {
+    text-align: center;
+  }
+  .smap th[scope='col'] {
+    text-align: center;
+  }
+  .smap .on {
+    color: var(--accent);
+    font-size: 1rem;
+  }
+  .smap .off {
+    color: var(--ink-3);
+  }
+</style>

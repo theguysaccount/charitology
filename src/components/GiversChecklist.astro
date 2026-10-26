@@ -1,0 +1,88 @@
+---
+// The Giver's Checklist: ten questions to ask of any gift. Ticking a box is
+// for your own reflection; nothing is stored or sent.
+import checklist from '../data/checklist.json';
+import { url } from '../lib/site';
+---
+
+<div class="gc">
+  <ol class="gc-list">
+    {
+      checklist.map((item, i) => (
+        <li class="gc-item">
+          <label class="gc-label">
+            <input type="checkbox" class="gc-box" />
+            <span class="gc-num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="gc-q">{item.question}</span>
+          </label>
+          <p class="gc-detail">
+            {item.detail} <a href={url(item.link)}>More</a>
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="note gc-count" aria-live="polite"><span data-gc-count>0</span> of {checklist.length} answered for this gift.</p>
+</div>
+
+<style>
+  .gc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .gc-item {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.9rem 0;
+  }
+  .gc-label {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 0.8rem;
+    align-items: baseline;
+    cursor: pointer;
+  }
+  .gc-box {
+    accent-color: var(--accent);
+    width: 1.15rem;
+    height: 1.15rem;
+    transform: translateY(2px);
+  }
+  .gc-num {
+    font-family: var(--font-display);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .gc-q {
+    font-family: var(--font-display);
+    font-size: 1.18rem;
+    font-weight: 560;
+  }
+  .gc-box:checked ~ .gc-q {
+    color: var(--ink-3);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+  .gc-detail {
+    margin: 0.3rem 0 0 calc(1.15rem + 0.8rem + 1.6rem + 0.8rem);
+    color: var(--ink-2);
+    font-size: 0.98rem;
+  }
+  .gc-count {
+    margin-top: 0.9rem;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.gc').forEach((root) => {
+    const boxes = [...root.querySelectorAll<HTMLInputElement>('.gc-box')];
+    const out = root.querySelector('[data-gc-count]');
+    const update = () => {
+      if (out) out.textContent = String(boxes.filter((b) => b.checked).length);
+    };
+    boxes.forEach((b) => b.addEventListener('change', update));
+  });
+</script>

@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/site';
+---
+
+<Base title="Not found" description="This page doesn’t exist." noindex>
+  <section class="wrap section nf">
+    <span class="eyebrow">404</span>
+    <h1>Unknown stays unknown</h1>
+    <p class="lede">This page doesn’t exist, or it moved. Even a science of doing good has gaps.</p>
+    <div class="btn-row">
+      <a class="btn" href={url('/')}>Go home</a>
+      <a class="btn btn-ghost" href={url('/search/')}>Search the field</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    min-height: 50vh;
+  }
+  .nf .lede {
+    margin-bottom: 1.5rem;
+  }
+</style>

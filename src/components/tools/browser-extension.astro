@@ -1,0 +1,107 @@
+---
+import { SITE, url } from '../../lib/site';
+---
+
+<section class="tool" aria-labelledby="ext-title">
+  <div class="tool-head">
+    <h2 id="ext-title">Before You Give</h2>
+    <span class="note">Chrome, Edge and Firefox · collects nothing</span>
+  </div>
+  <div class="tool-grid">
+    <div>
+      <h3>What it does</h3>
+      <ul class="ext-list">
+        <li>On fundraiser pages from GoFundMe, JustGiving and Every.org, it shows a small card with three questions and a “Look it up” button.</li>
+        <li>Anywhere, clicking its icon opens the full ten-question <a href={url('/method/#checklist')}>Giver’s Checklist</a> and a lookup pre-filled with the page title.</li>
+        <li>It sends nothing anywhere. It only remembers the sites where you hid the card.</li>
+      </ul>
+      <div class="btn-row ext-actions">
+        <a class="btn" href={url('/downloads/charitology-extension.zip')} download>Download the extension (.zip)</a>
+        <a class="btn btn-ghost" href={`${SITE.repo}/tree/main/extension`}>Read the source</a>
+      </div>
+      <h3>Install it</h3>
+      <ol class="ext-list">
+        <li>Unzip the download.</li>
+        <li><strong>Chrome or Edge:</strong> open <code>chrome://extensions</code>, turn on Developer mode, choose <em>Load unpacked</em> and select the unzipped folder.</li>
+        <li><strong>Firefox:</strong> open <code>about:debugging#/runtime/this-firefox</code>, choose <em>Load Temporary Add-on</em> and pick <code>manifest.json</code>.</li>
+      </ol>
+      <p class="note">Store listings are designed but not yet submitted. Until then, these developer installs are the way in.</p>
+    </div>
+    <div>
+      <h3>What you’ll see</h3>
+      <div class="mock" role="img" aria-label="Preview of the card the extension shows on donation pages">
+        <div class="mock-head"><span class="mock-dot"></span> Before you give <span class="mock-x">×</span></div>
+        <ol>
+          <li>Symptom or source? Where on the chain does this gift act?</li>
+          <li>What happens if I don’t give? Would it be funded anyway?</li>
+          <li>How would anyone find out if it stopped working?</li>
+        </ol>
+        <div class="mock-actions"><span class="mock-btn">Look it up</span><span class="mock-btn ghost">All 10 questions</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ext-list {
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.45rem;
+    margin: 0 0 1rem;
+  }
+  .ext-actions {
+    margin: 0.5rem 0 1.5rem;
+  }
+  .mock {
+    max-width: 340px;
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    background: var(--bg);
+    box-shadow: var(--shadow);
+    font-size: 0.88rem;
+    padding: 0.75rem 0.9rem 0.9rem;
+  }
+  .mock-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .mock-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-wash);
+  }
+  .mock-x {
+    margin-left: auto;
+    color: var(--ink-3);
+  }
+  .mock ol {
+    padding-left: 1.2rem;
+    margin: 0.5rem 0;
+  }
+  .mock li + li {
+    margin-top: 0.3rem;
+  }
+  .mock-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .mock-btn {
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+  .mock-btn.ghost {
+    background: none;
+    color: var(--ink);
+    border: 1px solid var(--rule);
+  }
+</style>

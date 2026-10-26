@@ -1,0 +1,118 @@
+---
+// Drafts a forecast as the exact YAML to add to a question file, plus a link
+// to edit that file on GitHub. Nothing is sent anywhere by this page.
+import { editUrl } from '../lib/site';
+
+interface Props {
+  questions: { id: string; title: string; filePath?: string }[];
+  selected?: string;
+}
+const { questions, selected } = Astro.props;
+const data = questions.map((q) => ({ id: q.id, title: q.title, edit: editUrl(q.filePath) }));
+---
+
+<div class="tool fd" data-fd>
+  <div class="tool-head">
+    <h2>Add your forecast</h2>
+    <span class="note">Forecasts are pull requests. Your handle and number are public.</span>
+  </div>
+  <div class="tool-grid">
+    <div>
+      {
+        questions.length > 1 && (
+          <div class="field">
+            <label for="fd-q">Question</label>
+            <select id="fd-q">
+              {questions.map((q) => (
+                <option value={q.id} selected={q.id === selected}>
+                  {q.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        )
+      }
+      <div class="field">
+        <label for="fd-by">Your GitHub handle</label>
+        <input id="fd-by" type="text" autocomplete="off" spellcheck="false" placeholder="your-handle" />
+      </div>
+      <div class="field">
+        <label for="fd-p">Probability of YES: <output id="fd-p-out">50%</output></label>
+        <input id="fd-p" type="range" min="1" max="99" step="1" value="50" />
+        <div class="range-labels"><span>Certainly not</span><span>Certainly</span></div>
+      </div>
+      <div class="field">
+        <label for="fd-why">Why (optional, one or two sentences)</label>
+        <textarea id="fd-why" rows="3"></textarea>
+      </div>
+    </div>
+    <div>
+      <div class="field">
+        <span class="label">Add this to the question’s <code>forecasts:</code> list</span>
+        <pre class="fd-yaml" aria-live="polite"><code id="fd-yaml"></code></pre>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-small" type="button" id="fd-copy">Copy</button>
+        <a class="btn btn-small" id="fd-edit" href="#">Open the file on GitHub</a>
+      </div>
+      <p class="note">
+        If the list is empty (<code>forecasts: []</code>), replace <code>[]</code> with a new line and paste the entry beneath it.
+        Only your latest forecast on a question is scored.
+      </p>
+    </div>
+  </div>
+  <script type="application/json" id="fd-data" set:html={JSON.stringify({ questions: data, selected: selected ?? data[0]?.id })} />
+</div>
+
+<style>
+  .fd-yaml {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 6rem;
+  }
+</style>
+
+<script>
+  import { $, readJson } from '../lib/client/dom';
+  import { copy, flash } from '../lib/client/files';
+  import { todayISO } from '../lib/client/format';
+
+  type Data = { questions: { id: string; title: string; edit: string }[]; selected: string };
+  const root = document.querySelector<HTMLElement>('[data-fd]');
+  if (root) {
+    const data = readJson<Data>('fd-data');
+    const qSel = root.querySelector<HTMLSelectElement>('#fd-q');
+    const by = $<HTMLInputElement>('#fd-by', root);
+    const p = $<HTMLInputElement>('#fd-p', root);
+    const why = $<HTMLTextAreaElement>('#fd-why', root);
+    const out = $('#fd-p-out', root);
+    const yaml = $('#fd-yaml', root);
+    const edit = $<HTMLAnchorElement>('#fd-edit', root);
+    const esc = (s: string) => `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\s+/g, ' ').trim()}"`;
+
+    const render = () => {
+      const id = qSel?.value ?? data.selected;
+      const q = data.questions.find((x) => x.id === id) ?? data.questions[0];
+      const handle = by.value.trim().replace(/^@/, '') || 'your-handle';
+      const prob = (Number(p.value) / 100).toFixed(2);
+      out.textContent = `${p.value}%`;
+      const lines = [`  - by: ${handle}`, `    p: ${prob}`, `    date: ${todayISO()}`];
+      if (why.value.trim()) lines.push(`    rationale: ${esc(why.value)}`);
+      yaml.textContent = lines.join('\n');
+      if (q) edit.href = q.edit;
+    };
+    [qSel, by, p, why].forEach((el) => el?.addEventListener('input', render));
+    $('#fd-copy', root).addEventListener('click', async (e) => {
+      const ok = await copy(yaml.textContent ?? '');
+      flash(e.currentTarget as HTMLElement, ok ? 'Copied' : 'Copy failed');
+    });
+    render();
+  }
+</script>

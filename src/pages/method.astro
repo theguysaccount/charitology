@@ -1,0 +1,362 @@
+---
+import Base from '../layouts/Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import SystemMap from '../components/SystemMap.astro';
+import GiversChecklist from '../components/GiversChecklist.astro';
+import { DEPTH, EVIDENCE, GRADE, UPSTREAM } from '../lib/labels';
+import { url } from '../lib/site';
+import frameworksData from '../data/frameworks.json';
+
+const SECTIONS = [
+  ['system', 'See the system'],
+  ['depth', 'Measure depth'],
+  ['evidence', 'Grade the evidence'],
+  ['counterfactual', 'Ask what would happen anyway'],
+  ['frameworks', 'Look through every lens'],
+  ['time', 'Mind the horizon'],
+  ['feedback', 'Close the loop'],
+  ['checklist', 'The Giver’s Checklist'],
+  ['honesty', 'The honesty rules'],
+];
+---
+
+<Base
+  title="The Charitology Method"
+  description="Nine instruments a charitologist uses on any gift, program or system: from seeing the system and measuring depth to the Giver’s Checklist."
+>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'Method' }]} />
+      <span class="eyebrow">The Method</span>
+      <h1>How a charitologist thinks</h1>
+      <p class="lede">
+        Nine instruments you can use on any gift, program or system. None of them needs a degree. All of them get better
+        with practice, which is what makes charitology a craft.
+      </p>
+    </div>
+  </header>
+
+  <div class="wrap section-tight method">
+    <nav class="toc" aria-label="On this page">
+      <ol>
+        {
+          SECTIONS.map(([id, label], i) => (
+            <li>
+              <a href={`#${id}`}>
+                <span class="numeral">{i + 1}</span> {label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="method-body">
+      <section id="system" class="m-section">
+        <span class="eyebrow">Instrument 1</span>
+        <h2>See the system</h2>
+        <p>
+          Start by placing any gift in the system it moves through: who gives, what signals they see, which channel holds
+          the money, what work it pays for, what changes, and whether anyone finds out. Most problems in giving aren’t
+          about one gift. They’re about the system’s habits. The <a href={url('/diagnosis/')}>Diagnosis</a> names fifteen of
+          them.
+        </p>
+        <SystemMap compact />
+      </section>
+
+      <section id="depth" class="m-section">
+        <span class="eyebrow">Instrument 2</span>
+        <h2>Measure depth</h2>
+        <p>
+          Every piece of work acts somewhere on the chain from <a href={url('/record/encyclopedia/symptoms-and-sources/')}
+            >symptom to source</a
+          >. Charitology uses five levels. Depth describes the work; it never grades it. Relief keeps people alive while
+          sources are fixed, and every level is needed. The question is always the mix.
+        </p>
+        <div class="table-wrap">
+          <table class="data depth-table">
+            <thead>
+              <tr><th>Level</th><th>What it does</th><th>Question to ask</th><th>Example</th></tr>
+            </thead>
+            <tbody>
+              {
+                DEPTH.map((d) => (
+                  <tr>
+                    <td>
+                      <span class={`swatch d${d.level}`} aria-hidden="true" />
+                      <strong>
+                        {d.level} · {d.name}
+                      </strong>
+                    </td>
+                    <td>{d.verb}</td>
+                    <td>{d.question}</td>
+                    <td>{d.example}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Level 4 takes its sources from <a href="https://humanityschecklist.org/">Humanity’s Checklist</a>, which names six
+          roots upstream of every world problem:
+          {
+            Object.values(UPSTREAM)
+              .map((u) => u.label.toLowerCase())
+              .join(', ')
+          }. Whether fixing them really helps everything downstream is a hypothesis charitology exists to test.
+        </p>
+      </section>
+
+      <section id="evidence" class="m-section">
+        <span class="eyebrow">Instrument 3</span>
+        <h2>Grade the evidence</h2>
+        <p>Every claim carries a label. There are two systems, one for claims about the charity system and one for interventions.</p>
+        <div class="two">
+          <div>
+            <h3>Claims about the system</h3>
+            <dl class="labels">
+              {
+                Object.entries(EVIDENCE).map(([, e]) => (
+                  <>
+                    <dt>
+                      <span aria-hidden="true">{e.glyph}</span> {e.label}
+                    </dt>
+                    <dd>{e.note}</dd>
+                  </>
+                ))
+              }
+            </dl>
+          </div>
+          <div>
+            <h3>Interventions</h3>
+            <dl class="labels">
+              {
+                Object.entries(GRADE).map(([, g]) => (
+                  <>
+                    <dt>{g.label}</dt>
+                    <dd>{g.note}</dd>
+                  </>
+                ))
+              }
+            </dl>
+          </div>
+        </div>
+        <p>
+          Look for outcomes, not activity: lives changed, not meals counted. See <a
+            href={url('/record/encyclopedia/outputs-and-outcomes/')}>outputs and outcomes</a
+          > and <a href={url('/diagnosis/measurement-gap/')}>the Measurement Gap</a>.
+        </p>
+      </section>
+
+      <section id="counterfactual" class="m-section">
+        <span class="eyebrow">Instrument 4</span>
+        <h2>Ask what would happen anyway</h2>
+        <p>
+          The real effect of a gift is the difference between the world with it and the world without it. If the work would
+          be funded anyway, your gift’s effect lands somewhere else. That’s why <a
+            href={url('/record/encyclopedia/neglectedness/')}>neglect</a
+          > matters: an extra dollar does more where few dollars go. See <a
+            href={url('/record/encyclopedia/counterfactual-impact/')}>counterfactual impact</a
+          > and <a href={url('/open-problems/the-counterfactual-problem/')}>Open Problem 4</a>.
+        </p>
+      </section>
+
+      <section id="frameworks" class="m-section">
+        <span class="eyebrow">Instrument 5</span>
+        <h2>Look through every lens</h2>
+        <p>
+          Every moral framework makes some kinds of good easy to see and others invisible. Charitology looks through all of
+          them, reports where they agree, and is honest where they don’t. These are the eight it uses today:
+        </p>
+        <div class="frames">
+          {
+            frameworksData.frameworks.map((f) => (
+              <div class="frame">
+                <h3>{f.name}</h3>
+                <p class="frame-q">{f.question}</p>
+                <p class="note">{f.thinkers.join(', ')}</p>
+              </div>
+            ))
+          }
+        </div>
+        <p>
+          Find your own mix with the <a href={url('/tools/values-compass/')}>Values Compass</a>, then turn it into a budget with
+          the <a href={url('/tools/portfolio-builder/')}>Portfolio Builder</a>. Seeing through only one lens is <a
+            href={url('/diagnosis/single-lens/')}>the Single Lens</a
+          >.
+        </p>
+      </section>
+
+      <section id="time" class="m-section">
+        <span class="eyebrow">Instrument 6</span>
+        <h2>Mind the horizon</h2>
+        <p>
+          Ask how long the good lasts and who it reaches across time. Some good ends when the money stops. Some compounds for
+          generations. Charity runs on annual budgets while its deepest problems run on decades, which is <a
+            href={url('/diagnosis/short-horizon/')}>the Short Horizon</a
+          >. How much the future should count is <a href={url('/open-problems/discounting-the-future/')}>Open Problem 13</a>.
+        </p>
+      </section>
+
+      <section id="feedback" class="m-section">
+        <span class="eyebrow">Instrument 7</span>
+        <h2>Close the loop</h2>
+        <p>
+          In a market, the person who pays is the person who benefits, so bad products lose customers. In charity those are
+          different people, so results rarely travel back. Ask how anyone would find out if the work stopped working, and
+          whether the people it serves get a say. See <a href={url('/diagnosis/missing-feedback-loop/')}
+            >the Missing Feedback Loop</a
+          > and <a href={url('/diagnosis/missing-voice/')}>the Missing Voice</a>.
+        </p>
+      </section>
+
+      <section id="checklist" class="m-section">
+        <span class="eyebrow">Instrument 8</span>
+        <h2>The Giver’s Checklist</h2>
+        <p>
+          Ten questions to ask of any gift, large or small. Tick them off as you go. Nothing is saved or sent. The <a
+            href={url('/tools/browser-extension/')}>browser extension</a
+          > puts the same list on donation pages.
+        </p>
+        <GiversChecklist />
+      </section>
+
+      <section id="honesty" class="m-section">
+        <span class="eyebrow">Instrument 9</span>
+        <h2>The honesty rules</h2>
+        <ol class="rules">
+          <li><strong>Unknown stays unknown.</strong> Write “nobody has measured this” instead of guessing. A gap is a finding.</li>
+          <li>
+            <strong>Charitology’s own claims are hypotheses</strong> until tested, and the Diagnosis labels them that way.
+          </li>
+          <li>
+            <strong>No ratings of named charities</strong> until the method has passed public <a href={url('/programs/red-team/')}
+              >red-team</a
+            > review. Depth classifications are descriptions, open to challenge.
+          </li>
+          <li><strong>Every claim has a source</strong>, and every page links to a public correction.</li>
+          <li><strong>Failures are published.</strong> Including Charitology’s own.</li>
+        </ol>
+        <p>The full standard is in <a href={url('/record/methodology/')}>the Methodology Handbook</a>.</p>
+      </section>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .method {
+    display: grid;
+    gap: 2rem 3.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 980px) {
+    .method {
+      grid-template-columns: 240px minmax(0, 1fr);
+    }
+    .toc {
+      position: sticky;
+      top: calc(var(--header-h) + 24px);
+      align-self: start;
+    }
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.15rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+  }
+  .toc a {
+    display: block;
+    padding: 0.4rem 0.6rem;
+    border-radius: 7px;
+    text-decoration: none;
+    color: var(--ink-2);
+  }
+  .toc a:hover {
+    background: var(--bg-2);
+    color: var(--ink);
+  }
+  .toc .numeral {
+    display: inline-block;
+    width: 1.4rem;
+  }
+  .method-body {
+    min-width: 0;
+  }
+  .m-section {
+    padding-bottom: 2.5rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--rule);
+    max-width: 920px;
+  }
+  .m-section:last-child {
+    border-bottom: 0;
+  }
+  .m-section > p {
+    max-width: var(--measure);
+  }
+  .swatch {
+    display: inline-block;
+    width: 18px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 0.45rem;
+  }
+  .depth-table td {
+    min-width: 140px;
+  }
+  .two {
+    display: grid;
+    gap: 1.5rem 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    margin: 1rem 0 1.25rem;
+  }
+  .two h3 {
+    font-size: 1.1rem;
+  }
+  .labels {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+  }
+  .labels dt {
+    font-weight: 700;
+    margin-top: 0.6rem;
+  }
+  .labels dd {
+    margin: 0.15rem 0 0;
+    color: var(--ink-2);
+  }
+  .frames {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+    margin: 1.25rem 0;
+  }
+  .frame {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    padding: 0.9rem 1rem;
+  }
+  .frame h3 {
+    font-size: 1.05rem;
+    margin: 0 0 0.3rem;
+  }
+  .frame-q {
+    margin: 0 0 0.4rem;
+    font-size: 0.95rem;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+  .rules {
+    padding-left: 1.3rem;
+    display: grid;
+    gap: 0.6rem;
+    max-width: var(--measure);
+  }
+</style>

@@ -1,0 +1,68 @@
+---
+// A listing of entries inside an info base: cards or rows, with optional badges.
+import Badges from './Badges.astro';
+import { url } from '../lib/site';
+
+interface Item {
+  href: string;
+  title: string;
+  summary: string;
+  kicker?: string;
+  depth?: number;
+  grade?: 'strong' | 'moderate' | 'mixed' | 'weak' | 'unknown';
+  tags?: string[];
+}
+interface Props {
+  items: Item[];
+  layout?: 'cards' | 'rows';
+  empty?: string;
+}
+const { items, layout = 'cards', empty = 'Nothing here yet. Be the first to contribute an entry.' } = Astro.props;
+---
+
+{items.length === 0 && <p class="empty">{empty}</p>}
+{
+  items.length > 0 && layout === 'cards' && (
+    <div class="grid entry-list">
+      {items.map((it) => (
+        <a class="card" href={url(it.href)}>
+          {it.kicker && <span class="eyebrow kicker">{it.kicker}</span>}
+          <h3>{it.title}</h3>
+          <p>{it.summary}</p>
+          {(it.depth != null || it.grade || it.tags?.length) && (
+            <div class="card-meta">
+              <Badges depth={it.depth} grade={it.grade} extra={it.tags} />
+            </div>
+          )}
+        </a>
+      ))}
+    </div>
+  )
+}
+{
+  items.length > 0 && layout === 'rows' && (
+    <div class="list-rows entry-list">
+      {items.map((it) => (
+        <a class="list-row" href={url(it.href)}>
+          <span class="numeral">{it.kicker ?? ''}</span>
+          <div>
+            <h3>{it.title}</h3>
+            <p>{it.summary}</p>
+          </div>
+          <div class="row-meta">
+            <Badges depth={it.depth} grade={it.grade} extra={it.tags} />
+          </div>
+        </a>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .entry-list {
+    margin-top: 2rem;
+  }
+  .kicker {
+    margin-bottom: 0;
+  }
+</style>

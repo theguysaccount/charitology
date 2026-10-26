@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content';
+import EntryList from '../EntryList.astro';
+
+const entries = (await getCollection('disagreements')).sort((a, b) => a.data.title.localeCompare(b.data.title));
+const items = entries.map((e) => ({
+  href: `/record/disagreements/${e.id}/`,
+  title: e.data.title,
+  summary: e.data.summary,
+  tags: [`${e.data.positions.length} positions`, `Status: ${e.data.status}`],
+}));
+---
+
+<EntryList items={items} />

@@ -99,7 +99,8 @@ export async function titleForPath(path: string): Promise<string | undefined> {
     }
     for (const [path, title] of Object.entries(STATIC_PAGES)) titleIndex.set(path, title);
   }
-  return titleIndex.get(path.endsWith('/') || path.includes('#') ? path : `${path}/`);
+  const key = path.endsWith('/') || path.includes('#') || path.includes('.') ? path : `${path}/`;
+  return titleIndex.get(key) ?? (key.includes('#') ? titleIndex.get(key.split('#')[0]) : undefined);
 }
 
 export const STATIC_PAGES: Record<string, string> = {
@@ -114,6 +115,7 @@ export const STATIC_PAGES: Record<string, string> = {
   '/contribute/': 'Become a charitologist',
   '/about/': 'About Charitology',
   '/search/': 'Search',
+  '/feed.xml': 'RSS feed of new and updated pages',
 };
 
 export async function statusCounts(collection: CatalogKey) {

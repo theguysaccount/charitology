@@ -1,0 +1,110 @@
+---
+import { getCollection, render } from 'astro:content';
+import Entry from '../../layouts/Entry.astro';
+import Badges from '../../components/Badges.astro';
+import ConditionLinks from '../../components/ConditionLinks.astro';
+import ForecastDrafter from '../../components/ForecastDrafter.astro';
+import { latestByForecaster, summarize } from '../../lib/forecasts';
+import { formatDate, url } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('forecasts');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const s = summarize(entry);
+const latest = latestByForecaster(entry).sort((a, b) => b.date.getTime() - a.date.getTime());
+const status = s.resolved ? `Resolved ${d.outcome ? 'YES' : 'NO'}` : s.open ? 'Open' : 'Closed, awaiting result';
+---
+
+<Entry
+  title={d.title}
+  eyebrow="Forecast question"
+  summary={d.question}
+  crumbs={[{ label: 'Tools', href: '/tools/' }, { label: 'Forecasting Platform', href: '/tools/forecasting-platform/' }, { label: d.title }]}
+  filePath={entry.filePath}
+  review={d.review}
+  sources={d.sources}
+>
+  <Badges slot="badges" extra={[status, `Closes ${formatDate(d.closes)}`]} />
+
+  <div class="res">
+    <span class="eyebrow">How it resolves</span>
+    <p>{d.resolution}</p>
+  </div>
+
+  <Content />
+
+  <h2>Forecasts</h2>
+  {
+    latest.length === 0 ? (
+      <p class="empty">No forecasts yet. Be the first.</p>
+    ) : (
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Forecaster</th>
+              <th class="num">Probability</th>
+              <th>Date</th>
+              <th>Why</th>
+              {s.resolved && <th class="num">Brier</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {latest.map((f) => (
+              <tr>
+                <td>{f.by}</td>
+                <td class="num">{Math.round(f.p * 100)}%</td>
+                <td>{formatDate(f.date)}</td>
+                <td>{f.rationale ?? ''}</td>
+                {s.resolved && <td class="num">{((f.p - (d.outcome ? 1 : 0)) ** 2).toFixed(3)}</td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  <div class="drafter">
+    <ForecastDrafter questions={[{ id: entry.id, title: d.title, filePath: entry.filePath }]} selected={entry.id} />
+  </div>
+
+  <Fragment slot="aside">
+    <div class="aside-box">
+      <h2>The crowd</h2>
+      <p>
+        <strong>{s.median == null ? 'No forecasts yet' : `${Math.round(s.median * 100)}% median`}</strong>{' '}
+        {s.forecasters > 0 && `from ${s.forecasters} forecaster${s.forecasters === 1 ? '' : 's'}`}
+      </p>
+    </div>
+    <ConditionLinks refs={d.conditions} heading="Related conditions" />
+    <div>
+      <a href={url('/tools/forecasting-platform/')}>All questions and the leaderboard</a>
+    </div>
+  </Fragment>
+</Entry>
+
+<style>
+  .res {
+    margin: 0 0 2rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+  .res .eyebrow {
+    margin-bottom: 0.35rem;
+  }
+  .res p {
+    margin: 0;
+  }
+  .drafter {
+    margin-top: 2.5rem;
+  }
+</style>

@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import SourceList from '../SourceList.astro';
+import { EVIDENCE } from '../../lib/labels';
+import { conditionsInOrder } from '../../lib/content';
+import { url } from '../../lib/site';
+import figures from '../../data/figures.json';
+
+const conditions = await conditionsInOrder();
+const problems = await getCollection('problems');
+const solved = problems.filter((p) => p.data.status === 'solved').length;
+const evidenceCounts = (Object.keys(EVIDENCE) as (keyof typeof EVIDENCE)[]).map((k) => ({
+  key: k,
+  label: EVIDENCE[k].label,
+  count: conditions.filter((c) => c.data.evidence === k).length,
+}));
+const UNKNOWNS = [
+  ['How much giving reaches sources rather than symptoms', '/open-problems/the-depth-census/'],
+  ['How often headline impact findings replicate', '/open-problems/the-replication-rate/'],
+  ['What a gift would have achieved if it hadn’t been made', '/open-problems/the-counterfactual-problem/'],
+  ['What simple public measure should replace overhead ratios', '/open-problems/the-overhead-replacement/'],
+  ['How fast philanthropic money should be spent', '/open-problems/the-payout-question/'],
+];
+---
+
+<section class="soc">
+  <h2>Edition 0 in numbers</h2>
+  <div class="kpis">
+    <div class="kpi">
+      <div class="k-label">Given, U.S., {figures.usGiving.year}</div>
+      <div class="k-value">${figures.usGiving.billions}B</div>
+      <div class="k-note">{figures.usGiving.growth}</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">In donor-advised funds, {figures.dafs.year}</div>
+      <div class="k-value">${figures.dafs.assetsBillions}B</div>
+      <div class="k-note">{figures.dafs.payoutRate}% paid out that year</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Registered U.S. charities</div>
+      <div class="k-value">1M+</div>
+      <div class="k-note">{figures.registered.label}</div>
+    </div>
+    <div class="kpi">
+      <div class="k-label">Share reaching sources</div>
+      <div class="k-value">Unknown</div>
+      <div class="k-note">Not yet measured anywhere</div>
+    </div>
+  </div>
+
+  <h2>The Diagnosis at Edition 0</h2>
+  <p>
+    {conditions.length} conditions of the charity system:
+    {evidenceCounts.map((e, i) => `${i ? (i === evidenceCounts.length - 1 ? ' and ' : ', ') : ''}${e.count} ${e.label.toLowerCase()}`).join('')}.
+    {problems.length} open problems, {solved} solved.
+  </p>
+
+  <h2>What Edition 0 can’t tell you</h2>
+  <ul class="unknowns">
+    {
+      UNKNOWNS.map(([text, href]) => (
+        <li>
+          <a href={url(href)}>{text}</a>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="note">Each of these is an open problem. Next year’s report gets better as they are solved.</p>
+
+  <SourceList sources={[...figures.usGiving.sources, ...figures.dafs.sources, ...figures.registered.sources]} heading="Sources for these figures" />
+</section>
+
+<style>
+  .soc {
+    margin-top: 2rem;
+  }
+  .soc h2 {
+    font-size: 1.3rem;
+    margin-top: 2rem;
+  }
+  .soc h2:first-child {
+    margin-top: 0;
+  }
+  .unknowns {
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+</style>

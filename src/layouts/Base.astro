@@ -18,7 +18,7 @@ interface Props {
 const { title, description = SITE.description, noindex = false, nosearch = false } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name}: ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL(url('/og.png'), Astro.site);
+const ogImage = new URL(url('/og.jpg'), Astro.site);
 ---
 
 <!doctype html>
@@ -30,6 +30,7 @@ const ogImage = new URL(url('/og.png'), Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
     <link rel="alternate" type="application/rss+xml" title="Charitology: new and updated pages" href={url('/feed.xml')} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />

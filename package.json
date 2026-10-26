@@ -11,11 +11,12 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist --silent",
+    "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
     "check": "node scripts/check-content.mjs && node scripts/check-links.mjs",
     "test": "npm run build && npm run check",
-    "extension:zip": "node scripts/zip-extension.mjs"
+    "extension:zip": "node scripts/zip-extension.mjs",
+    "images": "node scripts/make-images.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",

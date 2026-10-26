@@ -1,0 +1,17 @@
+---
+import { url } from '../../lib/site';
+---
+
+<div class="callout feed-box">
+  <p><strong>Subscribe to the feed.</strong> Paste this address into any feed reader:</p>
+  <p><a href={url('/feed.xml')}><code>{url('/feed.xml')}</code></a></p>
+</div>
+
+<style>
+  .feed-box {
+    margin-top: 2rem;
+  }
+  .feed-box p {
+    margin: 0 0 0.5rem;
+  }
+</style>

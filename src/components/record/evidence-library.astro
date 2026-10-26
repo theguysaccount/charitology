@@ -1,0 +1,56 @@
+---
+import { allCitations } from '../../lib/sources';
+import { url } from '../../lib/site';
+
+const citations = await allCitations();
+const pages = new Set(citations.flatMap((c) => c.citedBy.map((b) => b.href))).size;
+---
+
+<section class="lib">
+  <p class="meta">{citations.length} sources, cited across {pages} pages.</p>
+  <ol class="cites">
+    {
+      citations.map((c) => (
+        <li>
+          <a href={c.url} rel="noopener" class="cite-title">
+            {c.title}
+          </a>
+          {(c.publisher || c.year) && <span class="meta"> · {[c.publisher, c.year].filter(Boolean).join(', ')}</span>}
+          <div class="cited-by">
+            Cited by:{' '}
+            {c.citedBy.map((b, i) => (
+              <>
+                {i > 0 && ' · '}
+                <a href={url(b.href)}>{b.title}</a>
+              </>
+            ))}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .lib {
+    margin-top: 2rem;
+  }
+  .cites {
+    padding-left: 1.6rem;
+    display: grid;
+    gap: 1rem;
+    font-size: 1rem;
+  }
+  .cite-title {
+    font-weight: 600;
+  }
+  .cited-by {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: var(--ink-3);
+    margin-top: 0.2rem;
+  }
+  .cited-by a {
+    color: var(--ink-2);
+  }
+</style>

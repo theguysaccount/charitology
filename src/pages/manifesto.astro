@@ -1,0 +1,64 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import Seal from '../components/Seal.astro';
+import { url } from '../lib/site';
+
+const entry = await getEntry('journal', 'ten-dollars');
+if (!entry) throw new Error('The manifesto (src/content/journal/ten-dollars.md) is missing.');
+const { Content } = await render(entry);
+---
+
+<Base title="Ten Dollars: the manifesto" description={entry.data.summary}>
+  <article class="manifesto">
+    <div class="narrow">
+      <Crumbs items={[{ label: 'Manifesto' }]} />
+      <span class="eyebrow">Journal of Charitology · Vol. {entry.data.volume}, No. {entry.data.issue}</span>
+      <h1>Ten Dollars</h1>
+      <div class="poem">
+        <Content />
+      </div>
+      <div class="sign">
+        <Seal id="manifesto-seal" size={120} />
+        <div class="btn-row">
+          <a class="btn" href={url('/contribute/')}>Become a charitologist</a>
+          <a class="btn btn-ghost" href={url('/diagnosis/')}>Read the diagnosis</a>
+        </div>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .manifesto {
+    padding-block: clamp(2.5rem, 7vw, 5rem);
+  }
+  .manifesto h1 {
+    font-size: clamp(3rem, 9vw, 5.5rem);
+    letter-spacing: -0.03em;
+    margin-bottom: 2.5rem;
+  }
+  .poem {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2.4vw, 1.5rem);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  .poem :global(p) {
+    margin: 0 0 1.6em;
+  }
+  .poem :global(em) {
+    font-style: italic;
+    font-size: 1.25em;
+    color: var(--accent);
+  }
+  .sign {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 3px double var(--rule);
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+  }
+</style>

@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import Badges from '../components/Badges.astro';
+import { SITE, url } from '../lib/site';
+
+const designed = (
+  await Promise.all(
+    (['programs', 'tools', 'record'] as const).map(async (c) =>
+      (await getCollection(c)).filter((e) => e.data.status === 'designed').map((e) => ({ c, e })),
+    ),
+  )
+).flat();
+const drafts = (
+  await Promise.all(
+    (['conditions', 'encyclopedia', 'interventions', 'cases', 'myths', 'disagreements', 'traditions', 'principles'] as const).map(
+      async (c) => (await getCollection(c)).filter((e: any) => e.data.review === 'draft').length,
+    ),
+  )
+).reduce((a, b) => a + b, 0);
+
+const ROLES = [
+  ['Researchers', 'Take on one of the Open Problems. Publish an approach, a dataset or a partial result as an issue.', '/open-problems/'],
+  ['Builders', 'Ship a designed program or tool. Each one has a charter with a first milestone.', '#designed'],
+  ['Writers', 'Grow the Record: an encyclopedia entry, a case, a myth, a tradition. Sources first.', '/record/'],
+  ['Reviewers', `Check a draft’s sources and mark it reviewed. ${drafts} pages are waiting.`, '/record/methodology/'],
+  ['Critics', 'Red-team any claim. Every page links to a prefilled challenge.', '/programs/red-team/'],
+  ['Forecasters', 'Put a number on what will happen and get scored when it does.', '/tools/forecasting-platform/'],
+];
+---
+
+<Base title="Become a charitologist" description="How to contribute to Charitology: research, build, write, review, red-team and forecast. Everything is open on GitHub.">
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'Contribute' }]} />
+      <span class="eyebrow">Take part</span>
+      <h1>Become a charitologist</h1>
+      <p class="lede">
+        Charitology is built in the open, and anyone can practice it. Every page on this site is a file you can improve, every
+        claim can be challenged, and every open problem is waiting for someone to take it on.
+      </p>
+      <div class="btn-row hero-actions">
+        <a class="btn" href={SITE.repo}>Open the repository</a>
+        <a class="btn btn-ghost" href={`${SITE.repo}/issues`}>Browse issues</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="wrap section-tight">
+    <h2>Pick a role</h2>
+    <div class="grid">
+      {
+        ROLES.map(([title, text, href]) => (
+          <a class="card" href={href.startsWith('#') ? href : url(href)}>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wrap section-tight">
+    <div class="split split-even">
+      <div class="prose">
+        <h2>The fastest way in</h2>
+        <p>
+          You don’t need to install anything. Every page has an <strong>Improve this page</strong> link that opens the file in
+          GitHub’s editor. Make your change, describe it and propose it. A maintainer reviews it in public.
+        </p>
+        <h2>Working locally</h2>
+        <pre><code>git clone {SITE.repo}.git
+cd charitology
+npm ci
+npm run dev        # live preview at localhost:4321
+npm run build      # full build with search
+npm run check      # content cross-references and links</code></pre>
+        <p>Node 22 or newer. No accounts, keys or services are needed.</p>
+      </div>
+      <div class="prose">
+        <h2>Where things live</h2>
+        <ul>
+          <li><code>src/content/conditions/</code> holds the Diagnosis</li>
+          <li><code>src/content/problems/</code> holds the Open Problems</li>
+          <li><code>src/content/programs/</code>, <code>tools/</code> and <code>record/</code> hold the catalog</li>
+          <li><code>src/content/encyclopedia/</code>, <code>interventions/</code>, <code>cases/</code>, <code>myths/</code>, <code>disagreements/</code>, <code>traditions/</code>, <code>principles/</code> and <code>journal/</code> hold the Record</li>
+          <li><code>src/content/forecasts/</code> holds forecast questions</li>
+          <li><code>src/content/charities/</code> holds the Charity Index</li>
+          <li><code>src/data/</code> holds causes, frameworks, the depth scale, the checklist and headline figures</li>
+          <li><code>src/components/tools/</code> holds the interactive tools</li>
+          <li><code>extension/</code> holds the browser extension</li>
+        </ul>
+        <h2>The rules</h2>
+        <p>
+          Everything follows <a href={`${SITE.repo}/blob/main/STYLE.md`}>the Charitology Standard</a>: no judgment of the
+          good being done, a source for every factual claim, honest evidence labels, and no ratings of named charities. AI
+          help is fine if you disclose it and check every claim yourself.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section-tight" id="designed">
+    <h2>Designed, waiting for builders</h2>
+    <p class="note">Each of these has a written charter. Pick one, open an issue saying you’re on it, and ship the first milestone.</p>
+    <div class="grid">
+      {
+        designed.map(({ c, e }) => (
+          <a class="card" href={url(`/${c}/${e.id}/`)}>
+            <span class="eyebrow kicker">{c === 'record' ? 'Record' : c === 'tools' ? 'Tool' : 'Program'}</span>
+            <h3>{e.data.title}</h3>
+            <p>{e.data.summary}</p>
+            <div class="card-meta">
+              <Badges status={e.data.status} />
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero-actions {
+    margin-top: 1.5rem;
+  }
+  h2 {
+    font-size: 1.4rem;
+  }
+  .kicker {
+    margin-bottom: 0;
+  }
+</style>

@@ -1,0 +1,72 @@
+---
+// Server-rendered horizontal bars (same look as src/lib/client/bars.ts) with a
+// hover/focus tooltip. One scale and one baseline per chart; colors from tokens.
+interface Row {
+  label: string;
+  value: number | null;
+  display: string;
+  color?: string;
+  note?: string;
+}
+interface Props {
+  rows: Row[];
+  label: string;
+  max?: number;
+}
+const { rows, label, max = Math.max(...rows.map((r) => r.value ?? 0), 0) } = Astro.props;
+---
+
+<div class="bars static-bars" role="list" aria-label={label}>
+  {
+    rows.map((r) => (
+      <div
+        class="bar-row"
+        role="listitem"
+        tabindex="0"
+        data-tip={[r.label, r.display, r.note].filter(Boolean).join(' · ')}
+        aria-label={`${r.label}: ${r.display}`}
+      >
+        <span class="bar-label">{r.label}</span>
+        <div class={r.value == null ? 'bar-track unknown' : 'bar-track'}>
+          {r.value != null && max > 0 && (
+            <div class="bar-fill" style={`width:${(r.value / max) * 100}%;${r.color ? `background:${r.color}` : ''}`} />
+          )}
+        </div>
+        <span class="bar-value">{r.display}</span>
+      </div>
+    ))
+  }
+  <div class="chart-tip" role="tooltip" hidden></div>
+</div>
+
+<style>
+  .static-bars {
+    position: relative;
+  }
+  .bar-track.unknown {
+    background: repeating-linear-gradient(135deg, var(--rule-2) 0 6px, transparent 6px 12px);
+    box-shadow: inset 0 0 0 1px var(--rule);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.static-bars').forEach((chart) => {
+    const tip = chart.querySelector<HTMLElement>('.chart-tip');
+    if (!tip) return;
+    chart.querySelectorAll<HTMLElement>('.bar-row').forEach((row) => {
+      const show = () => {
+        tip.textContent = row.dataset.tip ?? '';
+        tip.hidden = false;
+        const box = row.getBoundingClientRect();
+        const host = chart.getBoundingClientRect();
+        tip.style.left = `${box.left - host.left + box.width / 2}px`;
+        tip.style.top = `${box.top - host.top}px`;
+      };
+      const hide = () => (tip.hidden = true);
+      row.addEventListener('pointerenter', show);
+      row.addEventListener('focus', show);
+      row.addEventListener('pointerleave', hide);
+      row.addEventListener('blur', hide);
+    });
+  });
+</script>

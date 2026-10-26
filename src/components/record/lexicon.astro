@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+import { url } from '../../lib/site';
+
+const terms = (await getCollection('lexicon')).sort((a, b) => a.data.term.localeCompare(b.data.term));
+const byId = new Map(terms.map((t) => [t.id, t.data.term]));
+const letters = [...new Set(terms.map((t) => t.data.term[0].toUpperCase()))];
+---
+
+<nav class="az" aria-label="Jump to letter">
+  {letters.map((l) => <a href={`#letter-${l}`}>{l}</a>)}
+</nav>
+<dl class="lexicon">
+  {
+    terms.map((t, i) => (
+      <>
+        {(i === 0 || terms[i - 1].data.term[0].toUpperCase() !== t.data.term[0].toUpperCase()) && (
+          <div class="letter" id={`letter-${t.data.term[0].toUpperCase()}`}>
+            {t.data.term[0].toUpperCase()}
+          </div>
+        )}
+        <div class="term" id={t.id}>
+          <dt>{t.data.term}</dt>
+          <dd>
+            {t.data.definition}
+            {t.data.see.length > 0 && (
+              <span class="see">
+                {' '}
+                See:{' '}
+                {t.data.see
+                  .filter((s) => byId.has(s))
+                  .map((s, j) => (
+                    <>
+                      {j > 0 && ', '}
+                      <a href={url(`/record/lexicon/#${s}`)}>{byId.get(s)}</a>
+                    </>
+                  ))}
+              </span>
+            )}
+          </dd>
+        </div>
+      </>
+    ))
+  }
+</dl>
+
+<style>
+  .az {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin: 2rem 0 1rem;
+    font-family: var(--font-sans);
+  }
+  .az a {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  .lexicon {
+    margin: 0;
+  }
+  .letter {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin: 1.5rem 0 0.25rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .term {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--rule-2);
+    scroll-margin-top: calc(var(--header-h) + 16px);
+  }
+  .term:target {
+    background: var(--accent-wash);
+  }
+  .term dt {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+  .term dd {
+    margin: 0.25rem 0 0;
+    color: var(--ink-2);
+  }
+  .see {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+  }
+</style>
