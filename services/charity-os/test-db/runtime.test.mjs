@@ -224,19 +224,23 @@ test(
         assert.equal(link.pathname, "/auth/confirm");
         const token = link.searchParams.get("token");
         assert.ok(token);
-        const countBefore = Number(
-          (await migrationDb.pool.query('SELECT count(*) FROM "session"'))
-            .rows[0].count,
-        );
+        const ownSessionCount = async () =>
+          Number(
+            (
+              await migrationDb.pool.query(
+                'SELECT count(*) FROM "session" s JOIN "user" u ON s."userId"=u.id WHERE u.email=$1',
+                [address],
+              )
+            ).rows[0].count,
+          );
+        const countBefore = await ownSessionCount();
+        assert.equal(countBefore, 0, "A new synthetic actor has no session.");
         const scanner = await call({ ip }, link.pathname + link.search);
         assert.match(scanner.value, /<form[^>]+method="post"/i);
         assert.equal(
-          Number(
-            (await migrationDb.pool.query('SELECT count(*) FROM "session"'))
-              .rows[0].count,
-          ),
+          await ownSessionCount(),
           countBefore,
-          "GET must not create a session.",
+          "GET must not create a session for this actor.",
         );
         const response = await handle(
           new Request(new URL("/auth/confirm", settings.origin), {
@@ -267,11 +271,13 @@ test(
         const session = (await call({ cookie, ip }, "/api/session")).value;
         assert.equal(session.user.email, address);
         assert.ok(session.csrfToken);
+        assert.equal(
+          await ownSessionCount(),
+          1,
+          "Deliberate confirmation creates exactly one session for this actor.",
+        );
         if (scannerCheck) {
-          const sessions = Number(
-            (await migrationDb.pool.query('SELECT count(*) FROM "session"'))
-              .rows[0].count,
-          );
+          const sessions = await ownSessionCount();
           const replay = await handle(
             new Request(new URL("/auth/confirm", settings.origin), {
               method: "POST",
@@ -292,12 +298,9 @@ test(
             "Replay must redirect with an error.",
           );
           assert.equal(
-            Number(
-              (await migrationDb.pool.query('SELECT count(*) FROM "session"'))
-                .rows[0].count,
-            ),
+            await ownSessionCount(),
             sessions,
-            "Replay cannot create another session.",
+            "Replay cannot create another session for this actor.",
           );
           await call({ cookie }, "/api/orgs", {
             method: "POST",
@@ -361,10 +364,23 @@ test(
         async () => {
           assert.equal((await call(null, "/api/session")).value.user, null);
           a = await signIn("owner-a", { scannerCheck: true });
-          [b, reviewer, reader, contributor, invitee] = await Promise.all(
+          // Drain every attempt before propagating an assertion failure so the
+          // fixture cannot close its pools while another actor is still signing in.
+          const actorResults = await Promise.allSettled(
             ["owner-b", "reviewer", "reader", "contributor", "invitee"].map(
               (label) => signIn(label),
             ),
+          );
+          const signInFailures = actorResults
+            .filter((result) => result.status === "rejected")
+            .map((result) => result.reason);
+          if (signInFailures.length)
+            throw new AggregateError(
+              signInFailures,
+              "Parallel synthetic sign-ins failed after every attempt settled.",
+            );
+          [b, reviewer, reader, contributor, invitee] = actorResults.map(
+            (result) => result.value,
           );
           orgA = (
             await call(a, "/api/orgs", {

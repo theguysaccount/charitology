@@ -3,21 +3,6 @@ name: Charity OS checks
 on:
   workflow_call:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - services/charity-os/**
-      - src/lib/irs-registry.mjs
-      - scripts/update-irs-registry.mjs
-      - .github/workflows/charity-os-check.yml
-      - .nvmrc
-  push:
-    branches: [main]
-    paths:
-      - services/charity-os/**
-      - src/lib/irs-registry.mjs
-      - scripts/update-irs-registry.mjs
-      - .github/workflows/charity-os-check.yml
-      - .nvmrc
 
 permissions:
   contents: read

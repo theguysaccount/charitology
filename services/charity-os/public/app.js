@@ -2122,7 +2122,7 @@ function renderReminder(module, record) {
     node(
       "p",
       { class: "fine" },
-      "Queue a reminder for your own member email. A saved reminder is not proof of inbox delivery.",
+      "Queue a reminder for your own member email. The daily dispatcher runs at 07:00 UTC and handles reminders after their due time. A saved reminder is not proof of inbox delivery.",
     ),
     node(
       "form",
@@ -2139,7 +2139,7 @@ function renderReminder(module, record) {
               );
               at.value = "";
               status.textContent =
-                "Reminder queued. It will be handled by the service’s scheduled job.";
+                "Reminder queued for the daily dispatch after its due time (07:00 UTC).";
               state.pageDirty = false;
               toast("Your reminder was queued.");
             },

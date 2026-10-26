@@ -2,7 +2,7 @@
 
 Date: October 25, 2026 (America/Los_Angeles). AI-assisted implementation, writing and verification. This record concerns software availability and published content, not independently reviewed research or operating institutions.
 
-This is the historical October25 implementation record. See [the current66-item acceptance register](MEGA_LIST_ACCEPTANCE.md) and [handoff](../HANDOFF.md) for later program, email and shared-OS releases.
+This is the historical October 25 implementation record. See [the current 66-item acceptance register](MEGA_LIST_ACCEPTANCE.md) and [handoff](../HANDOFF.md) for later program, email and shared-OS releases.
 
 ## Result
 
