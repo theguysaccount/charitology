@@ -6,7 +6,7 @@ The newsletter has its own package and lockfile in `services/newsletter`. The pu
 
 [`newsletter-check.yml`](../.github/workflows/newsletter-check.yml) is a reusable workflow called by both the pull-request/branch [Check workflow](../.github/workflows/check.yml) and the main-branch/manual [Pages deployment workflow](../.github/workflows/deploy.yml). Pages publication waits for both the website build/check job and newsletter checks to succeed.
 
-The newsletter job uses Node 24, the service's exact lockfile and a disposable PostgreSQL 17 service container. It runs:
+The first branch and pull-request runs passed on GitHub, including the actual disposable Postgres job. The newsletter job uses Node 24, the service's exact lockfile and a disposable PostgreSQL 17 service container. It runs:
 
 ```sh
 # Working directory: services/newsletter

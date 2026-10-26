@@ -38,16 +38,16 @@ A secret-free GitHub job runs unit tests and real Postgres tests against a dispo
 
 ## Disabled production deployment
 
-The initial service code at commit `4a7c4cc` was staged, checked and promoted as Vercel deployment `dpl_7QYsYQHv28teE7VRnJtnfea2mzD6`. Public endpoint: `https://mail.charitology.org/api/health`; it reports `sendingFlagEnabled:false` and `controlledTestMode:true`. Successful preview/health/maintenance responses are not delivery claims. A dedicated nine-event Resend webhook is configured; its signing credential is private, and actual signed callback verification remains pending deployment of that credential.
+The final service code at commit `0ece039` was staged, checked and promoted as Vercel deployment `dpl_EwJJBZ8FQRLoAhmQhmExswMuTe6X`. The earlier disabled deployment was `dpl_7QYsYQHv28teE7VRnJtnfea2mzD6`. Public endpoint: `https://mail.charitology.org/api/health`; it reports `sendingFlagEnabled:false` and `controlledTestMode:true`. Successful preview/health/maintenance responses are not delivery claims. A dedicated nine-event Resend webhook is configured with a private signing credential. A real provider-signed synthetic Contact event reached the promoted service with HTTP200 and provider success; exactly one durable event record was present, and no subscriber was created. The disposable Contact was removed and absence verified. An unsigned request was rejected with400. No email or membership change occurred. A post-deployment error/fatal log scan for this final deployment returned no entries. No external log drain or independent uptime monitor is configured.
 
-A runtime log scan identified one PostgreSQL SSL-mode compatibility warning, while the corresponding health request returned 200. The connection now explicitly requires certificate and hostname verification for Neon. Actual database integration reran successfully without the warning; local test connections retain their existing settings. No verification is disabled.
+The initial runtime scan identified one PostgreSQL SSL-mode compatibility warning while its health request returned200. The final connection explicitly requires certificate and hostname verification for Neon; actual integration and final deployment checks completed without that warning. Local test connections retain their existing settings.
 
 ## Remaining launch acceptance
 
 1. Verify the approved upgrade actually completed, check the domain allowance and keep transactional pay-as-you-go disabled. Do not create a second subscription or remove another domain.
 2. Create `charitology.org` in the authorized account, disable both tracking settings, publish its exact returned DKIM and sending-domain records without replacing website or receiving records, then confirm verified sender status.
-3. Finish the reviewed service configuration and final deployment, preserving the verified custom-domain HTTPS, private database access and disabled-send health.
-4. Configure and verify the signed Resend webhook. Keep credentials server-only and out of public build logs and artifacts.
+3. Sender-specific configuration remains pending. The reviewed service is deployed with verified custom-domain HTTPS, private database access, disabled-send health and authenticated bounded maintenance. Preserve those checks when enabling the sender.
+4. The signed webhook is configured and verified for a synthetic Contact event. Still verify actual message-delivery and unsubscribe events during the controlled inbox test. Keep credentials server-only and out of public build logs and artifacts.
 5. Enable controlled delivery and use the owner-authorized inbox: request, receive, inspect, deliberately confirm, reject replay, inspect native membership, send only the reviewed first issue and verify provider events separately from inbox receipt.
 6. Verify native and local unsubscribe, durable future-send exclusion, expired links and the `hello` reply forwarding route.
 7. Only after those checks, enable public confirmed signup, update public delivery copy and record the actual deployment and costs. Do not infer another list's consent or launch an unrequested campaign.
