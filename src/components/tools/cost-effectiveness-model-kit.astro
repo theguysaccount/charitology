@@ -440,7 +440,7 @@ const parts = [
   import { $, clear, h } from '../../lib/client/dom';
   import { download, toCsv } from '../../lib/client/files';
   import { num, parseAmount, slugify } from '../../lib/client/format';
-  import { load, save } from '../../lib/client/store';
+  import { load, save, validateToolStorage } from '../../lib/client/durable-store';
   import { histogram, quantile } from '../../lib/client/montecarlo';
   import { RANGED, dollars, dollarsTick, runModel, sensitivity, sig } from '../../lib/client/models';
   import type { ModelInputs, ModelRun, RangedKey } from '../../lib/client/models';
@@ -695,8 +695,12 @@ const parts = [
     const d = new Date(iso);
     return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
-  const isSaved = (m: unknown): m is Saved =>
-    !!m && typeof m === 'object' && typeof (m as Saved).id === 'string' && typeof (m as Saved).name === 'string' && typeof (m as Saved).values === 'object';
+  const isSaved = (m: unknown): m is Saved => {
+    if (!m || typeof m !== 'object') return false;
+    const v = m as Saved;
+    return ['id', 'name', 'unit', 'discount', 'seed', 'savedAt'].every(key => typeof (v as unknown as Record<string, unknown>)[key] === 'string') && !!v.id && !Number.isNaN(Date.parse(v.savedAt)) && !!v.values && RANGED.every(key => Array.isArray(v.values[key]) && v.values[key].length === 3 && v.values[key].every(value => typeof value === 'string'));
+  };
+  validateToolStorage(KEY, value => Array.isArray(value) && value.every(isSaved) && new Set(value.map(m => m.id)).size === value.length);
   let models: Saved[] = (() => {
     const stored = load<unknown>(KEY, []);
     return Array.isArray(stored) ? stored.filter(isSaved) : [];

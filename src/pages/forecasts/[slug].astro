@@ -4,7 +4,7 @@ import Entry from '../../layouts/Entry.astro';
 import Badges from '../../components/Badges.astro';
 import ConditionLinks from '../../components/ConditionLinks.astro';
 import ForecastDrafter from '../../components/ForecastDrafter.astro';
-import { latestByForecaster, summarize } from '../../lib/forecasts';
+import { latestByForecaster, summarize, cutoffText, brier } from '../../lib/forecasts';
 import { formatDate, url } from '../../lib/site';
 
 export async function getStaticPaths() {
@@ -17,7 +17,7 @@ const { Content } = await render(entry);
 const d = entry.data;
 const s = summarize(entry);
 const latest = latestByForecaster(entry).sort((a, b) => b.date.getTime() - a.date.getTime());
-const status = s.resolved ? `Resolved ${d.outcome ? 'YES' : 'NO'}` : s.open ? 'Open' : 'Closed, awaiting result';
+const status = s.status;
 ---
 
 <Entry
@@ -29,19 +29,22 @@ const status = s.resolved ? `Resolved ${d.outcome ? 'YES' : 'NO'}` : s.open ? 'O
   review={d.review}
   sources={d.sources}
 >
-  <Badges slot="badges" extra={[status, `Closes ${formatDate(d.closes)}`]} />
+  <Badges slot="badges" extra={[status, `Closes ${d.closes.toISOString()}`]} />
 
   <div class="res">
     <span class="eyebrow">How it resolves</span>
     <p>{d.resolution}</p>
+    <p class="note">Scored forecasts must be strictly before {cutoffText(d)} (UTC). Date-only closing values mean midnight UTC, not the end of that day.</p>
+    {(s.resolved || s.annulled) && <p><strong>{s.status}</strong> · Decision: {d.resolvedOn?.toISOString()}. {d.outcomeKnownOn && `Outcome publicly knowable: ${d.outcomeKnownOn.toISOString()}.`} <a href={d.resolutionSource}>Resolution evidence</a>. {d.resolutionNote}</p>}
   </div>
 
   <Content />
 
   <h2>Forecasts</h2>
+  <p class="note">Latest eligible forecasts appear below. Earlier updates remain in the repository and API. Annulled questions are excluded from all Brier scores and leaderboard counts.</p>
   {
     latest.length === 0 ? (
-      <p class="empty">No forecasts yet. Be the first.</p>
+      <p class="empty">{s.open ? 'No eligible forecasts yet. Add one below.' : 'No eligible forecasts were recorded before the cutoff.'}</p>
     ) : (
       <div class="table-wrap">
         <table class="data">
@@ -61,7 +64,7 @@ const status = s.resolved ? `Resolved ${d.outcome ? 'YES' : 'NO'}` : s.open ? 'O
                 <td class="num">{Math.round(f.p * 100)}%</td>
                 <td>{formatDate(f.date)}</td>
                 <td>{f.rationale ?? ''}</td>
-                {s.resolved && <td class="num">{((f.p - (d.outcome ? 1 : 0)) ** 2).toFixed(3)}</td>}
+                {s.resolved && <td class="num">{brier(f.p, d.outcome as boolean).toFixed(3)}</td>}
               </tr>
             ))}
           </tbody>
@@ -71,7 +74,7 @@ const status = s.resolved ? `Resolved ${d.outcome ? 'YES' : 'NO'}` : s.open ? 'O
   }
 
   <div class="drafter">
-    <ForecastDrafter questions={[{ id: entry.id, title: d.title, filePath: entry.filePath }]} selected={entry.id} />
+    <ForecastDrafter questions={[{ id: entry.id, title: d.title, filePath: entry.filePath, cutoff: cutoffText(d), settled: d.annulled || d.outcome !== null }]} selected={entry.id} />
   </div>
 
   <Fragment slot="aside">

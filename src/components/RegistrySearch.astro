@@ -1,0 +1,149 @@
+---
+import manifest from '../../public/data/irs-registry/manifest.json';
+import { url } from '../lib/site';
+const id = `irs-${Astro.props.id ?? 'registry'}`;
+const states = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY AS GU MP PR VI AA AE AP FM MH PW'.split(' ');
+---
+
+<section class="registry-search" data-irs-registry data-base={url('/data/irs-registry/')} aria-labelledby={`${id}-title`}>
+  <h3 id={`${id}-title`}>Search the IRS public registry snapshot</h3>
+  <p>
+    {manifest.recordCount.toLocaleString('en-US')} organization records from all four IRS EO BMF regions.
+    <strong> IRS data posting: <time datetime={manifest.dataDate}>{manifest.dataDate}</time>.</strong>
+    This is a US federal tax-exemption registry, including some non-domestic addresses. It is not a worldwide charity census.
+  </p>
+  <form data-irs-form role="search" aria-label="Search IRS organization identities">
+    <label for={`${id}-q`}>Beginning of the IRS primary name, or a complete EIN</label>
+    <input id={`${id}-q`} name="q" type="search" maxlength="120" autocomplete="off" spellcheck="false" required aria-describedby={`${id}-hint`} placeholder="For example, AMERICAN NATIONAL RED CROSS or 53-0196605" />
+    <div class="registry-controls">
+      <div>
+        <label for={`${id}-state`}>Filing state or territory (optional)</label>
+        <select id={`${id}-state`} name="state">
+          <option value="">All filing addresses</option>
+          {states.map(state => <option value={state}>{state}</option>)}
+        </select>
+      </div>
+      <button class="btn" type="submit">Search public registry</button>
+      <button class="btn btn-ghost" type="button" data-irs-clear>Clear results</button>
+    </div>
+    <p class="hint" id={`${id}-hint`}>
+      Use at least three characters from the start of the name as filed, including “The” when present. Punctuation and accents
+      are ignored for matching. EIN search uses all nine digits, including leading zeros. Search does not match aliases or words
+      in the middle of a name. Filing address does not show where the organization works.
+    </p>
+  </form>
+  <p data-irs-status role="status" aria-live="polite">No registry data is downloaded until you press Search public registry.</p>
+  <div class="btn-row">
+    <button type="button" class="btn btn-ghost btn-small" data-irs-json disabled>Export results JSON</button>
+    <button type="button" class="btn btn-ghost btn-small" data-irs-csv disabled>Export results CSV</button>
+  </div>
+  <ol data-irs-results class="registry-results" aria-label="Public IRS registry matches"></ol>
+  <details class="registry-sources">
+    <summary>Coverage, source files and download</summary>
+    <p>
+      These are dated government records, not Charitology reviews or ratings. The extract omits some self-declared organizations
+      and churches that did not apply for recognition. A missing match establishes neither revocation nor ineligibility. Status
+      and deductibility are separate IRS codes; check current IRS records before relying on either for a gift. No impact, financial
+      health or depth conclusion is inferred. Missing fields remain unknown. The IRS does not endorse this tool.
+    </p>
+    <p>
+      Search runs locally after downloading only the needed compressed shards. Your full query is not sent to an organization
+      API. The site host receives requests for a name-initial shard or EIN-prefix directory. Downloads total
+      {(manifest.compressedBytes / 1024 ** 2).toFixed(2)} MiB for the entire snapshot; a search uses a small part. There is no
+      automatic refresh during a visit. Newer IRS data may exist after the date above.
+    </p>
+    <p>
+      <a href={manifest.source.url} target="_blank" rel="noopener noreferrer">IRS EO BMF source and coverage</a> ·
+      <a href={manifest.codeDefinitions} target="_blank" rel="noopener noreferrer">Official code definitions (PDF)</a> ·
+      <a href="https://apps.irs.gov/app/eos/" target="_blank" rel="noopener noreferrer">Check current IRS tax-exempt records</a> ·
+      <a href={url('/data/irs-registry/manifest.json')} download>Download provenance manifest</a> ·
+      <a href={url('/data/irs-registry/README.txt')}>Data format and refresh instructions</a>
+    </p>
+    <ul>
+      {manifest.sources.map(source => <li><a href={source.url} target="_blank" rel="noopener noreferrer">IRS region {source.region}: original CSV</a> ({source.rows.toLocaleString('en-US')} rows). Raw-file SHA-256: <code>{source.sha256}</code>.</li>)}
+    </ul>
+    <p class="note">A browser without gzip decompression can use the original IRS CSV downloads above. Their combined raw size is about 326 MiB. Public IRS records are attributed to the IRS; the site’s content license does not relicense those government records.</p>
+  </details>
+  <noscript><p>JavaScript is needed for local registry search. Open the source and download links above to search the original IRS data.</p></noscript>
+</section>
+
+<style>
+  .registry-search { margin-block: 2rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
+  .registry-search label { display: block; font-weight: 600; margin-bottom: .3rem; }
+  .registry-search input { width: 100%; }
+  .registry-controls { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin-block: .75rem; }
+  .registry-controls > div { flex: 1 1 13rem; }
+  .registry-controls select { width: 100%; }
+  .registry-results { list-style: none; display: grid; gap: .8rem; padding: 0; }
+  .registry-results :global(h4) { margin: 0 0 .4rem; font-size: 1.12rem; overflow-wrap: anywhere; }
+  .registry-results :global(p) { margin: .4rem 0; }
+  .registry-sources code { overflow-wrap: anywhere; }
+  .registry-sources { margin-top: 1rem; }
+  @media (max-width: 480px) { .registry-controls .btn { width: 100%; } }
+</style>
+
+<script>
+  import { createRegistry, statusLabel, deductibilityLabel, type RegistryResult, type RegistryOrganization } from '../lib/irs-registry.mjs';
+  import { h, clear } from '../lib/client/dom';
+  import { download, toCsv } from '../lib/client/files';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-irs-registry]')) {
+    if (root.dataset.mounted) continue;
+    root.dataset.mounted = 'true';
+    const form = root.querySelector<HTMLFormElement>('[data-irs-form]')!;
+    const input = form.elements.namedItem('q') as HTMLInputElement;
+    const state = form.elements.namedItem('state') as HTMLSelectElement;
+    const submit = form.querySelector<HTMLButtonElement>('[type=submit]')!;
+    const status = root.querySelector<HTMLElement>('[data-irs-status]')!;
+    const results = root.querySelector<HTMLElement>('[data-irs-results]')!;
+    const json = root.querySelector<HTMLButtonElement>('[data-irs-json]')!;
+    const csv = root.querySelector<HTMLButtonElement>('[data-irs-csv]')!;
+    const registry = createRegistry({ base: new URL(root.dataset.base!, location.href).href });
+    let sequence = 0, result: RegistryResult | undefined;
+    function reset() { result = undefined; clear(results); json.disabled = csv.disabled = true; }
+    const describe = (r: RegistryOrganization) => [r.city || 'City not supplied', r.state || 'State or territory not supplied'].join(', ');
+    function card(r: RegistryOrganization) {
+      return h('li', { class: 'card' },
+        h('h4', {}, r.name),
+        h('p', {}, `EIN ${r.ein.slice(0, 2)}-${r.ein.slice(2)} · Filing address: ${describe(r)}`),
+        h('p', { class: 'note' }, `IRS status ${r.status ?? 'unknown'}: ${statusLabel(r.status)}. Subsection code: ${r.subsection ?? 'not supplied'}.`),
+        h('p', { class: 'note' }, `${deductibilityLabel(r.deductibility)}. Snapshot date: ${r.dataDate}.`),
+        h('p', { class: 'note' },
+          h('a', { href: r.sourceUrl, target: '_blank', rel: 'noopener noreferrer' }, `Source region ${r.sourceRegion} CSV`), ' · ',
+          h('a', { href: 'https://apps.irs.gov/app/eos/', target: '_blank', rel: 'noopener noreferrer' }, 'Check current IRS records'), ' · ',
+          h('a', { href: `https://projects.propublica.org/nonprofits/organizations/${r.ein}`, target: '_blank', rel: 'noopener noreferrer' }, 'Open ProPublica filings (external site)')));
+    }
+    form.addEventListener('submit', async event => {
+      event.preventDefault(); const current = ++sequence; reset(); submit.disabled = true;
+      status.textContent = 'Downloading and checking the required public data shard. A first search may take a moment.';
+      try {
+        const next = await registry.search({ q: input.value, state: state.value });
+        if (current !== sequence) return;
+        result = next;
+        status.textContent = next.total
+          ? `${next.total.toLocaleString('en-US')} matching records in the ${next.dataDate} snapshot. Showing ${next.organizations.length}${next.truncated ? '; narrow the beginning of the name or select a filing state for more specific results' : ''}. This is identity data, not a rating.`
+          : `No match in this ${next.dataDate} snapshot. Try the exact EIN, the start of the IRS primary name (including The), or remove the filing-state filter. Absence does not establish revocation or ineligibility.`;
+        for (const row of next.organizations) results.append(card(row));
+        json.disabled = csv.disabled = !next.organizations.length;
+      } catch (error) {
+        if (current === sequence) status.textContent = `${error instanceof Error ? error.message : 'Registry search failed.'} Your query has not been submitted to an external registry. Use the official IRS source links or try again.`;
+      } finally { if (current === sequence) submit.disabled = false; }
+    });
+    root.querySelector('[data-irs-clear]')!.addEventListener('click', () => {
+      sequence++; reset(); submit.disabled = false; input.value = ''; state.value = ''; registry.clearCache();
+      status.textContent = 'Results cleared. Search again to load the needed public shard.'; input.focus();
+    });
+    json.addEventListener('click', () => { if (result) download(`irs-eobmf-${result.dataDate}-results.json`, JSON.stringify(result, null, 2) + '\n', 'application/json'); });
+    csv.addEventListener('click', () => {
+      if (!result) return;
+      // Spreadsheet formula escaping applies only to CSV; JSON retains exact source spelling.
+      const safe = (value: unknown) => typeof value === 'string' && /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+      const rows = result.organizations.map(row => Object.fromEntries(Object.entries({ ...row, source: result!.source.url, queriedAt: result!.queriedAt }).map(([key, value]) => [key, safe(value)])));
+      download(`irs-eobmf-${result.dataDate}-results.csv`, '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+      status.textContent += ' CSV exported; EINs must be imported as text to preserve leading zeros. Spreadsheet formula characters are escaped in CSV; JSON retains exact spelling.';
+    });
+    // Extension fragments prefill only. No automatic network request on arrival or typing.
+    const incoming = new URLSearchParams(location.hash.slice(1)).get('q');
+    if (incoming) input.value = incoming.slice(0, 120);
+  }
+</script>

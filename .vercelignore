@@ -1,0 +1,22 @@
+# CLI deployments use the repository root and the project's services/charity-os rootDirectory.
+/public/
+/src/
+/dist/
+docs/
+extension/
+scripts/
+node_modules/
+services/newsletter/
+services/charity-os/.env*
+services/charity-os/test/
+services/charity-os/test-db/
+services/charity-os/docs/
+services/charity-os/public/*.test.js
+
+# Private/local artifacts never enter a deployment upload.
+.env*
+.projects/
+.astro/
+.vercel/
+.git/
+services/charity-os/.vercel/

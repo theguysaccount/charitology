@@ -1,0 +1,2 @@
+# Public IRS snapshot files are ordinary binary gzip assets, never Git LFS pointers.
+public/data/irs-registry/**/*.gz binary -filter

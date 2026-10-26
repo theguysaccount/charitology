@@ -455,7 +455,7 @@ const frequencies = ['Every session', 'Weekly', 'Monthly', 'Every term', 'Every 
   import { $, $$, clear, h } from '../../lib/client/dom';
   import { download } from '../../lib/client/files';
   import { fileSlug } from '../../lib/client/markdown';
-  import { load, save } from '../../lib/client/store';
+  import { load, save, validateToolStorage, sameToolValue } from '../../lib/client/durable-store';
   import {
     cleanDraft,
     emptyDraft,
@@ -497,6 +497,10 @@ const frequencies = ['Every session', 'Weekly', 'Monthly', 'Every term', 'Every 
     return { v: 1, current, drafts: unique };
   }
 
+  validateToolStorage(KEY, value => {
+    const v = value as Stored;
+    return !!v && v.v === 1 && typeof v.current === 'string' && Array.isArray(v.drafts) && v.drafts.length > 0 && v.drafts.length <= MAX_DRAFTS && v.drafts.every(d => sameToolValue(d, cleanDraft(d))) && new Set(v.drafts.map(d => d.id)).size === v.drafts.length && v.drafts.some(d => d.id === v.current);
+  });
   const state = restore();
   const draft = (): Draft => state.drafts.find((d) => d.id === state.current) ?? state.drafts[0];
   const title = (d: Draft) => d.name.trim() || 'Untitled draft';

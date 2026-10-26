@@ -4,11 +4,11 @@
 import { editUrl } from '../lib/site';
 
 interface Props {
-  questions: { id: string; title: string; filePath?: string }[];
+  questions: { id: string; title: string; filePath?: string; cutoff: string; settled: boolean }[];
   selected?: string;
 }
 const { questions, selected } = Astro.props;
-const data = questions.map((q) => ({ id: q.id, title: q.title, edit: editUrl(q.filePath) }));
+const data = questions.map((q) => ({ id: q.id, title: q.title, edit: editUrl(q.filePath), cutoff: q.cutoff, settled: q.settled }));
 ---
 
 <div class="tool fd" data-fd>
@@ -38,12 +38,12 @@ const data = questions.map((q) => ({ id: q.id, title: q.title, edit: editUrl(q.f
       </div>
       <div class="field">
         <label for="fd-p">Probability of YES: <output id="fd-p-out">50%</output></label>
-        <input id="fd-p" type="range" min="1" max="99" step="1" value="50" />
+        <input id="fd-p" type="range" min="0" max="100" step="1" value="50" />
         <div class="range-labels"><span>Certainly not</span><span>Certainly</span></div>
       </div>
       <div class="field">
         <label for="fd-why">Why (optional, one or two sentences)</label>
-        <textarea id="fd-why" rows="3"></textarea>
+        <textarea id="fd-why" rows="3" maxlength="2000"></textarea>
       </div>
     </div>
     <div>
@@ -57,8 +57,10 @@ const data = questions.map((q) => ({ id: q.id, title: q.title, edit: editUrl(q.f
       </div>
       <p class="note">
         If the list is empty (<code>forecasts: []</code>), replace <code>[]</code> with a new line and paste the entry beneath it.
-        Only your latest forecast on a question is scored.
+        Only your latest eligible forecast is scored. It must precede the closing instant, public outcome availability and the resolution decision. Dates shown here are UTC. An annulled question earns no score.
       </p>
+      <p class="note" id="fd-state" role="status"></p>
+      <p class="note">The generated timestamp is a draft, not an independent receipt. Reviewers must check the public submission history; never backdate a forecast. Resolution requires <code>resolvedOn</code>, <code>outcomeKnownOn</code>, a public HTTPS <code>resolutionSource</code> and a <code>resolutionNote</code>. Annulment uses <code>annulled: true</code>, <code>outcome: null</code>, decision time, source and reason.</p>
     </div>
   </div>
   <script type="application/json" id="fd-data" set:html={JSON.stringify({ questions: data, selected: selected ?? data[0]?.id })} />
@@ -82,9 +84,9 @@ const data = questions.map((q) => ({ id: q.id, title: q.title, edit: editUrl(q.f
 <script>
   import { $, readJson } from '../lib/client/dom';
   import { copy, flash } from '../lib/client/files';
-  import { todayISO } from '../lib/client/format';
+  import { validForecastHandle, forecastDraft } from '../lib/forecast-model';
 
-  type Data = { questions: { id: string; title: string; edit: string }[]; selected: string };
+  type Data = { questions: { id: string; title: string; edit: string; cutoff: string; settled: boolean }[]; selected: string };
   const root = document.querySelector<HTMLElement>('[data-fd]');
   if (root) {
     const data = readJson<Data>('fd-data');
@@ -95,24 +97,33 @@ const data = questions.map((q) => ({ id: q.id, title: q.title, edit: editUrl(q.f
     const out = $('#fd-p-out', root);
     const yaml = $('#fd-yaml', root);
     const edit = $<HTMLAnchorElement>('#fd-edit', root);
-    const esc = (s: string) => `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\s+/g, ' ').trim()}"`;
-
+    const copyButton = $<HTMLButtonElement>('#fd-copy', root);
+    const state = $('#fd-state', root);
     const render = () => {
       const id = qSel?.value ?? data.selected;
       const q = data.questions.find((x) => x.id === id) ?? data.questions[0];
-      const handle = by.value.trim().replace(/^@/, '') || 'your-handle';
-      const prob = (Number(p.value) / 100).toFixed(2);
+      const handle = by.value.trim().replace(/^@/, '');
+      const now = Date.now();
+      const open = !!q && !q.settled && now < Date.parse(q.cutoff);
+      const valid = validForecastHandle(handle);
+      const draft = q ? forecastDraft(q, { by: handle, p: Number(p.value) / 100, rationale: why.value }, now) : null;
+      [by, p, why].forEach(el => { el.disabled = !open; });
+      copyButton.disabled = draft === null;
+      edit.setAttribute('aria-disabled', String(draft === null));
+      if (draft !== null) edit.href = q.edit; else edit.removeAttribute('href');
+      state.textContent = !q ? 'No question is available.' : !open ? 'This question is closed, resolved or annulled. No forecast draft can be submitted here.' : `Strictly before ${q.cutoff}. ${valid ? 'Copy the timestamped draft, then open its file.' : 'Enter a public handle using letters, numbers, underscores or hyphens.'}`;
       out.textContent = `${p.value}%`;
-      const lines = [`  - by: ${handle}`, `    p: ${prob}`, `    date: ${todayISO()}`];
-      if (why.value.trim()) lines.push(`    rationale: ${esc(why.value)}`);
-      yaml.textContent = lines.join('\n');
-      if (q) edit.href = q.edit;
+      yaml.textContent = draft ?? (open ? 'Enter a valid public handle and bounded rationale to create a draft.' : 'Forecasting is closed for this question.');
+      return draft !== null;
     };
     [qSel, by, p, why].forEach((el) => el?.addEventListener('input', render));
-    $('#fd-copy', root).addEventListener('click', async (e) => {
+    copyButton.addEventListener('click', async (e) => {
+      if (!render()) return;
       const ok = await copy(yaml.textContent ?? '');
       flash(e.currentTarget as HTMLElement, ok ? 'Copied' : 'Copy failed');
     });
+    edit.addEventListener('click', e => { if (!render()) e.preventDefault(); });
+    document.addEventListener('visibilitychange', render);
     render();
   }
 </script>

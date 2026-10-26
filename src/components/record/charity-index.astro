@@ -1,7 +1,10 @@
 ---
 import RecordLibrary from "./RecordLibrary.astro";
 import { buildReferenceLibrary } from "../../lib/record-library";
+import RegistrySearch from "../RegistrySearch.astro";
 const library = await buildReferenceLibrary("charity-index");
 ---
 
 <RecordLibrary library={library} />
+
+<RegistrySearch id="index" />

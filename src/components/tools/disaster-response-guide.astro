@@ -236,7 +236,7 @@ const depthName = (level: number) => DEPTH.find((d) => d.level === level)?.name 
   import { download } from '../../lib/client/files';
   import { money } from '../../lib/client/format';
   import { addMonthsISO, buildAllDayIcs, localISODate, parseISODate } from '../../lib/client/ics';
-  import { load, save } from '../../lib/client/store';
+  import { load, save, validateToolStorage } from '../../lib/client/durable-store';
 
   type BucketId = 'relief' | 'recovery' | 'preparedness';
   type Shares = Record<BucketId, number>;
@@ -261,6 +261,10 @@ const depthName = (level: number) => DEPTH.find((d) => d.level === level)?.name 
     return values.every((v) => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 100) && values.reduce<number>((a, v) => a + (v as number), 0) === 100;
   }
 
+  validateToolStorage(KEY, value => {
+    const v = value as Plan;
+    return !!v && typeof v.amount === 'number' && Number.isFinite(v.amount) && v.amount >= 0 && validShares(v.shares) && typeof v.what === 'string' && v.what.length <= 120;
+  });
   const saved = load<Partial<Plan> | null>(KEY, null);
   let shares: Shares = validShares(saved?.shares) ? { ...saved!.shares! } : { ...defaults };
   if (saved && typeof saved.amount === 'number' && Number.isFinite(saved.amount) && saved.amount >= 0) amountEl.value = String(saved.amount);

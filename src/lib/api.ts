@@ -33,9 +33,9 @@ const entries = (collection: CollectionKey) => async () =>
   }));
 
 /** Replace content references ({ id, collection }) with plain ids so the JSON is easy to use. */
-function flattenRefs(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(flattenRefs);
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
+function flattenRefs(value: unknown, preserveInstants = false): unknown {
+  if (Array.isArray(value)) return value.map((item) => flattenRefs(item, preserveInstants));
+  if (value instanceof Date) return preserveInstants ? value.toISOString() : value.toISOString().slice(0, 10);
   if (value && typeof value === "object") {
     const v = value as Record<string, unknown>;
     if (
@@ -45,7 +45,7 @@ function flattenRefs(value: unknown): unknown {
     )
       return v.id;
     return Object.fromEntries(
-      Object.entries(v).map(([k, x]) => [k, flattenRefs(x)]),
+      Object.entries(v).map(([k, x]) => [k, flattenRefs(x, preserveInstants)]),
     );
   }
   return value;
@@ -229,6 +229,7 @@ export async function buildEndpoint(name: string): Promise<unknown> {
     description: endpoint.description,
     license: "CC BY 4.0. Cite “Charitology (charitology.org)”.",
     generated: new Date().toISOString().slice(0, 10),
-    data: flattenRefs(await endpoint.build()),
+    // Forecast timestamps are scoring cutoffs, not calendar-only dates.
+    data: flattenRefs(await endpoint.build(), name === "forecasts"),
   };
 }

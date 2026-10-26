@@ -109,7 +109,7 @@ const frameworks = frameworksData.frameworks;
   import { renderBars } from '../../lib/client/bars';
   import { copy, download, flash, toCsv } from '../../lib/client/files';
   import { money, pct } from '../../lib/client/format';
-  import { decodeState, encodeState, load, readHash, save, writeHash } from '../../lib/client/store';
+  import { decodeState, encodeState, load, readHash, save, writeHash, validateToolStorage } from '../../lib/client/durable-store';
 
   const sliders = $$<HTMLInputElement>('input[data-framework]');
   const budgetEl = $<HTMLInputElement>('#pb-budget');
@@ -141,7 +141,7 @@ const frameworks = frameworksData.frameworks;
 
   let current: { shares: Allocation; best: Allocation; budget: number } | undefined;
 
-  function render() {
+  function render(persistDraft = true) {
     const s = state();
     const weights: Weights = Object.fromEntries(FRAMEWORKS.map((f, i) => [f.id, s.w[i]]));
     const w = normalize(weights);
@@ -162,16 +162,26 @@ const frameworks = frameworksData.frameworks;
         ? 'The two methods disagree a lot for your credences. Which method is right is an open question: Open Problem 16, Moral Parliament in Practice.'
         : 'The two methods mostly agree for your credences, so the answer doesn’t depend much on the method.';
     current = { shares, best, budget: s.b };
-    save('portfolio', { allocation: shares, alternative: best, budget: s.b, method: 'shares', savedAt: new Date().toISOString() });
+    if (persistDraft) save('portfolio', { allocation: shares, alternative: best, budget: s.b, state: s, method: 'shares', savedAt: new Date().toISOString() });
     writeHash('p', encodeState(s));
   }
 
   const shared = readHash('p');
   const fromLink = shared ? decodeState<State>(shared) : undefined;
+  const validState = (s: State) => !!s && Array.isArray(s.w) && s.w.length === FRAMEWORKS.length && s.w.every(n => Number.isFinite(n) && n >= 0 && n <= 100) && Number.isFinite(s.b) && s.b >= 0 && Number.isFinite(s.t) && s.t >= 0 && s.t <= 100;
+  validateToolStorage('portfolio', value => {
+    const v = value as { allocation: Record<string, number>; alternative?: Record<string, number>; budget: number; state?: State };
+    const allocation = (a: unknown) => !!a && typeof a === 'object' && !Array.isArray(a) && Object.entries(a).length > 0 && Object.entries(a).every(([id, n]) => CAUSES.some(c => c.id === id) && typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 1);
+    return !!v && allocation(v.allocation) && (!v.alternative || allocation(v.alternative)) && typeof v.budget === 'number' && Number.isFinite(v.budget) && v.budget >= 0 && (!v.state || validState(v.state));
+  });
+  const savedPortfolio = load<{ state?: State } | null>('portfolio', null);
   const fromCompass = load<{ weights?: Weights } | null>('compass', null);
-  if (fromLink?.w?.length === FRAMEWORKS.length) {
+  if (fromLink && validState(fromLink)) {
     apply(fromLink);
     $('#pb-loaded').textContent = 'Loaded from a share link.';
+  } else if (savedPortfolio?.state && validState(savedPortfolio.state)) {
+    apply(savedPortfolio.state);
+    $('#pb-loaded').textContent = 'Loaded your saved portfolio controls.';
   } else if (fromCompass?.weights) {
     const w = normalize(fromCompass.weights);
     const top = Math.max(...Object.values(w));
@@ -179,8 +189,8 @@ const frameworks = frameworksData.frameworks;
     $('#pb-loaded').textContent = 'Started from your Values Compass answers.';
   }
 
-  [...sliders, budgetEl, tiltEl].forEach((el) => el.addEventListener('input', render));
-  render();
+  [...sliders, budgetEl, tiltEl].forEach((el) => el.addEventListener('input', () => render()));
+  render(false);
 
   $('#pb-csv').addEventListener('click', () => {
     if (!current) return;

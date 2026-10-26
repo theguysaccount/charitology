@@ -337,7 +337,7 @@ import { url } from '../../lib/site';
   import { LEVELS, OTHER, depthName, hasSamples, inYear, loadGifts, mergeGifts, plural, sampleGifts, saveGifts, summarize, yearsOf, type Gift } from '../../lib/client/gifts';
   import { canPersist } from '../../lib/client/persist';
   import { splitWhole } from '../../lib/client/split';
-  import { load, save } from '../../lib/client/store';
+  import { load, save, validateToolStorage } from '../../lib/client/durable-store';
 
   const PAGE = '/tools/charitology-wrapped/';
   const yearEl = $<HTMLSelectElement>('#wr-year');
@@ -345,6 +345,7 @@ import { url } from '../../lib/site';
   const statusEl = $('#wr-status');
 
   let gifts: Gift[] = loadGifts();
+  validateToolStorage('wrapped', value => !!value && typeof value === 'object' && typeof (value as { year?: unknown }).year === 'string' && typeof (value as { hide?: unknown }).hide === 'boolean');
   const prefs = load<{ year?: string; hide?: boolean }>('wrapped', {});
   let year = typeof prefs.year === 'string' ? prefs.year : '';
   hideEl.checked = prefs.hide === true;
@@ -362,6 +363,7 @@ import { url } from '../../lib/site';
     source: number;
     arch: Archetype;
     sample: boolean;
+    unclassifiedCount: number;
   }
 
   function build(): Wrap {
@@ -369,7 +371,7 @@ import { url } from '../../lib/site';
     const s = summarize(list);
     const named = s.byCause.find((c) => c.id !== OTHER.id);
     const top = named ?? s.byCause[0];
-    const percents = s.total > 0 ? splitWhole(100, s.shares) : [0, 0, 0, 0, 0];
+    const percents = s.total > 0 ? splitWhole(100, [...s.shares, s.unclassified / s.total]) : [0, 0, 0, 0, 0, 0];
     return {
       year,
       hide: hideEl.checked,
@@ -378,10 +380,11 @@ import { url } from '../../lib/site';
       orgs: s.organizations,
       top: top && { name: top.id === OTHER.id ? 'Not set yet' : top.name, amount: top.amount, share: top.amount / s.total, count: top.count },
       percents,
-      amounts: s.byDepth,
+      amounts: [...s.byDepth, s.unclassified],
       source: percents[3] + percents[4],
-      arch: s.total > 0 ? archetypeFor(s.shares) : ARCHETYPES.balance,
+      arch: s.unclassifiedCount ? ARCHETYPES.unclassified : s.total > 0 ? archetypeFor(s.shares) : ARCHETYPES.balance,
       sample: hasSamples(list),
+      unclassifiedCount: s.unclassifiedCount,
     };
   }
 
@@ -410,7 +413,7 @@ import { url } from '../../lib/site';
     const mix = $('#wr-c-mix');
     clear(mix);
     const tip = h('div', { class: 'chart-tip', role: 'tooltip', hidden: true });
-    LEVELS.filter((l) => w.amounts[l] > 0).forEach((l) => {
+    [...LEVELS, 5].filter((l) => w.amounts[l] > 0).forEach((l) => {
       const detail = w.hide ? `${w.percents[l]}%` : `${w.percents[l]}% · ${money(w.amounts[l])}`;
       const seg = h('div', {
         class: `wr-seg d${l}`,
@@ -419,6 +422,7 @@ import { url } from '../../lib/site';
         'aria-label': `${depthName(l)}: ${detail}`,
       });
       seg.style.flex = `${w.amounts[l]} 1 0`;
+      if (l === 5) seg.style.background = 'var(--ink-3)';
       const show = () => {
         tip.textContent = `${depthName(l)} · ${detail}`;
         tip.hidden = false;
@@ -437,11 +441,12 @@ import { url } from '../../lib/site';
 
     const legend = $('#wr-c-legend');
     clear(legend);
-    for (const l of LEVELS) {
+    for (const l of [...LEVELS, 5]) {
       legend.append(
-        h('li', {}, h('span', { class: `wr-sw d${l}`, 'aria-hidden': 'true' }), h('span', {}, depthName(l)), ' ', h('span', { class: 'wr-pct' }, `${w.percents[l]}%`)),
+        h('li', {}, h('span', { class: `wr-sw d${l}`, 'aria-hidden': 'true', style: l === 5 ? 'background:var(--ink-3)' : '' }), h('span', {}, depthName(l)), ' ', h('span', { class: 'wr-pct' }, `${w.percents[l]}%`)),
       );
     }
+    legend.append(h('li', { class: 'note' }, `${100 - w.percents[5]}% of logged dollars have a depth description. Unclassified is not depth 0.`));
   }
 
   function render() {
@@ -468,7 +473,7 @@ import { url } from '../../lib/site';
   }
 
   function summary(w: Wrap): string {
-    const mix = LEVELS.map((l) => `${depthName(l)} ${w.percents[l]}%`).join(' · ');
+    const mix = [...LEVELS, 5].map((l) => `${depthName(l)} ${w.percents[l]}%`).join(' · ');
     const topShare = w.top ? `${Math.round(w.top.share * 100)}% of my giving` : '';
     return [
       `My ${w.year} in giving, from Charitology Wrapped`,
@@ -546,7 +551,7 @@ import { url } from '../../lib/site';
     label('Depth mix', L, 668);
     const barY = 688;
     const barH = 52;
-    const active = LEVELS.filter((l) => w.amounts[l] > 0);
+    const active = [...LEVELS, 5].filter((l) => w.amounts[l] > 0);
     const gap = 4;
     const usable = CW - gap * Math.max(0, active.length - 1);
     const sum = active.reduce((s, l) => s + w.amounts[l], 0) || 1;
@@ -556,19 +561,19 @@ import { url } from '../../lib/site';
     let x = L;
     for (const l of active) {
       const segW = (usable * w.amounts[l]) / sum;
-      ctx.fillStyle = PAPER.depth[l];
+      ctx.fillStyle = PAPER.depth[l] ?? PAPER.ink2;
       ctx.fillRect(x, barY, segW, barH);
       x += segW + gap;
     }
     ctx.restore();
-    const colW = CW / 5;
-    LEVELS.forEach((l, i) => {
+    const colW = CW / 6;
+    [...LEVELS, 5].forEach((l, i) => {
       const x0 = L + i * colW;
       roundRect(ctx, x0, 768, 22, 22, 5);
-      ctx.fillStyle = PAPER.depth[l];
+      ctx.fillStyle = PAPER.depth[l] ?? PAPER.ink2;
       ctx.fill();
       ctx.textBaseline = 'middle';
-      line(depthName(l), x0 + 32, 780, font(22, 'sans', 600), PAPER.ink2);
+      line(depthName(l), x0 + 32, 780, font(18, 'sans', 600), PAPER.ink2);
       ctx.textBaseline = 'alphabetic';
       line(`${w.percents[l]}%`, x0, 830, font(36, 'display', 560), PAPER.ink);
     });
@@ -613,19 +618,19 @@ import { url } from '../../lib/site';
 
   $('#wr-try').addEventListener('click', () => {
     gifts = mergeGifts(gifts, sampleGifts()).gifts;
-    saveGifts(gifts);
+    const saved = saveGifts(gifts);
     year = '';
     render();
-    say('Added fictional sample gifts. They also appear in the Giving Dashboard, marked Sample.');
+    say(saved ? 'Added fictional sample gifts. They also appear in the Giving Dashboard, marked Sample.' : 'Sample gifts were added on this page only. The saved copy was protected; download current work or reload using the local-copy controls.');
     yearEl.focus();
   });
 
   $('#wr-unsample').addEventListener('click', () => {
     gifts = gifts.filter((g) => !g.sample);
-    saveGifts(gifts);
+    const saved = saveGifts(gifts);
     render();
     if (gifts.length) {
-      say('Removed the sample gifts.');
+      say(saved ? 'Removed the sample gifts.' : 'Sample gifts were removed on this page only. The saved copy remains protected.');
       yearEl.focus();
     } else {
       ($('#wr-try') as HTMLButtonElement).focus();
@@ -656,12 +661,7 @@ import { url } from '../../lib/site';
     say(ok ? 'Copied a plain-text summary of your year.' : 'Your browser blocked copying.');
   });
 
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'charitology.gifts') {
-      gifts = loadGifts();
-      render();
-    }
-  });
+  // Durable storage offers explicit reload instead of silently replacing work.
 
   $('#wr-blocked').hidden = canPersist();
   render();

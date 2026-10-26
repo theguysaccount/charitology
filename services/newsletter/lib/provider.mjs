@@ -47,8 +47,8 @@ export function provider(settings, { credential = () => {
   return {
     call,
     withDeadline: value => provider(settings, { credential, fetcher, deadline: value }),
-    async ready({ campaign = false } = {}) {
-      if (!settings.enabled || !settings.domainId || (campaign && (!settings.segmentId || !settings.topicId))) throw new Error('Newsletter delivery is not enabled');
+    async ready({ campaign = false, system = false } = {}) {
+      if (!(system ? settings.osMailSecret?.length >= 32 : settings.enabled) || !settings.domainId || (campaign && (!settings.segmentId || !settings.topicId))) throw new Error('Newsletter delivery is not enabled');
       const domain = await call('GET', `/domains/${e(settings.domainId)}`);
       if (domain.name !== 'charitology.org' || domain.status !== 'verified') throw new Error('Newsletter sender is not verified');
       if (domain.open_tracking !== false || domain.click_tracking !== false) throw new Error('Newsletter requires open and click tracking disabled');
@@ -89,6 +89,7 @@ export function provider(settings, { credential = () => {
     getBroadcast: id => call('GET', `/broadcasts/${e(id)}`),
     createBroadcast: edition => call('POST', '/broadcasts', { segment_id: settings.segmentId, topic_id: settings.topicId, from: FROM, reply_to: ['hello@charitology.org'], name: `Charitology ${edition.id} ${edition.hash.slice(0, 12)}`, subject: edition.subject, html: edition.html, text: edition.text, send: false }),
     sendBroadcast: id => call('POST', `/broadcasts/${e(id)}/send`, {}),
+    sendOsMail: (message, key) => call('POST', '/emails', { from: FROM, to: [message.to], reply_to: 'hello@charitology.org', subject: message.subject, html: message.html, text: message.text }, key),
     sendConfirmation: (attempt, origin, htmlEscape) => {
       const confirm = `${origin}/confirm?token=${attempt.confirm}`;
       const unsubscribe = `${origin}/unsubscribe?token=${attempt.unsubscribe}`;

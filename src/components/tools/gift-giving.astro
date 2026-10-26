@@ -387,7 +387,7 @@ const ringLength = Math.round((2 * Math.PI * ringR - 6) * 10) / 10;
   import { slugify } from '../../lib/client/format';
   import { LIMITS, MAX_REASONS, STYLES, cardText, cleanCard, emptyCard, type CardState, type CardStyle, type CardText } from '../../lib/client/giftcard';
   import { canPersist } from '../../lib/client/persist';
-  import { load, save } from '../../lib/client/store';
+  import { load, save, validateToolStorage, sameToolValue } from '../../lib/client/durable-store';
 
   const form = $<HTMLFormElement>('#gg-form');
   const card = $('#gg-card');
@@ -396,6 +396,7 @@ const ringLength = Math.round((2 * Math.PI * ringR - 6) * 10) / 10;
   const boxes = $$<HTMLInputElement>('input[name="reason"]', form);
   const styleButtons = $$<HTMLButtonElement>('[data-style]', $('.gg-styles'));
 
+  validateToolStorage('gift-card', value => sameToolValue(value, cleanCard(value)));
   let state: CardState = cleanCard(load<unknown>('gift-card', null));
 
   function persist() {

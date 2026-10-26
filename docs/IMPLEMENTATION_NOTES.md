@@ -2,6 +2,8 @@
 
 Date: October 25, 2026 (America/Los_Angeles). AI-assisted implementation, writing and verification. This record concerns software availability and published content, not independently reviewed research or operating institutions.
 
+This is the historical October 25 implementation record. See [the current 66-item acceptance register](MEGA_LIST_ACCEPTANCE.md) and [handoff](../HANDOFF.md) for later program, email and shared-OS releases.
+
 ## Result
 
 All 21 previously seeded and 10 designed original items now have usable browser implementations or substantial published editions. The 66-item roadmap has 57 live functions and 9 institutional programs needing partners. Status means the exact function described on the page; research outcomes, human review, local authorship, professional accreditation and legal funds are separate.

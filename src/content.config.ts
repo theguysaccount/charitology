@@ -1,6 +1,7 @@
 import { defineCollection, reference, z } from 'astro:content';
 import { file, glob } from 'astro/loaders';
 import causesData from './data/causes.json';
+import { forecastValidationIssues } from './lib/forecast-model';
 
 // Every collection is validated here. A pull request with a missing field,
 // a misspelled status or a link to a condition that doesn't exist fails the build.
@@ -220,7 +221,11 @@ const forecasts = defineCollection({
     resolution: z.string(),
     closes: z.coerce.date(),
     outcome: z.boolean().nullable().default(null),
+    annulled: z.boolean().default(false),
     resolvedOn: z.coerce.date().optional(),
+    outcomeKnownOn: z.coerce.date().optional(),
+    resolutionSource: z.string().url().optional(),
+    resolutionNote: z.string().trim().min(1).max(5000).optional(),
     conditions,
     forecasts: z
       .array(
@@ -228,12 +233,14 @@ const forecasts = defineCollection({
           by: z.string(),
           p: z.number().min(0).max(1),
           date: z.coerce.date(),
-          rationale: z.string().optional(),
+          rationale: z.string().max(2000).optional(),
         }),
       )
       .default([]),
     sources,
     review,
+  }).superRefine((data, context) => {
+    for (const issue of forecastValidationIssues(data)) context.addIssue({ code: z.ZodIssueCode.custom, path: issue.path, message: issue.message });
   }),
 });
 

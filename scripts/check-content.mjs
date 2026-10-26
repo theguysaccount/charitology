@@ -60,10 +60,10 @@ for (const iv of load('interventions')) {
   if (iv.cost && iv.cost.low > iv.cost.high) errors.push(`interventions/${iv.id}: cost.low is above cost.high`);
 }
 
-// Forecast probabilities and resolution.
-for (const q of load('forecasts')) {
-  if (q.outcome !== null && !q.resolvedOn) warnings.push(`forecasts/${q.id}: resolved without resolvedOn date`);
-}
+// Exercise the exact schema/scoring rules and reject invalid built forecasts.
+await import('./check-forecasts.mjs');
+await import('./check-donor-records.mjs');
+await import('./check-irs-registry.mjs');
 
 // Pages still in draft (informational).
 const drafts = ['conditions', 'encyclopedia', 'interventions', 'cases', 'myths', 'disagreements', 'traditions', 'principles', 'open-problems', 'programs', 'tools', 'record', 'charities', 'forecasts', 'journal']
