@@ -20,8 +20,8 @@ export function validateOsMail(input, settings) {
   try { url = new URL(rawUrl); } catch { throw new InputError('Invalid OS link.'); }
   const correctPath = purpose === 'login' ? url.pathname === '/auth/confirm' : purpose === 'invitation' ? url.pathname === '/invite' : (url.pathname === '/app' || url.pathname.startsWith('/app/'));
   if (url.origin !== settings.osOrigin || url.username || url.password || url.hash || !correctPath) throw new InputError('The link must use the configured OS origin and purpose path.');
-  const organizationName = string('organizationName', 160);
-  const title = string('title', 160);
+  const organizationName = string('organizationName', 180);
+  const title = string('title', 180);
   const message = string('message', 1000, false, true);
   return { purpose, to, url: url.toString(), organizationName, title, message };
 }

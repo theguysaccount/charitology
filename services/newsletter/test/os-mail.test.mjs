@@ -38,6 +38,23 @@ test('Relay JSON rejects extra fields, multiple recipients, header injection and
   assert.equal((await f.handler(request({ ...message, message: 'x'.repeat(17000) }))).status, 413);
   assert.equal(f.reservations.length, 0);
 });
+test('OS names and record titles accept180 characters intact and reject181 before a delivery intent', async () => {
+  const organizationName = 'O'.repeat(180), title = 'T'.repeat(180);
+  for (const purpose of ['invitation', 'reminder']) {
+    const payload = { ...message, purpose, url: settings.osOrigin + (purpose === 'invitation' ? '/invite?token=synthetic' : '/app'), organizationName, title };
+    const validated = validateOsMail(payload, settings);
+    assert.equal(validated.organizationName, organizationName); assert.equal(validated.title, title);
+    const f = fixture(), response = await f.handler(request(payload));
+    assert.equal(response.status, 202); assert.equal(f.sends.length, 1);
+    if (purpose === 'invitation') assert.ok(f.sends[0].payload.text.includes(organizationName));
+    else assert.equal(f.sends[0].payload.subject, title);
+    for (const field of ['organizationName', 'title']) {
+      const rejected = fixture();
+      assert.equal((await rejected.handler(request({ ...payload, [field]: 'X'.repeat(181) }))).status, 400);
+      assert.equal(rejected.reservations.length, 0); assert.equal(rejected.readiness.length, 0); assert.equal(rejected.sends.length, 0);
+    }
+  }
+});
 test('OS origin config permits only strict production HTTPS origins and explicit local development', () => {
   assert.throws(() => config({ NODE_ENV: 'production', OS_ORIGIN: 'http://localhost:4444' }));
   for (const origin of ['https://user:secret@os.charitology.org', 'https://os.charitology.org/path', 'https://os.charitology.org?x=1', 'https://os.charitology.org/']) assert.throws(() => config({ OS_ORIGIN: origin }));

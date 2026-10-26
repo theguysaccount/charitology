@@ -944,13 +944,65 @@ test(
                 )
               ).rows[0],
           );
-          assert.equal(
-            event.detail.sourceComments.length,
-            backup.comments.length,
+          assert.equal(event.detail.sourceArchiveId, preview.previewId);
+          assert.equal(event.detail.checksum, backup.checksum);
+          assert.equal(event.detail.sourceHistoryCount, backup.events.length);
+          assert.equal(event.detail.sourceCommentCount, backup.comments.length);
+          assert.equal(event.detail.sourceReportCount, backup.reports.length);
+          for (const field of [
+            "sourceHistory",
+            "sourceComments",
+            "sourceReports",
+          ])
+            assert.equal(
+              Object.hasOwn(event.detail, field),
+              false,
+              "Ordinary audit events reference private source archives without duplicating their payloads.",
+            );
+          const archives = (
+            await call(a, `/api/orgs/${restoredOrg}/backups/imports`)
+          ).value.imports;
+          assert.ok(
+            archives.some(
+              (archive) =>
+                archive.id === preview.previewId &&
+                archive.checksum === backup.checksum,
+            ),
+          );
+          const archive = await call(
+            a,
+            `/api/orgs/${restoredOrg}/backups/imports/${event.detail.sourceArchiveId}`,
           );
           assert.equal(
-            event.detail.sourceReports.length,
-            backup.reports.length,
+            archive.response.headers.get("cache-control"),
+            "no-store",
+          );
+          assert.deepEqual(archive.value.comments, backup.comments);
+          assert.deepEqual(archive.value.reports, backup.reports);
+          assert.deepEqual(archive.value.events, backup.events);
+          assert.deepEqual(archive.value, backup);
+          const { checksum: archivedChecksum, ...archivedPayload } =
+            archive.value;
+          assert.equal(archivedChecksum, backup.checksum);
+          assert.equal(hash(archivedPayload), archivedChecksum);
+          await db.tx(a.id, restoredOrg, (c) =>
+            c.query(
+              "INSERT INTO os_members(org_id,user_id,role) VALUES($1,$2,'contributor')",
+              [restoredOrg, contributor.id],
+            ),
+          );
+          await call(contributor, `/api/orgs/${restoredOrg}/backups/imports`, {
+            expect: 403,
+          });
+          await call(
+            contributor,
+            `/api/orgs/${restoredOrg}/backups/imports/${preview.previewId}`,
+            { expect: 403 },
+          );
+          await call(
+            b,
+            `/api/orgs/${restoredOrg}/backups/imports/${preview.previewId}`,
+            { expect: 403 },
           );
           await call(a, `/api/orgs/${restoredOrg}/import/commit`, {
             method: "POST",
