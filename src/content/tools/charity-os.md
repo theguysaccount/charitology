@@ -22,7 +22,9 @@ Keep working drafts, comments and decisions together. Another authorized reviewe
 
 Read-only CiviCRM, OpenProject, Kobo and CSV connections have an explicit preview before import. Configure your own credentials; a connection is not automatic two-way synchronization. Files, revision checks, recoverable trash and private JSON backups support handover and recovery. Original import archives can be downloaded separately. Personal reminders run in the daily dispatch after their due time.
 
-Accounting records hold external references and reconciliation controls. The OS does not post a ledger, run payroll, move money or issue tax receipts. Casework and safeguarding hold opaque codes and specialist-system references rather than private case narratives. Public intake and participant portals remain in the [implementation plan](/for-charities/os-plan/).
+Accounting records hold external references and reconciliation controls. The OS does not post a ledger, run payroll, move money or issue tax receipts. Casework and safeguarding hold opaque codes and specialist-system references rather than private case narratives.
+
+A new public request workflow is implemented for the next shared-service release; hosted acceptance is pending. Approved, version-bound forms can collect minimal contact, event-interest and volunteer-interest requests with explicit consent. A private receipt checks status or withdraws the request; an administrator separately reviews it before preparing unapproved drafts. Sending a request does not book a place, assign a volunteer or subscribe to a newsletter. Answer erasure is separate from withdrawal and cannot remove earlier backups or separately prepared contacts. Restored forms and receipts remain inactive. Participant accounts, confirmed booking/waitlists and notifications remain in the [implementation plan](/for-charities/os-plan/).
 
 ## Start with the local workspace
 

@@ -37,6 +37,8 @@ npm run preview  # serve dist/ (search works here, not in dev)
 
 The public site is static HTML with browser-local TypeScript workspaces and requires no keys or database to build. Separate services run [newsletter delivery](services/newsletter/README.md) and the [shared Charity OS](services/charity-os/README.md); their private configuration is not part of the public build.
 
+The current OS branch adds bounded public operational request forms: explicit consent, revision-bound approved publication, a private administrator queue, status/withdrawal receipts, draft conversion and answer erasure. [The intake acceptance plan](docs/PUBLIC_PARTICIPATION.md) records the privacy and recovery boundaries. Deployment and hosted intake checks are pending; these forms do not establish participant accounts, bookings, newsletters, payments or sensitive case intake.
+
 ## How it’s built
 
 - [Astro](https://astro.build) 5 with content collections. Every collection is validated by a schema in [`src/content.config.ts`](src/content.config.ts), so a malformed entry fails the build.

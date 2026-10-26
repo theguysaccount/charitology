@@ -93,6 +93,7 @@ function fixture({
   loggedIn = true,
   membership = true,
   occupied = 0,
+  intakeOccupied = 0,
 } = {}) {
   let activeRole = role,
     authenticated = loggedIn;
@@ -135,6 +136,8 @@ function fixture({
         return { rows: [{ count: state.records.size + state.occupied }] };
       if (sql.startsWith("SELECT count(*) FROM os_integrations"))
         return { rows: [{ count: 0 }] };
+      if (sql.startsWith("SELECT (SELECT count(*) FROM os_publications"))
+        return { rows: [{ count: intakeOccupied }] };
       if (sql.startsWith("SELECT pg_advisory_xact_lock")) return { rows: [] };
       if (sql.startsWith("DELETE FROM os_previews")) {
         for (const [id, p] of state.previews)
@@ -588,6 +591,19 @@ test("occupied organizations expose a blocking issue and reject commit while pre
   });
   assert.equal(r.response.status, 409);
   assert.equal(r.value.code, "restore_conflict");
+  assert.equal(f.state.records.size, 0);
+  assert.equal(f.state.previews.get(p.value.previewId).committed_at, null);
+});
+test("an organization containing only recovered intake cannot overwrite its private queue during restore", async () => {
+  const f = fixture({ intakeOccupied: 1 });
+  const p = await f.call("import/preview", { input: { backup: legacy() } });
+  assert.equal(p.response.status, 200);
+  assert.equal(p.value.summary.rejected, 1);
+  const committed = await f.call("import/commit", {
+    input: { previewId: p.value.previewId },
+  });
+  assert.equal(committed.response.status, 409);
+  assert.equal(committed.value.code, "restore_conflict");
   assert.equal(f.state.records.size, 0);
   assert.equal(f.state.previews.get(p.value.previewId).committed_at, null);
 });

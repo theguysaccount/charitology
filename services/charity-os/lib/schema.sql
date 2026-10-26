@@ -71,3 +71,38 @@ DROP POLICY IF EXISTS tenant ON os_uploads;
 CREATE POLICY tenant ON os_uploads USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
 
 ALTER TABLE os_job_tenants ADD COLUMN IF NOT EXISTS last_run_at timestamptz NOT NULL DEFAULT '1970-01-01T00:00:00Z';
+
+-- Public intake has a deliberately separate private queue; generic forms records
+-- retain their schema/aggregate semantics. Anonymous requests set one tenant only.
+CREATE TABLE IF NOT EXISTS os_publications (
+  org_id text NOT NULL REFERENCES os_orgs(id), id text NOT NULL,
+  record_id text NOT NULL, source_revision integer NOT NULL CHECK(source_revision>0),
+  kind text NOT NULL CHECK(kind IN ('contact','event-interest','volunteer-interest')),
+  target_id text, target_module text, target_revision integer,
+  schema jsonb NOT NULL, created_by text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(), withdrawn_at timestamptz,
+  PRIMARY KEY(org_id,id)
+);
+CREATE TABLE IF NOT EXISTS os_intake (
+  org_id text NOT NULL REFERENCES os_orgs(id), id text NOT NULL,
+  publication_id text NOT NULL, answers jsonb NOT NULL, consent_at timestamptz NOT NULL,
+  status text NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','reviewed','dismissed','converted','cancelled')),
+  revision integer NOT NULL DEFAULT 1 CHECK(revision>0),
+  idempotency_hash text, payload_hash text, receipt_hash text UNIQUE, ip_hash text,
+  reviewed_by text, reviewed_at timestamptz, converted_ids jsonb NOT NULL DEFAULT '[]',
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(org_id,id), UNIQUE(org_id,publication_id,idempotency_hash),
+  FOREIGN KEY(org_id,publication_id) REFERENCES os_publications(org_id,id)
+);
+CREATE INDEX IF NOT EXISTS os_publications_created ON os_publications(org_id,created_at DESC,id DESC);
+CREATE INDEX IF NOT EXISTS os_intake_created ON os_intake(org_id,created_at DESC,id DESC);
+CREATE INDEX IF NOT EXISTS os_intake_queue ON os_intake(org_id,publication_id,status);
+ALTER TABLE os_intake ADD COLUMN IF NOT EXISTS erased_at timestamptz;
+ALTER TABLE os_publications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_publications FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_publications;
+CREATE POLICY tenant ON os_publications USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
+ALTER TABLE os_intake ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_intake FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_intake;
+CREATE POLICY tenant ON os_intake USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));

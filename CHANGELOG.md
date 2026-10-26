@@ -1,5 +1,11 @@
 # Changelog
 
+## October 26, 2026: public participation in Charity OS
+
+- Added public operational forms from independently approved, published revisions, with explicit purpose consent, typed answers, bounded private queues and receipt links for status and withdrawal.
+- Added administrator review, explicit conversion into draft contacts and optional event registrations or volunteer assignments, publication withdrawal and answer erasure. Requests do not confirm bookings, move money or subscribe anyone to email.
+- Extended private organization backups to preserve intake data while removing receipt/network credentials. Restored forms stay closed, receipt access stays disabled and prior reviews grant no authority. Erasure does not remove separately prepared records or historical backup copies.
+
 ## October 26, 2026: shared OS and registry release
 
 - Added the separate shared Charity OS: passwordless organization accounts, eight roles, 26 typed modules, linked records, independent approvals, private files, frozen reports, daily reminders, read-only import previews and bounded recovery. The smaller browser workspace remains available, with explicit local-to-shared migration and private source archives.
