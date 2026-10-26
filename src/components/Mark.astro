@@ -1,13 +1,19 @@
 ---
-// The Charitology mark: an open circle (the whole of the problem) around
-// a single point (the place where a gift does the most good).
+// The Charitology mark (geometry in src/lib/mark.mjs): a compass rose behind
+// an open C, with the needle aiming out through the opening.
+import { markSvg } from '../lib/mark.mjs';
+
 interface Props {
   size?: number;
+  id?: string;
 }
-const { size = 28 } = Astro.props;
+const { size = 28, id = 'mark' } = Astro.props;
+const inner = markSvg({
+  id,
+  accent: 'var(--accent)',
+  accent2: 'color-mix(in srgb, var(--accent) 62%, #000)',
+  pivot: 'var(--bg)',
+});
 ---
 
-<svg class="mark" viewBox="0 0 32 32" width={size} height={size} aria-hidden="true" focusable="false">
-  <path d="M25.83 9.12A12 12 0 1 0 25.83 22.88" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"></path>
-  <circle cx="16" cy="16" r="3.6" fill="var(--accent)"></circle>
-</svg>
+<svg class="mark" viewBox="0 0 64 64" width={size} height={size} aria-hidden="true" focusable="false" set:html={inner} />
