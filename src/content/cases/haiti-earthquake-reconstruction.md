@@ -1,0 +1,57 @@
+---
+title: Rebuilding Haiti after the 2010 earthquake
+summary: Billions of dollars poured into Haiti after the 2010 earthquake, almost all of the relief aid through international organizations. In 2015 ProPublica and NPR reported that the American Red Cross had raised nearly half a billion dollars and built six permanent homes. The Red Cross said it had helped millions of Haitians in other ways.
+kind: failure
+era: 2010–2015
+place: Haiti
+depth: 1
+lessons:
+  - Giving that follows the news arrives in a burst, mostly without research, and attention fades long before rebuilding is done.
+  - Money raised for one disaster is, in practice, tied to that place and to the group that raised it. When land titles, partners and government capacity take years to sort out, a large earmarked sum can outrun the ability to spend it well.
+  - Aid that goes around local institutions leaves them no stronger. Almost all relief aid went to international agencies and organizations rather than through Haitian ones.
+  - Counting people helped is not the same as measuring what changed. Without project-level spending and results, big claims can’t be checked by anyone.
+conditions: [story-bias, restriction-reflex, missing-voice, measurement-gap]
+sources:
+  - title: How the Red Cross Raised Half a Billion Dollars for Haiti and Built Six Homes
+    publisher: Justin Elliott (ProPublica) and Laura Sullivan (NPR)
+    year: 2015
+    url: https://www.propublica.org/article/how-the-red-cross-raised-half-a-billion-dollars-for-haiti-and-built-6-homes
+  - title: American Red Cross Responds to Latest ProPublica and NPR Coverage
+    publisher: American Red Cross
+    year: 2015
+    url: https://www.redcross.org/about-us/news-and-events/press-release/american-red-cross-responds-to-latest-propublica-and-npr-coverag.html
+  - title: Give aid directly to Haitian institutions to build back better, says UN report
+    publisher: UN News, on a report by the Office of the UN Special Envoy for Haiti
+    year: 2011
+    url: https://news.un.org/en/story/2011/06/379512
+  - title: 'Haiti: Where Has All the Money Gone?'
+    publisher: Vijaya Ramachandran and Julie Walz, Center for Global Development
+    year: 2012
+    url: https://www.cgdev.org/publication/haiti-where-has-all-money-gone
+  - title: Real Time Charitable Giving
+    publisher: Aaron Smith, Pew Research Center
+    year: 2012
+    url: https://www.pewresearch.org/internet/2012/01/12/real-time-charitable-giving/
+review: draft
+---
+
+## What happened
+
+The earthquake that struck Haiti in January 2010 drew a wave of giving. Americans gave an estimated $43 million by text message alone. In a Pew survey of those text donors, most had heard about the appeal on television, and half gave the moment they heard. By 2012, the Center for Global Development counted almost $6 billion in official aid disbursed and an estimated $3 billion more in private donations to charities.
+
+The American Red Cross raised nearly half a billion dollars. In June 2015 ProPublica and NPR reported that it had built six permanent homes in all of Haiti. The Red Cross said it had provided homes to more than 130,000 people. The reporters found that count included people who got short-term rental aid, temporary shelters or construction training. A housing project in the Campeche neighborhood, for which an internal proposal estimated about 700 homes, built none. The Red Cross said it could not secure land rights. The reporters also described internal documents on staffing problems and, for one $5.4 million shelter project, layers of overhead that left about 60 percent for the work itself.
+
+The Red Cross published a response the same day. It said donors’ money had built and run eight hospitals and clinics, helped stem a cholera outbreak, provided clean water and sanitation, and moved more than 100,000 people out of tents into safer housing. When land for new homes wasn’t available, it said, it paid for rental subsidies, repairs and retrofits. It said 90 percent of its Haiti staff were Haitian and criticized what it called the reporting’s “lack of balance, context and accuracy.”
+
+## Where it sits in the system
+
+Rebuilding homes is **repair** (level 1) on the [depth scale](/method/#depth). The lessons are about the channels the money took, and they reach far beyond one organization.
+
+- **Attention.** The money followed the headlines ([Story Bias](/diagnosis/story-bias/)). In a 2012 Pew survey of text donors, 58 percent were following the rebuilding “not too closely” or not at all.
+- **Restriction.** Money given for Haiti was, in effect, committed to Haiti and to the group that raised it, even where land disputes and government delays, the obstacles the Red Cross itself cited, made building slow ([the Restriction Reflex](/diagnosis/restriction-reflex/)).
+- **Local voice.** About 99 percent of relief aid after the quake went to international agencies, the Red Cross movement and international charities and contractors, according to the UN Special Envoy’s office, which urged donors to work through Haitian institutions instead ([the Missing Voice](/diagnosis/missing-voice/)).
+- **Measurement.** The Center for Global Development found few evaluations of what aid in Haiti had delivered, and called for spending and results to be published ([the Measurement Gap](/diagnosis/measurement-gap/)).
+
+## What carries over
+
+Before giving after a disaster, ask who is already working there, how much of the money will reach local organizations and how results will be reported. See the [Disaster Response Guide](/tools/disaster-response-guide/) and [Open Problem 8, the Optimal Restriction](/open-problems/the-optimal-restriction/).
