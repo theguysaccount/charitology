@@ -388,6 +388,18 @@ async function loadMembers() {
     state.members = [];
   }
 }
+function invalidateModules(org = state.org, moduleIds = null) {
+  if (moduleIds) {
+    for (const moduleId of moduleIds) {
+      state.cache.delete(`${org}:${moduleId}`);
+      if (org === state.org && state.counts) delete state.counts[moduleId];
+    }
+  } else {
+    state.cache.clear();
+    if (org === state.org) state.counts = {};
+  }
+  if (org === state.org) renderNav();
+}
 async function recordsFor(module, refresh = false) {
   const key = `${state.org}:${module}`;
   if (!refresh && state.cache.has(key)) return state.cache.get(key);
@@ -434,7 +446,7 @@ function renderAccount() {
           if (!(await discardEditor())) return;
           await action(async () => {
             await api.logout();
-            state.cache.clear();
+            invalidateModules();
             state.session = null;
             setCsrfToken("");
             showSignedOut();
@@ -1127,7 +1139,7 @@ async function showTrash(module) {
                     record.revision,
                   );
                   closeSavedEditor();
-                  state.cache.clear();
+                  invalidateModules(org, [module.id]);
                   toast("Record restored for review.");
                   await route();
                 }, event.currentTarget),
@@ -1744,7 +1756,7 @@ async function openRecordEditor(module, record = null) {
           "The record may be saved, but its response is incomplete. Reload the list before retrying.",
         );
       closeSavedEditor();
-      state.cache.delete(`${org}:${module.id}`);
+      invalidateModules(org, [module.id]);
       toast(record ? "New revision saved." : "Record saved.");
       location.hash = recordHref(module.id, saved.id);
       if (state.route === `module/${module.id}/${saved.id}`) await route();
@@ -1778,7 +1790,7 @@ async function renderDetail(moduleId, id, epoch) {
             return;
           await action(async () => {
             await api.deleteRecord(state.org, moduleId, id, record.revision);
-            state.cache.delete(`${state.org}:${moduleId}`);
+            invalidateModules(state.org, [moduleId]);
             location.hash = `#module/${moduleId}`;
             toast("Record moved to recoverable trash.");
           }, event.currentTarget);
@@ -1928,7 +1940,7 @@ function renderWorkflow(module, record) {
                     to: select.value,
                     reason: reason.value.trim(),
                   });
-                  state.cache.delete(`${state.org}:${module.id}`);
+                  invalidateModules(state.org, [module.id]);
                   toast("Workflow transition recorded.");
                   await route();
                 },
@@ -2323,7 +2335,7 @@ function showInvitation() {
       state.orgs = refreshed.orgs || [];
       state.org = result.orgId || result.org?.id || state.orgs[0]?.id || null;
       if (state.org) rememberOrg(state.org);
-      state.cache.clear();
+      invalidateModules();
       await loadMembersIfOrg();
       renderAccount();
       renderOrgControl();
@@ -2665,7 +2677,7 @@ function renderData() {
             const committed = await api.commitImport(context.org, {
               previewId: context.id,
             });
-            state.cache.clear();
+            invalidateModules(context.org);
             state.importPreview = null;
             previewTarget.replaceChildren(
               notice(
@@ -3216,7 +3228,7 @@ async function renderIntegrations(epoch) {
                 integration.id,
                 response.previewId,
               );
-              state.cache.clear();
+              invalidateModules();
               output.replaceChildren(notice("Connector import completed."));
               toast("Connector records imported.");
             });
@@ -3657,8 +3669,7 @@ $("#org-switch").addEventListener("change", async (event) => {
     return;
   }
   state.org = next;
-  state.cache.clear();
-  state.counts = {};
+  invalidateModules();
   state.details = null;
   state.importPreview = null;
   rememberOrg(next);

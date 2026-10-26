@@ -1,5 +1,13 @@
 # Changelog
 
+## October 26, 2026: shared OS and registry release
+
+- Added the separate shared Charity OS: passwordless organization accounts, eight roles, 26 typed modules, linked records, independent approvals, private files, frozen reports, daily reminders, read-only import previews and bounded recovery. The smaller browser workspace remains available, with explicit local-to-shared migration and private source archives.
+- Activated operational login/reminder mail through the existing delivery service. Controlled inbox tests passed without changing newsletter consent. See [the release evidence](docs/SHARED_OS_RELEASE.md) for hosted, database, browser and delivery checks and their limits.
+- Added a dated IRS identity snapshot of 1,975,975 unique EINs with explicit-request local search, leading-zero preservation, code/source exports and raw/compressed/decoded integrity checks. It is separate from 16 editorial profiles and does not rate charities.
+- Preserved unknown donor depth across totals, exports and Wrapped; added saved-work recovery controls. Corrected forecast cutoffs, resolution provenance, annulment and ambiguous-record handling.
+- Published the exact [66-item acceptance register](docs/MEGA_LIST_ACCEPTANCE.md). Later public-participation workflows, real connector accounts, pilots, independent review, licensed payments and institutional operations retain explicit gates. AI-provider activation is deferred.
+
 ## October 26, 2026: confirmed newsletter signup
 
 - Added public email signup for The Charitology Letter, with explicit consent, a confirmation email and a deliberate confirmation action before joining. The same form appears on the newsletter and podcast/letter pages. Every edition remains freely available online and through RSS.
