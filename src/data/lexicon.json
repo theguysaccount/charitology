@@ -46,5 +46,251 @@
     "term": "Neglectedness",
     "definition": "How few resources already go to a problem relative to its size. Other things equal, an extra dollar does more where few dollars go.",
     "see": ["counterfactual"]
+  },
+  {
+    "id": "relief",
+    "term": "Relief",
+    "definition": "Level 0 of the depth scale: work that meets a need today, such as a meal, emergency surgery or a disaster shelter. It is the only help that reaches someone in need right now.",
+    "see": ["source-depth", "repair", "symptom"]
+  },
+  {
+    "id": "repair",
+    "term": "Repair",
+    "definition": "Level 1 of the depth scale: work that restores what was lost, such as rebuilding a home, rehabilitation after an injury or a new job after a layoff.",
+    "see": ["source-depth", "relief", "prevention"]
+  },
+  {
+    "id": "prevention",
+    "term": "Prevention",
+    "definition": "Level 2 of the depth scale: work that stops a harm from happening to the people it reaches, such as bed nets, vaccines or clean water for a village.",
+    "see": ["source-depth", "repair", "structure"]
+  },
+  {
+    "id": "structure",
+    "term": "Structure",
+    "definition": "Level 3 of the depth scale: work that changes the rules that produce a harm, such as a law, an institution, a market or a norm, so that the harm stops being produced.",
+    "see": ["source-depth", "prevention", "source", "systemic-change"]
+  },
+  {
+    "id": "scale",
+    "term": "Scale",
+    "definition": "How much good solving a problem would do, measured in some unit such as lives, wellbeing or rights secured. Choosing the unit is a moral choice, so a problem’s scale can differ from one moral framework to another.",
+    "see": ["tractability", "neglectedness", "moral-uncertainty"]
+  },
+  {
+    "id": "tractability",
+    "term": "Tractability",
+    "definition": "How much progress more effort on a problem would make. 80,000 Hours calls it solvability and measures it as the fraction of the remaining problem that doubling the effort would solve.",
+    "see": ["scale", "neglectedness", "leverage"]
+  },
+  {
+    "id": "cost-effectiveness",
+    "term": "Cost-effectiveness",
+    "definition": "How much of a result a program produces per dollar, such as lives saved or years of healthy life added. The estimates are rough, and the differences between programs can be very large.",
+    "see": ["expected-value", "outcomes", "overhead-ratio"]
+  },
+  {
+    "id": "expected-value",
+    "term": "Expected value",
+    "definition": "The probability-weighted average of an action’s possible results. A 10 percent chance of helping 10,000 people has the same expected value as helping 1,000 people for certain.",
+    "see": ["credence", "calibration", "cost-effectiveness"]
+  },
+  {
+    "id": "credence",
+    "term": "Credence",
+    "definition": "How strongly you believe something, expressed as a probability. Under moral uncertainty, your credence in each moral view sets how much weight that view gets.",
+    "see": ["moral-uncertainty", "calibration", "expected-value"]
+  },
+  {
+    "id": "moral-uncertainty",
+    "term": "Moral uncertainty",
+    "definition": "Uncertainty about which moral view is right, as opposed to uncertainty about the facts. Charitology’s method of looking through several moral frameworks at once is a way of acting well under it.",
+    "see": ["moral-parliament", "credence", "scale"]
+  },
+  {
+    "id": "moral-parliament",
+    "term": "Moral parliament",
+    "definition": "A way to decide under moral uncertainty, proposed by Nick Bostrom in 2009. Imagine each moral view you take seriously sending delegates to a parliament in proportion to your credence in it, and act on what the parliament decides.",
+    "see": ["moral-uncertainty", "credence"]
+  },
+  {
+    "id": "discount-rate",
+    "term": "Discount rate",
+    "definition": "The rate per year at which future benefits and costs are counted for less than present ones. It can stand for uncertainty, for rising incomes or for pure time preference, and it matters which.",
+    "see": ["pure-time-preference", "expected-value", "payout-rate"]
+  },
+  {
+    "id": "pure-time-preference",
+    "term": "Pure time preference",
+    "definition": "Valuing later wellbeing less simply because it comes later, as opposed to discounting for uncertainty or growth. Frank Ramsey rejected it in 1928, and whether it is ever justified is a moral question.",
+    "see": ["discount-rate"]
+  },
+  {
+    "id": "feedback-loop",
+    "term": "Feedback loop",
+    "definition": "The path by which results travel back to the people who make decisions, so they can change course. In charity it is mostly missing, because the people who pay are rarely the people served.",
+    "see": ["contract-failure", "outcomes", "participatory-grantmaking"]
+  },
+  {
+    "id": "contract-failure",
+    "term": "Contract failure",
+    "definition": "Henry Hansmann’s 1980 term for situations in which the people paying for a service cannot adequately judge its quality, as when donors pay for services delivered to other people. He argued that nonprofits exist mainly to address it.",
+    "see": ["feedback-loop"]
+  },
+  {
+    "id": "overhead-ratio",
+    "term": "Overhead ratio",
+    "definition": "The share of a charity’s spending reported as management and fundraising rather than programs. It shows how costs are split, not what they achieve.",
+    "see": ["starvation-cycle", "cost-effectiveness", "unrestricted-funding"]
+  },
+  {
+    "id": "starvation-cycle",
+    "term": "Starvation cycle",
+    "definition": "Ann Goggins Gregory and Don Howard’s 2009 name for a loop in which funders expect low overhead, charities underspend on staff and systems and underreport what they do spend, and the expectations stay unrealistically low.",
+    "see": ["overhead-ratio", "general-operating-support"]
+  },
+  {
+    "id": "restricted-funding",
+    "term": "Restricted funding",
+    "definition": "Money that must be spent on a purpose the funder names, often a specific project within a set time and budget.",
+    "see": ["unrestricted-funding", "general-operating-support"]
+  },
+  {
+    "id": "unrestricted-funding",
+    "term": "Unrestricted funding",
+    "definition": "Money an organization can spend on whatever it judges most useful, including salaries, systems and evaluation. It lets an organization act on what it learns.",
+    "see": ["restricted-funding", "general-operating-support", "trust-based-philanthropy"]
+  },
+  {
+    "id": "general-operating-support",
+    "term": "General operating support",
+    "definition": "A grant for an organization’s overall work rather than a specific project, also called unrestricted funding. Promised for several years at once, it is called multiyear general operating support.",
+    "see": ["unrestricted-funding", "restricted-funding"]
+  },
+  {
+    "id": "trust-based-philanthropy",
+    "term": "Trust-based philanthropy",
+    "definition": "An approach to grantmaking that aims to rebalance power between funders and the organizations they fund. The Trust-Based Philanthropy Project lists six practices, including multi-year unrestricted funding and asking for and acting on feedback.",
+    "see": ["unrestricted-funding", "participatory-grantmaking", "feedback-loop"]
+  },
+  {
+    "id": "participatory-grantmaking",
+    "term": "Participatory grantmaking",
+    "definition": "Grantmaking in which funders hand some or all decisions about money, including strategy and criteria, to the communities the money is meant to serve.",
+    "see": ["trust-based-philanthropy", "feedback-loop"]
+  },
+  {
+    "id": "donor-advised-fund",
+    "term": "Donor-advised fund",
+    "definition": "A charitable account maintained and legally controlled by a sponsoring public charity, which the donor advises on grants and investments. U.S. donor-advised funds held about $326 billion in 2024.",
+    "see": ["payout-rate", "private-foundation"]
+  },
+  {
+    "id": "private-foundation",
+    "term": "Private foundation",
+    "definition": "In U.S. law, a charity that does not qualify as a public charity, usually because it lacks broad public support. It must generally spend a minimum amount on charitable purposes each year.",
+    "see": ["payout-rate", "donor-advised-fund"]
+  },
+  {
+    "id": "payout-rate",
+    "term": "Payout rate",
+    "definition": "The share of a fund’s or foundation’s assets paid out for charitable purposes in a year. U.S. private foundations must generally pay out an amount tied to 5 percent of their investment assets.",
+    "see": ["private-foundation", "donor-advised-fund", "discount-rate"]
+  },
+  {
+    "id": "theory-of-change",
+    "term": "Theory of change",
+    "definition": "A written account of how and why a program’s activities are expected to lead to its long-term goal, step by step, with the assumptions that link each step to the next.",
+    "see": ["outputs", "outcomes", "impact"]
+  },
+  {
+    "id": "outputs",
+    "term": "Outputs",
+    "definition": "The direct products of a program’s activities, such as classes taught, nets distributed or people served. Outputs are easy to count, and they are not the same as results.",
+    "see": ["outcomes", "impact", "theory-of-change"]
+  },
+  {
+    "id": "outcomes",
+    "term": "Outcomes",
+    "definition": "The changes in people’s lives that a program produces, such as better health, new skills or higher income. Measuring them usually takes comparison groups and time.",
+    "see": ["outputs", "impact", "counterfactual"]
+  },
+  {
+    "id": "impact",
+    "term": "Impact",
+    "definition": "The difference a program or gift makes, compared with what would have happened without it. In evaluation it often means the deeper, longer-term change in communities or systems that outcomes add up to.",
+    "see": ["outcomes", "counterfactual", "additionality"]
+  },
+  {
+    "id": "replication",
+    "term": "Replication",
+    "definition": "Repeating a study to see whether its finding holds up. A finding that fails to replicate deserves less trust, and nobody has measured what share of charity impact findings replicate.",
+    "see": ["red-team", "calibration"]
+  },
+  {
+    "id": "red-team",
+    "term": "Red team",
+    "definition": "A person or group whose job is to find the flaws in a claim, plan or method before anyone relies on it. Charitology publishes no ratings of named charities until its method has passed public red-team review.",
+    "see": ["replication", "calibration"]
+  },
+  {
+    "id": "brier-score",
+    "term": "Brier score",
+    "definition": "A measure of how good probability forecasts are: the average squared difference between the probabilities given and what actually happened. Zero is perfect and one is the worst possible. Glenn Brier introduced it in 1950 in the journal Monthly Weather Review.",
+    "see": ["calibration", "credence"]
+  },
+  {
+    "id": "calibration",
+    "term": "Calibration",
+    "definition": "How well someone’s stated confidence matches how often they turn out to be right. A well-calibrated forecaster’s 70 percent predictions come true about 70 percent of the time.",
+    "see": ["brier-score", "credence", "expected-value"]
+  },
+  {
+    "id": "identifiable-victim-effect",
+    "term": "Identifiable victim effect",
+    "definition": "The tendency to give more to help one identified person than to help many people described by statistics. It is one of the best-known findings about giving, and it is now debated after a 2024 replication found no support for it.",
+    "see": ["psychic-numbing", "warm-glow", "replication"]
+  },
+  {
+    "id": "psychic-numbing",
+    "term": "Psychic numbing",
+    "definition": "The way concern fails to grow with the number of people in danger, and can even shrink, so that one person in need can move us more than a mass tragedy. The psychologist Paul Slovic applied the term, first used by Robert J. Lifton, to how people respond to mass suffering.",
+    "see": ["identifiable-victim-effect"]
+  },
+  {
+    "id": "warm-glow",
+    "term": "Warm glow",
+    "definition": "The satisfaction people get from the act of giving itself, apart from what the gift achieves. The economist James Andreoni built it into a theory of giving in 1990.",
+    "see": ["identifiable-victim-effect", "feedback-loop"]
+  },
+  {
+    "id": "systemic-change",
+    "term": "Systemic change",
+    "definition": "Change to the structures that produce outcomes, such as laws, markets, institutions, relationships and beliefs, rather than to outcomes one case at a time. On the depth scale it is the work of the structure and source levels.",
+    "see": ["structure", "source", "leverage"]
+  },
+  {
+    "id": "mutual-aid",
+    "term": "Mutual aid",
+    "definition": "People in a community pooling time, money and skills to meet one another’s needs directly, without a charity standing between giver and receiver. Peter Kropotkin wrote about it as a factor in evolution in 1902.",
+    "see": ["feedback-loop", "relief"]
+  },
+  {
+    "id": "beachhead",
+    "term": "Beachhead",
+    "definition": "Humanity’s Checklist’s term for one focused project that wins a foothold on a source. Each of the checklist’s six sources comes with one.",
+    "see": ["source", "protopia"]
+  },
+  {
+    "id": "protopia",
+    "term": "Protopia",
+    "definition": "Kevin Kelly’s term for a world that gets a little better every year, rather than a perfect utopia or a collapsing dystopia. Humanity’s Checklist uses it for the direction it points toward.",
+    "see": ["beachhead", "source"]
+  },
+  {
+    "id": "leverage",
+    "term": "Leverage",
+    "definition": "Influence beyond a gift’s own size. GiveWell uses the word for a charity’s influence on how governments and other funders spend, and the systems thinker Donella Meadows called places where a small shift produces big changes leverage points.",
+    "see": ["systemic-change", "counterfactual", "tractability"]
   }
 ]
