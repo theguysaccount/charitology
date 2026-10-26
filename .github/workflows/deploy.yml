@@ -15,6 +15,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  charity-os:
+    name: Shared OS checks
+    permissions:
+      contents: read
+    uses: ./.github/workflows/charity-os-check.yml
+
   newsletter:
     name: Newsletter safety checks
     permissions:
@@ -46,7 +52,7 @@ jobs:
           path: dist
 
   deploy:
-    needs: [build, newsletter]
+    needs: [build, newsletter, charity-os]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
