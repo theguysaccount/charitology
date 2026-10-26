@@ -1,0 +1,21 @@
+name: Work on an open problem
+description: Share an approach, dataset or partial result on one of the Open Problems.
+labels: [open-problem]
+body:
+  - type: input
+    id: problem
+    attributes:
+      label: Problem number and title
+      placeholder: "1. The Depth Census"
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Approach, data or result
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: Limits and what you have not checked

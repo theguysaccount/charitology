@@ -1,0 +1,22 @@
+name: Propose an entry
+description: Suggest a new encyclopedia entry, intervention, case, myth, disagreement, tradition or charity.
+labels: [idea]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of entry
+      options: [Encyclopedia, Intervention, Case study, Myth, Disagreement, Tradition, Charity Index, Forecast question, Other]
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: Title
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Key sources
+      description: Links to the strongest sources you know.

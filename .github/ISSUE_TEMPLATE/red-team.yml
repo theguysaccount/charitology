@@ -1,0 +1,26 @@
+name: Challenge a claim (red team)
+description: Argue that a claim, label or framing is wrong. Challenges stay open until answered with evidence.
+labels: [red-team]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: The claim you are challenging
+    validations:
+      required: true
+  - type: textarea
+    id: argument
+    attributes:
+      label: Your argument and evidence
+    validations:
+      required: true
+  - type: textarea
+    id: crux
+    attributes:
+      label: What would change your mind?
