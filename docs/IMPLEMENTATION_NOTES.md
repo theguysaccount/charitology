@@ -55,8 +55,9 @@ The build produces 444 HTML pages. The original brief remains unchanged. The API
 ## Verification
 
 - `npm run build` and `npm run check`: 444 pages and 25,298 internal links/assets passed, alongside schemas, content references, media, extension packages, original-brief preservation and new model/reference/type checks.
-- Research model checks: 17 groups; education/planning models: 10 scenario groups; completion models test missing/zero distinctions, integer cents, invalid enums/imports, disclosure requirements, safe spreadsheet text and two-tab overwrite protection.
+- Research model checks: 20 groups; education/planning models: 10 scenario groups; completion models test missing/zero distinctions, integer cents, invalid enums/imports, disclosure requirements, safe spreadsheet text and two-tab overwrite protection.
 - Reference checks read the actual built serialization for 8 shelves / 102 records (the failure shelf overlaps historical cases), then execute the actual dossier exporter and check source/review/field retention.
+- Actual two-tab browser tests confirmed stale research autosaves and depth-census edits cannot replace newer saved work. The stale page retains an exportable local draft and reload reads the newer version.
 - Browser tests cover all 31 targeted routes: filtering/reset/empty states, reading selection, side-by-side intervention fields, local save/edit/delete/undo, import preview/replacement/rejection and reload. Root verified research import through the in-app browser.
 - The ten-unit course was completed through visible controls, including wrong-answer explanations, twenty questions, practice, capstone and the shared completion record. Policy and workplace numeric scenarios were checked against independent hand calculations.
 - Mobile checks at 390×844 found no horizontal overflow for all 31 targeted pages. Reference and country views retain scrollable comparison tables.
@@ -68,7 +69,7 @@ The build produces 444 HTML pages. The original brief remains unchanged. The API
 - Required numeric planning context no longer becomes zero when missing.
 - Nomination Undo cannot erase work saved after a deletion.
 - Native-select enums are validated on nomination/manuscript import.
-- Local publication drafts refuse to overwrite a newer value from another tab. Corrupt browser data remains untouched.
+- Local publication drafts, research desks and education/planning workspaces refuse to overwrite newer data from another tab. Corrupt browser data remains untouched.
 - Country brief exports preserve uncertainty footnotes and observation status.
 - Depth-census CSV text protects whitespace-prefixed formulas. Money totals use integer cents; unclassified money remains separate from depth 0.
 - All 217 country state links have real static anchors; internal-link checking remains strict.

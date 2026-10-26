@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { build } from "esbuild";
+import ts from "typescript";
+import path from "node:path";
 
 // Bundle the browser module without running its DOM entry point, then test the
 // same pure validators and arithmetic used by the seven program workspaces.
@@ -45,6 +47,155 @@ const values = (title = "Sample") => ({
   count: "",
   choice: "",
 });
+check(
+  "Research workspace module and storage helpers pass strict TypeScript",
+  () => {
+    const file = ts.readConfigFile("tsconfig.json", ts.sys.readFile);
+    const parsed = ts.parseJsonConfigFileContent(
+      file.config,
+      ts.sys,
+      process.cwd(),
+    );
+    const program = ts.createProgram(
+      [
+        path.resolve("src/lib/client/research-programs.ts"),
+        path.resolve("node_modules/astro/client.d.ts"),
+      ],
+      {
+        ...parsed.options,
+        lib: ["lib.esnext.d.ts", "lib.dom.d.ts", "lib.dom.iterable.d.ts"],
+        noEmit: true,
+      },
+    );
+    const diagnostics = ts.getPreEmitDiagnostics(program);
+    assert.equal(
+      diagnostics.length,
+      0,
+      diagnostics
+        .map((d) => {
+          const location =
+            d.file && d.start != null
+              ? d.file.getLineAndCharacterOfPosition(d.start)
+              : null;
+          return `${d.file?.fileName ?? ""}:${location ? location.line + 1 : ""} TS${d.code}: ${ts.flattenDiagnosticMessageText(d.messageText, " ")}`;
+        })
+        .join("\n"),
+    );
+  },
+);
+check(
+  "Two research writers share the prefixed key and reject stale save, import, clear and undo",
+  () => {
+    const previous = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "localStorage",
+    );
+    const saved = new Map();
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      value: {
+        getItem: (key) => saved.get(key) ?? null,
+        setItem: (key, value) => saved.set(key, value),
+      },
+    });
+    try {
+      const a = m.researchStorage(config),
+        b = m.researchStorage(config);
+      assert.equal(a.key, "charitology.research-program.test.v1");
+      saved.set(a.key, JSON.stringify(blank()));
+      saved.set("research-program.test.v1", "unprefixed unrelated value");
+      const before = a.read();
+      b.read();
+      const latest = m.upsertResearchRecord(
+        before,
+        config,
+        values("Newer work in tab A"),
+        at,
+        "a",
+      );
+      a.write(latest);
+      const stored = saved.get(a.key);
+      const staleSave = m.upsertResearchRecord(
+        before,
+        config,
+        values("Stale tab B"),
+        later,
+        "b",
+      );
+      const imported = m.validateResearchState(
+        JSON.parse(JSON.stringify(staleSave)),
+        config,
+      );
+      for (const attempt of [staleSave, imported, blank(), before]) {
+        assert.throws(() => b.write(attempt), /Another tab changed/);
+        assert.equal(
+          saved.get(a.key),
+          stored,
+          "Newer records must survive every stale mutation path",
+        );
+      }
+      assert.equal(
+        saved.get("research-program.test.v1"),
+        "unprefixed unrelated value",
+      );
+      assert.deepEqual(
+        b.read(),
+        m.validateResearchState(latest, config),
+        "Explicit reload reads the newer workspace",
+      );
+      b.write({ ...latest, draft: values("Draft after reload") });
+      assert.throws(() => a.write(before), /Another tab changed/);
+    } finally {
+      if (previous) Object.defineProperty(globalThis, "localStorage", previous);
+      else delete globalThis.localStorage;
+    }
+  },
+);
+check(
+  "Malformed research storage and failed reads never get replaced by imports or clears",
+  () => {
+    const previous = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "localStorage",
+    );
+    const saved = new Map();
+    let blocked = false;
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      value: {
+        getItem(key) {
+          if (blocked) throw Error("Storage blocked");
+          return saved.get(key) ?? null;
+        },
+        setItem(key, value) {
+          if (blocked) throw Error("Storage blocked");
+          saved.set(key, value);
+        },
+      },
+    });
+    try {
+      for (const raw of [
+        "{broken JSON",
+        JSON.stringify({ ...blank(), program: "other" }),
+      ]) {
+        const storage = m.researchStorage(config);
+        saved.set(storage.key, raw);
+        assert.throws(() => storage.write(blank()), /could not be read/);
+        assert.throws(() => storage.read());
+        assert.throws(() => storage.write(blank()), /could not be read/);
+        assert.equal(saved.get(storage.key), raw);
+      }
+      const storage = m.researchStorage(config);
+      blocked = true;
+      assert.throws(() => storage.read(), /Storage blocked/);
+      blocked = false;
+      assert.throws(() => storage.write(blank()), /could not be read/);
+    } finally {
+      if (previous) Object.defineProperty(globalThis, "localStorage", previous);
+      else delete globalThis.localStorage;
+    }
+  },
+);
 check("required blanks and optional unknowns", () => {
   assert.match(m.fieldError(fields[0], "  "), /required/);
   assert.equal(m.fieldError(fields[2], ""), null);

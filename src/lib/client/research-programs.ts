@@ -1,8 +1,8 @@
 import { clear, h } from "./dom";
 import { download, toCsv } from "./files";
-import { load, remove, save } from "./store";
 import { canPersist } from "./persist";
 import { confirmTwice } from "./confirm";
+import { guardedDraft } from "./guarded-draft";
 
 export interface ResearchField {
   key: string;
@@ -164,6 +164,37 @@ export function validateResearchState(
       : null;
   return { version: 1, program: config.id, records, draft, editing };
 }
+/** Use the existing store.ts prefix, and never replace unreadable or newer data. */
+export function researchStorage(config: ResearchConfig) {
+  const key = `charitology.research-program.${config.id}.v1`;
+  const guard = guardedDraft(key);
+  let readable = false;
+  return {
+    key,
+    read(): ResearchState | null {
+      readable = false;
+      const raw = guard.read();
+      if (raw === null) {
+        readable = true;
+        return null;
+      }
+      const restored = validateResearchState(JSON.parse(raw), config);
+      if (!restored)
+        throw new Error(
+          "Stored research data is invalid and is left untouched.",
+        );
+      readable = true;
+      return restored;
+    },
+    write(state: ResearchState): void {
+      if (!readable)
+        throw new Error(
+          "Stored research data could not be read and is left untouched.",
+        );
+      guard.write(JSON.stringify(state));
+    },
+  };
+}
 export function upsertResearchRecord(
   state: ResearchState,
   config: ResearchConfig,
@@ -276,7 +307,7 @@ export function mountResearchWorkspaces() {
       if (root.dataset.ready) return;
       root.dataset.ready = "true";
       const config = JSON.parse(root.dataset.config!) as ResearchConfig;
-      const key = `research-program.${config.id}.v1`;
+      const storage = researchStorage(config);
       const blank = (): ResearchState => ({
         version: 1,
         program: config.id,
@@ -284,20 +315,32 @@ export function mountResearchWorkspaces() {
         draft: {},
         editing: null,
       });
-      const raw = load<unknown>(key, null),
-        restored = raw == null ? null : validateResearchState(raw, config);
+      let restored: ResearchState | null = null;
+      let storageIssue = "";
+      try {
+        restored = storage.read();
+      } catch (error) {
+        storageIssue =
+          error instanceof SyntaxError
+            ? "Stored research data is unreadable and is left untouched."
+            : error instanceof Error
+              ? error.message
+              : "Browser storage could not be read.";
+      }
       let state = restored ?? blank(),
         undo: ResearchState | null = null,
         pending: ResearchState | null = null;
-      let persistent = canPersist();
+      let persistent = !storageIssue && canPersist();
       const form = root.querySelector<HTMLFormElement>("form")!;
       const status = root.querySelector<HTMLElement>("[data-status]")!;
       const say = (message: string) => {
         status.textContent =
           message +
-          (persistent
-            ? ""
-            : " Browser storage is unavailable; download your work before leaving.");
+          (storageIssue
+            ? ` ${storageIssue} Changes remain only on this page; export JSON before reloading to read the saved version.`
+            : persistent
+              ? ""
+              : " Browser storage is unavailable; download your work before leaving.");
       };
       const input = (key: string) =>
         form.elements.namedItem(key) as
@@ -313,7 +356,16 @@ export function mountResearchWorkspaces() {
           input(field.key).value = state.draft[field.key] ?? "";
         });
       const persist = () => {
-        persistent = save(key, state) && persistent;
+        try {
+          storage.write(state);
+          persistent = true;
+          storageIssue = "";
+        } catch (error) {
+          persistent = false;
+          storageIssue =
+            error instanceof Error ? error.message : "Browser saving failed.";
+          say("Your current workspace is held on this page.");
+        }
       };
       const snapshot = () => {
         undo = structuredClone(state);
@@ -511,7 +563,6 @@ export function mountResearchWorkspaces() {
         action: () => {
           snapshot();
           state = blank();
-          remove(key);
           fill();
           persist();
           render();
@@ -631,14 +682,19 @@ export function mountResearchWorkspaces() {
         );
       }) as EventListener);
       root.addEventListener("research:inspect", completion);
+      window.addEventListener("storage", (event) => {
+        if (event.key !== storage.key && event.key !== null) return;
+        persistent = false;
+        storageIssue =
+          "Another tab changed this research workspace. Saved data will not be overwritten.";
+        say("This page keeps your current work for export.");
+      });
       fill();
       render();
       say(
-        raw != null && !restored
-          ? "Saved data did not match this workspace and was not loaded. Your original stored data is left intact until you edit or save."
-          : restored
-            ? "Restored this browser’s workspace."
-            : "Start a draft. Nothing is submitted to Charitology.",
+        restored
+          ? "Restored this browser’s workspace."
+          : "Start a draft. Nothing is submitted to Charitology.",
       );
     });
 }
