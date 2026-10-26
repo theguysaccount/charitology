@@ -1,0 +1,802 @@
+---
+// Impact Measurement Toolkit: a theory-of-change builder with a live chain
+// preview, several drafts saved in this browser, and Markdown and JSON export.
+// The draft model, gap prompts and exports live in src/lib/client/theory-of-change.ts.
+import { DEPTH } from '../../lib/labels';
+import { INDICATOR_KEYS, INDICATOR_LABELS, LABELS, type TextKey } from '../../lib/client/theory-of-change';
+import { url } from '../../lib/site';
+
+type Field = { key: TextKey; hint?: string; rows?: number };
+const steps: { title: string; intro?: string; fields: Field[]; depth?: boolean }[] = [
+  {
+    title: '1. The problem and its source',
+    fields: [
+      { key: 'problem', hint: 'What people experience, in plain words. This is the symptom.', rows: 3 },
+      {
+        key: 'source',
+        hint: 'What produces the problem. Keep asking why it happens until you reach something your work could change.',
+        rows: 3,
+      },
+    ],
+    depth: true,
+  },
+  {
+    title: '2. What you do and what it produces',
+    fields: [
+      { key: 'activities', hint: 'What the program does: services, events, campaigns, tools.', rows: 4 },
+      {
+        key: 'outputs',
+        hint: 'The direct products of the activities, which you can count: sessions held, people reached, items delivered.',
+        rows: 3,
+      },
+    ],
+  },
+  {
+    title: '3. What should change',
+    intro: 'Outcomes are changes in people’s lives, behavior, knowledge or conditions, not the work itself.',
+    fields: [
+      { key: 'outcomeShort', hint: 'What changes first.', rows: 2 },
+      { key: 'outcomeMedium', hint: 'What the first changes lead to.', rows: 2 },
+      { key: 'outcomeLong', hint: 'The lasting change you are aiming for.', rows: 2 },
+    ],
+  },
+];
+const depthOptions = DEPTH.map((d) => ({ value: String(d.level), label: `${d.level} · ${d.name}: ${d.verb}` }));
+const frequencies = ['Every session', 'Weekly', 'Monthly', 'Every term', 'Every quarter', 'Twice a year', 'Yearly'];
+---
+
+<section class="tool" aria-labelledby="imt-title">
+  <div class="tool-head">
+    <h2 id="imt-title">Build a theory of change</h2>
+    <span class="note">Drafts are saved only in this browser.</span>
+  </div>
+
+  <div class="imt-bar">
+    <div class="field">
+      <label for="imt-draft">Draft</label>
+      <select id="imt-draft"></select>
+    </div>
+    <div class="btn-row imt-bar-actions">
+      <button type="button" class="btn btn-ghost btn-small" id="imt-new">New draft</button>
+      <button type="button" class="btn btn-ghost btn-small" id="imt-example">Load example</button>
+      <button type="button" class="btn btn-ghost btn-small" id="imt-delete">Delete draft</button>
+    </div>
+  </div>
+  <div class="callout imt-storage" id="imt-storage" hidden>
+    <p>
+      <strong>This browser isn’t letting the page save.</strong> Your draft lasts only while this tab is open. Download it as
+      Markdown or JSON to keep it.
+    </p>
+  </div>
+  <p class="note imt-status" id="imt-status" role="status" aria-live="polite"></p>
+
+  <div class="imt-layout">
+    <form id="imt-form" class="imt-form" novalidate>
+      <a class="imt-jump note" href="#imt-preview-title">Jump to the preview</a>
+      <div class="field">
+        <label for="imt-f-name">{LABELS.name}</label>
+        <input type="text" id="imt-f-name" data-key="name" maxlength="200" autocomplete="off" />
+      </div>
+
+      {
+        steps.map((step) => (
+          <fieldset class="imt-step">
+            <legend>{step.title}</legend>
+            {step.intro && <p class="hint imt-intro">{step.intro}</p>}
+            {step.fields.map((f) => (
+              <div class="field">
+                <label for={`imt-f-${f.key}`}>{LABELS[f.key]}</label>
+                <textarea id={`imt-f-${f.key}`} data-key={f.key} rows={f.rows ?? 3} maxlength="5000" aria-describedby={f.hint ? `imt-h-${f.key}` : undefined} />
+                {f.hint && (
+                  <span class="hint" id={`imt-h-${f.key}`}>
+                    {f.hint}
+                  </span>
+                )}
+              </div>
+            ))}
+            {step.depth && (
+              <div class="field">
+                <label for="imt-f-depth">Where your work acts</label>
+                <select id="imt-f-depth" data-key="depth" aria-describedby="imt-h-depth">
+                  <option value="">Not chosen yet</option>
+                  {depthOptions.map((o) => (
+                    <option value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+                <span class="hint" id="imt-h-depth">
+                  The <a href={url('/method/#depth')}>depth scale</a> describes where work acts, from relief to source. It doesn’t grade:
+                  every level is needed.
+                </span>
+              </div>
+            )}
+          </fieldset>
+        ))
+      }
+
+      <fieldset class="imt-step">
+        <legend>4. How you’ll know: indicators</legend>
+        <p class="hint imt-intro">For each change you want to track: what you will measure, how, when, where you start and where you hope to be.</p>
+        <div id="imt-indicators" class="imt-indicators"></div>
+        <button type="button" class="btn btn-ghost btn-small" id="imt-add">Add an indicator</button>
+      </fieldset>
+
+      <fieldset class="imt-step">
+        <legend>5. Guardrails</legend>
+        <div class="field">
+          <label for="imt-f-assumptions">{LABELS.assumptions}</label>
+          <textarea id="imt-f-assumptions" data-key="assumptions" rows="3" maxlength="5000" aria-describedby="imt-h-assumptions"></textarea>
+          <span class="hint" id="imt-h-assumptions">What must be true for each link in the chain to hold. These are the first things to check.</span>
+        </div>
+        <div class="imt-pair">
+          <div class="field">
+            <label for="imt-f-feedbackMethod">Feedback from the people served: method</label>
+            <textarea id="imt-f-feedbackMethod" data-key="feedbackMethod" rows="2" maxlength="5000" aria-describedby="imt-h-feedback"></textarea>
+          </div>
+          <div class="field">
+            <label for="imt-f-feedbackFrequency">{LABELS.feedbackFrequency}</label>
+            <input type="text" id="imt-f-feedbackFrequency" data-key="feedbackFrequency" list="imt-frequencies" maxlength="200" autocomplete="off" />
+            <datalist id="imt-frequencies">
+              {frequencies.map((f) => <option value={f} />)}
+            </datalist>
+          </div>
+        </div>
+        <span class="hint imt-pair-hint" id="imt-h-feedback">How the people you serve will tell you what is working, and how you will tell them what changed as a result.</span>
+        <div class="field">
+          <label for="imt-f-comparison">{LABELS.comparison}</label>
+          <textarea id="imt-f-comparison" data-key="comparison" rows="3" maxlength="5000" aria-describedby="imt-h-comparison"></textarea>
+          <span class="hint" id="imt-h-comparison">
+            How you will tell your effect from what would have happened anyway: a randomized or waiting-list comparison, a similar group or
+            place, or at least a before-and-after with its limits stated.
+          </span>
+        </div>
+        <div class="field">
+          <label for="imt-f-stopRule">{LABELS.stopRule}</label>
+          <textarea id="imt-f-stopRule" data-key="stopRule" rows="2" maxlength="5000" aria-describedby="imt-h-stopRule"></textarea>
+          <span class="hint" id="imt-h-stopRule">The result that would make you change course, decided now, before the results arrive.</span>
+        </div>
+        <div class="imt-pair">
+          <div class="field">
+            <label for="imt-f-reviewer">{LABELS.reviewer}</label>
+            <input type="text" id="imt-f-reviewer" data-key="reviewer" maxlength="200" autocomplete="off" aria-describedby="imt-h-reviewer" />
+            <span class="hint" id="imt-h-reviewer">Who checks this plan and its results, ideally someone outside the program.</span>
+          </div>
+          <div class="field">
+            <label for="imt-f-reviewDate">{LABELS.reviewDate} (optional)</label>
+            <input type="date" id="imt-f-reviewDate" data-key="reviewDate" />
+          </div>
+        </div>
+      </fieldset>
+    </form>
+
+    <aside class="imt-preview" aria-labelledby="imt-preview-title">
+      <h3 id="imt-preview-title">Preview</h3>
+      <div id="imt-chain"></div>
+      <div class="btn-row imt-exports">
+        <button type="button" class="btn btn-small" id="imt-md">Download Markdown</button>
+        <button type="button" class="btn btn-ghost btn-small" id="imt-json">Download JSON</button>
+        <button type="button" class="btn btn-ghost btn-small" id="imt-import-btn">Import JSON</button>
+        <input type="file" id="imt-import" accept="application/json,.json" aria-label="JSON file to import" hidden />
+      </div>
+    </aside>
+  </div>
+
+  <div class="callout imt-related">
+    <p>
+      <strong>Related open tool.</strong> Systemic Altruism’s <a href="https://charities.systemicaltruism.com/toolkit/" rel="noopener"
+        >outcome and evidence planner</a
+      > asks similar questions, adds an optional cost scenario and also keeps drafts only in your browser.
+    </p>
+  </div>
+
+  <template id="imt-indicator-template">
+    <fieldset class="imt-ind">
+      <legend class="imt-ind-title"></legend>
+      <div class="imt-ind-grid">
+        {
+          INDICATOR_KEYS.map((k) => (
+            <div class={`field imt-ind-${k}`}>
+              <label data-for={k}>{INDICATOR_LABELS[k]}</label>
+              <input type="text" data-ind-key={k} maxlength="5000" autocomplete="off" />
+            </div>
+          ))
+        }
+      </div>
+      <button type="button" class="btn btn-ghost btn-small imt-remove">Remove</button>
+    </fieldset>
+  </template>
+</section>
+
+<style>
+  .imt-bar {
+    display: grid;
+    gap: 0 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    align-items: end;
+  }
+  .imt-bar-actions {
+    margin-bottom: 1rem;
+  }
+  .imt-storage {
+    margin-bottom: 1rem;
+  }
+  .imt-status {
+    min-height: 1.3em;
+    margin: 0 0 1rem;
+  }
+  .imt-layout {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+  .imt-jump {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+  }
+  .imt-preview h3 {
+    scroll-margin-top: calc(var(--header-h) + 16px);
+  }
+  @media (min-width: 1000px) {
+    .imt-jump {
+      display: none;
+    }
+    .imt-layout {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    }
+    .imt-preview {
+      position: sticky;
+      top: calc(var(--header-h) + 16px);
+      max-height: calc(100vh - var(--header-h) - 32px);
+      overflow: auto;
+    }
+  }
+  .imt-step {
+    border-top: 1px solid var(--rule-2);
+    padding-top: 1rem;
+    margin: 0 0 1.25rem;
+  }
+  .imt-step > legend {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 580;
+    padding: 0;
+    margin-bottom: 0.5rem;
+  }
+  .imt-intro {
+    display: block;
+    margin: 0 0 0.75rem;
+  }
+  .imt-pair {
+    display: grid;
+    gap: 0 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  }
+  .imt-pair-hint {
+    display: block;
+    margin: -0.6rem 0 1rem;
+  }
+  .imt-indicators {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  :global(.imt-ind) {
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 0.85rem 0.85rem;
+    background: var(--bg);
+    margin: 0;
+  }
+  :global(.imt-ind > legend) {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ink-2);
+    padding: 0 0.3rem;
+  }
+  :global(.imt-ind-grid) {
+    display: grid;
+    gap: 0 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  }
+  :global(.imt-ind-grid .imt-ind-what),
+  :global(.imt-ind-grid .imt-ind-how) {
+    grid-column: 1 / -1;
+  }
+  :global(.imt-ind .field) {
+    margin-bottom: 0.6rem;
+  }
+  :global(.imt-ind input) {
+    background: var(--surface) !important;
+  }
+  .imt-preview {
+    background: var(--bg);
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem 1.1rem;
+  }
+  .imt-preview h3 {
+    margin-bottom: 0.75rem;
+  }
+  .imt-exports {
+    margin-top: 1rem;
+  }
+  .imt-related {
+    margin-top: 1.5rem;
+  }
+  :global(.imt-banner) {
+    font-size: 0.85rem;
+    background: var(--accent-wash);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.7rem;
+    margin: 0 0 0.9rem;
+  }
+  :global(.imt-chain) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  :global(.imt-node) {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    padding: 0.6rem 0.8rem 0.65rem;
+  }
+  :global(.imt-node + .imt-node) {
+    margin-top: 1.9rem;
+  }
+  :global(.imt-node + .imt-node::before) {
+    content: '';
+    position: absolute;
+    left: 1.4rem;
+    top: calc(-1.9rem - 1px);
+    height: calc(1.9rem - 6px);
+    border-left: 2px solid var(--axis);
+  }
+  :global(.imt-node + .imt-node::after) {
+    content: '';
+    position: absolute;
+    left: calc(1.4rem - 5px);
+    top: -8px;
+    border: 6px solid transparent;
+    border-top-color: var(--axis);
+    border-bottom: 0;
+  }
+  :global(.imt-via) {
+    position: absolute;
+    left: 2.1rem;
+    top: -1.55rem;
+    font-size: 0.74rem;
+    font-style: italic;
+    color: var(--ink-3);
+  }
+  :global(.imt-k) {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.2rem;
+  }
+  :global(.imt-node p),
+  :global(.imt-guard p) {
+    margin: 0;
+    white-space: pre-line;
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+  :global(.imt-empty) {
+    color: var(--ink-3) !important;
+    font-style: italic;
+  }
+  :global(.imt-node .depth) {
+    margin-top: 0.45rem;
+    white-space: normal;
+  }
+  :global(.imt-outcomes) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+  :global(.imt-outcomes li) {
+    display: grid;
+    grid-template-columns: 4.4rem minmax(0, 1fr);
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  :global(.imt-outcomes .imt-when) {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-3);
+    padding-top: 0.1rem;
+  }
+  :global(.imt-inds) {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+  }
+  :global(.imt-inds .note) {
+    display: block;
+  }
+  :global(.imt-guard) {
+    margin-top: 1.25rem;
+    border-top: 1px solid var(--rule-2);
+    padding-top: 0.9rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+  :global(.imt-guard h4),
+  :global(.imt-gaps h4) {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  :global(.imt-gaps) {
+    margin-top: 1.1rem;
+    border-top: 1px solid var(--rule-2);
+    padding-top: 0.9rem;
+  }
+  :global(.imt-gaps ul) {
+    margin: 0.4rem 0 0;
+    padding-left: 1.1rem;
+    font-size: 0.86rem;
+    color: var(--ink-2);
+    display: grid;
+    gap: 0.25rem;
+  }
+</style>
+
+<script>
+  import { $, $$, clear, h } from '../../lib/client/dom';
+  import { download } from '../../lib/client/files';
+  import { fileSlug } from '../../lib/client/markdown';
+  import { load, save } from '../../lib/client/store';
+  import {
+    cleanDraft,
+    emptyDraft,
+    emptyIndicator,
+    exampleDraft,
+    gaps,
+    isExample,
+    parseImport,
+    parts,
+    toJson,
+    toMarkdown,
+    type Draft,
+    type Indicator,
+    type TextKey,
+  } from '../../lib/client/theory-of-change';
+  import { DEPTH } from '../../lib/labels';
+
+  type Stored = { v: 1; current: string; drafts: Draft[] };
+  const KEY = 'impact-drafts';
+  const MAX_DRAFTS = 50;
+  const MAX_INDICATORS = 30;
+
+  const select = $<HTMLSelectElement>('#imt-draft');
+  const form = $<HTMLFormElement>('#imt-form');
+  const status = $('#imt-status');
+  const storageNote = $('#imt-storage');
+  const chain = $('#imt-chain');
+  const rowsEl = $('#imt-indicators');
+  const template = $<HTMLTemplateElement>('#imt-indicator-template');
+  const fileInput = $<HTMLInputElement>('#imt-import');
+  const fields = $$<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('[data-key]', form);
+
+  function restore(): Stored {
+    const raw = load<{ current?: unknown; drafts?: unknown } | null>(KEY, null);
+    const drafts = Array.isArray(raw?.drafts) ? raw!.drafts.slice(0, MAX_DRAFTS).map((d) => cleanDraft(d)) : [];
+    const unique = drafts.filter((d, i) => drafts.findIndex((x) => x.id === d.id) === i);
+    if (!unique.length) unique.push(emptyDraft());
+    const current = typeof raw?.current === 'string' && unique.some((d) => d.id === raw.current) ? raw.current : unique[0].id;
+    return { v: 1, current, drafts: unique };
+  }
+
+  const state = restore();
+  const draft = (): Draft => state.drafts.find((d) => d.id === state.current) ?? state.drafts[0];
+  const title = (d: Draft) => d.name.trim() || 'Untitled draft';
+
+  function persist() {
+    storageNote.hidden = save(KEY, state);
+  }
+
+  let saveTimer: number | undefined;
+  let sayTimer: number | undefined;
+  function changed(announce = true) {
+    const d = draft();
+    d.updatedAt = new Date().toISOString();
+    window.clearTimeout(saveTimer);
+    saveTimer = window.setTimeout(persist, 300);
+    renderPreview();
+    if (announce) {
+      window.clearTimeout(sayTimer);
+      sayTimer = window.setTimeout(() => say(progressLine(d)), 1200);
+    }
+  }
+
+  function say(text: string) {
+    status.textContent = text;
+  }
+
+  function progressLine(d: Draft) {
+    const p = parts(d);
+    const done = p.filter((x) => x.done).length;
+    const saved = storageNote.hidden ? 'Saved in this browser.' : 'Not saved: this browser blocks storage.';
+    return `${saved} ${done} of ${p.length} parts written.`;
+  }
+
+  // ----- Drafts -----
+
+  function renderSelect() {
+    clear(select);
+    for (const d of state.drafts) select.append(h('option', { value: d.id, selected: d.id === state.current }, title(d)));
+  }
+
+  function fillForm(d: Draft) {
+    for (const el of fields) {
+      const key = el.dataset.key!;
+      if (key === 'depth') el.value = d.depth === null ? '' : String(d.depth);
+      else el.value = d[key as TextKey] ?? '';
+    }
+    renderRows(d);
+  }
+
+  function open(id: string) {
+    state.current = id;
+    renderSelect();
+    fillForm(draft());
+    renderPreview();
+    persist();
+  }
+
+  function add(d: Draft, message: string): boolean {
+    if (state.drafts.length >= MAX_DRAFTS) {
+      say(`You have ${MAX_DRAFTS} drafts, the most this page keeps. Delete one to add another.`);
+      return false;
+    }
+    state.drafts.push(d);
+    open(d.id);
+    say(message);
+    return true;
+  }
+
+  select.addEventListener('change', () => {
+    open(select.value);
+    say(`Opened “${title(draft())}”.`);
+  });
+
+  $('#imt-new').addEventListener('click', () => {
+    if (add(emptyDraft(), 'New draft started.')) $<HTMLInputElement>('#imt-f-name').focus();
+  });
+
+  $('#imt-example').addEventListener('click', () => {
+    add(exampleDraft(), 'Loaded the fictional example as a new draft. Edit it freely: your other drafts are unchanged.');
+  });
+
+  $('#imt-delete').addEventListener('click', () => {
+    const d = draft();
+    if (!window.confirm(`Delete “${title(d)}”? This can’t be undone.`)) return;
+    state.drafts = state.drafts.filter((x) => x.id !== d.id);
+    if (!state.drafts.length) state.drafts.push(emptyDraft());
+    open(state.drafts[0].id);
+    say(`Deleted “${title(d)}”.`);
+    select.focus();
+  });
+
+  // ----- Fields -----
+
+  form.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement;
+    const d = draft();
+    if (el.dataset.key) {
+      const key = el.dataset.key;
+      if (key === 'depth') d.depth = el.value === '' ? null : Number(el.value);
+      else d[key as TextKey] = el.value;
+      if (key === 'name') {
+        const option = select.querySelector<HTMLOptionElement>(`option[value="${CSS.escape(d.id)}"]`);
+        if (option) option.textContent = title(d);
+      }
+      changed();
+    } else if (el.dataset.indKey) {
+      const row = Number(el.closest<HTMLElement>('[data-row]')?.dataset.row);
+      if (Number.isInteger(row) && d.indicators[row]) {
+        d.indicators[row][el.dataset.indKey as keyof Indicator] = el.value;
+        changed();
+      }
+    }
+  });
+  form.addEventListener('submit', (e) => e.preventDefault());
+
+  // ----- Indicator rows -----
+
+  function renderRows(d: Draft) {
+    clear(rowsEl);
+    if (!d.indicators.length) d.indicators.push(emptyIndicator());
+    d.indicators.forEach((ind, i) => {
+      const node = template.content.firstElementChild!.cloneNode(true) as HTMLFieldSetElement;
+      node.dataset.row = String(i);
+      node.querySelector('legend')!.textContent = `Indicator ${i + 1}`;
+      for (const input of $$<HTMLInputElement>('input[data-ind-key]', node)) {
+        const key = input.dataset.indKey as keyof Indicator;
+        input.id = `imt-ind-${i}-${key}`;
+        input.value = ind[key];
+        const label = node.querySelector<HTMLLabelElement>(`label[data-for="${key}"]`);
+        if (label) label.htmlFor = input.id;
+      }
+      const remove = node.querySelector<HTMLButtonElement>('.imt-remove')!;
+      remove.setAttribute('aria-label', `Remove indicator ${i + 1}`);
+      remove.addEventListener('click', () => removeRow(i));
+      rowsEl.append(node);
+    });
+    $<HTMLButtonElement>('#imt-add').disabled = d.indicators.length >= MAX_INDICATORS;
+  }
+
+  function removeRow(i: number) {
+    const d = draft();
+    d.indicators.splice(i, 1);
+    if (!d.indicators.length) d.indicators.push(emptyIndicator());
+    renderRows(d);
+    changed(false);
+    say(`Indicator ${i + 1} removed.`);
+    const next = rowsEl.querySelector<HTMLInputElement>(`[data-row="${Math.min(i, d.indicators.length - 1)}"] input`);
+    (next ?? $<HTMLButtonElement>('#imt-add')).focus();
+  }
+
+  $('#imt-add').addEventListener('click', () => {
+    const d = draft();
+    if (d.indicators.length >= MAX_INDICATORS) return;
+    d.indicators.push(emptyIndicator());
+    renderRows(d);
+    changed(false);
+    rowsEl.querySelector<HTMLInputElement>(`[data-row="${d.indicators.length - 1}"] input`)?.focus();
+  });
+
+  // ----- Preview -----
+
+  const filled = (s: string) => s.trim().length > 0;
+  const textOr = (s: string, empty = 'Not written yet') => (filled(s) ? h('p', {}, s.trim()) : h('p', { class: 'imt-empty' }, empty));
+
+  function depthBadge(level: number | null) {
+    const d = level === null ? undefined : DEPTH.find((x) => x.level === level);
+    if (!d) return h('p', { class: 'imt-empty' }, 'Depth not chosen yet');
+    return h(
+      'span',
+      { class: 'depth' },
+      h(
+        'span',
+        { class: 'cells', 'aria-hidden': 'true' },
+        [0, 1, 2, 3, 4].map((i) => h('span', { class: i <= d.level ? `cell on d${i}` : 'cell' })),
+      ),
+      `Your work acts at: ${d.name} (${d.level} of 4)`,
+    );
+  }
+
+  function node(label: string, via: string | null, ...body: (Node | null)[]) {
+    return h('li', { class: 'imt-node' }, via ? h('span', { class: 'imt-via' }, via) : null, h('span', { class: 'imt-k' }, label), ...body);
+  }
+
+  function renderPreview() {
+    const d = draft();
+    clear(chain);
+    if (isExample(d)) {
+      chain.append(h('p', { class: 'imt-banner' }, h('strong', {}, 'Fictional example. '), 'Millbrook, its program and its numbers are made up to show how the parts fit together.'));
+    }
+    chain.append(h('p', { class: 'imt-k' }, title(d)));
+    const rows = d.indicators.filter((i) => Object.values(i).some(filled));
+    const outcomes = h(
+      'ul',
+      { class: 'imt-outcomes' },
+      ([
+        ['Short', d.outcomeShort],
+        ['Medium', d.outcomeMedium],
+        ['Long', d.outcomeLong],
+      ] as const).map(([when, text]) =>
+        h('li', {}, h('span', { class: 'imt-when' }, `${when} term`), filled(text) ? h('span', {}, text.trim()) : h('span', { class: 'imt-empty' }, 'Not written yet')),
+      ),
+    );
+    const indicators = rows.length
+      ? h(
+          'ol',
+          { class: 'imt-inds' },
+          rows.map((i) =>
+            h(
+              'li',
+              {},
+              h('strong', {}, filled(i.what) ? i.what : 'Unnamed indicator'),
+              [i.how, i.when].some(filled) ? h('span', { class: 'note' }, [i.how, i.when].filter(filled).join(' · ')) : null,
+              [i.baseline, i.target].some(filled)
+                ? h('span', { class: 'note' }, `Baseline: ${filled(i.baseline) ? i.baseline : 'not set'} → target: ${filled(i.target) ? i.target : 'not set'}`)
+                : null,
+            ),
+          ),
+        )
+      : h('p', { class: 'imt-empty' }, 'No indicators yet');
+
+    chain.append(
+      h(
+        'ol',
+        { class: 'imt-chain', 'aria-label': 'Theory of change, from problem to measurement' },
+        node('Problem (symptom)', null, textOr(d.problem)),
+        node('Source', 'produced by', textOr(d.source), depthBadge(d.depth)),
+        node('Activities', 'so the program does', textOr(d.activities)),
+        node('Outputs', 'which produces', textOr(d.outputs)),
+        node('Outcomes', 'which should lead to', outcomes),
+        node('Indicators', 'checked by', indicators),
+      ),
+    );
+
+    const feedback = [d.feedbackMethod.trim(), filled(d.feedbackFrequency) ? `How often: ${d.feedbackFrequency.trim()}` : ''].filter(Boolean).join('\n');
+    const reviewer = [d.reviewer.trim(), filled(d.reviewDate) ? `Next review: ${d.reviewDate}` : ''].filter(Boolean).join('\n');
+    chain.append(
+      h(
+        'div',
+        { class: 'imt-guard' },
+        h('div', {}, h('h4', {}, 'Assumptions'), textOr(d.assumptions)),
+        h('div', {}, h('h4', {}, 'Feedback from the people served'), textOr(feedback)),
+        h('div', {}, h('h4', {}, 'Comparison or counterfactual'), textOr(d.comparison)),
+        h('div', {}, h('h4', {}, 'Stop rule'), textOr(d.stopRule)),
+        h('div', {}, h('h4', {}, 'Reviewer'), textOr(reviewer)),
+      ),
+    );
+
+    const missing = gaps(d);
+    chain.append(
+      h(
+        'div',
+        { class: 'imt-gaps' },
+        h('h4', {}, missing.length ? `Still to write (${missing.length})` : 'Every part has something written'),
+        missing.length ? h('ul', {}, missing.map((m) => h('li', {}, m))) : h('p', { class: 'note' }, 'Now test it: share it with the people it is meant to serve and with your reviewer.'),
+      ),
+    );
+  }
+
+  // ----- Export and import -----
+
+  const toolUrl = () => location.origin + location.pathname;
+
+  $('#imt-md').addEventListener('click', () => {
+    const d = draft();
+    download(`charitology-theory-of-change-${fileSlug(d.name, 'draft')}.md`, toMarkdown(d, { depthLevels: DEPTH, toolUrl: toolUrl() }), 'text/markdown;charset=utf-8');
+    say('Markdown file downloaded.');
+  });
+
+  $('#imt-json').addEventListener('click', () => {
+    const d = draft();
+    download(`charitology-theory-of-change-${fileSlug(d.name, 'draft')}.json`, toJson(d), 'application/json;charset=utf-8');
+    say('JSON file downloaded. Import it here later to keep working on it.');
+  });
+
+  $('#imt-import-btn').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = '';
+    if (!file) return;
+    if (file.size > 1_000_000) {
+      say('That file is too large to be a theory of change export.');
+      return;
+    }
+    try {
+      const d = parseImport(await file.text());
+      add(d, `Imported “${title(d)}” as a new draft.`);
+    } catch (err) {
+      say(err instanceof Error ? err.message : 'That file couldn’t be read.');
+    }
+  });
+
+  // Saving waits for a pause in typing; don't lose the last keystrokes when the page closes.
+  window.addEventListener('pagehide', () => {
+    window.clearTimeout(saveTimer);
+    persist();
+  });
+
+  // ----- Start -----
+  renderSelect();
+  fillForm(draft());
+  renderPreview();
+  persist();
+</script>

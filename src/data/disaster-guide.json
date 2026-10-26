@@ -1,0 +1,95 @@
+{
+  "_note": "Guidance and gift-planner defaults for the Disaster Response Guide. Every point names its sources, which are also listed in src/content/tools/disaster-response-guide.md. The planner defaults are an editorial starting point, not a rule. Challenge them with a pull request that explains why.",
+  "points": [
+    {
+      "id": "cash",
+      "title": "Give money, not goods",
+      "body": "Money lets responders buy what is needed when it is needed, often from local businesses, which helps the local economy recover. Goods nobody asked for have to be shipped, sorted and stored, and that work pulls people away from survivors. Send goods only when a relief group asks for them.",
+      "sources": [
+        { "label": "FEMA", "url": "https://www.fema.gov/disaster/recover/volunteer-donate" },
+        { "label": "Center for Disaster Philanthropy", "url": "https://disasterphilanthropy.org/blog/cash-the-king-for-disaster-donations/" },
+        { "label": "CDP on in-kind gifts", "url": "https://disasterphilanthropy.org/blog/kind-donations-not-kind/" }
+      ]
+    },
+    {
+      "id": "local",
+      "title": "Give through experienced responders and local groups",
+      "body": "Choose organizations with a record of disaster work and people on the ground. Look for local ones too: the Center for Disaster Philanthropy notes that marginalized people often turn to schools, community nonprofits and faith groups. Your state’s Voluntary Organizations Active in Disaster (VOAD) and its emergency management agency can point you to trusted groups. In the 2016 Grand Bargain, major aid donors and agencies committed to support local and national responders.",
+      "sources": [
+        { "label": "FTC", "url": "https://consumer.ftc.gov/consumer-alerts/2025/07/help-people-affected-flooding-texas-not-scammer" },
+        { "label": "FEMA", "url": "https://www.fema.gov/disaster/recover/volunteer-donate" },
+        { "label": "Center for Disaster Philanthropy", "url": "https://disasterphilanthropy.org/cdp-resource/disaster-recovery/" },
+        { "label": "The Grand Bargain", "url": "https://alnap.org/help-library/resources/the-grand-bargain-a-shared-commitment-to-better-serve-people-in-need/" }
+      ]
+    },
+    {
+      "id": "recovery",
+      "title": "Recovery takes months and years",
+      "body": "Gifts surge in the first days, but recovery can take months or even years, and rebuilding can take decades. In 2023, reconstruction and recovery received 12.7% of the disaster giving tracked by the Center for Disaster Philanthropy and Candid. Consider keeping part of your gift for later.",
+      "sources": [
+        { "label": "FEMA", "url": "https://www.fema.gov/disaster/recover/volunteer-donate" },
+        { "label": "CDP on recovery", "url": "https://disasterphilanthropy.org/cdp-resource/disaster-recovery/" },
+        { "label": "CDP on the first days", "url": "https://disasterphilanthropy.org/blog/from-relief-to-recovery-a-strategic-approach-to-disaster-philanthropy/" },
+        { "label": "State of Disaster Philanthropy 2025", "url": "https://disasterphilanthropy.org/press/new-center-for-disaster-philanthropy-report-disaster-giving-declined-slightly-in-2023-but-support-for-long-term-recovery-and-resilience-efforts-increased/" }
+      ]
+    },
+    {
+      "id": "scams",
+      "title": "Check before you give",
+      "body": "After disasters, the FTC warns donors to watch for scams. Check that a charity is registered with the IRS and with your state. Be careful with crowdfunding: the money goes to the organizer, not straight to the people named, and gifts to individuals aren’t tax-deductible. Don’t let anyone rush you, and steer clear of anyone who insists on cash, gift cards, wire transfers or cryptocurrency.",
+      "sources": [
+        { "label": "FTC on disaster giving", "url": "https://consumer.ftc.gov/consumer-alerts/2025/07/help-people-affected-flooding-texas-not-scammer" },
+        { "label": "FTC on crowdfunding", "url": "https://consumer.ftc.gov/articles/donating-through-crowdfunding-social-media-and-fundraising-platforms" },
+        { "label": "FTC on charity scams", "url": "https://consumer.ftc.gov/articles/giving-charity" }
+      ],
+      "see": [{ "label": "Look up a charity", "path": "/tools/charity-lookup/" }]
+    },
+    {
+      "id": "prepare",
+      "title": "Fund preparedness and prevention too",
+      "body": "Work that reduces the harm of the next disaster pays off. A National Institute of Building Sciences study estimated that federally funded mitigation grants produce about $6 of benefit for every $1 spent. Yet in 2023, resilience, risk reduction and mitigation received 6% of the disaster giving tracked by CDP and Candid. On the depth scale, relief meets today’s need, and prevention stops the next disaster from hurting as much.",
+      "sources": [
+        { "label": "NIBS, Mitigation Saves 2019", "url": "https://nibs.org/wp-content/uploads/2025/04/mitigationsaves2019_complete.pdf" },
+        { "label": "NIBS summary", "url": "https://nibs.org/protecting-against-natural-disasters-nibs-unveils-new-report-on-mitigation/" },
+        { "label": "State of Disaster Philanthropy 2025", "url": "https://disasterphilanthropy.org/press/new-center-for-disaster-philanthropy-report-disaster-giving-declined-slightly-in-2023-but-support-for-long-term-recovery-and-resilience-efforts-increased/" }
+      ],
+      "see": [{ "label": "The depth scale", "path": "/method/#depth" }]
+    },
+    {
+      "id": "strings",
+      "title": "Skip strings you don’t need",
+      "body": "Earmarking a gift for one disaster, place or item can strand money where needs are already met. Less than a week after the 2004 Indian Ocean tsunami, Doctors Without Borders stopped accepting gifts for it. It went on to receive about €110 million against a forecast need of €25 million for 2005, and asked donors to let it use the rest for other emergencies. Only 1% asked for a refund instead. Unless you have a reason to restrict a gift, let responders put it where it is needed most.",
+      "sources": [
+        { "label": "Doctors Without Borders", "url": "https://www.msf.org/one-year-after-indian-ocean-tsunami-disaster" },
+        { "label": "The Grand Bargain", "url": "https://alnap.org/help-library/resources/the-grand-bargain-a-shared-commitment-to-better-serve-people-in-need/" }
+      ],
+      "see": [{ "label": "The Restriction Reflex", "path": "/diagnosis/restriction-reflex/" }]
+    }
+  ],
+  "planner": {
+    "defaults": { "relief": 50, "recovery": 30, "preparedness": 20 },
+    "buckets": [
+      {
+        "id": "relief",
+        "name": "Relief now",
+        "depth": 0,
+        "when": "The first days and weeks",
+        "where": "Experienced responders with people on the ground, and local groups helping survivors today."
+      },
+      {
+        "id": "recovery",
+        "name": "Recovery later",
+        "depth": 1,
+        "when": "Months to years from now",
+        "where": "Local organizations rebuilding homes, livelihoods and services, and funds that make recovery grants to them."
+      },
+      {
+        "id": "preparedness",
+        "name": "Preparedness",
+        "depth": 2,
+        "when": "Before the next disaster",
+        "where": "Preparedness, risk reduction and mitigation in places likely to be hit next."
+      }
+    ]
+  }
+}

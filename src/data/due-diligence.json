@@ -1,0 +1,228 @@
+{
+  "_note": "Items for the Due Diligence Checklist. Each link is a {ref} to a name in ecosystem.json, an internal {path}, or an external {url}. Every factual claim is sourced in src/content/tools/due-diligence-checklist.md. Improve an item with a pull request that cites a source.",
+  "groups": [
+    {
+      "id": "legitimacy",
+      "name": "Legitimacy",
+      "intro": "Is it what it says it is?",
+      "items": [
+        {
+          "id": "irs-status",
+          "question": "Is it on the IRS list of organizations that can receive tax-deductible gifts?",
+          "why": "The list confirms that the IRS recognizes it as tax-exempt. It says nothing about how well it works. Some eligible groups aren’t listed: churches don’t have to apply for recognition, and groups covered by a parent organization’s group ruling aren’t listed separately.",
+          "how": "Search its name or EIN in Tax Exempt Organization Search. If it isn’t there, ask for its IRS exemption letter.",
+          "links": [{ "ref": "IRS Tax Exempt Organization Search" }]
+        },
+        {
+          "id": "filing",
+          "question": "Has it kept filing its annual return with the IRS?",
+          "why": "An organization that doesn’t file for three years in a row automatically loses its tax-exempt status. The returns are also the fullest public record of what it does with its money.",
+          "how": "Tax Exempt Organization Search shows revocations and recent returns, and ProPublica Nonprofit Explorer shows the filings. Organizations whose gross receipts are normally $50,000 or less may file only a short electronic notice, the e-Postcard.",
+          "links": [{ "ref": "IRS Tax Exempt Organization Search" }, { "ref": "ProPublica Nonprofit Explorer" }]
+        },
+        {
+          "id": "state",
+          "question": "Is it registered with your state’s charity regulator, if your state requires that?",
+          "why": "Registration rules differ from state to state. The FTC suggests checking that both the charity and any fundraiser asking on its behalf are registered with your state.",
+          "how": "Find your state’s charity office in the National Association of State Charity Officials directory.",
+          "links": [{ "label": "State charity offices (NASCO)", "url": "https://www.nasconet.org/resources/state-government/" }]
+        },
+        {
+          "id": "governance",
+          "question": "Does it have an independent board and written conflict-of-interest and whistleblower policies?",
+          "why": "These are how an organization checks itself. Form 990 asks about each one in Part VI.",
+          "how": "Read Part VI of its latest Form 990: line 1b counts independent board members, line 12a asks about a conflict-of-interest policy and line 13 about a whistleblower policy. U.S. exempt organizations must let the public see their annual returns for three years.",
+          "links": [{ "ref": "ProPublica Nonprofit Explorer" }]
+        }
+      ]
+    },
+    {
+      "id": "money",
+      "name": "Money",
+      "intro": "Where does the money go, and where does it come from?",
+      "items": [
+        {
+          "id": "spending",
+          "question": "Do you know what its spending buys?",
+          "why": "How costs split between programs, management and fundraising says little about results. In 2013 the leaders of GuideStar, Charity Navigator and the BBB Wise Giving Alliance told donors that overhead is a poor measure of performance.",
+          "how": "Charity Impact Media shows Form 990 spending for U.S. charities with $10 million or more in revenue. For a charity that files the full Form 990, Part IX splits its expenses into programs, management and fundraising.",
+          "links": [{ "ref": "Charity Impact Media" }, { "ref": "ProPublica Nonprofit Explorer" }, { "label": "The Overhead Myth", "path": "/diagnosis/overhead-myth/" }]
+        },
+        {
+          "id": "invest",
+          "question": "Does it invest in what results depend on, such as skilled staff, good systems and evaluation?",
+          "why": "Charities that starve these to keep overhead low can end up less effective. Ann Goggins Gregory and Don Howard called the pattern the nonprofit starvation cycle.",
+          "how": "Ask what it would fix first if it had more flexible money.",
+          "links": [{ "label": "The Nonprofit Starvation Cycle (SSIR)", "url": "https://ssir.org/articles/entry/the_nonprofit_starvation_cycle" }]
+        },
+        {
+          "id": "audit",
+          "question": "Are its financial statements compiled, reviewed or audited by an independent accountant?",
+          "why": "It is an outside check on the books. Form 990 asks about it in Part XII.",
+          "how": "Read Part XII, line 2, of its latest Form 990, or ask for its latest audit or review.",
+          "links": [{ "ref": "ProPublica Nonprofit Explorer" }]
+        },
+        {
+          "id": "funders",
+          "question": "Do you know who else funds it?",
+          "why": "If large funders already cover the work, your gift might do more elsewhere. If one funder pays for most of it, ask what happens when that money ends.",
+          "how": "WHOFUNDS shows what U.S. private foundations reported paying it, from their Form 990-PF filings.",
+          "links": [{ "ref": "WHOFUNDS search", "label": "WHOFUNDS" }]
+        },
+        {
+          "id": "pay",
+          "question": "Is leadership pay set by people without a conflict of interest?",
+          "why": "The question isn’t whether pay is high or low. It is whether independent people set it and compare it with similar organizations.",
+          "how": "Form 990 asks about the process in Part VI, line 15, and lists pay for officers, directors and key employees in Part VII.",
+          "links": [{ "ref": "ProPublica Nonprofit Explorer" }]
+        }
+      ]
+    },
+    {
+      "id": "results",
+      "name": "Results",
+      "intro": "What changes because it exists?",
+      "items": [
+        {
+          "id": "outcomes",
+          "question": "Does it report what changed for people, not only what it did?",
+          "why": "Outputs count activity, such as meals served. Outcomes are changes in people’s lives, such as fewer hungry days. Form 990 asks for accomplishments in measures such as clients served, which are outputs, so you usually have to ask for outcomes.",
+          "how": "Ask which outcomes it tracks and how it measures them.",
+          "links": [{ "label": "The Measurement Gap", "path": "/diagnosis/measurement-gap/" }, { "label": "Impact Measurement Toolkit", "path": "/tools/impact-measurement-toolkit/" }]
+        },
+        {
+          "id": "evidence",
+          "question": "What is the strongest evidence that its approach works?",
+          "why": "A careful study of the same approach somewhere else is useful. A careful study of this program, in this place, tells you more.",
+          "how": "Ask for the best study it knows of and who did it. Independent evaluators publish research on some causes.",
+          "links": [{ "ref": "GiveWell" }, { "ref": "Giving Green" }, { "ref": "Animal Charity Evaluators" }]
+        },
+        {
+          "id": "cost",
+          "question": "Does it know what one result costs?",
+          "why": "Programs with the same goal can cost very different amounts per result. Cost per result tells you more than an overhead ratio.",
+          "how": "Ask for its cost per outcome, such as the cost per child who learns to read, and how it was worked out.",
+          "links": [{ "label": "The Giver’s Checklist", "path": "/method/#checklist" }]
+        }
+      ]
+    },
+    {
+      "id": "learning",
+      "name": "Learning",
+      "intro": "Does it find out, and act on what it finds?",
+      "items": [
+        {
+          "id": "failure",
+          "question": "Does it publish what didn’t work?",
+          "why": "A published failure lets others avoid repeating it, and an organization that names its mistakes shows it is looking for them. Some publish them openly, such as Engineers Without Borders Canada with its failure reports and GiveWell with its public list of mistakes.",
+          "how": "Look for a failure report, a mistakes page or lessons learned in its annual report.",
+          "links": [
+            { "label": "GiveWell: Our mistakes", "url": "https://www.givewell.org/about/our-mistakes" },
+            { "label": "EWB Canada failure report", "url": "https://www.ewb.ca/wp-content/uploads/2018/08/EWB_FAILURE-REPORT_EN_03-08-2018-pages.pdf" },
+            { "label": "The Silence About Failure", "path": "/diagnosis/silence-about-failure/" }
+          ]
+        },
+        {
+          "id": "changed",
+          "question": "Can it name something it changed because of what it learned?",
+          "why": "Learning shows up as programs that change, not only as reports.",
+          "how": "Ask for one example from the last few years."
+        },
+        {
+          "id": "stop-rule",
+          "question": "Does it know what result would make it change course?",
+          "why": "A program with no stop rule can keep running whatever its results. Deciding in advance keeps the later decision honest.",
+          "how": "Ask what result would make it redesign or stop the program.",
+          "links": [{ "label": "Impact Measurement Toolkit", "path": "/tools/impact-measurement-toolkit/" }]
+        },
+        {
+          "id": "feedback",
+          "question": "Does it ask the people it serves for feedback, and tell them what changed as a result?",
+          "why": "The people served are the first to know whether help is working. Listen4Good, a feedback program for nonprofits, ends its five-step loop by reporting back to the people who answered.",
+          "how": "Ask how often it collects feedback, and for one change it made because of it.",
+          "links": [
+            { "label": "Realizing the Promise of High-Quality Feedback", "url": "https://feedbacklabs.org/news-and-insights/realizing-the-promise-of-high-quality-feedback/" },
+            { "label": "The Missing Feedback Loop", "path": "/diagnosis/missing-feedback-loop/" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "system",
+      "name": "The system lens",
+      "intro": "Where does it sit in the larger system?",
+      "items": [
+        {
+          "id": "depth",
+          "question": "Do you know where on the depth scale its work acts?",
+          "why": "Relief, repair, prevention, structure or source. Every level is needed. Know which one you are paying for.",
+          "how": "Ask what would have to change for the problem to stop coming back, and whether its work changes that.",
+          "links": [{ "label": "The depth scale", "path": "/method/#depth" }]
+        },
+        {
+          "id": "counterfactual",
+          "question": "What would happen without this work, or without your gift?",
+          "why": "A program’s effect is the difference between what happened and what would have happened anyway. If the work would be funded without you, your gift’s real effect lands somewhere else.",
+          "how": "Ask how it compares its results with people or places it doesn’t serve, and whether another funder would fill the gap.",
+          "links": [
+            { "label": "J-PAL: Introduction to randomized evaluations", "url": "https://www.povertyactionlab.org/resource/introduction-randomized-evaluations" },
+            { "label": "The Counterfactual Problem", "path": "/open-problems/the-counterfactual-problem/" }
+          ]
+        },
+        {
+          "id": "coordination",
+          "question": "Does it work with others on the same problem?",
+          "why": "Organizations that work alone on a shared problem can duplicate each other’s costs and compete for the same donors.",
+          "how": "Ask who else works on this problem nearby and how they divide the work.",
+          "links": [{ "label": "The Fragmentation Problem", "path": "/diagnosis/fragmentation/" }]
+        },
+        {
+          "id": "voice",
+          "question": "Do the people it serves help decide what it does?",
+          "why": "The people closest to a problem often know which fix will last.",
+          "how": "Ask whether people it serves sit on its board, its advisory groups or the panels that decide where money goes.",
+          "links": [{ "label": "The Missing Voice", "path": "/diagnosis/missing-voice/" }, { "label": "Fund for Shared Insight", "url": "https://fundforsharedinsight.org/" }]
+        }
+      ]
+    },
+    {
+      "id": "red-flags",
+      "name": "Red flags",
+      "intro": "Warning signs the FTC describes. Here, yes means you saw it. Seeing one doesn’t prove a scam, but it is a reason to stop and check.",
+      "flag": true,
+      "items": [
+        {
+          "id": "rush",
+          "question": "Did anyone pressure you to give right away?",
+          "why": "The FTC says scammers rush people so they can’t stop to research. A real charity will still welcome your gift after you have checked it.",
+          "links": [{ "label": "FTC: Before giving to a charity", "url": "https://consumer.ftc.gov/articles/giving-charity" }]
+        },
+        {
+          "id": "payment",
+          "question": "Were you asked to pay only by cash, gift card, wire transfer, cryptocurrency or a payment app?",
+          "why": "The FTC says a charity that only accepts these is likely a scam, and that a credit card or check is the safest way to give.",
+          "links": [{ "label": "FTC: Before giving to a charity", "url": "https://consumer.ftc.gov/articles/giving-charity" }]
+        },
+        {
+          "id": "soundalike",
+          "question": "Did the name sound like a better-known charity, or were you thanked for a pledge you don’t remember making?",
+          "why": "The FTC says some scammers use names that sound like real charities, or claim you already pledged, so you feel you should give.",
+          "links": [{ "label": "FTC: Before giving to a charity", "url": "https://consumer.ftc.gov/articles/giving-charity" }]
+        },
+        {
+          "id": "vague",
+          "question": "Was the appeal emotional but vague about how the money would be used?",
+          "why": "The FTC advises caution when a moving story comes with few specifics about where the money goes.",
+          "links": [{ "label": "FTC: Before giving to a charity", "url": "https://consumer.ftc.gov/articles/giving-charity" }]
+        },
+        {
+          "id": "prize",
+          "question": "Were you promised a prize, or told a gift is tax-deductible when you couldn’t confirm it?",
+          "why": "The FTC says a promise that you will win something for giving is a scam. You can check deductibility yourself.",
+          "how": "Search the organization in Tax Exempt Organization Search.",
+          "links": [{ "ref": "IRS Tax Exempt Organization Search" }]
+        }
+      ]
+    }
+  ]
+}

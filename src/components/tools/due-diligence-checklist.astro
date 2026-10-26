@@ -1,0 +1,581 @@
+---
+// Due Diligence Checklist: about two dozen questions for checking one
+// organization, with answers saved per organization in this browser.
+// Items: src/data/due-diligence.json. Model and report: src/lib/client/diligence.ts.
+import data from '../../data/due-diligence.json';
+import ecosystem from '../../data/ecosystem.json';
+import { STATUSES } from '../../lib/client/diligence';
+import { url } from '../../lib/site';
+
+type RawLink = { ref?: string; label?: string; url?: string; path?: string };
+type Listed = { name: string; url: string; search?: string };
+const listed: Listed[] = [...ecosystem.instruments, ...ecosystem.registries, ...ecosystem.evaluators];
+
+function resolve(link: RawLink) {
+  if (link.ref) {
+    const found = listed.find((x) => x.name === link.ref);
+    if (!found) throw new Error(`due-diligence.json: "${link.ref}" is not in ecosystem.json`);
+    return { label: link.label ?? found.name, href: found.url, search: found.search, external: true };
+  }
+  if (link.path) return { label: link.label ?? link.path, href: url(link.path), search: undefined, external: false };
+  if (link.url) return { label: link.label ?? link.url, href: link.url, search: undefined, external: true };
+  throw new Error('due-diligence.json: every link needs a ref, a path or a url');
+}
+
+let number = 0;
+const groups = data.groups.map((g) => ({
+  ...g,
+  flag: (g as { flag?: boolean }).flag === true,
+  items: g.items.map((item) => ({
+    ...item,
+    how: (item as { how?: string }).how,
+    number: ++number,
+    links: ((item as { links?: RawLink[] }).links ?? []).map(resolve),
+  })),
+}));
+const checkCount = groups.filter((g) => !g.flag).reduce((n, g) => n + g.items.length, 0);
+const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.length, 0);
+---
+
+<section class="tool" aria-labelledby="dd-title">
+  <div class="tool-head">
+    <h2 id="dd-title">Check an organization</h2>
+    <span class="note">{checkCount} checks and {flagCount} red flags. Saved only in this browser.</span>
+  </div>
+
+  <div class="dd-orgbar">
+    <div class="field">
+      <label for="dd-org">Organization</label>
+      <select id="dd-org"></select>
+    </div>
+    <div class="field">
+      <label for="dd-name">Name</label>
+      <input type="text" id="dd-name" maxlength="160" autocomplete="off" placeholder="The organization you are checking" />
+    </div>
+    <div class="btn-row dd-orgactions">
+      <button class="btn btn-ghost btn-small" type="button" id="dd-new">New organization</button>
+      <button class="btn btn-ghost btn-small" type="button" id="dd-delete">Delete this checklist</button>
+    </div>
+  </div>
+  <p class="hint dd-privacy">
+    Links to ProPublica and WHOFUNDS include the organization’s name, so clicking one sends the name to that site. Nothing else
+    leaves your browser.
+  </p>
+  <div class="callout dd-storage" id="dd-storage" hidden>
+    <p>
+      <strong>This browser isn’t letting the page save.</strong> Your answers last only while this tab is open. Download the report
+      to keep them.
+    </p>
+  </div>
+
+  <nav class="dd-toc" aria-label="Checklist sections">
+    <ul>
+      {
+        groups.map((g) => (
+          <li>
+            <a class="chip" href={`#dd-g-${g.id}`}>
+              {g.name} <span class="dd-toc-count" data-group-count={g.id} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+
+  <form id="dd-form" novalidate>
+    {
+      groups.map((g) => (
+        <section class={g.flag ? 'dd-group dd-flags' : 'dd-group'} id={`dd-g-${g.id}`} aria-labelledby={`dd-gh-${g.id}`}>
+          <h3 id={`dd-gh-${g.id}`}>{g.name}</h3>
+          <p class="note dd-intro">{g.intro}</p>
+          {g.items.map((item) => (
+            <div class="dd-item" id={`dd-i-${item.id}`}>
+              <fieldset data-item={item.id}>
+                <legend>
+                  <span class="dd-num">{item.number}.</span> {item.question}
+                </legend>
+                <p class="dd-why">
+                  <strong>Why it matters.</strong> {item.why}
+                </p>
+                {(item.how || item.links.length > 0) && (
+                  <p class="dd-how">
+                    {item.how && (
+                      <>
+                        <strong>How to check.</strong> {item.how}{' '}
+                      </>
+                    )}
+                    {item.links.length > 0 && (
+                      <span class="dd-links">
+                        {item.links.map((l) => (
+                          <a
+                            href={l.href}
+                            data-base={l.href}
+                            data-search={l.search}
+                            target={l.external ? '_blank' : undefined}
+                            rel={l.external ? 'noopener noreferrer' : undefined}
+                          >
+                            {l.label}
+                            {l.external && <span class="visually-hidden"> (opens in a new tab)</span>}
+                          </a>
+                        ))}
+                      </span>
+                    )}
+                  </p>
+                )}
+                <div class="dd-scale">
+                  {STATUSES.map((s) => (
+                    <label class="dd-opt">
+                      <input type="radio" name={`dd-${item.id}`} value={s.id} />
+                      <span>{s.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <details class="dd-note">
+                <summary>
+                  Note<span class="dd-note-mark" data-note-mark={item.id} />
+                </summary>
+                <label class="visually-hidden" for={`dd-n-${item.id}`}>
+                  Note on question {item.number}
+                </label>
+                <textarea id={`dd-n-${item.id}`} data-note={item.id} rows="2" maxlength="2000" />
+              </details>
+            </div>
+          ))}
+        </section>
+      ))
+    }
+  </form>
+
+  <div class="result">
+    <h3>Summary</h3>
+    <p class="dd-progress" id="dd-progress" role="status" aria-live="polite"></p>
+    <div class="kpis dd-kpis">
+      <div class="kpi">
+        <div class="k-label">Yes</div>
+        <div class="k-value" id="dd-k-yes">0</div>
+        <div class="k-note">of {checkCount} checks</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">No</div>
+        <div class="k-value" id="dd-k-no">0</div>
+        <div class="k-note">information, not a verdict</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Unknown</div>
+        <div class="k-value" id="dd-k-unknown">0</div>
+        <div class="k-note">questions to ask</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Not applicable</div>
+        <div class="k-value" id="dd-k-na">0</div>
+        <div class="k-note">left out on purpose</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Red flags seen</div>
+        <div class="k-value" id="dd-k-flags">0</div>
+        <div class="k-note">of {flagCount} warning signs</div>
+      </div>
+    </div>
+    <p class="note">These are counts, not a score. Unknowns are never counted against an organization.</p>
+    <div class="tool-grid dd-lists">
+      <div>
+        <h4>Questions to ask</h4>
+        <ol id="dd-asks" class="dd-asks"></ol>
+        <p class="empty" id="dd-asks-empty">Anything you mark unknown appears here as a question to ask.</p>
+      </div>
+      <div>
+        <h4>Red flags seen</h4>
+        <ul id="dd-seen" class="dd-asks"></ul>
+        <p class="empty" id="dd-seen-empty">No red flags marked.</p>
+        <p class="note" id="dd-seen-note" hidden>A red flag doesn’t prove a scam. It is a reason to stop and check before giving.</p>
+      </div>
+    </div>
+    <div class="btn-row dd-actions">
+      <button class="btn" type="button" id="dd-export">Download report (Markdown)</button>
+      <button class="btn btn-ghost" type="button" id="dd-copy">Copy report</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dd-orgbar {
+    display: grid;
+    gap: 0 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    align-items: end;
+  }
+  .dd-orgactions {
+    margin-bottom: 1rem;
+  }
+  .dd-privacy {
+    margin: 0 0 1rem;
+  }
+  .dd-storage {
+    margin-bottom: 1rem;
+  }
+  .dd-toc ul {
+    list-style: none;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .dd-toc-count {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-3);
+  }
+  .dd-group {
+    margin-top: 2rem;
+    scroll-margin-top: calc(var(--header-h) + 16px);
+  }
+  .dd-group h3 {
+    margin-bottom: 0.2rem;
+  }
+  .dd-intro {
+    margin-bottom: 0.5rem;
+  }
+  .dd-flags .dd-intro {
+    color: var(--ink-2);
+  }
+  .dd-item {
+    border-top: 1px solid var(--rule-2);
+    padding: 1rem 0 0.6rem;
+    scroll-margin-top: calc(var(--header-h) + 16px);
+  }
+  .dd-item fieldset {
+    margin: 0;
+  }
+  .dd-item legend {
+    font-family: var(--font-serif);
+    font-size: 1.04rem;
+    font-weight: 560;
+    line-height: 1.4;
+    color: var(--ink);
+    padding: 0;
+    margin-bottom: 0.4rem;
+  }
+  .dd-num {
+    font-family: var(--font-display);
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .dd-why,
+  .dd-how {
+    font-size: 0.88rem;
+    color: var(--ink-2);
+    margin: 0 0 0.45rem;
+  }
+  .dd-links a {
+    margin-right: 0.75rem;
+    white-space: normal;
+  }
+  .dd-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.6rem;
+  }
+  .dd-opt {
+    position: relative;
+    cursor: pointer;
+  }
+  .dd-opt input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+  }
+  .dd-opt span {
+    display: inline-block;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--bg);
+  }
+  .dd-opt:hover span {
+    border-color: var(--ink-3);
+  }
+  .dd-opt input:checked + span {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+  .dd-opt input:checked + span::before {
+    content: '✓ ';
+  }
+  .dd-opt input:focus-visible + span {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .dd-note {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .dd-note summary {
+    cursor: pointer;
+    color: var(--ink-3);
+    font-weight: 600;
+    width: fit-content;
+  }
+  .dd-note textarea {
+    margin-top: 0.4rem;
+    min-height: 64px;
+  }
+  .dd-progress {
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .dd-kpis {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr));
+  }
+  .dd-lists h4 {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    margin: 0 0 0.5rem;
+  }
+  .dd-asks {
+    margin: 0 0 0.75rem;
+    padding-left: 1.3em;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .dd-asks:empty {
+    display: none;
+  }
+  .dd-actions {
+    margin-top: 1.25rem;
+  }
+</style>
+
+<script>
+  import data from '../../data/due-diligence.json';
+  import { $, $$, clear, h } from '../../lib/client/dom';
+  import {
+    MAX_ORGS,
+    cleanState,
+    countStatuses,
+    displayName,
+    newOrg,
+    questionsToAsk,
+    redFlagsSeen,
+    toMarkdown,
+    type DiligenceState,
+    type Group,
+    type Org,
+    type Status,
+  } from '../../lib/client/diligence';
+  import { copy, download, flash } from '../../lib/client/files';
+  import { fileSlug } from '../../lib/client/markdown';
+  import { load, readHash, save, writeHash } from '../../lib/client/store';
+
+  const KEY = 'due-diligence';
+  const groups = data.groups as Group[];
+  const itemIds = groups.flatMap((g) => g.items.map((i) => i.id));
+
+  const orgSelect = $<HTMLSelectElement>('#dd-org');
+  const nameInput = $<HTMLInputElement>('#dd-name');
+  const storageNote = $('#dd-storage');
+  const progress = $('#dd-progress');
+  const searchLinks = $$<HTMLAnchorElement>('#dd-form a[data-search]');
+  const radios = $$<HTMLInputElement>('#dd-form input[type="radio"]');
+  const notes = $$<HTMLTextAreaElement>('#dd-form textarea[data-note]');
+
+  let state: DiligenceState = cleanState(load<unknown>(KEY, null), itemIds);
+  if (!state.orgs.length) {
+    const first = newOrg();
+    state = { v: 1, current: first.id, orgs: [first] };
+  }
+
+  const current = (): Org => state.orgs.find((o) => o.id === state.current) ?? state.orgs[0];
+
+  function persist() {
+    const ok = save(KEY, state);
+    storageNote.hidden = ok;
+  }
+
+  function touch(org: Org) {
+    org.updatedAt = new Date().toISOString();
+    persist();
+  }
+
+  function renderOrgOptions() {
+    clear(orgSelect);
+    for (const org of state.orgs) {
+      orgSelect.append(h('option', { value: org.id, selected: org.id === state.current }, displayName(org)));
+    }
+  }
+
+  function renderLinks(org: Org) {
+    const name = org.name.trim();
+    for (const a of searchLinks) {
+      a.href = name ? a.dataset.search + encodeURIComponent(name) : (a.dataset.base ?? a.href);
+    }
+  }
+
+  function renderForm(org: Org) {
+    nameInput.value = org.name;
+    for (const r of radios) r.checked = org.answers[r.name.slice(3)] === r.value;
+    for (const t of notes) {
+      const id = t.dataset.note!;
+      t.value = org.notes[id] ?? '';
+      markNote(id, Boolean(org.notes[id]));
+      const details = t.closest('details');
+      if (details) details.open = Boolean(org.notes[id]);
+    }
+    renderLinks(org);
+  }
+
+  function markNote(id: string, has: boolean) {
+    const mark = document.querySelector<HTMLElement>(`[data-note-mark="${id}"]`);
+    if (mark) mark.textContent = has ? ' (written)' : '';
+  }
+
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+  function renderSummary(org: Org) {
+    const { checks, flags, byGroup } = countStatuses(org, groups);
+    $('#dd-k-yes').textContent = String(checks.yes);
+    $('#dd-k-no').textContent = String(checks.no);
+    $('#dd-k-unknown').textContent = String(checks.unknown + flags.unknown);
+    $('#dd-k-na').textContent = String(checks.na);
+    $('#dd-k-flags').textContent = String(flags.yes);
+    for (const g of groups) {
+      const c = byGroup[g.id];
+      const el = document.querySelector<HTMLElement>(`[data-group-count="${g.id}"]`);
+      if (el) el.textContent = `${c.total - c.open}/${c.total}`;
+    }
+    const answered = checks.total - checks.open;
+    progress.textContent =
+      `${displayName(org)}: ${answered} of ${checks.total} checks answered` +
+      ` (${checks.yes} yes, ${checks.no} no, ${checks.unknown} unknown, ${checks.na} not applicable).` +
+      ` ${plural(flags.yes, 'red flag', 'red flags')} seen` +
+      (flags.unknown ? `, ${flags.unknown} unsure.` : '.');
+
+    const asks = questionsToAsk(org, groups);
+    const asksEl = $('#dd-asks');
+    clear(asksEl);
+    for (const a of asks) {
+      asksEl.append(h('li', {}, h('a', { href: `#dd-i-${a.item.id}` }, a.item.question), a.item.how ? h('span', { class: 'note' }, ` ${a.item.how}`) : null));
+    }
+    $('#dd-asks-empty').hidden = asks.length > 0;
+
+    const seen = redFlagsSeen(org, groups);
+    const seenEl = $('#dd-seen');
+    clear(seenEl);
+    for (const s of seen) seenEl.append(h('li', {}, h('a', { href: `#dd-i-${s.item.id}` }, s.item.question)));
+    $('#dd-seen-empty').hidden = seen.length > 0;
+    $('#dd-seen-note').hidden = seen.length === 0;
+  }
+
+  function renderAll() {
+    const org = current();
+    renderOrgOptions();
+    renderForm(org);
+    renderSummary(org);
+  }
+
+  // A name handed over from the Charity Lookup, as #org=<name>.
+  const incoming = (readHash('org') ?? '').trim().slice(0, 160);
+  if (incoming) {
+    const existing = state.orgs.find((o) => o.name.trim().toLowerCase() === incoming.toLowerCase());
+    const blank = current();
+    if (existing) state.current = existing.id;
+    else if (!blank.name.trim() && !Object.keys(blank.answers).length && !Object.keys(blank.notes).length) blank.name = incoming;
+    else if (state.orgs.length < MAX_ORGS) {
+      const org = newOrg(incoming);
+      state.orgs.push(org);
+      state.current = org.id;
+    }
+    writeHash('org', undefined);
+  }
+  persist();
+  renderAll();
+
+  orgSelect.addEventListener('change', () => {
+    state.current = orgSelect.value;
+    persist();
+    renderForm(current());
+    renderSummary(current());
+  });
+
+  // The summary is a live region, so wait for a pause in typing before updating it.
+  let nameTimer: number | undefined;
+  nameInput.addEventListener('input', () => {
+    const org = current();
+    org.name = nameInput.value.slice(0, 160);
+    const option = orgSelect.querySelector<HTMLOptionElement>(`option[value="${CSS.escape(org.id)}"]`);
+    if (option) option.textContent = displayName(org);
+    renderLinks(org);
+    touch(org);
+    window.clearTimeout(nameTimer);
+    nameTimer = window.setTimeout(() => renderSummary(current()), 700);
+  });
+
+  $('#dd-new').addEventListener('click', (e) => {
+    if (state.orgs.length >= MAX_ORGS) {
+      flash(e.currentTarget as HTMLElement, `Limit of ${MAX_ORGS} reached`);
+      return;
+    }
+    const org = newOrg();
+    state.orgs.push(org);
+    state.current = org.id;
+    persist();
+    renderAll();
+    nameInput.focus();
+  });
+
+  $('#dd-delete').addEventListener('click', () => {
+    const org = current();
+    if (!window.confirm(`Delete the checklist for ${displayName(org)}? This can’t be undone.`)) return;
+    state.orgs = state.orgs.filter((o) => o.id !== org.id);
+    if (!state.orgs.length) state.orgs.push(newOrg());
+    state.current = state.orgs[0].id;
+    persist();
+    renderAll();
+    orgSelect.focus();
+  });
+
+  $('#dd-form').addEventListener('change', (e) => {
+    const target = e.target as HTMLInputElement;
+    if (target.type !== 'radio' || !target.checked) return;
+    const org = current();
+    org.answers[target.name.slice(3)] = target.value as Status;
+    touch(org);
+    renderSummary(org);
+  });
+
+  $('#dd-form').addEventListener('input', (e) => {
+    const target = e.target as HTMLTextAreaElement;
+    const id = target.dataset?.note;
+    if (!id) return;
+    const org = current();
+    const value = target.value.slice(0, 2000);
+    if (value.trim()) org.notes[id] = value;
+    else delete org.notes[id];
+    markNote(id, Boolean(value.trim()));
+    touch(org);
+  });
+
+  // Enter in the name field shouldn't submit anything.
+  $('#dd-form').addEventListener('submit', (e) => e.preventDefault());
+
+  const report = () => toMarkdown(current(), groups, { toolUrl: location.origin + location.pathname, date: new Date() });
+
+  $('#dd-export').addEventListener('click', () => {
+    const org = current();
+    download(`charitology-due-diligence-${fileSlug(org.name, 'organization')}.md`, report(), 'text/markdown;charset=utf-8');
+  });
+
+  $('#dd-copy').addEventListener('click', async (e) => {
+    const ok = await copy(report());
+    flash(e.currentTarget as HTMLElement, ok ? 'Report copied' : 'Copy failed');
+  });
+</script>

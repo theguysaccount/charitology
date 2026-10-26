@@ -1,0 +1,376 @@
+---
+// Charity Lookup: searches the Charitology Charity Index by name in the browser,
+// then hands off to the open registries only when the viewer clicks one.
+// The browser extension opens this page as /tools/charity-lookup/?q=<name>.
+import { getCollection } from 'astro:content';
+import causesData from '../../data/causes.json';
+import checklist from '../../data/checklist.json';
+import ecosystem from '../../data/ecosystem.json';
+import { url } from '../../lib/site';
+
+const causeName = new Map(causesData.causes.map((c) => [c.id, c.name]));
+const index = (await getCollection('charities'))
+  .map((c) => ({
+    id: c.id,
+    name: c.data.name,
+    website: c.data.website,
+    summary: c.data.summary,
+    depth: c.data.depth,
+    causes: c.data.causes.map((id) => causeName.get(id) ?? id),
+    note: c.data.note ?? '',
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+// Escape "<" so no entry can close the data block early.
+const indexJson = JSON.stringify(index).replace(/</g, '\\u003c');
+
+type Listed = { name: string; url: string; search?: string };
+const named = (list: Listed[], name: string): Listed => {
+  const found = list.find((x) => x.name === name);
+  if (!found) throw new Error(`charity-lookup: "${name}" is missing from src/data/ecosystem.json`);
+  return found;
+};
+const registries = [
+  {
+    ...named(ecosystem.registries, 'ProPublica Nonprofit Explorer'),
+    label: 'ProPublica Nonprofit Explorer',
+    what: 'Its tax filings (Form 990) and financial summaries.',
+  },
+  {
+    ...named(ecosystem.registries, 'WHOFUNDS search'),
+    label: 'WHOFUNDS',
+    what: 'Which private foundations reported grants to it.',
+  },
+  {
+    ...named(ecosystem.instruments, 'Charity Impact Media'),
+    search: undefined,
+    label: 'Charity Impact Media',
+    what: 'Where the money goes, for charities with $10 million or more in revenue.',
+  },
+  {
+    ...named(ecosystem.instruments, 'Systemic Altruism'),
+    search: undefined,
+    label: 'Systemic Altruism tracker',
+    what: 'Charities working on structural change, and a searchable IRS registry.',
+  },
+  {
+    ...named(ecosystem.registries, 'IRS Tax Exempt Organization Search'),
+    label: 'IRS Tax Exempt Organization Search',
+    what: 'Whether it can receive tax-deductible gifts, and whether its exemption was revoked.',
+  },
+];
+const count = index.length;
+---
+
+<section class="tool" aria-labelledby="cl-title">
+  <div class="tool-head">
+    <h2 id="cl-title">Look up a charity</h2>
+    <span class="note">The search runs in your browser.</span>
+  </div>
+
+  <form id="cl-form" class="cl-form" role="search" aria-label="Search the Charity Index" novalidate>
+    <label for="cl-q" class="cl-label">Charity name</label>
+    <div class="cl-row">
+      <input
+        type="search"
+        id="cl-q"
+        name="q"
+        maxlength="160"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        enterkeyhint="search"
+        aria-describedby="cl-q-hint"
+        placeholder="For example, a food bank or a foundation"
+      />
+      <button class="btn" type="submit">Search</button>
+    </div>
+    <p class="hint" id="cl-q-hint">Searches the Charitology Charity Index by name. The registry buttons below search public records, but only when you click one.</p>
+  </form>
+
+  <div class="cl-index">
+    <h3>In the Charity Index</h3>
+    <p id="cl-status" class="cl-status" role="status" aria-live="polite">
+      {
+        count
+          ? `Type a name to search the ${count} ${count === 1 ? 'organization' : 'organizations'} in the Charity Index.`
+          : 'The Charity Index has no entries yet, so there is nothing to match against here. The registries below cover far more organizations.'
+      }
+    </p>
+    <ul id="cl-matches" class="cl-matches" aria-label="Matches in the Charity Index"></ul>
+    <p class="note">
+      Each entry carries a <strong>depth hypothesis</strong>: Charitology’s working description of where on the
+      <a href={url('/method/#depth')}>chain from symptom to source</a> the charity’s work acts. It is not a rating, and every
+      level of depth is needed.
+    </p>
+  </div>
+
+  <div class="result">
+    <h3>Look it up in the open registries</h3>
+    <ul class="cl-regs">
+      {
+        registries.map((r) => (
+          <li class="cl-reg">
+            <a
+              class="btn btn-ghost cl-reg-btn"
+              href={r.url}
+              data-registry
+              data-base={r.url}
+              data-search={r.search}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {r.label}
+              <span class="visually-hidden"> (opens in a new tab)</span>
+            </a>
+            <span class="hint">
+              {r.what} <span class="cl-sends">{r.search ? 'Opens with the name you typed.' : 'Opens its home page. Search there.'}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-small" type="button" id="cl-copy" disabled>Copy the name</button>
+      <a class="btn btn-ghost btn-small" id="cl-dd" href={url('/tools/due-diligence-checklist/')}>Check it in depth</a>
+    </div>
+    <div class="callout cl-privacy">
+      <p>
+        <strong>Privacy.</strong> The name you type stays in your browser until you click a registry button. ProPublica and
+        WHOFUNDS open with the name in their address, so clicking one sends the name to that site. The other three open without
+        it. If this page was opened with a name in its address, as the browser extension does, that name was part of the request
+        for this page.
+      </p>
+    </div>
+  </div>
+
+  <div class="result">
+    <h3>Before you give</h3>
+    <p class="note">Ten questions from the Giver’s Checklist. None has one right answer for everyone.</p>
+    <ol class="cl-before">
+      {checklist.map((c) => <li>{c.question}</li>)}
+    </ol>
+    <a class="btn btn-ghost btn-small" href={url('/method/#checklist')}>Read the Giver’s Checklist</a>
+  </div>
+
+  <script type="application/json" id="cl-index" set:html={indexJson} />
+</section>
+
+<style>
+  .cl-label {
+    display: block;
+    font-weight: 650;
+    font-size: 0.88rem;
+    margin-bottom: 0.35rem;
+  }
+  .cl-row {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .cl-row input {
+    flex: 1;
+    min-width: 0;
+  }
+  .cl-row .btn {
+    flex: none;
+  }
+  .cl-form .hint {
+    margin: 0.4rem 0 0;
+  }
+  .cl-index {
+    margin-top: 1.5rem;
+  }
+  .cl-status {
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .cl-matches {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .cl-matches:empty {
+    display: none;
+  }
+  :global(.cl-match h4) {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  :global(.cl-match .cl-depth) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+    align-items: center;
+  }
+  :global(.cl-match .note) {
+    margin: 0;
+  }
+  .cl-regs {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .cl-reg {
+    display: grid;
+    gap: 0.3rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cl-reg-btn {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+    line-height: 1.25;
+  }
+  @media (min-width: 680px) {
+    .cl-reg {
+      grid-template-columns: 19rem minmax(0, 1fr);
+      gap: 1rem;
+      align-items: center;
+    }
+  }
+  .cl-sends {
+    color: var(--ink-2);
+  }
+  .cl-privacy {
+    margin-top: 1rem;
+  }
+  .cl-before {
+    margin: 0 0 1rem;
+    padding-left: 1.4em;
+    columns: 2 18rem;
+    column-gap: 2rem;
+  }
+  .cl-before li {
+    break-inside: avoid;
+    margin-bottom: 0.35rem;
+  }
+</style>
+
+<script>
+  import { $, $$, clear, h, readJson } from '../../lib/client/dom';
+  import { copy, flash } from '../../lib/client/files';
+  import { searchByName } from '../../lib/client/match';
+  import { readHash } from '../../lib/client/store';
+  import { DEPTH } from '../../lib/labels';
+  import { issueUrl } from '../../lib/site';
+
+  interface Entry {
+    id: string;
+    name: string;
+    website: string;
+    summary: string;
+    depth: number;
+    causes: string[];
+    note: string;
+  }
+
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const link = (path: string) => base + path;
+
+  const index = readJson<Entry[]>('cl-index');
+  const form = $<HTMLFormElement>('#cl-form');
+  const input = $<HTMLInputElement>('#cl-q');
+  const status = $('#cl-status');
+  const list = $('#cl-matches');
+  const registryLinks = $$<HTMLAnchorElement>('a[data-registry]');
+  const copyButton = $<HTMLButtonElement>('#cl-copy');
+  const diligenceLink = $<HTMLAnchorElement>('#cl-dd');
+  const pageUrl = location.origin + location.pathname;
+
+  function depthBadge(level: number) {
+    const d = DEPTH.find((x) => x.level === level);
+    return h(
+      'span',
+      { class: 'depth', title: d ? `Depth ${d.level} of 4: ${d.verb}` : undefined },
+      h(
+        'span',
+        { class: 'cells', 'aria-hidden': 'true' },
+        [0, 1, 2, 3, 4].map((i) => h('span', { class: i <= level ? `cell on d${i}` : 'cell' })),
+      ),
+      d ? `Depth hypothesis: ${d.name} (${d.level} of 4)` : 'Depth hypothesis: not set',
+    );
+  }
+
+  function card(e: Entry) {
+    return h(
+      'li',
+      { class: 'card cl-match' },
+      h('h4', {}, h('a', { href: link(`/record/charity-index/#${e.id}`) }, e.name)),
+      h('p', {}, e.summary),
+      h(
+        'div',
+        { class: 'cl-depth' },
+        depthBadge(e.depth),
+        h('a', { href: issueUrl('challenge', `Depth hypothesis: ${e.name}`, pageUrl), rel: 'noopener', class: 'note' }, 'Challenge this hypothesis'),
+      ),
+      e.causes.length ? h('div', { class: 'chips', 'aria-label': 'Causes' }, e.causes.map((c) => h('span', { class: 'chip' }, c))) : null,
+      e.note ? h('p', { class: 'note' }, e.note) : null,
+      h(
+        'p',
+        { class: 'note' },
+        h('a', { href: e.website, target: '_blank', rel: 'noopener noreferrer' }, `${e.name} website`, h('span', { class: 'visually-hidden' }, ' (opens in a new tab)')),
+      ),
+    );
+  }
+
+  // Only touch the live region when the message changes, so screen readers don't repeat it.
+  function say(text: string) {
+    if (status.textContent?.trim() !== text) status.textContent = text;
+  }
+
+  function update(raw: string) {
+    const q = raw.trim();
+    for (const a of registryLinks) {
+      const search = a.dataset.search;
+      a.href = q && search ? search + encodeURIComponent(q) : (a.dataset.base ?? a.href);
+    }
+    diligenceLink.href = link('/tools/due-diligence-checklist/') + (q ? `#org=${encodeURIComponent(q)}` : '');
+    copyButton.disabled = !q;
+
+    clear(list);
+    const total = index.length;
+    const noun = total === 1 ? 'organization' : 'organizations';
+    if (!total) {
+      say(
+        q
+          ? `The Charity Index has no entries yet, so there is nothing here to match “${q}” against. The registries below cover far more organizations.`
+          : 'The Charity Index has no entries yet, so there is nothing to match against here. The registries below cover far more organizations.',
+      );
+      return;
+    }
+    if (q.length < 2) {
+      say(`Type a name to search the ${total} ${noun} in the Charity Index.`);
+      return;
+    }
+    const matches = searchByName(q, index, 10);
+    if (!matches.length) {
+      say(`No match for “${q}” among the ${total} ${noun} in the Charity Index. The index is small and growing, so this says nothing about the charity. Try the registries below.`);
+      return;
+    }
+    say(`${matches.length} ${matches.length === 1 ? 'match' : 'matches'} for “${q}” in the Charity Index.`);
+    for (const m of matches) list.append(card(m.item));
+  }
+
+  let timer: number | undefined;
+  input.addEventListener('input', () => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => update(input.value), 150);
+  });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    window.clearTimeout(timer);
+    update(input.value);
+  });
+
+  copyButton.addEventListener('click', async () => {
+    const ok = await copy(input.value.trim());
+    flash(copyButton, ok ? 'Name copied' : 'Copy failed');
+  });
+
+  const incoming = (new URLSearchParams(location.search).get('q') ?? readHash('q') ?? '').trim().slice(0, 160);
+  if (incoming) input.value = incoming;
+  update(input.value);
+</script>
