@@ -1,0 +1,202 @@
+---
+// Portfolio Builder: split a budget across causes under moral uncertainty,
+// two ways, and show how much the methods agree. Math in src/lib/compass.ts.
+import frameworksData from '../../data/frameworks.json';
+import { url } from '../../lib/site';
+const frameworks = frameworksData.frameworks;
+---
+
+<section class="tool" aria-labelledby="pb-title">
+  <div class="tool-head">
+    <h2 id="pb-title">Build a portfolio</h2>
+    <span class="note" id="pb-loaded"></span>
+  </div>
+
+  <div class="tool-grid">
+    <div>
+      <h3>1. How sure are you of each framework?</h3>
+      <p class="note">Your credence: how likely you think each way of judging good is to be right, or how much you want it to count.</p>
+      <div class="pb-frames">
+        {
+          frameworks.map((f) => (
+            <div class="field pb-frame">
+              <label for={`pb-${f.id}`}>
+                {f.name} <output id={`pb-${f.id}-out`} class="pb-out" />
+              </label>
+              <span class="hint">{f.question}</span>
+              <input type="range" id={`pb-${f.id}`} data-framework={f.id} min="0" max="100" step="5" value="50" />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <div>
+      <h3>2. Your budget</h3>
+      <div class="field">
+        <label for="pb-budget">Amount to give</label>
+        <input type="number" id="pb-budget" min="0" step="10" value="1000" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <label for="pb-tilt">Relief or sources?</label>
+        <input type="range" id="pb-tilt" min="-100" max="100" step="10" value="0" />
+        <div class="range-labels"><span>Lean toward relief</span><span>Lean toward sources</span></div>
+        <span class="hint">Shifts money toward causes whose work sits deeper on the depth scale, or the other way.</span>
+      </div>
+      <div class="kpis pb-kpis">
+        <div class="kpi">
+          <div class="k-label">Methods agree on</div>
+          <div class="k-value" id="pb-overlap">–</div>
+          <div class="k-note">of the money</div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">Source lean</div>
+          <div class="k-value" id="pb-lean">–</div>
+          <div class="k-note">0 = all relief, 100 = all source</div>
+        </div>
+      </div>
+      <p class="note" id="pb-verdict"></p>
+    </div>
+  </div>
+
+  <div class="result">
+    <div class="tool-grid">
+      <div>
+        <h3>Each lens spends its share</h3>
+        <p class="note">Every framework gets a slice of the budget equal to your credence and spends it on its own priorities.</p>
+        <div id="pb-shares"></div>
+      </div>
+      <div>
+        <h3>Best on average</h3>
+        <p class="note">Scores each cause by your credence-weighted priorities, then concentrates on the top five.</p>
+        <div id="pb-best"></div>
+      </div>
+    </div>
+    <div class="btn-row pb-actions">
+      <a class="btn" href={url('/tools/one-click-split/')} id="pb-split">Use in One-Click Split</a>
+      <button class="btn btn-ghost" type="button" id="pb-csv">Download CSV</button>
+      <button class="btn btn-ghost" type="button" id="pb-share">Copy share link</button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pb-frames {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .pb-frame label {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .pb-out {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+  .pb-kpis {
+    margin-top: 0.5rem;
+  }
+  .pb-actions {
+    margin-top: 1.5rem;
+  }
+</style>
+
+<script>
+  import { CAUSES, FRAMEWORKS, allocateBest, allocateShares, normalize, overlap, sourceLean, tiltToSources } from '../../lib/compass';
+  import type { Allocation, Weights } from '../../lib/compass';
+  import { $, $$ } from '../../lib/client/dom';
+  import { renderBars } from '../../lib/client/bars';
+  import { copy, download, flash, toCsv } from '../../lib/client/files';
+  import { money, pct } from '../../lib/client/format';
+  import { decodeState, encodeState, load, readHash, save, writeHash } from '../../lib/client/store';
+
+  const sliders = $$<HTMLInputElement>('input[data-framework]');
+  const budgetEl = $<HTMLInputElement>('#pb-budget');
+  const tiltEl = $<HTMLInputElement>('#pb-tilt');
+  type State = { w: number[]; b: number; t: number };
+
+  const causeName = (id: string) => CAUSES.find((c) => c.id === id)?.name ?? id;
+
+  function state(): State {
+    return { w: sliders.map((s) => Number(s.value)), b: Number(budgetEl.value) || 0, t: Number(tiltEl.value) || 0 };
+  }
+
+  function apply(s: State) {
+    sliders.forEach((el, i) => (el.value = String(s.w[i] ?? 50)));
+    budgetEl.value = String(s.b ?? 1000);
+    tiltEl.value = String(s.t ?? 0);
+  }
+
+  function rows(a: Allocation, budget: number) {
+    return CAUSES.filter((c) => a[c.id] >= 0.005)
+      .sort((x, y) => a[y.id] - a[x.id])
+      .map((c) => ({
+        label: c.name,
+        value: a[c.id],
+        display: `${pct(a[c.id])} · ${money(a[c.id] * budget)}`,
+        note: c.summary,
+      }));
+  }
+
+  let current: { shares: Allocation; best: Allocation; budget: number } | undefined;
+
+  function render() {
+    const s = state();
+    const weights: Weights = Object.fromEntries(FRAMEWORKS.map((f, i) => [f.id, s.w[i]]));
+    const w = normalize(weights);
+    sliders.forEach((el) => {
+      const out = document.getElementById(`${el.id}-out`);
+      if (out) out.textContent = `${Math.round(w[el.dataset.framework!] * 100)}%`;
+    });
+    const shares = tiltToSources(allocateShares(weights), s.t / 100);
+    const best = tiltToSources(allocateBest(weights), s.t / 100);
+    const max = Math.max(...Object.values(shares), ...Object.values(best));
+    renderBars($('#pb-shares'), rows(shares, s.b), { max, ariaLabel: 'Allocation: each lens spends its share' });
+    renderBars($('#pb-best'), rows(best, s.b), { max, ariaLabel: 'Allocation: best on average' });
+    const agree = overlap(shares, best);
+    $('#pb-overlap').textContent = pct(agree);
+    $('#pb-lean').textContent = String(Math.round(((sourceLean(shares) + sourceLean(best)) / 2) * 100));
+    $('#pb-verdict').textContent =
+      agree < 0.6
+        ? 'The two methods disagree a lot for your credences. Which method is right is an open question: Open Problem 16, Moral Parliament in Practice.'
+        : 'The two methods mostly agree for your credences, so the answer doesn’t depend much on the method.';
+    current = { shares, best, budget: s.b };
+    save('portfolio', { allocation: shares, alternative: best, budget: s.b, method: 'shares', savedAt: new Date().toISOString() });
+    writeHash('p', encodeState(s));
+  }
+
+  const shared = readHash('p');
+  const fromLink = shared ? decodeState<State>(shared) : undefined;
+  const fromCompass = load<{ weights?: Weights } | null>('compass', null);
+  if (fromLink?.w?.length === FRAMEWORKS.length) {
+    apply(fromLink);
+    $('#pb-loaded').textContent = 'Loaded from a share link.';
+  } else if (fromCompass?.weights) {
+    const w = normalize(fromCompass.weights);
+    const top = Math.max(...Object.values(w));
+    sliders.forEach((el) => (el.value = String(Math.round((w[el.dataset.framework!] / top) * 100))));
+    $('#pb-loaded').textContent = 'Started from your Values Compass answers.';
+  }
+
+  [...sliders, budgetEl, tiltEl].forEach((el) => el.addEventListener('input', render));
+  render();
+
+  $('#pb-csv').addEventListener('click', () => {
+    if (!current) return;
+    const { shares, best, budget } = current;
+    const data = CAUSES.map((c) => ({
+      cause: causeName(c.id),
+      each_lens_share: shares[c.id].toFixed(4),
+      each_lens_amount: (shares[c.id] * budget).toFixed(2),
+      best_on_average_share: best[c.id].toFixed(4),
+      best_on_average_amount: (best[c.id] * budget).toFixed(2),
+    }));
+    download('charitology-portfolio.csv', toCsv(data), 'text/csv;charset=utf-8');
+  });
+
+  $('#pb-share').addEventListener('click', async (e) => {
+    const ok = await copy(location.href);
+    flash(e.currentTarget as HTMLElement, ok ? 'Link copied' : 'Copy failed');
+  });
+</script>

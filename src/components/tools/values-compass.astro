@@ -1,0 +1,307 @@
+---
+// Values Compass: five aiming questions and eight moral statements, scored
+// against src/data/causes.json and src/data/frameworks.json via src/lib/compass.ts.
+import compass from '../../data/compass.json';
+import { url } from '../../lib/site';
+---
+
+<section class="tool" aria-labelledby="vc-title">
+  <div class="tool-head">
+    <h2 id="vc-title">Find your compass</h2>
+    <span class="note">About two minutes. Nothing you answer leaves your browser.</span>
+  </div>
+
+  <form id="vc-form" novalidate>
+    <h3>1. Where would you aim your giving?</h3>
+    <div class="tool-grid">
+      {
+        compass.dimensions.map((d) => (
+          <div class="field">
+            <label for={`vc-${d.id}`}>{d.prompt}</label>
+            <input type="range" id={`vc-${d.id}`} name={d.id} min="0" max="100" step="5" value="50" />
+            <div class="range-labels">
+              <span>{d.left}</span>
+              <span>{d.right}</span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <h3 class="vc-gap">2. How much does each statement sound like you?</h3>
+    <div class="vc-statements">
+      {
+        compass.statements.map((s) => (
+          <fieldset class="vc-statement">
+            <legend>{s.text}</legend>
+            <div class="vc-scale">
+              {compass.scale.map((label, v) => (
+                <label class="vc-opt">
+                  <input type="radio" name={`s-${s.framework}`} value={v} checked={v === 2} />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ))
+      }
+    </div>
+
+    <div class="btn-row vc-actions">
+      <button class="btn" type="submit">See my compass</button>
+      <button class="btn btn-ghost" type="reset">Start over</button>
+    </div>
+  </form>
+
+  <div id="vc-result" class="result" hidden aria-live="polite">
+    <div class="tool-grid">
+      <div>
+        <h3>Your lenses</h3>
+        <p class="note">How much of your thinking each moral framework carries, from your answers in part 2.</p>
+        <div id="vc-lenses"></div>
+      </div>
+      <div>
+        <h3>Where you aim</h3>
+        <p class="note">Your answers in part 1.</p>
+        <div id="vc-dims" class="vc-dims"></div>
+      </div>
+    </div>
+
+    <h3 class="vc-gap">Causes that fit you</h3>
+    <div id="vc-matches" class="grid"></div>
+
+    <h3 class="vc-gap">What your other lenses see</h3>
+    <p class="note">
+      The frameworks you weighted least would point you here. Charitology calls missing these the
+      <a href={url('/diagnosis/single-lens/')}>Single Lens</a>.
+    </p>
+    <div id="vc-blind" class="grid"></div>
+
+    <div class="btn-row vc-gap">
+      <a class="btn" href={url('/tools/portfolio-builder/')} id="vc-portfolio">Build a portfolio from this</a>
+      <button class="btn btn-ghost" type="button" id="vc-share">Copy share link</button>
+    </div>
+    <p class="note vc-gap">
+      Cause positions and framework priorities are editorial judgments, published in
+      <code>src/data/causes.json</code> and <code>src/data/frameworks.json</code>. Challenge any of them on GitHub.
+    </p>
+  </div>
+</section>
+
+<style>
+  .vc-gap {
+    margin-top: 1.75rem;
+  }
+  .vc-statements {
+    display: grid;
+    gap: 0.9rem;
+  }
+  .vc-statement legend {
+    font-family: var(--font-serif);
+    font-size: 1.02rem;
+    font-weight: 500;
+    margin-bottom: 0.45rem;
+  }
+  .vc-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .vc-opt {
+    position: relative;
+    cursor: pointer;
+  }
+  .vc-opt input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+  }
+  .vc-opt span {
+    display: inline-block;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--bg);
+  }
+  .vc-opt input:checked + span {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+  .vc-opt input:focus-visible + span {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .vc-actions {
+    margin-top: 1.5rem;
+  }
+  .vc-dims {
+    display: grid;
+    gap: 0.9rem;
+  }
+  :global(.vc-dim .vc-track) {
+    position: relative;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--rule-2);
+    margin: 0.4rem 0 0.25rem;
+  }
+  :global(.vc-dim .vc-dot) {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--surface);
+    transform: translate(-50%, -50%);
+  }
+  :global(.vc-dim .vc-ends) {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--ink-3);
+  }
+  :global(.vc-dim strong) {
+    font-size: 0.85rem;
+  }
+  :global(.vc-match .vc-score) {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--ink);
+  }
+</style>
+
+<script>
+  import compass from '../../data/compass.json';
+  import { DIMS, FRAMEWORKS, DIM_LABELS, blindSpots, matchCauses, normalize, type Position } from '../../lib/compass';
+  import { $, clear, h } from '../../lib/client/dom';
+  import { renderBars } from '../../lib/client/bars';
+  import { copy, flash } from '../../lib/client/files';
+  import { decodeState, encodeState, readHash, save, writeHash } from '../../lib/client/store';
+
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const link = (path: string) => base + path;
+
+  const form = $<HTMLFormElement>('#vc-form');
+  const result = $('#vc-result');
+  type Answers = { d: number[]; s: number[] };
+
+  function read(): Answers {
+    const data = new FormData(form);
+    return {
+      d: compass.dimensions.map((d) => Number(data.get(d.id) ?? 50)),
+      s: compass.statements.map((s) => Number(data.get(`s-${s.framework}`) ?? 2)),
+    };
+  }
+
+  function fill(a: Answers) {
+    compass.dimensions.forEach((d, i) => {
+      const el = form.elements.namedItem(d.id) as HTMLInputElement | null;
+      if (el && Number.isFinite(a.d[i])) el.value = String(a.d[i]);
+    });
+    compass.statements.forEach((s, i) => {
+      const radio = form.querySelector<HTMLInputElement>(`input[name="s-${s.framework}"][value="${a.s[i]}"]`);
+      if (radio) radio.checked = true;
+    });
+  }
+
+  const frameworkName = (id: string) => FRAMEWORKS.find((f) => f.id === id)?.name ?? id;
+
+  function show(a: Answers) {
+    const weights = Object.fromEntries(compass.statements.map((s, i) => [s.framework, a.s[i]]));
+    const w = normalize(weights);
+    const position = Object.fromEntries(DIMS.map((d, i) => [d, a.d[i] / 100])) as Position;
+
+    renderBars(
+      $('#vc-lenses'),
+      [...FRAMEWORKS]
+        .sort((x, y) => w[y.id] - w[x.id])
+        .map((f) => ({ label: f.name, value: w[f.id], display: `${Math.round(w[f.id] * 100)}%`, note: f.question })),
+      { max: Math.max(...Object.values(w)), ariaLabel: 'Your lenses' },
+    );
+
+    const dims = $('#vc-dims');
+    clear(dims);
+    compass.dimensions.forEach((d, i) => {
+      const dot = h('span', { class: 'vc-dot' });
+      dot.style.left = `${a.d[i]}%`;
+      dims.append(
+        h(
+          'div',
+          { class: 'vc-dim' },
+          h('strong', {}, d.prompt),
+          h('div', { class: 'vc-track', role: 'img', 'aria-label': `${a.d[i]} out of 100, from ${d.left} to ${d.right}` }, dot),
+          h('div', { class: 'vc-ends' }, h('span', {}, d.left), h('span', {}, d.right)),
+        ),
+      );
+    });
+
+    const matches = matchCauses(weights, position).slice(0, 6);
+    const mEl = $('#vc-matches');
+    clear(mEl);
+    for (const m of matches) {
+      const why = [`strongest through your ${frameworkName(m.topFramework)} lens`];
+      if (m.closeDims.length) why.push(`close to your answers on ${m.closeDims.map((d) => DIM_LABELS[d]).join(', ')}`);
+      mEl.append(
+        h(
+          'a',
+          { class: 'card vc-match', href: link(`/record/cause-atlas/#${m.cause.id}`) },
+          h('div', { class: 'card-top' }, h('h3', {}, m.cause.name), h('span', { class: 'vc-score' }, `${Math.round(m.score * 100)}`)),
+          h('p', {}, m.cause.summary),
+          h('p', { class: 'note' }, `Why: ${why.join('; ')}.`),
+        ),
+      );
+    }
+
+    const bEl = $('#vc-blind');
+    clear(bEl);
+    const spots = blindSpots(weights, matches.map((m) => m.cause.id));
+    if (!spots.length) bEl.append(h('p', { class: 'empty' }, 'Your lenses are balanced enough that none of them points somewhere the others miss.'));
+    for (const s of spots) {
+      bEl.append(
+        h(
+          'a',
+          { class: 'card', href: link(`/record/cause-atlas/#${s.cause.id}`) },
+          h('h3', {}, s.cause.name),
+          h('p', {}, s.cause.summary),
+          h('p', { class: 'note' }, `Seen by: ${s.frameworks.map(frameworkName).join(', ')}.`),
+        ),
+      );
+    }
+
+    save('compass', { weights, position, answers: a, savedAt: new Date().toISOString() });
+    writeHash('c', encodeState(a));
+    result.hidden = false;
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    show(read());
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  form.addEventListener('reset', () => {
+    result.hidden = true;
+    writeHash('c', undefined);
+  });
+
+  $('#vc-share').addEventListener('click', async (e) => {
+    const ok = await copy(location.href);
+    flash(e.currentTarget as HTMLElement, ok ? 'Link copied' : 'Copy failed');
+  });
+
+  const shared = readHash('c');
+  const answers = shared ? decodeState<Answers>(shared) : undefined;
+  if (answers?.d?.length === compass.dimensions.length && answers?.s?.length === compass.statements.length) {
+    fill(answers);
+    show(answers);
+  }
+</script>
