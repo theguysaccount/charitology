@@ -45,4 +45,4 @@ Angus Deaton and Nancy Cartwright argue that the public, and sometimes researche
 
 ## Where trials stop
 
-Many of the questions Charitology cares most about cannot be randomized. Nobody can assign half a country to a new law or half a culture to a new story. Work at the structure and [source](/record/encyclopedia/source-depth/) levels will rarely have trial evidence, which may be one reason it is harder to fund. Finding other ways to measure it is [Open Problem 3](/open-problems/measuring-the-source/). How often trial findings hold up when repeated is [Open Problem 10](/open-problems/the-replication-rate/).
+Many of the questions Charitology cares most about cannot be randomized. Some national laws and cultural changes cannot feasibly be assigned at random, though policy rollout or components can sometimes be randomized. Charitology hypothesizes that limits on trial evidence can affect funding for structure and [source](/record/encyclopedia/source-depth/) work. Finding other ways to measure it is [Open Problem 3](/open-problems/measuring-the-source/). How often trial findings hold up when repeated is [Open Problem 10](/open-problems/the-replication-rate/).

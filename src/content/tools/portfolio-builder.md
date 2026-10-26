@@ -13,7 +13,7 @@ related: [/tools/values-compass/, /tools/one-click-split/, /open-problems/moral-
 
 ## Why a portfolio
 
-Most people give as if one moral framework were certainly right. Few are that sure. If you think welfare matters most but justice and future generations count too, your giving can reflect all three in proportion. Philosophers call this acting under [moral uncertainty](/record/encyclopedia/moral-uncertainty/).
+If you think welfare matters most but justice and future generations count too, your giving can reflect all three in proportion. The builder explores how to act under [moral uncertainty](/record/encyclopedia/moral-uncertainty/), without assuming one framework must decide every gift.
 
 ## The two methods
 

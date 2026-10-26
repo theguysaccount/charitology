@@ -1,6 +1,6 @@
 ---
 title: Outputs and outcomes
-summary: Outputs are what a program does or delivers. Outcomes are what changes for people as a result. Mistaking the first for the second is one of the most common errors in judging charity.
+summary: Outputs are what a program does or delivers. Outcomes are what changes for people as a result. Counting outputs alone does not establish outcomes.
 aliases: [outputs, outcomes, impact, results chain, logic model]
 conditions: [measurement-gap, overhead-myth]
 related: [/diagnosis/measurement-gap/, /record/encyclopedia/theory-of-change/, /tools/impact-measurement-toolkit/, /method/, /record/lexicon/#outcomes]
@@ -23,11 +23,11 @@ Every program can be described as a chain: resources pay for **activities**, act
 
 ## An example
 
-A bed-net program distributes 10,000 nets. That is an output. Families sleeping under the nets is an early outcome. Fewer children dying of malaria is the outcome that matters. In the trials pooled by a 2018 Cochrane review, insecticide-treated nets cut child deaths from all causes by about 17 percent compared with no nets. A program that only counts nets handed out cannot say whether it achieved anything like that.
+Imagine a bed-net program distributing 10,000 nets. That is an output. Families sleeping under the nets is an early outcome. Fewer children dying of malaria is the outcome that matters. In the trials pooled by a 2018 Cochrane review, insecticide-treated nets cut child deaths from all causes by about 17 percent compared with no nets. A program that only counts nets handed out cannot say whether it achieved anything like that.
 
 ## Why outputs win
 
-Outputs are cheap to count and can be counted in-house. Outcomes usually need comparison groups, follow-up surveys and time. So reports fill up with outputs, and donors learn to read “10,000 meals served” as if it were a result. That is the [Measurement Gap](/diagnosis/measurement-gap/). The [Overhead Myth](/diagnosis/overhead-myth/) makes it worse, because measuring outcomes takes staff and systems that donors often see as overhead.
+Outputs are cheap to count and can be counted in-house. Monitoring outcomes may need follow-up and time. Attributing changes to a program also needs a credible comparison, which does not always require randomization. The risk is that a count such as “10,000 meals served” is read as evidence of a later change without that change being checked. That is the [Measurement Gap](/diagnosis/measurement-gap/). The [Overhead Myth](/diagnosis/overhead-myth/) makes it worse, because measuring outcomes takes staff and systems that donors often see as overhead.
 
 ## Outcomes can be negative
 
@@ -35,4 +35,4 @@ The Kellogg definition of impact includes unintended change. Some programs produ
 
 ## Outcomes and depth
 
-The deeper on the [depth scale](/record/encyclopedia/source-depth/) a piece of work acts, the further its outcomes sit from its activities and the longer they take to appear. A campaign to change a law has outputs within months and outcomes over years. That is part of why source-level work is so hard to judge. See [theory of change](/record/encyclopedia/theory-of-change/) and the [Impact Measurement Toolkit](/tools/impact-measurement-toolkit/).
+Some work at the structure and source levels of the [depth scale](/record/encyclopedia/source-depth/) has outcomes far from its activities or takes a long time to show them. Depth does not determine timing by itself. A campaign to change a law has outputs within months and outcomes over years. That is part of why source-level work is so hard to judge. See [theory of change](/record/encyclopedia/theory-of-change/) and the [Impact Measurement Toolkit](/tools/impact-measurement-toolkit/).

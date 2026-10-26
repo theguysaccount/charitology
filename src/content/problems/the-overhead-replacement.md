@@ -14,4 +14,4 @@ Telling donors to stop using overhead has been tried. The [Overhead Myth](/diagn
 
 ## Where to start
 
-Candidate measures include published outcome data, the presence of independent evaluations, transparency about failures and feedback from the people served. Each has to be tested for whether it can be gamed. Open Form 990 data from [Charity Impact Media](https://theguysaccount.github.io/charity-impact-media/) covers about 25,000 U.S. charities.
+Candidate measures include published outcome data, the presence of independent evaluations, transparency about failures and feedback from the people served. Each has to be tested for whether it can be gamed. Open Form 990 data from [Charity Impact Media](https://theguysaccount.github.io/charity-impact-media/) provides source-linked spending records.

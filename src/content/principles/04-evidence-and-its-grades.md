@@ -1,7 +1,7 @@
 ---
 title: Evidence and its grades
 chapter: 4
-summary: Charitology labels every claim by how well it is known. This chapter explains its two label systems, one for claims about the charity system and one for interventions, how evidence earns each label and how a label can be lost.
+summary: Charitology uses evidence labels for conditions and evidence grades for interventions. This chapter explains its two label systems, one for claims about the charity system and one for interventions, how evidence earns each label and how a label can be lost.
 sources:
   - title: The Prize in Economic Sciences 2019
     publisher: The Royal Swedish Academy of Sciences
@@ -39,7 +39,7 @@ sources:
 
 ## Unknown stays unknown
 
-A science is defined as much by what it admits it doesn’t know as by what it knows. Charitology’s rule is simple: every claim carries a label that says how well it is known, and a claim that nobody has tested is called a hypothesis, including Charitology’s own. A gap in the evidence is not hidden. It is published as a finding and, where it fits, linked to an [Open Problem](/open-problems/).
+A science is defined as much by what it admits it doesn’t know as by what it knows. Charitology’s rule is simple: claims should make their support and uncertainty clear, and a claim that nobody has tested is called a hypothesis, including Charitology’s own. A gap in the evidence is not hidden. It is published as a finding and, where it fits, linked to an [Open Problem](/open-problems/).
 
 Charitology uses two label systems, because it makes two different kinds of claim. Claims about the charity system, the conditions in [the Diagnosis](/diagnosis/), get evidence labels. Claims about whether a particular intervention works, in the [Intervention Database](/record/interventions/), get evidence grades. Both are summarized in [the Method](/method/#evidence).
 
@@ -60,7 +60,7 @@ Each intervention carries one of five grades:
 - **Moderate.** Some rigorous studies, or strong studies of a related program.
 - **Mixed.** Rigorous studies disagree.
 - **Weak.** Plausible, but rigorous studies are scarce.
-- **Unknown.** Nobody has measured it well yet.
+- **Unknown.** The Record has not established what it does.
 
 [Insecticide-treated bed nets](/record/interventions/insecticide-treated-nets/) are graded strong. A 2018 Cochrane review pooled five randomized trials with about 200,000 participants and found that nets cut child deaths from all causes by about 17 percent. The reviewers rated that evidence high-certainty.
 
@@ -68,17 +68,17 @@ A grade says how sure we are that something works. It does not say how much good
 
 ## What makes evidence rigorous
 
-The core of rigor is a fair comparison: what happened to people who got the program, compared with similar people who did not. The strongest way to build that comparison is to let chance decide who gets the program, as in a [randomized controlled trial](/record/encyclopedia/randomized-controlled-trials/). In 2019 the Royal Swedish Academy of Sciences gave the economics prize to Abhijit Banerjee, Esther Duflo and Michael Kremer for bringing that approach to the study of global poverty. Systematic reviews then pool many trials, so that no single study decides the answer.
+The core of rigor is a fair comparison: what happened to people who got the program, compared with similar people who did not. Random assignment can make that comparison more credible by deciding who receives the program by chance, as in a [randomized controlled trial](/record/encyclopedia/randomized-controlled-trials/). In 2019 the Royal Swedish Academy of Sciences gave the economics prize to Abhijit Banerjee, Esther Duflo and Michael Kremer for bringing that approach to the study of global poverty. Systematic reviews then pool many trials, so that no single study decides the answer.
 
 Rigor has limits. Angus Deaton and Nancy Cartwright argue that a trial’s result applies to the people in it, and that carrying it to a new place needs an argument about why the program worked there. Many important questions, especially about structure and source, can’t be randomized at all. Charitology asks for evidence in proportion to the decision being made, and for methods that fit the question.
 
 ## Evidence can overturn intuition
 
-Sometimes the most valuable evidence shows that a popular program does harm. “Scared Straight” programs organize prison visits for young people at risk of offending, in the hope of deterring them. A Cochrane review of nine trials found that they increased offending compared with doing nothing at all. Without comparison groups, nobody would have known. See [the case study](/record/case-studies/scared-straight/).
+Sometimes the most valuable evidence shows that a popular program does harm. “Scared Straight” programs organize prison visits for young people at risk of offending, in the hope of deterring them. A Cochrane review of nine trials found that they increased offending compared with doing nothing at all. Without a credible comparison, apparent success would not establish the effect. See [the case study](/record/case-studies/scared-straight/).
 
 ## Evidence can be wrong
 
-Labels can be lost. In 2015 the Open Science Collaboration repeated 100 published psychology studies. Of the original studies, 97 percent had reported statistically significant results. Only 36 percent of the replications did, and the replicated effects were on average about half the size. Nobody has run the same check across charity impact research. That is [Open Problem 10, the Replication Rate](/open-problems/the-replication-rate/).
+Labels can be lost. In 2015 the Open Science Collaboration repeated 100 published psychology studies. Of the original studies, 97 percent had reported statistically significant results. Only 36 percent of the replications did, and the replicated effects were on average about half the size. Charitology has not established an equivalent sector-wide replication rate for charity impact research. That is [Open Problem 10, the Replication Rate](/open-problems/the-replication-rate/).
 
 The check reaches findings that matter to Charitology directly. The [identifiable victim effect](/record/encyclopedia/identifiable-victim-effect/), one of the findings behind the [Story Bias](/diagnosis/story-bias/), failed a pre-registered replication published in 2024. Estimates can also contain plain errors: in 2011 GiveWell found mistakes behind the deworming estimate in *Disease Control Priorities in Developing Countries*, a standard reference, that overstated its cost-effectiveness by a factor of about 100. A label is a judgment about the evidence today. When the evidence moves, the label should move too.
 

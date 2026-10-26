@@ -8,8 +8,8 @@ statusNote: Advising needs trained advisors, evaluation partners and independent
 conditions: [measurement-gap, overhead-myth]
 firstMilestone: A free, self-guided version of the advisory process, published alongside the Impact Measurement Toolkit and tried with five small nonprofits.
 help:
-  - Open an issue labeled program:nonprofit-advisory describing a measurement method that worked for a small organization.
-  - If you evaluate programs professionally and could advise pro bono, open an issue labeled program:nonprofit-advisory.
+  - Open an issue labeled program describing a measurement method that worked for a small organization.
+  - If you evaluate programs professionally and could advise pro bono, open an issue labeled program.
   - Try the Impact Measurement Toolkit with your organization and report what was missing.
 related: [/tools/impact-measurement-toolkit/, /tools/cost-effectiveness-model-kit/, /open-problems/the-overhead-replacement/, /record/myths/]
 ---
@@ -26,7 +26,7 @@ Everything the advisor helps produce would belong to the organization, and the m
 
 ## Why it matters for the system
 
-The [Measurement Gap](/diagnosis/measurement-gap/) exists partly because measuring outcomes is expensive and few funders pay for it. A charity with three staff can’t run a study of its own. A shared advisory service, backed by a published method, would bring that skill within reach.
+The [Measurement Gap](/diagnosis/measurement-gap/) concerns the resources and methods needed to estimate effects. A small team may need evaluation partners rather than running a study alone. A shared advisory service, backed by a published method, would bring that skill within reach.
 
 The [Overhead Myth](/diagnosis/overhead-myth/) survives because the overhead ratio is easy to find and results aren’t. An organization that can show what it achieved per dollar, and explain what its systems cost, gives donors a better number to look at and a reason to stop starving the systems that make results possible.
 

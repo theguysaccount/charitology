@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import NonprofitDirectory from '../../components/NonprofitDirectory.astro';
+import entries from '../../data/nonprofit-benefits.json';
+import { url } from '../../lib/site';
+---
+<Base title="Nonprofit benefits" description="A sourced directory of nonprofit software donations, service credits and discounts, with eligibility, limits and provider application routes.">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">For charities · A working directory</p>
+      <h1>More room for the mission.</h1>
+      <p class="lede">Software donations, service credits and discounts. With the conditions kept in view.</p>
+    </header>
+    <div class="directory-intro prose">
+      <p>A nonprofit discount can make useful tools more affordable. It does not make a tool the right fit. Compare the full cost, the work of moving your records and what happens when an offer changes.</p>
+      <p>These provider offers were checked on October 25, 2026. Availability, prices and eligibility can change. The provider makes the eligibility decision; a listing is not an approval, endorsement or promise of savings. Editorial source review is still pending.</p>
+      <p>Every offer links to the provider’s current terms and application route. Charitology does not apply on your behalf or collect your documents. For a broader set of options, see <a href={url('/for-charities/tools/')}>tools for charities</a>.</p>
+    </div>
+    <NonprofitDirectory entries={entries} kind="benefits" />
+    <aside class="directory-note prose">
+      <h2>Before you apply</h2>
+      <p>Check the country rules, excluded organization types, eligible users, renewal terms and any charges beyond the offer. Prepare your organization’s registration documents only for the provider’s own application. You may need approval before paying.</p>
+      <p>Know an offer that changed? <a href="https://github.com/theguysaccount/charitology/issues/new?labels=correction&amp;title=Nonprofit%20benefits%20directory%20correction">Suggest a public correction</a> and link the provider’s terms.</p>
+    </aside>
+  </div>
+</Base>
+<style>.directory-intro { max-width: 52rem; } .directory-note { max-width: 52rem; padding-bottom: 3rem; }</style>

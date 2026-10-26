@@ -56,7 +56,7 @@ sources:
 
 ## The debate
 
-In 2004 Miguel and Kremer reported that a school deworming program in Busia, Kenya, cut absenteeism in treated schools by about a quarter and helped untreated children nearby, though it did not raise test scores. Later follow-ups found that, twenty years on, people who had received two to three more years of treatment had about 14 percent higher consumption and 13 percent higher hourly earnings. Both estimates are significant only at the 10 percent level.
+In 2004 Miguel and Kremer reported that a school deworming program in Busia, Kenya, cut absenteeism in treated schools by about a quarter and helped untreated children nearby, though it did not raise test scores. Later follow-ups estimated about 14 percent higher consumption, pooling the 15- and 20-year surveys, and 13 percent higher hourly earnings, pooling the 10-, 15- and 20-year surveys, among people assigned two to three additional years of treatment. Both estimates meet the 10 percent significance threshold, but not the conventional 5 percent threshold.
 
 Systematic reviews read the wider evidence differently. A 2019 Cochrane review of 51 trials concluded that mass deworming does not appear to improve height, hemoglobin, cognition, school performance or mortality, and it cautioned against basing programs on two older studies that found large weight gains. A 2017 review found little to no effect on weight, height, cognition, attendance or mortality, and judged the long-run evidence too weak to draw conclusions.
 

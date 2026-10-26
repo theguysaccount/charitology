@@ -1,7 +1,7 @@
 ---
 title: The Missing Feedback Loop
 number: 1
-summary: The people who pay for charity are rarely the people it serves, so the signal that tells a market what works almost never reaches the givers.
+summary: When donors pay for services used by others, they may struggle to judge quality. Feedback and evaluation can help close that information gap.
 evidence: documented
 node: feedback
 upstream: coordination
@@ -10,7 +10,7 @@ sources:
   - title: The Role of Nonprofit Enterprise
     publisher: Henry B. Hansmann, Yale Law Journal 89(5)
     year: 1980
-    url: https://www.jstor.org/stable/796089
+    url: https://yalelawjournal.org/article/the-role-of-nonprofit-enterprise
   - title: Feedback Labs
     publisher: Feedback Labs
     url: https://feedbacklabs.org/
@@ -19,17 +19,17 @@ sources:
 
 ## What it looks like
 
-When you buy a phone, the price and the reviews tell you whether it works, and a bad phone loses customers. When you give to a charity, almost nothing comes back. A donor in Chicago funding a clinic in Malawi rarely learns whether anyone got healthier. The patients know, but they have no way to send that knowledge back to the donor’s wallet.
+Consider a donor paying for a clinic they do not use. The people served may know about its accessibility and quality, while the donor relies on reports. If their experience and the measured outcomes do not reach funding decisions, a feedback loop is missing. This example illustrates a mechanism; it does not measure how often it occurs.
 
 ## Why it happens
 
-In a market, the person who pays is the person who benefits. In charity they are two different people. The legal scholar Henry Hansmann named the general version of this “contract failure”: the people paying can’t easily see what they are paying for. So charities get rewarded for what donors *can* see, such as a moving story, a low overhead ratio or a warm thank-you letter, rather than for results donors can’t see.
+In many purchases, the buyer can use and assess the service. In donor-funded services, the payer and the person served can be different people. The legal scholar Henry Hansmann named the general version of this “contract failure”: the people paying can’t easily see what they are paying for. Charitology’s hypothesis is that this gap can make visible signals, such as stories or cost ratios, more influential than harder-to-observe results.
 
-This is the root of the whole Diagnosis. Almost every other condition grows in the space this one leaves open.
+Charitology treats this as a central mechanism in its Diagnosis. The claim that it causes the other conditions remains a hypothesis.
 
 ## No one is to blame
 
-Donors give in good faith. Charities report what they are asked to report. The loop is missing because nobody built it, not because anyone broke it.
+The question is how reporting, listening and funding rules work together. It is about the design of those rules, not anyone’s character.
 
 ## What we don’t know yet
 

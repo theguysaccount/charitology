@@ -8,8 +8,8 @@ statusNote: The charter is written, and the Principles of Charitology serves as 
 conditions: [missing-profession]
 firstMilestone: A pilot exam and portfolio review taken by volunteer candidates, with the exam, the results and the lessons published for critique.
 help:
-  - Draft exam questions for one chapter of the Principles of Charitology in an issue labeled program:certification.
-  - Volunteer to take the pilot exam by opening an issue labeled program:certification.
+  - Draft exam questions for one chapter of the Principles of Charitology in an issue labeled program.
+  - Volunteer to take the pilot exam by opening an issue labeled program.
   - Critique the list of skills a charitologist should be able to show.
 related: [/record/principles/, /programs/principles-course/, /open-problems/the-profession-question/, /contribute/]
 sources:

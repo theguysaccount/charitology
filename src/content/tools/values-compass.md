@@ -19,7 +19,7 @@ Your answers in part 2 become weights on those frameworks. Each framework ranks 
 
 ## What your other lenses see
 
-Most tools tell you what you already believe. The compass also shows the causes your least-used frameworks rank highly, because seeing past one lens is the whole point of charitology. That is the treatment for [the Single Lens](/diagnosis/single-lens/).
+The compass also shows the causes your least-used frameworks rank highly. It is an experiment in considering more than one moral lens, connected to the working hypothesis in [the Single Lens](/diagnosis/single-lens/).
 
 ## What it isn’t
 

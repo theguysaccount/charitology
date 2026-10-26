@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import { hrefFor } from '../../lib/content';
+import { SITE, url, editUrl } from '../../lib/site';
+const collections = ['conditions', 'encyclopedia', 'interventions', 'cases', 'myths', 'disagreements', 'traditions', 'principles', 'problems', 'programs', 'tools', 'record', 'charities', 'forecasts', 'journal'] as const;
+const titleOf = (entry: any): string => entry.data.title ?? entry.data.name;
+const groups = await Promise.all(collections.map(async (collection) => ({ collection, entries: (await getCollection(collection)).filter((entry) => entry.data.review === 'draft').sort((a,b) => titleOf(a).localeCompare(titleOf(b))) })));
+const count = groups.reduce((total, group) => total + group.entries.length, 0);
+const request = `${SITE.repo}/issues/new?${new URLSearchParams({title:'Source review: ', labels:'review', body:'Page:\n\nI would like to review this draft.\n\nSources checked:\n\nClaims needing correction:\n\nAI assistance, if any:\n'})}`;
+---
+<Base title="Review a draft" description="Pick one Charitology draft, check its sources and contribute a public review.">
+  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'Contribute',href:'/contribute/'},{label:'Review a draft'}]} /><span class="eyebrow">An open call for reviewers</span><h1>One page. Every source.</h1><p class="lede">{count} content entries are waiting for a second human contributor to check their sources and framing. Pick a subject you know, and help make it dependable.</p><div class="btn-row review-actions"><a class="btn" href={request}>Choose a page in an issue</a><a class="btn btn-ghost" href={`${SITE.repo}/blob/main/STYLE.md`}>Read the standard</a></div></div></header>
+  <section class="wrap section-tight prose"><h2>What a review needs</h2><ol><li>Open the page and read every cited source. Check the particular claim, denominator, date and uncertainty.</li><li>Check the framing: study the system, show credible disagreements and keep depth descriptive.</li><li>Fix unsupported claims or leave a public challenge with evidence. A link that loads is not proof of a claim.</li><li>Submit a pull request saying exactly what you read and whether AI helped. A second human contributor can change <code>review: draft</code> to <code>review: reviewed</code> once the whole page meets the standard.</li></ol><p>AI-assisted checks and the audit ledgers in the repository can help you find issues. They do not replace the human review listed here. Program charters and tool documentation also remain open to corrections through their page links.</p></section>
+  <section class="wrap section-tight review-groups">{groups.map(({collection,entries}) => <section><h2>{collection === 'cases' ? 'Case studies' : collection.charAt(0).toUpperCase()+collection.slice(1)} <span class="note">{entries.length} drafts</span></h2><ul>{entries.map((entry)=><li><a href={url(hrefFor(collection,entry.id))}>{titleOf(entry)}</a><span class="note"> · <a href={editUrl(entry.filePath)}>Edit source</a> · {'sources' in entry.data ? entry.data.sources.length : 0} cited sources</span></li>)}</ul></section>)}</section>
+</Base>
+<style>.review-actions{margin-top:1.5rem}.review-groups{display:grid;gap:2rem}.review-groups h2{font-size:1.4rem}.review-groups ul{display:grid;gap:.6rem;padding-left:1.2rem}</style>

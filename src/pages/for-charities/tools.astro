@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import NonprofitDirectory from '../../components/NonprofitDirectory.astro';
+import entries from '../../data/nonprofit-tools.json';
+import { url } from '../../lib/site';
+---
+<Base title="Tools for charities" description="A sourced directory of external tools for nonprofit fundraising, donor records, data, participation and daily work. Compare cost models and practical limits.">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">For charities · A working directory</p>
+      <h1>Tools for the work.</h1>
+      <p class="lede">Find something that fits the job, the budget and the people who will maintain it.</p>
+    </header>
+    <div class="directory-intro prose">
+      <p>These are external tools for fundraising, research and the daily work of an organization. Free software can still require time, hosting and support. A free account can still have transaction fees.</p>
+      <p>Listings summarize provider documentation checked on October 25, 2026. They are starting points, not endorsements or tested recommendations. Charitology has not independently tested these products. Editorial source review is still pending.</p>
+      <p>Looking for donated software or a discount? See <a href={url('/for-charities/benefits/')}>nonprofit benefits</a>. For tools made here, see <a href={url('/tools/')}>Charitology’s tools</a>.</p>
+    </div>
+    <NonprofitDirectory entries={entries} kind="tools" />
+    <aside class="directory-note prose">
+      <h2>Choose around the work</h2>
+      <p>Start with one task and test a small example. Check whether your team can export its records, manage access and keep the tool running. A product’s privacy or security claims are its own; decide what evidence your organization needs before moving sensitive information.</p>
+      <p>Spotted a changed price or a missing option? <a href="https://github.com/theguysaccount/charitology/issues/new?labels=correction&amp;title=Nonprofit%20tools%20directory%20correction">Suggest a public correction</a> with a provider source.</p>
+    </aside>
+  </div>
+</Base>
+<style>.directory-intro { max-width: 52rem; } .directory-note { max-width: 52rem; padding-bottom: 3rem; }</style>

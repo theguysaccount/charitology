@@ -8,9 +8,9 @@ statusNote: Incubation needs funding, a legal home and experienced mentors. The 
 conditions: [symptom-trap, fragmentation]
 firstMilestone: A published gap report naming three gaps the research has found, each checked for whether an existing organization could fill it.
 help:
-  - Open an issue labeled program:incubator pointing to a gap that you think no organization is filling.
+  - Open an issue labeled program pointing to a gap that you think no organization is filling.
   - Tell us which existing organization already fills a gap the research names.
-  - If you run or advise an incubator and could partner, open an issue labeled program:incubator.
+  - If you run or advise an incubator and could partner, open an issue labeled program.
 related: [/record/gap-map/, /open-problems/the-fragmentation-question/, /programs/cause-census/, /programs/methods-lab/]
 sources:
   - title: Ambitious Impact

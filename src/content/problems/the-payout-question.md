@@ -10,7 +10,7 @@ bounty: "Unfunded. The Question Bounties program will attach prizes once it is f
 
 ## Why it matters
 
-More than $326 billion sat in donor-advised funds in 2024, and private foundations hold far more. Whether that money should move faster is one of the largest decisions in philanthropy, and it is mostly made by default. See [Parked Money](/diagnosis/parked-money/).
+The Annual DAF Report 2025 estimated about $326 billion in donor-advised fund assets in 2024. Whether assets should be spent sooner is a substantial allocation question; the asset total alone cannot answer it. See [Parked Money](/diagnosis/parked-money/).
 
 ## Where to start
 

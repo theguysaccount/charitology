@@ -15,7 +15,7 @@ A **symptom** is a problem as it shows up in someone’s life: hunger tonight, a
 
 ## Why the distinction matters
 
-Symptoms are urgent, visible and real, and helping with them is good. But most symptoms come back until their sources change. A food bank feeds people tonight, and tomorrow there is a line again. Charitology asks every gift where it acts on the chain from symptom to source, and asks the system as a whole whether its mix is right. That is the [Symptom Trap](/diagnosis/symptom-trap/).
+Symptoms are urgent, visible and real, and helping with them is good. Some needs recur because the conditions producing them persist. A food bank feeds people tonight, and tomorrow there is a line again. Charitology asks every gift where it acts on the chain from symptom to source, and asks the system as a whole whether its mix is right. That is the [Symptom Trap](/diagnosis/symptom-trap/).
 
 ## The six sources
 

@@ -2,7 +2,7 @@
 title: The Open Problems of Charitology
 group: Research
 order: 1
-summary: A public list of the 23 biggest unanswered questions in doing good, each precise enough to work on, with progress tracked in the open.
+summary: A public list of 23 proposed unanswered questions in doing good, each precise enough to work on, with progress tracked in the open.
 status: live
 statusNote: All 23 problems are published and open for work. Prizes wait on the Question Bounties program.
 conditions: [missing-profession, measurement-gap, symptom-trap]
@@ -10,13 +10,13 @@ firstMilestone: The first partial result on any open problem, published and revi
 help:
   - Pick a problem and open an issue with your approach, data or partial result.
   - Propose a new problem with a pull request to src/content/problems/.
-  - Fund a prize through Question Bounties.
+  - Help design the unfunded Question Bounties program; it accepts no money now.
 related: [/open-problems/, /record/progress-report/, /programs/question-bounties/]
 ---
 
 ## What it is
 
-In 1900 the mathematician David Hilbert published 23 unsolved problems, and they shaped a century of mathematics. Charitology’s [Open Problems](/open-problems/) do the same for doing good. Each one turns a condition from the [Diagnosis](/diagnosis/) into a question precise enough that someone could answer it, with a stated test for what would count as progress.
+Inspired by the idea of a public research agenda, Charitology’s [Open Problems](/open-problems/) set out 23 proposed questions about giving. Each one turns a condition from the [Diagnosis](/diagnosis/) into a question precise enough that someone could answer it, with a stated test for what would count as progress.
 
 ## How it works
 
@@ -26,7 +26,7 @@ The list itself is open to revision. A new problem gets in when it names a condi
 
 ## Why it matters for the system
 
-A field is defined as much by its questions as by its answers. Today the hardest questions in giving belong to nobody: they fall between disciplines, causes and funders. Naming them gives researchers a target, funders a portfolio and newcomers a place to start, which is the first step toward [the missing profession](/diagnosis/missing-profession/).
+A field is defined as much by its questions as by its answers. Some questions cross disciplines, causes and funders. This agenda offers a place to coordinate work on them; it does not claim that nobody is already studying them. Naming them gives researchers a target, funders a portfolio and newcomers a place to start, which is the first step toward [the missing profession](/diagnosis/missing-profession/).
 
 ## What success looks like
 

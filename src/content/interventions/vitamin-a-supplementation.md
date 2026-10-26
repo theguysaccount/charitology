@@ -10,16 +10,16 @@ durability: while funded
 feedback: weak
 agency: top-down
 cost:
-  outcome: death averted (GiveWell’s modeled range for the places where it funds campaigns)
-  low: 1000
-  high: 8500
-  asOf: February 2024 cost-effectiveness analysis
+  outcome: death averted (GiveWell’s modeled range for its August and September 2024 grants in six countries)
+  low: 5200
+  high: 17000
+  asOf: April 2025 publication of the August and September 2024 grants
   source:
-    title: Vitamin A Supplementation
+    title: Helen Keller International — Vitamin A Supplementation (August & September 2024)
     publisher: GiveWell
-    year: 2024
-    url: https://www.givewell.org/international/technical/programs/vitamin-A
-  note: Treat this as uncertain. A later GiveWell grant page estimated about $5,200 to $17,000 per death averted for the locations it funded in 2024, and GiveWell now assumes a much smaller effect in today’s settings than the original trials found.
+    year: 2025
+    url: https://www.givewell.org/research/grants/helen-keller-international-vitamin-a-supplementation-august-september-2024
+  note: These are uncertain models for particular grants and locations, not a measured result or a prediction for a new donation. GiveWell estimates a smaller effect in these settings than the historical trials found. Its earlier February 2024 program model gave a lower range.
 conditions: [measurement-gap]
 sources:
   - title: Vitamin A supplementation for preventing morbidity and mortality in children from six months to five years of age (Cochrane systematic review)

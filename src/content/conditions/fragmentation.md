@@ -1,7 +1,7 @@
 ---
 title: The Fragmentation Problem
 number: 8
-summary: More than a million U.S. charities mostly work alone, duplicating costs and competing for the same donors, with no shared layer to coordinate them.
+summary: Separate organizations can duplicate costs or miss chances to coordinate. The size of this problem, and when coordination helps, are open questions.
 evidence: debated
 node: channels
 upstream: coordination
@@ -21,19 +21,19 @@ sources:
 
 ## What it looks like
 
-The IRS lists more than a million 501(c)(3) organizations in the United States alone. In one city, dozens of organizations may work on the same problem. Each has its own board, fundraising, software and reports, and often none of them knows exactly what the others are doing.
+The IRS master file listed 1,975,975 tax-exempt organizations in October 2026. That count covers many kinds of exempt organization, not only 501(c)(3) charities. A registry can show how many organizations exist; it cannot show whether they duplicate useful work or coordinate well.
 
 ## Why it happens
 
-Starting a charity is easy and merging two is hard. Founders want to build something of their own, donors like to fund distinct organizations, and nothing in the system rewards coordination. Humanity’s Checklist argues that every problem is a coordination problem: the people who could solve it together already exist, but they never meet.
+One possible mechanism is that separate funding and reporting systems make shared work harder. That is a hypothesis, not a conclusion about founders’ or donors’ motives. Humanity’s Checklist argues that coordination is a source shared by many problems: people who could work together may lack a way to find each other.
 
 ## Why it’s debated
 
-The count is documented. What it means is not. A plural sector has real strengths: many experiments, local knowledge and room for new ideas. Not every overlap is waste, and nobody knows the right number of charities or when consolidation helps rather than hurts.
+The count is documented. What it means is not. A plural sector has real strengths: many experiments, local knowledge and room for new ideas. Not every overlap is waste, and the registry count does not establish the right number of charities or when consolidation helps rather than hurts.
 
 ## No one is to blame
 
-Every founder started an organization to help. The system just has no layer that connects them.
+The question is whether shared services, networks or funding rules would help organizations coordinate. It does not require a judgment about anyone’s motives.
 
 ## What we don’t know yet
 

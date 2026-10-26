@@ -13,6 +13,10 @@ sources:
     publisher: National Zakat Foundation
     year: 2021
     url: https://nzf.org.uk/knowledge/what-is-zakat
+  - title: Zakat and your family
+    publisher: National Zakat Foundation
+    year: 2023
+    url: https://nzf.org.uk/knowledge/zakat-and-your-family/
   - title: What is Zakat and how to pay it
     publisher: Islamic Relief Worldwide
     url: https://islamic-relief.org/zakat/
@@ -35,7 +39,7 @@ review: draft
 
 *Zakat* is one of the five pillars of Islam, the core practices of the faith. The word comes from an Arabic root associated with growing, increasing and purifying. Once a Muslim’s wealth has reached a minimum threshold, called the *nisab*, and a lunar year has passed, they owe 2.5 percent of their qualifying wealth.
 
-The Qur’an names who may receive it, in verse 9:60: the poor, the needy, those who collect and administer it, those whose hearts are to be won over, the freeing of people from slavery, people in debt, the cause of God, and stranded travelers. Zakat may not be given to one’s own immediate family. At the end of Ramadan, every self-supporting Muslim with food beyond their needs also gives *zakat al-fitr*, a gift of food made before the prayer that marks the festival of Eid.
+The Qur’an names who may receive it, in verse 9:60: the poor, the needy, those who collect and administer it, those whose hearts are to be won over, the freeing of people from slavery, people in debt, the cause of God, and stranded travelers. Rules about giving to relatives differ between schools of Islamic law. The National Zakat Foundation notes that eligible siblings and other relatives may receive zakat, while restrictions apply to close relatives whom the giver must support. At the end of Ramadan, Muslims who have the means also give *zakat al-fitr*, a gift of food made before the prayer that marks the festival of Eid.
 
 ## Sadaqah
 

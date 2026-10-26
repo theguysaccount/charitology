@@ -8,9 +8,9 @@ statusNote: The charter and the outline of the chapter kit are written. The firs
 conditions: [missing-profession, story-bias]
 firstMilestone: Three pilot chapters at different universities run the kit for one term and publish what worked and what didn’t.
 help:
-  - Start a pilot chapter at your university and open an issue labeled program:chapters so others can find you.
-  - Draft or improve one session of the chapter kit in an issue labeled program:chapters.
-  - If your student group already runs sessions on giving, share what works in an issue labeled program:chapters.
+  - Start a pilot chapter at your university and open an issue labeled program so others can find you.
+  - Draft or improve one session of the chapter kit in an issue labeled program.
+  - If your student group already runs sessions on giving, share what works in an issue labeled program.
 related: [/programs/principles-course/, /tools/values-compass/, /tools/forecasting-platform/, /contribute/]
 ---
 

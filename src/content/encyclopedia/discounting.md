@@ -34,7 +34,7 @@ The first two reasons are about facts: what will happen and how much it will hel
 
 ## An example
 
-GiveWell discounts future gains in income and consumption at 4 percent a year, and health benefits at a lower rate. A 2023 review by Rethink Priorities breaks the 4 percent into parts: 0 percent for pure time preference, 1.4 percent for temporal uncertainty, 1.7 percent for improving circumstances as people get richer, and 0.9 percent for benefits that compound over time. Every part except the first is a claim about the world that evidence can improve.
+A 2023 review by Rethink Priorities described GiveWell’s then-current 4 percent rate for future income and consumption gains, with a lower rate for health benefits. It broke the 4 percent into parts: 0 percent for pure time preference, 1.4 percent for temporal uncertainty, 1.7 percent for improving circumstances as people get richer, and 0.9 percent for benefits that compound over time. Every part except the first is a claim about the world that evidence can improve.
 
 ## Why it is contested
 

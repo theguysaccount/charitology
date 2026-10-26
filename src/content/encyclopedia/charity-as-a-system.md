@@ -1,6 +1,6 @@
 ---
 title: Charity as a system
-summary: Charitology’s model of giving as one connected system. Givers respond to signals, money moves through channels to the work, the work produces outcomes, and the feedback that should carry results back is mostly missing.
+summary: Charitology’s model of giving as one connected system. Givers respond to signals, money moves through channels to the work, the work produces outcomes, and feedback can carry results back. The size of any gap is an open empirical question.
 aliases: [the charity system, the system map, giving system]
 conditions: [missing-feedback-loop, missing-profession, fragmentation]
 related: [/diagnosis/, /record/principles/02-the-charity-system/, /record/encyclopedia/source-depth/, /open-problems/closing-the-feedback-loop/, /tools/giving-dashboard/]
@@ -22,9 +22,13 @@ sources:
     publisher: Henry B. Hansmann, Yale Law Journal 89
     year: 1980
     url: https://yalelawjournal.org/article/the-role-of-nonprofit-enterprise
+  - title: Annual DAF Report 2025, full report
+    publisher: Donor Advised Fund Research Collaborative, Indiana University repository
+    year: 2025
+    url: https://scholarworks.indianapolis.iu.edu/server/api/core/bitstreams/8f309b9f-da38-433e-8c33-bc1b3d1f9a1a/content
 ---
 
-Most writing about charity is about one cause or one organization. Charitology studies the **system** that connects them all. Like any system, it produces the results it is built to produce, so to change the results you have to understand the structure.
+Charitology studies the **system** that connects them all. Like any system, it produces the results it is built to produce, so to change the results you have to understand the structure.
 
 ## Five stages
 
@@ -36,11 +40,11 @@ Most writing about charity is about one cause or one organization. Charitology s
 
 ## The missing loop
 
-In a market, the person who pays is usually the person who benefits, and prices and reviews carry information back. In charity, the payer and the person served are usually different people. The legal scholar Henry Hansmann called the general version of this *contract failure*: the people paying for a service cannot easily judge its quality. So results rarely travel back to givers, and the signals that reach them are the ones that are easy to see. That is [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/), and Charitology treats it as the root of the [Diagnosis](/diagnosis/).
+In a market, the person who pays is usually the person who benefits, and prices and reviews carry information back. In charity, the payer and the person served are usually different people. The legal scholar Henry Hansmann called the general version of this *contract failure*: the people paying for a service cannot easily judge its quality. This can make results harder for donors to assess. The frequency and allocation effects of the gap are not measured by Hansmann’s theory. That is [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/), and Charitology treats it as the root of the [Diagnosis](/diagnosis/).
 
 ## The field around it
 
-Around all five stages is the field: the knowledge, methods and people that could steer the system as a whole. Researchers, evaluators and advisors exist, but nobody is trained in the system itself. That is [the Missing Profession](/diagnosis/missing-profession/).
+Around all five stages is the field: the knowledge, methods and people that could steer the system as a whole. Researchers, evaluators, advisors and philanthropy educators already study parts of this system. Charitology proposes a shared craft connecting their work across causes and frameworks. That is [the Missing Profession](/diagnosis/missing-profession/).
 
 ## Where the conditions sit
 

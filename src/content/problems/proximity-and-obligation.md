@@ -14,4 +14,4 @@ The [Proximity Pull](/diagnosis/proximity-pull/) is partly a moral question and 
 
 ## Where to start
 
-Survey experiments that show donors cost comparisons across distance are cheap to run. The moral side is mapped in the [Disagreement Register](/record/disagreements/).
+A scoped survey experiment could test how comparisons across distance affect choices, with its cost and limits stated. The moral side is mapped in the [Disagreement Register](/record/disagreements/).

@@ -8,9 +8,9 @@ statusNote: An award needs prize money, an independent jury and a legal home. Th
 conditions: [prestige-economy, silence-about-failure]
 firstMilestone: Published categories, judging criteria and an independent jury, with the criteria tested in a public red-team review.
 help:
-  - Open an issue labeled program:prize proposing a category and how it should be judged.
+  - Open an issue labeled program proposing a category and how it should be judged.
   - Add a published failure report you learned from to the Failure Archive, so the field has examples to judge against.
-  - If your institution could host the award or serve on the jury, open an issue labeled program:prize.
+  - If your institution could host the award or serve on the jury, open an issue labeled program.
 related: [/record/failure-archive/, /open-problems/the-status-flip/, /open-problems/the-failure-commons/, /programs/failure-lab/]
 sources:
   - title: Instituut voor Briljante Mislukkingen (Institute of Brilliant Failures)

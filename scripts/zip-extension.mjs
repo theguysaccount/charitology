@@ -42,12 +42,18 @@ const crc32 = (buf) => {
 const DOS_TIME = 0;
 const DOS_DATE = ((2026 - 1980) << 9) | (1 << 5) | 1;
 
+function packageZip(outName, browser) {
 const locals = [];
 const centrals = [];
 let offset = 0;
 for (const file of files) {
   const name = relative(ext, file).split(sep).join('/');
   let data = readFileSync(file);
+  if (name === 'manifest.json' && browser === 'chrome') {
+    const manifest = JSON.parse(data.toString('utf8'));
+    delete manifest.browser_specific_settings;
+    data = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`);
+  }
   if (name.endsWith('.js')) data = Buffer.from(data.toString('utf8').replaceAll('__CHARITOLOGY_SITE__', site));
   const nameBuf = Buffer.from(name, 'utf8');
   const crc = crc32(data);
@@ -94,5 +100,10 @@ end.writeUInt32LE(offset, 16);
 
 const outDir = join(root, 'public/downloads');
 mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, 'charitology-extension.zip'), Buffer.concat([...locals, ...centrals, end]));
-console.log(`Packaged ${files.length} files for ${site} → public/downloads/charitology-extension.zip`);
+writeFileSync(join(outDir, outName), Buffer.concat([...locals, ...centrals, end]));
+console.log(`Packaged ${files.length} files for ${site} → public/downloads/${outName}`);
+}
+
+packageZip('charitology-extension.zip', 'firefox');
+packageZip('charitology-firefox.zip', 'firefox');
+packageZip('charitology-chrome.zip', 'chrome');

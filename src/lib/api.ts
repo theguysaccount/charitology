@@ -1,5 +1,5 @@
 // The Public API: every dataset as static JSON at /api/v1/<name>.json.
-// Each endpoint is generated at build time, so there are no keys and no rate limits.
+// Each endpoint is generated at build time; no application keys are needed.
 import { getCollection, type CollectionKey } from 'astro:content';
 import { hrefFor } from './content';
 import { allCitations } from './sources';
@@ -9,6 +9,9 @@ import depth from '../data/depth.json';
 import checklist from '../data/checklist.json';
 import figures from '../data/figures.json';
 import sourcesMap from '../data/sources-map.json';
+import roadmap from '../data/roadmap.json';
+import nonprofitTools from '../data/nonprofit-tools.json';
+import nonprofitBenefits from '../data/nonprofit-benefits.json';
 
 export interface Endpoint {
   name: string;
@@ -46,6 +49,7 @@ export const ENDPOINTS: Endpoint[] = [
   { name: 'traditions', description: 'The Giving Traditions Library.', build: entries('traditions') },
   { name: 'principles', description: 'Principles of Charitology, chapter by chapter.', build: entries('principles') },
   { name: 'forecasts', description: 'Forecast questions, forecasts and outcomes.', build: entries('forecasts') },
+  { name: 'journal', description: 'Journal entries with their review status.', build: entries('journal') },
   { name: 'lexicon', description: 'The Lexicon of terms.', build: async () => (await getCollection('lexicon')).map((e) => ({ id: e.id, ...e.data })) },
   { name: 'causes', description: 'Cause areas with their editorial positions on five dimensions.', build: async () => causes },
   { name: 'frameworks', description: 'Moral frameworks with their editorial cause priorities.', build: async () => frameworks },
@@ -53,6 +57,9 @@ export const ENDPOINTS: Endpoint[] = [
   { name: 'checklist', description: 'The Giver’s Checklist.', build: async () => checklist },
   { name: 'figures', description: 'Headline figures with their sources.', build: async () => figures },
   { name: 'source-map', description: 'Which sources Humanity’s Checklist links to which world problems.', build: async () => sourcesMap },
+  { name: 'roadmap', description: 'All 66 original brief items and their implementation scope.', build: async () => roadmap },
+  { name: 'nonprofit-tools', description: 'External tools for charities with costs, limits and official sources.', build: async () => nonprofitTools },
+  { name: 'nonprofit-benefits', description: 'Benefits for charities with eligibility and official application links.', build: async () => nonprofitBenefits },
   { name: 'sources', description: 'Every source cited on the site, with the pages that cite it.', build: allCitations },
 ];
 

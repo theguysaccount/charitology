@@ -34,7 +34,7 @@ sources:
 
 ## What happens if I don’t give?
 
-The second question in the [Giver’s Checklist](/method/#checklist) is the one that changes the most answers: what happens if I don’t give? If the work would be funded anyway, the real effect of a gift lands somewhere else.
+The second question in the [Giver’s Checklist](/method/#checklist) is a question that can change an answer: what happens if I don’t give? If the work would be funded anyway, the real effect of a gift lands somewhere else.
 
 This is [counterfactual](/record/lexicon/#counterfactual) reasoning, and it is the hidden half of every claim about impact. A program’s results are what happened. A gift’s results are the difference between what happened and what would have happened without it. The share of an outcome that would not have happened without a particular gift is its [additionality](/record/lexicon/#additionality).
 
@@ -58,7 +58,7 @@ The shortcut has limits. Neglect is a good guide only when a problem is neglecte
 
 ## Scale, neglectedness and tractability
 
-The best-known tool for combining these ideas is the [scale, neglectedness and tractability framework](/record/encyclopedia/scale-neglectedness-tractability/). It grew out of the work of GiveWell Labs; in 2013 Benjamin Todd proposed a version for 80,000 Hours, crediting GiveWell Labs for the names, and in 2016 Wiblin set out the formal version. It asks how good solving a problem would be, how many resources already go to it and what fraction of it more effort would solve.
+One tool for combining these ideas is the [scale, neglectedness and tractability framework](/record/encyclopedia/scale-neglectedness-tractability/). It grew out of the work of GiveWell Labs; in 2013 Benjamin Todd proposed a version for 80,000 Hours, crediting GiveWell Labs for the names, and in 2016 Wiblin set out the formal version. It asks how good solving a problem would be, how many resources already go to it and what fraction of it more effort would solve.
 
 Charitology uses the framework inside each moral lens rather than once for everyone, because *scale* needs a unit, and choosing a unit is a moral choice. Chapter 6 takes up that problem.
 
@@ -66,10 +66,10 @@ Charitology uses the framework inside each moral lens rather than once for every
 
 Counterfactual reasoning is usually applied to one decision at a time. Charitology adds two observations from the level of the system.
 
-First, neglect is predictable. The [Story Bias](/diagnosis/story-bias/) predicts that problems without faces or headlines will be underfunded. The [Proximity Pull](/diagnosis/proximity-pull/) predicts the same for distant need, and the [Single Lens](/diagnosis/single-lens/) for goods that the dominant frameworks cannot see. Charitology’s founding hypothesis, the [Symptom Trap](/diagnosis/symptom-trap/), predicts that work at the structure and source levels is neglected relative to relief. If that is true, depth is one of the most important dimensions of neglect. Nobody has measured it; that is [the Depth Census](/open-problems/the-depth-census/).
+First, Charitology proposes testable patterns of neglect. The [Story Bias](/diagnosis/story-bias/) predicts that problems without faces or headlines will be underfunded. The [Proximity Pull](/diagnosis/proximity-pull/) predicts the same for distant need, and the [Single Lens](/diagnosis/single-lens/) for goods that the dominant frameworks cannot see. Charitology’s founding hypothesis, the [Symptom Trap](/diagnosis/symptom-trap/), predicts that work at the structure and source levels is neglected relative to relief. If that is true, depth is one of the most important dimensions of neglect. Charitology has not established that depth mix; that is [the Depth Census](/open-problems/the-depth-census/).
 
 Second, counterfactual reasoning works best when givers coordinate. If every donor chases the most neglected gap alone, gaps can be overfilled, abandoned or fought over. Todd calls the habit of ignoring other actors single-player thinking. The [Fragmentation Problem](/diagnosis/fragmentation/) is what single-player thinking can look like across a whole sector, and whether coordination layers would help is [Open Problem 11](/open-problems/the-fragmentation-question/).
 
 ## What remains open
 
-Most givers never see a counterfactual estimate for their gifts. Producing one cheaply, with an error range, at a cost small relative to the gift, is [Open Problem 4, the Counterfactual Problem](/open-problems/the-counterfactual-problem/). Until it is solved, a giver can still ask the checklist questions: what happens if I don’t give, and who else is already funding this? The [Impact Calculator](/tools/impact-calculator/) and the [Compare Tool](/tools/compare-tool/) are places to start.
+A giver may not have a credible counterfactual estimate for a particular gift. Producing one cheaply, with an error range, at a cost small relative to the gift, is [Open Problem 4, the Counterfactual Problem](/open-problems/the-counterfactual-problem/). Until it is solved, a giver can still ask the checklist questions: what happens if I don’t give, and who else is already funding this? The [Impact Calculator](/tools/impact-calculator/) and the [Compare Tool](/tools/compare-tool/) are places to start.

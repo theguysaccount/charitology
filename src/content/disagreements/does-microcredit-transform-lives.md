@@ -4,7 +4,7 @@ summary: Microcredit was honored with a Nobel Peace Prize as a path out of pover
 status: narrowing
 positions:
   - name: It is a path out of poverty
-    claim: Credit lets people with ideas and energy but no collateral start and grow businesses, and lending to the poor builds dignity and self-reliance in a way charity cannot. The Nobel committee honored it for building development from below.
+    claim: Credit lets people with ideas and energy but no collateral start and grow businesses, and proponents value the autonomy and self-reliance that credit can support. The Nobel committee honored it for building development from below.
   - name: The averages are the answer
     claim: Randomized evaluations on four continents found modest, not transformative, effects. Demand was lower than expected, profits rarely rose and average household income didn’t change. Money that could do more elsewhere shouldn’t follow the old story.
   - name: Averages hide the people who gain
@@ -18,10 +18,10 @@ cruxes:
   - What counterfactual to use, since cash transfers and other programs compete for the same money.
 conditions: [story-bias, silence-about-failure]
 sources:
-  - title: Bangladeshi bank wins Nobel prize
-    publisher: Al Jazeera
+  - title: The Nobel Peace Prize 2006, press release
+    publisher: Norwegian Nobel Committee
     year: 2006
-    url: https://www.aljazeera.com/news/2006/10/13/bangladeshi-bank-wins-nobel-prize
+    url: https://www.nobelprize.org/prizes/peace/2006/press-release/
   - title: 'Six Randomized Evaluations of Microcredit: Introduction and Further Steps'
     publisher: 'Banerjee, Karlan and Zinman, American Economic Journal: Applied Economics 7(1)'
     year: 2015
@@ -38,6 +38,7 @@ sources:
     publisher: Banerjee, Breza, Duflo and Kinnan, NBER Working Paper 26346
     year: 2019
     url: https://www.nber.org/papers/w26346
+    note: Revised July 2024; the six-year business-asset and revenue figures refer to that version.
 ---
 
 ## The debate

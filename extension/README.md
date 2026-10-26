@@ -7,15 +7,19 @@ A small browser extension that puts the Giver’s Checklist where giving decisio
 
 ## Privacy
 
-It collects nothing and sends nothing. It reads the page title only to pre-fill the lookup, and the lookup opens only when you click. The single thing it stores is your choice to hide the card on a site, kept in your browser’s local extension storage. Permissions: `activeTab` (see the current tab when you click the icon) and `storage` (remember hidden sites).
+It has no analytics or background data transmission. The toolbar reads the active tab’s title when you open it; the donation-page card reads the title when you click Look it up. Search text travels in the lookup URL fragment (`#q=`), which is not included in the HTTP request. External registry searches receive the name only when you choose one. Ordinary website navigation still makes a request to the host. The single setting it stores is your choice to hide the card on a site, kept in local extension storage. Permissions: `activeTab` and `storage`. Read the [privacy notice](https://charitology.org/tools/browser-extension/privacy/).
 
 ## Install for development
 
 1. Run `npm run extension:zip`. This builds `public/downloads/charitology-extension.zip` and copies `src/data/checklist.json` into the package.
 2. **Chrome or Edge:** go to `chrome://extensions`, turn on Developer mode, choose *Load unpacked* and select the `extension/` folder. Unpacked loads use the default lookup site, `https://charitology.org`.
-3. **Firefox:** go to `about:debugging#/runtime/this-firefox`, choose *Load Temporary Add-on* and pick `extension/manifest.json`.
+3. **Firefox 140 or later:** go to `about:debugging#/runtime/this-firefox`, choose *Load Temporary Add-on* and pick `extension/manifest.json`.
 
 The packaged zip has the deployed site address baked in (from `SITE_URL` and `BASE_PATH`). Unpacked loads fall back to `https://charitology.org`.
+
+## Store packages
+
+The build also creates `charitology-chrome.zip` (without Firefox-only manifest fields) and `charitology-firefox.zip` (with the required data-collection declaration). Run `npm run check:extension` after packaging. The [store kit](../docs/extension-store-listing.md) has copy, privacy details, permission explanations and test steps. Promotional artwork is in `public/extension-store/`. No store listing is claimed until it is actually accepted.
 
 ## Files
 

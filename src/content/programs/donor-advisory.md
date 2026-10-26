@@ -8,8 +8,8 @@ statusNote: Advising needs trained advisors, a legal home and partners licensed 
 conditions: [parked-money, single-lens, proximity-pull]
 firstMilestone: A published advising protocol and conflict-of-interest policy, tried with ten volunteer donors whose anonymized feedback is published.
 help:
-  - Open an issue labeled program:donor-advisory with questions you think an advisor should ask.
-  - If you advise donors professionally and would follow the protocol pro bono, open an issue labeled program:donor-advisory.
+  - Open an issue labeled program with questions you think an advisor should ask.
+  - If you advise donors professionally and would follow the protocol pro bono, open an issue labeled program.
   - Try the Values Compass and the Portfolio Builder, then report where they fell short of the help you needed.
 related: [/tools/values-compass/, /tools/portfolio-builder/, /tools/legacy-planner/, /open-problems/the-payout-question/]
 ---

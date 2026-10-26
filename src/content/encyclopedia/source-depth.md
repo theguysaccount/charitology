@@ -27,7 +27,7 @@ Each level has a test question. Relief asks whether someone is fed, sheltered or
 
 ## Depth describes. It never grades.
 
-Every level is needed. Relief is the only thing that helps a hungry person tonight, and a change at the source can take a generation to arrive. A deeper level is not a better level, and nothing in the scale says a food bank matters less than a policy campaign. The scale exists so that a giver knows what they are paying for, and so the field can ask whether the system’s overall mix is right. That is the question behind the [Symptom Trap](/diagnosis/symptom-trap/).
+Every level is needed. Immediate food matters to a hungry person tonight, and a change at the source can take a generation to arrive. A deeper level is not a better level, and nothing in the scale says a food bank matters less than a policy campaign. The scale exists so that a giver knows what they are paying for, and so the field can ask whether the system’s overall mix is right. That is the question behind the [Symptom Trap](/diagnosis/symptom-trap/).
 
 ## How to place a piece of work
 
@@ -39,6 +39,6 @@ Every level is needed. Relief is the only thing that helps a hungry person tonig
 
 Level 4 comes from Humanity’s Checklist, which argues that world problems grow from six shared sources: the story we tell, how we coordinate, what we can picture, what our feeds reward, what we admire and who gets to build. Charitology treats the claim that changing them would help everything downstream as a hypothesis to test.
 
-## What nobody knows yet
+## What this project has not established
 
-No public dataset classifies the world’s giving by depth, so nobody knows the current mix. Measuring it is [Open Problem 1, the Depth Census](/open-problems/the-depth-census/). Measuring the effect of source-level work, which is diffuse, shared and slow, is [Open Problem 3](/open-problems/measuring-the-source/).
+Charitology has not produced a public estimate of the world’s giving by depth and has not established the current mix. Measuring it is [Open Problem 1, the Depth Census](/open-problems/the-depth-census/). Measuring the effect of source-level work, which is diffuse, shared and slow, is [Open Problem 3](/open-problems/measuring-the-source/).

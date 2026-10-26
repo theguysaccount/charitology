@@ -5,10 +5,10 @@ resolution: Resolves YES if the headline 2026 total in Giving USA 2027 (expected
 closes: 2027-05-31
 conditions: []
 sources:
-  - title: "Giving USA: $617.2B Was Given To Nonprofits During 2025"
-    publisher: The NonProfit Times, reporting Giving USA 2026
+  - title: "Giving USA: charitable giving rose to $617.20 billion in 2025"
+    publisher: Giving USA Foundation
     year: 2026
-    url: https://thenonprofittimes.com/npt_articles/giving-usa-617-2-b-was-given-to-nonprofits-during-2025/
+    url: https://givingusa.org/giving-usa-charitable-giving-rose-to-617-20-billion-in-2025-surpassing-the-600-billion-mark-for-the-first-time/
 forecasts: []
 ---
 

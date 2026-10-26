@@ -9,7 +9,7 @@ conditions: [single-lens]
 firstMilestone: Every framework sketch reviewed by at least two people who hold that framework, with their changes merged and credited.
 help:
   - Review the framework closest to your own values in src/data/frameworks.json and open a pull request explaining any score you would change.
-  - Open an issue labeled program:frameworks proposing a framework or tradition the file leaves out.
+  - Open an issue labeled program proposing a framework or tradition the file leaves out.
   - Write up a disagreement between two frameworks for the Disagreement Register.
 related: [/tools/values-compass/, /tools/portfolio-builder/, /record/disagreements/, /open-problems/moral-parliament-in-practice/]
 ---
@@ -26,7 +26,7 @@ Those numbers are editorial sketches, not measurements, and the file says so. Re
 
 ## Why it matters for the system
 
-The [Single Lens](/diagnosis/single-lens/) is the condition Charitology was founded to treat: most givers judge good through one framework without knowing it. A shared, public map of the frameworks turns an invisible lens into a visible choice. A giver can see their own priorities, see how the same money looks through the other seven lenses and decide knowing both. The map also gives researchers a common starting point for [Open Problem 16, Moral Parliament in Practice](/open-problems/moral-parliament-in-practice/), which asks how to allocate money when you aren’t sure which framework is right.
+The [Single Lens](/diagnosis/single-lens/) is the condition Charitology was founded to treat: considering several frameworks may reveal choices that one lens misses. This is a hypothesis, not a measured claim about most givers. A shared, public map of the frameworks turns an invisible lens into a visible choice. A giver can see their own priorities, see how the same money looks through the other seven lenses and decide knowing both. The map also gives researchers a common starting point for [Open Problem 16, Moral Parliament in Practice](/open-problems/moral-parliament-in-practice/), which asks how to allocate money when you aren’t sure which framework is right.
 
 ## Risks and limits
 

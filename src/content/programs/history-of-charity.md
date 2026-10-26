@@ -9,7 +9,7 @@ conditions: [short-horizon, silence-about-failure]
 firstMilestone: Twenty sourced case studies spanning at least four centuries and five world regions, with successes, failures and mixed results all represented.
 help:
   - Write a sourced case study of a historical success, failure or mixed result and open a pull request.
-  - Open an issue labeled program:history proposing a case the collection is missing, especially from outside Europe and North America.
+  - Open an issue labeled program proposing a case the collection is missing, especially from outside Europe and North America.
   - Check an existing case’s sources and lessons.
 related: [/record/case-studies/, /record/traditions/, /open-problems/measuring-the-source/, /programs/failure-lab/]
 sources:

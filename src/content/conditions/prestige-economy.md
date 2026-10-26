@@ -1,7 +1,7 @@
 ---
 title: The Prestige Economy
 number: 12
-summary: Status in giving flows to the size and visibility of a gift, such as the name on the building, the gala or the headline, not to what the gift achieved.
+summary: Charitology hypothesizes that public recognition can favor a gift’s size and visibility over its results. The size of that effect is not established here.
 evidence: hypothesis
 node: signals
 upstream: status
@@ -19,15 +19,15 @@ sources:
 
 ## What it looks like
 
-A gift’s size makes the news. Its results rarely do. Naming rights, galas and honor rolls reward visible generosity, and the reward is the same whether the gift saved a thousand lives or none.
+A naming right or public honor can recognize a visible gift without reporting its later results. This illustrates the proposed mechanism; it does not show how common it is or what it does to giving.
 
 ## Why it happens
 
-People give for many reasons, and feeling good about giving is one of them. The economist James Andreoni called this the “warm glow,” and it is well documented. The problem is what the glow attaches to. Today it attaches to the act and the size of giving, not to its effect. Humanity’s Checklist goes further: status has turned into the worship of money, and more than $300 billion a year flows into designer goods. If generosity became the status symbol, the status economy would start funding the cure.
+People give for many reasons, and feeling good about giving is one of them. The economist James Andreoni called this the “warm glow,” in a model of giving. Warm glow concerns satisfaction from giving itself; it does not by itself establish a preference for large or public gifts. Humanity’s Checklist proposes redirecting status toward generosity. Whether that would improve giving is a hypothesis.
 
 ## This is a hypothesis
 
-Charitology’s claim is that prestige pulls money toward visible, nameable gifts and away from effective ones. The warm glow is documented. Whether prestige systematically misdirects money, and by how much, has not been measured.
+Charitology’s claim is that prestige pulls money toward visible, nameable gifts and away from effective ones. The warm-glow model is published. The sources here do not establish whether prestige systematically shifts money away from effective opportunities or by how much.
 
 ## No one is to blame
 

@@ -10,7 +10,7 @@ firstMilestone: Reviews of 25 widely funded interventions, each graded and check
 help:
   - Write a review of an intervention you know well, following the Intervention Database format, and open a pull request.
   - Check the sources of an existing review and note in the pull request what you verified.
-  - Open an issue labeled program:evidence naming an intervention that needs a review.
+  - Open an issue labeled program naming an intervention that needs a review.
 related: [/record/interventions/, /record/evidence-library/, /programs/replication-program/, /method/]
 sources:
   - title: About us
@@ -33,7 +33,7 @@ The program builds on reviews that already exist instead of redoing them. Cochra
 
 ## Why it matters for the system
 
-The [Measurement Gap](/diagnosis/measurement-gap/) means most charities can count what they do but can’t tell what it changed. A small charity can’t close that gap alone, and it may not have to. If a good review shows that an intervention works in settings like its own, the charity can borrow that knowledge instead of building it from scratch. Shared reviews turn measurement from a cost every organization pays separately into a common good the whole field can use.
+The [Measurement Gap](/diagnosis/measurement-gap/) concerns the difference between counting activity and estimating its effects. A small charity may benefit from evaluation partners and shared research. If a good review shows that an intervention works in settings like its own, the charity can borrow that knowledge instead of building it from scratch. Shared reviews turn measurement from a cost every organization pays separately into a common good the whole field can use.
 
 Reviews also make the gaps visible. An intervention graded unknown is a finding, and a target for the [Replication Program](/programs/replication-program/) or for new research.
 

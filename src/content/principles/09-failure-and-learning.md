@@ -1,7 +1,7 @@
 ---
 title: Failure and learning
 chapter: 9
-summary: A field learns most from what doesn’t work, and charity rarely says what doesn’t work. This chapter covers why failure stays silent, what the silence costs, and the practices that turn failure into shared knowledge, from failure reports to replication, red teams and scored forecasts.
+summary: Sharing unsuccessful results can help a field learn. This chapter covers why failure stays silent, what the silence costs, and the practices that turn failure into shared knowledge, from failure reports to replication, red teams and scored forecasts.
 sources:
   - title: '“Scared Straight” and other juvenile awareness programs for preventing juvenile delinquency'
     publisher: Anthony Petrosino and colleagues, Cochrane Database of Systematic Reviews
@@ -35,11 +35,11 @@ sources:
     url: https://scores.readthedocs.io/en/0.9.3/tutorials/Brier_Score.html
 ---
 
-## The most valuable data nobody publishes
+## Learning from unsuccessful results
 
-In medicine, a failed drug trial can be published as a result in its own right, and the next team learns from it. In charity, a published failure can cost the next grant. So the safe move is silence. Programs that don’t work tend to fade quietly from annual reports, and when someone tries the same idea a few years later, they start from zero. That is [the Silence About Failure](/diagnosis/silence-about-failure/), and it costs the field the data it most needs: what doesn’t work, and why.
+An unsuccessful result can help later teams learn. Charitology hypothesizes that concern about losing support can discourage disclosure in charity; the sources here do not establish its frequency or funding effect. Selective reporting also occurs in medicine. That is [the Silence About Failure](/diagnosis/silence-about-failure/), and it costs the field the data it most needs: what doesn’t work, and why.
 
-Nobody is to blame for this. People’s jobs, and the people they serve, depend on the next grant. The incentive is the problem, not the people facing it.
+The hypothesis concerns incentives, not character. It should be tested without assuming what any individual thinks or why they disclose a result.
 
 ## When good intentions do harm
 
@@ -53,11 +53,11 @@ Failure is not only something programs do. Studies fail too.
 
 In 2015 the Open Science Collaboration repeated 100 published psychology studies. Ninety-seven percent of the originals had reported statistically significant results, but only 36 percent of the replications did, and the effects found were on average about half as large. Some findings that shape how charities raise money are now being retested. A pre-registered replication published in 2024 found no support for the [identifiable victim effect](/record/encyclopedia/identifiable-victim-effect/), one of the best-known findings about giving.
 
-Estimates fail as well. In 2011 GiveWell found five errors in the spreadsheet behind a standard global health reference’s cost-effectiveness estimate for deworming. Together they overstated it by a factor of about 100. Nobody has systematically checked how often charity impact findings hold up when tested again. That is [Open Problem 10, the Replication Rate](/open-problems/the-replication-rate/), and the [Replication Program](/programs/replication-program/) is meant to work on it.
+Estimates fail as well. In 2011 GiveWell found five errors in the spreadsheet behind a standard global health reference’s cost-effectiveness estimate for deworming. Together they overstated it by a factor of about 100. Charitology has not established a sector-wide rate for how often charity impact findings hold up when tested again. That is [Open Problem 10, the Replication Rate](/open-problems/the-replication-rate/), and the [Replication Program](/programs/replication-program/) is meant to work on it.
 
 ## Organizations that publish their failures
 
-A few organizations have shown that admitting failure is possible. Engineers Without Borders Canada has published failure reports since 2008, and a how-to guide based on its process, written by Fail Forward, helps other organizations do the same. GiveWell keeps a public page listing its own mistakes in research, grantmaking, strategy and operations, and the lessons it drew from them. Whether disclosure like this costs or earns trust, and funding, has not been measured. That is [Open Problem 9, the Failure Commons](/open-problems/the-failure-commons/). Charitology’s [Failure Archive](/record/failure-archive/) is the commons in seed form. See also the [Failure Lab](/programs/failure-lab/).
+A few organizations have shown that admitting failure is possible. Engineers Without Borders Canada has published failure reports since 2008, and a how-to guide based on its process, written by Fail Forward, helps other organizations do the same. GiveWell keeps a public page listing its own mistakes in research, grantmaking, strategy and operations, and the lessons it drew from them. These examples do not establish whether disclosure costs or earns trust and funding. That is [Open Problem 9, the Failure Commons](/open-problems/the-failure-commons/). Charitology’s [Failure Archive](/record/failure-archive/) is the commons in seed form. See also the [Failure Lab](/programs/failure-lab/).
 
 ## Practices that turn failure into learning
 
@@ -65,7 +65,7 @@ Science has developed habits that make failure useful. Each has a place in chari
 
 - **Pre-registration.** State in advance what you will measure and what would count as success, so a disappointing result can’t be quietly redefined. The 2024 replication above was pre-registered.
 - **Red teams.** Ask people whose job is to find the flaws to attack a claim before it is published. Charitology publishes no ratings of named charities until its method has passed public [red-team](/programs/red-team/) review.
-- **Scored forecasts.** Before funding a program, write down how likely you think it is to work, then check. A [Brier score](/record/lexicon/#brier-score) measures how close probability forecasts come to what happened, from 0 for perfect to 1 for the worst possible. Over many forecasts, it shows whether a funder’s confidence is [calibrated](/record/lexicon/#calibration). See the [Forecasting Platform](/tools/forecasting-platform/).
+- **Scored forecasts.** Before funding a program, write down how likely you think it is to work, then check. A [Brier score](/record/lexicon/#brier-score) measures how close probability forecasts come to what happened, from 0 for perfect to 1 for the worst possible. The average Brier score combines calibration and the ability to distinguish likely from unlikely outcomes. Calibration should also be checked directly across many forecasts; a score alone is not a complete calibration test. See the [Forecasting Platform](/tools/forecasting-platform/).
 - **Failure reports.** Publish what didn’t work, what was learned and what changed, on a regular schedule, so that disclosure becomes routine rather than an admission.
 
 ## Charitology’s own failures

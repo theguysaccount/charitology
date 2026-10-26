@@ -8,7 +8,7 @@ statusNote: The charter and draft design principles are written. The first pilot
 conditions: [restriction-reflex, prestige-economy]
 firstMilestone: A final set of design principles for workplace giving, piloted at one company that publishes its before-and-after results.
 help:
-  - If you run workplace giving or matching at a company, open an issue labeled program:corporate to talk about a pilot.
+  - If you run workplace giving or matching at a company, open an issue labeled program to talk about a pilot.
   - Share the rules of a matching program you know, with any public documents, so designs can be compared.
   - Critique the draft principles on this page.
 related: [/tools/values-compass/, /tools/giving-dashboard/, /open-problems/the-optimal-restriction/, /open-problems/the-status-flip/]

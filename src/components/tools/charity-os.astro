@@ -1,0 +1,405 @@
+<section class="tool os-tool" aria-labelledby="os-title">
+  <div class="tool-head">
+    <div><h2 id="os-title">Your working space</h2><p class="note">Mission, programs, grants, tasks and evidence in one place.</p></div>
+    <span id="os-save-state" class="note" role="status">Opening your workspace…</span>
+  </div>
+
+  <div id="os-storage" class="callout" hidden><strong>This browser is not keeping a saved copy.</strong> You can keep working on this page. Export JSON before leaving or reloading.</div>
+  <div id="os-recovery" class="callout" hidden><p>Your saved workspace could not be read. It has been left in place. Download the unreadable copy before starting again, or import a valid JSON backup.</p><div class="btn-row"><button type="button" class="btn btn-small" id="os-recovery-export">Download unreadable saved data</button><button type="button" class="btn btn-ghost btn-small" id="os-recovery-reset">Start an empty workspace</button></div></div>
+  <div id="os-conflict" class="callout" hidden>
+    <p>Another tab changed this workspace. Choose which version to keep before saving more changes.</p>
+    <div class="btn-row"><button type="button" class="btn btn-small" id="os-load-other">Load the other tab’s version</button><button type="button" class="btn btn-ghost btn-small" id="os-keep-local">Keep this page’s version</button></div>
+  </div>
+
+  <details class="os-context" id="os-context">
+    <summary>Mission and context <span id="os-org-label">· Start here</span></summary>
+    <form id="os-context-form" class="os-form">
+      <div class="os-fields">
+        <div class="field"><label for="os-organization">Organization or team</label><input id="os-organization" name="organization" maxlength="160" autocomplete="organization" /></div>
+        <div class="field"><label for="os-currency">Currency code</label><input id="os-currency" name="currency" value="USD" minlength="3" maxlength="3" pattern="[A-Za-z]{3}" required aria-describedby="os-currency-hint" /><span class="hint" id="os-currency-hint">One currency for every amount, such as USD, GBP or EUR. Changing the code does not convert amounts.</span></div>
+        <div class="field os-wide"><label for="os-mission">What change are you working toward?</label><textarea id="os-mission" name="mission" rows="3" maxlength="2000"></textarea></div>
+        <div class="field os-wide"><label for="os-community">Who shapes the work, and what is the context?</label><textarea id="os-community" name="community" rows="3" maxlength="2000" aria-describedby="os-context-hint"></textarea><span class="hint" id="os-context-hint">Use program-level notes. Record how the people affected help decide what happens.</span></div>
+      </div>
+      <button type="submit" class="btn btn-small">Save context</button>
+    </form>
+  </details>
+
+  <div class="kpis os-kpis" aria-label="Workspace totals">
+    <div class="kpi"><div class="k-label">Active programs</div><div class="k-value" id="os-active">0</div><div class="k-note" id="os-project-count">0 total projects</div></div>
+    <div class="kpi"><div class="k-label">Pending grant requests</div><div class="k-value" id="os-requested">$0</div><div class="k-note" id="os-awarded">$0 recorded as awarded</div></div>
+    <div class="kpi"><div class="k-label">Open tasks</div><div class="k-value" id="os-task-count">0</div><div class="k-note" id="os-overdue">0 overdue</div></div>
+    <div class="kpi"><div class="k-label">Evidence log</div><div class="k-value" id="os-observation-count">0</div><div class="k-note">observations, not impact scores</div></div>
+  </div>
+  <p class="note os-budget" id="os-budget">No program budgets entered.</p>
+  <div class="os-due"><h3>Next grant deadlines</h3><ul id="os-deadlines"></ul></div>
+
+  <nav class="os-nav" aria-label="Workspace sections"><a href="#os-projects">Programs</a><a href="#os-grants">Grant pipeline</a><a href="#os-tasks">Tasks</a><a href="#os-outcomes">Evidence log</a></nav>
+  <div class="os-filterbar">
+    <div class="field"><label for="os-search">Search records</label><input type="search" id="os-search" placeholder="Name, owner, funder, notes…" /></div>
+    <div class="field"><label for="os-project-filter">Project</label><select id="os-project-filter"><option value="all">All projects</option></select></div>
+    <button class="btn btn-ghost btn-small" type="button" id="os-clear-filters">Clear filters</button>
+  </div>
+  <p class="note">Filters affect the lists below. Totals and exports always include the whole workspace.</p>
+
+  <section class="os-section" id="os-projects" aria-labelledby="os-projects-title">
+    <div class="os-section-head"><h3 id="os-projects-title">Programs and projects</h3><button class="btn btn-small" type="button" data-add="projects">Add project</button></div>
+    <div class="field os-status-filter"><label for="os-project-status">Project status</label><select id="os-project-status" data-filter="projects"><option value="all">All statuses</option><option value="planned">Planned</option><option value="active">Active</option><option value="paused">Paused</option><option value="complete">Complete</option></select></div>
+    <div id="os-project-list" class="os-cards"></div>
+  </section>
+  <section class="os-section" id="os-grants" aria-labelledby="os-grants-title">
+    <div class="os-section-head"><h3 id="os-grants-title">Grant pipeline</h3><button class="btn btn-small" type="button" data-add="grants">Add grant</button></div>
+    <p class="note">Track real opportunities and your next step. Amounts record your plans and records; no money moves here.</p>
+    <div id="os-pipeline" class="os-pipeline" aria-label="Grants by stage"></div>
+    <div class="field os-status-filter"><label for="os-grant-status">Grant stage</label><select id="os-grant-status" data-filter="grants"><option value="all">All stages</option><option value="prospect">Prospect</option><option value="drafting">Drafting</option><option value="submitted">Submitted</option><option value="awarded">Awarded</option><option value="declined">Declined</option><option value="closed">Closed</option></select></div>
+    <div id="os-grant-list" class="os-cards"></div>
+  </section>
+  <section class="os-section" id="os-tasks" aria-labelledby="os-tasks-title">
+    <div class="os-section-head"><h3 id="os-tasks-title">Tasks</h3><button class="btn btn-small" type="button" data-add="tasks">Add task</button></div>
+    <div class="field os-status-filter"><label for="os-task-status">Task status</label><select id="os-task-status" data-filter="tasks"><option value="all">All statuses</option><option value="todo">To do</option><option value="in-progress">In progress</option><option value="done">Done</option></select></div>
+    <div id="os-task-list" class="os-cards"></div>
+  </section>
+  <section class="os-section" id="os-outcomes" aria-labelledby="os-outcomes-title">
+    <div class="os-section-head"><h3 id="os-outcomes-title">Evidence and outcomes log</h3><button class="btn btn-small" type="button" data-add="outcomes">Add observation</button></div>
+    <p class="note">Record outputs, outcomes, null results and harms, with units and an honest evidence label. A recorded change does not show what caused it. Unknown values can stay blank.</p>
+    <div class="field os-status-filter"><label for="os-outcome-status">Evidence status</label><select id="os-outcome-status" data-filter="outcomes"><option value="all">All evidence</option><option value="unknown">Unknown</option><option value="self-reported">Self-reported</option><option value="documented">Documented observation</option><option value="independent">Independently checked</option></select></div>
+    <div id="os-outcome-list" class="os-cards"></div>
+  </section>
+
+  <div class="os-files">
+    <h3>Your copy</h3>
+    <p class="note">This workspace stays in this browser. JSON keeps all fields and can restore them; CSV is for working with the records in a spreadsheet. Export a copy regularly.</p>
+    <div class="btn-row"><button type="button" class="btn btn-small" id="os-json">Export JSON</button><button type="button" class="btn btn-ghost btn-small" id="os-csv">Export CSV</button><button type="button" class="btn btn-ghost btn-small" id="os-import">Import JSON</button><button type="button" class="btn btn-ghost btn-small" id="os-sample">Try a fictional example</button><button type="button" class="btn btn-ghost btn-small" id="os-clear">Clear workspace</button><button type="button" class="btn btn-ghost btn-small" id="os-undo" hidden>Undo last change</button></div>
+    <input type="file" id="os-file" accept=".json,application/json" hidden />
+    <div id="os-import-preview" class="callout" hidden><p id="os-import-summary"></p><p class="note">Importing replaces this workspace. Export your current copy first if you want to keep it.</p><div class="btn-row"><button type="button" class="btn btn-small" id="os-import-apply">Replace workspace with this file</button><button type="button" class="btn btn-ghost btn-small" id="os-import-cancel">Cancel import</button></div></div>
+    <p id="os-status" class="os-status" role="status" aria-live="polite"></p>
+  </div>
+
+  <dialog id="os-editor" class="os-dialog" aria-labelledby="os-editor-title">
+    <form id="os-editor-form">
+      <div class="os-section-head"><h3 id="os-editor-title">Add a record</h3><button type="button" id="os-editor-close" class="btn btn-ghost btn-small">Close</button></div>
+      <p class="note" id="os-editor-hint"></p>
+      <div id="os-editor-fields" class="os-fields"></div>
+      <p id="os-editor-error" class="os-error" role="alert" hidden></p>
+      <div class="btn-row"><button type="submit" class="btn btn-small" id="os-editor-save">Save record</button><button type="button" class="btn btn-ghost btn-small" id="os-editor-cancel">Cancel</button></div>
+    </form>
+  </dialog>
+  <noscript><p class="callout">Charity OS needs JavaScript to work. Its records are saved in your browser.</p></noscript>
+</section>
+
+<style>
+  .os-tool :global([hidden]) { display: none !important; }
+  .os-tool { --os-line: var(--rule); }
+  .os-tool h2, .os-tool h3, .os-tool p { overflow-wrap: anywhere; }
+  .os-tool > .callout { margin-bottom: 1.5rem; }
+  .os-context { border-block: 1px solid var(--rule); padding: 1rem 0; margin-bottom: 1.5rem; }
+  .os-context summary { cursor: pointer; font-weight: 700; }
+  #os-org-label { font-weight: 400; color: var(--ink-3); }
+  .os-form { margin-top: 1rem; }
+  .os-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .3rem 1rem; }
+  .os-wide { grid-column: 1 / -1; }
+  .os-fields :global(textarea) { min-height: 5rem; resize: vertical; }
+  .os-kpis { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+  .os-kpis .k-value { font-size: clamp(1.3rem, 3vw, 2rem); overflow-wrap: anywhere; }
+  .os-budget { margin: .8rem 0 1.4rem; }
+  .os-due { background: var(--bg-2); border: 1px solid var(--rule); padding: 1rem 1.25rem; }
+  .os-due h3 { margin: 0; font-size: 1rem; }
+  .os-due ul { margin: .7rem 0 0; padding-left: 1.2rem; }
+  .os-nav { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; border-bottom: 1px solid var(--rule); padding: 1.25rem 0; margin-bottom: 1rem; }
+  .os-nav a { font-weight: 600; }
+  .os-filterbar { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; align-items: end; gap: .75rem; }
+  .os-filterbar .field { margin: 0; }
+  .os-section { margin-top: 2.25rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); scroll-margin-top: 5rem; }
+  .os-section-head { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: space-between; align-items: center; margin-bottom: .75rem; }
+  .os-section-head h3 { margin: 0; }
+  .os-status-filter { max-width: 17rem; margin-top: 1rem; }
+  .os-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 285px), 1fr)); gap: 1rem; }
+  .os-cards :global(.os-card) { border: 1px solid var(--rule); padding: 1.1rem; min-width: 0; background: var(--surface); }
+  .os-cards :global(.os-card h4) { margin: 0 0 .6rem; font-family: var(--font-display); font-size: 1.16rem; line-height: 1.35; overflow-wrap: anywhere; }
+  .os-cards :global(.os-card p) { font-size: .92rem; line-height: 1.5; margin: .6rem 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .os-cards :global(.os-card .note) { color: var(--ink-3); font-size: .84rem; }
+  .os-cards :global(.os-card dl) { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .3rem .7rem; font-size: .85rem; margin: .85rem 0; }
+  .os-cards :global(.os-card dt) { color: var(--ink-3); }
+  .os-cards :global(.os-card dd) { margin: 0; overflow-wrap: anywhere; }
+  .os-cards :global(.os-card .btn-row) { margin-top: 1rem; gap: .4rem; }
+  .os-cards :global(.os-card .os-late) { color: var(--critical); font-weight: 600; }
+  .os-cards :global(.os-empty) { grid-column: 1 / -1; border: 1px dashed var(--rule); color: var(--ink-3); padding: 1.25rem; margin: 0; }
+  .os-cards :global(.os-badges) { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .os-pipeline { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .os-pipeline :global(span) { border: 1px solid var(--rule); padding: .2rem .6rem; color: var(--ink-2); font-size: .8rem; }
+  .os-files { border-top: 1px solid var(--rule); margin-top: 2rem; padding-top: 1rem; }
+  .os-status { min-height: 1.6em; font-size: .9rem; }
+  .os-dialog { color: var(--ink); background: var(--surface); border: 1px solid var(--rule); padding: clamp(1rem, 4vw, 2rem); width: min(680px, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); overflow-y: auto; }
+  .os-dialog::backdrop { background: rgb(20 30 30 / .55); }
+  .os-dialog h3 { margin: 0; }
+  .os-dialog :global(.os-wide) { grid-column: 1 / -1; }
+  .os-error { border-left: 3px solid var(--critical); padding-left: .7rem; }
+  @media (max-width: 640px) { .os-fields, .os-filterbar { grid-template-columns: 1fr; } .os-filterbar > button { justify-self: start; } }
+</style>
+
+<script>
+  import { $, $$, clear, h } from '../../lib/client/dom';
+  import { download } from '../../lib/client/files';
+  import { confirmTwice } from '../../lib/client/confirm';
+  import { canPersist } from '../../lib/client/persist';
+  import { OS_KEY, PROJECT_STATUSES, GRANT_STATUSES, TASK_STATUSES, EVIDENCE, blankWorkspace, deleteRecord, exampleWorkspace, labels, loadWorkspace, localDate, newId, parseWorkspace, saveWorkspace, summarizeWorkspace, validateWorkspace, workspaceCsv, workspaceJson, type Workspace, type Kind } from '../../lib/client/charity-os';
+
+  const loaded = loadWorkspace();
+  let workspace = loaded.workspace;
+  let undo: Workspace | undefined;
+  let imported: Workspace | undefined;
+  let editing: { kind: Kind; id?: string } | undefined;
+  let conflict = false;
+  let contextDirty = false;
+  let recovery = !!loaded.error;
+  const dialog = $<HTMLDialogElement>('#os-editor');
+  const editorForm = $<HTMLFormElement>('#os-editor-form');
+  const contextForm = $<HTMLFormElement>('#os-context-form');
+  const fileInput = $<HTMLInputElement>('#os-file');
+  const search = $<HTMLInputElement>('#os-search');
+  const projectFilter = $<HTMLSelectElement>('#os-project-filter');
+  const kinds: Kind[] = ['projects', 'grants', 'tasks', 'outcomes'];
+  const names: Record<Kind, string> = { projects: 'project', grants: 'grant', tasks: 'task', outcomes: 'observation' };
+  const depthNames = ['Relief', 'Repair', 'Prevention', 'Structure', 'Source'];
+  const targets = { projects: '#os-project-list', grants: '#os-grant-list', tasks: '#os-task-list', outcomes: '#os-outcome-list' };
+  const say = (message: string) => { $('#os-status').textContent = message; };
+  $('#os-storage').hidden = canPersist();
+
+  function currency(amount: number) {
+    try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: workspace.currency, maximumFractionDigits: 2 }).format(amount); }
+    catch { return `${workspace.currency} ${amount.toLocaleString('en-US')}`; }
+  }
+  const dateLabel = (date: string) => date ? new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Not set';
+  const projectName = (projectId: string) => workspace.projects.find((p) => p.id === projectId)?.title ?? 'No linked project';
+
+  function persist() {
+    const saved = saveWorkspace(workspace);
+    $('#os-storage').hidden = saved;
+    $('#os-save-state').textContent = saved ? 'Saved in this browser' : 'Working on this page only';
+  }
+
+  function commit(next: Workspace, message: string) {
+    if (recovery) { say('The unreadable saved copy is protected. Download it, then start an empty workspace or import a valid backup.'); $('#os-recovery').scrollIntoView({ block: 'center' }); return false; }
+    if (conflict) { say('Another tab changed the workspace. Choose a version in the notice above before saving.'); $('#os-conflict').scrollIntoView({ block: 'center' }); return false; }
+    try { next = validateWorkspace(next); }
+    catch (error) { say(error instanceof Error ? error.message : 'That change could not be saved.'); return false; }
+    undo = structuredClone(workspace);
+    workspace = next;
+    persist();
+    render();
+    say(message);
+    return true;
+  }
+
+  function syncContext() {
+    for (const key of ['organization', 'currency', 'mission', 'community'] as const) ($(`#os-${key}`) as HTMLInputElement | HTMLTextAreaElement).value = workspace[key];
+    contextDirty = false;
+  }
+
+  function rowMatches(row: Record<string, unknown>, kind: Kind) {
+    const status = $<HTMLSelectElement>(`[data-filter="${kind}"]`).value;
+    if (status !== 'all' && row[kind === 'outcomes' ? 'evidence' : 'status'] !== status) return false;
+    if (projectFilter.value !== 'all') {
+      if (kind === 'projects' ? row.id !== projectFilter.value : (row.projectId || 'none') !== projectFilter.value) return false;
+    }
+    const query = search.value.trim().toLowerCase();
+    return !query || `${Object.values(row).join(' ')} ${row.projectId ? projectName(String(row.projectId)) : ''}`.toLowerCase().includes(query);
+  }
+
+  function details(entries: [string, string][]) {
+    const list = h('dl');
+    for (const [key, value] of entries) list.append(h('dt', {}, key), h('dd', {}, value));
+    return list;
+  }
+
+  function buttons(kind: Kind, id: string, title: string) {
+    const edit = h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'aria-label': `Edit ${title}` }, 'Edit');
+    edit.addEventListener('click', () => openEditor(kind, id));
+    const remove = h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'aria-label': `Delete ${title}` }, 'Delete');
+    confirmTwice(remove, { prompt: 'Confirm delete', announce: say, message: `Delete ${title}? Click the same button again to confirm.${kind === 'projects' ? ' Linked grants, tasks and observations will be kept without a project.' : ''}`, action: () => {
+      if (commit(deleteRecord(workspace, kind, id), `Deleted ${title}.${kind === 'projects' ? ' Linked records were kept.' : ''} Undo is available below.`)) $<HTMLButtonElement>('#os-undo').focus();
+    } });
+    const group = h('div', { class: 'btn-row' }, edit, remove);
+    if (kind === 'tasks') {
+      const task = workspace.tasks.find((t) => t.id === id)!;
+      const done = h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'aria-label': `${task.status === 'done' ? 'Reopen' : 'Complete'} ${title}` }, task.status === 'done' ? 'Reopen' : 'Mark done');
+      done.addEventListener('click', () => { const next = structuredClone(workspace); const target = next.tasks.find((t) => t.id === id)!; target.status = target.status === 'done' ? 'todo' : 'done'; commit(next, `${title}: ${labels[target.status]}.`); });
+      group.prepend(done);
+    }
+    return group;
+  }
+
+  function renderLists() {
+    for (const kind of kinds) {
+      const container = $(targets[kind]); clear(container);
+      let rows = [...workspace[kind]] as any[];
+      rows = rows.filter((row) => rowMatches(row, kind));
+      if (kind === 'tasks') rows.sort((a, b) => Number(a.status === 'done') - Number(b.status === 'done') || ({ high: 0, normal: 1, low: 2 }[a.priority as 'high']) - ({ high: 0, normal: 1, low: 2 }[b.priority as 'high']) || (a.due || '9999').localeCompare(b.due || '9999'));
+      if (kind === 'grants') rows.sort((a, b) => (a.deadline || '9999').localeCompare(b.deadline || '9999'));
+      if (kind === 'outcomes') rows.sort((a, b) => b.date.localeCompare(a.date));
+      if (!rows.length) container.append(h('p', { class: 'os-empty' }, workspace[kind].length ? `No ${kind === 'outcomes' ? 'observations' : kind} match these filters.` : `No ${kind === 'outcomes' ? 'observations' : kind} yet. Add your first ${names[kind]} above, or try the fictional example below.`));
+      for (const row of rows) {
+        const title = row.title ?? row.indicator;
+        const card = h('article', { class: 'os-card' }, h('h4', {}, title));
+        const badge = row.status ?? row.evidence;
+        card.append(h('div', { class: 'os-badges' }, h('span', { class: 'chip' }, labels[badge]), kind === 'tasks' && row.priority === 'high' ? h('span', { class: 'chip' }, 'High priority') : null));
+        if (kind === 'projects') {
+          card.append(details([['Owner', row.owner || 'Not assigned'], ['Target date', dateLabel(row.due)], ['Depth hypothesis', row.depth === null ? 'Unknown' : `${row.depth} · ${depthNames[row.depth]}`], ['Budget / spent', `${currency(row.budget)} / ${currency(row.spent)}`]]));
+          if (row.goal) card.append(h('p', {}, row.goal));
+          if (row.spent > row.budget) card.append(h('p', { class: 'os-late' }, `${currency(row.spent - row.budget)} above the recorded budget.`));
+        }
+        if (kind === 'grants') {
+          card.append(details([['Funder', row.funder || 'Not set'], ['Project', projectName(row.projectId)], ['Owner', row.owner || 'Not assigned'], ['Requested', currency(row.requested)], ['Awarded', currency(row.awarded)], ['Deadline', dateLabel(row.deadline)]]));
+          if (row.next) card.append(h('p', {}, h('strong', {}, 'Next: '), row.next));
+          if (row.deadline && row.deadline < localDate() && ['prospect', 'drafting', 'submitted'].includes(row.status)) card.append(h('p', { class: 'os-late' }, 'Deadline has passed. Check the next step.'));
+        }
+        if (kind === 'tasks') {
+          card.append(details([['Project', projectName(row.projectId)], ['Owner', row.owner || 'Not assigned'], ['Due', dateLabel(row.due)], ['Priority', labels[row.priority]]]));
+          if (row.due && row.due < localDate() && row.status !== 'done') card.append(h('p', { class: 'os-late' }, 'Overdue'));
+        }
+        if (kind === 'outcomes') {
+          card.append(details([['Project', projectName(row.projectId)], ['Date', dateLabel(row.date)], ['Observed value', row.value === null ? 'Unknown' : `${row.value.toLocaleString('en-US')} ${row.unit}`.trim()]]));
+          if (row.source) card.append(h('a', { href: row.source, target: '_blank', rel: 'noopener noreferrer' }, 'Open evidence source'));
+        }
+        if (row.notes) card.append(h('p', { class: 'note' }, row.notes));
+        card.append(buttons(kind, row.id, title)); container.append(card);
+      }
+    }
+  }
+
+  function render() {
+    $('#os-org-label').textContent = workspace.organization ? `· ${workspace.organization}` : '· Start here';
+    const previousFilter = projectFilter.value;
+    clear(projectFilter); projectFilter.append(h('option', { value: 'all' }, 'All projects'), h('option', { value: 'none' }, 'No linked project'));
+    for (const project of workspace.projects) projectFilter.append(h('option', { value: project.id }, project.title));
+    projectFilter.value = [...projectFilter.options].some((o) => o.value === previousFilter) ? previousFilter : 'all';
+    const totals = summarizeWorkspace(workspace);
+    $('#os-active').textContent = String(totals.activeProjects); $('#os-project-count').textContent = `${workspace.projects.length} total projects`;
+    $('#os-requested').textContent = currency(totals.requested); $('#os-awarded').textContent = `${currency(totals.awarded)} recorded as awarded`;
+    $('#os-task-count').textContent = String(totals.openTasks); $('#os-overdue').textContent = `${totals.overdueTasks} overdue`;
+    $('#os-observation-count').textContent = String(totals.observations);
+    $('#os-budget').textContent = `All project budgets: ${currency(totals.budget)}. Spending recorded: ${currency(totals.spent)}. Difference: ${currency(totals.budget - totals.spent)}. Grant amounts are separate and are not added to project budgets.`;
+    const deadlines = $('#os-deadlines'); clear(deadlines);
+    if (!totals.deadlines.length) deadlines.append(h('li', {}, 'No pending grants with a deadline yet.'));
+    for (const grant of totals.deadlines.slice(0, 4)) deadlines.append(h('li', {}, `${dateLabel(grant.deadline)}${grant.deadline < localDate() ? ' · passed' : ''} — ${grant.title}${grant.owner ? ` · ${grant.owner}` : ''}`));
+    const pipeline = $('#os-pipeline'); clear(pipeline);
+    for (const stage of GRANT_STATUSES) pipeline.append(h('span', {}, `${labels[stage]} · ${workspace.grants.filter((g) => g.status === stage).length}`));
+    $('#os-undo').hidden = !undo;
+    renderLists();
+  }
+
+  type Field = { key: string; label: string; type?: 'text' | 'textarea' | 'date' | 'number' | 'select'; required?: boolean; max?: number; options?: [string, string][]; hint?: string; wide?: boolean; negative?: boolean; nullable?: boolean };
+  const optionList = (values: readonly string[]): [string, string][] => values.map((value) => [value, labels[value]]);
+  const projectField = (): Field => ({ key: 'projectId', label: 'Linked project', type: 'select', options: [['', 'No linked project'], ...workspace.projects.map((p): [string, string] => [p.id, p.title])] });
+  function fieldConfig(kind: Kind): Field[] {
+    const notes: Field = { key: 'notes', label: 'Notes and limits', type: 'textarea', max: 4000, wide: true };
+    const owner: Field = { key: 'owner', label: 'Owner or role', max: 120 };
+    if (kind === 'projects') return [
+      { key: 'title', label: 'Project or program name', required: true, max: 160 }, { key: 'status', label: 'Status', type: 'select', options: optionList(PROJECT_STATUSES) }, owner,
+      { key: 'due', label: 'Target date (optional)', type: 'date' }, { key: 'depth', label: 'Depth hypothesis', type: 'select', options: [['', 'Unknown'], ...depthNames.map((name, i): [string, string] => [String(i), `${i} · ${name}`])], hint: 'Depth describes the work. Every level is needed.' },
+      { key: 'budget', label: `Budget (${workspace.currency})`, type: 'number', required: true }, { key: 'spent', label: `Spending recorded (${workspace.currency})`, type: 'number', required: true },
+      { key: 'goal', label: 'Intended change and how you will notice it', type: 'textarea', max: 2000, wide: true }, notes,
+    ];
+    if (kind === 'grants') return [
+      { key: 'title', label: 'Grant or opportunity name', required: true, max: 160 }, { key: 'funder', label: 'Funder', max: 160 }, projectField(), { key: 'status', label: 'Stage', type: 'select', options: optionList(GRANT_STATUSES) },
+      { key: 'requested', label: `Amount requested (${workspace.currency})`, type: 'number', required: true }, { key: 'awarded', label: `Amount awarded (${workspace.currency})`, type: 'number', required: true }, { key: 'deadline', label: 'Deadline (optional)', type: 'date' }, owner,
+      { key: 'next', label: 'Next step', type: 'textarea', max: 1000, wide: true }, notes,
+    ];
+    if (kind === 'tasks') return [
+      { key: 'title', label: 'Task', required: true, max: 160 }, projectField(), { key: 'status', label: 'Status', type: 'select', options: optionList(TASK_STATUSES) }, { key: 'priority', label: 'Priority', type: 'select', options: optionList(['high', 'normal', 'low']) }, { key: 'due', label: 'Due date (optional)', type: 'date' }, owner, notes,
+    ];
+    return [
+      { key: 'indicator', label: 'What did you observe?', required: true, max: 160 }, projectField(), { key: 'date', label: 'Observation date', type: 'date', required: true }, { key: 'evidence', label: 'Evidence status', type: 'select', options: optionList(EVIDENCE), hint: 'Choose what the record supports. This is not a claim that your program caused the result.' },
+      { key: 'value', label: 'Observed value (optional)', type: 'number', negative: true, nullable: true, hint: 'Leave blank if unknown. Zero and negative results can be recorded.' }, { key: 'unit', label: 'Unit, such as visits or percentage points', max: 80 },
+      { key: 'source', label: 'Evidence or document link (optional)', max: 1200, hint: 'A complete HTTPS link to a public source or your own document.' }, notes,
+    ];
+  }
+
+  function openEditor(kind: Kind, id?: string) {
+    if (conflict) { say('Choose which tab’s version to keep before editing.'); return; }
+    editing = { kind, id };
+    const defaults: Record<Kind, Record<string, unknown>> = {
+      projects: { title: '', status: 'planned', owner: '', due: '', depth: null, budget: 0, spent: 0, goal: '', notes: '' },
+      grants: { title: '', funder: '', projectId: '', status: 'prospect', requested: 0, awarded: 0, deadline: '', owner: '', next: '', notes: '' },
+      tasks: { title: '', projectId: '', status: 'todo', priority: 'normal', due: '', owner: '', notes: '' },
+      outcomes: { date: localDate(), projectId: '', indicator: '', value: null, unit: '', evidence: 'unknown', source: '', notes: '' },
+    };
+    const record = id ? workspace[kind].find((row) => row.id === id) as Record<string, unknown> : defaults[kind];
+    if (!record) return;
+    $('#os-editor-title').textContent = `${id ? 'Edit' : 'Add'} ${names[kind]}`;
+    $('#os-editor-hint').textContent = kind === 'outcomes' ? 'Separate what happened from what caused it. Include limits, missing data and unwelcome results.' : 'Use this record to make the next step and its owner clear.';
+    const fields = $('#os-editor-fields'); clear(fields); $('#os-editor-error').hidden = true;
+    for (const field of fieldConfig(kind)) {
+      const controlId = `os-field-${field.key}`;
+      const wrap = h('div', { class: `field${field.wide ? ' os-wide' : ''}` }, h('label', { for: controlId }, field.label));
+      let input: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+      if (field.type === 'select') { input = h('select', { id: controlId, name: field.key }); for (const [value, label] of field.options!) input.append(h('option', { value }, label)); }
+      else if (field.type === 'textarea') input = h('textarea', { id: controlId, name: field.key, rows: 3, maxlength: field.max });
+      else input = h('input', { id: controlId, name: field.key, type: field.type ?? 'text', maxlength: field.max, ...(field.type === 'number' ? { min: field.negative ? -1e12 : 0, max: 1e12, step: 'any', inputmode: 'decimal' } : {}), ...(field.type === 'date' ? { min: '1900-01-01', max: '2200-12-31' } : {}) });
+      input.required = !!field.required; input.value = record[field.key] === null ? '' : String(record[field.key] ?? '');
+      if (field.hint) { input.setAttribute('aria-describedby', `${controlId}-hint`); wrap.append(input, h('span', { class: 'hint', id: `${controlId}-hint` }, field.hint)); } else wrap.append(input);
+      fields.append(wrap);
+    }
+    dialog.showModal(); ($('input,select,textarea', fields) as HTMLElement).focus();
+  }
+
+  editorForm.addEventListener('submit', (event) => {
+    event.preventDefault(); if (!editing) return;
+    const { kind, id } = editing;
+    const record: Record<string, unknown> = { id: id ?? newId() };
+    for (const field of fieldConfig(kind)) {
+      const value = ($(`[name="${field.key}"]`, editorForm) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement).value.trim();
+      record[field.key] = field.type === 'number' ? (value === '' && field.nullable ? null : Number(value)) : field.key === 'depth' ? (value === '' ? null : Number(value)) : value;
+    }
+    const next = structuredClone(workspace);
+    (next[kind] as any[]) = id ? next[kind].map((row) => row.id === id ? record : row) : [...next[kind], record];
+    try { validateWorkspace(next); }
+    catch (error) { $('#os-editor-error').textContent = error instanceof Error ? error.message : 'Check the fields.'; $('#os-editor-error').hidden = false; return; }
+    if (commit(next, `${id ? 'Updated' : 'Added'} ${record.title ?? record.indicator}.`)) { dialog.close(); editing = undefined; $<HTMLButtonElement>(`[data-add="${kind}"]`).focus(); }
+  });
+  for (const id of ['#os-editor-close', '#os-editor-cancel']) $(id).addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => { editing = undefined; });
+  $$<HTMLButtonElement>('[data-add]').forEach((button) => button.addEventListener('click', () => openEditor(button.dataset.add as Kind)));
+  contextForm.addEventListener('input', () => { contextDirty = true; $('#os-save-state').textContent = 'Context has unsaved changes'; });
+  contextForm.addEventListener('submit', (event) => {
+    event.preventDefault(); const next = structuredClone(workspace);
+    for (const key of ['organization', 'currency', 'mission', 'community'] as const) next[key] = ($(`#os-${key}`) as HTMLInputElement | HTMLTextAreaElement).value;
+    if (next.currency.toUpperCase() !== workspace.currency && kinds.some((kind) => workspace[kind].length)) {
+      if (!window.confirm('Changing the currency label does not convert any amount. Keep the existing amounts under the new code?')) return;
+    }
+    if (commit(next, 'Saved mission and context.')) syncContext();
+  });
+  search.addEventListener('input', renderLists); projectFilter.addEventListener('change', renderLists);
+  $$<HTMLSelectElement>('[data-filter]').forEach((select) => select.addEventListener('change', renderLists));
+  $('#os-clear-filters').addEventListener('click', () => { search.value = ''; projectFilter.value = 'all'; $$<HTMLSelectElement>('[data-filter]').forEach((select) => select.value = 'all'); renderLists(); say('Showing all records.'); });
+  $('#os-json').addEventListener('click', () => { download(`charitology-workspace-${localDate()}.json`, workspaceJson(workspace), 'application/json;charset=utf-8'); say('Exported the whole workspace as JSON.'); });
+  $('#os-csv').addEventListener('click', () => { download(`charitology-workspace-${localDate()}.csv`, workspaceCsv(workspace), 'text/csv;charset=utf-8'); say('Exported all records as CSV. Use JSON to restore the workspace.'); });
+  $('#os-import').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files?.[0]; fileInput.value = ''; if (!file) return;
+    if (file.size > 5_000_000) { say('Choose a file smaller than 5 MB. Nothing was imported.'); return; }
+    let raw = ''; try { raw = await file.text(); } catch { say('This file could not be read. Nothing was imported.'); return; }
+    const parsed = parseWorkspace(raw);
+    if (!parsed.workspace) { say(`${parsed.error} Nothing was imported.`); return; }
+    imported = parsed.workspace;
+    $('#os-import-summary').textContent = `${file.name}: ${imported.organization || 'Unnamed workspace'}, ${imported.projects.length} projects, ${imported.grants.length} grants, ${imported.tasks.length} tasks and ${imported.outcomes.length} observations.`;
+    $('#os-import-preview').hidden = false; $<HTMLButtonElement>('#os-import-apply').focus();
+  });
+  $('#os-import-cancel').addEventListener('click', () => { imported = undefined; $('#os-import-preview').hidden = true; say('Import canceled. Nothing changed.'); });
+  $('#os-import-apply').addEventListener('click', () => { if (!imported) return; const wasRecovery = recovery; recovery = false; if (commit(imported, 'Imported the workspace. Undo is available.')) { imported = undefined; $('#os-import-preview').hidden = true; $('#os-recovery').hidden = true; syncContext(); } else recovery = wasRecovery; });
+  confirmTwice($<HTMLButtonElement>('#os-sample'), { prompt: 'Replace with example?', needed: () => kinds.some((kind) => workspace[kind].length) || !!workspace.organization || contextDirty, announce: say, message: 'The fictional example will replace this workspace. Export a copy first, then click the same button again to confirm.', action: () => { if (commit(exampleWorkspace(), 'Loaded a fictional example. Its people, funding and observations are invented. Undo restores the previous workspace.')) syncContext(); } });
+  confirmTwice($<HTMLButtonElement>('#os-clear'), { prompt: 'Confirm clear', announce: say, message: 'Clear this workspace? Export a copy first, then click the same button again to confirm.', action: () => { if (commit(blankWorkspace(), 'Cleared the workspace. Undo is available until your next change or reload.')) { syncContext(); $('#os-context').setAttribute('open', ''); } } });
+  $('#os-undo').addEventListener('click', () => { if (!undo || conflict) return; workspace = undo; undo = undefined; persist(); syncContext(); render(); say('Restored the workspace before the last change.'); });
+  window.addEventListener('storage', (event) => { if (event.key === `charitology.${OS_KEY}` || event.key === null) { conflict = true; $('#os-conflict').hidden = false; say('Another tab changed the saved workspace. Choose which version to keep.'); } });
+  $('#os-load-other').addEventListener('click', () => {
+    const next = loadWorkspace(); if (next.error) { say(`Could not load the other version: ${next.error}`); return; }
+    undo = structuredClone(workspace); workspace = next.workspace; conflict = false; $('#os-conflict').hidden = true; dialog.close(); syncContext(); render(); say('Loaded the saved version. Undo can restore this page’s earlier records.');
+  });
+  $('#os-keep-local').addEventListener('click', () => { if (recovery) { say('Recover the unreadable saved copy or start an empty workspace before keeping this version.'); return; } conflict = false; $('#os-conflict').hidden = true; persist(); say('Kept this page’s records. Unsaved context fields still need Save context.'); });
+  $('#os-recovery-export').addEventListener('click', () => { if (loaded.recoveryRaw) download(`charitology-workspace-recovery-${localDate()}.txt`, loaded.recoveryRaw); });
+  confirmTwice($<HTMLButtonElement>('#os-recovery-reset'), { prompt: 'Replace saved data?', announce: say, message: 'This replaces the unreadable saved data. Download it first, then click again to confirm.', action: () => { recovery = false; if (commit(blankWorkspace(), 'Started an empty workspace.')) { $('#os-recovery').hidden = true; syncContext(); } else recovery = true; } });
+
+  syncContext(); render();
+  $('#os-save-state').textContent = $('#os-storage').hidden ? 'Saved in this browser' : 'Working on this page only';
+  if (!workspace.organization && !workspace.projects.length) $('#os-context').setAttribute('open', '');
+  if (loaded.error) { $('#os-recovery').hidden = false; $('#os-save-state').textContent = 'Saved data needs recovery'; say(`Saved data could not be read: ${loaded.error} Import a valid JSON backup to restore it.`); }
+</script>

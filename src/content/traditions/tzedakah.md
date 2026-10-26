@@ -4,7 +4,7 @@ summary: In Jewish tradition, giving is an obligation of justice, and the 12th-c
 tradition: Judaism
 origin: The Hebrew Bible and rabbinic law, set out systematically by Maimonides in the 12th century
 practice: Regular giving to the poor as a duty of justice, ranked by how much dignity and independence it preserves
-lens: Maimonides’ highest level is source-level giving written 800 years ago. It ends the need instead of meeting it.
+lens: Maimonides’ highest level emphasizes helping someone become self-sufficient. Charitology reads this as a connection to preventing future need and preserving agency, not as proof that the wider causes of poverty have ended.
 sources:
   - title: Mishneh Torah, Laws of Gifts to the Poor 10:7
     publisher: Sefaria

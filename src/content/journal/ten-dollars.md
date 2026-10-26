@@ -2,10 +2,12 @@
 title: Ten Dollars
 author: Charitology
 date: 2026-10-26
-summary: The founding manifesto. In 2026 the name for the science of doing the most good was available for about ten dollars. That says something about the field.
+summary: The founding poem uses a ten-dollar domain registration as an image for Charitology’s invitation to study how generosity is aimed.
 volume: 0
 issue: 1
 ---
+
+*Editorial note: This manifesto is a poem, not a history of philanthropy. The ten-dollar image is the author’s account of a domain registration. Existing philanthropy, ethics and evaluation fields have long studied giving; the poem’s invitation is to develop and test Charitology’s proposed shared craft.*
 
 In 2026, we bought a word for ten dollars.
 

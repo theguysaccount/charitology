@@ -9,7 +9,7 @@ sources:
     publisher: William MacAskill, Krister Bykvist and Toby Ord, Oxford University Press
     year: 2020
     url: https://doi.org/10.1093/oso/9780198722274.001.0001
-    note: Open access under a Creative Commons license (CC BY-NC-ND 4.0).
+    note: Open access under a Creative Commons license (CC BY-NC-ND 4.0); freely readable at https://www.moraluncertainty.com/s/Moral-Uncertainty.pdf
   - title: Moral uncertainty – towards a solution?
     publisher: Nick Bostrom, Overcoming Bias
     year: 2009

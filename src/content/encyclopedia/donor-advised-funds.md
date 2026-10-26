@@ -16,6 +16,10 @@ sources:
     publisher: Johnson Center for Philanthropy
     year: 2025
     url: https://johnsoncenter.org/resource/report-annual-daf-report-2025/
+  - title: Annual DAF Report 2025, full report
+    publisher: Donor Advised Fund Research Collaborative, Indiana University repository
+    year: 2025
+    url: https://scholarworks.indianapolis.iu.edu/server/api/core/bitstreams/8f309b9f-da38-433e-8c33-bc1b3d1f9a1a/content
 ---
 
 A **donor-advised fund** (DAF) is an account for charitable giving. The IRS describes three features. It is a separately identified fund or account made up of a donor’s contributions. It is maintained by a 501(c)(3) organization, called the sponsoring organization, which has legal control of the money once the donor contributes. And the donor keeps advisory privileges over how the money is granted and invested. The donor recommends grants, and the sponsor makes them.
@@ -24,10 +28,12 @@ A **donor-advised fund** (DAF) is an account for charitable giving. The IRS desc
 
 The Annual DAF Report 2025, produced for the first time by the DAF Research Collaborative after the National Philanthropic Trust compiled it for nearly two decades, found that in 2024:
 
-- DAFs held about **$326 billion** in assets, up from $250 billion in 2023.
+- DAFs held about **$326 billion** in assets, up from about $256 billion in 2023.
 - Donors contributed **$89.6 billion**, the highest of the past five years.
 - DAFs granted **$64.9 billion** to charities.
-- The aggregate payout rate was **25.3 percent**, up from 24 percent in 2023.
+- The aggregate payout rate was **25.3 percent**, calculated as grants divided by prior-year assets.
+
+The payout rate is not the share of every account spent that year. The report uses prior-year assets as its denominator and aggregates across sponsors.
 
 ## Where they sit in the system
 
@@ -35,8 +41,8 @@ On the [system map](/record/encyclopedia/charity-as-a-system/), a DAF is a chann
 
 ## The debate
 
-This is [Parked Money](/diagnosis/parked-money/), and both sides have numbers. Defenders point to the payout rate: a quarter of assets granted in a year is far above the 5 percent that [private foundations](/record/encyclopedia/private-foundations/) must generally distribute. Critics point to the size of the pool, and note that an aggregate rate can hide accounts that rarely grant at all. The figures above describe DAFs as a whole, so they cannot settle how money moves through individual accounts.
+This is [Parked Money](/diagnosis/parked-money/), and both sides have numbers. Defenders point to the aggregate payout rate. It is higher than the roughly 5 percent legal distribution requirement for many [private foundations](/record/encyclopedia/private-foundations/), but those measures use different denominators and are not a direct comparison. Critics point to the size of the pool, and note that an aggregate rate can hide accounts that rarely grant at all. The figures above describe DAFs as a whole, so they cannot settle how money moves through individual accounts.
 
 ## What we don’t know
 
-Is a quarter a year fast or slow? The answer depends on how quickly the best giving opportunities are being used up, how much invested money grows while it waits and how much the future should count. That is [Open Problem 12, the Payout Question](/open-problems/the-payout-question/), and [discounting](/record/encyclopedia/discounting/) is part of it.
+Is that aggregate rate fast or slow? The answer depends on how quickly the best giving opportunities are being used up, how much invested money grows while it waits and how much the future should count. That is [Open Problem 12, the Payout Question](/open-problems/the-payout-question/), and [discounting](/record/encyclopedia/discounting/) is part of it.

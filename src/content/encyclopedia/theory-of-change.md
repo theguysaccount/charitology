@@ -33,9 +33,9 @@ A good theory of change lets a giver ask sharp questions:
 
 - **Which link is weakest?** A chain is only as strong as its least supported step.
 - **What evidence backs each link?** Some steps have trial evidence. Others are hopes.
-- **Where does the goal sit on the [depth scale](/record/encyclopedia/source-depth/)?** Relief goals have short chains. Structure and source goals have long ones.
+- **Where does the goal sit on the [depth scale](/record/encyclopedia/source-depth/)?** Ask how many uncertain links connect the activity to the goal; depth alone does not determine that number.
 - **What would show it is wrong?** A theory that no result could contradict is not doing any work.
 
 ## Why it matters for source work
 
-The deeper the goal, the longer the chain and the more assumptions it rests on. A campaign to change a norm may need a dozen links to hold, over many years, with credit shared among many actors. A written theory of change does not make that work easier to measure, but it shows which links to watch. Measuring them is [Open Problem 3](/open-problems/measuring-the-source/). See also the [Grant Evaluator](/tools/grant-evaluator/) and the [Impact Measurement Toolkit](/tools/impact-measurement-toolkit/).
+Some structure and source goals involve long chains and many assumptions. A campaign to change a norm may need a dozen links to hold, over many years, with credit shared among many actors. A written theory of change does not make that work easier to measure, but it shows which links to watch. Measuring them is [Open Problem 3](/open-problems/measuring-the-source/). See also the [Grant Evaluator](/tools/grant-evaluator/) and the [Impact Measurement Toolkit](/tools/impact-measurement-toolkit/).

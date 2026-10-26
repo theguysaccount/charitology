@@ -18,12 +18,12 @@ The simplest way to practice is to ask ten questions before a gift. Together the
 2. **What happens if I don’t give?** If the work would be funded anyway, the real effect of your gift lands somewhere else. See [counterfactual impact](/record/encyclopedia/counterfactual-impact/).
 3. **How do we know it works?** Look for outcomes, not activity, and ask what the strongest study found. See [the Method](/method/#evidence).
 4. **How would anyone find out if it stopped working?** A program nobody measures can fail for years without anyone noticing. See [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/).
-5. **Who decided this was the need?** The people closest to a problem often know which fix will last. See [the Missing Voice](/diagnosis/missing-voice/).
+5. **Who decided this was the need?** Ask what knowledge and decision rights the people served bring. See [the Missing Voice](/diagnosis/missing-voice/).
 6. **Is this the cheapest way to get this result?** Compare results per dollar, not overhead ratios. See [the Overhead Myth](/diagnosis/overhead-myth/).
 7. **Does my gift come with strings it doesn’t need?** Unrestricted money lets an organization fix what it learns is broken. See [the Restriction Reflex](/diagnosis/restriction-reflex/).
 8. **Will it still matter in ten years?** Some good ends when the money stops, and some compounds. See [the Short Horizon](/diagnosis/short-horizon/).
-9. **Am I giving to the story or to the size of the problem?** One face moves us more than a million people. That is human, and it is also a bias. See [the Story Bias](/diagnosis/story-bias/).
-10. **Who else is already funding this?** An extra dollar does more where few other dollars go. See [neglectedness](/record/encyclopedia/neglectedness/).
+9. **Am I giving to the story or to the size of the problem?** Some studies find attention effects, while replications show important limits. Check whether the appeal helps you see the scale and the evidence. See [the Story Bias](/diagnosis/story-bias/).
+10. **Who else is already funding this?** Neglect can suggest opportunity, but only if there is a useful way to make progress. See [neglectedness](/record/encyclopedia/neglectedness/).
 
 No gift will score well on every question, and that is not the point. The checklist turns a feeling into a set of choices you make on purpose.
 
@@ -59,7 +59,7 @@ The [Open Problems](/open-problems/) are 23 questions precise enough that someon
 Some problems can be started small:
 
 - **[The Depth Census](/open-problems/the-depth-census/).** Draw a random sample of organizations from a public registry, place each one on the depth scale using its program descriptions, and have a second person do the same. How often you agree is a finding in itself.
-- **[Proximity and Obligation](/open-problems/proximity-and-obligation/).** Survey experiments that show givers honest cost comparisons between giving near and giving far are cheap to run.
+- **[Proximity and Obligation](/open-problems/proximity-and-obligation/).** A scoped survey experiment could test how comparisons affect choices, with its cost and limits stated.
 - **[Story Without Bias](/open-problems/story-without-bias/).** Test whether a story about a whole community, or a picture of scale, changes giving compared with a story about one person.
 - **[The Question of Questions](/open-problems/the-question-of-questions/).** Estimate which open problem, if solved, would move the most money, and publish your reasoning.
 
@@ -73,4 +73,4 @@ Whether training in charitology changes where money goes is itself an open quest
 
 ## The point of naming it
 
-[The Missing Profession](/diagnosis/missing-profession/) ends with a simple observation: you can’t practice a craft nobody has named. This book has tried to name it, map its subject and set out its first methods. The rest is practice, and the practice belongs to anyone who wants it.
+[The Missing Profession](/diagnosis/missing-profession/) ends with a simple observation: a name can invite people to learn and test a proposed craft. This book has tried to name it, map its subject and set out its first methods. The rest is practice, and the practice belongs to anyone who wants it.

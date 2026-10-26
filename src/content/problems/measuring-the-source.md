@@ -10,7 +10,7 @@ bounty: "Unfunded. The Question Bounties program will attach prizes once it is f
 
 ## Why it matters
 
-If source work can’t be measured, it will keep losing to work that can, and the [Symptom Trap](/diagnosis/symptom-trap/) will keep closing. Hard-to-measure is not the same as small.
+If funders require measurements that source work cannot provide, useful work may be missed. That is one possible mechanism behind the [Symptom Trap](/diagnosis/symptom-trap/) hypothesis. Hard-to-measure is not the same as small.
 
 ## Where to start
 

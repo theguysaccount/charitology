@@ -8,7 +8,7 @@ statusNote: Fellowships need funding and host institutions. The program waits on
 conditions: [missing-profession]
 firstMilestone: A host institution, a legal home and published selection criteria in place for a pilot cohort of three fellows.
 help:
-  - If your university, research group or nonprofit could host fellows, open an issue labeled program:fellowship.
+  - If your university, research group or nonprofit could host fellows, open an issue labeled program.
   - Propose a fellowship project tied to one of the Open Problems.
   - Suggest how fellows should be chosen so the program reaches people outside the usual institutions.
 related: [/open-problems/, /open-problems/the-profession-question/, /programs/question-bounties/, /programs/certified-charitologist/]

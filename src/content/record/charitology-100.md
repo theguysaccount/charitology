@@ -14,7 +14,7 @@ related: ["/programs/red-team/", "/record/methodology/", "/record/charity-index/
 
 ## Why it doesn’t exist yet
 
-A ranked list is the most powerful signal a field can send, and the easiest to get wrong. Charitology won’t publish one until its method has been attacked in public and survived. Publishing a list early would repeat [the Story Bias](/diagnosis/story-bias/) with better graphics.
+A ranked list would steer attention and money. Charitology won’t publish one until its method has been challenged in public and survived. The draft below is a proposal for that review, not an approved rating method.
 
 ## Draft criteria
 

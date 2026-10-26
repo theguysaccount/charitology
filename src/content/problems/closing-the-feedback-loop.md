@@ -10,7 +10,7 @@ bounty: "Unfunded. The Question Bounties program will attach prizes once it is f
 
 ## Why it matters
 
-This is the root condition of the [Diagnosis](/diagnosis/). Close this loop and several others start to close by themselves.
+This is the root condition of the [Diagnosis](/diagnosis/). Charitology hypothesizes that improving this loop could also change other conditions.
 
 ## Where to start
 

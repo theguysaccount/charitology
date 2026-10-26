@@ -8,15 +8,15 @@ summary: Charitology is the science of doing the most good. It studies charity a
 
 Charitology is the science of doing the most good. Its subject is not any one cause, method or charity, but the system that connects them all: the people and institutions who give, the signals they see, the channels money passes through, the work it pays for and the results that come back, or don’t.
 
-Every field has a subject it can study and improve. Medicine studies the body, economics studies markets and ecology studies ecosystems. Charity is a system too. It moves more than $617 billion a year in the United States alone ([Giving USA 2026](https://thenonprofittimes.com/npt_articles/giving-usa-617-2-b-was-given-to-nonprofits-during-2025/)), and like any system it produces the results it is built to produce. Charitology asks what those results are, why the system produces them, and how to change it.
+A field can define a subject to study and improve. Medicine studies the body, economics studies markets and ecology studies ecosystems. Charity is a system too. It moves more than $617 billion a year in the United States alone ([Giving USA 2026](https://thenonprofittimes.com/npt_articles/giving-usa-617-2-b-was-given-to-nonprofits-during-2025/)), and like any system it produces the results it is built to produce. Charitology asks what those results are, why the system produces them, and how to change it.
 
 ## Three commitments
 
 **No judgment of the good being done.** Every food bank, clinic and volunteer is doing real good. Charitology doesn’t grade anyone’s heart. When it finds a problem, it looks for the mechanism, not the culprit.
 
-**All the ways, not one.** Most approaches to giving start from one cause or one moral framework. Charitology starts from all of them and asks where they agree, where they disagree and what each one can’t see. The aim is the best of all ways, not the best of one.
+**All the ways, not one.** Charitology explicitly considers eight editorial framework sketches and asks where they agree, where they disagree and what each one can’t see. The aim is the best of all ways, not the best of one.
 
-**Unknown stays unknown.** A science says what it doesn’t know. Every claim in charitology carries a label: established, documented, debated or hypothesis. Charitology’s own founding claims are labeled hypotheses, because testing them is the work.
+**Unknown stays unknown.** A science says what it doesn’t know. Each condition in the Diagnosis carries an evidence label: established, documented, debated or hypothesis. Interventions use a separate evidence grade. Charitology’s own founding claims are labeled hypotheses, because testing them is the work.
 
 ## Symptoms and sources
 

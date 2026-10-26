@@ -1,7 +1,7 @@
 ---
 title: The Single Lens
 number: 13
-summary: Most givers and organizations judge good through one moral framework without knowing it, so whole categories of good stay invisible to them.
+summary: Charitology hypothesizes that considering several moral frameworks can reveal choices a single framework misses. It has not measured how many givers use only one.
 evidence: hypothesis
 node: work
 flip: Givers see their choices through several moral frameworks at once and know where those frameworks agree and where they part.
@@ -14,17 +14,17 @@ sources:
 
 ## What it looks like
 
-A welfare-minded donor counts lives saved per dollar and can’t see the case for funding a museum. A justice-minded donor funds advocacy and can’t see the case for bed nets. A donor guided by their faith gives through their congregation and may never hear either argument. Each is looking through one lens, often without knowing it is a lens.
+A giver might compare gifts only by lives saved, institutional fairness or obligations within a tradition. Each question can reveal something useful, and none exhausts the possible reasons to give. These are simplified examples; welfare, justice and religious traditions all contain diverse views.
 
 ## Why it happens
 
-Every moral framework makes some kinds of good easy to see and others hard to see. Organizations specialize in one way of thinking, and donors find the organizations that already agree with them. Nobody’s job is to compare the frameworks themselves. Philosophers have a name for the problem of choosing well when you aren’t sure which framework is right: *moral uncertainty*. William MacAskill, Krister Bykvist and Toby Ord wrote a book about how to reason under it.
+Every moral framework makes some kinds of good easy to see and others hard to see. Organizations specialize in one way of thinking, and donors find the organizations that already agree with them. Comparing those frameworks is a task in moral philosophy as well as a proposed part of Charitology. Philosophers have a name for the problem of choosing well when you aren’t sure which framework is right: *moral uncertainty*. William MacAskill, Krister Bykvist and Toby Ord wrote a book about how to reason under it.
 
 This is the condition Charitology was founded to treat. Its whole method is to look at giving through all the lenses at once and report where they [agree and disagree](/record/disagreements/).
 
 ## This is a hypothesis
 
-Charitology’s claim is that single-lens giving leaves large, valuable opportunities unfunded because none of the dominant lenses can see them. It hasn’t been measured.
+Charitology’s claim is that single-lens giving leaves large, valuable opportunities unfunded because none of the dominant lenses can see them. The sources here do not test that allocation claim.
 
 ## No one is to blame
 

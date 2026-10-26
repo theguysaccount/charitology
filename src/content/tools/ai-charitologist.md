@@ -15,7 +15,7 @@ related: [/search/, /record/encyclopedia/, /open-problems/]
 
 ## How it works today
 
-Your question is matched against every page in the Record, the Diagnosis, the Method, the Programs and the Tools, and the best passages come back grouped by section, each linked to its page. Nothing is generated, so nothing is made up. When the Record has little to say, the tool says so and asks you to help fill the gap.
+Your question is matched against the site’s search index, and matching passages come back grouped by section, each linked to its page. Nothing is generated. The passages can still contain errors or unreviewed claims, so follow their evidence labels and sources. When few passages match, the tool asks you to help fill the gap.
 
 The search index is built when the site is built and runs in your browser. Your question isn’t sent anywhere.
 
