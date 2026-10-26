@@ -298,6 +298,55 @@ test("public collection needs explicit consent and a clear honeypot; invalid dat
   }
 });
 
+test("the exact Vercel rewrite capture reaches intake routing while wrong, duplicate and extra query fields stay forbidden", async () => {
+  const pathname = "/api/public/intake/org/pub",
+    capture = pathname.slice("/api/".length);
+  let calls = 0;
+  const marker = new Error("Synthetic storage boundary reached.");
+  const db = {
+    tx: async (_user, org) => {
+      calls++;
+      assert.equal(org, "org");
+      throw marker;
+    },
+    limit: async () => {
+      throw new Error("GET must not use rate storage.");
+    },
+  };
+  await assert.rejects(
+    publicIntakeRoutes({
+      request: new Request(
+        `${settings.origin}${pathname}?path=${encodeURIComponent(capture)}`,
+      ),
+      db,
+      settings,
+    }),
+    (e) => e === marker,
+  );
+  assert.equal(calls, 1);
+  for (const query of [
+    "path=wrong",
+    `path=${encodeURIComponent(capture)}&path=${encodeURIComponent(capture)}`,
+    `path=${encodeURIComponent(capture)}&token=secret`,
+    `path=${encodeURIComponent(capture)}&receipt=secret`,
+    `path=${encodeURIComponent(capture)}&other=`,
+  ]) {
+    await assert.rejects(
+      publicIntakeRoutes({
+        request: new Request(`${settings.origin}${pathname}?${query}`),
+        db,
+        settings,
+      }),
+      error("intake_query"),
+    );
+  }
+  assert.equal(
+    calls,
+    1,
+    "Invalid query fields are refused before tenant storage.",
+  );
+});
+
 test("private review routes require administrators before any queue read", async () => {
   await assert.rejects(
     intakeRoutes({

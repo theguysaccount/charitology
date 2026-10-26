@@ -304,7 +304,16 @@ export async function publicIntakeRoutes({
       url.pathname,
     );
   if (!match) return null;
-  if (url.search)
+  // Vercel forwards the unused /api/:path* rewrite capture as a query field.
+  // Ignore only that single, exact routing value; receipt/query data stays forbidden.
+  const query = new URLSearchParams(url.search),
+    routingPaths = query.getAll("path");
+  if (
+    routingPaths.length === 1 &&
+    routingPaths[0] === url.pathname.slice("/api/".length)
+  )
+    query.delete("path");
+  if (query.size)
     fail(
       400,
       "intake_query",
