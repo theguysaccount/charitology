@@ -1,0 +1,738 @@
+---
+// Legacy Planner: a private worksheet for leaving gifts to charity in a
+// will. It builds a printable summary and sample wording from
+// src/lib/client/legacy.ts, and saves only in this browser as "legacy".
+// Printing this page prints the summary alone. Not legal or tax advice.
+import { url } from '../../lib/site';
+---
+
+<section class="tool lp-tool" aria-labelledby="lp-title">
+  <div class="tool-head">
+    <h2 id="lp-title">Plan a gift in your will</h2>
+    <span class="note" id="lp-saved">Saved only in this browser.</span>
+  </div>
+
+  <div class="callout lp-warning" role="note">
+    <strong>This is not legal or tax advice.</strong> Rules for wills and charitable gifts vary by country and by state, and wording
+    that works in one place may not work in another. Use this worksheet to get ready, then have an estate attorney where you live
+    draft or review your will.
+  </div>
+  <div id="lp-storage" class="callout lp-space" hidden>
+    <strong>This browser isn’t saving your worksheet.</strong> Storage is blocked or full, so it will be gone when you close this
+    page. Print the summary or copy the sample language to keep it.
+  </div>
+
+  <form id="lp-form" novalidate>
+    <div class="tool-grid lp-top">
+      <div class="field">
+        <label for="lp-name">Your name <span class="lp-optional">(optional)</span></label>
+        <input type="text" id="lp-name" maxlength="100" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="lp-place">Where you live <span class="lp-optional">(optional)</span></label>
+        <input type="text" id="lp-place" maxlength="100" placeholder="State or country" aria-describedby="lp-place-hint" />
+        <span class="hint" id="lp-place-hint">The rules that apply to your will depend on it.</span>
+      </div>
+    </div>
+
+    <h3>Your gifts</h3>
+    <div id="lp-gifts" class="lp-gifts"></div>
+    <button type="button" class="btn btn-ghost btn-small" id="lp-add">Add another charity</button>
+
+    <div class="callout lp-why">
+      <p>
+        <strong>Why unrestricted is usually more useful.</strong> A will may take effect decades after you write it. By then the
+        charity’s programs, and the problem itself, may have changed. An unrestricted gift lets the organization use your money
+        where it is needed most when it arrives.
+      </p>
+      <p>
+        A restricted gift can get stuck if its purpose ends, and redirecting it may then take a court. If you do restrict a gift,
+        describe the purpose broadly, and the sample wording adds a line letting the charity use it for the closest purpose.
+        Charitology calls the habit of tying gifts to narrow purposes <a href={url('/diagnosis/restriction-reflex/')}>the Restriction Reflex</a>.
+      </p>
+    </div>
+
+    <h3>If a charity changes</h3>
+    <label class="option lp-flex">
+      <input type="checkbox" id="lp-flex" checked />
+      <span>
+        <strong>Add a flexibility clause</strong>
+        <span class="hint">
+          If the organization no longer exists, has merged, or is no longer a charity when your estate is settled, your executor may
+          give the gift to its successor or to a charity with similar purposes.
+        </span>
+      </span>
+    </label>
+
+    <div class="field lp-gap">
+      <label for="lp-notes">Notes and questions for your attorney <span class="lp-optional">(optional)</span></label>
+      <textarea id="lp-notes" maxlength="2000"></textarea>
+    </div>
+  </form>
+
+  <div class="result">
+    <div class="lp-result-head">
+      <h3>Your summary</h3>
+      <div class="btn-row">
+        <button class="btn" type="button" id="lp-print-btn">Print summary</button>
+        <button class="btn btn-ghost" type="button" id="lp-copy">Copy sample language</button>
+        <button class="btn btn-ghost" type="button" id="lp-clear">Clear worksheet</button>
+      </div>
+    </div>
+    <p id="lp-status" class="note lp-status" role="status"></p>
+    <div id="lp-checks-wrap" class="lp-checks" hidden>
+      <p><strong>Before you print</strong></p>
+      <ul id="lp-checks"></ul>
+    </div>
+
+    <p class="visually-hidden" id="lp-live" aria-live="polite"></p>
+    <div id="lp-print" class="lp-summary">
+      <header class="lp-s-head">
+        <p class="lp-s-eyebrow">Charitology Legacy Planner</p>
+        <h4 class="lp-s-title">Charitable gifts in my will: worksheet</h4>
+        <p class="lp-s-meta" id="lp-s-meta"></p>
+      </header>
+      <p class="lp-s-legal">
+        <strong>Not legal or tax advice.</strong> A worksheet to discuss with an estate attorney. Rules vary by country and state.
+      </p>
+      <div class="table-wrap">
+        <table class="data lp-s-table">
+          <caption class="visually-hidden">Gifts in the worksheet</caption>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Charity</th>
+              <th scope="col">Gift</th>
+              <th scope="col">How it may be used</th>
+            </tr>
+          </thead>
+          <tbody id="lp-s-rows"></tbody>
+        </table>
+      </div>
+      <p class="lp-s-flex" id="lp-s-flex"></p>
+      <div id="lp-s-notes-wrap" hidden>
+        <h5>Notes for my attorney</h5>
+        <p class="lp-s-notes" id="lp-s-notes"></p>
+      </div>
+      <section class="lp-s-sample" aria-labelledby="lp-s-sample-title">
+        <h5 id="lp-s-sample-title">Sample language to discuss with your estate attorney, not legal advice</h5>
+        <ol id="lp-s-sample"></ol>
+        <p class="lp-s-empty" id="lp-s-sample-empty">Name a charity above to see sample wording.</p>
+      </section>
+      <h5>To bring to the meeting</h5>
+      <ul class="lp-s-list">
+        <li>
+          Each charity’s full legal name, address and EIN. For U.S. charities, the IRS Tax Exempt Organization Search
+          (apps.irs.gov/app/eos) can confirm the legal name and EIN.
+        </li>
+        <li>A plan for what should happen if a charity no longer exists.</li>
+        <li>Your questions about how gifts to charity are taxed where you live.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* The global .btn, .field and grid classes set display, which would otherwise override [hidden]. */
+  .lp-tool :global([hidden]) {
+    display: none !important;
+  }
+  .lp-warning {
+    margin-bottom: 1.25rem;
+    border-left-width: 4px;
+  }
+  .lp-space {
+    margin-bottom: 1.25rem;
+  }
+  .lp-gap {
+    margin-top: 1.25rem;
+  }
+  .lp-optional {
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .lp-gifts {
+    display: grid;
+    gap: 0.9rem;
+    margin-bottom: 0.9rem;
+  }
+  .lp-gifts :global(.lp-gift) {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    padding: 0.8rem 1rem 0.2rem;
+    margin: 0;
+  }
+  .lp-gifts :global(.lp-gift > legend) {
+    padding: 0 0.3rem;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+  }
+  .lp-top {
+    align-items: start;
+  }
+  .lp-gifts :global(.lp-grid) {
+    display: grid;
+    gap: 0 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    align-items: start;
+  }
+  .lp-gifts :global(.lp-purpose) {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .lp-gifts :global(.lp-purpose .option) {
+    align-items: center;
+  }
+  .lp-gifts :global(.lp-msg) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .lp-gifts :global(input[aria-invalid='true']) {
+    border-color: var(--critical);
+  }
+  .lp-gifts :global(.lp-remove) {
+    margin-bottom: 1rem;
+  }
+  .lp-why {
+    margin: 1.5rem 0;
+  }
+  .lp-why p {
+    margin: 0 0 0.6rem;
+  }
+  .lp-flex .hint {
+    display: block;
+    margin-top: 0.15rem;
+  }
+  .lp-result-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
+  .lp-result-head h3 {
+    margin: 0;
+  }
+  .lp-status {
+    min-height: 1.2em;
+    margin: 0.75rem 0;
+  }
+  .lp-checks {
+    border-left: 3px solid var(--warning);
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .lp-checks p {
+    margin: 0 0 0.3rem;
+  }
+  .lp-checks ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  /* The summary reads like a document, on screen and on paper. */
+  .lp-summary {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    padding: clamp(1rem, 4vw, 2rem);
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--ink);
+  }
+  .lp-summary h4,
+  .lp-summary h5 {
+    font-family: var(--font-display);
+  }
+  .lp-summary h5 {
+    font-size: 1.05rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .lp-s-head {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.9rem;
+  }
+  .lp-s-eyebrow {
+    font: 700 0.72rem var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+    margin: 0 0 0.3rem;
+  }
+  .lp-s-title {
+    font-size: 1.45rem;
+    margin: 0 0 0.3rem;
+  }
+  .lp-s-meta {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--ink-2);
+    margin: 0;
+  }
+  .lp-s-legal {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+  }
+  .lp-summary .table-wrap {
+    position: relative;
+  }
+  .lp-s-table :global(td) {
+    overflow-wrap: break-word;
+  }
+  @media (max-width: 520px) {
+    .lp-s-table :global(th),
+    .lp-s-table :global(td) {
+      padding-inline: 0.35rem;
+    }
+  }
+  .lp-s-table :global(.lp-s-sub) {
+    display: block;
+    color: var(--ink-3);
+    font-size: 0.8rem;
+  }
+  .lp-s-flex {
+    margin-top: 1rem;
+  }
+  .lp-s-notes {
+    white-space: pre-wrap;
+  }
+  .lp-s-sample {
+    border-top: 1px solid var(--rule);
+    margin-top: 1.25rem;
+  }
+  .lp-s-sample ol {
+    padding-left: 1.3rem;
+    margin: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .lp-s-sample :global(li) {
+    line-height: 1.55;
+  }
+  .lp-s-empty {
+    color: var(--ink-3);
+    font-style: italic;
+  }
+  .lp-s-list {
+    padding-left: 1.2rem;
+    margin: 0;
+  }
+
+  @media print {
+    /* Print only the summary: hide everything that neither is it, holds it, nor sits inside it. */
+    :global(body:has(#lp-print) *:not(:has(#lp-print)):not(#lp-print):not(#lp-print *)) {
+      display: none !important;
+    }
+    :global(body:has(#lp-print) *:has(#lp-print)) {
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: none !important;
+      box-shadow: none !important;
+      width: auto !important;
+      max-width: none !important;
+    }
+    .lp-summary {
+      --ink: #1a1915;
+      --ink-2: #47443c;
+      --ink-3: #6b665c;
+      --rule: #d9d2c4;
+      --rule-2: #e8e2d6;
+      --surface: #ffffff;
+      --bg: #ffffff;
+      --accent: #8b1e2d;
+      color: #1a1915;
+      background: #ffffff;
+      border: 0;
+      padding: 0;
+      font-size: 11pt;
+    }
+    .lp-summary .table-wrap {
+      overflow: visible;
+    }
+    .lp-s-sample,
+    .lp-s-table :global(tr) {
+      break-inside: avoid;
+    }
+  }
+</style>
+
+<script>
+  import { $, clear, h } from '../../lib/client/dom';
+  import { copy, flash } from '../../lib/client/files';
+  import { displayDate, localToday, newId } from '../../lib/client/gifts';
+  import {
+    TYPES,
+    bequestSentence,
+    einProblem,
+    flexibilitySentence,
+    formatEin,
+    giftSummary,
+    planChecks,
+    sampleText,
+    type Bequest,
+    type BequestType,
+    type LegacyPlan,
+  } from '../../lib/client/legacy';
+  import { canPersist } from '../../lib/client/persist';
+  import { load, remove, save } from '../../lib/client/store';
+
+  const giftsEl = $('#lp-gifts');
+  const nameEl = $<HTMLInputElement>('#lp-name');
+  const placeEl = $<HTMLInputElement>('#lp-place');
+  const flexEl = $<HTMLInputElement>('#lp-flex');
+  const notesEl = $<HTMLTextAreaElement>('#lp-notes');
+  const statusEl = $('#lp-status');
+
+  const str = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '');
+  const isType = (v: unknown): v is BequestType => typeof v === 'string' && v in TYPES;
+
+  function blank(): Bequest {
+    return { id: newId(), charity: '', legal: '', ein: '', type: 'specific', amount: '', percent: '', condition: '', purpose: 'unrestricted', purposeText: '' };
+  }
+
+  function fresh(): LegacyPlan {
+    return { name: '', place: '', gifts: [blank()], flexible: true, notes: '' };
+  }
+
+  function cleanPlan(raw: unknown): LegacyPlan {
+    if (!raw || typeof raw !== 'object') return fresh();
+    const p = raw as Record<string, unknown>;
+    const gifts = (Array.isArray(p.gifts) ? p.gifts : [])
+      .filter((g): g is Record<string, unknown> => !!g && typeof g === 'object')
+      .map((g) => ({
+        id: typeof g.id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(g.id) ? g.id : newId(),
+        charity: str(g.charity, 120),
+        legal: str(g.legal, 200),
+        ein: str(g.ein, 20),
+        type: isType(g.type) ? g.type : 'specific',
+        amount: str(g.amount, 30),
+        percent: str(g.percent, 10),
+        condition: str(g.condition, 200),
+        purpose: g.purpose === 'restricted' ? ('restricted' as const) : ('unrestricted' as const),
+        purposeText: str(g.purposeText, 200),
+      }));
+    return {
+      name: str(p.name, 100),
+      place: str(p.place, 100),
+      gifts: gifts.length ? gifts : [blank()],
+      flexible: p.flexible !== false,
+      notes: str(p.notes, 2000),
+      savedAt: str(p.savedAt, 40) || undefined,
+    };
+  }
+
+  let plan = cleanPlan(load<unknown>('legacy', null));
+
+  function persist() {
+    plan.savedAt = new Date().toISOString();
+    const ok = save('legacy', plan);
+    $('#lp-storage').hidden = ok;
+    $('#lp-saved').textContent = ok ? 'Saved only in this browser.' : 'Not saved: this browser is blocking storage.';
+  }
+
+  // ---------- The gift fieldsets ----------
+
+  function field(id: string, label: string, control: HTMLElement, hint?: HTMLElement | string, attrs: Record<string, string> = {}) {
+    if (typeof hint === 'string' && !control.hasAttribute('aria-describedby')) control.setAttribute('aria-describedby', `${id}-hint`);
+    return h(
+      'div',
+      { class: 'field', ...attrs },
+      h('label', { for: id }, label),
+      control,
+      hint ? (typeof hint === 'string' ? h('span', { class: 'hint', id: `${id}-hint` }, hint) : hint) : null,
+    );
+  }
+
+  function giftEl(g: Bequest, i: number): HTMLElement {
+    const id = `lp-${g.id}`;
+    const typeSelect = h(
+      'select',
+      { id: `${id}-type`, 'data-field': 'type', 'aria-describedby': `${id}-type-hint` },
+      (Object.keys(TYPES) as BequestType[]).map((t) => h('option', { value: t }, TYPES[t].label)),
+    );
+    typeSelect.value = g.type;
+    const input = (name: keyof Bequest, attrs: Record<string, string | number> = {}) =>
+      h('input', { type: 'text', id: `${id}-${name}`, 'data-field': name, autocomplete: 'off', value: String(g[name] ?? ''), ...attrs });
+    const einHint = h(
+      'span',
+      { class: 'hint', id: `${id}-ein-hint` },
+      'Nine digits, like 12-3456789. For U.S. charities, look it up in the ',
+      h('a', { href: 'https://apps.irs.gov/app/eos/', rel: 'noopener' }, 'IRS Tax Exempt Organization Search'),
+      '.',
+    );
+    const purposeName = `${id}-purpose`;
+    const radio = (value: Bequest['purpose'], title: string, hint: string) => {
+      const r = h('input', { type: 'radio', name: purposeName, value, 'data-field': 'purpose' });
+      r.checked = g.purpose === value;
+      return h('label', { class: 'option' }, r, h('span', {}, h('strong', {}, title), h('span', { class: 'hint', style: 'display:block' }, hint)));
+    };
+    return h(
+      'fieldset',
+      { class: 'lp-gift', 'data-gift': g.id },
+      h('legend', {}, `Gift ${i + 1}`),
+      h(
+        'div',
+        { class: 'lp-grid' },
+        field(`${id}-charity`, 'Charity', input('charity', { maxlength: 120 }), 'The name you know it by.'),
+        field(`${id}-legal`, 'Full legal name', input('legal', { maxlength: 200 }), 'As registered, if it differs. Your executor needs it.'),
+        field(`${id}-ein`, 'EIN (optional)', input('ein', { maxlength: 20, inputmode: 'numeric', 'aria-describedby': `${id}-ein-hint` }), einHint),
+      ),
+      h(
+        'div',
+        { class: 'lp-grid' },
+        field(`${id}-type`, 'Kind of gift', typeSelect, TYPES[g.type].hint),
+        field(`${id}-amount`, 'Amount in dollars', input('amount', { inputmode: 'decimal', placeholder: '5,000', maxlength: 30 }), undefined, { 'data-show': 'specific' }),
+        field(
+          `${id}-percent`,
+          g.type === 'percent' ? 'Percent of your estate' : 'Percent of the residue',
+          input('percent', { inputmode: 'decimal', placeholder: g.type === 'percent' ? '10' : '100', maxlength: 10 }),
+          undefined,
+          { 'data-show': 'percent residue contingent' },
+        ),
+        field(
+          `${id}-condition`,
+          'Only if…',
+          input('condition', { maxlength: 200, placeholder: 'my spouse does not survive me', 'aria-describedby': `${id}-condition-hint` }),
+          'Who must not survive you, or what must happen, for this backup gift to apply.',
+          { 'data-show': 'contingent' },
+        ),
+      ),
+      h(
+        'fieldset',
+        { class: 'lp-purpose' },
+        h('legend', {}, 'How may the charity use it?'),
+        radio('unrestricted', 'Unrestricted', 'For its general charitable purposes. Usually the most useful.'),
+        radio('restricted', 'Restricted to a purpose', 'Only for the purpose you name.'),
+      ),
+      field(
+        `${id}-purposeText`,
+        'The purpose',
+        input('purposeText', { maxlength: 200, placeholder: 'for example, cancer research', 'aria-describedby': `${id}-purposeText-hint` }),
+        'Broad purposes stay usable longer than a single program.',
+        { 'data-purpose-text': '' },
+      ),
+      plan.gifts.length > 1
+        ? h('button', { class: 'btn btn-ghost btn-small lp-remove', type: 'button', 'data-remove': g.id }, `Remove gift ${i + 1}`)
+        : null,
+    );
+  }
+
+  /** Show the fields this kind of gift needs, and keep labels, hints and errors current. */
+  function syncGift(g: Bequest) {
+    const box = giftsEl.querySelector<HTMLElement>(`[data-gift="${g.id}"]`);
+    if (!box) return;
+    box.querySelectorAll<HTMLElement>('[data-show]').forEach((el) => {
+      el.hidden = !(el.dataset.show ?? '').split(' ').includes(g.type);
+    });
+    const purposeText = box.querySelector<HTMLElement>('[data-purpose-text]');
+    if (purposeText) purposeText.hidden = g.purpose !== 'restricted';
+    const typeHint = document.getElementById(`lp-${g.id}-type-hint`);
+    if (typeHint) typeHint.textContent = TYPES[g.type].hint;
+    const percentLabel = box.querySelector<HTMLLabelElement>(`label[for="lp-${g.id}-percent"]`);
+    if (percentLabel) percentLabel.textContent = g.type === 'percent' ? 'Percent of your estate' : 'Percent of the residue';
+    document.getElementById(`lp-${g.id}-percent`)?.setAttribute('placeholder', g.type === 'percent' ? '10' : '100');
+    const ein = document.getElementById(`lp-${g.id}-ein`);
+    const einHint = document.getElementById(`lp-${g.id}-ein-hint`);
+    const problem = einProblem(g.ein);
+    if (ein && einHint) {
+      if (problem) ein.setAttribute('aria-invalid', 'true');
+      else ein.removeAttribute('aria-invalid');
+      einHint.classList.toggle('lp-msg', !!problem);
+    }
+  }
+
+  function renderGifts() {
+    clear(giftsEl);
+    plan.gifts.forEach((g, i) => giftsEl.append(giftEl(g, i)));
+    plan.gifts.forEach(syncGift);
+  }
+
+  // ---------- The summary ----------
+
+  function renderSummary() {
+    const meta = [plan.name.trim() && `Prepared by ${plan.name.trim()}`, plan.place.trim() && `Lives in ${plan.place.trim()}`, `Updated ${displayDate(localToday())}`]
+      .filter(Boolean)
+      .join(' · ');
+    $('#lp-s-meta').textContent = meta;
+
+    const rows = $('#lp-s-rows');
+    clear(rows);
+    plan.gifts.forEach((g, i) => {
+      const legal = g.legal.trim();
+      const ein = formatEin(g.ein);
+      rows.append(
+        h(
+          'tr',
+          {},
+          h('td', {}, String(i + 1)),
+          h(
+            'td',
+            {},
+            g.charity.trim() || legal || 'Not named yet',
+            legal && legal !== g.charity.trim() ? h('span', { class: 'lp-s-sub' }, `Legal name: ${legal}`) : null,
+            h('span', { class: 'lp-s-sub' }, ein ? `EIN ${ein}` : 'EIN not given'),
+          ),
+          h('td', {}, giftSummary(g)),
+          h('td', {}, g.purpose === 'restricted' ? `Restricted: ${g.purposeText.trim() || 'purpose not written yet'}` : 'Unrestricted'),
+        ),
+      );
+    });
+
+    $('#lp-s-flex').textContent = plan.flexible
+      ? 'Flexibility clause: included. If an organization no longer exists, has merged or is no longer a charity, the gift goes to its successor or to a charity with similar purposes chosen by the executor.'
+      : 'Flexibility clause: not included.';
+
+    const notes = plan.notes.trim();
+    $('#lp-s-notes-wrap').hidden = !notes;
+    $('#lp-s-notes').textContent = notes;
+
+    const sample = $('#lp-s-sample');
+    clear(sample);
+    const named = plan.gifts.filter((g) => g.charity.trim() || g.legal.trim());
+    for (const g of named) {
+      sample.append(h('li', {}, [bequestSentence(g), plan.flexible ? flexibilitySentence(g) : ''].filter(Boolean).join(' ')));
+    }
+    $('#lp-s-sample-empty').hidden = named.length > 0;
+
+    const checks = planChecks(plan);
+    const list = $('#lp-checks');
+    clear(list);
+    checks.forEach((c) => list.append(h('li', {}, c)));
+    $('#lp-checks-wrap').hidden = checks.length === 0;
+    announce(named.length, checks.length);
+  }
+
+  let announceTimer: number | undefined;
+  function announce(named: number, checks: number) {
+    window.clearTimeout(announceTimer);
+    announceTimer = window.setTimeout(() => {
+      const gifts = named === 1 ? '1 named gift' : `${named} named gifts`;
+      const todo = checks ? ` ${checks === 1 ? '1 thing' : `${checks} things`} to check before printing.` : ' Ready to print.';
+      $('#lp-live').textContent = `Summary updated: ${gifts}.${todo}`;
+    }, 900);
+  }
+
+  // ---------- Events ----------
+
+  giftsEl.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement | HTMLSelectElement;
+    const g = plan.gifts.find((x) => x.id === el.closest<HTMLElement>('[data-gift]')?.dataset.gift);
+    const key = el.dataset.field as keyof Bequest | undefined;
+    if (!g || !key) return;
+    if (key === 'type') {
+      if (isType(el.value)) g.type = el.value;
+    } else if (key === 'purpose') {
+      g.purpose = el.value === 'restricted' ? 'restricted' : 'unrestricted';
+    } else if (key !== 'id') {
+      g[key] = el.value;
+    }
+    syncGift(g);
+    renderSummary();
+    persist();
+  });
+
+  giftsEl.addEventListener('change', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (el.dataset.field !== 'ein') return;
+    const g = plan.gifts.find((x) => x.id === el.closest<HTMLElement>('[data-gift]')?.dataset.gift);
+    const formatted = formatEin(el.value);
+    if (g && formatted) {
+      g.ein = formatted;
+      el.value = formatted;
+      renderSummary();
+      persist();
+    }
+  });
+
+  giftsEl.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-remove]');
+    if (!btn) return;
+    const i = plan.gifts.findIndex((g) => g.id === btn.dataset.remove);
+    if (i < 0) return;
+    const [removed] = plan.gifts.splice(i, 1);
+    renderGifts();
+    renderSummary();
+    persist();
+    statusEl.textContent = `Removed the gift to ${removed.charity.trim() || `gift ${i + 1}`}.`;
+    const next = plan.gifts[Math.min(i, plan.gifts.length - 1)];
+    (document.getElementById(`lp-${next.id}-charity`) ?? $<HTMLElement>('#lp-add')).focus();
+  });
+
+  $('#lp-add').addEventListener('click', () => {
+    const g = blank();
+    plan.gifts.push(g);
+    renderGifts();
+    renderSummary();
+    persist();
+    document.getElementById(`lp-${g.id}-charity`)?.focus();
+  });
+
+  nameEl.addEventListener('input', () => {
+    plan.name = nameEl.value;
+    renderSummary();
+    persist();
+  });
+  placeEl.addEventListener('input', () => {
+    plan.place = placeEl.value;
+    renderSummary();
+    persist();
+  });
+  flexEl.addEventListener('change', () => {
+    plan.flexible = flexEl.checked;
+    renderSummary();
+    persist();
+  });
+  notesEl.addEventListener('input', () => {
+    plan.notes = notesEl.value;
+    renderSummary();
+    persist();
+  });
+
+  $('#lp-print-btn').addEventListener('click', () => window.print());
+
+  $('#lp-copy').addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLElement;
+    if (!plan.gifts.some((g) => g.charity.trim() || g.legal.trim())) {
+      statusEl.textContent = 'Name a charity first, then copy its sample language.';
+      return;
+    }
+    const ok = await copy(sampleText(plan));
+    flash(btn, ok ? 'Copied' : 'Copy failed');
+    statusEl.textContent = ok ? 'Copied the sample language, with its label. Take it to your attorney, not straight into a will.' : 'Your browser blocked copying.';
+  });
+
+  $('#lp-clear').addEventListener('click', () => {
+    if (!confirm('Clear the whole worksheet? Everything you typed here will be deleted from this browser.')) return;
+    plan = fresh();
+    remove('legacy');
+    fill();
+    statusEl.textContent = 'Cleared the worksheet.';
+    nameEl.focus();
+  });
+
+  function fill() {
+    nameEl.value = plan.name;
+    placeEl.value = plan.place;
+    flexEl.checked = plan.flexible;
+    notesEl.value = plan.notes;
+    renderGifts();
+    renderSummary();
+  }
+
+  if (!canPersist()) {
+    $('#lp-storage').hidden = false;
+    $('#lp-saved').textContent = 'Not saved: this browser is blocking storage.';
+  }
+  fill();
+</script>

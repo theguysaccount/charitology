@@ -1,0 +1,616 @@
+---
+// Gift Giving: a card for a donation made in someone's name. The preview is
+// HTML in the page's theme; the PNG is drawn on canvas in a fixed light
+// palette; printing this page prints the card alone. There is no amount
+// field, on purpose: the card is about what the gift does.
+import checklist from '../../data/checklist.json';
+import Mark from '../Mark.astro';
+import { LIMITS, MAX_REASONS, REASONS, STYLES } from '../../lib/client/giftcard';
+import { url } from '../../lib/site';
+const themes = checklist.filter((c) => c.id in REASONS);
+const ringR = 78;
+const ringLength = Math.round((2 * Math.PI * ringR - 6) * 10) / 10;
+---
+
+<section class="tool gg-tool" aria-labelledby="gg-title">
+  <div class="tool-head">
+    <h2 id="gg-title">Make a gift card</h2>
+    <span class="note" id="gg-saved">Your draft is kept only in this browser.</span>
+  </div>
+
+  <div class="tool-grid gg-layout">
+    <form id="gg-form" class="gg-form" novalidate>
+      <div class="gg-pair">
+        <div class="field">
+          <label for="gg-to">Who is it for?</label>
+          <input type="text" id="gg-to" data-field="to" maxlength={LIMITS.to} autocomplete="off" placeholder="Sam" />
+        </div>
+        <div class="field">
+          <label for="gg-from">Who is it from?</label>
+          <input type="text" id="gg-from" data-field="from" maxlength={LIMITS.from} autocomplete="off" placeholder="Jordan" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="gg-charity">Charity</label>
+        <input type="text" id="gg-charity" data-field="charity" maxlength={LIMITS.charity} autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="gg-does">What the gift does</label>
+        <textarea id="gg-does" data-field="does" maxlength={LIMITS.does} rows="3" aria-describedby="gg-does-hint gg-does-count"></textarea>
+        <span class="hint" id="gg-does-hint">In plain words, for example: “Keeps a family housed for a month while they get back on their feet.”</span>
+        <span class="hint gg-count" id="gg-does-count"></span>
+      </div>
+      <div class="field">
+        <label for="gg-message">Personal message</label>
+        <textarea id="gg-message" data-field="message" maxlength={LIMITS.message} rows="4" aria-describedby="gg-message-count"></textarea>
+        <span class="hint gg-count" id="gg-message-count"></span>
+      </div>
+      <fieldset class="gg-reasons" aria-describedby="gg-reasons-hint">
+        <legend>Why this gift <span class="gg-optional">(optional, up to {MAX_REASONS})</span></legend>
+        <p class="hint" id="gg-reasons-hint">
+          Each reason comes from a question in the Giver’s Checklist and becomes one short sentence on the card.
+        </p>
+        {
+          themes.map((t) => (
+            <label class="option gg-reason">
+              <input type="checkbox" name="reason" value={t.id} />
+              <span>
+                <strong>{t.question}</strong>
+                <span class="hint">“{REASONS[t.id]}”</span>
+              </span>
+            </label>
+          ))
+        }
+        <p class="hint" id="gg-reason-count" aria-live="polite"></p>
+      </fieldset>
+    </form>
+
+    <div class="gg-side">
+      <div class="gg-styles">
+        <span class="gg-styles-label" id="gg-style-label">Style</span>
+        <div class="seg" role="group" aria-labelledby="gg-style-label">
+          {
+            Object.entries(STYLES).map(([id, name], i) => (
+              <button type="button" data-style={id} aria-pressed={i === 0 ? 'true' : 'false'}>
+                {name}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div id="gg-print" class="gg-stage">
+        <article class="gg-card" id="gg-card" data-style="classic" aria-label="Gift card preview">
+          <svg class="gg-seal" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+            <defs>
+              <path id="gg-ring" d={`M100,100 m-${ringR},0 a${ringR},${ringR} 0 1,1 ${ringR * 2},0 a${ringR},${ringR} 0 1,1 -${ringR * 2},0`}></path>
+            </defs>
+            <circle cx="100" cy="100" r="97" fill="none" stroke="currentColor" stroke-width="1.4"></circle>
+            <circle cx="100" cy="100" r="92" fill="none" stroke="currentColor" stroke-width="0.6"></circle>
+            <circle cx="100" cy="100" r="62" fill="none" stroke="currentColor" stroke-width="0.8"></circle>
+            <text fill="currentColor" font-size="10.4" font-weight="560" class="gg-ring-text">
+              <textPath href="#gg-ring" textLength={ringLength} lengthAdjust="spacing">A GIFT OF GOOD · GIVEN IN YOUR NAME · CHARITOLOGY ·</textPath>
+            </text>
+            <g transform="translate(64 64) scale(2.25)">
+              <path d="M25.83 9.12A12 12 0 1 0 25.83 22.88" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+              <circle cx="16" cy="16" r="3.4" fill="var(--accent)"></circle>
+            </g>
+          </svg>
+          <div class="gg-brand"><Mark size={22} /><span>Charitology</span></div>
+          <span class="gg-ornament"><Mark size={34} /></span>
+          <p class="gg-eyebrow" id="gg-c-eyebrow"></p>
+          <p class="gg-to" id="gg-c-to"></p>
+          <p class="gg-line" id="gg-c-line"></p>
+          <div class="gg-block" id="gg-c-does-wrap">
+            <p class="gg-label">What it does</p>
+            <p class="gg-does" id="gg-c-does"></p>
+          </div>
+          <div class="gg-block" id="gg-c-msg-wrap">
+            <p class="gg-label" id="gg-c-msg-label"></p>
+            <p class="gg-msg" id="gg-c-msg"></p>
+          </div>
+          <div class="gg-block" id="gg-c-why-wrap">
+            <p class="gg-label">Why this gift</p>
+            <ul class="gg-why" id="gg-c-why"></ul>
+          </div>
+          <p class="gg-foot" id="gg-c-foot"></p>
+        </article>
+      </div>
+
+      <div class="btn-row gg-actions">
+        <button class="btn" type="button" id="gg-png">Download PNG</button>
+        <button class="btn btn-ghost" type="button" id="gg-print-btn">Print</button>
+        <button class="btn btn-ghost" type="button" id="gg-new">Start a new card</button>
+      </div>
+      <p class="note gg-status" id="gg-status" role="status"></p>
+      <p class="note">
+        Give through the charity first; the card doesn’t make the donation. Want to keep track of it? Log it in the
+        <a href={url('/tools/giving-dashboard/')}>Giving Dashboard</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* The global .btn, .field and grid classes set display, which would otherwise override [hidden]. */
+  .gg-tool :global([hidden]) {
+    display: none !important;
+  }
+  .gg-layout {
+    align-items: start;
+  }
+  .gg-pair {
+    display: grid;
+    gap: 0 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+    align-items: start;
+  }
+  .gg-optional {
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .gg-count {
+    justify-self: end;
+    font-variant-numeric: tabular-nums;
+  }
+  .gg-reasons {
+    display: grid;
+    gap: 0.45rem;
+  }
+  .gg-reasons > .hint {
+    margin: 0 0 0.2rem;
+  }
+  .gg-reason .hint {
+    display: block;
+    margin-top: 0.1rem;
+  }
+  .gg-reason:has(input:disabled) {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  @media (min-width: 900px) {
+    .gg-side {
+      position: sticky;
+      top: calc(var(--header-h) + 1rem);
+    }
+  }
+  .gg-styles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .gg-styles-label {
+    font-weight: 650;
+    font-size: 0.88rem;
+  }
+  .gg-actions {
+    margin-top: 1.1rem;
+  }
+  .gg-status {
+    min-height: 1.2em;
+    margin: 0.75rem 0;
+  }
+
+  /* The card. Sizes follow the stage width, with floors for small screens. */
+  .gg-stage {
+    container-type: inline-size;
+    max-width: 480px;
+  }
+  .gg-card {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.55rem, 3cqi, 1.1rem);
+    padding: clamp(1.5rem, 10cqi, 3.2rem);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    font-family: var(--font-serif);
+    overflow-wrap: anywhere;
+  }
+  .gg-card p {
+    margin: 0;
+  }
+  .gg-seal,
+  .gg-brand,
+  .gg-ornament {
+    display: none;
+  }
+  .gg-eyebrow {
+    font: 700 clamp(0.62rem, 2.2cqi, 0.8rem) var(--font-sans);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .gg-to {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.9rem, 9cqi, 3rem);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .gg-line {
+    font-size: clamp(0.98rem, 3.4cqi, 1.2rem);
+    color: var(--ink-2);
+  }
+  .gg-block {
+    margin-top: clamp(0.3rem, 2.4cqi, 0.9rem);
+  }
+  .gg-label {
+    font: 700 clamp(0.6rem, 2cqi, 0.74rem) var(--font-sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.35em !important;
+  }
+  .gg-does {
+    font-size: clamp(0.98rem, 3.4cqi, 1.18rem);
+  }
+  .gg-msg {
+    font-size: clamp(0.95rem, 3.2cqi, 1.12rem);
+    white-space: pre-line;
+  }
+  .gg-why {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.3em;
+    font-size: clamp(0.9rem, 2.9cqi, 1.04rem);
+  }
+  .gg-foot {
+    margin-top: auto !important;
+    padding-top: 0.75rem;
+    font: 600 clamp(0.6rem, 1.9cqi, 0.74rem) var(--font-sans);
+    color: var(--ink-3);
+  }
+
+  /* Classic: centered, a double rule, the mark as ornament. */
+  .gg-card[data-style='classic'] {
+    text-align: center;
+    align-items: center;
+  }
+  .gg-card[data-style='classic']::before {
+    content: '';
+    position: absolute;
+    inset: clamp(8px, 2.6cqi, 14px);
+    border: 3px double var(--rule);
+    border-radius: 8px;
+    pointer-events: none;
+  }
+  .gg-card[data-style='classic'] .gg-ornament {
+    display: block;
+    line-height: 0;
+  }
+  .gg-card[data-style='classic'] .gg-does {
+    font-style: italic;
+  }
+
+  /* Modern: left-aligned, a band of accent, bold type. */
+  .gg-card[data-style='modern'] {
+    background: var(--bg);
+    border-top: clamp(8px, 2.6cqi, 14px) solid var(--accent);
+    font-family: var(--font-sans);
+  }
+  .gg-card[data-style='modern'] .gg-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-family: var(--font-display);
+    font-weight: 620;
+    font-size: clamp(0.9rem, 3.3cqi, 1.15rem);
+    margin-bottom: clamp(0.4rem, 3cqi, 1rem);
+  }
+  .gg-card[data-style='modern'] .gg-eyebrow {
+    color: var(--accent);
+  }
+  .gg-card[data-style='modern'] .gg-to {
+    font-weight: 700;
+    font-size: clamp(2.1rem, 11cqi, 3.6rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .gg-card[data-style='modern'] .gg-block {
+    border-top: 1px solid var(--rule);
+    padding-top: 0.7em;
+  }
+  .gg-card[data-style='modern'] .gg-why :global(li)::before {
+    content: '→ ';
+    color: var(--ink-3);
+  }
+
+  /* Seal: a formal certificate under the seal. */
+  .gg-card[data-style='seal'] {
+    text-align: center;
+    align-items: center;
+    border: 2px solid var(--ink-3);
+    outline: 1px solid var(--rule);
+    outline-offset: -9px;
+  }
+  .gg-card[data-style='seal'] .gg-seal {
+    display: block;
+    width: clamp(84px, 30cqi, 150px);
+    height: auto;
+    color: var(--ink);
+    margin-bottom: clamp(0.2rem, 2cqi, 0.6rem);
+  }
+  .gg-ring-text {
+    font-family: var(--font-display);
+    letter-spacing: 0.08em;
+  }
+
+  @media print {
+    /* Print only the card: hide everything that neither is it, holds it, nor sits inside it. */
+    :global(body:has(#gg-print) *:not(:has(#gg-print)):not(#gg-print):not(#gg-print *)) {
+      display: none !important;
+    }
+    :global(body:has(#gg-print) *:has(#gg-print)) {
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: none !important;
+      box-shadow: none !important;
+      width: auto !important;
+      max-width: none !important;
+      position: static !important;
+    }
+    .gg-stage {
+      max-width: 5.6in;
+      margin: 0.3in auto 0;
+    }
+    .gg-card {
+      --bg: #f6f3ec;
+      --surface: #fdfcf9;
+      --ink: #1a1915;
+      --ink-2: #47443c;
+      --ink-3: #6b665c;
+      --rule: #d9d2c4;
+      --accent: #8b1e2d;
+      box-shadow: none;
+      break-inside: avoid;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
+
+<script>
+  import { FACE, PAPER, canvas, drawBlocks, drawMark, drawRingText, drawWordmark, fitBlocks, font, fontsReady, layoutBlocks, roundRect, siteLabel, toPng, type TextBlock } from '../../lib/client/canvas';
+  import { $, $$, clear, h } from '../../lib/client/dom';
+  import { download } from '../../lib/client/files';
+  import { slugify } from '../../lib/client/format';
+  import { LIMITS, MAX_REASONS, STYLES, cardText, cleanCard, emptyCard, type CardState, type CardStyle, type CardText } from '../../lib/client/giftcard';
+  import { canPersist } from '../../lib/client/persist';
+  import { load, save } from '../../lib/client/store';
+
+  const form = $<HTMLFormElement>('#gg-form');
+  const card = $('#gg-card');
+  const statusEl = $('#gg-status');
+  const inputs = $$<HTMLInputElement | HTMLTextAreaElement>('[data-field]', form);
+  const boxes = $$<HTMLInputElement>('input[name="reason"]', form);
+  const styleButtons = $$<HTMLButtonElement>('[data-style]', $('.gg-styles'));
+
+  let state: CardState = cleanCard(load<unknown>('gift-card', null));
+
+  function persist() {
+    const ok = save('gift-card', state);
+    $('#gg-saved').textContent = ok ? 'Your draft is kept only in this browser.' : 'This browser isn’t saving drafts. Download or print the card to keep it.';
+  }
+
+  function counts() {
+    const left = (k: 'does' | 'message') => LIMITS[k] - state[k].length;
+    $('#gg-does-count').textContent = `${left('does')} characters left`;
+    $('#gg-message-count').textContent = `${left('message')} characters left`;
+    const picked = state.reasons.length;
+    boxes.forEach((b) => (b.disabled = !b.checked && picked >= MAX_REASONS));
+    $('#gg-reason-count').textContent = picked ? `${picked} of ${MAX_REASONS} picked.` : '';
+  }
+
+  function render() {
+    const t = cardText(state);
+    card.dataset.style = state.style;
+    $('#gg-c-eyebrow').textContent = t.eyebrow;
+    $('#gg-c-to').textContent = t.to;
+    $('#gg-c-line').textContent = t.line;
+    $('#gg-c-does').textContent = t.does;
+    $('#gg-c-does-wrap').hidden = !t.does;
+    $('#gg-c-msg-label').textContent = t.messageLabel;
+    $('#gg-c-msg').textContent = t.message;
+    $('#gg-c-msg-wrap').hidden = !t.message;
+    const why = $('#gg-c-why');
+    clear(why);
+    t.reasons.forEach((r) => why.append(h('li', {}, r)));
+    $('#gg-c-why-wrap').hidden = t.reasons.length === 0;
+    $('#gg-c-foot').textContent = `Made with Charitology · ${siteLabel('/')}`;
+    styleButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.style === state.style)));
+    counts();
+  }
+
+  function fill() {
+    inputs.forEach((el) => (el.value = state[el.dataset.field as keyof typeof LIMITS] ?? ''));
+    boxes.forEach((b) => (b.checked = state.reasons.includes(b.value)));
+    render();
+  }
+
+  form.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement;
+    const key = el.dataset.field as keyof typeof LIMITS | undefined;
+    if (key && key in LIMITS) state[key] = el.value.slice(0, LIMITS[key]);
+    if (el.name === 'reason') {
+      state.reasons = boxes.filter((b) => b.checked).map((b) => b.value).slice(0, MAX_REASONS);
+    }
+    render();
+    persist();
+  });
+  form.addEventListener('submit', (e) => e.preventDefault());
+
+  styleButtons.forEach((b) =>
+    b.addEventListener('click', () => {
+      state.style = (b.dataset.style as CardStyle) ?? 'classic';
+      render();
+      persist();
+      statusEl.textContent = `${STYLES[state.style]} style.`;
+    }),
+  );
+
+  // ---------- The PNG ----------
+
+  const W = 1200;
+  const H = 1500;
+
+  function blocks(t: CardText, style: CardStyle): TextBlock[] {
+    const body = style === 'modern' ? 'sans' : 'serif';
+    const label = (text: string, gap: number): TextBlock => ({ text, face: 'sans', weight: 700, size: 22, color: PAPER.ink3, maxLines: 1, gap, caps: true, tracking: 4 });
+    const out: TextBlock[] = [
+      { text: t.eyebrow, face: 'sans', weight: 700, size: 26, color: style === 'modern' ? PAPER.accent : PAPER.ink3, maxLines: 1, caps: true, tracking: 5 },
+      {
+        text: t.to,
+        face: 'display',
+        weight: style === 'modern' ? 700 : 600,
+        size: style === 'modern' ? 120 : 104,
+        minSize: 56,
+        lineHeight: 1.08,
+        color: PAPER.ink,
+        maxLines: 2,
+        gap: 22,
+        tracking: style === 'modern' ? -2 : 0,
+      },
+      { text: t.line, face: body, size: 38, color: PAPER.ink2, maxLines: 3, gap: 24 },
+    ];
+    if (t.does) out.push(label('What it does', 60), { text: t.does, face: body, italic: style === 'classic', size: 36, color: PAPER.ink, maxLines: 5, gap: 14 });
+    if (t.message) out.push(label(t.messageLabel, 50), { text: t.message, face: 'serif', size: 34, lineHeight: 1.42, color: PAPER.ink, maxLines: 9, gap: 14 });
+    if (t.reasons.length) {
+      out.push(label('Why this gift', 50));
+      t.reasons.forEach((r, i) => out.push({ text: style === 'modern' ? `→ ${r}` : r, face: body, size: 30, color: PAPER.ink, maxLines: 2, gap: i === 0 ? 14 : 10 }));
+    }
+    return out;
+  }
+
+  /** Short cards get larger type (while leaving a fifth of the space free); long ones shrink until they fit. */
+  function fit(ctx: CanvasRenderingContext2D, list: TextBlock[], width: number, height: number) {
+    for (const scale of [1.25, 1.18, 1.1]) {
+      const result = layoutBlocks(ctx, list, width, scale);
+      if (result.height <= height * 0.8) return result;
+    }
+    return fitBlocks(ctx, list, width, height);
+  }
+
+  function footer(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, align: CanvasTextAlign) {
+    ctx.font = font(21, 'sans', 600);
+    ctx.fillStyle = PAPER.ink3;
+    ctx.textAlign = align;
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(text, x, y);
+  }
+
+  function drawSeal(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number) {
+    const s = size / 200;
+    ctx.save();
+    ctx.translate(cx - 100 * s, cy - 100 * s);
+    ctx.scale(s, s);
+    ctx.strokeStyle = PAPER.ink;
+    for (const [r, w] of [
+      [97, 1.4],
+      [92, 0.6],
+      [62, 0.8],
+    ]) {
+      ctx.beginPath();
+      ctx.arc(100, 100, r, 0, Math.PI * 2);
+      ctx.lineWidth = w;
+      ctx.stroke();
+    }
+    ctx.font = `560 10.4px ${FACE.display}`;
+    drawRingText(ctx, 'A GIFT OF GOOD · GIVEN IN YOUR NAME · CHARITOLOGY · ', 100, 100, 81.5, PAPER.ink);
+    drawMark(ctx, 64, 64, 72);
+    ctx.restore();
+  }
+
+  async function drawCard(s: CardState): Promise<HTMLCanvasElement> {
+    const { el, ctx } = canvas(W, H);
+    const t = cardText(s);
+    await fontsReady([t.eyebrow, t.to, t.line, t.does, t.messageLabel, t.message, ...t.reasons, 'What it does Why this gift Made with Charitology'].join(' '));
+    const made = `Made with Charitology · ${siteLabel('/')}`;
+
+    if (s.style === 'modern') {
+      ctx.fillStyle = PAPER.bg;
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = PAPER.accent;
+      ctx.fillRect(0, 0, W, 36);
+      drawWordmark(ctx, 120, 136, 36);
+      const area = { x: 120, y: 214, w: 960, h: 1130 };
+      const res = fit(ctx, blocks(t, 'modern'), area.w, area.h);
+      drawBlocks(ctx, res.placed, area.x, area.y, area.w, 'left');
+      ctx.fillStyle = PAPER.rule;
+      ctx.fillRect(120, 1380, 960, 2);
+      footer(ctx, made, 120, 1430, 'left');
+    } else if (s.style === 'seal') {
+      ctx.fillStyle = PAPER.surface;
+      ctx.fillRect(0, 0, W, H);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = PAPER.ink3;
+      ctx.strokeRect(36, 36, W - 72, H - 72);
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = PAPER.rule;
+      ctx.strokeRect(54, 54, W - 108, H - 108);
+      drawSeal(ctx, W / 2, 262, 300);
+      const area = { x: 170, y: 450, w: 860, h: 900 };
+      const res = fit(ctx, blocks(t, 'seal'), area.w, area.h);
+      drawBlocks(ctx, res.placed, area.x, area.y + Math.max(0, (area.h - res.height) / 2), area.w, 'center');
+      footer(ctx, made, W / 2, 1410, 'center');
+    } else {
+      ctx.fillStyle = PAPER.surface;
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = PAPER.rule;
+      ctx.lineWidth = 3;
+      roundRect(ctx, 40, 40, W - 80, H - 80, 18);
+      ctx.stroke();
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, 56, 56, W - 112, H - 112, 12);
+      ctx.stroke();
+      drawMark(ctx, W / 2 - 32, 118, 64);
+      const area = { x: 170, y: 230, w: 860, h: 1110 };
+      const res = fit(ctx, blocks(t, 'classic'), area.w, area.h);
+      drawBlocks(ctx, res.placed, area.x, area.y + Math.max(0, (area.h - res.height) / 2), area.w, 'center');
+      footer(ctx, made, W / 2, 1404, 'center');
+    }
+    return el;
+  }
+
+  $('#gg-png').addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    btn.disabled = true;
+    statusEl.textContent = 'Drawing your card…';
+    try {
+      const blob = await toPng(await drawCard(state));
+      const who = slugify(state.to);
+      const filename = who ? `gift-card-for-${who}.png` : 'gift-card.png';
+      download(filename, blob);
+      statusEl.textContent = `Downloaded ${filename}, ${W} × ${H} pixels.`;
+    } catch {
+      statusEl.textContent = 'This browser couldn’t draw the image. Print still works.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $('#gg-print-btn').addEventListener('click', () => window.print());
+
+  $('#gg-new').addEventListener('click', () => {
+    const typed = state.to || state.from || state.charity || state.does || state.message || state.reasons.length;
+    if (typed && !confirm('Start a new card? The draft saved in this browser will be cleared.')) return;
+    state = emptyCard(state.style);
+    persist();
+    fill();
+    statusEl.textContent = 'Started a new card.';
+    ($('#gg-to') as HTMLInputElement).focus();
+  });
+
+  if (!canPersist()) $('#gg-saved').textContent = 'This browser isn’t saving drafts. Download or print the card to keep it.';
+  fill();
+</script>

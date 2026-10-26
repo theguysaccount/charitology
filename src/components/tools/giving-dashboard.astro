@@ -1,0 +1,678 @@
+---
+// Giving Dashboard: a private log of gifts, summarized by cause and by
+// source depth. Gifts are saved only in this browser under "gifts"
+// (src/lib/client/gifts.ts), the same log Charitology Wrapped reads.
+import causesData from '../../data/causes.json';
+import depthScale from '../../data/depth.json';
+import { url } from '../../lib/site';
+const causes = causesData.causes;
+---
+
+<section class="tool gd-tool" aria-labelledby="gd-title">
+  <div class="tool-head">
+    <h2 id="gd-title">Your giving</h2>
+    <span class="note">Saved only in this browser. Nothing you log is sent anywhere.</span>
+  </div>
+
+  <div id="gd-storage" class="callout gd-space" hidden>
+    <strong>This browser isn’t saving your gifts.</strong> Storage is blocked or full, so the log will be gone when you close
+    this page. Export a JSON file to keep a copy.
+  </div>
+
+  <form id="gd-form" class="gd-form" novalidate>
+    <h3 id="gd-form-title">Log a gift</h3>
+    <div class="gd-fields">
+      <div class="field">
+        <label for="gd-date">Date</label>
+        <input type="date" id="gd-date" name="date" required min="1900-01-01" max="2100-12-31" />
+      </div>
+      <div class="field gd-wide">
+        <label for="gd-org">Organization</label>
+        <input type="text" id="gd-org" name="organization" required maxlength="120" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="gd-amount">Amount in dollars</label>
+        <input type="text" id="gd-amount" name="amount" required inputmode="decimal" autocomplete="off" placeholder="50" />
+      </div>
+      <div class="field">
+        <label for="gd-cause">Cause</label>
+        <select id="gd-cause" name="cause" required>
+          <option value="" disabled selected>Choose a cause</option>
+          {causes.map((c) => <option value={c.id}>{c.name}</option>)}
+          <option value="other">Other or not sure</option>
+        </select>
+      </div>
+      <div class="field gd-wide">
+        <label for="gd-depth">Depth: where the gift acts</label>
+        <select id="gd-depth" name="depth" required aria-describedby="gd-depth-hint">
+          <option value="" disabled selected>Choose a level</option>
+          {
+            depthScale.map((d) => (
+              <option value={d.level}>
+                {d.level} · {d.name}: {d.verb}
+              </option>
+            ))
+          }
+        </select>
+        <span class="hint" id="gd-depth-hint">
+          Every level is needed. Pick the one most of the gift’s work sits at.
+          <a href={url('/record/encyclopedia/symptoms-and-sources/')}>How to tell them apart</a>
+        </span>
+      </div>
+      <div class="field gd-wide">
+        <label for="gd-note">Note <span class="gd-optional">(optional)</span></label>
+        <input type="text" id="gd-note" name="note" maxlength="200" autocomplete="off" />
+      </div>
+    </div>
+    <p id="gd-error" class="gd-error" role="alert" hidden></p>
+    <div class="btn-row">
+      <button class="btn" type="submit" id="gd-submit">Add gift</button>
+      <button class="btn btn-ghost" type="button" id="gd-cancel" hidden>Cancel editing</button>
+    </div>
+    <p id="gd-status" class="note gd-status" role="status"></p>
+  </form>
+
+  <div class="result">
+    <div class="gd-bar">
+      <div class="field gd-year">
+        <label for="gd-year">Show</label>
+        <select id="gd-year">
+          <option value="all">All years</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-small" type="button" id="gd-sample">Try sample data</button>
+        <button class="btn btn-ghost btn-small" type="button" id="gd-unsample" hidden>Remove sample gifts</button>
+      </div>
+    </div>
+
+    <div class="kpis gd-kpis" aria-live="polite" aria-atomic="true">
+      <div class="kpi">
+        <div class="k-label">Total given</div>
+        <div class="k-value" id="gd-total">–</div>
+        <div class="k-note" id="gd-total-note">No gifts yet</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Gifts</div>
+        <div class="k-value" id="gd-count">–</div>
+        <div class="k-note" id="gd-count-note">&nbsp;</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Organizations</div>
+        <div class="k-value" id="gd-orgs">–</div>
+        <div class="k-note">different ones</div>
+      </div>
+      <div class="kpi">
+        <div class="k-label">Source share</div>
+        <div class="k-value" id="gd-source">–</div>
+        <div class="k-note">of dollars at structure and source</div>
+      </div>
+    </div>
+
+    <div id="gd-charts" class="gd-charts" hidden>
+      <div>
+        <h3>By depth</h3>
+        <p class="note">Dollars at each level, from relief to source. Depth describes. It doesn’t grade.</p>
+        <div id="gd-depths"></div>
+      </div>
+      <div>
+        <h3>By cause</h3>
+        <p class="note">Dollars to each cause area, largest first.</p>
+        <div id="gd-causes"></div>
+      </div>
+    </div>
+
+    <h3 class="gd-gap">Gifts</h3>
+    <p id="gd-empty" class="empty">
+      No gifts yet. Log your first gift above, import a file, or try the sample data to see how the dashboard works.
+    </p>
+    <div class="table-wrap" id="gd-table-wrap" hidden>
+      <table class="data gd-table">
+        <caption class="visually-hidden">Your logged gifts, newest first</caption>
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Organization</th>
+            <th scope="col" class="num">Amount</th>
+            <th scope="col">Cause</th>
+            <th scope="col">Depth</th>
+            <th scope="col">Note</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="gd-rows"></tbody>
+      </table>
+    </div>
+
+    <div class="btn-row gd-gap">
+      <button class="btn btn-ghost btn-small" type="button" id="gd-json">Export JSON</button>
+      <button class="btn btn-ghost btn-small" type="button" id="gd-csv">Export CSV</button>
+      <button class="btn btn-ghost btn-small" type="button" id="gd-import">Import JSON or CSV</button>
+      <input type="file" id="gd-file" accept=".json,.csv,application/json,text/csv" hidden />
+      <button class="btn btn-ghost btn-small" type="button" id="gd-clear">Clear all</button>
+    </div>
+    <p id="gd-io-status" class="note gd-status" role="status"></p>
+    <p class="note">
+      A CSV needs a header row with <code>date</code>, <code>organization</code>, <code>amount</code> and <code>depth</code> (0–4
+      or a level name). <code>cause</code> and <code>note</code> are optional. Importing a file you exported updates those gifts
+      instead of adding them twice. See your year as a card in
+      <a href={url('/tools/charitology-wrapped/')}>Charitology Wrapped</a>.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* The global .btn, .field and grid classes set display, which would otherwise override [hidden]. */
+  .gd-tool :global([hidden]) {
+    display: none !important;
+  }
+  .gd-space {
+    margin-bottom: 1.25rem;
+  }
+  .gd-gap {
+    margin-top: 1.75rem;
+  }
+  .gd-fields {
+    display: grid;
+    gap: 0 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    align-items: start;
+  }
+  @media (min-width: 720px) {
+    .gd-wide {
+      grid-column: span 2;
+    }
+  }
+  .gd-optional {
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .gd-error {
+    color: var(--ink);
+    border-left: 3px solid var(--critical);
+    padding: 0.35rem 0 0.35rem 0.75rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+  }
+  .gd-status {
+    min-height: 1.2em;
+    margin: 0.75rem 0 0;
+  }
+  .gd-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .gd-year {
+    margin: 0;
+    min-width: min(100%, 12rem);
+  }
+  .gd-kpis {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 132px), 1fr));
+  }
+  /* Charts stack, so long cause names keep their labels. */
+  .gd-charts {
+    display: grid;
+    gap: 1.75rem;
+    max-width: 52rem;
+  }
+  /* The table scrolls inside .table-wrap on small screens instead of crushing its columns.
+     position: relative keeps its visually hidden caption and header text inside the scroller,
+     so they can't widen the page. */
+  .gd-tool .table-wrap {
+    position: relative;
+  }
+  .gd-table {
+    min-width: 50rem;
+  }
+  .gd-table :global(.gd-nowrap) {
+    white-space: nowrap;
+  }
+  .gd-table :global(.gd-org) {
+    min-width: 11rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .gd-table :global(.gd-cause) {
+    min-width: 8rem;
+  }
+  .gd-table :global(.gd-note) {
+    min-width: 9rem;
+    color: var(--ink-2);
+    overflow-wrap: anywhere;
+  }
+  .gd-table :global(.gd-actions) {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+  .gd-table :global(.chip) {
+    margin-left: 0.4rem;
+    font-size: 0.72rem;
+    padding: 0.1rem 0.5rem;
+    vertical-align: 0.1em;
+  }
+  .gd-table :global(tr.gd-editing td) {
+    background: var(--accent-wash);
+  }
+  .gd-status :global(button) {
+    margin-left: 0.5rem;
+  }
+</style>
+
+<script>
+  import { renderBars } from '../../lib/client/bars';
+  import { $, clear, h } from '../../lib/client/dom';
+  import { download } from '../../lib/client/files';
+  import { money, num, parseAmount, pct } from '../../lib/client/format';
+  import {
+    DEPTHS,
+    LEVELS,
+    causeName,
+    depthName,
+    displayDate,
+    giftsToCsv,
+    giftsToJson,
+    hasSamples,
+    inYear,
+    localToday,
+    loadGifts,
+    mergeGifts,
+    newId,
+    parseGiftFile,
+    plural,
+    sampleGifts,
+    sanitizeGift,
+    saveGifts,
+    sortGifts,
+    summarize,
+    validDate,
+    yearOf,
+    yearsOf,
+    type Gift,
+  } from '../../lib/client/gifts';
+  import { canPersist } from '../../lib/client/persist';
+  import { splitWhole } from '../../lib/client/split';
+
+  const form = $<HTMLFormElement>('#gd-form');
+  const dateEl = $<HTMLInputElement>('#gd-date');
+  const orgEl = $<HTMLInputElement>('#gd-org');
+  const amountEl = $<HTMLInputElement>('#gd-amount');
+  const causeEl = $<HTMLSelectElement>('#gd-cause');
+  const depthEl = $<HTMLSelectElement>('#gd-depth');
+  const noteEl = $<HTMLInputElement>('#gd-note');
+  const errorEl = $('#gd-error');
+  const statusEl = $('#gd-status');
+  const ioStatusEl = $('#gd-io-status');
+  const yearEl = $<HTMLSelectElement>('#gd-year');
+  const fileEl = $<HTMLInputElement>('#gd-file');
+  const depthHint = $('#gd-depth-hint');
+  const depthHintDefault = depthHint.innerHTML;
+
+  let gifts: Gift[] = loadGifts();
+  let year = 'all';
+  let editing: string | null = null;
+  let yearsKey = '';
+
+  $('#gd-storage').hidden = canPersist();
+  dateEl.value = localToday();
+
+  function persist() {
+    $('#gd-storage').hidden = saveGifts(gifts);
+  }
+
+  const amountText = (n: number) => money(n, { cents: !Number.isInteger(n) });
+
+  function say(el: HTMLElement, text: string, undo?: () => void) {
+    clear(el);
+    el.append(text);
+    if (undo) {
+      const btn = h('button', { class: 'btn btn-ghost btn-small', type: 'button' }, 'Undo');
+      btn.addEventListener('click', () => {
+        undo();
+        say(el, 'Restored.');
+        orgEl.focus();
+      });
+      el.append(btn);
+      btn.focus();
+    }
+  }
+
+  function showDepthHint() {
+    const level = depthEl.value === '' ? NaN : Number(depthEl.value);
+    const d = DEPTHS.find((x) => x.level === level);
+    if (!d) {
+      depthHint.innerHTML = depthHintDefault;
+      return;
+    }
+    depthHint.textContent = `Ask: ${d.question} For example: ${d.example}`;
+  }
+
+  function depthCell(level: number) {
+    return h(
+      'span',
+      { class: 'depth' },
+      h(
+        'span',
+        { class: 'cells', 'aria-hidden': 'true' },
+        LEVELS.map((i) => h('span', { class: i <= level ? `cell on d${i}` : 'cell' })),
+      ),
+      `${level} ${depthName(level)}`,
+    );
+  }
+
+  function renderYears() {
+    const years = yearsOf(gifts);
+    if (year !== 'all' && !years.includes(year)) year = 'all';
+    const key = years.join(',');
+    if (key !== yearsKey) {
+      yearsKey = key;
+      clear(yearEl);
+      yearEl.append(h('option', { value: 'all' }, 'All years'));
+      for (const y of years) yearEl.append(h('option', { value: y }, y));
+    }
+    yearEl.value = year;
+  }
+
+  function render() {
+    renderYears();
+    const shown = inYear(gifts, year);
+    const s = summarize(shown);
+    const when = year === 'all' ? 'across all years' : `in ${year}`;
+
+    $('#gd-total').textContent = s.count ? money(s.total) : '–';
+    $('#gd-total-note').textContent = s.count ? when : 'No gifts yet';
+    $('#gd-count').textContent = s.count ? num(s.count) : '–';
+    $('#gd-count-note').textContent = s.count ? `average ${money(s.total / s.count)}` : ' ';
+    $('#gd-orgs').textContent = s.count ? num(s.organizations) : '–';
+    // Whole percentages that add up to 100, so the depth bars and source share agree with Wrapped.
+    const depthPct = s.total > 0 ? splitWhole(100, s.shares) : [0, 0, 0, 0, 0];
+    $('#gd-source').textContent = s.count ? `${depthPct[3] + depthPct[4]}%` : '–';
+
+    const charts = $('#gd-charts');
+    charts.hidden = s.count === 0;
+    if (s.count) {
+      renderBars(
+        $('#gd-causes'),
+        s.byCause.map((c) => ({
+          label: c.name,
+          value: c.amount,
+          display: `${money(c.amount)} · ${pct(c.amount / s.total)}`,
+          note: plural(c.count, 'gift'),
+        })),
+        { ariaLabel: `Giving by cause ${when}` },
+      );
+      renderBars(
+        $('#gd-depths'),
+        LEVELS.map((level) => ({
+          label: `${level} ${depthName(level)}`,
+          value: s.byDepth[level],
+          display: `${money(s.byDepth[level])} · ${depthPct[level]}%`,
+          color: `var(--depth-${level})`,
+          note: `${DEPTHS[level].verb} · ${plural(s.depthCounts[level], 'gift')}`,
+        })),
+        { ariaLabel: `Giving by depth ${when}` },
+      );
+    }
+
+    const rows = $('#gd-rows');
+    clear(rows);
+    for (const g of sortGifts(shown)) {
+      const label = `${g.organization}, ${displayDate(g.date)}`;
+      rows.append(
+        h(
+          'tr',
+          { class: g.id === editing ? 'gd-editing' : undefined },
+          h('td', { class: 'gd-nowrap' }, h('time', { datetime: g.date }, displayDate(g.date))),
+          h('td', { class: 'gd-org' }, g.organization, g.sample ? h('span', { class: 'chip' }, 'Sample') : null),
+          h('td', { class: 'num gd-nowrap' }, amountText(g.amount)),
+          h('td', { class: 'gd-cause' }, causeName(g.cause)),
+          h('td', { class: 'gd-nowrap' }, depthCell(g.depth)),
+          h('td', { class: 'gd-note' }, g.note ?? ''),
+          h(
+            'td',
+            {},
+            h(
+              'div',
+              { class: 'gd-actions' },
+              h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'data-edit': g.id, 'aria-label': `Edit the gift to ${label}` }, 'Edit'),
+              h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'data-delete': g.id, 'aria-label': `Delete the gift to ${label}` }, 'Delete'),
+            ),
+          ),
+        ),
+      );
+    }
+    $('#gd-table-wrap').hidden = shown.length === 0;
+    const empty = $('#gd-empty');
+    empty.hidden = shown.length > 0;
+
+    const samples = hasSamples(gifts);
+    $('#gd-sample').hidden = samples;
+    $('#gd-unsample').hidden = !samples;
+    const scope = year === 'all' ? '' : ` ${year}`;
+    $('#gd-json').textContent = `Export${scope} as JSON`;
+    $('#gd-csv').textContent = `Export${scope} as CSV`;
+    for (const id of ['#gd-json', '#gd-csv', '#gd-clear']) ($(id) as HTMLButtonElement).disabled = shown.length === 0 && gifts.length === 0;
+  }
+
+  function fieldError(el: HTMLElement, text: string) {
+    errorEl.textContent = text;
+    errorEl.hidden = false;
+    el.setAttribute('aria-invalid', 'true');
+    el.focus();
+  }
+
+  function clearErrors() {
+    errorEl.hidden = true;
+    errorEl.textContent = '';
+    for (const el of [dateEl, orgEl, amountEl, causeEl, depthEl]) el.removeAttribute('aria-invalid');
+  }
+
+  function readForm(): Gift | undefined {
+    clearErrors();
+    if (!validDate(dateEl.value)) return void fieldError(dateEl, 'Enter the date of the gift.');
+    if (!orgEl.value.trim()) return void fieldError(orgEl, 'Enter the organization you gave to.');
+    const amount = parseAmount(amountEl.value);
+    if (!(amount > 0) || amount >= 1e10) return void fieldError(amountEl, 'Enter an amount greater than zero, like 50 or 1,250.');
+    if (!causeEl.value) return void fieldError(causeEl, 'Choose a cause, or “Other or not sure”.');
+    if (depthEl.value === '') return void fieldError(depthEl, 'Choose where the gift acts, from relief to source.');
+    const current = editing ? gifts.find((g) => g.id === editing) : undefined;
+    return sanitizeGift({
+      id: editing ?? newId(),
+      date: dateEl.value,
+      organization: orgEl.value,
+      amount,
+      cause: causeEl.value,
+      depth: Number(depthEl.value),
+      note: noteEl.value,
+      sample: current?.sample ?? false,
+    });
+  }
+
+  function resetForm() {
+    const keepDate = dateEl.value;
+    form.reset();
+    dateEl.value = validDate(keepDate) ? keepDate : localToday();
+    editing = null;
+    $('#gd-form-title').textContent = 'Log a gift';
+    $('#gd-submit').textContent = 'Add gift';
+    $('#gd-cancel').hidden = true;
+    clearErrors();
+    showDepthHint();
+  }
+
+  function startEdit(id: string) {
+    const g = gifts.find((x) => x.id === id);
+    if (!g) return;
+    editing = id;
+    clearErrors();
+    dateEl.value = g.date;
+    orgEl.value = g.organization;
+    amountEl.value = String(g.amount);
+    causeEl.value = g.cause;
+    depthEl.value = String(g.depth);
+    noteEl.value = g.note ?? '';
+    showDepthHint();
+    $('#gd-form-title').textContent = `Edit the gift to ${g.organization}`;
+    $('#gd-submit').textContent = 'Save changes';
+    $('#gd-cancel').hidden = false;
+    say(statusEl, '');
+    render();
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    orgEl.focus({ preventScroll: true });
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const gift = readForm();
+    if (!gift) return;
+    const wasEditing = editing;
+    if (wasEditing) gifts = gifts.map((g) => (g.id === wasEditing ? gift : g));
+    else gifts.push(gift);
+    persist();
+    let where = '';
+    if (year !== 'all' && yearOf(gift) !== year) {
+      year = yearOf(gift);
+      where = ` Showing ${year}.`;
+    }
+    resetForm();
+    render();
+    const totals = summarize(inYear(gifts, year));
+    say(
+      statusEl,
+      `${wasEditing ? 'Saved changes to' : `Added ${amountText(gift.amount)} to`} ${gift.organization}.${where} ${plural(totals.count, 'gift')}, ${amountText(totals.total)} in total.`,
+    );
+    if (wasEditing) orgEl.focus();
+  });
+
+  $('#gd-cancel').addEventListener('click', () => {
+    resetForm();
+    render();
+    say(statusEl, 'Editing canceled. Nothing was changed.');
+  });
+
+  depthEl.addEventListener('change', showDepthHint);
+
+  $('#gd-rows').addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button');
+    if (!btn) return;
+    if (btn.dataset.edit) startEdit(btn.dataset.edit);
+    if (btn.dataset.delete) {
+      const i = gifts.findIndex((g) => g.id === btn.dataset.delete);
+      if (i < 0) return;
+      const [removed] = gifts.splice(i, 1);
+      if (editing === removed.id) resetForm();
+      persist();
+      render();
+      say(statusEl, `Deleted the gift to ${removed.organization}.`, () => {
+        gifts.splice(Math.min(i, gifts.length), 0, removed);
+        persist();
+        render();
+      });
+    }
+  });
+
+  yearEl.addEventListener('change', () => {
+    year = yearEl.value;
+    render();
+  });
+
+  $('#gd-sample').addEventListener('click', () => {
+    const merged = mergeGifts(gifts, sampleGifts());
+    gifts = merged.gifts;
+    year = 'all';
+    persist();
+    render();
+    say(statusEl, `Added ${merged.added} fictional sample gifts, each marked Sample. Remove them in one click when you’re done.`);
+    $('#gd-unsample').focus();
+  });
+
+  $('#gd-unsample').addEventListener('click', () => {
+    const before = gifts.length;
+    gifts = gifts.filter((g) => !g.sample);
+    if (editing && !gifts.some((g) => g.id === editing)) resetForm();
+    persist();
+    render();
+    say(statusEl, `Removed ${plural(before - gifts.length, 'sample gift')}.`);
+    $('#gd-sample').focus();
+  });
+
+  function exportName(ext: string) {
+    return year === 'all' ? `charitology-gifts-${localToday()}.${ext}` : `charitology-gifts-${year}.${ext}`;
+  }
+
+  $('#gd-json').addEventListener('click', () => {
+    const shown = sortGifts(inYear(gifts, year));
+    download(exportName('json'), giftsToJson(shown), 'application/json;charset=utf-8');
+    say(ioStatusEl, `Exported ${plural(shown.length, 'gift')} as ${exportName('json')}.`);
+  });
+
+  $('#gd-csv').addEventListener('click', () => {
+    const shown = sortGifts(inYear(gifts, year));
+    download(exportName('csv'), giftsToCsv(shown), 'text/csv;charset=utf-8');
+    say(ioStatusEl, `Exported ${plural(shown.length, 'gift')} as ${exportName('csv')}.`);
+  });
+
+  $('#gd-import').addEventListener('click', () => fileEl.click());
+
+  fileEl.addEventListener('change', async () => {
+    const file = fileEl.files?.[0];
+    fileEl.value = '';
+    if (!file) return;
+    if (file.size > 5_000_000) return say(ioStatusEl, 'That file is larger than 5 MB, which is more than a gift log should be. Nothing was imported.');
+    let text = '';
+    try {
+      text = await file.text();
+    } catch {
+      return say(ioStatusEl, 'That file couldn’t be read. Nothing was imported.');
+    }
+    const parsed = parseGiftFile(text, file.name);
+    if (parsed.error) return say(ioStatusEl, `${parsed.error} Nothing was imported.`);
+    if (!parsed.gifts.length) {
+      return say(
+        ioStatusEl,
+        `No gifts could be read from ${file.name}. Each row needs a date, an organization, an amount above zero and a depth from 0 to 4.`,
+      );
+    }
+    const merged = mergeGifts(gifts, parsed.gifts);
+    gifts = merged.gifts;
+    year = 'all';
+    persist();
+    render();
+    const parts = [merged.added ? `added ${plural(merged.added, 'new gift')}` : 'no new gifts'];
+    if (merged.updated) parts.push(`updated ${plural(merged.updated, 'gift')}`);
+    if (merged.same) parts.push(`${num(merged.same)} already logged`);
+    let text2 = `From ${file.name}: ${parts.join(', ')}.`;
+    if (parsed.skipped) {
+      text2 += ` ${plural(parsed.skipped, 'row')} couldn’t be read: each needs a date, an organization, an amount above zero and a depth from 0 to 4.`;
+    }
+    say(ioStatusEl, text2);
+  });
+
+  $('#gd-clear').addEventListener('click', () => {
+    if (!gifts.length) return;
+    const ok = confirm(`Delete all ${plural(gifts.length, 'gift')} from this browser? This can’t be undone. Export a copy first if you want to keep them.`);
+    if (!ok) return;
+    gifts = [];
+    resetForm();
+    persist();
+    render();
+    say(ioStatusEl, 'Deleted every gift from this browser.');
+  });
+
+  // Keep in step with Charitology Wrapped (or another tab) adding sample data.
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'charitology.gifts') {
+      gifts = loadGifts();
+      render();
+    }
+  });
+
+  showDepthHint();
+  render();
+</script>
