@@ -12,6 +12,6 @@ help:
 related: ["/programs/failure-lab/", "/open-problems/the-failure-commons/", "/open-problems/when-charity-harms/"]
 ---
 
-The field’s most valuable data is what didn’t work, and it is the data least often published. That is [the Silence About Failure](/diagnosis/silence-about-failure/). This archive collects documented failures and mixed results, each written as a lesson for the system.
+Evidence about what did not work can improve later decisions. Charitology’s working hypothesis in [the Silence About Failure](/diagnosis/silence-about-failure/) asks whether the system makes those lessons harder to share. This archive collects documented failures and mixed results, each written as a lesson for the system.
 
-Failures here are not accusations. Most were run by people doing their best inside the incentives they faced. Where an organization has responded publicly, its response is included.
+The entries examine published actions and results, without inferring anyone’s motives. Where an organization has responded publicly, its response is included.

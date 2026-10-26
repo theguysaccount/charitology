@@ -1,0 +1,341 @@
+[
+  {
+    "id": "civicrm",
+    "name": "CiviCRM",
+    "category": "Donor management",
+    "summary": "Manage relationships, contributions, memberships and events in an open-source constituent relationship manager.",
+    "costType": "Open source",
+    "cost": "Free software; budget separately for hosting, setup and support.",
+    "delivery": "Self-hosted or paid hosting",
+    "fit": "Organizations that want control over their donor and member records.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Someone must maintain the installation, backups and updates. Hosted CiviCRM services have their own prices.",
+    "url": "https://civicrm.org/download",
+    "sources": [
+      {
+        "label": "Download and costs",
+        "url": "https://civicrm.org/download"
+      },
+      {
+        "label": "User guide",
+        "url": "https://docs.civicrm.org/user/en/latest/"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "cryptpad",
+    "name": "CryptPad",
+    "category": "Operations",
+    "summary": "Collaborative documents, sheets and other office tools with end-to-end encryption.",
+    "costType": "Free tier",
+    "cost": "Free public-instance accounts and self-hosting are available; additional services are paid.",
+    "delivery": "Hosted service or self-hosted",
+    "fit": "Teams that want collaborative documents with encryption built into the service.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Storage and support depend on the chosen instance or plan. Understand recovery and sharing before relying on it for essential records.",
+    "url": "https://cryptpad.org/",
+    "sources": [
+      {
+        "label": "Product and encryption",
+        "url": "https://cryptpad.org/"
+      },
+      {
+        "label": "Pricing choices",
+        "url": "https://cryptpad.org/pricing/"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "decidim",
+    "name": "Decidim",
+    "category": "Participation",
+    "summary": "Run participation processes, proposals, meetings and collective decisions on an open-source platform.",
+    "costType": "Open source",
+    "cost": "Free software; deployment and facilitation require resources.",
+    "delivery": "Self-hosted or provider-hosted",
+    "fit": "Organizations inviting members or communities into decisions.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Someone must operate the platform and design a fair participation process. A public consultation also needs clear rules and a response to what people say.",
+    "url": "https://decidim.org/",
+    "sources": [
+      {
+        "label": "Platform and features",
+        "url": "https://decidim.org/"
+      },
+      {
+        "label": "Project documentation",
+        "url": "https://docs.decidim.org/en/develop/understand/about.html"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "donorbox",
+    "name": "Donorbox",
+    "category": "Fundraising",
+    "summary": "Donation forms, recurring giving, fundraising pages and donor management.",
+    "costType": "Paid or usage fees",
+    "cost": "Platform and payment-processing fees apply; some features and plans add charges.",
+    "delivery": "Hosted service",
+    "fit": "Organizations that need embedded forms and recurring donations.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "A free-to-start account does not make transactions free. Check the rate for each campaign type, processor, country and add-on.",
+    "url": "https://donorbox.org/pricing",
+    "sources": [
+      {
+        "label": "Plans, features and fees",
+        "url": "https://donorbox.org/pricing"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "givebutter",
+    "name": "Givebutter",
+    "category": "Fundraising",
+    "summary": "Donation forms, fundraising pages, donor management and events in one hosted service.",
+    "costType": "Free with conditions",
+    "cost": "Core fundraising is free when optional donor tips are enabled. Paid Plus features are separate.",
+    "delivery": "Hosted service",
+    "fit": "Teams that want donation pages and supporter records together.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "The pricing page lists a platform fee and standard processing charges when tips are disabled. Confirm eligibility, payment availability and the donor checkout experience.",
+    "url": "https://givebutter.com/pricing",
+    "sources": [
+      {
+        "label": "Pricing and tip conditions",
+        "url": "https://givebutter.com/pricing"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "kobotoolbox",
+    "name": "KoboToolbox",
+    "category": "Data and research",
+    "summary": "Collect and manage survey data for social impact work.",
+    "costType": "Free tier",
+    "cost": "The Community Plan includes 5,000 submissions per month and 1 GB of file storage. Higher capacity is paid.",
+    "delivery": "Hosted service or self-hosted",
+    "fit": "Field teams collecting structured information.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "The quota is an account limit. Choose the appropriate server and review consent, access controls and the data you actually need.",
+    "url": "https://www.kobotoolbox.org/",
+    "sources": [
+      {
+        "label": "Current Community Plan",
+        "url": "https://kf.kobotoolbox.org/accounts/signup/"
+      },
+      {
+        "label": "Account quota explanation",
+        "url": "https://community.kobotoolbox.org/t/community-plan-terms-and-conditions/52505"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "limesurvey",
+    "name": "LimeSurvey",
+    "category": "Data and research",
+    "summary": "Create surveys, collect responses and export results.",
+    "costType": "Open source",
+    "cost": "Community Edition is free to self-host. Cloud has a limited free plan and paid plans.",
+    "delivery": "Self-hosted or managed cloud",
+    "fit": "Organizations running surveys or community feedback projects.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Cloud response and storage quotas depend on the plan. Self-hosting requires maintenance; good survey design and informed consent still matter.",
+    "url": "https://community.limesurvey.org/",
+    "sources": [
+      {
+        "label": "Community Edition",
+        "url": "https://community.limesurvey.org/"
+      },
+      {
+        "label": "Cloud and self-hosted comparison",
+        "url": "https://www.limesurvey.org/manual/LimeSurvey_Cloud_vs_LimeSurvey_CE"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "matomo",
+    "name": "Matomo",
+    "category": "Publishing",
+    "summary": "Website analytics with self-hosted and managed cloud options.",
+    "costType": "Open source",
+    "cost": "The on-premise core can be downloaded free; cloud hosting and premium features are paid.",
+    "delivery": "Self-hosted or paid hosting",
+    "fit": "Teams that want to understand website use and choose where analytics are hosted.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Tracking configuration, consent decisions, hosting and updates remain your responsibility. Paid plugins and support can add cost.",
+    "url": "https://matomo.org/pricing/",
+    "sources": [
+      {
+        "label": "Hosting options and pricing",
+        "url": "https://matomo.org/pricing/"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "metabase",
+    "name": "Metabase",
+    "category": "Data and research",
+    "summary": "Explore data and build shared dashboards with a query builder and SQL tools.",
+    "costType": "Open source",
+    "cost": "The open-source edition is free to self-host. Managed plans and additional features are paid.",
+    "delivery": "Self-hosted or paid hosting",
+    "fit": "Organizations with an existing database and someone able to manage access.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Hosting, database connections and permissions need maintenance. A dashboard does not establish that a program caused an outcome.",
+    "url": "https://www.metabase.com/start/oss",
+    "sources": [
+      {
+        "label": "Open-source edition",
+        "url": "https://www.metabase.com/start/oss"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "nextcloud",
+    "name": "Nextcloud Files",
+    "category": "Operations",
+    "summary": "Share and synchronize files through a workspace you can host or obtain from a provider.",
+    "costType": "Open source",
+    "cost": "Self-hosted software; hosting and enterprise services have separate costs.",
+    "delivery": "Self-hosted or provider-hosted",
+    "fit": "Organizations that need shared files with control over their infrastructure.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "You need a maintained installation or a hosting provider. Review sharing permissions, backups and recovery before storing sensitive records.",
+    "url": "https://nextcloud.com/files/",
+    "sources": [
+      {
+        "label": "Features and hosting choices",
+        "url": "https://nextcloud.com/files/"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "odk",
+    "name": "ODK",
+    "category": "Data and research",
+    "summary": "Build forms with branching, multiple languages and offline data collection.",
+    "costType": "Open source",
+    "cost": "Open-source software; managed ODK Cloud is a paid service.",
+    "delivery": "Self-hosted or paid hosting",
+    "fit": "Teams collecting data where connectivity is unreliable.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Plan for devices, data collection training and a maintained server or cloud subscription. Cloud capacity and support depend on the plan.",
+    "url": "https://getodk.org/",
+    "sources": [
+      {
+        "label": "Features, open source and Cloud pricing",
+        "url": "https://getodk.org/"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "openrefine",
+    "name": "OpenRefine",
+    "category": "Data and research",
+    "summary": "Clean inconsistent names, categories and formats in a dataset before analyzing it.",
+    "costType": "Free software",
+    "cost": "Free, open-source desktop software.",
+    "delivery": "Runs on your computer",
+    "fit": "Teams cleaning exports, survey results or public data.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "External reconciliation services can receive data you choose to send. Keep a backup and inspect changes before re-importing records.",
+    "url": "https://openrefine.org/",
+    "sources": [
+      {
+        "label": "Features and local processing",
+        "url": "https://openrefine.org/"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "uwazi",
+    "name": "Uwazi",
+    "category": "Data and research",
+    "summary": "Organize documents and structured records, connect them and publish or search a collection.",
+    "costType": "Open source",
+    "cost": "Free open-source software and a limited free managed plan; larger managed plans and services are paid.",
+    "delivery": "Self-hosted or managed service",
+    "fit": "Teams maintaining an evidence library or documentation project.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Hosting and support depend on the arrangement. Configure permissions and retention around the needs of people represented in the records.",
+    "url": "https://uwazi.io/",
+    "sources": [
+      {
+        "label": "Features and open-source model",
+        "url": "https://uwazi.io/"
+      },
+      {
+        "label": "Hosting and service pricing",
+        "url": "https://uwazi.io/pricing"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "wordpress",
+    "name": "WordPress",
+    "category": "Publishing",
+    "summary": "An open-source publishing system for a charity website, news and public resources.",
+    "costType": "Open source",
+    "cost": "Free software; hosting, domains and some plugins or themes are separate.",
+    "delivery": "Self-hosted or provider-hosted",
+    "fit": "Teams maintaining a public website and regularly publishing material.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Choose maintained plugins, keep software updated and assign responsibility for backups and accessibility. WordPress.org is the software project.",
+    "url": "https://wordpress.org/about/",
+    "sources": [
+      {
+        "label": "Software and license",
+        "url": "https://wordpress.org/about/"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  },
+  {
+    "id": "zeffy",
+    "name": "Zeffy",
+    "category": "Fundraising",
+    "summary": "Hosted fundraising tools with a model funded by optional donor contributions to Zeffy.",
+    "costType": "Free with conditions",
+    "cost": "The provider says it covers platform and transaction fees through optional donor contributions.",
+    "delivery": "Hosted service",
+    "fit": "Eligible nonprofits looking for fundraising without fees charged to the organization.",
+    "eligibility": "No nonprofit discount is assumed. Check the provider’s current terms and availability.",
+    "limits": "Eligibility and payment availability still apply. Review how the optional contribution appears to donors before choosing a service.",
+    "url": "https://www.zeffy.com/pricing",
+    "sources": [
+      {
+        "label": "Pricing and funding model",
+        "url": "https://www.zeffy.com/home/free-online-fundraising-platform"
+      }
+    ],
+    "checked": "2026-10-25",
+    "review": "draft"
+  }
+]

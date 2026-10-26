@@ -1,7 +1,7 @@
 ---
 title: Feedback and voice
 chapter: 8
-summary: In charity the people who pay are rarely the people served, so results rarely travel back and the people closest to a problem rarely decide what is done about it. This chapter covers the missing feedback loop, the practices that restore parts of it and what would close it.
+summary: When donors pay for services used by others, feedback and shared decisions can help address gaps in what the funder knows. This chapter covers the missing feedback loop, the practices that restore parts of it and what would close it.
 sources:
   - title: The Role of Nonprofit Enterprise
     publisher: Henry B. Hansmann, Yale Law Journal 89
@@ -33,15 +33,15 @@ sources:
 
 ## Two people, not one
 
-In a market, the buyer and the user are usually the same person. If a product is bad, the person who paid for it knows, and the next time they pay for something else. Prices and reviews carry what each buyer learns to everyone else. The loop runs by itself.
+In a market, the buyer and the user are usually the same person. If a product is bad, the person who paid for it knows, and the next time they pay for something else. Prices and reviews carry what each buyer learns to everyone else. Those signals can help, though markets also have information failures.
 
-In charity, the buyer and the user are two different people. A donor in one city pays for a clinic in another country. The patients know whether the clinic helped. The donor, usually, does not. In 1980 Henry Hansmann described the general problem as *contract failure*: the people paying for a service cannot easily judge its quality. Charitology calls the result [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/) and treats it as the root of the Diagnosis.
+In donor-funded services, the payer and the person served can be different people. A donor in one city pays for a clinic in another country. The patients know whether the clinic helped. The donor may need other evidence. In 1980 Henry Hansmann described the general problem as *contract failure*: the people paying for a service cannot easily judge its quality. Charitology calls the result [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/) and treats it as the root of the Diagnosis.
 
-Two things go missing at once. Results do not travel back to givers, so money does not follow what works. And the people closest to a problem have no channel that turns what they know into decisions about money. That second gap is [the Missing Voice](/diagnosis/missing-voice/).
+Two gaps can arise. Results may not reach givers, and the knowledge of the people served may not influence funding decisions. That second gap is [the Missing Voice](/diagnosis/missing-voice/).
 
 ## What a loop would look like
 
-A complete feedback loop has three parts. The people served say how the work is going. Someone listens and changes the work. And the money responds: what works attracts more, and what doesn’t attracts less. Most charity has, at best, fragments of the first two and almost nothing of the third.
+A complete feedback loop has three parts. The people served say how the work is going. Someone listens and changes the work. And the money responds: what works attracts more, and what doesn’t attracts less. How often charity contains all three, and when that improves outcomes, are questions for evidence rather than assumptions.
 
 ## Listening
 
@@ -61,10 +61,10 @@ The most direct way to put the people served in charge is to give them the money
 
 ## Feedback to givers
 
-The loop also has a giver’s end. What a donor sees after giving shapes the next gift. Today that is usually a thank-you letter and an overhead ratio. A system with a working loop would show givers what changed, honestly, including when nothing did. The [Giving Dashboard](/tools/giving-dashboard/) and [Charitology Wrapped](/tools/charitology-wrapped/) are meant to give the giver’s end of the loop something better to show.
+The loop also has a giver’s end. What a donor sees after giving shapes the next gift. That information might include a thank-you letter, accounts, feedback or evaluation results. A system with a working loop would show givers what changed, honestly, including when nothing did. The [Giving Dashboard](/tools/giving-dashboard/) and [Charitology Wrapped](/tools/charitology-wrapped/) are meant to give the giver’s end of the loop something better to show.
 
 ## What would close it
 
-Each practice in this chapter repairs part of the loop. None closes it, because none yet lets the voice of the people served move money at scale, the way prices move money in a market. What mechanism could? That is [Open Problem 5, Closing the Feedback Loop](/open-problems/closing-the-feedback-loop/). It targets the root condition of the Diagnosis: close this loop, and several other conditions start to close with it.
+Each practice in this chapter repairs part of the loop. This chapter does not establish which of these practices links the voice of the people served to funding at scale, or how reliably. What mechanism could? That is [Open Problem 5, Closing the Feedback Loop](/open-problems/closing-the-feedback-loop/). It targets the root condition of the Diagnosis: Charitology hypothesizes that a better loop could also improve other conditions.
 
-A related question has an empirical answer that nobody has yet found: do community-led programs outperform top-down ones on the same outcome, and by how much? That is [Open Problem 14, the Agency Premium](/open-problems/the-agency-premium/). A measured premium would make the case for voice impossible to ignore. A measured cost would show where expertise should lead.
+A related question needs context-specific comparison: do community-led programs outperform top-down ones on the same outcome, and by how much? That is [Open Problem 14, the Agency Premium](/open-problems/the-agency-premium/). Differences in outcomes would inform program design. They would not by themselves settle whose rights or decision authority should count.

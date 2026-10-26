@@ -16,7 +16,7 @@ sources:
   - {"title": "Exempt Organizations Business Master File Extract", "publisher": "Internal Revenue Service", "url": "https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf"}
 ---
 
-The IRS lists more than a million 501(c)(3) organizations in the United States alone, and the open registries already publish their identities, finances and funders. What no registry records is *where the work sits on the chain from symptom to source*. The Index adds that layer and nothing else.
+The IRS publishes a master file of U.S. tax-exempt organizations. The Index links to existing public registries for filings and adds an editorial hypothesis about *where the work sits on the chain from symptom to source*. It starts with a small set of organizations; it is not a worldwide census.
 
 ## What it is not
 

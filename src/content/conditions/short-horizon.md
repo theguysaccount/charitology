@@ -1,7 +1,7 @@
 ---
 title: The Short Horizon
 number: 10
-summary: Charity runs on annual budgets and yearly reports, while the deepest problems take decades to solve and many of the people they affect aren’t born yet.
+summary: Charitology hypothesizes that short funding and reporting cycles can work against goals whose benefits take much longer to appear.
 evidence: hypothesis
 node: givers
 upstream: vision
@@ -15,15 +15,15 @@ sources:
 
 ## What it looks like
 
-Grants run for one to three years. Annual reports need annual results. A program that will take twenty years to change a system has to justify itself every twelve months as if it were a twelve-month program.
+Imagine a twenty-year effort funded one year at a time. An annual report may need to show useful progress without pretending the final outcome has already arrived. This is an illustration of the time mismatch, not an estimate of typical grant length.
 
 ## Why it happens
 
-Budgets, boards and tax years all run on annual cycles, and people prefer results they can see. Future people can’t donate, vote or write a thank-you letter. Humanity’s Checklist adds that we can’t build a future we can’t see: without a shared, compelling picture of where we are going, nothing pulls money toward the long game.
+Short funding and reporting cycles may favor results that arrive sooner. Whether they systematically do so is the hypothesis to test. Future people can’t donate, vote or write a thank-you letter. Humanity’s Checklist adds that we can’t build a future we can’t see: without a shared, compelling picture of where we are going, nothing pulls money toward the long game.
 
 ## This is a hypothesis
 
-Charitology’s working claim is that the system’s timescale is shorter than the timescale of its problems. That hasn’t been measured. And how much the future *should* count is a real moral question, taken up in [Open Problem 13, Discounting the Future](/open-problems/discounting-the-future/).
+Charitology’s working claim is that the system’s timescale is shorter than the timescale of its problems. This page does not provide a sector-wide test of that claim. And how much the future *should* count is a real moral question, taken up in [Open Problem 13, Discounting the Future](/open-problems/discounting-the-future/).
 
 ## No one is to blame
 

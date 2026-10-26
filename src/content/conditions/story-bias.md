@@ -1,8 +1,8 @@
 ---
 title: The Story Bias
 number: 3
-summary: Giving follows faces, stories and headlines more than the size of the need, so the most visible problems get funded and the largest often don’t.
-evidence: established
+summary: Stories and news coverage can affect giving and relief decisions. How strong these effects are, and how well some classic findings replicate, remain debated.
+evidence: debated
 node: signals
 upstream: attention
 flip: Stories carry scale. People feel the size of a problem, not just one face, and money follows need instead of news.
@@ -11,6 +11,7 @@ sources:
     publisher: Deborah A. Small, George Loewenstein and Paul Slovic, Organizational Behavior and Human Decision Processes 102(2)
     year: 2007
     url: https://doi.org/10.1016/j.obhdp.2006.01.005
+    note: Freely readable at https://faculty.wharton.upenn.edu/wp-content/uploads/2012/04/Sympathy_and_callousness.pdf
   - title: "“If I look at the mass I will never act”: Psychic numbing and genocide"
     publisher: Paul Slovic, Judgment and Decision Making 2(2)
     year: 2007
@@ -19,21 +20,27 @@ sources:
     publisher: Thomas Eisensee and David Strömberg, Quarterly Journal of Economics 122(2)
     year: 2007
     url: https://doi.org/10.1162/qjec.122.2.693
+  - title: Revisiting and Rethinking the Identifiable Victim Effect
+    publisher: Maximilian Maier, Yik Chun Wong and Gilad Feldman, Collabra Psychology
+    year: 2024
+    url: https://wrap.warwick.ac.uk/id/eprint/201115/
 ---
 
 ## What it looks like
 
-One child’s photo raises more money than a statistic about millions. A disaster that leads the evening news draws a flood of gifts. A larger one that happens on a busy news day draws a trickle.
+Some experiments find greater giving to an identified individual than to statistical appeals. News coverage has also been linked to U.S. government disaster relief decisions. These findings do not establish a rule for every appeal or for private disaster donations.
 
 ## Why it happens
 
-Researchers have measured this many times. In experiments by Deborah Small, George Loewenstein and Paul Slovic, people gave more to help one identified child than to help many children described with statistics, and adding the statistics to the child’s story *lowered* giving. Slovic calls the wider pattern “psychic numbing”: concern does not grow with the number of people suffering, and it can shrink. Outside the lab, Thomas Eisensee and David Strömberg found that U.S. disaster relief depended partly on whether other news was crowding a disaster out of the headlines.
+Published studies report several attention effects, with important limits. In experiments by Deborah Small, George Loewenstein and Paul Slovic, people gave more to help one identified child than to help many children described with statistics, and adding the statistics to the child’s story *lowered* giving. Slovic calls the wider pattern “psychic numbing”: concern does not grow with the number of people suffering, and it can shrink. Outside the lab, Thomas Eisensee and David Strömberg studied U.S. government disaster relief and found that competing news affected coverage and relief decisions. Their outcome was government assistance, not private charitable gifts.
 
-So the charity system routes money through human attention, and human attention is tuned for faces and drama, not for scale. Humanity’s Checklist names attention as one of the six sources upstream of every world problem.
+A pre-registered replication published in 2024, using hypothetical donations, found no support for the classic identifiable-victim effect. The original studies used real donations, so more high-powered tests with real money would help. See the [evidence and replication limits](/record/encyclopedia/identifiable-victim-effect/).
+
+Charitology’s hypothesis is that attention effects can influence allocation across the charity system. The studies here do not measure that overall effect. Humanity’s Checklist names attention as one of the six sources upstream of every world problem.
 
 ## No one is to blame
 
-Being moved by one person is not a flaw in anyone’s character. It is how human attention works. The bias lives in a system that sends money through attention and almost nothing else.
+Being moved by one person is not a flaw in anyone’s character. The question is which kinds of information help people make the decisions they value, and under what conditions.
 
 ## What we don’t know yet
 

@@ -9,7 +9,7 @@ conditions: [silence-about-failure]
 firstMilestone: Fifty documented cases in the Failure Archive, each with public sources, and a first published analysis of the harm mechanisms they share.
 help:
   - Add a documented failure to the Failure Archive by pull request, with public sources and without blaming anyone.
-  - Publish a failure from your own organization and link it in an issue labeled program:failure.
+  - Publish a failure from your own organization and link it in an issue labeled program.
   - Help sort archived cases by harm mechanism for Open Problem 20.
 related: [/record/failure-archive/, /open-problems/when-charity-harms/, /open-problems/the-failure-commons/, /programs/the-charitology-prize/]
 sources:

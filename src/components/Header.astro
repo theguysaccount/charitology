@@ -8,6 +8,7 @@ const NAV = [
   { href: '/programs/', label: 'Programs', note: 'The work of the field' },
   { href: '/tools/', label: 'Tools', note: 'Instruments anyone can use' },
   { href: '/record/', label: 'Record', note: 'What the field knows' },
+  { href: '/for-charities/', label: 'For charities', note: 'Workspace, tools and benefits' },
   { href: '/open-problems/', label: 'Open Problems', note: 'What nobody knows yet' },
 ];
 
@@ -64,6 +65,7 @@ const current = (href: string) => (path.startsWith(url(href)) ? 'page' : undefin
           ))}
           <a href={url('/manifesto/')}>Manifesto<small>Ten dollars</small></a>
           <a href={url('/contribute/')}>Contribute<small>Become a charitologist</small></a>
+          <a href={url('/roadmap/')}>Full roadmap<small>All 66 original ideas and what comes next</small></a>
         </nav>
       </details>
     </div>

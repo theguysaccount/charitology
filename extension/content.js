@@ -65,6 +65,7 @@
         a.ghost { color: #1a1915; border: 1px solid #d9d2c4; }
         a.btn:focus-visible { outline: 2px solid #2a78d6; outline-offset: 2px; }
         .never { all: unset; cursor: pointer; display: block; margin: -6px 14px 12px; color: #6b665c; font-size: 12px; text-decoration: underline; }
+        .never:focus-visible { outline: 2px solid #2a78d6; outline-offset: 3px; }
         @media (prefers-color-scheme: dark) {
           .card { background: #1a1916; color: #efebe3; border-color: #38352e; }
           a.primary { background: #efebe3; color: #1a1916; }
@@ -74,7 +75,13 @@
         }`,
     });
     const close = () => host.remove();
-    const lookup = `${SITE}/tools/charity-lookup/?q=${encodeURIComponent(cleanTitle())}`;
+    const lookup = `${SITE}/tools/charity-lookup/`;
+    const lookupButton = el('a', { class: 'btn primary', href: lookup, target: '_blank', rel: 'noopener noreferrer', text: 'Look it up' });
+    // Read the title only when the visitor chooses a lookup. The fragment is
+    // consumed locally by the lookup page and is absent from its HTTP request.
+    lookupButton.addEventListener('click', () => {
+      lookupButton.href = `${lookup}#q=${encodeURIComponent(cleanTitle())}`;
+    });
     const card = el(
       'aside',
       { class: 'card', role: 'complementary', 'aria-label': 'Charitology: before you give' },
@@ -88,7 +95,7 @@
       el(
         'div',
         { class: 'actions' },
-        el('a', { class: 'btn primary', href: lookup, target: '_blank', rel: 'noopener', text: 'Look it up' }),
+        lookupButton,
         el('a', { class: 'btn ghost', href: `${SITE}/method/#checklist`, target: '_blank', rel: 'noopener', text: 'All 10 questions' }),
       ),
       el('button', {

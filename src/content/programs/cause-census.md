@@ -9,7 +9,7 @@ conditions: [symptom-trap, story-bias]
 firstMilestone: Sourced estimates of scale, neglectedness and solvability for all 17 cause areas in the Cause Atlas, each with its framework assumptions stated.
 help:
   - Pick a cause area in src/data/causes.json and add a sourced estimate of how much money goes to it, by pull request.
-  - Open an issue labeled program:census proposing a cause area the Atlas leaves out.
+  - Open an issue labeled program proposing a cause area the Atlas leaves out.
   - Help code organizations by depth for the Depth Census.
 related: [/record/cause-atlas/, /open-problems/the-depth-census/, /record/gap-map/, /tools/values-compass/]
 sources:
@@ -33,7 +33,7 @@ Every estimate would carry its assumptions, and scale needs the most care. A pro
 
 The [Story Bias](/diagnosis/story-bias/) sends money where attention goes, and attention follows faces and headlines more than size. A public census would put the size of each problem next to the attention it gets, so a giver can see the gap for themselves.
 
-The depth question treats the [Symptom Trap](/diagnosis/symptom-trap/). Within each cause, the census would ask how much money goes to relief and how much to work on sources. That is the [Depth Census](/open-problems/the-depth-census/) carried out one cause at a time. Nobody has measured it yet, which is exactly why it is worth measuring.
+The depth question treats the [Symptom Trap](/diagnosis/symptom-trap/). Within each cause, the census would ask how much money goes to relief and how much to work on sources. That is the [Depth Census](/open-problems/the-depth-census/) carried out one cause at a time. Charitology has not established that mix; the census would provide a baseline.
 
 ## Risks and limits
 

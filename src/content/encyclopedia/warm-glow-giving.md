@@ -1,6 +1,6 @@
 ---
 title: Warm-glow giving
-summary: The satisfaction people get from the act of giving itself, apart from what the gift achieves. The economist James Andreoni built it into a theory of giving in 1990, and it helps explain why the charity system rewards giving more than results.
+summary: The satisfaction people get from the act of giving itself, apart from what the gift achieves. The economist James Andreoni built it into a theory of giving in 1990, It is one possible input to Charitology’s hypotheses about giving signals.
 aliases: [warm glow, impure altruism, joy of giving]
 conditions: [prestige-economy, missing-feedback-loop, story-bias]
 related: [/diagnosis/prestige-economy/, /open-problems/the-status-flip/, /record/encyclopedia/identifiable-victim-effect/, /record/lexicon/#warm-glow, /tools/charitology-wrapped/]
@@ -10,9 +10,9 @@ sources:
     year: 1990
     url: https://doi.org/10.2307/2234133
   - title: Paying Taxes, According To The Brain, Can Bring Satisfaction
-    publisher: University of Oregon, via ScienceDaily, on William Harbaugh, Ulrich Mayr and Dan Burghart in Science
+    publisher: University of Oregon, via EurekAlert, on William Harbaugh, Ulrich Mayr and Dan Burghart in Science
     year: 2007
-    url: https://www.sciencedaily.com/releases/2007/06/070614151757.htm
+    url: https://www.eurekalert.org/news-releases/465670
 ---
 
 Why do people give? One answer is that they care about the result: fewer hungry children, a cleaner river. Another is that giving feels good, whatever the result. The economist James Andreoni called the second motive the **warm glow** and built it into a formal theory in 1990.
@@ -29,7 +29,7 @@ In a 2007 study published in *Science*, William Harbaugh, Ulrich Mayr and Dan Bu
 
 The warm glow is not a flaw. It is part of what makes people generous at all, and Charitology has no interest in removing it. The question is what the glow attaches to. Charitology’s working claim is that today it attaches mainly to the act of giving and to its size, which donors can see, rather than to its results, which they usually cannot. That is one way the [Missing Feedback Loop](/diagnosis/missing-feedback-loop/) shapes behavior: if the reward arrives the moment the gift is made, nothing pulls the donor to find out what happened next.
 
-The [Prestige Economy](/diagnosis/prestige-economy/) is the social version of the same pattern, and Charitology’s hypothesis is that it pulls money toward visible gifts rather than effective ones. The warm glow itself is well documented. Whether its attachment to visible giving misdirects money, and by how much, has not been measured.
+The [Prestige Economy](/diagnosis/prestige-economy/) is the social version of the same pattern, and Charitology’s hypothesis is that it pulls money toward visible gifts rather than effective ones. The warm glow itself is well documented. The sources here do not establish whether visible giving shifts money away from better opportunities or by how much.
 
 ## Pointing the glow at results
 

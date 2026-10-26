@@ -4,7 +4,7 @@ summary: Giving, dāna in Sanskrit and Pali, is honored in three religions that 
 tradition: Buddhism, Hinduism and Jainism
 origin: Ancient India, in the teachings of the Buddha, Hindu scriptures such as the Bhagavad Gita, and the vows of Jain laypeople
 practice: Gifts of food, money and support to monks, nuns, temples and people in need, judged as much by the giver’s intention as by the gift
-lens: In all three traditions, giving is first a discipline for the giver, a way to loosen attachment, and then a help to others. Buddhism’s teaching that the gift of the Dhamma, the Buddha’s teaching, is the highest gift ranks helping someone understand above material help.
+lens: The sources here emphasize intention, attachment and spiritual development alongside material support. The Buddhist sources describe the gift of the Dhamma, the Buddha’s teaching, as the highest gift. These are accounts of giving within the traditions, not a single test of effectiveness shared by all three.
 sources:
   - title: 'Dana: The Practice of Giving'
     publisher: Bhikkhu Bodhi (ed.), Buddhist Publication Society, Wheel Publication 367/369, via Access to Insight
@@ -47,4 +47,4 @@ Jainism teaches a path to spiritual purity through nonviolence toward all living
 
 ## Through the source lens
 
-None of these traditions measures a gift mainly by its effect on the world. They measure it by what it does to the giver’s mind and by the worthiness of the recipient. Their aim is liberation, not system change, and the fit with Charitology’s depth scale should not be forced. Still, the Buddhist ranking is striking: material help meets a need, while the gift of understanding changes how a person sees.
+The sources in this entry discuss the giver’s intention, the recipient and spiritual development, alongside the material gift. They do not establish one view shared by every school or practitioner in these three religions. The fit with Charitology’s depth scale should not be forced. One connection is the Buddhist distinction between material support and the gift of teaching: it asks readers to consider both meeting a need and changing understanding.

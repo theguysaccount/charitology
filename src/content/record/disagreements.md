@@ -11,4 +11,4 @@ help:
 related: ["/programs/moral-frameworks-program/", "/programs/red-team/"]
 ---
 
-Most writing about giving hides its disagreements. This register puts them in the open: each entry states every serious position at full strength, names the *cruxes* that would change minds, and says honestly whether the question is open, narrowing or settled. Publishing disagreements is how a field earns trust.
+This register makes disagreements explicit: each entry states the positions it covers, names the *cruxes* that could change minds, and says whether the question is open, narrowing or settled. Readers can add a missing position or challenge the evidence in public.

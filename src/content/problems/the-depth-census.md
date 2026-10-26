@@ -10,7 +10,7 @@ bounty: "Unfunded. The Question Bounties program will attach prizes once it is f
 
 ## Why it matters
 
-Charitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Nobody has checked. If the hypothesis is wrong, the field should be the first to say so. If it’s right, the census gives every later effort a baseline to move.
+Charitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Charitology has not established the current mix. If the hypothesis is wrong, the field should be the first to say so. The census would supply a descriptive baseline. Deciding whether a mix is appropriate also requires an explicit standard tied to the goals being considered.
 
 ## Where to start
 

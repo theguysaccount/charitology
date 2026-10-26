@@ -2,9 +2,9 @@
   "manifest_version": 3,
   "name": "Charitology: Before You Give",
   "short_name": "Charitology",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The Giver’s Checklist on donation pages, plus a one-click lookup in the open charity registries. Collects nothing.",
-  "homepage_url": "https://github.com/theguysaccount/charitology/tree/main/extension",
+  "homepage_url": "https://charitology.org/tools/browser-extension/",
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
@@ -35,7 +35,13 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "before-you-give@charitology.org",
-      "strict_min_version": "121.0"
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
     }
   }
 }

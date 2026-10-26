@@ -8,6 +8,10 @@ sources:
   - title: Global Polio Eradication Initiative
     publisher: Global Polio Eradication Initiative
     url: https://polioeradication.org/
+  - title: Poliomyelitis
+    publisher: World Health Organization
+    year: 2025
+    url: https://www.who.int/news-room/fact-sheets/detail/poliomyelitis
 forecasts: []
 ---
 
@@ -17,4 +21,4 @@ Two of the three wild poliovirus types have been certified eradicated. Wild poli
 
 ## Why it matters
 
-Eradication is the clearest case of source-level work in health: once a disease is gone, its symptoms never need funding again. See the [Historical Case Studies](/record/case-studies/).
+Charitology describes eradication as source-level work in health because it ends transmission. Certification of wild poliovirus type 1 would not by itself end all polio work: vaccine-derived outbreaks, surveillance and post-certification safeguards also matter. See the [Historical Case Studies](/record/case-studies/).

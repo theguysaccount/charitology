@@ -14,7 +14,7 @@ const designed = (
 ).flat();
 const drafts = (
   await Promise.all(
-    (['conditions', 'encyclopedia', 'interventions', 'cases', 'myths', 'disagreements', 'traditions', 'principles'] as const).map(
+    (['conditions', 'encyclopedia', 'interventions', 'cases', 'myths', 'disagreements', 'traditions', 'principles', 'problems', 'programs', 'tools', 'record', 'charities', 'forecasts', 'journal'] as const).map(
       async (c) => (await getCollection(c)).filter((e: any) => e.data.review === 'draft').length,
     ),
   )
@@ -24,7 +24,7 @@ const ROLES = [
   ['Researchers', 'Take on one of the Open Problems. Publish an approach, a dataset or a partial result as an issue.', '/open-problems/'],
   ['Builders', 'Ship a designed program or tool. Each one has a charter with a first milestone.', '#designed'],
   ['Writers', 'Grow the Record: an encyclopedia entry, a case, a myth, a tradition. Sources first.', '/record/'],
-  ['Reviewers', `Check a draft’s sources and mark it reviewed. ${drafts} pages are waiting.`, '/record/methodology/'],
+  ['Reviewers', `Check a draft’s sources and contribute a public review. ${drafts} pages are waiting.`, '/contribute/review/'],
   ['Critics', 'Red-team any claim. Every page links to a prefilled challenge.', '/programs/red-team/'],
   ['Forecasters', 'Put a number on what will happen and get scored when it does.', '/tools/forecasting-platform/'],
 ];

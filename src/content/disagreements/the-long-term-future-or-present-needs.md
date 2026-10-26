@@ -1,6 +1,6 @@
 ---
 title: The long-term future or present needs?
-summary: Should giving focus on people alive now, whose needs are certain and urgent, or on protecting the far larger number of people who may live in the future?
+summary: Should giving focus on people alive now, whose needs are certain and urgent, or on protecting the potentially far larger number of people who may live in the future?
 status: open
 positions:
   - name: The long-term future matters most
@@ -46,7 +46,7 @@ sources:
 
 The case for the long term rests on scale. William MacAskill’s *What We Owe the Future* argues that humanity’s story could continue for millions of years, so choices made now could shape the lives of enormous numbers of people whose interests deserve weight. Toby Ord’s *The Precipice* argues that advanced weapons, engineered pandemics, unaligned artificial intelligence and other dangers threaten that future, and that reducing those risks is among the most urgent moral issues of our time.
 
-The case for the present rests on certainty and on duty. Help for people alive now can be measured: GiveWell’s typical modeled cost to save a life at its top charities is about $3,000 to $5,500. Some philosophers argue that people who don’t yet exist can’t hold rights against us, and others that our obligations to them carry less weight.
+The case for the present rests on certainty and on duty. Help for people alive now can be measured: GiveWell’s April 2024 explanation reported typical modeled costs of $3,000 to $5,500 per life saved for grants to its top charities. This is a dated estimate, not a guarantee for a current gift. Some philosophers argue that people who don’t yet exist can’t hold rights against us, and others that our obligations to them carry less weight.
 
 Uncertainty cuts both ways. Hilary Greaves argued in 2016 that because most of an action’s effects are unforeseeable, we may be clueless about much of what matters for choosing well, and that this problem is especially pressing for effective altruism.
 

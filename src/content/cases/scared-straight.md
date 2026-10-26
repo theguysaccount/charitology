@@ -26,7 +26,7 @@ review: draft
 
 ## What happened
 
-In the 1970s, inmates serving life sentences at a New Jersey prison started a program to scare at-risk and delinquent teenagers away from crime. The teenagers visited the prison and sat through aggressive presentations about prison life, often with exaggerated stories of violence. A television documentary that aired in 1979 reported that 16 of the 17 teenagers it followed stayed law-abiding for three months afterward, a 94 percent success rate. There was no comparison group. The program was copied in more than 30 jurisdictions, and Congress held hearings on it.
+In the 1970s, inmates serving life sentences at a New Jersey prison started a program to scare at-risk and delinquent teenagers away from crime. The teenagers visited the prison and sat through aggressive presentations about prison life, often with exaggerated stories of violence. A television documentary that aired in 1978 reported that 16 of the 17 teenagers it followed stayed law-abiding for three months afterward, a 94 percent success rate. There was no comparison group. The program was copied in more than 30 jurisdictions, and Congress held hearings on it.
 
 It is easy to see why it spread. The idea is deterrence, which matches a common intuition about how to stop crime. It was cheap, too: one Maryland version cost less than a dollar per participant.
 

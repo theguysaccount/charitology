@@ -8,8 +8,8 @@ statusNote: The charter is written. The lab needs researchers to build its first
 conditions: [single-lens, symptom-trap]
 firstMilestone: A published comparison of all seven methods on one shared problem, with the evidence for each method graded and its place on the depth scale stated.
 help:
-  - Open an issue labeled program:methods proposing a problem the lab could use for its first comparison.
-  - Summarize the strongest evidence you know for one method, with sources, in an issue labeled program:methods.
+  - Open an issue labeled program proposing a problem the lab could use for its first comparison.
+  - Summarize the strongest evidence you know for one method, with sources, in an issue labeled program.
   - Describe a way of giving that the list of seven leaves out.
 related: [/record/interventions/, /programs/time-charitology/, /programs/question-bounties/, /open-problems/the-counterfactual-problem/]
 sources:

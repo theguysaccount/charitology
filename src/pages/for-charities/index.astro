@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import { url } from '../../lib/site';
+const sections = [
+  ['Charity OS', 'A local workspace for programs, grant deadlines, tasks and outcome records. Export your work when you need to share it.', '/tools/charity-os/'],
+  ['Tools for charities', 'Browse external tools by the job you need to do. Check the costs, limits and official sources before choosing.', '/for-charities/tools/'],
+  ['Benefits for charities', 'Find donated services, credits and discounts, with eligibility and application links. Each provider decides who qualifies.', '/for-charities/benefits/'],
+  ['Measure and learn', 'Build a theory of change, choose indicators and plan how people served can send feedback.', '/tools/impact-measurement-toolkit/'],
+  ['Model a program', 'Explore the cost per outcome and uncertainty in a model whose inputs and assumptions you can inspect.', '/tools/cost-effectiveness-model-kit/'],
+  ['Evaluate a proposal', 'Use a private worksheet to consider evidence, learning and the voice of people served.', '/tools/grant-evaluator/'],
+];
+---
+<Base title="For charities" description="A workspace, practical tools and sourced directories for people running charities.">
+  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'For charities'}]} /><span class="eyebrow">For the people doing the work</span><h1>More room for the mission.</h1><p class="lede">Keep track of the work, find useful resources and build a clearer path from activity to learning. Charitology’s browser tools are free and keep your work locally.</p></div></header>
+  <section class="wrap section-tight"><div class="grid">{sections.map(([title,text,path])=><a class="card" href={url(path)}><h2>{title}</h2><p>{text}</p></a>)}</div></section>
+  <section class="wrap section-tight prose"><h2>Start with the system around your work</h2><p>What signals move money toward your mission? How does feedback reach the people making decisions? Where does your work act on the chain from relief to source? Use <a href={url('/method/')}>the Method</a> to put those questions beside the daily work.</p><p>These tools support planning and record keeping. Your organization remains responsible for its own accounting, legal obligations, security and decisions. The directories link to third parties; they do not imply endorsement or guaranteed eligibility.</p><p><a href={url('/roadmap/')}>See the full roadmap</a> or <a href={url('/contribute/')}>help improve a tool</a>.</p></section>
+</Base>
+<style>h2{font-size:1.4rem}</style>

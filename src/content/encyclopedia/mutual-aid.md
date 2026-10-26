@@ -1,6 +1,6 @@
 ---
 title: Mutual aid
-summary: People in a community pooling time, money and skills to meet one another’s needs directly, without a charity standing between giver and receiver. It is among the oldest forms of generosity and works very differently from the rest of the charity system.
+summary: People in a community pooling time, money and skills to meet one another’s needs directly, without a charity standing between giver and receiver. Its structure can differ from giving through a separate service provider.
 aliases: [solidarity networks, community self-help]
 conditions: [missing-feedback-loop, missing-voice, proximity-pull]
 related: [/record/encyclopedia/charity-as-a-system/, /record/encyclopedia/beneficiary-feedback/, /record/traditions/, /programs/local-charitology/, /record/lexicon/#mutual-aid]
@@ -15,7 +15,7 @@ sources:
     url: https://bcrw.barnard.edu/videos/we-keep-each-other-safe-mutual-aid-for-survival-and-solidarity
 ---
 
-In **mutual aid**, the people who help and the people who are helped belong to the same community, and often trade places. Neighbors run a grocery delivery list, a congregation keeps a fund for funerals, a tenants’ group covers a member’s rent this month and someone else’s next month. Nobody is a donor and nobody is a client.
+In **mutual aid**, the people who help and the people who are helped belong to the same community, and often trade places. Neighbors run a grocery delivery list, a congregation keeps a fund for funerals, a tenants’ group covers a member’s rent this month and someone else’s next month. Giving and receiving can overlap, rather than being fixed roles.
 
 ## Roots
 
@@ -25,14 +25,14 @@ Organizers use the term today too. Dean Spade, author of *Mutual Aid: Building S
 
 ## How it differs on the system map
 
-On the [system map](/record/encyclopedia/charity-as-a-system/), most charity runs one way: from givers through signals and channels to work done for someone else, with results rarely coming back. Mutual aid folds the stages together. The giver can see the need directly, the person helped often has a say in what help looks like, and the result is visible to everyone involved. In Charitology’s terms, the [feedback loop](/diagnosis/missing-feedback-loop/) and the [voice](/diagnosis/missing-voice/) that formal charity lacks are built in.
+On the [system map](/record/encyclopedia/charity-as-a-system/), most charity runs one way: from givers through signals and channels to work done for someone else, with results rarely coming back. Mutual aid folds the stages together. The giver can see the need directly, the person helped often has a say in what help looks like, and the result is visible to everyone involved. In Charitology’s terms, direct contact may support a [feedback loop](/diagnosis/missing-feedback-loop/) and [voice](/diagnosis/missing-voice/). That is a feature to examine, not a guarantee that every network shares power well.
 
 The costs mirror the strengths. Mutual aid reaches the people inside a network, so people outside it can be missed. It runs on volunteer time, which can run out. And because it is close to home, it carries the [Proximity Pull](/diagnosis/proximity-pull/) by design. Under the care framework that is the point; under the welfare framework it is a trade-off worth seeing clearly.
 
 ## Depth
 
-Most mutual aid is relief: food, rent and rides this week. But the networks it builds can outlast the crisis that formed them. Humanity’s Checklist names coordination, whether the people who could solve a problem together ever meet, as one of the six sources upstream of world problems. Whether mutual aid networks change coordination in a lasting way is a question nobody has measured well.
+Mutual aid can provide relief: food, rent and rides this week. But the networks it builds can outlast the crisis that formed them. Humanity’s Checklist names coordination, whether the people who could solve a problem together ever meet, as one of the six sources upstream of world problems. Whether mutual aid networks change coordination in a lasting way is a question the sources here do not settle.
 
 ## What we don’t know
 
-Much mutual aid never passes through a registered organization, so it is largely invisible to the data the rest of the system uses. Nobody knows how much of it there is or how its results compare with formal charity working on the same needs. The [Giving Traditions Library](/record/traditions/) records older forms of the same practice.
+Much mutual aid never passes through a registered organization, so it is largely invisible to the data the rest of the system uses. This entry does not establish its total scale or compare its results with formal charity working on the same needs. The [Giving Traditions Library](/record/traditions/) records older forms of the same practice.

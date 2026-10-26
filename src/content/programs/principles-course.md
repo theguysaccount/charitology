@@ -8,8 +8,8 @@ statusNote: The textbook is being written in the open, and each published chapte
 conditions: [missing-profession]
 firstMilestone: The first five units complete, each with a reading, an exercise that uses a Charitology tool and a problem set with worked answers.
 help:
-  - Write an exercise or problem set for a published chapter and share it in an issue labeled program:course.
-  - Work through a unit and open an issue labeled program:course describing what confused you.
+  - Write an exercise or problem set for a published chapter and share it in an issue labeled program.
+  - Work through a unit and open an issue labeled program describing what confused you.
   - Teach a unit in your own class and report how it went.
 related: [/record/principles/, /record/lexicon/, /programs/certified-charitologist/, /programs/university-chapters/]
 ---

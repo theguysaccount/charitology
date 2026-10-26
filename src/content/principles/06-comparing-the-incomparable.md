@@ -7,7 +7,7 @@ sources:
     publisher: William MacAskill, Krister Bykvist and Toby Ord, Oxford University Press
     year: 2020
     url: https://doi.org/10.1093/oso/9780198722274.001.0001
-    note: Open access under a Creative Commons license (CC BY-NC-ND 4.0).
+    note: Open access under a Creative Commons license (CC BY-NC-ND 4.0); freely readable at https://www.moraluncertainty.com/s/Moral-Uncertainty.pdf
   - title: Moral uncertainty – towards a solution?
     publisher: Nick Bostrom, Overcoming Bias
     year: 2009
@@ -51,7 +51,7 @@ Charitology does not pick one framework and convert everything into its currency
 - **All life:** What protects animals and the living world for their own sake?
 - **Flourishing:** What helps people become who they could be?
 
-Each framework makes some goods easy to see and others hard to see. A welfare lens sees bed nets clearly and struggles to see the case for a museum. A care lens sees the neighbor and may miss the stranger far away. Most givers look through one lens without knowing it is a lens. That is the [Single Lens](/diagnosis/single-lens/), the condition Charitology was founded to treat.
+Each framework makes some goods easy to see and others hard to see. A welfare lens asks about wellbeing from both bed nets and museums. A care lens asks about relationships and responsibilities, which can include neighbors and distant strangers. The frameworks differ internally, and these short sketches cannot speak for every holder of a view. Charitology hypothesizes that considering more than one lens can reveal choices a giver might otherwise miss; it has not measured how many givers use a single lens. That is the [Single Lens](/diagnosis/single-lens/), the condition Charitology was founded to treat.
 
 ## Deciding when you are not sure which view is right
 

@@ -37,7 +37,7 @@ A **DALY** counts the years of life lost to a condition plus the years lived wit
 
 ## How it is used
 
-GiveWell calls cost-effectiveness the single most important input in its evaluations, but says it does not judge programs on it alone. Strength of evidence and track record also carry weight. Its models of its top charities have typically estimated an average cost of $3,000 to $5,500 to save a life, and it expects that cost to rise over time.
+GiveWell calls cost-effectiveness the single most important input in its evaluations, but says it does not judge programs on it alone. Strength of evidence and track record also carry weight. Its April 2024 explanation reported typical modeled costs of $3,000 to $5,500 per life saved for grants to its top charities, while cautioning that future costs could rise. This is a dated model range, not a universal or current guaranteed price.
 
 ## How it goes wrong
 

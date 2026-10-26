@@ -10,7 +10,7 @@ bounty: "Unfunded. The Question Bounties program will attach prizes once it is f
 
 ## Why it matters
 
-Psychology and medicine found that many famous results didn’t hold up when tested again. Nobody has run the same check across charity impact research. Donors deserve to know how much to trust a headline.
+The [Replication Program](/programs/replication-program/) describes published checks in psychology and deworming research. Charitology has not established an equivalent sector-wide rate for charity impact findings. Donors deserve to know how much to trust a headline.
 
 ## Where to start
 

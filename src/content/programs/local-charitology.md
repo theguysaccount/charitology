@@ -8,7 +8,7 @@ statusNote: The charter is written. A pilot city map needs local volunteers and 
 conditions: [proximity-pull, fragmentation]
 firstMilestone: A published map of one pilot city’s charitable organizations by cause and depth, built from public filings, with its method and its blind spots stated.
 help:
-  - Volunteer to map your city by opening an issue labeled program:local.
+  - Volunteer to map your city by opening an issue labeled program.
   - Help build a mapping method from public filings that other cities can reuse.
   - Introduce a community foundation or local funders’ network that could use a map.
 related: [/open-problems/proximity-and-obligation/, /open-problems/the-fragmentation-question/, /record/disagreements/, /tools/charity-lookup/]
@@ -30,9 +30,9 @@ Much giving stays close to home. Local Charitology would take local giving as it
 
 ## How it works
 
-A city map would start from public data. ProPublica’s Nonprofit Explorer makes the tax filings of U.S. tax-exempt organizations searchable. Charity Impact Media publishes spending breakdowns from the Form 990 of every U.S. public charity with $10 million or more in revenue. WHOFUNDS shows which private foundations fund which nonprofits, and publishes its own miss rate. Volunteers would code each organization by cause and depth, then check the map with the people who run those organizations and the people they serve.
+A city map would start from public data. ProPublica’s Nonprofit Explorer makes the tax filings of U.S. tax-exempt organizations searchable. Charity Impact Media publishes spending breakdowns from selected large U.S. public charities’ Form 990 filings. WHOFUNDS shows which private foundations fund which nonprofits, and publishes its own miss rate. Volunteers would code each organization by cause and depth, then check the map with the people who run those organizations and the people they serve.
 
-The finished map would show where money and effort cluster, where several groups do the same thing and where nobody is working on a problem’s sources. It would also give local givers an honest comparison of what their money can do at home and what the same money could do elsewhere.
+The finished map would show where money and effort cluster, where several groups do the same thing and where its data do not identify work on a problem’s sources. Absence from the map would not prove that no work exists. It would also give local givers an honest comparison of what their money can do at home and what the same money could do elsewhere.
 
 ## Why it matters for the system
 

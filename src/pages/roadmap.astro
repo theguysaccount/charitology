@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import Badges from '../components/Badges.astro';
+import brief from '../data/roadmap.json';
+import { SITE, url } from '../lib/site';
+
+const catalogs = {
+  programs: await getCollection('programs'),
+  tools: await getCollection('tools'),
+  record: await getCollection('record'),
+};
+const entries = brief.entries.map((item) => {
+  const page = catalogs[item.collection as keyof typeof catalogs].find((entry) => entry.id === item.id);
+  if (!page) throw new Error(`Original brief item has no page: ${item.collection}/${item.id}`);
+  return { ...item, data: page.data, path: `/${item.collection}/${item.id}/` };
+});
+const counts = entries.reduce((out, entry) => ({ ...out, [entry.data.status]: out[entry.data.status] + 1 }), { live: 0, seeded: 0, designed: 0, partners: 0 });
+---
+
+<Base title="The full roadmap" description="Every item in Charitology’s original 66-item brief, its current page, what works and what remains.">
+  <header class="page-head"><div class="wrap">
+    <Crumbs items={[{ label: 'Roadmap' }]} />
+    <span class="eyebrow">The whole brief, kept in public</span>
+    <h1>The full roadmap</h1>
+    <p class="lede">26 programs, 19 tools and 21 information bases. Every item from the original brief has a page below. A page is a place to start; its status says how far the work has reached.</p>
+    <div class="btn-row roadmap-actions">
+      <a class="btn" href={`${SITE.repo}/blob/main/MASTER_PLAN.md`}>Read the master plan</a>
+      <a class="btn btn-ghost" href={`${SITE.repo}/blob/main/docs/ORIGINAL_BRIEF.md`}>Read the original brief</a>
+    </div>
+  </div></header>
+  <section class="wrap section-tight">
+    <div class="callout prose">
+      <h2>What the statuses mean</h2>
+      <p><strong>Live ({counts.live})</strong> means the function described on the page is available. <strong>Seeded ({counts.seeded})</strong> means starter content exists. <strong>Designed ({counts.designed})</strong> means a charter or method is written. <strong>Needs partners ({counts.partners})</strong> means people, funding or governance are needed.</p>
+      <p>The original brief proposed charity ratings and automatic money splitting. The current method requires public review before any ratings, and the split tool plans gifts without handling money. Those changes are visible below. Availability also does not mean a page has passed <a href={url('/contribute/review/')}>human source review</a>.</p>
+    </div>
+    <form class="roadmap-filters" role="search" aria-label="Filter the roadmap" onsubmit="return false">
+      <label class="field">Find an item<input type="search" id="roadmap-search" placeholder="Try forecasting, course or fund" /></label>
+      <label class="field">Section<select id="roadmap-section"><option value="">All sections</option><option value="programs">Programs</option><option value="tools">Tools</option><option value="record">Information bases</option></select></label>
+      <label class="field">Status<select id="roadmap-status"><option value="">All statuses</option><option value="live">Live</option><option value="seeded">Seeded</option><option value="designed">Designed</option><option value="partners">Needs partners</option></select></label>
+    </form>
+    <p id="roadmap-count" role="status" aria-live="polite">Showing all {entries.length} original items.</p>
+    <div class="roadmap-items">
+      {entries.map((entry, index) => (
+        <article class="card roadmap-item" data-section={entry.collection} data-status={entry.data.status} data-search={`${entry.originalTitle} ${entry.originalBrief} ${entry.adaptation} ${entry.group}`.toLowerCase()}>
+          <div class="roadmap-item-head"><span class="eyebrow">{String(index + 1).padStart(2, '0')} · {entry.collection === 'record' ? 'Info bases' : entry.collection} · {entry.group}</span><Badges status={entry.data.status} /></div>
+          <h2><a href={url(entry.path)}>{entry.originalTitle}</a></h2>
+          <p>{entry.data.summary}</p>
+          <p class="note"><strong>Scope:</strong> {entry.adaptation}</p>
+          {entry.data.statusNote && <p class="note"><strong>Current state:</strong> {entry.data.statusNote}</p>}
+          {'firstMilestone' in entry.data && entry.data.firstMilestone && <p class="note"><strong>Milestone:</strong> {entry.data.firstMilestone}</p>}
+          <details><summary>Original idea</summary><p>{entry.originalBrief}</p></details>
+        </article>
+      ))}
+    </div>
+    <p id="roadmap-empty" hidden>No items match these filters. Try a different word or choose all statuses.</p>
+  </section>
+  <section class="wrap section-tight prose">
+    <h2>Added to the brief</h2>
+    <p>These came from the owner’s follow-up request on October 25, 2026. They are tracked separately so the original list stays intact.</p>
+    <ul>
+      <li><a href={url('/tools/charity-os/')}>Charity OS</a>: a local workspace for projects, grants, tasks and outcome records.</li>
+      <li><a href={url('/for-charities/tools/')}>Tools for charities</a>: a directory with categories, costs and official sources.</li>
+      <li><a href={url('/for-charities/benefits/')}>Benefits for charities</a>: offers with eligibility, limits and application links.</li>
+    </ul>
+    <h2>What a website cannot finish on its own</h2>
+    <p>A legal fund, paid fellowship, prize, credential, conference or locally written country profile needs the people, resources and governance stated in its charter. No page claims those institutions are operating simply because their plans are published. The next steps belong in public issues and pull requests.</p>
+  </section>
+</Base>
+
+<style>
+  .roadmap-actions{margin-top:1.5rem}.roadmap-filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1rem;margin-top:2rem}.roadmap-filters label{display:grid;gap:.35rem}.roadmap-items{display:grid;gap:1rem}.roadmap-item-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}.roadmap-item h2{font-size:1.45rem;margin:.5rem 0}.roadmap-item p{max-width:80ch}.roadmap-item details{font-size:.9rem}.roadmap-item summary{cursor:pointer}.roadmap-item[hidden]{display:none}@media(max-width:640px){.roadmap-filters{grid-template-columns:1fr}}
+</style>
+<script>
+  const search = document.querySelector<HTMLInputElement>('#roadmap-search')!;
+  const section = document.querySelector<HTMLSelectElement>('#roadmap-section')!;
+  const status = document.querySelector<HTMLSelectElement>('#roadmap-status')!;
+  const items = [...document.querySelectorAll<HTMLElement>('.roadmap-item')];
+  function filter() {
+    const query = search.value.trim().toLowerCase();
+    let visible = 0;
+    for (const item of items) {
+      item.hidden = Boolean((query && !item.dataset.search?.includes(query)) || (section.value && section.value !== item.dataset.section) || (status.value && status.value !== item.dataset.status));
+      if (!item.hidden) visible++;
+    }
+    document.querySelector('#roadmap-count')!.textContent = `Showing ${visible} of ${items.length} original items.`;
+    (document.querySelector('#roadmap-empty') as HTMLElement).hidden = visible > 0;
+  }
+  search.addEventListener('input', filter);
+  section.addEventListener('change', filter);
+  status.addEventListener('change', filter);
+</script>

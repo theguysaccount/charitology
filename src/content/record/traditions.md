@@ -11,4 +11,4 @@ help:
 related: ["/method/#frameworks", "/tools/values-compass/"]
 ---
 
-People have thought hard about giving for thousands of years. Many traditions reached conclusions modern research is only now testing. Maimonides ranked helping a person become self-sufficient above every other gift, which is source-level giving, eight centuries early. Each entry describes a tradition on its own terms first, then asks what it says about symptoms and sources.
+Each entry describes a tradition on its own terms, using the sources listed there, then asks what its practices suggest about symptoms and sources. The depth reading is Charitology’s interpretation, open to correction by people who practice the tradition.

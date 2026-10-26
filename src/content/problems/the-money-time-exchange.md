@@ -10,7 +10,7 @@ bounty: "Unfunded. The Question Bounties program will attach prizes once it is f
 
 ## Why it matters
 
-Millions of people give time, not just money. Some volunteering is invaluable and some costs the organization more to manage than it returns. Nobody can tell a volunteer which is which.
+Volunteer time can help in different ways and also takes coordination. The proposed study would compare the value of roles with the cost of supporting them; it does not assume those answers are already known.
 
 ## Where to start
 

@@ -4,6 +4,10 @@ summary: Plenty of programs with convincing logic have failed when tested, and s
 verdict: 'false'
 conditions: [measurement-gap, story-bias]
 sources:
+  - title: Justice Department Discourages the Use of “Scared Straight” Programs
+    publisher: Office of Juvenile Justice and Delinquency Prevention
+    year: 2011
+    url: https://ojjdp.ojp.gov/sites/ojjdp/files/pubs/news_at_glance/234084/topstory.html
   - title: Scared Straight and Other Juvenile Awareness Programs for Preventing Juvenile Delinquency, a systematic review
     publisher: Anthony Petrosino, Carolyn Turpin-Petrosino, Meghan E. Hollis-Peel and Julia G. Lavenberg, Campbell Systematic Reviews 2013:5
     year: 2013
@@ -35,7 +39,7 @@ Logic matters. A good program starts with a [theory of change](/record/encyclope
 
 That a convincing theory is enough. Three cases:
 
-- **Scared Straight.** The logic was deterrence: show teenagers what prison is like and they will avoid it. A 1979 documentary reported a 94 percent success rate with no comparison group. When researchers ran randomized trials, the programs increased the odds of later offending by a factor of about 1.6 to 1.7. The teenagers would have been better off with nothing.
+- **Scared Straight.** The logic was deterrence: show teenagers what prison is like and they will avoid it. A 1978 documentary reported a 94 percent success rate with no comparison group. When researchers ran randomized trials, the programs increased the odds of later offending by a factor of about 1.6 to 1.7. On average, the teenagers did better without the program.
 - **D.A.R.E.** Police officers teaching children to resist drugs became the most widely used school drug prevention program in the United States. Ten years after sixth grade, young people who had gone through it were doing no better on drug use than those who had standard drug education.
 - **One Laptop per Child.** Giving every child a laptop seemed a direct route to better learning. A randomized evaluation in rural Peru found children used computers far more, but their math and language scores did not improve.
 

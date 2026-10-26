@@ -10,15 +10,15 @@ durability: years
 feedback: strong
 agency: top-down
 cost:
-  outcome: 0.1 standard deviation gain in one student’s math score (Zambia’s government-run Catch Up program)
-  low: 2.43
+  outcome: 0.1 standard deviation gain in one student’s broad foundational math score (Zambia’s government-run Catch Up program)
+  low: 6.38
   high: 6.38
   asOf: 2022–2024 trial
   source:
     title: Targeting Foundational Skills to Improve Learning at Scale in Zambia
     publisher: J-PAL
     url: https://www.povertyactionlab.org/evaluation/targeting-foundational-skills-improve-learning-scale-zambia
-  note: From one randomized trial in one country. The low figure counts only the math skills the program targets, and the high figure counts foundational math overall. The researchers found that the choice of measure changed cost-effectiveness by a factor of 2.6. The program cost $9.63 per student over two years.
+  note: A point estimate from one randomized trial, not an uncertainty interval. The program cost $9.63 per student over two years. Counting only the procedural math skill it targeted gave a different estimate, $2.43 per 0.1 standard deviation, so the choice of test changed apparent cost-effectiveness by a factor of 2.6. The calculator uses the broader measure.
 conditions: [measurement-gap]
 sources:
   - title: Teaching at the Right Level to improve learning (evidence-to-policy case study)

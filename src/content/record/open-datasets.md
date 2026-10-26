@@ -11,4 +11,4 @@ help:
 related: ["/tools/public-api/", "/record/evidence-library/"]
 ---
 
-Everything Charitology publishes is available as structured data under CC BY 4.0. The endpoints are static JSON files, so there are no keys and no rate limits. Full documentation is on the [Public API](/tools/public-api/) page.
+Charitology’s content collections and shared datasets are available as structured data under CC BY 4.0. The endpoints are static JSON files and need no application key. The hosting provider’s normal limits still apply. Full documentation is on the [Public API](/tools/public-api/) page.

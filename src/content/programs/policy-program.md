@@ -8,7 +8,7 @@ statusNote: The charter is written. The first analysis needs researchers with ex
 conditions: [symptom-trap, short-horizon]
 firstMilestone: One published analysis of a public program’s budget by depth and time horizon, reviewed by people who run the program.
 help:
-  - Open an issue labeled program:policy proposing a public program or budget line for a first analysis.
+  - Open an issue labeled program proposing a public program or budget line for a first analysis.
   - Share public evaluation plans or learning agendas published by government agencies.
   - Offer to review the first analysis if you work in public budgeting or evaluation.
 related: [/open-problems/the-government-question/, /open-problems/discounting-the-future/, /record/country-profiles/, /programs/evidence-reviews/]
@@ -30,7 +30,7 @@ Public budgets for aid and social programs face the same questions as private gi
 
 Each analysis would take one public program or budget line and ask four questions. What does the evidence say about the interventions it pays for, drawing on [Evidence Reviews](/programs/evidence-reviews/)? How is the money split between relief, repair, prevention, structure and source? What are its costs and benefits over ten or twenty years, not just one budget cycle? And who was consulted on its design, including the people it serves?
 
-The program would build on government work that already exists. The UK’s What Works Network, made up of independent What Works Centres, uses evidence to improve how public services are designed and delivered. In the United States, the Foundations for Evidence-Based Policymaking Act, which became law in January 2019, requires federal agencies to plan how they will build evidence for policy and to name an evaluation officer.
+The program would build on government work that already exists. The UK’s What Works Network, made up of independent What Works Centres, uses evidence to improve how public services are designed and delivered. In the United States, the Foundations for Evidence-Based Policymaking Act, which became law in January 2019, requires covered federal agencies to plan evidence-building and designate evaluation officers.
 
 The program would publish analysis. It wouldn’t lobby for bills, endorse candidates or take sides between parties.
 

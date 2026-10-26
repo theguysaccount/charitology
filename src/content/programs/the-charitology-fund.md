@@ -8,9 +8,9 @@ statusNote: The fund needs a legal entity, a fiscal sponsor and independent gove
 conditions: [symptom-trap, story-bias, single-lens]
 firstMilestone: A published governance charter, a legal entity and fiscal sponsor in place and an allocation method that has passed public red-team review, all before a single gift is accepted.
 help:
-  - Critique the allocation approach on this page by opening an issue labeled program:fund.
-  - If you work with a fiscal sponsor, a foundation or a nonprofit law practice that could help, open an issue labeled program:fund.
-  - Draft one part of the governance charter, such as conflict-of-interest rules, in an issue labeled program:fund.
+  - Critique the allocation approach on this page by opening an issue labeled program.
+  - If you work with a fiscal sponsor, a foundation or a nonprofit law practice that could help, open an issue labeled program.
+  - Draft one part of the governance charter, such as conflict-of-interest rules, in an issue labeled program.
 related: [/tools/portfolio-builder/, /record/gap-map/, /programs/red-team/, /open-problems/moral-parliament-in-practice/]
 sources:
   - title: 'What is fiscal sponsorship? How do I find a fiscal sponsor?'

@@ -19,28 +19,52 @@ const { title, description = SITE.description, noindex = false, nosearch = false
 const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name}: ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(url('/og.jpg'), Astro.site);
+const ogImageAlt = 'Charitology: the science of doing the most good. A compass points through an open C, beside a diagram of charity as a system and its five depths: relief, repair, prevention, structure and source.';
+// The brand introduction complements the home page; articles keep their own title and description.
+const ogVideo = Astro.url.pathname === url('/')
+  ? new URL(url('/social/charitology-intro.mp4'), Astro.site)
+  : null;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <link rel="icon" href={url('/favicon.ico')} sizes="16x16 32x32 48x48" />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
-    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+    <link rel="icon" href={url('/favicon-32.png')} type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} sizes="180x180" />
+    <link rel="manifest" href={url('/site.webmanifest')} />
     <link rel="alternate" type="application/rss+xml" title="Charitology: new and updated pages" href={url('/feed.xml')} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title ?? `${SITE.name}: ${SITE.tagline}`} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    {ogVideo && <>
+      <meta property="og:video" content={ogVideo} />
+      <meta property="og:video:secure_url" content={ogVideo} />
+      <meta property="og:video:type" content="video/mp4" />
+      <meta property="og:video:width" content="1200" />
+      <meta property="og:video:height" content="630" />
+      <meta property="og:video:alt" content="A ten-second silent Charitology introduction. The compass settles on its direction as a signal moves through charity's feedback loop." />
+    </>}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title ?? `${SITE.name}: ${SITE.tagline}`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
     <meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)" />
     {noindex && <meta name="robots" content="noindex" />}

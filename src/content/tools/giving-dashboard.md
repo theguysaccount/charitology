@@ -22,7 +22,7 @@ Not ready to log your own gifts? **Try sample data** fills the dashboard with cl
 
 Depth asks where a gift acts. Relief meets the need today. Repair restores what was lost. Prevention stops the harm happening to these people. Structure changes the rules that produce it. Source changes what feeds many problems at once. You choose the level for each gift, because you know what you paid for.
 
-**Source share** is the part of your dollars at structure and source, levels 3 and 4. It describes your mix. It isn’t a score: a high number isn’t better and a low one isn’t worse. Relief is the only thing that helps someone tonight, and every level is needed. The point is to see your mix and choose it on purpose, which is the treatment for [the Symptom Trap](/diagnosis/symptom-trap/).
+**Source share** is the part of your dollars at structure and source, levels 3 and 4. It describes your mix. It isn’t a score: a high number isn’t better and a low one isn’t worse. Relief meets an immediate need, and every level is needed. The point is to see your mix and choose it on purpose, which is the treatment for [the Symptom Trap](/diagnosis/symptom-trap/).
 
 Charity sends very little information back to the people who pay for it. Charitology calls that [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/). The dashboard can’t tell you what your gifts achieved. It makes the first part of the loop visible: what you gave, where it went and at what depth. [Charitology Wrapped](/tools/charitology-wrapped/) turns the same log into a year-in-review card.
 

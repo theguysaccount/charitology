@@ -12,7 +12,7 @@ sources:
 
 ## Why it matters
 
-Humanity’s Checklist notes that more than $300 billion a year flows into designer goods. If even a share of that status spending became giving, aimed at results, it would change the scale of what charity can do. See [the Prestige Economy](/diagnosis/prestige-economy/).
+Humanity’s Checklist proposes directing status toward generosity. Whether that would increase giving or improve its results is a hypothesis to test. See [the Prestige Economy](/diagnosis/prestige-economy/).
 
 ## Where to start
 

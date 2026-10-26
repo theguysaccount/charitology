@@ -10,7 +10,7 @@ bounty: "Unfunded. The Question Bounties program will attach prizes once it is f
 
 ## Why it matters
 
-Most people who will ever live haven’t been born. How much they count changes nearly every allocation decision. Today the choice is made silently, usually by [annual budget cycles](/diagnosis/short-horizon/).
+If humanity has a long future, vastly more people may live after us than are alive now. How much they count changes nearly every allocation decision. Short funding cycles may leave that choice implicit; see [the Short Horizon hypothesis](/diagnosis/short-horizon/).
 
 ## Where to start
 

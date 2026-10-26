@@ -8,9 +8,9 @@ statusNote: Prize money needs a legal home, either a legal entity or a fiscal sp
 conditions: [missing-profession, measurement-gap]
 firstMilestone: Published prize rules and an independent judging panel, with a legal home in place to hold prize money, before any prize is announced.
 help:
-  - Open an issue labeled program:bounties proposing prize rules, such as how results are judged, how partial results are paid and how disputes are settled.
+  - Open an issue labeled program proposing prize rules, such as how results are judged, how partial results are paid and how disputes are settled.
   - Make the case for which open problem should carry the first prize. That choice is itself Open Problem 23.
-  - If your institution could hold prize money or judge results, open an issue labeled program:bounties.
+  - If your institution could hold prize money or judge results, open an issue labeled program.
 related: [/open-problems/, /open-problems/the-question-of-questions/, /programs/the-open-problems/, /programs/charitology-fellowship/]
 sources:
   - title: Millennium Prize Problems
@@ -32,7 +32,7 @@ Today every open problem says the same thing about its prize: unfunded. Prize mo
 
 ## Why it matters for the system
 
-Because of the [Missing Profession](/diagnosis/missing-profession/), the hardest questions in giving belong to nobody. A prize pays for answers rather than positions, so a graduate student, a retired statistician or a team in another country can work on a question without first finding an employer. Many of the open problems are measurement problems, so prizes also put money into the [Measurement Gap](/diagnosis/measurement-gap/), which few funders pay to close.
+The [Missing Profession](/diagnosis/missing-profession/) hypothesis asks whether a shared craft could help coordinate work on questions that cross fields. A prize pays for answers rather than positions, so a graduate student, a retired statistician or a team in another country can work on a question without first finding an employer. Many of the open problems are measurement problems, so prizes also put money into the [Measurement Gap](/diagnosis/measurement-gap/), which the program proposes to help close.
 
 ## Risks and limits
 

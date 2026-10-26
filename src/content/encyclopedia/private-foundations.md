@@ -39,7 +39,7 @@ Under U.S. tax law, every 501(c)(3) organization is a **private foundation** unl
 
 ## The 5 percent rule
 
-The IRS requires private foundations to spend a certain amount each year for charitable purposes. The amount is tied to what the IRS calls a foundation’s *minimum investment return*: 5 percent of the value of its assets that are not used for charitable purposes, less debt incurred to buy them. A foundation that falls short owes a 30 percent excise tax on the undistributed amount under Section 4942 of the tax code, and a 100 percent tax if it does not make up the shortfall within 90 days of being notified.
+Private non-operating foundations generally must make qualifying distributions each year; operating foundations have different rules. The amount is tied to what the IRS calls a foundation’s *minimum investment return*: 5 percent of the value of its assets that are not used for charitable purposes, less debt incurred to buy them. A foundation that falls short owes a 30 percent excise tax on the undistributed amount under Section 4942 of the tax code, and a 100 percent tax if it does not make up the shortfall within 90 days of being notified.
 
 Foundations can also invest for their mission. A **program-related investment**, in the IRS’s terms, is one whose primary purpose is charitable, where earning income is not a significant purpose and which is not used for lobbying or political campaigns. The IRS’s examples include low-interest loans to needy students and high-risk investments in nonprofit low-income housing.
 

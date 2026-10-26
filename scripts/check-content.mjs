@@ -66,7 +66,7 @@ for (const q of load('forecasts')) {
 }
 
 // Pages still in draft (informational).
-const drafts = ['conditions', 'encyclopedia', 'interventions', 'cases', 'myths', 'disagreements', 'traditions', 'principles']
+const drafts = ['conditions', 'encyclopedia', 'interventions', 'cases', 'myths', 'disagreements', 'traditions', 'principles', 'open-problems', 'programs', 'tools', 'record', 'charities', 'forecasts', 'journal']
   .flatMap((n) => load(n))
   .filter((x) => x.review === 'draft').length;
 
@@ -75,4 +75,4 @@ if (errors.length) {
   console.error(`✗ ${errors.length} content problem(s):\n${errors.map((e) => `  ${e}`).join('\n')}`);
   process.exit(1);
 }
-console.log(`✓ Content cross-references are consistent. ${drafts} pages are drafts awaiting review.`);
+console.log(`✓ Content cross-references are consistent. ${drafts} content entries are drafts awaiting review.`);

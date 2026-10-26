@@ -9,7 +9,7 @@ conditions: [missing-feedback-loop, short-horizon]
 firstMilestone: The first ten questions resolved and scored, with the scores published and a short report on what the forecasts got right and wrong.
 help:
   - Add your forecast to an open question with a pull request to src/content/forecasts/, giving a probability and a short rationale.
-  - Open an issue labeled program:forecasting proposing a question that will resolve clearly by a stated date.
+  - Open an issue labeled program proposing a question that will resolve clearly by a stated date.
   - When a question closes, help resolve it by finding the source that settles it.
 related: [/tools/forecasting-platform/, /open-problems/the-question-of-questions/, /open-problems/measuring-the-source/, /programs/replication-program/]
 sources:

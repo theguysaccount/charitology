@@ -13,9 +13,13 @@ sources:
     publisher: Humanity’s Checklist
     year: 2026
     url: https://humanityschecklist.org/
+  - title: "Deciding Together: Shifting Power and Resources Through Participatory Grantmaking"
+    publisher: Cynthia Gibson, GrantCraft, Foundation Center
+    year: 2018
+    url: https://learningforfunders.candid.org/wp-content/uploads/sites/2/2018/12/DecidingTogether_Final_20181002.pdf
 ---
 
-In most philanthropy, the people who decide where money goes are the people who have it: donors, foundation staff and boards. **Participatory grantmaking** moves some of those decisions to the people who will live with the results. In the version described by Cynthia Gibson’s 2018 guide for GrantCraft, *Deciding Together: Shifting Power and Resources Through Participatory Grantmaking*, funders cede decision-making power about funding to the communities they aim to serve.
+In a conventional grant process, donors, foundation staff or boards decide where money goes. **Participatory grantmaking** moves some of those decisions to the people who will live with the results. In the version described by Cynthia Gibson’s 2018 guide for GrantCraft, *Deciding Together: Shifting Power and Resources Through Participatory Grantmaking*, funders cede decision-making power about funding to the communities they aim to serve.
 
 ## What it looks like
 
@@ -23,7 +27,7 @@ Participation runs along a spectrum. At one end, community members advise a fund
 
 ## The case for it
 
-The people closest to a problem often know which fix will last, which risks a plan has missed and which organizations their neighbors trust. A process that lets them decide also changes who holds power, which some practitioners see as part of the result rather than a means to it. Humanity’s Checklist names gatekeepers as one of the six sources upstream of world problems: when a few gatekeepers decide what gets built, most good ideas never ship. Participatory grantmaking applies the same idea to philanthropy.
+Community members can bring knowledge about needs, risks and trusted organizations that a funder may lack. A process that lets them decide also changes who holds power, which some practitioners see as part of the result rather than a means to it. Humanity’s Checklist names gatekeepers as one of the six sources upstream of world problems: concentrated decision rights may exclude useful ideas. Participatory grantmaking applies the same idea to philanthropy.
 
 ## The questions it raises
 
@@ -31,4 +35,4 @@ Who speaks for a community, and how are they chosen? What does it cost in time a
 
 ## What we don’t know
 
-Most of the case for participatory grantmaking rests on principle and on practitioners’ experience. Comparative outcome evidence is thin. Do community-decided grants achieve more than expert-decided ones on the same outcome, and in which settings? That is [Open Problem 14, the Agency Premium](/open-problems/the-agency-premium/). See also [the Missing Voice](/diagnosis/missing-voice/) and [beneficiary feedback](/record/encyclopedia/beneficiary-feedback/).
+The guide presents principles and practitioners’ experience. It does not establish a general causal estimate of the effect on final outcomes. Do community-decided grants achieve more than expert-decided ones on the same outcome, and in which settings? That is [Open Problem 14, the Agency Premium](/open-problems/the-agency-premium/). See also [the Missing Voice](/diagnosis/missing-voice/) and [beneficiary feedback](/record/encyclopedia/beneficiary-feedback/).

@@ -8,7 +8,7 @@ statusNote: The charter is written. The first survey of organizations needs rese
 conditions: [measurement-gap, missing-feedback-loop]
 firstMilestone: A published survey of at least 50 organizations on what an hour of each kind of volunteer help is worth to them, including the cost of managing it.
 help:
-  - If you manage volunteers, open an issue labeled program:time describing which roles help most and which cost more than they return.
+  - If you manage volunteers, open an issue labeled program describing which roles help most and which cost more than they return.
   - Help design the organization survey for Open Problem 19.
   - Describe a volunteer role that changed something lasting, not just one day’s work.
 related: [/open-problems/the-money-time-exchange/, /programs/methods-lab/, /programs/local-charitology/, /tools/impact-calculator/]
@@ -36,7 +36,7 @@ The program would start where [Open Problem 19, the Money-Time Exchange](/open-p
 
 ## Why it matters for the system
 
-Volunteer time sits deep inside the [Measurement Gap](/diagnosis/measurement-gap/). Some volunteering is invaluable, and some costs an organization more to manage than it returns, yet nobody can tell a volunteer which is which. Volunteers also face their own [Missing Feedback Loop](/diagnosis/missing-feedback-loop/): they know the hours they gave, but little in the system reports back what those hours changed. Time Charitology would measure the value of different roles and send that signal back to the people choosing them.
+Volunteer time sits deep inside the [Measurement Gap](/diagnosis/measurement-gap/). Some volunteering is invaluable, and some costs an organization more to manage than it returns, so role-specific evidence is more useful than assuming every hour has the same effect. Volunteers also face their own [Missing Feedback Loop](/diagnosis/missing-feedback-loop/): they know the hours they gave, but little in the system reports back what those hours changed. Time Charitology would measure the value of different roles and send that signal back to the people choosing them.
 
 ## Risks and limits
 

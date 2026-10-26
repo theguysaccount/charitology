@@ -10,18 +10,22 @@ durability: years
 feedback: some
 agency: top-down
 cost:
-  outcome: life saved (GiveWell’s typical modeled range across its top charities)
+  outcome: death averted (GiveWell’s modeled range for the places where it funds net campaigns)
   low: 3000
-  high: 5500
-  asOf: February 2024 version
+  high: 8000
+  asOf: December 2023 cost-effectiveness analysis
   source:
-    title: How Much Does It Cost to Save a Life?
+    title: Mass Distribution of Insecticide-Treated Nets (ITNs)
     publisher: GiveWell
-    year: 2024
-    url: https://www.givewell.org/how-much-does-it-cost-to-save-a-life
-  note: This range covers GiveWell’s top charities as a group, not net distribution alone. GiveWell expects costs to rise over time.
+    year: 2023
+    url: https://www.givewell.org/international/technical/programs/insecticide-treated-nets
+  note: This is a model for net campaigns in the locations GiveWell funds, not a measured price for a life. The range varies by location and depends on malaria mortality, net use, how long nets last and what other funders would have paid for.
 conditions: [story-bias]
 sources:
+  - title: Mass Distribution of Insecticide-Treated Nets (ITNs)
+    publisher: GiveWell
+    year: 2023
+    url: https://www.givewell.org/international/technical/programs/insecticide-treated-nets
   - title: Insecticide-treated nets for preventing malaria (Cochrane systematic review)
     publisher: Joseph Pryce, Marty Richardson and Christian Lengeler, Cochrane Database of Systematic Reviews
     year: 2018

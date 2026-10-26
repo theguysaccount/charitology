@@ -22,7 +22,7 @@ sources:
     url: https://doi.org/10.1111/japp.12176
 ---
 
-Most charity changes outcomes one person or one case at a time. **Systemic change** aims at the structures that keep producing those outcomes: the rules, markets, institutions, relationships and beliefs underneath. On the [depth scale](/record/encyclopedia/source-depth/) it is the work of level 3, structure, and level 4, source.
+**Systemic change** aims at the structures that keep producing those outcomes: the rules, markets, institutions, relationships and beliefs underneath. On the [depth scale](/record/encyclopedia/source-depth/) it is the work of level 3, structure, and level 4, source.
 
 ## Where to push
 
@@ -30,7 +30,7 @@ The systems thinker Donella Meadows described *leverage points* as places in a c
 
 In 2018 John Kania, Mark Kramer and Peter Senge, writing for FSG, described six interdependent conditions that hold social and environmental problems in place: policies, practices and resource flows, which are the most visible; relationships and connections, and power dynamics; and, deepest, mental models, the beliefs people take for granted.
 
-Both maps point the same way as Charitology’s scale: the deeper the change, the harder it is to see and the more it moves.
+Both maps inform Charitology’s scale. They are frameworks for reasoning about change, not evidence that a deeper intervention always achieves more.
 
 ## The debate
 
@@ -40,4 +40,4 @@ The case for caution is just as real. Systemic bets are slow, their credit is sh
 
 ## How Charitology sees it
 
-Charitology does not treat systemic change as better than direct help. It treats the line between them as a scale rather than a wall, and every level as needed. Its working hypothesis, the [Symptom Trap](/diagnosis/symptom-trap/), is that the system as a whole underfunds the deep end of the scale, partly because systemic change is so hard to measure. Measuring it is [Open Problem 3](/open-problems/measuring-the-source/). The eradication of smallpox shows what a source-level result can look like when it works: see [the case study](/record/case-studies/smallpox-eradication/).
+Charitology does not treat systemic change as better than direct help. It treats the line between them as a scale rather than a wall, and every level as needed. Its working hypothesis, the [Symptom Trap](/diagnosis/symptom-trap/), is that the system as a whole underfunds the deep end of the scale, partly because systemic change is so hard to measure. Measuring it is [Open Problem 3](/open-problems/measuring-the-source/). The eradication of smallpox is a useful case of a lasting change. Its proposed source-depth classification is Charitology’s hypothesis, open to challenge: see [the case study](/record/case-studies/smallpox-eradication/).

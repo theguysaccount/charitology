@@ -8,8 +8,8 @@ statusNote: Field work needs funding, local research partners and ethics review.
 conditions: [missing-feedback-loop, measurement-gap, missing-voice]
 firstMilestone: A published verification protocol, reviewed by field researchers and community organizations, and one pilot check run with a local research partner.
 help:
-  - Open an issue labeled program:verification describing what a fair check of one kind of program, such as water points or school meals, should look at.
-  - If you lead a research group or community organization that could partner on a pilot, open an issue labeled program:verification.
+  - Open an issue labeled program describing what a fair check of one kind of program, such as water points or school meals, should look at.
+  - If you lead a research group or community organization that could partner on a pilot, open an issue labeled program.
   - Share a monitoring or feedback method that worked for your organization.
 related: [/open-problems/closing-the-feedback-loop/, /open-problems/the-agency-premium/, /tools/due-diligence-checklist/, /programs/evidence-reviews/]
 sources:

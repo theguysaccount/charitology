@@ -1,0 +1,122 @@
+---
+interface Listing {
+  id: string;
+  name: string;
+  category: string;
+  summary: string;
+  costType: string;
+  cost: string;
+  delivery: string;
+  fit: string;
+  eligibility: string;
+  limits: string;
+  url: string;
+  sources: { label: string; url: string }[];
+  checked: string;
+  review: string;
+}
+interface Props { entries: Listing[]; kind: 'tools' | 'benefits'; }
+const { entries, kind } = Astro.props;
+const categories = [...new Set(entries.map((entry) => entry.category))].sort();
+const costs = [...new Set(entries.map((entry) => entry.costType))].sort();
+const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+---
+
+<div class="nonprofit-directory" data-directory>
+  <form class="directory-filters" role="search" aria-label={`Filter nonprofit ${kind}`}>
+    <label class="directory-search">Search this directory
+      <input type="search" name="q" placeholder={kind === 'tools' ? 'Try surveys, donors or self-hosted…' : 'Try design, cloud or free…'} autocomplete="off" />
+    </label>
+    <label>What you need
+      <select name="category"><option value="">All categories</option>{categories.map((value) => <option>{value}</option>)}</select>
+    </label>
+    <label>{kind === 'tools' ? 'Cost model' : 'Type of benefit'}
+      <select name="cost"><option value="">All types</option>{costs.map((value) => <option>{value}</option>)}</select>
+    </label>
+    <button type="reset" class="directory-reset">Reset filters</button>
+  </form>
+  <div class="directory-results-line">
+    <p class="directory-count" aria-live="polite" aria-atomic="true"><span data-count>{entries.length}</span> <span data-count-label>listings</span></p>
+    <p>Alphabetical, with no scores or paid placements.</p>
+  </div>
+  <p class="directory-empty" data-empty hidden>No listings match those filters. Try fewer words or reset the filters.</p>
+  <div class="directory-grid">
+    {entries.map((entry) => (
+      <article id={entry.id} class="directory-card" data-listing data-category={entry.category} data-cost={entry.costType} data-search={`${entry.name} ${entry.category} ${entry.summary} ${entry.cost} ${entry.delivery} ${entry.fit} ${entry.eligibility} ${entry.limits}`.toLowerCase()}>
+        <div class="directory-card-top"><span class="directory-category">{entry.category}</span><span class="directory-cost-type">{entry.costType}</span></div>
+        <h2>{entry.name}</h2>
+        <p class="directory-summary">{entry.summary}</p>
+        <p class="directory-offer">{entry.cost}</p>
+        <dl>
+          {kind === 'tools' ? <><dt>Possible use</dt><dd>{entry.fit}</dd><dt>How it runs</dt><dd>{entry.delivery}</dd></> : <><dt>Who can apply</dt><dd>{entry.eligibility}</dd></>}
+          <dt>{kind === 'tools' ? 'Before choosing it' : 'Limits and costs'}</dt><dd>{entry.limits}</dd>
+        </dl>
+        <div class="directory-card-bottom">
+          <a class="directory-provider" href={entry.url} rel="noopener">{kind === 'tools' ? 'Explore the tool' : 'Check offer and apply'} <span aria-hidden="true">↗</span></a>
+          <details class="directory-sources"><summary>Provider sources <span>({entry.sources.length})</span></summary><ul>{entry.sources.map((source) => <li><a href={source.url} rel="noopener">{source.label}</a></li>)}</ul></details>
+          <p class="directory-checked">Source checked {checked(entry.checked)} · Editorial review pending</p>
+        </div>
+      </article>
+    ))}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-directory]').forEach((directory) => {
+    const form = directory.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('[name="q"]')!;
+    const category = form.querySelector<HTMLSelectElement>('[name="category"]')!;
+    const cost = form.querySelector<HTMLSelectElement>('[name="cost"]')!;
+    const cards = [...directory.querySelectorAll<HTMLElement>('[data-listing]')];
+    const update = () => {
+      const words = query.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      let count = 0;
+      cards.forEach((card) => {
+        const show = (!category.value || card.dataset.category === category.value)
+          && (!cost.value || card.dataset.cost === cost.value)
+          && words.every((word) => card.dataset.search?.includes(word));
+        card.hidden = !show;
+        if (show) count++;
+      });
+      directory.querySelector('[data-count]')!.textContent = String(count);
+      directory.querySelector('[data-count-label]')!.textContent = count === 1 ? 'listing' : 'listings';
+      directory.querySelector<HTMLElement>('[data-empty]')!.hidden = count !== 0;
+    };
+    form.addEventListener('submit', (event) => event.preventDefault());
+    form.addEventListener('input', update);
+    form.addEventListener('change', update);
+    form.addEventListener('reset', () => requestAnimationFrame(update));
+  });
+</script>
+
+<style>
+  .nonprofit-directory { margin: 2rem 0 4rem; }
+  .directory-filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; align-items: end; gap: 1rem; border-block: 1px solid var(--rule); padding: 1.5rem 0; }
+  .directory-filters label { display: grid; gap: .45rem; font: 600 .78rem/1.3 var(--font-sans); letter-spacing: .03em; }
+  .directory-filters input, .directory-filters select { width: 100%; min-width: 0; height: 2.8rem; font: 400 .95rem var(--font-sans); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: .6rem .7rem; }
+  .directory-reset { min-height: 2.8rem; font: 500 .85rem var(--font-sans); color: var(--accent); border: 1px solid var(--rule); border-radius: 3px; background: transparent; padding: .6rem .9rem; cursor: pointer; }
+  .directory-results-line { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem 1rem; padding: 1rem 0; font: .78rem/1.5 var(--font-sans); color: var(--ink-3); }
+  .directory-results-line p { margin: 0; }
+  .directory-count { color: var(--ink); font-weight: 600; }
+  .directory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .directory-card { border: 1px solid var(--rule); padding: 1.5rem; display: flex; flex-direction: column; background: var(--surface); scroll-margin-top: 5rem; }
+  .directory-card[hidden], .directory-empty[hidden] { display: none; }
+  .directory-card-top { display: flex; justify-content: space-between; gap: .6rem; align-items: baseline; font: .7rem/1.4 var(--font-sans); }
+  .directory-category { color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; }
+  .directory-cost-type { color: var(--accent); text-align: right; }
+  .directory-card h2 { font-size: 1.75rem; line-height: 1.15; margin: .85rem 0 .65rem; letter-spacing: -.025em; }
+  .directory-summary { margin: 0 0 .8rem; font-size: 1rem; line-height: 1.55; }
+  .directory-offer { padding: .8rem 1rem; margin: 0 0 1rem; border-left: 2px solid var(--accent); background: var(--accent-wash); font-size: .95rem; line-height: 1.5; }
+  .directory-card dl { margin: 0 0 1rem; }
+  .directory-card dt { font: 600 .72rem/1.5 var(--font-sans); color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; margin: .65rem 0 .2rem; }
+  .directory-card dd { margin: 0; font-size: .9rem; line-height: 1.55; }
+  .directory-card-bottom { margin-top: auto; padding-top: .8rem; border-top: 1px solid var(--rule); }
+  .directory-provider { font: 600 .85rem/1.5 var(--font-sans); }
+  .directory-sources { margin-top: .7rem; font: .77rem/1.55 var(--font-sans); }
+  .directory-sources summary { color: var(--ink-3); cursor: pointer; }
+  .directory-sources ul { margin: .5rem 0; padding-left: 1.2rem; }
+  .directory-checked { margin: .8rem 0 0; color: var(--ink-3); font: .66rem/1.5 var(--font-sans); }
+  .directory-empty { padding: 1.5rem; border: 1px dashed var(--rule); }
+  @media (max-width: 900px) { .directory-filters { grid-template-columns: 1fr 1fr; } .directory-search { grid-column: 1 / -1; } .directory-reset { grid-column: 1 / -1; justify-self: start; } }
+  @media (max-width: 640px) { .directory-grid { grid-template-columns: 1fr; } .directory-card { padding: 1.15rem; } }
+</style>

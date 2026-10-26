@@ -1,7 +1,7 @@
 ---
 title: 'Depth: from relief to source'
 chapter: 3
-summary: Charitology describes every piece of work by where it acts, from relief through repair, prevention and structure to source. This chapter explains the five levels, how to place real work on them, why depth never grades and what nobody yet knows about the mix.
+summary: Charitology describes every piece of work by where it acts, from relief through repair, prevention and structure to source. This chapter explains the five levels, how to place real work on them, why depth never grades and what this project has not established about the mix.
 sources:
   - title: 'Humanity’s Checklist: six things to fix so we can fix everything else'
     publisher: Humanity’s Checklist
@@ -42,7 +42,7 @@ The intuition behind the scale is old. Maimonides set out eight levels of giving
 
 ## Depth describes. It never grades.
 
-This is the rule that matters most. Every level is needed. Relief is the only help that reaches a hungry person tonight, and nothing upstream will reach them in time. A source-level change may take a generation, and it may fail. A world that funded only source work would leave people to suffer while it waited.
+This is the rule that matters most. Every level is needed. A hungry person needs food tonight; a future promise cannot substitute for that help. A source-level change may take a generation, and it may fail. A world that funded only source work would leave people to suffer while it waited.
 
 So the scale is not a ranking of virtue, and no charity is better for sitting higher on it. It is a description, like a map’s scale or a thermometer. Its job is to let a giver see what they are paying for, and to let the field ask the question that no single gift can answer: is the mix right? A healthy system funds all five levels on purpose.
 
@@ -54,7 +54,7 @@ Charitology adopts the six as the top of its scale and treats the larger claim a
 
 ## When it works
 
-Source-level results do happen. The campaign against smallpox ended a deadly disease for good. On May 8, 1980, the World Health Assembly accepted the World Health Organization’s finding that smallpox had been eradicated. No other deadly human disease has been eradicated, before or since, and nobody has needed to fund smallpox treatment since then. The Record classifies the campaign as a source-level outcome for one disease. See [the case study](/record/case-studies/smallpox-eradication/).
+Source-level results do happen. The campaign against smallpox ended a deadly disease for good. On May 8, 1980, the World Health Assembly accepted the World Health Organization’s finding that smallpox had been eradicated. Smallpox remains the only human disease declared eradicated worldwide. Eradication does not mean all spending stops: research and preparedness continue. The Record’s source-level classification is a Charitology hypothesis, and readers can challenge whether eliminating one disease fits a level defined around many problems. See [the case study](/record/case-studies/smallpox-eradication/).
 
 ## How to place real work
 
@@ -65,10 +65,10 @@ Real work rarely sits neatly on one rung. Four habits help.
 - **Name the chain.** Deeper work depends on a longer [theory of change](/record/encyclopedia/theory-of-change/). Write it down, and the level of the final goal usually becomes clear.
 - **Say when it is hard to call.** If two careful people place the same work at different levels, record both. How often independent coders agree is itself a finding about the scale.
 
-## What nobody knows yet
+## What this project has not established
 
-Charitology’s founding hypothesis is the [Symptom Trap](/diagnosis/symptom-trap/): that the charity system as a whole is weighted toward the bottom of the scale, because relief is visible, quick and easy to credit, while work on sources is slow, shared and hard to measure. Nobody has checked. No public dataset classifies the world’s giving by depth.
+Charitology’s founding hypothesis is the [Symptom Trap](/diagnosis/symptom-trap/): that the charity system as a whole is weighted toward the bottom of the scale, because relief is visible, quick and easy to credit, while work on sources is slow, shared and hard to measure. Charitology has not established the current mix or produced a public global dataset on this scale.
 
-Checking is [Open Problem 1, the Depth Census](/open-problems/the-depth-census/). If the census finds the mix is already balanced, the Symptom Trap comes off the list. Measuring the effect of source-level work, so that it can compete fairly for money, is [Open Problem 3, Measuring the Source](/open-problems/measuring-the-source/). Until both are answered, every depth classification Charitology publishes is a description labeled as a hypothesis and open to challenge.
+Checking is [Open Problem 1, the Depth Census](/open-problems/the-depth-census/). A census describes the mix; deciding whether it is balanced also requires an explicit standard tied to the goals being considered. Evidence against the Symptom Trap should change or remove it. Measuring the effect of source-level work, so that it can compete fairly for money, is [Open Problem 3, Measuring the Source](/open-problems/measuring-the-source/). Until both are answered, every depth classification Charitology publishes is a description labeled as a hypothesis and open to challenge.
 
 To think about where your own giving sits, the [Values Compass](/tools/values-compass/) asks where on the chain you want to act, and the [Portfolio Builder](/tools/portfolio-builder/) helps turn your values into an allocation. For work across causes, see the [Cause Atlas](/record/cause-atlas/) and the [Gap Map](/record/gap-map/).

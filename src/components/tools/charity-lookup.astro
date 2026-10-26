@@ -1,7 +1,7 @@
 ---
 // Charity Lookup: searches the Charitology Charity Index by name in the browser,
 // then hands off to the open registries only when the viewer clicks one.
-// The browser extension opens this page as /tools/charity-lookup/?q=<name>.
+// The extension uses /tools/charity-lookup/#q=<name>, keeping it out of HTTP requests.
 import { getCollection } from 'astro:content';
 import causesData from '../../data/causes.json';
 import checklist from '../../data/checklist.json';
@@ -137,8 +137,8 @@ const count = index.length;
       <p>
         <strong>Privacy.</strong> The name you type stays in your browser until you click a registry button. ProPublica and
         WHOFUNDS open with the name in their address, so clicking one sends the name to that site. The other three open without
-        it. If this page was opened with a name in its address, as the browser extension does, that name was part of the request
-        for this page.
+        it. The extension passes the name after <code>#q=</code>, which stays in your browser. Older links using
+        <code>?q=</code> still work, but include the name in the request for this page.
       </p>
     </div>
   </div>

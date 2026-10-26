@@ -8,15 +8,15 @@ statusNote: A summit needs a host, a venue, funding and a legal home. The progra
 conditions: [fragmentation, missing-profession]
 firstMilestone: A free online pilot with sessions on three Open Problems, a red-team session and a failure session, all recorded and published.
 help:
-  - Open an issue labeled program:summit proposing a working session built around one open problem.
-  - If your institution could host an online pilot or an in-person summit, open an issue labeled program:summit.
+  - Open an issue labeled program proposing a working session built around one open problem.
+  - If your institution could host an online pilot or an in-person summit, open an issue labeled program.
   - Suggest ways to bring in people from the communities charity serves, not only funders and experts.
 related: [/open-problems/, /open-problems/the-fragmentation-question/, /record/progress-report/, /programs/red-team/]
 ---
 
 ## What it is
 
-Each cause has grown its own experts, and studying the system that connects them is nobody’s job. The Charitology Summit would gather people once a year around that shared system: researchers, funders, nonprofit staff and the people charity serves, from every cause and every moral framework.
+Experts work across many causes and disciplines; this proposal would give them a shared place to examine the system that connects their work. The Charitology Summit would gather people once a year around that shared system: researchers, funders, nonprofit staff and the people charity serves, from every cause and every moral framework.
 
 ## How it works
 
@@ -26,7 +26,7 @@ Attendance would be free or low-cost, with travel support for people from the co
 
 ## Why it matters for the system
 
-The [Fragmentation Problem](/diagnosis/fragmentation/) persists partly because nothing in the system rewards coordination, so organizations working on the same problem have little reason to sit down together. A summit built around shared problems would give them one, and a place to start sharing data and dividing work.
+The [Fragmentation Problem](/diagnosis/fragmentation/) raises the question of when shared information and incentives help organizations coordinate. A summit built around shared problems would give them one, and a place to start sharing data and dividing work.
 
 It would also treat the [Missing Profession](/diagnosis/missing-profession/). A field needs somewhere its people can meet, argue and recognize each other’s work. A yearly summit could be where a new field starts to know itself.
 

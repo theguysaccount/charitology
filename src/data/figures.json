@@ -7,59 +7,110 @@
     "label": "Given to U.S. charities in 2025",
     "sources": [
       {
-        "title": "Giving USA: $617.2B Was Given To Nonprofits During 2025",
-        "publisher": "The NonProfit Times, reporting Giving USA 2026",
+        "title": "Giving USA: charitable giving rose to $617.20 billion in 2025",
+        "publisher": "Giving USA Foundation",
         "year": 2026,
-        "url": "https://thenonprofittimes.com/npt_articles/giving-usa-617-2-b-was-given-to-nonprofits-during-2025/"
-      },
-      {
-        "title": "Key takeaways from Giving USA’s 2026 report on philanthropy",
-        "publisher": "Foundation Source",
-        "year": 2026,
-        "url": "https://foundationsource.com/blog/key-takeaways-from-giving-usas-2026-report-on-philanthropy/"
+        "url": "https://givingusa.org/giving-usa-charitable-giving-rose-to-617-20-billion-in-2025-surpassing-the-600-billion-mark-for-the-first-time/"
       }
     ]
   },
   "bySource": {
     "year": 2025,
     "rows": [
-      { "name": "Individuals", "billions": 394.2, "share": 64 },
-      { "name": "Foundations", "billions": 117.15, "share": 19 },
-      { "name": "Bequests", "billions": 62.19, "share": 10 },
-      { "name": "Corporations", "billions": 43.67, "share": 7 }
+      {
+        "name": "Individuals",
+        "billions": 394.2,
+        "share": 64
+      },
+      {
+        "name": "Foundations",
+        "billions": 117.15,
+        "share": 19
+      },
+      {
+        "name": "Bequests",
+        "billions": 62.19,
+        "share": 10
+      },
+      {
+        "name": "Corporations",
+        "billions": 43.67,
+        "share": 7
+      }
     ],
-    "note": "Giving USA 2026 estimates. Shares are rounded by Giving USA."
+    "note": "Giving USA 2026 estimates. Shares are rounded from the amounts in its 2026 press release."
   },
   "byRecipient": {
     "year": 2025,
     "rows": [
-      { "name": "Religion", "billions": 151.58 },
-      { "name": "Education", "billions": 92.01 },
-      { "name": "Public-society benefit", "billions": 72.06 },
-      { "name": "Environment and animals", "billions": 24.57 }
+      {
+        "name": "Religion",
+        "billions": 151.58
+      },
+      {
+        "name": "Human services",
+        "billions": 99.5
+      },
+      {
+        "name": "Education",
+        "billions": 92.01
+      },
+      {
+        "name": "To foundations",
+        "billions": 79.05
+      },
+      {
+        "name": "Public-society benefit",
+        "billions": 72.06
+      },
+      {
+        "name": "Health",
+        "billions": 61.43
+      },
+      {
+        "name": "International affairs",
+        "billions": 33.02
+      },
+      {
+        "name": "Arts, culture and humanities",
+        "billions": 27.31
+      },
+      {
+        "name": "Environment and animals",
+        "billions": 24.57
+      }
     ],
-    "note": "Giving USA reports nine recipient subsectors by type of organization. These four are the 2025 figures published in the coverage cited here. The other subsectors are left out rather than guessed."
+    "note": "Giving USA 2026 estimates for all nine recipient subsectors, classified by type of organization. Giving to individuals and unallocated giving are separate categories, so these rows do not sum to the headline total. These are not depth classifications.",
+    "sources": [
+      {
+        "title": "Giving USA: charitable giving rose to $617.20 billion in 2025",
+        "publisher": "Giving USA Foundation",
+        "year": 2026,
+        "url": "https://givingusa.org/giving-usa-charitable-giving-rose-to-617-20-billion-in-2025-surpassing-the-600-billion-mark-for-the-first-time/"
+      }
+    ]
   },
   "dafs": {
     "year": 2024,
-    "assetsBillions": 326,
-    "grantsBillions": 64.9,
-    "contributionsBillions": 89.6,
+    "assetsBillions": 326.45,
+    "grantsBillions": 64.89,
+    "contributionsBillions": 89.64,
     "payoutRate": 25.3,
     "sources": [
       {
-        "title": "DAF Assets Soar 30% to $326 Billion",
-        "publisher": "The Chronicle of Philanthropy, reporting the Annual DAF Report 2025 by the DAF Research Collaborative",
+        "title": "The Annual DAF Report 2025, Table 3 and data methods",
+        "publisher": "Donor Advised Fund Research Collaborative",
         "year": 2025,
-        "url": "https://www.philanthropy.com/news/daf-assets-soar-30-to-326-billion/"
+        "url": "https://scholarworks.indianapolis.iu.edu/server/api/core/bitstreams/8f309b9f-da38-433e-8c33-bc1b3d1f9a1a/content"
       },
       {
-        "title": "The Annual DAF Report 2025",
+        "title": "Report // Annual DAF Report 2025",
         "publisher": "Johnson Center for Philanthropy",
         "year": 2025,
         "url": "https://johnsoncenter.org/resource/report-annual-daf-report-2025/"
       }
-    ]
+    ],
+    "note": "Fiscal year 2024 estimates across sponsors with different year-end dates. Some 2024 figures are imputed. The aggregate payout rate divides current-year grants by previous year-end assets; it does not describe every account."
   },
   "costPerLife": {
     "low": 3000,

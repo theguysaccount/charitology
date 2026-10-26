@@ -25,8 +25,8 @@ Humanity’s Checklist makes the larger argument plainly. Most of the world’s 
 
 ## This is a hypothesis
 
-Charitology’s founding hypothesis is that the charity system as a whole is weighted toward symptoms. **Nobody has measured this.** No public dataset classifies the world’s giving by [source depth](/method/#depth): relief, repair, prevention, structure, source. Measuring it is [Open Problem 1, the Depth Census](/open-problems/the-depth-census/). If the census finds the mix is already balanced, this condition comes off the list. That is what makes it science.
+Charitology’s founding hypothesis is that the charity system as a whole is weighted toward symptoms. **Charitology has not established the current mix.** The project has not produced a public dataset classifying the world’s giving by [source depth](/method/#depth): relief, repair, prevention, structure, source. Measuring it is [Open Problem 1, the Depth Census](/open-problems/the-depth-census/). A census can describe the mix. Deciding whether it is balanced also requires an explicit standard for what mix would serve the goals being considered. Evidence against the hypothesis should change or remove the condition.
 
 ## No one is to blame
 
-Relief is not a lesser good. People need to eat tonight, and relief is the only thing that helps them tonight. The question is the mix. A system that funds only relief will be funding the same relief forever.
+Relief is not a lesser good. People need to eat tonight, and immediate help matters. The question is the mix. A system should also ask what would prevent recurring needs, without assuming every need can be eliminated.

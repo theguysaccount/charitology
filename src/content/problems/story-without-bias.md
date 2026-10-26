@@ -10,7 +10,7 @@ bounty: "Unfunded. The Question Bounties program will attach prizes once it is f
 
 ## Why it matters
 
-The [Story Bias](/diagnosis/story-bias/) is one of the best-documented conditions on the list. Telling people about it doesn’t switch it off. The fix has to work with human attention, not against it.
+The [Story Bias](/diagnosis/story-bias/) draws on attention research, including findings whose strength and replication remain debated. In the classic study, explaining the bias did not increase donations to statistical appeals. The fix has to work with human attention, not against it.
 
 ## Where to start
 

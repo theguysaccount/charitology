@@ -1,7 +1,7 @@
 ---
 title: The charity system
 chapter: 2
-summary: Charity is a system with five stages, from givers to outcomes, joined by a feedback loop that is mostly missing and surrounded by a field that nobody is trained to steer. This chapter maps the system and shows where each condition of the Diagnosis acts.
+summary: Charity is a system with five stages, from givers to outcomes, joined by feedback that may be incomplete. It proposes a shared craft connecting existing professions. This chapter maps the system and shows where each condition of the Diagnosis acts.
 sources:
   - title: 'Giving USA: $617.2B Was Given To Nonprofits During 2025'
     publisher: The NonProfit Times, reporting Giving USA 2026
@@ -35,6 +35,10 @@ sources:
     publisher: Donella Meadows, The Sustainability Institute
     year: 1999
     url: https://www.donellameadows.org/archives/leverage-points-places-to-intervene-in-a-system/
+  - title: Annual DAF Report 2025, full report
+    publisher: Donor Advised Fund Research Collaborative, Indiana University repository
+    year: 2025
+    url: https://scholarworks.indianapolis.iu.edu/server/api/core/bitstreams/8f309b9f-da38-433e-8c33-bc1b3d1f9a1a/content
 ---
 
 ## A system produces what it is built to produce
@@ -59,13 +63,13 @@ The map has five stages, a loop that should connect the last stage to the first,
 
 In most of economic life, information flows back. When you buy a phone, the price, the reviews and your own experience tell you and everyone else whether it was worth it. A product that fails loses customers.
 
-Charity breaks that loop at its root. The person who pays is usually not the person served. In 1980 the legal scholar Henry Hansmann described the general problem as *contract failure*: the people paying for a service cannot easily judge its quality. Donors funding services for other people cannot see what their money did. Fay Twersky, Phil Buchanan and Valerie Threlfall made the comparison with business in 2013: a company that ignores its customers watches its sales fall, but the people a charity serves often have few alternatives and are not the ones paying, so a weak program can carry on.
+Donor-funded services can interrupt that loop. The person who pays is usually not the person served. In 1980 the legal scholar Henry Hansmann described the general problem as *contract failure*: the people paying for a service cannot easily judge its quality. Donors funding services for other people may struggle to assess quality or results. Fay Twersky, Phil Buchanan and Valerie Threlfall made the comparison with business in 2013: a company that ignores its customers watches its sales fall, but the people a charity serves often have few alternatives and are not the ones paying, so a weak program can carry on.
 
-The result is that the signals reaching givers are not results. They are whatever is easy to show. That is why Charitology treats [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/) as the root condition. Almost every other condition grows in the space it leaves open.
+Charitology hypothesizes that this can favor visible signals over harder-to-observe results. This is why it treats [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/) as the root condition. Whether that mechanism causes other conditions is a further hypothesis.
 
 ## The field around it
 
-Around the five stages sits the field: the people and knowledge that could steer the system as a whole. There are scholars of philanthropy, evaluators, advisors and researchers in every cause. What is missing is a shared craft whose subject is the system itself, with methods, training and standards. That is [the Missing Profession](/diagnosis/missing-profession/), and it is the reason this book exists.
+Around the five stages sits the field: the people and knowledge that could steer the system as a whole. There are scholars of philanthropy, evaluators, advisors and researchers in every cause. Charitology proposes a shared craft connecting that existing work across causes and moral frameworks. The need for, and effect of, such a craft must be tested. That is [the Missing Profession](/diagnosis/missing-profession/), and it is the reason this book exists.
 
 ## Where the conditions act
 

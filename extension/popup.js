@@ -61,7 +61,8 @@ fetch('checklist.json')
 document.getElementById('lookup').addEventListener('submit', (e) => {
   e.preventDefault();
   const q = input.value.trim();
-  const url = `${SITE}/tools/charity-lookup/${q ? `?q=${encodeURIComponent(q)}` : ''}`;
+  // URL fragments stay in the browser; the page title is not sent to the host.
+  const url = `${SITE}/tools/charity-lookup/${q ? `#q=${encodeURIComponent(q)}` : ''}`;
   api.tabs.create({ url });
   window.close();
 });

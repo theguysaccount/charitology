@@ -8,9 +8,12 @@ depth: 4
 lessons:
   - A precise, shared goal (zero cases) let thousands of organizations and governments coordinate around one measurable target.
   - Surveillance and ring vaccination, which meant finding cases and vaccinating everyone around them, beat trying to vaccinate everyone everywhere. Learning which approach worked mattered as much as the money.
-  - Ending a problem at its source removes the need to fund its symptoms forever.
+  - Eradication can end recurring disease and treatment, while preparedness and safe handling of laboratory stocks still need support.
 conditions: [fragmentation, short-horizon]
 sources:
+  - title: Smallpox
+    publisher: World Health Organization
+    url: https://www.who.int/health-topics/smallpox
   - title: 'Smallpox: A Great and Terrible Scourge, “Success”'
     publisher: U.S. National Library of Medicine
     url: https://nlm.nih.gov/exhibition/smallpox/sp_success.html
@@ -21,11 +24,11 @@ sources:
 
 ## What happened
 
-Efforts to eliminate smallpox go back to the 1950s, and in 1967 the World Health Organization launched an intensified eradication program. Instead of trying to vaccinate everyone everywhere, teams increasingly found each case and vaccinated the people around it, an approach called surveillance and containment. The last naturally occurring case was a hospital cook named Ali Maow Maalin in Merca, Somalia, in October 1977. He recovered. On 8 May 1980 the World Health Assembly declared smallpox eradicated.
+Efforts to eliminate smallpox go back to the 1950s, and in 1967 the World Health Organization launched an intensified eradication program. Alongside widespread vaccination, teams increasingly found each case and vaccinated the people around it, an approach called surveillance and containment. The last naturally occurring case was recorded in Somalia in 1977. On 8 May 1980 the World Health Assembly declared smallpox eradicated.
 
 ## Why it’s a source-level case
 
-Most health spending treats disease case by case, year after year. Eradication removed the source. No one has needed to treat smallpox, or to fund its treatment, since then. On the depth scale this is a **source** (level 4) outcome for one disease. The campaign was a feat of [coordination](/diagnosis/fragmentation/) as much as of medicine.
+Eradication ended naturally occurring smallpox. WHO still oversees laboratory stocks, research on vaccines and treatments, and emergency preparedness, so the disease has not disappeared from public health budgets. On the depth scale Charitology describes the end of natural transmission as a **source** (level 4) outcome for one disease. The campaign was a feat of [coordination](/diagnosis/fragmentation/) as much as of medicine.
 
 ## What carries over
 
