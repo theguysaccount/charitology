@@ -2610,9 +2610,29 @@ function renderData() {
             throw new Error("Choose a JSON organization backup first.");
           if (selected.size > 64 * 1024 * 1024)
             throw new Error("The backup exceeds the 64 MiB import limit.");
+          status.textContent = "Reading the selected backup…";
+          let text, readTimeout;
+          try {
+            text = await Promise.race([
+              selected.text(),
+              new Promise((_, reject) => {
+                readTimeout = setTimeout(
+                  () =>
+                    reject(
+                      new Error(
+                        "Reading this file timed out. Choose a fresh local copy and preview it again. No saved records were changed.",
+                      ),
+                    ),
+                  30000,
+                );
+              }),
+            ]);
+          } finally {
+            clearTimeout(readTimeout);
+          }
           let backup;
           try {
-            backup = JSON.parse(await selected.text());
+            backup = JSON.parse(text);
           } catch {
             throw new Error(
               "This file is not valid JSON. The saved workspace has not changed.",
@@ -2625,6 +2645,7 @@ function renderData() {
             throw new Error(
               "The parsed import request exceeds the service’s 64 MiB limit.",
             );
+          status.textContent = "Checking the backup with the shared service…";
           const result = await api.previewImport(state.org, { backup });
           state.importPreview = { org: state.org, id: result.previewId };
           renderImportPreview(previewTarget, result, async () => {
@@ -2654,6 +2675,7 @@ function renderData() {
             file.value = "";
             toast("Reviewed backup imported.");
           });
+          status.textContent = "Review the preview below.";
         },
         event.currentTarget,
         status,
