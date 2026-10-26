@@ -1,0 +1,215 @@
+---
+import ResearchWorkspace from "./ResearchWorkspace.astro";
+import { researchProgramCatalog } from "../../lib/research-program-catalog";
+import { url } from "../../lib/site";
+const { interventions } = await researchProgramCatalog();
+const fields = [
+  { key: "title", label: "Review question", required: true, group: "Protocol" },
+  {
+    key: "population",
+    label: "Population and setting",
+    required: true,
+    group: "Protocol",
+  },
+  {
+    key: "intervention",
+    label: "Intervention and comparison",
+    type: "textarea" as const,
+    required: true,
+    group: "Protocol",
+  },
+  {
+    key: "outcome",
+    label: "Primary outcome and time horizon",
+    required: true,
+    group: "Protocol",
+  },
+  {
+    key: "search",
+    label: "Databases, full search strings and search date",
+    type: "textarea" as const,
+    required: true,
+    group: "Search and selection",
+  },
+  {
+    key: "inclusion",
+    label: "Inclusion and exclusion rules",
+    type: "textarea" as const,
+    required: true,
+    group: "Search and selection",
+  },
+  {
+    key: "selection",
+    label: "Records found, screened, excluded and included",
+    type: "textarea" as const,
+    group: "Search and selection",
+    hint: "Record counts and exclusion reasons. Do not treat a missing result as a zero effect.",
+  },
+  {
+    key: "source",
+    label: "Primary study or review URL",
+    type: "url" as const,
+    required: true,
+    group: "Study extraction",
+  },
+  {
+    key: "design",
+    label: "Study design",
+    type: "select" as const,
+    required: true,
+    group: "Study extraction",
+    options: [
+      { value: "randomized", label: "Randomized evaluation" },
+      { value: "quasi", label: "Quasi-experimental evaluation" },
+      { value: "observational", label: "Observational study" },
+      { value: "qualitative", label: "Qualitative study" },
+      { value: "systematic", label: "Systematic review" },
+      { value: "other", label: "Other / specify in notes" },
+    ],
+  },
+  {
+    key: "sample",
+    label: "Sample, assignment and follow-up",
+    type: "textarea" as const,
+    group: "Study extraction",
+  },
+  {
+    key: "effect",
+    label: "Effect estimate, unit and uncertainty",
+    type: "textarea" as const,
+    required: true,
+    group: "Study extraction",
+    hint: "Include comparison, follow-up period, confidence interval or standard error, and table/page. Write unknown where the paper does not report it.",
+  },
+  {
+    key: "bias",
+    label: "Bias, missing data and selective reporting",
+    type: "textarea" as const,
+    required: true,
+    group: "Critical appraisal",
+  },
+  {
+    key: "transfer",
+    label: "What would need to hold in a new setting?",
+    type: "textarea" as const,
+    group: "Critical appraisal",
+  },
+  {
+    key: "conflicts",
+    label: "Funding, conflicts and author reply",
+    type: "textarea" as const,
+    group: "Critical appraisal",
+  },
+  {
+    key: "synthesis",
+    label: "What the studies agree on, disagree on and leave unknown",
+    type: "textarea" as const,
+    required: true,
+    group: "Synthesis",
+  },
+  {
+    key: "next",
+    label: "Next study or check that could change the conclusion",
+    type: "textarea" as const,
+    group: "Synthesis",
+  },
+];
+---
+
+<section
+  class="tool"
+  id="er-catalog"
+  data-entries={JSON.stringify(interventions)}
+>
+  <h2>Start from the published evidence register</h2><p>
+    Read an existing intervention and its primary sources, then use it to scope
+    a review. These entries remain editorial drafts; opening a source is not a
+    completed review.
+  </p><div class="field">
+    <label for="er-select">Intervention</label><select id="er-select"
+      ><option value="">Choose an intervention</option>{
+        interventions.map((entry) => (
+          <option value={entry.id}>
+            {entry.title} · {entry.evidence}
+          </option>
+        ))
+      }</select>
+  </div><div id="er-detail" class="result"></div><button
+    class="btn btn-ghost"
+    type="button"
+    id="er-start"
+    disabled>Use this as a review starting point</button
+  ><p class="note">
+    For several studies, save one extraction per study with the same review
+    question. Export all records to keep the selection log and synthesis
+    together. The workspace does not run a literature search or calculate a
+    pooled effect.
+  </p><p>
+    <a href={url("/record/evidence-library/")}>Search the Evidence Library</a> ·
+    <a href={url("/record/encyclopedia/randomized-controlled-trials/")}
+      >Read the methods debate</a>
+  </p>
+</section>
+<ResearchWorkspace
+  id="evidence-reviews"
+  title="Evidence review desk"
+  description="Define a reproducible question and search, extract a study, examine its limits and write a synthesis that preserves disagreement."
+  fields={fields}
+/>
+<script>
+  import { h, clear } from "../../lib/client/dom";
+  const root = document.getElementById("er-catalog")!;
+  const entries = JSON.parse(root.dataset.entries!);
+  const select = document.getElementById("er-select") as HTMLSelectElement;
+  const button = document.getElementById("er-start") as HTMLButtonElement;
+  const box = document.getElementById("er-detail")!;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  select.addEventListener("change", () => {
+    clear(box);
+    const entry = entries.find((item: any) => item.id === select.value);
+    button.disabled = !entry;
+    if (!entry) return;
+    box.append(
+      h("h3", {}, h("a", { href: base + entry.href }, entry.title)),
+      h("p", {}, entry.summary),
+      h(
+        "p",
+        { class: "note" },
+        `Record evidence grade: ${entry.evidence}. Depth ${entry.depth} is descriptive, not a rating.`,
+      ),
+    );
+    const list = h("ul");
+    entry.sources.forEach((source: any) =>
+      list.append(
+        h(
+          "li",
+          {},
+          h(
+            "a",
+            { href: source.url, target: "_blank", rel: "noopener" },
+            source.title,
+          ),
+        ),
+      ),
+    );
+    box.append(list);
+  });
+  button.addEventListener("click", () => {
+    const entry = entries.find((item: any) => item.id === select.value);
+    if (!entry) return;
+    document
+      .getElementById("workspace-evidence-reviews")!
+      .dispatchEvent(
+        new CustomEvent("research:prefill", {
+          detail: {
+            title: `Review: ${entry.title}`,
+            intervention: entry.mechanism,
+            source: entry.sources[0]?.url ?? "",
+          },
+        }),
+      );
+    document
+      .getElementById("workspace-evidence-reviews")!
+      .scrollIntoView({ block: "start" });
+  });
+</script>

@@ -1,0 +1,309 @@
+---
+import { researchProgramCatalog } from "../../lib/research-program-catalog";
+import { url } from "../../lib/site";
+import ResearchWorkspace from "./ResearchWorkspace.astro";
+const { cases } = await researchProgramCatalog();
+const ordered = [...cases].sort(
+  (a, b) =>
+    Number(a.era.match(/\d{4}/)?.[0] ?? 9999) -
+    Number(b.era.match(/\d{4}/)?.[0] ?? 9999),
+);
+const fields = [
+  {
+    key: "title",
+    label: "Historical comparison question",
+    required: true,
+    group: "Comparison",
+  },
+  {
+    key: "first",
+    label: "First case",
+    type: "select" as const,
+    required: true,
+    group: "Comparison",
+    options: cases.map((entry) => ({ value: entry.id, label: entry.title })),
+  },
+  {
+    key: "second",
+    label: "Second case",
+    type: "select" as const,
+    required: true,
+    group: "Comparison",
+    options: cases.map((entry) => ({ value: entry.id, label: entry.title })),
+  },
+  {
+    key: "question",
+    label: "What mechanism or claim are you comparing?",
+    type: "textarea" as const,
+    required: true,
+    group: "Comparison",
+  },
+  {
+    key: "source",
+    label: "Primary source URL checked",
+    type: "url" as const,
+    required: true,
+    group: "Evidence",
+  },
+  {
+    key: "similar",
+    label: "Relevant similarities",
+    type: "textarea" as const,
+    required: true,
+    group: "Evidence",
+  },
+  {
+    key: "different",
+    label: "Differences in context, implementation and time",
+    type: "textarea" as const,
+    required: true,
+    group: "Evidence",
+  },
+  {
+    key: "missing",
+    label: "Missing perspectives and missing records",
+    type: "textarea" as const,
+    required: true,
+    group: "Evidence",
+  },
+  {
+    key: "lesson",
+    label: "Conditional lesson and what could contradict it",
+    type: "textarea" as const,
+    required: true,
+    group: "Interpretation",
+  },
+  {
+    key: "next",
+    label: "Next archive, source or comparison to examine",
+    type: "textarea" as const,
+    group: "Interpretation",
+  },
+];
+---
+
+<section class="tool" id="hc-browser" data-cases={JSON.stringify(ordered)}>
+  <h2>A comparative history desk</h2><p>
+    Browse {cases.length} sourced case studies in date order. Case outcomes and depth
+    classifications are this project’s draft descriptions; source links let you challenge
+    them.
+  </p><div class="hc-controls">
+    <div class="field">
+      <label for="hc-search">Search title, place or period</label><input
+        id="hc-search"
+        type="search"
+      />
+    </div><div class="field">
+      <label for="hc-kind">Reported outcome</label><select id="hc-kind"
+        ><option value="">All outcomes</option><option value="success"
+          >Success</option
+        ><option value="mixed">Mixed</option><option value="failure"
+          >Failure</option
+        ></select>
+    </div><div class="field">
+      <label for="hc-depth">Depth</label><select id="hc-depth"
+        ><option value="">All depths</option>{
+          ["Relief", "Repair", "Prevention", "Structure", "Source"].map(
+            (name, i) => (
+              <option value={i}>
+                {i} · {name}
+              </option>
+            ),
+          )
+        }</select>
+    </div>
+  </div><p class="note" id="hc-count" role="status"></p><ol class="hc-timeline">
+    {
+      ordered.map((entry) => (
+        <li
+          data-history-card
+          data-search={`${entry.title} ${entry.place} ${entry.era}`.toLowerCase()}
+          data-kind={entry.kind}
+          data-depth={entry.depth}
+        >
+          <>
+            <span class="hc-era">{entry.era}</span>
+            <div>
+              <>
+                <h3>
+                  <a href={url(entry.href)}>{entry.title}</a>
+                </h3>
+                <p>{entry.summary}</p>
+                <p class="note">
+                  {entry.place} · {entry.kind} · depth {entry.depth}{" "}
+                  (hypothesis) · draft
+                </p>
+                <details>
+                  <>
+                    <summary>Lessons and sources</summary>
+                    <ul>
+                      {entry.lessons.map((lesson) => (
+                        <li>{lesson}</li>
+                      ))}
+                    </ul>
+                    <ul>
+                      {entry.sources.map((source) => (
+                        <li>
+                          <a href={source.url} target="_blank" rel="noopener">
+                            {source.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                </details>
+                <button
+                  class="btn btn-ghost btn-small"
+                  type="button"
+                  data-compare-case={entry.id}
+                >
+                  Use as first comparison case
+                </button>
+              </>
+            </div>
+          </>
+        </li>
+      ))
+    }
+  </ol><p id="hc-empty" hidden>No case matches these filters.</p><div
+    class="btn-row"
+  >
+    <button class="btn btn-ghost btn-small" id="hc-reset" type="button"
+      >Reset filters</button
+    ><button class="btn btn-ghost btn-small" id="hc-export" type="button"
+      >Export visible reading list</button>
+  </div><p class="note">
+    Ordering uses the first four-digit year in each period label. A timeline is
+    not a causal test. Compare sources and counterfactual explanations before
+    carrying a lesson to a new setting.
+  </p>
+</section>
+<ResearchWorkspace
+  id="history-of-charity"
+  title="Historical comparison notebook"
+  description="Connect two cases through a specific question, examine differences and preserve what the surviving evidence cannot show."
+  fields={fields}
+/>
+<style>
+  .hc-controls {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1rem;
+  }
+  .hc-timeline {
+    list-style: none;
+    padding: 0 !important;
+  }
+  .hc-timeline > li {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 1.5rem;
+    border-top: 1px solid var(--rule);
+    padding: 1rem 0;
+  }
+  .hc-timeline > li[hidden] {
+    display: none;
+  }
+  .hc-timeline h3 {
+    margin-top: 0;
+  }
+  .hc-era {
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+  }
+  summary {
+    cursor: pointer;
+  }
+  .hc-timeline button {
+    margin-top: 0.7rem;
+  }
+  @media (max-width: 650px) {
+    .hc-controls {
+      grid-template-columns: 1fr;
+    }
+    .hc-timeline > li {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+  }
+</style>
+<script>
+  import { download } from "../../lib/client/files";
+  const root = document.getElementById("hc-browser")!,
+    entries = JSON.parse(root.dataset.cases!),
+    cards = [...root.querySelectorAll<HTMLElement>("[data-history-card]")],
+    search = document.getElementById("hc-search") as HTMLInputElement,
+    kind = document.getElementById("hc-kind") as HTMLSelectElement,
+    depth = document.getElementById("hc-depth") as HTMLSelectElement;
+  const filter = () => {
+    const q = search.value.trim().toLowerCase();
+    let count = 0;
+    cards.forEach((card) => {
+      card.hidden = !(
+        (card.dataset.search ?? "").includes(q) &&
+        (!kind.value || card.dataset.kind === kind.value) &&
+        (!depth.value || card.dataset.depth === depth.value)
+      );
+      if (!card.hidden) count++;
+    });
+    document.getElementById("hc-count")!.textContent =
+      `${count} of ${cards.length} case studies shown.`;
+    document.getElementById("hc-empty")!.hidden = count > 0;
+  };
+  [search, kind, depth].forEach((el) =>
+    el.addEventListener(el === search ? "input" : "change", filter),
+  );
+  filter();
+  document.getElementById("hc-reset")!.addEventListener("click", () => {
+    search.value = "";
+    kind.value = "";
+    depth.value = "";
+    filter();
+  });
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-compare-case]")
+    .forEach((button) =>
+      button.addEventListener("click", () => {
+        const entry = entries.find(
+          (item: any) => item.id === button.dataset.compareCase,
+        );
+        const workspace = document.getElementById(
+          "workspace-history-of-charity",
+        )!;
+        workspace.dispatchEvent(
+          new CustomEvent("research:prefill", {
+            detail: {
+              first: entry.id,
+              title: `Comparison beginning with ${entry.title}`,
+              source: entry.sources[0]?.url ?? "",
+            },
+          }),
+        );
+        workspace.scrollIntoView({ block: "start" });
+      }),
+    );
+  document.getElementById("hc-export")!.addEventListener("click", () => {
+    const visible = new Set(
+      cards
+        .filter((card) => !card.hidden)
+        .map(
+          (card) =>
+            card.querySelector<HTMLButtonElement>("[data-compare-case]")!
+              .dataset.compareCase,
+        ),
+    );
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+    download(
+      "charity-history-reading-list.md",
+      "# Charity history reading list\n\nDraft Record entries; descriptions and classifications are open to challenge.\n\n" +
+        entries
+          .filter((entry: any) => visible.has(entry.id))
+          .map(
+            (entry: any) =>
+              `## ${entry.era}: ${entry.title}\n\n${entry.summary}\n\nRecord: ${new URL(base + entry.href, location.origin).href}\n\n${entry.sources.map((source: any) => `- ${source.title}: ${source.url}`).join("\n")}`,
+          )
+          .join("\n\n"),
+      "text/markdown;charset=utf-8",
+    );
+  });
+</script>

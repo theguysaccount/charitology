@@ -2,9 +2,9 @@
 title: History of Charity
 group: Research
 order: 9
-summary: Studies what worked, what failed and what was mixed across centuries of giving, so today’s choices can draw on long-run evidence that no annual report can provide.
-status: seeded
-statusNote: The Historical Case Studies collection is open, starting with the eradication of smallpox. New cases are added by pull request.
+summary: Browse a sourced historical timeline and compare cases through their mechanisms, contexts, missing records and conditional lessons.
+status: live
+statusNote: Live filters, a source-linked timeline and a comparison notebook cover the current 13 draft cases. Broader historical coverage and independent source review remain open.
 conditions: [short-horizon, silence-about-failure]
 firstMilestone: Twenty sourced case studies spanning at least four centuries and five world regions, with successes, failures and mixed results all represented.
 help:
@@ -21,6 +21,12 @@ sources:
     year: 2013
     url: https://socialwelfare.library.vcu.edu/organizations/charity-organization-societies-1877-1893/
 ---
+
+## Use the live research desk
+
+Filter the timeline by period or place, reported outcome and depth. Open the lessons and source links, then compare two different cases in the [notebook](#workspace-history-of-charity). A timeline does not establish causation. Record differences and missing perspectives before carrying a lesson into a new setting.
+
+Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 
 ## What it is
 

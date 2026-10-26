@@ -3,10 +3,10 @@ title: The charity system
 chapter: 2
 summary: Charity is a system with five stages, from givers to outcomes, joined by feedback that may be incomplete. It proposes a shared craft connecting existing professions. This chapter maps the system and shows where each condition of the Diagnosis acts.
 sources:
-  - title: 'Giving USA: $617.2B Was Given To Nonprofits During 2025'
-    publisher: The NonProfit Times, reporting Giving USA 2026
+  - title: 'Giving USA: charitable giving rose to $617.20 billion in 2025'
+    publisher: Giving USA Foundation
     year: 2026
-    url: https://thenonprofittimes.com/npt_articles/giving-usa-617-2-b-was-given-to-nonprofits-during-2025/
+    url: https://givingusa.org/giving-usa-charitable-giving-rose-to-617-20-billion-in-2025-surpassing-the-600-billion-mark-for-the-first-time/
   - title: Key takeaways from Giving USA’s 2026 report on philanthropy
     publisher: Foundation Source
     year: 2026

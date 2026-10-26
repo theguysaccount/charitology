@@ -1,42 +1,7 @@
 ---
-import { getCollection } from 'astro:content';
-import Badges from '../Badges.astro';
-import { url } from '../../lib/site';
-
-const entries = (await getCollection('interventions')).sort((a, b) => a.data.depth - b.data.depth || a.data.title.localeCompare(b.data.title));
+import RecordLibrary from "./RecordLibrary.astro";
+import { buildReferenceLibrary } from "../../lib/record-library";
+const library = await buildReferenceLibrary("interventions");
 ---
 
-<div class="table-wrap iv">
-  <table class="data">
-    <thead>
-      <tr><th>Intervention</th><th>Depth</th><th>Evidence</th><th>Time to effect</th><th>Lasts</th><th>Cost data</th></tr>
-    </thead>
-    <tbody>
-      {
-        entries.map((e) => (
-          <tr>
-            <td>
-              <a href={url(`/record/interventions/${e.id}/`)}>{e.data.title}</a>
-            </td>
-            <td><Badges depth={e.data.depth} /></td>
-            <td>{e.data.evidence}</td>
-            <td>{e.data.timeToEffect}</td>
-            <td>{e.data.durability}</td>
-            <td>{e.data.cost ? `$${e.data.cost.low.toLocaleString('en-US')}–$${e.data.cost.high.toLocaleString('en-US')} per ${e.data.cost.outcome.split(' (')[0]}` : 'Not published'}</td>
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
-</div>
-
-<style>
-  .iv {
-    margin-top: 2rem;
-  }
-  .iv :global(.badge) {
-    border: 0;
-    padding: 0;
-    background: none;
-  }
-</style>
+<RecordLibrary library={library} />

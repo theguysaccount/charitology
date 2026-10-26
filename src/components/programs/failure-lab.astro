@@ -1,0 +1,205 @@
+---
+import ResearchWorkspace from "./ResearchWorkspace.astro";
+import { researchProgramCatalog } from "../../lib/research-program-catalog";
+import { url } from "../../lib/site";
+const { cases } = await researchProgramCatalog();
+const entries = cases.filter((entry) => entry.kind !== "success");
+const fields = [
+  {
+    key: "title",
+    label: "Postmortem title",
+    required: true,
+    group: "What was tried",
+  },
+  {
+    key: "source",
+    label: "Public source URL",
+    type: "url" as const,
+    required: true,
+    group: "What was tried",
+  },
+  {
+    key: "intent",
+    label: "Intended outcome and theory of change",
+    type: "textarea" as const,
+    required: true,
+    group: "What was tried",
+  },
+  {
+    key: "timeline",
+    label: "Timeline of decisions and observations",
+    type: "textarea" as const,
+    required: true,
+    group: "What was tried",
+  },
+  {
+    key: "observed",
+    label: "What was observed, with source page/table",
+    type: "textarea" as const,
+    required: true,
+    group: "What happened",
+  },
+  {
+    key: "counterfactual",
+    label: "Comparison and alternative explanations",
+    type: "textarea" as const,
+    required: true,
+    group: "What happened",
+  },
+  {
+    key: "mechanism",
+    label: "Proposed failure mechanism",
+    type: "select" as const,
+    required: true,
+    group: "What was learned",
+    options: [
+      { value: "causal-chain", label: "A link in the causal chain failed" },
+      { value: "implementation", label: "Implementation or maintenance" },
+      { value: "context", label: "Context or scale changed the effect" },
+      { value: "incentives", label: "Incentives or feedback" },
+      { value: "displacement", label: "Displaced another useful activity" },
+      { value: "measurement", label: "Measurement or reporting error" },
+      { value: "unknown", label: "Unknown / multiple mechanisms" },
+    ],
+  },
+  {
+    key: "confidence",
+    label: "Support for this mechanism",
+    type: "select" as const,
+    required: true,
+    group: "What was learned",
+    options: [
+      { value: "hypothesis", label: "Hypothesis to test" },
+      { value: "documented", label: "Documented in linked evidence" },
+      { value: "debated", label: "Debated / conflicting evidence" },
+    ],
+  },
+  {
+    key: "lesson",
+    label: "What should change, and what should not be generalized?",
+    type: "textarea" as const,
+    required: true,
+    group: "What was learned",
+  },
+  {
+    key: "action",
+    label: "Next corrective action",
+    required: true,
+    group: "Follow-up",
+  },
+  {
+    key: "owner",
+    label: "Responsible team or role",
+    group: "Follow-up",
+    hint: "Use a role, not personal information about people served.",
+  },
+  {
+    key: "due",
+    label: "Follow-up date",
+    type: "date" as const,
+    group: "Follow-up",
+  },
+  {
+    key: "verification",
+    label: "How will you check that the change helped?",
+    type: "textarea" as const,
+    required: true,
+    group: "Follow-up",
+  },
+  {
+    key: "result",
+    label: "Follow-up observation and unresolved questions",
+    type: "textarea" as const,
+    group: "Follow-up",
+  },
+];
+---
+
+<section class="tool" id="fl-cases" data-entries={JSON.stringify(entries)}>
+  <h2>Learn from a documented case</h2><p>
+    The archive includes unsuccessful and mixed results. A case is evidence
+    about a program and setting, not a verdict on people or the worth of a
+    cause.
+  </p><div class="field">
+    <label for="fl-case">Case</label><select id="fl-case"
+      ><option value="">Choose a documented case</option>{
+        entries.map((entry) => (
+          <option value={entry.id}>
+            {entry.title} · {entry.kind}
+          </option>
+        ))
+      }</select>
+  </div><div id="fl-detail" class="result"></div><button
+    class="btn btn-ghost"
+    id="fl-use"
+    type="button"
+    disabled>Start a postmortem from this case</button
+  ><p>
+    <a href={url("/record/failure-archive/")}>Open the Failure Archive</a> · <a
+      href={url("/open-problems/when-charity-harms/")}
+      >Work on harm mechanisms</a>
+  </p>
+</section>
+<ResearchWorkspace
+  id="failure-lab"
+  title="Postmortem and follow-up workspace"
+  description="Separate intended outcomes, observations and explanations. Save a practical correction and a check of whether it helped. Nothing is published from this page."
+  fields={fields}
+/>
+<script>
+  import { h, clear } from "../../lib/client/dom";
+  const root = document.getElementById("fl-cases")!,
+    entries = JSON.parse(root.dataset.entries!),
+    select = document.getElementById("fl-case") as HTMLSelectElement,
+    button = document.getElementById("fl-use") as HTMLButtonElement,
+    box = document.getElementById("fl-detail")!;
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  select.addEventListener("change", () => {
+    clear(box);
+    const entry = entries.find((item: any) => item.id === select.value);
+    button.disabled = !entry;
+    if (!entry) return;
+    box.append(
+      h("h3", {}, h("a", { href: base + entry.href }, entry.title)),
+      h("p", {}, entry.summary),
+      h(
+        "p",
+        { class: "note" },
+        `${entry.era} · ${entry.place} · Editorial draft`,
+      ),
+    );
+    const list = h("ul");
+    entry.lessons.forEach((lesson: string) => list.append(h("li", {}, lesson)));
+    box.append(list);
+    const links = h("ul");
+    entry.sources.forEach((source: any) =>
+      links.append(
+        h(
+          "li",
+          {},
+          h(
+            "a",
+            { href: source.url, target: "_blank", rel: "noopener" },
+            source.title,
+          ),
+        ),
+      ),
+    );
+    box.append(links);
+  });
+  button.addEventListener("click", () => {
+    const entry = entries.find((item: any) => item.id === select.value);
+    if (!entry) return;
+    const workspace = document.getElementById("workspace-failure-lab")!;
+    workspace.dispatchEvent(
+      new CustomEvent("research:prefill", {
+        detail: {
+          title: `Postmortem: ${entry.title}`,
+          source: entry.sources[0]?.url ?? "",
+          observed: `Starting summary from the draft Record; verify against the source:\n${entry.summary}`,
+        },
+      }),
+    );
+    workspace.scrollIntoView({ block: "start" });
+  });
+</script>

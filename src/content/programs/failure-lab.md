@@ -2,9 +2,9 @@
 title: Failure Lab
 group: Research
 order: 8
-summary: Studies programs and charities that failed or did harm, finds the patterns that connect them and publishes the lessons so the field learns each one once.
-status: seeded
-statusNote: The Failure Archive is open and grows by contribution. Pattern analysis across cases begins once the archive holds enough documented entries.
+summary: Build a source-linked postmortem, test possible failure mechanisms and track a corrective action and its follow-up.
+status: live
+statusNote: Live case browsing and postmortem software are available. Archive entries remain drafts; cross-case findings and independent field investigations still need researchers and evidence.
 conditions: [silence-about-failure]
 firstMilestone: Fifty documented cases in the Failure Archive, each with public sources, and a first published analysis of the harm mechanisms they share.
 help:
@@ -22,6 +22,12 @@ sources:
     year: 2011
     url: https://alnap.org/help-library/resources/failure-report-2010-learning-from-our-mistakes/
 ---
+
+## Use the live research desk
+
+Choose a documented case as a starting point or open a blank [postmortem](#workspace-failure-lab). Separate intentions, observations and explanations. Record the proposed mechanism, its evidence label, a corrective action and how you will check it. Study the system and published actions, without judging people.
+
+Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 
 ## What it is
 

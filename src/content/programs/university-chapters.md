@@ -3,16 +3,24 @@ title: University Chapters
 group: People and education
 order: 3
 summary: Student clubs that study and practice charitology together, using a free chapter kit whose sessions also contribute real work to the field.
-status: designed
-statusNote: The charter and the outline of the chapter kit are written. The first chapters need student founders.
+status: live
+statusNote: A local chapter-launch workspace includes six facilitated session agendas, responsibilities, tasks, draft constitution and invitation, handover prompts and JSON/CSV/Markdown exports. No recognized chapters or university partnerships are claimed.
 conditions: [missing-profession, story-bias]
-firstMilestone: Three pilot chapters at different universities run the kit for one term and publish what worked and what didn’t.
+firstMilestone: Use the kit to plan a term and run a first meeting with the institution’s permission. A multi-university pilot and published results remain future work.
 help:
   - Start a pilot chapter at your university and open an issue labeled program so others can find you.
   - Draft or improve one session of the chapter kit in an issue labeled program.
   - If your student group already runs sessions on giving, share what works in an issue labeled program.
 related: [/programs/principles-course/, /tools/values-compass/, /tools/forecasting-platform/, /contribute/]
 ---
+
+## Use the chapter launch workspace
+
+[Jump to the working workspace](#pw-title).
+
+Build a term plan below. The fictional example supplies six sessions with timed agendas, readings and concrete outputs, plus launch tasks and role descriptions. Add your own dates, access arrangements and decision rules. Save each form, then export a complete Markdown kit containing the plan, a draft constitution, invitation and handover prompts. JSON restores the editable workspace; CSV opens the saved records in a spreadsheet.
+
+The kit does not register a chapter, obtain university approval or submit anything publicly. Keep private contact details elsewhere and check your institution’s rules. The network and adoption goals below remain proposals.
 
 ## What it is
 

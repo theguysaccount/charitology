@@ -1,0 +1,548 @@
+---
+import type { ReferenceLibrary } from "../../lib/record-library";
+import { absolute, url, issueUrl } from "../../lib/site";
+interface Props {
+  library: ReferenceLibrary;
+}
+const { library } = Astro.props;
+const page = absolute(`/record/${library.id}/`, Astro.site);
+const data = JSON.stringify({ ...library, page }).replace(/</g, "\\u003c");
+---
+
+<section
+  class="record-library"
+  data-record-library={library.id}
+  aria-label={library.title}
+>
+  <div class="rl-scope">
+    <strong>{library.entries.length} entries in this working collection.</strong
+    ><p>{library.notice}</p>
+  </div>
+  <form class="rl-filters" role="search" aria-label={`Search ${library.title}`}>
+    <label class="rl-search"
+      >Search titles, text and sources<input
+        name="q"
+        type="search"
+        placeholder="Find a concept, place, mechanism or source…"
+        autocomplete="off"
+      /></label
+    >
+    {
+      library.filters.map((filter) => (
+        <label>
+          {filter.label}
+          <select name={filter.key}>
+            <option value="">All</option>
+            {filter.options.map((option) => (
+              <option value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </label>
+      ))
+    }
+    <button class="btn btn-ghost btn-small" type="reset">Reset filters</button>
+  </form>
+  <div class="rl-toolbar">
+    <p data-library-count role="status" aria-live="polite" aria-atomic="true">
+      Showing {library.entries.length} of {library.entries.length} entries.
+    </p>
+    <div class="rl-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-copy-view
+        >Copy this view</button
+      ><button type="button" class="btn btn-ghost btn-small" data-export-results
+        >Export filtered JSON</button>
+    </div>
+  </div>
+  <section class="rl-reading" aria-label="Your reading list">
+    <div>
+      <strong>Reading list</strong><p class="rl-small">
+        <span data-selected-count>0</span> selected. Choices stay in this browser
+        tab, including after a reload. Use Clear list to remove them. If tab storage
+        is blocked, choices last only for this page.
+      </p>
+    </div>
+    <div class="rl-actions">
+      <button type="button" class="btn btn-small" data-download-reading disabled
+        >Download research dossier</button
+      ><button
+        type="button"
+        class="btn btn-ghost btn-small"
+        data-copy-reading
+        disabled>Copy reading-list link</button
+      >{
+        library.compare && (
+          <button
+            type="button"
+            class="btn btn-ghost btn-small"
+            data-compare
+            disabled
+          >
+            Compare selected
+          </button>
+        )
+      }<button
+        type="button"
+        class="btn btn-ghost btn-small"
+        data-clear-reading
+        disabled>Clear list</button>
+    </div>
+    {
+      library.compare && (
+        <p class="rl-small rl-wide">
+          Select two to four interventions for a field-by-field comparison. Cost
+          amounts retain their original outcome, date and caveats.
+        </p>
+      )
+    }
+  </section>
+  <p class="rl-message" data-library-message role="status" aria-live="polite">
+  </p>
+  <section
+    class="rl-comparison"
+    data-comparison
+    hidden
+    aria-label="Selected intervention comparison"
+  >
+  </section>
+  <p class="rl-empty" data-library-empty hidden>
+    No entries match these filters. Try fewer words or reset the filters.
+  </p>
+  <div class="rl-grid">
+    {
+      library.entries.map((entry) => (
+        <article id={entry.id} class="rl-card" data-record-id={entry.id}>
+          <div class="rl-card-top">
+            <>
+              <span
+                class:list={[
+                  "rl-review",
+                  { "rl-reviewed": entry.review === "reviewed" },
+                ]}
+              >
+                {entry.review === "reviewed"
+                  ? "Contributor reviewed"
+                  : "Draft · human review pending"}
+              </span>
+              <span class="rl-source-count">
+                {entry.sources.length}{" "}
+                {entry.sources.length === 1 ? "source" : "sources"}
+              </span>
+            </>
+          </div>
+          <h3>
+            <a href={url(entry.href)}>{entry.title}</a>
+          </h3>
+          <p class="rl-summary">{entry.summary}</p>
+          <dl class="rl-fields">
+            {entry.fields.slice(0, 2).map((field) => (
+              <>
+                <dt>{field.label}</dt>
+                <dd>
+                  {field.values.length
+                    ? field.values.join(" · ")
+                    : "Not recorded"}
+                </dd>
+              </>
+            ))}
+          </dl>
+          {entry.fields.length > 2 && (
+            <details class="rl-details">
+              <summary>Inspect the recorded fields</summary>
+              <dl class="rl-fields">
+                {entry.fields.slice(2).map((field) => (
+                  <>
+                    <dt>{field.label}</dt>
+                    <dd>
+                      {field.values.length > 1 ? (
+                        <ul>
+                          {field.values.map((value) => (
+                            <li>{value}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        (field.values[0] ?? "Not recorded")
+                      )}
+                    </dd>
+                  </>
+                ))}
+              </dl>
+            </details>
+          )}
+          <details class="rl-details">
+            <summary>Read the source list ({entry.sources.length})</summary>
+            {entry.sources.length ? (
+              <ol class="rl-sources">
+                {entry.sources.map((source) => (
+                  <li>
+                    <a href={source.url} rel="noopener">
+                      {source.title}
+                    </a>
+                    {(source.publisher || source.year) && (
+                      <span class="rl-small">
+                        {" "}
+                        —{" "}
+                        {[source.publisher, source.year]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </span>
+                    )}
+                    {source.note && <p class="rl-small">{source.note}</p>}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p class="rl-small">
+                No sources are recorded. This is a gap to address, not evidence
+                for the claim.
+              </p>
+            )}
+          </details>
+          {entry.links.length > 0 && (
+            <ul class="rl-links">
+              {entry.links.map((link) => (
+                <li>
+                  <a href={url(link.href)}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div class="rl-card-bottom">
+            <>
+              <label class="rl-pick">
+                <input
+                  type="checkbox"
+                  data-pick={entry.id}
+                  aria-label={`Add ${entry.title} to your reading list`}
+                />
+                Reading list
+              </label>
+              <div class="rl-actions">
+                <>
+                  <a
+                    href={url(`/record/${library.id}/#${entry.id}`)}
+                    class="rl-permalink"
+                    aria-label={`Permanent link to ${entry.title}`}
+                  >
+                    Link
+                  </a>
+                  <a
+                    href={issueUrl(
+                      "challenge",
+                      `${library.id === "charity-index" ? "Depth hypothesis" : "Record entry"}: ${entry.title}`,
+                      `${page}#${entry.id}`,
+                    )}
+                    class="rl-permalink"
+                  >
+                    Challenge
+                  </a>
+                </>
+              </div>
+            </>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+  <nav class="rl-related" aria-label="Continue your research">
+    <strong>Continue your research</strong><ul>
+      {
+        library.related.map((link) => (
+          <li>
+            <a href={url(link.href)}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <script type="application/json" data-library-data set:html={data} />
+</section>
+<script>
+  import { initializeRecordLibraries } from "../../lib/client/record-library";
+  initializeRecordLibraries();
+</script>
+<style>
+  .record-library {
+    margin: 2rem 0 3rem;
+    font-size: 0.95rem;
+    min-width: 0;
+  }
+  .record-library * {
+    box-sizing: border-box;
+  }
+  .rl-scope {
+    padding: 1rem 1.2rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-wash);
+    line-height: 1.6;
+  }
+  .rl-scope p {
+    margin: 0.5rem 0 0;
+  }
+  .rl-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: 0.85rem;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: end;
+  }
+  .rl-filters label {
+    display: grid;
+    gap: 0.35rem;
+    font: 600 0.75rem/1.4 var(--font-sans);
+  }
+  .rl-search {
+    grid-column: 1/-1;
+  }
+  .rl-filters input,
+  .rl-filters select {
+    font: 400 0.9rem/1.3 var(--font-sans);
+    height: 2.65rem;
+    width: 100%;
+    min-width: 0;
+    padding: 0.5rem 0.6rem;
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    border-radius: 4px;
+  }
+  .rl-filters .btn {
+    min-height: 2.65rem;
+  }
+  .rl-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    padding: 1rem 0;
+    font: 0.75rem/1.5 var(--font-sans);
+  }
+  .rl-toolbar p {
+    margin: 0;
+  }
+  .rl-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+  .rl-actions .btn {
+    font-size: 0.72rem;
+    padding: 0.45rem 0.65rem;
+    min-height: 2rem;
+  }
+  .rl-reading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--rule);
+    background: var(--bg-2);
+  }
+  .rl-reading p {
+    margin: 0.35rem 0 0;
+  }
+  .rl-reading strong {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+  }
+  .rl-wide {
+    flex-basis: 100%;
+  }
+  .rl-small {
+    font: 400 0.73rem/1.6 var(--font-sans);
+    color: var(--ink-3);
+  }
+  .rl-message {
+    font: 500 0.75rem/1.5 var(--font-sans);
+    min-height: 1.4rem;
+    margin: 0.5rem 0;
+  }
+  .rl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 1rem;
+    min-width: 0;
+  }
+  .rl-card {
+    padding: 1.2rem;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    scroll-margin-top: calc(var(--header-h) + 20px);
+  }
+  .rl-card:target {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .rl-card[hidden],
+  .rl-empty[hidden],
+  .rl-comparison[hidden] {
+    display: none;
+  }
+  .rl-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font: 500 0.64rem/1.4 var(--font-sans);
+    color: var(--ink-3);
+  }
+  .rl-review {
+    border: 1px solid var(--rule);
+    padding: 0.2rem 0.35rem;
+    border-radius: 3px;
+  }
+  .rl-reviewed {
+    color: var(--good-text);
+  }
+  .rl-card h3 {
+    font: 600 1.45rem/1.25 var(--font-display);
+    margin: 0.85rem 0 0.6rem;
+    letter-spacing: -0.02em;
+  }
+  .rl-card h3 a {
+    text-decoration: none;
+  }
+  .rl-card h3 a:hover {
+    text-decoration: underline;
+  }
+  .rl-summary {
+    margin: 0 0 0.75rem;
+    line-height: 1.6;
+  }
+  .rl-fields {
+    margin: 0 0 0.6rem;
+  }
+  .rl-fields dt {
+    font: 600 0.67rem/1.4 var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-3);
+    margin: 0.7rem 0 0.25rem;
+  }
+  .rl-fields dd {
+    margin: 0;
+    line-height: 1.6;
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+  .rl-fields dd ul {
+    padding-left: 1rem;
+    margin: 0;
+  }
+  .rl-fields dd li + li {
+    margin-top: 0.4rem;
+  }
+  .rl-details {
+    margin: 0.4rem 0 0.5rem;
+  }
+  .rl-details summary {
+    font: 500 0.75rem/1.5 var(--font-sans);
+    cursor: pointer;
+    color: var(--ink-2);
+  }
+  .rl-sources {
+    margin: 0.6rem 0 0;
+    padding-left: 1.2rem;
+    font-size: 0.8rem;
+  }
+  .rl-sources li + li {
+    margin-top: 0.7rem;
+  }
+  .rl-sources p {
+    margin: 0.3rem 0;
+  }
+  .rl-links {
+    display: flex;
+    gap: 0.4rem 0.8rem;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0;
+    font: 500 0.72rem/1.6 var(--font-sans);
+  }
+  .rl-links li {
+    margin: 0;
+  }
+  .rl-card-bottom {
+    margin-top: auto;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rl-pick {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    font: 500 0.73rem/1.5 var(--font-sans);
+    cursor: pointer;
+  }
+  .rl-pick input {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: var(--accent);
+  }
+  .rl-permalink {
+    font: 500 0.7rem/1.5 var(--font-sans);
+  }
+  .rl-related {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    font: 500 0.8rem/1.6 var(--font-sans);
+  }
+  .rl-related ul {
+    padding-left: 1.2rem;
+  }
+  .rl-empty {
+    border: 1px dashed var(--rule);
+    padding: 1.25rem;
+  }
+  .rl-comparison {
+    border: 1px solid var(--rule);
+    padding: 1rem;
+    margin: 0 0 1.5rem;
+    overflow-x: auto;
+  }
+  .rl-comparison :global(table) {
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    width: 100%;
+    min-width: 34rem;
+  }
+  .rl-comparison :global(th),
+  .rl-comparison :global(td) {
+    vertical-align: top;
+    padding: 0.65rem;
+    border: 1px solid var(--rule);
+    min-width: 12rem;
+    white-space: normal;
+  }
+  .rl-comparison :global(th:first-child) {
+    min-width: 8rem;
+  }
+  .rl-comparison :global(h3) {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+  }
+  .rl-comparison :global(p) {
+    font-size: 0.8rem;
+  }
+  .rl-comparison :global(caption) {
+    text-align: left;
+    margin-bottom: 0.8rem;
+    font: 400 0.72rem/1.5 var(--font-sans);
+  }
+</style>

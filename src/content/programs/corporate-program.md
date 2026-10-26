@@ -3,10 +3,10 @@ title: Corporate Program
 group: Reach
 order: 4
 summary: Redesigns workplace giving and gift matching so they fund flexibly, report what gifts achieved and recognize results rather than size.
-status: designed
-statusNote: The charter and draft design principles are written. The first pilot needs a company willing to try them and publish what happens.
+status: live
+statusNote: A workplace matching calculator compares capped equal-gift scenarios, administration costs, budget shortfalls and participation sensitivity, alongside an editable policy and review checklist. It does not process gifts, payroll or establish company pilots.
 conditions: [restriction-reflex, prestige-economy]
-firstMilestone: A final set of design principles for workplace giving, piloted at one company that publishes its before-and-after results.
+firstMilestone: Export a concrete policy draft with explicit matching assumptions and an oversubscription rule for human review. A company pilot and published results remain future work.
 help:
   - If you run workplace giving or matching at a company, open an issue labeled program to talk about a pilot.
   - Share the rules of a matching program you know, with any public documents, so designs can be compared.
@@ -18,6 +18,16 @@ sources:
     year: 2026
     url: https://thenonprofittimes.com/npt_articles/giving-usa-617-2-b-was-given-to-nonprofits-during-2025/
 ---
+
+## Use the workplace policy workspace
+
+[Jump to the working workspace](#pw-title).
+
+Draft eligibility, flexible-funding, privacy and feedback rules below. Compare matching scenarios using eligible employees, participation, average gift, match ratio, employer cap, administration cost and total budget. Participants are rounded down to whole people, and each modeled participant makes the same average gift. The calculator applies the employer cap per person before adding matches.
+
+Each scenario shows employee gifts, employer cost, budget headroom or shortfall and a participation sensitivity of ten percentage points in each direction. An oversubscribed scenario stays oversubscribed until you choose and disclose a policy response; the tool does not silently reduce promised matches. These are planning assumptions, not observed participation or outcomes.
+
+Export a policy kit and review tasks as Markdown, the inputs and calculations as CSV or an editable JSON backup. No money moves and no recipient’s eligibility is determined here. The company-pilot program below remains proposed.
 
 ## What it is
 

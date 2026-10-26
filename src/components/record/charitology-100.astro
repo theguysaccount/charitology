@@ -1,0 +1,362 @@
+---
+import { url } from "../../lib/site";
+---
+
+<section id="hundred-lab">
+  <h2>Nomination and method lab</h2><p>
+    Prepare a source-linked nomination and challenge the criteria. This tool
+    does not rank, endorse or approve organizations. The public rating gate
+    remains closed until independent red-team review. A complete packet is ready
+    for discussion, not a recommendation.
+  </p><form id="nomination-form">
+    <label
+      >Public activity or research title<input
+        name="title"
+        maxlength="180"
+        required
+      /></label
+    ><label
+      >Who or what is being considered?<input
+        name="subject"
+        maxlength="180"
+        required
+      /></label
+    ><label
+      >Depth described<select name="depth"
+        ><option value="unknown">Unclassified or disputed</option><option
+          >0 · Relief</option
+        ><option>1 · Repair</option><option>2 · Prevention</option><option
+          >3 · Structure</option
+        ><option>4 · Source</option><option
+          >Multiple levels; explain below</option
+        ></select
+      ></label
+    ><label
+      >Mechanism and why that description fits<textarea
+        name="mechanism"
+        maxlength="5000"
+        required
+        rows="3"></textarea></label
+    ><label
+      >Relevant moral lenses and disagreements<textarea
+        name="lenses"
+        maxlength="5000"
+        required
+        rows="3"></textarea></label
+    ><label
+      >Evidence, dates, outcome units and public HTTPS sources<textarea
+        name="evidence"
+        maxlength="10000"
+        required
+        rows="4"></textarea></label
+    ><label
+      >Additional funding: use, limits and unknowns<textarea
+        name="funding"
+        maxlength="5000"
+        required
+        rows="3"></textarea></label
+    ><label
+      >Affected communities: agency, consent and missing voices<textarea
+        name="voice"
+        maxlength="5000"
+        required
+        rows="3"></textarea></label
+    ><label
+      >Strongest objection and what would change the claim<textarea
+        name="objection"
+        maxlength="5000"
+        required
+        rows="3"></textarea></label
+    ><label
+      >Conflicts of interest, including none known or unknown<textarea
+        name="conflicts"
+        maxlength="3000"
+        required
+        rows="2"></textarea></label
+    ><div class="lab-actions">
+      <button class="btn" type="submit">Save nomination</button><button
+        class="btn btn-ghost"
+        type="button"
+        id="nomination-new">Start another</button>
+    </div>
+  </form><p id="nomination-status" role="status"></p><div id="nomination-list">
+  </div><div class="lab-actions">
+    <button class="btn" id="nomination-export"
+      >Download nomination packets</button
+    ><button class="btn btn-ghost" id="nomination-json"
+      >Export JSON backup</button
+    ><label class="btn btn-ghost"
+      >Preview backup import<input
+        type="file"
+        id="nomination-import"
+        accept="application/json,.json"
+      /></label>
+  </div><div id="nomination-preview" hidden>
+    <p id="nomination-preview-note"></p><button
+      class="btn"
+      id="nomination-replace">Replace with previewed backup</button
+    ><button class="btn btn-ghost" id="nomination-cancel">Cancel import</button>
+  </div><h3>What public review must decide</h3><ol>
+    <li>
+      Whether any list should be ranked at all, given disagreement across values
+      and outcome units.
+    </li><li>
+      What evidence supports activity-level depth labels and how dissent is
+      preserved.
+    </li><li>
+      How funding limits, harms, agency, conflicts and excluded alternatives
+      change a recommendation.
+    </li><li>
+      Who can review, appeal or withdraw an entry, and how corrections reach
+      people who relied on it.
+    </li>
+  </ol><p>
+    <a href={url("/programs/red-team/")}>Challenge the method in public</a>.
+    Public submission is a separate, deliberate action through GitHub; this
+    browser form sends nothing.
+  </p>
+</section>
+<script>
+  import { download } from "../../lib/client/files";
+  import { guardedDraft } from "../../lib/client/guarded-draft";
+  import { validateNominations as valid } from "../../lib/client/completion-models";
+  const root = document.querySelector("#hundred-lab");
+  if (root) {
+    const draft = guardedDraft("charitology-nominations-v1");
+    const form = root.querySelector<HTMLFormElement>("form")!;
+    const fields = [
+      "title",
+      "subject",
+      "depth",
+      "mechanism",
+      "lenses",
+      "evidence",
+      "funding",
+      "voice",
+      "objection",
+      "conflicts",
+    ];
+    type Row = { id: string; [key: string]: string };
+    let rows: Row[] = [];
+    let editing = "";
+    let pending: Row[] | null = null;
+    let writable = true;
+    let undo: Row[] | null = null;
+    const status = root.querySelector<HTMLElement>("#nomination-status")!;
+    try {
+      const raw = draft.read();
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (!valid(data)) throw Error();
+        rows = data;
+      }
+    } catch {
+      writable = false;
+      status.textContent =
+        "Stored data unreadable or saving unavailable; it is left untouched. Export any new work before leaving.";
+    }
+    function persist() {
+      try {
+        if (!writable) throw Error();
+        draft.write(JSON.stringify(rows));
+        status.textContent =
+          "Saved locally. No public review or recommendation has been completed.";
+      } catch (err) {
+        status.textContent =
+          (err instanceof Error && err.message
+            ? err.message + " "
+            : "Saving unavailable. ") +
+          "Export a backup of this tab before leaving. Existing stored data is untouched.";
+      }
+    }
+    function render() {
+      const list = root!.querySelector("#nomination-list")!;
+      list.replaceChildren();
+      if (!rows.length) {
+        const p = document.createElement("p");
+        p.textContent =
+          "No nominations saved. Create the first source-linked packet above.";
+        list.append(p);
+      }
+      for (const row of rows) {
+        const card = document.createElement("article");
+        card.className = "nomination-card";
+        const h = document.createElement("h3");
+        h.textContent = row.title;
+        const p = document.createElement("p");
+        p.textContent = `${row.subject} · ${row.depth} · Editorial draft; not reviewed`;
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "btn btn-small btn-ghost";
+        edit.textContent = "Edit packet";
+        edit.onclick = () => {
+          editing = row.id;
+          for (const f of fields)
+            (form.elements.namedItem(f) as HTMLInputElement).value = row[f];
+          form.scrollIntoView({ block: "start" });
+        };
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "btn btn-small btn-ghost";
+        del.textContent = "Delete packet";
+        let armed = false;
+        del.onclick = () => {
+          if (!armed) {
+            armed = true;
+            del.textContent = "Confirm delete";
+            return;
+          }
+          undo = [...rows];
+          rows = rows.filter((r) => r.id !== row.id);
+          if (editing === row.id) {
+            editing = "";
+            form.reset();
+          }
+          persist();
+          render();
+        };
+        card.append(h, p, edit, document.createTextNode(" "), del);
+        list.append(card);
+      }
+      if (undo) {
+        const btn = document.createElement("button");
+        btn.textContent = "Undo last deletion or import";
+        btn.className = "btn btn-small";
+        btn.onclick = () => {
+          rows = undo!;
+          undo = null;
+          persist();
+          render();
+        };
+        list.append(btn);
+      }
+    }
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const row = Object.fromEntries(
+        fields.map((f) => [
+          f,
+          (form.elements.namedItem(f) as HTMLInputElement).value.trim(),
+        ]),
+      ) as Row;
+      row.id = editing || crypto.randomUUID();
+      if (!valid([row])) {
+        status.textContent = "Complete every field within its stated length.";
+        return;
+      }
+      if (!editing && rows.length >= 100) {
+        status.textContent =
+          "The local workspace holds up to 100 packets. Export and start a separate batch.";
+        return;
+      }
+      undo = null;
+      rows = editing
+        ? rows.map((r) => (r.id === editing ? row : r))
+        : [...rows, row];
+      editing = "";
+      form.reset();
+      persist();
+      render();
+    });
+    root.querySelector("#nomination-new")!.addEventListener("click", () => {
+      editing = "";
+      form.reset();
+    });
+    root
+      .querySelector("#nomination-json")!
+      .addEventListener("click", () =>
+        download(
+          "charitology-nominations.json",
+          JSON.stringify(rows, null, 2),
+          "application/json",
+        ),
+      );
+    root
+      .querySelector("#nomination-export")!
+      .addEventListener("click", () =>
+        download(
+          "charitology-nomination-packets.md",
+          "# Nomination packets\n\nEditorial drafts, not rankings, recommendations or approved reviews.\n\n" +
+            rows
+              .map((r) => fields.map((f) => `## ${f}\n${r[f]}`).join("\n\n"))
+              .join("\n\n---\n\n"),
+        ),
+      );
+    root
+      .querySelector<HTMLInputElement>("#nomination-import")!
+      .addEventListener("change", async (e) => {
+        const input = e.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+        try {
+          if (file.size > 24000000) throw Error("Backup exceeds 24 MB.");
+          const value = JSON.parse(await file.text());
+          if (!valid(value))
+            throw Error("Invalid backup fields or duplicate IDs.");
+          pending = value;
+          root!.querySelector<HTMLElement>("#nomination-preview")!.hidden =
+            false;
+          root!.querySelector("#nomination-preview-note")!.textContent =
+            `Preview: ${pending.length} packets will replace ${rows.length} current packets. Export the current backup first if needed. No source review is imported or granted.`;
+        } catch (err) {
+          pending = null;
+          status.textContent =
+            err instanceof Error ? err.message : "Invalid import";
+        }
+        input.value = "";
+      });
+    root.querySelector("#nomination-replace")!.addEventListener("click", () => {
+      if (!pending) return;
+      undo = [...rows];
+      rows = pending;
+      pending = null;
+      editing = "";
+      form.reset();
+      root!.querySelector<HTMLElement>("#nomination-preview")!.hidden = true;
+      persist();
+      render();
+    });
+    root.querySelector("#nomination-cancel")!.addEventListener("click", () => {
+      pending = null;
+      root!.querySelector<HTMLElement>("#nomination-preview")!.hidden = true;
+    });
+    render();
+  }
+</script>
+<style>
+  #hundred-lab {
+    margin-block: 2rem;
+  }
+  form {
+    display: grid;
+    gap: 1rem;
+  }
+  label {
+    display: grid;
+    gap: 0.35rem;
+    font: 0.9rem var(--font-sans);
+  }
+  input,
+  textarea,
+  select {
+    width: 100%;
+  }
+  .lab-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  #hundred-lab :global(.nomination-card) {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  #hundred-lab :global(.nomination-card h3) {
+    margin-top: 0;
+  }
+  input[type="file"] {
+    max-width: 230px;
+  }
+</style>

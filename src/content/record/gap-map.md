@@ -3,7 +3,8 @@ title: "The Gap Map"
 group: "Flagship references"
 order: 5
 summary: "Where charitable money goes, and a question for the Depth Census: how much reaches the sources of problems?"
-status: seeded
+status: live
+statusNote: "Financial baseline charts and a local depth census with classification coverage, undo and validated backups. No global depth estimate is claimed."
 conditions: ["symptom-trap", "story-bias", "parked-money"]
 firstMilestone: "The first published estimate of giving by depth, from the Depth Census."
 help:
@@ -13,6 +14,4 @@ help:
 related: ["/open-problems/the-depth-census/", "/record/state-of-charity/", "/record/cause-atlas/"]
 ---
 
-Giving is tracked by who gives and by what kind of organization receives. Both views are below, from published estimates. Charitology has not yet assembled an estimate by its own **depth** scale: how much money treats symptoms and how much reaches sources.
-
-That missing axis is the gap. Until the [Depth Census](/open-problems/the-depth-census/) measures it, the bars for it stay empty, on purpose.
+Use the published U.S. financial baseline alongside a local depth-census workspace. The worksheet records actual activities, money and classification rationales, retains unclassified money and exports the sample for another contributor to inspect. A personal sample does not fill the global evidence gap.

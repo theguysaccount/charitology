@@ -3,10 +3,10 @@ title: Local Charitology
 group: Reach
 order: 2
 summary: Applies the Charitology method to one city’s giving, mapping where local money goes by cause and depth and where organizations overlap or leave gaps.
-status: designed
-statusNote: The charter is written. A pilot city map needs local volunteers and data work.
+status: live
+statusNote: A local research workspace records a geographic scope, sourced needs and activities, tentative depth descriptions and listening questions, then exports a methods-first brief. It is not a completed city census or a rating service.
 conditions: [proximity-pull, fragmentation]
-firstMilestone: A published map of one pilot city’s charitable organizations by cause and depth, built from public filings, with its method and its blind spots stated.
+firstMilestone: Create and check one public-data research brief with stated boundaries, source dates and blind spots. A published pilot-city map and community review still need local researchers.
 help:
   - Volunteer to map your city by opening an issue labeled program.
   - Help build a mapping method from public filings that other cities can reuse.
@@ -23,6 +23,14 @@ sources:
     publisher: WHOFUNDS
     url: https://theguysaccount.github.io/whofunds-open-grant-graph/
 ---
+
+## Use the local research workspace
+
+[Jump to the working workspace](#pw-title).
+
+Set your boundary, population, question and search method below. Record needs with dates, denominators and public sources. Describe activities by mechanism and tentative depth, then track unanswered questions and whose input is missing. The summary counts only the activities you entered; it cannot describe the whole city.
+
+Export a Markdown brief with methods, sources, limitations and a listening guide, or CSV for further mapping. JSON backs up the editable notebook. Nothing is submitted or published. Store only aggregate public information. A missing record is not evidence that no work exists. The wider city-mapping program below remains proposed.
 
 ## What it is
 

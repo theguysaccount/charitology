@@ -1,28 +1,41 @@
 ---
-import { getCollection, render } from 'astro:content';
-import Entry from '../../layouts/Entry.astro';
-import Badges from '../../components/Badges.astro';
-import CatalogAside from '../../components/CatalogAside.astro';
+import { getCollection, render } from "astro:content";
+import Entry from "../../layouts/Entry.astro";
+import Badges from "../../components/Badges.astro";
+import CatalogAside from "../../components/CatalogAside.astro";
+
+const views = import.meta.glob<{ default: any }>(
+  "../../components/programs/*.astro",
+  { eager: true },
+);
 
 export async function getStaticPaths() {
-  const entries = await getCollection('programs');
-  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  const entries = await getCollection("programs");
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
 }
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const View = views[`../../components/programs/${entry.id}.astro`]?.default;
 ---
 
 <Entry
   title={entry.data.title}
   eyebrow={`Program · ${entry.data.group}`}
   summary={entry.data.summary}
-  crumbs={[{ label: 'Programs', href: '/programs/' }, { label: entry.data.title }]}
+  crumbs={[
+    { label: "Programs", href: "/programs/" },
+    { label: entry.data.title },
+  ]}
   filePath={entry.filePath}
   review={entry.data.review}
   sources={entry.data.sources}
 >
   <Badges slot="badges" status={entry.data.status} />
   <Content />
+  {View && <View />}
   <CatalogAside slot="aside" entry={entry} />
 </Entry>

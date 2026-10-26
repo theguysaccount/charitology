@@ -2,9 +2,9 @@
 title: Cause Census
 group: Research
 order: 4
-summary: Maps every cause area by how big the problem is, how few resources it gets and how solvable it looks, with the sources and judgments behind each estimate.
-status: seeded
-statusNote: The Cause Atlas places 17 cause areas on five editorial dimensions. Sourced estimates of scale, neglectedness and solvability are the next layer, and contributions are open.
+summary: Explore coverage of 17 cause areas and capture source-linked estimates with units, years, uncertainty and value assumptions.
+status: live
+statusNote: Live cause filters and evidence-capture software are available. Existing mappings are editorial hypotheses; a complete global funding or depth census has not been produced.
 conditions: [symptom-trap, story-bias]
 firstMilestone: Sourced estimates of scale, neglectedness and solvability for all 17 cause areas in the Cause Atlas, each with its framework assumptions stated.
 help:
@@ -19,6 +19,12 @@ sources:
     url: https://80000hours.org/articles/problem-framework/
 ---
 
+## Use the live research desk
+
+Filter the cause map by text and proposed upstream source, then start a [census observation](#workspace-cause-census). Record a primary source, coverage, unit, reference year and uncertainty. A blank value stays unknown; a reported zero stays zero. The map counts entries in this Record, not global need or funding.
+
+Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
+
 ## What it is
 
 The Cause Census maps every cause area Charitology tracks, from global health to arts and culture. For each cause it aims to answer the three questions that 80,000 Hours sets out in its framework for comparing global problems: how big is the problem, how neglected is it and how much would more effort solve? The census adds a fourth question of its own: where on the [depth scale](/method/#depth) does the money already going to this cause act?
@@ -31,7 +37,7 @@ Every estimate would carry its assumptions, and scale needs the most care. A pro
 
 ## Why it matters for the system
 
-The [Story Bias](/diagnosis/story-bias/) sends money where attention goes, and attention follows faces and headlines more than size. A public census would put the size of each problem next to the attention it gets, so a giver can see the gap for themselves.
+The [Story Bias](/diagnosis/story-bias/) asks how faces and headlines might pull attention away from the scale of a need. That mechanism is debated; it should be tested rather than assumed. A public census would put the size of each problem next to the attention it gets, so a giver can see the gap for themselves.
 
 The depth question treats the [Symptom Trap](/diagnosis/symptom-trap/). Within each cause, the census would ask how much money goes to relief and how much to work on sources. That is the [Depth Census](/open-problems/the-depth-census/) carried out one cause at a time. Charitology has not established that mix; the census would provide a baseline.
 

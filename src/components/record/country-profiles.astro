@@ -1,0 +1,390 @@
+---
+import countries from "../../data/countries.json";
+import { url } from "../../lib/site";
+const regions = [...new Set(countries.countries.map((c) => c.region))].sort();
+---
+
+<section id="country-desk" data-countries={JSON.stringify(countries)}>
+  <h2>Country data desk</h2>
+  <p>
+    Search {countries.countries.length} countries and economies. This is a reproducible
+    statistical snapshot, not a locally authored needs assessment or a list of places
+    to donate. Observations may have different years. Missing data stays unknown.
+  </p>
+  <div class="country-controls">
+    <label
+      >Search countries<input
+        id="country-search"
+        type="search"
+        placeholder="Name or country code"
+      /></label
+    ><label
+      >Region<select id="country-region"
+        ><option value="">All regions</option>{
+          regions.map((r) => <option>{r}</option>)
+        }</select
+      ></label
+    ><button id="country-reset" type="button" class="btn btn-ghost"
+      >Reset filters</button
+    >
+  </div>
+  <p id="country-count" role="status"></p>
+  <div class="country-controls">
+    <label
+      >First country<select id="country-a"
+        >{
+          countries.countries.map((c) => (
+            <option value={c.id} selected={c.id === "KEN"}>
+              {c.name}
+            </option>
+          ))
+        }</select
+      ></label
+    ><label
+      >Compare with<select id="country-b"
+        ><option value="">No comparison</option>{
+          countries.countries.map((c) => <option value={c.id}>{c.name}</option>)
+        }</select
+      ></label
+    >
+  </div>
+  <div id="country-comparison" class="table-wrap"></div>
+  <p class="note">
+    Source: World Bank World Development Indicators and the original statistical
+    producers linked below. Snapshot retrieved {countries.retrieved}; latest
+    non-empty observations in 2020–2025. Rounded only for display; exports
+    retain source values. National averages can hide differences within a
+    country. No combined need score is calculated.
+  </p>
+  <div class="country-controls">
+    <button id="country-csv" class="btn">Download comparison CSV</button><button
+      id="country-note"
+      class="btn btn-ghost">Download research brief</button
+    >
+  </div>
+  <details>
+    <summary>Local context worksheet</summary><p>
+      These notes remain in this browser. Add public sources and consented
+      perspectives; do not enter personal details about the people a program
+      serves. Writing notes does not establish local coauthorship or review.
+    </p><label
+      >What do people living here identify as priorities?<textarea
+        id="country-voices"
+        maxlength="10000"
+        rows="4"></textarea></label
+    ><label
+      >Institutions, funding and public sources to investigate<textarea
+        id="country-institutions"
+        maxlength="10000"
+        rows="4"></textarea></label
+    ><label
+      >What the national data misses<textarea
+        id="country-gaps"
+        maxlength="10000"
+        rows="4"></textarea></label
+    ><p id="country-storage" role="status"></p>
+  </details>
+  <ul id="country-list" class="country-list">
+    {
+      countries.countries.map((c) => (
+        <li
+          id={`country=${c.id}`}
+          data-country={c.id}
+          data-region={c.region}
+          data-name={`${c.name} ${c.id} ${c.iso2}`.toLowerCase()}
+        >
+          <a href={url(`/record/countries/${c.id.toLowerCase()}/`)}>{c.name}</a>{" "}
+          <>
+            <span class="note">{c.region}</span>
+            <button
+              type="button"
+              data-open={c.id}
+              class="btn btn-small btn-ghost"
+            >
+              Explore {c.id}
+            </button>
+          </>
+        </li>
+      ))
+    }
+  </ul>
+  <p id="country-empty" hidden>
+    No matching countries. Try a shorter search or reset the region.
+  </p>
+  <details>
+    <summary
+      >Indicator definitions, original producers and retrieval links</summary
+    >{
+      countries.indicators.map((i) => (
+        <section>
+          <>
+            <h3>
+              <a href={i.url}>{i.label}</a>
+            </h3>
+            <p>{i.definition}</p>
+            <p>{i.note}</p>
+            <p class="note">{i.organization}</p>
+            <a href={i.apiUrl}>
+              Exact API query · source updated {i.lastUpdated}
+            </a>
+          </>
+        </section>
+      ))
+    }
+  </details>
+</section>
+<script>
+  import { download, toCsv } from "../../lib/client/files";
+  import { guardedDraft } from "../../lib/client/guarded-draft";
+  const root = document.querySelector<HTMLElement>("#country-desk");
+  if (root) {
+    const data = JSON.parse(root.dataset.countries!);
+    const countries = data.countries as any[];
+    const indicators = data.indicators as any[];
+    const a = root.querySelector<HTMLSelectElement>("#country-a")!;
+    const b = root.querySelector<HTMLSelectElement>("#country-b")!;
+    const q = root.querySelector<HTMLInputElement>("#country-search")!;
+    const region = root.querySelector<HTMLSelectElement>("#country-region")!;
+    const draft = guardedDraft("charitology-country-notes-v1");
+    const notes = ["voices", "institutions", "gaps"];
+    let memory: Record<string, Record<string, string>> = {};
+    let persistent = true;
+    try {
+      const raw = draft.read();
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (
+          !parsed ||
+          typeof parsed !== "object" ||
+          Array.isArray(parsed) ||
+          Object.keys(parsed).some(
+            (k) =>
+              !countries.some((c) => c.id === k) ||
+              !parsed[k] ||
+              typeof parsed[k] !== "object" ||
+              notes.some(
+                (n) =>
+                  typeof parsed[k][n] !== "string" ||
+                  parsed[k][n].length > 10000,
+              ),
+          )
+        )
+          throw Error();
+        memory = parsed;
+      }
+    } catch {
+      persistent = false;
+    }
+    const storage = root.querySelector<HTMLElement>("#country-storage")!;
+    function save() {
+      memory[a.value] = Object.fromEntries(
+        notes.map((n) => [
+          n,
+          root!.querySelector<HTMLTextAreaElement>("#country-" + n)!.value,
+        ]),
+      );
+      try {
+        if (!persistent) throw Error();
+        draft.write(JSON.stringify(memory));
+        storage.textContent =
+          "Notes saved in this browser. Download a brief for a portable backup.";
+      } catch (error) {
+        storage.textContent =
+          (error instanceof Error
+            ? error.message
+            : "Browser saving unavailable.") +
+          " Your changes remain in this tab; download the research brief before leaving.";
+      }
+    }
+    function selected() {
+      return [
+        countries.find((c) => c.id === a.value),
+        countries.find((c) => c.id === b.value),
+      ].filter(Boolean);
+    }
+    function render() {
+      const cs = selected();
+      const table = document.createElement("table");
+      table.className = "data";
+      const cap = table.createCaption();
+      cap.textContent = "Country comparison — values and observation years";
+      const head = table.createTHead().insertRow();
+      for (const t of ["Indicator", ...cs.map((c) => c.name)]) {
+        const th = document.createElement("th");
+        th.textContent = t;
+        th.scope = "col";
+        head.append(th);
+      }
+      const body = table.createTBody();
+      for (const i of indicators) {
+        const row = body.insertRow();
+        const th = document.createElement("th");
+        th.textContent = i.label + " (" + i.unit + ")";
+        th.scope = "row";
+        row.append(th);
+        for (const c of cs) {
+          const v = c.values[i.id];
+          const td = row.insertCell();
+          td.textContent = v
+            ? `${v.value.toLocaleString("en-US", { maximumFractionDigits: i.unit === "people" ? 0 : 2 })} · ${v.year}${v.status ? " · status " + v.status : ""}`
+            : "Unknown in snapshot";
+          if (v?.footnote)
+            td.append(document.createTextNode(" · " + v.footnote));
+        }
+      }
+      root!.querySelector("#country-comparison")!.replaceChildren(table);
+      for (const n of notes)
+        root!.querySelector<HTMLTextAreaElement>("#country-" + n)!.value =
+          memory[a.value]?.[n] || "";
+      storage.textContent = persistent
+        ? "Notes stay in this browser."
+        : "Browser saving unavailable or stored notes unreadable. Download a backup before leaving.";
+      const params = new URLSearchParams();
+      params.set("country", a.value);
+      if (b.value) params.set("compare", b.value);
+      history.replaceState(null, "", "#" + params);
+    }
+    function filter() {
+      const words = q.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      let count = 0;
+      root!.querySelectorAll<HTMLElement>("[data-country]").forEach((el) => {
+        el.hidden = !(
+          words.every((w) => el.dataset.name!.includes(w)) &&
+          (!region.value || el.dataset.region === region.value)
+        );
+        if (!el.hidden) count++;
+      });
+      root!.querySelector("#country-count")!.textContent =
+        `${count} countries and economies shown`;
+      root!.querySelector<HTMLElement>("#country-empty")!.hidden = count !== 0;
+    }
+    a.addEventListener("change", render);
+    b.addEventListener("change", render);
+    q.addEventListener("input", filter);
+    region.addEventListener("change", filter);
+    root.querySelector("#country-reset")!.addEventListener("click", () => {
+      q.value = "";
+      region.value = "";
+      filter();
+    });
+    notes.forEach((n) =>
+      root.querySelector("#country-" + n)!.addEventListener("input", save),
+    );
+    root.querySelectorAll<HTMLButtonElement>("[data-open]").forEach((el) =>
+      el.addEventListener("click", () => {
+        a.value = el.dataset.open!;
+        render();
+        a.scrollIntoView({ block: "center" });
+        a.focus();
+      }),
+    );
+    root.querySelector("#country-csv")!.addEventListener("click", () => {
+      const rows = selected().flatMap((c) =>
+        indicators.map((i) => ({
+          country: c.name,
+          code: c.id,
+          indicator: i.id,
+          label: i.label,
+          unit: i.unit,
+          value: c.values[i.id]?.value ?? "",
+          year: c.values[i.id]?.year ?? "",
+          status: c.values[i.id]?.status ?? "",
+          footnote: c.values[i.id]?.footnote ?? "",
+          source: i.url,
+          retrieved: data.retrieved,
+        })),
+      );
+      download(
+        "charitology-country-comparison.csv",
+        toCsv(rows),
+        "text/csv;charset=utf-8",
+      );
+    });
+    root.querySelector("#country-note")!.addEventListener("click", () => {
+      save();
+      const c = selected()[0];
+      const brief = [
+        `# Research brief: ${c.name}`,
+        "Statistical snapshot; not locally coauthored, not reviewed, not a donation recommendation.",
+        `Retrieved ${data.retrieved}.`,
+        ...indicators.map((i) => {
+          const v = c.values[i.id];
+          return `- ${i.label}: ${v ? v.value + " " + i.unit + " (" + v.year + ")" : "Unknown"}.${v?.footnote ? " Observation note: " + v.footnote + "." : ""}${v?.status ? " Observation status: " + v.status + "." : ""} Interpretation: ${i.note} Source: ${i.url}`;
+        }),
+        ...notes.map(
+          (n) => `\n## ${n}\n${memory[c.id]?.[n] || "Not recorded."}`,
+        ),
+        "\n## Before publication\nAsk local coauthors to check the framing, within-country differences, public source interpretation and whose voices are absent. Obtain independent source review.",
+      ].join("\n");
+      download("country-" + c.id.toLowerCase() + "-research-brief.md", brief);
+    });
+    const params = new URLSearchParams(location.hash.slice(1));
+    if (countries.some((c) => c.id === params.get("country")))
+      a.value = params.get("country")!;
+    if (countries.some((c) => c.id === params.get("compare")))
+      b.value = params.get("compare")!;
+    render();
+    filter();
+  }
+</script>
+<style>
+  .country-controls {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    align-items: end;
+    margin: 1rem 0;
+  }
+  .country-controls label {
+    flex: 1;
+    min-width: min(100%, 180px);
+  }
+  label {
+    display: grid;
+    gap: 0.3rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+  }
+  input,
+  select,
+  textarea {
+    max-width: 100%;
+    width: 100%;
+  }
+  .country-list {
+    list-style: none;
+    padding: 0;
+    max-height: 30rem;
+    overflow: auto;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    margin: 1.5rem 0;
+  }
+  .country-list li {
+    padding: 0.65rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--rule);
+  }
+  .country-list li[hidden] {
+    display: none;
+  }
+  .country-list li > a {
+    flex: 1;
+  }
+  .country-list .note {
+    font-size: 0.72rem;
+  }
+  details {
+    margin: 1rem 0;
+  }
+  textarea {
+    margin-bottom: 1rem;
+  }
+  .table-wrap {
+    overflow: auto;
+    max-width: 100%;
+  }
+</style>

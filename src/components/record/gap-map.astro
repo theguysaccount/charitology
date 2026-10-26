@@ -1,42 +1,56 @@
 ---
-import StaticBars from '../StaticBars.astro';
-import SourceList from '../SourceList.astro';
-import { DEPTH } from '../../lib/labels';
-import { url } from '../../lib/site';
-import figures from '../../data/figures.json';
+import DepthCensus from "../DepthCensus.astro";
+import StaticBars from "../StaticBars.astro";
+import SourceList from "../SourceList.astro";
+import { DEPTH } from "../../lib/labels";
+import { url } from "../../lib/site";
+import figures from "../../data/figures.json";
 
 const bySource = figures.bySource.rows.map((r) => ({
   label: r.name,
   value: r.billions,
-  display: `$${r.billions.toLocaleString('en-US')}B · ${r.share}%`,
+  display: `$${r.billions.toLocaleString("en-US")}B · ${r.share}%`,
 }));
 const byRecipient = figures.byRecipient.rows.map((r) => ({
   label: r.name,
   value: r.billions,
-  display: `$${r.billions.toLocaleString('en-US')}B`,
+  display: `$${r.billions.toLocaleString("en-US")}B`,
 }));
 const byDepth = DEPTH.map((d) => ({
   label: `${d.level} · ${d.name}`,
   value: null,
-  display: 'Not measured',
-  note: 'No public dataset classifies giving by depth yet',
+  display: "Not measured",
+  note: "Charitology has not assembled a giving-by-depth estimate",
 }));
-const allSources = [...figures.usGiving.sources, ...figures.dafs.sources];
+const allSources = [
+  ...figures.usGiving.sources,
+  ...figures.byRecipient.sources,
+  ...figures.dafs.sources,
+];
 ---
 
 <div class="gap">
   <section class="gap-panel">
     <h2>Who gives</h2>
-    <p class="note">U.S. charitable giving by source, {figures.bySource.year}. Total ${figures.usGiving.billions} billion.</p>
+    <p class="note">
+      U.S. charitable giving by source, {figures.bySource.year}. Total ${
+        figures.usGiving.billions
+      } billion.
+    </p>
     <StaticBars rows={bySource} label="U.S. giving by source" />
   </section>
 
   <section class="gap-panel">
     <h2>What kind of organization receives</h2>
     <p class="note">
-      Selected recipient categories, {figures.byRecipient.year}. {figures.byRecipient.note}
+      Recipient categories, {figures.byRecipient.year}. {
+        figures.byRecipient.note
+      }
     </p>
-    <StaticBars rows={byRecipient} label="U.S. giving to selected recipient categories" />
+    <StaticBars
+      rows={byRecipient}
+      label="U.S. giving to selected recipient categories"
+    />
   </section>
 
   <section class="gap-panel">
@@ -50,21 +64,34 @@ const allSources = [...figures.usGiving.sources, ...figures.dafs.sources];
       <div class="kpi">
         <div class="k-label">Granted, {figures.dafs.year}</div>
         <div class="k-value">${figures.dafs.grantsBillions}B</div>
-        <div class="k-note">to charities, a {figures.dafs.payoutRate}% payout rate</div>
+        <div class="k-note">
+          to charities, a {figures.dafs.payoutRate}% payout rate
+        </div>
       </div>
     </div>
-    <p class="note">See <a href={url('/diagnosis/parked-money/')}>Parked Money</a>, a debated condition.</p>
+    <p class="note">
+      See <a href={url("/diagnosis/parked-money/")}>Parked Money</a>, a debated
+      condition.
+    </p>
   </section>
 
   <section class="gap-panel gap-missing">
     <h2>The missing axis: depth</h2>
     <p>
-      How much of this money relieves symptoms and how much reaches sources? <strong>Nobody knows.</strong> These bars stay
-      empty until the <a href={url('/open-problems/the-depth-census/')}>Depth Census</a> fills them.
+      How much of this money acts at each depth? <strong
+        >Charitology has not measured it.</strong
+      > These bars stay empty until the <a
+        href={url("/open-problems/the-depth-census/")}>Depth Census</a
+      > fills them.
     </p>
-    <StaticBars rows={byDepth} label="Giving by depth: not yet measured" max={1} />
+    <StaticBars
+      rows={byDepth}
+      label="Giving by depth: not yet measured"
+      max={1}
+    />
   </section>
 
+  <DepthCensus />
   <SourceList sources={allSources} heading="Sources for these figures" />
 </div>
 

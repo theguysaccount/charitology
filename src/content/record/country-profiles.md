@@ -2,8 +2,9 @@
 title: "Country Profiles"
 group: "Research archives"
 order: 5
-summary: "Needs, institutions and giving options country by country, built from open data."
-status: designed
+summary: "Dated national indicators, country comparisons and a research desk for locally accountable profiles."
+status: live
+statusNote: "217 country/economy data profiles and a local research desk. Locally coauthored narrative profiles remain a separate milestone."
 conditions: ["proximity-pull", "missing-voice"]
 firstMilestone: "Ten profiles, each co-written with someone who lives there."
 help:
@@ -12,16 +13,12 @@ help:
 related: ["/record/open-datasets/", "/record/cause-atlas/"]
 ---
 
-## Why it’s only designed
+## Statistical profiles and local authorship
 
-A profile written from far away repeats [the Missing Voice](/diagnosis/missing-voice/). Charitology will publish country profiles only when people who live in each country co-write them.
+The data desk publishes dated World Bank observations for 217 countries and economies. It offers comparable units, exact observation years, original-producer metadata, source links and exportable research briefs. These statistical pages are not locally coauthored narratives and do not claim to identify a country’s priorities.
 
-## The template
+A full narrative profile still needs people living there to shape the question, challenge the interpretation and identify missing voices. The private worksheet prepares that work without inventing it.
 
-Each profile will cover:
+## A reproducible snapshot
 
-1. **Biggest problems** by scale, from open data such as the Global Burden of Disease and World Bank indicators
-2. **Where funding goes now**, from public aid and philanthropy data
-3. **Local institutions** that are working on sources
-4. **Gaps**: what is underfunded relative to its size
-5. **Voices**: what people living there say they need, with sources
+Five indicators cover population, life expectancy, under-five mortality, electricity access and basic drinking water. Each country uses the latest non-empty observation within 2020–2025. Missing values remain unknown. No composite need score, charity ranking or global funding estimate is inferred.

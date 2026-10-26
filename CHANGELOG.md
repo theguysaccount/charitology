@@ -1,5 +1,13 @@
 # Changelog
 
+## October 25, 2026: 31-item implementation pass
+
+- Completed software/publication implementations for all 21 seeded and 10 designed original items; the roadmap now distinguishes 57 available functions from 9 institutional programs needing partners.
+- Added seven research desks, seven learning/planning experiences, eight source-preserving reference workbenches, country-data profiles and publication tools.
+- Published 217 country/economy data pages, a complete textbook edition, two proposed-method essays, six actual MP3 readings and the first newsletter issue with dedicated feeds.
+- Added strict backup/enum validation, stale-tab overwrite protection, source-preserving exports and regression checks for numeric gaps, uncertainty, undo and spreadsheet formulas.
+- See [implementation and validation](docs/IMPLEMENTATION_NOTES.md) for exact scopes and limits. Content review remains draft; AI assistance does not count as independent human review.
+
 Significant changes to Charitology are recorded here. Code is MIT; content is CC BY 4.0.
 
 ## Edition 0 completion pass — 2026-10-25

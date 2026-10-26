@@ -1,86 +1,133 @@
 ---
 // One template for every entry inside an info base:
 // /record/encyclopedia/<id>/, /record/interventions/<id>/, /record/case-studies/<id>/ and so on.
-import { getCollection, render } from 'astro:content';
-import Entry from '../../../layouts/Entry.astro';
-import Badges from '../../../components/Badges.astro';
-import ConditionLinks from '../../../components/ConditionLinks.astro';
-import { RECORD_SECTIONS, titleForPath, type RecordSectionCollection } from '../../../lib/content';
-import { CASE_KIND, VERDICT } from '../../../lib/labels';
-import { editUrl, formatDate, url } from '../../../lib/site';
-import causesData from '../../../data/causes.json';
+import ReaderNotebook from "../../../components/ReaderNotebook.astro";
+import { getCollection, render } from "astro:content";
+import Entry from "../../../layouts/Entry.astro";
+import Badges from "../../../components/Badges.astro";
+import ConditionLinks from "../../../components/ConditionLinks.astro";
+import {
+  RECORD_SECTIONS,
+  titleForPath,
+  type RecordSectionCollection,
+} from "../../../lib/content";
+import { CASE_KIND, VERDICT } from "../../../lib/labels";
+import { editUrl, formatDate, url } from "../../../lib/site";
+import causesData from "../../../data/causes.json";
 
 const LABELS: Record<RecordSectionCollection, string> = {
-  encyclopedia: 'The Charitology Encyclopedia',
-  interventions: 'Intervention Database',
-  cases: 'Historical Case Studies',
-  traditions: 'Giving Traditions Library',
-  myths: 'Myth-Busting Series',
-  disagreements: 'Disagreement Register',
-  principles: 'Principles of Charitology',
-  journal: 'Journal of Charitology',
+  encyclopedia: "The Charitology Encyclopedia",
+  interventions: "Intervention Database",
+  cases: "Historical Case Studies",
+  traditions: "Giving Traditions Library",
+  myths: "Myth-Busting Series",
+  disagreements: "Disagreement Register",
+  principles: "Principles of Charitology",
+  journal: "Journal of Charitology",
 };
 
 export async function getStaticPaths() {
   const out = [];
   for (const [collection, section] of Object.entries(RECORD_SECTIONS)) {
     const entries = await getCollection(collection as RecordSectionCollection);
-    for (const entry of entries) out.push({ params: { section, id: entry.id }, props: { entry, collection } });
+    for (const entry of entries)
+      out.push({
+        params: { section, id: entry.id },
+        props: { entry, collection },
+      });
   }
   return out;
 }
 
-const { entry, collection } = Astro.props as { entry: any; collection: RecordSectionCollection };
+const { entry, collection } = Astro.props as {
+  entry: any;
+  collection: RecordSectionCollection;
+};
 const { Content } = await render(entry);
 const d = entry.data;
 const section = RECORD_SECTIONS[collection];
 const sectionLabel = LABELS[collection];
-const causeName = (id: string) => causesData.causes.find((c) => c.id === id)?.name ?? id;
+const causeName = (id: string) =>
+  causesData.causes.find((c) => c.id === id)?.name ?? id;
 
 const related: { path: string; title: string }[] = await Promise.all(
-  (d.related ?? []).map(async (path: string) => ({ path, title: (await titleForPath(path)) ?? path })),
+  (d.related ?? []).map(async (path: string) => ({
+    path,
+    title: (await titleForPath(path)) ?? path,
+  })),
 );
 
 let prev: any;
 let next: any;
-if (collection === 'principles') {
-  const chapters = (await getCollection('principles')).sort((a, b) => a.data.chapter - b.data.chapter);
+if (collection === "principles") {
+  const chapters = (await getCollection("principles")).sort(
+    (a, b) => a.data.chapter - b.data.chapter,
+  );
   const i = chapters.findIndex((c) => c.id === entry.id);
   prev = chapters[i - 1];
   next = chapters[i + 1];
 }
 
 const eyebrow =
-  collection === 'myths'
-    ? 'Myth-Busting Series'
-    : collection === 'principles'
+  collection === "myths"
+    ? "Myth-Busting Series"
+    : collection === "principles"
       ? `Principles of Charitology · Chapter ${d.chapter}`
-      : collection === 'journal'
+      : collection === "journal"
         ? `Journal of Charitology · Vol. ${d.volume}, No. ${d.issue}`
         : sectionLabel;
-const title = collection === 'myths' ? `“${d.title}”` : d.title;
+const title = collection === "myths" ? `“${d.title}”` : d.title;
 ---
 
 <Entry
   title={title}
   eyebrow={eyebrow}
   summary={d.summary}
-  crumbs={[{ label: 'Record', href: '/record/' }, { label: sectionLabel, href: `/record/${section}/` }, { label: d.title }]}
+  crumbs={[
+    { label: "Record", href: "/record/" },
+    { label: sectionLabel, href: `/record/${section}/` },
+    { label: d.title },
+  ]}
   filePath={entry.filePath}
   review={d.review}
   sources={d.sources ?? []}
 >
   <Fragment slot="badges">
-    {collection === 'interventions' && <Badges depth={d.depth} grade={d.evidence} />}
-    {collection === 'cases' && <Badges depth={d.depth} extra={[CASE_KIND[d.kind as keyof typeof CASE_KIND], d.era]} />}
-    {collection === 'myths' && <Badges extra={[`Verdict: ${VERDICT[d.verdict as keyof typeof VERDICT]}`]} />}
-    {collection === 'disagreements' && <Badges extra={[`Status: ${d.status}`]} />}
-    {collection === 'traditions' && <Badges extra={[d.tradition]} />}
-    {collection === 'journal' && <Badges extra={[d.author, formatDate(d.date)]} />}
+    {
+      collection === "interventions" && (
+        <Badges depth={d.depth} grade={d.evidence} />
+      )
+    }
+    {
+      collection === "cases" && (
+        <Badges
+          depth={d.depth}
+          extra={[CASE_KIND[d.kind as keyof typeof CASE_KIND], d.era]}
+        />
+      )
+    }
+    {
+      collection === "myths" && (
+        <Badges
+          extra={[`Verdict: ${VERDICT[d.verdict as keyof typeof VERDICT]}`]}
+        />
+      )
+    }
+    {
+      collection === "disagreements" && (
+        <Badges extra={[`Status: ${d.status}`]} />
+      )
+    }
+    {collection === "traditions" && <Badges extra={[d.tradition]} />}
+    {
+      collection === "journal" && (
+        <Badges extra={[d.author, formatDate(d.date)]} />
+      )
+    }
   </Fragment>
 
   {
-    collection === 'disagreements' && (
+    collection === "disagreements" && (
       <div class="positions">
         {d.positions.map((p: { name: string; claim: string }) => (
           <div class="position">
@@ -93,9 +140,14 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
   }
 
   <Content />
+  {
+    collection === "principles" && (
+      <ReaderNotebook id={entry.id} title={d.title} />
+    )
+  }
 
   {
-    collection === 'disagreements' && (
+    collection === "disagreements" && (
       <>
         <h2>The cruxes</h2>
         <p>What would have to be true for each side to change its mind:</p>
@@ -109,7 +161,7 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
   }
 
   {
-    collection === 'cases' && (
+    collection === "cases" && (
       <>
         <h2>Lessons for the system</h2>
         <ol>
@@ -122,7 +174,7 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
   }
 
   {
-    collection === 'principles' && (prev || next) && (
+    collection === "principles" && (prev || next) && (
       <nav class="chapter-nav" aria-label="Chapters">
         {prev ? (
           <a href={url(`/record/principles/${prev.id}/`)}>
@@ -144,7 +196,7 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
 
   <Fragment slot="aside">
     {
-      collection === 'interventions' && (
+      collection === "interventions" && (
         <>
           <div class="aside-box">
             <h2>How it works</h2>
@@ -154,7 +206,7 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
             <h2>Profile</h2>
             <dl class="facts">
               <dt>Causes</dt>
-              <dd>{d.causes.map(causeName).join(', ')}</dd>
+              <dd>{d.causes.map(causeName).join(", ")}</dd>
               <dt>Time to effect</dt>
               <dd>{d.timeToEffect}</dd>
               <dt>Durability</dt>
@@ -170,12 +222,16 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
               <h2>Cost data</h2>
               <p>
                 <strong>
-                  ${d.cost.low.toLocaleString('en-US')}–${d.cost.high.toLocaleString('en-US')}
-                </strong>{' '}
+                  ${d.cost.low.toLocaleString("en-US")}–$
+                  {d.cost.high.toLocaleString("en-US")}
+                </strong>{" "}
                 per {d.cost.outcome}
               </p>
               <p class="note">
-                {d.cost.asOf} · <a href={d.cost.source.url}>{d.cost.source.publisher ?? d.cost.source.title}</a>
+                {d.cost.asOf} ·{" "}
+                <a href={d.cost.source.url}>
+                  {d.cost.source.publisher ?? d.cost.source.title}
+                </a>
                 {d.cost.note && <> · {d.cost.note}</>}
               </p>
             </div>
@@ -184,7 +240,7 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
       )
     }
     {
-      collection === 'cases' && (
+      collection === "cases" && (
         <div>
           <h2>Case</h2>
           <dl class="facts">
@@ -199,7 +255,7 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
       )
     }
     {
-      collection === 'traditions' && (
+      collection === "traditions" && (
         <div>
           <h2>Tradition</h2>
           <dl class="facts">
@@ -216,14 +272,18 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
       )
     }
     {
-      collection === 'encyclopedia' && d.aliases.length > 0 && (
+      collection === "encyclopedia" && d.aliases.length > 0 && (
         <div>
           <h2>Also called</h2>
-          <p>{d.aliases.join(', ')}</p>
+          <p>{d.aliases.join(", ")}</p>
         </div>
       )
     }
-    {d.conditions && <ConditionLinks refs={d.conditions} heading="Related conditions" />}
+    {
+      d.conditions && (
+        <ConditionLinks refs={d.conditions} heading="Related conditions" />
+      )
+    }
     {
       related.length > 0 && (
         <div>
@@ -239,7 +299,9 @@ const title = collection === 'myths' ? `“${d.title}”` : d.title;
       )
     }
     <div>
-      <a class="btn btn-ghost btn-small" href={editUrl(entry.filePath)}>Edit this page on GitHub</a>
+      <a class="btn btn-ghost btn-small" href={editUrl(entry.filePath)}
+        >Edit this page on GitHub</a
+      >
     </div>
   </Fragment>
 </Entry>

@@ -2,9 +2,9 @@
 title: Methods Lab
 group: Research
 order: 3
-summary: Compares the ways of giving, from direct cash and policy advocacy to research, mutual aid, volunteering, impact investing and prizes, on the same terms.
-status: designed
-statusNote: The charter is written. The lab needs researchers to build its first side-by-side comparison.
+summary: Design alternatives across seven ways of giving and compare their user-entered scenarios within a common outcome, scope, currency and horizon.
+status: live
+statusNote: Live scenario and experiment-planning software is available. Its ranges are user assumptions, not empirical estimates; staffed comparative research and published findings remain milestones.
 conditions: [single-lens, symptom-trap]
 firstMilestone: A published comparison of all seven methods on one shared problem, with the evidence for each method graded and its place on the depth scale stated.
 help:
@@ -18,6 +18,12 @@ sources:
     year: 2016
     url: https://odi.org/en/publications/cash-transfers-what-does-the-evidence-say-a-rigorous-review-of-impacts-and-the-role-of-design-and-implementation-features/
 ---
+
+## Use the live research desk
+
+Use the [experiment workspace](#workspace-methods-lab) to plan several approaches to one problem. Matching population, outcome unit, currency and time horizon groups saved scenarios for comparison. Enter evidence and uncertainty before interpreting cost per expected outcome. Blank inputs stay unknown. These scenario bounds are not confidence intervals, effectiveness scores or forecasts validated against results.
+
+Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 
 ## What it is
 

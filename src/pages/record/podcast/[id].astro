@@ -1,0 +1,59 @@
+---
+import Entry from "../../../layouts/Entry.astro";
+import podcast from "../../../data/podcast.json";
+import { getEntry, render } from "astro:content";
+import { url } from "../../../lib/site";
+export function getStaticPaths() {
+  return podcast.episodes.map((episode) => ({
+    params: { id: episode.id },
+    props: { episode },
+  }));
+}
+const { episode } = Astro.props;
+const chapter = (await getEntry("principles", episode.chapter))!;
+const { Content } = await render(chapter);
+---
+
+<Entry
+  title={episode.title}
+  eyebrow={`Principles read aloud · Episode ${episode.number}`}
+  summary={episode.description}
+  crumbs={[
+    { label: "Record", href: "/record/" },
+    {
+      label: "Podcast and newsletter",
+      href: "/record/podcast-and-newsletter/",
+    },
+    { label: episode.title },
+  ]}
+  sources={chapter.data.sources}
+>
+  <p>
+    <strong>Computer narration.</strong> This is a reading of the open textbook,
+    not a recorded guest interview. The text remains an editorial draft awaiting
+    independent review. No voice was cloned. Published October 25, 2026.
+  </p><audio
+    controls
+    preload="metadata"
+    src={url(episode.audio)}
+    aria-label={`Listen to ${episode.title}`}></audio><p>
+    <a href={url(episode.audio)} download>Download MP3</a> · {
+      Math.floor(episode.seconds / 60)
+    }:{String(episode.seconds % 60).padStart(2, "0")} · <a
+      href={url("/podcast.xml")}>Podcast RSS feed</a>
+  </p><h2>Transcript</h2><p>
+    The audio opens with the show name, episode title and narration disclosure,
+    then reads the chapter below. Spoken source names link to the references in
+    this transcript. It closes by inviting corrections and noting that every
+    depth level is needed.
+  </p><Content /><p>
+    <a href={url(`/record/principles/${episode.chapter}/`)}
+      >Original chapter, reading notebook and correction links</a>
+  </p>
+</Entry>
+<style>
+  audio {
+    width: 100%;
+    margin-block: 1rem;
+  }
+</style>

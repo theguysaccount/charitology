@@ -2,11 +2,11 @@
 title: Certified Charitologist
 group: People and education
 order: 1
-summary: A credential for donors, nonprofit staff and advisors who have shown they can apply the Charitology method. Anyone can practice charitology without it.
-status: designed
-statusNote: The charter is written, and the Principles of Charitology serves as the draft curriculum. The exam and the portfolio review need builders.
+summary: A nonaccredited self-study completion record today, with a proposed professional credential that would require an independently reviewed exam and portfolio.
+status: live
+statusNote: A printable nonaccredited course completion record is available from the shared ten-unit course progress. The proposed professional credential, independent exam and two-reviewer portfolio process do not operate.
 conditions: [missing-profession]
-firstMilestone: A pilot exam and portfolio review taken by volunteer candidates, with the exam, the results and the lessons published for critique.
+firstMilestone: Complete the self-study course and capstone to print a completion record. A separately governed professional exam and portfolio pilot still need people and public review.
 help:
   - Draft exam questions for one chapter of the Principles of Charitology in an issue labeled program.
   - Volunteer to take the pilot exam by opening an issue labeled program.
@@ -20,6 +20,18 @@ sources:
     publisher: CFRE International
     url: https://www.cfre.org/
 ---
+
+## What is available now
+
+[Jump to the working completion record](#pc-title).
+
+The completion workspace below uses the same local progress as the [Principles course](/programs/principles-course/). Finish its ten readings, twenty knowledge checks, practice notes and capstone to unlock a printable course completion record. You can back up or import that progress with JSON.
+
+The record is explicitly **nonaccredited self-study**. It does not verify identity, independently assess reasoning or confer the proposed Certified Charitologist professional credential. Do not present it as that credential.
+
+## The proposed professional credential
+
+The charter below describes a future exam and human portfolio review. Neither has been established by publishing this workspace.
 
 ## What it is
 

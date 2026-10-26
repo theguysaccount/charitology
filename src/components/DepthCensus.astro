@@ -1,0 +1,410 @@
+<section id="depth-census">
+  <h2>Your depth census</h2><p>
+    Classify a documented set of activities. This is a local research sample,
+    not an estimate of global charity. Amounts use one currency per file.
+    Classifications are your hypotheses; evidence quality and impact are
+    separate questions.
+  </p><form id="census-form">
+    <div class="census-controls">
+      <label>Activity<input name="activity" maxlength="200" required /></label
+      ><label
+        >Amount<input
+          name="amount"
+          type="number"
+          min="0"
+          max="1000000000"
+          step="0.01"
+          required
+        /></label
+      ><label
+        >Depth<select name="depth"
+          ><option value="unknown">Unclassified</option><option value="0"
+            >0 · Relief</option
+          ><option value="1">1 · Repair</option><option value="2"
+            >2 · Prevention</option
+          ><option value="3">3 · Structure</option><option value="4"
+            >4 · Source</option
+          ></select
+        ></label
+      >
+    </div><label
+      >Public source or classification rationale<textarea
+        name="source"
+        required
+        maxlength="5000"
+        rows="2"></textarea></label
+    ><button class="btn" type="submit" id="census-submit">Add activity</button>
+    <button class="btn btn-ghost" type="button" id="census-new"
+      >Start another</button
+    >
+  </form><label
+    >Currency for the whole sample<input
+      id="census-currency"
+      value="USD"
+      pattern="[A-Z]{3}"
+      maxlength="3"
+    /></label
+  ><p id="census-status" role="status"></p><div id="census-results"></div><div
+    id="census-rows"
+  >
+  </div><div class="census-controls">
+    <button class="btn" id="census-csv">Export sample CSV</button><button
+      class="btn btn-ghost"
+      id="census-json">Export JSON backup</button
+    ><label class="btn btn-ghost"
+      >Preview JSON import<input
+        id="census-import"
+        type="file"
+        accept=".json,application/json"
+      /></label
+    >
+  </div><div id="census-preview" hidden>
+    <p></p><button class="btn" id="census-replace"
+      >Replace current sample</button
+    ><button class="btn btn-ghost" id="census-cancel">Cancel</button>
+  </div>
+</section>
+<script>
+  import { download, toCsv } from "../lib/client/files";
+  import { guardedDraft } from "../lib/client/guarded-draft";
+  import {
+    validateDepthSample as valid,
+    depthCoverage,
+    safeCsvText,
+  } from "../lib/client/completion-models";
+  const root = document.querySelector("#depth-census");
+  if (root) {
+    type Row = {
+      id: string;
+      activity: string;
+      amount: number;
+      depth: string;
+      source: string;
+    };
+    type Sample = { currency: string; rows: Row[] };
+    let sample: Sample = { currency: "USD", rows: [] };
+    let pending: Sample | null = null;
+    let undo: Sample | null = null;
+    const draft = guardedDraft("charitology-depth-census-v1");
+    let writable = true;
+    let editing = "";
+    const form = root.querySelector<HTMLFormElement>("form")!;
+    const currency = root.querySelector<HTMLInputElement>("#census-currency")!;
+    const status = root.querySelector<HTMLElement>("#census-status")!;
+
+    try {
+      const raw = draft.read();
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (!valid(data)) throw Error();
+        sample = data;
+      }
+    } catch {
+      writable = false;
+      status.textContent =
+        "Stored sample unreadable or saving unavailable. Existing data is untouched. Export new work before leaving.";
+    }
+    currency.value = sample.currency;
+    function save() {
+      try {
+        if (!writable) throw Error();
+        draft.write(JSON.stringify(sample));
+        status.textContent =
+          "Saved in this browser. User classifications remain hypotheses.";
+      } catch (error) {
+        status.textContent =
+          error instanceof Error
+            ? error.message + " Export your sample before leaving."
+            : "Saving unavailable; export your sample before leaving.";
+      }
+    }
+    function render() {
+      const { total, unknown } = depthCoverage(sample);
+      const container = root!.querySelector("#census-results")!;
+      container.replaceChildren();
+      const p = document.createElement("p");
+      p.textContent = `${sample.rows.length} activities · ${sample.currency} ${total.toLocaleString("en-US", { maximumFractionDigits: 2 })} recorded · ${total ? (((total - unknown) / total) * 100).toFixed(1) + "% of recorded money classified" : "Money coverage undefined for a zero total"}. Unclassified is not zero need.`;
+      container.append(p);
+      const table = document.createElement("table");
+      table.className = "data";
+      const body = table.createTBody();
+      for (const [value, label] of [
+        ["0", "Relief"],
+        ["1", "Repair"],
+        ["2", "Prevention"],
+        ["3", "Structure"],
+        ["4", "Source"],
+        ["unknown", "Unclassified"],
+      ]) {
+        const amount =
+          sample.rows
+            .filter((r) => r.depth === value)
+            .reduce((n, r) => n + Math.round(r.amount * 100), 0) / 100;
+        const tr = body.insertRow();
+        const th = document.createElement("th");
+        th.scope = "row";
+        th.textContent = label;
+        tr.append(th);
+        tr.insertCell().textContent =
+          sample.currency +
+          " " +
+          amount.toLocaleString("en-US", { maximumFractionDigits: 2 });
+        tr.insertCell().textContent = total
+          ? ((100 * amount) / total).toFixed(1) + "%"
+          : "Undefined";
+      }
+      container.append(table);
+      const list = root!.querySelector("#census-rows")!;
+      list.replaceChildren();
+      if (!sample.rows.length) {
+        const empty = document.createElement("p");
+        empty.textContent =
+          "No activity records yet. Add an actual record with a source or rationale.";
+        list.append(empty);
+      }
+      for (const row of sample.rows) {
+        const card = document.createElement("div");
+        card.className = "census-row";
+        const text = document.createElement("p");
+        text.textContent = `${row.activity} · ${sample.currency} ${row.amount} · ${row.depth === "unknown" ? "Unclassified" : "Depth " + row.depth}`;
+        const source = document.createElement("p");
+        source.textContent = row.source;
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "btn btn-small btn-ghost";
+        edit.textContent = "Edit";
+        edit.onclick = () => {
+          editing = row.id;
+          for (const f of ["activity", "amount", "depth", "source"])
+            (form.elements.namedItem(f) as HTMLInputElement).value = String(
+              row[f as keyof Row],
+            );
+          root!.querySelector("#census-submit")!.textContent = "Save activity";
+          form.scrollIntoView({ block: "center" });
+        };
+        const del = document.createElement("button");
+        del.className = "btn btn-small btn-ghost";
+        del.textContent = "Delete";
+        let armed = false;
+        del.onclick = () => {
+          if (!armed) {
+            armed = true;
+            del.textContent = "Confirm delete";
+            return;
+          }
+          undo = structuredClone(sample);
+          sample.rows = sample.rows.filter((r) => r.id !== row.id);
+          if (editing === row.id) {
+            editing = "";
+            form.reset();
+            root!.querySelector("#census-submit")!.textContent = "Add activity";
+          }
+          save();
+          render();
+        };
+        card.append(text, source, edit, document.createTextNode(" "), del);
+        list.append(card);
+      }
+      if (undo) {
+        const b = document.createElement("button");
+        b.textContent = "Undo last change";
+        b.className = "btn btn-small";
+        b.onclick = () => {
+          sample = undo!;
+          currency.value = sample.currency;
+          undo = null;
+          save();
+          render();
+        };
+        list.append(b);
+      }
+    }
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!editing && sample.rows.length >= 1000) {
+        status.textContent =
+          "This sample supports up to 1,000 activities. Export and start another sample.";
+        return;
+      }
+      const activity = (
+        form.elements.namedItem("activity") as HTMLInputElement
+      ).value.trim();
+      const source = (
+        form.elements.namedItem("source") as HTMLInputElement
+      ).value.trim();
+      const amount =
+        Math.round(
+          Number(
+            (form.elements.namedItem("amount") as HTMLInputElement).value,
+          ) * 100,
+        ) / 100;
+      const depth = (form.elements.namedItem("depth") as HTMLSelectElement)
+        .value;
+      const row = {
+        id: editing || crypto.randomUUID(),
+        activity,
+        amount,
+        depth,
+        source,
+      };
+      const next = {
+        currency: currency.value,
+        rows: editing
+          ? sample.rows.map((r) => (r.id === editing ? row : r))
+          : [...sample.rows, row],
+      };
+      if (!valid(next)) {
+        status.textContent =
+          "Enter a three-letter uppercase currency, an activity, a nonnegative amount and a rationale.";
+        return;
+      }
+      undo = structuredClone(sample);
+      sample = next;
+      editing = "";
+      form.reset();
+      root!.querySelector("#census-submit")!.textContent = "Add activity";
+      save();
+      render();
+    });
+    root.querySelector("#census-new")!.addEventListener("click", () => {
+      editing = "";
+      form.reset();
+      root!.querySelector("#census-submit")!.textContent = "Add activity";
+    });
+    currency.addEventListener("change", () => {
+      if (!/^[A-Z]{3}$/.test(currency.value)) {
+        status.textContent = "Use a three-letter uppercase currency code.";
+        currency.value = sample.currency;
+        return;
+      }
+      if (sample.rows.length && currency.value !== sample.currency) {
+        status.textContent =
+          "Currency cannot change after adding amounts. Export and import a separately converted sample with documented rates.";
+        currency.value = sample.currency;
+        return;
+      }
+      sample.currency = currency.value;
+      save();
+      render();
+    });
+    root
+      .querySelector("#census-json")!
+      .addEventListener("click", () =>
+        download(
+          "depth-census.json",
+          JSON.stringify(sample, null, 2),
+          "application/json",
+        ),
+      );
+    root.querySelector("#census-csv")!.addEventListener("click", () =>
+      download(
+        "depth-census.csv",
+        toCsv(
+          sample.rows.map((r) => ({
+            activity: safeCsvText(r.activity),
+            currency: sample.currency,
+            amount: r.amount,
+            depth: r.depth,
+            source: safeCsvText(r.source),
+            classification: "User hypothesis",
+          })),
+          [
+            "activity",
+            "currency",
+            "amount",
+            "depth",
+            "source",
+            "classification",
+          ],
+        ),
+        "text/csv;charset=utf-8",
+      ),
+    );
+    root
+      .querySelector<HTMLInputElement>("#census-import")!
+      .addEventListener("change", async (e) => {
+        const input = e.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+        try {
+          if (file.size > 32000000) throw Error("Backup exceeds 32 MB.");
+          const data = JSON.parse(await file.text());
+          if (!valid(data))
+            throw Error(
+              "Invalid currency, amounts, fields or duplicate record IDs.",
+            );
+          pending = data;
+          root!.querySelector<HTMLElement>("#census-preview")!.hidden = false;
+          root!.querySelector("#census-preview p")!.textContent =
+            `${data.rows.length} ${data.currency} records will replace ${sample.rows.length} current records. Export the current backup before replacing it.`;
+        } catch (err) {
+          pending = null;
+          status.textContent =
+            err instanceof Error ? err.message : "Invalid import";
+        }
+        input.value = "";
+      });
+    root.querySelector("#census-replace")!.addEventListener("click", () => {
+      if (!pending) return;
+      undo = structuredClone(sample);
+      sample = pending;
+      pending = null;
+      editing = "";
+      form.reset();
+      root!.querySelector("#census-submit")!.textContent = "Add activity";
+      currency.value = sample.currency;
+      root!.querySelector<HTMLElement>("#census-preview")!.hidden = true;
+      save();
+      render();
+    });
+    root.querySelector("#census-cancel")!.addEventListener("click", () => {
+      pending = null;
+      root!.querySelector<HTMLElement>("#census-preview")!.hidden = true;
+    });
+    render();
+  }
+</script>
+<style>
+  #depth-census {
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin: 2rem 0;
+  }
+  label {
+    display: grid;
+    gap: 0.35rem;
+    font: 0.9rem var(--font-sans);
+    margin: 0.8rem 0;
+  }
+  input,
+  select,
+  textarea {
+    max-width: 100%;
+    width: 100%;
+  }
+  .census-controls {
+    display: flex;
+    gap: 0.7rem;
+    align-items: end;
+    flex-wrap: wrap;
+  }
+  .census-controls label {
+    flex: 1;
+    min-width: min(100%, 150px);
+  }
+  #depth-census :global(.census-row) {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.5rem 0;
+  }
+  #depth-census :global(.census-row p) {
+    margin: 0.25rem 0;
+    overflow-wrap: anywhere;
+  }
+  input[type="file"] {
+    max-width: 250px;
+  }
+  table {
+    width: 100%;
+  }
+</style>
