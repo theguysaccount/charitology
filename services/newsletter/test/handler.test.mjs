@@ -23,6 +23,28 @@ test('Signup requires explicit consent; honeypot and disallowed origins have no 
   assert.equal((await handler(request('/api/subscribe', { email: 'a@example.com', consent: 'yes' }, { origin: 'https://evil.example' }))).status, 403);
   assert.equal(sends, 0);
 });
+test('Confirmation accepts its no-referrer opaque origin with a valid bearer token and rejects other origins before DB access', async () => {
+  const tokens = [];
+  const token = newToken();
+  const handler = createHandler({ db: { confirm: async value => { tokens.push(value); return 'a@example.invalid'; }, exclusive: async () => {} }, mail: {}, settings, logger: () => {} });
+  const denied = await handler(request('/confirm', { token }, { origin: 'https://evil.example' }));
+  assert.equal(denied.status, 403);
+  assert.deepEqual(tokens, []);
+  for (const origin of ['null', settings.origin, undefined]) {
+    const response = await handler(request('/confirm', { token }, origin === undefined ? {} : { origin }));
+    assert.equal(response.status, 200);
+    assert.match((await response.json()).message, /confirmation was recorded/);
+  }
+  assert.deepEqual(tokens, [token, token, token]);
+  assert.equal((await handler(request('/confirm', { token: 'invalid' }, { origin: 'null' }))).status, 400);
+  assert.equal(tokens.length, 3);
+});
+test('Opaque origin allowance is confined to confirmation, not signup or admin routes', async () => {
+  const fail = () => { throw new Error('unexpected side effect'); };
+  const handler = createHandler({ db: new Proxy({}, { get: fail }), mail: new Proxy({}, { get: fail }), settings });
+  assert.equal((await handler(request('/api/subscribe', { email: 'a@example.invalid', consent: 'yes' }, { origin: 'null' }))).status, 403);
+  assert.equal((await handler(new Request('https://mail.charitology.org/api/admin/readiness', { headers: { authorization: `Bearer ${settings.adminToken}`, origin: 'null' } }))).status, 403);
+});
 test('Allowed form signup returns generic result even on provider rejection, and records failure', async () => {
   const updates = [];
   const db = { rate: async () => true, pending: async email => ({ email, generation: 'gen' }), mailResult: async (...args) => updates.push(args) };
@@ -43,6 +65,54 @@ test('Disabled delivery and admin endpoints fail closed', async () => {
   assert.equal((await handler(new Request('https://mail.charitology.org/api/admin/preview'))).status, 401);
   const preview = await handler(new Request('https://mail.charitology.org/api/admin/preview', { headers: { authorization: `Bearer ${settings.adminToken}` } }));
   assert.equal(preview.status, 200); assert.match((await preview.json()).hash, /^[a-f0-9]{64}$/);
+});
+test('Readiness requires the admin bearer and allowed origin before any provider access', async () => {
+  let calls = 0;
+  const handler = createHandler({ db: {}, mail: { ready: async () => calls++ }, settings });
+  const make = headers => new Request('https://mail.charitology.org/api/admin/readiness', { headers });
+  assert.equal((await handler(make({}))).status, 401);
+  assert.equal((await handler(make({ authorization: 'Bearer wrong' }))).status, 401);
+  assert.equal((await handler(make({ authorization: `Bearer ${settings.adminToken}`, origin: 'https://evil.example' }))).status, 403);
+  assert.equal(calls, 0);
+});
+test('Authenticated readiness checks campaign readiness without database or message side effects', async () => {
+  const calls = [];
+  const fail = () => { throw new Error('unexpected side effect'); };
+  const handler = createHandler({ db: new Proxy({}, { get: fail }), mail: { ready: async options => calls.push(options), sendConfirmation: fail }, settings });
+  const response = await handler(new Request('https://mail.charitology.org/api/admin/readiness', { headers: { authorization: `Bearer ${settings.adminToken}`, origin: settings.origin } }));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, providerReady: true });
+  assert.deepEqual(calls, [{ campaign: true }]);
+  assert.equal(response.headers.get('cache-control'), 'no-store, private');
+});
+test('Failed readiness exposes only bounded diagnostic fields and logs no provider details', async () => {
+  const logs = [];
+  const error = Object.assign(new Error('secret-token private@example.invalid provider body'), { name: 'ConnectError', code: 'TOKEN_EXCHANGE_FAILED', status: 401, details: { token: 'secret-token' } });
+  const handler = createHandler({ db: {}, mail: { ready: async () => { throw error; } }, settings, logger: (...args) => logs.push(args) });
+  const response = await handler(new Request('https://mail.charitology.org/api/admin/readiness', { headers: { authorization: `Bearer ${settings.adminToken}` } }));
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { ok: false, providerReady: false, errorType: 'ConnectError', code: 'TOKEN_EXCHANGE_FAILED', providerStatus: 401 });
+  assert.deepEqual(logs, [[]]);
+});
+test('Readiness discards unsafe or oversized diagnostic values and handles non-Error rejection', async () => {
+  for (const error of [null, 'secret-token', { name: 'private@example.invalid', code: 'token secret', status: '401' }, { name: 'A'.repeat(65), code: 'B'.repeat(65), status: 401.5 }]) {
+    const handler = createHandler({ db: {}, mail: { ready: async () => { throw error; } }, settings, logger: () => {} });
+    const response = await handler(new Request('https://mail.charitology.org/api/admin/readiness', { headers: { authorization: `Bearer ${settings.adminToken}` } }));
+    assert.equal(response.status, 503);
+    assert.deepEqual(await response.json(), { ok: false, providerReady: false, errorType: 'Error' });
+  }
+});
+test('Public signup keeps readiness failures generic and stops before pending subscriber creation', async () => {
+  let pending = 0;
+  const error = Object.assign(new Error('secret-token private@example.invalid'), { name: 'ConnectError', code: 'TOKEN_EXCHANGE_FAILED', status: 401 });
+  const handler = createHandler({ db: { rate: async () => true, pending: async () => pending++ }, mail: { ready: async () => { throw error; } }, settings, logger: () => {} });
+  const response = await handler(request('/api/subscribe', { email: 'a@example.invalid', consent: 'yes' }));
+  assert.equal(response.status, 503);
+  const body = await response.json();
+  assert.deepEqual(Object.keys(body).sort(), ['message', 'ok']);
+  assert.equal(body.ok, false);
+  assert.doesNotMatch(JSON.stringify(body), /secret-token|private@example|TOKEN_EXCHANGE|ConnectError|providerReady|providerStatus/);
+  assert.equal(pending, 0);
 });
 test('One-click unsubscribe supports query bearer plus RFC8058 body and remains durable after sync failure', async () => {
   let withdrawn = 0;

@@ -9,7 +9,13 @@ export async function syncSubscriber(db, mail, settings, email, { confirmedOnly 
     if (!settings.segmentId || !settings.topicId) throw new Error('Newsletter preferences are not configured');
     let contact = await mail.contact(email);
     if (person.state === 'unsubscribed' || person.state === 'blocked') {
-      if (contact) { await mail.setTopic(contact.id, 'opt_out'); await mail.removeSegment(contact.id); }
+      if (contact) {
+        const topics = await mail.contactTopics(contact.id);
+        // Even an unchanged Topic PATCH emits a webhook. Avoid re-queuing the
+        // same withdrawal forever; a native opt-out needs only segment cleanup.
+        if (topics.find(x => x.id === settings.topicId)?.subscription !== 'opt_out') await mail.setTopic(contact.id, 'opt_out');
+        await mail.removeSegment(contact.id);
+      }
       await durable('UPDATE newsletter_subscribers SET sync_pending=false,updated_at=now() WHERE email=$1', [email]);
       return;
     }

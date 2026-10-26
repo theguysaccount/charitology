@@ -1,12 +1,18 @@
 # Changelog
 
+## October 26, 2026: confirmed newsletter signup
+
+- Added public email signup for The Charitology Letter, with explicit consent, a confirmation email and a deliberate confirmation action before joining. The same form appears on the newsletter and podcast/letter pages. Every edition remains freely available online and through RSS.
+- Added protected production provider-readiness checks and corrected confirmation handling for browser form requests and the native topic subscription format. Signup, preferences and withdrawal remain separate from deliberate issue publication; confirming does not automatically send a past issue.
+- Verified the paid sending plan, authenticated sender domain, disabled open/click tracking and actual reply forwarding. The [delivery record](docs/EMAIL_DELIVERY.md) distinguishes controlled confirmation, issue delivery and unsubscribe evidence from automated checks. This adds no human source-review or general-deliverability claim.
+
 ## October 26, 2026: nine program workspaces, OS research and mail service
 
 - Added usable local workflows for the nine formerly partner-only programs: the Fund, Incubator, Question Bounties, Prize, Fellowship, Donor Advisory, Nonprofit Advisory, Summit and Field Verification. All 26 program pages now have live functions; institutional authority, partners, resources and independent review remain separate requirements.
 - Added 46 dedicated collections and 68 fictional example records, editing, filtering, one-step undo, guarded local persistence, validated JSON backups, CSV and complete Markdown kits. The Fund has a selected-field transparency draft; the Summit has tentative UTC calendar export and overlap checks. No funding, award, selection, advisory engagement, event or field verification is established by this software.
 - Published the draft shared Charity OS plan: ten system dossiers, twenty public discussions, a 26-module feature universe and Phases 0–5 with architecture comparisons and acceptance gates. Added the two research JSON datasets and links from the local OS, charities hub and roadmap. No shared OS service, installed integration or pilot result is claimed.
 - Added 16 passing model/type scenario groups and separate agent adversarial review. Browser checks covered all nine create/edit/reload/filter/draft flows and mobile layouts, delete/undo, valid/invalid/large imports and actual JSON/CSV/Markdown/ICS/transparency downloads. See [program scope, recovery and verification evidence](docs/PROGRAM_WORKSPACES.md).
-- Implemented and deployed a separately hosted private newsletter service with single-use double opt-in, scoped native preferences, durable withdrawal, safe skip-existing contact imports, signed webhooks and guarded issue publication. Sending and public signup remain disabled pending the approved account upgrade, sender verification and actual inbox tests. The public letter and RSS remain available. See [the delivery record](docs/EMAIL_DELIVERY.md).
+- Implemented and deployed a separately hosted private newsletter service with single-use double opt-in, scoped native preferences, durable withdrawal, safe skip-existing contact imports, signed webhooks and guarded issue publication. This initial deployment kept sending and public signup disabled pending separately recorded account, sender and controlled inbox checks. The public letter and RSS were available throughout. See [the delivery record](docs/EMAIL_DELIVERY.md).
 
 ## October 25, 2026: 31-item implementation pass
 

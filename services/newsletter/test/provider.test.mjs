@@ -56,6 +56,27 @@ test('New contact path uses native multipart skip import and never unsafe global
   assert.equal(await call.body.get('file').text(), 'Email\na@example.invalid\n');
   assert.equal(call.body.has('topics'), false); assert.equal(call.body.has('segments'), false); assert.equal(call.body.has('unsubscribed'), false);
 });
+test('Topic update wire body is a top-level array scoped to one configured topic for either preference', async () => {
+  const calls = [];
+  const mail = provider(settings, { credential: async () => 'private-token', fetcher: async (url, options) => {
+    const body = JSON.parse(options.body);
+    assert.ok(Array.isArray(body), 'HTTP PATCH requires the array itself, not the SDK topics wrapper');
+    calls.push({ url, ...options, parsedBody: body });
+    return Response.json({ object: 'contact_topics', data: body });
+  } });
+  for (const subscription of ['opt_in', 'opt_out']) {
+    await mail.setTopic('contact/with space', subscription);
+    const call = calls.at(-1);
+    assert.equal(call.url, 'https://api.resend.com/contacts/contact%2Fwith%20space/topics');
+    assert.equal(call.method, 'PATCH');
+    assert.equal(call.headers['content-type'], 'application/json');
+    assert.deepEqual(call.parsedBody, [{ id: settings.topicId, subscription }]);
+    assert.equal(call.headers['Idempotency-Key'], undefined);
+    assert.ok(!call.body.includes('private-token'));
+    assert.equal(call.body.includes('unsubscribed'), false);
+  }
+  assert.equal(calls.length, 2, 'one mutation per explicit call; no implicit retry');
+});
 test('Provider maintenance deadline bounds credential retrieval and prevents calls after expiry', async () => {
   let fetched = 0;
   const mail = provider(settings, { credential: async () => new Promise(() => {}), fetcher: async () => { fetched++; return Response.json({}); } });
