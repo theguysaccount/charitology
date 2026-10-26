@@ -290,6 +290,15 @@ hr {
   grid-template-columns: 1fr;
 }
 
+/* Grid children default to min-width: auto, which lets a wide table or code
+   block stretch the column past the viewport. */
+.split > *,
+.grid > *,
+.grid-2 > *,
+.tool-grid > * {
+  min-width: 0;
+}
+
 @media (min-width: 900px) {
   .split {
     grid-template-columns: minmax(0, 1fr) 300px;
@@ -1183,15 +1192,19 @@ fieldset {
   margin-top: 0.2rem;
 }
 
+/* Rows share one set of columns (subgrid), so every bar track has the same
+   length and bars are read against one scale. */
 .bars {
   display: grid;
-  gap: 0.55rem;
+  grid-template-columns: minmax(96px, 30%) minmax(0, 1fr) auto;
+  column-gap: 0.75rem;
+  row-gap: 0.55rem;
 }
 
 .bar-row {
   display: grid;
-  grid-template-columns: minmax(96px, 30%) minmax(0, 1fr) auto;
-  gap: 0.75rem;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
   font-size: 0.86rem;
 }
@@ -1226,6 +1239,7 @@ fieldset {
 }
 
 .table-wrap {
+  position: relative; /* contains visually-hidden cell text so it can't widen the page */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
