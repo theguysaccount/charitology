@@ -18,6 +18,7 @@ import { url } from '../../lib/site';
   <details class="os-context" id="os-context">
     <summary>Mission and context <span id="os-org-label">· Start here</span></summary>
     <form id="os-context-form" class="os-form">
+      <fieldset id="os-context-controls" disabled>
       <div class="os-fields">
         <div class="field"><label for="os-organization">Organization or team</label><input id="os-organization" name="organization" maxlength="160" autocomplete="organization" /></div>
         <div class="field"><label for="os-currency">Currency code</label><input id="os-currency" name="currency" value="USD" minlength="3" maxlength="3" pattern="[A-Za-z]{3}" required aria-describedby="os-currency-hint" /><span class="hint" id="os-currency-hint">One currency for every amount, such as USD, GBP or EUR. Changing the code does not convert amounts.</span></div>
@@ -25,6 +26,7 @@ import { url } from '../../lib/site';
         <div class="field os-wide"><label for="os-community">Who shapes the work, and what is the context?</label><textarea id="os-community" name="community" rows="3" maxlength="2000" aria-describedby="os-context-hint"></textarea><span class="hint" id="os-context-hint">Use program-level notes. Record how the people affected help decide what happens.</span></div>
       </div>
       <button type="submit" class="btn btn-small">Save context</button>
+      </fieldset>
     </form>
   </details>
 
@@ -87,7 +89,7 @@ import { url } from '../../lib/site';
       <div class="btn-row"><button type="submit" class="btn btn-small" id="os-editor-save">Save record</button><button type="button" class="btn btn-ghost btn-small" id="os-editor-cancel">Cancel</button></div>
     </form>
   </dialog>
-  <noscript><p class="callout">Charity OS needs JavaScript to work. Its records are saved in your browser.</p></noscript>
+  <noscript><p class="callout">Charity OS needs JavaScript to work locally. Context fields stay disabled until it is ready. Its records are saved in your browser.</p></noscript>
 </section>
 
 <style>
@@ -99,6 +101,7 @@ import { url } from '../../lib/site';
   .os-context summary { cursor: pointer; font-weight: 700; }
   #os-org-label { font-weight: 400; color: var(--ink-3); }
   .os-form { margin-top: 1rem; }
+  #os-context-controls { border: 0; margin: 0; padding: 0; min-width: 0; }
   .os-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .3rem 1rem; }
   .os-wide { grid-column: 1 / -1; }
   .os-fields :global(textarea) { min-height: 5rem; resize: vertical; }
@@ -147,6 +150,8 @@ import { url } from '../../lib/site';
   import { canPersist } from '../../lib/client/persist';
   import { OS_KEY, PROJECT_STATUSES, GRANT_STATUSES, TASK_STATUSES, EVIDENCE, blankWorkspace, deleteRecord, exampleWorkspace, labels, loadWorkspace, localDate, newId, parseWorkspace, saveWorkspace, summarizeWorkspace, validateWorkspace, workspaceCsv, workspaceJson, type Workspace, type Kind } from '../../lib/client/charity-os';
 
+  const contextForm = $<HTMLFormElement>('#os-context-form');
+  contextForm.addEventListener('submit', (event) => event.preventDefault());
   const loaded = loadWorkspace();
   let workspace = loaded.workspace;
   let undo: Workspace | undefined;
@@ -157,7 +162,6 @@ import { url } from '../../lib/site';
   let recovery = !!loaded.error;
   const dialog = $<HTMLDialogElement>('#os-editor');
   const editorForm = $<HTMLFormElement>('#os-editor-form');
-  const contextForm = $<HTMLFormElement>('#os-context-form');
   const fileInput = $<HTMLInputElement>('#os-file');
   const search = $<HTMLInputElement>('#os-search');
   const projectFilter = $<HTMLSelectElement>('#os-project-filter');
@@ -406,4 +410,5 @@ import { url } from '../../lib/site';
   $('#os-save-state').textContent = $('#os-storage').hidden ? 'Saved in this browser' : 'Working on this page only';
   if (!workspace.organization && !workspace.projects.length) $('#os-context').setAttribute('open', '');
   if (loaded.error) { $('#os-recovery').hidden = false; $('#os-save-state').textContent = 'Saved data needs recovery'; say(`Saved data could not be read: ${loaded.error} Import a valid JSON backup to restore it.`); }
+  $<HTMLFieldSetElement>('#os-context-controls').disabled = false;
 </script>
