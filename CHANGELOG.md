@@ -1,5 +1,11 @@
 # Changelog
 
+## October 27, 2026: fixed publications and guarded issue operations
+
+- Published five source-backed captures with 41 complete members, 410 exact source snapshots and JSON/Markdown/plain-text downloads. State and Progress retain their stated factual baseline; book, journal and Letter pages link their fixed versions. Unknown historical states and draft/review limits stay explicit.
+- Added a private publication proposal desk with deliberately selected complete bases, immutable versions, guarded stale-tab/recovery controls and distinct complete versus selected exports. Nothing automatically publishes a paper or sends email.
+- Deployed the per-issue mail registry and fresh operational review gateway, with durable uncertain-send stops and original accepted Letter 1/withdrawal history preserved. The release sent no mail. [Acceptance](docs/PUBLICATION_EDITIONS_ACCEPTANCE.md) records exact source/CI/deployment identities, controlled browser checks, 480 public byte matches and remaining native-file/people gates.
+
 ## October 26, 2026: own-request participant portal
 
 - Added a separate participant portal requiring both a private receipt and a matching verified email, with explicit account-linking consent. Signing in alone discovers no requests or team membership.
