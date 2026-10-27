@@ -185,7 +185,14 @@ import { url } from '../../lib/site';
   import { $, clear, h } from '../../lib/client/dom';
   import { renderBars } from '../../lib/client/bars';
   import { copy, flash } from '../../lib/client/files';
-  import { decodeState, encodeState, load, readHash, save, writeHash, validateToolStorage } from '../../lib/client/durable-store';
+  import { decodeState, encodeState, readHash, writeHash } from '../../lib/client/store';
+  import { createD1ViewTracker, openD1ToolSession, readD1Dependency } from '../../lib/client/donor-recovery';
+  import { mountD1RecoveryControls } from '../../lib/client/donor-recovery-controls';
+  import type { D1ValueMap } from '../../lib/client/donor-recovery-schemas';
+
+  async function initializeDonorTool(): Promise<void> {
+
+
 
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   const link = (path: string) => base + path;
@@ -277,21 +284,54 @@ import { url } from '../../lib/site';
       );
     }
 
-    save('compass', { weights, position, answers: a, savedAt: new Date().toISOString() });
+
     writeHash('c', encodeState(a));
     result.hidden = false;
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    show(read());
-    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
 
-  form.addEventListener('reset', () => {
-    result.hidden = true;
-    writeHash('c', undefined);
+  const d1View = createD1ViewTracker();
+  const d1Root = form.closest<HTMLElement>('section.tool') ?? form.parentElement!;
+  const d1EarlyInput = () => { d1View.changedForm(); };
+  d1Root.addEventListener('input', d1EarlyInput, true);
+  d1Root.addEventListener('change', d1EarlyInput, true);
+  d1Root.addEventListener('submit', event => event.preventDefault(), true);
+  const d1Session = await openD1ToolSession('compass', { view: d1View });
+  const d1Host = document.createElement('div'); d1Root.append(d1Host);
+  const d1Status = document.createElement('p'); d1Status.className = 'note'; d1Status.setAttribute('role', 'status'); d1Root.append(d1Status);
+  const d1Controls = mountD1RecoveryControls({ host: d1Host, session: d1Session, view: d1View });
+  d1Status.textContent = d1Session.snapshot().message;
+  function d1Changed() { d1View.changedForm(); d1Controls.noteViewMutation(); }
+  function d1FinishLoad() {
+    d1Root.removeEventListener('input', d1EarlyInput, true);
+    d1Root.removeEventListener('change', d1EarlyInput, true);
+    return d1View.snapshot().formGeneration === 0;
+  }
+  async function d1Save(value: D1ValueMap['compass']): Promise<boolean> {
+    const epoch = d1View.snapshot().formGeneration;
+    try {
+      const result = await d1Session.saveCaptured(d1Session.captureSave(value));
+      if (result.formGeneration !== d1View.snapshot().formGeneration) return false;
+      const ok = result.outcome === 'saved' || result.outcome === 'no-op';
+      if (ok) d1View.markFormSaved(result.formGeneration);
+      d1Status.textContent = ok ? 'This record is saved in this browser.' : result.snapshot.message;
+      return ok;
+    } catch (error) {
+      if (epoch === d1View.snapshot().formGeneration) d1Status.textContent = error instanceof Error ? error.message : 'Saving was refused. Your current form remains in this tab.';
+      return false;
+    } finally { d1Controls.refresh(); }
+  }
+
+  form.addEventListener('input', () => d1Changed());
+  form.addEventListener('change', () => d1Changed());
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); d1Changed();
+    const a = read(); show(a); result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const weights = Object.fromEntries(compass.statements.map((v, i) => [v.framework, a.s[i]]));
+    const position = Object.fromEntries(DIMS.map((v, i) => [v, a.d[i] / 100]));
+    await d1Save({ weights, position, answers: a, savedAt: new Date().toISOString() });
   });
+  form.addEventListener('reset', () => { d1Changed(); result.hidden = true; writeHash('c', undefined); });
 
   $('#vc-share').addEventListener('click', async (e) => {
     const ok = await copy(location.href);
@@ -300,11 +340,14 @@ import { url } from '../../lib/site';
 
   const shared = readHash('c');
   const validAnswers = (a: Answers) => !!a && Array.isArray(a.d) && a.d.length === compass.dimensions.length && a.d.every(n => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 100) && Array.isArray(a.s) && a.s.length === compass.statements.length && a.s.every(n => Number.isInteger(n) && n >= 0 && n < compass.scale.length);
-  validateToolStorage('compass', value => !!value && typeof value === 'object' && validAnswers((value as { answers: Answers }).answers));
-  const saved = load<{ answers: Answers } | null>('compass', null);
-  const answers = shared ? decodeState<Answers>(shared) : saved?.answers;
-  if (answers && validAnswers(answers)) {
-    fill(answers);
-    show(answers);
+  const saved = d1Session.snapshot();
+  const answers = shared ? decodeState<Answers>(shared) : saved.persistence === 'saved' && saved.hasState ? saved.value.answers : undefined;
+  if (d1FinishLoad() && answers && validAnswers(answers)) { fill(answers); show(answers); }
+
   }
+  void initializeDonorTool().catch(error => {
+    const note = document.createElement("p"); note.className = "callout"; note.setAttribute("role", "status");
+    note.textContent = error instanceof Error ? error.message : "The saved copy could not be opened safely. Reload or keep a recovery copy.";
+    document.querySelector("main")?.append(note);
+  });
 </script>

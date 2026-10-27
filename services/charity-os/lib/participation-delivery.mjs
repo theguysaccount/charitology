@@ -1211,7 +1211,13 @@ export function deliveryOutcome(value, { status = false } = {}) {
     };
   return { state: "unknown", safeCode, providerEventAt };
 }
-async function workerTransaction(db, org, budget, fn) {
+async function workerTransaction(
+  db,
+  org,
+  budget,
+  fn,
+  { waitForLock = false } = {},
+) {
   if (Date.now() >= budget.deadline - 3000) return null;
   try {
     return await db.tx("", org, async (c) => {
@@ -1220,12 +1226,6 @@ async function workerTransaction(db, org, budget, fn) {
           Math.max(1, Math.min(2000, budget.deadline - Date.now() - 3000)),
         ),
       ]);
-      const acquired = (
-        await c.query(
-          "SELECT pg_try_advisory_xact_lock(hashtextextended($1,0)) AS locked",
-          [org],
-        )
-      ).rows[0]?.locked;
       const bounded = {
         query(text, values) {
           const milliseconds = Math.floor(budget.deadline - Date.now() - 3000);
@@ -1242,6 +1242,24 @@ async function workerTransaction(db, org, budget, fn) {
           });
         },
       };
+      let acquired;
+      if (waitForLock) {
+        // A completed provider attempt must not lose its known outcome merely
+        // because another worker is briefly scanning this tenant. The statement
+        // and query timeouts still bound this wait to the remaining window.
+        await bounded.query(
+          "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+          [org],
+        );
+        acquired = true;
+      } else {
+        acquired = (
+          await bounded.query(
+            "SELECT pg_try_advisory_xact_lock(hashtextextended($1,0)) AS locked",
+            [org],
+          )
+        ).rows[0]?.locked;
+      }
       return acquired ? fn(bounded) : null;
     });
   } catch (e) {
@@ -1366,64 +1384,70 @@ async function releaseUnattempted(db, org, job, budget) {
   }
 }
 async function completeWork(db, org, job, result, budget) {
-  return workerTransaction(db, org, budget, async (c) => {
-    const row = (
-      await c.query(
-        "SELECT * FROM os_participation_outbox WHERE org_id=$1 AND id=$2 AND lease_owner=$3 FOR UPDATE",
-        [org, job.id, job.lease_owner],
+  return workerTransaction(
+    db,
+    org,
+    budget,
+    async (c) => {
+      const row = (
+        await c.query(
+          "SELECT * FROM os_participation_outbox WHERE org_id=$1 AND id=$2 AND lease_owner=$3 FOR UPDATE",
+          [org, job.id, job.lease_owner],
+        )
+      ).rows[0];
+      if (!row) return false;
+      let next = result.state;
+      // Older status snapshots cannot downgrade already recorded provider facts.
+      if (
+        ["delivered", "suppressed", "failed"].includes(row.state) &&
+        !["suppressed", "failed"].includes(next)
       )
-    ).rows[0];
-    if (!row) return false;
-    let next = result.state;
-    // Older status snapshots cannot downgrade already recorded provider facts.
-    if (
-      ["delivered", "suppressed", "failed"].includes(row.state) &&
-      !["suppressed", "failed"].includes(next)
-    )
-      next = row.state;
-    if (row.state === "accepted" && next === "unknown") next = "accepted";
-    let safeCode = result.safeCode,
-      providerEventAt = result.providerEventAt;
-    if (
-      next !== result.state ||
-      (next === row.state &&
-        row.provider_event_at &&
-        providerEventAt &&
-        Date.parse(providerEventAt) < Date.parse(row.provider_event_at))
-    ) {
-      safeCode = row.safe_code;
-      providerEventAt = iso(row.provider_event_at);
-    }
-    await c.query(
-      "UPDATE os_participation_outbox SET state=$4,safe_code=$5,provider_event_at=$6::timestamptz,last_checked_at=now(),first_attempt_at=CASE WHEN $7::boolean THEN NULL ELSE first_attempt_at END,lease_owner=NULL,lease_until=NULL,next_at=now()+CASE WHEN $7::boolean THEN interval '1 hour' WHEN $4='delivered' THEN interval '1 day' ELSE interval '30 minutes' END WHERE org_id=$1 AND id=$2 AND lease_owner=$3",
-      [
-        org,
-        job.id,
-        job.lease_owner,
-        next,
-        safeCode,
-        providerEventAt,
-        result.provenNoAttempt === true && job.operation === "send",
-      ],
-    );
-    if (result.state === "suppressed") {
+        next = row.state;
+      if (row.state === "accepted" && next === "unknown") next = "accepted";
+      let safeCode = result.safeCode,
+        providerEventAt = result.providerEventAt;
+      if (
+        next !== result.state ||
+        (next === row.state &&
+          row.provider_event_at &&
+          providerEventAt &&
+          Date.parse(providerEventAt) < Date.parse(row.provider_event_at))
+      ) {
+        safeCode = row.safe_code;
+        providerEventAt = iso(row.provider_event_at);
+      }
       await c.query(
-        "UPDATE os_participations SET delivery_consent=jsonb_build_object('version',$4::text,'enabled',false,'revision',COALESCE((delivery_consent->>'revision')::integer,0)+1,'at',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')),revision=revision+1,updated_at=now() WHERE org_id=$1 AND id=$2 AND delivery_consent->>'recipientHash'=$3 AND delivery_consent->>'enabled'='true'",
+        "UPDATE os_participation_outbox SET state=$4,safe_code=$5,provider_event_at=$6::timestamptz,last_checked_at=now(),first_attempt_at=CASE WHEN $7::boolean THEN NULL ELSE first_attempt_at END,lease_owner=NULL,lease_until=NULL,next_at=now()+CASE WHEN $7::boolean THEN interval '1 hour' WHEN $4='delivered' THEN interval '1 day' ELSE interval '30 minutes' END WHERE org_id=$1 AND id=$2 AND lease_owner=$3",
         [
           org,
-          row.participation_id,
-          row.recipient_hash,
-          DELIVERY_CONSENT_VERSION,
+          job.id,
+          job.lease_owner,
+          next,
+          safeCode,
+          providerEventAt,
+          result.provenNoAttempt === true && job.operation === "send",
         ],
       );
-      await suppressParticipationDelivery(c, {
-        org,
-        participationId: row.participation_id,
-        reason: "recipient_blocked",
-      });
-    }
-    return true;
-  });
+      if (result.state === "suppressed") {
+        await c.query(
+          "UPDATE os_participations SET delivery_consent=jsonb_build_object('version',$4::text,'enabled',false,'revision',COALESCE((delivery_consent->>'revision')::integer,0)+1,'at',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')),revision=revision+1,updated_at=now() WHERE org_id=$1 AND id=$2 AND delivery_consent->>'recipientHash'=$3 AND delivery_consent->>'enabled'='true'",
+          [
+            org,
+            row.participation_id,
+            row.recipient_hash,
+            DELIVERY_CONSENT_VERSION,
+          ],
+        );
+        await suppressParticipationDelivery(c, {
+          org,
+          participationId: row.participation_id,
+          reason: "recipient_blocked",
+        });
+      }
+      return true;
+    },
+    { waitForLock: true },
+  );
 }
 export async function runParticipationDelivery({
   db,

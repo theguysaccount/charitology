@@ -1,5 +1,18 @@
 # Changelog
 
+## October 27, 2026: guarded donor records
+
+- Added exact-key asynchronous saving and explicit recovery across twelve existing tools, preserving all fourteen saved keys and v1 formats. Failed writes and protected copies remain exportable; newer tab edits and file choices revoke older apply authority.
+- Added separately confirmed three-step grant repair with visible partial states and exact retry. Compass and other tools distinguish an empty start from a saved record; Wrapped examples stay on the page.
+- Fixed an OS email-worker completion race found by release CI: known provider outcomes now wait briefly for the tenant lock within the existing deadline. A forced PostgreSQL contention test confirms one send and later status-only reconciliation.
+- [Acceptance](docs/DONOR_RECOVERY_ACCEPTANCE.md) records 133 focused groups, strict types, complete builds and controlled Chrome flows/layouts. Native file saving remains unverified; no donation, provider action or message was sent.
+
+## October 27, 2026: fixed publications and guarded issue operations
+
+- Published five source-backed captures with 41 complete members, 410 exact source snapshots and JSON/Markdown/plain-text downloads. State and Progress retain their stated factual baseline; book, journal and Letter pages link their fixed versions. Unknown historical states and draft/review limits stay explicit.
+- Added a private publication proposal desk with deliberately selected complete bases, immutable versions, guarded stale-tab/recovery controls and distinct complete versus selected exports. Nothing automatically publishes a paper or sends email.
+- Deployed the per-issue mail registry and fresh operational review gateway, with durable uncertain-send stops and original accepted Letter 1/withdrawal history preserved. The release sent no mail. [Acceptance](docs/PUBLICATION_EDITIONS_ACCEPTANCE.md) records exact source/CI/deployment identities, controlled browser checks, 480 public byte matches and remaining native-file/people gates.
+
 ## October 26, 2026: own-request participant portal
 
 - Added a separate participant portal requiring both a private receipt and a matching verified email, with explicit account-linking consent. Signing in alone discovers no requests or team membership.
