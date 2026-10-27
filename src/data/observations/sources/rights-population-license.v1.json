@@ -1,0 +1,48 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "rights-population-license",
+  "url": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+  "publisher": "World Bank",
+  "title": "rights population license",
+  "retrievedAt": "2026-10-27T14:01:03.339Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "c25cdd32d8c377a060b404205c54452539e0408518f9a7de52a41ee66e8a32d1",
+  "rawBytes": 786808,
+  "payload": {
+    "kind": "external-document",
+    "mediaType": "text/html",
+    "publicExcerpt": {
+      "path": "evidence/28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537.txt",
+      "sha256": "28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537",
+      "bytes": 10,
+      "mediaType": "text/plain"
+    }
+  },
+  "producerMetadata": [
+    {
+      "field": "originalRetrievalRecord",
+      "literal": "2026-10-27T14:01:03.339Z"
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "linked-document-only",
+      "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+    },
+    "attribution": "World Bank",
+    "originalProducerCredit": "World Bank",
+    "limitations": [
+      "No human review or blanket relicensing is established."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "cbe441957dbabe82095d138475cbd91dc9cbe858118c9771914db2eaeed47d42"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-prt",
+  "entity": {
+    "kind": "entity",
+    "id": "country-prt",
+    "version": 1,
+    "hash": "72b98860cf32b3acec9ee08857dc49aa999fc7439adfdb3cfa7a6eab87f55e8d"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Portugal statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-prt",
+      "version": 1,
+      "hash": "72b98860cf32b3acec9ee08857dc49aa999fc7439adfdb3cfa7a6eab87f55e8d"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-prt",
+      "version": 1,
+      "hash": "72b98860cf32b3acec9ee08857dc49aa999fc7439adfdb3cfa7a6eab87f55e8d"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "9c44cf914bcad0b74865a135cf14ae0cfc8e239569a59978018b8c46678ce12e"
+}

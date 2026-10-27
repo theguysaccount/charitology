@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-pse",
+  "entity": {
+    "kind": "entity",
+    "id": "country-pse",
+    "version": 1,
+    "hash": "8a4967ce032398fdf6902c772af581a481748c726daecaa5a89eb8beaa28ee8b"
+  },
+  "scopeKind": "national-statistics",
+  "label": "West Bank and Gaza statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-pse",
+      "version": 1,
+      "hash": "8a4967ce032398fdf6902c772af581a481748c726daecaa5a89eb8beaa28ee8b"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-pse",
+      "version": 1,
+      "hash": "8a4967ce032398fdf6902c772af581a481748c726daecaa5a89eb8beaa28ee8b"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "af32a6d4c3c705cd4f784c0af44dac8c29a153cf56df2fcb56f75fc1946dbd25"
+}

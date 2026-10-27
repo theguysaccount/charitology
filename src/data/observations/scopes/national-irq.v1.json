@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-irq",
+  "entity": {
+    "kind": "entity",
+    "id": "country-irq",
+    "version": 1,
+    "hash": "90ea90a6dd60b419699fda400d0e9631f7a64d96f6746e561bfffddfdeb679e8"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Iraq statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-irq",
+      "version": 1,
+      "hash": "90ea90a6dd60b419699fda400d0e9631f7a64d96f6746e561bfffddfdeb679e8"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-irq",
+      "version": 1,
+      "hash": "90ea90a6dd60b419699fda400d0e9631f7a64d96f6746e561bfffddfdeb679e8"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7fa43f431896fbb8a7aa8364d82f7124b03557837f3948bee8da676020dd13c1"
+}

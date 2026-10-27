@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-fro",
+  "entity": {
+    "kind": "entity",
+    "id": "country-fro",
+    "version": 1,
+    "hash": "aaed5d7c432c586028d61b65ffb48c7c204f9d0e416151b82f2f56f51f4c73ad"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Faroe Islands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-fro",
+      "version": 1,
+      "hash": "aaed5d7c432c586028d61b65ffb48c7c204f9d0e416151b82f2f56f51f4c73ad"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-fro",
+      "version": 1,
+      "hash": "aaed5d7c432c586028d61b65ffb48c7c204f9d0e416151b82f2f56f51f4c73ad"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7bd9b6c264d8c9b1261b723259ecb941c2c87b06ae53c5b237feec81611b64f7"
+}

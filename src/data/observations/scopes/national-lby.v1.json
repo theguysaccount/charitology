@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-lby",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lby",
+    "version": 1,
+    "hash": "60c5f698133b02e7a51195e112556231c361f37b804384c34a0893a0156f75b4"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Libya statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-lby",
+      "version": 1,
+      "hash": "60c5f698133b02e7a51195e112556231c361f37b804384c34a0893a0156f75b4"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-lby",
+      "version": 1,
+      "hash": "60c5f698133b02e7a51195e112556231c361f37b804384c34a0893a0156f75b4"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "82708197845bd69de080b868e863a2b16b1bdad7eb7b09c3bef5d41aca849bc7"
+}

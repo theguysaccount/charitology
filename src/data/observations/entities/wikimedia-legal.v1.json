@@ -1,0 +1,64 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "wikimedia-legal",
+  "entityKind": "legal-organization",
+  "label": "Wikimedia Foundation, Inc.",
+  "identifiers": [
+    {
+      "kind": "ein",
+      "value": "200049703",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-identity",
+            "version": 1,
+            "hash": "7ac0d0f640c9a183b66cc2a3214a846572037e7e3b6141d1e586286ba2af6ffe"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Tax identity"
+            ],
+            "excerpt": "Our tax ID number is 20-0049703."
+          }
+        }
+      ]
+    }
+  ],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [
+    "wikimedia-foundation"
+  ],
+  "countryMetadata": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wm-audit",
+        "version": 1,
+        "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 8,
+        "printedPage": "6",
+        "section": [
+          "Organization and consolidation notes"
+        ],
+        "row": [],
+        "column": []
+      }
+    }
+  ],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "2bf409a486b83aafc9629806100047f88bab9f2ac16bb9756de7eefec80de4ff"
+}

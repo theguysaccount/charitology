@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-vut",
+  "entity": {
+    "kind": "entity",
+    "id": "country-vut",
+    "version": 1,
+    "hash": "63291103f19d5053ecef73c60f204900c57fc25c5fc19ebc7cbf110c0624e3d0"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Vanuatu statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-vut",
+      "version": 1,
+      "hash": "63291103f19d5053ecef73c60f204900c57fc25c5fc19ebc7cbf110c0624e3d0"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-vut",
+      "version": 1,
+      "hash": "63291103f19d5053ecef73c60f204900c57fc25c5fc19ebc7cbf110c0624e3d0"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "17ab62c00878706f97354b61544d9a455c26c14559ba78de48fda54850ec274a"
+}

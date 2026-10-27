@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-isl",
+  "entity": {
+    "kind": "entity",
+    "id": "country-isl",
+    "version": 1,
+    "hash": "a377773587cf38dadd1b93914f217036dd53ce2a19162b3fbf68b590e7171f61"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Iceland statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-isl",
+      "version": 1,
+      "hash": "a377773587cf38dadd1b93914f217036dd53ce2a19162b3fbf68b590e7171f61"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-isl",
+      "version": 1,
+      "hash": "a377773587cf38dadd1b93914f217036dd53ce2a19162b3fbf68b590e7171f61"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "b3e07ddbd5d777ddf5c54c6bda8f44dab0dd024f594f21ab4d95957c1aa543f3"
+}

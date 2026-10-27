@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mng",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mng",
+    "version": 1,
+    "hash": "7a627a9fa69b323abebc43e308a2f99926a3c41958f60645cc6bb1779873f723"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Mongolia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mng",
+      "version": 1,
+      "hash": "7a627a9fa69b323abebc43e308a2f99926a3c41958f60645cc6bb1779873f723"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mng",
+      "version": 1,
+      "hash": "7a627a9fa69b323abebc43e308a2f99926a3c41958f60645cc6bb1779873f723"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "cfbf274b44445505fca257db29ceb888145548ac334a94e340ee140d64ae028f"
+}

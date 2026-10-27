@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-cze",
+  "entity": {
+    "kind": "entity",
+    "id": "country-cze",
+    "version": 1,
+    "hash": "4b637b347199b609b320ffdd4bbcfc465a992c46367ddfc7d21dc10730561993"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Czechia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-cze",
+      "version": 1,
+      "hash": "4b637b347199b609b320ffdd4bbcfc465a992c46367ddfc7d21dc10730561993"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-cze",
+      "version": 1,
+      "hash": "4b637b347199b609b320ffdd4bbcfc465a992c46367ddfc7d21dc10730561993"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "bd6385cd8292ce59f3c6bc1a4f922aec8a1e994ddd883d79e8b736bdf50bc46c"
+}

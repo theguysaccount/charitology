@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-dma",
+  "entity": {
+    "kind": "entity",
+    "id": "country-dma",
+    "version": 1,
+    "hash": "0f388da14e4e6e8b736a53bd12f40caa4f7cdb584abd6597900b34bd3758a47d"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Dominica statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-dma",
+      "version": 1,
+      "hash": "0f388da14e4e6e8b736a53bd12f40caa4f7cdb584abd6597900b34bd3758a47d"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-dma",
+      "version": 1,
+      "hash": "0f388da14e4e6e8b736a53bd12f40caa4f7cdb584abd6597900b34bd3758a47d"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a087621fed0f12e0f237eb49e670c3c36ff540c29f9be82889bc9220c9dbe88f"
+}

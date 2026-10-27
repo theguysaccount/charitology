@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-ven",
+  "entity": {
+    "kind": "entity",
+    "id": "country-ven",
+    "version": 1,
+    "hash": "a2bdbd17a9e020124016c8c635ffece72db7c0ebae69be97589c4872afcd33ae"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Venezuela, RB statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-ven",
+      "version": 1,
+      "hash": "a2bdbd17a9e020124016c8c635ffece72db7c0ebae69be97589c4872afcd33ae"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-ven",
+      "version": 1,
+      "hash": "a2bdbd17a9e020124016c8c635ffece72db7c0ebae69be97589c4872afcd33ae"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "0dfc629961e60af256395487fe52353aaf1825b002c4c220ae1d58bb4575afcf"
+}

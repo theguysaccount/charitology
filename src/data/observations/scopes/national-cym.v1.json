@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-cym",
+  "entity": {
+    "kind": "entity",
+    "id": "country-cym",
+    "version": 1,
+    "hash": "7917cac5ef4160f044ab3b2d4fc80f5679c33008395afb44ce42e2a9cf9d3021"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Cayman Islands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-cym",
+      "version": 1,
+      "hash": "7917cac5ef4160f044ab3b2d4fc80f5679c33008395afb44ce42e2a9cf9d3021"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-cym",
+      "version": 1,
+      "hash": "7917cac5ef4160f044ab3b2d4fc80f5679c33008395afb44ce42e2a9cf9d3021"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4a2ce819814d332e4788cb1169e534202f3f81a31220a6efba98cf023d1e921b"
+}

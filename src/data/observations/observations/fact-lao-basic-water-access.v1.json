@@ -1,0 +1,100 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-lao-basic-water-access",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lao",
+    "version": 1,
+    "hash": "ed5b7c5dfbea98cff701e45203b71f050b67321961637206a2efb1619571d8c4"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-lao",
+    "version": 1,
+    "hash": "b9de20d89de6db1341f520699db665c50f62b378b9fb364cdd1a6d10992cefe6"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-basic-water-access",
+    "version": 1,
+    "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2024
+  },
+  "reported": {
+    "token": "95.8635794968398",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sh-h2o-basw-zs",
+        "version": 1,
+        "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/943/value",
+        "matches": [
+          {
+            "pointer": "/1/943/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "LA"
+            }
+          },
+          {
+            "pointer": "/1/943/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "LAO"
+            }
+          },
+          {
+            "pointer": "/1/943/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SH.H2O.BASW.ZS"
+            }
+          },
+          {
+            "pointer": "/1/943/date",
+            "expected": {
+              "kind": "string",
+              "value": "2024"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "958635794968398",
+    "exponent": -13
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7592ed05571c1d7da1a30b2d6aea2157e0cd8da12edbfb5ea0a7cfa9362bec6a"
+}

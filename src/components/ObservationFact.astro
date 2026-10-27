@@ -1,0 +1,31 @@
+---
+import type { ObservationProjection, ObservationRecord } from "../lib/observation-types";
+import { observationFact } from "../lib/observation-view";
+import ObservationRefs from "./ObservationRefs.astro";
+import { observationSourceHref } from "../lib/observations";
+import { url } from "../lib/site";
+interface Props { projection: ObservationProjection; observation: ObservationRecord; showEntity?: boolean; }
+const { projection, observation, showEntity = true } = Astro.props;
+const f = observationFact(projection, observation);
+---
+<article class="ob-fact" id={`fact-${observation.id}`} data-observation-id={observation.id} data-observation-version={observation.version} data-observation-hash={observation.hash} data-edition-id={projection.edition.id} data-edition-hash={projection.edition.hash}>
+  <h3>{f.measure.label}</h3>
+  {showEntity && <p>{f.entity.label} · {f.scope.label}</p>}
+  <p class="ob-value"><strong>{f.valueText}</strong> {f.unitText}</p>
+  <p>{f.periodText}</p>
+  <p class="note"><a href={url(observationSourceHref(f.source.id, f.source.version))}>Source, exact location and reuse terms</a> · source retrieved {f.source.retrievedAt} · draft transcription</p>
+  <details><summary>Definition, reported token and limitations</summary>
+    <p>{f.measure.definition}</p><p>Printed or returned token: <code>{observation.reported.token}</code>. Exact source multiplier: {f.scaleText}. Normalized value: {f.valueText} {f.measure.unit.label}.</p>
+    <p>{f.precisionText}. {f.uncertaintyText}.</p>
+    {observation.uncertainty && <p>{observation.uncertainty.verbatimNote}</p>}
+    {observation.producerStatus !== null && <p>Returned observation status: {observation.producerStatus === "" ? "empty string (no status label supplied)" : observation.producerStatus}.</p>}
+    {observation.producerUnit !== null && <p>Returned producer unit field: {observation.producerUnit === "" ? "empty string; normalized unit uses the linked definition" : observation.producerUnit}.</p>}
+    {observation.producerDecimal !== null && <p>Producer display metadata: {observation.producerDecimal}. This is not measured precision.</p>}
+    {observation.annotations.map(a => <p>{a.verbatim}</p>)}
+    <p>Price basis is unknown. No inflation or currency conversion is made.</p>
+    <ul>{[...f.scope.limitations, ...f.measure.limitations, ...observation.limitations].map(l => <li>{l}</li>)}</ul>
+    <ObservationRefs projection={projection} refs={[observation.reported.valueRef, ...observation.sourceRefs]} />
+    <p class="ob-hash">Observation {observation.id} v{observation.version} · {observation.hash}</p>
+    <p class="ob-hash">Edition {projection.edition.id} · {projection.edition.hash}</p>
+  </details>
+</article>

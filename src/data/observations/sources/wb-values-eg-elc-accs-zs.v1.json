@@ -1,0 +1,71 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "wb-values-eg-elc-accs-zs",
+  "url": "https://api.worldbank.org/v2/country/all/indicator/EG.ELC.ACCS.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+  "publisher": "World Bank",
+  "title": "values-EG.ELC.ACCS.ZS",
+  "retrievedAt": "2026-10-27T12:27:35.187Z",
+  "sourceUpdatedDay": "2026-10-08",
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "10370958e966da191fbdbd8f47cf82a9b9fd3068da320558ff58436806acef12",
+  "rawBytes": 379616,
+  "payload": {
+    "kind": "public-json",
+    "raw": {
+      "path": "raw/10370958e966da191fbdbd8f47cf82a9b9fd3068da320558ff58436806acef12.json",
+      "sha256": "10370958e966da191fbdbd8f47cf82a9b9fd3068da320558ff58436806acef12",
+      "bytes": 379616,
+      "mediaType": "application/json"
+    },
+    "adapter": "world-bank-values-v1"
+  },
+  "producerMetadata": [
+    {
+      "field": "sourceid",
+      "literal": "2"
+    },
+    {
+      "field": "lastupdated",
+      "literal": "2026-10-08"
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "explicit-license",
+      "label": "CC BY 4.0",
+      "termsUrl": "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS",
+      "evidence": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "rights-electricity-license",
+            "version": 1,
+            "hash": "efb54fd7f41dcd989a8c54e5b17e8f5b79974f43e3364643889aa5f86275d336"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Retained rights evidence"
+            ],
+            "excerpt": "CC BY-4.0"
+          }
+        }
+      ]
+    },
+    "attribution": "World Bank World Development Indicators and named original statistical producers",
+    "originalProducerCredit": "SDG 7.1.1 Electrification Dataset, World Bank (WB), uri: https://trackingsdg7.esmap.org/downloads, note: Data is downloaded from ESMAP website. Data is released when a new Tracking SDG7 report is released., publisher: World Bank (WB), date accessed: 2024-05-16, date published: 2023",
+    "limitations": [
+      "The source unit field is empty; normalized unit comes from its retained definition."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+}

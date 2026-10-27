@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-per",
+  "entity": {
+    "kind": "entity",
+    "id": "country-per",
+    "version": 1,
+    "hash": "0551b2879dc965348d8716ab906f9502982a7323d292a72e25591591a42c6aae"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Peru statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-per",
+      "version": 1,
+      "hash": "0551b2879dc965348d8716ab906f9502982a7323d292a72e25591591a42c6aae"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-per",
+      "version": 1,
+      "hash": "0551b2879dc965348d8716ab906f9502982a7323d292a72e25591591a42c6aae"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f684300bb05780fe31aa03c7ef58cab3de8baf71d13f21423de2e9f811a66b81"
+}

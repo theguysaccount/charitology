@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-moz",
+  "entity": {
+    "kind": "entity",
+    "id": "country-moz",
+    "version": 1,
+    "hash": "d7127f0a0c96ed7393bb3debfa3e0370fe2d3f9fe1004c19430ea5cadfdae5b3"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Mozambique statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-moz",
+      "version": 1,
+      "hash": "d7127f0a0c96ed7393bb3debfa3e0370fe2d3f9fe1004c19430ea5cadfdae5b3"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-moz",
+      "version": 1,
+      "hash": "d7127f0a0c96ed7393bb3debfa3e0370fe2d3f9fe1004c19430ea5cadfdae5b3"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "bc35c5ed55895434b0da30151f973ae6b2ca13f1ad10e9e0452a0e80d1d08b34"
+}

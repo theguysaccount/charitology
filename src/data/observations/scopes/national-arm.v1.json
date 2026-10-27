@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-arm",
+  "entity": {
+    "kind": "entity",
+    "id": "country-arm",
+    "version": 1,
+    "hash": "eff9f86aa3b90b599872ad6c69a89a50a0e359e87d496240f8336b86ea14e7c3"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Armenia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-arm",
+      "version": 1,
+      "hash": "eff9f86aa3b90b599872ad6c69a89a50a0e359e87d496240f8336b86ea14e7c3"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-arm",
+      "version": 1,
+      "hash": "eff9f86aa3b90b599872ad6c69a89a50a0e359e87d496240f8336b86ea14e7c3"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f6e0f80669d5896d40584b6c585c78b3ff75493eaffca9ff2d6cdd3fc376cddd"
+}

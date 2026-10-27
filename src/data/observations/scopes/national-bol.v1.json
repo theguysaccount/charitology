@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-bol",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bol",
+    "version": 1,
+    "hash": "62b9cddf54dbae658d3c76ec4624290f48292101cb5fef4c7769e76bdc7fe692"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Bolivia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-bol",
+      "version": 1,
+      "hash": "62b9cddf54dbae658d3c76ec4624290f48292101cb5fef4c7769e76bdc7fe692"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-bol",
+      "version": 1,
+      "hash": "62b9cddf54dbae658d3c76ec4624290f48292101cb5fef4c7769e76bdc7fe692"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "30a2d5a413711ffbe27ef040118c3138352505af6312ecfcc94b47c024a6e182"
+}

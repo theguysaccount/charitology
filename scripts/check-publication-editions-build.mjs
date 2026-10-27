@@ -221,12 +221,12 @@ check(
       };
       return { name: field("name"), description: field("description") };
     });
-    assert.equal(expected.length, 34);
-    assert.equal(new Set(expected.map((e) => e.name)).size, 34);
+    assert.equal(expected.length, 36);
+    assert.equal(new Set(expected.map((e) => e.name)).size, 36);
     const index = json("/api/v1/index.json");
     sameKeys(index, ["name", "version", "license", "docs", "endpoints"]);
     assert.equal(index.version, 1);
-    assert.equal(index.endpoints.length, 34);
+    assert.equal(index.endpoints.length, 36);
     assert.equal(index.docs, new URL(href("/tools/public-api/"), site).href);
     assert.deepEqual(
       index.endpoints,
@@ -240,7 +240,13 @@ check(
       sameKeys(body, ["name", "description", "license", "generated", "data"]);
       assert.equal(body.name, e.name);
       assert.equal(body.description, e.description);
-      assert.equal(body.license, index.license);
+      if (
+        ["countries", "observations", "observation-coverage"].includes(e.name)
+      ) {
+        assert.match(body.license, /World Bank/);
+        assert.match(body.license, /source-specific terms/);
+        assert.match(body.license, /Financial documents have separate terms/);
+      } else assert.equal(body.license, index.license);
       assert.match(body.generated, /^\d{4}-\d{2}-\d{2}$/);
     }
   },

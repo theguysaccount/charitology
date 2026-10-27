@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-phl",
+  "entity": {
+    "kind": "entity",
+    "id": "country-phl",
+    "version": 1,
+    "hash": "c0a19028b940b9c88f31477f4f34ad7490d83dc85583b3d398aef676d8b6a410"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Philippines statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-phl",
+      "version": 1,
+      "hash": "c0a19028b940b9c88f31477f4f34ad7490d83dc85583b3d398aef676d8b6a410"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-phl",
+      "version": 1,
+      "hash": "c0a19028b940b9c88f31477f4f34ad7490d83dc85583b3d398aef676d8b6a410"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "6dd9c99ec5bcc8f5798ad8bcea6288e01a3c57c08eedf7f7d14aa11ee760bb4f"
+}

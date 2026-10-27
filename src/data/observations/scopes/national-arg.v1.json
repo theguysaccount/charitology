@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-arg",
+  "entity": {
+    "kind": "entity",
+    "id": "country-arg",
+    "version": 1,
+    "hash": "c2de2adb254bfa84eb1c2071d7e8b76f17042ae221afd79791c25fd42957837d"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Argentina statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-arg",
+      "version": 1,
+      "hash": "c2de2adb254bfa84eb1c2071d7e8b76f17042ae221afd79791c25fd42957837d"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-arg",
+      "version": 1,
+      "hash": "c2de2adb254bfa84eb1c2071d7e8b76f17042ae221afd79791c25fd42957837d"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "5d750d801671a029522b401b57ff03d06da05460a59d98ff6dc99a3fc2fcd121"
+}

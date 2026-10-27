@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-fra",
+  "entity": {
+    "kind": "entity",
+    "id": "country-fra",
+    "version": 1,
+    "hash": "7b274230719e455c59737a6db7517eae4c6c85de7790a9b7bac3e554b641a370"
+  },
+  "scopeKind": "national-statistics",
+  "label": "France statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-fra",
+      "version": 1,
+      "hash": "7b274230719e455c59737a6db7517eae4c6c85de7790a9b7bac3e554b641a370"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-fra",
+      "version": 1,
+      "hash": "7b274230719e455c59737a6db7517eae4c6c85de7790a9b7bac3e554b641a370"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "bcdec732db0471e9667e2cca78c899c9d42aad7786d8a7304c079976de932a48"
+}

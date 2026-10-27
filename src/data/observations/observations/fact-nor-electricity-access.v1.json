@@ -1,0 +1,100 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-nor-electricity-access",
+  "entity": {
+    "kind": "entity",
+    "id": "country-nor",
+    "version": 1,
+    "hash": "00918040ffb5638801cce0946e924c8d31e83b439c3db344034d4bd51f6c6a33"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-nor",
+    "version": 1,
+    "hash": "1e7770607e6e6dfb9ebb92f9dcb1d7ba6ee56d90beedd9ca65f9358390103be4"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-electricity-access",
+    "version": 1,
+    "hash": "a6e896fe7a8769fc5bab41f1f4b1e329873e251227a9ea68a4598a2be25a7c73"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2024
+  },
+  "reported": {
+    "token": "100",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-eg-elc-accs-zs",
+        "version": 1,
+        "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/1177/value",
+        "matches": [
+          {
+            "pointer": "/1/1177/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "NO"
+            }
+          },
+          {
+            "pointer": "/1/1177/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "NOR"
+            }
+          },
+          {
+            "pointer": "/1/1177/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "EG.ELC.ACCS.ZS"
+            }
+          },
+          {
+            "pointer": "/1/1177/date",
+            "expected": {
+              "kind": "string",
+              "value": "2024"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "1",
+    "exponent": 2
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "1",
+  "annotations": [],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a8e44f79b070c1821fe2df99c5242f21e741dd4e6a89607b4ba17fd3e10d59d1"
+}

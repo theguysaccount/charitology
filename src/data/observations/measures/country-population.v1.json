@@ -1,0 +1,64 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "measure",
+  "id": "country-population",
+  "label": "Population",
+  "measureKind": "population-count",
+  "family": "population",
+  "producerCode": "SP.POP.TOTL",
+  "definition": "Total population is based on the de facto definition of population, which counts all residents regardless of legal status or citizenship. The values shown are midyear estimates.",
+  "unit": {
+    "kind": "count",
+    "label": "people",
+    "denominator": null
+  },
+  "method": "Latest non-null producer value in the explicitly fixed 2020–2025 window.",
+  "legacyCountry": {
+    "id": "SP.POP.TOTL",
+    "label": "Population",
+    "unit": "people",
+    "note": "The number of residents; not a measure of need.",
+    "indicatorUrl": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+    "queryUrl": "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?date=2020:2025&footnote=y&format=json&per_page=20000",
+    "definition": "Total population is based on the de facto definition of population, which counts all residents regardless of legal status or citizenship. The values shown are midyear estimates.",
+    "organization": "World Population Prospects, United Nations (UN), uri: https://population.un.org/wpp/, publisher: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), uri: https://unstats.un.org/home/nso_sites/, publisher: National Statistical Offices;\nEurostat: Demographic Statistics, Eurostat (ESTAT), uri: https://ec.europa.eu/eurostat/data/database?node_code=earn_ses_monthly, publisher: Eurostat;\nPopulation and Vital Statistics Report (various years), United Nations (UN), uri: https://unstats.un.org, publisher: UN Statistics Division"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-sp-pop-totl",
+        "version": 1,
+        "hash": "221eff895f67a4e1449daa26f7a240e45fbde3abb13a805ced6c42e48243b3af"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/sourceNote",
+        "matches": []
+      }
+    },
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-sp-pop-totl",
+        "version": 1,
+        "hash": "221eff895f67a4e1449daa26f7a240e45fbde3abb13a805ced6c42e48243b3af"
+      },
+      "role": "unit",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/name",
+        "matches": []
+      }
+    }
+  ],
+  "limitations": [
+    "The number of residents; not a measure of need."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "34a26175e5b5483546f01d37cc3ddd0d757f73bcee30231fd1eb23a7d90fe4df"
+}

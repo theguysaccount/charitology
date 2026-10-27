@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-kna",
+  "entity": {
+    "kind": "entity",
+    "id": "country-kna",
+    "version": 1,
+    "hash": "1e3f672638b64327723335d6dcf19f464db16471fe4b0f2322aa74c26b5a83fb"
+  },
+  "scopeKind": "national-statistics",
+  "label": "St. Kitts and Nevis statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-kna",
+      "version": 1,
+      "hash": "1e3f672638b64327723335d6dcf19f464db16471fe4b0f2322aa74c26b5a83fb"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-kna",
+      "version": 1,
+      "hash": "1e3f672638b64327723335d6dcf19f464db16471fe4b0f2322aa74c26b5a83fb"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4ef2b9978c5420b798e7abc18b2498707cb698f3470ee248dcab0c980eb2d3b5"
+}

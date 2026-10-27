@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-yem",
+  "entity": {
+    "kind": "entity",
+    "id": "country-yem",
+    "version": 1,
+    "hash": "d999d3ca988d473ce7b7b7c1b376ee28fa5cf54202b68bf5d72df958269e5a2c"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Yemen, Rep. statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-yem",
+      "version": 1,
+      "hash": "d999d3ca988d473ce7b7b7c1b376ee28fa5cf54202b68bf5d72df958269e5a2c"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-yem",
+      "version": 1,
+      "hash": "d999d3ca988d473ce7b7b7c1b376ee28fa5cf54202b68bf5d72df958269e5a2c"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "493c6c6f86e58d420af00d3f8602c5b8efc8939d889330813487a92b9dc1160f"
+}

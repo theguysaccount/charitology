@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-cyp",
+  "entity": {
+    "kind": "entity",
+    "id": "country-cyp",
+    "version": 1,
+    "hash": "72d487c252aec14bcc43f82f534831e88864432317a11e3956f2782538749346"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Cyprus statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-cyp",
+      "version": 1,
+      "hash": "72d487c252aec14bcc43f82f534831e88864432317a11e3956f2782538749346"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-cyp",
+      "version": 1,
+      "hash": "72d487c252aec14bcc43f82f534831e88864432317a11e3956f2782538749346"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "dbd075093f94c65c7888e494cdac616350850cba689ca8bddd66e36690fb394f"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-dza",
+  "entity": {
+    "kind": "entity",
+    "id": "country-dza",
+    "version": 1,
+    "hash": "94f451c52bcdd5a9c5be188739a40a1d3fa4099579960c415cbb20e8ee0d3231"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Algeria statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-dza",
+      "version": 1,
+      "hash": "94f451c52bcdd5a9c5be188739a40a1d3fa4099579960c415cbb20e8ee0d3231"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-dza",
+      "version": 1,
+      "hash": "94f451c52bcdd5a9c5be188739a40a1d3fa4099579960c415cbb20e8ee0d3231"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "25963b1ab176cc8b442d5f13225693df2474d32885e302b49b490b354c706cd7"
+}

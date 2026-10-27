@@ -1,0 +1,5280 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "coverage",
+  "id": "country-basic-water-access",
+  "selection": {
+    "kind": "country-latest-window",
+    "startYear": 2020,
+    "endYear": 2025,
+    "rule": "latest-non-null",
+    "indicator": "SH.H2O.BASW.ZS",
+    "countryMetadataSource": {
+      "kind": "source",
+      "id": "wb-country-metadata",
+      "version": 1,
+      "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+    },
+    "valuesSource": {
+      "kind": "source",
+      "id": "wb-values-sh-h2o-basw-zs",
+      "version": 1,
+      "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+    },
+    "indicatorMetadataSource": {
+      "kind": "source",
+      "id": "wb-metadata-sh-h2o-basw-zs",
+      "version": 1,
+      "hash": "5ae6a2ec842a9afb9a528130166ad43c8101fe3f1b4f1dcd6cfc5a38f1f9511b"
+    },
+    "measure": {
+      "kind": "measure",
+      "id": "country-basic-water-access",
+      "version": 1,
+      "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+    },
+    "nonaggregateRule": "country-metadata-region-id-not-NA"
+  },
+  "cells": [
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-abw",
+        "version": 1,
+        "hash": "a287e226865c6d4acd233d5ddffbe65a73b5c5a09c9a6b03785e82b1d180e0bf"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-abw",
+        "version": 1,
+        "hash": "1ab523d0fb72d6dfad30cb159b40d1774caf060852f11b6954db7ae7ae1b55f8"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/348/value",
+            "matches": [
+              {
+                "pointer": "/1/348/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AW"
+                }
+              },
+              {
+                "pointer": "/1/348/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ABW"
+                }
+              },
+              {
+                "pointer": "/1/348/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/348/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/349/value",
+            "matches": [
+              {
+                "pointer": "/1/349/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AW"
+                }
+              },
+              {
+                "pointer": "/1/349/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ABW"
+                }
+              },
+              {
+                "pointer": "/1/349/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/349/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/350/value",
+            "matches": [
+              {
+                "pointer": "/1/350/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AW"
+                }
+              },
+              {
+                "pointer": "/1/350/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ABW"
+                }
+              },
+              {
+                "pointer": "/1/350/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/350/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/351/value",
+            "matches": [
+              {
+                "pointer": "/1/351/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AW"
+                }
+              },
+              {
+                "pointer": "/1/351/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ABW"
+                }
+              },
+              {
+                "pointer": "/1/351/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/351/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/352/value",
+            "matches": [
+              {
+                "pointer": "/1/352/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AW"
+                }
+              },
+              {
+                "pointer": "/1/352/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ABW"
+                }
+              },
+              {
+                "pointer": "/1/352/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/352/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/353/value",
+            "matches": [
+              {
+                "pointer": "/1/353/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AW"
+                }
+              },
+              {
+                "pointer": "/1/353/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ABW"
+                }
+              },
+              {
+                "pointer": "/1/353/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/353/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-afg-basic-water-access",
+        "version": 1,
+        "hash": "60491308fb9f1f612b5077f170ae3e27266bea9cf50d887e0d0dbc82bfc7b495"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ago-basic-water-access",
+        "version": 1,
+        "hash": "6bfd9fb1e8ebaea257e7e3960f24516070d122695de07e20f0cce4ff9cc86160"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-alb-basic-water-access",
+        "version": 1,
+        "hash": "a4e48a3fd12e8b8ee580e258b7738f0d3930ba95845f658fc9ed74da595619a5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-and-basic-water-access",
+        "version": 1,
+        "hash": "3aaaeaf757a4c706b213d8167ec944cd19c895a384144523c19cc6b4458f2623"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-are-basic-water-access",
+        "version": 1,
+        "hash": "c65994c7f5c50e687520adbae13d9c068a3f3e4b98e6868ef73c10f62142c0e0"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-arg",
+        "version": 1,
+        "hash": "c2de2adb254bfa84eb1c2071d7e8b76f17042ae221afd79791c25fd42957837d"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-arg",
+        "version": 1,
+        "hash": "5d750d801671a029522b401b57ff03d06da05460a59d98ff6dc99a3fc2fcd121"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/336/value",
+            "matches": [
+              {
+                "pointer": "/1/336/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AR"
+                }
+              },
+              {
+                "pointer": "/1/336/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ARG"
+                }
+              },
+              {
+                "pointer": "/1/336/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/336/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/337/value",
+            "matches": [
+              {
+                "pointer": "/1/337/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AR"
+                }
+              },
+              {
+                "pointer": "/1/337/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ARG"
+                }
+              },
+              {
+                "pointer": "/1/337/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/337/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/338/value",
+            "matches": [
+              {
+                "pointer": "/1/338/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AR"
+                }
+              },
+              {
+                "pointer": "/1/338/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ARG"
+                }
+              },
+              {
+                "pointer": "/1/338/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/338/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/339/value",
+            "matches": [
+              {
+                "pointer": "/1/339/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AR"
+                }
+              },
+              {
+                "pointer": "/1/339/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ARG"
+                }
+              },
+              {
+                "pointer": "/1/339/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/339/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/340/value",
+            "matches": [
+              {
+                "pointer": "/1/340/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AR"
+                }
+              },
+              {
+                "pointer": "/1/340/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ARG"
+                }
+              },
+              {
+                "pointer": "/1/340/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/340/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/341/value",
+            "matches": [
+              {
+                "pointer": "/1/341/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AR"
+                }
+              },
+              {
+                "pointer": "/1/341/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ARG"
+                }
+              },
+              {
+                "pointer": "/1/341/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/341/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-arm-basic-water-access",
+        "version": 1,
+        "hash": "5c79d5f737b72d465aa34419243d91b329246b728a13add15e9740381153941c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-asm-basic-water-access",
+        "version": 1,
+        "hash": "d131f3ea9d6c66f7ff4aff2c216f8e3b7df0a3b11c5263bcb4286e9540945800"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-atg-basic-water-access",
+        "version": 1,
+        "hash": "524104e66d4b9dfacea2010fadcf998755ea1119ab45be25c92cae1a5e7c3a2d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aus-basic-water-access",
+        "version": 1,
+        "hash": "e9c9fc3b0777917431a57ebd9c3af08053be981816e8b124adcbf8e3e64d8baf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aut-basic-water-access",
+        "version": 1,
+        "hash": "511029096071287aff9626c847b4bcd9de40652f94ecd10728c9e1598bb4ba13"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aze-basic-water-access",
+        "version": 1,
+        "hash": "3458ea2797e15346d62cf20da2d351a20bf37437243bbb4cdd82df91f71577f4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bdi-basic-water-access",
+        "version": 1,
+        "hash": "6ca094f23b378b514941b8043e48d587f147611046b85206028d20f421d1a8fe"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bel-basic-water-access",
+        "version": 1,
+        "hash": "4f8da4bf1e268859171bf7e3da2068076bea277261f156a5d4987e257aab5067"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ben-basic-water-access",
+        "version": 1,
+        "hash": "f9b78125469e98341612f541df382c50ae67da29b6743b7daddc6ea70a6639ef"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bfa-basic-water-access",
+        "version": 1,
+        "hash": "82a0ce37d04406db7c38cdfeb4b71b68762171bb57166b0f0db0bbb3fd92d01b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bgd-basic-water-access",
+        "version": 1,
+        "hash": "085392bd36a6eef5d7c374638bbb565095292e1f9bf287fb97dd3b0c4a20b5f8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bgr-basic-water-access",
+        "version": 1,
+        "hash": "ee565d8d003068f718dcd7581fb012bc8f8296f06ce9061597d3a23584a03b52"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bhr-basic-water-access",
+        "version": 1,
+        "hash": "53c0a9bedf6c79995160d57aca8182599e051df5953ac15371f8459c9f1a83a7"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-bhs",
+        "version": 1,
+        "hash": "ec6b164d2a0314e4a9ec386dc872c87c7d11aacac20764f46831349ec28eafab"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-bhs",
+        "version": 1,
+        "hash": "d4082db2d5c03f07f16ff135f952b3e4a8fe10eff0ba579944349e03e05769f2"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/372/value",
+            "matches": [
+              {
+                "pointer": "/1/372/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "BS"
+                }
+              },
+              {
+                "pointer": "/1/372/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "BHS"
+                }
+              },
+              {
+                "pointer": "/1/372/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/372/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/373/value",
+            "matches": [
+              {
+                "pointer": "/1/373/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "BS"
+                }
+              },
+              {
+                "pointer": "/1/373/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "BHS"
+                }
+              },
+              {
+                "pointer": "/1/373/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/373/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/374/value",
+            "matches": [
+              {
+                "pointer": "/1/374/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "BS"
+                }
+              },
+              {
+                "pointer": "/1/374/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "BHS"
+                }
+              },
+              {
+                "pointer": "/1/374/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/374/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/375/value",
+            "matches": [
+              {
+                "pointer": "/1/375/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "BS"
+                }
+              },
+              {
+                "pointer": "/1/375/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "BHS"
+                }
+              },
+              {
+                "pointer": "/1/375/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/375/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/376/value",
+            "matches": [
+              {
+                "pointer": "/1/376/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "BS"
+                }
+              },
+              {
+                "pointer": "/1/376/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "BHS"
+                }
+              },
+              {
+                "pointer": "/1/376/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/376/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/377/value",
+            "matches": [
+              {
+                "pointer": "/1/377/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "BS"
+                }
+              },
+              {
+                "pointer": "/1/377/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "BHS"
+                }
+              },
+              {
+                "pointer": "/1/377/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/377/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bih-basic-water-access",
+        "version": 1,
+        "hash": "356183adee7b88870a453598c3b4e087a7a43d1ca61593822cc9c5a6c33d580f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-blr-basic-water-access",
+        "version": 1,
+        "hash": "5ea925452cd496fff8017c1b18ff2b6845172eb05eb0975a715c868be8675b47"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-blz-basic-water-access",
+        "version": 1,
+        "hash": "200ebf785869490871405d0a73ae9c6f0e405d09bacb101817c38c25ce4b7751"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bmu-basic-water-access",
+        "version": 1,
+        "hash": "6baeb2cc68d79024a34d8663d88e88125b042ef93d712100e582d4b8e66e4574"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bol-basic-water-access",
+        "version": 1,
+        "hash": "4fa4a4daab62ac24f3ada38e2074bd5e6318af1126f8da8307e998d7f89d6f34"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bra-basic-water-access",
+        "version": 1,
+        "hash": "6c52d2458a5c898ed6e4189d9fa8a7ab400664abd436f213b4c856d0a1bf96b2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-brb-basic-water-access",
+        "version": 1,
+        "hash": "467489131f17f16fe38be8f1765975707353637652e8bb4674c3be9a9f6aa296"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-brn-basic-water-access",
+        "version": 1,
+        "hash": "84c8cac7e9b206738512d43f9a7b7eaa5f6fd7dc74821c74a82eef69db08980d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-btn-basic-water-access",
+        "version": 1,
+        "hash": "621b914ca3e54111a633fd889339ea0a85f24f29ea9e590704c797949932fa0b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bwa-basic-water-access",
+        "version": 1,
+        "hash": "1f47fd7ba03a732be856073e52a92f5e7091c1dc2387ffe0bee048b1a0a74451"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-caf-basic-water-access",
+        "version": 1,
+        "hash": "ef5da42c02d259b03d39c7fd91361d7a3c5dc62d72357c8c8e04e13e945b5877"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-can-basic-water-access",
+        "version": 1,
+        "hash": "8d9893280988b6522a7e5a0a90e5b5191263011c10bf283cf0a4fb4696f24f3c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-che-basic-water-access",
+        "version": 1,
+        "hash": "7d043d447e392116de02aa85975b793be6dba236102093483d7143de22baf988"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-chi",
+        "version": 1,
+        "hash": "f531fbd66b84ce468b4dcebcd0a8343776a8bfda04462928a93eed2e3a8db656"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-chi",
+        "version": 1,
+        "hash": "4dd7516757d3693499632bab06b104a951f81c0f3a1e260cecc54d92df751521"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/528/value",
+            "matches": [
+              {
+                "pointer": "/1/528/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "JG"
+                }
+              },
+              {
+                "pointer": "/1/528/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "CHI"
+                }
+              },
+              {
+                "pointer": "/1/528/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/528/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/529/value",
+            "matches": [
+              {
+                "pointer": "/1/529/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "JG"
+                }
+              },
+              {
+                "pointer": "/1/529/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "CHI"
+                }
+              },
+              {
+                "pointer": "/1/529/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/529/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/530/value",
+            "matches": [
+              {
+                "pointer": "/1/530/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "JG"
+                }
+              },
+              {
+                "pointer": "/1/530/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "CHI"
+                }
+              },
+              {
+                "pointer": "/1/530/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/530/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/531/value",
+            "matches": [
+              {
+                "pointer": "/1/531/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "JG"
+                }
+              },
+              {
+                "pointer": "/1/531/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "CHI"
+                }
+              },
+              {
+                "pointer": "/1/531/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/531/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/532/value",
+            "matches": [
+              {
+                "pointer": "/1/532/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "JG"
+                }
+              },
+              {
+                "pointer": "/1/532/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "CHI"
+                }
+              },
+              {
+                "pointer": "/1/532/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/532/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/533/value",
+            "matches": [
+              {
+                "pointer": "/1/533/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "JG"
+                }
+              },
+              {
+                "pointer": "/1/533/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "CHI"
+                }
+              },
+              {
+                "pointer": "/1/533/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/533/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chl-basic-water-access",
+        "version": 1,
+        "hash": "155c674f665005143b15b6464ee25d192974f22b14852f5b86b523f1151335b5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chn-basic-water-access",
+        "version": 1,
+        "hash": "44c841edb384461c2ad492f2636e4e8c9a0e2d0e9877f482a4922c3a561f5f22"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-civ-basic-water-access",
+        "version": 1,
+        "hash": "2c93a0561f4d3b9768f82a794a9c75a4238806bbe027051e7919e7b4706b52fc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cmr-basic-water-access",
+        "version": 1,
+        "hash": "d14d7ef957a170b40db65ee74195c82a16056c87a6b83dfc60c69a534b4d6764"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cod-basic-water-access",
+        "version": 1,
+        "hash": "6382d2894f1bbc0d4895a2527eab203df5f5ea7cb2596071020286b1addba4e1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cog-basic-water-access",
+        "version": 1,
+        "hash": "3996a299ad9e5a94b930eea223ef22de649aa6d6e78d2158f8166d30786de618"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-col-basic-water-access",
+        "version": 1,
+        "hash": "3e63947437c5a9aa746dbccb0432431ad2ee1436335df2c3ae68029fd3da0cb5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-com-basic-water-access",
+        "version": 1,
+        "hash": "50a5fd94eda25b934424e401f644bda9f172111e799334b3e46f0013d7a647c4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cpv-basic-water-access",
+        "version": 1,
+        "hash": "ee9a06a3ecfc8a7b5d9f4ec3ba762e7d8a6c73cd7415b91d1ae783270816d83e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cri-basic-water-access",
+        "version": 1,
+        "hash": "1a7c117d2ac17de7e7d54e479025567bbbea7b10f80867dd21882a4d3f0306de"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cub-basic-water-access",
+        "version": 1,
+        "hash": "6b7570669a2449107496b4ddeec40678879f3e0d7fc84483b26506bc0ee941fd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cuw-basic-water-access",
+        "version": 1,
+        "hash": "a25399378212115a7ce8feb8841832064553bb0d7b7ec07edc1f03f70a64e3ae"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cym-basic-water-access",
+        "version": 1,
+        "hash": "fb7a427126914b62cdeaf10df9fee3a4550d6315e425f35fdbdec2fa27899663"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cyp-basic-water-access",
+        "version": 1,
+        "hash": "8cf768c679f89328201f8610023e4dddfedfde92775bd76f3d80abb4db950f86"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cze-basic-water-access",
+        "version": 1,
+        "hash": "78d88da8e956a9b83235981f25ed504fabcba6867ea1e1ff15f3929d86e25bc5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-deu-basic-water-access",
+        "version": 1,
+        "hash": "8e7ea026a3cda494c27c7302c15ce048f65e176e73d9fe1e254008b97592809e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dji-basic-water-access",
+        "version": 1,
+        "hash": "f7ae0c9133a50923a9d65b8dcfbf6699b1a5e914739def5e8208fb564309a7ce"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dma-basic-water-access",
+        "version": 1,
+        "hash": "679d23816b8fdd1527b992c5394a1de0abddb2ef9f79b862df96b3f9b90a8d1d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dnk-basic-water-access",
+        "version": 1,
+        "hash": "a759b236d32a75feee38e5657a3090184d5dc1e3f3b1dfec3cb07476256f6dc4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dom-basic-water-access",
+        "version": 1,
+        "hash": "2d93654318eb52d004db4392e0f68376def49c71538ea75c30e2f2e5975fdc82"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dza-basic-water-access",
+        "version": 1,
+        "hash": "955380a5adad520a981baeaaf501ae834a7939a4dbf1e76b50b5355901220509"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ecu-basic-water-access",
+        "version": 1,
+        "hash": "2a235cae812b1b74fee77df451216065529484b3a415f6b94e376044be0f1822"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-egy-basic-water-access",
+        "version": 1,
+        "hash": "67a5500bb6c63dcf2112218b318ae2053ed6fb974ce365dcab5402ecd276b416"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-eri",
+        "version": 1,
+        "hash": "90753c1d3309a8b5c176a93f26f02ad2c7ccfb85fa4c4645d27a3d6390fc6eb4"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-eri",
+        "version": 1,
+        "hash": "51c5fd8e89e204a10d5ba7730c7388b0361b1d6c7ba64c6bb00a0384c0f51cc5"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/660/value",
+            "matches": [
+              {
+                "pointer": "/1/660/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "ER"
+                }
+              },
+              {
+                "pointer": "/1/660/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ERI"
+                }
+              },
+              {
+                "pointer": "/1/660/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/660/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/661/value",
+            "matches": [
+              {
+                "pointer": "/1/661/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "ER"
+                }
+              },
+              {
+                "pointer": "/1/661/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ERI"
+                }
+              },
+              {
+                "pointer": "/1/661/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/661/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/662/value",
+            "matches": [
+              {
+                "pointer": "/1/662/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "ER"
+                }
+              },
+              {
+                "pointer": "/1/662/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ERI"
+                }
+              },
+              {
+                "pointer": "/1/662/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/662/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/663/value",
+            "matches": [
+              {
+                "pointer": "/1/663/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "ER"
+                }
+              },
+              {
+                "pointer": "/1/663/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ERI"
+                }
+              },
+              {
+                "pointer": "/1/663/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/663/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/664/value",
+            "matches": [
+              {
+                "pointer": "/1/664/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "ER"
+                }
+              },
+              {
+                "pointer": "/1/664/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ERI"
+                }
+              },
+              {
+                "pointer": "/1/664/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/664/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/665/value",
+            "matches": [
+              {
+                "pointer": "/1/665/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "ER"
+                }
+              },
+              {
+                "pointer": "/1/665/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ERI"
+                }
+              },
+              {
+                "pointer": "/1/665/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/665/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-esp-basic-water-access",
+        "version": 1,
+        "hash": "e39fbf9d45e343047c83ae4ba43f7ee52187f47ff8ab2cb12e2aa1f2892b94df"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-est-basic-water-access",
+        "version": 1,
+        "hash": "b5402b1a5f498b41e0c3e675936242ad4193c2eb2bada0598155f8a18817cfd7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-eth-basic-water-access",
+        "version": 1,
+        "hash": "8a27d9f4380dfde457a90a1249569636b168c485458736956c399647e2d64e8e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fin-basic-water-access",
+        "version": 1,
+        "hash": "3ab447ba3319e13b31dccd049c4f6dc802471010a5c1141c415e2e4df8e225d8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fji-basic-water-access",
+        "version": 1,
+        "hash": "5ce70a07257f5cad1c12bc80add41cfbd687e3f35ffd41cd612638bc5c491ef5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fra-basic-water-access",
+        "version": 1,
+        "hash": "cfbfa19881d720f97f5b3eb8f68a92db69e4c1da0b490a98d72d49cc3acb1c41"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fro-basic-water-access",
+        "version": 1,
+        "hash": "63d4d84bff3be448880ebf6e6e30746b81668e45e2aea30ed2dbd577f812148e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fsm-basic-water-access",
+        "version": 1,
+        "hash": "72f12df9ce139bc991b0b538cdf3f7519f7579cec982889c42792881484d169d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gab-basic-water-access",
+        "version": 1,
+        "hash": "449d726dc89faae3cfe73e877d1687e808d2fc904757c0846cbef46daf4783d7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gbr-basic-water-access",
+        "version": 1,
+        "hash": "4e6f9b2f7ba501518bdc0d8759bb4d25673628b6eb781bf4cf00f2b0710f1696"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-geo-basic-water-access",
+        "version": 1,
+        "hash": "b661e4add5da35beffc448b7e961ec26856ed15d3d14580e2bb58cc4bf14c2a4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gha-basic-water-access",
+        "version": 1,
+        "hash": "e4d21ffad58f47d901a1d404945932efb1be86a2b1be5500477e6d3b1e55f37f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gib-basic-water-access",
+        "version": 1,
+        "hash": "1a93bd7a3f202b0275a791585c87579b495d9287f4aee35b7aada2071e6eb56b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gin-basic-water-access",
+        "version": 1,
+        "hash": "cd754ab1d6aedc43aa617d4739f939a5ac9398690218e4923cd3f6640add0d93"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gmb-basic-water-access",
+        "version": 1,
+        "hash": "b7c5e9aa845b09964f6bb5ec38f89711ba976f331a8893f82b8af27faddec3b6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gnb-basic-water-access",
+        "version": 1,
+        "hash": "57244464955c2c7d54a59ac6a49c54a30628f9a2dccabaecb550941ee9ef0e23"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-gnq",
+        "version": 1,
+        "hash": "cbaa6fa045cdc42158db4788a0adb33b684f1b7065d4f760add7d482e0bd3fb0"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-gnq",
+        "version": 1,
+        "hash": "373d1566ab4c50d00daf86110c84ea4dd047d28cc6adbab55143c969c252af96"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/654/value",
+            "matches": [
+              {
+                "pointer": "/1/654/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GQ"
+                }
+              },
+              {
+                "pointer": "/1/654/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GNQ"
+                }
+              },
+              {
+                "pointer": "/1/654/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/654/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/655/value",
+            "matches": [
+              {
+                "pointer": "/1/655/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GQ"
+                }
+              },
+              {
+                "pointer": "/1/655/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GNQ"
+                }
+              },
+              {
+                "pointer": "/1/655/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/655/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/656/value",
+            "matches": [
+              {
+                "pointer": "/1/656/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GQ"
+                }
+              },
+              {
+                "pointer": "/1/656/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GNQ"
+                }
+              },
+              {
+                "pointer": "/1/656/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/656/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/657/value",
+            "matches": [
+              {
+                "pointer": "/1/657/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GQ"
+                }
+              },
+              {
+                "pointer": "/1/657/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GNQ"
+                }
+              },
+              {
+                "pointer": "/1/657/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/657/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/658/value",
+            "matches": [
+              {
+                "pointer": "/1/658/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GQ"
+                }
+              },
+              {
+                "pointer": "/1/658/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GNQ"
+                }
+              },
+              {
+                "pointer": "/1/658/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/658/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/659/value",
+            "matches": [
+              {
+                "pointer": "/1/659/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GQ"
+                }
+              },
+              {
+                "pointer": "/1/659/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GNQ"
+                }
+              },
+              {
+                "pointer": "/1/659/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/659/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grc-basic-water-access",
+        "version": 1,
+        "hash": "cfe6db6c864e4940fa8e6a20aeaa23ff1331212074fe7fb63b58a3acedab5c16"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-grd",
+        "version": 1,
+        "hash": "f30048178d095b3155e75c2c856a0d7e9b74bb9e5b9c1ba21294388dba5180cd"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-grd",
+        "version": 1,
+        "hash": "1a54ef26e5e9918b9a569015d2a055ef2209a0ecd949bd8e9ed01d0120051637"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/762/value",
+            "matches": [
+              {
+                "pointer": "/1/762/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GD"
+                }
+              },
+              {
+                "pointer": "/1/762/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GRD"
+                }
+              },
+              {
+                "pointer": "/1/762/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/762/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/763/value",
+            "matches": [
+              {
+                "pointer": "/1/763/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GD"
+                }
+              },
+              {
+                "pointer": "/1/763/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GRD"
+                }
+              },
+              {
+                "pointer": "/1/763/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/763/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/764/value",
+            "matches": [
+              {
+                "pointer": "/1/764/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GD"
+                }
+              },
+              {
+                "pointer": "/1/764/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GRD"
+                }
+              },
+              {
+                "pointer": "/1/764/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/764/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/765/value",
+            "matches": [
+              {
+                "pointer": "/1/765/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GD"
+                }
+              },
+              {
+                "pointer": "/1/765/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GRD"
+                }
+              },
+              {
+                "pointer": "/1/765/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/765/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/766/value",
+            "matches": [
+              {
+                "pointer": "/1/766/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GD"
+                }
+              },
+              {
+                "pointer": "/1/766/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GRD"
+                }
+              },
+              {
+                "pointer": "/1/766/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/766/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/767/value",
+            "matches": [
+              {
+                "pointer": "/1/767/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "GD"
+                }
+              },
+              {
+                "pointer": "/1/767/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "GRD"
+                }
+              },
+              {
+                "pointer": "/1/767/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/767/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grl-basic-water-access",
+        "version": 1,
+        "hash": "3c0575f056ed02f8288249a0c4327db29f34adf1806732e09901cea18d3429d4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gtm-basic-water-access",
+        "version": 1,
+        "hash": "e59aa6a5d36cc3d9fd0b38b467b527bf5c181bc100ad85bd2759a6e45008a879"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gum-basic-water-access",
+        "version": 1,
+        "hash": "868c5c4fb98c7a7f37b804ae2415be1f52335b3cfa4f44fb21cb486ddae48a1d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-guy-basic-water-access",
+        "version": 1,
+        "hash": "bded10837c45c2118919dd48ac289d98a6c1fca96062d542686cee7c94e5cb86"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hkg-basic-water-access",
+        "version": 1,
+        "hash": "24243550d4cbf221266fb90c0a365d3e12f9769005090c4e3903c5e05cb40ab3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hnd-basic-water-access",
+        "version": 1,
+        "hash": "2ba3a8e477d9814b95f9a27eb473411a86b29c7a833ae4eb695b9a513c6f89d3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hrv-basic-water-access",
+        "version": 1,
+        "hash": "94fd5e9ac637a7459a7f928c0090b53dc82d2bd03dd5fee8ad7f673f7daa5d22"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hti-basic-water-access",
+        "version": 1,
+        "hash": "e5bf625f7a455124efab9fe0953c6777f0b179d4c213d6430310cadc413de48a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hun-basic-water-access",
+        "version": 1,
+        "hash": "f18978e8102f352ecfb28a407f2b768f3db4c4608c87dabcf3e4df879a164fec"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-idn-basic-water-access",
+        "version": 1,
+        "hash": "13b30afdcac3d0856bf29ad64c4b2c93ee4abefa9cb50ef2e8bc3c9d3f5452e8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-imn-basic-water-access",
+        "version": 1,
+        "hash": "961c64fe90fad3dd7934a7ca097080c607378bf943a0f1b3844b80aa4ff325c8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ind-basic-water-access",
+        "version": 1,
+        "hash": "7065061fc317fd177598769ef594095740497afa4084fa4b100fe8c3502dbebc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irl-basic-water-access",
+        "version": 1,
+        "hash": "34fa8047011be1aeefb67bd681e445fbfecfe6d89aadaefc1a7f476942f52905"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irn-basic-water-access",
+        "version": 1,
+        "hash": "a76f682038cac7a38c72b1d5f5d7497d8bb28b1600fac4228ab18219ec618bf6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irq-basic-water-access",
+        "version": 1,
+        "hash": "7f4aa65c5c8060bcc5dd2020527e75e6b4d22b74af660d004132c97287491d42"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-isl-basic-water-access",
+        "version": 1,
+        "hash": "25f258ede92fcf144a8578008e9f7c661b322cea36734b466d9a45e3bf5efbef"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-isr-basic-water-access",
+        "version": 1,
+        "hash": "fd1d5b42f6a0a81ab941dd195f465da8d723830e095fccb9fd2752fb63708673"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ita-basic-water-access",
+        "version": 1,
+        "hash": "0c1320645e64f1afeb66d6dded081d96d303cacfc2d3fc5bfca72ee394d807cf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jam-basic-water-access",
+        "version": 1,
+        "hash": "42769559286ee208562c29ef0c0d81778dc6b3de40b1808eb899d6d93ad48865"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jor-basic-water-access",
+        "version": 1,
+        "hash": "d3d317d7cc8b060cd3183e4ef6a8351eed71613a83e6754b26c85bab5c20ceb9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jpn-basic-water-access",
+        "version": 1,
+        "hash": "af16b6a0674eef9fcb340391eb85815ac70e0b68b1c07eb55b15285c58586426"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kaz-basic-water-access",
+        "version": 1,
+        "hash": "c612d9bdfd5d54582eed0f33f668e8f6934e066c3352faa9b4efb12cf3beed63"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ken-basic-water-access",
+        "version": 1,
+        "hash": "d85758908dc4b409a8ad9c731e40a506d7e7794c40845338849a2cf6a96e74e6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kgz-basic-water-access",
+        "version": 1,
+        "hash": "3515ccd1688d6d33b8db70d3c52f138b127a9ed37f0dad5cc858e01ecd6a48b7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-khm-basic-water-access",
+        "version": 1,
+        "hash": "0c8f7f3c2ffc31bb21f09bf6da6ae4aca927bb95f87352630b5e3233ede7444c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kir-basic-water-access",
+        "version": 1,
+        "hash": "efdf10c02768e417cd4f2f2a8b98dbb4d097453bb6f0435ddeb3e5c39e3d79a7"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-kna",
+        "version": 1,
+        "hash": "1e3f672638b64327723335d6dcf19f464db16471fe4b0f2322aa74c26b5a83fb"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-kna",
+        "version": 1,
+        "hash": "4ef2b9978c5420b798e7abc18b2498707cb698f3470ee248dcab0c980eb2d3b5"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1380/value",
+            "matches": [
+              {
+                "pointer": "/1/1380/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "KN"
+                }
+              },
+              {
+                "pointer": "/1/1380/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "KNA"
+                }
+              },
+              {
+                "pointer": "/1/1380/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1380/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1381/value",
+            "matches": [
+              {
+                "pointer": "/1/1381/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "KN"
+                }
+              },
+              {
+                "pointer": "/1/1381/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "KNA"
+                }
+              },
+              {
+                "pointer": "/1/1381/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1381/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1382/value",
+            "matches": [
+              {
+                "pointer": "/1/1382/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "KN"
+                }
+              },
+              {
+                "pointer": "/1/1382/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "KNA"
+                }
+              },
+              {
+                "pointer": "/1/1382/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1382/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1383/value",
+            "matches": [
+              {
+                "pointer": "/1/1383/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "KN"
+                }
+              },
+              {
+                "pointer": "/1/1383/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "KNA"
+                }
+              },
+              {
+                "pointer": "/1/1383/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1383/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1384/value",
+            "matches": [
+              {
+                "pointer": "/1/1384/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "KN"
+                }
+              },
+              {
+                "pointer": "/1/1384/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "KNA"
+                }
+              },
+              {
+                "pointer": "/1/1384/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1384/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1385/value",
+            "matches": [
+              {
+                "pointer": "/1/1385/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "KN"
+                }
+              },
+              {
+                "pointer": "/1/1385/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "KNA"
+                }
+              },
+              {
+                "pointer": "/1/1385/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1385/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kor-basic-water-access",
+        "version": 1,
+        "hash": "eb5c7a7d6f91d115b1b8d2633a7039e1f012c176026256f2ecf2c05ea45f72ff"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kwt-basic-water-access",
+        "version": 1,
+        "hash": "43cbdba723183f899659eadb1af01b4d33290a04868eab3ed57c4ef57862d1a1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lao-basic-water-access",
+        "version": 1,
+        "hash": "7592ed05571c1d7da1a30b2d6aea2157e0cd8da12edbfb5ea0a7cfa9362bec6a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lbn-basic-water-access",
+        "version": 1,
+        "hash": "a860b09a011b19f7a22708d4788967107e585e2282614781d542411f5c7bcfbc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lbr-basic-water-access",
+        "version": 1,
+        "hash": "534b2c51f3df1a878a3b89f5d69afab68946251b804169a4cba53a8386d85951"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lby-basic-water-access",
+        "version": 1,
+        "hash": "75957165de9e46317c7b35aafbf826a033f087a3ea76991404581f7bb556ab23"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lca-basic-water-access",
+        "version": 1,
+        "hash": "94b484544e3e7f62493e985d2a6612d673491fa39cadbe874ead484d3b6b6b0e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lie-basic-water-access",
+        "version": 1,
+        "hash": "2564bff25570039fe19f8785fe70f50fc27b64dec5bf4db1d35fea8f13e6e37d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lka-basic-water-access",
+        "version": 1,
+        "hash": "786ed44f477250ed61c9cf2c50928820e377984cc5fd4b26c1b374c739d53588"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lso-basic-water-access",
+        "version": 1,
+        "hash": "cfb6a6ea91d906acf15fc3b59c4c430fb073d0c6c244bdf5b5b14b6eac2da1e1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ltu-basic-water-access",
+        "version": 1,
+        "hash": "1ac12d8f301d5aadccf95b684b7c131bccb9311dd08c4b9b8112cc8bf2254c55"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lux-basic-water-access",
+        "version": 1,
+        "hash": "a2493efb88462af08a73ee9e952c44d83beddd080bdc364ea88259bc16e02e5d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lva-basic-water-access",
+        "version": 1,
+        "hash": "11fe7ba266cb8da32e018e91079bc87fc90f2aa688d8a9540f8a66bbb6d8cbde"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mac-basic-water-access",
+        "version": 1,
+        "hash": "60b0d7c1db8015ea451c646d00f0e64118f6b21be56ab6cd0683efff224f0292"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-maf-basic-water-access",
+        "version": 1,
+        "hash": "b166d124e3368d5ac301c5bfe3dd89f328e8d218b9dbf84b9200fccf797cc23b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mar-basic-water-access",
+        "version": 1,
+        "hash": "ee8406a7f2ab6350e5fa0f2bf44c98f816d30a5318b8b4ad81a72266b797e421"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mco-basic-water-access",
+        "version": 1,
+        "hash": "3b71caeb65b5a8625a9347579d18061a04f3cbfeb48318167d2e8751da368efe"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mda-basic-water-access",
+        "version": 1,
+        "hash": "f4d45170d2ae10c01856e73f23a99e8842e845969c5a909b9020577f32c68d02"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mdg-basic-water-access",
+        "version": 1,
+        "hash": "689ec1b46644bd257d2076e73e898edc787c47d60957a9e8bcdd1dc6de5b1070"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mdv-basic-water-access",
+        "version": 1,
+        "hash": "16ff8e652e53714667e669c46b35bf351963a0b7dc380f488d0cb72f1546a77f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mex-basic-water-access",
+        "version": 1,
+        "hash": "244b54729f0b560990c711e120779eb3292705df79de2d3bd87f849bc153d3c7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mhl-basic-water-access",
+        "version": 1,
+        "hash": "656320a234ca8ee1d2c16ed999dedd24e4c813b5e537400c963ea6bdcbf86573"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mkd-basic-water-access",
+        "version": 1,
+        "hash": "ee2a528819803120596a4d9be49baa0f844182e1d8a51011c3b7663c0d5a20a5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mli-basic-water-access",
+        "version": 1,
+        "hash": "6b1c6f8dc6afeb8a9976b2ec59c24c3247552ba46998c7305249d59e8a51b299"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mlt-basic-water-access",
+        "version": 1,
+        "hash": "542a6b77e8672e62229aebce72221a033dfff1bdcdd75cd233207834c1cbf0aa"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mmr-basic-water-access",
+        "version": 1,
+        "hash": "d78ae45b191d559f900ced1c594fe94e4d3341619f6b4c4862b1e06429a83bda"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mne-basic-water-access",
+        "version": 1,
+        "hash": "c08b80506fa64976f2716ec04c8290e5bb8387da2af27d253f02674a6afaf4dd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mng-basic-water-access",
+        "version": 1,
+        "hash": "3990c17f7c770dc92dc7ded335e7d15517781c6ddd3e86ff407efc597b209119"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mnp-basic-water-access",
+        "version": 1,
+        "hash": "391346862142728b2fd5b70db975e18881d6fc6e3ac8e6a07a75ec3efdcdefd8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-moz-basic-water-access",
+        "version": 1,
+        "hash": "7eb205bacec44a50d599ed020458a1003b785efc40253166a890758e1f43879e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mrt-basic-water-access",
+        "version": 1,
+        "hash": "97f2af983c22b2e88e9833872ce01cb1a0671c9298c5a73d87a09f9e9ddf3d41"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mus-basic-water-access",
+        "version": 1,
+        "hash": "cc883bcc52ea51b2cce95a436ad6b21110c328c26e931193fe1b0480998263e2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mwi-basic-water-access",
+        "version": 1,
+        "hash": "b73ab764ccde6445965f17f9085e5c95355e36752ce51d0b6cdd5cfab43fa349"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mys-basic-water-access",
+        "version": 1,
+        "hash": "644808242b59f19914e5246ad6863ad0a0ca97a58e3bd8e45832fc56770dc623"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nam-basic-water-access",
+        "version": 1,
+        "hash": "5726d19b529354f56d2f2b4b77bd8c01bf690501fe6960d48cdbeceac4f36b7a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ncl-basic-water-access",
+        "version": 1,
+        "hash": "2060c37c7b425532c3e2624a1b13629b8a5f88ec72fd6a324f60e6155f77cc9f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ner-basic-water-access",
+        "version": 1,
+        "hash": "bcb97fb9b5d14fa263e912d6e6fc515894c31f4c5de12a538fb863a7cf77a3b5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nga-basic-water-access",
+        "version": 1,
+        "hash": "bf0da19a46aa85557e9347b177354ede6d65cb707912cc5429d31a59fb9911c7"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-nic",
+        "version": 1,
+        "hash": "89e0200228eeff9851799d5457832dfb8100437f7e1e9498b0039008c68510a9"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-nic",
+        "version": 1,
+        "hash": "a10f6b8b88c8b724483b305cc9b5da39e998dc60d6017cb86ec56bb91da1bab0"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1146/value",
+            "matches": [
+              {
+                "pointer": "/1/1146/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "NI"
+                }
+              },
+              {
+                "pointer": "/1/1146/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "NIC"
+                }
+              },
+              {
+                "pointer": "/1/1146/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1146/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1147/value",
+            "matches": [
+              {
+                "pointer": "/1/1147/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "NI"
+                }
+              },
+              {
+                "pointer": "/1/1147/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "NIC"
+                }
+              },
+              {
+                "pointer": "/1/1147/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1147/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1148/value",
+            "matches": [
+              {
+                "pointer": "/1/1148/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "NI"
+                }
+              },
+              {
+                "pointer": "/1/1148/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "NIC"
+                }
+              },
+              {
+                "pointer": "/1/1148/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1148/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1149/value",
+            "matches": [
+              {
+                "pointer": "/1/1149/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "NI"
+                }
+              },
+              {
+                "pointer": "/1/1149/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "NIC"
+                }
+              },
+              {
+                "pointer": "/1/1149/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1149/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1150/value",
+            "matches": [
+              {
+                "pointer": "/1/1150/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "NI"
+                }
+              },
+              {
+                "pointer": "/1/1150/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "NIC"
+                }
+              },
+              {
+                "pointer": "/1/1150/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1150/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1151/value",
+            "matches": [
+              {
+                "pointer": "/1/1151/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "NI"
+                }
+              },
+              {
+                "pointer": "/1/1151/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "NIC"
+                }
+              },
+              {
+                "pointer": "/1/1151/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1151/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nld-basic-water-access",
+        "version": 1,
+        "hash": "45ca6c3b9099c743d9f63223275f900aca582757491ec1129e52bbf3c838bf60"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nor-basic-water-access",
+        "version": 1,
+        "hash": "a58effe900a6a31858e74e8b713a1f517a81b24008c845c204718c2c2b14ac4c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-npl-basic-water-access",
+        "version": 1,
+        "hash": "32be12cbeb1f8874706f061c552050e4692f9d483ed573346931dc5965677378"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nru-basic-water-access",
+        "version": 1,
+        "hash": "379821088ca9217d9975eb7580270a70500a4422c7e62fc71fd7a024d345998d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nzl-basic-water-access",
+        "version": 1,
+        "hash": "ad138d5585e52ba7c4db0ed1918ad09ec05f129d729b2cd9645751046cc3cfdc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-omn-basic-water-access",
+        "version": 1,
+        "hash": "e60f5cbe9acd1bb610017418df9c70ae1e355b0fc67ed500e179b551729e3be4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pak-basic-water-access",
+        "version": 1,
+        "hash": "c1249d85a38e1c62f164c799057b31bb934312d3f0d8768ce27f7602c1a2dd10"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pan-basic-water-access",
+        "version": 1,
+        "hash": "7b97bcc03b1c301deb22509c00fd19e9c0198c7951c1bbb20cf8ee67ceb9f90b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-per-basic-water-access",
+        "version": 1,
+        "hash": "5e4760013f78d522a63358e0763588ae40b523e7103e8f9930b74642959a4b93"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-phl-basic-water-access",
+        "version": 1,
+        "hash": "f636beb13a44b209ec097bc2f4ba2c54108fe7603854b60ccd19e2b2176ef8a3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-plw-basic-water-access",
+        "version": 1,
+        "hash": "b26a5a52bd7974754a662fb383f3b0d3f118227cccc7d49c72877ec16bc27448"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-png-basic-water-access",
+        "version": 1,
+        "hash": "6dc02ddb3679d886885837dead1db115ecc29dbb8335d3ee3331975491b6e824"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pol-basic-water-access",
+        "version": 1,
+        "hash": "9d14302cbca56b33d1d3c57062c09043c9e8ce40c8154a24c54491835eaae399"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pri-basic-water-access",
+        "version": 1,
+        "hash": "f03892053ef548cdc0782e9c5e72609d5a1b6d166c8850ba2608a09d9312df62"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-prk-basic-water-access",
+        "version": 1,
+        "hash": "21478fe8f153640ed5e07a210d817ba7b23f6ad32770c9fd6cb053d2aad493c9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-prt-basic-water-access",
+        "version": 1,
+        "hash": "3365715440952ffe3a35be5b22e24ceebc46e7ff9ece72dc32d1636dc24b4a6b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pry-basic-water-access",
+        "version": 1,
+        "hash": "6f9f140930c8961f3c6fbf961930d4fde02047ea6c8fc603f4c51bcbc3525eb4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pse-basic-water-access",
+        "version": 1,
+        "hash": "69db5dbd4c27a5efe791e395da0b7d962bf79abd0989aba6e6dbf5ed3b853fda"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pyf-basic-water-access",
+        "version": 1,
+        "hash": "a74d11a191a95d321c74e889a17849a7bf067ec04e3ed1e421412f20330c9822"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-qat-basic-water-access",
+        "version": 1,
+        "hash": "25aaccdd4d2256e8aba97d7c579eea6c2dacd4093dca61f6fecd22208cb4c174"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rou-basic-water-access",
+        "version": 1,
+        "hash": "a6b39936fe5ca364607e80f1a7650dede8ef46e5aaabc84d9d5018c0d559123f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rus-basic-water-access",
+        "version": 1,
+        "hash": "40bc5f498307b08e6d7fe824366eeb1827ebf430ccdf4b2448f904a3e6d85160"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rwa-basic-water-access",
+        "version": 1,
+        "hash": "98066051c834bd41ef99154740115e50d2e8e8520015f204b73712e4545482ab"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sau-basic-water-access",
+        "version": 1,
+        "hash": "6fac864ff1a30214975cd81a3eaf97d6b38bf76409dcb6dea4f80571e11d2da5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sdn-basic-water-access",
+        "version": 1,
+        "hash": "06a3f72cd17ad3e902ce6178ad85250365be65bd9c325d46743726eba8023177"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sen-basic-water-access",
+        "version": 1,
+        "hash": "6f726332d8e29b24cd5dd0b0b75e8f75d4902d96be804a90460791e5d138bc85"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sgp-basic-water-access",
+        "version": 1,
+        "hash": "f7b46d72f816fa24e1687013cc5723c592054a9b5cf46a16104d62cb7d3b28c3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-slb-basic-water-access",
+        "version": 1,
+        "hash": "9f5f77cfe11ad09d38a3aa29621f7adab04608a2797a7e652a388d51e12c73bc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sle-basic-water-access",
+        "version": 1,
+        "hash": "af4ec788e23ede308441e63f71c8cf3c9929e0cd3b85bd7454042546e974ae48"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-slv-basic-water-access",
+        "version": 1,
+        "hash": "80bba14b79ccb2edb13f1b260b4357ea31f4713ab6c11cf84788a3a6902a04ff"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-smr-basic-water-access",
+        "version": 1,
+        "hash": "800f7286233324257a495d0397b49746d474a91beb0725cbba9cc20e51eb3685"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-som-basic-water-access",
+        "version": 1,
+        "hash": "943316185dc559a4cc31b3f5c3a799d1a067f29a135ecd05767403c9dc9bc2cf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-srb-basic-water-access",
+        "version": 1,
+        "hash": "421a97b4a8c708802848920cb41861bea4fbbf95fc9e9e032da69c8f393a85a2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ssd-basic-water-access",
+        "version": 1,
+        "hash": "8c4e69e71193c0b93ed0eaf3cc85c1f9ab8dba0aa18b022e3ab34afb4b4407ee"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-stp-basic-water-access",
+        "version": 1,
+        "hash": "dda2ccc7682f64111617968c985985963c630dd15ee7906d0e2f08a2968ea626"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sur-basic-water-access",
+        "version": 1,
+        "hash": "ac3a621a4e1fc4bb635d74bc7045d1411854cb57fa1bdb4089de8eb0c12195c3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-svk-basic-water-access",
+        "version": 1,
+        "hash": "baa9fd2f4e8bc2c7de1920a21ad0184c54582a328c95aba81b5a0751a2b53cf4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-svn-basic-water-access",
+        "version": 1,
+        "hash": "642332978600ea151b1acb8543cbf71aa4822b353fa08dedaabf7e0061ac2a8a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-swe-basic-water-access",
+        "version": 1,
+        "hash": "7bd7d7f7d9c28dad2cddb4246d5d0fd8a85aa7a025bd84af95599117e9891160"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-swz-basic-water-access",
+        "version": 1,
+        "hash": "e764e369f27089c426ed5ef5e2d34fb1c785ba36c0b7ec90e574467a50a5db36"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-sxm",
+        "version": 1,
+        "hash": "5a1a975efcb353cf0fff978cbd7f73cbd12c85342683b58823c2cb630eee89a9"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-sxm",
+        "version": 1,
+        "hash": "428bb59aa6ed8f85487d3ec134cd0184fc5a56ffdc93e2cd8c523c91d8ea8ee4"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1326/value",
+            "matches": [
+              {
+                "pointer": "/1/1326/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SX"
+                }
+              },
+              {
+                "pointer": "/1/1326/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "SXM"
+                }
+              },
+              {
+                "pointer": "/1/1326/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1326/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1327/value",
+            "matches": [
+              {
+                "pointer": "/1/1327/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SX"
+                }
+              },
+              {
+                "pointer": "/1/1327/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "SXM"
+                }
+              },
+              {
+                "pointer": "/1/1327/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1327/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1328/value",
+            "matches": [
+              {
+                "pointer": "/1/1328/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SX"
+                }
+              },
+              {
+                "pointer": "/1/1328/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "SXM"
+                }
+              },
+              {
+                "pointer": "/1/1328/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1328/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1329/value",
+            "matches": [
+              {
+                "pointer": "/1/1329/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SX"
+                }
+              },
+              {
+                "pointer": "/1/1329/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "SXM"
+                }
+              },
+              {
+                "pointer": "/1/1329/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1329/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1330/value",
+            "matches": [
+              {
+                "pointer": "/1/1330/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SX"
+                }
+              },
+              {
+                "pointer": "/1/1330/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "SXM"
+                }
+              },
+              {
+                "pointer": "/1/1330/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1330/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1331/value",
+            "matches": [
+              {
+                "pointer": "/1/1331/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SX"
+                }
+              },
+              {
+                "pointer": "/1/1331/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "SXM"
+                }
+              },
+              {
+                "pointer": "/1/1331/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1331/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-syc-basic-water-access",
+        "version": 1,
+        "hash": "444b26e383567f23ca34d91904db279764f17a5fb402e9c17a62fc852c25acf5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-syr-basic-water-access",
+        "version": 1,
+        "hash": "cf2d3d24cc5aed0a3d442a9dd99fc39b289ab766aa0c8feb35eab6f28947d801"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tca-basic-water-access",
+        "version": 1,
+        "hash": "28f8131999b4f2a87ebef0a95b09f06bd6569ecb80a53e93d398392a5d8643bd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tcd-basic-water-access",
+        "version": 1,
+        "hash": "35955fce140acc56d59f111f641170f5317964638aa07159710cf4a3c56913dd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tgo-basic-water-access",
+        "version": 1,
+        "hash": "b5c5e1b3e468b47bc473648d9cb9440777d2c01c761eeb511d6594f4e764fc46"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tha-basic-water-access",
+        "version": 1,
+        "hash": "2d6277da4bcbfde52a969529f07b6bc5567264e2e669081bce4d4d9d60e47e26"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tjk-basic-water-access",
+        "version": 1,
+        "hash": "5c8ead459dfee3c74ea12107c8a51680814f2b5a09efb8d9c36f9014bc8bb560"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tkm-basic-water-access",
+        "version": 1,
+        "hash": "be72167efe498eb588c8e3f3a58d9ed04cef29553fcd2f3a52821a46197b7ec2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tls-basic-water-access",
+        "version": 1,
+        "hash": "16700a4dc1e785a0f71ee2072f2afa1f33d88ef51bd33c28b142a11e893e3d06"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ton-basic-water-access",
+        "version": 1,
+        "hash": "2fe0d1ee2dc856374adee164f96ac47f3619a6486356e4015c88e978d4deac71"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tto-basic-water-access",
+        "version": 1,
+        "hash": "6efe5b232ab13f6d7da94390b39ea774c6a93411786e92f366a2a130dd17b2a4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tun-basic-water-access",
+        "version": 1,
+        "hash": "59cdf215b8223b1364d97e4a3cbeddae03c6209eca0bce0d802d4bb8a54d58a1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tur-basic-water-access",
+        "version": 1,
+        "hash": "78d3fc347a308b87b44da5a3218ec2b0c71acb5ca2ac32bbb9658f85db9bec09"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tuv-basic-water-access",
+        "version": 1,
+        "hash": "d1087a97f8f79f232b7e861d740a331c91ca5a9c3ef2c6898d057fb25a8feb83"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tza-basic-water-access",
+        "version": 1,
+        "hash": "aee65e8ff2c4d837db57030cd6ca54050c569cfb1cfa8dd128c854df9fcdb4f5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-uga-basic-water-access",
+        "version": 1,
+        "hash": "ee276455a5a04ea8fd823165ee663c1073898e6b9b00241ed031aab23c727e42"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ukr-basic-water-access",
+        "version": 1,
+        "hash": "3f5ed1897c5efbf5779c20bf4f21a8017d341e6739e1deb4928cac23a3f5cb53"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ury-basic-water-access",
+        "version": 1,
+        "hash": "66fe6f1cb9a7509c019ec820fceb5ecc3b5cf63343575b249d9912a75c46119b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-usa-basic-water-access",
+        "version": 1,
+        "hash": "431f4d09543ee25d46756acd62f206cf103bda0331389038efbbcc0adf6a43fe"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-uzb-basic-water-access",
+        "version": 1,
+        "hash": "216516bacbe66fec7dcde45ff29a8095ab2879da284b8f967bccc469fb08df1d"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-vct",
+        "version": 1,
+        "hash": "1feb3cbe040014e2537b1e8e8bfb149f1a559faa686b93c5d6fffb1dbfcd20f3"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-vct",
+        "version": 1,
+        "hash": "d58c9dc8a3e4a3f5d588fd950b2181f9cb9eb6db076b8e8891c6271d030c50cc"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1398/value",
+            "matches": [
+              {
+                "pointer": "/1/1398/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "VC"
+                }
+              },
+              {
+                "pointer": "/1/1398/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "VCT"
+                }
+              },
+              {
+                "pointer": "/1/1398/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1398/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1399/value",
+            "matches": [
+              {
+                "pointer": "/1/1399/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "VC"
+                }
+              },
+              {
+                "pointer": "/1/1399/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "VCT"
+                }
+              },
+              {
+                "pointer": "/1/1399/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1399/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1400/value",
+            "matches": [
+              {
+                "pointer": "/1/1400/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "VC"
+                }
+              },
+              {
+                "pointer": "/1/1400/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "VCT"
+                }
+              },
+              {
+                "pointer": "/1/1400/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1400/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1401/value",
+            "matches": [
+              {
+                "pointer": "/1/1401/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "VC"
+                }
+              },
+              {
+                "pointer": "/1/1401/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "VCT"
+                }
+              },
+              {
+                "pointer": "/1/1401/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1401/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1402/value",
+            "matches": [
+              {
+                "pointer": "/1/1402/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "VC"
+                }
+              },
+              {
+                "pointer": "/1/1402/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "VCT"
+                }
+              },
+              {
+                "pointer": "/1/1402/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1402/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/1403/value",
+            "matches": [
+              {
+                "pointer": "/1/1403/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "VC"
+                }
+              },
+              {
+                "pointer": "/1/1403/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "VCT"
+                }
+              },
+              {
+                "pointer": "/1/1403/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/1403/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ven-basic-water-access",
+        "version": 1,
+        "hash": "cb73ebdb70ddfa7575de2a778310ef7e6732123c30caf0a36f29721e322bb2ec"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vgb-basic-water-access",
+        "version": 1,
+        "hash": "674626158bb2bfeb39c0e7b1a092f9b78a5d1b9812eb3eeb872cb46a00197172"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vir-basic-water-access",
+        "version": 1,
+        "hash": "ce8c7197de466b211c45218188665e0d9cc45e647368348967ceb01798061c5f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vnm-basic-water-access",
+        "version": 1,
+        "hash": "65aa4d2352efcabd03d2355f6e85f09fbb56816c1f6996f11fee34398c7713f5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vut-basic-water-access",
+        "version": 1,
+        "hash": "99a812f62645fd3556c429d6242e3394d7420b28771eaef4d9286255e34700cc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-wsm-basic-water-access",
+        "version": 1,
+        "hash": "2f51570383bb6f928f7a70a7d00b456f874ca3925fe8c6ff03a1818e20872502"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-xkx",
+        "version": 1,
+        "hash": "99b2d01097d1f608fc5230b17caaf40449d631ed9ed89108314558179e5eb5e8"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-xkx",
+        "version": 1,
+        "hash": "ad376a1205528029f625ed4b703a6c5845d671be490b592e271159faad0c6804"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-basic-water-access",
+        "version": 1,
+        "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/924/value",
+            "matches": [
+              {
+                "pointer": "/1/924/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/924/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/924/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/924/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/925/value",
+            "matches": [
+              {
+                "pointer": "/1/925/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/925/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/925/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/925/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/926/value",
+            "matches": [
+              {
+                "pointer": "/1/926/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/926/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/926/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/926/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/927/value",
+            "matches": [
+              {
+                "pointer": "/1/927/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/927/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/927/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/927/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/928/value",
+            "matches": [
+              {
+                "pointer": "/1/928/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/928/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/928/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/928/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-sh-h2o-basw-zs",
+            "version": 1,
+            "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/929/value",
+            "matches": [
+              {
+                "pointer": "/1/929/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/929/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/929/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "SH.H2O.BASW.ZS"
+                }
+              },
+              {
+                "pointer": "/1/929/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-yem-basic-water-access",
+        "version": 1,
+        "hash": "54342f41e4c379622876aa8b8c99b827779b179fbbe340876dd03375e2c84819"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zaf-basic-water-access",
+        "version": 1,
+        "hash": "d9049209e7ff72ef7ab11c2e950c7feae57b8d0b887815f5e3eb28f596343e46"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zmb-basic-water-access",
+        "version": 1,
+        "hash": "138580ded1142cd55a73a98967f43fcd40c6c138a0eb170305a896e9e60bd2a9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zwe-basic-water-access",
+        "version": 1,
+        "hash": "18adc466208b9f679f3601a1cfac736c55d0099d81d634754241aa58796bb924"
+      }
+    }
+  ],
+  "sourceRefs": [],
+  "exclusions": [
+    "Aggregate regions are retained in raw source context but excluded from this country matrix."
+  ],
+  "limitations": [
+    "Latest non-null fact per fixed window; not a normalized six-year time series."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "1b5dcf5d8823f39079fd197c4c438577906dadda5d5404066ef7ac030ab8e70c"
+}

@@ -1,0 +1,164 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "coverage",
+  "id": "financial-panel",
+  "selection": {
+    "kind": "explicit-financial-panel",
+    "rule": "selected-consolidated-audit-rows",
+    "panels": [
+      {
+        "scope": {
+          "kind": "scope",
+          "id": "wikimedia-consolidated",
+          "version": 1,
+          "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+        },
+        "measures": [
+          {
+            "kind": "measure",
+            "id": "financial-assets",
+            "version": 1,
+            "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+          },
+          {
+            "kind": "measure",
+            "id": "financial-liabilities",
+            "version": 1,
+            "hash": "2c9907ac2e53b20c0ff98053f303248a02efe4dc0cb6afaccdb37451e8cd2d93"
+          },
+          {
+            "kind": "measure",
+            "id": "financial-net-assets",
+            "version": 1,
+            "hash": "ad6235d127b120cce2d84bac155fc1ca6ad6cd53ddc8f7f2406c97388c986c96"
+          },
+          {
+            "kind": "measure",
+            "id": "financial-wikimedia-expenses",
+            "version": 1,
+            "hash": "55954b0180804ccc5319c7da1e5becab814fac4f94fc375d2afc9dde883fa50f"
+          }
+        ]
+      },
+      {
+        "scope": {
+          "kind": "scope",
+          "id": "givewell-consolidated",
+          "version": 1,
+          "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
+        },
+        "measures": [
+          {
+            "kind": "measure",
+            "id": "financial-assets",
+            "version": 1,
+            "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+          },
+          {
+            "kind": "measure",
+            "id": "financial-liabilities",
+            "version": 1,
+            "hash": "2c9907ac2e53b20c0ff98053f303248a02efe4dc0cb6afaccdb37451e8cd2d93"
+          },
+          {
+            "kind": "measure",
+            "id": "financial-net-assets",
+            "version": 1,
+            "hash": "ad6235d127b120cce2d84bac155fc1ca6ad6cd53ddc8f7f2406c97388c986c96"
+          },
+          {
+            "kind": "measure",
+            "id": "financial-givewell-expenses",
+            "version": 1,
+            "hash": "74dc76d6cbf2cff431e6ffff3f5c13582008a69d20a3e46ac8b985f9ddd1b840"
+          }
+        ]
+      }
+    ],
+    "unknownRemainder": "Other organizations/reporting groups are not collected by this financial panel; worldwide denominator unknown."
+  },
+  "cells": [
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "wikimedia-assets",
+        "version": 1,
+        "hash": "4f74470b7a34326e2f594a2cf24265ac1086f9ffd80dd9976324ad8a05cc2bea"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "wikimedia-liabilities",
+        "version": 1,
+        "hash": "519be0ef8579cc9a5210690b97db3efbc7928d34d7ca53ea047f2284bc59685c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "wikimedia-net-assets",
+        "version": 1,
+        "hash": "4af3fd29d94e2c6a1185999e40015d0a368c5a4e090ec5be751633034fbe9ebb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "wikimedia-expenses",
+        "version": 1,
+        "hash": "f109dd5916c1231f63ea8aa9dfccd57c7d8180c2e7416b3dcdfa473123583c8f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "givewell-assets",
+        "version": 1,
+        "hash": "6ada6df4bd8c7e797636e64a0d1e2c572ec0d21dc97ff8148455d876e284ccef"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "givewell-liabilities",
+        "version": 1,
+        "hash": "e0a706eb947f1aa82646e82ab1ccd9128e53e3062023fc1de9186225a37bd1af"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "givewell-net-assets",
+        "version": 1,
+        "hash": "c583b0a78efbaba29036fd93a7c3938bfeb06c23366971b59c57d48e11af4477"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "givewell-expenses",
+        "version": 1,
+        "hash": "b442044e51c45e028cd4ec580bb1a4f8c7210f70cbad6256cdcfe21e7db4815c"
+      }
+    }
+  ],
+  "sourceRefs": [],
+  "exclusions": [],
+  "limitations": [
+    "No worldwide financial coverage or charitable rating."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a61215b5976b6ba483696ec42d40354a1803b3f82af7728af61c86a93d3fede2"
+}

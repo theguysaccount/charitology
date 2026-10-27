@@ -2,7 +2,7 @@
 title: Public API
 group: For everyone
 order: 2
-summary: Every Charitology dataset as static JSON, free to use with attribution. Build the Diagnosis, the interventions or the open problems into your own app or donation platform.
+summary: Charitology datasets as static JSON with source dates, attribution and reuse terms. Build the Diagnosis, the interventions or the open problems into your own app or donation platform.
 status: live
 conditions: [fragmentation, missing-feedback-loop]
 help:
@@ -13,11 +13,11 @@ related: [/record/open-datasets/, /tools/charity-lookup/]
 
 ## How it works
 
-The API is a set of JSON files generated every time the site is built, so it is always in step with the site. There are no keys, no accounts and no rate limits, and nothing is logged beyond what the static host keeps.
+The API is a set of JSON files generated with the site. There are no application keys or accounts. The static host's request limits and logging policies still apply. Source dates and fixed edition identities describe the data; a build date does not establish its freshness.
 
 ## License
 
-Data is published under [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Cite it as “Charitology (charitology.org)”. Figures sourced from other publishers keep their sources in the data so you can cite them too.
+Charitology's schema and editorial material use [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Cite them as “Charitology (charitology.org)”. External data and documents retain their own source-specific terms, attribution and exceptions. Each response states its scope; the observations endpoints also retain individual source rights. This notice does not grant new rights in a publisher's data or financial document.
 
 ## Why an API
 

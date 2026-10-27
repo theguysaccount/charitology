@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mwi",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mwi",
+    "version": 1,
+    "hash": "f4beb3abec019585cc1eb024a1923a8b2b6c0d414a68ddc8269c683db22560dc"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Malawi statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mwi",
+      "version": 1,
+      "hash": "f4beb3abec019585cc1eb024a1923a8b2b6c0d414a68ddc8269c683db22560dc"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mwi",
+      "version": 1,
+      "hash": "f4beb3abec019585cc1eb024a1923a8b2b6c0d414a68ddc8269c683db22560dc"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f2babf68a2b68f2dcfb3ead84486620db96cc79bb3c092c00dab262056599d20"
+}

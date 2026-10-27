@@ -8,7 +8,7 @@ const example = absolute('/api/v1/conditions.json', site);
 <section class="tool" aria-labelledby="api-title">
   <div class="tool-head">
     <h2 id="api-title">Endpoints</h2>
-    <span class="note">Static JSON · no key · CC BY 4.0</span>
+    <span class="note">Static JSON · no key · source-specific terms</span>
   </div>
   <div class="table-wrap">
     <table class="data">
@@ -45,6 +45,13 @@ console.log(data.map((c) => c.title));`}</code></pre>
   <p class="note">
     Every response has the shape <code>{'{ name, description, license, generated, data }'}</code>. The index of all endpoints
     is at <a href={url('/api/v1/index.json')}><code>/api/v1/index.json</code></a>.
+  </p>
+  <p class="note">
+    Charitology's schema and editorial material use CC BY 4.0. External data and
+    documents retain their own terms and attribution. Read each response's
+    license statement and source rights; the API does not grant new rights in
+    third-party material. The observations endpoints retain exact source dates,
+    definitions and missing coverage. A build date does not establish freshness.
   </p>
 </section>
 

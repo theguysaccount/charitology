@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-lux",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lux",
+    "version": 1,
+    "hash": "1dab3f5c1cf040e9a4ce617920426f1ab3bc838c3e5caf9ed20d4766426d1b60"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Luxembourg statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-lux",
+      "version": 1,
+      "hash": "1dab3f5c1cf040e9a4ce617920426f1ab3bc838c3e5caf9ed20d4766426d1b60"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-lux",
+      "version": 1,
+      "hash": "1dab3f5c1cf040e9a4ce617920426f1ab3bc838c3e5caf9ed20d4766426d1b60"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "de12cf1912c378f9ea19b10edcdb36bf4c7040cab88a39284a85862d3ee890b6"
+}

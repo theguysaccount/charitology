@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-alb",
+  "entity": {
+    "kind": "entity",
+    "id": "country-alb",
+    "version": 1,
+    "hash": "b565eb5533b1efad01ef0c3eb0ad4bd8e114af25eb1b65d249d53e967627e5ba"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Albania statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-alb",
+      "version": 1,
+      "hash": "b565eb5533b1efad01ef0c3eb0ad4bd8e114af25eb1b65d249d53e967627e5ba"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-alb",
+      "version": 1,
+      "hash": "b565eb5533b1efad01ef0c3eb0ad4bd8e114af25eb1b65d249d53e967627e5ba"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "9cbd91b9a94fbe394523c1987a2fa8dd74100d964e299a600c484e419bfc11f4"
+}

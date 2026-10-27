@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-grl",
+  "entity": {
+    "kind": "entity",
+    "id": "country-grl",
+    "version": 1,
+    "hash": "6522127fed65ee8a6d701401086e9a2b65a22a00a0d3335db4d336d9f5c4f815"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Greenland statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-grl",
+      "version": 1,
+      "hash": "6522127fed65ee8a6d701401086e9a2b65a22a00a0d3335db4d336d9f5c4f815"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-grl",
+      "version": 1,
+      "hash": "6522127fed65ee8a6d701401086e9a2b65a22a00a0d3335db4d336d9f5c4f815"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "3200acdadb85480fa0cd10fd67cec5e150c52441dc1498cd15640d4b796ace3c"
+}

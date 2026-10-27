@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-afg",
+  "entity": {
+    "kind": "entity",
+    "id": "country-afg",
+    "version": 1,
+    "hash": "3f5210af20948f6d00dcf0155149a848ef3f9f0c5b9f78899c434f09ccf16070"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Afghanistan statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-afg",
+      "version": 1,
+      "hash": "3f5210af20948f6d00dcf0155149a848ef3f9f0c5b9f78899c434f09ccf16070"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-afg",
+      "version": 1,
+      "hash": "3f5210af20948f6d00dcf0155149a848ef3f9f0c5b9f78899c434f09ccf16070"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c461784bf68096c658fb3db1fc28ee2c51fd7550dc894e761a5a3582cf4b0f2c"
+}

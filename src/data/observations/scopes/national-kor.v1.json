@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-kor",
+  "entity": {
+    "kind": "entity",
+    "id": "country-kor",
+    "version": 1,
+    "hash": "a4969e1034cad912288e3cb29dc934695bf173aafc1ab4ded47ce55e30dbbc90"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Korea, Rep. statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-kor",
+      "version": 1,
+      "hash": "a4969e1034cad912288e3cb29dc934695bf173aafc1ab4ded47ce55e30dbbc90"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-kor",
+      "version": 1,
+      "hash": "a4969e1034cad912288e3cb29dc934695bf173aafc1ab4ded47ce55e30dbbc90"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c095f217d0cf1194d617cef94f29efb7daf3166dfa8a75a7647b3ed87a0e08db"
+}

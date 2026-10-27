@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-vgb",
+  "entity": {
+    "kind": "entity",
+    "id": "country-vgb",
+    "version": 1,
+    "hash": "0d358e5fde425667479abccbb3801d09696cb518d2a49d103aba13cbdc1cc75e"
+  },
+  "scopeKind": "national-statistics",
+  "label": "British Virgin Islands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-vgb",
+      "version": 1,
+      "hash": "0d358e5fde425667479abccbb3801d09696cb518d2a49d103aba13cbdc1cc75e"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-vgb",
+      "version": 1,
+      "hash": "0d358e5fde425667479abccbb3801d09696cb518d2a49d103aba13cbdc1cc75e"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7bb8d0be734d88bff528d0dd47cee356ec444e4be0df1c41049027fd371de661"
+}

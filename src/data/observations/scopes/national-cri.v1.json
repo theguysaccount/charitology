@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-cri",
+  "entity": {
+    "kind": "entity",
+    "id": "country-cri",
+    "version": 1,
+    "hash": "c28c24ba71a20dbc1a587cc676a8f86796fef990d0a470e40352e5939df59276"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Costa Rica statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-cri",
+      "version": 1,
+      "hash": "c28c24ba71a20dbc1a587cc676a8f86796fef990d0a470e40352e5939df59276"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-cri",
+      "version": 1,
+      "hash": "c28c24ba71a20dbc1a587cc676a8f86796fef990d0a470e40352e5939df59276"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a63cea43d8fadfdf993747dd1987a8614922d38ead191bd8e77c8c5c1f7f44de"
+}

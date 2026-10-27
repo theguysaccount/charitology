@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-nru",
+  "entity": {
+    "kind": "entity",
+    "id": "country-nru",
+    "version": 1,
+    "hash": "54cffcd0c177780aafe8e526cb4098a6c620bff24dd8f0bed812c9bcd3320d7e"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Naoero statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-nru",
+      "version": 1,
+      "hash": "54cffcd0c177780aafe8e526cb4098a6c620bff24dd8f0bed812c9bcd3320d7e"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-nru",
+      "version": 1,
+      "hash": "54cffcd0c177780aafe8e526cb4098a6c620bff24dd8f0bed812c9bcd3320d7e"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "2efd5812372b1a4bdbb9139d4845fff42d630848821a89c9df8302607854dfd9"
+}

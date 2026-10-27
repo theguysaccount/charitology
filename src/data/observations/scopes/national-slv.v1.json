@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-slv",
+  "entity": {
+    "kind": "entity",
+    "id": "country-slv",
+    "version": 1,
+    "hash": "cfddc3cc1f7aed45dcf65443065ed9ea0e55bc75b8a5ad38526aaa303bd0e912"
+  },
+  "scopeKind": "national-statistics",
+  "label": "El Salvador statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-slv",
+      "version": 1,
+      "hash": "cfddc3cc1f7aed45dcf65443065ed9ea0e55bc75b8a5ad38526aaa303bd0e912"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-slv",
+      "version": 1,
+      "hash": "cfddc3cc1f7aed45dcf65443065ed9ea0e55bc75b8a5ad38526aaa303bd0e912"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "08fbb5f6ecd8e453a183a49e33e73f37bff6b4d66728a96cefd39ddcfa0bf699"
+}

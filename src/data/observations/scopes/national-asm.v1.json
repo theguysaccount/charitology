@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-asm",
+  "entity": {
+    "kind": "entity",
+    "id": "country-asm",
+    "version": 1,
+    "hash": "03826f7b421db2dbfed0b426ac059a06dd886f8536d590c23f679817441cca69"
+  },
+  "scopeKind": "national-statistics",
+  "label": "American Samoa statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-asm",
+      "version": 1,
+      "hash": "03826f7b421db2dbfed0b426ac059a06dd886f8536d590c23f679817441cca69"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-asm",
+      "version": 1,
+      "hash": "03826f7b421db2dbfed0b426ac059a06dd886f8536d590c23f679817441cca69"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "0e126b02cae5bdd6e8a0aa5b6b18be1ce207eae198e0d9d1dc04418907c2a073"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-syc",
+  "entity": {
+    "kind": "entity",
+    "id": "country-syc",
+    "version": 1,
+    "hash": "ca970089886faa6fe3e5c6ae19fb252fd541d62244848168acc73a3a5f9a8b60"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Seychelles statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-syc",
+      "version": 1,
+      "hash": "ca970089886faa6fe3e5c6ae19fb252fd541d62244848168acc73a3a5f9a8b60"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-syc",
+      "version": 1,
+      "hash": "ca970089886faa6fe3e5c6ae19fb252fd541d62244848168acc73a3a5f9a8b60"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f219a6de0803af7ef2bfa538bf424d2c31fc0eb1d7506ed9b60e91bb0be9432d"
+}

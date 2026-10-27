@@ -1,0 +1,51 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "measure",
+  "id": "financial-givewell-expenses",
+  "label": "Total expenses",
+  "measureKind": "flow",
+  "family": "expenses",
+  "producerCode": null,
+  "definition": "Total expenses for the source's stated reporting period; operating and total expenses are distinct definitions.",
+  "unit": {
+    "kind": "currency",
+    "label": "USD",
+    "currency": "USD",
+    "denominator": null
+  },
+  "method": "Selected historical audited-statement transcription, not an effectiveness estimate.",
+  "legacyCountry": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "gw-audit",
+        "version": 1,
+        "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 6,
+        "printedPage": "4",
+        "section": [
+          "Statement of activities"
+        ],
+        "row": [
+          "Total expenses"
+        ],
+        "column": [
+          "2024"
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "No marginal impact, service geography or charitable rating is inferred."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "74dc76d6cbf2cff431e6ffff3f5c13582008a69d20a3e46ac8b985f9ddd1b840"
+}

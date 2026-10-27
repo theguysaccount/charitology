@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mkd",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mkd",
+    "version": 1,
+    "hash": "fd96f848287d9ee2df76e7522ef0d73fe5743befa74d2d5da1644b767dafff70"
+  },
+  "scopeKind": "national-statistics",
+  "label": "North Macedonia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mkd",
+      "version": 1,
+      "hash": "fd96f848287d9ee2df76e7522ef0d73fe5743befa74d2d5da1644b767dafff70"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mkd",
+      "version": 1,
+      "hash": "fd96f848287d9ee2df76e7522ef0d73fe5743befa74d2d5da1644b767dafff70"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "cfa8983f45a24b7cd1bb03a0c67d61b8425e6f87a19536478bad98c3723147be"
+}

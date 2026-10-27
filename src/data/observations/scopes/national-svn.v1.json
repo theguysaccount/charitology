@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-svn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-svn",
+    "version": 1,
+    "hash": "fe5ab8d2b4a86c4e80fc5e26bd9863dd85df907d0d1a6a3dd1312739075cb2ab"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Slovenia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-svn",
+      "version": 1,
+      "hash": "fe5ab8d2b4a86c4e80fc5e26bd9863dd85df907d0d1a6a3dd1312739075cb2ab"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-svn",
+      "version": 1,
+      "hash": "fe5ab8d2b4a86c4e80fc5e26bd9863dd85df907d0d1a6a3dd1312739075cb2ab"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "67331b77de9b58bf97dc10ff4d0ebac44a7a7aaeb97faadc6383cb4c7a2ed732"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-sgp",
+  "entity": {
+    "kind": "entity",
+    "id": "country-sgp",
+    "version": 1,
+    "hash": "1a279c9adbbcfc1bd9521851207e50db7efd5170cf2ef89c4ae48cb01ad5918f"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Singapore statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-sgp",
+      "version": 1,
+      "hash": "1a279c9adbbcfc1bd9521851207e50db7efd5170cf2ef89c4ae48cb01ad5918f"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-sgp",
+      "version": 1,
+      "hash": "1a279c9adbbcfc1bd9521851207e50db7efd5170cf2ef89c4ae48cb01ad5918f"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "236871995d5d90a28ad04e8e5119797068103ff0906d64fbcb00cede9455f22d"
+}

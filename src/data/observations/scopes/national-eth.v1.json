@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-eth",
+  "entity": {
+    "kind": "entity",
+    "id": "country-eth",
+    "version": 1,
+    "hash": "460f92f0b456fe31876b22929b992e2ba114702a35adb0dec019f29ebb6b1fa5"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Ethiopia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-eth",
+      "version": 1,
+      "hash": "460f92f0b456fe31876b22929b992e2ba114702a35adb0dec019f29ebb6b1fa5"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-eth",
+      "version": 1,
+      "hash": "460f92f0b456fe31876b22929b992e2ba114702a35adb0dec019f29ebb6b1fa5"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "28769204d13841a8e9a842846c00162c946a800c5cd7dfb6b0f6788ac8889fa8"
+}

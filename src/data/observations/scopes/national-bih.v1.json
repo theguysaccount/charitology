@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-bih",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bih",
+    "version": 1,
+    "hash": "8457a93a0a6d697114a633d3caea9ccb76e161ba3db30276d4fbf5cd9a31ec65"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Bosnia and Herzegovina statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-bih",
+      "version": 1,
+      "hash": "8457a93a0a6d697114a633d3caea9ccb76e161ba3db30276d4fbf5cd9a31ec65"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-bih",
+      "version": 1,
+      "hash": "8457a93a0a6d697114a633d3caea9ccb76e161ba3db30276d4fbf5cd9a31ec65"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "8f685c5ae79dd0e51854d035ac32b4f760976135bbd3924bbaa247d1b789141c"
+}

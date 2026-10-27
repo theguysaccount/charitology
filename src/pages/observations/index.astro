@@ -1,0 +1,15 @@
+---
+import Entry from "../../layouts/Entry.astro";
+import ObservationDesk from "../../components/ObservationDesk.astro";
+import { loadObservations, observationEditionHref } from "../../lib/observations";
+import { url } from "../../lib/site";
+const { input, projection } = loadObservations();
+---
+<Entry title="Sourced observations" eyebrow="The Record · coverage and provenance" summary="Read dated facts with their definitions, reporting scopes and exact sources. Unknowns remain visible." crumbs={[{label:"Record",href:"/record/"},{label:"Observations"}]}>
+  <p>National statistics describe countries and economies. Selected historical financial statements describe two consolidated reporting groups. Neither is a rating, a measure of an organization's impact or a worldwide census of charity. All transcriptions remain drafts awaiting independent human source review.</p>
+  <p>Selected capture: <time datetime={projection.capturedAt}>{projection.capturedAt}</time>. Capture dates are not the dates of every observation or evidence of fresh publication by a source.</p>
+  <nav class="ob-actions" aria-label="Observation evidence"><a class="btn" href={url(observationEditionHref(projection.edition.id))}>Read this fixed edition</a><a href={url("/record/country-profiles/")}>Country research desk</a><a href={url("/tools/compare-tool/#organizations")}>Factual organization comparison</a><a href={url("/api/v1/observations.json")}>Metadata API</a></nav>
+  <ObservationDesk projection={projection}/>
+  <h2>Retained editions</h2><ul>{input.registry.editions.map(e=><li><a href={url(observationEditionHref(e.id))}>Edition {e.sequence} · {e.id}</a>{e.id===projection.edition.id&&" · selected current edition"}</li>)}</ul>
+  <p><a href={url("/observations/history.json")}>Download complete public history JSON</a>. Public source text is retained where its stated reuse basis permits it. Original audit PDFs are linked and identified by exact byte hashes; they are not redistributed.</p>
+</Entry>

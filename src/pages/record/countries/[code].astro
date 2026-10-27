@@ -1,14 +1,22 @@
 ---
 import Entry from "../../../layouts/Entry.astro";
-import countries from "../../../data/countries.json";
+import { loadObservations, observationEditionHref } from "../../../lib/observations";
+import { countryObservationFacts, countryMissingFacts, observationCoverageAnchor } from "../../../lib/observation-view";
+import ObservationFact from "../../../components/ObservationFact.astro";
+import ObservationRefs from "../../../components/ObservationRefs.astro";
+import "../../../styles/observations.css";
 import { url } from "../../../lib/site";
 export function getStaticPaths() {
+  const { countries } = loadObservations();
   return countries.countries.map((country) => ({
     params: { code: country.id.toLowerCase() },
     props: { country },
   }));
 }
 const { country } = Astro.props;
+const { countries, projection } = loadObservations();
+const facts = countryObservationFacts(projection, country.id);
+const missing = countryMissingFacts(projection,country.id);
 ---
 
 <Entry
@@ -32,44 +40,25 @@ const { country } = Astro.props;
     locally authored narrative profile has not been published.
   </p>
   <h2>What the snapshot records</h2>
-  <dl class="country-facts">
+  <div class="ob-grid">
     {
       countries.indicators.map((i) => {
-        const v = (country.values as any)[i.id];
+        const fact = facts[i.id];
         return (
           <>
-            <>
-              <dt>{i.label}</dt>
-              <dd>
-                {v ? (
-                  <>
-                    <strong>
-                      {v.value.toLocaleString("en-US", {
-                        maximumFractionDigits: i.unit === "people" ? 0 : 2,
-                      })}{" "}
-                      {i.unit}
-                    </strong>{" "}
-                    · {v.year}
-                    {v.footnote && <p class="note">{v.footnote}</p>}
-                    {v.status && <span> · observation status: {v.status}</span>}
-                  </>
-                ) : (
-                  <strong>Unknown in the 2020–2025 snapshot</strong>
-                )}
-                <p class="note">{i.note}</p>
-              </dd>
-            </>
+            {fact ? <ObservationFact projection={projection} observation={fact.record} showEntity={false}/> : <article class="ob-fact" data-coverage-id={missing[i.id]?.coverage.id} data-coverage-version={missing[i.id]?.coverage.version} data-coverage-hash={missing[i.id]?.coverage.hash} data-cell-index={missing[i.id]?.index} data-edition-id={projection.edition.id} data-edition-hash={projection.edition.hash}><h3>{i.label}</h3><p><strong>Unknown in the 2020–2025 snapshot</strong></p><p>The producer returned null throughout the selection window. This is not a measured zero.</p><p>{i.note}</p>{missing[i.id]&&<><ObservationRefs projection={projection} refs={missing[i.id].cell.sourceRefs}/><details><summary>Missing-cell identity</summary><p>Coverage {missing[i.id].coverage.id} v{missing[i.id].coverage.version}, cell {missing[i.id].index}; edition {projection.edition.id}.</p><p class="ob-hash">Coverage hash {missing[i.id].coverage.hash} · edition hash {projection.edition.hash}</p></details><a href={url(`${observationEditionHref(projection.edition.id)}#${observationCoverageAnchor(missing[i.id].coverage.id,missing[i.id].coverage.version,missing[i.id].index)}`)}>Read this exact missing-coverage cell and its source</a></>}</article>}
           </>
         );
       })
     }
-  </dl>
+  </div>
   <p class="note">
     Retrieved {countries.retrieved}. Each series uses its latest non-empty
     observation in 2020–2025; the years can differ. National averages may hide
     differences by region, wealth, gender, disability or other circumstances.
     These figures do not measure charitable funding or unmet need.
   </p>
+  <p><a href={url(observationEditionHref(projection.edition.id))}>Fixed observation edition {projection.edition.sequence}</a> · captured {projection.capturedAt}. The source/reuse detail belongs to each source; no blanket license or independent local review is implied.</p>
   <h2>Build an accountable local profile</h2><ol>
     <li>
       Invite local coauthors to define priorities and correct the framing.

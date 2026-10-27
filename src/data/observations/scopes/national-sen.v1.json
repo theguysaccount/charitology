@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-sen",
+  "entity": {
+    "kind": "entity",
+    "id": "country-sen",
+    "version": 1,
+    "hash": "a54328b4e068cbf80bd7d24c63c6cfba6450a196e8f21ae4f96911ab4cac55c6"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Senegal statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-sen",
+      "version": 1,
+      "hash": "a54328b4e068cbf80bd7d24c63c6cfba6450a196e8f21ae4f96911ab4cac55c6"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-sen",
+      "version": 1,
+      "hash": "a54328b4e068cbf80bd7d24c63c6cfba6450a196e8f21ae4f96911ab4cac55c6"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ddc32e2c40ef5867a7168f60369280e5dbce7e362a2a37db93bb5aed7a57c9c9"
+}

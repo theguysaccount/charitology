@@ -4,6 +4,13 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseFragment } from 'parse5';
+
+// Astro may emit numeric character references, including &#38; in query
+// strings. Decode attributes as HTML before interpreting URL fragments.
+function attributeValue(value) {
+  return parseFragment(`<a href="${value}"></a>`).childNodes[0].attrs[0].value;
+}
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const dist = join(root, 'dist');
@@ -24,7 +31,7 @@ const html = walk(dist).filter((f) => f.endsWith('.html'));
 const idsCache = new Map();
 const idsIn = (file) => {
   if (!idsCache.has(file)) {
-    const ids = new Set([...readFileSync(file, 'utf8').matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
+    const ids = new Set([...readFileSync(file, 'utf8').matchAll(/\sid="([^"]+)"/g)].map((m) => attributeValue(m[1])));
     idsCache.set(file, ids);
   }
   return idsCache.get(file);
@@ -52,7 +59,7 @@ for (const file of html) {
   const page = relative(dist, file).split(sep).join('/');
   const text = readFileSync(file, 'utf8');
   for (const m of text.matchAll(/\s(?:href|src)="([^"]+)"/g)) {
-    const ref = m[1].replace(/&amp;/g, '&');
+    const ref = attributeValue(m[1]);
     if (/^(https?:|mailto:|data:|javascript:|\/\/)/.test(ref)) continue;
     if (ref.startsWith('#')) {
       if (ref.length > 1 && !idsIn(file).has(fragmentId(ref.slice(1)))) problems.push(`${page}: missing anchor ${ref}`);

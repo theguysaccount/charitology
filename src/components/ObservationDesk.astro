@@ -1,0 +1,38 @@
+---
+import type { ObservationProjection } from "../lib/observation-types";
+import { observationFact, observationPinned, observationUnitText, observationCoverageAnchor } from "../lib/observation-view";
+import { observationEditionHref, observationSourceHref } from "../lib/observations";
+import { url } from "../lib/site";
+import "../styles/observations.css";
+interface Props { projection: ObservationProjection; }
+const { projection: p } = Astro.props;
+const rows = p.coverage.flatMap(coverage => coverage.cells.map((cell, index) => {
+  if (cell.state === "present") {
+    const observation = observationPinned(p.observations, cell.observation);
+    const f = observationFact(p, observation);
+    return { entity: f.entity, measure: f.measure, state: "present", value: f.valueText,
+      period: f.periodText, unit: f.unitText, source: f.source, note: f.uncertaintyText,
+      token: observation.reported.token, observation, coverage, index };
+  }
+  return { entity: observationPinned(p.entities, cell.entity), measure: observationPinned(p.measures, cell.measure),
+    state: "missing", value: "Unknown", period: coverage.selection.kind === "country-latest-window" ? "2020–2025 selection window" : "No period supplied",
+    unit: observationUnitText(observationPinned(p.measures, cell.measure).unit), source: cell.sourceRefs.length ? observationPinned(p.sources, cell.sourceRefs[0].source) : null,
+    note: "Producer returned null throughout the selected window; this is a coverage finding, not a zero observation.", token: null, observation: null, coverage, index };
+}));
+---
+<section class="observations ob-desk" data-observation-desk>
+  <p>{rows.filter(r=>r.state === "present").length.toLocaleString("en-US")} present facts and {rows.filter(r=>r.state === "missing").length.toLocaleString("en-US")} missing cells in this selected edition. These counts describe collected coverage, not the scale of need or charitable impact.</p>
+  <div class="ob-controls"><label>Search entity or measure<input type="search" data-ob-search /></label><label>Measure<select data-ob-measure><option value="">All measures</option>{p.measures.map(m=><option value={m.id}>{m.label}</option>)}</select></label><label>Coverage<select data-ob-state><option value="all">Present and missing</option><option value="present">Present facts</option><option value="missing">Missing cells</option></select></label><button class="btn btn-ghost" type="button" data-ob-reset>Reset filters</button></div>
+  <p role="status" data-ob-count>All {rows.length} selected coverage cells are listed below.</p>
+  <p class="note">On a narrow screen, scroll the table horizontally. Keyboard users can focus the table region and use the arrow keys.</p>
+  <div class="table-wrap ob-table-scroll" tabindex="0" role="region" aria-label="Source-linked facts table"><table class="data"><caption>Source-linked facts and explicit missing coverage · draft</caption><thead><tr><th scope="col">Entity</th><th scope="col">Measure</th><th scope="col">Value and unit</th><th scope="col">Period</th><th scope="col">Source and limits</th></tr></thead><tbody>{rows.map(r=><tr id={observationCoverageAnchor(r.coverage.id,r.coverage.version,r.index)} data-ob-row data-search={`${r.entity.label} ${r.measure.label}`.toLowerCase()} data-measure={r.measure.id} data-state={r.state} data-edition-id={p.edition.id} data-edition-hash={p.edition.hash} data-coverage-id={r.coverage.id} data-coverage-version={r.coverage.version} data-coverage-hash={r.coverage.hash} data-cell-index={r.index} data-observation-id={r.observation?.id} data-observation-version={r.observation?.version} data-observation-hash={r.observation?.hash}>
+    <th scope="row">{r.entity.label}</th><td>{r.measure.label}</td><td><strong>{r.value}</strong>{r.state === "present" && <> {r.unit}</>}</td><td>{r.period}</td><td>{r.source && <a href={url(observationSourceHref(r.source.id,r.source.version))}>Read source and exact locations</a>}<details><summary>{r.state === "missing" ? "Why this cell is unknown" : "Reported token and limits"}</summary>{r.token !== null && <p>Source token <code>{r.token}</code>. Exact normalized value shown, without aggregation.</p>}<p>{r.note}</p><p>{r.measure.definition}</p><p class="note">Coverage {r.coverage.id} v{r.coverage.version}, cell {r.index}. {r.observation&&<>Observation {r.observation.id} v{r.observation.version}. </>}<a href={url(observationEditionHref(p.edition.id))}>Pinned edition {p.edition.id}</a>.</p><p class="ob-hash">Coverage hash {r.coverage.hash}{r.observation&&<> · observation hash {r.observation.hash}</>}</p></details></td>
+  </tr>)}</tbody></table></div>
+  <p data-ob-empty hidden>No cells match these filters. Reset to see the selected coverage.</p><button class="btn btn-ghost" type="button" data-ob-more hidden>Show 50 more cells</button>
+  <noscript><p>All rows are readable without JavaScript. Use your browser's Find command to search them.</p></noscript>
+  <p class="note">Filters change this view only. Edition downloads retain their declared coverage and source context; a filtered screen is not a new measured dataset.</p>
+</section>
+<script>
+  import { mountObservationDesks } from "../lib/client/observation-ui";
+  mountObservationDesks();
+</script>

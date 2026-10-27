@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-npl",
+  "entity": {
+    "kind": "entity",
+    "id": "country-npl",
+    "version": 1,
+    "hash": "11bee1955d0720329b0c0052e7668db5d2824f97d03c1489d3818658f8f73a40"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Nepal statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-npl",
+      "version": 1,
+      "hash": "11bee1955d0720329b0c0052e7668db5d2824f97d03c1489d3818658f8f73a40"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-npl",
+      "version": 1,
+      "hash": "11bee1955d0720329b0c0052e7668db5d2824f97d03c1489d3818658f8f73a40"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4a0618c8939874368b93657b17a825677cbe54971b8f8e3b49319b2f2a2289f6"
+}

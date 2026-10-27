@@ -1,0 +1,71 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "measure",
+  "id": "country-under-five-mortality",
+  "label": "Under-five mortality",
+  "measureKind": "rate",
+  "family": "under-five-mortality",
+  "producerCode": "SH.DYN.MORT",
+  "definition": "Under-five mortality rate is the probability per 1,000 that a newborn baby will die before reaching age five, if subject to age-specific mortality rates of the specified year.",
+  "unit": {
+    "kind": "rate",
+    "label": "per 1,000 live births",
+    "denominator": {
+      "label": "live births",
+      "definition": "Probability per 1,000 live births, not total population.",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 3
+      }
+    }
+  },
+  "method": "Latest non-null producer value in the explicitly fixed 2020–2025 window.",
+  "legacyCountry": {
+    "id": "SH.DYN.MORT",
+    "label": "Under-five mortality",
+    "unit": "per 1,000 live births",
+    "note": "A population rate, not the number of children who died.",
+    "indicatorUrl": "https://data.worldbank.org/indicator/SH.DYN.MORT",
+    "queryUrl": "https://api.worldbank.org/v2/country/all/indicator/SH.DYN.MORT?date=2020:2025&footnote=y&format=json&per_page=20000",
+    "definition": "Under-five mortality rate is the probability per 1,000 that a newborn baby will die before reaching age five, if subject to age-specific mortality rates of the specified year.",
+    "organization": "UN Inter-agency Group for Child Mortality Estimation, UN Children's Fund (UNICEF), uri: www.childmortality.org, publisher: UNICEF, WHO, World Bank, United Nations Population Division;\nWorld Health Organization (WHO), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nWorld Bank (WB), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nUnited Nations (UN), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation, publisher: UN Population Division"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-sh-dyn-mort",
+        "version": 1,
+        "hash": "500365d2b050f082403853a801e2fb63b7ac66640e5898e80910bda74103d1b4"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/sourceNote",
+        "matches": []
+      }
+    },
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-sh-dyn-mort",
+        "version": 1,
+        "hash": "500365d2b050f082403853a801e2fb63b7ac66640e5898e80910bda74103d1b4"
+      },
+      "role": "unit",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/name",
+        "matches": []
+      }
+    }
+  ],
+  "limitations": [
+    "A population rate, not the number of children who died."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "8c607101dca23e1254c36ea3a06611a49398a5083b2be11ea2d8ee406ebcd146"
+}

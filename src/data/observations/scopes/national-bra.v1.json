@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-bra",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bra",
+    "version": 1,
+    "hash": "9c6d899ad5de85d29e130c5783aeb39c7102c3e6e4f7608c4356df9082422c79"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Brazil statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-bra",
+      "version": 1,
+      "hash": "9c6d899ad5de85d29e130c5783aeb39c7102c3e6e4f7608c4356df9082422c79"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-bra",
+      "version": 1,
+      "hash": "9c6d899ad5de85d29e130c5783aeb39c7102c3e6e4f7608c4356df9082422c79"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "e79562699d5b611a0fe6369aaf8a99dd6c3766b05d2c16818e72c12b2b5c1df6"
+}
