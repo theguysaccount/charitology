@@ -1,0 +1,46 @@
+{
+  "id": "version:problem-discounting-the-future-v1",
+  "recordId": "problem:discounting-the-future",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "Discounting the Future",
+      "number": 13,
+      "statement": "How much should future people count, and how should giving weigh present suffering against risks to the future?",
+      "progress": "A clear map of the positions, what each implies for allocation, and which facts would change the answer.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "short-horizon"
+        },
+        {
+          "collection": "conditions",
+          "id": "single-lens"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nIf humanity has a long future, vastly more people may live after us than are alive now. How much they count changes nearly every allocation decision. Short funding cycles may leave that choice implicit; see [the Short Horizon hypothesis](/diagnosis/short-horizon/).\n\n## Where to start\n\nPhilosophers distinguish pure time preference (valuing the future less simply because it is later) from uncertainty about whether help will arrive. Separating the two is the first step. The [Future generations](/tools/values-compass/) framework in the Values Compass is a rough starting point.\n"
+  },
+  "subjectHash": "8e1d5aaf29db2c5927c4633b156c99a37928354332b9261756cb017a1517e9a5",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-discounting-the-future",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "695ce8da32651f4eb467db584c699374263d274b9ff92c7b82e0252ed42bb1f3"
+}

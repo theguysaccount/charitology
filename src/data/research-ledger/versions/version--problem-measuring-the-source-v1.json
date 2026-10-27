@@ -1,0 +1,50 @@
+{
+  "id": "version:problem-measuring-the-source-v1",
+  "recordId": "problem:measuring-the-source",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "Measuring the Source",
+      "number": 3,
+      "statement": "How do you measure the impact of source-level work, such as changing a story, a norm or an institution, when the effects are diffuse, shared and delayed?",
+      "progress": "A measurement approach validated on at least one historical source-level change, recovering an effect that independent historians agree took place.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "symptom-trap"
+        },
+        {
+          "collection": "conditions",
+          "id": "measurement-gap"
+        },
+        {
+          "collection": "conditions",
+          "id": "short-horizon"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nIf funders require measurements that source work cannot provide, useful work may be missed. That is one possible mechanism behind the [Symptom Trap](/diagnosis/symptom-trap/) hypothesis. Hard-to-measure is not the same as small.\n\n## Where to start\n\nWork backwards from changes everyone agrees happened, such as the spread of oral rehydration therapy or the end of smallpox (see [Historical Case Studies](/record/case-studies/)), and test which measures would have detected them early. Contribution analysis, process tracing and forecasting tournaments are candidate methods.\n"
+  },
+  "subjectHash": "5998a2220b5dc20e4cab2a388a454b3fa554b674fe09a9affbf6afc495a22951",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-measuring-the-source",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "84de722c6ad0d66750e2e2bae46ab0650e5f4f8da1ef4b55fc8b0221860da058"
+}

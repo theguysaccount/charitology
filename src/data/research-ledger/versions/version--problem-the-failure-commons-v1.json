@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-failure-commons-v1",
+  "recordId": "problem:the-failure-commons",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Failure Commons",
+      "number": 9,
+      "statement": "What incentives would get charities to publish their failures, and what happens to their funding when they do?",
+      "progress": "A shared failure registry with a meaningful sample of participating organizations, and data on their funding before and after disclosure.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "silence-about-failure"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThe [Silence About Failure](/diagnosis/silence-about-failure/) costs the field its most valuable data. If disclosure turns out to be rewarded, the incentive problem is smaller than people fear. If it’s punished, funders need to see that.\n\n## Where to start\n\nCharitology’s [Failure Archive](/record/failure-archive/) is the commons in seed form. Pair it with a funder pledge not to penalize honest disclosure, and measure what happens.\n"
+  },
+  "subjectHash": "8dbc79668c734967d9eb2b3da7bd48f91f712fd53723283f8e26a6b6bf535345",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-failure-commons",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "74d468fcd69f28994867c6c13478dadcf6454f0931b0e087ee4adb436c7a6142"
+}

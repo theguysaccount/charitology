@@ -1,0 +1,176 @@
+---
+import { ledgerHref, projectResearchLedger } from "../lib/research-ledger-model.mjs";
+import { ledgerEditionHref, ledgerEditionJsonHref, ledgerEditionCsvHref, ledgerSourceHref } from "../lib/research-ledger";
+import { url } from "../lib/site";
+import "../styles/research-ledger.css";
+
+/** The parent supplies an already validated model projection and the real current edition ID.
+ * A selected record reads one current record; a historical overview includes its pinned archive.
+ */
+interface Props {
+  projection: ReturnType<typeof projectResearchLedger>;
+  selectedRecordId?: string | null;
+  currentEditionId: string;
+}
+const { projection, selectedRecordId = null, currentEditionId } = Astro.props;
+const { edition, graph, views, counters, problemStates } = projection;
+const isCurrent = edition.id === currentEditionId;
+const versions = new Map(graph.versions.map((v) => [v.id, v]));
+const eventMap = new Map(graph.events.map((v) => [v.id, v]));
+const sourceMap = new Map(graph.sources.map((v) => [v.id, v]));
+const actorMap = new Map(graph.actors.map((v) => [v.id, v]));
+const reviewMap = new Map(graph.reviews.map((v) => [v.id, v]));
+const viewMap = new Map(views.map((v) => [v.id, v]));
+const selected = selectedRecordId === null ? null : viewMap.get(selectedRecordId);
+if (selectedRecordId !== null && !selected) throw Error("The selected research-ledger record is not pinned in this edition.");
+const current = (view) => graph.versions.find((v) => v.recordId === view.id && v.version === view.currentVersion.version);
+const title = (version) => version?.subject.type === "entry" ? version.subject.frontmatter.title : version?.subject.title ?? version?.recordId ?? "Unknown subject";
+const kindNames = { problem: "Research problem", manuscript: "Manuscript", case: "Source-derived case", method: "Method", claim: "Bounded claim", artifact: "Artifact", challenge: "Challenge", decision: "Disposition decision" };
+const eventNames = { baseline: "Coverage baseline", "version-recorded": "Version recorded", "artifact-recorded": "Artifact recorded", response: "Response", "challenge-disposition": "Challenge disposition", "review-recorded": "Public review declaration recorded", "review-withdrawn": "Review withdrawn", "artifact-withdrawn": "Artifact withdrawn", "problem-disposition": "Problem disposition" };
+const artifactNames = { "editorial-correction": "Editorial correction", "proposed-method": "Proposed method", "software-check": "Software check", "empirical-result": "Empirical result", "replication-result": "Replication result", "synthesis-result": "Synthesis result", "theoretical-result": "Theoretical result" };
+const page = (items) => Array.from({ length: Math.ceil(items.length / 20) }, (_, i) => items.slice(i * 20, i * 20 + 20));
+const encodeAnchor = (id) => `#${encodeURIComponent(id)}`;
+const recordAnchor = (id) => `record-${id}`;
+const versionAnchor = (recordId, number) => isCurrent ? `version-${number}` : `${recordAnchor(recordId)}-version-${number}`;
+const recordLink = (id, version) => isCurrent ? url(ledgerHref(id, version)) : `${url(ledgerEditionHref(edition.id))}${encodeAnchor(version === undefined ? recordAnchor(id) : versionAnchor(id, version))}`;
+const reviewLink = (id) => { const review = reviewMap.get(id); return `${isCurrent ? url(ledgerHref(review.subject.recordId)) : url(ledgerEditionHref(edition.id))}${encodeAnchor(`review-${id}`)}`; };
+const eventLink = (id) => { const event = eventMap.get(id); return `${isCurrent ? url(ledgerHref(event.recordId)) : url(ledgerEditionHref(edition.id))}${encodeAnchor(`event-${id}`)}`; };
+const resolveRef = (ref) => graph.versions.find((v) => v.recordId === ref.recordId && v.version === ref.version && v.subjectHash === ref.subjectHash);
+const asText = (value) => value === null ? "Unknown / not supplied" : typeof value === "string" ? value : JSON.stringify(value, null, 2);
+const excerpt = (v) => v?.subject.type === "claim" ? v.subject.statement : v?.subject.type === "entry" ? v.subject.body : v?.subject.summary ?? v?.subject.argument ?? v?.subject.reason ?? "Subject unavailable";
+const bodyViews = selected ? [selected] : !isCurrent ? views : [];
+const prefix = `rl-${edition.id.replace(":", "-")}-${selectedRecordId?.replace(":", "-") ?? "overview"}`;
+const covered = new Set(edition.coverage.sourceKeys);
+const scientificLabel = "Qualification follows the exact recorded public declarations. The ledger cannot establish identity, independence, source reading or truth by itself.";
+---
+
+<section class="research-ledger" data-research-ledger aria-label="Public research ledger">
+  <header class="rl-panel">
+    <p class="rl-kicker">{isCurrent ? "Current published edition" : "Historical edition"}</p>
+    <h2>{selected ? title(current(selected)) : "What is recorded, and what remains unreviewed"}</h2>
+    <p>As recorded by <time datetime={edition.capturedAt}>{edition.capturedAt}</time>. This is a dated public record of drafts, changes, sources and review declarations. A page, checksum or merged pull request does not establish a scientific result or independent review.</p>
+    {!isCurrent && <p class="rl-warning">This edition retains only the evidence pinned at its capture. Later corrections and withdrawals are shown in the <a href={url("/research-ledger/")}>current ledger</a>.</p>}
+    <dl class="rl-definitions">
+      <dt>Edition</dt><dd><a href={url(ledgerEditionHref(edition.id))}>{edition.id}</a></dd>
+      <dt>Edition checksum</dt><dd><code>{edition.hash}</code></dd>
+      <dt>Projection checksum</dt><dd><code>{projection.factualHash}</code></dd>
+      <dt>Period</dt><dd><time datetime={edition.period.from}>{edition.period.from}</time> inclusive to <time datetime={edition.period.to}>{edition.period.to}</time> exclusive.</dd>
+      <dt>Starting baseline</dt><dd>{edition.coverage.baselineKnownFrom === null ? "Unknown before the recorded capture. Present states are not backdated to January." : edition.coverage.baselineKnownFrom}</dd>
+    </dl>
+    <nav class="rl-actions" aria-label="Ledger edition downloads">
+      <a class="rl-button" href={url(ledgerEditionJsonHref(edition.id))} download>Complete edition JSON</a>
+      <a class="rl-button" href={url(ledgerEditionCsvHref(edition.id))} download>Complete event CSV</a>
+      {selected && <a class="rl-button" href={url("/research-ledger/")}>All current records</a>}
+    </nav>
+    <p class="rl-note">JSON retains the complete pinned edition. CSV covers every recorded event in this edition; view filters do not change either download.</p>
+  </header>
+
+  <section aria-label="Model-derived edition counts">
+    <h3>Recorded activity and qualification</h3>
+    <ul class="rl-stats">
+      {[
+        ["Stable records", counters.records], ["Subject versions", counters.versions], ["Recorded events", counters.events],
+        ["Review declarations", counters.reviews], ["Subjects with qualifying source review", counters.qualifiedSourceReviews],
+        ["Peer-reviewed manuscripts", counters.peerReviewedManuscripts], ["Qualifying research results", counters.qualifyingResearchResults],
+        ["Editorial correction artifacts", counters.correctionArtifacts], ["Changed claim subjects", counters.changedClaims],
+        ["Open problems", counters.open], ["Partially resolved problems", counters.partial], ["Solved problems", counters.solved],
+        ["Problems under review", counters.underReview], ["Unresolved challenges", counters.unresolvedChallenges],
+      ].map(([label, count]) => <li class="rl-stat"><strong>{count}</strong>{label}</li>)}
+    </ul>
+    <p class="rl-note">{scientificLabel} Editorial corrections, proposed methods and software checks are separate from qualifying research results.</p>
+  </section>
+
+  <details class="rl-panel">
+    <summary>Coverage and limits</summary>
+    <p>{covered.size} source entries are covered by this edition. Claim-level records cover only their selected wording and context; they do not qualify a whole manuscript. Source-derived case labels describe the published summaries, not Charitology fieldwork or charity ratings.</p>
+    <ul class="rl-links">{edition.coverage.limitations.map((note) => <li>{note}</li>)}</ul>
+    <ul class="rl-links">{edition.currentSources.map((source) => <li><a href={url(source.href)}>{source.sourceKey}</a> · <a href={recordLink(source.recordId)}>ledger record</a> · <a href={url(ledgerSourceHref(source.sourceId))}>pinned source text</a></li>)}</ul>
+    <p class="rl-note">Entry links open the present site. The separate pinned source text retains this edition’s exact archived bytes.</p>
+  </details>
+
+  {!selected && <section class="rl-list" data-ledger-noun="records" aria-labelledby={`${prefix}-records`}>
+    <h3 id={`${prefix}-records`}>Records in this edition</h3>
+    <div class="rl-controls" hidden>
+      <div class="rl-control"><label for={`${prefix}-search`}>Find a record</label><input class="rl-text-filter" id={`${prefix}-search`} type="search" maxlength="180" /></div>
+      <div class="rl-control"><label for={`${prefix}-kind`}>Record type</label><select class="rl-kind-filter" id={`${prefix}-kind`}><option value="">All types</option>{Object.entries(kindNames).map(([value, label]) => <option value={value}>{label}</option>)}</select></div>
+      <div class="rl-control"><label for={`${prefix}-state`}>Problem or source-review state</label><select class="rl-state-filter" id={`${prefix}-state`}><option value="">All states</option>{["open", "partial", "solved", "under-review", "draft", "reviewed"].map((value) => <option value={value}>{value}</option>)}</select></div>
+      <button class="rl-button rl-reset" type="button">Clear filters</button>
+      <div class="rl-paging"><button class="rl-button rl-prev" type="button">Previous records</button><button class="rl-button rl-next" type="button">Next records</button><p class="rl-page-status" role="status" aria-live="polite" tabindex="-1"></p></div>
+    </div>
+    {page(views).map((batch, index) => <details class="rl-batch" open={index === 0}>
+      <summary>Records {index * 20 + 1}–{Math.min((index + 1) * 20, views.length)} of {views.length}</summary>
+      <table class="rl-table"><thead><tr><th scope="col">Record</th><th scope="col">Type and state</th><th scope="col">Review qualification</th></tr></thead><tbody>
+        {batch.map((view) => { const v = current(view); const problem = problemStates.find((p) => p.recordId === view.id); return <tr class="rl-item" data-ledger-kind={view.kind} data-ledger-state={problem?.effectiveStatus ?? view.qualification.sourceReview} data-ledger-search={`${title(v)} ${view.id} ${view.kind}`}>
+          <td><a href={recordLink(view.id)}>{title(v)}</a><p class="rl-meta"><code>{view.id}</code> · version {view.currentVersion.version}</p></td>
+          <td data-label="Type and state">{kindNames[view.kind]}{problem && <p>Effective problem state: <strong>{problem.effectiveStatus}</strong></p>}{v?.subject.type === "artifact" && <p>{artifactNames[v.subject.kind]}</p>}</td>
+          <td data-label="Review">Source review: <strong>{view.qualification.sourceReview}</strong>{view.qualification.peerReview !== "not-applicable" && <p>Peer review: {view.qualification.peerReview}</p>}</td>
+        </tr>; })}
+      </tbody></table>
+    </details>)}
+    <noscript><p class="rl-note">All records are readable in the expandable batches above. Optional filters need JavaScript.</p></noscript>
+  </section>}
+
+  {bodyViews.map((view) => { const v = current(view); const problem = problemStates.find((p) => p.recordId === view.id); const recordVersions = view.versionIds.map((id) => versions.get(id)).sort((a, b) => a.version === view.currentVersion.version ? -1 : b.version === view.currentVersion.version ? 1 : b.version - a.version); const recordEvents = view.eventIds.map((id) => eventMap.get(id)); const recordReviews = graph.reviews.filter((r) => r.subject.recordId === view.id); return <details class="rl-record rl-archive" id={recordAnchor(view.id)} open={Boolean(selected)}>
+    <summary>{title(v)} · {kindNames[view.kind]} · version {view.currentVersion.version}</summary>
+    <div class="rl-badges"><span class="rl-badge">Source review: {view.qualification.sourceReview}</span>{view.qualification.peerReview !== "not-applicable" && <span class="rl-badge">Peer review: {view.qualification.peerReview}</span>}{problem && <span class="rl-badge">Problem: {problem.effectiveStatus}</span>}</div>
+    <p><code>{view.id}</code></p>
+    <ul class="rl-links">{view.qualification.reasons.map((reason) => <li>{reason}</li>)}</ul>
+    {problem && <dl class="rl-definitions"><dt>Effective problem state</dt><dd>{problem.effectiveStatus}</dd><dt>Last recorded state</dt><dd>{problem.lastRecordedStatus}</dd><dt>Current support</dt><dd>{problem.support}</dd><dt>Last recorded disposition</dt><dd>{problem.lastRecordedDisposition ? <a href={recordLink(problem.lastRecordedDisposition.recordId, problem.lastRecordedDisposition.version)}>Exact decision version {problem.lastRecordedDisposition.version}</a> : "No scientific disposition is recorded."}</dd></dl>}
+    <p class="rl-note">{scientificLabel}</p>
+
+    <section class="rl-list" data-ledger-noun="versions" aria-labelledby={`${recordAnchor(view.id)}-versions`}>
+      <h3 id={`${recordAnchor(view.id)}-versions`}>Versions and exact subjects</h3>
+      <div class="rl-controls" hidden><div class="rl-control"><label for={`${recordAnchor(view.id)}-version-search`}>Find text in versions</label><input class="rl-text-filter" id={`${recordAnchor(view.id)}-version-search`} type="search" maxlength="180" /></div><button class="rl-button rl-reset" type="button">Clear filter</button><div class="rl-paging"><button class="rl-button rl-prev" type="button">Previous versions</button><button class="rl-button rl-next" type="button">Next versions</button><p class="rl-page-status" role="status" aria-live="polite" tabindex="-1"></p></div></div>
+      {page(recordVersions).map((batch, index) => <details class="rl-batch" open={index === 0}><summary>Version entries {index * 20 + 1}–{Math.min((index + 1) * 20, recordVersions.length)}</summary>
+        {batch.map((version) => { const subject = version.subject; const frontmatter = subject.type === "entry" ? subject.frontmatter : null; const subjectSources = subject.sources ?? frontmatter?.sources ?? []; return <article class="rl-item rl-version" id={versionAnchor(view.id, version.version)} data-ledger-search={`${title(version)} ${JSON.stringify(subject)}`}>
+          <h4>Version {version.version}: {title(version)}</h4>
+          <p class="rl-meta">{version.version === view.currentVersion.version ? "Current subject in this edition" : "Historical subject; retained for the record"}</p>
+          <dl class="rl-definitions"><dt>Subject checksum</dt><dd><code>{version.subjectHash}</code></dd><dt>Version checksum</dt><dd><code>{version.hash}</code></dd><dt>Authorship declaration</dt><dd>{version.authorship.state}; {version.authorship.complete ? "recorded as complete" : "completeness unknown"}. {version.authorship.actorIds.map((id) => <a href={encodeAnchor(`actor-${id}`)}>{actorMap.get(id)?.publicName ?? id} </a>)}</dd></dl>
+          {subject.type === "entry" && <><dl class="rl-definitions">{Object.entries(frontmatter).filter(([key]) => key !== "title" && key !== "sources").map(([key, value]) => <><dt>{key}</dt><dd>{typeof value === "object" && value !== null ? <pre>{asText(value)}</pre> : asText(value)}</dd></>)}</dl><details><summary>Exact archived Markdown body</summary><p class="rl-note">Inert source text, including its original formatting. It is not executed as page markup.</p><pre>{subject.body}</pre></details></>}
+          {subject.type === "claim" && <><p class="rl-meta">Bounded claim · {subject.evidence} · parent <a href={recordLink(subject.parentId)}>{subject.parentId}</a></p><div class="rl-excerpt">{subject.statement}</div>{subject.context && <><h5>Exact selected context</h5><div class="rl-excerpt">{subject.context}</div></>}</>}
+          {subject.type === "artifact" && <><p><strong>{artifactNames[subject.kind]}</strong> · finding: {subject.finding}</p><p>{subject.summary}</p><h5>Limitations</h5><p>{subject.limitations}</p><dl class="rl-definitions"><dt>Funding disclosure</dt><dd>{subject.funding.state}{subject.funding.note && `: ${subject.funding.note}`}</dd><dt>Conflict disclosure</dt><dd>{subject.conflicts.state}{subject.conflicts.note && `: ${subject.conflicts.note}`}</dd></dl><ul class="rl-links">{subject.targets.map((target) => <li><a href={recordLink(target.recordId, target.version)}>{title(resolveRef(target))} · version {target.version}</a></li>)}</ul></>}
+          {subject.type === "challenge" && <><p>{subject.argument}</p><h5>What would settle it</h5><p>{subject.crux}</p><p>Targets <a href={recordLink(subject.target.recordId, subject.target.version)}>{title(resolveRef(subject.target))} · version {subject.target.version}</a>.</p></>}
+          {subject.type === "decision" && <><p>Proposed change from <strong>{subject.from}</strong> to <strong>{subject.to}</strong>. Effective status is shown separately above.</p><h5>Exact progress criterion</h5><p>{subject.criterion}</p><h5>Recorded reason</h5><p>{subject.reason}</p><h5>Limitations</h5><p>{subject.limitations}</p><ul class="rl-links">{[subject.problem, ...subject.results].map((target) => <li><a href={recordLink(target.recordId, target.version)}>{title(resolveRef(target))} · version {target.version}</a></li>)}</ul></>}
+          {subjectSources.length > 0 && <><h5>Cited evidence</h5><ul class="rl-links">{subjectSources.map((source) => <li><a href={source.url}>{source.title}</a>{source.locator && ` · ${source.locator}`}{source.note && ` · ${source.note}`}{source.publisher && ` · ${source.publisher}`}{source.year && ` · ${source.year}`}</li>)}</ul></>}
+          <h5>Pinned source capture</h5>
+          {version.sources.length === 0 ? <p>No repository source capture is attached to this version. Its public evidence references remain separate.</p> : <ul class="rl-links">{version.sources.map((binding) => { const source = sourceMap.get(binding.sourceId); return <li><a href={url(ledgerSourceHref(binding.sourceId))}>{source.path}</a> · {binding.selector.kind === "entry" ? "whole entry" : `selected claim (${binding.selector.adapter})`}<br /><code>{source.sha256}</code> · {source.byteLength} UTF-8 bytes · commit <code>{source.commit}</code></li>; })}</ul>}
+          <details><summary>Exact version fields and declaration references</summary><pre>{JSON.stringify(version, null, 2)}</pre></details>
+        </article>; })}
+      </details>)}
+    </section>
+
+    <section class="rl-list" data-ledger-noun="events" aria-labelledby={`${recordAnchor(view.id)}-timeline`}>
+      <h3 id={`${recordAnchor(view.id)}-timeline`}>Timeline in recorded order</h3>
+      <p class="rl-note">Public occurrence time and ledger recording time are different. A coverage baseline records what was present at capture; it does not invent an earlier history.</p>
+      <div class="rl-controls" hidden><div class="rl-control"><label for={`${recordAnchor(view.id)}-event-search`}>Find timeline text</label><input class="rl-text-filter" id={`${recordAnchor(view.id)}-event-search`} type="search" maxlength="180" /></div><div class="rl-control"><label for={`${recordAnchor(view.id)}-event-kind`}>Event type</label><select class="rl-kind-filter" id={`${recordAnchor(view.id)}-event-kind`}><option value="">All event types</option>{Object.entries(eventNames).map(([value, label]) => <option value={value}>{label}</option>)}</select></div><button class="rl-button rl-reset" type="button">Clear filters</button><div class="rl-paging"><button class="rl-button rl-prev" type="button">Previous events</button><button class="rl-button rl-next" type="button">Next events</button><p class="rl-page-status" role="status" aria-live="polite" tabindex="-1"></p></div></div>
+      {page(recordEvents).map((batch, index) => <details class="rl-batch" open={index === 0}><summary>Events {index * 20 + 1}–{Math.min((index + 1) * 20, recordEvents.length)}</summary>
+        {batch.map((event) => <article class="rl-item rl-event" id={`event-${event.id}`} data-ledger-kind={event.type} data-ledger-search={`${event.type} ${event.id} ${event.reason}`}>
+          <h4>{eventNames[event.type]}</h4>
+          <dl class="rl-definitions"><dt>Recorded order</dt><dd>{event.ordinal}; sequence {event.sequence} for this record.</dd><dt>Public occurrence</dt><dd>{event.occurredAt === null ? "Undated / no earlier occurrence asserted" : <time datetime={event.occurredAt}>{event.occurredAt}</time>} · {event.timeBasis}</dd><dt>Recorded in ledger</dt><dd><time datetime={event.recordedAt}>{event.recordedAt}</time></dd></dl>
+          <p>{event.reason}</p>
+          {event.type === "baseline" && <p>Observed baseline: <a href={recordLink(event.version.recordId, event.version.version)}>version {event.version.version}</a>{event.initialProblemState && `; problem ${event.initialProblemState}`}.</p>}
+          {event.type === "version-recorded" && <p>{event.before ? <a href={recordLink(event.before.recordId, event.before.version)}>Version {event.before.version}</a> : "No earlier active version"} → <a href={recordLink(event.after.recordId, event.after.version)}>version {event.after.version}</a>.</p>}
+          {event.type === "artifact-recorded" && <><p><a href={recordLink(event.artifact.recordId, event.artifact.version)}>{title(resolveRef(event.artifact))}</a>. {event.challengeIds.length === 0 ? "No challenge is recorded for this artifact." : "Linked challenges:"} {event.challengeIds.map((id) => <a href={recordLink(id)}>{id} </a>)}</p>{event.changes.map((change) => <section><h5>Changed subject: {title(resolveRef(change.after))}</h5><div class="rl-comparison">{[["Before", change.before], ["After", change.after]].map(([label, ref]) => <div><p><strong>{label}</strong> · <a href={recordLink(ref.recordId, ref.version)}>version {ref.version}</a></p><div class="rl-excerpt">{excerpt(resolveRef(ref))}</div>{resolveRef(ref)?.subject.type === "claim" && <><p class="rl-meta">Selected context</p><div class="rl-excerpt">{resolveRef(ref).subject.context ?? "No editorial context is recorded for this version."}</div></>}<p class="rl-meta"><code>{ref.subjectHash}</code></p></div>)}</div></section>)}</>}
+          {event.type === "response" && <><p>Response to <a href={recordLink(event.challenge.recordId, event.challenge.version)}>exact challenge version {event.challenge.version}</a>.</p><p>{event.response}</p><h5>Retained dissent</h5>{event.dissent.length ? <ul>{event.dissent.map((text) => <li>{text}</li>)}</ul> : <p>No dissent is recorded in this event.</p>}</>}
+          {event.type === "challenge-disposition" && <><p>Challenge disposition: <strong>{event.disposition}</strong>.</p><h5>Responses considered</h5><ul class="rl-links">{event.responseIds.map((id) => <li><a href={eventLink(id)}>{id}</a></li>)}</ul><ul class="rl-links">{event.resultingClaims.map((ref) => <li><a href={recordLink(ref.recordId, ref.version)}>Resulting claim {ref.recordId} · version {ref.version}</a></li>)}</ul>{event.dissent.length > 0 && <><h5>Retained dissent</h5><ul>{event.dissent.map((text) => <li>{text}</li>)}</ul></>}</>}
+          {event.type === "review-recorded" && <p><a href={reviewLink(event.reviewId)}>Read the recorded {reviewMap.get(event.reviewId)?.scope} declaration</a>.</p>}
+          {event.type === "review-withdrawn" && <p><a href={reviewLink(event.reviewId)}>This review declaration</a> was withdrawn. {event.replacementReviewId ? <a href={reviewLink(event.replacementReviewId)}>Replacement declaration</a> : "No replacement is recorded."}</p>}
+          {event.type === "artifact-withdrawn" && <p><a href={recordLink(event.artifact.recordId, event.artifact.version)}>Artifact version {event.artifact.version}</a> withdrawn. {event.replacement ? <a href={recordLink(event.replacement.recordId, event.replacement.version)}>Replacement version {event.replacement.version}</a> : "No replacement is recorded."}</p>}
+          {event.type === "problem-disposition" && <><p><a href={recordLink(event.decision.recordId, event.decision.version)}>Exact disposition decision</a>. Historical recording and present support remain separate.</p><ul class="rl-links">{[...event.researchReviewIds, ...event.decisionReviewIds].map((id) => <li><a href={reviewLink(id)}>{id}</a></li>)}</ul></>}
+          <ul class="rl-links">{event.refs.map((ref) => <li><a href={ref.url}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}{event.observationIds.map((id) => <li><a href={encodeAnchor(`observation-${id}`)}>Dated public metadata observation: {id}</a></li>)}</ul>
+          <details><summary>Exact event fields</summary><pre>{JSON.stringify(event, null, 2)}</pre></details>
+        </article>)}
+      </details>)}
+    </section>
+    <section aria-label="Recorded reviews for this record"><h3>Review declarations</h3>{recordReviews.length === 0 ? <p>No public review declaration is recorded for this subject in this edition.</p> : recordReviews.map((review) => <article class="rl-panel" id={`review-${review.id}`}><h4>{review.scope} · {review.disposition}</h4><p>Recorded public declaration by {actorMap.get(review.reviewerId)?.publicName ?? review.reviewerId}; target version {review.subject.version}. {view.qualification.reviewIds.includes(review.id) ? "Included in this edition’s current eligible declaration set." : "Historical or not currently qualifying; retained for inspection."}</p><p>{review.statement}</p><dl class="rl-definitions"><dt>Public statement time</dt><dd>{review.occurredAt ?? "Unknown / undated"}</dd><dt>Independence declaration</dt><dd>{review.independence}</dd><dt>Conflict disclosure</dt><dd>{review.conflicts.state}{review.conflicts.note && `: ${review.conflicts.note}`}</dd><dt>Recorded inspection</dt><dd>{review.inspection.decision} · {review.inspection.at}<br />{review.inspection.reason}</dd></dl><h5>Public statements and checked sources</h5><ul class="rl-links">{[...review.statementRefs, ...review.sourcesChecked, ...review.inspection.refs].map((ref) => <li><a href={ref.url}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}</ul><details><summary>Exact review declaration</summary><pre>{JSON.stringify(review, null, 2)}</pre></details></article>)}</section>
+  </details>; })}
+
+  {graph.observations.length > 0 && <section class="rl-panel"><h3>Dated public metadata observations</h3><p class="rl-note">These observations record only the displayed metadata at inspection. A merge, closed issue or empty review list does not establish research or independent review.</p>{graph.observations.map((observation) => <details id={`observation-${observation.id}`}><summary>{observation.kind} · {observation.observedAt}</summary><p><a href={observation.url}>Observed public object</a></p><pre>{JSON.stringify(observation.facts, null, 2)}</pre><p class="rl-meta"><code>{observation.hash}</code></p></details>)}</section>}
+  {graph.actors.length > 0 && <section class="rl-panel"><h3>Public contributor declarations</h3><p class="rl-note">Recorded declarations do not verify identity or prove independent human work.</p>{graph.actors.map((actor) => <details id={`actor-${actor.id}`}><summary>{actor.publicName} · {actor.kind}</summary><p>Human work declaration: {actor.humanWork}.</p><ul class="rl-links">{actor.profileUrls.map((href) => <li><a href={href}>{href}</a></li>)}{actor.declarationRefs.map((ref) => <li><a href={ref.url}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}</ul><details><summary>Exact declaration, including aliases</summary><pre>{JSON.stringify(actor, null, 2)}</pre></details></details>)}</section>}
+  <footer class="rl-panel"><h3>Corrections stay public</h3><p>This ledger reads checked-in public evidence. It does not read private browser registers, publish a local result, assign reviewers or rate charities. New evidence and corrections enter through the repository’s public contribution process.</p><a href={url("/contribute/")}>How to contribute or challenge a claim</a></footer>
+</section>
+
+<script>
+  import { mountResearchLedger } from "../lib/client/research-ledger-ui";
+  document.querySelectorAll<HTMLElement>("[data-research-ledger]").forEach(mountResearchLedger);
+</script>

@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-profession-question-v1",
+  "recordId": "problem:the-profession-question",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Profession Question",
+      "number": 17,
+      "statement": "What should a charitologist be trained in, and does training change where money goes?",
+      "progress": "A curriculum, and evidence comparing the decisions of trained and untrained advisors or donors on the same choices.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "missing-profession"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nCharitology’s founding claim is that a profession would improve where money goes, as medicine improved how illness is treated. That claim can be tested, so it should be. See [the Missing Profession](/diagnosis/missing-profession/).\n\n## Where to start\n\nThe [Principles of Charitology](/record/principles/) textbook and the [Certified Charitologist](/programs/certified-charitologist/) program are draft curricula. A randomized study of a short training course is a feasible first test.\n"
+  },
+  "subjectHash": "2e79ab989f3b58bf7000693a2940f8d3ff88c90b3431a599faa32ae539243f14",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-profession-question",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "2ddbe19f97bffd2eb82714bbceb50f1178fc414409c07d0120c71be11b127d81"
+}

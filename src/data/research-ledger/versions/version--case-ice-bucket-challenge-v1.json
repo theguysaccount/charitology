@@ -1,0 +1,68 @@
+{
+  "id": "version:case-ice-bucket-challenge-v1",
+  "recordId": "case:ice-bucket-challenge",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "cases",
+    "frontmatter": {
+      "title": "The ALS Ice Bucket Challenge",
+      "summary": "In the summer of 2014 a viral video challenge raised $115 million for the ALS Association, which turned the money into research grants, clinics and advocacy. It is a case of attention-driven giving that funded lasting work, and a reminder that attention picks causes by what spreads, not by need.",
+      "kind": "mixed",
+      "era": "2014–2024",
+      "place": "United States and online worldwide",
+      "depth": 1,
+      "lessons": [
+        "Attention can raise a fortune in a single summer, but it chooses causes by what spreads, not by the size or neglect of the need.",
+        "A windfall does the most good when it is turned into things that keep working, such as research teams, clinics and trained people.",
+        "Self-reported impact needs independent checks. The 10-year evaluation leaned on a grantee survey that only about a quarter of grantees answered.",
+        "A campaign total can’t say whether the money was new giving or giving moved from other causes. That counterfactual is the question that matters most and is the hardest to answer."
+      ],
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "story-bias"
+        },
+        {
+          "collection": "conditions",
+          "id": "measurement-gap"
+        }
+      ],
+      "sources": [
+        {
+          "title": "The ALS Ice Bucket Challenge",
+          "url": "https://www.als.org/ibc",
+          "publisher": "The ALS Association",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "ALS Association Ice Bucket Challenge Impact Evaluation Report",
+          "url": "https://www.als.org/sites/default/files/2024-08/ALS_IBC10_Impact_Report.pdf",
+          "publisher": "Joshua Schnell and colleagues, RTI International",
+          "year": 2024,
+          "note": null
+        }
+      ]
+    },
+    "body": "\n## What happened\n\nIn the summer of 2014, people around the world filmed themselves dumping buckets of ice water over their heads and challenged their friends to do the same and give to the fight against amyotrophic lateral sclerosis (ALS), also called Lou Gehrig’s disease. The ALS Association credits Anthony Senerchia, Pete Frates and Pat Quinn with launching the movement. It says 17 million people took part and the challenge raised $115 million for the association.\n\nA 10-year evaluation by RTI International, published by the association in 2024, describes where the money went. From 2013 to 2024 the association awarded $154.7 million in 560 research grants. Grantees reported new genes, biomarkers and treatment targets, and close to 80 percent of those who answered a survey said the funding let them expand their ALS research. The association says the number of multidisciplinary ALS clinics has more than doubled since 2014, from 100 to more than 220. Federal research money grew too: NIH funding for ALS research nearly tripled between 2011–2013 and 2021–2023, adjusted for inflation, while the NIH budget as a whole grew about 21 percent. The evaluators say that attributing this growth specifically to the association is beyond the scope of their study.\n\n## Why it’s mixed\n\nThe money was real and so was the research. But the way it arrived is not a model for how giving should choose causes. ALS got a viral moment that most diseases never get, and nothing in the challenge compared ALS with other needs. The windfall came once. RTI calls it a “once-in-a-generation phenomenon.”\n\nThe evidence on impact is also thinner than the totals suggest. The grantee survey had a 27 percent response rate, a limitation the report itself flags. And most care for people living with ALS is still palliative, the evaluators note.\n\n## Where it sits in the system\n\nThe money worked at several depths. Clinic care is relief, research aims at treatments, which on the [depth scale](/method/#depth) is **repair** (level 1), and advocacy for federal funding works on structure. The way the money was raised is a clear case of [Story Bias](/diagnosis/story-bias/): a fun, social, shareable act, attached to one cause. The way its impact is reported shows the [Measurement Gap](/diagnosis/measurement-gap/), where outputs such as grants, papers and clinics are counted, while the outcome that matters most, years of life for people with ALS, is much harder to measure.\n\n## What carries over\n\nWhen attention brings a windfall, put it into capacity that lasts and commission evaluation that doesn’t rely on the people funded. And ask the question no campaign total answers: did this money add to the world’s giving or move it from somewhere else? That is [Open Problem 4, the Counterfactual Problem](/open-problems/the-counterfactual-problem/).\n"
+  },
+  "subjectHash": "820b323d149fa9a22f34cb549c344707e350fa7218826babbac8ffa747df0fcd",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-cases-ice-bucket-challenge",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "8358d3d19c1d135b1704683b95d309f750646105aeaffb9a427b4feac7ca5ae1"
+}

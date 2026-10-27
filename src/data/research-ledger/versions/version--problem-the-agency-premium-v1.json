@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-agency-premium-v1",
+  "recordId": "problem:the-agency-premium",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Agency Premium",
+      "number": 14,
+      "statement": "Do community-led programs outperform top-down ones on the same outcome, and by how much?",
+      "progress": "Head-to-head comparisons of community-led and expert-led versions of the same intervention, in several contexts.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "missing-voice"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThe case for [listening to the people served](/diagnosis/missing-voice/) is strong in principle. A measured premium would make it impossible to ignore, and a measured cost would show where expertise should lead.\n\n## Where to start\n\nLook for interventions that have been delivered both ways, such as community-driven development programs evaluated against centrally planned ones.\n"
+  },
+  "subjectHash": "4f818cd1f381dc4a159152c34731b185e1030d292eecd877f20c1a5fe904ee7d",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-agency-premium",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "a4303c37c44cd3673cb390bb52b53f9cb50aa6b02c6278f488c0bf71a7f939ab"
+}

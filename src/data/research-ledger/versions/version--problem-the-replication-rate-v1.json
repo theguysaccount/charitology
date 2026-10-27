@@ -1,0 +1,46 @@
+{
+  "id": "version:problem-the-replication-rate-v1",
+  "recordId": "problem:the-replication-rate",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Replication Rate",
+      "number": 10,
+      "statement": "What share of headline charity impact findings replicate when they are tested again?",
+      "progress": "A systematic replication project covering a defined set of influential findings, publishing the rate with confidence bounds.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "silence-about-failure"
+        },
+        {
+          "collection": "conditions",
+          "id": "measurement-gap"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThe [Replication Program](/programs/replication-program/) describes published checks in psychology and deworming research. Charitology has not established an equivalent sector-wide rate for charity impact findings. Donors deserve to know how much to trust a headline.\n\n## Where to start\n\nChoose a fixed list of widely cited findings, pre-register the replication plan and publish everything, including findings that replicate. See the [Replication Program](/programs/replication-program/).\n"
+  },
+  "subjectHash": "22e313fa3bf8aeb4c22448662a5fd4f76c09a4545fa0b6d0354e1234b2c0d669",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-replication-rate",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "2bfd6c82b2e6d78ae4a82ab51968dc62eb01c45f6e93d3910a2d8289ce05e0cc"
+}

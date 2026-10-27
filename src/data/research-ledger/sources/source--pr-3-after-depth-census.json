@@ -1,0 +1,9 @@
+{
+  "id": "source:pr-3-after-depth-census",
+  "commit": "510320528e89f45caa9c42eb5a6eda3d6ad1bede",
+  "path": "src/content/problems/the-depth-census.md",
+  "sha256": "ebd0d4239ba1e1fabc871238a4436d82e1eacc0401bd61a78cdb2952cd8b7a9e",
+  "byteLength": 1453,
+  "text": "---\ntitle: \"The Depth Census\"\nnumber: 1\nstatement: \"What share of the world’s charitable money goes to relief, repair, prevention, structure and source work?\"\nprogress: \"A public, reproducible estimate of the depth mix for at least one country’s giving, with a method others can rerun and a stated error range.\"\nconditions: [\"symptom-trap\", \"measurement-gap\"]\nstatus: open\nbounty: \"Unfunded. The Question Bounties program will attach prizes once it is funded.\"\n---\n\n## Why it matters\n\nCharitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Charitology has not established the current mix. If the hypothesis is wrong, the field should be the first to say so. The census would supply a descriptive baseline. Deciding whether a mix is appropriate also requires an explicit standard tied to the goals being considered.\n\n## Where to start\n\nDraw a random sample of organizations from a public registry and code each one on the [depth scale](/method/#depth), weighting by spending. Program descriptions from Form 990 filings, published openly by [Charity Impact Media](https://theguysaccount.github.io/charity-impact-media/), and the foundation grants in [WHOFUNDS](https://theguysaccount.github.io/whofunds-open-grant-graph/) are open starting points. How often two independent coders agree is itself a finding: if people can’t agree on depth, the scale needs work first.\n",
+  "hash": "72c9ff3b4a1f522e8d836889b29e04735a03788c213f939dab4e57eb540917f4"
+}

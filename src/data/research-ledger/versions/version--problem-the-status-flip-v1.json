@@ -1,0 +1,50 @@
+{
+  "id": "version:problem-the-status-flip-v1",
+  "recordId": "problem:the-status-flip",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Status Flip",
+      "number": 15,
+      "statement": "Can generosity become a stronger status signal than consumption, and what would that unlock?",
+      "progress": "Field evidence that a status mechanism tied to what gifts achieve changes giving behavior at scale.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "prestige-economy"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": [
+        {
+          "title": "Humanity’s Checklist",
+          "url": "https://humanityschecklist.org/",
+          "publisher": "Humanity’s Checklist",
+          "year": 2026,
+          "note": null
+        }
+      ]
+    },
+    "body": "\n## Why it matters\n\nHumanity’s Checklist proposes directing status toward generosity. Whether that would increase giving or improve its results is a hypothesis to test. See [the Prestige Economy](/diagnosis/prestige-economy/).\n\n## Where to start\n\nHumanity’s Checklist proposes charity designer goods, where the coolest thing you can wear shows how much you gave. Testing that proposal, and others like Charitology’s shareable [Wrapped](/tools/charitology-wrapped/) card, is a concrete first experiment.\n"
+  },
+  "subjectHash": "75ccb73d8f4e616d91ac22f7effa791b89e8acb56ece25bd36882cd7fd240272",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-status-flip",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "683a64be553c9878f47ebbaf94c5c4713b4bc47a96be0875746c9d7ed7da8856"
+}

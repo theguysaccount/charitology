@@ -1,0 +1,18 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Crumbs from '../../../components/Crumbs.astro';
+import ResearchLedger from '../../../components/ResearchLedger.astro';
+import { loadResearchLedger } from '../../../lib/research-ledger';
+export async function getStaticPaths() {
+  const { editions } = await loadResearchLedger();
+  return editions.map((edition:any)=>({params:{id:edition.edition.id},props:{editionId:edition.edition.id}}));
+}
+const {editionId} = Astro.props;
+const ledger = await loadResearchLedger();
+const projection = ledger.editions.find((edition:any)=>edition.edition.id===editionId);
+if(!projection) throw new Error('Pinned research edition is missing.');
+---
+<Base title={`${editionId}: pinned research edition`} description="An immutable as-of source and research-history capture, with exact hashes and coverage limits.">
+  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'Record',href:'/record/'},{label:'Research ledger',href:'/research-ledger/'},{label:'Pinned edition'}]}/><h1>Pinned research edition</h1></div></header>
+  <section class="wrap section-tight"><ResearchLedger projection={projection} currentEditionId={ledger.input.manifest.currentEditionId}/></section>
+</Base>

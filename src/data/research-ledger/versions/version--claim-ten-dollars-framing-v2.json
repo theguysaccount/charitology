@@ -1,0 +1,37 @@
+{
+  "id": "version:claim-ten-dollars-framing-v2",
+  "recordId": "claim:ten-dollars-framing",
+  "version": 2,
+  "previousId": "version:claim-ten-dollars-framing-v1",
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "claim",
+    "parentId": "manuscript:ten-dollars",
+    "title": "Framing of the founding poem",
+    "statement": "The founding poem uses a ten-dollar domain registration as an image for Charitology’s invitation to study how generosity is aimed.",
+    "context": "*Editorial note: This manifesto is a poem, not a history of philanthropy. The ten-dollar image is the author’s account of a domain registration. Existing philanthropy, ethics and evaluation fields have long studied giving; the poem’s invitation is to develop and test Charitology’s proposed shared craft.*",
+    "evidence": "not-applicable",
+    "sources": []
+  },
+  "subjectHash": "d32dca610a5ca31c8a179497ebcc580f5d4ce05b80b88bfef2c8409ada1f7f59",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:pr-3-after-ten-dollars",
+      "selector": {
+        "kind": "claim",
+        "adapter": "ten-dollars-framing-v1",
+        "frontmatterKeys": [
+          "summary"
+        ],
+        "bodyExcerpt": "*Editorial note: This manifesto is a poem, not a history of philanthropy. The ten-dollar image is the author’s account of a domain registration. Existing philanthropy, ethics and evaluation fields have long studied giving; the poem’s invitation is to develop and test Charitology’s proposed shared craft.*"
+      }
+    }
+  ],
+  "hash": "c24286c0d07f975e2104f4962705ec529e6c4c13d13aacf67cf74a15c5cdad59"
+}

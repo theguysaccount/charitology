@@ -1,0 +1,35 @@
+{
+  "id": "version:claim-depth-census-knowledge-v2",
+  "recordId": "claim:depth-census-knowledge",
+  "version": 2,
+  "previousId": "version:claim-depth-census-knowledge-v1",
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "claim",
+    "parentId": "problem:the-depth-census",
+    "title": "Scope of the Depth Census knowledge claim",
+    "statement": "Charitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Charitology has not established the current mix. If the hypothesis is wrong, the field should be the first to say so. The census would supply a descriptive baseline. Deciding whether a mix is appropriate also requires an explicit standard tied to the goals being considered.",
+    "context": "Why it matters",
+    "evidence": "not-applicable",
+    "sources": []
+  },
+  "subjectHash": "6f3b6d06a2d61893e35d33ae513a3959f44f1321c2bd43d30ff95c54b25fe9a3",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:pr-3-after-depth-census",
+      "selector": {
+        "kind": "claim",
+        "adapter": "depth-census-knowledge-v1",
+        "frontmatterKeys": [],
+        "bodyExcerpt": "Charitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Charitology has not established the current mix. If the hypothesis is wrong, the field should be the first to say so. The census would supply a descriptive baseline. Deciding whether a mix is appropriate also requires an explicit standard tied to the goals being considered."
+      }
+    }
+  ],
+  "hash": "41cecbcc688f19234fe1b5ee880b1465722a4e9c5cbd1fc7e7b3d64fedfe12e2"
+}

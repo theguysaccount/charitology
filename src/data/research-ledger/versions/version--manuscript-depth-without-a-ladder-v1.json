@@ -1,0 +1,45 @@
+{
+  "id": "version:manuscript-depth-without-a-ladder-v1",
+  "recordId": "manuscript:depth-without-a-ladder",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "journal",
+    "frontmatter": {
+      "title": "Depth without a ladder: a protocol for describing where work acts",
+      "author": "Charitology editorial project (AI-assisted draft)",
+      "date": "2026-10-25",
+      "summary": "A reproducible proposal for classifying activities across relief, repair, prevention, structure and source without turning description into a rating.",
+      "volume": 0,
+      "issue": 2,
+      "sources": [
+        {
+          "title": "Humanity's Checklist",
+          "url": "https://humanityschecklist.org/",
+          "publisher": null,
+          "year": null,
+          "note": "The proposed source framework cited in this draft, not established causal evidence."
+        }
+      ]
+    },
+    "body": "\n**Article type: proposed method. Peer review: not completed.** This paper makes no claim that the depth framework predicts impact. Its purpose is to make that hypothesis testable and its classifications reproducible.\n\n## The unit is an activity\n\nAn organization can operate a shelter, campaign for housing rules and convene a coordination network. Assigning one depth to the entire organization erases those differences. Begin with an activity, a period and a stated outcome. Keep its money and volunteer time in separate fields unless a defensible conversion is explicitly supplied.\n\nRecord a short mechanism: “If this activity happens, what changes, for whom, through which step?” A statement such as “addresses root causes” is not enough. Name the recurring mechanism being changed. The source categories proposed by [Humanity’s Checklist](https://humanityschecklist.org/) are hypotheses that may help generate questions; invoking one does not demonstrate causality.\n\n## A proposed coding rule\n\nUse **0 relief** when the activity reduces an immediate burden; **1 repair** when it restores a damaged capacity; **2 prevention** when it reduces recurrence or exposure; **3 structure** when it changes a durable rule, institution or allocation; and **4 source** when it tests a proposed upstream mechanism that feeds several problems. These are Charitology’s definitions. They are not ordinal grades of merit.\n\nAn activity can span levels. Record a primary level only when the evidence for its mechanism supports that choice. Otherwise use multiple labels or “unclassified.” Do not allocate equal percentages merely because several labels apply. Budget shares require a stated allocation rule and evidence.\n\n## An illustrative coding exercise\n\nConsider a fictional water program. Delivering emergency water is relief. Restoring a broken pump can be repair. Scheduled maintenance may prevent outages. A change to accountable utility governance can act on structure. A coordination experiment connecting previously disconnected maintainers may test a source hypothesis.\n\nThe example does not establish which intervention works, what it costs or which deserves funding. Emergency delivery could be essential while an institutional reform fails. The coding tells us what to investigate, not which activity wins.\n\n## Independent coding and disagreement\n\nGive two coders the same public materials, definitions and period. Each records the claimed mechanism, supporting source, depth label, uncertainty and alternative interpretation before seeing the other’s answer. Compare the raw assignments before resolving disagreements. Publish the original codes and the adjudication separately.\n\nDisagreements can reveal a vague definition, missing activity-level information or an actual causal dispute. Do not hide them by averaging labels. A project described as level 2 by one coder and level 4 by another is not thereby level 3.\n\n## Denominators and unknowns\n\nA census should publish total eligible activities, activities with usable records, money covered and money unclassified. An observed zero is different from an absent record. “No source work found in this sample” is different from “no source work exists.” Funding shares across different years, geographic scopes or accounting definitions cannot be added without reconciliation.\n\nThe [Gap Map](/record/gap-map/) provides a local worksheet for making this accounting explicit. Its user-entered scenarios are not a global census.\n\n## Tests that could reject the method\n\nA useful test could find that coders cannot apply the definitions consistently, that activities span levels too often for the categories to be informative or that a different set of categories captures mechanisms more clearly. A further study could test whether depth adds predictive information beyond context, evidence quality and program design. A null result belongs in the Record.\n\nBefore any named-charity recommendation uses depth, the method requires public red-team review, a defensible unit of analysis, transparent uncertainty and independent source checks. This draft has not met those conditions.\n\n## Reproduction packet\n\nPublish the sampling frame, inclusion and exclusion rules, source retrieval dates, coding manual, coder assignments, uncoded records, adjudications and analysis code. Use the [Replication Program](/programs/replication-program/) to preregister the question and the [Evidence Reviews desk](/programs/evidence-reviews/) to track sources. Report descriptive results even when they fail to support the founding hypothesis.\n"
+  },
+  "subjectHash": "6f9e81cf213139edc9a1f3c36a913ba5806793bf34f63e0cc2fc374740186708",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-journal-depth-without-a-ladder",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "87126315e1511359bf56bb1de897628e92962bfad699acf8ce5ae3d2d22a275a"
+}

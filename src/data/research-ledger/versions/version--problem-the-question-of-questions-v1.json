@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-question-of-questions-v1",
+  "recordId": "problem:the-question-of-questions",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Question of Questions",
+      "number": 23,
+      "statement": "How should the field decide which open problem to work on first?",
+      "progress": "A published value-of-information estimate for each open problem, updated as problems are solved.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "missing-profession"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nResearch money is limited too. The first problems solved should be the ones whose answers would change the most decisions.\n\n## Where to start\n\nFor each problem, estimate how much money would move if it were solved and how likely a solution is in the next five years. Publish the estimates and let the [Forecasting Platform](/tools/forecasting-platform/) test them.\n"
+  },
+  "subjectHash": "04bc6511dbed2c14d6dfd2586007a3bfc2f2024f87250e04e252df17bff2b841",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-question-of-questions",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "17b20e2d14c5ca44d2a48f55ed42f27359dba5be93e5b8ea214e1a09ff3aa682"
+}

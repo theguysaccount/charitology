@@ -1,0 +1,74 @@
+{
+  "id": "version:case-smallpox-eradication-v1",
+  "recordId": "case:smallpox-eradication",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "cases",
+    "frontmatter": {
+      "title": "The eradication of smallpox",
+      "summary": "A coordinated global campaign ended a disease that had killed people for thousands of years. It remains the only human disease ever eradicated.",
+      "kind": "success",
+      "era": "1967–1980",
+      "place": "Worldwide",
+      "depth": 4,
+      "lessons": [
+        "A precise, shared goal (zero cases) let thousands of organizations and governments coordinate around one measurable target.",
+        "Surveillance and ring vaccination, which meant finding cases and vaccinating everyone around them, beat trying to vaccinate everyone everywhere. Learning which approach worked mattered as much as the money.",
+        "Eradication can end recurring disease and treatment, while preparedness and safe handling of laboratory stocks still need support."
+      ],
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "fragmentation"
+        },
+        {
+          "collection": "conditions",
+          "id": "short-horizon"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Smallpox",
+          "url": "https://www.who.int/health-topics/smallpox",
+          "publisher": "World Health Organization",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "Smallpox: A Great and Terrible Scourge, “Success”",
+          "url": "https://nlm.nih.gov/exhibition/smallpox/sp_success.html",
+          "publisher": "U.S. National Library of Medicine",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "The WHO and the Eradication of Smallpox",
+          "url": "https://origins.osu.edu/read/who-and-eradication-smallpox",
+          "publisher": "Origins, Ohio State University",
+          "year": null,
+          "note": null
+        }
+      ]
+    },
+    "body": "\n## What happened\n\nEfforts to eliminate smallpox go back to the 1950s, and in 1967 the World Health Organization launched an intensified eradication program. Alongside widespread vaccination, teams increasingly found each case and vaccinated the people around it, an approach called surveillance and containment. The last naturally occurring case was recorded in Somalia in 1977. On 8 May 1980 the World Health Assembly declared smallpox eradicated.\n\n## Why it’s a source-level case\n\nEradication ended naturally occurring smallpox. WHO still oversees laboratory stocks, research on vaccines and treatments, and emergency preparedness, so the disease has not disappeared from public health budgets. On the depth scale Charitology describes the end of natural transmission as a **source** (level 4) outcome for one disease. The campaign was a feat of [coordination](/diagnosis/fragmentation/) as much as of medicine.\n\n## What carries over\n\nFew problems can be eradicated the way a virus with no animal host can. But the campaign shows what a precise shared goal, honest measurement and a willingness to change methods mid-course can do.\n"
+  },
+  "subjectHash": "826756971a4d7fccc34860688b8b7178512fd675477661b8f3a2cd84a5d1af63",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-cases-smallpox-eradication",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "064cd5213c91f54024045c31f0f86eb57ce5443019bcca9957e9e547e0788ca5"
+}

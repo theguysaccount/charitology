@@ -1,28 +1,22 @@
 ---
-import { editUrl, issueUrl } from '../lib/site';
-
-interface Props {
-  filePath?: string;
-  review?: 'draft' | 'reviewed';
-  title: string;
-}
-const { filePath, review = 'draft', title } = Astro.props;
-const page = Astro.url.pathname;
+import { editUrl, issueUrl, url } from '../lib/site';
+import { loadResearchLedger } from '../lib/research-ledger';
+import { ledgerHref } from '../lib/research-ledger-model.mjs';
+interface Props { filePath?:string; review?:'draft'|'reviewed'; title:string; }
+const {filePath,review='draft',title}=Astro.props;
+const ledger=await loadResearchLedger();
+const sourceKey=filePath?.replaceAll('\\','/').match(/(?:^|\/)src\/content\/(.+)\.md$/)?.[1];
+const binding=ledger.input.manifest.currentSources.find((item:any)=>item.sourceKey===sourceKey);
+const view=binding?ledger.current.views.find((item:any)=>item.id===binding.recordId):undefined;
+const reviewed=view?.qualification.sourceReview==='reviewed';
+if(review==='reviewed'&&!reviewed)throw new Error(`No current exact-source review qualification: ${sourceKey??title}`);
+const page=Astro.url.pathname;
 ---
-
 <aside class="review-note no-print" aria-label="Review status">
-  {
-    review === 'draft' ? (
-      <span>
-        <strong>Draft, Edition 0.</strong> A second charitologist hasn’t reviewed this page yet.
-      </span>
-    ) : (
-      <span>
-        <strong>Reviewed.</strong> Checked by a second charitologist.
-      </span>
-    )
-  }
+  {reviewed ? <span><strong>Recorded source review.</strong> See the exact statement, scope and limits.</span> : <span><strong>Draft, Edition 0.</strong> No qualifying independent source review is recorded for this version.</span>}
+  {view?.kind === 'manuscript' && <span>{view.qualification.peerReview === 'peer-reviewed' ? 'Recorded peer review qualifies for this version.' : 'This version has not met the recorded peer-review gate.'}</span>}
+  {binding && <a href={url(ledgerHref(binding.recordId))}>Source versions and review history</a>}
   {filePath && <a href={editUrl(filePath)}>Improve this page</a>}
-  <a href={issueUrl('correction', `Correction: ${title}`, page)}>Report an error</a>
-  <a href={issueUrl('challenge', `Challenge: ${title}`, page)}>Challenge a claim</a>
+  <a href={issueUrl('correction',`Correction: ${title}`,page)}>Report an error</a>
+  <a href={issueUrl('challenge',`Challenge: ${title}`,page)}>Challenge a claim</a>
 </aside>

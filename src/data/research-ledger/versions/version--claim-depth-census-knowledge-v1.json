@@ -1,0 +1,35 @@
+{
+  "id": "version:claim-depth-census-knowledge-v1",
+  "recordId": "claim:depth-census-knowledge",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "claim",
+    "parentId": "problem:the-depth-census",
+    "title": "Scope of the Depth Census knowledge claim",
+    "statement": "Charitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Nobody has checked. If the hypothesis is wrong, the field should be the first to say so. If it’s right, the census gives every later effort a baseline to move.",
+    "context": "Why it matters",
+    "evidence": "not-applicable",
+    "sources": []
+  },
+  "subjectHash": "9792de6050cabd1ef2715b6145183702a6a1e5f448563b7474d82c066fd64b4e",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:pr-3-before-depth-census",
+      "selector": {
+        "kind": "claim",
+        "adapter": "depth-census-knowledge-v1",
+        "frontmatterKeys": [],
+        "bodyExcerpt": "Charitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Nobody has checked. If the hypothesis is wrong, the field should be the first to say so. If it’s right, the census gives every later effort a baseline to move."
+      }
+    }
+  ],
+  "hash": "78292a918c91a6f6b80b3148da6531f9fab51aedcc3d1206fe833de7fd92843e"
+}

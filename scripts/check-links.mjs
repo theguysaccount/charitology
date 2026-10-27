@@ -41,6 +41,11 @@ function resolveTarget(pathname) {
   return null;
 }
 
+function fragmentId(hash) {
+  try { return decodeURIComponent(hash); }
+  catch { return null; }
+}
+
 const problems = [];
 let checked = 0;
 for (const file of html) {
@@ -50,7 +55,7 @@ for (const file of html) {
     const ref = m[1].replace(/&amp;/g, '&');
     if (/^(https?:|mailto:|data:|javascript:|\/\/)/.test(ref)) continue;
     if (ref.startsWith('#')) {
-      if (ref.length > 1 && !idsIn(file).has(ref.slice(1))) problems.push(`${page}: missing anchor ${ref}`);
+      if (ref.length > 1 && !idsIn(file).has(fragmentId(ref.slice(1)))) problems.push(`${page}: missing anchor ${ref}`);
       checked++;
       continue;
     }
@@ -62,7 +67,7 @@ for (const file of html) {
       problems.push(`${page}: broken link ${ref}`);
       continue;
     }
-    if (hash && target.endsWith('.html') && !idsIn(target).has(hash)) problems.push(`${page}: missing anchor ${ref}`);
+    if (hash && target.endsWith('.html') && !idsIn(target).has(fragmentId(hash))) problems.push(`${page}: missing anchor ${ref}`);
   }
 }
 

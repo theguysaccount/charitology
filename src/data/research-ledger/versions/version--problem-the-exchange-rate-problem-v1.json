@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-exchange-rate-problem-v1",
+  "recordId": "problem:the-exchange-rate-problem",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Exchange Rate Problem",
+      "number": 2,
+      "statement": "Can outcomes in different causes (a life saved, a species protected, a law changed, a child educated) be compared on a common scale, and where must comparison stop?",
+      "progress": "A comparison method that people holding different moral frameworks accept as fair for at least some pairs of causes, with the pairs it can’t compare stated openly.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "single-lens"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nEvery choice between two causes is an exchange rate, whether or not anyone writes it down. Writing it down lets people argue about it.\n\n## Where to start\n\nHealth economics already compares treatments with quality- and disability-adjusted life years. Wellbeing research proposes life-satisfaction measures. Each scale carries a moral framework inside it. The work is to map which scales each framework accepts and where every scale breaks down. Charitology’s [frameworks data](/tools/public-api/) is a place to begin.\n"
+  },
+  "subjectHash": "1a4c4522a053129c8654668fade099456696dd6e732d57c68b13c2f0aa4ee83d",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-exchange-rate-problem",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "b6f3a010d72147a3c25ac2ed22a74dd1044472f28b11b6a1aa1363baf29837ec"
+}

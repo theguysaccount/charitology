@@ -1,53 +1,25 @@
 ---
 import { getEntries } from 'astro:content';
 import { problemsInOrder } from '../../lib/content';
-import { pad, url } from '../../lib/site';
-
-const problems = await problemsInOrder();
-const rows = await Promise.all(
-  problems.map(async (p) => ({ p, conds: p.data.conditions.length ? await getEntries(p.data.conditions) : [] })),
-);
-const count = (s: string) => problems.filter((p) => p.data.status === s).length;
+import { loadResearchLedger, ledgerEditionJsonHref } from '../../lib/research-ledger';
+import { ledgerHref } from '../../lib/research-ledger-model.mjs';
+import { pad,url } from '../../lib/site';
+const ledger=await loadResearchLedger();
+const problems=await problemsInOrder();
+const rows=await Promise.all(problems.map(async p=>{
+  const binding=ledger.input.manifest.currentSources.find((b:any)=>b.sourceKey===`problems/${p.id}`);
+  const state=ledger.current.problemStates.find((s:any)=>s.recordId===binding?.recordId);
+  if(!binding||!state)throw new Error(`Missing ledger problem state: ${p.id}`);
+  return{p,binding,state,conds:p.data.conditions.length?await getEntries(p.data.conditions):[]};
+}));
+const counts=ledger.current.counters;
 ---
-
 <section class="pr">
-  <div class="kpis">
-    <div class="kpi"><div class="k-label">Open</div><div class="k-value">{count('open')}</div></div>
-    <div class="kpi"><div class="k-label">Partly answered</div><div class="k-value">{count('partial')}</div></div>
-    <div class="kpi"><div class="k-label">Solved</div><div class="k-value">{count('solved')}</div></div>
-  </div>
-  <div class="table-wrap">
-    <table class="data">
-      <thead>
-        <tr><th>No.</th><th>Problem</th><th>Status</th><th>Conditions it would treat</th></tr>
-      </thead>
-      <tbody>
-        {
-          rows.map(({ p, conds }) => (
-            <tr>
-              <td class="num">{pad(p.data.number)}</td>
-              <td>
-                <a href={url(`/open-problems/${p.id}/`)}>{p.data.title}</a>
-              </td>
-              <td>{p.data.status}</td>
-              <td>
-                {conds.map((c, i) => (
-                  <>
-                    {i > 0 && ', '}
-                    <a href={url(`/diagnosis/${c.id}/`)}>{c.data.title}</a>
-                  </>
-                ))}
-              </td>
-            </tr>
-          ))
-        }
-      </tbody>
-    </table>
-  </div>
+  <p>Current source capture: <time datetime={ledger.current.edition.capturedAt}>{ledger.current.edition.capturedAt}</time>. These are present states, not a completed annual result.</p>
+  <div class="kpis">{[['Open',counts.open],['Partly answered',counts.partial],['Solved',counts.solved],['Under review',counts.underReview]].map(([label,count])=><div class="kpi"><div class="k-label">{label}</div><div class="k-value">{count}</div></div>)}</div>
+  <p>No January baseline was recorded for the initial capture. Earlier states stay unknown. The ledger distinguishes dated editorial corrections, qualified research decisions, later support withdrawals and undated records.</p>
+  <p><a href={url('/research-ledger/')}>Inspect the public research ledger</a> · <a href={url('/api/v1/research-progress.json')}>Exact progress JSON</a> · <a href={url(ledgerEditionJsonHref(ledger.current.edition.id))}>Complete pinned edition</a></p>
+  <p>This capture records {counts.correctionArtifacts} editorial correction artifact affecting {counts.changedClaims} claims, {counts.qualifyingResearchResults} qualifying research results and {counts.peerReviewedManuscripts} manuscripts meeting the recorded peer-review gate. An editorial correction does not solve a research problem.</p>
+  <div class="table-wrap"><table class="data"><thead><tr><th>No.</th><th>Problem</th><th>Current state</th><th>Conditions</th><th>Source history</th></tr></thead><tbody>{rows.map(({p,binding,state,conds})=><tr><td class="num">{pad(p.data.number)}</td><td><a href={url(`/open-problems/${p.id}/`)}>{p.data.title}</a></td><td>{state.effectiveStatus}</td><td>{conds.map((c,i)=><>{i>0&&', '}<a href={url(`/diagnosis/${c.id}/`)}>{c.data.title}</a></>)}</td><td><a href={url(ledgerHref(binding.recordId))}>Exact record</a></td></tr>)}</tbody></table></div>
 </section>
-
-<style>
-  .pr {
-    margin-top: 2rem;
-  }
-</style>
+<style>.pr {margin-top:2rem;overflow-wrap:anywhere;}</style>
