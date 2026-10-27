@@ -15,7 +15,7 @@ related: [/method/#checklist, /tools/charity-lookup/]
 
 ## Why an extension
 
-The extension brings three questions to a donation page: symptom or source, what would happen anyway, and how anyone would know if it worked. It offers a pause to think about the system behind a gift, including the debated effects described in [the Story Bias](/diagnosis/story-bias/).
+The extension brings three questions to selected fundraising-site URLs: symptom or source, what would happen anyway, and how anyone would know if it worked. It offers a pause to think about the system behind a gift, including the debated effects described in [the Story Bias](/diagnosis/story-bias/).
 
 ## Privacy by construction
 
@@ -24,3 +24,7 @@ The extension reads the page title to suggest a lookup, and the lookup opens onl
 ## What it isn’t
 
 It doesn’t rate charities or fundraisers. The card can be dismissed, and it does not alter the donation form or handle money.
+
+## Exact scope and exit
+
+The [compatibility page](/tools/browser-extension/compatibility/) lists the exact URL patterns, version, source and package checksums, tested boundaries and unverified browsers. Version 0.1.2 retains local-only title suggestions and hide settings. The toolbar limits queries to 120 characters, preserves manual text during delayed title access, and explains a failed tab opening or preference save. Developer installation is available; store acceptance is still pending.

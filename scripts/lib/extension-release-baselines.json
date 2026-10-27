@@ -1,0 +1,50 @@
+{
+  "format": "charitology-extension-source-baselines",
+  "version": 1,
+  "releases": [
+    {
+      "extensionVersion": "0.1.1",
+      "sourceSha256": "6a9a3283871d8fe412ddd882b86a95765d1f6b5e5b0e36050161eb20bf7d9d48",
+      "productionSite": "https://charitology.org",
+      "productionPackages": [
+        {
+          "path": "charitology-extension.zip",
+          "bytes": 28283,
+          "sha256": "32491b8823e335f6886b961f74ad8d37d52b7709c5548b40fb6a9124351c54b1"
+        },
+        {
+          "path": "charitology-firefox.zip",
+          "bytes": 28283,
+          "sha256": "32491b8823e335f6886b961f74ad8d37d52b7709c5548b40fb6a9124351c54b1"
+        },
+        {
+          "path": "charitology-chrome.zip",
+          "bytes": 28026,
+          "sha256": "08c16ff2a095480c59c5551e7ecf2e5826bd956c6c9fdebd09354105ceff904f"
+        }
+      ]
+    },
+    {
+      "extensionVersion": "0.1.2",
+      "sourceSha256": "9305141cbea7e086d928b72dbc584f4591f886d07549a17fe503286d9e1a4ca7",
+      "productionSite": "https://charitology.org",
+      "productionPackages": [
+        {
+          "path": "charitology-extension.zip",
+          "bytes": 31207,
+          "sha256": "02692f5bed707e89b6960dd071102fd5ed92a47ef9ed2d39e2a12f7128053684"
+        },
+        {
+          "path": "charitology-firefox.zip",
+          "bytes": 31207,
+          "sha256": "02692f5bed707e89b6960dd071102fd5ed92a47ef9ed2d39e2a12f7128053684"
+        },
+        {
+          "path": "charitology-chrome.zip",
+          "bytes": 30902,
+          "sha256": "90c6e85941460e48b584996fdd6eb7229de02f776c44c125942a7a26bd0f82ff"
+        }
+      ]
+    }
+  ]
+}

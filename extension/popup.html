@@ -14,16 +14,31 @@
     <form id="lookup">
       <label for="q">Look up this organization or cause</label>
       <div class="row">
-        <input id="q" type="text" autocomplete="off" spellcheck="false" />
+        <input
+          id="q"
+          maxlength="120"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+        />
         <button type="submit">Look up</button>
       </div>
-      <p class="hint">Opens Charitology’s lookup. The search text stays in your browser until you choose an external registry.</p>
+      <p class="hint">
+        Opens Charitology’s lookup. The search text stays in your browser until
+        you choose an external registry.
+      </p>
+      <p id="lookup-status" role="status" class="hint"></p>
+      <a id="lookup-manual" target="_blank" rel="noopener noreferrer" hidden
+        >Open this lookup directly</a
+      >
     </form>
     <h2>The Giver’s Checklist</h2>
     <ol id="checklist"></ol>
     <footer>
       <span id="count">0 of 10 answered</span>
-      <a id="method" href="#" target="_blank" rel="noopener">Why these questions</a>
+      <a id="method" href="#" target="_blank" rel="noopener"
+        >Why these questions</a
+      >
     </footer>
     <script src="popup.js"></script>
   </body>
