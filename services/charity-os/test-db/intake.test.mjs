@@ -46,6 +46,35 @@ test(
       await owner.pool.query(`CREATE SCHEMA ${quote(schema)}`);
       migration = database(direct(process.env.DATABASE_URL), { schema });
       await migration.migrate();
+      if (
+        process.env.OS_INTAKE_BROWSER_ONLY === "1" &&
+        process.env.OS_INTAKE_BROWSER_ADMIN === "1" &&
+        process.env.OS_INTAKE_BROWSER_PORT
+      ) {
+        const { getMigrations } = await import("better-auth/db/migration");
+        const { magicLink } = await import("better-auth/plugins/magic-link");
+        const migrations = await getMigrations({
+          database: migration.pool,
+          rateLimit: { enabled: true, storage: "database" },
+          plugins: [
+            magicLink({
+              storeToken: "hashed",
+              sendMagicLink: async () => {
+                throw new Error("Browser fixture does not send mail.");
+              },
+            }),
+          ],
+          logger: { disabled: true },
+        });
+        assert.equal(
+          /(?:"public"\s*\.|\bpublic\s*\.)/i.test(
+            await migrations.compileMigrations(),
+          ),
+          false,
+          "Browser fixture auth migrations must remain in the temporary schema.",
+        );
+        await migrations.runMigrations();
+      }
       const roleName = decodeURIComponent(
         new URL(process.env.OS_DATABASE_URL).username,
       );
@@ -907,8 +936,25 @@ async function serveBrowserFixture({ db, makeOrg, base, settings, user }) {
   if (!Number.isInteger(port) || port < 1024 || port > 65535)
     throw new Error("Use a valid nonprivileged fixture port.");
   const origin = `http://localhost:${port}`,
-    browserOrg = "synthetic-browser-org";
+    browserOrg = "synthetic-browser-org",
+    adminMode = process.env.OS_INTAKE_BROWSER_ADMIN === "1";
+  if (adminMode && process.env.OS_INTAKE_BROWSER_ONLY !== "1")
+    throw new Error(
+      "Synthetic admin mode requires the explicit browser-only fixture.",
+    );
   await makeOrg(browserOrg);
+  if (adminMode) {
+    await db.tx(user, browserOrg, async (c) => {
+      await c.query(
+        'INSERT INTO "user"(id,name,email,"emailVerified","createdAt","updatedAt") VALUES($1,\'Synthetic fixture operator\',\'synthetic-operator@example.invalid\',true,now(),now())',
+        [user],
+      );
+      await c.query(
+        "INSERT INTO os_members(org_id,user_id,role) VALUES($1,$2,'owner')",
+        [browserOrg, user],
+      );
+    });
+  }
   const form = base(
     "forms",
     "synthetic-browser-form",
@@ -957,7 +1003,26 @@ async function serveBrowserFixture({ db, makeOrg, base, settings, user }) {
   const handle = createHandler({
     settings: fixtureSettings,
     db,
-    auth: { api: { getSession: async () => null } },
+    // This explicit loopback-only acceptance mode is not an authentication test.
+    // Public requests dispatch before this stub; all admin CSRF and role checks remain real.
+    auth: {
+      api: {
+        getSession: async () =>
+          adminMode
+            ? {
+                user: {
+                  id: user,
+                  name: "Synthetic fixture operator",
+                  email: "synthetic-operator@example.invalid",
+                },
+                session: {
+                  id: "synthetic-browser-admin-session",
+                  userId: user,
+                },
+              }
+            : null,
+      },
+    },
     send: async () => {
       throw new Error("Fixture does not send mail.");
     },
@@ -986,11 +1051,14 @@ async function serveBrowserFixture({ db, makeOrg, base, settings, user }) {
       } else {
         const path = url.pathname.startsWith("/p/")
           ? "intake.html"
-          : url.pathname.slice(1);
+          : adminMode && ["/", "/app"].includes(url.pathname)
+            ? "index.html"
+            : url.pathname.slice(1);
         if (
-          !/^(?:intake\.(?:html|js)|api\.js|os\.css|mark\.svg|fonts\/[a-zA-Z0-9_.-]+)$/.test(
+          !/^(?:intake\.(?:html|js)|api\.js|os\.css|mark(?:-dark)?\.svg|fonts\/[a-zA-Z0-9_.-]+)$/.test(
             path,
-          )
+          ) &&
+          !(adminMode && /^(?:index\.html|app\.js|model\.js)$/.test(path))
         ) {
           res.writeHead(404);
           res.end();
@@ -1024,6 +1092,10 @@ async function serveBrowserFixture({ db, makeOrg, base, settings, user }) {
   console.log(
     `Synthetic intake browser fixture: ${origin}/p/${browserOrg}.${publication.publication.id}`,
   );
+  if (adminMode)
+    console.log(
+      `Synthetic admin acceptance fixture (auth stub, no real sign-in or mail): ${origin}/#intake`,
+    );
   console.log(
     `Create ${withdrawFile} to withdraw its source; create ${stopFile} to stop and remove its temporary schema. Maximum wait: 10 minutes.`,
   );

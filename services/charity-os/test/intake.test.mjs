@@ -7,6 +7,7 @@ import {
   publicIntakeRoutes,
   intakeRoutes,
 } from "../lib/intake.mjs";
+import { validateRecord } from "../lib/modules.mjs";
 
 const source = () => ({
   id: "source",
@@ -399,4 +400,167 @@ test("review metadata cannot push the pending queue beyond its actual row-byte c
     }),
     error("intake_quota"),
   );
+});
+
+test("existing-contact conversion preserves all associations while creating only the optional event or volunteer draft", async () => {
+  const stamp = new Date("2030-01-01T00:00:00Z");
+  const raw = (record) => ({
+    org_id: "org",
+    id: record.id,
+    module_id: record.moduleId,
+    data: record.data,
+    status: record.status,
+    revision: record.revision,
+    owner_id: "author",
+    last_editor_id: "author",
+    approval: record.approval || null,
+    snapshot: null,
+    source: null,
+    created_at: stamp,
+    updated_at: stamp,
+  });
+  for (const kind of ["contact", "event-interest", "volunteer-interest"]) {
+    const form = source(),
+      moduleId = kind === "event-interest" ? "events" : "volunteers";
+    const contact = {
+      id: "existing-contact",
+      moduleId: "contacts",
+      revision: 1,
+      status: "draft",
+      data: {
+        title: "Existing operational contact",
+        kind: "person-reference",
+        displayLabel: "Existing operational contact",
+      },
+    };
+    const target =
+      kind === "contact"
+        ? null
+        : {
+            id: "target",
+            moduleId,
+            revision: 2,
+            status: "open",
+            approval: { revision: 2, status: "approved", actorId: "reviewer" },
+            data: validateRecord(
+              moduleId,
+              {
+                title: "Operational session or shift",
+                kind: moduleId === "events" ? "session" : "shift",
+                startAt: "2030-01-01T10:00:00Z",
+                endAt: "2030-01-01T11:00:00Z",
+                timeZone: "UTC",
+                capacity: 3,
+              },
+              { status: "open", records: [] },
+            ),
+          };
+    const records = [form, contact, ...(target ? [target] : [])];
+    const publication = {
+      id: "publication",
+      record_id: form.id,
+      source_revision: form.revision,
+      kind,
+      schema: intakeSchema(form, kind),
+      target_id: target?.id || null,
+      target_revision: target?.revision || null,
+      target_module: target?.moduleId || null,
+    };
+    const submission = {
+      id: "request",
+      publication_id: publication.id,
+      status: "reviewed",
+      revision: 2,
+      answers: { name: "Submitted operational name" },
+      consent_at: stamp,
+      created_at: stamp,
+      converted_ids: [],
+    };
+    const saved = [],
+      events = [];
+    let storedRefs;
+    const c = {
+      query: async (sql, args = []) => {
+        if (sql.startsWith("SELECT * FROM os_intake"))
+          return { rows: [submission] };
+        if (sql.startsWith("SELECT * FROM os_publications"))
+          return { rows: [publication] };
+        if (sql.startsWith("SELECT * FROM os_records"))
+          return { rows: records.map(raw) };
+        if (sql.startsWith("SELECT COALESCE(sum(octet_length(data::text))"))
+          return { rows: [{ size: 0, count: records.length }] };
+        if (sql.startsWith("INSERT INTO os_records")) {
+          saved.push(args);
+          return { rows: [] };
+        }
+        if (sql.startsWith("SELECT sum(size)")) return { rows: [{ size: 0 }] };
+        if (sql.startsWith("INSERT INTO os_events")) {
+          events.push({
+            action: args[2],
+            recordId: args[3],
+            detail: JSON.parse(args[5]),
+          });
+          return { rows: [] };
+        }
+        if (sql.startsWith("UPDATE os_intake")) {
+          storedRefs = JSON.parse(args[4]);
+          return {
+            rows: [
+              {
+                ...submission,
+                status: args[2],
+                revision: 3,
+                converted_ids: storedRefs,
+              },
+            ],
+          };
+        }
+        throw new Error(`Unexpected synthetic conversion query: ${sql}`);
+      },
+    };
+    const response = await intakeRoutes({
+      c,
+      org: "org",
+      user: "admin",
+      member: { role: "admin", programIds: [] },
+      tail: "intake/submissions/request/review",
+      method: "POST",
+      input: { revision: 2, action: "convert", contactId: contact.id },
+      settings,
+    });
+    const result = await response.json(),
+      expectedCreated = target ? 1 : 0;
+    assert.equal(result.submission.status, "converted", kind);
+    assert.equal(saved.length, expectedCreated, kind);
+    if (target) {
+      const draftData = JSON.parse(saved[0][3]);
+      assert.equal(draftData.contactId, contact.id);
+      assert.equal(
+        draftData[moduleId === "events" ? "eventId" : "shiftId"],
+        target.id,
+      );
+    }
+    assert.equal(result.records.length, expectedCreated, kind);
+    assert.ok(
+      result.records.every(
+        (record) => record.moduleId !== "contacts" && record.status === "draft",
+      ),
+    );
+    assert.deepEqual(storedRefs[0], { id: contact.id, moduleId: "contacts" });
+    assert.equal(storedRefs.length, expectedCreated + 1, kind);
+    assert.deepEqual(result.submission.convertedIds, storedRefs);
+    assert.equal(
+      new Set(storedRefs.map((record) => record.id)).size,
+      storedRefs.length,
+    );
+    assert.equal(
+      events.filter((event) => event.action === "record.created").length,
+      expectedCreated,
+    );
+    assert.deepEqual(
+      events.find((event) => event.action === "intake.converted").detail
+        .recordIds,
+      storedRefs.map((record) => record.id),
+    );
+  }
 });

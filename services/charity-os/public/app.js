@@ -4088,7 +4088,7 @@ async function openIntakeSubmission(org, id, publications) {
       node(
         "p",
         { class: "full-width fine" },
-        "Draft records have been prepared. Conversion does not confirm a booking or assignment. A requester’s later cancellation does not delete those records; review withdrawal before advancing them.",
+        "Records are linked for follow-up. Review them before taking the next operational step. Conversion does not confirm a booking or assignment. A requester’s later cancellation does not delete linked records; review withdrawal before advancing them.",
       ),
     );
   configureEditor(
@@ -4153,12 +4153,13 @@ async function openIntakeConversion(org, submission, publication) {
         ...(contact.value ? { contactId: contact.value } : {}),
       });
       closeSavedEditor();
+      const drafts = result.records || [];
       invalidateModules(org, [
-        ...new Set((result.records || []).map((record) => record.moduleId)),
+        ...new Set(drafts.map((record) => record.moduleId)),
       ]);
-      const links = (result.records || []).map((record) =>
+      const links = (result.submission?.convertedIds || drafts).map((record) =>
         link(
-          `Open ${moduleById(record.moduleId)?.title || record.moduleId} draft`,
+          `Open linked ${moduleById(record.moduleId)?.title || record.moduleId} record`,
           recordHref(record.moduleId, record.id),
           { class: "button subtle" },
         ),
@@ -4169,16 +4170,28 @@ async function openIntakeConversion(org, submission, publication) {
           node(
             "section",
             { class: "panel section-gap", role: "status" },
-            node("h2", {}, "Draft records prepared."),
+            node(
+              "h2",
+              {},
+              drafts.length
+                ? "Draft records prepared."
+                : "Request linked for follow-up.",
+            ),
             node(
               "p",
               {},
-              "Review the drafts before taking the next operational step. This did not confirm a place, assignment or booking.",
+              drafts.length
+                ? "Review the drafts before taking the next operational step. This did not confirm a place, assignment or booking."
+                : "No new record was needed. Review the linked record before taking the next operational step. This did not confirm a place, assignment or booking.",
             ),
             node("div", { class: "actions" }, links),
           ),
         );
-      toast("Reviewed request converted to drafts.");
+      toast(
+        drafts.length
+          ? "Reviewed request converted to drafts."
+          : "Request linked for follow-up. No new record was needed.",
+      );
     },
   );
 }
