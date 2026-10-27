@@ -921,7 +921,7 @@ export async function createGrantReportWorkspace({
         );
         picker.replaceChildren(
           node("option", { value: "" }, "Select a saved grant-report manifest"),
-          state.manifests.map((record) =>
+          ...state.manifests.map((record) =>
             node(
               "option",
               { value: record.id },

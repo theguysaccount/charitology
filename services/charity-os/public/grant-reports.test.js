@@ -220,8 +220,8 @@ function installDom() {
         await fn({ currentTarget: this, preventDefault() {} });
     }
     append(...values) {
-      for (const value of values.flat(Infinity)) {
-        this.children.push(value);
+      for (const value of values) {
+        this.children.push(value instanceof Element ? value : String(value));
         if (value instanceof Element) value.parentElement = this;
       }
     }
@@ -559,6 +559,22 @@ test("source preparation requires explicit normal revisioned save and never appr
     );
     await h.find("Open manifest for review").emit("click");
     assert.deepEqual(h.opened, ["manifest"]);
+  } finally {
+    h.cleanup();
+  }
+});
+
+test("native select children are individual options, not an array coerced to text", async () => {
+  const h = await harness();
+  try {
+    const picker = h.root.querySelector("#grant-report-manifest");
+    const options = picker.querySelectorAll("option");
+    assert.equal(options.length, 2);
+    assert.equal(options[1].value, "manifest");
+    assert.match(options[1].textContent, /Fictional manifest · revision 4/);
+    assert.doesNotMatch(picker.textContent, /\[object /);
+    await h.select();
+    assert.equal(h.find("Prepare sources").disabled, false);
   } finally {
     h.cleanup();
   }
