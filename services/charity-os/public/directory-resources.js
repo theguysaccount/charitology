@@ -117,10 +117,11 @@ export function createDirectoryResourceWorkspace({
   orgId, api, initialSelection = null, record = null, currencies = {}, canExport = false,
   isCurrent = () => true, editorOpen = () => false, onDirty = () => {},
   onSaved = () => {}, onTrash = () => {}, onError = () => {}, onReload = null, download = () => {},
+  confirmSourceChange = async () => false,
   now = () => Date.now(), randomUUID = () => crypto.randomUUID(), hash = directoryHash,
 }) {
   let version = 0, disposed = false, busy = false, inspectionRequired = false, selected = null, source = null,
-    panel = null, ready = null, pending = null, timer = null, nextCursor = null, staleRecord = false;
+    panel = null, ready = null, pending = null, timer = null, nextCursor = null, staleRecord = false, draftDirty = false;
   const element = n("section", { class: "panel stack", "data-directory-workspace": "true" });
   const status = n("p", { role: "status", "aria-live": "polite", style: "overflow-wrap:anywhere" });
   const sourceHost = n("div", { class: "stack" }), evidenceHost = n("div", { class: "stack" }),
@@ -130,6 +131,7 @@ export function createDirectoryResourceWorkspace({
   const clearProof = () => { ready = null; pending = null; clearTimeout(timer); timer = null; replace(previewHost, ); };
   const invalidate = () => { ++version; clearProof(); if (staleRecord && !disposed) showReload(); };
   const changed = () => {
+    draftDirty = true;
     invalidate(); onDirty(true);
     status.textContent = staleRecord
       ? "The saved Resource changed. Your notes are still shown; copy them before reloading."
@@ -160,7 +162,7 @@ export function createDirectoryResourceWorkspace({
     else host.append(n("p", {}, "Only historical provenance remains. It cannot be opened or restored as a current Resource here."));
     return host;
   }
-  function renderSource() {
+  function renderSource(draft = null) {
     const l = source.entry.listing, c = source.comparison;
     const age = c.checkedAgeDays === null ? "Source checked age unknown." : `Source checked ${c.checkedAgeDays} ${c.checkedAgeDays === 1 ? "day" : "days"} before today's UTC date.`;
     replace(sourceHost, 
@@ -173,21 +175,24 @@ export function createDirectoryResourceWorkspace({
       button("Inspect this exact source again", async () => {
         if (busy) return;
         if (staleRecord) { status.textContent = "The saved Resource changed. Copy any unsaved text, then use Reload current Resource."; return; }
-        try { await inspect(selected); } catch (error) { failure(error); }
+        await inspect(selected);
       }),
     );
     if (c.newerVersion && HEX.test(c.headEntrySha256 || "")) appendContent(sourceHost, button("Inspect current directory entry", async () => {
       if (busy) return;
-      const epoch = version, selection = own(selected);
+      const selection = own(selected);
+      invalidate(); inspectionRequired = true;
+      const epoch = version;
       try {
         const catalogs = await api.directoryCatalogs();
         if (!valid(epoch)) return;
         await inspect({ ...selection, captureId: catalogs.head.captureId, entrySha256: c.headEntrySha256 });
-      } catch (error) { failure(error); }
+      } catch (error) { if (valid(epoch)) failure(error); }
     }));
-    renderForm();
+    renderForm(draft);
   }
-  function renderForm() {
+  let captureDraft = () => null;
+  function renderForm(draft = null) {
     clearProof();
     const copying = !record, l = source.entry.listing;
     const historical = input({ type: "checkbox", "data-directory-historical": "true" });
@@ -197,6 +202,7 @@ export function createDirectoryResourceWorkspace({
     const ownership = select([["keep-current", "Keep the complete current limitations"], ["replace-mapped", "Replace the last mapped directory block"], ["replace-all", "Replace all limitations with this directory block and explicit notes"]], "keep-current");
     ownership.setAttribute("data-directory-ownership", "true");
     const notesMode = select([["keep", "Keep the stored organization notes"], ["set", "Set organization notes explicitly (blank clears them)"]], "keep");
+    notesMode.setAttribute("data-directory-notes-mode", "true");
     const notes = n("textarea", { rows: 4, maxlength: 4000, "data-directory-notes": "true" });
     const assess = input({ type: "checkbox", "data-directory-assess": "true" });
     const provider = input({ maxlength: 240, "data-directory-provider": "true" });
@@ -210,6 +216,16 @@ export function createDirectoryResourceWorkspace({
     const amount = input({ inputmode: "decimal", "data-directory-amount": "true" });
     const currency = select([["", "Choose a currency"], ...Object.keys(currencies).map(k => [k, k])]);
     currency.setAttribute("data-directory-currency", "true");
+    const values = { sourceChoice, ownership, notesMode, notes, provider, eligibility, reviewed, renewal, reference, costKind, amount, currency };
+    const checks = { historical, assess, ...Object.fromEntries([...mappedFields].map(([key, control]) => [`copy:${key}`, control])) };
+    if (draft) {
+      for (const [key, control] of Object.entries(values)) control.value = draft.values[key];
+      for (const [key, control] of Object.entries(checks)) control.checked = draft.checks[key];
+    }
+    captureDraft = () => ({
+      values: Object.fromEntries(Object.entries(values).map(([key, control]) => [key, control.value])),
+      checks: Object.fromEntries(Object.entries(checks).map(([key, control]) => [key, control.checked])),
+    });
     readProposal = () => {
       if (!valid()) throw new Error("This view changed. Inspect the Resource again.");
       if (source.comparison.historical && !historical.checked) throw new Error("Acknowledge this historical or absent directory version before previewing.");
@@ -248,17 +264,37 @@ export function createDirectoryResourceWorkspace({
     replace(formHost, form);
   }
   async function inspect(selection) {
-    invalidate(); source = null; readProposal = null; selected = own(selection);
-    const epoch = version, identity = stable(selected);
-    status.textContent = "Inspecting the exact bundled directory entry…";
-    replace(sourceHost, ); replace(formHost, );
-    const result = await api.directoryEntry(selected);
-    if (!valid(epoch) || stable(selected) !== identity) return;
-    if (stable(result.selection) !== identity || result.entrySha256 !== selected.entrySha256 || result.entry?.catalogKind !== selected.catalogKind || result.entry?.listing?.id !== selected.listingId || !result.comparison || !result.core) throw new Error("The service did not return this exact source. Nothing was previewed.");
-    const digest = await hash({ namespace: "charitology:directory-entry:v1", entry: result.entry });
-    if (!valid(epoch) || stable(selected) !== identity) return;
-    if (digest !== selected.entrySha256) throw new Error("The frozen source hash did not match. Nothing was previewed.");
-    inspectionRequired = false; source = own(result); renderSource(); status.textContent = "Source inspected. Review the proposal before making a copy or recheck.";
+    if (!valid()) return false;
+    const nextSelection = own(selection), identity = stable(nextSelection);
+    const sameSource = selected && stable(selected) === identity;
+    const needsDiscard = !sameSource && (draftDirty || ready || pending);
+    invalidate(); inspectionRequired = true;
+    let epoch = version;
+    try {
+      if (needsDiscard) {
+        const confirmed = await confirmSourceChange();
+        if (!valid(epoch)) return false;
+        if (confirmed !== true) {
+          status.textContent = "The source switch was canceled. Your exact directory choices and notes are still shown. Inspect the source before previewing again.";
+          return false;
+        }
+      }
+      const draft = sameSource ? captureDraft() : null;
+      // Keep the existing form while reading. A failed or superseded inspection
+      // must not destroy the user's only copy of unfinished organization text.
+      invalidate(); epoch = version;
+      status.textContent = "Inspecting the exact bundled directory entry…";
+      const result = await api.directoryEntry(nextSelection);
+      if (!valid(epoch)) return false;
+      if (stable(result.selection) !== identity || result.entrySha256 !== nextSelection.entrySha256 || result.entry?.catalogKind !== nextSelection.catalogKind || result.entry?.listing?.id !== nextSelection.listingId || !result.comparison || !result.core) throw new Error("The service did not return this exact source. Nothing was previewed.");
+      const digest = await hash({ namespace: "charitology:directory-entry:v1", entry: result.entry });
+      if (!valid(epoch)) return false;
+      if (digest !== nextSelection.entrySha256) throw new Error("The frozen source hash did not match. Nothing was previewed.");
+      selected = nextSelection; source = own(result); inspectionRequired = false;
+      if (!sameSource) draftDirty = false;
+      renderSource(draft); status.textContent = "Source inspected. Review the proposal before making a copy or recheck.";
+      return true;
+    } catch (error) { if (valid(epoch)) failure(error); return false; }
   }
   async function runPreview() {
     if (busy || !readProposal || !valid()) return;
@@ -280,6 +316,7 @@ export function createDirectoryResourceWorkspace({
       if (!valid(epoch) || stable(readProposal()) !== identity) return;
       if (digest !== p.planSha256) throw new Error("The preview hash did not match. Inspect it again.");
       ready = { proposal, identity, previewToken: result.previewToken, expiry, plan: own(p), epoch };
+      draftDirty = true; onDirty(true);
       timer = setTimeout(() => { if (ready?.epoch === epoch) { invalidate(); inspectionRequired = true; status.textContent = "The ten-minute proof expired. Inspect and preview again."; } }, Math.max(1, expiry - now()));
       timer?.unref?.();
       replace(previewHost, n("h3", {}, "Review every change"), n("p", {}, `Resource state: ${p.candidate.status} · Revision ${p.candidate.revision}. This preview expires at ${result.expiresAt}. It creates no approval or provider action.`),
@@ -308,7 +345,7 @@ export function createDirectoryResourceWorkspace({
         const result = await api.commitDirectoryResource(orgId, exact);
         if (!valid(epoch) || pending !== exact) return;
         if (!["copied", "rechecked", "adopted", "existing"].includes(result.kind) || !result.disposition) throw Object.assign(new Error("The save response was incomplete. Retry the exact command to inspect its current result."), { code: "invalid_response" });
-        clearProof(); onDirty(false);
+        clearProof(); draftDirty = false; onDirty(false);
         replace(previewHost, disposition(result.disposition));
         status.textContent = "The command was accepted. Open the current saved Resource to continue its ordinary review workflow.";
         await onSaved(result.disposition);
@@ -343,21 +380,28 @@ export function createDirectoryResourceWorkspace({
         canExport === true ? button("Download partial source evidence JSON", async () => {
           const ownedEpoch = version;
           try { const file = await api.exportDirectoryResource(orgId, record.id); if (valid(ownedEpoch)) download(`resource-${record.id}-partial-directory-evidence.json`, file); }
-          catch (error) { failure(error); }
+          catch (error) { if (valid(ownedEpoch)) failure(error); }
         }) : null, n("p", { class: "fine" }, "A selected Resource export is partial evidence. Use an administrator's full organization backup for recovery. CSV does not retain complete source history."));
     }
     for (const event of result.events || []) appendContent(evidenceHost, details(`Source event ${event.packet.sequence}: ${event.packet.event} · ${event.provenance} · ${event.packet.recordedAt}`, n("div", {}, pre(event), button("Inspect this event's exact source", async () => {
       if (busy) return;
-      try { await inspect(event.packet.selection); } catch (error) { failure(error); }
+      await inspect(event.packet.selection);
     }))));
     if (nextCursor) {
-      const more = button("Load more source history", async () => { more.disabled = true; try { await renderEvidence(true); more.remove(); } catch (error) { more.disabled = false; failure(error); } });
+      const more = button("Load more source history", async () => {
+        const ownedEpoch = version;
+        more.disabled = true;
+        try { if (await renderEvidence(true)) more.remove(); }
+        catch (error) { if (valid(ownedEpoch)) failure(error); }
+        finally { if (!disposed) more.disabled = false; }
+      });
       appendContent(evidenceHost, more);
     }
     if (!append) {
       if (result.disposition?.kind !== "active-record") { replace(formHost, disposition(result.disposition)); return; }
       await inspect(binding.selection);
     }
+    return true;
   }
   const leave = () => { invalidate(); inspectionRequired = true; status.textContent = "This review left the active page. Inspect the source again before previewing."; };
   const visibility = () => { if (document.visibilityState === "hidden") leave(); };
@@ -367,11 +411,12 @@ export function createDirectoryResourceWorkspace({
   return {
     element,
     load: async () => {
+      const ownedEpoch = version;
       try { if (record) await renderEvidence(); else if (initialSelection) await inspect(initialSelection); else throw new Error("Choose a frozen source using a public directory card."); }
-      catch (error) { if (valid()) failure(error); }
+      catch (error) { if (valid(ownedEpoch)) failure(error); }
     },
     invalidate: () => { invalidate(); status.textContent = "The context changed. Inspect and preview again."; },
     dispose: () => { disposed = true; invalidate(); if (typeof window !== "undefined") window.removeEventListener("pagehide", leave); document.removeEventListener?.("visibilitychange", visibility); },
-    isDirty: () => !!ready || !!pending,
+    isDirty: () => draftDirty || !!ready || !!pending,
   };
 }

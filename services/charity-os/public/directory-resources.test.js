@@ -233,3 +233,98 @@ test("contributors retain source, writing and recheck without an unavailable exp
   const exporter=harness({record,canExport:true});await exporter.workspace.load();await click(exporter.button("Download partial source evidence JSON"));assert.equal(exporter.calls.download.length,1);exporter.workspace.dispose();
   const app=await readFile(new URL("./app.js",import.meta.url),"utf8");assert.ok(app.includes('canExport: can(moduleById("resources"), "export", destination.role)'));assert.ok(app.includes('canExport: can(module, "export", role())'));
 });
+
+test("same-source reinspection after proof expiry preserves every literal unfinished control", async () => {
+  const h=harness({record});await h.workspace.load();
+  const values={
+    '[data-directory-source-choice]':"source:0",'[data-directory-ownership]':"replace-all",
+    '[data-directory-notes-mode]':"set",'[data-directory-notes]':"  Literal notes\n\nOrganization adoption notes:\nkeep my spaces  ",
+    '[data-directory-provider]':"  Declared provider  ",'[data-directory-eligibility]':"eligible",
+    '[data-directory-reviewed]':"2026-10-26",'[data-directory-renewal]':"2027-01-02",
+    '[data-directory-reference]':"  Reference  ",'[data-directory-cost-kind]':"amount",
+    '[data-directory-amount]':"0.00",'[data-directory-currency]':"USD",
+  };
+  for(const [selector,value] of Object.entries(values))await change(h.find(selector),value);
+  await change(h.find('[data-directory-copy-field="sourceUrl"]'),true);
+  await change(h.find('[data-directory-assess]'),true);
+  await click(h.find('[data-directory-preview]'));
+  const first=copy(h.calls.preview[0]);h.setTime(clock+600000);
+  await click(h.find('[data-directory-commit]'));assert.match(h.workspace.element.textContent,/expired/);
+  await click(h.button("Inspect this exact source again"));
+  for(const [selector,value] of Object.entries(values))assert.equal(h.find(selector).value,value,selector);
+  assert.equal(h.find('[data-directory-assess]').checked,true);
+  assert.equal(h.find('[data-directory-copy-field="sourceUrl"]').checked,true);
+  assert.equal(h.workspace.isDirty(),true);assert.equal(h.find('[data-directory-commit]'),null);
+  // A fresh preview reads the same proposal; no normalization mutated the form.
+  h.setTime(clock);await click(h.find('[data-directory-preview]'));
+  assert.deepEqual(h.calls.preview[1],first);h.workspace.dispose();
+});
+
+test("a different frozen source requires explicit dirty discard; cancellation retains exact notes", async () => {
+  const changedEntry={...copy(entry),listing:{...copy(listing),name:"Changed fictional tool"}};
+  const changedSelection={...selection,captureId:"d".repeat(64),entrySha256:await directoryHash({namespace:"charitology:directory-entry:v1",entry:changedEntry})};
+  let confirm=false,confirms=0;
+  const h=harness({record,confirmSourceChange:async()=>{confirms++;return confirm;},api:{directoryEntry:async s=>s.captureId===selection.captureId?{...copy(entryResponse),comparison:{...entryResponse.comparison,newerVersion:true,headEntrySha256:changedSelection.entrySha256}}:{...copy(entryResponse),selection:changedSelection,entry:changedEntry,entrySha256:changedSelection.entrySha256}}});
+  await h.workspace.load();await change(h.find('[data-directory-notes]'),"  Keep these exact notes  ");
+  await click(h.find('[data-directory-preview]'));assert.ok(h.find('[data-directory-commit]'));
+  await click(h.button("Inspect current directory entry"));
+  assert.equal(confirms,1);assert.equal(h.find('[data-directory-notes]').value,"  Keep these exact notes  ");
+  assert.equal(h.find('[data-directory-commit]'),null);assert.match(h.workspace.element.textContent,/switch was canceled/);
+  confirm=true;await click(h.button("Inspect current directory entry"));
+  assert.equal(confirms,2);assert.equal(h.find('[data-directory-notes]').value,"");
+  assert.match(h.workspace.element.textContent,/Changed fictional tool/);assert.equal(h.workspace.isDirty(),false);
+  await click(h.find('[data-directory-preview]'));assert.deepEqual(h.calls.preview.at(-1).selection,changedSelection);h.workspace.dispose();
+});
+
+test("source discard confirmation cannot outlive an edit, editor, route or disposed mount", async () => {
+  for(const mode of ["edit","editor","route","dispose"]){
+    const gate=deferred();let reads=0;
+    const h=harness({record,confirmSourceChange:()=>gate.promise,api:{directoryEntry:async()=>{reads++;return {...copy(entryResponse),comparison:{...entryResponse.comparison,newerVersion:true,headEntrySha256:"d".repeat(64)}};}}});
+    await h.workspace.load();await change(h.find('[data-directory-notes]'),"Keep my unsaved choices");
+    const choosing=click(h.button("Inspect current directory entry"));await new Promise(resolve=>setImmediate(resolve));
+    if(mode==="edit")await change(h.find('[data-directory-notes]'),"An even newer literal draft");
+    if(mode==="editor")h.setEditor(true);if(mode==="route")h.setCurrent(false);if(mode==="dispose")h.workspace.dispose();
+    gate.resolve(true);await choosing;assert.equal(reads,1,mode);
+    assert.equal(h.find('[data-directory-notes]').value,mode==="edit"?"An even newer literal draft":"Keep my unsaved choices");h.workspace.dispose();
+  }
+});
+
+test("late source401/403 failures cannot clear a newer inspected source or report an old session error", async () => {
+  for(const status of [401,403]){
+    const gate=deferred();let reads=0,errors=0;
+    const h=harness({record,onError:()=>{errors++;},api:{directoryEntry:async()=>++reads===2?gate.promise:copy(entryResponse)}});
+    await h.workspace.load();const older=click(h.button("Inspect this exact source again"));
+    await new Promise(resolve=>setImmediate(resolve));await click(h.button("Inspect this event's exact source"));
+    await change(h.find('[data-directory-notes]'),"Newer unfinished notes");
+    gate.reject(Object.assign(new Error("Old access failure"),{status}));await older;
+    assert.ok(h.find('[data-directory-preview]'));assert.equal(h.find('[data-directory-notes]').value,"Newer unfinished notes");assert.equal(errors,0);h.workspace.dispose();
+  }
+});
+
+test("source errors after editor, navigation or disposal cannot invoke global authorization handling", async () => {
+  for(const mode of ["editor","route","dispose"]){
+    const gate=deferred();let reads=0,errors=0;
+    const h=harness({record,onError:()=>{errors++;},api:{directoryEntry:async()=>++reads===2?gate.promise:copy(entryResponse)}});
+    await h.workspace.load();const older=click(h.button("Inspect this exact source again"));
+    await new Promise(resolve=>setImmediate(resolve));if(mode==="editor")h.setEditor(true);if(mode==="route")h.setCurrent(false);if(mode==="dispose")h.workspace.dispose();
+    gate.reject(Object.assign(new Error("Expired old session"),{status:401}));await older;assert.equal(errors,0,mode);h.workspace.dispose();
+  }
+});
+
+test("stale partial-export failures cannot erase a newer form",async()=>{
+  const gate=deferred();let errors=0;
+  const h=harness({record,onError:()=>{errors++;},api:{exportDirectoryResource:()=>gate.promise}});await h.workspace.load();
+  const exporting=click(h.button("Download partial source evidence JSON"));await new Promise(resolve=>setImmediate(resolve));
+  await click(h.button("Inspect this exact source again"));await change(h.find('[data-directory-notes]'),"New notes after export began");
+  gate.reject(Object.assign(new Error("Old export forbidden"),{status:403}));await exporting;
+  assert.equal(errors,0);assert.equal(h.find('[data-directory-notes]').value,"New notes after export began");assert.ok(h.find('[data-directory-preview]'));h.workspace.dispose();
+});
+
+test("superseded source-history pages keep the pagination control and the newer form",async()=>{
+  const gate=deferred();let reads=0,errors=0;
+  const h=harness({record,onError:()=>{errors++;},api:{directoryResource:async()=>++reads===1?{binding,events:[event],disposition:{kind:"active-record",record},nextCursor:"older"}:gate.promise}});await h.workspace.load();
+  const more=h.button("Load more source history"),loading=click(more);await new Promise(resolve=>setImmediate(resolve));
+  await click(h.button("Inspect this exact source again"));
+  gate.reject(Object.assign(new Error("Old history forbidden"),{status:403}));await loading;
+  assert.equal(errors,0);assert.ok(h.find('[data-directory-preview]'));assert.equal(h.button("Load more source history"),more);assert.equal(more.disabled,false);h.workspace.dispose();
+});
