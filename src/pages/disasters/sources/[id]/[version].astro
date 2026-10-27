@@ -1,0 +1,10 @@
+---
+import Entry from "../../../../layouts/Entry.astro";
+import DisasterDesk from "../../../../components/DisasterDesk.astro";
+import { loadDisasters, requireDisasters } from "../../../../lib/disaster-incidents/public.mjs";
+export function getStaticPaths() { return (loadDisasters()?.sources ?? []).map(({source})=>({params:{id:source.id,version:String(source.version)}})); }
+const data=requireDisasters(), item=data.sources.find(({source})=>source.id===Astro.params.id && String(source.version)===Astro.params.version)!;
+---
+<Entry title={item.source.title} eyebrow={`Source ${item.source.id} · version ${item.source.version}`} summary="Authored factual notes, exact retrieval metadata, source locators and reuse limits. The original document remains with its publisher." crumbs={[{label:"Disaster Desk",href:"/disasters/"},{label:`${item.source.id} v${item.source.version}`}]}>
+  <DisasterDesk projection={data.selected.projection} view="source" source={item.source} sourceNote={item.note} editions={data.editions.map(e=>e.projection.packet.edition)} />
+</Entry>

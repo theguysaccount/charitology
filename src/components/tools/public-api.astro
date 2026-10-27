@@ -1,8 +1,9 @@
 ---
-import { ENDPOINTS } from '../../lib/api';
+import { availableEndpoints } from '../../lib/api';
 import { absolute, url } from '../../lib/site';
 const site = Astro.site;
 const example = absolute('/api/v1/conditions.json', site);
+const endpoints = await availableEndpoints();
 ---
 
 <section class="tool" aria-labelledby="api-title">
@@ -15,7 +16,7 @@ const example = absolute('/api/v1/conditions.json', site);
       <thead><tr><th>Endpoint</th><th>What it holds</th><th></th></tr></thead>
       <tbody>
         {
-          ENDPOINTS.map((e) => (
+          endpoints.map((e) => (
             <tr>
               <td>
                 <a href={url(`/api/v1/${e.name}.json`)}>
@@ -43,7 +44,9 @@ const example = absolute('/api/v1/conditions.json', site);
 const { data } = await res.json();
 console.log(data.map((c) => c.title));`}</code></pre>
   <p class="note">
-    Every response has the shape <code>{'{ name, description, license, generated, data }'}</code>. The index of all endpoints
+    Common responses have the shape <code>{'{ name, description, license, generated, data }'}</code>.
+    Fixed Disaster Desk responses use <code>{'{ name, license, generated, data }'}</code>, with the exact capture instant in <code>generated</code>.
+    Dataset descriptions remain in the index. The index of available endpoints
     is at <a href={url('/api/v1/index.json')}><code>/api/v1/index.json</code></a>.
   </p>
   <p class="note">

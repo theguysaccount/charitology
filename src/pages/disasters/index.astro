@@ -1,0 +1,10 @@
+---
+import Entry from "../../layouts/Entry.astro";
+import DisasterDesk from "../../components/DisasterDesk.astro";
+import { loadDisasters } from "../../lib/disaster-incidents/public.mjs";
+const data = loadDisasters();
+---
+<Entry title="Disaster Desk" eyebrow="Relief, recovery and preparedness" summary="Follow dated reports through recovery, with exact sources, visible gaps and retained editions." crumbs={[{label:"Tools",href:"/tools/"},{label:"Disaster Desk"}]}>
+  <p>Relief addresses immediate harm. Recovery repairs what was lost. Preparedness can prevent future harm. Each matters; a change in the news cycle does not establish that needs have ended.</p>
+  {data ? <DisasterDesk projection={data.selected.projection} view="index" editions={data.editions.map(e=>e.projection.packet.edition)} /> : <p>No source edition has been captured yet. Source admission and publication checks must pass before incident reports appear.</p>}
+</Entry>

@@ -1,0 +1,10 @@
+---
+import Entry from "../../../layouts/Entry.astro";
+import DisasterDesk from "../../../components/DisasterDesk.astro";
+import { loadDisasters, requireDisasters } from "../../../lib/disaster-incidents/public.mjs";
+export function getStaticPaths() { return (loadDisasters()?.editions ?? []).map(e=>({params:{id:e.pin.id}})); }
+const data=requireDisasters(), edition=data.editions.find(e=>e.pin.id===Astro.params.id)!;
+---
+<Entry title={`Disaster edition ${edition.pin.id}`} eyebrow="Fixed source edition" summary="Dated reports, source notes and coverage retained together. Later editions do not rewrite this record." crumbs={[{label:"Disaster Desk",href:"/disasters/"},{label:edition.pin.id}]}>
+  <DisasterDesk projection={edition.projection} view="edition" editions={data.editions.map(e=>e.projection.packet.edition)} />
+</Entry>

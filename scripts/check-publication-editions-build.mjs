@@ -193,7 +193,7 @@ check(
   },
 );
 check(
-  "API discovery has exactly the actual 34 source-declared datasets with complete bounded wrappers",
+  "API discovery has exactly the actual 38 source-declared datasets with complete bounded wrappers",
   () => {
     const ast = ts.createSourceFile(
       "api.ts",
@@ -221,22 +221,31 @@ check(
       };
       return { name: field("name"), description: field("description") };
     });
-    assert.equal(expected.length, 36);
-    assert.equal(new Set(expected.map((e) => e.name)).size, 36);
+    assert.equal(expected.length, 38);
+    assert.equal(new Set(expected.map((e) => e.name)).size, 38);
+    const visible = existsSync(join(root,"src/data/disaster-incidents")) ? expected : expected.filter(e=>!["disaster-incidents","disaster-incident-coverage"].includes(e.name));
     const index = json("/api/v1/index.json");
     sameKeys(index, ["name", "version", "license", "docs", "endpoints"]);
     assert.equal(index.version, 1);
-    assert.equal(index.endpoints.length, 36);
+    assert.equal(index.endpoints.length, visible.length);
     assert.equal(index.docs, new URL(href("/tools/public-api/"), site).href);
     assert.deepEqual(
       index.endpoints,
-      expected.map((e) => ({
+      visible.map((e) => ({
         ...e,
         url: new URL(href(`/api/v1/${e.name}.json`), site).href,
       })),
     );
-    for (const e of expected) {
+    for (const e of visible) {
       const body = json(`/api/v1/${e.name}.json`);
+      if (["disaster-incidents", "disaster-incident-coverage"].includes(e.name)) {
+        sameKeys(body, ["name", "license", "generated", "data"]);
+        assert.equal(body.name, e.name);
+        assert.match(body.generated, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+        assert.match(body.license, /External originals remain with their publishers/);
+        assert.match(body.license, /no independently verified current needs/);
+        continue;
+      }
       sameKeys(body, ["name", "description", "license", "generated", "data"]);
       assert.equal(body.name, e.name);
       assert.equal(body.description, e.description);

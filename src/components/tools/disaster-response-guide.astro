@@ -6,11 +6,14 @@
 import guide from '../../data/disaster-guide.json';
 import { DEPTH } from '../../lib/labels';
 import { url } from '../../lib/site';
+import DisasterDesk from '../DisasterDesk.astro';
+import { loadDisasters } from '../../lib/disaster-incidents/public.mjs';
 
 type See = { label: string; path: string };
 const points = guide.points.map((p) => ({ ...p, see: ((p as { see?: See[] }).see ?? []) as See[] }));
 const { buckets, defaults } = guide.planner;
 const depthName = (level: number) => DEPTH.find((d) => d.level === level)?.name ?? '';
+const disasterData = loadDisasters();
 ---
 
 <section class="tool" aria-labelledby="dr-title">
@@ -121,6 +124,8 @@ const depthName = (level: number) => DEPTH.find((d) => d.level === level)?.name 
     <p class="note dr-ics-status" id="dr-ics-status" role="status" aria-live="polite"></p>
   </div>
 </section>
+
+{disasterData && <DisasterDesk projection={disasterData.selected.projection} view="index" editions={disasterData.editions.map(e => e.projection.packet.edition)} />}
 
 <style>
   .dr-points {

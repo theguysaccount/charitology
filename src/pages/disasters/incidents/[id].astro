@@ -1,0 +1,11 @@
+---
+import Entry from "../../../layouts/Entry.astro";
+import DisasterDesk from "../../../components/DisasterDesk.astro";
+import { loadDisasters, requireDisasters } from "../../../lib/disaster-incidents/public.mjs";
+export function getStaticPaths() { return (loadDisasters()?.selected.projection.incidents ?? []).map(({incident})=>({params:{id:incident.id}})); }
+const data=requireDisasters(), selected=data.selectedIncident(data.registry.selected.id,Astro.params.id!);
+const incident=selected.projection.packet.incidents[0];
+---
+<Entry title={incident.name} eyebrow="Disaster follow-up" summary="An attributed source record with separate incident, operation, editorial and review states." crumbs={[{label:"Disaster Desk",href:"/disasters/"},{label:incident.name}]}>
+  <DisasterDesk projection={selected.projection} view="incident" incidentId={incident.id} editions={data.editions.map(e=>e.projection.packet.edition)} />
+</Entry>

@@ -28,6 +28,8 @@ export interface Endpoint {
   build: () => Promise<unknown>;
   capturedAt?: () => Promise<string>;
   preserveShape?: boolean;
+  envelope?: "fixed-capture-v1";
+  available?: () => Promise<boolean>;
   license?: string;
 }
 
@@ -39,6 +41,17 @@ async function observations() {
   const { loadObservations } = await import("./observations");
   return loadObservations();
 }
+
+async function disasters() {
+  const { requireDisasters } = await import("./disaster-incidents/public.mjs");
+  return requireDisasters();
+}
+async function disastersAvailable() {
+  const { loadDisasters } = await import("./disaster-incidents/public.mjs");
+  return loadDisasters() !== null;
+}
+const DISASTER_LICENSE_SUMMARY =
+  "Charitology schema and authored factual notes: CC BY 4.0. External originals remain with their publishers, are not redistributed and have no granted reuse license in this dataset. Read each exact source rights record and the edition coverage. Draft source self-reports; no independently verified current needs or worldwide coverage.";
 
 const entries = (collection: CollectionKey) => async () =>
   ((await getCollection(collection)) as any[]).map((e) => ({
@@ -72,6 +85,26 @@ function flattenRefs(value: unknown, preserveInstants = false): unknown {
 }
 
 export const ENDPOINTS: Endpoint[] = [
+  {
+    name: "disaster-incidents",
+    description: "Complete fixed Disaster Desk edition: attributed reports, exact source versions, status scopes and explicit limitations. Not live or a worldwide needs census.",
+    build: async () => (await disasters()).selected.projection.packet,
+    capturedAt: async () => (await disasters()).selected.projection.capturedAt,
+    envelope: "fixed-capture-v1",
+    available: disastersAvailable,
+    preserveShape: true,
+    license: DISASTER_LICENSE_SUMMARY,
+  },
+  {
+    name: "disaster-incident-coverage",
+    description: "Fixed Disaster Desk coverage, omitted areas, source-access checks and explicit gaps. Missing coverage never means zero need.",
+    build: async () => (await disasters()).selected.coverage,
+    capturedAt: async () => (await disasters()).selected.projection.capturedAt,
+    envelope: "fixed-capture-v1",
+    available: disastersAvailable,
+    preserveShape: true,
+    license: DISASTER_LICENSE_SUMMARY,
+  },
   {
     name: "observations",
     description:
@@ -312,9 +345,15 @@ export const ENDPOINTS: Endpoint[] = [
   },
 ];
 
+export async function availableEndpoints(): Promise<Endpoint[]> {
+  const ready = await Promise.all(ENDPOINTS.map(async e => !e.available || await e.available()));
+  return ENDPOINTS.filter((_, i) => ready[i]);
+}
+
 export async function buildEndpoint(name: string): Promise<unknown> {
   const endpoint = ENDPOINTS.find((e) => e.name === name);
   if (!endpoint) throw new Error(`Unknown endpoint: ${name}`);
+  if (endpoint.available && !await endpoint.available()) throw new Error("This dataset has no committed source capture yet.");
   const data = await endpoint.build();
   const capture = endpoint.capturedAt ? await endpoint.capturedAt() : null;
   if (
@@ -324,6 +363,10 @@ export async function buildEndpoint(name: string): Promise<unknown> {
       new Date(capture).toISOString() !== capture)
   )
     throw new Error("Invalid pinned API capture.");
+  if (endpoint.envelope === "fixed-capture-v1") {
+    if (!capture) throw new Error("A fixed API envelope requires its capture instant.");
+    return { name, generated: capture, license: endpoint.license ?? API_LICENSE_SUMMARY, data };
+  }
   return {
     name,
     description: endpoint.description,
