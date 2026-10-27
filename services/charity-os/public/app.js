@@ -6,6 +6,7 @@ import {
   request as apiRequest,
 } from "./api.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
+import { createGrantReportWorkspace } from "./grant-reports.js";
 import {
   blank,
   recordTitle,
@@ -53,6 +54,7 @@ const state = {
   module: null,
   importPreview: null,
   invitation: null,
+  grantReportWorkspace: null,
 };
 function node(tag, attrs = {}, ...children) {
   const element = document.createElement(tag);
@@ -297,6 +299,11 @@ function safeRoute() {
   }
 }
 function setContent(...content) {
+  if (state.grantReportWorkspace) {
+    state.grantReportWorkspace.dispose?.();
+    state.pageDirty = false;
+  }
+  state.grantReportWorkspace = null;
   $("#content").replaceChildren(
     ...content
       .flat(Infinity)
@@ -450,7 +457,7 @@ function renderAccount() {
       button(
         "Sign out",
         async (event) => {
-          if (!(await discardEditor())) return;
+          if (!(await discardEditor()) || !(await discardPage())) return;
           await action(async () => {
             await api.logout();
             invalidateModules();
@@ -552,6 +559,8 @@ function renderNav() {
     );
 }
 function showSignedOut() {
+  ++state.epoch;
+  setContent();
   $("#connecting").hidden = true;
   $("#workspace").hidden = true;
   $("#auth-screen").hidden = false;
@@ -2413,8 +2422,31 @@ function showInvitation() {
 }
 
 async function renderReports(epoch) {
+  const org = state.org;
   const result = await api.reports(state.org);
   if (epoch !== state.epoch) return;
+  const grantWorkspace = await createGrantReportWorkspace({
+    org,
+    role: role(),
+    isCurrent: () =>
+      epoch === state.epoch && org === state.org && !!state.session?.user,
+    request: apiRequest,
+    api,
+    onSaved: () => invalidateModules(org, ["reporting"]),
+    onDirty: (value) => {
+      if (epoch === state.epoch && org === state.org) state.pageDirty = value;
+    },
+    openManifest: async (id) => {
+      const data = await api.record(org, "reporting", id);
+      if (epoch !== state.epoch || org !== state.org || !state.session?.user)
+        return;
+      await openRecordEditor(moduleById("reporting"), data.record);
+    },
+  });
+  if (epoch !== state.epoch || org !== state.org || !state.session?.user) {
+    grantWorkspace.dispose?.();
+    return;
+  }
   const reports = result.reports || [];
   const allowed = readable().filter((m) => can(m, "export", role()));
   const title = node("input", {
@@ -2554,10 +2586,11 @@ async function renderReports(epoch) {
       "Keep the version you shared.",
       "Freeze an inspectable report with record IDs, source revisions and unknowns preserved.",
     ),
+    grantWorkspace,
     node(
       "section",
       { class: "panel" },
-      node("h2", {}, "A report from saved work"),
+      node("h2", {}, "Module snapshots"),
       node(
         "p",
         { class: "fine" },
@@ -2567,6 +2600,7 @@ async function renderReports(epoch) {
     ),
     reportList,
   );
+  state.grantReportWorkspace = grantWorkspace;
 }
 async function showReport(id) {
   const org = state.org;

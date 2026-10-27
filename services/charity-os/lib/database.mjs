@@ -195,6 +195,7 @@ export async function logicalBackupBytes(c, org) {
     "os_participation_outbox",
     "os_participation_delivery_policies",
     "os_participation_delivery_previews",
+    "os_grant_report_previews",
   ];
   const sql =
     tables

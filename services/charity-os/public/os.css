@@ -1949,6 +1949,158 @@ textarea[aria-invalid="true"] {
   gap: 0.75rem;
   margin: 1rem 0;
 }
+
+.grant-report-workspace,
+.grant-report-document,
+.grant-report-stage,
+.grant-report-reader {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.grant-report-authoring,
+.grant-report-saved,
+.grant-report-reader:not(:empty),
+.grant-report-stage:not(:empty) {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+.grant-report-document {
+  margin: 1.25rem 0;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+.grant-report-document h3 {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+}
+.grant-report-document h4 {
+  margin: 1.5rem 0 0.75rem;
+}
+.grant-report-document h5 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+.grant-report-document p,
+.grant-report-document dd {
+  white-space: pre-wrap;
+}
+.grant-report-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.85rem 1.25rem;
+  margin: 1rem 0;
+}
+.grant-report-facts > div {
+  min-width: 0;
+}
+.grant-report-facts dt {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.grant-report-facts dd {
+  margin: 0.25rem 0 0;
+}
+.grant-report-boundary,
+.grant-report-gaps,
+.grant-report-missingness {
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--rule);
+  background: var(--bg);
+}
+.grant-report-finances {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: 1rem;
+}
+.grant-report-financial,
+.grant-report-row {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+.grant-report-rows {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.grant-report-document summary {
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+.grant-report-document pre {
+  max-width: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.grant-report-freeze-form {
+  margin: 1.25rem 0;
+}
+.grant-report-ack {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+.grant-report-ack input {
+  flex: 0 0 auto;
+  width: auto;
+  margin-top: 0.25rem;
+}
+.grant-report-print-surface {
+  display: none;
+}
+@media (max-width: 560px) {
+  .grant-report-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .grant-report-controls .button {
+    width: 100%;
+  }
+}
+@media print {
+  body.grant-report-printing {
+    --muted: #333;
+    --rule: #888;
+    --surface: #fff;
+    --bg: #fff;
+  }
+  body.grant-report-printing > :not(.grant-report-print-surface) {
+    display: none !important;
+  }
+  body.grant-report-printing > .grant-report-print-surface {
+    display: block !important;
+  }
+  .grant-report-print-surface .grant-report-document {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    color: #000;
+    background: #fff;
+  }
+  .grant-report-print-surface .grant-report-controls,
+  .grant-report-print-surface .grant-report-source-raw {
+    display: none !important;
+  }
+  .grant-report-print-surface .grant-report-finances {
+    display: block;
+  }
+  .grant-report-print-surface .grant-report-row,
+  .grant-report-print-surface .grant-report-facts > div {
+    break-inside: avoid;
+  }
+  .grant-report-print-surface .grant-report-trace > :not(summary) {
+    display: block;
+  }
+}
 .participation-delivery-counts > div,
 .participation-delivery-choice,
 .participation-delivery-outcome {

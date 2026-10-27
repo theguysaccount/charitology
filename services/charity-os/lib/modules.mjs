@@ -363,6 +363,15 @@ export const MODULES = [
       ref("agreementId", "Grant agreement", "grant-delivery"),
       money("planned", "Planned amount"),
       money("actual", "External actual amount"),
+      select(
+        "actualClass",
+        "External actual classification",
+        ["unknown", "cash-spent", "other"],
+        {
+          help: "Only an explicit cash-spent reference can enter a grant report's spending subtotal. An unclassified actual is never cash received.",
+        },
+      ),
+      date("actualDate", "Externally referenced cash-spending date"),
       integer("allocationBps", "Allocation share, basis points", {
         max: 10000,
       }),
@@ -480,6 +489,7 @@ export const MODULES = [
     [
       kind(["campaign", "pledge", "gift-reference", "acknowledgment"]),
       program(),
+      ref("agreementId", "Grant agreement", "grant-delivery"),
       ref("contactId", "Operational donor reference", "contacts"),
       ref("campaignId", "Campaign", "fundraising"),
       money("amount", "Amount"),
@@ -929,6 +939,19 @@ export const MODULES = [
       ref("agreementId", "Grant agreement", "grant-delivery"),
       refs("outcomeIds", "Indicator sources", "outcomes"),
       refs("financeIds", "Financial planning sources", "finance"),
+      refs("receiptIds", "Externally referenced grant receipts", "fundraising"),
+      select("assemblyMethod", "Report assembly method", ["grant-report-v1"], {
+        help: "Use the Grant report workspace to prepare source versions, save their digest and obtain independent approval before freezing.",
+      }),
+      text("sourceDigest", "Prepared grant-report source digest", {
+        maxLength: 64,
+        help: "The Grant report workspace calculates this binding. A source change requires a new digest and fresh manifest approval.",
+      }),
+      text("supersedesReportId", "Previous frozen grant-report ID", {
+        format: "opaque",
+        maxLength: 100,
+      }),
+      area("revisionReason", "Reason for a new report edition"),
       ...dates(),
       area("summary", "Report narrative"),
       area("missingness", "Known gaps and uncertainty"),

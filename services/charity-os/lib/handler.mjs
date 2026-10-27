@@ -74,6 +74,11 @@ import {
 } from "./participation-delivery-backup.mjs";
 import { participationMailer } from "./mail.mjs";
 import {
+  grantReportRoutes,
+  isGrantReport,
+  grantReportForReader,
+} from "./grant-reports.mjs";
+import {
   exportParticipation,
   restoredParticipation,
   restoreParticipation,
@@ -315,8 +320,23 @@ export function createHandler({
         ? {}
         : await body(
             request,
-            path.startsWith("/api/participant/") ? 16384 : 8 * 1024 * 1024,
+            path.startsWith("/api/participant/") ||
+              /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/grant-reports(?:\/|$)/.test(
+                path,
+              )
+              ? 16384
+              : 8 * 1024 * 1024,
           );
+      if (
+        /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/grant-reports(?:\/|$)/.test(path)
+      ) {
+        const read = ["GET", "HEAD"].includes(method);
+        await db.limit(
+          `grant-report-${read ? "read" : "write"}:${hash(session.user.id)}`,
+          read ? 120 : 60,
+          3600,
+        );
+      }
       if (path.startsWith("/api/participant/")) {
         const bucket = hash(session.user.id);
         if (method === "GET")
@@ -489,6 +509,18 @@ export function createHandler({
             settings,
           });
           if (participationResponse) return participationResponse;
+          const grantReportResponse = await grantReportRoutes({
+            c,
+            org,
+            user,
+            member,
+            tail,
+            method,
+            input,
+            url,
+            settings,
+          });
+          if (grantReportResponse) return grantReportResponse;
           const records = await allRecords(c, org),
             visible = records
               .map((r) => visibleRecord(r, member))
@@ -865,6 +897,7 @@ export function createHandler({
               reports: rows
                 .filter(
                   (r) =>
+                    !isGrantReport(r.payload) &&
                     (administrators(member.role) ||
                       [
                         "program_lead",
@@ -948,6 +981,16 @@ export function createHandler({
               )
             ).rows[0];
             if (!r) fail(404, "report", "Report not found.");
+            if (isGrantReport(r.payload)) {
+              const report = grantReportForReader(r.payload, member);
+              if (!report)
+                fail(
+                  403,
+                  "role",
+                  "This report is unavailable to your current role or program scope.",
+                );
+              return okay({ report });
+            }
             for (const m of r.payload.modules) {
               requirePermission(m.id, member, "read");
               if (m.records.some((r) => !inScope(r, member)))

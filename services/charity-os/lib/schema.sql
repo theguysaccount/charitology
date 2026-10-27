@@ -265,3 +265,23 @@ DROP TRIGGER IF EXISTS os_participation_legacy_revision ON os_participation_outb
 CREATE TRIGGER os_participation_legacy_revision BEFORE INSERT OR UPDATE ON os_participation_outbox FOR EACH ROW EXECUTE FUNCTION os_participation_legacy_revision();
 
 ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS recovered_state text CHECK(recovered_state IS NULL OR recovered_state IN ('paused','pending','leased','accepted','delivered','suppressed','failed','unknown','cancelled'));
+
+-- Short-lived grant-report review proofs are private and carry no approval authority after restore.
+CREATE TABLE IF NOT EXISTS os_grant_report_previews (
+ org_id text NOT NULL REFERENCES os_orgs(id),
+ id text NOT NULL,
+ actor_id text NOT NULL,
+ manifest_id text NOT NULL,
+ manifest_revision integer NOT NULL CHECK(manifest_revision>0),
+ review_hash text NOT NULL CHECK(review_hash ~ '^[a-f0-9]{64}$'),
+ payload jsonb NOT NULL CHECK(jsonb_typeof(payload)='object' AND octet_length(payload::text)<=2105344),
+ expires_at timestamptz NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(org_id,id)
+);
+ALTER TABLE os_grant_report_previews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_grant_report_previews FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_grant_report_previews;
+CREATE POLICY tenant ON os_grant_report_previews USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+CREATE UNIQUE INDEX IF NOT EXISTS os_grant_report_command ON os_reports(org_id,(payload#>>'{command,actorId}'),(payload#>>'{command,keyHash}')) WHERE payload->>'kind'='grant-period' AND payload->>'methodVersion'='grant-report-v1';
+CREATE UNIQUE INDEX IF NOT EXISTS os_grant_report_edition ON os_reports(org_id,(payload#>>'{manifest,id}'),(payload#>>'{manifest,revision}'),(payload#>>'{manifest,sourceDigest}')) WHERE payload->>'kind'='grant-period' AND payload->>'methodVersion'='grant-report-v1';
