@@ -1,15 +1,24 @@
 // Controlled native FileReader boundary and fictional DOM, never browser proof.
 import assert from "node:assert/strict";
 import { installProgramRecordDom } from "../program-record-recovery/ui-dom.mjs";
-import { setImmediate as nextTurn } from "node:timers/promises";
+import {
+  setImmediate as nextTurn,
+  setTimeout as nativePause,
+} from "node:timers/promises";
+import { performance } from "node:perf_hooks";
 export async function spin() {
   await Promise.resolve();
   await nextTurn();
 }
 export async function settle(test, message = "condition") {
-  for (let i = 0; i < 100; i++) {
+  // Native Web Crypto completes on a worker thread. A fixed number of immediate
+  // turns can finish before that worker is scheduled on a busy CI runner.
+  // Retain the actual condition and a bounded deadline, yielding real time.
+  const deadline = performance.now() + 5000;
+  while (performance.now() < deadline) {
     if (test()) return;
     await spin();
+    await nativePause(1);
   }
   throw Error("Timed out: " + message);
 }

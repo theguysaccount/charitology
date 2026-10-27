@@ -47,6 +47,8 @@ The 47 earlier private-form privacy groups remain passing after narrowly updatin
 
 The final complete build passes with 546 pages; all 46,600 internal links/assets pass. The complete `npm run check` passes at `7ae317b`, which changes only the observation UI checker after the product runtime above. An earlier run timed out starting Python for an existing malformed-extension-package test; its focused repeat passed all 20 groups. The next run exposed an outdated observation UI fixture: its fictional AAA/BBB country identities did not belong to the closed 217-code form facade, it did not await asynchronous readiness, and its fake DOM lacked `style`. The narrow checker correction generates a consistent fictional graph with KEN/UGA before hashing, awaits readiness and supplies that DOM capability. All original missingness, zero, source and selection assertions remain; all 20 presentation/controller groups pass. No observation interpretation file or method gate changed.
 
+Release CI then exposed a test-wait race: the recovery DOM fixture allowed only 100 immediate turns for actual Web Crypto completion. An actual local 32 MB digest remained pending after all 100 turns and completed within 17 ms. The test helper now retains the same condition with a five-second monotonic deadline and an imported native one-millisecond pause, independent of its fake clock. This changes no controller, engine, browser asset or evidence assertion; final required CI must pass at the corrected head before merge.
+
 ## Browser and release record
 
 - Final product runtime: `6b5f86ed546adbd8e299e734a3bfd46ed9ade141`; full local build and complete check pass, including the checker-only correction `7ae317b`.
