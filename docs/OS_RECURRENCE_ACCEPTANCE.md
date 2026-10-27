@@ -38,9 +38,9 @@ The model's near-quota projection admits a valid 16,707,576-byte structured work
 
 ## Release record
 
-- Final runtime: `ffdbf7af612985492dd415bd7b0af4ffdaf7b398`; release head and PR CI pending.
+- Final runtime: `ffdbf7af612985492dd415bd7b0af4ffdaf7b398`; [PR #26](https://github.com/theguysaccount/charitology/pull/26). Final release-head CI pending. The initial new-branch push correctly refused an all-zero prior branch base; the next nonzero push supplies an actual committed comparison base without weakening the observation-history gate.
 - Complete static build/check: passed, 546 pages and 46,600 internal links/assets with none broken; social assets and strict checks pass. Exact-head required CI: pending.
-- Additive production migration and forced-RLS inspection: pending.
+- Additive production migration: passed. All 60 existing rows, old columns and ACLs stayed unchanged in one repeatable-read transaction. Both new tables are empty; 24 tenant tables enable and force RLS. Constrained runtime flags, narrow privileges and the immutable trigger passed; context-free counts and nonexistent-tenant backup usage are zero.
 - Protected production stage, canonical promotion and exact public assets: pending.
 
 Do not label this slice published until these identities and checks are recorded. Existing email/provider state and actual participants are outside this release.

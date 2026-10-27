@@ -1,6 +1,6 @@
 # Program records and local OS recovery acceptance
 
-October 27, 2026 · AI-assisted engineering · bounded implementation and controlled Chrome checks complete; publication pending. Read the committed pre-runtime [plan](PROGRAM_RECORD_RECOVERY_PLAN.md) and [interfaces](PROGRAM_RECORD_RECOVERY_INTERFACES.md). Native operating-system file saving remains unverified.
+October 27, 2026 · AI-assisted engineering · bounded implementation and controlled Chrome checks complete; published. Read the committed pre-runtime [plan](PROGRAM_RECORD_RECOVERY_PLAN.md) and [interfaces](PROGRAM_RECORD_RECOVERY_INTERFACES.md). Native operating-system file saving remains unverified.
 
 ## Preserved scope
 
@@ -26,7 +26,7 @@ The native local OS editor moves the same existing recovery host into a sibling 
 
 ## Executable evidence
 
-Final runtime `d222c13da2e917235fd7eb2a776309901cb48069` passed `npm run build` and the complete `npm run check`: 546 pages, 46,600 checked internal links/assets with none broken and the existing 36 API datasets. Social checks passed favicon assets, the 1200×630 OG image and the 10-second fast-start H.264 OG video. These local checks do not establish publication.
+Final runtime `d222c13da2e917235fd7eb2a776309901cb48069` passed `npm run build` and the complete `npm run check`: 546 pages, 46,600 checked internal links/assets with none broken and the existing 36 API datasets. Social checks passed favicon assets, the 1200×630 OG image and the 10-second fast-start H.264 OG video. The separate publication record below identifies the released build.
 
 The release has 199 focused production-module groups with strict types passing:
 
@@ -56,12 +56,12 @@ Generated Blob bytes and native file chooser input are verified; native operatin
 - Final runtime: `d222c13da2e917235fd7eb2a776309901cb48069`.
 - Local full build/check: passed.
 - Controlled Chrome: passed, including the final modal keyboard journey and all 28 layout cases; owned fictional state and tab cleaned up.
-- Release PR and final release head: pending.
-- Exact-head required CI: pending.
-- Main merge and Pages publication: pending.
-- Public routes/assets and live Chrome verification: pending.
+- Release [PR #25](https://github.com/theguysaccount/charitology/pull/25); final release head `0f357ca69a33e4089e8675afe1d45128c051589f`.
+- Both exact-head CI runs 40550939191 and 40551013233: all required checks passed.
+- Main merge `d3311aa769c469caab55ea528ce613efbd292f0e`; [Pages 40552380639](https://github.com/theguysaccount/charitology/actions/runs/40552380639): succeeded.
+- All 54 selected public routes/assets matched exact tested bytes, including 21 affected pages, home, referenced JavaScript/CSS, favicon/manifest and OG image/video. Live Chrome opened Time Charitology and its recovery panel with zero application warnings in the bounded log read; it was a read-only visit and its owned tab closed.
 
-No production publication is claimed for this release until those identities and results are recorded.
+Publication does not expand the bounded local/native-file/operating evidence described above.
 
 ## Remaining operating work
 
