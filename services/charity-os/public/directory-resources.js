@@ -114,7 +114,7 @@ export function createDirectoryCatalogPicker({ api, isCurrent = () => true, hash
 }
 
 export function createDirectoryResourceWorkspace({
-  orgId, api, initialSelection = null, record = null, currencies = {},
+  orgId, api, initialSelection = null, record = null, currencies = {}, canExport = false,
   isCurrent = () => true, editorOpen = () => false, onDirty = () => {},
   onSaved = () => {}, onTrash = () => {}, onError = () => {}, onReload = null, download = () => {},
   now = () => Date.now(), randomUUID = () => crypto.randomUUID(), hash = directoryHash,
@@ -340,11 +340,11 @@ export function createDirectoryResourceWorkspace({
         result.assessment?.assessment ? n("p", {}, `Organization declaration dated ${result.assessment.assessment.reviewedDate}: ${result.assessment.kind === "current" ? "matches this working data and selected source" : result.assessment.kind === "historical" ? "historical recovered declaration" : "does not match the current working basis"}. Declared eligibility: ${result.assessment.assessment.eligibility}.`) : n("p", {}, "No organization eligibility declaration is recorded in this source history."),
         result.assessment ? details("Organization declaration basis", pre(result.assessment)) : null,
         n("p", { class: "fine" }, "Declarations are dated organization records, not provider verification or a guarantee of current eligibility. Generic edits and restores can detach their basis."),
-        button("Download partial source evidence JSON", async () => {
+        canExport === true ? button("Download partial source evidence JSON", async () => {
           const ownedEpoch = version;
           try { const file = await api.exportDirectoryResource(orgId, record.id); if (valid(ownedEpoch)) download(`resource-${record.id}-partial-directory-evidence.json`, file); }
           catch (error) { failure(error); }
-        }), n("p", { class: "fine" }, "This selected Resource export is partial evidence. Use the full organization backup for recovery. CSV does not retain complete source history."));
+        }) : null, n("p", { class: "fine" }, "A selected Resource export is partial evidence. Use an administrator's full organization backup for recovery. CSV does not retain complete source history."));
     }
     for (const event of result.events || []) appendContent(evidenceHost, details(`Source event ${event.packet.sequence}: ${event.packet.event} · ${event.provenance} · ${event.packet.recordedAt}`, n("div", {}, pre(event), button("Inspect this event's exact source", async () => {
       if (busy) return;

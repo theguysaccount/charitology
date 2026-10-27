@@ -56,7 +56,7 @@ function harness(options = {}) {
     exportDirectoryResource: async () => new Blob(["partial-evidence"]),
     ...options.api,
   };
-  const workspace = createDirectoryResourceWorkspace({ orgId:"org1",api:transport,initialSelection:copy(selection),currencies:{USD:2,JPY:0},isCurrent:()=>current,editorOpen:()=>editor,now:()=>time,randomUUID:()=>key,download:(...args)=>calls.download.push(args),...options,api:transport });
+  const workspace = createDirectoryResourceWorkspace({ orgId:"org1",canExport:true,api:transport,initialSelection:copy(selection),currencies:{USD:2,JPY:0},isCurrent:()=>current,editorOpen:()=>editor,now:()=>time,randomUUID:()=>key,download:(...args)=>calls.download.push(args),...options,api:transport });
   const find = s => workspace.element.querySelector(s);
   const button = text => workspace.element.querySelectorAll("button").find(b=>b.textContent===text);
   return {workspace,calls,find,button,setCurrent:v=>{current=v},setEditor:v=>{editor=v},setTime:v=>{time=v}};
@@ -225,4 +225,11 @@ test("stale server revision409 preserves notes until explicit parent dirty-confi
 test("a409during preview also offers current Resource reload and keeps it available while notes are copied",async()=>{
   let reloads=0;const h=harness({record,onReload:async()=>{reloads++;},api:{previewDirectoryResource:async()=>{throw Object.assign(new Error("The target revision changed"),{status:409});}}});
   await h.workspace.load();await click(h.find('[data-directory-preview]'));assert.ok(h.find('[data-directory-reload]'));await change(h.find('[data-directory-notes]'),"Text still kept");assert.ok(h.find('[data-directory-reload]'));await click(h.find('[data-directory-reload]'));assert.equal(reloads,1);assert.equal(h.find('[data-directory-notes]').value,"Text still kept");h.workspace.dispose();
+});
+
+test("contributors retain source, writing and recheck without an unavailable export control",async()=>{
+  const h=harness({record,canExport:false});await h.workspace.load();assert.equal(h.button("Download partial source evidence JSON"),undefined);assert.ok(h.find('[data-directory-preview]'));assert.match(h.workspace.element.textContent,/Source event 1/);await click(h.find('[data-directory-preview]'));assert.equal(h.calls.preview[0].intent,"recheck");assert.ok(h.find('[data-directory-commit]'));assert.match(h.workspace.element.textContent,/Source event 1/);h.workspace.dispose();
+  for(const canExport of[undefined,false,"true"]){const no=harness({record,canExport});await no.workspace.load();assert.equal(no.button("Download partial source evidence JSON"),undefined);no.workspace.dispose();}
+  const exporter=harness({record,canExport:true});await exporter.workspace.load();await click(exporter.button("Download partial source evidence JSON"));assert.equal(exporter.calls.download.length,1);exporter.workspace.dispose();
+  const app=await readFile(new URL("./app.js",import.meta.url),"utf8");assert.ok(app.includes('canExport: can(moduleById("resources"), "export", destination.role)'));assert.ok(app.includes('canExport: can(module, "export", role())'));
 });

@@ -762,6 +762,7 @@ async function renderDirectoryCopy(epoch) {
           api,
           initialSelection: selection,
           currencies: state.currencies,
+          canExport: can(moduleById("resources"), "export", destination.role),
           isCurrent: () =>
             epoch === state.epoch && orgId === state.org &&
             location.hash === fragment && state.session === session &&
@@ -2110,6 +2111,7 @@ async function renderDetail(moduleId, id, epoch) {
           api,
           record,
           currencies: state.currencies,
+          canExport: can(module, "export", role()),
           isCurrent: ownsDetail,
           editorOpen: () => !!state.editor,
           onDirty: (value) => {
