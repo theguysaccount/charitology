@@ -1,0 +1,163 @@
+{
+  "format": "charitology-publication-capture-request",
+  "schemaVersion": 1,
+  "requests": [
+    {
+      "id": "state-of-charity-initial-capture",
+      "family": "state-of-charity",
+      "sequence": 1,
+      "title": "State of Charity: a new source capture",
+      "declaredPublicationDate": null,
+      "sourceLabel": "Edition 0 source label",
+      "provenance": "new-source-capture",
+      "methodId": "state-of-charity-capture-v1",
+      "coverage": {
+        "scope": "Dated U.S. financial estimates and a census of the Charitology project; not a worldwide charity census.",
+        "geography": "United States and the Charitology project",
+        "period": null,
+        "completeness": "declared-scope-only",
+        "limitations": [
+          "Unknown historical baselines stay unknown. Capture time is not a source measurement or a historical served-edition timestamp.",
+          "This project has not measured worldwide giving, allocation by depth, counterfactual impact or sector-wide change.",
+          "Stocks, annual flows and ratios with different source periods cannot be added or read as an impact ranking."
+        ]
+      },
+      "editorial": {
+        "label": "editorial-draft",
+        "aiAssistance": "Prepared with AI assistance. Independent human review has not been completed.",
+        "limitations": [
+          "A fixed edition records its stated sources and scope; it does not establish a staffed institution, independently reviewed research or an annual publication cadence."
+        ]
+      },
+      "r4EditionId": "edition:2026-10-27-initial",
+      "supersedes": null,
+      "correction": null,
+      "authoredLetterPath": null
+    },
+    {
+      "id": "progress-report-initial-capture",
+      "family": "progress-report",
+      "sequence": 1,
+      "title": "Open Problems Progress: pinned initial ledger",
+      "declaredPublicationDate": null,
+      "sourceLabel": "Initial closed R4 edition",
+      "provenance": "new-source-capture",
+      "methodId": "progress-report-capture-v1",
+      "coverage": {
+        "scope": "The exact closed research ledger and its explicitly dated progress, with no known January baseline.",
+        "geography": "Charitology project",
+        "period": {
+          "from": "2026-01-01T00:00:00.000Z",
+          "to": "2026-10-27T08:31:31.000Z",
+          "convention": "utc-half-open"
+        },
+        "completeness": "declared-scope-only",
+        "limitations": [
+          "Unknown historical baselines stay unknown. Capture time is not a source measurement or a historical served-edition timestamp.",
+          "The pinned ledger as-of time is 2026-10-27T08:31:31.000Z, earlier than this publication capture. No January state is inferred."
+        ]
+      },
+      "editorial": {
+        "label": "editorial-draft",
+        "aiAssistance": "Prepared with AI assistance. Independent human review has not been completed.",
+        "limitations": [
+          "A fixed edition records its stated sources and scope; it does not establish a staffed institution, independently reviewed research or an annual publication cadence."
+        ]
+      },
+      "r4EditionId": "edition:2026-10-27-initial",
+      "supersedes": null,
+      "correction": null,
+      "authoredLetterPath": null
+    },
+    {
+      "id": "principles-initial-capture",
+      "family": "principles",
+      "sequence": 1,
+      "title": "Principles of Charitology: ten fixed chapters",
+      "declaredPublicationDate": null,
+      "sourceLabel": "Edition 0 source label",
+      "provenance": "new-source-capture",
+      "methodId": "principles-capture-v1",
+      "coverage": {
+        "scope": "The complete text and source lists of the ten current textbook chapters.",
+        "geography": "Charitology project",
+        "period": null,
+        "completeness": "declared-scope-only",
+        "limitations": [
+          "Unknown historical baselines stay unknown. Capture time is not a source measurement or a historical served-edition timestamp."
+        ]
+      },
+      "editorial": {
+        "label": "editorial-draft",
+        "aiAssistance": "Prepared with AI assistance. Independent human review has not been completed.",
+        "limitations": [
+          "A fixed edition records its stated sources and scope; it does not establish a staffed institution, independently reviewed research or an annual publication cadence."
+        ]
+      },
+      "r4EditionId": null,
+      "supersedes": null,
+      "correction": null,
+      "authoredLetterPath": null
+    },
+    {
+      "id": "journal-volume-zero-capture",
+      "family": "journal",
+      "sequence": 1,
+      "title": "Journal of Charitology: Volume 0 source capture",
+      "declaredPublicationDate": null,
+      "sourceLabel": "Volume 0; three editorial drafts",
+      "provenance": "new-source-capture",
+      "methodId": "journal-capture-v1",
+      "coverage": {
+        "scope": "Three exact draft manuscripts and their pinned R4 qualification references.",
+        "geography": "Charitology project",
+        "period": null,
+        "completeness": "declared-scope-only",
+        "limitations": [
+          "Unknown historical baselines stay unknown. Capture time is not a source measurement or a historical served-edition timestamp."
+        ]
+      },
+      "editorial": {
+        "label": "editorial-draft",
+        "aiAssistance": "Prepared with AI assistance. Independent human review has not been completed.",
+        "limitations": [
+          "A fixed edition records its stated sources and scope; it does not establish a staffed institution, independently reviewed research or an annual publication cadence."
+        ]
+      },
+      "r4EditionId": "edition:2026-10-27-initial",
+      "supersedes": null,
+      "correction": null,
+      "authoredLetterPath": null
+    },
+    {
+      "id": "letter-edition-one-preserved",
+      "family": "letter",
+      "sequence": 1,
+      "title": "The Charitology Letter: preserved Edition 1 mail",
+      "declaredPublicationDate": "2026-10-25",
+      "sourceLabel": "Edition 1",
+      "provenance": "preserved-artifact",
+      "methodId": "letter-capture-v1",
+      "coverage": {
+        "scope": "The original public Edition 1 mail artifact, declared date, feed identity and original ordered content hash.",
+        "geography": "Charitology project",
+        "period": null,
+        "completeness": "declared-scope-only",
+        "limitations": [
+          "Unknown historical baselines stay unknown. Capture time is not a source measurement or a historical served-edition timestamp."
+        ]
+      },
+      "editorial": {
+        "label": "editorial-draft",
+        "aiAssistance": "Prepared with AI assistance. Independent human review has not been completed.",
+        "limitations": [
+          "A fixed edition records its stated sources and scope; it does not establish a staffed institution, independently reviewed research or an annual publication cadence."
+        ]
+      },
+      "r4EditionId": null,
+      "supersedes": null,
+      "correction": null,
+      "authoredLetterPath": null
+    }
+  ]
+}
