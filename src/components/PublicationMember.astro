@@ -1,0 +1,56 @@
+---
+import type { Member } from "../lib/publication-editions-types";
+import { renderPublicationMarkdown } from "../lib/publication-editions-view";
+import { url } from "../lib/site";
+import { ledgerEditionHref, ledgerHref } from "../lib/research-ledger";
+const { member } = Astro.props as { member: Member };
+const p = member.payload;
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const progress = p.kind === "r4-progress-v1" ? JSON.parse(p.progressJson) : null;
+---
+<section class:list={["pe-card", {pr: p.kind === "r4-progress-v1"}]} id={`member-${member.id}`} data-publication-member={member.id}>
+  {p.kind === "figure-input-v1" && <>
+    <h2>{p.label}</h2>
+    <p class="lede">{p.value === null ? "Unknown / source description" : p.value} {p.value !== null && p.unit}</p>
+    <dl><dt>Scope</dt><dd>{p.geography}</dd><dt>Source period</dt><dd>{p.sourcePeriodLabel ?? "Unknown / not supplied"}</dd><dt>Measure</dt><dd>{p.measure}{p.currency ? ` · ${p.currency}` : ""}</dd><dt>Denominator</dt><dd>{p.denominator ?? "Not supplied / not applicable"}</dd></dl>
+    <ul>{p.limitations.map(s=><li>{s}</li>)}</ul>
+    <ul>{p.sources.map(s=><li><a href={s.url}>{s.title}</a>{s.publisher ? ` · ${s.publisher}` : ""}{s.year !== null ? ` · ${s.year}` : ""}{s.note ? ` · ${s.note}` : ""}</li>)}</ul>
+  </>}
+  {p.kind === "project-census-v1" && <>
+    <h2>The captured project census</h2><p>Counts describe this project. Draft declarations and availability do not establish independent review or operating institutions.</p>
+    <div class="table-wrap"><table><thead><tr><th>Collection</th><th>Entries</th><th>Declared drafts</th></tr></thead><tbody>{p.collections.map(r=><tr><th scope="row">{r.collection}</th><td>{r.entries}</td><td>{r.drafts}</td></tr>)}</tbody></table></div>
+    <h3>Diagnosis evidence labels</h3><ul>{p.evidence.map(r=><li>{r.label}: {r.count}</li>)}</ul>
+    <h3>Catalog availability</h3><ul>{p.availability.map(r=><li>{r.status}: {r.count}</li>)}</ul>
+    <h3>Effective problem states from the pinned ledger</h3><ul>{p.problemStates.counts.map(r=><li>{r.state}: {r.count}</li>)}</ul><p><a href={url(ledgerEditionHref(p.problemStates.ledgerEditionId))}>Inspect this exact ledger edition</a></p><p class="pe-hash">Ledger {p.problemStates.ledgerEditionId} · {p.problemStates.ledgerEditionHash}</p>
+    <details><summary>Literal source status declarations</summary><p>These are frontmatter assertions, distinct from the ledger's qualified effective states.</p><ul>{p.declaredProblemStatuses.map(r=><li>{r.status}: {r.count}</li>)}</ul></details>
+  </>}
+  {(p.kind === "chapter-v1" || p.kind === "manuscript-v1") && <>
+    <p class="eyebrow">{p.kind === "chapter-v1" ? `Chapter ${p.chapter} · CC BY 4.0` : `Volume ${p.volume}, issue ${p.issue} · ${p.declaredDate}`}</p>
+    <h2>{p.title}</h2><p class="lede">{p.summary}</p>
+    {p.kind === "manuscript-v1" && <p>{p.attribution}</p>}
+    <p class="note">Source review declaration: {p.declaredReview}. This archive is an editorial draft; preserving a source does not supply an independent reviewer.</p>
+    <div class="prose" set:html={renderPublicationMarkdown(p.body, basePath)} />
+    <h3>Sources retained with this version</h3><ul>{p.sources.map(s=><li><a href={s.url}>{s.title}</a>{s.publisher ? ` · ${s.publisher}` : ""}{s.year !== null ? ` · ${s.year}` : ""}{s.note ? ` · ${s.note}` : ""}</li>)}</ul>
+    {p.qualification && <details><summary>Exact ledger qualification reference</summary><p>A reference identifies the record to inspect; it does not itself state that a review gate passed.</p><p class="pe-hash">{p.qualification.recordId} · version {p.qualification.version} · {p.qualification.subjectHash}<br/>Ledger {p.qualification.ledgerEditionId} · {p.qualification.ledgerEditionHash}</p><a href={url(ledgerEditionHref(p.qualification.ledgerEditionId))}>Inspect this exact ledger edition</a></details>}
+  </>}
+  {p.kind === "r4-progress-v1" && <>
+    <h2>Progress recorded by the pinned research ledger</h2><p>Interval: <time datetime={p.from}>{p.from}</time> up to, excluding, <time datetime={p.to}>{p.to}</time>. No January baseline was recorded. Unknown earlier states stay unknown.</p>
+    <p>Editorial changes, qualified research decisions and later withdrawals retain their distinct meanings in this exact projection. A software release or correction is not a solved research problem.</p>
+    <dl>{[["Recorded dispositions", "dispositionsRecorded"], ["Currently supported dispositions", "currentlySupportedDispositions"], ["Editorial corrections", "editorialCorrections"], ["Changed claims", "changedClaims"]].map(([label,key])=><><dt>{label}</dt><dd>{progress.counters[key]}</dd></>)}</dl>
+    <h3>The captured problem states</h3><p>These are the exact ending states supplied by the pinned projection. Earlier starting states remain unknown where no baseline was recorded.</p>
+    <div class="table-wrap"><table><thead><tr><th>Open problem</th><th>Starting state</th><th>Ending state</th><th>Evidence record</th></tr></thead><tbody>{progress.endingStates.map((s: {recordId:string;status:string|null})=><tr><td><a href={url(`/open-problems/${s.recordId.slice("problem:".length)}/`)}>{s.recordId.slice("problem:".length).replaceAll("-", " ")}</a></td><td>{progress.startingStates.find((start: {recordId:string})=>start.recordId===s.recordId)?.status??"unknown"}</td><td>{s.status??"unknown"}</td><td><a href={url(ledgerHref(s.recordId))}>Inspect record</a></td></tr>)}</tbody></table></div>
+    <p class="pe-hash">Ledger {p.ledgerEditionId} · {p.ledgerEditionHash}</p>
+    <p><a href={url(ledgerEditionHref(p.ledgerEditionId))}>Inspect this exact ledger edition</a></p>
+    <details><summary>Read the complete retained progress projection</summary><pre>{p.progressJson}</pre><p class="pe-hash">Raw progress SHA-256: {p.progressSha256}</p></details>
+  </>}
+  {p.kind === "legacy-letter-v1" && <>
+    <h2>{p.title}</h2><p>Preserved legacy mail artifact. Declared publication date and mail identity are retained; this new registry capture is not a reconstruction of every historical served web byte.</p><p>Subject: {p.subject}</p><div class="pe-text">{p.text}</div>
+    <details><summary>Inspect original HTML as inert source text</summary><pre>{p.html}</pre></details><p class="pe-hash">Original ordered mail content hash: {p.legacyContentHash}</p>
+  </>}
+  {p.kind === "authored-letter-v1" && <>
+    <h2>{p.title}</h2><p>{p.summary}</p><p>{p.publicByline} · {p.declaredDate}</p><p>AI assistance: {p.aiAssistance}</p>
+    {p.blocks.map(b=> b.kind === "heading" ? <h3>{b.text}</h3> : b.kind === "paragraph" ? <p class="pe-text">{b.text}</p> : b.kind === "list" ? <ul>{b.items.map(s=><li>{s}</li>)}</ul> : <ul>{b.items.map(s=><li><a href={s.url}>{s.label}</a></li>)}</ul>)}
+    <ul>{p.sources.map(s=><li><a href={s.url}>{s.title}</a></li>)}</ul>
+  </>}
+  <details><summary>Member identity and provenance</summary><p class="pe-hash">{member.id} · {member.contentHash}</p><p>{member.sourcePins.length} exact retained source pins. The complete edition manifest contains their identities and hashes.</p></details>
+</section>

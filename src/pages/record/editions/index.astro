@@ -1,0 +1,20 @@
+---
+import Base from "../../../layouts/Base.astro";
+import PublicationProposal from "../../../components/PublicationProposal.astro";
+import { loadPublicationEditions } from "../../../lib/publication-editions";
+import { PUBLICATION_FAMILIES, publicationHref } from "../../../lib/publication-editions-view";
+import { url } from "../../../lib/site";
+import "../../../styles/publication-editions.css";
+const { input, catalog, inventory } = loadPublicationEditions();
+---
+<Base title="Fixed publications and proposal desk" description="Read retained publication captures with their complete sources, compare their limits and prepare private, source-linked proposals.">
+  <main class="wrap publication-editions"><p class="eyebrow">The Record · accountable publication</p><h1>Keep the evidence with the edition.</h1><p class="lede">A report should keep the facts, sources and limits that its readers saw. These fixed captures make later changes inspectable.</p>
+    <p>The archive distinguishes newly captured sources from preserved artifacts. A capture date does not turn an earlier label into historical proof. Every initial edition is an editorial draft; hashes preserve identity, not independent review.</p>
+    <nav class="pe-actions" aria-label="Publication archive"><a class="btn" href="#captures">Read fixed captures</a><a class="btn btn-ghost" href={url("/record/editions/compare/")}>Compare with limits</a><a class="btn btn-ghost" href="#proposal-desk">Open the private proposal desk</a><a href={url("/api/v1/publication-editions.json")}>Public metadata API</a></nav>
+    <section id="captures"><h2>The retained editions</h2>
+      {Object.entries(PUBLICATION_FAMILIES).map(([family,label])=><section><h3>{label}</h3><div class="pe-grid">{input.editions.filter(e=>e.core.family===family).sort((a,b)=>b.core.sequence-a.core.sequence).map(e=><article class="pe-card"><p class="eyebrow">Capture {e.core.sequence} · {e.core.provenance.replaceAll("-"," ")}</p><h4><a href={url(publicationHref(e.core.id))}>{e.core.title}</a></h4><p>Captured <time datetime={e.core.capturedAt}>{e.core.capturedAt}</time>. Declared publication day: {e.core.declaredPublicationDate??"unknown / not declared"}.</p><p>{e.core.members.length} retained members · {e.core.sourcePins.length} exact source pins · editorial draft.</p><p>{e.core.coverage.scope}</p>{input.registry.current[e.core.family]===e.core.id&&<p>Selected current capture for this family.</p>}<p class="pe-hash">{e.hash}</p></article>)}</div></section>)}
+    </section>
+    <details><summary>Archive identity, size and scope</summary><p>{input.editions.length} immutable captures, {input.sources.length} shared source snapshots and {input.artifacts.length} textual artifacts. Stored registry/source/artifact files: {inventory.storedBytes.toLocaleString("en-US")} UTF-8 bytes. Complete basis downloads: {inventory.basisBytes.toLocaleString("en-US")} bytes. Combined shipped evidence: {inventory.shippedBytes.toLocaleString("en-US")} of 20,971,520 bytes.</p><p class="pe-hash">Registry {input.registry.hash}</p><p>Current source pages and external cited websites can change. The archive keeps the exact captured repository text; it does not claim fresh external retrieval or independent source review.</p></details>
+    <section><h2>Prepare a private publication proposal</h2><p>Choose a fixed source basis, write an argument and keep explicit versions. Download a selected proposal for your own redaction and a manual pull request. Nothing here publishes a page, submits a paper or sends email.</p><PublicationProposal catalog={catalog}/></section>
+  </main>
+</Base>

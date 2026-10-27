@@ -4,6 +4,7 @@ import podcast from "../data/podcast.json";
 import newsletter from "../data/newsletter.json";
 import { getCollection, type CollectionKey } from "astro:content";
 import { STATIC_PAGES, hrefFor } from "./content";
+import { loadPublicationEditions } from "./publication-editions";
 
 export interface PageInfo {
   path: string;
@@ -71,6 +72,13 @@ export async function allPages(): Promise<PageInfo[]> {
       summary: i.summary,
       date: new Date(i.date),
       section: "Newsletter",
+    });
+  for (const edition of loadPublicationEditions().input.editions)
+    pages.push({
+      path: `/record/editions/${edition.core.id}/`,
+      title: edition.core.title,
+      summary: `Fixed ${edition.core.provenance.replaceAll("-", " ")} · editorial draft · ${edition.core.coverage.scope}`,
+      section: "Fixed publications",
     });
   return pages;
 }

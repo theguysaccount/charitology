@@ -1,0 +1,21 @@
+---
+import Base from "../../../../../layouts/Base.astro";
+import { loadPublicationEditions } from "../../../../../lib/publication-editions";
+import { comparePublicationEditions } from "../../../../../lib/publication-editions-model.mjs";
+import { publicationHref } from "../../../../../lib/publication-editions-view";
+import { url } from "../../../../../lib/site";
+import "../../../../../styles/publication-editions.css";
+export function getStaticPaths() {
+  const { input } = loadPublicationEditions();
+  return input.editions.flatMap(from=>input.editions.filter(to=>to.core.id!==from.core.id).map(to=>({params:{from:from.core.id,to:to.core.id},props:{from,to}})));
+}
+const { from, to } = Astro.props;
+const comparison = comparePublicationEditions(loadPublicationEditions().input, {fromId:from.core.id,toId:to.core.id});
+---
+<Base title={`${from.core.title} → ${to.core.title}`} description="A fixed comparison with explicit scope, source, baseline and research-evidence limitations.">
+  <main class="wrap publication-editions" data-publication-comparison><p class="eyebrow">Fixed capture comparison</p><h1>What the two captures record</h1><p>From <a href={url(publicationHref(from.core.id))}>{from.core.title}</a> to <a href={url(publicationHref(to.core.id))}>{to.core.title}</a>.</p><p>No effect is pooled, no currency is converted and no editorial change becomes a scientific result.</p>
+    {comparison.differences.length===0&&<p class="pe-empty">No supported difference is recorded. That does not establish that the wider charity system was unchanged.</p>}
+    {comparison.differences.map((d: any)=><section class="pe-card"><h2>{d.code.replaceAll("-"," ")}</h2><p>{d.reason}</p><dl><dt>Member</dt><dd>{d.memberId}</dd><dt>Earlier value</dt><dd>{d.before ?? "Unknown / not supplied"}</dd><dt>Later value</dt><dd>{d.after ?? "Unknown / not supplied"}</dd></dl>{d.r4EventIds.length>0&&<p>Exact ledger events: {d.r4EventIds.join(", ")}</p>}</section>)}
+    <p class="pe-hash">Earlier final hash {comparison.from.hash}<br/>Later final hash {comparison.to.hash}</p><p><a href={url("/record/editions/compare/")}>Choose other captures</a></p>
+  </main>
+</Base>

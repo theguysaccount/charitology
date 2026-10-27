@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import PublicationCurrent from "../PublicationCurrent.astro";
 import EntryList from "../EntryList.astro";
 import { formatDate, url } from "../../lib/site";
 import { loadResearchLedger } from "../../lib/research-ledger";
@@ -24,6 +25,8 @@ const items = issues.map((j) => ({
   tags: [j.data.author, formatDate(j.data.date), journalView(j.id).view.qualification.peerReview === "peer-reviewed" ? "Recorded peer review" : "Not peer-reviewed"],
 }));
 ---
+
+<PublicationCurrent family="journal"/>
 
 <EntryList items={items} layout="cards" />
 <details>

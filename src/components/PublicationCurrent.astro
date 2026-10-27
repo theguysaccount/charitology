@@ -1,0 +1,15 @@
+---
+import type { Family } from "../lib/publication-editions-types";
+import { loadPublicationEditions } from "../lib/publication-editions";
+import { publicationHref } from "../lib/publication-editions-view";
+import { url } from "../lib/site";
+const { family } = Astro.props as { family: Family };
+const { input } = loadPublicationEditions();
+const id = input.registry.current[family];
+const edition = input.editions.find(e=>e.core.id===id)!;
+---
+<aside class="callout" data-current-publication={family}>
+  <h2>A fixed source capture is available</h2>
+  <p><a href={url(publicationHref(id))}>{edition.core.title}</a> preserves its complete sources, method, scope and limitations. Captured <time datetime={edition.core.capturedAt}>{edition.core.capturedAt}</time>; editorial draft. Its facts stay fixed when the current pages change.</p>
+  <p><a href={url("/record/editions/")}>Read earlier captures or draft a private proposal</a></p>
+</aside>

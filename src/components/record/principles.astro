@@ -1,10 +1,13 @@
 ---
 import { getCollection } from "astro:content";
+import PublicationCurrent from "../PublicationCurrent.astro";
 import { url } from "../../lib/site";
 const chapters = (await getCollection("principles")).sort(
   (a, b) => a.data.chapter - b.data.chapter,
 );
 ---
+
+<PublicationCurrent family="principles"/>
 
 <section
   id="book-index"

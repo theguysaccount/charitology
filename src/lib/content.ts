@@ -111,6 +111,8 @@ export const STATIC_PAGES: Record<string, string> = {
   '/programs/': 'Programs',
   '/tools/': 'Tools',
   '/record/': 'The Record',
+  '/record/editions/': 'Fixed publications and proposal desk',
+  '/record/editions/compare/': 'Compare fixed publication captures',
   '/open-problems/': 'The Open Problems of Charitology',
   '/contribute/': 'Become a charitologist',
   '/contribute/review/': 'Review a draft',
