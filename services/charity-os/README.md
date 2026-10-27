@@ -26,7 +26,7 @@ The public AI Charitologist remains a source-retrieval tool. This service does n
 
 ## Public operational requests
 
-The current branch implements account-free contact, event-interest and volunteer-interest forms. Deployment and hosted intake acceptance are pending. [PUBLIC_PARTICIPATION.md](../../docs/PUBLIC_PARTICIPATION.md) records the design, limits and test checklist; the earlier hosted OS release does not prove this new flow.
+The deployed service implements account-free contact, event-interest and volunteer-interest forms. Runtime `98ebea527b6a5b382d5e143acf207205eccd172b`, deployment `dpl_1yFKcLN8m2x8QkXs4Sf1sZbeBdYd`, is promoted to https://os.charitology.org. [PUBLIC_PARTICIPATION.md](../../docs/PUBLIC_PARTICIPATION.md) records exact CI, production RLS and controlled synthetic browser evidence. The browser fixture used an isolated actual database and explicitly fake administrator authentication; it does not establish actual human approval, participant adoption or a published production form. [SHARED_OS_RELEASE.md](../../docs/SHARED_OS_RELEASE.md) preserves the full release history and remaining gates.
 
 An owner or administrator can publish the exact current, independently approved Forms revision in its published workflow state, optionally linked to an equally current approved event session or volunteer shift. Source or target edits, deletion, closure, withdrawal or an expired retention review date stop new acceptance and conversion. The public page shows only the organization's name and the deliberately published title, purpose, questions, consent and review date. Publishers must inspect that wording; keyword screening cannot guarantee that prompts or volunteered answers contain no sensitive information.
 
