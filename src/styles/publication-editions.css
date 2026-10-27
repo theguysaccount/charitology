@@ -23,6 +23,9 @@
 .publication-editions .pe-check input { flex: 0 0 auto; margin-top: .35rem; }
 .publication-editions table { width: 100%; border-collapse: collapse; }
 .publication-editions :is(th,td) { text-align: left; border-bottom: 1px solid var(--rule); padding: .65rem; vertical-align: top; }
+.publication-editions .pr .table-wrap { max-width: 100%; overflow-x: auto; }
+.publication-editions .pr table { min-width: 36rem; }
+.publication-editions .pr :is(th,td) { overflow-wrap: normal; word-break: normal; }
 .publication-editions dl { display: grid; grid-template-columns: minmax(8rem,1fr) minmax(0,3fr); gap: .4rem .8rem; }
 .publication-editions dd { margin: 0; }
 .publication-editions details { padding-block: .5rem; }

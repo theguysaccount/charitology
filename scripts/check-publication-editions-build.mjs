@@ -408,8 +408,37 @@ check(
           assert.equal(progress.coverage.baselineKnownFrom, null);
           assert.equal(progress.counters.dispositionsRecorded, 0);
           assert.equal(progress.counters.currentlySupportedDispositions, 0);
-          for (const r of progress.endingStates)
-            includes(section, `${r.recordId}: ${r.status ?? "unknown"}`);
+          const rows = all(
+            section,
+            (n) => n.tagName === "tr" && attr(n, "data-problem-record"),
+          );
+          assert.equal(rows.length, progress.endingStates.length);
+          for (const r of progress.endingStates) {
+            const row = rows.find(
+              (n) => attr(n, "data-problem-record") === r.recordId,
+            );
+            assert.ok(row, `Missing exact problem row: ${r.recordId}`);
+            const cells = (row.childNodes || []).filter(
+              (n) => n.tagName === "td",
+            );
+            assert.equal(cells.length, 4);
+            assert.equal(
+              tidy(text(cells[1])),
+              progress.startingStates.find((s) => s.recordId === r.recordId)
+                ?.status ?? "unknown",
+            );
+            assert.equal(tidy(text(cells[2])), r.status ?? "unknown");
+            assert.ok(
+              links(cells[0]).includes(
+                href(`/open-problems/${r.recordId.slice("problem:".length)}/`),
+              ),
+            );
+            assert.ok(
+              links(cells[3]).includes(
+                href(`/research-ledger/${encodeURIComponent(r.recordId)}/`),
+              ),
+            );
+          }
         }
       }
       for (const pin of e.core.sourcePins) {
