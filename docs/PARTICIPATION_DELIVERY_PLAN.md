@@ -2,6 +2,8 @@
 
 Frozen pre-implementation contract · October 26, 2026 · AI-assisted planning
 
+Historical design checkpoint. The later implementation, verification and release are recorded in [PARTICIPATION_DELIVERY.md](PARTICIPATION_DELIVERY.md). Statements below describe the system before this slice; they are not current deployment claims.
+
 This is the next bounded slice after [participation bookings](PARTICIPATION_BOOKINGS_PLAN.md). It proposes real operational delivery through the existing Charity OS mail relay and authorized Resend account. It does not establish that delivery code, enabled configuration, participant use or inbox receipt exists. This planning pass changes no runtime, database, provider, secret, account, DNS or production preference. No new paid service is proposed.
 
 ## Outcome and boundary
