@@ -36,6 +36,9 @@ globalThis.__observationUiFixture = {
   countries: legacyCountriesProjection(projection),
 };
 class Element extends BaseElement {
+  get options() {
+    return this.children.filter((child) => child.tagName === "OPTION");
+  }
   select() {
     this.selectionStart = 0;
     this.selectionEnd = this.value.length;
@@ -126,15 +129,24 @@ function dom(html) {
   visit(parse(html), document);
   document.body = document.querySelector("body");
   globalThis.document = document;
-  globalThis.location = {
-    href: "https://example.invalid/charitology/tools/compare-tool/",
-    hash: "",
-    origin: "https://example.invalid",
+  globalThis.Node = Element;
+  globalThis.location = new URL(
+    "https://example.invalid/charitology/tools/compare-tool/",
+  );
+  const events = new Map();
+  globalThis.window = {
+    addEventListener(name, callback) {
+      const list = events.get(name) ?? [];
+      list.push(callback);
+      events.set(name, list);
+    },
+    async fire(name) {
+      for (const callback of events.get(name) ?? []) await callback();
+    },
   };
-  globalThis.window = { addEventListener() {} };
   globalThis.history = {
     replaceState(_a, _b, href) {
-      location.hash = href;
+      location.href = new URL(href, location.href).href;
     },
   };
   return document;
@@ -166,8 +178,7 @@ try {
         namespace: "fixture",
       }));
       b.onLoad({ filter: /.*/, namespace: "fixture" }, () => ({
-        contents:
-          "export const getCollection=async()=>[{id:'fictional-uncovered',data:{name:'Fictional uncovered organization'}}];",
+        contents: `const interventions=[1,2].map(n=>({id:'fictional-intervention-'+n,data:{title:'Fictional intervention '+n,depth:n,evidence:'C',mechanism:'Fictional comparison only',timeToEffect:'unknown',durability:'unknown',feedback:'unknown',agency:'unknown',causes:[],conditions:[]}}));export const getCollection=async(name)=>name==='interventions'?interventions:name==='charities'?[{id:'fictional-uncovered',data:{name:'Fictional uncovered organization'}}]:[];`,
         loader: "js",
       }));
       b.onResolve({ filter: /research-program-catalog$/ }, () => ({
@@ -217,6 +228,7 @@ try {
     "OrganizationComparison",
     "record/country-profiles",
     "programs/cause-census",
+    "tools/compare-tool",
   ];
   const loaded = {};
   for (const name of components) {
@@ -240,7 +252,11 @@ try {
     container.renderToString(loaded[name], { props });
   async function mountInline(file, d) {
     const raw = await readFile(file, "utf8"),
-      code = [...raw.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)]
+      code = [
+        ...raw
+          .replace(/<script\b[^>]*\/>/g, "")
+          .matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g),
+      ]
         .filter((m) => !m[1].includes("application/json"))
         .map((m) => m[2])
         .join("\n"),
@@ -270,6 +286,7 @@ try {
       write: false,
       platform: "node",
       format: "esm",
+      define: { "import.meta.env.BASE_URL": '"/charitology/"' },
       plugins: [
         {
           name: "capture-generated-downloads",
@@ -283,7 +300,7 @@ try {
               (args) => ({ path: args.path, namespace: "file" }),
             );
             b.onLoad({ filter: /.*/, namespace: "download-fixture" }, () => ({
-              contents: `export {toCsv} from ${JSON.stringify(resolve("src/lib/client/files.ts"))};export function download(name,content,type){globalThis.__obDownloads.push({name,content,type});}`,
+              contents: `export {toCsv,copy,flash} from ${JSON.stringify(resolve("src/lib/client/files.ts"))};export function download(name,content,type){globalThis.__obDownloads.push({name,content,type});}`,
               loader: "js",
             }));
           },
@@ -293,7 +310,7 @@ try {
     });
     const name = join(
       temporary,
-      `inline-${file.includes("country") ? "country" : "census"}.mjs`,
+      `inline-${file.split("/").at(-1).replace(".astro", "")}.mjs`,
     );
     await writeFile(name, compiled.outputFiles[0].text);
     (await import(pathToFileURL(name))).mount();
@@ -612,6 +629,49 @@ try {
       ui.mountOrganizationComparisons(old);
       assert.equal(oldRoot.querySelector("[data-org-a]").value, data.second);
       assert.equal(oldRoot.querySelector("[data-org-b]").value, data.first);
+    },
+  );
+  await check(
+    "both actual comparison controllers preserve a real organization anchor until a deliberate intervention change",
+    async () => {
+      const html = await render("tools/compare-tool");
+      for (const organizationFirst of [true, false]) {
+        const d = dom(html),
+          data = JSON.parse(d.querySelector("[data-org-data]").textContent),
+          address = `https://example.invalid/charitology/tools/compare-tool/?${new URLSearchParams({ orgA: data.second, orgB: data.first })}#organizations`;
+        location.href = address;
+        if (organizationFirst) ui.mountOrganizationComparisons(d);
+        await mountInline("src/components/tools/compare-tool.astro", d);
+        if (!organizationFirst) ui.mountOrganizationComparisons(d);
+        assert.equal(
+          location.href,
+          address,
+          "initial rendering keeps the exact section URL",
+        );
+        assert.equal(d.querySelector("[data-org-a]").value, data.second);
+        assert.equal(d.querySelector("[data-org-b]").value, data.first);
+        assert.match(
+          d.getElementById("ct-summary").textContent,
+          /Comparing Fictional intervention 1 and Fictional intervention 2/,
+        );
+        await window.fire("hashchange");
+        assert.equal(
+          location.href,
+          address,
+          "hash-driven rendering keeps the section URL",
+        );
+        const third = d.getElementById("ct-pick-3");
+        third.value = "";
+        await third.fire("change");
+        assert.equal(location.searchParams.get("orgA"), data.second);
+        const hash = new URLSearchParams(location.hash.slice(1));
+        assert.equal(hash.has("organizations"), false);
+        assert.equal(
+          hash.get("v"),
+          "fictional-intervention-1,fictional-intervention-2",
+        );
+        assert.equal(d.querySelector("[data-org-a]").value, data.second);
+      }
     },
   );
   await check(

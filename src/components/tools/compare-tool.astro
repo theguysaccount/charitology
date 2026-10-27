@@ -415,12 +415,17 @@ const slots = [
     return h('span', { class: differs ? 'ct-tag ct-tag-diff' : 'ct-tag' }, differs ? 'Differs' : 'Same');
   }
 
-  function render() {
+  function render(writeURL = false) {
     syncOptions();
     const ids = selected();
     const chosen = ids.map((id) => byId.get(id)!);
-    writeHash('v', ids.length ? ids.join(',') : undefined);
-    writeHash('d', diffOnly.checked ? '1' : undefined);
+    if (writeURL) {
+      // This page also has a real organization-comparison section anchor.
+      // Initial/hash-driven rendering must not turn it into parameter syntax.
+      if (location.hash === '#organizations') history.replaceState(null, '', location.pathname + location.search);
+      writeHash('v', ids.length ? ids.join(',') : undefined);
+      writeHash('d', diffOnly.checked ? '1' : undefined);
+    }
     const tableBox = $('#ct-table');
     const stackBox = $('#ct-stack');
     const notes = $('#ct-notes');
@@ -527,8 +532,8 @@ const slots = [
   });
 
   $('#ct-form').addEventListener('submit', (e) => e.preventDefault());
-  picks.forEach((s) => s.addEventListener('change', render));
-  diffOnly.addEventListener('change', render);
+  picks.forEach((s) => s.addEventListener('change', () => render(true)));
+  diffOnly.addEventListener('change', () => render(true));
   $('#ct-share').addEventListener('click', async (e) => {
     const ok = await copy(location.href);
     flash(e.currentTarget as HTMLElement, ok ? 'Link copied' : 'Copy failed');
