@@ -66,3 +66,5 @@ The first source slice is intentionally narrow. It supplies no worldwide current
 ## Release record
 
 At this documentation point the first edition, bounded Chrome acceptance, 556-page build and clean full-check rerun are complete locally. Exact-head CI, main merge, Pages publication and canonical byte/browser checks are still pending. Do not describe this candidate as published until that evidence is appended here.
+
+The initial branch-creation push at `09ef9b401d4ac1baeadc3690bb50c982dbbdcd76` had an all-zero previous SHA. Push run40593495059 correctly refused it at the existing observation-history gate because an actual nonzero committed base is mandatory. This is not a passing CI run. A documentation follow-up uses that now-existing commit as its real push comparison base; the PR independently supplies its actual main base. No history validator, source bytes or comparison rule is weakened.
