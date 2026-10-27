@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-gnb",
+  "entity": {
+    "kind": "entity",
+    "id": "country-gnb",
+    "version": 1,
+    "hash": "c54efa70cfefebd0e773ba7b755ef026b24cc9973cfcc931df62fa686051ab08"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Guinea-Bissau statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-gnb",
+      "version": 1,
+      "hash": "c54efa70cfefebd0e773ba7b755ef026b24cc9973cfcc931df62fa686051ab08"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-gnb",
+      "version": 1,
+      "hash": "c54efa70cfefebd0e773ba7b755ef026b24cc9973cfcc931df62fa686051ab08"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "df00c224cb5d7b56069f1cb24ff57dd031595f8ad89dccad0e7abf1930bb9fae"
+}

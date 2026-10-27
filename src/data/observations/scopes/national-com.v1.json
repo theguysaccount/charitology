@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-com",
+  "entity": {
+    "kind": "entity",
+    "id": "country-com",
+    "version": 1,
+    "hash": "a35a1b61bc8ce8d604f1a67f979120ee1eba4f6a04169103cbe65714b0f56fea"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Comoros statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-com",
+      "version": 1,
+      "hash": "a35a1b61bc8ce8d604f1a67f979120ee1eba4f6a04169103cbe65714b0f56fea"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-com",
+      "version": 1,
+      "hash": "a35a1b61bc8ce8d604f1a67f979120ee1eba4f6a04169103cbe65714b0f56fea"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7c33ce95139c0dd8bde1f2b000ed5a060d82c14688c5ffceed9ba4a48b154f2e"
+}

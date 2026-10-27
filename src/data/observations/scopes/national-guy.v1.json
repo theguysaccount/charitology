@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-guy",
+  "entity": {
+    "kind": "entity",
+    "id": "country-guy",
+    "version": 1,
+    "hash": "e0b411cdb013152d3ccd005ae453497a91ae2d6ae6d4142eb54e00f60465e989"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Guyana statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-guy",
+      "version": 1,
+      "hash": "e0b411cdb013152d3ccd005ae453497a91ae2d6ae6d4142eb54e00f60465e989"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-guy",
+      "version": 1,
+      "hash": "e0b411cdb013152d3ccd005ae453497a91ae2d6ae6d4142eb54e00f60465e989"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "50ace35cea7bb14385fdf6e6dd8aa1cc3ee49743c98ee4ad21dde92e412b02dc"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-rus",
+  "entity": {
+    "kind": "entity",
+    "id": "country-rus",
+    "version": 1,
+    "hash": "62509fd29b35bc18c19da64b89221276dddb6b1cac19422e07a37a217eb1b17d"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Russian Federation statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-rus",
+      "version": 1,
+      "hash": "62509fd29b35bc18c19da64b89221276dddb6b1cac19422e07a37a217eb1b17d"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-rus",
+      "version": 1,
+      "hash": "62509fd29b35bc18c19da64b89221276dddb6b1cac19422e07a37a217eb1b17d"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c25d03eb62ccfa990ab9c4cf428194dfe19d9411ff80d5e055e7169a98e2721c"
+}

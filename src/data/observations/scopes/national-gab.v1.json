@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-gab",
+  "entity": {
+    "kind": "entity",
+    "id": "country-gab",
+    "version": 1,
+    "hash": "a59b6a2459d783b8f8b5377225b61dc09e58189661f1c29ba0c867ecbf5c8cc0"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Gabon statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-gab",
+      "version": 1,
+      "hash": "a59b6a2459d783b8f8b5377225b61dc09e58189661f1c29ba0c867ecbf5c8cc0"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-gab",
+      "version": 1,
+      "hash": "a59b6a2459d783b8f8b5377225b61dc09e58189661f1c29ba0c867ecbf5c8cc0"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ad6e51567c7a55bd49bef29b7eedcfe40cf730266f64fdc23e5c4a96ed7a9070"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mlt",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mlt",
+    "version": 1,
+    "hash": "4f7b8242e4b96f354e4b148ed91aa006b728d592c21819abd12afb3747cf1474"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Malta statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mlt",
+      "version": 1,
+      "hash": "4f7b8242e4b96f354e4b148ed91aa006b728d592c21819abd12afb3747cf1474"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mlt",
+      "version": 1,
+      "hash": "4f7b8242e4b96f354e4b148ed91aa006b728d592c21819abd12afb3747cf1474"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "b4fa7c836602ad82654d019293d9b52285f555756d58d036e618f3deed482c9c"
+}

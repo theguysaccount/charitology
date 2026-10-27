@@ -1,0 +1,217 @@
+{
+  "format": "charitology-financial-transcription",
+  "schemaVersion": 1,
+  "documentSha256": "3858a38150a0672425893ccf1cfa708f180dc62a3d3e272096aac7f895765d1d",
+  "assertions": [
+    {
+      "id": "givewell-assertion-1",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Consolidated Statement of Financial Position"
+        ],
+        "row": [
+          "Total assets"
+        ],
+        "column": [
+          "2024"
+        ]
+      },
+      "token": "289,426",
+      "parser": "printed-integer-v1",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 3
+      },
+      "support": [
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 9,
+            "printedPage": "7",
+            "section": [
+              "Organization and consolidation notes"
+            ],
+            "row": [],
+            "column": []
+          }
+        },
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "section": [
+              "Foreign Currency Translation"
+            ],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "note": "AI-assisted selected historical transcription; no independent human review."
+    },
+    {
+      "id": "givewell-assertion-2",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Consolidated Statement of Financial Position"
+        ],
+        "row": [
+          "Total liabilities"
+        ],
+        "column": [
+          "2024"
+        ]
+      },
+      "token": "21,895",
+      "parser": "printed-integer-v1",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 3
+      },
+      "support": [
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 9,
+            "printedPage": "7",
+            "section": [
+              "Organization and consolidation notes"
+            ],
+            "row": [],
+            "column": []
+          }
+        },
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "section": [
+              "Foreign Currency Translation"
+            ],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "note": "AI-assisted selected historical transcription; no independent human review."
+    },
+    {
+      "id": "givewell-assertion-3",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Consolidated Statement of Financial Position"
+        ],
+        "row": [
+          "Total net assets"
+        ],
+        "column": [
+          "2024"
+        ]
+      },
+      "token": "267,531",
+      "parser": "printed-integer-v1",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 3
+      },
+      "support": [
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 9,
+            "printedPage": "7",
+            "section": [
+              "Organization and consolidation notes"
+            ],
+            "row": [],
+            "column": []
+          }
+        },
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "section": [
+              "Foreign Currency Translation"
+            ],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "note": "AI-assisted selected historical transcription; no independent human review."
+    },
+    {
+      "id": "givewell-assertion-4",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 6,
+        "printedPage": "4",
+        "section": [
+          "Consolidated Statement of Activities and Changes in Net Assets"
+        ],
+        "row": [
+          "Total expenses"
+        ],
+        "column": [
+          "2024",
+          "Total"
+        ]
+      },
+      "token": "183,889",
+      "parser": "printed-integer-v1",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 3
+      },
+      "support": [
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 9,
+            "printedPage": "7",
+            "section": [
+              "Organization and consolidation notes"
+            ],
+            "row": [],
+            "column": []
+          }
+        },
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "section": [
+              "Foreign Currency Translation"
+            ],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "note": "AI-assisted selected historical transcription; no independent human review."
+    }
+  ],
+  "review": "draft"
+}

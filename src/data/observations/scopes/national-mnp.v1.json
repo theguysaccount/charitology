@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mnp",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mnp",
+    "version": 1,
+    "hash": "4bd7e8a73d382a402112e05cb01efd9b0672bb9279117824bfca065dc946ee6b"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Northern Mariana Islands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mnp",
+      "version": 1,
+      "hash": "4bd7e8a73d382a402112e05cb01efd9b0672bb9279117824bfca065dc946ee6b"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mnp",
+      "version": 1,
+      "hash": "4bd7e8a73d382a402112e05cb01efd9b0672bb9279117824bfca065dc946ee6b"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "9b3550135cbfa87b056177e556d2c7b663936be44fd56611872f6526a8328a8b"
+}

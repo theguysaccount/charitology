@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-isr",
+  "entity": {
+    "kind": "entity",
+    "id": "country-isr",
+    "version": 1,
+    "hash": "6402f169ad593c8b1b34898afac875bc144665f7bfc13f94babe168668a982b4"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Israel statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-isr",
+      "version": 1,
+      "hash": "6402f169ad593c8b1b34898afac875bc144665f7bfc13f94babe168668a982b4"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-isr",
+      "version": 1,
+      "hash": "6402f169ad593c8b1b34898afac875bc144665f7bfc13f94babe168668a982b4"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "13c4830664283e0bd5068e0462946a721f1c4a1144a00f2b2b9105e01418b1a9"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-bdi",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bdi",
+    "version": 1,
+    "hash": "1b361a8a2c57e71bbd976fae79e66b465908bf17b8f002aff8eba440249505cd"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Burundi statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-bdi",
+      "version": 1,
+      "hash": "1b361a8a2c57e71bbd976fae79e66b465908bf17b8f002aff8eba440249505cd"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-bdi",
+      "version": 1,
+      "hash": "1b361a8a2c57e71bbd976fae79e66b465908bf17b8f002aff8eba440249505cd"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "43bd1453f740b704a06c95eb8704136c5f0dec6887b00ff11080db57e46fa773"
+}

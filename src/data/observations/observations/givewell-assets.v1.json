@@ -1,0 +1,131 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "givewell-assets",
+  "entity": {
+    "kind": "entity",
+    "id": "givewell-group",
+    "version": 1,
+    "hash": "4f18449b88e5618f4c78f215deae703189e23cf113ff8b72fc149c880b24db3e"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "givewell-consolidated",
+    "version": 1,
+    "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "financial-assets",
+    "version": 1,
+    "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+  },
+  "period": {
+    "kind": "stock-day",
+    "day": "2024-12-31"
+  },
+  "reported": {
+    "token": "289,426",
+    "parser": "printed-integer-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 3
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "gw-audit",
+        "version": 1,
+        "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Consolidated Statement of Financial Position"
+        ],
+        "row": [
+          "Total assets"
+        ],
+        "column": [
+          "2024"
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "289426",
+    "exponent": 3
+  },
+  "precision": {
+    "kind": "reported-quantum",
+    "quantum": {
+      "coefficient": "1",
+      "exponent": 3
+    },
+    "sourceRefs": [
+      {
+        "source": {
+          "kind": "source",
+          "id": "gw-audit",
+          "version": 1,
+          "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+        },
+        "role": "value",
+        "locator": {
+          "kind": "pdf",
+          "pdfPage": 5,
+          "printedPage": "3",
+          "section": [
+            "Consolidated Statement of Financial Position"
+          ],
+          "row": [
+            "Total assets"
+          ],
+          "column": [
+            "2024"
+          ]
+        }
+      }
+    ]
+  },
+  "uncertainty": null,
+  "producerStatus": null,
+  "producerUnit": null,
+  "producerDecimal": null,
+  "annotations": [],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "gw-audit",
+        "version": 1,
+        "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+      },
+      "role": "unit",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 12,
+        "printedPage": "10",
+        "section": [
+          "Foreign Currency Translation"
+        ],
+        "row": [],
+        "column": []
+      }
+    }
+  ],
+  "limitations": [
+    "Selected historical financial fact, not a measure of comparative effectiveness."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "6ada6df4bd8c7e797636e64a0d1e2c572ec0d21dc97ff8148455d876e284ccef"
+}

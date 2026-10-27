@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-can",
+  "entity": {
+    "kind": "entity",
+    "id": "country-can",
+    "version": 1,
+    "hash": "5d2398b41f1878b9b4ced16671c742fb85e7127c1092528a28d78ef77c0bbe6a"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Canada statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-can",
+      "version": 1,
+      "hash": "5d2398b41f1878b9b4ced16671c742fb85e7127c1092528a28d78ef77c0bbe6a"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-can",
+      "version": 1,
+      "hash": "5d2398b41f1878b9b4ced16671c742fb85e7127c1092528a28d78ef77c0bbe6a"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c5732f7cba01156e32d0432510e7ab214516a2cd81cdb1bff8b9137de8ea1990"
+}

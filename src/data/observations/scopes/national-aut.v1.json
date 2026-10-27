@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-aut",
+  "entity": {
+    "kind": "entity",
+    "id": "country-aut",
+    "version": 1,
+    "hash": "b670faf20e1b5dc134b5cf2a1987bba7c0fef0cacdf95ba7937459b2490e3d16"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Austria statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-aut",
+      "version": 1,
+      "hash": "b670faf20e1b5dc134b5cf2a1987bba7c0fef0cacdf95ba7937459b2490e3d16"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-aut",
+      "version": 1,
+      "hash": "b670faf20e1b5dc134b5cf2a1987bba7c0fef0cacdf95ba7937459b2490e3d16"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "6e5fb2395e86f43754a83fc8989db3ffef08826d455008af4b2ab48b095f2f39"
+}

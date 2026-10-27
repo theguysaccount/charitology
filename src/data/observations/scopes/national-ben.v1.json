@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-ben",
+  "entity": {
+    "kind": "entity",
+    "id": "country-ben",
+    "version": 1,
+    "hash": "04d7dc1264dcf10c47c87a98766a2ed70a340c27866231b8bc19a75dc2ae0307"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Benin statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-ben",
+      "version": 1,
+      "hash": "04d7dc1264dcf10c47c87a98766a2ed70a340c27866231b8bc19a75dc2ae0307"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-ben",
+      "version": 1,
+      "hash": "04d7dc1264dcf10c47c87a98766a2ed70a340c27866231b8bc19a75dc2ae0307"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "e9b1905ff304e0d976ef8a31085ccfc59717acc91f0075cc6d2f3cbfb9b3aa22"
+}

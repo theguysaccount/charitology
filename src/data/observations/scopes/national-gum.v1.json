@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-gum",
+  "entity": {
+    "kind": "entity",
+    "id": "country-gum",
+    "version": 1,
+    "hash": "817f4ce0d16aa7c28a466fe02a77b72cd4aa3db4c5519e69fa3d93299af0a335"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Guam statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-gum",
+      "version": 1,
+      "hash": "817f4ce0d16aa7c28a466fe02a77b72cd4aa3db4c5519e69fa3d93299af0a335"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-gum",
+      "version": 1,
+      "hash": "817f4ce0d16aa7c28a466fe02a77b72cd4aa3db4c5519e69fa3d93299af0a335"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "3e2cf47a051ede5ce5f7c00f2ca8230342a48e8c6345105665f631733da4fb77"
+}

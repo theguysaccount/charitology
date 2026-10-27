@@ -1,0 +1,71 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "measure",
+  "id": "country-electricity-access",
+  "label": "Access to electricity",
+  "measureKind": "rate",
+  "family": "electricity-access",
+  "producerCode": "EG.ELC.ACCS.ZS",
+  "definition": "Access to electricity is the percentage of population with access to electricity. Electrification data are collected from industry, national surveys and international sources.",
+  "unit": {
+    "kind": "rate",
+    "label": "% of population",
+    "denominator": {
+      "label": "population",
+      "definition": "Access to electricity is the percentage of population with access to electricity. Electrification data are collected from industry, national surveys and international sources.",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 2
+      }
+    }
+  },
+  "method": "Latest non-null producer value in the explicitly fixed 2020–2025 window.",
+  "legacyCountry": {
+    "id": "EG.ELC.ACCS.ZS",
+    "label": "Access to electricity",
+    "unit": "% of population",
+    "note": "Access does not establish reliability or affordability.",
+    "indicatorUrl": "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS",
+    "queryUrl": "https://api.worldbank.org/v2/country/all/indicator/EG.ELC.ACCS.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+    "definition": "Access to electricity is the percentage of population with access to electricity. Electrification data are collected from industry, national surveys and international sources.",
+    "organization": "SDG 7.1.1 Electrification Dataset, World Bank (WB), uri: https://trackingsdg7.esmap.org/downloads, note: Data is downloaded from ESMAP website. Data is released when a new Tracking SDG7 report is released., publisher: World Bank (WB), date accessed: 2024-05-16, date published: 2023"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-eg-elc-accs-zs",
+        "version": 1,
+        "hash": "542602afe84dfb726a34a3ca72dc3d1dd9fa39916a44ddd6c31c0c19e56708df"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/sourceNote",
+        "matches": []
+      }
+    },
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-eg-elc-accs-zs",
+        "version": 1,
+        "hash": "542602afe84dfb726a34a3ca72dc3d1dd9fa39916a44ddd6c31c0c19e56708df"
+      },
+      "role": "unit",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/name",
+        "matches": []
+      }
+    }
+  ],
+  "limitations": [
+    "Access does not establish reliability or affordability."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a6e896fe7a8769fc5bab41f1f4b1e329873e251227a9ea68a4598a2be25a7c73"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-ury",
+  "entity": {
+    "kind": "entity",
+    "id": "country-ury",
+    "version": 1,
+    "hash": "41305c44f127d0542a72a280cf2a61cbf7e6e2b5f148c5a427339bb2eadb5e64"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Uruguay statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-ury",
+      "version": 1,
+      "hash": "41305c44f127d0542a72a280cf2a61cbf7e6e2b5f148c5a427339bb2eadb5e64"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-ury",
+      "version": 1,
+      "hash": "41305c44f127d0542a72a280cf2a61cbf7e6e2b5f148c5a427339bb2eadb5e64"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c36166d8b3c39a90a5c2e419d2e8d24b7ec4e9bbe40c699db0d94a3eb33930f1"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-tca",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tca",
+    "version": 1,
+    "hash": "f48038db652d9024772d47bf1531c17f545a13a0d422e7282725c0354b855801"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Turks and Caicos Islands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-tca",
+      "version": 1,
+      "hash": "f48038db652d9024772d47bf1531c17f545a13a0d422e7282725c0354b855801"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-tca",
+      "version": 1,
+      "hash": "f48038db652d9024772d47bf1531c17f545a13a0d422e7282725c0354b855801"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "5278eb56aa5e6266bbdfee0462f62978344cf42414dda98183d43a406a5af56c"
+}

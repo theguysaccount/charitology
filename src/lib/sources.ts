@@ -3,7 +3,7 @@
 import { getCollection, type CollectionKey } from "astro:content";
 import { hrefFor } from "./content";
 import figures from "../data/figures.json";
-import countries from "../data/countries.json";
+import { loadObservations, observationSourceHref } from "./observations";
 import nonprofitTools from "../data/nonprofit-tools.json";
 import nonprofitBenefits from "../data/nonprofit-benefits.json";
 
@@ -98,7 +98,8 @@ export async function allCitations(): Promise<Citation[]> {
     }
   }
 
-  for (const indicator of countries.indicators)
+  const observations = loadObservations();
+  for (const indicator of observations.countries.indicators)
     add(
       {
         title: indicator.label,
@@ -106,6 +107,14 @@ export async function allCitations(): Promise<Citation[]> {
         publisher: "World Bank and original statistical producers",
       },
       { title: "Country data profiles", href: "/record/country-profiles/" },
+    );
+  for (const source of observations.projection.sources)
+    add(
+      { title: source.title, url: source.url, publisher: source.publisher },
+      {
+        title: `${source.title}: retained source and limits`,
+        href: observationSourceHref(source.id, source.version),
+      },
     );
   return [...map.values()]
     .map((citation) => ({

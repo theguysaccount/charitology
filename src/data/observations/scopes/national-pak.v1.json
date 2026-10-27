@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-pak",
+  "entity": {
+    "kind": "entity",
+    "id": "country-pak",
+    "version": 1,
+    "hash": "c026c135746589c892afcf7a4f10aafc5e4d5bdbae7e8aca86c178b4d089d94c"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Pakistan statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-pak",
+      "version": 1,
+      "hash": "c026c135746589c892afcf7a4f10aafc5e4d5bdbae7e8aca86c178b4d089d94c"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-pak",
+      "version": 1,
+      "hash": "c026c135746589c892afcf7a4f10aafc5e4d5bdbae7e8aca86c178b4d089d94c"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "d934b59a19de4cdf0ff58013f17c88207ade72088d0eb9f09d27b58979193a49"
+}

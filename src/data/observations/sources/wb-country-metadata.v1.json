@@ -1,0 +1,80 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "wb-country-metadata",
+  "url": "https://api.worldbank.org/v2/country?format=json&per_page=20000",
+  "publisher": "World Bank",
+  "title": "country-metadata",
+  "retrievedAt": "2026-10-27T12:27:35.122Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "a8c6a1ce8d08d1e7586f6a997267f7cb39403700d96d580d9535dc043cb43031",
+  "rawBytes": 113956,
+  "payload": {
+    "kind": "public-json",
+    "raw": {
+      "path": "raw/a8c6a1ce8d08d1e7586f6a997267f7cb39403700d96d580d9535dc043cb43031.json",
+      "sha256": "a8c6a1ce8d08d1e7586f6a997267f7cb39403700d96d580d9535dc043cb43031",
+      "bytes": 113956,
+      "mediaType": "application/json"
+    },
+    "adapter": "world-bank-country-v1"
+  },
+  "producerMetadata": [],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "publisher-default-inference",
+      "label": "Publisher-default dataset reuse terms; author inference",
+      "termsUrl": "https://www.worldbank.org/ext/en/legal/terms-conditions/datasets",
+      "attribution": "World Bank country/classification metadata",
+      "evidence": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "rights-worldbank-dataset-terms",
+            "version": 1,
+            "hash": "327d56e3867648991a7de2e3ccf94ce1aa00cc9207ab9e937efaa90ce8022bd7"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Retained rights evidence"
+            ],
+            "excerpt": "Unless specifically labeled otherwise"
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "rights-worldbank-summary-terms",
+            "version": 1,
+            "hash": "d99411bc8ec5ff4dd07eb5d9788d5a39c70824d21a2535a99bb72c6123071589"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Retained rights evidence"
+            ],
+            "excerpt": "CC BY 4.0"
+          }
+        }
+      ],
+      "humanReview": "pending"
+    },
+    "attribution": "World Bank country/classification metadata",
+    "originalProducerCredit": "World Bank",
+    "limitations": [
+      "The response supplies no license field. Human rights review remains pending."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+}

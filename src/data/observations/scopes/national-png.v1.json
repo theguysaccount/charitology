@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-png",
+  "entity": {
+    "kind": "entity",
+    "id": "country-png",
+    "version": 1,
+    "hash": "22e713a3085741d4aab1c01b6cd574d71fda9f98a75fff6f178323039233f61a"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Papua New Guinea statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-png",
+      "version": 1,
+      "hash": "22e713a3085741d4aab1c01b6cd574d71fda9f98a75fff6f178323039233f61a"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-png",
+      "version": 1,
+      "hash": "22e713a3085741d4aab1c01b6cd574d71fda9f98a75fff6f178323039233f61a"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a8ee19ee57c96c473b6301219d7349c6cd156fa5f0f8452d79fa872faf5fa5f5"
+}

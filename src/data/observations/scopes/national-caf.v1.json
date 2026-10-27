@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-caf",
+  "entity": {
+    "kind": "entity",
+    "id": "country-caf",
+    "version": 1,
+    "hash": "411b054b431a5b3fdfe6da1fe4eee5b2528108408facf1c18acba8b46c1215e7"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Central African Republic statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-caf",
+      "version": 1,
+      "hash": "411b054b431a5b3fdfe6da1fe4eee5b2528108408facf1c18acba8b46c1215e7"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-caf",
+      "version": 1,
+      "hash": "411b054b431a5b3fdfe6da1fe4eee5b2528108408facf1c18acba8b46c1215e7"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "31867ed8ca8fe62367c936592a61a747d7e0c5fa9955364cfda30dc0adeba025"
+}

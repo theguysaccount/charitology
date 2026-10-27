@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-est",
+  "entity": {
+    "kind": "entity",
+    "id": "country-est",
+    "version": 1,
+    "hash": "8d51d5f4113620bfdc9b9f7929b485791e426abdfc72c463a4e2e438028fc290"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Estonia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-est",
+      "version": 1,
+      "hash": "8d51d5f4113620bfdc9b9f7929b485791e426abdfc72c463a4e2e438028fc290"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-est",
+      "version": 1,
+      "hash": "8d51d5f4113620bfdc9b9f7929b485791e426abdfc72c463a4e2e438028fc290"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "616d6fa42a9dd3814c5d869e2066b38abe23f8b4b19e73608c74ca6b761581a7"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-kir",
+  "entity": {
+    "kind": "entity",
+    "id": "country-kir",
+    "version": 1,
+    "hash": "1ac26db4ff2db7f4c53324618fa548ba3a4205bf7400d7fdab8c5de6d407e3ba"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Kiribati statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-kir",
+      "version": 1,
+      "hash": "1ac26db4ff2db7f4c53324618fa548ba3a4205bf7400d7fdab8c5de6d407e3ba"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-kir",
+      "version": 1,
+      "hash": "1ac26db4ff2db7f4c53324618fa548ba3a4205bf7400d7fdab8c5de6d407e3ba"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a1d1f0988caf11671439f63d5211f7f453f92756656a9d51638a2b82e777c537"
+}

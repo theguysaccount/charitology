@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-cmr",
+  "entity": {
+    "kind": "entity",
+    "id": "country-cmr",
+    "version": 1,
+    "hash": "7afbddf3d4730d5ecb449e57e1d5b62bc9b2140edd8d52982928907b38ba017f"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Cameroon statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-cmr",
+      "version": 1,
+      "hash": "7afbddf3d4730d5ecb449e57e1d5b62bc9b2140edd8d52982928907b38ba017f"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-cmr",
+      "version": 1,
+      "hash": "7afbddf3d4730d5ecb449e57e1d5b62bc9b2140edd8d52982928907b38ba017f"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "b83f738d02139995b8b777c0bc1c63a7372b5793626d095345596e25c70da39b"
+}

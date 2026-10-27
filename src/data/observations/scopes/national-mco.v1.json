@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mco",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mco",
+    "version": 1,
+    "hash": "f4d391039823eecd3980dbcae4649e5ac81c6f857aba4f610912b44566ee4182"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Monaco statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mco",
+      "version": 1,
+      "hash": "f4d391039823eecd3980dbcae4649e5ac81c6f857aba4f610912b44566ee4182"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mco",
+      "version": 1,
+      "hash": "f4d391039823eecd3980dbcae4649e5ac81c6f857aba4f610912b44566ee4182"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "03467f5b025ba90f4466bf4d75d7388624a4257d02dc315df579f6de44d82cea"
+}

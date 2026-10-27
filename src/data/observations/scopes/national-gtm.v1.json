@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-gtm",
+  "entity": {
+    "kind": "entity",
+    "id": "country-gtm",
+    "version": 1,
+    "hash": "6c2cc3ed8e9929eab426eaeafe97c45306d65735ff5a9c11baf8722ddf721ae8"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Guatemala statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-gtm",
+      "version": 1,
+      "hash": "6c2cc3ed8e9929eab426eaeafe97c45306d65735ff5a9c11baf8722ddf721ae8"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-gtm",
+      "version": 1,
+      "hash": "6c2cc3ed8e9929eab426eaeafe97c45306d65735ff5a9c11baf8722ddf721ae8"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "85d47cbc701137a9b9b732f8d22f0688167d17c5d5fa3e500653c57be395c3f0"
+}

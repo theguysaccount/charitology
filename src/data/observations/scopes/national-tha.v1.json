@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-tha",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tha",
+    "version": 1,
+    "hash": "20f4dc40e1003d3ac81efcd2cadfc9c06090ac3e74990808d895fb05a11bd0ee"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Thailand statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-tha",
+      "version": 1,
+      "hash": "20f4dc40e1003d3ac81efcd2cadfc9c06090ac3e74990808d895fb05a11bd0ee"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-tha",
+      "version": 1,
+      "hash": "20f4dc40e1003d3ac81efcd2cadfc9c06090ac3e74990808d895fb05a11bd0ee"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "2d8fd10095cc836d7fb28c21f337eb7b5d8747e64b5f79a5c2779be84cb40c20"
+}

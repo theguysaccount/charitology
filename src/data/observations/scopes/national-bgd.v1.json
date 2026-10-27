@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-bgd",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bgd",
+    "version": 1,
+    "hash": "f2d9095dcd8515f00652afaa188ec995c77a3dd75ea075d9a7d2f0eb2a5815ae"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Bangladesh statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-bgd",
+      "version": 1,
+      "hash": "f2d9095dcd8515f00652afaa188ec995c77a3dd75ea075d9a7d2f0eb2a5815ae"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-bgd",
+      "version": 1,
+      "hash": "f2d9095dcd8515f00652afaa188ec995c77a3dd75ea075d9a7d2f0eb2a5815ae"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "094bb628690ca968f731c23b6248946c76571b0d6ead14c91018e51aaebf8d55"
+}

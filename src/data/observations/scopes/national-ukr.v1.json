@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-ukr",
+  "entity": {
+    "kind": "entity",
+    "id": "country-ukr",
+    "version": 1,
+    "hash": "d6b1d47ae3964919c7c2c4198c4318c028f8d214b0a81cea695d732e809c41c3"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Ukraine statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-ukr",
+      "version": 1,
+      "hash": "d6b1d47ae3964919c7c2c4198c4318c028f8d214b0a81cea695d732e809c41c3"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-ukr",
+      "version": 1,
+      "hash": "d6b1d47ae3964919c7c2c4198c4318c028f8d214b0a81cea695d732e809c41c3"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f7f39ac2d04eeaba8e7d6285d41ce4164f5a607f71ea87570e759b51fb752882"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-swe",
+  "entity": {
+    "kind": "entity",
+    "id": "country-swe",
+    "version": 1,
+    "hash": "57c491cc5c526a1f602c9d66fc91722dd77bb5c58b9e1b0206e36e1511307d75"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Sweden statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-swe",
+      "version": 1,
+      "hash": "57c491cc5c526a1f602c9d66fc91722dd77bb5c58b9e1b0206e36e1511307d75"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-swe",
+      "version": 1,
+      "hash": "57c491cc5c526a1f602c9d66fc91722dd77bb5c58b9e1b0206e36e1511307d75"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "bdf770785b8c366b6931bd3afd976c883f187066ffb73015fe724d3bd4311e8a"
+}

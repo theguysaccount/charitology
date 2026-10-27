@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-lso",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lso",
+    "version": 1,
+    "hash": "8468382b8eb73214867bd8a3172aea473590657e48eb851aae75e67dd7bc6cd8"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Lesotho statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-lso",
+      "version": 1,
+      "hash": "8468382b8eb73214867bd8a3172aea473590657e48eb851aae75e67dd7bc6cd8"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-lso",
+      "version": 1,
+      "hash": "8468382b8eb73214867bd8a3172aea473590657e48eb851aae75e67dd7bc6cd8"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "104051501e95ec0ba7996cb06faf16b88405b9008746762db2e0e61e75432b48"
+}

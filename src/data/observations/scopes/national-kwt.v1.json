@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-kwt",
+  "entity": {
+    "kind": "entity",
+    "id": "country-kwt",
+    "version": 1,
+    "hash": "c0a7548d1839b8fb234893f6d9ae624d37dba8cf0385958d8d1e1ec9125675e9"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Kuwait statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-kwt",
+      "version": 1,
+      "hash": "c0a7548d1839b8fb234893f6d9ae624d37dba8cf0385958d8d1e1ec9125675e9"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-kwt",
+      "version": 1,
+      "hash": "c0a7548d1839b8fb234893f6d9ae624d37dba8cf0385958d8d1e1ec9125675e9"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f10453b7b4d3eb9cd9a786a7eaf1efc2b37d6f0ffbb3e9ffbad949170dec6e7a"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-maf",
+  "entity": {
+    "kind": "entity",
+    "id": "country-maf",
+    "version": 1,
+    "hash": "8d5a436e66cd2cd0d687dba8b6943c42e56045e1ec73ba74b881c2f680ebd921"
+  },
+  "scopeKind": "national-statistics",
+  "label": "St. Martin (French part) statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-maf",
+      "version": 1,
+      "hash": "8d5a436e66cd2cd0d687dba8b6943c42e56045e1ec73ba74b881c2f680ebd921"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-maf",
+      "version": 1,
+      "hash": "8d5a436e66cd2cd0d687dba8b6943c42e56045e1ec73ba74b881c2f680ebd921"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "3c571e6649495e988d6e38a98e9a31da60cc7332ace27a050bd77f7b8e8931de"
+}

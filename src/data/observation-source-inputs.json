@@ -1,0 +1,3612 @@
+{
+  "format": "charitology-observation-source-definitions",
+  "version": 1,
+  "review": "draft",
+  "byteBasis": "Exact retained HTTP entity bytes after Fetch content decoding, before parse/reserialization.",
+  "sources": [
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "gw-audit",
+        "version": 1,
+        "previous": null,
+        "url": "https://files.givewell.org/files/ClearFund/Clear%20Fund%202024%20audited%20financial%20statements%20%28PDF%29.pdf",
+        "publisher": "The Clear Fund d.b.a. GiveWell",
+        "title": "2024 consolidated audited statements, in thousands",
+        "retrievedAt": "2026-10-27T12:34:00.744Z",
+        "sourceUpdatedDay": null,
+        "reportDay": "2025-06-27",
+        "publishedAt": null,
+        "rawSha256": "3858a38150a0672425893ccf1cfa708f180dc62a3d3e272096aac7f895765d1d",
+        "rawBytes": 210328,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "application/pdf",
+          "publicExcerpt": {
+            "path": "evidence/36d033a1713ca1543c723fe9660c3c6f056c94ab15de586407be7f5de9a4ab8c.json",
+            "sha256": "36d033a1713ca1543c723fe9660c3c6f056c94ab15de586407be7f5de9a4ab8c",
+            "bytes": 5158,
+            "mediaType": "application/json"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T12:34:00.744934Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original PDF retained privately; no reuse grant inferred from a website footer."
+          },
+          "attribution": "The Clear Fund d.b.a. GiveWell",
+          "originalProducerCredit": "The Clear Fund d.b.a. GiveWell and GiveWell UK",
+          "limitations": [
+            "Small factual transcription only. An audit opinion does not review this dataset or compare impact."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+      },
+      "input": {
+        "name": "gw-audit",
+        "url": "https://files.givewell.org/files/ClearFund/Clear%20Fund%202024%20audited%20financial%20statements%20%28PDF%29.pdf",
+        "retrievedAt": "2026-10-27T12:34:00.744Z",
+        "sha256": "3858a38150a0672425893ccf1cfa708f180dc62a3d3e272096aac7f895765d1d",
+        "bytes": 210328,
+        "mediaType": "application/pdf",
+        "publicDisposition": "private-original",
+        "retainedFile": "givewell-2024-audit.pdf",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T12:34:00.744934Z"
+      },
+      "publicEvidence": {
+        "mediaType": "application/json",
+        "text": "{\n  \"format\": \"charitology-financial-transcription\",\n  \"schemaVersion\": 1,\n  \"documentSha256\": \"3858a38150a0672425893ccf1cfa708f180dc62a3d3e272096aac7f895765d1d\",\n  \"assertions\": [\n    {\n      \"id\": \"givewell-assertion-1\",\n      \"locator\": {\n        \"kind\": \"pdf\",\n        \"pdfPage\": 5,\n        \"printedPage\": \"3\",\n        \"section\": [\n          \"Consolidated Statement of Financial Position\"\n        ],\n        \"row\": [\n          \"Total assets\"\n        ],\n        \"column\": [\n          \"2024\"\n        ]\n      },\n      \"token\": \"289,426\",\n      \"parser\": \"printed-integer-v1\",\n      \"scale\": {\n        \"coefficient\": \"1\",\n        \"exponent\": 3\n      },\n      \"support\": [\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 9,\n            \"printedPage\": \"7\",\n            \"section\": [\n              \"Organization and consolidation notes\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        },\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 12,\n            \"printedPage\": \"10\",\n            \"section\": [\n              \"Foreign Currency Translation\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        }\n      ],\n      \"note\": \"AI-assisted selected historical transcription; no independent human review.\"\n    },\n    {\n      \"id\": \"givewell-assertion-2\",\n      \"locator\": {\n        \"kind\": \"pdf\",\n        \"pdfPage\": 5,\n        \"printedPage\": \"3\",\n        \"section\": [\n          \"Consolidated Statement of Financial Position\"\n        ],\n        \"row\": [\n          \"Total liabilities\"\n        ],\n        \"column\": [\n          \"2024\"\n        ]\n      },\n      \"token\": \"21,895\",\n      \"parser\": \"printed-integer-v1\",\n      \"scale\": {\n        \"coefficient\": \"1\",\n        \"exponent\": 3\n      },\n      \"support\": [\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 9,\n            \"printedPage\": \"7\",\n            \"section\": [\n              \"Organization and consolidation notes\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        },\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 12,\n            \"printedPage\": \"10\",\n            \"section\": [\n              \"Foreign Currency Translation\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        }\n      ],\n      \"note\": \"AI-assisted selected historical transcription; no independent human review.\"\n    },\n    {\n      \"id\": \"givewell-assertion-3\",\n      \"locator\": {\n        \"kind\": \"pdf\",\n        \"pdfPage\": 5,\n        \"printedPage\": \"3\",\n        \"section\": [\n          \"Consolidated Statement of Financial Position\"\n        ],\n        \"row\": [\n          \"Total net assets\"\n        ],\n        \"column\": [\n          \"2024\"\n        ]\n      },\n      \"token\": \"267,531\",\n      \"parser\": \"printed-integer-v1\",\n      \"scale\": {\n        \"coefficient\": \"1\",\n        \"exponent\": 3\n      },\n      \"support\": [\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 9,\n            \"printedPage\": \"7\",\n            \"section\": [\n              \"Organization and consolidation notes\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        },\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 12,\n            \"printedPage\": \"10\",\n            \"section\": [\n              \"Foreign Currency Translation\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        }\n      ],\n      \"note\": \"AI-assisted selected historical transcription; no independent human review.\"\n    },\n    {\n      \"id\": \"givewell-assertion-4\",\n      \"locator\": {\n        \"kind\": \"pdf\",\n        \"pdfPage\": 6,\n        \"printedPage\": \"4\",\n        \"section\": [\n          \"Consolidated Statement of Activities and Changes in Net Assets\"\n        ],\n        \"row\": [\n          \"Total expenses\"\n        ],\n        \"column\": [\n          \"2024\",\n          \"Total\"\n        ]\n      },\n      \"token\": \"183,889\",\n      \"parser\": \"printed-integer-v1\",\n      \"scale\": {\n        \"coefficient\": \"1\",\n        \"exponent\": 3\n      },\n      \"support\": [\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 9,\n            \"printedPage\": \"7\",\n            \"section\": [\n              \"Organization and consolidation notes\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        },\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 12,\n            \"printedPage\": \"10\",\n            \"section\": [\n              \"Foreign Currency Translation\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        }\n      ],\n      \"note\": \"AI-assisted selected historical transcription; no independent human review.\"\n    }\n  ],\n  \"review\": \"draft\"\n}\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "gw-identity",
+        "version": 1,
+        "previous": null,
+        "url": "https://files.givewell.org/files/ClearFund/Clear_Fund_2024_tax_return_Form_990.pdf",
+        "publisher": "GiveWell",
+        "title": "gw identity",
+        "retrievedAt": "2026-10-27T12:34:00.744Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "fbaf96db5d3b6b3a30edf4a7a607b2f72bebca9118bc388e4d28c4a951b56a34",
+        "rawBytes": 478862,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "application/pdf",
+          "publicExcerpt": null
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T12:34:00.744934Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "GiveWell",
+          "originalProducerCredit": "The Clear Fund d.b.a. GiveWell",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "3b79842838d9bdc05a0ba1d8a4350605c06fe99ab9277fac7029a158a09b0468"
+      },
+      "input": {
+        "name": "gw-identity",
+        "url": "https://files.givewell.org/files/ClearFund/Clear_Fund_2024_tax_return_Form_990.pdf",
+        "retrievedAt": "2026-10-27T12:34:00.744Z",
+        "sha256": "fbaf96db5d3b6b3a30edf4a7a607b2f72bebca9118bc388e4d28c4a951b56a34",
+        "bytes": 478862,
+        "mediaType": "application/pdf",
+        "publicDisposition": "private-original",
+        "retainedFile": "givewell-2024-form990-identity.pdf",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T12:34:00.744934Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "rights-basic-water-license",
+        "version": 1,
+        "previous": null,
+        "url": "https://data.worldbank.org/indicator/SH.H2O.BASW.ZS",
+        "publisher": "World Bank",
+        "title": "rights basic water license",
+        "retrievedAt": "2026-10-27T14:01:03.318Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "551a0d4f5cc9226bf29d4f91e8e061ce8b6613fe80778778fa3b999a9a40bf06",
+        "rawBytes": 984428,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537.txt",
+            "sha256": "28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537",
+            "bytes": 10,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T14:01:03.318Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "World Bank",
+          "originalProducerCredit": "World Bank",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "6e3b13fa930aeb7b1b1cd343a3f6fc0dd94cca05231d376971886fbbbe4c4cc1"
+      },
+      "input": {
+        "name": "rights-basic-water-license",
+        "url": "https://data.worldbank.org/indicator/SH.H2O.BASW.ZS",
+        "retrievedAt": "2026-10-27T14:01:03.318Z",
+        "sha256": "551a0d4f5cc9226bf29d4f91e8e061ce8b6613fe80778778fa3b999a9a40bf06",
+        "bytes": 984428,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "r1-rights-2026-10-27/basic-water-license.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T14:01:03.318Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "CC BY-4.0\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "rights-electricity-license",
+        "version": 1,
+        "previous": null,
+        "url": "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS",
+        "publisher": "World Bank",
+        "title": "rights electricity license",
+        "retrievedAt": "2026-10-27T14:01:03.324Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "a2027a161fcafaddd507aef0914e4e7a0126770689decffd98fb30bf97ef0144",
+        "rawBytes": 961662,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537.txt",
+            "sha256": "28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537",
+            "bytes": 10,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T14:01:03.324Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "World Bank",
+          "originalProducerCredit": "World Bank",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "efb54fd7f41dcd989a8c54e5b17e8f5b79974f43e3364643889aa5f86275d336"
+      },
+      "input": {
+        "name": "rights-electricity-license",
+        "url": "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS",
+        "retrievedAt": "2026-10-27T14:01:03.324Z",
+        "sha256": "a2027a161fcafaddd507aef0914e4e7a0126770689decffd98fb30bf97ef0144",
+        "bytes": 961662,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "r1-rights-2026-10-27/electricity-license.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T14:01:03.324Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "CC BY-4.0\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "rights-life-expectancy-license",
+        "version": 1,
+        "previous": null,
+        "url": "https://data.worldbank.org/indicator/SP.DYN.LE00.IN",
+        "publisher": "World Bank",
+        "title": "rights life expectancy license",
+        "retrievedAt": "2026-10-27T14:03:30.991Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "41f1ecf033021529f657effa611deca0e7d14028ad891f696eebae5edc044688",
+        "rawBytes": 1223097,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537.txt",
+            "sha256": "28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537",
+            "bytes": 10,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T14:03:30.991Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "World Bank",
+          "originalProducerCredit": "World Bank",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "6dac346c71a77ed127f06d2746fc06e204949f7791571b8abbcb684d52139b89"
+      },
+      "input": {
+        "name": "rights-life-expectancy-license",
+        "url": "https://data.worldbank.org/indicator/SP.DYN.LE00.IN",
+        "retrievedAt": "2026-10-27T14:03:30.991Z",
+        "sha256": "41f1ecf033021529f657effa611deca0e7d14028ad891f696eebae5edc044688",
+        "bytes": 1223097,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "r1-rights-2026-10-27/life-expectancy-license.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T14:03:30.991Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "CC BY-4.0\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "rights-mortality-license",
+        "version": 1,
+        "previous": null,
+        "url": "https://data.worldbank.org/indicator/SH.DYN.MORT",
+        "publisher": "World Bank",
+        "title": "rights mortality license",
+        "retrievedAt": "2026-10-27T14:03:30.995Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "48e0fe1c002b13d513b2532f3801ec310d3fc66ec0cfcb0f926a239b6b3be77b",
+        "rawBytes": 1071444,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537.txt",
+            "sha256": "28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537",
+            "bytes": 10,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T14:03:30.995Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "World Bank",
+          "originalProducerCredit": "World Bank",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "18703ae4f74b48728359a2b505db300ccdbd3cb30fa2619c21dc86bf6b074a07"
+      },
+      "input": {
+        "name": "rights-mortality-license",
+        "url": "https://data.worldbank.org/indicator/SH.DYN.MORT",
+        "retrievedAt": "2026-10-27T14:03:30.995Z",
+        "sha256": "48e0fe1c002b13d513b2532f3801ec310d3fc66ec0cfcb0f926a239b6b3be77b",
+        "bytes": 1071444,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "r1-rights-2026-10-27/mortality-license.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T14:03:30.995Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "CC BY-4.0\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "rights-population-license",
+        "version": 1,
+        "previous": null,
+        "url": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+        "publisher": "World Bank",
+        "title": "rights population license",
+        "retrievedAt": "2026-10-27T14:01:03.339Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "c25cdd32d8c377a060b404205c54452539e0408518f9a7de52a41ee66e8a32d1",
+        "rawBytes": 786808,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537.txt",
+            "sha256": "28b9ae199b097cd8b81230da594f5f9dcd3fe3de87cf804ffea846088612b537",
+            "bytes": 10,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T14:01:03.339Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "World Bank",
+          "originalProducerCredit": "World Bank",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "cbe441957dbabe82095d138475cbd91dc9cbe858118c9771914db2eaeed47d42"
+      },
+      "input": {
+        "name": "rights-population-license",
+        "url": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+        "retrievedAt": "2026-10-27T14:01:03.339Z",
+        "sha256": "c25cdd32d8c377a060b404205c54452539e0408518f9a7de52a41ee66e8a32d1",
+        "bytes": 786808,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "r1-rights-2026-10-27/population-license.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T14:01:03.339Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "CC BY-4.0\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "rights-worldbank-dataset-terms",
+        "version": 1,
+        "previous": null,
+        "url": "https://www.worldbank.org/ext/en/legal/terms-conditions/datasets",
+        "publisher": "World Bank",
+        "title": "rights worldbank dataset terms",
+        "retrievedAt": "2026-10-27T14:01:03.342Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "bf7646ed7077968b0652c8ab2a7b91893275ab282dc9a2b769bd85d21b6ce828",
+        "rawBytes": 30580,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/9a4fbf61be0e4af8d83b6cabcb02547c8a8b53e99af238e1577a4634fe2920ff.txt",
+            "sha256": "9a4fbf61be0e4af8d83b6cabcb02547c8a8b53e99af238e1577a4634fe2920ff",
+            "bytes": 38,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T14:01:03.342Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "World Bank",
+          "originalProducerCredit": "World Bank",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "327d56e3867648991a7de2e3ccf94ce1aa00cc9207ab9e937efaa90ce8022bd7"
+      },
+      "input": {
+        "name": "rights-worldbank-dataset-terms",
+        "url": "https://www.worldbank.org/ext/en/legal/terms-conditions/datasets",
+        "retrievedAt": "2026-10-27T14:01:03.342Z",
+        "sha256": "bf7646ed7077968b0652c8ab2a7b91893275ab282dc9a2b769bd85d21b6ce828",
+        "bytes": 30580,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "r1-rights-2026-10-27/worldbank-dataset-terms.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T14:01:03.342Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "Unless specifically labeled otherwise\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "rights-worldbank-summary-terms",
+        "version": 1,
+        "previous": null,
+        "url": "https://data.worldbank.org/summary-terms-of-use",
+        "publisher": "World Bank",
+        "title": "rights worldbank summary terms",
+        "retrievedAt": "2026-10-27T14:02:23.864Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "7f7490aeacec1cb5ef146bcd430edcdb7030450ce6b5e42c2d36a15570f68c0a",
+        "rawBytes": 207426,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/2b6602e1a1e1f573d9f9e85ed48bdaf3531459168d6844ea45abff93e34ee6fb.txt",
+            "sha256": "2b6602e1a1e1f573d9f9e85ed48bdaf3531459168d6844ea45abff93e34ee6fb",
+            "bytes": 10,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T14:02:23.864Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "World Bank",
+          "originalProducerCredit": "World Bank",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "d99411bc8ec5ff4dd07eb5d9788d5a39c70824d21a2535a99bb72c6123071589"
+      },
+      "input": {
+        "name": "rights-worldbank-summary-terms",
+        "url": "https://data.worldbank.org/summary-terms-of-use",
+        "retrievedAt": "2026-10-27T14:02:23.864Z",
+        "sha256": "7f7490aeacec1cb5ef146bcd430edcdb7030450ce6b5e42c2d36a15570f68c0a",
+        "bytes": 207426,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "r1-rights-2026-10-27/worldbank-summary-terms.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T14:02:23.864Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "CC BY 4.0\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-country-metadata",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/country?format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "country-metadata",
+        "retrievedAt": "2026-10-27T12:27:35.122Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "a8c6a1ce8d08d1e7586f6a997267f7cb39403700d96d580d9535dc043cb43031",
+        "rawBytes": 113956,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/a8c6a1ce8d08d1e7586f6a997267f7cb39403700d96d580d9535dc043cb43031.json",
+            "sha256": "a8c6a1ce8d08d1e7586f6a997267f7cb39403700d96d580d9535dc043cb43031",
+            "bytes": 113956,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-country-v1"
+        },
+        "producerMetadata": [],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "publisher-default-inference",
+            "label": "Publisher-default dataset reuse terms; author inference",
+            "termsUrl": "https://www.worldbank.org/ext/en/legal/terms-conditions/datasets",
+            "attribution": "World Bank country/classification metadata",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-worldbank-dataset-terms",
+                  "version": 1,
+                  "hash": "327d56e3867648991a7de2e3ccf94ce1aa00cc9207ab9e937efaa90ce8022bd7"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "Unless specifically labeled otherwise"
+                }
+              },
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-worldbank-summary-terms",
+                  "version": 1,
+                  "hash": "d99411bc8ec5ff4dd07eb5d9788d5a39c70824d21a2535a99bb72c6123071589"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY 4.0"
+                }
+              }
+            ],
+            "humanReview": "pending"
+          },
+          "attribution": "World Bank country/classification metadata",
+          "originalProducerCredit": "World Bank",
+          "limitations": [
+            "The response supplies no license field. Human rights review remains pending."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+      },
+      "input": {
+        "name": "wb-country-metadata",
+        "url": "https://api.worldbank.org/v2/country?format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.122Z",
+        "sha256": "a8c6a1ce8d08d1e7586f6a997267f7cb39403700d96d580d9535dc043cb43031",
+        "bytes": 113956,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/country-metadata.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.122Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-metadata-eg-elc-accs-zs",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/indicator/EG.ELC.ACCS.ZS?format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "metadata-EG.ELC.ACCS.ZS",
+        "retrievedAt": "2026-10-27T12:27:35.326Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "f94a984e2c0749a6d29e56ec3f2fe352a265fd6959ef7bdf18bde51ccd5543ea",
+        "rawBytes": 815,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/f94a984e2c0749a6d29e56ec3f2fe352a265fd6959ef7bdf18bde51ccd5543ea.json",
+            "sha256": "f94a984e2c0749a6d29e56ec3f2fe352a265fd6959ef7bdf18bde51ccd5543ea",
+            "bytes": 815,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-indicator-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "unit",
+            "literal": ""
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-electricity-license",
+                  "version": 1,
+                  "hash": "efb54fd7f41dcd989a8c54e5b17e8f5b79974f43e3364643889aa5f86275d336"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "SDG 7.1.1 Electrification Dataset, World Bank (WB), uri: https://trackingsdg7.esmap.org/downloads, note: Data is downloaded from ESMAP website. Data is released when a new Tracking SDG7 report is released., publisher: World Bank (WB), date accessed: 2024-05-16, date published: 2023",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "542602afe84dfb726a34a3ca72dc3d1dd9fa39916a44ddd6c31c0c19e56708df"
+      },
+      "input": {
+        "name": "wb-metadata-eg-elc-accs-zs",
+        "url": "https://api.worldbank.org/v2/indicator/EG.ELC.ACCS.ZS?format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.326Z",
+        "sha256": "f94a984e2c0749a6d29e56ec3f2fe352a265fd6959ef7bdf18bde51ccd5543ea",
+        "bytes": 815,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/metadata-EG.ELC.ACCS.ZS.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.326Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-metadata-sh-dyn-mort",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/indicator/SH.DYN.MORT?format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "metadata-SH.DYN.MORT",
+        "retrievedAt": "2026-10-27T12:27:35.302Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "746832a29fe1e96fa3e17a915bb213b93af03566262fcde35987ae372e114558",
+        "rawBytes": 1102,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/746832a29fe1e96fa3e17a915bb213b93af03566262fcde35987ae372e114558.json",
+            "sha256": "746832a29fe1e96fa3e17a915bb213b93af03566262fcde35987ae372e114558",
+            "bytes": 1102,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-indicator-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "unit",
+            "literal": ""
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/SH.DYN.MORT",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-mortality-license",
+                  "version": 1,
+                  "hash": "18703ae4f74b48728359a2b505db300ccdbd3cb30fa2619c21dc86bf6b074a07"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "UN Inter-agency Group for Child Mortality Estimation, UN Children's Fund (UNICEF), uri: www.childmortality.org, publisher: UNICEF, WHO, World Bank, United Nations Population Division;\nWorld Health Organization (WHO), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nWorld Bank (WB), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nUnited Nations (UN), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation, publisher: UN Population Division",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "500365d2b050f082403853a801e2fb63b7ac66640e5898e80910bda74103d1b4"
+      },
+      "input": {
+        "name": "wb-metadata-sh-dyn-mort",
+        "url": "https://api.worldbank.org/v2/indicator/SH.DYN.MORT?format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.302Z",
+        "sha256": "746832a29fe1e96fa3e17a915bb213b93af03566262fcde35987ae372e114558",
+        "bytes": 1102,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/metadata-SH.DYN.MORT.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.302Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-metadata-sh-h2o-basw-zs",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/indicator/SH.H2O.BASW.ZS?format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "metadata-SH.H2O.BASW.ZS",
+        "retrievedAt": "2026-10-27T12:27:35.395Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "9bef480d3233d85580114d3731c0abb10740dea9e6bb45a47561d5640728a10a",
+        "rawBytes": 1270,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/9bef480d3233d85580114d3731c0abb10740dea9e6bb45a47561d5640728a10a.json",
+            "sha256": "9bef480d3233d85580114d3731c0abb10740dea9e6bb45a47561d5640728a10a",
+            "bytes": 1270,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-indicator-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "unit",
+            "literal": ""
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/SH.H2O.BASW.ZS",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-basic-water-license",
+                  "version": 1,
+                  "hash": "6e3b13fa930aeb7b1b1cd343a3f6fc0dd94cca05231d376971886fbbbe4c4cc1"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene, World Health Organization (WHO), uri: washdata.org, publisher: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene (washdata.org), date accessed: 2025-09-30, date published: 2025-08-25;\nUN Children's Fund (UNICEF), uri: washdata.org, note: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "5ae6a2ec842a9afb9a528130166ad43c8101fe3f1b4f1dcd6cfc5a38f1f9511b"
+      },
+      "input": {
+        "name": "wb-metadata-sh-h2o-basw-zs",
+        "url": "https://api.worldbank.org/v2/indicator/SH.H2O.BASW.ZS?format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.395Z",
+        "sha256": "9bef480d3233d85580114d3731c0abb10740dea9e6bb45a47561d5640728a10a",
+        "bytes": 1270,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/metadata-SH.H2O.BASW.ZS.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.395Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-metadata-sp-dyn-le00-in",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/indicator/SP.DYN.LE00.IN?format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "metadata-SP.DYN.LE00.IN",
+        "retrievedAt": "2026-10-27T12:27:35.255Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "420b2d34826841a21cd05f0ccfe624d9543abdf597c3c0442bb05dec5462be55",
+        "rawBytes": 972,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/420b2d34826841a21cd05f0ccfe624d9543abdf597c3c0442bb05dec5462be55.json",
+            "sha256": "420b2d34826841a21cd05f0ccfe624d9543abdf597c3c0442bb05dec5462be55",
+            "bytes": 972,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-indicator-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "unit",
+            "literal": ""
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/SP.DYN.LE00.IN",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-life-expectancy-license",
+                  "version": 1,
+                  "hash": "6dac346c71a77ed127f06d2746fc06e204949f7791571b8abbcb684d52139b89"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "World Population Prospects, United Nations (UN), uri: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), note: Derived from male and female life expectancy at birth from sources such as statistical databases and publications from national statistical offices.;\nDemographic Statistics, Eurostat (ESTAT), note: Derived from male and female life expectancy at birth from sources such as Eurostat: Demographic Statistics.",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "85606cc158b0dff5d99afceb3d8c0312361b983a3bb417719858a68a92e6bd18"
+      },
+      "input": {
+        "name": "wb-metadata-sp-dyn-le00-in",
+        "url": "https://api.worldbank.org/v2/indicator/SP.DYN.LE00.IN?format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.255Z",
+        "sha256": "420b2d34826841a21cd05f0ccfe624d9543abdf597c3c0442bb05dec5462be55",
+        "bytes": 972,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/metadata-SP.DYN.LE00.IN.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.255Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-metadata-sp-pop-totl",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/indicator/SP.POP.TOTL?format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "metadata-SP.POP.TOTL",
+        "retrievedAt": "2026-10-27T12:27:35.431Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "2e38279185f7c166d36de81a60f040590c0a4badfb82028380e342b4e9e0b502",
+        "rawBytes": 1102,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/2e38279185f7c166d36de81a60f040590c0a4badfb82028380e342b4e9e0b502.json",
+            "sha256": "2e38279185f7c166d36de81a60f040590c0a4badfb82028380e342b4e9e0b502",
+            "bytes": 1102,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-indicator-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "unit",
+            "literal": ""
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-population-license",
+                  "version": 1,
+                  "hash": "cbe441957dbabe82095d138475cbd91dc9cbe858118c9771914db2eaeed47d42"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "World Population Prospects, United Nations (UN), uri: https://population.un.org/wpp/, publisher: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), uri: https://unstats.un.org/home/nso_sites/, publisher: National Statistical Offices;\nEurostat: Demographic Statistics, Eurostat (ESTAT), uri: https://ec.europa.eu/eurostat/data/database?node_code=earn_ses_monthly, publisher: Eurostat;\nPopulation and Vital Statistics Report (various years), United Nations (UN), uri: https://unstats.un.org, publisher: UN Statistics Division",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "221eff895f67a4e1449daa26f7a240e45fbde3abb13a805ced6c42e48243b3af"
+      },
+      "input": {
+        "name": "wb-metadata-sp-pop-totl",
+        "url": "https://api.worldbank.org/v2/indicator/SP.POP.TOTL?format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.431Z",
+        "sha256": "2e38279185f7c166d36de81a60f040590c0a4badfb82028380e342b4e9e0b502",
+        "bytes": 1102,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/metadata-SP.POP.TOTL.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.431Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-values-eg-elc-accs-zs",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/country/all/indicator/EG.ELC.ACCS.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "values-EG.ELC.ACCS.ZS",
+        "retrievedAt": "2026-10-27T12:27:35.187Z",
+        "sourceUpdatedDay": "2026-10-08",
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "10370958e966da191fbdbd8f47cf82a9b9fd3068da320558ff58436806acef12",
+        "rawBytes": 379616,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/10370958e966da191fbdbd8f47cf82a9b9fd3068da320558ff58436806acef12.json",
+            "sha256": "10370958e966da191fbdbd8f47cf82a9b9fd3068da320558ff58436806acef12",
+            "bytes": 379616,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-values-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "sourceid",
+            "literal": "2"
+          },
+          {
+            "field": "lastupdated",
+            "literal": "2026-10-08"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-electricity-license",
+                  "version": 1,
+                  "hash": "efb54fd7f41dcd989a8c54e5b17e8f5b79974f43e3364643889aa5f86275d336"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "SDG 7.1.1 Electrification Dataset, World Bank (WB), uri: https://trackingsdg7.esmap.org/downloads, note: Data is downloaded from ESMAP website. Data is released when a new Tracking SDG7 report is released., publisher: World Bank (WB), date accessed: 2024-05-16, date published: 2023",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+      },
+      "input": {
+        "name": "wb-values-eg-elc-accs-zs",
+        "url": "https://api.worldbank.org/v2/country/all/indicator/EG.ELC.ACCS.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.187Z",
+        "sha256": "10370958e966da191fbdbd8f47cf82a9b9fd3068da320558ff58436806acef12",
+        "bytes": 379616,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/values-EG.ELC.ACCS.ZS.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.187Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-values-sh-dyn-mort",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SH.DYN.MORT?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "values-SH.DYN.MORT",
+        "retrievedAt": "2026-10-27T12:27:35.194Z",
+        "sourceUpdatedDay": "2026-10-08",
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "00f8bef20831c7b7c3f4f3408b894f242b482844369218cd6a63fe47048272e9",
+        "rawBytes": 417996,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/00f8bef20831c7b7c3f4f3408b894f242b482844369218cd6a63fe47048272e9.json",
+            "sha256": "00f8bef20831c7b7c3f4f3408b894f242b482844369218cd6a63fe47048272e9",
+            "bytes": 417996,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-values-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "sourceid",
+            "literal": "2"
+          },
+          {
+            "field": "lastupdated",
+            "literal": "2026-10-08"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/SH.DYN.MORT",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-mortality-license",
+                  "version": 1,
+                  "hash": "18703ae4f74b48728359a2b505db300ccdbd3cb30fa2619c21dc86bf6b074a07"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "UN Inter-agency Group for Child Mortality Estimation, UN Children's Fund (UNICEF), uri: www.childmortality.org, publisher: UNICEF, WHO, World Bank, United Nations Population Division;\nWorld Health Organization (WHO), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nWorld Bank (WB), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nUnited Nations (UN), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation, publisher: UN Population Division",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "3fca4dd30092df1af0e73a5afa1b35c154657f4bdd02d2412160c3cdb9695c3a"
+      },
+      "input": {
+        "name": "wb-values-sh-dyn-mort",
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SH.DYN.MORT?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.194Z",
+        "sha256": "00f8bef20831c7b7c3f4f3408b894f242b482844369218cd6a63fe47048272e9",
+        "bytes": 417996,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/values-SH.DYN.MORT.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.194Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-values-sh-h2o-basw-zs",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SH.H2O.BASW.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "values-SH.H2O.BASW.ZS",
+        "retrievedAt": "2026-10-27T12:27:35.251Z",
+        "sourceUpdatedDay": "2026-10-08",
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "9aa4b4c6cf9c7d6d5d42011daa8e9ba75dc1da20eddd450c444cdd1a884249b3",
+        "rawBytes": 438744,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/9aa4b4c6cf9c7d6d5d42011daa8e9ba75dc1da20eddd450c444cdd1a884249b3.json",
+            "sha256": "9aa4b4c6cf9c7d6d5d42011daa8e9ba75dc1da20eddd450c444cdd1a884249b3",
+            "bytes": 438744,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-values-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "sourceid",
+            "literal": "2"
+          },
+          {
+            "field": "lastupdated",
+            "literal": "2026-10-08"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/SH.H2O.BASW.ZS",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-basic-water-license",
+                  "version": 1,
+                  "hash": "6e3b13fa930aeb7b1b1cd343a3f6fc0dd94cca05231d376971886fbbbe4c4cc1"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene, World Health Organization (WHO), uri: washdata.org, publisher: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene (washdata.org), date accessed: 2025-09-30, date published: 2025-08-25;\nUN Children's Fund (UNICEF), uri: washdata.org, note: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "f378734b4456e9bbe5651afa159dafe2ec22c2c0120d8e1b2e9d92c1d765b8cb"
+      },
+      "input": {
+        "name": "wb-values-sh-h2o-basw-zs",
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SH.H2O.BASW.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.251Z",
+        "sha256": "9aa4b4c6cf9c7d6d5d42011daa8e9ba75dc1da20eddd450c444cdd1a884249b3",
+        "bytes": 438744,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/values-SH.H2O.BASW.ZS.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.251Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-values-sp-dyn-le00-in",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SP.DYN.LE00.IN?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "values-SP.DYN.LE00.IN",
+        "retrievedAt": "2026-10-27T12:27:35.184Z",
+        "sourceUpdatedDay": "2026-10-08",
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "5d96881c4b3297f64d69f14c0389e0b11796ce70bc37f3f796a83135d330080f",
+        "rawBytes": 385231,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/5d96881c4b3297f64d69f14c0389e0b11796ce70bc37f3f796a83135d330080f.json",
+            "sha256": "5d96881c4b3297f64d69f14c0389e0b11796ce70bc37f3f796a83135d330080f",
+            "bytes": 385231,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-values-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "sourceid",
+            "literal": "2"
+          },
+          {
+            "field": "lastupdated",
+            "literal": "2026-10-08"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/SP.DYN.LE00.IN",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-life-expectancy-license",
+                  "version": 1,
+                  "hash": "6dac346c71a77ed127f06d2746fc06e204949f7791571b8abbcb684d52139b89"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "World Population Prospects, United Nations (UN), uri: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), note: Derived from male and female life expectancy at birth from sources such as statistical databases and publications from national statistical offices.;\nDemographic Statistics, Eurostat (ESTAT), note: Derived from male and female life expectancy at birth from sources such as Eurostat: Demographic Statistics.",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "1b5ccb99674d00ae13781e2e829a4ecf3b575d7cbeb78e880f4482bac4c77d29"
+      },
+      "input": {
+        "name": "wb-values-sp-dyn-le00-in",
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SP.DYN.LE00.IN?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.184Z",
+        "sha256": "5d96881c4b3297f64d69f14c0389e0b11796ce70bc37f3f796a83135d330080f",
+        "bytes": 385231,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/values-SP.DYN.LE00.IN.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.184Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wb-values-sp-pop-totl",
+        "version": 1,
+        "previous": null,
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "publisher": "World Bank",
+        "title": "values-SP.POP.TOTL",
+        "retrievedAt": "2026-10-27T12:27:35.126Z",
+        "sourceUpdatedDay": "2026-10-08",
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "ffbb10fcc39df73ead35d44bb3233b18d6f268332a5e358ecfb1211fcb4819ec",
+        "rawBytes": 346384,
+        "payload": {
+          "kind": "public-json",
+          "raw": {
+            "path": "raw/ffbb10fcc39df73ead35d44bb3233b18d6f268332a5e358ecfb1211fcb4819ec.json",
+            "sha256": "ffbb10fcc39df73ead35d44bb3233b18d6f268332a5e358ecfb1211fcb4819ec",
+            "bytes": 346384,
+            "mediaType": "application/json"
+          },
+          "adapter": "world-bank-values-v1"
+        },
+        "producerMetadata": [
+          {
+            "field": "sourceid",
+            "literal": "2"
+          },
+          {
+            "field": "lastupdated",
+            "literal": "2026-10-08"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "explicit-license",
+            "label": "CC BY 4.0",
+            "termsUrl": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+            "evidence": [
+              {
+                "source": {
+                  "kind": "source",
+                  "id": "rights-population-license",
+                  "version": 1,
+                  "hash": "cbe441957dbabe82095d138475cbd91dc9cbe858118c9771914db2eaeed47d42"
+                },
+                "role": "rights",
+                "locator": {
+                  "kind": "text",
+                  "section": ["Retained rights evidence"],
+                  "excerpt": "CC BY-4.0"
+                }
+              }
+            ]
+          },
+          "attribution": "World Bank World Development Indicators and named original statistical producers",
+          "originalProducerCredit": "World Population Prospects, United Nations (UN), uri: https://population.un.org/wpp/, publisher: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), uri: https://unstats.un.org/home/nso_sites/, publisher: National Statistical Offices;\nEurostat: Demographic Statistics, Eurostat (ESTAT), uri: https://ec.europa.eu/eurostat/data/database?node_code=earn_ses_monthly, publisher: Eurostat;\nPopulation and Vital Statistics Report (various years), United Nations (UN), uri: https://unstats.un.org, publisher: UN Statistics Division",
+          "limitations": [
+            "The source unit field is empty; normalized unit comes from its retained definition."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+      },
+      "input": {
+        "name": "wb-values-sp-pop-totl",
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "retrievedAt": "2026-10-27T12:27:35.126Z",
+        "sha256": "ffbb10fcc39df73ead35d44bb3233b18d6f268332a5e358ecfb1211fcb4819ec",
+        "bytes": 346384,
+        "mediaType": "application/json",
+        "publicDisposition": "raw-json",
+        "retainedFile": "worldbank-bulk-2026-10-27/values-SP.POP.TOTL.json",
+        "mutableBody": true,
+        "originalRetrievalLiteral": "2026-10-27T12:27:35.126Z"
+      },
+      "publicEvidence": null
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wm-audit",
+        "version": 1,
+        "previous": null,
+        "url": "https://upload.wikimedia.org/wikipedia/foundation/f/f6/Wikimedia_Foundation_2024_Audited_Financial_Statements.pdf",
+        "publisher": "Wikimedia Foundation",
+        "title": "2024 consolidated audited statements",
+        "retrievedAt": "2026-10-27T12:34:00.744Z",
+        "sourceUpdatedDay": null,
+        "reportDay": "2024-10-08",
+        "publishedAt": null,
+        "rawSha256": "0560f7324670b44dcd89a8505f8fef398a5e73487bb80870796f784e624739ef",
+        "rawBytes": 417936,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "application/pdf",
+          "publicExcerpt": {
+            "path": "evidence/bf3f8fb488f73095f73d78ae4773fe95f9f2c1deb53da4b2a487847ae6fbe62d.json",
+            "sha256": "bf3f8fb488f73095f73d78ae4773fe95f9f2c1deb53da4b2a487847ae6fbe62d",
+            "bytes": 8171,
+            "mediaType": "application/json"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T12:34:00.744934Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original PDF retained privately; no reuse grant inferred from a website footer."
+          },
+          "attribution": "Wikimedia Foundation",
+          "originalProducerCredit": "Wikimedia Foundation and Wikimedia, LLC",
+          "limitations": [
+            "Small factual transcription only. An audit opinion does not review this dataset or compare impact."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+      },
+      "input": {
+        "name": "wm-audit",
+        "url": "https://upload.wikimedia.org/wikipedia/foundation/f/f6/Wikimedia_Foundation_2024_Audited_Financial_Statements.pdf",
+        "retrievedAt": "2026-10-27T12:34:00.744Z",
+        "sha256": "0560f7324670b44dcd89a8505f8fef398a5e73487bb80870796f784e624739ef",
+        "bytes": 417936,
+        "mediaType": "application/pdf",
+        "publicDisposition": "private-original",
+        "retainedFile": "wikimedia-2024-audit.pdf",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T12:34:00.744934Z"
+      },
+      "publicEvidence": {
+        "mediaType": "application/json",
+        "text": "{\n  \"format\": \"charitology-financial-transcription\",\n  \"schemaVersion\": 1,\n  \"documentSha256\": \"0560f7324670b44dcd89a8505f8fef398a5e73487bb80870796f784e624739ef\",\n  \"assertions\": [\n    {\n      \"id\": \"wikimedia-assertion-1\",\n      \"locator\": {\n        \"kind\": \"pdf\",\n        \"pdfPage\": 5,\n        \"printedPage\": \"3\",\n        \"section\": [\n          \"Consolidated Statements of Financial Position\"\n        ],\n        \"row\": [\n          \"Total assets\"\n        ],\n        \"column\": [\n          \"2024\"\n        ]\n      },\n      \"token\": \"286,759,938\",\n      \"parser\": \"printed-integer-v1\",\n      \"scale\": {\n        \"coefficient\": \"1\",\n        \"exponent\": 0\n      },\n      \"support\": [\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 8,\n            \"printedPage\": \"6\",\n            \"section\": [\n              \"Organization and consolidation notes\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        },\n        {\n          \"kind\": \"other-source\",\n          \"ref\": {\n            \"source\": {\n              \"kind\": \"source\",\n              \"id\": \"wm-usd\",\n              \"version\": 1,\n              \"hash\": \"cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616\"\n            },\n            \"role\": \"unit\",\n            \"locator\": {\n              \"kind\": \"text\",\n              \"section\": [\n                \"Financial statements header\"\n              ],\n              \"excerpt\": \"2024 (USD)\"\n            }\n          }\n        },\n        {\n          \"kind\": \"other-source\",\n          \"ref\": {\n            \"source\": {\n              \"kind\": \"source\",\n              \"id\": \"wm-period\",\n              \"version\": 1,\n              \"hash\": \"ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47\"\n            },\n            \"role\": \"period\",\n            \"locator\": {\n              \"kind\": \"text\",\n              \"section\": [\n                \"Fiscal interval\"\n              ],\n              \"excerpt\": \"1 July 2023 - 30 June 2024\"\n            }\n          }\n        }\n      ],\n      \"note\": \"AI-assisted selected historical transcription; no independent human review.\"\n    },\n    {\n      \"id\": \"wikimedia-assertion-2\",\n      \"locator\": {\n        \"kind\": \"pdf\",\n        \"pdfPage\": 5,\n        \"printedPage\": \"3\",\n        \"section\": [\n          \"Consolidated Statements of Financial Position\"\n        ],\n        \"row\": [\n          \"Total liabilities\"\n        ],\n        \"column\": [\n          \"2024\"\n        ]\n      },\n      \"token\": \"15,204,548\",\n      \"parser\": \"printed-integer-v1\",\n      \"scale\": {\n        \"coefficient\": \"1\",\n        \"exponent\": 0\n      },\n      \"support\": [\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 8,\n            \"printedPage\": \"6\",\n            \"section\": [\n              \"Organization and consolidation notes\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        },\n        {\n          \"kind\": \"other-source\",\n          \"ref\": {\n            \"source\": {\n              \"kind\": \"source\",\n              \"id\": \"wm-usd\",\n              \"version\": 1,\n              \"hash\": \"cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616\"\n            },\n            \"role\": \"unit\",\n            \"locator\": {\n              \"kind\": \"text\",\n              \"section\": [\n                \"Financial statements header\"\n              ],\n              \"excerpt\": \"2024 (USD)\"\n            }\n          }\n        },\n        {\n          \"kind\": \"other-source\",\n          \"ref\": {\n            \"source\": {\n              \"kind\": \"source\",\n              \"id\": \"wm-period\",\n              \"version\": 1,\n              \"hash\": \"ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47\"\n            },\n            \"role\": \"period\",\n            \"locator\": {\n              \"kind\": \"text\",\n              \"section\": [\n                \"Fiscal interval\"\n              ],\n              \"excerpt\": \"1 July 2023 - 30 June 2024\"\n            }\n          }\n        }\n      ],\n      \"note\": \"AI-assisted selected historical transcription; no independent human review.\"\n    },\n    {\n      \"id\": \"wikimedia-assertion-3\",\n      \"locator\": {\n        \"kind\": \"pdf\",\n        \"pdfPage\": 5,\n        \"printedPage\": \"3\",\n        \"section\": [\n          \"Consolidated Statements of Financial Position\"\n        ],\n        \"row\": [\n          \"Total net assets\"\n        ],\n        \"column\": [\n          \"2024\"\n        ]\n      },\n      \"token\": \"271,555,390\",\n      \"parser\": \"printed-integer-v1\",\n      \"scale\": {\n        \"coefficient\": \"1\",\n        \"exponent\": 0\n      },\n      \"support\": [\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 8,\n            \"printedPage\": \"6\",\n            \"section\": [\n              \"Organization and consolidation notes\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        },\n        {\n          \"kind\": \"other-source\",\n          \"ref\": {\n            \"source\": {\n              \"kind\": \"source\",\n              \"id\": \"wm-usd\",\n              \"version\": 1,\n              \"hash\": \"cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616\"\n            },\n            \"role\": \"unit\",\n            \"locator\": {\n              \"kind\": \"text\",\n              \"section\": [\n                \"Financial statements header\"\n              ],\n              \"excerpt\": \"2024 (USD)\"\n            }\n          }\n        },\n        {\n          \"kind\": \"other-source\",\n          \"ref\": {\n            \"source\": {\n              \"kind\": \"source\",\n              \"id\": \"wm-period\",\n              \"version\": 1,\n              \"hash\": \"ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47\"\n            },\n            \"role\": \"period\",\n            \"locator\": {\n              \"kind\": \"text\",\n              \"section\": [\n                \"Fiscal interval\"\n              ],\n              \"excerpt\": \"1 July 2023 - 30 June 2024\"\n            }\n          }\n        }\n      ],\n      \"note\": \"AI-assisted selected historical transcription; no independent human review.\"\n    },\n    {\n      \"id\": \"wikimedia-assertion-4\",\n      \"locator\": {\n        \"kind\": \"pdf\",\n        \"pdfPage\": 6,\n        \"printedPage\": \"4\",\n        \"section\": [\n          \"Consolidated Statements of Activities\"\n        ],\n        \"row\": [\n          \"Total operating expenses\"\n        ],\n        \"column\": [\n          \"2024\"\n        ]\n      },\n      \"token\": \"178,471,109\",\n      \"parser\": \"printed-integer-v1\",\n      \"scale\": {\n        \"coefficient\": \"1\",\n        \"exponent\": 0\n      },\n      \"support\": [\n        {\n          \"kind\": \"same-document\",\n          \"locator\": {\n            \"kind\": \"pdf\",\n            \"pdfPage\": 8,\n            \"printedPage\": \"6\",\n            \"section\": [\n              \"Organization and consolidation notes\"\n            ],\n            \"row\": [],\n            \"column\": []\n          }\n        },\n        {\n          \"kind\": \"other-source\",\n          \"ref\": {\n            \"source\": {\n              \"kind\": \"source\",\n              \"id\": \"wm-usd\",\n              \"version\": 1,\n              \"hash\": \"cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616\"\n            },\n            \"role\": \"unit\",\n            \"locator\": {\n              \"kind\": \"text\",\n              \"section\": [\n                \"Financial statements header\"\n              ],\n              \"excerpt\": \"2024 (USD)\"\n            }\n          }\n        },\n        {\n          \"kind\": \"other-source\",\n          \"ref\": {\n            \"source\": {\n              \"kind\": \"source\",\n              \"id\": \"wm-period\",\n              \"version\": 1,\n              \"hash\": \"ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47\"\n            },\n            \"role\": \"period\",\n            \"locator\": {\n              \"kind\": \"text\",\n              \"section\": [\n                \"Fiscal interval\"\n              ],\n              \"excerpt\": \"1 July 2023 - 30 June 2024\"\n            }\n          }\n        }\n      ],\n      \"note\": \"AI-assisted selected historical transcription; no independent human review.\"\n    }\n  ],\n  \"review\": \"draft\"\n}\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wm-identity",
+        "version": 1,
+        "previous": null,
+        "url": "https://wikimediafoundation.org/who-we-are/financial-reports/",
+        "publisher": "Wikimedia Foundation",
+        "title": "wm identity",
+        "retrievedAt": "2026-10-27T12:35:25.133Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "c75f57e6dc27e35472a513a9cc95ca01c70440dbbde12e7313ea20961f8d8be7",
+        "rawBytes": 180869,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/0e290bc0aa549599c77257f77c2e6080f8f7844f68b41770716ada4a22afa623.txt",
+            "sha256": "0e290bc0aa549599c77257f77c2e6080f8f7844f68b41770716ada4a22afa623",
+            "bytes": 33,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T12:35:25.133682Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "Wikimedia Foundation",
+          "originalProducerCredit": "Wikimedia Foundation",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "7ac0d0f640c9a183b66cc2a3214a846572037e7e3b6141d1e586286ba2af6ffe"
+      },
+      "input": {
+        "name": "wm-identity",
+        "url": "https://wikimediafoundation.org/who-we-are/financial-reports/",
+        "retrievedAt": "2026-10-27T12:35:25.133Z",
+        "sha256": "c75f57e6dc27e35472a513a9cc95ca01c70440dbbde12e7313ea20961f8d8be7",
+        "bytes": 180869,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "wikimedia-financial-reports.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T12:35:25.133682Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "Our tax ID number is 20-0049703.\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wm-period",
+        "version": 1,
+        "previous": null,
+        "url": "https://meta.wikimedia.org/wiki/Wikimedia_Foundation_reports/Financial/Audits/2023-2024_-_frequently_asked_questions",
+        "publisher": "Wikimedia Foundation",
+        "title": "wm period",
+        "retrievedAt": "2026-10-27T12:35:25.579Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "aae6af939c51286842090149867a53f89b3c27214b0fa1cbc7d8e3724275e248",
+        "rawBytes": 142743,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/06f8be9d44d80ec3f7bd7ae084716adc357154453f8822147bb3329e646ce33b.txt",
+            "sha256": "06f8be9d44d80ec3f7bd7ae084716adc357154453f8822147bb3329e646ce33b",
+            "bytes": 27,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T12:35:25.579856Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "Wikimedia Foundation",
+          "originalProducerCredit": "Wikimedia Foundation",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+      },
+      "input": {
+        "name": "wm-period",
+        "url": "https://meta.wikimedia.org/wiki/Wikimedia_Foundation_reports/Financial/Audits/2023-2024_-_frequently_asked_questions",
+        "retrievedAt": "2026-10-27T12:35:25.579Z",
+        "sha256": "aae6af939c51286842090149867a53f89b3c27214b0fa1cbc7d8e3724275e248",
+        "bytes": 142743,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "wikimedia-audit-faq-2023-2024.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T12:35:25.579856Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "1 July 2023 - 30 June 2024\n"
+      }
+    },
+    {
+      "record": {
+        "format": "charitology-observation-record",
+        "schemaVersion": 1,
+        "kind": "source",
+        "id": "wm-usd",
+        "version": 1,
+        "previous": null,
+        "url": "https://wikimediafoundation.org/annualreports/2023-2024-annual-report/",
+        "publisher": "Wikimedia Foundation",
+        "title": "wm usd",
+        "retrievedAt": "2026-10-27T12:35:24.634Z",
+        "sourceUpdatedDay": null,
+        "reportDay": null,
+        "publishedAt": null,
+        "rawSha256": "2e4aec6b33244c45a9dbb20aabf876e634d344cf7c67935e523620b74f9ceed1",
+        "rawBytes": 588406,
+        "payload": {
+          "kind": "external-document",
+          "mediaType": "text/html",
+          "publicExcerpt": {
+            "path": "evidence/007e523e8032f7e74f2b0666bbb6a61b7dadcb8025b1038e8a81c1703e3448ba.txt",
+            "sha256": "007e523e8032f7e74f2b0666bbb6a61b7dadcb8025b1038e8a81c1703e3448ba",
+            "bytes": 11,
+            "mediaType": "text/plain"
+          }
+        },
+        "producerMetadata": [
+          {
+            "field": "originalRetrievalRecord",
+            "literal": "2026-10-27T12:35:24.634709Z"
+          }
+        ],
+        "rights": {
+          "returnedLicense": null,
+          "publicReuse": {
+            "kind": "linked-document-only",
+            "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+          },
+          "attribution": "Wikimedia Foundation",
+          "originalProducerCredit": "Wikimedia Foundation",
+          "limitations": [
+            "No human review or blanket relicensing is established."
+          ]
+        },
+        "limitations": [],
+        "review": "draft",
+        "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+      },
+      "input": {
+        "name": "wm-usd",
+        "url": "https://wikimediafoundation.org/annualreports/2023-2024-annual-report/",
+        "retrievedAt": "2026-10-27T12:35:24.634Z",
+        "sha256": "2e4aec6b33244c45a9dbb20aabf876e634d344cf7c67935e523620b74f9ceed1",
+        "bytes": 588406,
+        "mediaType": "text/html",
+        "publicDisposition": "private-original",
+        "retainedFile": "wikimedia-annual-2023-2024.html",
+        "mutableBody": false,
+        "originalRetrievalLiteral": "2026-10-27T12:35:24.634709Z"
+      },
+      "publicEvidence": {
+        "mediaType": "text/plain",
+        "text": "2024 (USD)\n"
+      }
+    }
+  ],
+  "templates": [
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "coverage",
+      "id": "financial-panel",
+      "version": 1,
+      "previous": null,
+      "selection": {
+        "kind": "explicit-financial-panel",
+        "rule": "selected-consolidated-audit-rows",
+        "panels": [
+          {
+            "scope": {
+              "kind": "scope",
+              "id": "wikimedia-consolidated",
+              "version": 1,
+              "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+            },
+            "measures": [
+              {
+                "kind": "measure",
+                "id": "financial-assets",
+                "version": 1,
+                "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+              },
+              {
+                "kind": "measure",
+                "id": "financial-liabilities",
+                "version": 1,
+                "hash": "2c9907ac2e53b20c0ff98053f303248a02efe4dc0cb6afaccdb37451e8cd2d93"
+              },
+              {
+                "kind": "measure",
+                "id": "financial-net-assets",
+                "version": 1,
+                "hash": "ad6235d127b120cce2d84bac155fc1ca6ad6cd53ddc8f7f2406c97388c986c96"
+              },
+              {
+                "kind": "measure",
+                "id": "financial-wikimedia-expenses",
+                "version": 1,
+                "hash": "55954b0180804ccc5319c7da1e5becab814fac4f94fc375d2afc9dde883fa50f"
+              }
+            ]
+          },
+          {
+            "scope": {
+              "kind": "scope",
+              "id": "givewell-consolidated",
+              "version": 1,
+              "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
+            },
+            "measures": [
+              {
+                "kind": "measure",
+                "id": "financial-assets",
+                "version": 1,
+                "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+              },
+              {
+                "kind": "measure",
+                "id": "financial-liabilities",
+                "version": 1,
+                "hash": "2c9907ac2e53b20c0ff98053f303248a02efe4dc0cb6afaccdb37451e8cd2d93"
+              },
+              {
+                "kind": "measure",
+                "id": "financial-net-assets",
+                "version": 1,
+                "hash": "ad6235d127b120cce2d84bac155fc1ca6ad6cd53ddc8f7f2406c97388c986c96"
+              },
+              {
+                "kind": "measure",
+                "id": "financial-givewell-expenses",
+                "version": 1,
+                "hash": "74dc76d6cbf2cff431e6ffff3f5c13582008a69d20a3e46ac8b985f9ddd1b840"
+              }
+            ]
+          }
+        ],
+        "unknownRemainder": "Other organizations/reporting groups are not collected by this financial panel; worldwide denominator unknown."
+      },
+      "cells": [
+        {
+          "state": "present",
+          "observation": {
+            "kind": "observation",
+            "id": "wikimedia-assets",
+            "version": 1,
+            "hash": "4f74470b7a34326e2f594a2cf24265ac1086f9ffd80dd9976324ad8a05cc2bea"
+          }
+        },
+        {
+          "state": "present",
+          "observation": {
+            "kind": "observation",
+            "id": "wikimedia-liabilities",
+            "version": 1,
+            "hash": "519be0ef8579cc9a5210690b97db3efbc7928d34d7ca53ea047f2284bc59685c"
+          }
+        },
+        {
+          "state": "present",
+          "observation": {
+            "kind": "observation",
+            "id": "wikimedia-net-assets",
+            "version": 1,
+            "hash": "4af3fd29d94e2c6a1185999e40015d0a368c5a4e090ec5be751633034fbe9ebb"
+          }
+        },
+        {
+          "state": "present",
+          "observation": {
+            "kind": "observation",
+            "id": "wikimedia-expenses",
+            "version": 1,
+            "hash": "f109dd5916c1231f63ea8aa9dfccd57c7d8180c2e7416b3dcdfa473123583c8f"
+          }
+        },
+        {
+          "state": "present",
+          "observation": {
+            "kind": "observation",
+            "id": "givewell-assets",
+            "version": 1,
+            "hash": "6ada6df4bd8c7e797636e64a0d1e2c572ec0d21dc97ff8148455d876e284ccef"
+          }
+        },
+        {
+          "state": "present",
+          "observation": {
+            "kind": "observation",
+            "id": "givewell-liabilities",
+            "version": 1,
+            "hash": "e0a706eb947f1aa82646e82ab1ccd9128e53e3062023fc1de9186225a37bd1af"
+          }
+        },
+        {
+          "state": "present",
+          "observation": {
+            "kind": "observation",
+            "id": "givewell-net-assets",
+            "version": 1,
+            "hash": "c583b0a78efbaba29036fd93a7c3938bfeb06c23366971b59c57d48e11af4477"
+          }
+        },
+        {
+          "state": "present",
+          "observation": {
+            "kind": "observation",
+            "id": "givewell-expenses",
+            "version": 1,
+            "hash": "b442044e51c45e028cd4ec580bb1a4f8c7210f70cbad6256cdcfe21e7db4815c"
+          }
+        }
+      ],
+      "sourceRefs": [],
+      "exclusions": [],
+      "limitations": ["No worldwide financial coverage or charitable rating."],
+      "review": "draft",
+      "hash": "a61215b5976b6ba483696ec42d40354a1803b3f82af7728af61c86a93d3fede2"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "entity",
+      "id": "givewell-group",
+      "version": 1,
+      "previous": null,
+      "entityKind": "reporting-group",
+      "label": "The Clear Fund d.b.a. GiveWell and GiveWell UK, consolidated",
+      "identifiers": [],
+      "aliases": [],
+      "memberEntities": [
+        {
+          "kind": "entity",
+          "id": "givewell-legal",
+          "version": 1,
+          "hash": "3f71990c90897ce78488f54088c891d8c7b697019c0d577b75e2af18d2961f71"
+        },
+        {
+          "kind": "entity",
+          "id": "givewell-subsidiary",
+          "version": 1,
+          "hash": "8759736ff642f7713b19d5d49f255a80708cee81338fa085429e9b3f5730954f"
+        }
+      ],
+      "profileRefs": [],
+      "countryMetadata": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "scope",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 9,
+            "printedPage": "7",
+            "section": ["Organization and consolidation notes"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [
+        "Group identity differs from the parent EIN legal entity."
+      ],
+      "review": "draft",
+      "hash": "4f18449b88e5618f4c78f215deae703189e23cf113ff8b72fc149c880b24db3e"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "entity",
+      "id": "givewell-legal",
+      "version": 1,
+      "previous": null,
+      "entityKind": "legal-organization",
+      "label": "The Clear Fund d.b.a. GiveWell",
+      "identifiers": [
+        {
+          "kind": "ein",
+          "value": "208625442",
+          "sourceRefs": [
+            {
+              "source": {
+                "kind": "source",
+                "id": "gw-identity",
+                "version": 1,
+                "hash": "3b79842838d9bdc05a0ba1d8a4350605c06fe99ab9277fac7029a158a09b0468"
+              },
+              "role": "identity",
+              "locator": {
+                "kind": "pdf",
+                "pdfPage": 1,
+                "printedPage": "1",
+                "section": ["Form 990 Part I fields C and D"],
+                "row": [],
+                "column": []
+              }
+            }
+          ]
+        }
+      ],
+      "aliases": [],
+      "memberEntities": [],
+      "profileRefs": ["givewell"],
+      "countryMetadata": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "scope",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 9,
+            "printedPage": "7",
+            "section": ["Organization and consolidation notes"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [],
+      "review": "draft",
+      "hash": "3f71990c90897ce78488f54088c891d8c7b697019c0d577b75e2af18d2961f71"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "entity",
+      "id": "givewell-subsidiary",
+      "version": 1,
+      "previous": null,
+      "entityKind": "legal-organization",
+      "label": "GiveWell UK",
+      "identifiers": [],
+      "aliases": [],
+      "memberEntities": [],
+      "profileRefs": [],
+      "countryMetadata": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "scope",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 9,
+            "printedPage": "7",
+            "section": ["Organization and consolidation notes"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": ["External identifier not verified in this collection."],
+      "review": "draft",
+      "hash": "8759736ff642f7713b19d5d49f255a80708cee81338fa085429e9b3f5730954f"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "entity",
+      "id": "wikimedia-group",
+      "version": 1,
+      "previous": null,
+      "entityKind": "reporting-group",
+      "label": "Wikimedia Foundation, Inc. and Wikimedia, LLC, consolidated",
+      "identifiers": [],
+      "aliases": [],
+      "memberEntities": [
+        {
+          "kind": "entity",
+          "id": "wikimedia-legal",
+          "version": 1,
+          "hash": "2bf409a486b83aafc9629806100047f88bab9f2ac16bb9756de7eefec80de4ff"
+        },
+        {
+          "kind": "entity",
+          "id": "wikimedia-subsidiary",
+          "version": 1,
+          "hash": "6bceb9974f860f436fd5ea27ed2d90e7b5e16e2c1d45d4999e8ae0e5ba7dbda3"
+        }
+      ],
+      "profileRefs": [],
+      "countryMetadata": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "scope",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 8,
+            "printedPage": "6",
+            "section": ["Organization and consolidation notes"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [
+        "Group identity differs from the parent EIN legal entity."
+      ],
+      "review": "draft",
+      "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "entity",
+      "id": "wikimedia-legal",
+      "version": 1,
+      "previous": null,
+      "entityKind": "legal-organization",
+      "label": "Wikimedia Foundation, Inc.",
+      "identifiers": [
+        {
+          "kind": "ein",
+          "value": "200049703",
+          "sourceRefs": [
+            {
+              "source": {
+                "kind": "source",
+                "id": "wm-identity",
+                "version": 1,
+                "hash": "7ac0d0f640c9a183b66cc2a3214a846572037e7e3b6141d1e586286ba2af6ffe"
+              },
+              "role": "identity",
+              "locator": {
+                "kind": "text",
+                "section": ["Tax identity"],
+                "excerpt": "Our tax ID number is 20-0049703."
+              }
+            }
+          ]
+        }
+      ],
+      "aliases": [],
+      "memberEntities": [],
+      "profileRefs": ["wikimedia-foundation"],
+      "countryMetadata": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "scope",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 8,
+            "printedPage": "6",
+            "section": ["Organization and consolidation notes"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [],
+      "review": "draft",
+      "hash": "2bf409a486b83aafc9629806100047f88bab9f2ac16bb9756de7eefec80de4ff"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "entity",
+      "id": "wikimedia-subsidiary",
+      "version": 1,
+      "previous": null,
+      "entityKind": "legal-organization",
+      "label": "Wikimedia, LLC",
+      "identifiers": [],
+      "aliases": [],
+      "memberEntities": [],
+      "profileRefs": [],
+      "countryMetadata": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "scope",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 8,
+            "printedPage": "6",
+            "section": ["Organization and consolidation notes"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": ["External identifier not verified in this collection."],
+      "review": "draft",
+      "hash": "6bceb9974f860f436fd5ea27ed2d90e7b5e16e2c1d45d4999e8ae0e5ba7dbda3"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "measure",
+      "id": "financial-assets",
+      "version": 1,
+      "previous": null,
+      "label": "Total assets",
+      "measureKind": "stock",
+      "family": "assets",
+      "producerCode": null,
+      "definition": "Source-reported total assets for the consolidated scope on its stock date.",
+      "unit": {
+        "kind": "currency",
+        "label": "USD",
+        "currency": "USD",
+        "denominator": null
+      },
+      "method": "Selected historical audited-statement transcription, not an effectiveness estimate.",
+      "legacyCountry": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "definition",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Statement of financial position"],
+            "row": ["Total assets"],
+            "column": ["2024"]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "definition",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Statement of financial position"],
+            "row": ["Total assets"],
+            "column": ["2024"]
+          }
+        }
+      ],
+      "limitations": [
+        "No marginal impact, service geography or charitable rating is inferred."
+      ],
+      "review": "draft",
+      "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "measure",
+      "id": "financial-givewell-expenses",
+      "version": 1,
+      "previous": null,
+      "label": "Total expenses",
+      "measureKind": "flow",
+      "family": "expenses",
+      "producerCode": null,
+      "definition": "Total expenses for the source's stated reporting period; operating and total expenses are distinct definitions.",
+      "unit": {
+        "kind": "currency",
+        "label": "USD",
+        "currency": "USD",
+        "denominator": null
+      },
+      "method": "Selected historical audited-statement transcription, not an effectiveness estimate.",
+      "legacyCountry": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "definition",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 6,
+            "printedPage": "4",
+            "section": ["Statement of activities"],
+            "row": ["Total expenses"],
+            "column": ["2024"]
+          }
+        }
+      ],
+      "limitations": [
+        "No marginal impact, service geography or charitable rating is inferred."
+      ],
+      "review": "draft",
+      "hash": "74dc76d6cbf2cff431e6ffff3f5c13582008a69d20a3e46ac8b985f9ddd1b840"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "measure",
+      "id": "financial-liabilities",
+      "version": 1,
+      "previous": null,
+      "label": "Total liabilities",
+      "measureKind": "stock",
+      "family": "liabilities",
+      "producerCode": null,
+      "definition": "Source-reported total liabilities for the consolidated scope on its stock date.",
+      "unit": {
+        "kind": "currency",
+        "label": "USD",
+        "currency": "USD",
+        "denominator": null
+      },
+      "method": "Selected historical audited-statement transcription, not an effectiveness estimate.",
+      "legacyCountry": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "definition",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Statement of financial position"],
+            "row": ["Total liabilities"],
+            "column": ["2024"]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "definition",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Statement of financial position"],
+            "row": ["Total liabilities"],
+            "column": ["2024"]
+          }
+        }
+      ],
+      "limitations": [
+        "No marginal impact, service geography or charitable rating is inferred."
+      ],
+      "review": "draft",
+      "hash": "2c9907ac2e53b20c0ff98053f303248a02efe4dc0cb6afaccdb37451e8cd2d93"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "measure",
+      "id": "financial-net-assets",
+      "version": 1,
+      "previous": null,
+      "label": "Total net assets",
+      "measureKind": "stock",
+      "family": "net-assets",
+      "producerCode": null,
+      "definition": "Source-reported total net assets for the consolidated scope on its stock date.",
+      "unit": {
+        "kind": "currency",
+        "label": "USD",
+        "currency": "USD",
+        "denominator": null
+      },
+      "method": "Selected historical audited-statement transcription, not an effectiveness estimate.",
+      "legacyCountry": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "definition",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Statement of financial position"],
+            "row": ["Total net assets"],
+            "column": ["2024"]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "definition",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Statement of financial position"],
+            "row": ["Total net assets"],
+            "column": ["2024"]
+          }
+        }
+      ],
+      "limitations": [
+        "No marginal impact, service geography or charitable rating is inferred."
+      ],
+      "review": "draft",
+      "hash": "ad6235d127b120cce2d84bac155fc1ca6ad6cd53ddc8f7f2406c97388c986c96"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "measure",
+      "id": "financial-wikimedia-expenses",
+      "version": 1,
+      "previous": null,
+      "label": "Total operating expenses",
+      "measureKind": "flow",
+      "family": "expenses",
+      "producerCode": null,
+      "definition": "Total operating expenses for the source's stated reporting period; operating and total expenses are distinct definitions.",
+      "unit": {
+        "kind": "currency",
+        "label": "USD",
+        "currency": "USD",
+        "denominator": null
+      },
+      "method": "Selected historical audited-statement transcription, not an effectiveness estimate.",
+      "legacyCountry": null,
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "definition",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 6,
+            "printedPage": "4",
+            "section": ["Statement of activities"],
+            "row": ["Total operating expenses"],
+            "column": ["2024"]
+          }
+        }
+      ],
+      "limitations": [
+        "No marginal impact, service geography or charitable rating is inferred."
+      ],
+      "review": "draft",
+      "hash": "55954b0180804ccc5319c7da1e5becab814fac4f94fc375d2afc9dde883fa50f"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "observation",
+      "id": "givewell-assets",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "givewell-group",
+        "version": 1,
+        "hash": "4f18449b88e5618f4c78f215deae703189e23cf113ff8b72fc149c880b24db3e"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "givewell-consolidated",
+        "version": 1,
+        "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "financial-assets",
+        "version": 1,
+        "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+      },
+      "period": {
+        "kind": "stock-day",
+        "day": "2024-12-31"
+      },
+      "reported": {
+        "token": "289,426",
+        "parser": "printed-integer-v1",
+        "scale": {
+          "coefficient": "1",
+          "exponent": 3
+        },
+        "valueRef": {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Consolidated Statement of Financial Position"],
+            "row": ["Total assets"],
+            "column": ["2024"]
+          }
+        }
+      },
+      "value": {
+        "coefficient": "289426",
+        "exponent": 3
+      },
+      "precision": {
+        "kind": "reported-quantum",
+        "quantum": {
+          "coefficient": "1",
+          "exponent": 3
+        },
+        "sourceRefs": [
+          {
+            "source": {
+              "kind": "source",
+              "id": "gw-audit",
+              "version": 1,
+              "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+            },
+            "role": "value",
+            "locator": {
+              "kind": "pdf",
+              "pdfPage": 5,
+              "printedPage": "3",
+              "section": ["Consolidated Statement of Financial Position"],
+              "row": ["Total assets"],
+              "column": ["2024"]
+            }
+          }
+        ]
+      },
+      "uncertainty": null,
+      "producerStatus": null,
+      "producerUnit": null,
+      "producerDecimal": null,
+      "annotations": [],
+      "priceBasis": {
+        "kind": "unknown"
+      },
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "unit",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "section": ["Foreign Currency Translation"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [
+        "Selected historical financial fact, not a measure of comparative effectiveness."
+      ],
+      "review": "draft",
+      "hash": "6ada6df4bd8c7e797636e64a0d1e2c572ec0d21dc97ff8148455d876e284ccef"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "observation",
+      "id": "givewell-expenses",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "givewell-group",
+        "version": 1,
+        "hash": "4f18449b88e5618f4c78f215deae703189e23cf113ff8b72fc149c880b24db3e"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "givewell-consolidated",
+        "version": 1,
+        "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "financial-givewell-expenses",
+        "version": 1,
+        "hash": "74dc76d6cbf2cff431e6ffff3f5c13582008a69d20a3e46ac8b985f9ddd1b840"
+      },
+      "period": {
+        "kind": "year-ended",
+        "end": "2024-12-31",
+        "literalStart": null,
+        "sourceLabel": "Year Ended December 31, 2024"
+      },
+      "reported": {
+        "token": "183,889",
+        "parser": "printed-integer-v1",
+        "scale": {
+          "coefficient": "1",
+          "exponent": 3
+        },
+        "valueRef": {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 6,
+            "printedPage": "4",
+            "section": [
+              "Consolidated Statement of Activities and Changes in Net Assets"
+            ],
+            "row": ["Total expenses"],
+            "column": ["2024", "Total"]
+          }
+        }
+      },
+      "value": {
+        "coefficient": "183889",
+        "exponent": 3
+      },
+      "precision": {
+        "kind": "reported-quantum",
+        "quantum": {
+          "coefficient": "1",
+          "exponent": 3
+        },
+        "sourceRefs": [
+          {
+            "source": {
+              "kind": "source",
+              "id": "gw-audit",
+              "version": 1,
+              "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+            },
+            "role": "value",
+            "locator": {
+              "kind": "pdf",
+              "pdfPage": 6,
+              "printedPage": "4",
+              "section": [
+                "Consolidated Statement of Activities and Changes in Net Assets"
+              ],
+              "row": ["Total expenses"],
+              "column": ["2024", "Total"]
+            }
+          }
+        ]
+      },
+      "uncertainty": null,
+      "producerStatus": null,
+      "producerUnit": null,
+      "producerDecimal": null,
+      "annotations": [],
+      "priceBasis": {
+        "kind": "unknown"
+      },
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "unit",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "section": ["Foreign Currency Translation"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [
+        "Selected historical financial fact, not a measure of comparative effectiveness."
+      ],
+      "review": "draft",
+      "hash": "b442044e51c45e028cd4ec580bb1a4f8c7210f70cbad6256cdcfe21e7db4815c"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "observation",
+      "id": "givewell-liabilities",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "givewell-group",
+        "version": 1,
+        "hash": "4f18449b88e5618f4c78f215deae703189e23cf113ff8b72fc149c880b24db3e"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "givewell-consolidated",
+        "version": 1,
+        "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "financial-liabilities",
+        "version": 1,
+        "hash": "2c9907ac2e53b20c0ff98053f303248a02efe4dc0cb6afaccdb37451e8cd2d93"
+      },
+      "period": {
+        "kind": "stock-day",
+        "day": "2024-12-31"
+      },
+      "reported": {
+        "token": "21,895",
+        "parser": "printed-integer-v1",
+        "scale": {
+          "coefficient": "1",
+          "exponent": 3
+        },
+        "valueRef": {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Consolidated Statement of Financial Position"],
+            "row": ["Total liabilities"],
+            "column": ["2024"]
+          }
+        }
+      },
+      "value": {
+        "coefficient": "21895",
+        "exponent": 3
+      },
+      "precision": {
+        "kind": "reported-quantum",
+        "quantum": {
+          "coefficient": "1",
+          "exponent": 3
+        },
+        "sourceRefs": [
+          {
+            "source": {
+              "kind": "source",
+              "id": "gw-audit",
+              "version": 1,
+              "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+            },
+            "role": "value",
+            "locator": {
+              "kind": "pdf",
+              "pdfPage": 5,
+              "printedPage": "3",
+              "section": ["Consolidated Statement of Financial Position"],
+              "row": ["Total liabilities"],
+              "column": ["2024"]
+            }
+          }
+        ]
+      },
+      "uncertainty": null,
+      "producerStatus": null,
+      "producerUnit": null,
+      "producerDecimal": null,
+      "annotations": [],
+      "priceBasis": {
+        "kind": "unknown"
+      },
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "unit",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "section": ["Foreign Currency Translation"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [
+        "Selected historical financial fact, not a measure of comparative effectiveness."
+      ],
+      "review": "draft",
+      "hash": "e0a706eb947f1aa82646e82ab1ccd9128e53e3062023fc1de9186225a37bd1af"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "observation",
+      "id": "givewell-net-assets",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "givewell-group",
+        "version": 1,
+        "hash": "4f18449b88e5618f4c78f215deae703189e23cf113ff8b72fc149c880b24db3e"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "givewell-consolidated",
+        "version": 1,
+        "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "financial-net-assets",
+        "version": 1,
+        "hash": "ad6235d127b120cce2d84bac155fc1ca6ad6cd53ddc8f7f2406c97388c986c96"
+      },
+      "period": {
+        "kind": "stock-day",
+        "day": "2024-12-31"
+      },
+      "reported": {
+        "token": "267,531",
+        "parser": "printed-integer-v1",
+        "scale": {
+          "coefficient": "1",
+          "exponent": 3
+        },
+        "valueRef": {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Consolidated Statement of Financial Position"],
+            "row": ["Total net assets"],
+            "column": ["2024"]
+          }
+        }
+      },
+      "value": {
+        "coefficient": "267531",
+        "exponent": 3
+      },
+      "precision": {
+        "kind": "reported-quantum",
+        "quantum": {
+          "coefficient": "1",
+          "exponent": 3
+        },
+        "sourceRefs": [
+          {
+            "source": {
+              "kind": "source",
+              "id": "gw-audit",
+              "version": 1,
+              "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+            },
+            "role": "value",
+            "locator": {
+              "kind": "pdf",
+              "pdfPage": 5,
+              "printedPage": "3",
+              "section": ["Consolidated Statement of Financial Position"],
+              "row": ["Total net assets"],
+              "column": ["2024"]
+            }
+          }
+        ]
+      },
+      "uncertainty": null,
+      "producerStatus": null,
+      "producerUnit": null,
+      "producerDecimal": null,
+      "annotations": [],
+      "priceBasis": {
+        "kind": "unknown"
+      },
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "unit",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "section": ["Foreign Currency Translation"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [
+        "Selected historical financial fact, not a measure of comparative effectiveness."
+      ],
+      "review": "draft",
+      "hash": "c583b0a78efbaba29036fd93a7c3938bfeb06c23366971b59c57d48e11af4477"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "observation",
+      "id": "wikimedia-assets",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "wikimedia-group",
+        "version": 1,
+        "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "wikimedia-consolidated",
+        "version": 1,
+        "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "financial-assets",
+        "version": 1,
+        "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+      },
+      "period": {
+        "kind": "stock-day",
+        "day": "2024-06-30"
+      },
+      "reported": {
+        "token": "286,759,938",
+        "parser": "printed-integer-v1",
+        "scale": {
+          "coefficient": "1",
+          "exponent": 0
+        },
+        "valueRef": {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Consolidated Statements of Financial Position"],
+            "row": ["Total assets"],
+            "column": ["2024"]
+          }
+        }
+      },
+      "value": {
+        "coefficient": "286759938",
+        "exponent": 0
+      },
+      "precision": {
+        "kind": "reported-quantum",
+        "quantum": {
+          "coefficient": "1",
+          "exponent": 0
+        },
+        "sourceRefs": [
+          {
+            "source": {
+              "kind": "source",
+              "id": "wm-audit",
+              "version": 1,
+              "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+            },
+            "role": "value",
+            "locator": {
+              "kind": "pdf",
+              "pdfPage": 5,
+              "printedPage": "3",
+              "section": ["Consolidated Statements of Financial Position"],
+              "row": ["Total assets"],
+              "column": ["2024"]
+            }
+          }
+        ]
+      },
+      "uncertainty": null,
+      "producerStatus": null,
+      "producerUnit": null,
+      "producerDecimal": null,
+      "annotations": [],
+      "priceBasis": {
+        "kind": "unknown"
+      },
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-usd",
+            "version": 1,
+            "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+          },
+          "role": "unit",
+          "locator": {
+            "kind": "text",
+            "section": ["Financial statements header"],
+            "excerpt": "2024 (USD)"
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-period",
+            "version": 1,
+            "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+          },
+          "role": "period",
+          "locator": {
+            "kind": "text",
+            "section": ["Fiscal interval"],
+            "excerpt": "1 July 2023 - 30 June 2024"
+          }
+        }
+      ],
+      "limitations": [
+        "Selected historical financial fact, not a measure of comparative effectiveness."
+      ],
+      "review": "draft",
+      "hash": "4f74470b7a34326e2f594a2cf24265ac1086f9ffd80dd9976324ad8a05cc2bea"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "observation",
+      "id": "wikimedia-expenses",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "wikimedia-group",
+        "version": 1,
+        "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "wikimedia-consolidated",
+        "version": 1,
+        "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "financial-wikimedia-expenses",
+        "version": 1,
+        "hash": "55954b0180804ccc5319c7da1e5becab814fac4f94fc375d2afc9dde883fa50f"
+      },
+      "period": {
+        "kind": "closed-interval",
+        "start": "2023-07-01",
+        "end": "2024-06-30",
+        "sourceLabel": "Fiscal year 2023–2024"
+      },
+      "reported": {
+        "token": "178,471,109",
+        "parser": "printed-integer-v1",
+        "scale": {
+          "coefficient": "1",
+          "exponent": 0
+        },
+        "valueRef": {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 6,
+            "printedPage": "4",
+            "section": ["Consolidated Statements of Activities"],
+            "row": ["Total operating expenses"],
+            "column": ["2024"]
+          }
+        }
+      },
+      "value": {
+        "coefficient": "178471109",
+        "exponent": 0
+      },
+      "precision": {
+        "kind": "reported-quantum",
+        "quantum": {
+          "coefficient": "1",
+          "exponent": 0
+        },
+        "sourceRefs": [
+          {
+            "source": {
+              "kind": "source",
+              "id": "wm-audit",
+              "version": 1,
+              "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+            },
+            "role": "value",
+            "locator": {
+              "kind": "pdf",
+              "pdfPage": 6,
+              "printedPage": "4",
+              "section": ["Consolidated Statements of Activities"],
+              "row": ["Total operating expenses"],
+              "column": ["2024"]
+            }
+          }
+        ]
+      },
+      "uncertainty": null,
+      "producerStatus": null,
+      "producerUnit": null,
+      "producerDecimal": null,
+      "annotations": [],
+      "priceBasis": {
+        "kind": "unknown"
+      },
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-usd",
+            "version": 1,
+            "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+          },
+          "role": "unit",
+          "locator": {
+            "kind": "text",
+            "section": ["Financial statements header"],
+            "excerpt": "2024 (USD)"
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-period",
+            "version": 1,
+            "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+          },
+          "role": "period",
+          "locator": {
+            "kind": "text",
+            "section": ["Fiscal interval"],
+            "excerpt": "1 July 2023 - 30 June 2024"
+          }
+        }
+      ],
+      "limitations": [
+        "Selected historical financial fact, not a measure of comparative effectiveness."
+      ],
+      "review": "draft",
+      "hash": "f109dd5916c1231f63ea8aa9dfccd57c7d8180c2e7416b3dcdfa473123583c8f"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "observation",
+      "id": "wikimedia-liabilities",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "wikimedia-group",
+        "version": 1,
+        "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "wikimedia-consolidated",
+        "version": 1,
+        "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "financial-liabilities",
+        "version": 1,
+        "hash": "2c9907ac2e53b20c0ff98053f303248a02efe4dc0cb6afaccdb37451e8cd2d93"
+      },
+      "period": {
+        "kind": "stock-day",
+        "day": "2024-06-30"
+      },
+      "reported": {
+        "token": "15,204,548",
+        "parser": "printed-integer-v1",
+        "scale": {
+          "coefficient": "1",
+          "exponent": 0
+        },
+        "valueRef": {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Consolidated Statements of Financial Position"],
+            "row": ["Total liabilities"],
+            "column": ["2024"]
+          }
+        }
+      },
+      "value": {
+        "coefficient": "15204548",
+        "exponent": 0
+      },
+      "precision": {
+        "kind": "reported-quantum",
+        "quantum": {
+          "coefficient": "1",
+          "exponent": 0
+        },
+        "sourceRefs": [
+          {
+            "source": {
+              "kind": "source",
+              "id": "wm-audit",
+              "version": 1,
+              "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+            },
+            "role": "value",
+            "locator": {
+              "kind": "pdf",
+              "pdfPage": 5,
+              "printedPage": "3",
+              "section": ["Consolidated Statements of Financial Position"],
+              "row": ["Total liabilities"],
+              "column": ["2024"]
+            }
+          }
+        ]
+      },
+      "uncertainty": null,
+      "producerStatus": null,
+      "producerUnit": null,
+      "producerDecimal": null,
+      "annotations": [],
+      "priceBasis": {
+        "kind": "unknown"
+      },
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-usd",
+            "version": 1,
+            "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+          },
+          "role": "unit",
+          "locator": {
+            "kind": "text",
+            "section": ["Financial statements header"],
+            "excerpt": "2024 (USD)"
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-period",
+            "version": 1,
+            "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+          },
+          "role": "period",
+          "locator": {
+            "kind": "text",
+            "section": ["Fiscal interval"],
+            "excerpt": "1 July 2023 - 30 June 2024"
+          }
+        }
+      ],
+      "limitations": [
+        "Selected historical financial fact, not a measure of comparative effectiveness."
+      ],
+      "review": "draft",
+      "hash": "519be0ef8579cc9a5210690b97db3efbc7928d34d7ca53ea047f2284bc59685c"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "observation",
+      "id": "wikimedia-net-assets",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "wikimedia-group",
+        "version": 1,
+        "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "wikimedia-consolidated",
+        "version": 1,
+        "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "financial-net-assets",
+        "version": 1,
+        "hash": "ad6235d127b120cce2d84bac155fc1ca6ad6cd53ddc8f7f2406c97388c986c96"
+      },
+      "period": {
+        "kind": "stock-day",
+        "day": "2024-06-30"
+      },
+      "reported": {
+        "token": "271,555,390",
+        "parser": "printed-integer-v1",
+        "scale": {
+          "coefficient": "1",
+          "exponent": 0
+        },
+        "valueRef": {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 5,
+            "printedPage": "3",
+            "section": ["Consolidated Statements of Financial Position"],
+            "row": ["Total net assets"],
+            "column": ["2024"]
+          }
+        }
+      },
+      "value": {
+        "coefficient": "27155539",
+        "exponent": 1
+      },
+      "precision": {
+        "kind": "reported-quantum",
+        "quantum": {
+          "coefficient": "1",
+          "exponent": 0
+        },
+        "sourceRefs": [
+          {
+            "source": {
+              "kind": "source",
+              "id": "wm-audit",
+              "version": 1,
+              "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+            },
+            "role": "value",
+            "locator": {
+              "kind": "pdf",
+              "pdfPage": 5,
+              "printedPage": "3",
+              "section": ["Consolidated Statements of Financial Position"],
+              "row": ["Total net assets"],
+              "column": ["2024"]
+            }
+          }
+        ]
+      },
+      "uncertainty": null,
+      "producerStatus": null,
+      "producerUnit": null,
+      "producerDecimal": null,
+      "annotations": [],
+      "priceBasis": {
+        "kind": "unknown"
+      },
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-usd",
+            "version": 1,
+            "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+          },
+          "role": "unit",
+          "locator": {
+            "kind": "text",
+            "section": ["Financial statements header"],
+            "excerpt": "2024 (USD)"
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-period",
+            "version": 1,
+            "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+          },
+          "role": "period",
+          "locator": {
+            "kind": "text",
+            "section": ["Fiscal interval"],
+            "excerpt": "1 July 2023 - 30 June 2024"
+          }
+        }
+      ],
+      "limitations": [
+        "Selected historical financial fact, not a measure of comparative effectiveness."
+      ],
+      "review": "draft",
+      "hash": "4af3fd29d94e2c6a1185999e40015d0a368c5a4e090ec5be751633034fbe9ebb"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "scope",
+      "id": "givewell-consolidated",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "givewell-group",
+        "version": 1,
+        "hash": "4f18449b88e5618f4c78f215deae703189e23cf113ff8b72fc149c880b24db3e"
+      },
+      "scopeKind": "consolidated-reporting-group",
+      "label": "The Clear Fund d.b.a. GiveWell and GiveWell UK, consolidated",
+      "includedEntities": [
+        {
+          "kind": "entity",
+          "id": "givewell-legal",
+          "version": 1,
+          "hash": "3f71990c90897ce78488f54088c891d8c7b697019c0d577b75e2af18d2961f71"
+        },
+        {
+          "kind": "entity",
+          "id": "givewell-subsidiary",
+          "version": 1,
+          "hash": "8759736ff642f7713b19d5d49f255a80708cee81338fa085429e9b3f5730954f"
+        }
+      ],
+      "consolidation": "consolidated-with-eliminations",
+      "geography": {
+        "kind": "unknown",
+        "note": "Service geography is not supplied by these financial rows."
+      },
+      "exclusions": ["Do not add GiveWell UK again after consolidation."],
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-audit",
+            "version": 1,
+            "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+          },
+          "role": "scope",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 9,
+            "printedPage": "7",
+            "section": ["Organization and consolidation notes"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [],
+      "review": "draft",
+      "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
+    },
+    {
+      "format": "charitology-observation-record",
+      "schemaVersion": 1,
+      "kind": "scope",
+      "id": "wikimedia-consolidated",
+      "version": 1,
+      "previous": null,
+      "entity": {
+        "kind": "entity",
+        "id": "wikimedia-group",
+        "version": 1,
+        "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+      },
+      "scopeKind": "consolidated-reporting-group",
+      "label": "Wikimedia Foundation, Inc. and Wikimedia, LLC, consolidated",
+      "includedEntities": [
+        {
+          "kind": "entity",
+          "id": "wikimedia-legal",
+          "version": 1,
+          "hash": "2bf409a486b83aafc9629806100047f88bab9f2ac16bb9756de7eefec80de4ff"
+        },
+        {
+          "kind": "entity",
+          "id": "wikimedia-subsidiary",
+          "version": 1,
+          "hash": "6bceb9974f860f436fd5ea27ed2d90e7b5e16e2c1d45d4999e8ae0e5ba7dbda3"
+        }
+      ],
+      "consolidation": "consolidated-unspecified-eliminations",
+      "geography": {
+        "kind": "unknown",
+        "note": "Service geography is not supplied by these financial rows."
+      },
+      "exclusions": [
+        "Movement affiliates and the Wikimedia Endowment are outside this reporting group."
+      ],
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wm-audit",
+            "version": 1,
+            "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+          },
+          "role": "scope",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 8,
+            "printedPage": "6",
+            "section": ["Organization and consolidation notes"],
+            "row": [],
+            "column": []
+          }
+        }
+      ],
+      "limitations": [],
+      "review": "draft",
+      "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+    }
+  ]
+}

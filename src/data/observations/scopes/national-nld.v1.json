@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-nld",
+  "entity": {
+    "kind": "entity",
+    "id": "country-nld",
+    "version": 1,
+    "hash": "57fdeeb3cdb9716fe0f3f56a1ad5d35239cf192385aa6e7f9b77a148420e80b5"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Netherlands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-nld",
+      "version": 1,
+      "hash": "57fdeeb3cdb9716fe0f3f56a1ad5d35239cf192385aa6e7f9b77a148420e80b5"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-nld",
+      "version": 1,
+      "hash": "57fdeeb3cdb9716fe0f3f56a1ad5d35239cf192385aa6e7f9b77a148420e80b5"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "06c797d5e654b26f3a39923cccd106f4f0cfb88748d72723d7147dcf8f1d9dd8"
+}

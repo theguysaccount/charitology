@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-stp",
+  "entity": {
+    "kind": "entity",
+    "id": "country-stp",
+    "version": 1,
+    "hash": "7840c00c4c69426cc2b081c4667cdbeae71c9390c3524636d40ac9ad29f07ada"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Sao Tome and Principe statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-stp",
+      "version": 1,
+      "hash": "7840c00c4c69426cc2b081c4667cdbeae71c9390c3524636d40ac9ad29f07ada"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-stp",
+      "version": 1,
+      "hash": "7840c00c4c69426cc2b081c4667cdbeae71c9390c3524636d40ac9ad29f07ada"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "8f1df706ef375f4eb8ff75b1b93be74ffedf0b4baed218e2ac218b6620c200c0"
+}

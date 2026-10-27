@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-tls",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tls",
+    "version": 1,
+    "hash": "ea337a04146786efd5bd15b7ba82ce4c69a9b4c8aa52c46a93c8ed1e7806f86a"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Timor-Leste statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-tls",
+      "version": 1,
+      "hash": "ea337a04146786efd5bd15b7ba82ce4c69a9b4c8aa52c46a93c8ed1e7806f86a"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-tls",
+      "version": 1,
+      "hash": "ea337a04146786efd5bd15b7ba82ce4c69a9b4c8aa52c46a93c8ed1e7806f86a"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c21beaf64691d3dfe8a9f22426003ba112a4aab82e52c36a280ea6f79ebb76b0"
+}

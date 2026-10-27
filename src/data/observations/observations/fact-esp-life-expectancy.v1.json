@@ -1,0 +1,100 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-esp-life-expectancy",
+  "entity": {
+    "kind": "entity",
+    "id": "country-esp",
+    "version": 1,
+    "hash": "8a5f523ef0f9488918583549a7f26f4447157f09ef61bca9eb7f38a23676c452"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-esp",
+    "version": 1,
+    "hash": "dd67c2e0a39e423d440ca5e5fbf34ee8502a8dd83af48b9666473748ad9c9f1c"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-life-expectancy",
+    "version": 1,
+    "hash": "1e63c27f141ec4a648b59ff898a1a1d48b56700968139e67d5db95f488d6c97e"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2024
+  },
+  "reported": {
+    "token": "83.8878048780488",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sp-dyn-le00-in",
+        "version": 1,
+        "hash": "1b5ccb99674d00ae13781e2e829a4ecf3b575d7cbeb78e880f4482bac4c77d29"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/1369/value",
+        "matches": [
+          {
+            "pointer": "/1/1369/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "ES"
+            }
+          },
+          {
+            "pointer": "/1/1369/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "ESP"
+            }
+          },
+          {
+            "pointer": "/1/1369/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SP.DYN.LE00.IN"
+            }
+          },
+          {
+            "pointer": "/1/1369/date",
+            "expected": {
+              "kind": "string",
+              "value": "2024"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "838878048780488",
+    "exponent": -13
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "bb209bc8ebe3086c32fde8cc3d39f0bcf2b10cbc2fce128347d078e57a945aca"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-tkm",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tkm",
+    "version": 1,
+    "hash": "6d415d24fff3914b512a1a3e90f2e22cbc60c8291f27c7ab6dfccbcd231d2390"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Turkmenistan statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-tkm",
+      "version": 1,
+      "hash": "6d415d24fff3914b512a1a3e90f2e22cbc60c8291f27c7ab6dfccbcd231d2390"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-tkm",
+      "version": 1,
+      "hash": "6d415d24fff3914b512a1a3e90f2e22cbc60c8291f27c7ab6dfccbcd231d2390"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a4281894f886737164bc2979988ff2c990341c3e43f5f5f3a692f06ff3ef0076"
+}

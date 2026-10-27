@@ -1,0 +1,54 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "wikimedia-group",
+  "entityKind": "reporting-group",
+  "label": "Wikimedia Foundation, Inc. and Wikimedia, LLC, consolidated",
+  "identifiers": [],
+  "aliases": [],
+  "memberEntities": [
+    {
+      "kind": "entity",
+      "id": "wikimedia-legal",
+      "version": 1,
+      "hash": "2bf409a486b83aafc9629806100047f88bab9f2ac16bb9756de7eefec80de4ff"
+    },
+    {
+      "kind": "entity",
+      "id": "wikimedia-subsidiary",
+      "version": 1,
+      "hash": "6bceb9974f860f436fd5ea27ed2d90e7b5e16e2c1d45d4999e8ae0e5ba7dbda3"
+    }
+  ],
+  "profileRefs": [],
+  "countryMetadata": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wm-audit",
+        "version": 1,
+        "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 8,
+        "printedPage": "6",
+        "section": [
+          "Organization and consolidation notes"
+        ],
+        "row": [],
+        "column": []
+      }
+    }
+  ],
+  "limitations": [
+    "Group identity differs from the parent EIN legal entity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+}

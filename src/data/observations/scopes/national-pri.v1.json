@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-pri",
+  "entity": {
+    "kind": "entity",
+    "id": "country-pri",
+    "version": 1,
+    "hash": "faf8b586dc2c23cd465ac4403b09a88c0c6e6af117aa66d2516482078f25200a"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Puerto Rico (US) statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-pri",
+      "version": 1,
+      "hash": "faf8b586dc2c23cd465ac4403b09a88c0c6e6af117aa66d2516482078f25200a"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-pri",
+      "version": 1,
+      "hash": "faf8b586dc2c23cd465ac4403b09a88c0c6e6af117aa66d2516482078f25200a"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "3ddbdff162338636dec8e32b113a3ca48143eb907570e000baa345acdd94fab3"
+}

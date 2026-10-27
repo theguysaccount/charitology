@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mli",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mli",
+    "version": 1,
+    "hash": "82caca1e53fd01845b82c5857d73e91f39821ac4088e0aab8c1d2455c1df0be3"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Mali statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mli",
+      "version": 1,
+      "hash": "82caca1e53fd01845b82c5857d73e91f39821ac4088e0aab8c1d2455c1df0be3"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mli",
+      "version": 1,
+      "hash": "82caca1e53fd01845b82c5857d73e91f39821ac4088e0aab8c1d2455c1df0be3"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "5da7fdd33efd23f122185c385813fb63838d09710237cc183dfecdf6a22422e8"
+}

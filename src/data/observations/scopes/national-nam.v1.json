@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-nam",
+  "entity": {
+    "kind": "entity",
+    "id": "country-nam",
+    "version": 1,
+    "hash": "254d972ffaa1e3a67c446ae9b4a71b10bafa0842b1c37f21edbbe3f76d406423"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Namibia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-nam",
+      "version": 1,
+      "hash": "254d972ffaa1e3a67c446ae9b4a71b10bafa0842b1c37f21edbbe3f76d406423"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-nam",
+      "version": 1,
+      "hash": "254d972ffaa1e3a67c446ae9b4a71b10bafa0842b1c37f21edbbe3f76d406423"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "bab0a5e83c4b978fecc505a10aebcdf2afa49d28a4243c69a58a1f926e401e29"
+}

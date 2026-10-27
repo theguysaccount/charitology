@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-rwa",
+  "entity": {
+    "kind": "entity",
+    "id": "country-rwa",
+    "version": 1,
+    "hash": "9cd23f38d4927fd1178d4bcd5aa536c02add857316d2de0f006522ffae13f527"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Rwanda statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-rwa",
+      "version": 1,
+      "hash": "9cd23f38d4927fd1178d4bcd5aa536c02add857316d2de0f006522ffae13f527"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-rwa",
+      "version": 1,
+      "hash": "9cd23f38d4927fd1178d4bcd5aa536c02add857316d2de0f006522ffae13f527"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "e6acaf60702b7715e93fa9c0e49b6f0614690a3e58cbd4b853cbe287141a83e4"
+}

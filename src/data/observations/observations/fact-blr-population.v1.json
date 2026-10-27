@@ -1,0 +1,118 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-blr-population",
+  "entity": {
+    "kind": "entity",
+    "id": "country-blr",
+    "version": 1,
+    "hash": "a207ae41afeac186b0a6b569c32d4af58b2365a3b4511b5e672652bed547a781"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-blr",
+    "version": 1,
+    "hash": "fa0d7cac2ac3bd71086236becb6e5ea291474403307b6a20ef010845de96c45e"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-population",
+    "version": 1,
+    "hash": "34a26175e5b5483546f01d37cc3ddd0d757f73bcee30231fd1eb23a7d90fe4df"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2025
+  },
+  "reported": {
+    "token": "9085991",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sp-pop-totl",
+        "version": 1,
+        "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/396/value",
+        "matches": [
+          {
+            "pointer": "/1/396/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "BY"
+            }
+          },
+          {
+            "pointer": "/1/396/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "BLR"
+            }
+          },
+          {
+            "pointer": "/1/396/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SP.POP.TOTL"
+            }
+          },
+          {
+            "pointer": "/1/396/date",
+            "expected": {
+              "kind": "string",
+              "value": "2025"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "9085991",
+    "exponent": 0
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [
+    {
+      "verbatim": "Extrapolated assuming the same growth rate as the one between 2024 average population and 2025 January 1st population of National Statistical Committee website.",
+      "sourceRef": {
+        "source": {
+          "kind": "source",
+          "id": "wb-values-sp-pop-totl",
+          "version": 1,
+          "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+        },
+        "role": "annotation",
+        "locator": {
+          "kind": "json",
+          "pointer": "/1/396/footnote",
+          "matches": []
+        }
+      }
+    }
+  ],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "e2dba4c6a84daccafe316bebfc2de824c56cfaecc3309a1a0aa318ba821f75b8"
+}

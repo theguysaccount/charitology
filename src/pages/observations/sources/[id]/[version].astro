@@ -1,0 +1,29 @@
+---
+import Entry from "../../../../layouts/Entry.astro";
+import ObservationRefs from "../../../../components/ObservationRefs.astro";
+import { loadObservations, observationEditionHref } from "../../../../lib/observations";
+import { observationProjection } from "../../../../lib/observation-model.mjs";
+import { url } from "../../../../lib/site";
+import "../../../../styles/observations.css";
+export function getStaticPaths() { return loadObservations().input.registry.records.filter(r=>r.kind==="source").map(s=>({params:{id:s.id,version:`v${s.version}`}})); }
+const { input, file } = loadObservations();
+const pin=input.registry.records.find(r=>r.kind==="source"&&r.id===Astro.params.id&&`v${r.version}`===Astro.params.version)!;
+const edition=input.registry.editions.find(e=>observationProjection(input,e.id).sources.some(s=>s.id===pin.id&&s.version===pin.version))!;
+const p=observationProjection(input,edition.id);
+const s=p.sources.find(s=>s.id===pin.id&&s.version===pin.version)!;
+const blob=s.payload.kind==="external-document" ? s.payload.publicExcerpt : s.payload.raw;
+const raw=blob ? new TextDecoder("utf-8",{fatal:true}).decode(file(blob.path)) : null;
+const refs=p.observations.flatMap(o=>[o.reported.valueRef,...o.sourceRefs]).filter(r=>r.source.id===s.id&&r.source.version===s.version);
+---
+<Entry title={s.title} eyebrow={`Retained source · version ${s.version} · draft`} summary="Inspect retrieval, exact locations, source scope and source-specific reuse terms." crumbs={[{label:"Record",href:"/record/"},{label:"Observations",href:"/observations/"},{label:"Source detail"}]}>
+  <p><a href={s.url} rel="noopener">Open the publisher's source</a>. Publisher: {s.publisher}. Retrieved <time datetime={s.retrievedAt}>{s.retrievedAt}</time>. The external page can change; the identity below records the retrieved bytes.</p>
+  <dl><dt>Source update day</dt><dd>{s.sourceUpdatedDay??"Unknown / not supplied"}</dd><dt>Report day</dt><dd>{s.reportDay??"Unknown / not applicable"}</dd><dt>Publication day or instant</dt><dd>{s.publishedAt ? s.publishedAt.kind==="day"?s.publishedAt.day:s.publishedAt.instant : "Unknown / not established by the retrieval or audit report day"}</dd></dl>
+  <h2>Rights and attribution</h2><p>{s.rights.attribution}</p><p>{s.rights.originalProducerCredit}</p><p>Returned license field: {s.rights.returnedLicense??"null — no literal license field returned"}.</p>
+  {s.rights.publicReuse.kind==="linked-document-only" ? <p>{s.rights.publicReuse.note} Original document bytes are not redistributed here.</p> : <><p><a href={s.rights.publicReuse.termsUrl}>{s.rights.publicReuse.label}</a>{s.rights.publicReuse.kind==="publisher-default-inference"&&" · author inference under publisher-default terms; independent human rights review pending"}.</p><ObservationRefs projection={p} refs={s.rights.publicReuse.evidence}/></>}
+  <ul>{[...s.rights.limitations,...s.limitations].map(l=><li>{l}</li>)}</ul>
+  {s.payload.kind==="external-document"&&<p>This page retains bounded source evidence or numerical transcription, not the original PDF/HTML. A source's audit opinion does not independently audit Charitology's transcription, comparison or social-impact claims.</p>}
+  {blob&&<><h2>{s.payload.kind==="external-document"?"Public evidence/transcription packet":"Retained raw source text"}</h2><p><a href={url(`/observations/files/${blob.path}`)}>Download exact retained {blob.mediaType==="application/json"?"JSON":"text"}</a> · {blob.bytes.toLocaleString("en-US")} bytes.</p><details><summary>Read inert retained text</summary><pre class="ob-source-text">{raw}</pre></details></>}
+  <h2>Observation locations using this source</h2>{refs.length ? <ObservationRefs projection={p} refs={refs}/> : <p>This source supplies identity, definitions, metadata, rights or other source support in the edition closure.</p>}
+  <p><a href={url(observationEditionHref(edition.id))}>Read a fixed edition containing this source version</a>.</p>
+  <details><summary>Exact byte and record identities</summary><p class="ob-hash">Original retrieved bytes: {s.rawBytes} · SHA-256 {s.rawSha256}</p><p class="ob-hash">Source record: {s.id} v{s.version} · {s.hash}</p>{blob&&<p class="ob-hash">Public file SHA-256 {blob.sha256}</p>}</details>
+</Entry>

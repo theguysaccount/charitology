@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-lbn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lbn",
+    "version": 1,
+    "hash": "cf5e1f02c250de60ce333e5b9da6fd3cbe118993a7dc35de81c51a12b9ccfa81"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Lebanon statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-lbn",
+      "version": 1,
+      "hash": "cf5e1f02c250de60ce333e5b9da6fd3cbe118993a7dc35de81c51a12b9ccfa81"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-lbn",
+      "version": 1,
+      "hash": "cf5e1f02c250de60ce333e5b9da6fd3cbe118993a7dc35de81c51a12b9ccfa81"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ce5b1bf2138af08af71c0516e1c7683affe73d1e02bd3ea29abe701a70990452"
+}

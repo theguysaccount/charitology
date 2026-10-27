@@ -1,0 +1,67 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "wb-metadata-sh-h2o-basw-zs",
+  "url": "https://api.worldbank.org/v2/indicator/SH.H2O.BASW.ZS?format=json&per_page=20000",
+  "publisher": "World Bank",
+  "title": "metadata-SH.H2O.BASW.ZS",
+  "retrievedAt": "2026-10-27T12:27:35.395Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "9bef480d3233d85580114d3731c0abb10740dea9e6bb45a47561d5640728a10a",
+  "rawBytes": 1270,
+  "payload": {
+    "kind": "public-json",
+    "raw": {
+      "path": "raw/9bef480d3233d85580114d3731c0abb10740dea9e6bb45a47561d5640728a10a.json",
+      "sha256": "9bef480d3233d85580114d3731c0abb10740dea9e6bb45a47561d5640728a10a",
+      "bytes": 1270,
+      "mediaType": "application/json"
+    },
+    "adapter": "world-bank-indicator-v1"
+  },
+  "producerMetadata": [
+    {
+      "field": "unit",
+      "literal": ""
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "explicit-license",
+      "label": "CC BY 4.0",
+      "termsUrl": "https://data.worldbank.org/indicator/SH.H2O.BASW.ZS",
+      "evidence": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "rights-basic-water-license",
+            "version": 1,
+            "hash": "6e3b13fa930aeb7b1b1cd343a3f6fc0dd94cca05231d376971886fbbbe4c4cc1"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Retained rights evidence"
+            ],
+            "excerpt": "CC BY-4.0"
+          }
+        }
+      ]
+    },
+    "attribution": "World Bank World Development Indicators and named original statistical producers",
+    "originalProducerCredit": "WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene, World Health Organization (WHO), uri: washdata.org, publisher: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene (washdata.org), date accessed: 2025-09-30, date published: 2025-08-25;\nUN Children's Fund (UNICEF), uri: washdata.org, note: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene",
+    "limitations": [
+      "The source unit field is empty; normalized unit comes from its retained definition."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "5ae6a2ec842a9afb9a528130166ad43c8101fe3f1b4f1dcd6cfc5a38f1f9511b"
+}

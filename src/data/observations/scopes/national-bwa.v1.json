@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-bwa",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bwa",
+    "version": 1,
+    "hash": "7d8e5ada009de9cf144d26d49bd72f10acdba889e1a13559c0d8f19570ff76b4"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Botswana statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-bwa",
+      "version": 1,
+      "hash": "7d8e5ada009de9cf144d26d49bd72f10acdba889e1a13559c0d8f19570ff76b4"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-bwa",
+      "version": 1,
+      "hash": "7d8e5ada009de9cf144d26d49bd72f10acdba889e1a13559c0d8f19570ff76b4"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c8769cba8bd2f0660ebdfa5ddc7edaab27ac6d999783a912a836209f2db3c4d7"
+}

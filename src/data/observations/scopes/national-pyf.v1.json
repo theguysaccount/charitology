@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-pyf",
+  "entity": {
+    "kind": "entity",
+    "id": "country-pyf",
+    "version": 1,
+    "hash": "b42bfd0c8fdb341891cca56eb1c5596ff9c2c5310f30e7507374b2c4a65878eb"
+  },
+  "scopeKind": "national-statistics",
+  "label": "French Polynesia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-pyf",
+      "version": 1,
+      "hash": "b42bfd0c8fdb341891cca56eb1c5596ff9c2c5310f30e7507374b2c4a65878eb"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-pyf",
+      "version": 1,
+      "hash": "b42bfd0c8fdb341891cca56eb1c5596ff9c2c5310f30e7507374b2c4a65878eb"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "5c894e1a7f9a74bde45a7aec732641c05681e4b2d02dbbff75c883fac5d6e593"
+}

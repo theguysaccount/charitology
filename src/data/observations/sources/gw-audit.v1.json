@@ -1,0 +1,48 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "gw-audit",
+  "url": "https://files.givewell.org/files/ClearFund/Clear%20Fund%202024%20audited%20financial%20statements%20%28PDF%29.pdf",
+  "publisher": "The Clear Fund d.b.a. GiveWell",
+  "title": "2024 consolidated audited statements, in thousands",
+  "retrievedAt": "2026-10-27T12:34:00.744Z",
+  "sourceUpdatedDay": null,
+  "reportDay": "2025-06-27",
+  "publishedAt": null,
+  "rawSha256": "3858a38150a0672425893ccf1cfa708f180dc62a3d3e272096aac7f895765d1d",
+  "rawBytes": 210328,
+  "payload": {
+    "kind": "external-document",
+    "mediaType": "application/pdf",
+    "publicExcerpt": {
+      "path": "evidence/36d033a1713ca1543c723fe9660c3c6f056c94ab15de586407be7f5de9a4ab8c.json",
+      "sha256": "36d033a1713ca1543c723fe9660c3c6f056c94ab15de586407be7f5de9a4ab8c",
+      "bytes": 5158,
+      "mediaType": "application/json"
+    }
+  },
+  "producerMetadata": [
+    {
+      "field": "originalRetrievalRecord",
+      "literal": "2026-10-27T12:34:00.744934Z"
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "linked-document-only",
+      "note": "Original PDF retained privately; no reuse grant inferred from a website footer."
+    },
+    "attribution": "The Clear Fund d.b.a. GiveWell",
+    "originalProducerCredit": "The Clear Fund d.b.a. GiveWell and GiveWell UK",
+    "limitations": [
+      "Small factual transcription only. An audit opinion does not review this dataset or compare impact."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-nga",
+  "entity": {
+    "kind": "entity",
+    "id": "country-nga",
+    "version": 1,
+    "hash": "1abe3e2df9f7d4c16fc3d5df64906808b989d2b4592268a96297e66cc5b51d2b"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Nigeria statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-nga",
+      "version": 1,
+      "hash": "1abe3e2df9f7d4c16fc3d5df64906808b989d2b4592268a96297e66cc5b51d2b"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-nga",
+      "version": 1,
+      "hash": "1abe3e2df9f7d4c16fc3d5df64906808b989d2b4592268a96297e66cc5b51d2b"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "582586889bc9b569201e6d6baa78c060fb5e12d0c5964a89748282ab6ab8db17"
+}

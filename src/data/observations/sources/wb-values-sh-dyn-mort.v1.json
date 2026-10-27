@@ -1,0 +1,71 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "wb-values-sh-dyn-mort",
+  "url": "https://api.worldbank.org/v2/country/all/indicator/SH.DYN.MORT?date=2020:2025&footnote=y&format=json&per_page=20000",
+  "publisher": "World Bank",
+  "title": "values-SH.DYN.MORT",
+  "retrievedAt": "2026-10-27T12:27:35.194Z",
+  "sourceUpdatedDay": "2026-10-08",
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "00f8bef20831c7b7c3f4f3408b894f242b482844369218cd6a63fe47048272e9",
+  "rawBytes": 417996,
+  "payload": {
+    "kind": "public-json",
+    "raw": {
+      "path": "raw/00f8bef20831c7b7c3f4f3408b894f242b482844369218cd6a63fe47048272e9.json",
+      "sha256": "00f8bef20831c7b7c3f4f3408b894f242b482844369218cd6a63fe47048272e9",
+      "bytes": 417996,
+      "mediaType": "application/json"
+    },
+    "adapter": "world-bank-values-v1"
+  },
+  "producerMetadata": [
+    {
+      "field": "sourceid",
+      "literal": "2"
+    },
+    {
+      "field": "lastupdated",
+      "literal": "2026-10-08"
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "explicit-license",
+      "label": "CC BY 4.0",
+      "termsUrl": "https://data.worldbank.org/indicator/SH.DYN.MORT",
+      "evidence": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "rights-mortality-license",
+            "version": 1,
+            "hash": "18703ae4f74b48728359a2b505db300ccdbd3cb30fa2619c21dc86bf6b074a07"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Retained rights evidence"
+            ],
+            "excerpt": "CC BY-4.0"
+          }
+        }
+      ]
+    },
+    "attribution": "World Bank World Development Indicators and named original statistical producers",
+    "originalProducerCredit": "UN Inter-agency Group for Child Mortality Estimation, UN Children's Fund (UNICEF), uri: www.childmortality.org, publisher: UNICEF, WHO, World Bank, United Nations Population Division;\nWorld Health Organization (WHO), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nWorld Bank (WB), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nUnited Nations (UN), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation, publisher: UN Population Division",
+    "limitations": [
+      "The source unit field is empty; normalized unit comes from its retained definition."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "3fca4dd30092df1af0e73a5afa1b35c154657f4bdd02d2412160c3cdb9695c3a"
+}

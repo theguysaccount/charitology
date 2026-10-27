@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mda",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mda",
+    "version": 1,
+    "hash": "716317c7eedd931e2ceb22e8911b5f733b6fa3ed2896316ba9eb502e461a3fb5"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Moldova statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mda",
+      "version": 1,
+      "hash": "716317c7eedd931e2ceb22e8911b5f733b6fa3ed2896316ba9eb502e461a3fb5"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mda",
+      "version": 1,
+      "hash": "716317c7eedd931e2ceb22e8911b5f733b6fa3ed2896316ba9eb502e461a3fb5"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "60fd73068480a3b5056843c318423599a52bb03830820c749caa34d64392bb85"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-ind",
+  "entity": {
+    "kind": "entity",
+    "id": "country-ind",
+    "version": 1,
+    "hash": "9190deb44ec48881ecc1cbdc3c09d2c9f258375ea9cfe9a0daab111d4ab7e60e"
+  },
+  "scopeKind": "national-statistics",
+  "label": "India statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-ind",
+      "version": 1,
+      "hash": "9190deb44ec48881ecc1cbdc3c09d2c9f258375ea9cfe9a0daab111d4ab7e60e"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-ind",
+      "version": 1,
+      "hash": "9190deb44ec48881ecc1cbdc3c09d2c9f258375ea9cfe9a0daab111d4ab7e60e"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "0a524371dba12369eae49746c38aa69eac197b15eef2b90e1ce2d4f4c0e63886"
+}

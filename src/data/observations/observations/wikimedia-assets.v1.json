@@ -1,0 +1,144 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "wikimedia-assets",
+  "entity": {
+    "kind": "entity",
+    "id": "wikimedia-group",
+    "version": 1,
+    "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "wikimedia-consolidated",
+    "version": 1,
+    "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "financial-assets",
+    "version": 1,
+    "hash": "c62089662175d6b0317d48e25d2c2477484d9e5a0707fab9f1ddee931ae70a40"
+  },
+  "period": {
+    "kind": "stock-day",
+    "day": "2024-06-30"
+  },
+  "reported": {
+    "token": "286,759,938",
+    "parser": "printed-integer-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wm-audit",
+        "version": 1,
+        "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Consolidated Statements of Financial Position"
+        ],
+        "row": [
+          "Total assets"
+        ],
+        "column": [
+          "2024"
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "286759938",
+    "exponent": 0
+  },
+  "precision": {
+    "kind": "reported-quantum",
+    "quantum": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "sourceRefs": [
+      {
+        "source": {
+          "kind": "source",
+          "id": "wm-audit",
+          "version": 1,
+          "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+        },
+        "role": "value",
+        "locator": {
+          "kind": "pdf",
+          "pdfPage": 5,
+          "printedPage": "3",
+          "section": [
+            "Consolidated Statements of Financial Position"
+          ],
+          "row": [
+            "Total assets"
+          ],
+          "column": [
+            "2024"
+          ]
+        }
+      }
+    ]
+  },
+  "uncertainty": null,
+  "producerStatus": null,
+  "producerUnit": null,
+  "producerDecimal": null,
+  "annotations": [],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wm-usd",
+        "version": 1,
+        "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+      },
+      "role": "unit",
+      "locator": {
+        "kind": "text",
+        "section": [
+          "Financial statements header"
+        ],
+        "excerpt": "2024 (USD)"
+      }
+    },
+    {
+      "source": {
+        "kind": "source",
+        "id": "wm-period",
+        "version": 1,
+        "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+      },
+      "role": "period",
+      "locator": {
+        "kind": "text",
+        "section": [
+          "Fiscal interval"
+        ],
+        "excerpt": "1 July 2023 - 30 June 2024"
+      }
+    }
+  ],
+  "limitations": [
+    "Selected historical financial fact, not a measure of comparative effectiveness."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4f74470b7a34326e2f594a2cf24265ac1086f9ffd80dd9976324ad8a05cc2bea"
+}

@@ -1,0 +1,71 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "measure",
+  "id": "country-basic-water-access",
+  "label": "At least basic drinking water",
+  "measureKind": "rate",
+  "family": "basic-water-access",
+  "producerCode": "SH.H2O.BASW.ZS",
+  "definition": "The percentage of people using at least basic water services.  This indicator encompasses both people using basic water services as well as those using safely managed water services.  Basic drinking water services is defined as drinking water from an improved source, provided collection time is not more than 30 minutes for a round trip.  Improved water sources include piped water, boreholes or tubewells, protected dug wells, protected springs, and packaged or delivered water.",
+  "unit": {
+    "kind": "rate",
+    "label": "% of population",
+    "denominator": {
+      "label": "population",
+      "definition": "The percentage of people using at least basic water services.  This indicator encompasses both people using basic water services as well as those using safely managed water services.  Basic drinking water services is defined as drinking water from an improved source, provided collection time is not more than 30 minutes for a round trip.  Improved water sources include piped water, boreholes or tubewells, protected dug wells, protected springs, and packaged or delivered water.",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 2
+      }
+    }
+  },
+  "method": "Latest non-null producer value in the explicitly fixed 2020–2025 window.",
+  "legacyCountry": {
+    "id": "SH.H2O.BASW.ZS",
+    "label": "At least basic drinking water",
+    "unit": "% of population",
+    "note": "Basic service is not the same as safely managed water.",
+    "indicatorUrl": "https://data.worldbank.org/indicator/SH.H2O.BASW.ZS",
+    "queryUrl": "https://api.worldbank.org/v2/country/all/indicator/SH.H2O.BASW.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+    "definition": "The percentage of people using at least basic water services.  This indicator encompasses both people using basic water services as well as those using safely managed water services.  Basic drinking water services is defined as drinking water from an improved source, provided collection time is not more than 30 minutes for a round trip.  Improved water sources include piped water, boreholes or tubewells, protected dug wells, protected springs, and packaged or delivered water.",
+    "organization": "WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene, World Health Organization (WHO), uri: washdata.org, publisher: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene (washdata.org), date accessed: 2025-09-30, date published: 2025-08-25;\nUN Children's Fund (UNICEF), uri: washdata.org, note: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-sh-h2o-basw-zs",
+        "version": 1,
+        "hash": "5ae6a2ec842a9afb9a528130166ad43c8101fe3f1b4f1dcd6cfc5a38f1f9511b"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/sourceNote",
+        "matches": []
+      }
+    },
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-sh-h2o-basw-zs",
+        "version": 1,
+        "hash": "5ae6a2ec842a9afb9a528130166ad43c8101fe3f1b4f1dcd6cfc5a38f1f9511b"
+      },
+      "role": "unit",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/name",
+        "matches": []
+      }
+    }
+  ],
+  "limitations": [
+    "Basic service is not the same as safely managed water."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
+}

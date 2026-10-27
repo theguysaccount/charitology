@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-cpv",
+  "entity": {
+    "kind": "entity",
+    "id": "country-cpv",
+    "version": 1,
+    "hash": "95d0e71bbea534babb6a94ff675b258685f709485b0eedf40f629c1efeb692e2"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Cabo Verde statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-cpv",
+      "version": 1,
+      "hash": "95d0e71bbea534babb6a94ff675b258685f709485b0eedf40f629c1efeb692e2"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-cpv",
+      "version": 1,
+      "hash": "95d0e71bbea534babb6a94ff675b258685f709485b0eedf40f629c1efeb692e2"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "25a3d37df1fd68eb58af6855279106b51b125a7e952bce1afead10755f244ce8"
+}

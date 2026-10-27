@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-ago",
+  "entity": {
+    "kind": "entity",
+    "id": "country-ago",
+    "version": 1,
+    "hash": "8b52557c048667eefd4c55149156406e79074db3127be26888e77e66c947f051"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Angola statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-ago",
+      "version": 1,
+      "hash": "8b52557c048667eefd4c55149156406e79074db3127be26888e77e66c947f051"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-ago",
+      "version": 1,
+      "hash": "8b52557c048667eefd4c55149156406e79074db3127be26888e77e66c947f051"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "970b3b5d2b5a2652c276a30c4b51f5875bebd9108780d9cc12df8faad88758cf"
+}

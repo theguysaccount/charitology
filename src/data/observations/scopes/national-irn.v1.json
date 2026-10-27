@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-irn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-irn",
+    "version": 1,
+    "hash": "e9dc5ff6386d5e486aa097c0cb68ec62efd9b59c44d4f343e32f112b5afd91c8"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Iran, Islamic Rep. statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-irn",
+      "version": 1,
+      "hash": "e9dc5ff6386d5e486aa097c0cb68ec62efd9b59c44d4f343e32f112b5afd91c8"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-irn",
+      "version": 1,
+      "hash": "e9dc5ff6386d5e486aa097c0cb68ec62efd9b59c44d4f343e32f112b5afd91c8"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "57c80b5d3d32429d603c70368d00d4842cd9e34c2777ab22ece40c681b61038b"
+}

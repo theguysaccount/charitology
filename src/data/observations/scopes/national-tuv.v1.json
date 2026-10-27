@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-tuv",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tuv",
+    "version": 1,
+    "hash": "12011583971f8d5263248b71a7da10cf000884f2fbe3f872d6d50c4645f7206f"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Tuvalu statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-tuv",
+      "version": 1,
+      "hash": "12011583971f8d5263248b71a7da10cf000884f2fbe3f872d6d50c4645f7206f"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-tuv",
+      "version": 1,
+      "hash": "12011583971f8d5263248b71a7da10cf000884f2fbe3f872d6d50c4645f7206f"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "943d05987f3f7c7329f7a1e801a002c2ff9ff24f9c81948b8a9198a8f2237544"
+}

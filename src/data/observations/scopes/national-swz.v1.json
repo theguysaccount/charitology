@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-swz",
+  "entity": {
+    "kind": "entity",
+    "id": "country-swz",
+    "version": 1,
+    "hash": "9b5edb52e0de61a806d3eb17a16f1589e3bde4df067a09028e29b1d80380c4e2"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Eswatini statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-swz",
+      "version": 1,
+      "hash": "9b5edb52e0de61a806d3eb17a16f1589e3bde4df067a09028e29b1d80380c4e2"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-swz",
+      "version": 1,
+      "hash": "9b5edb52e0de61a806d3eb17a16f1589e3bde4df067a09028e29b1d80380c4e2"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ccf460b6bbb7021ef57d59dc7c60c450489eca50cae0d21903f4c3c5cd03ef3b"
+}

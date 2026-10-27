@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mac",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mac",
+    "version": 1,
+    "hash": "c374bb2d828ddd7c6a334a245caab87972ddfa2f24eae1e11e8e57fa7472657b"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Macao SAR, China statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mac",
+      "version": 1,
+      "hash": "c374bb2d828ddd7c6a334a245caab87972ddfa2f24eae1e11e8e57fa7472657b"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mac",
+      "version": 1,
+      "hash": "c374bb2d828ddd7c6a334a245caab87972ddfa2f24eae1e11e8e57fa7472657b"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "efa06e91b42c38d969ec5dd050bc9135e226e8507483211f77ee69649a8b8cb6"
+}

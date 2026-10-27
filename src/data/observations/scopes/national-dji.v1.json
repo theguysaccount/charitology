@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-dji",
+  "entity": {
+    "kind": "entity",
+    "id": "country-dji",
+    "version": 1,
+    "hash": "5ee06a4c36f70d78e782da06da11243ba483f2d546331949fefb733aa65b89ac"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Djibouti statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-dji",
+      "version": 1,
+      "hash": "5ee06a4c36f70d78e782da06da11243ba483f2d546331949fefb733aa65b89ac"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-dji",
+      "version": 1,
+      "hash": "5ee06a4c36f70d78e782da06da11243ba483f2d546331949fefb733aa65b89ac"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "b47501516dc65aceef0b5c7cea7bd58c6df971fa621fe1915f028a2c02a3f954"
+}

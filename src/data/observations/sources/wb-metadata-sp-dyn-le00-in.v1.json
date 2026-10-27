@@ -1,0 +1,67 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "wb-metadata-sp-dyn-le00-in",
+  "url": "https://api.worldbank.org/v2/indicator/SP.DYN.LE00.IN?format=json&per_page=20000",
+  "publisher": "World Bank",
+  "title": "metadata-SP.DYN.LE00.IN",
+  "retrievedAt": "2026-10-27T12:27:35.255Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "420b2d34826841a21cd05f0ccfe624d9543abdf597c3c0442bb05dec5462be55",
+  "rawBytes": 972,
+  "payload": {
+    "kind": "public-json",
+    "raw": {
+      "path": "raw/420b2d34826841a21cd05f0ccfe624d9543abdf597c3c0442bb05dec5462be55.json",
+      "sha256": "420b2d34826841a21cd05f0ccfe624d9543abdf597c3c0442bb05dec5462be55",
+      "bytes": 972,
+      "mediaType": "application/json"
+    },
+    "adapter": "world-bank-indicator-v1"
+  },
+  "producerMetadata": [
+    {
+      "field": "unit",
+      "literal": ""
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "explicit-license",
+      "label": "CC BY 4.0",
+      "termsUrl": "https://data.worldbank.org/indicator/SP.DYN.LE00.IN",
+      "evidence": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "rights-life-expectancy-license",
+            "version": 1,
+            "hash": "6dac346c71a77ed127f06d2746fc06e204949f7791571b8abbcb684d52139b89"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Retained rights evidence"
+            ],
+            "excerpt": "CC BY-4.0"
+          }
+        }
+      ]
+    },
+    "attribution": "World Bank World Development Indicators and named original statistical producers",
+    "originalProducerCredit": "World Population Prospects, United Nations (UN), uri: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), note: Derived from male and female life expectancy at birth from sources such as statistical databases and publications from national statistical offices.;\nDemographic Statistics, Eurostat (ESTAT), note: Derived from male and female life expectancy at birth from sources such as Eurostat: Demographic Statistics.",
+    "limitations": [
+      "The source unit field is empty; normalized unit comes from its retained definition."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "85606cc158b0dff5d99afceb3d8c0312361b983a3bb417719858a68a92e6bd18"
+}

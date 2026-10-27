@@ -10,7 +10,6 @@ import checklist from "../data/checklist.json";
 import figures from "../data/figures.json";
 import sourcesMap from "../data/sources-map.json";
 import roadmap from "../data/roadmap.json";
-import countries from "../data/countries.json";
 import podcast from "../data/podcast.json";
 import newsletter from "../data/newsletter.json";
 import nonprofitTools from "../data/nonprofit-tools.json";
@@ -29,6 +28,16 @@ export interface Endpoint {
   build: () => Promise<unknown>;
   capturedAt?: () => Promise<string>;
   preserveShape?: boolean;
+  license?: string;
+}
+
+export const API_LICENSE_SUMMARY =
+  "Charitology schema and editorial material: CC BY 4.0; cite “Charitology (charitology.org)”. External data and documents retain their own source-specific terms, attribution and exceptions. This notice does not license third-party source material.";
+const OBSERVATION_LICENSE_SUMMARY =
+  "Charitology schema and editorial notes: CC BY 4.0. World Bank indicator responses retain their recorded CC BY 4.0 attribution and source-specific terms; metadata licensing is a disclosed publisher-default inference. Financial documents have separate terms and private originals are not included. Consult each source rights record at /api/v1/observations.json.";
+async function observations() {
+  const { loadObservations } = await import("./observations");
+  return loadObservations();
 }
 
 const entries = (collection: CollectionKey) => async () =>
@@ -63,6 +72,40 @@ function flattenRefs(value: unknown, preserveInstants = false): unknown {
 }
 
 export const ENDPOINTS: Endpoint[] = [
+  {
+    name: "observations",
+    description:
+      "Version-pinned exact source tokens, decimals, periods, definitions, source rights and explicit coverage. Draft source transcription; no ranking or impact estimate.",
+    build: async () => (await observations()).projection,
+    capturedAt: async () => (await observations()).projection.capturedAt,
+    preserveShape: true,
+    license: OBSERVATION_LICENSE_SUMMARY,
+  },
+  {
+    name: "observation-coverage",
+    description:
+      "Explicit country-window and consolidated-group coverage, including producer-null and uncollected states, linked to exact observations and source rights in the same edition.",
+    build: async () => {
+      const p = (await observations()).projection;
+      return {
+        format: "charitology-observation-coverage-projection",
+        version: 1,
+        edition: p.edition,
+        capturedAt: p.capturedAt,
+        countryProjection: p.countryProjection,
+        entities: p.entities,
+        scopes: p.scopes,
+        measures: p.measures,
+        sources: p.sources,
+        coverage: p.coverage,
+        observationsEndpoint: "/api/v1/observations.json",
+        limitations: p.limitations,
+      };
+    },
+    capturedAt: async () => (await observations()).projection.capturedAt,
+    preserveShape: true,
+    license: OBSERVATION_LICENSE_SUMMARY,
+  },
   {
     name: "publication-editions",
     description:
@@ -245,7 +288,10 @@ export const ENDPOINTS: Endpoint[] = [
     name: "countries",
     description:
       "Dated World Bank country/economy indicators, definitions, source metadata and explicit missing data.",
-    build: async () => countries,
+    build: async () => (await observations()).countries,
+    capturedAt: async () => (await observations()).projection.capturedAt,
+    preserveShape: true,
+    license: OBSERVATION_LICENSE_SUMMARY,
   },
   {
     name: "podcast",
@@ -281,7 +327,7 @@ export async function buildEndpoint(name: string): Promise<unknown> {
   return {
     name,
     description: endpoint.description,
-    license: "CC BY 4.0. Cite “Charitology (charitology.org)”.",
+    license: endpoint.license ?? API_LICENSE_SUMMARY,
     generated: capture
       ? capture.slice(0, 10)
       : new Date().toISOString().slice(0, 10),

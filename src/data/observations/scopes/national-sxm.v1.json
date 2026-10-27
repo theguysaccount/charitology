@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-sxm",
+  "entity": {
+    "kind": "entity",
+    "id": "country-sxm",
+    "version": 1,
+    "hash": "5a1a975efcb353cf0fff978cbd7f73cbd12c85342683b58823c2cb630eee89a9"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Sint Maarten (Dutch part) statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-sxm",
+      "version": 1,
+      "hash": "5a1a975efcb353cf0fff978cbd7f73cbd12c85342683b58823c2cb630eee89a9"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-sxm",
+      "version": 1,
+      "hash": "5a1a975efcb353cf0fff978cbd7f73cbd12c85342683b58823c2cb630eee89a9"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "428bb59aa6ed8f85487d3ec134cd0184fc5a56ffdc93e2cd8c523c91d8ea8ee4"
+}

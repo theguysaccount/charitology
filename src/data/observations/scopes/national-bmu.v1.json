@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-bmu",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bmu",
+    "version": 1,
+    "hash": "236db3fabdf588a02dbf13d8afa879a48b38cce9acb9c0b325bb09569b15eecb"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Bermuda statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-bmu",
+      "version": 1,
+      "hash": "236db3fabdf588a02dbf13d8afa879a48b38cce9acb9c0b325bb09569b15eecb"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-bmu",
+      "version": 1,
+      "hash": "236db3fabdf588a02dbf13d8afa879a48b38cce9acb9c0b325bb09569b15eecb"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "d4ac8c0dad9ab15134efea76e9499f724385bbb26967c535bd6b87ed45f40275"
+}

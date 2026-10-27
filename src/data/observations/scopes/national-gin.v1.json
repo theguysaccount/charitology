@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-gin",
+  "entity": {
+    "kind": "entity",
+    "id": "country-gin",
+    "version": 1,
+    "hash": "16997ee7737d31c13de303e49a0aff929ec6713db3cd6cdb8cab91e360789af0"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Guinea statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-gin",
+      "version": 1,
+      "hash": "16997ee7737d31c13de303e49a0aff929ec6713db3cd6cdb8cab91e360789af0"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-gin",
+      "version": 1,
+      "hash": "16997ee7737d31c13de303e49a0aff929ec6713db3cd6cdb8cab91e360789af0"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "e690e3267961828bfd2a4c6224d1963b8f7d84249c04ad7fd860e11bd500099e"
+}

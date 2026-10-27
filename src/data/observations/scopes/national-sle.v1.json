@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-sle",
+  "entity": {
+    "kind": "entity",
+    "id": "country-sle",
+    "version": 1,
+    "hash": "956ce9b158a0fe6d5e7275bc29d4ab0c4d1684fbb3bc0fd8c2399333f3cf94c3"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Sierra Leone statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-sle",
+      "version": 1,
+      "hash": "956ce9b158a0fe6d5e7275bc29d4ab0c4d1684fbb3bc0fd8c2399333f3cf94c3"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-sle",
+      "version": 1,
+      "hash": "956ce9b158a0fe6d5e7275bc29d4ab0c4d1684fbb3bc0fd8c2399333f3cf94c3"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "9644d35c114cfa2a9ff3ad8dcce09b01fbbe6299274ca0b48a88657442addc00"
+}

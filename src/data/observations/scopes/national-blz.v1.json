@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-blz",
+  "entity": {
+    "kind": "entity",
+    "id": "country-blz",
+    "version": 1,
+    "hash": "d2ae22701c52bbe7ee2619338b697ea651bbd35e458472e76fe3c665bfa6858c"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Belize statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-blz",
+      "version": 1,
+      "hash": "d2ae22701c52bbe7ee2619338b697ea651bbd35e458472e76fe3c665bfa6858c"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-blz",
+      "version": 1,
+      "hash": "d2ae22701c52bbe7ee2619338b697ea651bbd35e458472e76fe3c665bfa6858c"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "934634a447d3aa9f7523ef77117394fe65f055b22656d550663c4c7bd4c20cb1"
+}

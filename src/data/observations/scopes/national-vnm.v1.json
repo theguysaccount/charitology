@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-vnm",
+  "entity": {
+    "kind": "entity",
+    "id": "country-vnm",
+    "version": 1,
+    "hash": "c2b0182482ba739a6c87565c1f2a465b4c60bcfe372035d1ff9844e503a38b51"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Viet Nam statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-vnm",
+      "version": 1,
+      "hash": "c2b0182482ba739a6c87565c1f2a465b4c60bcfe372035d1ff9844e503a38b51"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-vnm",
+      "version": 1,
+      "hash": "c2b0182482ba739a6c87565c1f2a465b4c60bcfe372035d1ff9844e503a38b51"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7aabeb7e36c6dac7e569fcdfe285fa0e1a1f8c368614bf4c6cf5451ef87eae1d"
+}

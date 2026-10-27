@@ -78,7 +78,7 @@ The build produces 444 HTML pages. The original brief remains unchanged. The API
 
 ## Reproduction
 
-`npm run data:countries` explicitly refreshes the fixed 2020–2025 statistical window from World Bank APIs; ordinary builds use the committed snapshot and need no external data API.
+The original `npm run data:countries` refresh is retired and refuses rather than rewriting the historical country snapshot. Explicit `observations:prepare` and reviewed `observations:capture` create append-only factual editions with a real interpretation source commit; see [observation acceptance](OBSERVATIONS_ACCEPTANCE.md). Ordinary builds use committed sources and need no external data API.
 
 `FFMPEG=/path/to/ffmpeg npm run audio:podcast` regenerates the reading season on macOS using `say`. Ordinary CI uses the committed audio.
 

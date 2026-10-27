@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-brn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-brn",
+    "version": 1,
+    "hash": "a159f9dc6b9a8d8a650f9a07a311596b75d4669c74a359fec9045433c9f7e5c4"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Brunei Darussalam statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-brn",
+      "version": 1,
+      "hash": "a159f9dc6b9a8d8a650f9a07a311596b75d4669c74a359fec9045433c9f7e5c4"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-brn",
+      "version": 1,
+      "hash": "a159f9dc6b9a8d8a650f9a07a311596b75d4669c74a359fec9045433c9f7e5c4"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "d37ffb1663821f44bb2a444e97be172ab390d296ea0738f58c5b9cfc35f3aa41"
+}

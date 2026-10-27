@@ -2,7 +2,8 @@
 
 ## October 27, 2026: guarded donor records
 
-- Protected the local OS context form when JavaScript is unavailable or startup fails: fields remain disabled until local submission handling is ready, preventing private text from entering a default GET URL. Three actual-render/script regression groups cover the boundary.
+- Added a source-bound observation desk, immutable editions and source pages, exact country facts/missing cells and scoped consolidated financial comparison. Current HTML/API/exports read one admitted projection; refresh requires real committed interpretation inputs and preserves earlier records. Source-specific rights and private-original exclusions stay visible. Final publication evidence is recorded in [observation acceptance](docs/OBSERVATIONS_ACCEPTANCE.md).
+- Published the local OS context form correction in PR #23/Pages 40529490305: when JavaScript is unavailable or startup fails, fields remain disabled until local submission handling is ready, preventing private text from entering a default GET URL. Three actual-render/script groups and four exact live page/asset comparisons cover the boundary.
 - Added exact-key asynchronous saving and explicit recovery across twelve existing tools, preserving all fourteen saved keys and v1 formats. Failed writes and protected copies remain exportable; newer tab edits and file choices revoke older apply authority.
 - Added separately confirmed three-step grant repair with visible partial states and exact retry. Compass and other tools distinguish an empty start from a saved record; Wrapped examples stay on the page.
 - Fixed an OS email-worker completion race found by release CI: known provider outcomes now wait briefly for the tenant lock within the existing deadline. A forced PostgreSQL contention test confirms one send and later status-only reconciliation.
