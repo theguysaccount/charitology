@@ -778,6 +778,15 @@ export async function createGrantReportWorkspace({
       ["approved", "frozen", "issued"].includes(record.status),
     );
   }
+  function updateManifestOption(record) {
+    if (!record?.id) return;
+    state.manifests = state.manifests.map((saved) =>
+      saved.id === record.id ? record : saved,
+    );
+    for (const option of picker.querySelectorAll("option"))
+      if (option.value === record.id)
+        option.textContent = `${record.data.title || record.id} · revision ${record.revision} · ${human(record.status)}`;
+  }
   function errorMessage(error) {
     const issues = (error.issues || []).map(
       (issue) =>
@@ -992,6 +1001,7 @@ export async function createGrantReportWorkspace({
     if (!guard(generation)) return null;
     if (result.record?.revision !== selected.revision) {
       state.selected = result.record;
+      updateManifestOption(result.record);
       state.prepared = null;
       state.preview = null;
       clearExpiry();
@@ -1002,6 +1012,7 @@ export async function createGrantReportWorkspace({
       );
     }
     state.selected = result.record;
+    updateManifestOption(result.record);
     return result.record;
   }
   async function prepare() {
@@ -1089,6 +1100,7 @@ export async function createGrantReportWorkspace({
           "The saved digest response could not be verified. Refresh the manifest before saving again.",
         );
       state.selected = result.record;
+      updateManifestOption(result.record);
       state.prepared = null;
       state.preview = null;
       dirty(false);

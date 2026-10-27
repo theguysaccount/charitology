@@ -551,6 +551,12 @@ test("source preparation requires explicit normal revisioned save and never appr
     assert.equal(h.writes[0][3].data.sourceDigest, hash);
     assert.equal(h.writes[0][3].data.agreementId, "agreement");
     assert.equal(h.model.manifest.approval, null);
+    assert.match(
+      h.root
+        .querySelector("#grant-report-manifest")
+        .querySelectorAll("option")[1].textContent,
+      /revision 5 · review/,
+    );
     assert.match(h.root.textContent, /fresh independent approval/);
     assert.equal(h.find("Preview approved report").disabled, true);
     assert.equal(
