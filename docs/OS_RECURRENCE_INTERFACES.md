@@ -1,6 +1,6 @@
 # Recurring task draft interfaces
 
-Pre-implementation proposal · October 27, 2026 · AI-assisted · root engineering review pending. Read the [plan](OS_RECURRENCE_PLAN.md). Types below describe proposed boundaries, not implemented exports. Root acceptance and a pre-runtime freeze are required before code. No new dependency, provider, account or scheduled job is proposed.
+Pre-implementation proposal · October 27, 2026 · AI-assisted · root engineering review accepted for implementation. Read the [plan](OS_RECURRENCE_PLAN.md). Types below describe proposed boundaries, not implemented exports. Root acceptance and a pre-runtime freeze are required before code. No new dependency, provider, account or scheduled job is proposed.
 
 ## Typed calendar boundary
 

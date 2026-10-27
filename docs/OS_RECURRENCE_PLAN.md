@@ -1,6 +1,6 @@
 # Explicit recurring task drafts
 
-Pre-implementation proposal · October 27, 2026 · AI-assisted · root engineering review pending. No runtime, database migration or deployment is supplied by this document. Read the [proposed interfaces](OS_RECURRENCE_INTERFACES.md) and [writing standard](../STYLE.md). The root implementation agent must accept and freeze both documents before runtime work starts. Engineering review does not establish an organizational pilot or independent human review.
+Pre-implementation proposal · October 27, 2026 · AI-assisted · root engineering review accepted for implementation. No runtime, database migration or deployment is supplied by this document. Read the [proposed interfaces](OS_RECURRENCE_INTERFACES.md) and [writing standard](../STYLE.md). The root implementation agent must accept and freeze both documents before runtime work starts. Engineering review does not establish an organizational pilot or independent human review.
 
 ## Result and boundary
 
