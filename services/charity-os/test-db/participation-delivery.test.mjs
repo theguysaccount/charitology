@@ -653,6 +653,198 @@ test(
         },
       );
       await t.test(
+        "known provider outcomes wait for brief tenant-lock contention instead of leaving a completed send leased",
+        async () => {
+          const p = await seed("outcome-contention", { fresh: true });
+          await queue(p);
+          let held = null,
+            finalizerPid = null,
+            observation,
+            sends = 0,
+            statuses = 0;
+          const contendedDb = {
+            pool: db.pool,
+            tx(user, tenant, fn, options) {
+              return db.tx(
+                user,
+                tenant,
+                async (c) => {
+                  const backendPid = (
+                    await c.query("SELECT pg_backend_pid() AS pid")
+                  ).rows[0].pid;
+                  return fn({
+                    query(sql, values) {
+                      const pending = c.query(sql, values),
+                        text = typeof sql === "string" ? sql : sql.text;
+                      if (held && text.includes("advisory_xact_lock"))
+                        finalizerPid = backendPid;
+                      return pending;
+                    },
+                  });
+                },
+                options,
+              );
+            },
+          };
+          try {
+            const result = await runParticipationDelivery({
+              db: contendedDb,
+              settings,
+              budget: { deadline: Date.now() + 45000, remaining: 1 },
+              transport: {
+                async sendParticipation() {
+                  sends++;
+                  held = await db.pool.connect();
+                  await held.query("BEGIN");
+                  await held.query(
+                    "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+                    [org],
+                  );
+                  // Release only after PostgreSQL shows that the finalizer is
+                  // actually waiting. A try-lock/drop implementation cannot
+                  // satisfy this assertion, regardless of runner scheduling.
+                  const lock = held;
+                  observation = (async () => {
+                    const until = Date.now() + 1000;
+                    try {
+                      while (Date.now() < until) {
+                        if (finalizerPid) {
+                          const blocked = (
+                            await migration.pool.query(
+                              "SELECT EXISTS (SELECT 1 FROM pg_locks WHERE pid=$1 AND locktype='advisory' AND NOT granted) AS blocked",
+                              [finalizerPid],
+                            )
+                          ).rows[0].blocked;
+                          if (blocked) return true;
+                        }
+                        await new Promise((resolve) => setTimeout(resolve, 5));
+                      }
+                      return false;
+                    } finally {
+                      await lock.query("ROLLBACK");
+                      lock.release();
+                      if (held === lock) held = null;
+                    }
+                  })();
+                  return {
+                    state: "accepted",
+                    safeCode: "provider_accepted",
+                    providerEventAt: null,
+                  };
+                },
+                async participationStatus() {
+                  throw new Error("The first operation must send once.");
+                },
+              },
+            });
+            assert.equal(await observation, true);
+            assert.equal(result.attempted, 1);
+            assert.equal(sends, 1);
+            const accepted = (await boxes(p.id)).at(-1);
+            assert.equal(accepted.state, "accepted");
+            assert.equal(accepted.safe_code, "provider_accepted");
+            assert.equal(accepted.lease_owner, null);
+            assert.equal(accepted.attempts, 1);
+            const reconcile = async (state, safeCode) => {
+              await db.tx(staff, org, (c) =>
+                c.query(
+                  "UPDATE os_participation_outbox SET next_at=now() WHERE org_id=$1 AND participation_id=$2",
+                  [org, p.id],
+                ),
+              );
+              return run({
+                async sendParticipation() {
+                  sends++;
+                  throw new Error("A completed attempt cannot resend.");
+                },
+                async participationStatus() {
+                  statuses++;
+                  return { state, safeCode, providerEventAt: null };
+                },
+              });
+            };
+            assert.equal(
+              (await reconcile("delivered", "provider_delivered")).reconciled,
+              1,
+            );
+            assert.equal((await boxes(p.id)).at(-1).state, "delivered");
+            assert.equal(
+              (await reconcile("suppressed", "provider_complained")).reconciled,
+              1,
+            );
+            assert.equal((await boxes(p.id)).at(-1).state, "suppressed");
+            assert.equal((await row(p.id)).delivery_consent.enabled, false);
+            assert.equal(sends, 1);
+            assert.equal(statuses, 2);
+          } finally {
+            if (observation) await observation;
+            if (held) {
+              await held.query("ROLLBACK");
+              held.release();
+            }
+          }
+        },
+      );
+      await t.test(
+        "a genuinely exhausted completion deadline keeps the attempted lease recoverable by status only",
+        async () => {
+          const p = await seed("outcome-deadline", { fresh: true });
+          await queue(p);
+          let sends = 0,
+            statuses = 0;
+          const budget = { deadline: Date.now() + 45000, remaining: 1 };
+          const result = await runParticipationDelivery({
+            db,
+            settings,
+            budget,
+            transport: {
+              async sendParticipation() {
+                sends++;
+                budget.deadline = Date.now();
+                return {
+                  state: "accepted",
+                  safeCode: "provider_accepted",
+                  providerEventAt: null,
+                };
+              },
+              async participationStatus() {
+                throw new Error("The initial operation must send once.");
+              },
+            },
+          });
+          assert.equal(result.attempted, 1);
+          assert.equal(result.budgetLimited, true);
+          const interrupted = (await boxes(p.id)).at(-1);
+          assert.equal(interrupted.state, "leased");
+          assert.ok(interrupted.first_attempt_at);
+          assert.equal(interrupted.attempts, 1);
+          await db.tx(staff, org, (c) =>
+            c.query(
+              "UPDATE os_participation_outbox SET lease_until=now()-interval '1 second',next_at=now() WHERE org_id=$1 AND participation_id=$2",
+              [org, p.id],
+            ),
+          );
+          const recovered = await run({
+            async sendParticipation() {
+              sends++;
+              throw new Error("An expired attempted lease cannot resend.");
+            },
+            async participationStatus() {
+              statuses++;
+              return {
+                state: "delivered",
+                safeCode: "provider_delivered",
+                providerEventAt: null,
+              };
+            },
+          });
+          assert.equal(recovered.reconciled, 1);
+          assert.equal((await boxes(p.id)).at(-1).state, "delivered");
+          assert.equal(sends, 1);
+          assert.equal(statuses, 1);
+        },
+      );
+      await t.test(
         "ambiguous attempt and expired attempted lease never resend, including after provider cache expiry",
         async () => {
           const p = await seed("unknown", { fresh: true });

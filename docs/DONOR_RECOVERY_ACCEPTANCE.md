@@ -50,6 +50,12 @@ These journeys used three frozen builds. Between `aa9e750` and `1ed8d8a`, 66/75 
 
 Native saved-file proof remains unverified while the previously reported locked-Mac limitation is unresolved. No provider, payment, mail send, user-origin storage discovery or real private recipient was involved in this slice. Private proof and byte-comparison records remain outside the repository; no injected fixture ships.
 
+## Release-gate OS correction
+
+The final donor head's public check passed, but one of two concurrent CI runs exposed a preexisting OS operational-email race: provider acceptance was known after one send, while a competing short tenant-lock scan could make nonblocking completion leave the intent leased. The second run passing did not close that finding. Completion now waits for that lock within the existing two-second query and remaining dispatch deadline; selection and final eligibility remain nonblocking. The existing lease-owner check, suppression transaction and status-only uncertain-attempt recovery stay in place. No provider call is retried.
+
+The full 244 OS unit/browser-model checks and ten focused delivery units pass. Two new deterministic actual-PostgreSQL cases observe a real ungranted advisory lock before releasing its holder, then check acceptance → delivery → complaint with one send; a separately exhausted deadline retains the attempted lease and recovers by status only. All 18 isolated delivery database groups pass with schema cleanup verified. Those tests use fictional accounts and injected transport, not production mail. Exact final-head CI and service deployment remain separate gates.
+
 ## Publication
 
 [PR #22](https://github.com/theguysaccount/charitology/pull/22) contains this slice. Final-head CI, merge/Pages identity and public byte checks are pending at this documentation capture. The runtime/build/browser evidence above does not stand in for those release gates.
