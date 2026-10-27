@@ -69,6 +69,7 @@ async function start(p = "university-chapters", value = sample(p), opts = {}) {
       .querySelectorAll("input")
       .find((n) => n.dataset.prFile === "true");
   d.saved = () => JSON.parse(d.values.get(fullKey(p)));
+  if (opts.beforeRun) await opts.beforeRun(d);
   const release = opts.holdInitial ? await d.hold(key(p)) : null;
   const output = join(temp, "run-" + serial++ + ".mjs");
   await writeFile(output, script);
@@ -890,6 +891,201 @@ check(
       true,
     );
     assert.deepEqual(d.saved(), before);
+    assert.equal(hasWrite(d), false);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "all five persisted returns retain live context and collection editor identity without automatic writes",
+  async () => {
+    for (const p of programs) {
+      const original = sample(p),
+        d = await start(p, original),
+        config = model.programWorkspaces[p],
+        field = config.context[0].key,
+        c = config.collections[0],
+        before = d.values.get(fullKey(p));
+      await d
+        .$("#pw-rows-" + c.key)
+        .querySelectorAll("button")
+        .find((b) => b.textContent.startsWith("Edit "))
+        .click();
+      const input = d.$("#pw-context-" + field),
+        recordInput =
+          editor(d, c).querySelector('input[name="title"]') ||
+          editor(d, c).querySelector("input");
+      await d.set("#pw-context-" + field, "Cached unfinished context");
+      recordInput.value = "Cached unfinished record";
+      await recordInput.fire("input");
+      await d.action("forms").click();
+      const forms = JSON.parse(await d.downloads.at(-1).text());
+      await d.window.fire("pagehide", { persisted: true });
+      await d.window.fire("pageshow", { persisted: true });
+      assert.equal(d.$("#pw-context-" + field), input);
+      assert.equal(input.value, "Cached unfinished context");
+      assert.equal(recordInput.value, "Cached unfinished record");
+      assert.equal(d.values.get(fullKey(p)), before);
+      assert.equal(d.$('#pw-context button[type="submit"]').disabled, false);
+      await d.action("forms").click();
+      assert.deepEqual(
+        JSON.parse(await d.downloads.at(-1).text()).forms,
+        forms.forms,
+      );
+      await d.$("#pw-context").fire("submit");
+      assert.equal(d.saved().context[field], "Cached unfinished context");
+      assert.equal(recordInput.value, "Cached unfinished record");
+      await d.window.fire("pagehide");
+    }
+  },
+);
+check(
+  "persisted history observes silently changed disk and preserves all raw fields without adopting foreign records",
+  async () => {
+    const d = await start(),
+      p = d.program,
+      f = model.programWorkspaces[p].context[0].key;
+    await d.set("#pw-context-" + f, "Retained cached private form");
+    await d.window.fire("pagehide", { persisted: true });
+    const foreign = sample(p);
+    foreign.context[f] = "Foreign cached copy";
+    const raw = JSON.stringify(foreign);
+    d.values.set(fullKey(p), raw);
+    await d.window.fire("pageshow", { persisted: true });
+    assert.equal(d.get("#pw-context-" + f), "Retained cached private form");
+    assert.equal(d.values.get(fullKey(p)), raw);
+    assert.equal(d.$('#pw-context button[type="submit"]').disabled, true);
+    assert.match(d.$("#pw-status").textContent, /review recovery/);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "persisted hide revokes actual queued save and both recovery/sample previews",
+  async () => {
+    const d = await start(),
+      p = d.program,
+      f = model.programWorkspaces[p].context[0].key,
+      raw = d.values.get(fullKey(p));
+    await d.$("#pw-sample").click();
+    await settleTools(() => !d.$("#pw-sample-preview").hidden);
+    await d.window.fire("pagehide", { persisted: true });
+    assert.equal(d.$("#pw-sample-preview").hidden, true);
+    await d.window.fire("pageshow", { persisted: true });
+    await d.action("review-remove").click();
+    await settleTools(() => !d.action("apply").hidden);
+    await d.window.fire("pagehide", { persisted: true });
+    assert.equal(d.action("apply").hidden, true);
+    await d.window.fire("pageshow", { persisted: true });
+    const release = await d.hold(key(p));
+    await d.set("#pw-context-" + f, "Queued cached input");
+    const pending = d.$("#pw-context").fire("submit");
+    await Promise.resolve();
+    await d.window.fire("pagehide", { persisted: true });
+    const show = d.window.fire("pageshow", { persisted: true });
+    release();
+    await pending;
+    await show;
+    assert.equal(d.values.get(fullKey(p)), raw);
+    assert.equal(d.get("#pw-context-" + f), "Queued cached input");
+    assert.equal(d.$('#pw-context button[type="submit"]').disabled, false);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "persisted return preserves exact failed candidate and newer raw fields through Retry",
+  async () => {
+    const d = await start(),
+      p = d.program,
+      f = model.programWorkspaces[p].context[0].key;
+    d.flags.failWrite = true;
+    await d.set("#pw-context-" + f, "Exact cached failed candidate");
+    await d.$("#pw-context").fire("submit");
+    await d.set("#pw-context-" + f, "Newer cached raw form");
+    await d.window.fire("pagehide", { persisted: true });
+    await d.window.fire("pageshow", { persisted: true });
+    assert.match(
+      d.$("#pw-status").textContent,
+      /exact failed operation remains pending/,
+    );
+    d.flags.failWrite = false;
+    await d.action("retry").click();
+    await settleTools(() => !d.action("reload").disabled);
+    assert.equal(d.saved().context[f], "Exact cached failed candidate");
+    assert.equal(d.get("#pw-context-" + f), "Newer cached raw form");
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "all five held-open persisted returns recheck bytes before guarded initial hydration",
+  async () => {
+    for (const p of programs) {
+      const d = await start(p, sample(p), {
+          holdInitial: true,
+          early: async (d) => {
+            await d.window.fire("pagehide", { persisted: true });
+            await d.window.fire("pageshow", { persisted: true });
+          },
+        }),
+        f = model.programWorkspaces[p].context[0].key;
+      assert.equal(d.get("#pw-context-" + f), sample(p).context[f]);
+      assert.equal(hasWrite(d), false);
+      await d.window.fire("pagehide");
+    }
+  },
+);
+check(
+  "persisted return retains untouched native hydration through unrelated context save",
+  async () =>
+    nativeControlSanitization(async () => {
+      const p = "university-chapters",
+        v = sample(p);
+      v.context.name = "Fictional\r\nCached chapter";
+      const d = await start(p, v);
+      await d.set("#pw-context-purpose", "Cached other field");
+      await d.window.fire("pagehide", { persisted: true });
+      await d.window.fire("pageshow", { persisted: true });
+      assert.equal(d.get("#pw-context-name"), "FictionalCached chapter");
+      await d.$("#pw-context").fire("submit");
+      assert.equal(d.saved().context.name, v.context.name);
+      assert.equal(d.saved().context.purpose, "Cached other field");
+      await d.window.fire("pagehide");
+    }),
+);
+check(
+  "held-init resume cannot reacquire hydration ownership after a newer view-only intent",
+  async () => {
+    const p = "local-charitology",
+      field = model.programWorkspaces[p].context[0].key,
+      baseline = await start(p, sample(p)),
+      trigger = baseline.operations.filter(([op]) => op === "get").length + 1;
+    await baseline.window.fire("pagehide");
+    let reads = 0,
+      changed = false;
+    const d = await start(p, sample(p), {
+      holdInitial: true,
+      beforeRun: async (d) => {
+        const get = d.storage.getItem.bind(d.storage);
+        d.storage.getItem = (k) => {
+          const raw = get(k);
+          if (k === fullKey(p) && ++reads === trigger)
+            queueMicrotask(() => {
+              d.$("#pw-context-" + field).value =
+                "Preserve newer view-owned context";
+              void d.$("#pw-sample-discard").fire("change");
+              changed = true;
+            });
+          return raw;
+        };
+      },
+      early: async (d) => {
+        await d.window.fire("pagehide", { persisted: true });
+        await d.window.fire("pageshow", { persisted: true });
+      },
+    });
+    assert.equal(changed, true);
+    assert.equal(
+      d.get("#pw-context-" + field),
+      "Preserve newer view-owned context",
+    );
     assert.equal(hasWrite(d), false);
     await d.window.fire("pagehide");
   },

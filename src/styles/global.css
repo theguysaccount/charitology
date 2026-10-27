@@ -662,7 +662,9 @@ hr {
   border: 1px solid var(--rule);
   background: var(--surface);
   color: var(--ink-2);
-  white-space: nowrap;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .badge .glyph {
@@ -981,24 +983,30 @@ a.list-row:hover h3 {
 
 /* D1 recovery is mounted beside each tool; its private text and native file
    control must fit a narrow screen. Explicit display rules must honor hidden. */
-.d1-recovery {
+.d1-recovery,
+.rr-recovery {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.d1-recovery [hidden] {
+.btn[hidden],
+.d1-recovery [hidden],
+.rr-recovery [hidden] {
   display: none !important;
 }
-.d1-recovery .btn {
+.d1-recovery .btn,
+.rr-recovery .btn {
   max-width: 100%;
   white-space: normal;
   line-height: 1.35;
   text-align: center;
 }
-.d1-recovery label {
+.d1-recovery label,
+.rr-recovery label {
   display: block;
   margin-block: 1rem 0.5rem;
 }
-.d1-recovery :is(input[type='file'], select) {
+.d1-recovery :is(input[type='file'], select),
+.rr-recovery :is(input[type='file'], select) {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;

@@ -17,6 +17,9 @@ const config = { id, title, fields, freeze };
 <section
   class="tool rp-workspace"
   data-research-workspace
+  data-ready="remaining-record"
+  data-rr-research
+  data-rr-initialization="opening"
   data-config={JSON.stringify(config)}
   id={`workspace-${id}`}
   aria-labelledby={`${id}-workspace-title`}
@@ -86,7 +89,9 @@ const config = { id, title, fields, freeze };
                       <input
                         id={`${id}-${field.key}`}
                         name={field.key}
-                        type={field.type ?? "text"}
+                        type={field.type === "number" || field.type === "date" ? "text" : field.type ?? "text"}
+                        inputmode={field.type === "number" ? "decimal" : field.type === "date" ? "numeric" : undefined}
+                        placeholder={field.type === "date" ? "YYYY-MM-DD; partial drafts are retained" : undefined}
                         required={field.required}
                         min={field.min}
                         max={field.max}
@@ -113,37 +118,27 @@ const config = { id, title, fields, freeze };
     <div class="btn-row">
       <button class="btn" type="submit"
         >{freeze ? "Freeze version" : "Save record"}</button
-      ><button class="btn btn-ghost" type="button" data-new>New draft</button>
+      ><button class="btn btn-ghost" type="button" data-save-draft>Save partial draft now</button>
+      <button class="btn btn-ghost" type="button" data-new>New draft</button>
     </div>
     </fieldset>
   </form>
   <p role="status" aria-live="polite" data-status class="note"></p>
+  <p data-save-state class="note">Opening this browser’s saved copy. No write has been made.</p>
   <div class="btn-row">
-    <button class="btn btn-ghost btn-small" type="button" data-json
+    <button class="btn btn-ghost btn-small" type="button" data-json disabled
       >Export JSON</button
-    ><button class="btn btn-ghost btn-small" type="button" data-markdown
+    ><button class="btn btn-ghost btn-small" type="button" data-markdown disabled
       >Export research memo</button
-    ><button class="btn btn-ghost btn-small" type="button" data-csv
+    ><button class="btn btn-ghost btn-small" type="button" data-csv disabled
       >Export saved CSV</button>
   </div>
-  <details class="rp-transfer">
-    <summary>Import, undo and clear</summary><div class="field">
-      <label for={`${id}-import`}>Import this program’s JSON export</label
-      ><input
-        id={`${id}-import`}
-        data-import
-        type="file"
-        accept="application/json,.json"
-      />
-    </div><button class="btn" type="button" data-confirm-import hidden
-      >Replace with imported workspace</button
-    ><div class="btn-row">
-      <button class="btn btn-ghost btn-small" type="button" data-undo disabled
-        >Undo last change</button
-      ><button class="btn btn-ghost btn-small" type="button" data-clear
-        >Clear workspace</button>
-    </div>
-  </details>
+  <div class="btn-row">
+    <button class="btn btn-ghost btn-small" type="button" data-replace-draft disabled>Review replacing the failed save with this draft</button>
+    <button class="btn btn-small" type="button" data-apply-draft hidden disabled>Apply reviewed current draft</button>
+  </div>
+  <p data-draft-preview class="note"></p>
+  <div data-record-recovery></div>
   <h3>Saved records (<span data-count>0</span>)</h3><div data-records></div>
   <noscript
     ><p>
@@ -203,6 +198,19 @@ const config = { id, title, fields, freeze };
     overflow-wrap: anywhere;
     color: var(--ink-2);
   }
+  .rp-workspace :global([hidden]) {
+    display: none !important;
+  }
+  .rp-workspace :global(.btn) {
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.35;
+    text-align: center;
+  }
+  .rp-workspace :global(.rr-recovery) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
   .rp-workspace input[type="file"] {
     max-width: 100%;
   }
@@ -213,6 +221,872 @@ const config = { id, title, fields, freeze };
   }
 </style>
 <script>
-  import { mountResearchWorkspaces } from "../../lib/client/research-programs";
-  mountResearchWorkspaces();
+import { clear, h } from "../../lib/client/dom";
+import { download } from "../../lib/client/files";
+import {
+  fieldError,
+  researchCrossError,
+  researchCsv,
+  researchMarkdown,
+  isHttps,
+  type ResearchConfig,
+  type ResearchState,
+} from "../../lib/client/research-programs";
+import {
+  createRemainingRecordView,
+  openRemainingRecordSession,
+  remainingRecordHydratedString,
+  type RRResearchKey,
+  type RRSession,
+  type RRSnapshot,
+  type RRViewToken,
+  type RRRestorePreview,
+  type RRHydratedString,
+} from "../../lib/client/remaining-record-recovery";
+import {
+  mountRemainingRecordRecoveryControls,
+  type RRRecoveryControls,
+} from "../../lib/client/remaining-record-recovery-controls";
+import {
+  createRemainingRecordDraftAutosaver,
+  type RRDraftAutosaver,
+} from "../../lib/client/remaining-record-recovery-autosave";
+import { remainingRecordBackup } from "../../lib/client/remaining-record-recovery-formats";
+import {
+  RR_RESEARCH_SCHEMAS,
+  researchForRemainingKey,
+  copyRemainingRecordPlain,
+} from "../../lib/client/remaining-record-recovery-schemas";
+type Control = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+type Editor = {
+  id: string;
+  createdAt: string;
+  kind: "existing" | "admitted-new";
+  frozenCommitted: boolean;
+};
+async function mount(root: HTMLElement) {
+  if (root.dataset.rrMounted) return;
+  root.dataset.rrMounted = "true";
+  const form = root.querySelector<HTMLFormElement>("form")!;
+  // Install interception before storage, imports or any other asynchronous work.
+  const prevent = (event: Event) => event.preventDefault();
+  form.addEventListener("submit", prevent, true);
+  const status = root.querySelector<HTMLElement>("[data-status]")!,
+    fieldset = root.querySelector<HTMLFieldSetElement>(
+      "[data-private-form-controls]",
+    )!;
+  let disposed = false,
+    session: RRSession<RRResearchKey> | null = null,
+    controls: RRRecoveryControls | null = null,
+    autosaver: RRDraftAutosaver<RRResearchKey> | null = null;
+  const config = JSON.parse(root.dataset.config!) as ResearchConfig,
+    key = `charitology.research-program.${config.id}.v1` as RRResearchKey,
+    view = createRemainingRecordView(key);
+  let state: ResearchState | null = null,
+    editor: Editor | null = null,
+    ready = false,
+    resumeCheckRequested = false;
+  let draftPresent = new Set<string>(),
+    hydrated = new Map<string, RRHydratedString>(),
+    customPreview: RRRestorePreview<RRResearchKey> | null = null;
+  const previewText = root.querySelector<HTMLElement>("[data-draft-preview]")!,
+    applyDraft = root.querySelector<HTMLButtonElement>("[data-apply-draft]")!,
+    replaceDraft = root.querySelector<HTMLButtonElement>(
+      "[data-replace-draft]",
+    )!;
+  const cleanups: (() => void)[] = [];
+  const on = (target: EventTarget, name: string, listener: EventListener) => {
+    target.addEventListener(name, listener);
+    cleanups.push(() => target.removeEventListener(name, listener));
+  };
+  const input = (name: string): Control => {
+    const el = form.elements.namedItem(name);
+    if (!(
+      el instanceof HTMLInputElement ||
+      el instanceof HTMLTextAreaElement ||
+      el instanceof HTMLSelectElement
+    ))
+      throw Error(`Missing research field: ${name}`);
+    return el;
+  };
+  const say = (message: string) => {
+    if (!disposed) status.textContent = message;
+  };
+  const revokePreview = () => {
+    customPreview = null;
+    previewText.textContent = "";
+    applyDraft.hidden = true;
+    applyDraft.disabled = true;
+  };
+  const raw = () =>
+    Object.fromEntries(config.fields.map((f) => [f.key, input(f.key).value]));
+  const values = () =>
+    Object.fromEntries(
+      config.fields.map((f) => [
+        f.key,
+        remainingRecordHydratedString(
+          input(f.key).value,
+          hydrated.get(f.key) ?? null,
+        ),
+      ]),
+    );
+  const draft = () => {
+    const all = values();
+    return Object.fromEntries(
+      config.fields
+        .filter((f) => draftPresent.has(f.key))
+        .map((f) => [f.key, all[f.key]]),
+    );
+  };
+  const editing = () =>
+    !config.freeze && editor && state?.records.some((r) => r.id === editor!.id)
+      ? editor.id
+      : null;
+  const overlay = (): ResearchState => {
+    if (!state)
+      throw Error(
+        "No admitted research workspace is available. Keep the raw saved copy.",
+      );
+    return { ...state, draft: draft(), editing: editing() };
+  };
+  const meaningful = () =>
+    view.snapshot().dirtyForms.length > 0 ||
+    autosaver?.hasPending() ||
+    session?.snapshot().pendingPersist ||
+    Object.values(draft()).some(Boolean) ||
+    editor !== null;
+  function stopIntent() {
+    view.changedView();
+    autosaver?.cancel();
+    controls?.noteViewMutation();
+    revokePreview();
+  }
+  function review(message: string) {
+    stopIntent();
+    const token = view.capture();
+    return !meaningful() || (window.confirm(message) && view.isCurrent(token));
+  }
+  function fill(native: ResearchState) {
+    draftPresent = new Set(Object.keys(native.draft));
+    hydrated = new Map();
+    for (const f of config.fields) {
+      const control = input(f.key),
+        original = native.draft[f.key] ?? "";
+      if (control.tagName === "SELECT") {
+        for (const option of [
+          ...control.querySelectorAll<HTMLOptionElement>(
+            "[data-rr-retained-option]",
+          ),
+        ])
+          option.remove();
+        if (original && !f.options?.some((o) => o.value === original)) {
+          const option = document.createElement("option");
+          option.value = original;
+          option.textContent = `Retained unfinished choice: ${original}`;
+          option.dataset.rrRetainedOption = "true";
+          control.append(option);
+        }
+      }
+      control.value = original;
+      hydrated.set(f.key, Object.freeze({ original, display: control.value }));
+    }
+    const row = native.editing
+      ? native.records.find((r) => r.id === native.editing)
+      : undefined;
+    editor = row
+      ? {
+          id: row.id,
+          createdAt: row.createdAt,
+          kind: "existing",
+          frozenCommitted: false,
+        }
+      : null;
+  }
+  function completion() {
+    if (!state) return;
+    const current = values(),
+      required = config.fields.filter((f) => f.required),
+      complete = required.filter((f) => !fieldError(f, current[f.key])).length;
+    root.querySelector("[data-completion]")!.textContent =
+      `${complete} of ${required.length} required fields complete. Partial drafts keep exact strings; blank optional values stay unknown.`;
+    root.querySelector("[data-editing]")!.textContent = editor?.frozenCommitted
+      ? "Saved frozen version; Fork or New before another version"
+      : editor
+        ? editor.kind === "admitted-new"
+          ? "Retained new-record identity"
+          : "Editing a saved record"
+        : config.freeze
+          ? "New local version"
+          : "New record";
+    root.dispatchEvent(new CustomEvent("research:change", { detail: current }));
+    root.dispatchEvent(
+      new CustomEvent("research:state", {
+        detail: { ...state, draft: current, editing: editing() },
+      }),
+    );
+  }
+  function capabilities(s: RRSnapshot<RRResearchKey>) {
+    // Failed persistence keeps controls editable so newer text is recoverable.
+    fieldset.disabled =
+      !ready ||
+      !s.hasCurrent ||
+      s.code === "read-only" ||
+      s.code === "disposed";
+    const submit = form.querySelector<HTMLButtonElement>(
+      'button[type="submit"]',
+    )!;
+    submit.disabled = !ready || !s.canWrite;
+    for (const attr of ["data-save-draft", "data-new"]) {
+      const b = root.querySelector<HTMLButtonElement>(`[${attr}]`)!;
+      b.disabled = !ready || !s.canWrite;
+    }
+    for (const attr of ["data-json", "data-markdown", "data-csv"])
+      root.querySelector<HTMLButtonElement>(`[${attr}]`)!.disabled =
+        !ready || !s.hasCurrent;
+    replaceDraft.disabled =
+      !ready || !s.hasCurrent || !s.pendingPersist || s.code !== "ready";
+    root.querySelector("[data-save-state]")!.textContent = !s.hasCurrent
+      ? "No admitted research records. Keep the protected saved copy and use recovery."
+      : s.pendingPersist
+        ? "The exact failed candidate is retained only in memory. Retry it, or review replacing it with the current draft."
+        : s.persistence === "saved"
+          ? "Validated research workspace saved in this browser."
+          : s.persistence === "absent"
+            ? "Empty workspace; this key has not been saved."
+            : "Current research work is not saved. Keep native and unfinished-form backups.";
+    if (customPreview && !view.isCurrent(customPreview.view)) revokePreview();
+  }
+  function renderRecords() {
+    const box = root.querySelector<HTMLElement>("[data-records]")!;
+    clear(box);
+    root.querySelector("[data-count]")!.textContent = String(
+      state?.records.length ?? 0,
+    );
+    if (!state) {
+      box.append(h("p", {}, "No admitted research records are available."));
+      return;
+    }
+    if (!state.records.length)
+      box.append(
+        h(
+          "p",
+          { class: "empty" },
+          "No saved records yet. Partial drafts remain separate from saved records.",
+        ),
+      );
+    for (const row of [...state.records].reverse()) {
+      const detail = h(
+        "details",
+        { class: "rp-record" },
+        h("summary", {}, row.values.title || "Untitled record"),
+      );
+      detail.append(
+        h(
+          "p",
+          { class: "note" },
+          `${config.freeze ? "Frozen local version · " : ""}Saved ${row.updatedAt}`,
+        ),
+      );
+      const dl = h("dl");
+      for (const f of config.fields) {
+        const value = row.values[f.key],
+          display =
+            f.type === "select"
+              ? (f.options?.find((o) => o.value === value)?.label ?? value)
+              : value;
+        dl.append(
+          h("dt", {}, f.label),
+          h(
+            "dd",
+            {},
+            f.type === "url" && value && isHttps(value)
+              ? h(
+                  "a",
+                  { href: value, target: "_blank", rel: "noopener" },
+                  value,
+                )
+              : display || "Unknown / not recorded.",
+          ),
+        );
+      }
+      const edit = h(
+          "button",
+          {
+            type: "button",
+            class: "btn btn-ghost btn-small",
+            "data-research-edit": row.id,
+          },
+          config.freeze ? "Fork a new draft" : "Edit record",
+        ),
+        del = h(
+          "button",
+          {
+            type: "button",
+            class: "btn btn-ghost btn-small",
+            "data-research-delete": row.id,
+          },
+          "Delete record",
+        );
+      edit.disabled = !session?.snapshot().canWrite;
+      del.disabled = !session?.snapshot().canWrite;
+      detail.append(dl, h("div", { class: "btn-row" }, edit, del));
+      box.append(detail);
+    }
+  }
+  function accept(
+    s: RRSnapshot<RRResearchKey>,
+    adopt = false,
+    token?: RRViewToken,
+  ) {
+    if (disposed) return;
+    if (s.hasCurrent) state = s.value as ResearchState;
+    if (
+      editor?.kind === "admitted-new" &&
+      config.freeze &&
+      s.persistence === "saved" &&
+      s.hasCurrent &&
+      s.value.records.some((r) => r.id === editor!.id)
+    )
+      editor.frozenCommitted = true;
+    if (adopt && s.hasCurrent && token && view.isCurrent(token)) {
+      fill(s.value as ResearchState);
+      view.markClean("draft", token);
+      autosaver?.cancel();
+      revokePreview();
+    }
+    renderRecords();
+    capabilities(s);
+    completion();
+  }
+  async function saveModel(
+    candidate: ResearchState,
+    adopt: boolean,
+    install?: Editor,
+  ) {
+    if (!session || disposed) throw Error("Research workspace is not ready.");
+    stopIntent();
+    view.changedForm("draft");
+    controls?.noteViewMutation();
+    let token = view.capture();
+    try {
+      const captured = (() => {
+        try {
+          return session!.captureSave(candidate, { form: "draft" });
+        } finally {
+          token = view.capture();
+        }
+      })();
+      token = captured.view;
+      if (install) editor = install;
+      const result = await session.saveCaptured(captured);
+      if (disposed) return;
+      controls?.refresh();
+      if (!view.isCurrent(result.view)) return;
+      if (result.outcome === "saved" || result.outcome === "no-op") {
+        if (adopt) accept(result.snapshot, true, result.view);
+        else {
+          accept(result.snapshot);
+          view.markClean("draft", result.view);
+        }
+        say(
+          "Research workspace saved in this browser. No submission was sent.",
+        );
+      } else if (result.outcome === "unsaved")
+        say(
+          "This exact candidate is only in memory. Newer fields remain here; retry the captured change or review the current draft.",
+        );
+      else say("A newer edit superseded this save; the current fields remain.");
+    } catch (error) {
+      if (!disposed && view.isCurrent(token)) {
+        controls?.refresh();
+        say(
+          error instanceof Error
+            ? error.message
+            : "The research change was refused.",
+        );
+      }
+    }
+  }
+  function dispose() {
+    if (disposed) return;
+    disposed = true;
+    ready = false;
+    autosaver?.dispose();
+    controls?.dispose();
+    session?.dispose();
+    view.dispose();
+    for (const fn of cleanups) fn();
+    fieldset.disabled = true;
+    for (const el of root.querySelectorAll<
+      | HTMLInputElement
+      | HTMLButtonElement
+      | HTMLTextAreaElement
+      | HTMLSelectElement
+    >("button,input,textarea,select"))
+      el.disabled = true;
+    revokePreview();
+  }
+  const leaving = (event: BeforeUnloadEvent) => {
+    if (disposed) return;
+    const current = session?.snapshot();
+    if (
+      view.snapshot().dirtyForms.length ||
+      autosaver?.hasPending() ||
+      current?.pendingPersist ||
+      current?.persistence === "unsaved"
+    ) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+  };
+  on(window, "beforeunload", leaving as EventListener);
+  on(window, "pagehide", ((event: Event) => {
+    if (disposed) return;
+    if ((event as PageTransitionEvent).persisted) {
+      if (!ready) return;
+      stopIntent();
+      say(
+        "This page is retained with its unfinished fields. Queued saves and recovery previews were canceled; no rollback is implied. Save the draft or edit again after returning.",
+      );
+    } else dispose();
+  }) as EventListener);
+  on(window, "pageshow", (async (event: Event) => {
+    if (!(event as PageTransitionEvent).persisted || disposed) return;
+    if (!ready || !session) {
+      resumeCheckRequested = true;
+      return;
+    }
+    stopIntent();
+    let owned = view.capture();
+    try {
+      const notice = (() => {
+        try {
+          return session!.noticeExternalChange();
+        } finally {
+          owned = view.capture();
+        }
+      })();
+      const snapshot = await notice;
+      if (disposed || !view.isCurrent(owned)) return;
+      controls?.refresh();
+      say(
+        snapshot.message ||
+          "Returned to this research workspace. Unfinished fields remain unchanged; edit or Save partial draft to save them. No saved copy was automatically adopted.",
+      );
+    } catch (error) {
+      if (!disposed && view.isCurrent(owned))
+        say(
+          (error instanceof Error
+            ? error.message
+            : "Saved-copy recheck failed.") +
+            " Unfinished fields remain on this page.",
+        );
+    }
+  }) as EventListener);
+  try {
+    const program = researchForRemainingKey(key);
+    if (!program) throw Error("Unknown research program.");
+    const spec = RR_RESEARCH_SCHEMAS[program];
+    if (
+      config.freeze !== spec.freeze ||
+      config.fields.length !== spec.fields.length ||
+      config.fields.some((f, i) => f.key !== spec.fields[i].key)
+    )
+      throw Error(
+        "Research field definitions changed. Saved data remains protected until compatibility is reviewed.",
+      );
+    session = await openRemainingRecordSession(key, { view });
+    while (resumeCheckRequested) {
+      resumeCheckRequested = false;
+      await session.noticeExternalChange();
+    }
+    if (disposed || !root.isConnected)
+      throw Error("Research view was closed during initialization.");
+    const first = session.snapshot();
+    if (first.hasCurrent) {
+      state = first.value as ResearchState;
+      fill(state);
+    }
+    autosaver = createRemainingRecordDraftAutosaver({
+      session,
+      view,
+      form: "draft",
+      readCandidate: overlay,
+      onResult(result) {
+        if (disposed || !view.isCurrent(result.view)) return;
+        controls?.refresh();
+        accept(result.snapshot);
+        if (result.outcome === "saved" || result.outcome === "no-op") {
+          view.markClean("draft", result.view);
+          say(
+            "Partial draft saved in this browser. No research finding or submission is implied.",
+          );
+        } else if (result.outcome === "unsaved")
+          say(
+            "Draft saving failed. The exact candidate and newer unfinished fields remain separate; use Retry or backups.",
+          );
+      },
+      onError(error) {
+        say(
+          error instanceof Error ? error.message : "Draft saving was refused.",
+        );
+        controls?.refresh();
+      },
+    });
+    controls = mountRemainingRecordRecoveryControls({
+      host: root.querySelector<HTMLElement>("[data-record-recovery]")!,
+      session,
+      view,
+      readForms: () => [
+        { form: "draft", editingId: editor?.id ?? null, values: raw() },
+      ],
+      onAdopt: (s, token) => accept(s, true, token),
+      onStatus: (s) => accept(s),
+    });
+    const edited = (event: Event) => {
+      if (disposed || !ready) return;
+      const target = event.target as Control;
+      if (!config.fields.some((f) => f.key === target?.name)) return;
+      hydrated.delete(target.name);
+      draftPresent.add(target.name);
+      view.changedForm("draft");
+      controls?.noteViewMutation();
+      revokePreview();
+      autosaver?.noteInput();
+      completion();
+    };
+    on(form, "input", edited);
+    on(form, "change", edited);
+    on(form, "submit", (() => {
+      if (!ready || !state || !session || disposed) return;
+      const current = values(),
+        invalid = config.fields.find((f) => fieldError(f, current[f.key]));
+      if (invalid) {
+        input(invalid.key).focus();
+        say(fieldError(invalid, current[invalid.key])!);
+        return;
+      }
+      const cross = researchCrossError(config, current);
+      if (cross) {
+        say(cross);
+        return;
+      }
+      if (config.freeze && editor?.frozenCommitted) {
+        say(
+          "This frozen version is already saved. Keep the newer draft text; explicitly Fork or start New before creating another version.",
+        );
+        return;
+      }
+      const old = editor
+        ? state.records.find((r) => r.id === editor!.id)
+        : undefined;
+      if (editor?.kind === "existing" && !old) {
+        say(
+          "The original editing target is no longer in this workspace. Keep these fields and explicitly start New; it will not be silently recreated.",
+        );
+        return;
+      }
+      const at = new Date().toISOString();
+      const identity = editor ?? {
+        id: crypto.randomUUID(),
+        createdAt: at,
+        kind: "admitted-new" as const,
+        frozenCommitted: false,
+      };
+      if (!old && state.records.length >= 200) {
+        say(
+          "This workspace holds at most 200 records. Keep an export and remove old records before adding another.",
+        );
+        return;
+      }
+      const row = {
+          id: identity.id,
+          createdAt: old?.createdAt ?? identity.createdAt,
+          updatedAt: at,
+          values: current,
+        },
+        candidate = {
+          ...state,
+          records: old
+            ? state.records.map((r) => (r.id === old.id ? row : r))
+            : [...state.records, row],
+          draft: {},
+          editing: null,
+        };
+      void saveModel(candidate, true, identity);
+    }) as EventListener);
+    on(root.querySelector("[data-save-draft]")!, "click", (() => {
+      if (state) void saveModel(overlay(), false);
+    }) as EventListener);
+    on(root.querySelector("[data-new]")!, "click", (() => {
+      if (
+        !state ||
+        !review(
+          "Start a new draft and discard the current unfinished editor? Keep backups first.",
+        )
+      )
+        return;
+      void saveModel({ ...state, draft: {}, editing: null }, true);
+    }) as EventListener);
+    on(root.querySelector("[data-records]")!, "click", ((event: Event) => {
+      const target = (event.target as HTMLElement).closest<HTMLButtonElement>(
+        "[data-research-edit],[data-research-delete]",
+      );
+      if (!target || !state || !session?.snapshot().canWrite) return;
+      const id = target.dataset.researchEdit ?? target.dataset.researchDelete!,
+        row = state.records.find((r) => r.id === id);
+      if (!row) return;
+      if (
+        !review(
+          target.dataset.researchEdit
+            ? "Replace this unfinished editor with the selected saved record?"
+            : "Delete this saved record? Keep an export first; guarded Undo is available.",
+        )
+      )
+        return;
+      if (target.dataset.researchEdit)
+        void saveModel(
+          {
+            ...state,
+            draft: { ...row.values },
+            editing: config.freeze ? null : row.id,
+          },
+          true,
+        );
+      else {
+        const selected = editor?.id === id;
+        void saveModel(
+          {
+            ...state,
+            records: state.records.filter((r) => r.id !== id),
+            draft: selected ? {} : draft(),
+            editing: selected ? null : editing(),
+          },
+          true,
+        );
+      }
+    }) as EventListener);
+    on(root.querySelector("[data-json]")!, "click", (() => {
+      try {
+        download(
+          `${config.id}.json`,
+          remainingRecordBackup(key, overlay()),
+          "application/json;charset=utf-8",
+        );
+        say(
+          `Requested the complete native backup with the current draft overlay (${session!.snapshot().persistence}). This does not save or clean the form.`,
+        );
+      } catch (error) {
+        say(
+          `${error instanceof Error ? error.message : "Native backup refused."} Keep the fields and use unfinished-form recovery.`,
+        );
+      }
+    }) as EventListener);
+    on(root.querySelector("[data-markdown]")!, "click", (() => {
+      try {
+        const candidate = overlay();
+        remainingRecordBackup(key, candidate);
+        download(
+          `${config.id}.md`,
+          researchMarkdown(config, candidate),
+          "text/markdown;charset=utf-8",
+        );
+        say(
+          "Requested the research memo with the current draft. Saved records and draft assumptions remain distinct.",
+        );
+      } catch (error) {
+        say(
+          `${error instanceof Error ? error.message : "Memo refused."} Keep the fields and use unfinished-form recovery.`,
+        );
+      }
+    }) as EventListener);
+    on(root.querySelector("[data-csv]")!, "click", (() => {
+      if (!state) return;
+      download(
+        `${config.id}.csv`,
+        researchCsv(
+          state.records.map((row) =>
+            Object.fromEntries([
+              ["savedAt", row.updatedAt],
+              ...config.fields.map((f) => [f.label, row.values[f.key] ?? ""]),
+            ]),
+          ),
+        ),
+        "text/csv;charset=utf-8",
+      );
+      say(
+        `Requested CSV of current admitted saved-record rows (${session!.snapshot().persistence}). Unfinished editor fields are excluded.`,
+      );
+    }) as EventListener);
+    on(replaceDraft, "click", (async () => {
+      if (!state || !session) return;
+      stopIntent();
+      let owned = view.capture();
+      try {
+        const promise = (() => {
+          try {
+            return session!.previewReplace(overlay(), {
+              kind: "replace",
+              discardLocal: true,
+            });
+          } finally {
+            owned = view.capture();
+          }
+        })();
+        const p = await promise;
+        if (disposed || !view.isCurrent(p.view)) return;
+        customPreview = p;
+        previewText.textContent = `Replace the earlier failed candidate with this exact current draft, keeping ${p.summary.counts.records ?? 0} records. Review ${p.reviewHash}. Apply discards that earlier candidate; newer typing cancels this review.`;
+        applyDraft.hidden = false;
+        applyDraft.disabled = false;
+      } catch (error) {
+        if (!disposed && view.isCurrent(owned))
+          say(
+            error instanceof Error
+              ? error.message
+              : "Replacement preview refused.",
+          );
+      }
+    }) as EventListener);
+    on(applyDraft, "click", (async () => {
+      const p = customPreview;
+      if (!p || !session || !view.isCurrent(p.view)) return;
+      revokePreview();
+      try {
+        const r = await session.applyRestore(p);
+        controls?.refresh();
+        if (disposed || !view.isCurrent(r.view)) return;
+        if (r.outcome === "saved" || r.outcome === "no-op") {
+          accept(r.snapshot, true, r.view);
+          say(
+            "The reviewed current draft replaced the failed candidate and is saved.",
+          );
+        } else
+          say(
+            "The reviewed current draft remains only in memory. Exact Retry and both forms of backup remain available.",
+          );
+      } catch (error) {
+        if (!disposed && view.isCurrent(p.view))
+          say(error instanceof Error ? error.message : "Replacement refused.");
+      }
+    }) as EventListener);
+    on(root, "research:prefill", ((event: Event) => {
+      if (!state || !ready) return;
+      try {
+        const incoming = copyRemainingRecordPlain(
+          (event as CustomEvent).detail,
+          1000000,
+        ) as Record<string, unknown>;
+        if (
+          !incoming ||
+          typeof incoming !== "object" ||
+          Array.isArray(incoming) ||
+          Object.keys(incoming).some(
+            (k) =>
+              !config.fields.some((f) => f.key === k) ||
+              typeof incoming[k] !== "string",
+          )
+        )
+          throw Error(
+            "The starting point does not match this program's draft fields.",
+          );
+        if (
+          !review(
+            "Replace affected unfinished fields with this starting point and start a new draft?",
+          )
+        )
+          return;
+        const merged = { ...draft(), ...incoming } as Record<string, string>,
+          candidate = { ...state, draft: merged, editing: null };
+        remainingRecordBackup(key, candidate);
+        editor = null;
+        for (const [k, v] of Object.entries(incoming)) {
+          const control = input(k);
+          if (
+            control.tagName === "SELECT" &&
+            ![...control.querySelectorAll<HTMLOptionElement>("option")].some(
+              (o) => o.value === v,
+            )
+          ) {
+            const option = document.createElement("option");
+            option.value = v as string;
+            option.textContent = `Retained unfinished choice: ${v}`;
+            option.dataset.rrRetainedOption = "true";
+            control.append(option);
+          }
+          control.value = v as string;
+          hydrated.delete(k);
+          draftPresent.add(k);
+        }
+        view.changedForm("draft");
+        controls?.noteViewMutation();
+        autosaver?.noteInput();
+        completion();
+        say(
+          "Starting-point fields are an unfinished local draft. Verify the evidence before saving a record.",
+        );
+      } catch (error) {
+        say(error instanceof Error ? error.message : "Starting point refused.");
+      }
+    }) as EventListener);
+    on(root, "research:inspect", completion);
+    on(window, "storage", (async (event: Event) => {
+      const keyChanged = (event as StorageEvent).key;
+      if (keyChanged !== key && keyChanged !== null) return;
+      stopIntent();
+      let owned = view.capture();
+      try {
+        const promise = (() => {
+          try {
+            return session!.noticeExternalChange();
+          } finally {
+            owned = view.capture();
+          }
+        })();
+        await promise;
+        if (disposed || !view.isCurrent(owned)) return;
+        controls?.refresh();
+        say(
+          "Another tab changed this key. Current fields are retained; review saved-copy recovery before changing it.",
+        );
+      } catch (error) {
+        if (!disposed && view.isCurrent(owned))
+          say(
+            error instanceof Error ? error.message : "Saved-copy check failed.",
+          );
+      }
+    }) as EventListener);
+    ready = true;
+    root.dataset.rrInitialization = "ready";
+    accept(session.snapshot());
+    say(
+      first.message ||
+        "Research workspace ready. Nothing is submitted to Charitology.",
+    );
+  } catch (error) {
+    dispose();
+    root.dataset.rrInitialization = "failed";
+    status.textContent =
+      error instanceof Error
+        ? error.message
+        : "Research workspace initialization failed. Private controls remain disabled.";
+  }
+}
+for (const root of document.querySelectorAll<HTMLElement>("[data-rr-research]"))
+  void mount(root).catch((error) => {
+    root.dataset.rrInitialization = "failed";
+    for (const field of root.querySelectorAll<
+      | HTMLInputElement
+      | HTMLButtonElement
+      | HTMLTextAreaElement
+      | HTMLSelectElement
+    >("button,input,textarea,select"))
+      field.disabled = true;
+    const status = root.querySelector<HTMLElement>("[data-status]");
+    if (status)
+      status.textContent =
+        error instanceof Error
+          ? error.message
+          : "Research initialization failed. Private controls remain disabled.";
+  });
 </script>

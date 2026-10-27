@@ -92,18 +92,8 @@ import { url } from "../../lib/site";
       >Download nomination packets</button
     ><button class="btn btn-ghost" id="nomination-json"
       >Export JSON backup</button
-    ><label class="btn btn-ghost"
-      >Preview backup import<input
-        type="file"
-        id="nomination-import"
-        accept="application/json,.json"
-      /></label>
-  </div><div id="nomination-preview" hidden>
-    <p id="nomination-preview-note"></p><button
-      class="btn"
-      id="nomination-replace">Replace with previewed backup</button
-    ><button class="btn btn-ghost" id="nomination-cancel">Cancel import</button>
-  </div><h3>What public review must decide</h3><ol>
+    >
+  </div><div id="nomination-recovery"></div><h3>What public review must decide</h3><ol>
     <li>
       Whether any list should be ranked at all, given disagreement across values
       and outcome units.
@@ -125,61 +115,171 @@ import { url } from "../../lib/site";
 </section>
 <script>
   import { download } from "../../lib/client/files";
-  import { guardedDraft } from "../../lib/client/guarded-draft";
-  import { validateNominations as valid } from "../../lib/client/completion-models";
-  const root = document.querySelector("#hundred-lab");
+  import {
+    nominationFields as fields,
+    type Nomination,
+  } from "../../lib/client/completion-models";
+  import {
+    createRemainingRecordView,
+    openRemainingRecordSession,
+    remainingRecordHydratedString,
+    type RRSession,
+    type RRHydratedString,
+    type RRReadonly,
+    type RRViewToken,
+  } from "../../lib/client/remaining-record-recovery";
+  import {
+    mountRemainingRecordRecoveryControls,
+    type RRRecoveryControls,
+  } from "../../lib/client/remaining-record-recovery-controls";
+  const root = document.querySelector<HTMLElement>("#hundred-lab");
   if (root) {
+    let resumeCheckRequested = false;
+    root.dataset.rrInitialization = "opening";
     const form = root.querySelector<HTMLFormElement>("form")!;
     form.addEventListener("submit", (event) => event.preventDefault(), true);
-    const draft = guardedDraft("charitology-nominations-v1");
-    const fields = [
-      "title",
-      "subject",
-      "depth",
-      "mechanism",
-      "lenses",
-      "evidence",
-      "funding",
-      "voice",
-      "objection",
-      "conflicts",
-    ];
-    type Row = { id: string; [key: string]: string };
-    let rows: Row[] = [];
-    let editing = "";
-    let pending: Row[] | null = null;
-    let writable = true;
-    let undo: Row[] | null = null;
-    const status = root.querySelector<HTMLElement>("#nomination-status")!;
-    try {
-      const raw = draft.read();
-      if (raw) {
-        const data = JSON.parse(raw);
-        if (!valid(data)) throw Error();
-        rows = data;
-      }
-    } catch {
-      writable = false;
-      status.textContent =
-        "Stored data unreadable or saving unavailable; it is left untouched. Export any new work before leaving.";
+    const fieldset = root.querySelector<HTMLFieldSetElement>(
+        "[data-private-form-controls]",
+      )!,
+      status = root.querySelector<HTMLElement>("#nomination-status")!;
+    const key = "charitology-nominations-v1" as const,
+      view = createRemainingRecordView(key);
+    let session: RRSession<typeof key> | null = null,
+      controls: RRRecoveryControls | null = null,
+      rows: RRReadonly<Nomination[]> | null = null,
+      initialized = false,
+      disposed = false,
+      busy = false;
+    let editing: { id: string; admittedNew: boolean } | null = null;
+    const hydrated = new Map<string, RRHydratedString>();
+    const field = (name: string) => {
+      const el = form.elements.namedItem(name);
+      if (!(
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLSelectElement ||
+        el instanceof HTMLTextAreaElement
+      ))
+        throw Error("Missing nomination field: " + name);
+      return el;
+    };
+    const values = (native: boolean) =>
+      Object.fromEntries(
+        fields.map((name) => [
+          name,
+          native
+            ? remainingRecordHydratedString(
+                field(name).value,
+                hydrated.get(name) ?? null,
+              )
+            : field(name).value,
+        ]),
+      );
+    function reset() {
+      editing = null;
+      hydrated.clear();
+      form.reset();
     }
-    function persist() {
+    function localIntent() {
+      view.changedView();
+      controls?.noteViewMutation();
+    }
+    function resetReviewed() {
+      localIntent();
+      const token = view.capture();
+      if (
+        view.snapshot().dirtyForms.includes("nomination") &&
+        !window.confirm(
+          "Discard this unfinished nomination form? Keep a field backup first if needed.",
+        )
+      )
+        return;
+      if (!view.isCurrent(token)) return;
+      reset();
+      view.markClean("nomination", token);
+    }
+    function dispose() {
+      if (disposed) return;
+      disposed = true;
+      initialized = false;
+      controls?.dispose();
+      session?.dispose();
+      view.dispose();
+      fieldset.disabled = true;
+    }
+    function refreshCapabilities() {
+      if (!session || disposed) return;
+      fieldset.disabled = !session.snapshot().hasCurrent;
+      form.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled =
+        busy || !session.snapshot().canWrite;
+    }
+    async function persist(
+      candidate: Nomination[],
+      tokenAction?: () => void,
+      resetEditor = false,
+    ) {
+      if (!session || disposed || busy) return;
+      controls?.noteViewMutation();
+      let captured;
+      let token = view.capture();
       try {
-        if (!writable) throw Error();
-        draft.write(JSON.stringify(rows));
-        status.textContent =
-          "Saved locally. No public review or recommendation has been completed.";
-      } catch (err) {
-        status.textContent =
-          (err instanceof Error && err.message
-            ? err.message + " "
-            : "Saving unavailable. ") +
-          "Export a backup of this tab before leaving. Existing stored data is untouched.";
+        try {
+          captured = session.captureSave(candidate, { form: "nomination" });
+        } finally {
+          token = view.capture();
+        }
+      } catch (error) {
+        if (!disposed && view.isCurrent(token))
+          status.textContent =
+            error instanceof Error
+              ? error.message
+              : "Saving was refused. Unfinished fields remain.";
+        return;
+      }
+      tokenAction?.();
+      busy = true;
+      root!.dataset.rrBusy = "true";
+      controls?.noteViewMutation();
+      refreshCapabilities();
+      try {
+        const result = await session.saveCaptured(captured);
+        if (disposed) return;
+        rows = result.snapshot.hasCurrent ? result.snapshot.value : null;
+        render();
+        controls?.refresh();
+        if (view.isCurrent(result.view)) {
+          if (result.outcome === "saved" || result.outcome === "no-op") {
+            if (resetEditor) {
+              reset();
+              view.markClean("nomination", result.view);
+            }
+            status.textContent =
+              "Saved locally. No public review or recommendation has been completed.";
+          } else
+            status.textContent =
+              "The exact nomination is retained in memory. Newer unfinished fields stay here; use Retry or keep both backups.";
+        }
+      } catch (error) {
+        if (!disposed && view.isCurrent(token))
+          status.textContent =
+            error instanceof Error
+              ? error.message
+              : "Saving was refused. Unfinished fields remain.";
+      } finally {
+        busy = false;
+        root!.dataset.rrBusy = "false";
+        refreshCapabilities();
       }
     }
     function render() {
-      const list = root!.querySelector("#nomination-list")!;
+      const list = root!.querySelector<HTMLElement>("#nomination-list")!;
       list.replaceChildren();
+      if (!rows) {
+        const p = document.createElement("p");
+        p.textContent =
+          "No validated saved nominations are available. Use the protected copy and reviewed recovery below.";
+        list.append(p);
+        return;
+      }
       if (!rows.length) {
         const p = document.createElement("p");
         p.textContent =
@@ -189,149 +289,284 @@ import { url } from "../../lib/site";
       for (const row of rows) {
         const card = document.createElement("article");
         card.className = "nomination-card";
-        const h = document.createElement("h3");
-        h.textContent = row.title;
+        card.dataset.recordId = row.id;
+        const heading = document.createElement("h3");
+        heading.textContent = row.title;
         const p = document.createElement("p");
         p.textContent = `${row.subject} · ${row.depth} · Editorial draft; not reviewed`;
         const edit = document.createElement("button");
         edit.type = "button";
         edit.className = "btn btn-small btn-ghost";
         edit.textContent = "Edit packet";
-        edit.onclick = () => {
-          editing = row.id;
-          for (const f of fields)
-            (form.elements.namedItem(f) as HTMLInputElement).value = row[f];
+        edit.addEventListener("click", () => {
+          if (!initialized || disposed || busy) return;
+          localIntent();
+          const token = view.capture();
+          if (
+            view.snapshot().dirtyForms.includes("nomination") &&
+            !window.confirm(
+              "Replace this unfinished form with the selected saved packet? Keep a field backup first if needed.",
+            )
+          )
+            return;
+          if (!view.isCurrent(token)) return;
+          editing = { id: row.id, admittedNew: false };
+          hydrated.clear();
+          for (const name of fields) {
+            const el = field(name);
+            el.value = row[name];
+            hydrated.set(
+              name,
+              Object.freeze({ original: row[name], display: el.value }),
+            );
+          }
+          view.markClean("nomination", token);
           form.scrollIntoView({ block: "start" });
-        };
+        });
         const del = document.createElement("button");
         del.type = "button";
         del.className = "btn btn-small btn-ghost";
         del.textContent = "Delete packet";
-        let armed = false;
-        del.onclick = () => {
-          if (!armed) {
-            armed = true;
+        let armed: RRViewToken | null = null;
+        del.addEventListener("click", () => {
+          if (!initialized || disposed || busy || !session || !rows) return;
+          if (!armed || !view.isCurrent(armed)) {
+            localIntent();
+            armed = view.capture();
             del.textContent = "Confirm delete";
+            status.textContent =
+              "Press Confirm delete again for this packet and this version of unfinished fields. Keep backups first if needed.";
             return;
           }
-          undo = [...rows];
-          rows = rows.filter((r) => r.id !== row.id);
-          if (editing === row.id) {
-            editing = "";
-            form.reset();
-          }
-          persist();
-          render();
-        };
-        card.append(h, p, edit, document.createTextNode(" "), del);
+          const next = rows
+            .filter((item) => item.id !== row.id)
+            .map((item) => ({ ...item }));
+          void persist(next, undefined, editing?.id === row.id).catch((error) => {
+            if (!disposed)
+              status.textContent =
+                error instanceof Error
+                  ? error.message
+                  : "Deletion was refused. Fields remain.";
+          });
+        });
+        del.disabled = !session?.snapshot().canWrite;
+        card.append(heading, p, edit, document.createTextNode(" "), del);
         list.append(card);
       }
-      if (undo) {
-        const btn = document.createElement("button");
-        btn.textContent = "Undo last deletion or import";
-        btn.className = "btn btn-small";
-        btn.onclick = () => {
-          rows = undo!;
-          undo = null;
-          persist();
-          render();
-        };
-        list.append(btn);
-      }
     }
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const row = Object.fromEntries(
-        fields.map((f) => [
-          f,
-          (form.elements.namedItem(f) as HTMLInputElement).value.trim(),
-        ]),
-      ) as Row;
-      row.id = editing || crypto.randomUUID();
-      if (!valid([row])) {
-        status.textContent = "Complete every field within its stated length.";
-        return;
-      }
-      if (!editing && rows.length >= 100) {
+    const changed = (event: Event) => {
+      if (!initialized || disposed) return;
+      const target = event.target as HTMLInputElement | null;
+      if (target && fields.includes(target.name as (typeof fields)[number]))
+        hydrated.delete(target.name);
+      else hydrated.clear();
+      view.changedForm("nomination");
+      controls?.noteViewMutation();
+    };
+    form.addEventListener("input", changed);
+    form.addEventListener("change", changed);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!initialized || disposed || busy || !rows || !session) return;
+      try {
+        const prior = editing;
+        if (
+          prior &&
+          !prior.admittedNew &&
+          !rows.some((row) => row.id === prior.id)
+        )
+          throw Error(
+            "The packet being edited is no longer in current records. Keep its unfinished fields, then start a deliberate new packet.",
+          );
+        const proposed = prior ?? { id: crypto.randomUUID(), admittedNew: true };
+        const row = { id: proposed.id, ...values(true) } as Nomination;
+        const next = rows.some((item) => item.id === row.id)
+          ? rows.map((item) => (item.id === row.id ? row : { ...item }))
+          : [...rows.map((item) => ({ ...item })), row];
+        // The new ID becomes the editor target only after complete synchronous admission.
+        void persist(
+          next,
+          () => {
+            editing = proposed;
+          },
+          true,
+        ).catch((error) => {
+          if (!disposed)
+            status.textContent =
+              error instanceof Error
+                ? error.message
+                : "The save was refused. Keep this form.";
+        });
+      } catch (error) {
         status.textContent =
-          "The local workspace holds up to 100 packets. Export and start a separate batch.";
-        return;
+          error instanceof Error
+            ? error.message
+            : "The nomination was refused. Fields remain.";
       }
-      undo = null;
-      rows = editing
-        ? rows.map((r) => (r.id === editing ? row : r))
-        : [...rows, row];
-      editing = "";
-      form.reset();
-      persist();
-      render();
     });
     root.querySelector("#nomination-new")!.addEventListener("click", () => {
-      editing = "";
-      form.reset();
+      if (initialized && !disposed && !busy) resetReviewed();
     });
-    root
-      .querySelector("#nomination-json")!
-      .addEventListener("click", () =>
-        download(
-          "charitology-nominations.json",
-          JSON.stringify(rows, null, 2),
-          "application/json",
-        ),
-      );
-    root
-      .querySelector("#nomination-export")!
-      .addEventListener("click", () =>
-        download(
-          "charitology-nomination-packets.md",
-          "# Nomination packets\n\nEditorial drafts, not rankings, recommendations or approved reviews.\n\n" +
-            rows
-              .map((r) => fields.map((f) => `## ${f}\n${r[f]}`).join("\n\n"))
-              .join("\n\n---\n\n"),
-        ),
-      );
-    root
-      .querySelector<HTMLInputElement>("#nomination-import")!
-      .addEventListener("change", async (e) => {
-        const input = e.target as HTMLInputElement;
-        const file = input.files?.[0];
-        if (!file) return;
-        try {
-          if (file.size > 24000000) throw Error("Backup exceeds 24 MB.");
-          const value = JSON.parse(await file.text());
-          if (!valid(value))
-            throw Error("Invalid backup fields or duplicate IDs.");
-          pending = value;
-          root!.querySelector<HTMLElement>("#nomination-preview")!.hidden =
-            false;
-          root!.querySelector("#nomination-preview-note")!.textContent =
-            `Preview: ${pending.length} packets will replace ${rows.length} current packets. Export the current backup first if needed. No source review is imported or granted.`;
-        } catch (err) {
-          pending = null;
-          status.textContent =
-            err instanceof Error ? err.message : "Invalid import";
-        }
-        input.value = "";
-      });
-    root.querySelector("#nomination-replace")!.addEventListener("click", () => {
-      if (!pending) return;
-      undo = [...rows];
-      rows = pending;
-      pending = null;
-      editing = "";
-      form.reset();
-      root!.querySelector<HTMLElement>("#nomination-preview")!.hidden = true;
-      persist();
+    window.addEventListener("beforeunload", (event) => {
+      if (!session || disposed) return;
+      const state = session.snapshot();
+      if (
+        busy ||
+        state.pendingPersist ||
+        state.persistence === "unsaved" ||
+        view.snapshot().dirtyForms.length
+      ) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    });
+    window.addEventListener("pagehide", (event) => {
+      if (!event.persisted) {
+        dispose();
+        return;
+      }
+      if (disposed || !initialized) return;
+
+      view.changedView();
+      controls?.noteViewMutation();
       render();
+      status.textContent =
+        "This page is preserved with its unfinished fields. Pending review and save authority was canceled.";
     });
-    root.querySelector("#nomination-cancel")!.addEventListener("click", () => {
-      pending = null;
-      root!.querySelector<HTMLElement>("#nomination-preview")!.hidden = true;
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted || disposed) return;
+      if (!initialized || !session) {
+        resumeCheckRequested = true;
+        return;
+      }
+
+      controls?.noteViewMutation();
+      const notice = session.noticeExternalChange(),
+        token = view.capture();
+      void notice
+        .then((state) => {
+          if (disposed || !view.isCurrent(token)) return;
+          controls?.refresh();
+          status.textContent = state.pendingPersist
+            ? "The saved copy was rechecked. The exact failed operation is still pending; use Retry. Newer unfinished fields were retained."
+            : state.code === "conflict" ||
+                state.code === "unavailable" ||
+                state.code === "corrupt"
+              ? state.message +
+                " Unfinished fields were retained. Review recovery before saving."
+              : "The actual saved copy was rechecked. Unfinished fields were retained. Submit deliberately to save current unfinished fields, or keep a form backup.";
+        })
+        .catch((error) => {
+          if (!disposed && view.isCurrent(token))
+            status.textContent =
+              (error instanceof Error
+                ? error.message
+                : "Saved-copy check was refused.") +
+              " Unfinished fields remain here.";
+        });
     });
-    render();
-    root.querySelector<HTMLFieldSetElement>(
-      "[data-private-form-controls]",
-    )!.disabled = false;
+    async function initializeRemainingNominations() {
+      try {
+        session = await openRemainingRecordSession(key, { view });
+        if (resumeCheckRequested) {
+          resumeCheckRequested = false;
+          await session.noticeExternalChange();
+        }
+        rows = session.snapshot().hasCurrent ? session.snapshot().value : null;
+        controls = mountRemainingRecordRecoveryControls({
+          host: root!.querySelector<HTMLElement>("#nomination-recovery")!,
+          session,
+          view,
+          readForms: () => [
+            {
+              form: "nomination",
+              editingId: editing?.id ?? null,
+              values: values(false),
+            },
+          ],
+          onStatus(state) {
+            if (disposed) return;
+            rows = state.hasCurrent ? state.value : null;
+            render();
+            refreshCapabilities();
+          },
+          onAdopt(state, token) {
+            if (disposed || !view.isCurrent(token)) return;
+            rows = state.hasCurrent ? state.value : null;
+            reset();
+            view.markClean("nomination", token);
+            render();
+          },
+        });
+        root!.querySelector("#nomination-json")!.addEventListener("click", () => {
+          try {
+            if (!session || disposed) return;
+            const out = session.exportNative();
+            download(
+              "charitology-nominations.json",
+              out.text,
+              "application/json;charset=utf-8",
+            );
+            status.textContent = `Requested all admitted nomination records (${out.persistence}). Unfinished fields have a separate backup.`;
+          } catch (error) {
+            status.textContent =
+              error instanceof Error
+                ? error.message
+                : "No admitted native records are available.";
+          }
+        });
+        root!
+          .querySelector("#nomination-export")!
+          .addEventListener("click", () => {
+            if (!rows || !session || disposed) return;
+            download(
+              "charitology-nomination-packets.md",
+              "# Nomination packets\n\nEditorial drafts, not rankings, recommendations or approved reviews.\n\n" +
+                `Persistence: ${session.snapshot().persistence}. Unfinished forms are excluded.\n\n` +
+                rows
+                  .map((row) =>
+                    fields.map((name) => `## ${name}\n${row[name]}`).join("\n\n"),
+                  )
+                  .join("\n\n---\n\n"),
+            );
+            status.textContent =
+              "Requested every admitted nomination packet. Nothing submitted; unfinished fields remain on this page.";
+          });
+        window.addEventListener("storage", (event) => {
+          if (disposed || (event.key !== key && event.key !== null) || !session)
+            return;
+          controls?.noteViewMutation();
+          const notice = session.noticeExternalChange(),
+            noticeToken = view.capture();
+          void notice
+            .then(() => {
+              if (!disposed) controls?.refresh();
+            })
+            .catch((error) => {
+              if (!disposed && view.isCurrent(noticeToken))
+                status.textContent =
+                  error instanceof Error
+                    ? error.message
+                    : "Saved nominations changed; keep unfinished fields.";
+            });
+        });
+        initialized = true;
+        render();
+        refreshCapabilities();
+        root!.dataset.rrInitialization = "ready";
+        status.textContent =
+          session.snapshot().message ||
+          "Nomination editing is ready. Nothing is sent by this form.";
+      } catch (error) {
+        dispose();
+        root!.dataset.rrInitialization = "failed";
+        status.textContent =
+          "Local editing could not start. Fields stay disabled. " +
+          (error instanceof Error ? error.message : "");
+        throw error;
+      }
+    }
+    void initializeRemainingNominations().catch(() => {});
   }
 </script>
 <style>

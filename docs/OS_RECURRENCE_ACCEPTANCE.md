@@ -1,6 +1,6 @@
 # Manual recurring task drafts: acceptance
 
-October 27, 2026 · AI-assisted engineering · local implementation and controlled browser checks complete; release checks pending. The [plan](OS_RECURRENCE_PLAN.md) and [interfaces](OS_RECURRENCE_INTERFACES.md) were accepted and committed before implementation. This is software acceptance with fictional records, not independent human review or an organizational pilot.
+October 27, 2026 · AI-assisted engineering · deployed service with bounded local, controlled browser and production checks. The [plan](OS_RECURRENCE_PLAN.md) and [interfaces](OS_RECURRENCE_INTERFACES.md) were accepted and committed before implementation. This is software acceptance with fictional records, not independent human review or an organizational pilot.
 
 ## Working flow
 
@@ -38,12 +38,15 @@ The model's near-quota projection admits a valid 16,707,576-byte structured work
 
 ## Release record
 
-- Final runtime: `ffdbf7af612985492dd415bd7b0af4ffdaf7b398`; [PR #26](https://github.com/theguysaccount/charitology/pull/26). Final release-head CI pending. The initial new-branch push correctly refused an all-zero prior branch base; the next nonzero push supplies an actual committed comparison base without weakening the observation-history gate.
-- Complete static build/check: passed, 546 pages and 46,600 internal links/assets with none broken; social assets and strict checks pass. Exact-head required CI: pending.
+- Final runtime `ffdbf7af612985492dd415bd7b0af4ffdaf7b398`; [PR #26](https://github.com/theguysaccount/charitology/pull/26), release head `b542f13f3ceec9960b358e816afa589584e36252`, main merge `edd5411538f66343996ece242b2368cefb353c52`. The initial new-branch push correctly refused an all-zero prior branch base; the next nonzero push supplied an actual committed comparison base without weakening the observation-history gate.
+- Complete static build/check: passed, 546 pages and 46,600 internal links/assets with none broken; social assets and strict checks pass. Both final exact-head CI runs 40555445340 and 40555453856 passed all required static, OS and mail checks.
 - Additive production migration: passed. All 60 existing rows, old columns and ACLs stayed unchanged in one repeatable-read transaction. Both new tables are empty; 24 tenant tables enable and force RLS. Constrained runtime flags, narrow privileges and the immutable trigger passed; context-free counts and nonexistent-tenant backup usage are zero.
-- Protected production stage, canonical promotion and exact public assets: pending.
+- Exact production stage `dpl_CyAHQVAiZ4zqwQD4yVQQob3f4Cq9`: 34 protected-stage checks passed. After the merged-main build finished, that tested stage was promoted to https://os.charitology.org. All 35 canonical checks passed, including ten exact committed assets, four unsigned recurrence denials and HTTP→HTTPS 308. Authenticated deployment/alias inspection confirmed that exact stage/runtime at 18:08:36 UTC. Future Git deployments may reassign normally; auto-assignment settings were preserved.
+- Fresh production inspection again matched all 60 old rows across 29 tables, columns and ACLs; both new tables were empty, with 24 forced-RLS tables and zero context-free counts/nonexistent-tenant usage. No accepted authentication, mail, provider or job action occurred.
+- Public Astro/Pages publication: [Pages run 40556871347](https://github.com/theguysaccount/charitology/actions/runs/40556871347) passed all four jobs on main merge `edd5411538f66343996ece242b2368cefb353c52`. At 18:28:28 UTC, the [public Charity OS page](https://charitology.org/tools/charity-os/) returned HTTP 200 and matched the saved `ffdb` static build byte for byte: 45,279 bytes, SHA-256 `38fa3997d4acbc42406d11fec7f738bd15718e9e9e003fb33f095c32f3a2cb99`. Both recurrence paragraphs and the shared OS link matched.
+- Public resource comparison: all 29 checked script, style, icon, manifest, feed and declared JavaScript/CSS/font dependencies returned HTTP 200; 28 matched exact bytes. The sole difference was feed item ordering. All 457 unique items matched complete item bytes, and the channel metadata matched exactly. The [feed generator](https://github.com/theguysaccount/charitology/blob/edd5411538f66343996ece242b2368cefb353c52/src/pages/feed.xml.ts) and [page enumeration](https://github.com/theguysaccount/charitology/blob/edd5411538f66343996ece242b2368cefb353c52/src/lib/pages.ts) were identical between the saved runtime and merged main and preserve unsorted collection order. Different build enumeration is consistent with the observed permutation; no content difference was admitted. This Pages check is separate from the exact deployed service checks above.
 
-Do not label this slice published until these identities and checks are recorded. Existing email/provider state and actual participants are outside this release.
+The service is deployed. Existing email/provider state and actual participants are outside this release.
 
 ## Rollback and operating work
 

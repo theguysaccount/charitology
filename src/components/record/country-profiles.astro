@@ -42,7 +42,7 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
   <p id="country-count" role="status"></p>
   <div class="country-controls">
     <label
-      >First country<select id="country-a"
+      >First country<select id="country-a" disabled
         >{
           countries.countries.map((c) => (
             <option value={c.id} selected={c.id === "KEN"}>
@@ -79,22 +79,26 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
       These notes remain in this browser. Add public sources and consented
       perspectives; do not enter personal details about the people a program
       serves. Writing notes does not establish local coauthorship or review.
-    </p><label
+    </p><form id="country-notes-form"><fieldset data-private-form-controls disabled><label
       >What do people living here identify as priorities?<textarea
-        id="country-voices"
+        id="country-voices" name="voices"
         maxlength="10000"
         rows="4"></textarea></label
     ><label
       >Institutions, funding and public sources to investigate<textarea
-        id="country-institutions"
+        id="country-institutions" name="institutions"
         maxlength="10000"
         rows="4"></textarea></label
     ><label
       >What the national data misses<textarea
-        id="country-gaps"
+        id="country-gaps" name="gaps"
         maxlength="10000"
         rows="4"></textarea></label
-    ><p id="country-storage" role="status"></p>
+    ></fieldset></form><p id="country-storage" role="status"></p>
+    <noscript><p>Local note editing needs JavaScript. Its fields stay disabled until editing is ready; no notes are submitted.</p></noscript>
+    <button type="button" id="country-notes-json" class="btn btn-ghost">Download all country notes</button>
+    <div id="country-navigation" hidden><p id="country-navigation-message"></p><div class="country-controls"><button type="button" id="country-navigation-save" class="btn">Try saving previous notes and open</button><button type="button" id="country-navigation-discard" class="btn btn-ghost">Discard this local version, load saved notes and open</button><button type="button" id="country-navigation-cancel" class="btn btn-ghost">Keep current country</button></div></div>
+    <div id="country-notes-recovery"></div>
   </details>
   <ul id="country-list" class="country-list">
     {
@@ -147,72 +151,266 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
 </section>
 <script>
   import { download, toCsv } from "../../lib/client/files";
-  import { guardedDraft } from "../../lib/client/guarded-draft";
+  import {
+    createRemainingRecordView,
+    openRemainingRecordSession,
+    remainingRecordHydratedString,
+    type RRSession,
+    type RRCountryNotes,
+    type RRReadonly,
+    type RRHydratedString,
+    type RRViewToken,
+  } from "../../lib/client/remaining-record-recovery";
+  import {
+    mountRemainingRecordRecoveryControls,
+    createRemainingRecordDraftAutosaver,
+    type RRRecoveryControls,
+    type RRDraftAutosaver,
+  } from "../../lib/client/remaining-record-recovery-controls";
+  import { remainingRecordBackup } from "../../lib/client/remaining-record-recovery-formats";
   const root = document.querySelector<HTMLElement>("#country-desk");
   if (root) {
+    let resumeCheckRequested = false;
+    root.dataset.rrInitialization = "opening";
+    const notesForm = root.querySelector<HTMLFormElement>("#country-notes-form")!;
+    notesForm.addEventListener("submit", (event) => event.preventDefault(), true);
     const data = JSON.parse(root!.dataset.countries!);
-    const facts = JSON.parse(root!.dataset.facts!) as Record<string, Record<string,{value:string;token:string;scale:string;unit:string;period:string;source:string;sourceUrl:string;retrievedAt:string;sourceId:string;sourceVersion:number;sourceHash:string;observationId:string;observationVersion:number;observationHash:string;precision:string;uncertainty:string;refs:string}>>;
-    const missing=JSON.parse(root!.dataset.missing!) as Record<string, Record<string,{source:string|null;sourceUrl:string|null;sourceId:string|null;sourceVersion:number|null;sourceHash:string|null;coverageId:string;coverageVersion:number;coverageHash:string;cellIndex:number;cellHref:string;refs:string}>>;
+    const facts = JSON.parse(root!.dataset.facts!) as Record<
+      string,
+      Record<
+        string,
+        {
+          value: string;
+          token: string;
+          scale: string;
+          unit: string;
+          period: string;
+          source: string;
+          sourceUrl: string;
+          retrievedAt: string;
+          sourceId: string;
+          sourceVersion: number;
+          sourceHash: string;
+          observationId: string;
+          observationVersion: number;
+          observationHash: string;
+          precision: string;
+          uncertainty: string;
+          refs: string;
+        }
+      >
+    >;
+    const missing = JSON.parse(root!.dataset.missing!) as Record<
+      string,
+      Record<
+        string,
+        {
+          source: string | null;
+          sourceUrl: string | null;
+          sourceId: string | null;
+          sourceVersion: number | null;
+          sourceHash: string | null;
+          coverageId: string;
+          coverageVersion: number;
+          coverageHash: string;
+          cellIndex: number;
+          cellHref: string;
+          refs: string;
+        }
+      >
+    >;
     const countries = data.countries as any[];
     const indicators = data.indicators as any[];
     const a = root.querySelector<HTMLSelectElement>("#country-a")!;
     const b = root.querySelector<HTMLSelectElement>("#country-b")!;
     const q = root.querySelector<HTMLInputElement>("#country-search")!;
     const region = root.querySelector<HTMLSelectElement>("#country-region")!;
-    const draft = guardedDraft("charitology-country-notes-v1");
-    const notes = ["voices", "institutions", "gaps"];
-    let memory: Record<string, Record<string, string>> = {};
-    let persistent = true;
-    try {
-      const raw = draft.read();
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (
-          !parsed ||
-          typeof parsed !== "object" ||
-          Array.isArray(parsed) ||
-          Object.keys(parsed).some(
-            (k) =>
-              !countries.some((c) => c.id === k) ||
-              !parsed[k] ||
-              typeof parsed[k] !== "object" ||
-              notes.some(
-                (n) =>
-                  typeof parsed[k][n] !== "string" ||
-                  parsed[k][n].length > 10000,
-              ),
-          )
-        )
-          throw Error();
-        memory = parsed;
-      }
-    } catch {
-      persistent = false;
-    }
-    const storage = root.querySelector<HTMLElement>("#country-storage")!;
-    function save() {
-      memory[a.value] = Object.fromEntries(
-        notes.map((n) => [
-          n,
-          root!.querySelector<HTMLTextAreaElement>("#country-" + n)!.value,
+    const notes = ["voices", "institutions", "gaps"] as const;
+    const key = "charitology-country-notes-v1" as const,
+      view = createRemainingRecordView(key);
+    let session: RRSession<typeof key> | null = null,
+      controls: RRRecoveryControls | null = null,
+      autosaver: RRDraftAutosaver<typeof key> | null = null;
+    let memory: RRReadonly<RRCountryNotes> | null = null,
+      primary = a.value,
+      initialized = false,
+      disposed = false,
+      navEpoch = 0;
+    const hydrated = new Map<string, RRHydratedString>();
+    const storage = root.querySelector<HTMLElement>("#country-storage")!,
+      fieldset = root.querySelector<HTMLFieldSetElement>(
+        "[data-private-form-controls]",
+      )!;
+    const navPanel = root.querySelector<HTMLElement>("#country-navigation")!,
+      navMessage = root.querySelector<HTMLElement>(
+        "#country-navigation-message",
+      )!;
+    let pendingNavigation: {
+      next: string;
+      prior: string;
+      token: RRViewToken;
+      epoch: number;
+    } | null = null;
+    const noteField = (name: (typeof notes)[number]) => {
+      const el = root!.querySelector<HTMLTextAreaElement>("#country-" + name);
+      if (!el) throw Error("Missing country note field: " + name);
+      return el;
+    };
+    const rawNotes = () =>
+      Object.fromEntries(
+        notes.map((name) => [name, noteField(name).value]),
+      ) as RRCountryNotes[string];
+    const currentNotes = () =>
+      Object.fromEntries(
+        notes.map((name) => [
+          name,
+          remainingRecordHydratedString(
+            noteField(name).value,
+            hydrated.get(name) ?? null,
+          ),
         ]),
-      );
-      try {
-        if (!persistent) throw Error();
-        draft.write(JSON.stringify(memory));
-        storage.textContent =
-          "Notes saved in this browser. Download a brief for a portable backup.";
-      } catch (error) {
-        storage.textContent =
-          (error instanceof Error
-            ? error.message
-            : "Browser saving unavailable.") +
-          " Your changes remain in this tab; download the research brief before leaving.";
+      ) as RRCountryNotes[string];
+    function readCandidate(): RRCountryNotes {
+      if (!memory)
+        throw Error(
+          "No admitted current note map is available. Keep the protected saved copy.",
+        );
+      return { ...memory, [primary]: currentNotes() };
+    }
+    function fillEditor() {
+      hydrated.clear();
+      for (const name of notes) {
+        const original = memory?.[primary]?.[name] ?? "",
+          el = noteField(name);
+        el.value = original;
+        hydrated.set(name, Object.freeze({ original, display: el.value }));
       }
     }
+    function revokeNavigation() {
+      navEpoch++;
+      pendingNavigation = null;
+      navPanel.hidden = true;
+    }
+    function dispose() {
+      if (disposed) return;
+      disposed = true;
+      initialized = false;
+      revokeNavigation();
+      autosaver?.dispose();
+      controls?.dispose();
+      session?.dispose();
+      view.dispose();
+      fieldset.disabled = true;
+      a.disabled = true;
+    }
+    function makeAutosaver() {
+      autosaver?.dispose();
+      autosaver = null;
+      if (!session || !memory || disposed) return;
+      const form = `country:${primary}` as const;
+      autosaver = createRemainingRecordDraftAutosaver({
+        session,
+        view,
+        form,
+        readCandidate,
+        onResult(result) {
+          if (disposed || !view.isCurrent(result.view)) return;
+          controls?.refresh();
+          if (result.outcome === "saved" || result.outcome === "no-op") {
+            view.markClean(form, result.view);
+            storage.textContent =
+              "Notes saved in this browser. No public submission or local review is implied.";
+          } else
+            storage.textContent =
+              "The exact note map is retained in memory. Use Retry or keep native and unfinished-form backups; newer fields remain here.";
+        },
+        onError(error) {
+          if (disposed) return;
+          controls?.refresh();
+          storage.textContent =
+            (error instanceof Error ? error.message : "Saving was refused.") +
+            " Keep this country and its unfinished fields until you resolve the saved copy.";
+        },
+      });
+    }
+    function commitPrimary(next: string) {
+      const token = view.capture();
+      view.markClean(`country:${primary}`, token);
+      autosaver?.cancel();
+      view.changedView();
+      controls?.noteViewMutation();
+      revokeNavigation();
+      primary = next;
+      a.value = next;
+      fillEditor();
+      makeAutosaver();
+      render();
+    }
+    async function navigate(next: string) {
+      a.value = primary;
+      if (
+        !initialized ||
+        disposed ||
+        !countries.some((country) => country.id === next) ||
+        next === primary
+      )
+        return;
+      autosaver?.cancel();
+      view.changedView();
+      controls?.noteViewMutation();
+      revokeNavigation();
+      const epoch = navEpoch,
+        prior = primary;
+      const state = session!.snapshot(),
+        local =
+          view.snapshot().dirtyForms.includes(`country:${primary}`) ||
+          state.pendingPersist ||
+          state.persistence === "unsaved";
+      if (!local) {
+        commitPrimary(next);
+        return;
+      }
+      if (!state.pendingPersist && autosaver) {
+        const saving = autosaver.flush(),
+          token = view.capture();
+        const result = await saving;
+        if (
+          disposed ||
+          epoch !== navEpoch ||
+          primary !== prior ||
+          !view.isCurrent(token)
+        )
+          return;
+        if (
+          result &&
+          (result.outcome === "saved" || result.outcome === "no-op") &&
+          !session!.snapshot().pendingPersist
+        ) {
+          commitPrimary(next);
+          return;
+        }
+      }
+      if (disposed || epoch !== navEpoch || primary !== prior) return;
+      pendingNavigation = { next, prior, token: view.capture(), epoch };
+      navPanel.hidden = false;
+      navMessage.textContent = `Keep ${prior}'s unfinished notes before opening ${next}. Retry any exact failed save below, then try saving these fields again. Or explicitly discard this captured local version and load the saved note map first.`;
+    }
+    const noteChanged = (event: Event) => {
+      if (!initialized || disposed) return;
+      const target = event.target as HTMLTextAreaElement | null;
+      const name = notes.find((name) => noteField(name) === target);
+      if (name) hydrated.delete(name);
+      else hydrated.clear();
+      revokeNavigation();
+      view.changedForm(`country:${primary}`);
+      controls?.noteViewMutation();
+      autosaver?.noteInput();
+    };
+    notesForm.addEventListener("input", noteChanged);
+    notesForm.addEventListener("change", noteChanged);
     function selected() {
       return [
-        countries.find((c) => c.id === a.value),
+        countries.find((c) => c.id === primary),
         countries.find((c) => c.id === b.value),
       ].filter(Boolean);
     }
@@ -237,33 +435,58 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
         th.scope = "row";
         row.append(th);
         for (const c of cs) {
-          const v = c.values[i.id], fact=facts[c.id]?.[i.id];
+          const v = c.values[i.id],
+            fact = facts[c.id]?.[i.id];
           const td = row.insertCell();
-          td.dataset.editionId=root!.dataset.edition!;
-          td.dataset.editionHash=root!.dataset.editionHash!;
+          td.dataset.editionId = root!.dataset.edition!;
+          td.dataset.editionHash = root!.dataset.editionHash!;
           td.textContent = fact
             ? `${fact.value} ${fact.unit} · ${fact.period}${v.status ? " · status " + v.status : ""}`
             : "Unknown: producer null throughout the selection window";
-          if (v?.footnote)
-            td.append(document.createTextNode(" · " + v.footnote));
-          if (fact) { const link=document.createElement("a");link.href=fact.source;link.textContent=" Source, exact token and limits";td.append(link); }
-          else if(missing[c.id]?.[i.id]?.source){const link=document.createElement("a");link.href=missing[c.id][i.id].source!;link.textContent=" Source for missing-coverage finding";td.append(link);}
-          const identity=document.createElement("details"),summary=document.createElement("summary"),description=document.createElement("p");
-          summary.textContent=fact?"Observation identity":"Missing-cell identity";identity.append(summary,description);
-          if(fact){td.dataset.observationId=fact.observationId;td.dataset.observationVersion=String(fact.observationVersion);td.dataset.observationHash=fact.observationHash;description.textContent=`Observation ${fact.observationId} v${fact.observationVersion}; hash ${fact.observationHash}. Edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}. Source ${fact.sourceId} v${fact.sourceVersion}; hash ${fact.sourceHash}.`;}
-          else {const absent=missing[c.id]?.[i.id];if(absent){td.dataset.coverageId=absent.coverageId;td.dataset.coverageVersion=String(absent.coverageVersion);td.dataset.coverageHash=absent.coverageHash;td.dataset.cellIndex=String(absent.cellIndex);description.textContent=`Coverage ${absent.coverageId} v${absent.coverageVersion}, cell ${absent.cellIndex}; hash ${absent.coverageHash}. Edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}.`;const exact=document.createElement("a");exact.href=absent.cellHref;exact.textContent="Read this exact missing cell";identity.append(exact);}}
+          if (v?.footnote) td.append(document.createTextNode(" · " + v.footnote));
+          if (fact) {
+            const link = document.createElement("a");
+            link.href = fact.source;
+            link.textContent = " Source, exact token and limits";
+            td.append(link);
+          } else if (missing[c.id]?.[i.id]?.source) {
+            const link = document.createElement("a");
+            link.href = missing[c.id][i.id].source!;
+            link.textContent = " Source for missing-coverage finding";
+            td.append(link);
+          }
+          const identity = document.createElement("details"),
+            summary = document.createElement("summary"),
+            description = document.createElement("p");
+          summary.textContent = fact
+            ? "Observation identity"
+            : "Missing-cell identity";
+          identity.append(summary, description);
+          if (fact) {
+            td.dataset.observationId = fact.observationId;
+            td.dataset.observationVersion = String(fact.observationVersion);
+            td.dataset.observationHash = fact.observationHash;
+            description.textContent = `Observation ${fact.observationId} v${fact.observationVersion}; hash ${fact.observationHash}. Edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}. Source ${fact.sourceId} v${fact.sourceVersion}; hash ${fact.sourceHash}.`;
+          } else {
+            const absent = missing[c.id]?.[i.id];
+            if (absent) {
+              td.dataset.coverageId = absent.coverageId;
+              td.dataset.coverageVersion = String(absent.coverageVersion);
+              td.dataset.coverageHash = absent.coverageHash;
+              td.dataset.cellIndex = String(absent.cellIndex);
+              description.textContent = `Coverage ${absent.coverageId} v${absent.coverageVersion}, cell ${absent.cellIndex}; hash ${absent.coverageHash}. Edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}.`;
+              const exact = document.createElement("a");
+              exact.href = absent.cellHref;
+              exact.textContent = "Read this exact missing cell";
+              identity.append(exact);
+            }
+          }
           td.append(identity);
         }
       }
       root!.querySelector("#country-comparison")!.replaceChildren(table);
-      for (const n of notes)
-        root!.querySelector<HTMLTextAreaElement>("#country-" + n)!.value =
-          memory[a.value]?.[n] || "";
-      storage.textContent = persistent
-        ? "Notes stay in this browser."
-        : "Browser saving unavailable or stored notes unreadable. Download a backup before leaving.";
       const params = new URLSearchParams();
-      params.set("country", a.value);
+      params.set("country", primary);
       if (b.value) params.set("compare", b.value);
       history.replaceState(null, "", "#" + params);
     }
@@ -281,7 +504,15 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
         `${count} countries and economies shown`;
       root!.querySelector<HTMLElement>("#country-empty")!.hidden = count !== 0;
     }
-    a.addEventListener("change", render);
+    a.addEventListener("change", () => {
+      void navigate(a.value).catch((error) => {
+        if (!disposed)
+          storage.textContent =
+            error instanceof Error
+              ? error.message
+              : "Keep the prior country and unfinished notes.";
+      });
+    });
     b.addEventListener("change", render);
     q.addEventListener("input", filter);
     region.addEventListener("change", filter);
@@ -290,17 +521,181 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
       region.value = "";
       filter();
     });
-    notes.forEach((n) =>
-      root.querySelector("#country-" + n)!.addEventListener("input", save),
-    );
     root.querySelectorAll<HTMLButtonElement>("[data-open]").forEach((el) =>
       el.addEventListener("click", () => {
-        a.value = el.dataset.open!;
-        render();
-        a.scrollIntoView({ block: "center" });
-        a.focus();
+        void navigate(el.dataset.open!)
+          .then(() => {
+            if (!disposed) {
+              a.scrollIntoView({ block: "center" });
+              a.focus();
+            }
+          })
+          .catch((error) => {
+            if (!disposed)
+              storage.textContent =
+                error instanceof Error
+                  ? error.message
+                  : "Keep the previous country's notes.";
+          });
       }),
     );
+    root
+      .querySelector("#country-navigation-cancel")!
+      .addEventListener("click", () => {
+        if (disposed) return;
+        revokeNavigation();
+        view.changedView();
+        controls?.noteViewMutation();
+        a.value = primary;
+        storage.textContent =
+          "Country change canceled. The previous country's unfinished fields remain here.";
+      });
+    root
+      .querySelector("#country-navigation-save")!
+      .addEventListener("click", () => {
+        const selected = pendingNavigation;
+        if (
+          !selected ||
+          disposed ||
+          selected.epoch !== navEpoch ||
+          selected.prior !== primary
+        )
+          return;
+        void navigate(selected.next).catch((error) => {
+          if (!disposed)
+            storage.textContent =
+              error instanceof Error
+                ? error.message
+                : "Saving was refused; notes remain here.";
+        });
+      });
+    root
+      .querySelector("#country-navigation-discard")!
+      .addEventListener("click", () => {
+        const selected = pendingNavigation;
+        if (
+          !selected ||
+          disposed ||
+          !session ||
+          selected.epoch !== navEpoch ||
+          selected.prior !== primary ||
+          !view.isCurrent(selected.token)
+        )
+          return;
+        autosaver?.cancel();
+        view.changedView();
+        controls?.noteViewMutation();
+        revokeNavigation();
+        const epoch = navEpoch;
+        const promise = session.reload({ discardLocal: true }),
+          token = view.capture();
+        void promise
+          .then((state) => {
+            if (
+              disposed ||
+              epoch !== navEpoch ||
+              primary !== selected.prior ||
+              !view.isCurrent(token)
+            )
+              return;
+            controls?.refresh();
+            if (
+              state.hasCurrent &&
+              (state.code === "ready" || state.code === "read-only") &&
+              (state.persistence === "saved" || state.persistence === "absent")
+            ) {
+              memory = state.value;
+              commitPrimary(selected.next);
+              storage.textContent =
+                "Loaded the saved note map and opened the selected country. The explicitly discarded local version was not saved.";
+            } else
+              storage.textContent =
+                "Saved notes could not be adopted. The previous country's unfinished fields remain here. " +
+                state.message;
+          })
+          .catch((error) => {
+            if (!disposed && epoch === navEpoch && view.isCurrent(token))
+              storage.textContent =
+                (error instanceof Error ? error.message : "Reload was refused.") +
+                " The previous notes remain here.";
+          });
+      });
+    root.querySelector("#country-notes-json")!.addEventListener("click", () => {
+      if (disposed || !initialized) return;
+      try {
+        download(
+          "charitology-country-notes.json",
+          remainingRecordBackup(key, readCandidate()),
+          "application/json;charset=utf-8",
+        );
+        storage.textContent =
+          "Requested every current country note, with this primary country's unfinished fields included. This read-only backup does not save, clear or submit them.";
+      } catch (error) {
+        storage.textContent =
+          (error instanceof Error
+            ? error.message
+            : "The complete backup was refused.") +
+          " Keep the fields and use unfinished-field recovery.";
+      }
+    });
+    window.addEventListener("beforeunload", (event) => {
+      if (!session || disposed) return;
+      const state = session.snapshot();
+      if (
+        autosaver?.hasPending() ||
+        state.pendingPersist ||
+        state.persistence === "unsaved" ||
+        view.snapshot().dirtyForms.length
+      ) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    });
+    window.addEventListener("pagehide", (event) => {
+      if (!event.persisted) {
+        dispose();
+        return;
+      }
+      if (disposed || !initialized) return;
+      autosaver?.cancel();
+      view.changedView();
+      controls?.noteViewMutation();
+      revokeNavigation();
+      storage.textContent =
+        "This page is preserved with its unfinished fields. Pending review and save authority was canceled.";
+    });
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted || disposed) return;
+      if (!initialized || !session) {
+        resumeCheckRequested = true;
+        return;
+      }
+      autosaver?.cancel();
+      controls?.noteViewMutation();
+      const notice = session.noticeExternalChange(),
+        token = view.capture();
+      void notice
+        .then((state) => {
+          if (disposed || !view.isCurrent(token)) return;
+          controls?.refresh();
+          storage.textContent = state.pendingPersist
+            ? "The saved copy was rechecked. The exact failed operation is still pending; use Retry. Newer unfinished fields were retained."
+            : state.code === "conflict" ||
+                state.code === "unavailable" ||
+                state.code === "corrupt"
+              ? state.message +
+                " Unfinished fields were retained. Review recovery before saving."
+              : "The actual saved copy was rechecked. Unfinished fields were retained. Edit again to save the current fields, or keep a form backup.";
+        })
+        .catch((error) => {
+          if (!disposed && view.isCurrent(token))
+            storage.textContent =
+              (error instanceof Error
+                ? error.message
+                : "Saved-copy check was refused.") +
+              " Unfinished fields remain here.";
+        });
+    });
     root.querySelector("#country-csv")!.addEventListener("click", () => {
       const rows = selected().flatMap((c) =>
         indicators.map((i) => ({
@@ -309,28 +704,44 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
           indicator: i.id,
           label: i.label,
           unit: facts[c.id]?.[i.id]?.unit ?? i.unit,
-          definition:i.definition,
+          definition: i.definition,
           value: facts[c.id]?.[i.id]?.value ?? "",
           reported_token: facts[c.id]?.[i.id]?.token ?? "",
           source_multiplier: facts[c.id]?.[i.id]?.scale ?? "",
-          coverage: facts[c.id]?.[i.id] ? "present" : "producer-null-throughout-window",
+          coverage: facts[c.id]?.[i.id]
+            ? "present"
+            : "producer-null-throughout-window",
           year: c.values[i.id]?.year ?? "",
           status: c.values[i.id]?.status ?? "",
           footnote: c.values[i.id]?.footnote ?? "",
-          source: facts[c.id]?.[i.id]?.sourceUrl ?? missing[c.id]?.[i.id]?.sourceUrl ?? i.apiUrl,
-          source_detail: facts[c.id]?.[i.id]?.source ?? missing[c.id]?.[i.id]?.source ?? "",
-          source_hash: facts[c.id]?.[i.id]?.sourceHash ?? missing[c.id]?.[i.id]?.sourceHash ?? "",
-          source_id:facts[c.id]?.[i.id]?.sourceId??missing[c.id]?.[i.id]?.sourceId??"",
-          source_version:facts[c.id]?.[i.id]?.sourceVersion??missing[c.id]?.[i.id]?.sourceVersion??"",
-          source_refs_json:facts[c.id]?.[i.id]?.refs??missing[c.id]?.[i.id]?.refs??"[]",
-          coverage_hash:missing[c.id]?.[i.id]?.coverageHash??"",
-          coverage_id:missing[c.id]?.[i.id]?.coverageId??"",
-          coverage_version:missing[c.id]?.[i.id]?.coverageVersion??"",
-          coverage_cell_index:missing[c.id]?.[i.id]?.cellIndex??"",
-          coverage_cell_detail:missing[c.id]?.[i.id]?.cellHref??"",
+          source:
+            facts[c.id]?.[i.id]?.sourceUrl ??
+            missing[c.id]?.[i.id]?.sourceUrl ??
+            i.apiUrl,
+          source_detail:
+            facts[c.id]?.[i.id]?.source ?? missing[c.id]?.[i.id]?.source ?? "",
+          source_hash:
+            facts[c.id]?.[i.id]?.sourceHash ??
+            missing[c.id]?.[i.id]?.sourceHash ??
+            "",
+          source_id:
+            facts[c.id]?.[i.id]?.sourceId ??
+            missing[c.id]?.[i.id]?.sourceId ??
+            "",
+          source_version:
+            facts[c.id]?.[i.id]?.sourceVersion ??
+            missing[c.id]?.[i.id]?.sourceVersion ??
+            "",
+          source_refs_json:
+            facts[c.id]?.[i.id]?.refs ?? missing[c.id]?.[i.id]?.refs ?? "[]",
+          coverage_hash: missing[c.id]?.[i.id]?.coverageHash ?? "",
+          coverage_id: missing[c.id]?.[i.id]?.coverageId ?? "",
+          coverage_version: missing[c.id]?.[i.id]?.coverageVersion ?? "",
+          coverage_cell_index: missing[c.id]?.[i.id]?.cellIndex ?? "",
+          coverage_cell_detail: missing[c.id]?.[i.id]?.cellHref ?? "",
           observation_hash: facts[c.id]?.[i.id]?.observationHash ?? "",
-          observation_id:facts[c.id]?.[i.id]?.observationId??"",
-          observation_version:facts[c.id]?.[i.id]?.observationVersion??"",
+          observation_id: facts[c.id]?.[i.id]?.observationId ?? "",
+          observation_version: facts[c.id]?.[i.id]?.observationVersion ?? "",
           reporting_precision: facts[c.id]?.[i.id]?.precision ?? "",
           numerical_uncertainty: facts[c.id]?.[i.id]?.uncertainty ?? "",
           edition: root!.dataset.edition,
@@ -340,24 +751,38 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
       );
       download(
         "charitology-country-comparison.csv",
-        toCsv(rows.map(row=>Object.fromEntries(Object.entries(row).map(([key,value])=>[key,typeof value === "string" && (/^[\s\u0000-\u001f]*[=+\-@]/.test(value)||/^[\t\r\n]/.test(value)) ? "'"+value : value])))),
+        toCsv(
+          rows.map((row) =>
+            Object.fromEntries(
+              Object.entries(row).map(([key, value]) => [
+                key,
+                typeof value === "string" &&
+                (/^[\s\u0000-\u001f]*[=+\-@]/.test(value) ||
+                  /^[\t\r\n]/.test(value))
+                  ? "'" + value
+                  : value,
+              ]),
+            ),
+          ),
+        ),
         "text/csv;charset=utf-8",
       );
     });
     root.querySelector("#country-note")!.addEventListener("click", () => {
-      save();
+      const current = memory ? readCandidate() : {};
       const c = selected()[0];
       const brief = [
         `# Research brief: ${c.name}`,
         "Statistical snapshot; not locally coauthored, not reviewed, not a donation recommendation.",
         `Retrieved ${data.retrieved}. Fixed edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}.`,
         ...indicators.map((i) => {
-          const v = c.values[i.id], fact=facts[c.id]?.[i.id];
-          const absent=missing[c.id]?.[i.id];
-          return `- ${i.label}: ${fact ? fact.value + " " + fact.unit + " (" + fact.period + ")" : "Unknown — producer null throughout selected window"}.${v?.footnote ? " Observation note: " + v.footnote + "." : ""}${v?.status ? " Observation status: " + v.status + "." : ""} Interpretation: ${i.note} Source: ${fact?.sourceUrl??absent?.sourceUrl??i.apiUrl}${fact ? ` Exact token: ${fact.token}; multiplier ${fact.scale}. ${fact.precision}. ${fact.uncertainty}. Source detail: ${new URL(fact.source,location.origin).href}; source ${fact.sourceId} v${fact.sourceVersion}, hash ${fact.sourceHash}; observation ${fact.observationId} v${fact.observationVersion}, hash ${fact.observationHash}.` : absent ? ` Missing coverage ${absent.coverageId} v${absent.coverageVersion}, cell ${absent.cellIndex}; hash ${absent.coverageHash}; exact cell ${new URL(absent.cellHref,location.origin).href}; source detail ${absent.source?new URL(absent.source,location.origin).href:"not available"}.` : ""}`;
+          const v = c.values[i.id],
+            fact = facts[c.id]?.[i.id];
+          const absent = missing[c.id]?.[i.id];
+          return `- ${i.label}: ${fact ? fact.value + " " + fact.unit + " (" + fact.period + ")" : "Unknown — producer null throughout selected window"}.${v?.footnote ? " Observation note: " + v.footnote + "." : ""}${v?.status ? " Observation status: " + v.status + "." : ""} Interpretation: ${i.note} Source: ${fact?.sourceUrl ?? absent?.sourceUrl ?? i.apiUrl}${fact ? ` Exact token: ${fact.token}; multiplier ${fact.scale}. ${fact.precision}. ${fact.uncertainty}. Source detail: ${new URL(fact.source, location.origin).href}; source ${fact.sourceId} v${fact.sourceVersion}, hash ${fact.sourceHash}; observation ${fact.observationId} v${fact.observationVersion}, hash ${fact.observationHash}.` : absent ? ` Missing coverage ${absent.coverageId} v${absent.coverageVersion}, cell ${absent.cellIndex}; hash ${absent.coverageHash}; exact cell ${new URL(absent.cellHref, location.origin).href}; source detail ${absent.source ? new URL(absent.source, location.origin).href : "not available"}.` : ""}`;
         }),
         ...notes.map(
-          (n) => `\n## ${n}\n${memory[c.id]?.[n] || "Not recorded."}`,
+          (n) => `\n## ${n}\n${current[c.id]?.[n] || "Not recorded."}`,
         ),
         "\n## Before publication\nAsk local coauthors to check the framing, within-country differences, public source interpretation and whose voices are absent. Obtain independent source review.",
       ].join("\n");
@@ -368,11 +793,85 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
       a.value = params.get("country")!;
     if (countries.some((c) => c.id === params.get("compare")))
       b.value = params.get("compare")!;
+    primary = a.value;
     render();
     filter();
+    async function initializeRemainingCountries() {
+      try {
+        session = await openRemainingRecordSession(key, { view });
+        if (resumeCheckRequested) {
+          resumeCheckRequested = false;
+          await session.noticeExternalChange();
+        }
+        const state = session.snapshot();
+        memory = state.hasCurrent ? state.value : null;
+        fillEditor();
+        makeAutosaver();
+        controls = mountRemainingRecordRecoveryControls({
+          host: root!.querySelector<HTMLElement>("#country-notes-recovery")!,
+          session,
+          view,
+          readForms: () => [
+            { form: `country:${primary}`, editingId: null, values: rawNotes() },
+          ],
+          onStatus(state) {
+            if (disposed) return;
+            memory = state.hasCurrent ? state.value : null;
+            fieldset.disabled = !state.hasCurrent;
+          },
+          onAdopt(state, token) {
+            if (disposed || !state.hasCurrent || !view.isCurrent(token)) return;
+            autosaver?.cancel();
+            revokeNavigation();
+            memory = state.value;
+            fillEditor();
+            for (const form of view.snapshot().dirtyForms)
+              view.markClean(form, token);
+            makeAutosaver();
+            storage.textContent =
+              "Adopted the reviewed complete note map for this country. Nothing submitted.";
+          },
+        });
+        window.addEventListener("storage", (event) => {
+          if (disposed || (event.key !== key && event.key !== null) || !session)
+            return;
+          autosaver?.cancel();
+          revokeNavigation();
+          controls?.noteViewMutation();
+          const notice = session.noticeExternalChange(),
+            noticeToken = view.capture();
+          void notice
+            .then(() => {
+              if (!disposed) controls?.refresh();
+            })
+            .catch((error) => {
+              if (!disposed && view.isCurrent(noticeToken))
+                storage.textContent =
+                  error instanceof Error
+                    ? error.message
+                    : "Saved notes changed. Keep the current country and unfinished fields.";
+            });
+        });
+        initialized = true;
+        a.disabled = false;
+        root!.dataset.rrInitialization = "ready";
+        storage.textContent =
+          state.message ||
+          "Notes stay in this browser. Statistical comparison and filters do not replace these fields.";
+      } catch (error) {
+        dispose();
+        root!.dataset.rrInitialization = "failed";
+        storage.textContent =
+          "Local note editing could not start. Fields stay disabled. " +
+          (error instanceof Error ? error.message : "");
+        throw error;
+      }
+    }
+    void initializeRemainingCountries().catch(() => {});
   }
 </script>
 <style>
+  [data-private-form-controls] { border:0; padding:0; margin:0; min-width:0; }
   #country-comparison :global(td details) { overflow-wrap: anywhere; }
   .country-controls {
     display: flex;

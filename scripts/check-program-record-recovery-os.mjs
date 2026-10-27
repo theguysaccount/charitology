@@ -37,9 +37,13 @@ ToolElement.prototype.prepend = function (...nodes) {
 let html, script;
 async function start(initial = {}, options = {}) {
   const d = installToolDom(html, initial, options);
+  if (options.beforeRun) await options.beforeRun(d);
+  const release = options.holdInitial ? await d.hold("charity-os") : null;
   const file = join(temp, "run-" + serial++ + ".mjs");
   await writeFile(file, script);
   await import(pathToFileURL(file));
+  if (options.early) await options.early(d);
+  release?.();
   d.action = (name) =>
     d
       .$("#os-record-recovery")
@@ -1001,6 +1005,223 @@ check(
     assert.equal(
       JSON.parse(await d.downloads.at(-1).text()).workspace.organization,
       osEnvelope().workspace.organization,
+    );
+    assert.equal(hasWrite(d), false);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "persisted return preserves modal editor, raw context, recovery location and existing record identity",
+  async () => {
+    const value = osEnvelope(),
+      d = await start({ "charity-os": value }),
+      project = value.workspace.projects[0];
+    await editRecord(d, "projects", project.title);
+    await openModalRecovery(d);
+    const context = d.$("#os-mission"),
+      field = d.$("#os-field-title"),
+      host = d.$("#os-record-recovery"),
+      before = d.values.get("charitology.charity-os");
+    await d.set("#os-mission", "Cached unfinished mission");
+    await d.set("#os-field-title", "Cached unfinished project");
+    await d.action("forms").click();
+    const forms = JSON.parse(await d.downloads.at(-1).text());
+    await d.window.fire("pagehide", { persisted: true });
+    await d.window.fire("pageshow", { persisted: true });
+    assert.equal(d.$("#os-editor").open, true);
+    assert.equal(d.$("#os-mission"), context);
+    assert.equal(d.$("#os-field-title"), field);
+    assert.equal(field.value, "Cached unfinished project");
+    assert.equal(context.value, "Cached unfinished mission");
+    assert.equal(host.parentElement, d.$("#os-editor-recovery-slot"));
+    assert.equal(d.values.get("charitology.charity-os"), before);
+    await d.action("forms").click();
+    assert.deepEqual(
+      JSON.parse(await d.downloads.at(-1).text()).forms,
+      forms.forms,
+    );
+    await d.$("#os-editor-form").fire("submit");
+    await settleTools(
+      () =>
+        d.saved().workspace.projects[0].title === "Cached unfinished project",
+    );
+    assert.equal(d.saved().workspace.projects[0].id, project.id);
+    assert.equal(context.value, "Cached unfinished mission");
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "persisted return notices silently changed bytes without hydrating context or modal draft",
+  async () => {
+    const v = osEnvelope(),
+      d = await start({ "charity-os": v });
+    await d.$('[data-add="tasks"]').click();
+    await d.set("#os-field-title", "Private cached task");
+    await d.set("#os-mission", "Private cached mission");
+    await d.window.fire("pagehide", { persisted: true });
+    const foreign = osEnvelope();
+    foreign.workspace.organization = "Foreign cached organization";
+    const raw = JSON.stringify(foreign);
+    d.values.set("charitology.charity-os", raw);
+    await d.window.fire("pageshow", { persisted: true });
+    assert.equal(d.get("#os-field-title"), "Private cached task");
+    assert.equal(d.get("#os-mission"), "Private cached mission");
+    assert.equal(d.$("#os-editor").open, true);
+    assert.equal(d.values.get("charitology.charity-os"), raw);
+    assert.equal(d.$("#os-editor-save").disabled, true);
+    assert.match(d.$("#os-status").textContent, /review recovery/);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "persisted hide revokes queued context and modal saves while retaining their exact raw fields",
+  async () => {
+    for (const modal of [false, true]) {
+      const d = await start({ "charity-os": osEnvelope() }),
+        before = d.values.get("charitology.charity-os"),
+        release = await d.hold("charity-os");
+      if (modal) {
+        await d.$('[data-add="tasks"]').click();
+        await d.set("#os-field-title", "Held cached task");
+        await d.$("#os-editor-form").fire("submit");
+      } else await submitContext(d, "Held cached organization");
+      await d.window.fire("pagehide", { persisted: true });
+      const showing = d.window.fire("pageshow", { persisted: true });
+      release();
+      await showing;
+      await settleTools(() => !d.$('[data-add="tasks"]').disabled);
+      assert.equal(d.values.get("charitology.charity-os"), before);
+      assert.equal(
+        d.get(modal ? "#os-field-title" : "#os-organization"),
+        modal ? "Held cached task" : "Held cached organization",
+      );
+      if (modal) assert.equal(d.$("#os-editor").open, true);
+      await d.window.fire("pagehide");
+    }
+  },
+);
+check(
+  "persisted return retains exact failed operation and newer raw context through Retry",
+  async () => {
+    const d = await start();
+    d.flags.failWrite = true;
+    await submitContext(d, "Exact cached failed organization");
+    await settleTools(() => !d.action("retry").disabled);
+    await d.set("#os-organization", "Newer cached organization");
+    await d.window.fire("pagehide", { persisted: true });
+    await d.window.fire("pageshow", { persisted: true });
+    assert.match(
+      d.$("#os-status").textContent,
+      /exact failed operation remains pending/,
+    );
+    d.flags.failWrite = false;
+    await d.action("retry").click();
+    await idle(d);
+    assert.equal(
+      d.saved().workspace.organization,
+      "Exact cached failed organization",
+    );
+    assert.equal(d.get("#os-organization"), "Newer cached organization");
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "persisted hide revokes recovery and fictional sample preview without closing an open editor",
+  async () => {
+    const d = await start({ "charity-os": osEnvelope() });
+    await d.$("#os-sample").click();
+    await settleTools(() => !d.$("#os-sample-preview").hidden);
+    await d.window.fire("pagehide", { persisted: true });
+    assert.equal(d.$("#os-sample-preview").hidden, true);
+    await d.window.fire("pageshow", { persisted: true });
+    await d.$('[data-add="tasks"]').click();
+    await openModalRecovery(d);
+    await d.action("review-remove").click();
+    await settleTools(() => !d.action("apply").hidden);
+    await d.window.fire("pagehide", { persisted: true });
+    assert.equal(d.action("apply").hidden, true);
+    assert.equal(d.$("#os-editor").open, true);
+    await d.window.fire("pageshow", { persisted: true });
+    assert.equal(d.$("#os-editor").open, true);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "persisted return preserves untouched admitted hydration through an unrelated context save",
+  async () =>
+    nativeControlSanitization(async () => {
+      const v = rawContextEnvelope(),
+        d = await start({ "charity-os": v });
+      await d.set("#os-community", "Cached community change");
+      await d.window.fire("pagehide", { persisted: true });
+      await d.window.fire("pageshow", { persisted: true });
+      assert.equal(d.get("#os-organization"), "FICTIONAL raworganization");
+      await d.$("#os-context-form").fire("submit");
+      await settleTools(
+        () => d.saved().workspace.community === "Cached community change",
+      );
+      assert.equal(d.saved().workspace.organization, v.workspace.organization);
+      assert.equal(d.saved().workspace.mission, v.workspace.mission);
+      await d.window.fire("pagehide");
+    }),
+);
+check(
+  "persisted return during held initialization performs a saved-byte recheck before first context hydration",
+  async () => {
+    const v = osEnvelope(),
+      d = await start(
+        { "charity-os": v },
+        {
+          holdInitial: true,
+          early: async (d) => {
+            await d.window.fire("pagehide", { persisted: true });
+            await d.window.fire("pageshow", { persisted: true });
+          },
+        },
+      );
+    assert.equal(d.get("#os-organization"), v.workspace.organization);
+    assert.equal(d.$("#os-context-controls").disabled, false);
+    assert.equal(hasWrite(d), false);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "held-init resume never hydrates over a newer view-owned context during its saved-byte notice",
+  async () => {
+    const value = osEnvelope(),
+      baseline = await start({ "charity-os": value }),
+      trigger = baseline.operations.filter(([op]) => op === "get").length + 1;
+    await baseline.window.fire("pagehide");
+    let reads = 0,
+      changed = false;
+    const d = await start(
+      { "charity-os": value },
+      {
+        holdInitial: true,
+        beforeRun: async (d) => {
+          const get = d.storage.getItem.bind(d.storage);
+          d.storage.getItem = (k) => {
+            const raw = get(k);
+            if (k === "charitology.charity-os" && ++reads === trigger)
+              queueMicrotask(() => {
+                d.$("#os-organization").value =
+                  "Preserve newer view-owned organization";
+                void d.$("#os-sample-discard").fire("change");
+                changed = true;
+              });
+            return raw;
+          };
+        },
+        early: async (d) => {
+          await d.window.fire("pagehide", { persisted: true });
+          await d.window.fire("pageshow", { persisted: true });
+        },
+      },
+    );
+    assert.equal(changed, true);
+    assert.equal(
+      d.get("#os-organization"),
+      "Preserve newer view-owned organization",
     );
     assert.equal(hasWrite(d), false);
     await d.window.fire("pagehide");

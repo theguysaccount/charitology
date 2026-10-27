@@ -100,20 +100,7 @@ const items = issues.map((j) => ({
       This local form needs JavaScript. Its fields stay disabled until local
       editing is ready; nothing is submitted by this form.
     </p></noscript
-  ><details>
-    <summary>Restore a form backup</summary><label
-      >Choose a manuscript JSON backup<input
-        type="file"
-        id="manuscript-import"
-        accept="application/json,.json"
-      /></label
-    ><p id="manuscript-preview"></p><button
-      class="btn"
-      id="manuscript-replace"
-      hidden>Replace form with previewed draft</button
-    ><button class="btn btn-ghost" id="manuscript-cancel" hidden
-      >Cancel restore</button>
-  </details><p id="manuscript-status" role="status"></p><p>
+  ><div id="manuscript-recovery"></div><p id="manuscript-status" role="status"></p><p>
     <a
       href="https://github.com/theguysaccount/charitology/blob/main/CONTRIBUTING.md"
       >Open the contribution instructions</a
@@ -122,147 +109,292 @@ const items = issues.map((j) => ({
 </section>
 <script>
   import { download } from "../../lib/client/files";
-  import { guardedDraft } from "../../lib/client/guarded-draft";
+  import { manuscriptFields as fields } from "../../lib/client/completion-models";
   import {
-    validateManuscript as valid,
-    manuscriptFields as fields,
-  } from "../../lib/client/completion-models";
-  const root = document.querySelector("#journal-desk");
+    createRemainingRecordView,
+    openRemainingRecordSession,
+    remainingRecordHydratedString,
+    type RRSession,
+    type RRManuscript,
+    type RRManuscriptField,
+    type RRHydratedString,
+  } from "../../lib/client/remaining-record-recovery";
+  import {
+    mountRemainingRecordRecoveryControls,
+    createRemainingRecordDraftAutosaver,
+    type RRRecoveryControls,
+    type RRDraftAutosaver,
+  } from "../../lib/client/remaining-record-recovery-controls";
+  import { remainingRecordBackup } from "../../lib/client/remaining-record-recovery-formats";
+  const root = document.querySelector<HTMLElement>("#journal-desk");
   if (root) {
+    let resumeCheckRequested = false;
+    root.dataset.rrInitialization = "opening";
     const form = root.querySelector<HTMLFormElement>("form")!;
     form.addEventListener("submit", (event) => event.preventDefault(), true);
-    const draft = guardedDraft("charitology-manuscript-v1");
+    const fieldset = root.querySelector<HTMLFieldSetElement>(
+      "[data-private-form-controls]",
+    )!;
+    const key = "charitology-manuscript-v1" as const,
+      view = createRemainingRecordView(key);
+    let session: RRSession<typeof key> | null = null,
+      controls: RRRecoveryControls | null = null,
+      autosaver: RRDraftAutosaver<typeof key> | null = null,
+      disposed = false,
+      initialized = false;
+    const hydrated = new Map<RRManuscriptField, RRHydratedString>();
     const status = root.querySelector<HTMLElement>("#manuscript-status")!;
-    let writable = true;
-    let pending: Record<string, string> | null = null;
-    try {
-      const saved = draft.read();
-      if (saved) {
-        const values = JSON.parse(saved);
-        if (!valid(values)) throw Error();
-        for (const f of fields)
-          (form.elements.namedItem(f) as HTMLInputElement).value = values[f];
-      }
-    } catch {
-      writable = false;
-      status.textContent =
-        "Saving unavailable or stored draft unreadable. Existing data is untouched; use a form backup.";
-    }
-    function values() {
-      return Object.fromEntries(
-        fields.map((f) => [
-          f,
-          (form.elements.namedItem(f) as HTMLInputElement).value,
+    const field = (name: RRManuscriptField) => {
+      const control = form.elements.namedItem(name);
+      if (!(
+        control instanceof HTMLInputElement ||
+        control instanceof HTMLTextAreaElement ||
+        control instanceof HTMLSelectElement
+      ))
+        throw Error("Missing manuscript field: " + name);
+      return control;
+    };
+    const rawValues = () =>
+      Object.fromEntries(
+        fields.map((name) => [name, field(name).value]),
+      ) as RRManuscript;
+    const values = () =>
+      Object.fromEntries(
+        fields.map((name) => [
+          name,
+          remainingRecordHydratedString(
+            field(name).value,
+            hydrated.get(name) ?? null,
+          ),
         ]),
-      );
+      ) as RRManuscript;
+    function fill(value: RRManuscript | Readonly<RRManuscript>) {
+      hydrated.clear();
+      for (const name of fields) {
+        const input = field(name);
+        input.value = value[name];
+        hydrated.set(
+          name,
+          Object.freeze({ original: value[name], display: input.value }),
+        );
+      }
     }
-    form.addEventListener("input", () => {
+    function dispose() {
+      if (disposed) return;
+      disposed = true;
+      initialized = false;
+      autosaver?.dispose();
+      controls?.dispose();
+      session?.dispose();
+      view.dispose();
+      fieldset.disabled = true;
+    }
+    function changed(event: Event) {
+      if (!initialized || disposed) return;
+      const target = event.target as HTMLInputElement | null;
+      if (target && fields.includes(target.name as RRManuscriptField))
+        hydrated.delete(target.name as RRManuscriptField);
+      else hydrated.clear();
+      view.changedForm("manuscript");
+      controls?.noteViewMutation();
+      autosaver?.noteInput();
+    }
+    form.addEventListener("input", changed);
+    form.addEventListener("change", changed);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!initialized || disposed) return;
       try {
-        if (!writable) throw Error();
-        draft.write(JSON.stringify(values()));
-        status.textContent = "Draft saved in this browser. No submission sent.";
-      } catch (err) {
+        const v = values();
+        remainingRecordBackup(key, v);
+        if (fields.some((name) => !v[name].trim()))
+          throw Error(
+            "Complete every section, explicitly recording unknowns where needed.",
+          );
+        const now = new Date(),
+          date = [
+            now.getFullYear(),
+            String(now.getMonth() + 1).padStart(2, "0"),
+            String(now.getDate()).padStart(2, "0"),
+          ].join("-");
+        const text = `---\ntitle: ${JSON.stringify(v.title)}\nauthor: ${JSON.stringify(v.author)}\ndate: ${date}\nsummary: ${JSON.stringify(v.summary)}\nvolume: 0\nissue: 4\nreview: draft\n---\n\n**Article type: ${v.kind}. Not peer-reviewed.**\n\n## Question\n\n${v.question}\n\n## Methods and reproducibility\n\n${v.methods}\n\n## Results or proposed method\n\n${v.results}\n\n## Limitations and objections\n\n${v.limits}\n\n## Sources, conflicts and funding\n\n${v.sources}\n\n<!-- Maintainers assign the final volume and issue after review. Disclose AI assistance in the PR. -->\n`;
+        download("manuscript-draft.md", text);
         status.textContent =
-          (err instanceof Error && err.message
-            ? err.message + " "
-            : "Draft is not saved. ") +
-          "Download a backup of this tab before leaving. Existing stored data is untouched.";
+          "Requested the manuscript draft. Nothing sent. Include source checks and AI disclosure in your pull request. Unfinished work remains on this page.";
+      } catch (error) {
+        status.textContent =
+          error instanceof Error
+            ? error.message
+            : "Keep the current form and use unfinished-field recovery.";
       }
     });
-    root
-      .querySelector("#manuscript-backup")!
-      .addEventListener("click", () =>
-        download(
-          "manuscript-form.json",
-          JSON.stringify(values(), null, 2),
-          "application/json",
-        ),
-      );
-    root
-      .querySelector<HTMLInputElement>("#manuscript-import")!
-      .addEventListener("change", async (e) => {
-        const input = e.target as HTMLInputElement;
-        const file = input.files?.[0];
-        if (!file) return;
-        try {
-          if (file.size > 1000000) throw Error("Backup exceeds 1 MB.");
-          const v = JSON.parse(await file.text());
-          if (!valid(v))
-            throw Error(
-              "Invalid manuscript fields, article type or excessive lengths.",
-            );
-          pending = v;
-          root!.querySelector("#manuscript-preview")!.textContent =
-            "Preview: " +
-            (v.title || "Untitled draft") +
-            ". This replaces the form; download the current backup first.";
-          root!.querySelector<HTMLButtonElement>(
-            "#manuscript-replace",
-          )!.hidden = false;
-          root!.querySelector<HTMLButtonElement>("#manuscript-cancel")!.hidden =
-            false;
-        } catch (err) {
-          pending = null;
-          status.textContent =
-            err instanceof Error ? err.message : "Invalid backup";
-        }
-        input.value = "";
-      });
-    root.querySelector("#manuscript-replace")!.addEventListener("click", () => {
-      if (!pending) return;
-      for (const f of fields)
-        (form.elements.namedItem(f) as HTMLInputElement).value = pending[f];
-      pending = null;
-      root!.querySelector("#manuscript-preview")!.textContent =
-        "Draft restored. No submission sent.";
-      root!.querySelector<HTMLButtonElement>("#manuscript-replace")!.hidden =
-        true;
-      root!.querySelector<HTMLButtonElement>("#manuscript-cancel")!.hidden =
-        true;
-      try {
-        if (!writable) throw Error();
-        draft.write(JSON.stringify(values()));
-        status.textContent = "Restored and saved locally.";
-      } catch (err) {
-        status.textContent =
-          "Restored in this tab only. " +
-          (err instanceof Error && err.message
-            ? err.message + " "
-            : "Saving unavailable. ") +
-          "Download a backup; existing stored data is untouched.";
+    window.addEventListener("beforeunload", (event) => {
+      if (!session || disposed) return;
+      if (
+        autosaver?.hasPending() ||
+        session.snapshot().pendingPersist ||
+        session.snapshot().persistence === "unsaved" ||
+        view.snapshot().dirtyForms.length
+      ) {
+        event.preventDefault();
+        event.returnValue = "";
       }
     });
-    root.querySelector("#manuscript-cancel")!.addEventListener("click", () => {
-      pending = null;
-      root!.querySelector("#manuscript-preview")!.textContent =
-        "Restore canceled.";
-      root!.querySelector<HTMLButtonElement>("#manuscript-replace")!.hidden =
-        true;
-      root!.querySelector<HTMLButtonElement>("#manuscript-cancel")!.hidden =
-        true;
-    });
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const v = values();
-      if (fields.some((f) => !v[f].trim())) {
-        status.textContent =
-          "Complete every section, explicitly recording unknowns where needed.";
+    window.addEventListener("pagehide", (event) => {
+      if (!event.persisted) {
+        dispose();
         return;
       }
-      const now = new Date();
-      const date = [
-        now.getFullYear(),
-        String(now.getMonth() + 1).padStart(2, "0"),
-        String(now.getDate()).padStart(2, "0"),
-      ].join("-");
-      const text = `---\ntitle: ${JSON.stringify(v.title)}\nauthor: ${JSON.stringify(v.author)}\ndate: ${date}\nsummary: ${JSON.stringify(v.summary)}\nvolume: 0\nissue: 4\nreview: draft\n---\n\n**Article type: ${v.kind}. Not peer-reviewed.**\n\n## Question\n\n${v.question}\n\n## Methods and reproducibility\n\n${v.methods}\n\n## Results or proposed method\n\n${v.results}\n\n## Limitations and objections\n\n${v.limits}\n\n## Sources, conflicts and funding\n\n${v.sources}\n\n<!-- Maintainers assign the final volume and issue after review. Disclose AI assistance in the PR. -->\n`;
-      download("manuscript-draft.md", text);
+      if (disposed || !initialized) return;
+      autosaver?.cancel();
+      view.changedView();
+      controls?.noteViewMutation();
+
       status.textContent =
-        "Manuscript downloaded. Nothing sent. Maintainers assign the final issue number; include source checks and AI disclosure in your pull request.";
+        "This page is preserved with its unfinished fields. Pending review and save authority was canceled.";
     });
-    root.querySelector<HTMLFieldSetElement>(
-      "[data-private-form-controls]",
-    )!.disabled = false;
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted || disposed) return;
+      if (!initialized || !session) {
+        resumeCheckRequested = true;
+        return;
+      }
+      autosaver?.cancel();
+      controls?.noteViewMutation();
+      const notice = session.noticeExternalChange(),
+        token = view.capture();
+      void notice
+        .then((state) => {
+          if (disposed || !view.isCurrent(token)) return;
+          controls?.refresh();
+          status.textContent = state.pendingPersist
+            ? "The saved copy was rechecked. The exact failed operation is still pending; use Retry. Newer unfinished fields were retained."
+            : state.code === "conflict" ||
+                state.code === "unavailable" ||
+                state.code === "corrupt"
+              ? state.message +
+                " Unfinished fields were retained. Review recovery before saving."
+              : "The actual saved copy was rechecked. Unfinished fields were retained. Edit again to save the current fields, or keep a form backup.";
+        })
+        .catch((error) => {
+          if (!disposed && view.isCurrent(token))
+            status.textContent =
+              (error instanceof Error
+                ? error.message
+                : "Saved-copy check was refused.") +
+              " Unfinished fields remain here.";
+        });
+    });
+    async function initializeRemainingManuscript() {
+      try {
+        session = await openRemainingRecordSession(key, { view });
+        if (resumeCheckRequested) {
+          resumeCheckRequested = false;
+          await session.noticeExternalChange();
+        }
+        const initial = session.snapshot();
+        if (initial.hasCurrent) fill(initial.value);
+        autosaver = createRemainingRecordDraftAutosaver({
+          session,
+          view,
+          form: "manuscript",
+          readCandidate: values,
+          onResult(result) {
+            if (disposed || !view.isCurrent(result.view)) return;
+            controls?.refresh();
+            if (result.outcome === "saved" || result.outcome === "no-op") {
+              view.markClean("manuscript", result.view);
+              status.textContent =
+                "Draft saved in this browser. No submission sent.";
+            } else
+              status.textContent =
+                "The exact draft is retained in memory. Retry that save or keep native and unfinished-form backups before leaving.";
+          },
+          onError(error) {
+            if (!disposed) {
+              controls?.refresh();
+              status.textContent =
+                (error instanceof Error
+                  ? error.message
+                  : "Draft save was refused.") +
+                " Unfinished fields remain on this page.";
+            }
+          },
+        });
+        controls = mountRemainingRecordRecoveryControls({
+          host: root!.querySelector<HTMLElement>("#manuscript-recovery")!,
+          session,
+          view,
+          readForms: () => [
+            { form: "manuscript", editingId: null, values: rawValues() },
+          ],
+          onStatus(state) {
+            if (disposed) return;
+            fieldset.disabled = !state.hasCurrent;
+          },
+          onAdopt(state, token) {
+            if (disposed || !state.hasCurrent || !view.isCurrent(token)) return;
+            autosaver?.cancel();
+            fill(state.value);
+            view.markClean("manuscript", token);
+            status.textContent =
+              "Adopted the reviewed manuscript draft. No submission sent.";
+          },
+        });
+        root!
+          .querySelector("#manuscript-backup")!
+          .addEventListener("click", () => {
+            if (disposed || !initialized) return;
+            try {
+              download(
+                "manuscript-form.json",
+                remainingRecordBackup(key, values()),
+                "application/json;charset=utf-8",
+              );
+              status.textContent =
+                "Requested a complete backup of this current partial form. This does not save or submit it.";
+            } catch (error) {
+              status.textContent =
+                (error instanceof Error
+                  ? error.message
+                  : "The native form backup was refused.") +
+                " Keep the form and use unfinished-field recovery.";
+            }
+          });
+        window.addEventListener("storage", (event) => {
+          if (disposed || (event.key !== key && event.key !== null) || !session)
+            return;
+          autosaver?.cancel();
+          controls?.noteViewMutation();
+          const notice = session.noticeExternalChange(),
+            noticeToken = view.capture();
+          void notice
+            .then(() => {
+              if (!disposed) controls?.refresh();
+            })
+            .catch((error) => {
+              if (!disposed && view.isCurrent(noticeToken))
+                status.textContent =
+                  error instanceof Error
+                    ? error.message
+                    : "Saved notes changed; keep this form.";
+            });
+        });
+        status.textContent =
+          initial.message ||
+          "Draft editing is ready. Nothing is submitted by this form.";
+        initialized = true;
+        root!.dataset.rrInitialization = "ready";
+      } catch (error) {
+        dispose();
+        root!.dataset.rrInitialization = "failed";
+        status.textContent =
+          "Local editing could not start. Fields stay disabled. " +
+          (error instanceof Error ? error.message : "Keep existing saved data.");
+        throw error;
+      }
+    }
+    void initializeRemainingManuscript().catch(() => {});
   }
 </script>
 <style>

@@ -12,6 +12,7 @@ import yaml from "js-yaml";
 import {
   installToolDom,
   ToolElement,
+  settleTools,
 } from "../test-fixtures/donor-recovery/tool-dom.mjs";
 
 const programs = [
@@ -40,6 +41,10 @@ ToolElement.prototype.dispatchEvent = function (event) {
     listener.fn(event);
   return !event.defaultPrevented;
 };
+
+// Native inputs expose a validity object; this fixture represents ordinary valid
+// exposed values only. Incomplete native buffers are covered separately.
+ToolElement.prototype.validity ??= { badInput: false };
 
 // Only the table DOM operations needed by the actual Depth Census renderer.
 ToolElement.prototype.createTBody = function () {
@@ -191,6 +196,27 @@ async function compiledScript(source, path) {
     await writeFile(file, result.outputFiles[0].text);
     const module = await import(pathToFileURL(file));
     if (module.privacyReady) await module.privacyReady;
+    // New record/research sessions initialize asynchronously behind the same
+    // SSR-disabled wrapper and earliest capture guard. Await the actual owner,
+    // never substitute a synchronous old persistence implementation.
+    const rrRoot = document.querySelector(
+      "[data-rr-research],#journal-desk,#hundred-lab,#depth-census",
+    );
+    if (
+      rrRoot &&
+      (contents.includes("remaining-record-recovery") ||
+        rrRoot.dataset.rrResearch !== undefined)
+    ) {
+      await settleTools(
+        () =>
+          rrRoot.dataset.rrInitialization === "ready" ||
+          rrRoot.dataset.rrInitialization === "failed",
+      );
+      if (rrRoot.dataset.rrInitialization === "failed")
+        throw Error(
+          "Actual record initialization failed with controls disabled.",
+        );
+    }
   };
 }
 
@@ -406,7 +432,9 @@ try {
         dom.$("[data-research-workspace]").dataset.config = "{";
       },
       async effect(dom, form) {
-        await form.fire("input");
+        for (const field of form.querySelectorAll("input,textarea,select"))
+          if (field.name) await field.fire("input");
+        await settleTools(() => dom.values.has(this.key));
         const state = JSON.parse(dom.values.get(this.key));
         assert.equal(state.program, id);
         assert.equal(state.draft.title, "Fictional private title");
@@ -421,7 +449,7 @@ try {
       path: "src/components/record/journal.astro",
       form: "#manuscript-form",
       key: "charitology-manuscript-v1",
-      break: "#manuscript-import",
+      break: "#manuscript-recovery",
     },
     {
       id: "hundred-lab",
@@ -459,6 +487,7 @@ try {
       async effect(dom, form) {
         if (entry.id === "journal-desk") {
           await form.fire("input");
+          await settleTools(() => dom.values.has(entry.key));
           assert.equal(
             JSON.parse(dom.values.get(entry.key)).title,
             "Fictional private title",
@@ -473,6 +502,7 @@ try {
         } else {
           const event = await form.fire("submit");
           assert.equal(event.defaultPrevented, true);
+          await settleTools(() => dom.values.has(entry.key));
           const saved = JSON.parse(dom.values.get(entry.key));
           const row = entry.id === "depth-census" ? saved.rows[0] : saved[0];
           assert.ok(row, "actual business handler records fictional local row");

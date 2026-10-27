@@ -1,10 +1,10 @@
 # Shared Charity OS release evidence
 
-Evidence checkpoint: **26 October 2026** (local date). Bounded grant-period reports are promoted at https://os.charitology.org. Their evidence is recorded first; earlier consented delivery, booking, own-request, public intake, foundation, recovery and controlled login/reminder evidence follows separately.
+Evidence checkpoint: **27 October 2026**. Manual recurring task drafts are promoted at https://os.charitology.org. Their evidence appears first; earlier reports, consented delivery, booking, own-request, public intake, foundation, recovery and controlled login/reminder evidence follows separately.
 
-## Manual recurring task drafts: local acceptance
+## Manual recurring task drafts deployed
 
-The [recurrence acceptance record](OS_RECURRENCE_ACCEPTANCE.md) records the frozen-before-code contract, 309 complete OS units, 90 actual PostgreSQL tests, independent bounded review and actual signed-in fictional Chrome checks. Preview/generate, current scopes, End and inactive backup recovery work locally. Four 320/390 light/dark preview cases pass. Production migration, exact runtime CI, staging and promotion remain pending; no publication or real pilot is claimed.
+The [recurrence acceptance record](OS_RECURRENCE_ACCEPTANCE.md) records the frozen-before-code contract, 309 complete OS units, 90 actual PostgreSQL tests, independent bounded review and actual signed-in fictional Chrome checks. Preview/generate, current scopes, End and inactive backup recovery work locally. Four 320/390 light/dark preview cases pass. Runtime `ffdbf7af612985492dd415bd7b0af4ffdaf7b398`, release head `b542f13f3ceec9960b358e816afa589584e36252`, passed both exact CI runs and merged through PR #26 as `edd5411538f66343996ece242b2368cefb353c52`. The additive migration preserved all 60 old rows/columns/ACLs; 24 tenant tables force RLS. Exact stage `dpl_CyAHQVAiZ4zqwQD4yVQQob3f4Cq9` passed 34 protected-stage checks, was promoted after the merged-main build finished and passed 35 canonical checks with ten exact assets. The canonical identity was confirmed at 18:08:36 UTC; future Git deployments can reassign normally. No accepted authentication, provider, email, job or real pilot is claimed.
 
 ## Grant-period reports
 
