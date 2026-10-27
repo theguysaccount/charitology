@@ -40,6 +40,7 @@ const items = issues.map((j) => ({
     contributor guide. Publication and peer review are separate states; the
     current Volume 0 essays are editorial drafts.
   </p><form id="manuscript-form">
+    <fieldset data-private-form-controls disabled>
     <label>Title<input name="title" required maxlength="200" /></label><label
       >Public author or project name<input
         name="author"
@@ -93,7 +94,13 @@ const items = issues.map((j) => ({
       class="btn btn-ghost"
       id="manuscript-backup"
       type="button">Download form backup</button>
-  </form><details>
+    </fieldset>
+  </form><noscript
+    ><p>
+      This local form needs JavaScript. Its fields stay disabled until local
+      editing is ready; nothing is submitted by this form.
+    </p></noscript
+  ><details>
     <summary>Restore a form backup</summary><label
       >Choose a manuscript JSON backup<input
         type="file"
@@ -122,8 +129,9 @@ const items = issues.map((j) => ({
   } from "../../lib/client/completion-models";
   const root = document.querySelector("#journal-desk");
   if (root) {
-    const draft = guardedDraft("charitology-manuscript-v1");
     const form = root.querySelector<HTMLFormElement>("form")!;
+    form.addEventListener("submit", (event) => event.preventDefault(), true);
+    const draft = guardedDraft("charitology-manuscript-v1");
     const status = root.querySelector<HTMLElement>("#manuscript-status")!;
     let writable = true;
     let pending: Record<string, string> | null = null;
@@ -252,9 +260,20 @@ const items = issues.map((j) => ({
       status.textContent =
         "Manuscript downloaded. Nothing sent. Maintainers assign the final issue number; include source checks and AI disclosure in your pull request.";
     });
+    root.querySelector<HTMLFieldSetElement>(
+      "[data-private-form-controls]",
+    )!.disabled = false;
   }
 </script>
 <style>
+  [data-private-form-controls] {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    display: grid;
+    gap: 1rem;
+  }
   #journal-desk {
     margin-top: 2rem;
   }

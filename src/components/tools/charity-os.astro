@@ -8,12 +8,8 @@ import { url } from '../../lib/site';
     <span id="os-save-state" class="note" role="status">Opening your workspace…</span>
   </div>
 
-  <div id="os-storage" class="callout" hidden><strong>This browser is not keeping a saved copy.</strong> You can keep working on this page. Export JSON before leaving or reloading.</div>
-  <div id="os-recovery" class="callout" hidden><p>Your saved workspace could not be read. It has been left in place. Download the unreadable copy before starting again, or import a valid JSON backup.</p><div class="btn-row"><button type="button" class="btn btn-small" id="os-recovery-export">Download unreadable saved data</button><button type="button" class="btn btn-ghost btn-small" id="os-recovery-reset">Start an empty workspace</button></div></div>
-  <div id="os-conflict" class="callout" hidden>
-    <p>Another tab changed this workspace. Choose which version to keep before saving more changes.</p>
-    <div class="btn-row"><button type="button" class="btn btn-small" id="os-load-other">Load the other tab’s version</button><button type="button" class="btn btn-ghost btn-small" id="os-keep-local">Keep this page’s version</button></div>
-  </div>
+  <div id="os-storage" class="callout" hidden><p id="os-storage-message"></p></div>
+  <div id="os-record-recovery-home"><div id="os-record-recovery"></div></div>
 
   <details class="os-context" id="os-context">
     <summary>Mission and context <span id="os-org-label">· Start here</span></summary>
@@ -74,9 +70,10 @@ import { url } from '../../lib/site';
   <div class="os-files">
     <h3>Your copy</h3>
     <p class="note">This workspace stays in this browser. JSON keeps all fields and can restore them; CSV is for working with the records in a spreadsheet. Export a copy regularly.</p>
-    <div class="btn-row"><button type="button" class="btn btn-small" id="os-json">Export JSON</button><button type="button" class="btn btn-ghost btn-small" id="os-csv">Export CSV</button><button type="button" class="btn btn-ghost btn-small" id="os-import">Import JSON</button><button type="button" class="btn btn-ghost btn-small" id="os-sample">Try a fictional example</button><button type="button" class="btn btn-ghost btn-small" id="os-clear">Clear workspace</button><button type="button" class="btn btn-ghost btn-small" id="os-undo" hidden>Undo last change</button></div>
-    <input type="file" id="os-file" accept=".json,application/json" hidden />
-    <div id="os-import-preview" class="callout" hidden><p id="os-import-summary"></p><p class="note">Importing replaces this workspace. Export your current copy first if you want to keep it.</p><div class="btn-row"><button type="button" class="btn btn-small" id="os-import-apply">Replace workspace with this file</button><button type="button" class="btn btn-ghost btn-small" id="os-import-cancel">Cancel import</button></div></div>
+    <div class="btn-row"><button type="button" class="btn btn-small" id="os-json" disabled>Export JSON</button><button type="button" class="btn btn-ghost btn-small" id="os-csv" disabled>Export CSV</button><button type="button" class="btn btn-ghost btn-small" id="os-sample" disabled>Review a fictional example</button></div>
+    <p class="note">Use Backups and recovery above to restore a native file, remove this saved key or undo a record change. These records are separate from unfinished fields.</p>
+    <label class="note"><input type="checkbox" id="os-sample-discard" /> Allow the reviewed fictional example to discard this local version and unfinished fields.</label>
+    <div id="os-sample-preview" class="callout" hidden><p id="os-sample-summary"></p><div class="btn-row"><button type="button" class="btn btn-small" id="os-sample-apply">Apply reviewed fictional example</button><button type="button" class="btn btn-ghost btn-small" id="os-sample-cancel">Cancel example</button></div></div>
     <p id="os-status" class="os-status" role="status" aria-live="polite"></p>
   </div>
 
@@ -86,8 +83,9 @@ import { url } from '../../lib/site';
       <p class="note" id="os-editor-hint"></p>
       <div id="os-editor-fields" class="os-fields"></div>
       <p id="os-editor-error" class="os-error" role="alert" hidden></p>
-      <div class="btn-row"><button type="submit" class="btn btn-small" id="os-editor-save">Save record</button><button type="button" class="btn btn-ghost btn-small" id="os-editor-cancel">Cancel</button></div>
+      <div class="btn-row"><button type="submit" class="btn btn-small" id="os-editor-save" disabled>Save record</button><button type="button" class="btn btn-ghost btn-small" id="os-editor-cancel">Cancel</button><button type="button" class="btn btn-ghost btn-small" id="os-editor-backups" aria-controls="os-editor-recovery-slot" aria-expanded="false" disabled>Backups for this form</button></div>
     </form>
+    <div id="os-editor-recovery-slot"></div>
   </dialog>
   <noscript><p class="callout">Charity OS needs JavaScript to work locally. Context fields stay disabled until it is ready. Its records are saved in your browser.</p></noscript>
 </section>
@@ -144,271 +142,1237 @@ import { url } from '../../lib/site';
 </style>
 
 <script>
-  import { $, $$, clear, h } from '../../lib/client/dom';
-  import { download } from '../../lib/client/files';
-  import { confirmTwice } from '../../lib/client/confirm';
-  import { canPersist } from '../../lib/client/persist';
-  import { OS_KEY, PROJECT_STATUSES, GRANT_STATUSES, TASK_STATUSES, EVIDENCE, blankWorkspace, deleteRecord, exampleWorkspace, labels, loadWorkspace, localDate, newId, parseWorkspace, saveWorkspace, summarizeWorkspace, validateWorkspace, workspaceCsv, workspaceJson, type Workspace, type Kind } from '../../lib/client/charity-os';
+  import { $, $$, clear, h } from "../../lib/client/dom";
+  import { download } from "../../lib/client/files";
+  import { confirmTwice } from "../../lib/client/confirm";
+  import {
+    PROJECT_STATUSES,
+    GRANT_STATUSES,
+    TASK_STATUSES,
+    EVIDENCE,
+    blankWorkspace,
+    deleteRecord,
+    exampleWorkspace,
+    labels,
+    localDate,
+    newId,
+    summarizeWorkspace,
+    workspaceCsv,
+    type Workspace,
+    type Kind,
+  } from "../../lib/client/charity-os";
+  import {
+    createProgramRecordView,
+    openProgramRecordSession,
+    type PRSession,
+    type PRSnapshot,
+    type PRFormId,
+    type PRRawForm,
+    type PRViewToken,
+    type PRRestorePreview,
+  } from "../../lib/client/program-record-recovery";
+  import {
+    mountProgramRecordRecoveryControls,
+    type PRRecoveryControls,
+  } from "../../lib/client/program-record-recovery-controls";
 
-  const contextForm = $<HTMLFormElement>('#os-context-form');
-  contextForm.addEventListener('submit', (event) => event.preventDefault());
-  const loaded = loadWorkspace();
-  let workspace = loaded.workspace;
-  let undo: Workspace | undefined;
-  let imported: Workspace | undefined;
-  let editing: { kind: Kind; id?: string } | undefined;
-  let conflict = false;
-  let contextDirty = false;
-  let recovery = !!loaded.error;
-  const dialog = $<HTMLDialogElement>('#os-editor');
-  const editorForm = $<HTMLFormElement>('#os-editor-form');
-  const fileInput = $<HTMLInputElement>('#os-file');
-  const search = $<HTMLInputElement>('#os-search');
-  const projectFilter = $<HTMLSelectElement>('#os-project-filter');
-  const kinds: Kind[] = ['projects', 'grants', 'tasks', 'outcomes'];
-  const names: Record<Kind, string> = { projects: 'project', grants: 'grant', tasks: 'task', outcomes: 'observation' };
-  const depthNames = ['Relief', 'Repair', 'Prevention', 'Structure', 'Source'];
-  const targets = { projects: '#os-project-list', grants: '#os-grant-list', tasks: '#os-task-list', outcomes: '#os-outcome-list' };
-  const say = (message: string) => { $('#os-status').textContent = message; };
-  $('#os-storage').hidden = canPersist();
+  const root = $(".os-tool");
+  const contextForm = $<HTMLFormElement>("#os-context-form");
+  contextForm.addEventListener("submit", (event) => event.preventDefault());
+  const editorForm = $<HTMLFormElement>("#os-editor-form");
+  editorForm.addEventListener("submit", (event) => event.preventDefault());
+  const dialog = $<HTMLDialogElement>("#os-editor");
+  const recoveryHost = $("#os-record-recovery"),
+    recoveryHome = $("#os-record-recovery-home"),
+    recoverySlot = $("#os-editor-recovery-slot");
+  const editorBackups = $<HTMLButtonElement>("#os-editor-backups");
+  function restoreRecoveryHome() {
+    if (recoveryHost.parentElement !== recoveryHome)
+      recoveryHome.append(recoveryHost);
+    editorBackups.setAttribute("aria-expanded", "false");
+  }
+  const key = "charitology.charity-os" as const;
+  const view = createProgramRecordView(key);
+  let session: PRSession<typeof key> | undefined;
+  let controls: PRRecoveryControls | undefined;
+  let workspace = blankWorkspace(); // Private fallback only; never rendered as a loaded record.
+  let editing: { kind: Kind; id?: string; draftId: string } | undefined;
+  let sample: PRRestorePreview<typeof key> | undefined;
+  let busy = false;
+  let disposed = false;
+  const search = $<HTMLInputElement>("#os-search");
+  const projectFilter = $<HTMLSelectElement>("#os-project-filter");
+  const kinds: Kind[] = ["projects", "grants", "tasks", "outcomes"];
+  const names: Record<Kind, string> = {
+    projects: "project",
+    grants: "grant",
+    tasks: "task",
+    outcomes: "observation",
+  };
+  const depthNames = ["Relief", "Repair", "Prevention", "Structure", "Source"];
+  const targets = {
+    projects: "#os-project-list",
+    grants: "#os-grant-list",
+    tasks: "#os-task-list",
+    outcomes: "#os-outcome-list",
+  };
+  const say = (message: string) => {
+    if (!disposed) $("#os-status").textContent = message;
+  };
+  const errorText = (error: unknown) =>
+    error instanceof Error
+      ? error.message
+      : "This local action could not finish.";
+  const contextKeys = [
+    "organization",
+    "currency",
+    "mission",
+    "community",
+  ] as const;
+  type StringControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+  // Native controls may sanitize an admitted string while showing it. Preserve
+  // the original only until an explicit input/change owns the displayed text.
+  const hydratedStrings = new WeakMap<
+    StringControl,
+    { original: string; display: string }
+  >();
+  const boundStrings = new WeakSet<StringControl>();
+  function hydrateString(input: StringControl, original: string) {
+    input.value = original;
+    hydratedStrings.set(input, { original, display: input.value });
+    if (!boundStrings.has(input)) {
+      const edited = () => hydratedStrings.delete(input);
+      input.addEventListener("input", edited);
+      input.addEventListener("change", edited);
+      boundStrings.add(input);
+    }
+  }
+  function stringValue(input: StringControl) {
+    const hydrated = hydratedStrings.get(input);
+    return hydrated && input.value === hydrated.display
+      ? hydrated.original
+      : input.value;
+  }
+  function invalidateSample() {
+    sample = undefined;
+    $("#os-sample-preview").hidden = true;
+    $<HTMLInputElement>("#os-sample-discard").checked = false;
+  }
+  function changed(form?: PRFormId) {
+    if (disposed) return;
+    if (form) view.changedForm(form);
+    else view.changedView();
+    controls?.noteViewMutation();
+    invalidateSample();
+    refreshStatus();
+  }
+  function refreshStatus(refreshControls = true) {
+    const state = session?.snapshot();
+    const valid = !!state?.hasCurrent;
+    const writable = !!state?.canWrite;
+    $<HTMLFieldSetElement>("#os-context-controls").disabled = !writable;
+    $$<HTMLButtonElement>("[data-add], [data-os-mutation]").forEach(
+      (button) => (button.disabled = busy || !writable),
+    );
+    $<HTMLButtonElement>("#os-editor-save").disabled = busy || !writable;
+    editorBackups.disabled = disposed || !session;
+    const contextSubmit = contextForm.querySelector<HTMLButtonElement>(
+      'button[type="submit"]',
+    );
+    if (contextSubmit) contextSubmit.disabled = busy || !writable;
+    $<HTMLButtonElement>("#os-json").disabled = !valid;
+    $<HTMLButtonElement>("#os-csv").disabled = !valid;
+    $<HTMLButtonElement>("#os-sample").disabled = busy || !state?.canRecover;
+    $$<HTMLElement>(
+      ".os-kpis, .os-budget, .os-due, .os-filterbar, .os-section",
+    ).forEach((element) => (element.hidden = !valid));
+    $("#os-save-state").textContent = !state
+      ? "Opening your workspace…"
+      : !valid
+        ? "No validated workspace loaded"
+        : state.persistence === "saved"
+          ? "Saved records in this browser"
+          : state.persistence === "absent"
+            ? "Empty workspace · not saved"
+            : "Current records are unsaved memory";
+    if (state && view.snapshot().dirtyForms.length)
+      $("#os-save-state").textContent += " · unfinished fields";
+    $("#os-storage").hidden = !state || state.code === "ready";
+    $("#os-storage-message").textContent = state?.message || "";
+    if (refreshControls) controls?.refresh();
+  }
+  function readForms(): readonly PRRawForm[] {
+    const forms: PRRawForm[] = [
+      {
+        form: "context",
+        editingId: null,
+        values: Object.fromEntries(
+          contextKeys.map((name) => [
+            name,
+            ($(`#os-${name}`) as HTMLInputElement | HTMLTextAreaElement).value,
+          ]),
+        ),
+      },
+    ];
+    if (editing && dialog.open)
+      forms.push({
+        form: `editor:${editing.kind}`,
+        editingId: editing.id ?? null,
+        values: Object.fromEntries(
+          fieldConfig(editing.kind).map((field) => [
+            field.key,
+            (
+              $(`[name="${field.key}"]`, editorForm) as
+                HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+            ).value,
+          ]),
+        ),
+      });
+    return forms;
+  }
+  function accept(
+    state: PRSnapshot<typeof key>,
+    token?: PRViewToken,
+    reset = false,
+    refreshControls = true,
+  ) {
+    if (disposed || (token && !view.isCurrent(token)) || !state.hasCurrent)
+      return;
+    const actual = session?.snapshot();
+    if (
+      actual &&
+      (actual.generation !== state.generation || actual.hash !== state.hash)
+    )
+      return;
+    workspace = structuredClone(state.value) as Workspace;
+    if (reset) {
+      syncContext();
+      restoreRecoveryHome();
+      if (dialog.open) dialog.close();
+      editing = undefined;
+      for (const form of view.snapshot().dirtyForms) view.markClean(form, token!);
+      invalidateSample();
+    }
+    render();
+    refreshStatus(refreshControls);
+  }
+  async function commit(
+    next: Workspace,
+    message: string,
+    form: PRFormId | null = null,
+  ) {
+    if (!session || disposed || busy)
+      return { saved: false, current: false, token: null as PRViewToken | null };
+    let captured;
+    try {
+      captured = session.captureSave(next, {
+        at: new Date().toISOString(),
+        form,
+      });
+    } catch (error) {
+      say(errorText(error));
+      refreshStatus();
+      return { saved: false, current: false, token: null as PRViewToken | null };
+    }
+    controls?.noteViewMutation();
+    invalidateSample();
+    busy = true;
+    refreshStatus();
+    try {
+      const result = await session.saveCaptured(captured);
+      if (disposed)
+        return {
+          saved: false,
+          current: false,
+          token: null as PRViewToken | null,
+        };
+      accept(result.snapshot);
+      const saved = result.outcome === "saved" || result.outcome === "no-op";
+      if (saved && result.viewCurrent && view.isCurrent(captured.view) && form)
+        view.markClean(form, captured.view);
+      say(
+        saved
+          ? message
+          : result.outcome === "unsaved"
+            ? "The browser could not save this exact change. Records remain on this page for native backup or Retry. Unfinished fields were kept."
+            : "A newer edit replaced this save; its fields were kept.",
+      );
+      return {
+        saved,
+        current: result.viewCurrent && view.isCurrent(captured.view),
+        token: captured.view,
+      };
+    } catch (error) {
+      say(errorText(error));
+      return { saved: false, current: false, token: null as PRViewToken | null };
+    } finally {
+      busy = false;
+      refreshStatus();
+    }
+  }
+  function syncContext() {
+    for (const name of contextKeys)
+      hydrateString($(`#os-${name}`) as StringControl, workspace[name]);
+  }
 
   function currency(amount: number) {
-    try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: workspace.currency, maximumFractionDigits: 2 }).format(amount); }
-    catch { return `${workspace.currency} ${amount.toLocaleString('en-US')}`; }
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: workspace.currency,
+        maximumFractionDigits: 2,
+      }).format(amount);
+    } catch {
+      return `${workspace.currency} ${amount.toLocaleString("en-US")}`;
+    }
   }
-  const dateLabel = (date: string) => date ? new Date(`${date}T12:00:00`).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Not set';
-  const projectName = (projectId: string) => workspace.projects.find((p) => p.id === projectId)?.title ?? 'No linked project';
-
-  function persist() {
-    const saved = saveWorkspace(workspace);
-    $('#os-storage').hidden = saved;
-    $('#os-save-state').textContent = saved ? 'Saved in this browser' : 'Working on this page only';
-  }
-
-  function commit(next: Workspace, message: string) {
-    if (recovery) { say('The unreadable saved copy is protected. Download it, then start an empty workspace or import a valid backup.'); $('#os-recovery').scrollIntoView({ block: 'center' }); return false; }
-    if (conflict) { say('Another tab changed the workspace. Choose a version in the notice above before saving.'); $('#os-conflict').scrollIntoView({ block: 'center' }); return false; }
-    try { next = validateWorkspace(next); }
-    catch (error) { say(error instanceof Error ? error.message : 'That change could not be saved.'); return false; }
-    undo = structuredClone(workspace);
-    workspace = next;
-    persist();
-    render();
-    say(message);
-    return true;
-  }
-
-  function syncContext() {
-    for (const key of ['organization', 'currency', 'mission', 'community'] as const) ($(`#os-${key}`) as HTMLInputElement | HTMLTextAreaElement).value = workspace[key];
-    contextDirty = false;
-  }
+  const dateLabel = (date: string) =>
+    date
+      ? new Date(`${date}T12:00:00`).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
+      : "Not set";
+  const projectName = (projectId: string) =>
+    workspace.projects.find((p) => p.id === projectId)?.title ??
+    "No linked project";
 
   function rowMatches(row: Record<string, unknown>, kind: Kind) {
     const status = $<HTMLSelectElement>(`[data-filter="${kind}"]`).value;
-    if (status !== 'all' && row[kind === 'outcomes' ? 'evidence' : 'status'] !== status) return false;
-    if (projectFilter.value !== 'all') {
-      if (kind === 'projects' ? row.id !== projectFilter.value : (row.projectId || 'none') !== projectFilter.value) return false;
+    if (
+      status !== "all" &&
+      row[kind === "outcomes" ? "evidence" : "status"] !== status
+    )
+      return false;
+    if (projectFilter.value !== "all") {
+      if (
+        kind === "projects"
+          ? row.id !== projectFilter.value
+          : (row.projectId || "none") !== projectFilter.value
+      )
+        return false;
     }
     const query = search.value.trim().toLowerCase();
-    return !query || `${Object.values(row).join(' ')} ${row.projectId ? projectName(String(row.projectId)) : ''}`.toLowerCase().includes(query);
+    return (
+      !query ||
+      `${Object.values(row).join(" ")} ${row.projectId ? projectName(String(row.projectId)) : ""}`
+        .toLowerCase()
+        .includes(query)
+    );
   }
 
   function details(entries: [string, string][]) {
-    const list = h('dl');
-    for (const [key, value] of entries) list.append(h('dt', {}, key), h('dd', {}, value));
+    const list = h("dl");
+    for (const [key, value] of entries)
+      list.append(h("dt", {}, key), h("dd", {}, value));
     return list;
   }
 
   function buttons(kind: Kind, id: string, title: string) {
-    const edit = h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'aria-label': `Edit ${title}` }, 'Edit');
-    edit.addEventListener('click', () => openEditor(kind, id));
-    const remove = h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'aria-label': `Delete ${title}` }, 'Delete');
-    confirmTwice(remove, { prompt: 'Confirm delete', announce: say, message: `Delete ${title}? Click the same button again to confirm.${kind === 'projects' ? ' Linked grants, tasks and observations will be kept without a project.' : ''}`, action: () => {
-      if (commit(deleteRecord(workspace, kind, id), `Deleted ${title}.${kind === 'projects' ? ' Linked records were kept.' : ''} Undo is available below.`)) $<HTMLButtonElement>('#os-undo').focus();
-    } });
-    const group = h('div', { class: 'btn-row' }, edit, remove);
-    if (kind === 'tasks') {
-      const task = workspace.tasks.find((t) => t.id === id)!;
-      const done = h('button', { class: 'btn btn-ghost btn-small', type: 'button', 'aria-label': `${task.status === 'done' ? 'Reopen' : 'Complete'} ${title}` }, task.status === 'done' ? 'Reopen' : 'Mark done');
-      done.addEventListener('click', () => { const next = structuredClone(workspace); const target = next.tasks.find((t) => t.id === id)!; target.status = target.status === 'done' ? 'todo' : 'done'; commit(next, `${title}: ${labels[target.status]}.`); });
+    const attrs = {
+      class: "btn btn-ghost btn-small",
+      type: "button",
+      "data-os-mutation": "true",
+    };
+    const edit = h("button", { ...attrs, "aria-label": `Edit ${title}` }, "Edit");
+    edit.addEventListener("click", () => openEditor(kind, id));
+    const remove = h(
+      "button",
+      { ...attrs, "aria-label": `Delete ${title}` },
+      "Delete",
+    );
+    const linked =
+      kind === "projects"
+        ? ` ${workspace.grants.filter((row) => row.projectId === id).length} grants, ${workspace.tasks.filter((row) => row.projectId === id).length} tasks and ${workspace.outcomes.filter((row) => row.projectId === id).length} observations will stay with no linked project.`
+        : "";
+    confirmTwice(remove, {
+      prompt: "Confirm delete",
+      announce: say,
+      message: `Delete ${title}? Click the same button again to confirm.${linked}`,
+      action: () => {
+        if (!session?.snapshot().canWrite || busy) return;
+        void commit(
+          deleteRecord(workspace, kind, id),
+          `Deleted ${title}.${linked} Guarded Undo is available in recovery.`,
+        );
+      },
+    });
+    const group = h("div", { class: "btn-row" }, edit, remove);
+    if (kind === "tasks") {
+      const task = workspace.tasks.find((row) => row.id === id)!;
+      const done = h(
+        "button",
+        {
+          ...attrs,
+          "aria-label": `${task.status === "done" ? "Reopen" : "Complete"} ${title}`,
+        },
+        task.status === "done" ? "Reopen" : "Mark done",
+      );
+      done.addEventListener("click", () => {
+        if (!session?.snapshot().canWrite || busy) return;
+        const next = structuredClone(workspace);
+        const target = next.tasks.find((row) => row.id === id)!;
+        target.status = target.status === "done" ? "todo" : "done";
+        void commit(next, `${title}: ${labels[target.status]}.`);
+      });
       group.prepend(done);
     }
+    for (const button of group.querySelectorAll("button"))
+      button.disabled = busy || !session?.snapshot().canWrite;
     return group;
   }
 
   function renderLists() {
     for (const kind of kinds) {
-      const container = $(targets[kind]); clear(container);
+      const container = $(targets[kind]);
+      clear(container);
       let rows = [...workspace[kind]] as any[];
       rows = rows.filter((row) => rowMatches(row, kind));
-      if (kind === 'tasks') rows.sort((a, b) => Number(a.status === 'done') - Number(b.status === 'done') || ({ high: 0, normal: 1, low: 2 }[a.priority as 'high']) - ({ high: 0, normal: 1, low: 2 }[b.priority as 'high']) || (a.due || '9999').localeCompare(b.due || '9999'));
-      if (kind === 'grants') rows.sort((a, b) => (a.deadline || '9999').localeCompare(b.deadline || '9999'));
-      if (kind === 'outcomes') rows.sort((a, b) => b.date.localeCompare(a.date));
-      if (!rows.length) container.append(h('p', { class: 'os-empty' }, workspace[kind].length ? `No ${kind === 'outcomes' ? 'observations' : kind} match these filters.` : `No ${kind === 'outcomes' ? 'observations' : kind} yet. Add your first ${names[kind]} above, or try the fictional example below.`));
+      if (kind === "tasks")
+        rows.sort(
+          (a, b) =>
+            Number(a.status === "done") - Number(b.status === "done") ||
+            { high: 0, normal: 1, low: 2 }[a.priority as "high"] -
+              { high: 0, normal: 1, low: 2 }[b.priority as "high"] ||
+            (a.due || "9999").localeCompare(b.due || "9999"),
+        );
+      if (kind === "grants")
+        rows.sort((a, b) =>
+          (a.deadline || "9999").localeCompare(b.deadline || "9999"),
+        );
+      if (kind === "outcomes") rows.sort((a, b) => b.date.localeCompare(a.date));
+      if (!rows.length)
+        container.append(
+          h(
+            "p",
+            { class: "os-empty" },
+            workspace[kind].length
+              ? `No ${kind === "outcomes" ? "observations" : kind} match these filters.`
+              : `No ${kind === "outcomes" ? "observations" : kind} yet. Add your first ${names[kind]} above, or try the fictional example below.`,
+          ),
+        );
       for (const row of rows) {
         const title = row.title ?? row.indicator;
-        const card = h('article', { class: 'os-card' }, h('h4', {}, title));
+        const card = h("article", { class: "os-card" }, h("h4", {}, title));
         const badge = row.status ?? row.evidence;
-        card.append(h('div', { class: 'os-badges' }, h('span', { class: 'chip' }, labels[badge]), kind === 'tasks' && row.priority === 'high' ? h('span', { class: 'chip' }, 'High priority') : null));
-        if (kind === 'projects') {
-          card.append(details([['Owner', row.owner || 'Not assigned'], ['Target date', dateLabel(row.due)], ['Depth hypothesis', row.depth === null ? 'Unknown' : `${row.depth} · ${depthNames[row.depth]}`], ['Budget / spent', `${currency(row.budget)} / ${currency(row.spent)}`]]));
-          if (row.goal) card.append(h('p', {}, row.goal));
-          if (row.spent > row.budget) card.append(h('p', { class: 'os-late' }, `${currency(row.spent - row.budget)} above the recorded budget.`));
+        card.append(
+          h(
+            "div",
+            { class: "os-badges" },
+            h("span", { class: "chip" }, labels[badge]),
+            kind === "tasks" && row.priority === "high"
+              ? h("span", { class: "chip" }, "High priority")
+              : null,
+          ),
+        );
+        if (kind === "projects") {
+          card.append(
+            details([
+              ["Owner", row.owner || "Not assigned"],
+              ["Target date", dateLabel(row.due)],
+              [
+                "Depth hypothesis",
+                row.depth === null
+                  ? "Unknown"
+                  : `${row.depth} · ${depthNames[row.depth]}`,
+              ],
+              [
+                "Budget / spent",
+                `${currency(row.budget)} / ${currency(row.spent)}`,
+              ],
+            ]),
+          );
+          if (row.goal) card.append(h("p", {}, row.goal));
+          if (row.spent > row.budget)
+            card.append(
+              h(
+                "p",
+                { class: "os-late" },
+                `${currency(row.spent - row.budget)} above the recorded budget.`,
+              ),
+            );
         }
-        if (kind === 'grants') {
-          card.append(details([['Funder', row.funder || 'Not set'], ['Project', projectName(row.projectId)], ['Owner', row.owner || 'Not assigned'], ['Requested', currency(row.requested)], ['Awarded', currency(row.awarded)], ['Deadline', dateLabel(row.deadline)]]));
-          if (row.next) card.append(h('p', {}, h('strong', {}, 'Next: '), row.next));
-          if (row.deadline && row.deadline < localDate() && ['prospect', 'drafting', 'submitted'].includes(row.status)) card.append(h('p', { class: 'os-late' }, 'Deadline has passed. Check the next step.'));
+        if (kind === "grants") {
+          card.append(
+            details([
+              ["Funder", row.funder || "Not set"],
+              ["Project", projectName(row.projectId)],
+              ["Owner", row.owner || "Not assigned"],
+              ["Requested", currency(row.requested)],
+              ["Awarded", currency(row.awarded)],
+              ["Deadline", dateLabel(row.deadline)],
+            ]),
+          );
+          if (row.next)
+            card.append(h("p", {}, h("strong", {}, "Next: "), row.next));
+          if (
+            row.deadline &&
+            row.deadline < localDate() &&
+            ["prospect", "drafting", "submitted"].includes(row.status)
+          )
+            card.append(
+              h(
+                "p",
+                { class: "os-late" },
+                "Deadline has passed. Check the next step.",
+              ),
+            );
         }
-        if (kind === 'tasks') {
-          card.append(details([['Project', projectName(row.projectId)], ['Owner', row.owner || 'Not assigned'], ['Due', dateLabel(row.due)], ['Priority', labels[row.priority]]]));
-          if (row.due && row.due < localDate() && row.status !== 'done') card.append(h('p', { class: 'os-late' }, 'Overdue'));
+        if (kind === "tasks") {
+          card.append(
+            details([
+              ["Project", projectName(row.projectId)],
+              ["Owner", row.owner || "Not assigned"],
+              ["Due", dateLabel(row.due)],
+              ["Priority", labels[row.priority]],
+            ]),
+          );
+          if (row.due && row.due < localDate() && row.status !== "done")
+            card.append(h("p", { class: "os-late" }, "Overdue"));
         }
-        if (kind === 'outcomes') {
-          card.append(details([['Project', projectName(row.projectId)], ['Date', dateLabel(row.date)], ['Observed value', row.value === null ? 'Unknown' : `${row.value.toLocaleString('en-US')} ${row.unit}`.trim()]]));
-          if (row.source) card.append(h('a', { href: row.source, target: '_blank', rel: 'noopener noreferrer' }, 'Open evidence source'));
+        if (kind === "outcomes") {
+          card.append(
+            details([
+              ["Project", projectName(row.projectId)],
+              ["Date", dateLabel(row.date)],
+              [
+                "Observed value",
+                row.value === null
+                  ? "Unknown"
+                  : `${row.value.toLocaleString("en-US")} ${row.unit}`.trim(),
+              ],
+            ]),
+          );
+          if (row.source)
+            card.append(
+              h(
+                "a",
+                {
+                  href: row.source,
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                },
+                "Open evidence source",
+              ),
+            );
         }
-        if (row.notes) card.append(h('p', { class: 'note' }, row.notes));
-        card.append(buttons(kind, row.id, title)); container.append(card);
+        if (row.notes) card.append(h("p", { class: "note" }, row.notes));
+        card.append(buttons(kind, row.id, title));
+        container.append(card);
       }
     }
   }
 
   function render() {
-    $('#os-org-label').textContent = workspace.organization ? `· ${workspace.organization}` : '· Start here';
+    $("#os-org-label").textContent = workspace.organization
+      ? `· ${workspace.organization}`
+      : "· Start here";
     const previousFilter = projectFilter.value;
-    clear(projectFilter); projectFilter.append(h('option', { value: 'all' }, 'All projects'), h('option', { value: 'none' }, 'No linked project'));
-    for (const project of workspace.projects) projectFilter.append(h('option', { value: project.id }, project.title));
-    projectFilter.value = [...projectFilter.options].some((o) => o.value === previousFilter) ? previousFilter : 'all';
+    clear(projectFilter);
+    projectFilter.append(
+      h("option", { value: "all" }, "All projects"),
+      h("option", { value: "none" }, "No linked project"),
+    );
+    for (const project of workspace.projects)
+      projectFilter.append(h("option", { value: project.id }, project.title));
+    projectFilter.value = [...projectFilter.options].some(
+      (o) => o.value === previousFilter,
+    )
+      ? previousFilter
+      : "all";
     const totals = summarizeWorkspace(workspace);
-    $('#os-active').textContent = String(totals.activeProjects); $('#os-project-count').textContent = `${workspace.projects.length} total projects`;
-    $('#os-requested').textContent = currency(totals.requested); $('#os-awarded').textContent = `${currency(totals.awarded)} recorded as awarded`;
-    $('#os-task-count').textContent = String(totals.openTasks); $('#os-overdue').textContent = `${totals.overdueTasks} overdue`;
-    $('#os-observation-count').textContent = String(totals.observations);
-    $('#os-budget').textContent = `All project budgets: ${currency(totals.budget)}. Spending recorded: ${currency(totals.spent)}. Difference: ${currency(totals.budget - totals.spent)}. Grant amounts are separate and are not added to project budgets.`;
-    const deadlines = $('#os-deadlines'); clear(deadlines);
-    if (!totals.deadlines.length) deadlines.append(h('li', {}, 'No pending grants with a deadline yet.'));
-    for (const grant of totals.deadlines.slice(0, 4)) deadlines.append(h('li', {}, `${dateLabel(grant.deadline)}${grant.deadline < localDate() ? ' · passed' : ''} — ${grant.title}${grant.owner ? ` · ${grant.owner}` : ''}`));
-    const pipeline = $('#os-pipeline'); clear(pipeline);
-    for (const stage of GRANT_STATUSES) pipeline.append(h('span', {}, `${labels[stage]} · ${workspace.grants.filter((g) => g.status === stage).length}`));
-    $('#os-undo').hidden = !undo;
+    $("#os-active").textContent = String(totals.activeProjects);
+    $("#os-project-count").textContent =
+      `${workspace.projects.length} total projects`;
+    $("#os-requested").textContent = currency(totals.requested);
+    $("#os-awarded").textContent =
+      `${currency(totals.awarded)} recorded as awarded`;
+    $("#os-task-count").textContent = String(totals.openTasks);
+    $("#os-overdue").textContent = `${totals.overdueTasks} overdue`;
+    $("#os-observation-count").textContent = String(totals.observations);
+    $("#os-budget").textContent =
+      `All project budgets: ${currency(totals.budget)}. Spending recorded: ${currency(totals.spent)}. Difference: ${currency(totals.budget - totals.spent)}. Grant amounts are separate and are not added to project budgets.`;
+    const deadlines = $("#os-deadlines");
+    clear(deadlines);
+    if (!totals.deadlines.length)
+      deadlines.append(h("li", {}, "No pending grants with a deadline yet."));
+    for (const grant of totals.deadlines.slice(0, 4))
+      deadlines.append(
+        h(
+          "li",
+          {},
+          `${dateLabel(grant.deadline)}${grant.deadline < localDate() ? " · passed" : ""} — ${grant.title}${grant.owner ? ` · ${grant.owner}` : ""}`,
+        ),
+      );
+    const pipeline = $("#os-pipeline");
+    clear(pipeline);
+    for (const stage of GRANT_STATUSES)
+      pipeline.append(
+        h(
+          "span",
+          {},
+          `${labels[stage]} · ${workspace.grants.filter((g) => g.status === stage).length}`,
+        ),
+      );
     renderLists();
   }
 
-  type Field = { key: string; label: string; type?: 'text' | 'textarea' | 'date' | 'number' | 'select'; required?: boolean; max?: number; options?: [string, string][]; hint?: string; wide?: boolean; negative?: boolean; nullable?: boolean };
-  const optionList = (values: readonly string[]): [string, string][] => values.map((value) => [value, labels[value]]);
-  const projectField = (): Field => ({ key: 'projectId', label: 'Linked project', type: 'select', options: [['', 'No linked project'], ...workspace.projects.map((p): [string, string] => [p.id, p.title])] });
+  type Field = {
+    key: string;
+    label: string;
+    type?: "text" | "textarea" | "date" | "number" | "select";
+    required?: boolean;
+    max?: number;
+    options?: [string, string][];
+    hint?: string;
+    wide?: boolean;
+    negative?: boolean;
+    nullable?: boolean;
+  };
+  const optionList = (values: readonly string[]): [string, string][] =>
+    values.map((value) => [value, labels[value]]);
+  const projectField = (): Field => ({
+    key: "projectId",
+    label: "Linked project",
+    type: "select",
+    options: [
+      ["", "No linked project"],
+      ...workspace.projects.map((p): [string, string] => [p.id, p.title]),
+    ],
+  });
   function fieldConfig(kind: Kind): Field[] {
-    const notes: Field = { key: 'notes', label: 'Notes and limits', type: 'textarea', max: 4000, wide: true };
-    const owner: Field = { key: 'owner', label: 'Owner or role', max: 120 };
-    if (kind === 'projects') return [
-      { key: 'title', label: 'Project or program name', required: true, max: 160 }, { key: 'status', label: 'Status', type: 'select', options: optionList(PROJECT_STATUSES) }, owner,
-      { key: 'due', label: 'Target date (optional)', type: 'date' }, { key: 'depth', label: 'Depth hypothesis', type: 'select', options: [['', 'Unknown'], ...depthNames.map((name, i): [string, string] => [String(i), `${i} · ${name}`])], hint: 'Depth describes the work. Every level is needed.' },
-      { key: 'budget', label: `Budget (${workspace.currency})`, type: 'number', required: true }, { key: 'spent', label: `Spending recorded (${workspace.currency})`, type: 'number', required: true },
-      { key: 'goal', label: 'Intended change and how you will notice it', type: 'textarea', max: 2000, wide: true }, notes,
-    ];
-    if (kind === 'grants') return [
-      { key: 'title', label: 'Grant or opportunity name', required: true, max: 160 }, { key: 'funder', label: 'Funder', max: 160 }, projectField(), { key: 'status', label: 'Stage', type: 'select', options: optionList(GRANT_STATUSES) },
-      { key: 'requested', label: `Amount requested (${workspace.currency})`, type: 'number', required: true }, { key: 'awarded', label: `Amount awarded (${workspace.currency})`, type: 'number', required: true }, { key: 'deadline', label: 'Deadline (optional)', type: 'date' }, owner,
-      { key: 'next', label: 'Next step', type: 'textarea', max: 1000, wide: true }, notes,
-    ];
-    if (kind === 'tasks') return [
-      { key: 'title', label: 'Task', required: true, max: 160 }, projectField(), { key: 'status', label: 'Status', type: 'select', options: optionList(TASK_STATUSES) }, { key: 'priority', label: 'Priority', type: 'select', options: optionList(['high', 'normal', 'low']) }, { key: 'due', label: 'Due date (optional)', type: 'date' }, owner, notes,
-    ];
+    const notes: Field = {
+      key: "notes",
+      label: "Notes and limits",
+      type: "textarea",
+      max: 4000,
+      wide: true,
+    };
+    const owner: Field = { key: "owner", label: "Owner or role", max: 120 };
+    if (kind === "projects")
+      return [
+        {
+          key: "title",
+          label: "Project or program name",
+          required: true,
+          max: 160,
+        },
+        {
+          key: "status",
+          label: "Status",
+          type: "select",
+          options: optionList(PROJECT_STATUSES),
+        },
+        owner,
+        { key: "due", label: "Target date (optional)", type: "date" },
+        {
+          key: "depth",
+          label: "Depth hypothesis",
+          type: "select",
+          options: [
+            ["", "Unknown"],
+            ...depthNames.map((name, i): [string, string] => [
+              String(i),
+              `${i} · ${name}`,
+            ]),
+          ],
+          hint: "Depth describes the work. Every level is needed.",
+        },
+        {
+          key: "budget",
+          label: `Budget (${workspace.currency})`,
+          type: "number",
+          required: true,
+        },
+        {
+          key: "spent",
+          label: `Spending recorded (${workspace.currency})`,
+          type: "number",
+          required: true,
+        },
+        {
+          key: "goal",
+          label: "Intended change and how you will notice it",
+          type: "textarea",
+          max: 2000,
+          wide: true,
+        },
+        notes,
+      ];
+    if (kind === "grants")
+      return [
+        {
+          key: "title",
+          label: "Grant or opportunity name",
+          required: true,
+          max: 160,
+        },
+        { key: "funder", label: "Funder", max: 160 },
+        projectField(),
+        {
+          key: "status",
+          label: "Stage",
+          type: "select",
+          options: optionList(GRANT_STATUSES),
+        },
+        {
+          key: "requested",
+          label: `Amount requested (${workspace.currency})`,
+          type: "number",
+          required: true,
+        },
+        {
+          key: "awarded",
+          label: `Amount awarded (${workspace.currency})`,
+          type: "number",
+          required: true,
+        },
+        { key: "deadline", label: "Deadline (optional)", type: "date" },
+        owner,
+        {
+          key: "next",
+          label: "Next step",
+          type: "textarea",
+          max: 1000,
+          wide: true,
+        },
+        notes,
+      ];
+    if (kind === "tasks")
+      return [
+        { key: "title", label: "Task", required: true, max: 160 },
+        projectField(),
+        {
+          key: "status",
+          label: "Status",
+          type: "select",
+          options: optionList(TASK_STATUSES),
+        },
+        {
+          key: "priority",
+          label: "Priority",
+          type: "select",
+          options: optionList(["high", "normal", "low"]),
+        },
+        { key: "due", label: "Due date (optional)", type: "date" },
+        owner,
+        notes,
+      ];
     return [
-      { key: 'indicator', label: 'What did you observe?', required: true, max: 160 }, projectField(), { key: 'date', label: 'Observation date', type: 'date', required: true }, { key: 'evidence', label: 'Evidence status', type: 'select', options: optionList(EVIDENCE), hint: 'Choose what the record supports. This is not a claim that your program caused the result.' },
-      { key: 'value', label: 'Observed value (optional)', type: 'number', negative: true, nullable: true, hint: 'Leave blank if unknown. Zero and negative results can be recorded.' }, { key: 'unit', label: 'Unit, such as visits or percentage points', max: 80 },
-      { key: 'source', label: 'Evidence or document link (optional)', max: 1200, hint: 'A complete HTTPS link to a public source or your own document.' }, notes,
+      {
+        key: "indicator",
+        label: "What did you observe?",
+        required: true,
+        max: 160,
+      },
+      projectField(),
+      { key: "date", label: "Observation date", type: "date", required: true },
+      {
+        key: "evidence",
+        label: "Evidence status",
+        type: "select",
+        options: optionList(EVIDENCE),
+        hint: "Choose what the record supports. This is not a claim that your program caused the result.",
+      },
+      {
+        key: "value",
+        label: "Observed value (optional)",
+        type: "number",
+        negative: true,
+        nullable: true,
+        hint: "Leave blank if unknown. Zero and negative results can be recorded.",
+      },
+      {
+        key: "unit",
+        label: "Unit, such as visits or percentage points",
+        max: 80,
+      },
+      {
+        key: "source",
+        label: "Evidence or document link (optional)",
+        max: 1200,
+        hint: "A complete HTTPS link to a public source or your own document.",
+      },
+      notes,
     ];
   }
 
   function openEditor(kind: Kind, id?: string) {
-    if (conflict) { say('Choose which tab’s version to keep before editing.'); return; }
-    editing = { kind, id };
+    if (!session?.snapshot().canWrite || busy) {
+      say("Recover or retry the saved copy before editing records.");
+      return;
+    }
+    changed();
+    editing = { kind, id, draftId: id ?? newId() };
     const defaults: Record<Kind, Record<string, unknown>> = {
-      projects: { title: '', status: 'planned', owner: '', due: '', depth: null, budget: 0, spent: 0, goal: '', notes: '' },
-      grants: { title: '', funder: '', projectId: '', status: 'prospect', requested: 0, awarded: 0, deadline: '', owner: '', next: '', notes: '' },
-      tasks: { title: '', projectId: '', status: 'todo', priority: 'normal', due: '', owner: '', notes: '' },
-      outcomes: { date: localDate(), projectId: '', indicator: '', value: null, unit: '', evidence: 'unknown', source: '', notes: '' },
+      projects: {
+        title: "",
+        status: "planned",
+        owner: "",
+        due: "",
+        depth: null,
+        budget: 0,
+        spent: 0,
+        goal: "",
+        notes: "",
+      },
+      grants: {
+        title: "",
+        funder: "",
+        projectId: "",
+        status: "prospect",
+        requested: 0,
+        awarded: 0,
+        deadline: "",
+        owner: "",
+        next: "",
+        notes: "",
+      },
+      tasks: {
+        title: "",
+        projectId: "",
+        status: "todo",
+        priority: "normal",
+        due: "",
+        owner: "",
+        notes: "",
+      },
+      outcomes: {
+        date: localDate(),
+        projectId: "",
+        indicator: "",
+        value: null,
+        unit: "",
+        evidence: "unknown",
+        source: "",
+        notes: "",
+      },
     };
-    const record = id ? workspace[kind].find((row) => row.id === id) as Record<string, unknown> : defaults[kind];
+    const record = id
+      ? (workspace[kind].find((row) => row.id === id) as Record<string, unknown>)
+      : defaults[kind];
     if (!record) return;
-    $('#os-editor-title').textContent = `${id ? 'Edit' : 'Add'} ${names[kind]}`;
-    $('#os-editor-hint').textContent = kind === 'outcomes' ? 'Separate what happened from what caused it. Include limits, missing data and unwelcome results.' : 'Use this record to make the next step and its owner clear.';
-    const fields = $('#os-editor-fields'); clear(fields); $('#os-editor-error').hidden = true;
+    $("#os-editor-title").textContent = `${id ? "Edit" : "Add"} ${names[kind]}`;
+    $("#os-editor-hint").textContent =
+      kind === "outcomes"
+        ? "Separate what happened from what caused it. Include limits, missing data and unwelcome results."
+        : "Use this record to make the next step and its owner clear.";
+    const fields = $("#os-editor-fields");
+    clear(fields);
+    $("#os-editor-error").hidden = true;
     for (const field of fieldConfig(kind)) {
       const controlId = `os-field-${field.key}`;
-      const wrap = h('div', { class: `field${field.wide ? ' os-wide' : ''}` }, h('label', { for: controlId }, field.label));
+      const wrap = h(
+        "div",
+        { class: `field${field.wide ? " os-wide" : ""}` },
+        h("label", { for: controlId }, field.label),
+      );
       let input: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-      if (field.type === 'select') { input = h('select', { id: controlId, name: field.key }); for (const [value, label] of field.options!) input.append(h('option', { value }, label)); }
-      else if (field.type === 'textarea') input = h('textarea', { id: controlId, name: field.key, rows: 3, maxlength: field.max });
-      else input = h('input', { id: controlId, name: field.key, type: field.type ?? 'text', maxlength: field.max, ...(field.type === 'number' ? { min: field.negative ? -1e12 : 0, max: 1e12, step: 'any', inputmode: 'decimal' } : {}), ...(field.type === 'date' ? { min: '1900-01-01', max: '2200-12-31' } : {}) });
-      input.required = !!field.required; input.value = record[field.key] === null ? '' : String(record[field.key] ?? '');
-      if (field.hint) { input.setAttribute('aria-describedby', `${controlId}-hint`); wrap.append(input, h('span', { class: 'hint', id: `${controlId}-hint` }, field.hint)); } else wrap.append(input);
+      if (field.type === "select") {
+        input = h("select", { id: controlId, name: field.key });
+        for (const [value, label] of field.options!)
+          input.append(h("option", { value }, label));
+      } else if (field.type === "textarea")
+        input = h("textarea", {
+          id: controlId,
+          name: field.key,
+          rows: 3,
+          maxlength: field.max,
+        });
+      else
+        input = h("input", {
+          id: controlId,
+          name: field.key,
+          type: field.type ?? "text",
+          maxlength: field.max,
+          ...(field.type === "number"
+            ? {
+                min: field.negative ? -1e12 : 0,
+                max: 1e12,
+                step: "any",
+                inputmode: "decimal",
+              }
+            : {}),
+          ...(field.type === "date"
+            ? { min: "1900-01-01", max: "2200-12-31" }
+            : {}),
+        });
+      input.required = !!field.required;
+      const source = record[field.key];
+      if (typeof source === "string") hydrateString(input, source);
+      else input.value = source === null ? "" : String(source ?? "");
+      if (field.hint) {
+        input.setAttribute("aria-describedby", `${controlId}-hint`);
+        wrap.append(
+          input,
+          h("span", { class: "hint", id: `${controlId}-hint` }, field.hint),
+        );
+      } else wrap.append(input);
       fields.append(wrap);
     }
-    dialog.showModal(); ($('input,select,textarea', fields) as HTMLElement).focus();
+    dialog.showModal();
+    ($("input,select,textarea", fields) as HTMLElement).focus();
   }
 
-  editorForm.addEventListener('submit', (event) => {
-    event.preventDefault(); if (!editing) return;
-    const { kind, id } = editing;
-    const record: Record<string, unknown> = { id: id ?? newId() };
-    for (const field of fieldConfig(kind)) {
-      const value = ($(`[name="${field.key}"]`, editorForm) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement).value.trim();
-      record[field.key] = field.type === 'number' ? (value === '' && field.nullable ? null : Number(value)) : field.key === 'depth' ? (value === '' ? null : Number(value)) : value;
+  const editorChanged = (event: Event) => {
+    if (
+      editing &&
+      event.target instanceof Node &&
+      $("#os-editor-fields").contains(event.target)
+    )
+      changed(`editor:${editing.kind}`);
+  };
+  editorForm.addEventListener("input", editorChanged);
+  editorForm.addEventListener("change", editorChanged);
+  editorForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!editing || !session?.snapshot().canWrite || busy) return;
+    const selected = editing;
+    const record: Record<string, unknown> = { id: selected.draftId };
+    for (const field of fieldConfig(selected.kind)) {
+      const input = $(`[name="${field.key}"]`, editorForm) as StringControl;
+      const raw =
+        field.type === "number" || field.key === "depth"
+          ? input.value
+          : stringValue(input);
+      const numeric = raw.trim();
+      record[field.key] =
+        field.type === "number"
+          ? numeric === "" && field.nullable
+            ? null
+            : numeric === ""
+              ? NaN
+              : Number(numeric)
+          : field.key === "depth"
+            ? numeric === ""
+              ? null
+              : Number(numeric)
+            : raw;
     }
     const next = structuredClone(workspace);
-    (next[kind] as any[]) = id ? next[kind].map((row) => row.id === id ? record : row) : [...next[kind], record];
-    try { validateWorkspace(next); }
-    catch (error) { $('#os-editor-error').textContent = error instanceof Error ? error.message : 'Check the fields.'; $('#os-editor-error').hidden = false; return; }
-    if (commit(next, `${id ? 'Updated' : 'Added'} ${record.title ?? record.indicator}.`)) { dialog.close(); editing = undefined; $<HTMLButtonElement>(`[data-add="${kind}"]`).focus(); }
+    const existing = next[selected.kind].some(
+      (row) => row.id === selected.draftId,
+    );
+    (next[selected.kind] as any[]) = existing
+      ? next[selected.kind].map((row) =>
+          row.id === selected.draftId ? record : row,
+        )
+      : [...next[selected.kind], record];
+    void commit(
+      next,
+      `${selected.id ? "Updated" : "Added"} ${record.title ?? record.indicator}.`,
+      `editor:${selected.kind}`,
+    ).then((result) => {
+      if (
+        result.saved &&
+        result.current &&
+        result.token &&
+        view.isCurrent(result.token) &&
+        editing === selected
+      ) {
+        restoreRecoveryHome();
+        dialog.close();
+        $<HTMLButtonElement>(`[data-add="${selected.kind}"]`).focus();
+      } else if (!result.saved && editing === selected) {
+        $("#os-editor-error").textContent =
+          "Record fields remain here. Review the status, export unfinished fields or retry the retained save.";
+        $("#os-editor-error").hidden = false;
+      }
+    });
   });
-  for (const id of ['#os-editor-close', '#os-editor-cancel']) $(id).addEventListener('click', () => dialog.close());
-  dialog.addEventListener('close', () => { editing = undefined; });
-  $$<HTMLButtonElement>('[data-add]').forEach((button) => button.addEventListener('click', () => openEditor(button.dataset.add as Kind)));
-  contextForm.addEventListener('input', () => { contextDirty = true; $('#os-save-state').textContent = 'Context has unsaved changes'; });
-  contextForm.addEventListener('submit', (event) => {
-    event.preventDefault(); const next = structuredClone(workspace);
-    for (const key of ['organization', 'currency', 'mission', 'community'] as const) next[key] = ($(`#os-${key}`) as HTMLInputElement | HTMLTextAreaElement).value;
-    if (next.currency.toUpperCase() !== workspace.currency && kinds.some((kind) => workspace[kind].length)) {
-      if (!window.confirm('Changing the currency label does not convert any amount. Keep the existing amounts under the new code?')) return;
+  function closeEditor() {
+    if (disposed) return;
+    const form: PRFormId | null = editing ? `editor:${editing.kind}` : null;
+    if (
+      form &&
+      view.snapshot().dirtyForms.includes(form) &&
+      !window.confirm(
+        "Discard this unfinished record form? Download unfinished fields first if you want to keep them.",
+      )
+    )
+      return;
+    changed();
+    if (form) view.markClean(form, view.capture());
+    restoreRecoveryHome();
+    dialog.close();
+  }
+  for (const id of ["#os-editor-close", "#os-editor-cancel"])
+    $(id).addEventListener("click", closeEditor);
+  dialog.addEventListener("close", () => {
+    restoreRecoveryHome();
+    editing = undefined;
+  });
+  editorBackups.addEventListener("click", () => {
+    if (disposed || !session || !controls || !dialog.open) return;
+    // Move the same controller-owned panel into the native modal's accessible
+    // subtree. The slot is outside the editor form, so recovery fields cannot
+    // mark record text dirty or revoke their own file previews.
+    recoverySlot.append(recoveryHost);
+    editorBackups.setAttribute("aria-expanded", "true");
+    controls.refresh();
+    const panel =
+      recoveryHost.querySelector<HTMLDetailsElement>("[data-pr-recovery]");
+    if (panel) {
+      panel.open = true;
+      panel.querySelector<HTMLElement>("summary")?.focus();
     }
-    if (commit(next, 'Saved mission and context.')) syncContext();
   });
-  search.addEventListener('input', renderLists); projectFilter.addEventListener('change', renderLists);
-  $$<HTMLSelectElement>('[data-filter]').forEach((select) => select.addEventListener('change', renderLists));
-  $('#os-clear-filters').addEventListener('click', () => { search.value = ''; projectFilter.value = 'all'; $$<HTMLSelectElement>('[data-filter]').forEach((select) => select.value = 'all'); renderLists(); say('Showing all records.'); });
-  $('#os-json').addEventListener('click', () => { download(`charitology-workspace-${localDate()}.json`, workspaceJson(workspace), 'application/json;charset=utf-8'); say('Exported the whole workspace as JSON.'); });
-  $('#os-csv').addEventListener('click', () => { download(`charitology-workspace-${localDate()}.csv`, workspaceCsv(workspace), 'text/csv;charset=utf-8'); say('Exported all records as CSV. Use JSON to restore the workspace.'); });
-  $('#os-import').addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', async () => {
-    const file = fileInput.files?.[0]; fileInput.value = ''; if (!file) return;
-    if (file.size > 5_000_000) { say('Choose a file smaller than 5 MB. Nothing was imported.'); return; }
-    let raw = ''; try { raw = await file.text(); } catch { say('This file could not be read. Nothing was imported.'); return; }
-    const parsed = parseWorkspace(raw);
-    if (!parsed.workspace) { say(`${parsed.error} Nothing was imported.`); return; }
-    imported = parsed.workspace;
-    $('#os-import-summary').textContent = `${file.name}: ${imported.organization || 'Unnamed workspace'}, ${imported.projects.length} projects, ${imported.grants.length} grants, ${imported.tasks.length} tasks and ${imported.outcomes.length} observations.`;
-    $('#os-import-preview').hidden = false; $<HTMLButtonElement>('#os-import-apply').focus();
+  dialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeEditor();
   });
-  $('#os-import-cancel').addEventListener('click', () => { imported = undefined; $('#os-import-preview').hidden = true; say('Import canceled. Nothing changed.'); });
-  $('#os-import-apply').addEventListener('click', () => { if (!imported) return; const wasRecovery = recovery; recovery = false; if (commit(imported, 'Imported the workspace. Undo is available.')) { imported = undefined; $('#os-import-preview').hidden = true; $('#os-recovery').hidden = true; syncContext(); } else recovery = wasRecovery; });
-  confirmTwice($<HTMLButtonElement>('#os-sample'), { prompt: 'Replace with example?', needed: () => kinds.some((kind) => workspace[kind].length) || !!workspace.organization || contextDirty, announce: say, message: 'The fictional example will replace this workspace. Export a copy first, then click the same button again to confirm.', action: () => { if (commit(exampleWorkspace(), 'Loaded a fictional example. Its people, funding and observations are invented. Undo restores the previous workspace.')) syncContext(); } });
-  confirmTwice($<HTMLButtonElement>('#os-clear'), { prompt: 'Confirm clear', announce: say, message: 'Clear this workspace? Export a copy first, then click the same button again to confirm.', action: () => { if (commit(blankWorkspace(), 'Cleared the workspace. Undo is available until your next change or reload.')) { syncContext(); $('#os-context').setAttribute('open', ''); } } });
-  $('#os-undo').addEventListener('click', () => { if (!undo || conflict) return; workspace = undo; undo = undefined; persist(); syncContext(); render(); say('Restored the workspace before the last change.'); });
-  window.addEventListener('storage', (event) => { if (event.key === `charitology.${OS_KEY}` || event.key === null) { conflict = true; $('#os-conflict').hidden = false; say('Another tab changed the saved workspace. Choose which version to keep.'); } });
-  $('#os-load-other').addEventListener('click', () => {
-    const next = loadWorkspace(); if (next.error) { say(`Could not load the other version: ${next.error}`); return; }
-    undo = structuredClone(workspace); workspace = next.workspace; conflict = false; $('#os-conflict').hidden = true; dialog.close(); syncContext(); render(); say('Loaded the saved version. Undo can restore this page’s earlier records.');
+  $$<HTMLButtonElement>("[data-add]").forEach((button) => {
+    button.disabled = true;
+    button.addEventListener("click", () =>
+      openEditor(button.dataset.add as Kind),
+    );
   });
-  $('#os-keep-local').addEventListener('click', () => { if (recovery) { say('Recover the unreadable saved copy or start an empty workspace before keeping this version.'); return; } conflict = false; $('#os-conflict').hidden = true; persist(); say('Kept this page’s records. Unsaved context fields still need Save context.'); });
-  $('#os-recovery-export').addEventListener('click', () => { if (loaded.recoveryRaw) download(`charitology-workspace-recovery-${localDate()}.txt`, loaded.recoveryRaw); });
-  confirmTwice($<HTMLButtonElement>('#os-recovery-reset'), { prompt: 'Replace saved data?', announce: say, message: 'This replaces the unreadable saved data. Download it first, then click again to confirm.', action: () => { recovery = false; if (commit(blankWorkspace(), 'Started an empty workspace.')) { $('#os-recovery').hidden = true; syncContext(); } else recovery = true; } });
-
-  syncContext(); render();
-  $('#os-save-state').textContent = $('#os-storage').hidden ? 'Saved in this browser' : 'Working on this page only';
-  if (!workspace.organization && !workspace.projects.length) $('#os-context').setAttribute('open', '');
-  if (loaded.error) { $('#os-recovery').hidden = false; $('#os-save-state').textContent = 'Saved data needs recovery'; say(`Saved data could not be read: ${loaded.error} Import a valid JSON backup to restore it.`); }
-  $<HTMLFieldSetElement>('#os-context-controls').disabled = false;
+  contextForm.addEventListener("input", () => changed("context"));
+  contextForm.addEventListener("change", () => changed("context"));
+  contextForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!session?.snapshot().canWrite || busy) return;
+    const next = structuredClone(workspace);
+    for (const name of contextKeys)
+      next[name] = stringValue($(`#os-${name}`) as StringControl);
+    if (
+      next.currency !== workspace.currency &&
+      kinds.some((kind) => workspace[kind].length) &&
+      !window.confirm(
+        "Changing the currency label does not convert any amount. Keep the existing amounts under the new code?",
+      )
+    )
+      return;
+    void commit(next, "Saved mission and context.", "context").then((result) => {
+      if (
+        result.saved &&
+        result.current &&
+        result.token &&
+        view.isCurrent(result.token)
+      )
+        syncContext();
+    });
+  });
+  search.addEventListener("input", renderLists);
+  projectFilter.addEventListener("change", renderLists);
+  $$<HTMLSelectElement>("[data-filter]").forEach((select) =>
+    select.addEventListener("change", renderLists),
+  );
+  $("#os-clear-filters").addEventListener("click", () => {
+    search.value = "";
+    projectFilter.value = "all";
+    $$<HTMLSelectElement>("[data-filter]").forEach(
+      (select) => (select.value = "all"),
+    );
+    if (session?.snapshot().hasCurrent) renderLists();
+    say("Showing all records.");
+  });
+  $("#os-json").addEventListener("click", () => {
+    try {
+      if (!session) return;
+      const exported = session.exportNative({ at: new Date().toISOString() });
+      download(
+        `charitology-workspace-${localDate()}.json`,
+        exported.text,
+        "application/json;charset=utf-8",
+      );
+      say(
+        `Requested a whole native record backup (${exported.persistence}). Unfinished fields have a separate download.`,
+      );
+    } catch (error) {
+      say(errorText(error));
+    }
+  });
+  $("#os-csv").addEventListener("click", () => {
+    try {
+      if (!session?.snapshot().hasCurrent) return;
+      download(
+        `charitology-workspace-${localDate()}.csv`,
+        workspaceCsv(workspace),
+        "text/csv;charset=utf-8",
+      );
+      say(
+        "Requested every record as CSV. Use native JSON to restore records; unfinished fields are separate.",
+      );
+    } catch (error) {
+      say(errorText(error));
+    }
+  });
+  $("#os-sample-discard").addEventListener("change", () => {
+    view.changedView();
+    controls?.noteViewMutation();
+    sample = undefined;
+    $("#os-sample-preview").hidden = true;
+  });
+  $("#os-sample").addEventListener("click", () => {
+    if (!session || busy) return;
+    const allowed = $<HTMLInputElement>("#os-sample-discard").checked;
+    sample = undefined;
+    $("#os-sample-preview").hidden = true;
+    let pending: Promise<PRRestorePreview<typeof key>>;
+    try {
+      pending = session.previewReplace(exampleWorkspace(), {
+        kind: "example",
+        at: new Date().toISOString(),
+        discardLocal: allowed,
+      });
+    } catch (error) {
+      say(errorText(error));
+      return;
+    }
+    const token = view.capture();
+    controls?.noteViewMutation();
+    busy = true;
+    refreshStatus();
+    void pending
+      .then((preview) => {
+        if (!disposed && view.isCurrent(token)) {
+          sample = preview;
+          $("#os-sample-summary").textContent =
+            `FICTIONAL replacement: ${Object.entries(preview.summary.counts)
+              .map(([name, count]) => `${count} ${name}`)
+              .join(
+                ", ",
+              )}. No real people, funding or observations. Applying replaces the complete local workspace. Review ${preview.reviewHash}.`;
+          $("#os-sample-preview").hidden = false;
+        }
+      })
+      .catch((error) => {
+        if (!disposed && view.isCurrent(token)) say(errorText(error));
+      })
+      .finally(() => {
+        busy = false;
+        if (!disposed) refreshStatus();
+      });
+  });
+  $("#os-sample-apply").addEventListener("click", () => {
+    if (!session || !sample || busy) return;
+    const selected = sample;
+    sample = undefined;
+    $("#os-sample-preview").hidden = true;
+    busy = true;
+    refreshStatus();
+    void Promise.resolve()
+      .then(() => session!.applyRestore(selected))
+      .then((result) => {
+        if (disposed) return;
+        if (
+          (result.outcome === "saved" || result.outcome === "no-op") &&
+          result.viewCurrent
+        ) {
+          accept(result.snapshot, selected.view, true);
+          say(
+            "Saved the explicitly fictional example. Guarded Undo is available in recovery.",
+          );
+        } else {
+          accept(result.snapshot);
+          say(
+            "The example was not saved; retained memory and unfinished fields remain available for backup.",
+          );
+        }
+      })
+      .catch((error) => say(errorText(error)))
+      .finally(() => {
+        busy = false;
+        if (!disposed) refreshStatus();
+      });
+  });
+  $("#os-sample-cancel").addEventListener("click", () => {
+    changed();
+    say("Canceled the fictional example. No replacement applied.");
+  });
+  $("#os-record-recovery").addEventListener("click", invalidateSample, true);
+  $("#os-record-recovery").addEventListener("change", invalidateSample, true);
+  window.addEventListener("storage", (event) => {
+    if (!disposed && session && (event.key === key || event.key === null)) {
+      controls?.noteViewMutation();
+      invalidateSample();
+      void session
+        .noticeExternalChange()
+        .then(() => {
+          if (!disposed) {
+            refreshStatus();
+            say(
+              "Another tab changed saved bytes. Current records and unfinished fields remain here; use recovery to review the saved copy.",
+            );
+          }
+        })
+        .catch((error) => say(errorText(error)));
+    }
+  });
+  window.addEventListener("beforeunload", (event) => {
+    if (!session || disposed) return;
+    const state = session.snapshot();
+    if (
+      view.snapshot().dirtyForms.length ||
+      state.unsaved ||
+      state.pendingOperation ||
+      state.persistence === "unsaved-memory"
+    ) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+  });
+  function dispose() {
+    if (disposed) return;
+    disposed = true;
+    restoreRecoveryHome();
+    editorBackups.disabled = true;
+    controls?.dispose();
+    session?.dispose();
+    if (!session) view.dispose();
+  }
+  window.addEventListener("pagehide", dispose);
+  document.addEventListener("astro:before-swap", dispose);
+  async function initialize() {
+    refreshStatus();
+    const opened = await openProgramRecordSession(key, { view });
+    if (disposed) {
+      opened.dispose();
+      return;
+    }
+    session = opened;
+    controls = mountProgramRecordRecoveryControls({
+      host: recoveryHost,
+      session,
+      view,
+      readForms,
+      onAdopt: (state, token) => accept(state, token, true),
+      onStatus: (state) => {
+        // Status notification adopts only validated record memory. Raw forms stay untouched.
+        if (state.hasCurrent) accept(state, undefined, false, false);
+        else refreshStatus(false);
+      },
+    });
+    const state = session.snapshot();
+    if (state.hasCurrent) {
+      workspace = structuredClone(state.value) as Workspace;
+      syncContext();
+      render();
+    } else
+      say(
+        "No validated records were loaded. Saved bytes stay protected; use native restore or reviewed removal in recovery.",
+      );
+    if (state.hasCurrent && !workspace.organization && !workspace.projects.length)
+      $("#os-context").setAttribute("open", "");
+    refreshStatus();
+    root.dataset.prInitialization = "ready";
+  }
+  void initialize().catch((error) => {
+    if (!disposed) {
+      root.dataset.prInitialization = "failed";
+      say(
+        `Workspace initialization failed: ${errorText(error)}. Context fields stay disabled.`,
+      );
+      const fieldset = contextForm.querySelector<HTMLFieldSetElement>(
+        "#os-context-controls",
+      );
+      if (fieldset) fieldset.disabled = true;
+      $$<HTMLButtonElement>("button", root).forEach(
+        (button) => (button.disabled = true),
+      );
+      dispose();
+    }
+  });
 </script>

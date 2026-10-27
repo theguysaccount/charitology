@@ -13,23 +13,18 @@ const config = programWorkspaces[program];
     form, then export a backup before sharing or changing devices. Sample
     records are fictional.
   </p>
+  <p id="pw-save-state" class="note">Opening the local record snapshot…</p>
   <p id="pw-storage" class="callout" hidden>
-    Browser saving is blocked or full. Your current work remains on this page;
-    export JSON before leaving.
+    <span id="pw-storage-message"></span>
   </p>
-  <div id="pw-conflict" class="callout" hidden>
-    <p id="pw-conflict-text"></p><button
-      type="button"
-      class="btn btn-small btn-ghost"
-      id="pw-reload">Load stored version</button
-    ><button type="button" class="btn btn-small btn-ghost" id="pw-raw"
-      >Download original stored data</button>
-  </div>
+  <div id="pw-record-recovery"></div>
   <p id="pw-status" role="status" class="note"></p>
   <details id="pw-context-detail" open>
     <summary>1. Set the scope and assumptions</summary><form id="pw-context">
       <div class="tool-grid" id="pw-context-fields"></div><button
         type="submit"
+        data-pw-save
+        disabled
         class="btn btn-small">Save context and recalculate</button
       ><p class="hint">
         Calculations use the saved context. Required fields are marked with an
@@ -54,13 +49,13 @@ const config = programWorkspaces[program];
     Exports include all records even while a filter is active.
   </p>
   <div class="btn-row">
-    <button type="button" class="btn btn-small" id="pw-preview"
+    <button type="button" class="btn btn-small" id="pw-preview" disabled
       >Refresh draft preview</button
-    ><button type="button" class="btn btn-small" id="pw-markdown"
+    ><button type="button" class="btn btn-small" id="pw-markdown" disabled
       >Export complete kit Markdown</button
-    ><button type="button" class="btn btn-small btn-ghost" id="pw-csv"
+    ><button type="button" class="btn btn-small btn-ghost" id="pw-csv" disabled
       >Export records CSV</button
-    ><button type="button" class="btn btn-small btn-ghost" id="pw-export"
+    ><button type="button" class="btn btn-small btn-ghost" id="pw-export" disabled
       >Export backup JSON</button>
   </div>
   <details id="pw-preview-detail">
@@ -71,15 +66,25 @@ const config = programWorkspaces[program];
     </pre>
   </details>
   <div class="btn-row pw-actions">
-    <button type="button" class="btn btn-small btn-ghost" id="pw-import"
-      >Import backup JSON</button
-    ><button type="button" class="btn btn-small btn-ghost" id="pw-sample"
-      >Load fictional example</button
-    ><button type="button" class="btn btn-small btn-ghost" id="pw-undo" disabled
-      >Undo last change</button
-    ><button type="button" class="btn btn-small btn-ghost" id="pw-reset"
-      >Clear workspace</button
-    ><input type="file" id="pw-file" accept=".json,application/json" hidden />
+    <button type="button" class="btn btn-small btn-ghost" id="pw-sample" disabled
+      >Review fictional example</button>
+  </div>
+  <p class="note">
+    Use Backups and recovery above to restore native JSON, remove this saved key,
+    undo a record change or retry a failed save. Unfinished fields have a separate
+    recovery download.
+  </p>
+  <label class="note"><input type="checkbox" id="pw-sample-discard" /> Allow the
+    reviewed fictional example to discard this local version and unfinished fields.
+  </label>
+  <div id="pw-sample-preview" class="callout" hidden>
+    <p id="pw-sample-summary"></p>
+    <div class="btn-row">
+      <button type="button" class="btn btn-small" id="pw-sample-apply"
+        >Apply reviewed fictional example</button>
+      <button type="button" class="btn btn-small btn-ghost" id="pw-sample-cancel"
+        >Cancel example</button>
+    </div>
   </div>
   <noscript
     >This workspace needs JavaScript for local editing, calculations and
@@ -175,7 +180,7 @@ const config = programWorkspaces[program];
   }
 </style>
 <script>
-  import { $, clear, h } from "../../lib/client/dom";
+  import { $, $$, clear, h } from "../../lib/client/dom";
   import { url } from "../../lib/site";
   import {
     programWorkspaces,
@@ -184,10 +189,7 @@ const config = programWorkspaces[program];
   import {
     emptyWorkspace,
     sampleWorkspace,
-    parseWorkspace,
-    validValues,
     defaults,
-    workspaceKey,
     recordId,
     workspaceSummary,
     workspaceMarkdown,
@@ -195,84 +197,227 @@ const config = programWorkspaces[program];
     recordAnalysis,
     type ProgramState,
   } from "../../lib/client/program-workspaces";
-  import { save } from "../../lib/client/store";
-  import { canPersist } from "../../lib/client/persist";
   import { download } from "../../lib/client/files";
-  import { confirmTwice } from "../../lib/client/confirm";
-  const root = $(".pw-tool");
-  const config = programWorkspaces[(root as HTMLElement).dataset.program!];
-  const key = workspaceKey(config.id);
-  const storageKey = `charitology.${key}`;
-  let state = emptyWorkspace(config);
-  let undo: ProgramState | undefined;
-  let blocked = "";
-  let originalRaw = "";
-  const dirtyForms = new Set<string>();
+  import {
+    createProgramRecordView,
+    openProgramRecordSession,
+    type PRProgramKey,
+    type PRSession,
+    type PRSnapshot,
+    type PRViewToken,
+    type PRFormId,
+    type PRRawForm,
+    type PRRestorePreview,
+  } from "../../lib/client/program-record-recovery";
+  import {
+    mountProgramRecordRecoveryControls,
+    type PRRecoveryControls,
+  } from "../../lib/client/program-record-recovery-controls";
+  const root = $<HTMLElement>(".pw-tool"),
+    config = programWorkspaces[root.dataset.program!];
+  const key = ("charitology.program-workspace-v1." + config.id) as PRProgramKey;
+  const view = createProgramRecordView(key);
+  let session: PRSession<typeof key> | undefined,
+    controls: PRRecoveryControls | undefined;
+  let state = emptyWorkspace(config); // Form defaults only until actual admission.
+  let hasCurrent = false,
+    busy = false,
+    disposed = false;
+  let sample: PRRestorePreview<typeof key> | undefined;
+  type FieldInput = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+  // Native controls can sanitize an admitted string while displaying it. Keep
+  // its original bytes until an explicit input/change owns the displayed text.
+  const hydratedValues = new WeakMap<
+    FieldInput,
+    { original: string; display: string }
+  >();
+  function fieldValue(input: FieldInput) {
+    const hydrated = hydratedValues.get(input);
+    return hydrated && input.value === hydrated.display
+      ? hydrated.original
+      : input.value;
+  }
+  const collectionForm = (name: string) => ("collection:" + name) as PRFormId;
   const say = (message: string) => {
-    $("#pw-status").textContent = message;
+    if (!disposed) $("#pw-status").textContent = message;
   };
-  $("#pw-storage").hidden = canPersist();
-  function readStored() {
-    try {
-      originalRaw = localStorage.getItem(storageKey) ?? "";
-    } catch {
-      $("#pw-storage").hidden = false;
-      blocked = "";
-      showBlock();
-      return;
-    }
-    try {
-      state = originalRaw
-        ? parseWorkspace(JSON.parse(originalRaw), config)
-        : emptyWorkspace(config);
-      blocked = "";
-    } catch {
-      blocked =
-        "Stored data could not be read. Editing is paused to protect it. Download the original data, then import a valid backup, load the example or clear this workspace.";
-    }
-    showBlock();
+  const errorText = (error: unknown) =>
+    error instanceof Error
+      ? error.message
+      : "This local action could not finish.";
+  function invalidateSample() {
+    sample = undefined;
+    $("#pw-sample-preview").hidden = true;
+    $<HTMLInputElement>("#pw-sample-discard").checked = false;
   }
-  function showBlock() {
-    $("#pw-conflict").hidden = !blocked;
-    $("#pw-conflict-text").textContent = blocked;
-    $<HTMLButtonElement>("#pw-raw").hidden = !originalRaw;
+  function changed(form?: PRFormId) {
+    if (disposed) return;
+    if (form) view.changedForm(form);
+    else view.changedView();
+    controls?.noteViewMutation();
+    invalidateSample();
+    refreshStatus();
   }
-  function allowed() {
-    if (blocked) {
+  function writable() {
+    if (disposed || busy || !session?.snapshot().canWrite) {
       say(
-        "Editing is paused. Load the stored version, import a valid backup or use the confirmed reset/example action.",
+        "Saving is unavailable. Keep unfinished fields or use reviewed recovery.",
       );
-      $("#pw-conflict").scrollIntoView({ block: "center" });
       return false;
     }
     return true;
   }
-  function persist(message: string) {
-    state.updated = new Date().toISOString();
-    const ok = save(key, state);
-    $("#pw-storage").hidden = ok;
-    if (ok) originalRaw = JSON.stringify(state);
-    say(
-      ok
-        ? message
-        : `${message} Browser saving failed; export JSON before leaving.`,
+  function refreshStatus(refreshControls = true) {
+    if (disposed) return;
+    const snapshot = session?.snapshot(),
+      canWrite = !!snapshot?.canWrite;
+    $$<HTMLButtonElement>("[data-pw-save], [data-pw-mutation]").forEach(
+      (button) => (button.disabled = busy || !canWrite),
     );
+    $$<HTMLButtonElement>("[data-pw-edit]").forEach(
+      (button) => (button.disabled = busy || !hasCurrent),
+    );
+    for (const id of ["pw-export", "pw-markdown", "pw-csv", "pw-preview"])
+      $<HTMLButtonElement>("#" + id).disabled = !hasCurrent;
+    $<HTMLButtonElement>("#pw-sample").disabled = busy || !snapshot?.canRecover;
+    $<HTMLButtonElement>("#pw-sample-apply").disabled = busy || !sample;
+    $("#pw-save-state").textContent = !snapshot
+      ? "Opening the local record snapshot…"
+      : !snapshot.hasCurrent
+        ? "No validated record snapshot loaded"
+        : snapshot.persistence === "saved"
+          ? "Validated records saved in this browser"
+          : snapshot.persistence === "absent"
+            ? "Empty workspace · not saved"
+            : "Current records are unsaved memory";
+    if (view.snapshot().dirtyForms.length)
+      $("#pw-save-state").textContent += " · unfinished fields";
+    $("#pw-storage").hidden = !snapshot || snapshot.code === "ready";
+    $("#pw-storage-message").textContent = snapshot?.message || "";
+    if (refreshControls) controls?.refresh();
   }
-  function remember() {
-    undo = structuredClone(state);
-    $<HTMLButtonElement>("#pw-undo").disabled = false;
+  function readForms(): readonly PRRawForm[] {
+    // Raw-field recovery records the actual exposed controls. Original admitted
+    // source spelling is retained separately by the native snapshot and backup.
+    const read = (form: HTMLFormElement, fields: ProgramField[]) =>
+      Object.fromEntries(
+        fields.map((field) => [
+          field.key,
+          form.querySelector<FieldInput>('[name="' + field.key + '"]')!.value,
+        ]),
+      );
+    return [
+      {
+        form: "context",
+        editingId: null,
+        values: read($<HTMLFormElement>("#pw-context"), config.context),
+      },
+      ...config.collections.map((c) => {
+        const editor = collectionEditors.get(c.key)!;
+        return {
+          form: collectionForm(c.key),
+          editingId: editor.edit || null,
+          values: read(editor.form, c.fields),
+        };
+      }),
+    ];
+  }
+  function accept(
+    snapshot: PRSnapshot<typeof key>,
+    token?: PRViewToken,
+    reset = false,
+    refreshControls = true,
+  ) {
+    if (disposed || (token && !view.isCurrent(token))) return;
+    const actual = session?.snapshot();
+    if (
+      actual &&
+      (actual.generation !== snapshot.generation || actual.hash !== snapshot.hash)
+    )
+      return;
+    hasCurrent = snapshot.hasCurrent;
+    if (snapshot.hasCurrent)
+      state = structuredClone(snapshot.value) as ProgramState;
+    if (reset && snapshot.hasCurrent) {
+      renderContext();
+      buildCollections();
+      for (const form of view.snapshot().dirtyForms) view.markClean(form, token!);
+      invalidateSample();
+    }
+    render();
+    refreshStatus(refreshControls);
+  }
+  async function commit(
+    next: ProgramState,
+    message: string,
+    form: PRFormId | null = null,
+  ) {
+    if (!writable() || !session)
+      return { saved: false, current: false, retained: false };
+    let captured;
+    try {
+      controls?.noteViewMutation();
+      invalidateSample();
+      captured = session.captureSave(next, {
+        at: new Date().toISOString(),
+        form,
+      });
+    } catch (error) {
+      say(errorText(error));
+      refreshStatus();
+      return { saved: false, current: false, retained: false };
+    }
+    busy = true;
+    refreshStatus();
+    try {
+      const result = await session.saveCaptured(captured);
+      if (disposed) return { saved: false, current: false, retained: false };
+      accept(result.snapshot);
+      const saved = result.outcome === "saved" || result.outcome === "no-op",
+        current = result.viewCurrent && view.isCurrent(captured.view);
+      if (saved && current && form) view.markClean(form, captured.view);
+      say(
+        saved
+          ? current
+            ? message
+            : "The record snapshot was saved; newer unfinished fields were kept."
+          : result.outcome === "unsaved"
+            ? "Saving failed. This exact validated change remains in memory for native backup or Retry; unfinished fields were kept."
+            : "A newer edit replaced this save. Its unfinished fields were kept.",
+      );
+      return {
+        saved,
+        current,
+        retained: result.outcome !== "superseded",
+      };
+    } catch (error) {
+      say(errorText(error));
+      return { saved: false, current: false, retained: false };
+    } finally {
+      busy = false;
+      refreshStatus();
+    }
   }
   function inputFor(
     field: ProgramField,
     prefix: string,
     values: Record<string, string>,
+    form: PRFormId,
   ) {
     const id = `${prefix}-${field.key}`;
+    const numericHint =
+      field.kind === "number"
+        ? `Enter a finite ${["employees", "years"].includes(field.key) ? "whole " : ""}number from ${field.key === "years" ? 1 : (field.min ?? 0)} to ${field.max ?? 1e12}.`
+        : "";
+    const hint = [numericHint, field.hint].filter(Boolean).join(" ");
     const attrs = {
       id,
       name: field.key,
+      "data-pw-field": true,
+      disabled: !session,
       required: !field.optional,
       maxlength: field.kind === "textarea" ? 5000 : 500,
+      ...(hint ? { "aria-describedby": id + "-hint" } : {}),
     };
     let input: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
     if (field.kind === "textarea") input = h("textarea", { ...attrs, rows: 3 });
@@ -285,17 +430,24 @@ const config = programWorkspaces[program];
     else
       input = h("input", {
         ...attrs,
-        type: field.kind ?? "text",
-        ...(field.kind === "number"
-          ? {
-              min: field.key === "years" ? 1 : (field.min ?? 0),
-              max: field.max ?? 1e12,
-              step: ["employees", "years"].includes(field.key) ? "1" : "any",
-            }
-          : {}),
+        type: field.kind === "number" ? "text" : (field.kind ?? "text"),
+        ...(field.kind === "number" ? { inputmode: "decimal" } : {}),
       });
-    input.value = values[field.key] ?? "";
-    input.addEventListener("input", () => dirtyForms.add(prefix));
+    const original = values[field.key] ?? "";
+    input.value = original;
+    hydratedValues.set(input, { original, display: input.value });
+    const edited = () => {
+      // Original source spelling protects untouched fields only. An explicit
+      // input/change owns its displayed spelling, including a return or clear.
+      hydratedValues.delete(input);
+      changed(form);
+      if (form.startsWith("collection:")) {
+        const editor = collectionEditors.get(form.slice("collection:".length));
+        if (editor) editor.cancel.hidden = false;
+      }
+    };
+    input.addEventListener("input", edited);
+    input.addEventListener("change", edited);
     return h(
       "div",
       { class: `field ${field.kind === "textarea" ? "pw-wide" : ""}` },
@@ -305,23 +457,33 @@ const config = programWorkspaces[program];
         field.label + (field.optional ? " (optional)" : " *"),
       ),
       input,
-      field.hint ? h("span", { class: "hint" }, field.hint) : null,
+      hint ? h("span", { class: "hint", id: id + "-hint" }, hint) : null,
     );
   }
   function formValues(form: HTMLFormElement, fields: ProgramField[]) {
-    const data = new FormData(form);
-    return validValues(
-      Object.fromEntries(
-        fields.map((f) => [f.key, String(data.get(f.key) ?? "")]),
-      ),
-      fields,
+    const values = Object.fromEntries(
+      fields.map((field) => [
+        field.key,
+        fieldValue(form.querySelector<FieldInput>('[name="' + field.key + '"]')!),
+      ]),
     );
+    for (const field of fields) {
+      if (
+        !values[field.key].trim() &&
+        (!field.optional || field.kind === "number")
+      )
+        throw Error(
+          field.label + " is required; missing numbers are not treated as zero.",
+        );
+    }
+    return values; // The fixed schema validates the whole candidate without cleaning strings.
   }
+
   function renderContext() {
     const target = $("#pw-context-fields");
     clear(target);
     config.context.forEach((f) =>
-      target.append(inputFor(f, "pw-context", state.context)),
+      target.append(inputFor(f, "pw-context", state.context, "context")),
     );
   }
   const collectionEditors = new Map<
@@ -333,11 +495,14 @@ const config = programWorkspaces[program];
       cancel: HTMLButtonElement;
       title: HTMLElement;
       edit: string;
+      revision: number;
+      reset: () => void;
     }
   >();
   function buildCollections() {
     const target = $("#pw-collections");
     clear(target);
+    collectionEditors.clear();
     config.collections.forEach((c) => {
       const heading = h("h3", {}, c.label);
       const title = h("summary", {}, `Add ${c.singular}`);
@@ -349,7 +514,16 @@ const config = programWorkspaces[program];
         "Cancel edit",
       );
       const detail = h("details", { class: "pw-editor" }, title, form);
-      const editor = { detail, form, fields, cancel, title, edit: "" };
+      const editor = {
+        detail,
+        form,
+        fields,
+        cancel,
+        title,
+        edit: "",
+        revision: 0,
+        reset: () => {},
+      };
       collectionEditors.set(c.key, editor);
       form.append(
         fields,
@@ -358,66 +532,92 @@ const config = programWorkspaces[program];
           { class: "btn-row" },
           h(
             "button",
-            { type: "submit", class: "btn btn-small" },
+            {
+              type: "submit",
+              class: "btn btn-small",
+              "data-pw-save": true,
+              disabled: true,
+            },
             `Save ${c.singular}`,
           ),
           cancel,
         ),
       );
       const resetEditor = () => {
+        editor.revision++;
         editor.edit = "";
         clear(fields);
         c.fields.forEach((f) =>
-          fields.append(inputFor(f, `pw-${c.key}`, defaults(c.fields))),
+          fields.append(
+            inputFor(f, "pw-" + c.key, defaults(c.fields), collectionForm(c.key)),
+          ),
         );
         title.textContent = `Add ${c.singular}`;
         cancel.hidden = true;
         detail.open = false;
-        dirtyForms.delete(`pw-${c.key}`);
       };
+      editor.reset = resetEditor;
       resetEditor();
       cancel.addEventListener("click", () => {
+        changed();
         resetEditor();
-        say("Edit canceled. Saved records did not change.");
+        view.markClean(collectionForm(c.key), view.capture());
+        say(
+          "Unfinished fields in this record form were discarded. Records did not change.",
+        );
+        refreshStatus();
       });
-      form.addEventListener("submit", (event) => {
+      form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        if (!allowed()) return;
+        if (!writable()) return;
         try {
-          const values = formValues(form, c.fields);
-          const total = Object.values(state.records).reduce(
-            (sum, r) => sum + r.length,
-            0,
-          );
-          if (
-            !editor.edit &&
-            (state.records[c.key].length >= 250 || total >= 500)
-          )
-            throw new Error(
-              "Record limit reached. Export and split a larger project into separate workspaces.",
+          const values = formValues(form, c.fields),
+            next = structuredClone(state);
+          const total = Object.values(next.records).reduce(
+              (sum, rows) => sum + rows.length,
+              0,
+            ),
+            editingId = editor.edit,
+            editorRevision = editor.revision,
+            candidateId = editingId || recordId();
+          if (!editingId && (next.records[c.key].length >= 250 || total >= 500))
+            throw Error(
+              "Record limit reached. Export and split a larger project.",
             );
-          remember();
-          if (editor.edit) {
-            const record = state.records[c.key].find(
-              (r) => r.id === editor.edit,
-            );
+          if (editingId) {
+            const record = next.records[c.key].find((r) => r.id === editingId);
             if (!record)
-              throw new Error(
-                "That record was removed. Cancel and add it again.",
+              throw Error(
+                "That record was removed. Keep a field copy and reset this editor.",
               );
             record.values = values;
-          } else state.records[c.key].push({ id: recordId(), values });
-          persist(
-            `${c.singular[0].toUpperCase() + c.singular.slice(1)} saved.`,
+          } else next.records[c.key].push({ id: candidateId, values });
+          const result = await commit(
+            next,
+            "Record saved in this browser.",
+            collectionForm(c.key),
           );
-          resetEditor();
-          render();
+          const sameEditor =
+            collectionEditors.get(c.key) === editor &&
+            editor.revision === editorRevision &&
+            editor.edit === editingId;
+          if (result.current && result.saved && sameEditor) {
+            resetEditor();
+            changed();
+          } else if (
+            sameEditor &&
+            result.retained &&
+            !editingId &&
+            state.records[c.key].some((record) => record.id === candidateId)
+          ) {
+            // Failed writes and successful writes with newer fields keep the
+            // admitted row identity. Retry must not turn the next Save into Add.
+            editor.edit = candidateId;
+            title.textContent = "Edit " + c.singular;
+            cancel.hidden = false;
+          }
         } catch (error) {
-          say(
-            error instanceof Error
-              ? error.message
-              : "The record could not be saved.",
-          );
+          say(errorText(error));
         }
       });
       target.append(
@@ -433,6 +633,23 @@ const config = programWorkspaces[program];
     });
   }
   function render() {
+    if (disposed) return;
+    if (!hasCurrent) {
+      for (const id of ["pw-kpis", "pw-summary", "pw-draft"]) clear($("#" + id));
+      config.collections.forEach((c) => {
+        const target = $("#pw-rows-" + c.key);
+        clear(target);
+        target.append(
+          h(
+            "p",
+            { class: "note" },
+            "No validated records loaded. Saved bytes stay protected; use recovery.",
+          ),
+        );
+      });
+      $("#pw-filter-count").textContent = "No validated record snapshot loaded.";
+      return;
+    }
     const summary = workspaceSummary(config, state);
     clear($("#pw-kpis"));
     summary.metrics.forEach((m) =>
@@ -503,15 +720,28 @@ const config = programWorkspaces[program];
           { type: "button", class: "btn btn-small btn-ghost" },
           `Delete ${v.title || c.singular}`,
         );
+        edit.dataset.pwEdit = "true";
+        remove.dataset.pwMutation = "true";
         edit.addEventListener("click", () => {
-          if (!allowed()) return;
+          if (busy || !hasCurrent) return;
           const editor = collectionEditors.get(c.key)!;
+          if (view.snapshot().dirtyForms.includes(collectionForm(c.key))) {
+            say(
+              "Keep or discard this collection's unfinished fields before opening another record.",
+            );
+            editor.detail.open = true;
+            return;
+          }
+          changed();
+          editor.revision++;
           editor.edit = record.id;
           clear(editor.fields);
           c.fields.forEach((f) =>
-            editor.fields.append(inputFor(f, `pw-${c.key}`, v)),
+            editor.fields.append(
+              inputFor(f, "pw-" + c.key, v, collectionForm(c.key)),
+            ),
           );
-          editor.title.textContent = `Edit ${c.singular}`;
+          editor.title.textContent = "Edit " + c.singular;
           editor.cancel.hidden = false;
           editor.detail.open = true;
           editor.detail.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -519,18 +749,42 @@ const config = programWorkspaces[program];
             .querySelector<HTMLInputElement>("input, textarea, select")
             ?.focus({ preventScroll: true });
         });
-        confirmTwice(remove, {
-          prompt: `Confirm delete ${c.singular}`,
-          announce: say,
-          action: () => {
-            if (!allowed()) return;
-            remember();
-            state.records[c.key] = state.records[c.key].filter(
-              (r) => r.id !== record.id,
+        let deleteReview: PRViewToken | null = null;
+        remove.addEventListener("click", async () => {
+          if (!writable()) return;
+          if (!deleteReview || !view.isCurrent(deleteReview)) {
+            changed();
+            deleteReview = view.capture();
+            remove.textContent = "Confirm delete " + c.singular;
+            say(
+              "Review this record deletion, then press Confirm again. Unfinished fields are kept.",
             );
-            persist("Record deleted. Undo is available.");
-            render();
-          },
+            return;
+          }
+          const editor = collectionEditors.get(c.key)!;
+          if (
+            editor.edit === record.id &&
+            view.snapshot().dirtyForms.includes(collectionForm(c.key))
+          ) {
+            say(
+              "Keep or discard this record's unfinished fields before deleting it.",
+            );
+            return;
+          }
+          deleteReview = null;
+          const next = structuredClone(state);
+          if (!next.records[c.key].some((r) => r.id === record.id)) return;
+          next.records[c.key] = next.records[c.key].filter(
+            (r) => r.id !== record.id,
+          );
+          const result = await commit(
+            next,
+            "Record deleted. Guarded Undo is available in recovery.",
+          );
+          if (result.saved && result.current && editor.edit === record.id) {
+            editor.reset();
+            changed();
+          }
         });
         const analysis = recordAnalysis(config, state, c.key, v);
         target.append(
@@ -555,171 +809,253 @@ const config = programWorkspaces[program];
       `${shown} of ${total} saved records shown. Exports include every saved record.`;
     $("#pw-draft").textContent = workspaceMarkdown(config, state);
   }
-  $("#pw-context").addEventListener("submit", (event) => {
+  const contextForm = $<HTMLFormElement>("#pw-context");
+  contextForm.querySelector<HTMLButtonElement>(
+    'button[type="submit"]',
+  )!.dataset.pwSave = "true";
+  contextForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!allowed()) return;
+    if (!writable()) return;
     try {
-      const next = formValues(
-        event.currentTarget as HTMLFormElement,
-        config.context,
-      );
-      remember();
-      state.context = next;
-      dirtyForms.delete("pw-context");
-      persist("Context saved and calculations updated.");
-      render();
+      const next = structuredClone(state);
+      next.context = formValues(contextForm, config.context);
+      await commit(next, "Context saved and calculations updated.", "context");
     } catch (error) {
-      say(
-        error instanceof Error ? error.message : "Context could not be saved.",
-      );
+      say(errorText(error));
     }
   });
-  $("#pw-search").addEventListener("input", render);
+  $("#pw-search").addEventListener("input", () => {
+    changed();
+    render();
+    refreshStatus();
+  });
   $("#pw-preview").addEventListener("click", () => {
+    if (!hasCurrent) return;
     $("#pw-draft").textContent = workspaceMarkdown(config, state);
     $<HTMLDetailsElement>("#pw-preview-detail").open = true;
     say(
-      "Draft refreshed from saved forms. Unsaved form edits are not included.",
+      "Draft refreshed from the validated record snapshot. Unfinished fields are not included.",
     );
   });
-  $("#pw-markdown").addEventListener("click", () => {
-    download(
-      `charitology-${config.id}-kit.md`,
-      workspaceMarkdown(config, state),
-    );
-    say(
-      "Complete kit exported from saved forms. Read and review before sharing.",
-    );
-  });
-  $("#pw-csv").addEventListener("click", () => {
-    download(
-      `charitology-${config.id}-records.csv`,
-      workspaceCsv(config, state),
+  for (const [id, extension, body, media] of [
+    [
+      "pw-markdown",
+      "kit.md",
+      () => workspaceMarkdown(config, state),
+      "text/markdown;charset=utf-8",
+    ],
+    [
+      "pw-csv",
+      "records.csv",
+      () => workspaceCsv(config, state),
       "text/csv;charset=utf-8",
-    );
-    say(
-      "All saved records and calculations exported in a long-format CSV. Text that looks like a spreadsheet formula is escaped.",
-    );
-  });
+    ],
+  ] as const)
+    $("#" + id).addEventListener("click", () => {
+      if (!hasCurrent) return;
+      try {
+        download("charitology-" + config.id + "-" + extension, body(), media);
+        say(
+          "Requested the complete validated record snapshot, including retained failed-save memory when present. Unfinished fields are separate; review before sharing.",
+        );
+      } catch (error) {
+        say(errorText(error));
+      }
+    });
   $("#pw-export").addEventListener("click", () => {
-    download(
-      `charitology-${config.id}-backup.json`,
-      JSON.stringify(state, null, 2),
-      "application/json",
-    );
-    say("Saved workspace exported. Unsaved forms are not included.");
-  });
-  $("#pw-raw").addEventListener("click", () =>
-    download(`charitology-${config.id}-original.txt`, originalRaw),
-  );
-  $("#pw-reload").addEventListener("click", () => {
-    if (
-      dirtyForms.size &&
-      !confirm("Discard unsaved form edits and load the stored version?")
-    )
-      return;
-    readStored();
-    renderContext();
-    buildCollections();
-    render();
-    dirtyForms.clear();
-    if (!blocked) say("Stored version loaded.");
-  });
-  const file = $<HTMLInputElement>("#pw-file");
-  $("#pw-import").addEventListener("click", () => file.click());
-  file.addEventListener("change", async () => {
-    const selected = file.files?.[0];
-    file.value = "";
-    if (!selected) return;
-    if (selected.size > 2000000)
-      return void say("Choose a JSON backup smaller than 2 MB.");
+    if (!session || !hasCurrent) return;
     try {
-      const next = parseWorkspace(JSON.parse(await selected.text()), config);
-      if (
-        !confirm(
-          `Import ${Object.values(next.records).reduce((s, rows) => s + rows.length, 0)} records and replace this ${config.id} workspace? Export a backup first if needed.`,
-        )
-      )
-        return;
-      remember();
-      state = next;
-      dirtyForms.clear();
-      blocked = "";
-      showBlock();
-      persist(
-        "Backup imported and calculations recomputed. Undo is available.",
+      const exported = session.exportNative({ at: new Date().toISOString() });
+      download(
+        "charitology-" + config.id + "-backup.json",
+        exported.text,
+        "application/json",
       );
-      renderContext();
-      buildCollections();
-      render();
-    } catch (error) {
       say(
-        error instanceof Error
-          ? error.message
-          : "This file could not be read. Nothing changed.",
+        "Requested native JSON from " +
+          exported.persistence +
+          ". Unfinished fields are not included.",
       );
+    } catch (error) {
+      say(errorText(error));
     }
   });
-  confirmTwice($<HTMLButtonElement>("#pw-sample"), {
-    prompt: "Confirm replace with example",
-    announce: say,
-    action: () => {
-      remember();
-      state = sampleWorkspace(config);
-      dirtyForms.clear();
-      blocked = "";
-      showBlock();
-      persist(
-        "Fictional example loaded. Replace every assumption before using it for real work. Undo is available.",
-      );
-      renderContext();
-      buildCollections();
-      render();
-    },
+  $("#pw-sample-discard").addEventListener("change", () => {
+    view.changedView();
+    controls?.noteViewMutation();
+    sample = undefined;
+    $("#pw-sample-preview").hidden = true;
+    refreshStatus();
   });
-  confirmTwice($<HTMLButtonElement>("#pw-reset"), {
-    prompt: "Confirm clear workspace",
-    announce: say,
-    action: () => {
-      remember();
-      state = emptyWorkspace(config);
-      dirtyForms.clear();
-      blocked = "";
-      showBlock();
-      persist(
-        "Workspace cleared. Undo is available until you make another saved change.",
-      );
-      renderContext();
-      buildCollections();
-      render();
-    },
+  $("#pw-sample").addEventListener("click", () => {
+    if (!session || busy) return;
+    const discardLocal = $<HTMLInputElement>("#pw-sample-discard").checked;
+    sample = undefined;
+    $("#pw-sample-preview").hidden = true;
+    let pending: Promise<PRRestorePreview<typeof key>>;
+    try {
+      pending = session.previewReplace(sampleWorkspace(config), {
+        kind: "example",
+        at: new Date().toISOString(),
+        discardLocal,
+      });
+    } catch (error) {
+      say(errorText(error));
+      return;
+    }
+    const token = view.capture();
+    controls?.noteViewMutation();
+    busy = true;
+    refreshStatus();
+    void pending
+      .then((preview) => {
+        if (disposed || !view.isCurrent(token)) return;
+        sample = preview;
+        $("#pw-sample-summary").textContent =
+          "FICTIONAL replacement: " +
+          Object.entries(preview.summary.counts)
+            .map(([name, count]) => count + " " + name)
+            .join(", ") +
+          ". No actual participants or research. Apply replaces this whole local workspace. Review " +
+          preview.reviewHash +
+          ".";
+        $("#pw-sample-preview").hidden = false;
+      })
+      .catch((error) => {
+        if (!disposed && view.isCurrent(token)) say(errorText(error));
+      })
+      .finally(() => {
+        busy = false;
+        refreshStatus();
+      });
   });
-  $("#pw-undo").addEventListener("click", () => {
-    if (!undo || !allowed()) return;
-    state = undo;
-    dirtyForms.clear();
-    undo = undefined;
-    $<HTMLButtonElement>("#pw-undo").disabled = true;
-    persist("Last saved change undone.");
-    renderContext();
-    buildCollections();
-    render();
+  $("#pw-sample-apply").addEventListener("click", () => {
+    if (!session || !sample || busy) return;
+    const selected = sample;
+    sample = undefined;
+    $("#pw-sample-preview").hidden = true;
+    busy = true;
+    refreshStatus();
+    void session
+      .applyRestore(selected)
+      .then((result) => {
+        if (disposed) return;
+        if (
+          (result.outcome === "saved" || result.outcome === "no-op") &&
+          result.viewCurrent &&
+          view.isCurrent(selected.view)
+        ) {
+          accept(result.snapshot, selected.view, true);
+          say(
+            "Saved the explicitly fictional example. Guarded Undo is available in recovery.",
+          );
+        } else {
+          accept(result.snapshot);
+          say(
+            "The example was not saved. Retained memory and unfinished fields remain available for backup.",
+          );
+        }
+      })
+      .catch((error) => say(errorText(error)))
+      .finally(() => {
+        busy = false;
+        refreshStatus();
+      });
   });
+  $("#pw-sample-cancel").addEventListener("click", () => {
+    changed();
+    say("Fictional example canceled. No replacement applied.");
+  });
+  $("#pw-record-recovery").addEventListener("click", invalidateSample, true);
+  $("#pw-record-recovery").addEventListener("change", invalidateSample, true);
   window.addEventListener("storage", (event) => {
-    if (event.key !== storageKey && event.key !== null) return;
-    blocked =
-      "This workspace changed in another tab. Editing is paused to avoid replacing newer work. Export your current version, then load the stored version.";
-    showBlock();
-    say(blocked);
+    if (disposed || !session || (event.key !== key && event.key !== null)) return;
+    controls?.noteViewMutation();
+    invalidateSample();
+    void session
+      .noticeExternalChange()
+      .then((snapshot) => {
+        if (disposed) return;
+        accept(snapshot);
+        say(
+          "Saved bytes changed in another tab. Current records and unfinished fields stay here; review the saved copy in recovery.",
+        );
+      })
+      .catch((error) => say(errorText(error)));
   });
   window.addEventListener("beforeunload", (event) => {
-    if (dirtyForms.size) {
+    const snapshot = session?.snapshot();
+    if (
+      !disposed &&
+      (view.snapshot().dirtyForms.length ||
+        snapshot?.unsaved ||
+        snapshot?.pendingOperation ||
+        snapshot?.persistence === "unsaved-memory")
+    ) {
       event.preventDefault();
       event.returnValue = "";
     }
   });
-  readStored();
+  function dispose() {
+    if (disposed) return;
+    disposed = true;
+    controls?.dispose();
+    session?.dispose();
+    if (!session) view.dispose();
+  }
+  window.addEventListener("pagehide", dispose);
+  document.addEventListener("astro:before-swap", dispose);
   renderContext();
   buildCollections();
   render();
+  refreshStatus();
+  const initialView = view.capture();
+  async function initialize() {
+    const opened = await openProgramRecordSession(key, { view });
+    if (disposed) {
+      opened.dispose();
+      return;
+    }
+    session = opened;
+    controls = mountProgramRecordRecoveryControls({
+      host: $("#pw-record-recovery"),
+      session,
+      view,
+      readForms,
+      onAdopt: (snapshot, token) => accept(snapshot, token, true),
+      onStatus: (snapshot) => accept(snapshot, undefined, false, false),
+    });
+    accept(session.snapshot());
+    if (hasCurrent && view.isCurrent(initialView)) {
+      renderContext();
+      buildCollections();
+    }
+    $$<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+      "[data-pw-field]",
+    ).forEach((field) => (field.disabled = false));
+    refreshStatus();
+    root.dataset.prInitialization = "ready";
+  }
+  void initialize().catch((error) => {
+    if (disposed) return;
+    root.dataset.prInitialization = "failed";
+    // A render target may be missing. Do not call rendering/status helpers again.
+    const status = root.querySelector<HTMLElement>("#pw-status");
+    if (status)
+      status.textContent =
+        "Initialization failed: " +
+        errorText(error) +
+        ". Fields stay visible and disabled; reload before editing.";
+    const saved = root.querySelector<HTMLElement>("#pw-save-state");
+    if (saved) saved.textContent = "Record editor could not open";
+    $$<
+      | HTMLButtonElement
+      | HTMLInputElement
+      | HTMLSelectElement
+      | HTMLTextAreaElement
+    >("button,input,select,textarea", root).forEach(
+      (field) => (field.disabled = true),
+    );
+    dispose();
+  });
 </script>

@@ -305,6 +305,8 @@ export function mountResearchWorkspaces() {
     .querySelectorAll<HTMLElement>("[data-research-workspace]")
     .forEach((root) => {
       if (root.dataset.ready) return;
+      const form = root.querySelector<HTMLFormElement>("form")!;
+      form.addEventListener("submit", (event) => event.preventDefault(), true);
       root.dataset.ready = "true";
       const config = JSON.parse(root.dataset.config!) as ResearchConfig;
       const storage = researchStorage(config);
@@ -331,7 +333,6 @@ export function mountResearchWorkspaces() {
         undo: ResearchState | null = null,
         pending: ResearchState | null = null;
       let persistent = !storageIssue && canPersist();
-      const form = root.querySelector<HTMLFormElement>("form")!;
       const status = root.querySelector<HTMLElement>("[data-status]")!;
       const say = (message: string) => {
         status.textContent =
@@ -696,6 +697,9 @@ export function mountResearchWorkspaces() {
           ? "Restored this browser’s workspace."
           : "Start a draft. Nothing is submitted to Charitology.",
       );
+      root.querySelector<HTMLFieldSetElement>(
+        "[data-private-form-controls]",
+      )!.disabled = false;
     });
 }
 

@@ -40,6 +40,7 @@ const config = { id, title, fields, freeze };
     )
   }
   <form novalidate>
+    <fieldset data-private-form-controls disabled>
     {
       groups.map((group) => (
         <fieldset>
@@ -114,6 +115,7 @@ const config = { id, title, fields, freeze };
         >{freeze ? "Freeze version" : "Save record"}</button
       ><button class="btn btn-ghost" type="button" data-new>New draft</button>
     </div>
+    </fieldset>
   </form>
   <p role="status" aria-live="polite" data-status class="note"></p>
   <div class="btn-row">
@@ -156,6 +158,12 @@ const config = { id, title, fields, freeze };
     border-top: 1px solid var(--rule);
     padding: 1rem 0;
     margin: 1.2rem 0 0;
+    min-width: 0;
+  }
+  [data-private-form-controls] {
+    border: 0;
+    padding: 0;
+    margin: 0;
     min-width: 0;
   }
   legend {
