@@ -113,6 +113,18 @@ export const api = {
       method: "PATCH",
       body: data,
     }),
+  directoryCatalogs: (cursor) =>
+    request(`/api/directory-resources/catalogs${cursor ? `?cursor=${part(cursor)}` : ""}`),
+  directoryEntry: (selection) =>
+    request(`/api/directory-resources/catalogs/${part(selection.captureId)}/${part(selection.catalogKind)}/${part(selection.listingId)}`),
+  directoryResource: (org, id, cursor) =>
+    request(`${orgPath(org)}/directory-resources/records/${part(id)}${cursor ? `?cursor=${part(cursor)}` : ""}`),
+  previewDirectoryResource: (org, proposal) =>
+    request(`${orgPath(org)}/directory-resources/preview`, { method: "POST", body: proposal }),
+  commitDirectoryResource: (org, body) =>
+    request(`${orgPath(org)}/directory-resources/commit`, { method: "POST", body }),
+  exportDirectoryResource: (org, id) =>
+    requestFile(`${orgPath(org)}/directory-resources/records/${part(id)}/export`),
   taskRecurrence: (org, id) =>
     request(`${orgPath(org)}/task-recurrence/tasks/${part(id)}`),
   previewTaskRecurrence: (org, id, body) =>

@@ -5,8 +5,15 @@ import {
   setCsrfToken,
   request as apiRequest,
 } from "./api.js";
+import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
 import { createGrantReportWorkspace } from "./grant-reports.js";
+import {
+  createDirectoryResourceWorkspace,
+  createDirectoryCatalogPicker,
+  directorySelectionFromFragment,
+  DIRECTORY_VISIBILITY_NOTICE,
+} from "./directory-resources.js";
 import {
   blank,
   recordTitle,
@@ -56,6 +63,7 @@ const state = {
   invitation: null,
   grantReportWorkspace: null,
   taskRecurrencePanel: null,
+  directoryResourceWorkspace: null,
 };
 function node(tag, attrs = {}, ...children) {
   const element = document.createElement(tag);
@@ -301,6 +309,8 @@ function safeRoute() {
 }
 function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
+  state.directoryResourceWorkspace?.dispose();
+  state.directoryResourceWorkspace = null;
   state.taskRecurrencePanel = null;
   if (state.grantReportWorkspace) {
     state.grantReportWorkspace.dispose?.();
@@ -357,7 +367,11 @@ async function discardEditor() {
   return true;
 }
 async function discardPage() {
-  if (!state.pageDirty && !state.taskRecurrencePanel?.isDirty()) return true;
+  if (
+    !state.pageDirty &&
+    !state.taskRecurrencePanel?.isDirty() &&
+    !state.directoryResourceWorkspace?.isDirty()
+  ) return true;
   if (
     !(await confirmAction(
       "Leave this unsaved form?",
@@ -371,6 +385,7 @@ async function discardPage() {
 }
 function configureEditor(eyebrow, title, saveLabel, fields, onSave) {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   state.dirty = false;
   $("#editor-eyebrow").textContent = eyebrow;
   $("#editor-title").textContent = title;
@@ -462,6 +477,7 @@ function renderAccount() {
         "Sign out",
         async (event) => {
           state.taskRecurrencePanel?.invalidate();
+          state.directoryResourceWorkspace?.invalidate();
           if (!(await discardEditor()) || !(await discardPage())) return;
           await action(async () => {
             await api.logout();
@@ -570,6 +586,10 @@ function showSignedOut() {
   $("#workspace").hidden = true;
   $("#auth-screen").hidden = false;
   renderAccount();
+  if (directorySelectionFromFragment(location.hash))
+    announce(
+      "Your exact public directory source is kept in this tab’s fragment. Sign in, then use the refresh button in this tab to choose an organization and inspect a preview.",
+    );
   if (state.invitation)
     announce(
       "You have an organization invitation. Sign in with the invited email address, then return to this tab and refresh to review it.",
@@ -619,6 +639,7 @@ async function loadMembersIfOrg() {
 }
 async function route() {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   const current = ++state.epoch;
   state.route = safeRoute();
   renderNav();
@@ -629,7 +650,9 @@ async function route() {
   if (!state.org) return renderCreateOrganization();
   setContent(loading());
   try {
-    if (state.route.startsWith("module/")) {
+    if (state.route.startsWith("directory/")) {
+      await renderDirectoryCopy(current);
+    } else if (state.route.startsWith("module/")) {
       const [, module, id] = state.route.split("/");
       if (id) await renderDetail(module, id, current);
       else await renderModule(module, current);
@@ -688,6 +711,112 @@ async function route() {
     );
     if (error.status === 401) showError(error);
   }
+}
+async function renderDirectoryCopy(epoch) {
+  const selection = directorySelectionFromFragment(location.hash);
+  if (!selection)
+    throw new ApiError(
+      "Choose an exact public directory source link. Extra fragment fields are not accepted.",
+      422,
+    );
+  const fragment = location.hash;
+  const session = state.session;
+  let choiceVersion = 0;
+  const orgChoice = node(
+    "select",
+    { required: true, "data-directory-org-choice": "true" },
+    node("option", { value: "" }, "Choose the destination organization…"),
+    state.orgs
+      .filter((org) => can(moduleById("resources"), "write", org.role))
+      .map((org) => node("option", { value: org.id }, org.name)),
+  );
+  const host = node("div", { class: "stack" });
+  const choiceStatus = node("p", { role: "status" });
+  const choose = button(
+    "Inspect for this organization",
+    async (event) => {
+      if (!orgChoice.value) {
+        choiceStatus.textContent =
+          "Choose an organization explicitly before inspecting this copy.";
+        return;
+      }
+      const choiceEpoch = ++choiceVersion;
+      const destination = state.orgs.find((org) => org.id === orgChoice.value);
+      if (
+        !destination || epoch !== state.epoch ||
+        location.hash !== fragment || state.session !== session
+      ) return;
+      await action(async () => {
+        state.directoryResourceWorkspace?.invalidate();
+        state.org = destination.id;
+        invalidateModules();
+        rememberOrg(state.org);
+        await loadMembers();
+        if (
+          choiceEpoch !== choiceVersion || epoch !== state.epoch ||
+          location.hash !== fragment || state.session !== session
+        ) return;
+        renderOrgControl();
+        const orgId = state.org;
+        const workspace = createDirectoryResourceWorkspace({
+          orgId,
+          api,
+          initialSelection: selection,
+          currencies: state.currencies,
+          canExport: can(moduleById("resources"), "export", destination.role),
+          confirmSourceChange: () => confirmAction("Discard unsaved directory choices?", "This selects a different frozen source. Your unsaved directory choices and notes will be lost. Keep or copy them before switching.", "Discard choices"),
+          isCurrent: () =>
+            epoch === state.epoch && orgId === state.org &&
+            location.hash === fragment && state.session === session &&
+            !!session?.user,
+          editorOpen: () => !!state.editor,
+          onDirty: (value) => {
+            if (epoch === state.epoch) state.pageDirty = value;
+          },
+          onSaved: () => {
+            invalidateModules(orgId, ["resources"]);
+            state.pageDirty = false;
+          },
+          onTrash: () => showTrash(moduleById("resources")),
+          onError: (error) => {
+            if (error.status === 401) showError(error);
+          },
+          download,
+        });
+        state.directoryResourceWorkspace?.dispose();
+        state.directoryResourceWorkspace = workspace;
+        host.replaceChildren(
+          notice(`Destination: ${destination.name}. This source selection stays exact.`, true),
+          workspace.element,
+        );
+        await workspace.load();
+      }, event.currentTarget, choiceStatus);
+    },
+    "primary",
+  );
+  orgChoice.addEventListener("change", () => {
+    ++choiceVersion;
+    state.directoryResourceWorkspace?.invalidate();
+    state.directoryResourceWorkspace?.dispose();
+    state.directoryResourceWorkspace = null;
+    host.replaceChildren();
+  });
+  setContent(
+    heading(
+      "Public directory source",
+      "Choose where to review this listing",
+      "No Resource is saved until you confirm its preview.",
+    ),
+    node(
+      "section",
+      { class: "panel stack" },
+      notice(DIRECTORY_VISIBILITY_NOTICE, true),
+      field("Destination organization", orgChoice),
+      choose,
+      choiceStatus,
+    ),
+    host,
+  );
 }
 function renderCreateOrganization() {
   const name = node("input", {
@@ -751,7 +880,7 @@ function renderCreateOrganization() {
             rememberOrg(org.id);
             await loadMembers();
             renderOrgControl();
-            location.hash = "home";
+            if (!directorySelectionFromFragment(location.hash)) location.hash = "home";
             await route();
             toast("Organization created.");
           },
@@ -1140,6 +1269,19 @@ async function renderModule(id, epoch) {
       ),
     ),
   );
+  const catalogOrgId = state.org;
+  const catalogSession = state.session;
+  const directoryCatalogPicker =
+    id === "resources" && can(module, "write", role())
+      ? createDirectoryCatalogPicker({
+          api,
+          isCurrent: () =>
+            epoch === state.epoch &&
+            catalogOrgId === state.org &&
+            catalogSession === state.session &&
+            safeRoute() === "module/resources",
+        })
+      : null;
   setContent(
     heading(
       module.category || module.group || "Workspace module",
@@ -1153,6 +1295,7 @@ async function renderModule(id, epoch) {
           true,
         )
       : null,
+    directoryCatalogPicker?.element,
     node(
       "div",
       { class: "toolbar" },
@@ -1516,6 +1659,7 @@ async function referenceOptions(module, record) {
 }
 async function openRecordEditor(module, record = null) {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   if (!can(module, "write", role()))
     return toast("Your role can read this module but cannot edit it.");
   const org = state.org;
@@ -1849,8 +1993,11 @@ async function openRecordEditor(module, record = null) {
 async function renderDetail(moduleId, id, epoch) {
   const orgId = state.org;
   const detailRoute = `module/${moduleId}/${id}`;
+  const detailSession = state.session;
   const ownsDetail = () =>
-    epoch === state.epoch && orgId === state.org && safeRoute() === detailRoute;
+    epoch === state.epoch && orgId === state.org &&
+    state.session === detailSession && !!detailSession?.user &&
+    safeRoute() === detailRoute;
   if (!ownsDetail()) return;
   const module = moduleById(moduleId);
   if (!module || !can(module, "read", role()))
@@ -1869,6 +2016,7 @@ async function renderDetail(moduleId, id, epoch) {
         "Move to trash",
         async (event) => {
           state.taskRecurrencePanel?.invalidate();
+          state.directoryResourceWorkspace?.invalidate();
           if (
             !(await confirmAction(
               "Move this record to trash?",
@@ -1958,6 +2106,37 @@ async function renderDetail(moduleId, id, epoch) {
           onTrash: () => showTrash(module),
         })
       : null;
+  const directoryWorkspace =
+    moduleId === "resources" && can(module, "write", role())
+      ? createDirectoryResourceWorkspace({
+          orgId,
+          api,
+          record,
+          currencies: state.currencies,
+          canExport: can(module, "export", role()),
+          confirmSourceChange: () => confirmAction("Discard unsaved directory choices?", "This selects a different frozen source. Your unsaved directory choices and notes will be lost. Keep or copy them before switching.", "Discard choices"),
+          isCurrent: ownsDetail,
+          editorOpen: () => !!state.editor,
+          onDirty: (value) => {
+            if (ownsDetail()) state.pageDirty = value;
+          },
+          onSaved: async () => {
+            if (ownsDetail()) {
+              state.pageDirty = false;
+              invalidateModules(orgId, [moduleId]);
+              await route();
+            }
+          },
+          onTrash: () => showTrash(module),
+          onReload: async () => {
+            if (!(await discardEditor()) || !(await discardPage())) return;
+            await route();
+          },
+          onError: (error) => {
+            if (error.status === 401) showError(error);
+          },
+          download,
+        }) : null;
   setContent(
     heading(
       module.title,
@@ -1994,13 +2173,16 @@ async function renderDetail(moduleId, id, epoch) {
         { class: "stack" },
         workflow,
         recurrence?.element,
+        directoryWorkspace?.element,
         renderReminder(module, record),
         history,
       ),
     ),
   );
+  state.directoryResourceWorkspace = directoryWorkspace;
   state.taskRecurrencePanel = recurrence;
   recurrence?.load();
+  directoryWorkspace?.load();
 }
 // Tokens and exact interrupted commands belong only to this mounted detail view.
 function createTaskRecurrencePanel({
@@ -2648,6 +2830,7 @@ function renderWorkflow(module, record) {
             onsubmit: (event) => {
               event.preventDefault();
               state.taskRecurrencePanel?.invalidate();
+              state.directoryResourceWorkspace?.invalidate();
               action(
                 async () => {
                   await api.transition(state.org, module.id, record.id, {
@@ -3325,6 +3508,9 @@ async function showReport(id) {
   );
 }
 function renderData() {
+  const pageOrg = state.org, pageSession = state.session, pageEpoch = state.epoch;
+  const ownsDataPage = () => state.org === pageOrg && state.session === pageSession && state.epoch === pageEpoch;
+  let importSelection = 0;
   const status = node("p", { class: "form-status", role: "status" });
   const previewTarget = node("div", {});
   state.importPreview = null;
@@ -3355,79 +3541,87 @@ function renderData() {
     async (event) =>
       action(
         async () => {
+          if (!ownsDataPage()) return;
           state.importPreview = null;
           previewTarget.replaceChildren();
-          const selected = file.files?.[0];
-          if (!selected)
-            throw new Error("Choose a JSON organization backup first.");
-          if (selected.size > 64 * 1024 * 1024)
-            throw new Error("The backup exceeds the 64 MiB import limit.");
-          status.textContent = "Reading the selected backup…";
-          let text, readTimeout;
+          const selected = file.files?.[0], selectedEpoch = importSelection;
+          const ownsImport = () => ownsDataPage() && importSelection === selectedEpoch && file.files?.[0] === selected;
           try {
-            text = await Promise.race([
-              selected.text(),
-              new Promise((_, reject) => {
-                readTimeout = setTimeout(
-                  () =>
-                    reject(
-                      new Error(
-                        "Reading this file timed out. Choose a fresh local copy and preview it again. No saved records were changed.",
+            if (!selected)
+              throw new Error("Choose a JSON organization backup first.");
+            if (selected.size > 64 * 1024 * 1024)
+              throw new Error("The backup exceeds the 64 MiB import limit.");
+            status.textContent = "Reading the selected backup…";
+            let bytes, readTimeout;
+            try {
+              bytes = await Promise.race([
+                selected.arrayBuffer(),
+                new Promise((_, reject) => {
+                  readTimeout = setTimeout(
+                    () =>
+                      reject(
+                        new Error(
+                          "Reading this file timed out. Choose a fresh local copy and preview it again. No saved records were changed.",
+                        ),
                       ),
-                    ),
-                  30000,
-                );
-              }),
-            ]);
-          } finally {
-            clearTimeout(readTimeout);
-          }
-          let backup;
-          try {
-            backup = JSON.parse(text);
-          } catch {
-            throw new Error(
-              "This file is not valid JSON. The saved workspace has not changed.",
-            );
-          }
-          if (
-            new TextEncoder().encode(JSON.stringify({ backup })).byteLength >
-            64 * 1024 * 1024
-          )
-            throw new Error(
-              "The parsed import request exceeds the service’s 64 MiB limit.",
-            );
-          status.textContent = "Checking the backup with the shared service…";
-          const result = await api.previewImport(state.org, { backup });
-          state.importPreview = { org: state.org, id: result.previewId };
-          renderImportPreview(previewTarget, result, async () => {
-            const context = state.importPreview;
-            if (!context || context.org !== state.org)
-              throw new Error(
-                "Choose and preview the backup again for this organization.",
-              );
+                    30000,
+                  );
+                }),
+              ]);
+            } finally {
+              clearTimeout(readTimeout);
+            }
+            if (!ownsImport()) return;
+            let backup;
+            try {
+              backup = parseSelectedBackupJson(new Uint8Array(bytes));
+            } catch (error) {
+              throw new Error(`${error.message || "This file is not valid UTF-8 JSON."} The saved workspace has not changed.`);
+            }
             if (
-              !(await confirmAction(
-                "Apply this reviewed import?",
-                `Import the previewed records into ${activeOrg().name}? Keep a current organization backup before applying it.`,
-                "Import reviewed backup",
-              ))
+              new TextEncoder().encode(JSON.stringify({ backup })).byteLength >
+              64 * 1024 * 1024
             )
-              return;
-            const committed = await api.commitImport(context.org, {
-              previewId: context.id,
+              throw new Error(
+                "The parsed import request exceeds the service’s 64 MiB limit.",
+              );
+            status.textContent = "Checking the backup with the shared service…";
+            const result = await api.previewImport(pageOrg, { backup });
+            if (!ownsImport()) return;
+            state.importPreview = { org: pageOrg, id: result.previewId };
+            renderImportPreview(previewTarget, result, async () => {
+              const context = state.importPreview;
+              if (!ownsImport() || !context || context.org !== state.org)
+                throw new Error(
+                  "Choose and preview the backup again for this organization.",
+                );
+              if (
+                !(await confirmAction(
+                  "Apply this reviewed import?",
+                  `Import the previewed records into ${activeOrg().name}? Keep a current organization backup before applying it.`,
+                  "Import reviewed backup",
+                ))
+              )
+                return;
+              if (!ownsImport()) return;
+              const committed = await api.commitImport(context.org, {
+                previewId: context.id,
+              });
+              if (!ownsImport()) return;
+              invalidateModules(context.org);
+              state.importPreview = null;
+              previewTarget.replaceChildren(
+                notice(
+                  `Import completed. ${typeof committed.imported === "number" ? `${committed.imported} records imported.` : "The service recorded the imported result."}`,
+                ),
+              );
+              file.value = "";
+              toast("Reviewed backup imported.");
             });
-            invalidateModules(context.org);
-            state.importPreview = null;
-            previewTarget.replaceChildren(
-              notice(
-                `Import completed. ${typeof committed.imported === "number" ? `${committed.imported} records imported.` : "The service recorded the imported result."}`,
-              ),
-            );
-            file.value = "";
-            toast("Reviewed backup imported.");
-          });
-          status.textContent = "Review the preview below.";
+            status.textContent = "Review the preview below.";
+          } catch (error) {
+            if (ownsImport()) throw error;
+          }
         },
         event.currentTarget,
         status,
@@ -3435,6 +3629,7 @@ function renderData() {
     "",
   );
   file.addEventListener("change", () => {
+    importSelection++;
     state.importPreview = null;
     previewTarget.replaceChildren();
   });
@@ -5120,10 +5315,16 @@ $("#sign-in-form").addEventListener("submit", (event) => {
   );
 });
 $("#editor-form").addEventListener("input", () => {
-  if (state.editor) state.dirty = true;
+  if (state.editor) {
+    state.dirty = true;
+    state.directoryResourceWorkspace?.invalidate();
+  }
 });
 $("#editor-form").addEventListener("change", () => {
-  if (state.editor) state.dirty = true;
+  if (state.editor) {
+    state.dirty = true;
+    state.directoryResourceWorkspace?.invalidate();
+  }
 });
 $("#editor-form").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -5138,6 +5339,7 @@ $("#editor-dialog").addEventListener("cancel", (event) => {
 });
 $("#org-switch").addEventListener("change", async (event) => {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   const next = event.target.value;
   if (next === state.org) return;
   if (!(await discardEditor()) || !(await discardPage())) {
@@ -5156,6 +5358,7 @@ $("#org-switch").addEventListener("change", async (event) => {
 });
 $("#new-org").addEventListener("click", async () => {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   if (!(await discardEditor()) || !(await discardPage())) return;
   renderCreateOrganization();
   $("#sidebar").classList.remove("open");
@@ -5180,6 +5383,7 @@ $("#content").addEventListener("change", (event) => {
 });
 window.addEventListener("hashchange", async () => {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   if ((state.editor && !(await discardEditor())) || !(await discardPage())) {
     history.replaceState(null, "", `#${state.route}`);
     return;
@@ -5188,7 +5392,10 @@ window.addEventListener("hashchange", async () => {
   else if (safeRoute() === "privacy") showPrivacy();
 });
 window.addEventListener("beforeunload", (event) => {
-  if (state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty()) {
+  if (
+    state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty() ||
+    state.directoryResourceWorkspace?.isDirty()
+  ) {
     event.preventDefault();
     event.returnValue = "";
   }

@@ -1,4 +1,5 @@
 import { id, hash, fail, json } from "./security.mjs";
+import { parseBackupJson } from "./backup-json.mjs";
 export const MAX_BACKUP_BYTES = 64 * 1024 * 1024;
 const CHUNK_BYTES = 1500000;
 export async function uploadPart({ c, org, user, input }) {
@@ -65,16 +66,11 @@ export async function uploadedBackup(c, org, user, uploadId) {
     chunks.some((r, i) => r.part !== i || r.total !== chunks.length)
   )
     fail(409, "upload", "The backup upload is incomplete or expired.");
-  const bytes = Buffer.concat(chunks.map((r) => r.bytes));
-  if (bytes.length > MAX_BACKUP_BYTES)
+  const byteLength = chunks.reduce((sum, row) => sum + row.bytes.length, 0);
+  if (byteLength > MAX_BACKUP_BYTES)
     fail(413, "size", "Backups must be under64 MiB.");
-  let backup;
-  try {
-    backup = JSON.parse(bytes.toString("utf8"));
-  } catch {
-    fail(422, "backup", "The uploaded backup is not valid JSON.");
-  }
-  return backup;
+  const bytes = Buffer.concat(chunks.map((r) => r.bytes), byteLength);
+  return parseBackupJson(bytes, MAX_BACKUP_BYTES);
 }
 export function downloadJson(value, name) {
   const bytes = new TextEncoder().encode(JSON.stringify(value));

@@ -12,11 +12,11 @@ interface Listing {
   limits: string;
   url: string;
   sources: { label: string; url: string }[];
-  checked: string;
+  checked: string | null;
   review: string;
 }
-interface Props { entries: Listing[]; kind: 'tools' | 'benefits'; }
-const { entries, kind } = Astro.props;
+interface Props { entries: Listing[]; kind: 'tools' | 'benefits'; captureId: string; entryHashes: Record<string, string>; capturedAt: string; }
+const { entries, kind, captureId, entryHashes, capturedAt } = Astro.props;
 const categories = [...new Set(entries.map((entry) => entry.category))].sort();
 const costs = [...new Set(entries.map((entry) => entry.costType))].sort();
 const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
@@ -54,7 +54,10 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
         <div class="directory-card-bottom">
           <a class="directory-provider" href={entry.url} rel="noopener">{kind === 'tools' ? 'Explore the tool' : 'Check offer and apply'} <span aria-hidden="true">↗</span></a>
           <details class="directory-sources"><summary>Provider sources <span>({entry.sources.length})</span></summary><ul>{entry.sources.map((source) => <li><a href={source.url} rel="noopener">{source.label}</a></li>)}</ul></details>
-          <p class="directory-checked">Source checked {checked(entry.checked)} · Editorial review pending</p>
+          <p class="directory-checked">Source checked {entry.checked === null ? 'Unknown' : checked(entry.checked)} · {entry.review === 'reviewed' ? 'Editorially reviewed' : 'Editorial review pending'}</p>
+          <a class="directory-copy" href={`https://os.charitology.org/#directory/${kind}/${entry.id}/${captureId}/${entryHashes[entry.id]}`}>Review in Charity OS</a>
+          <p class="directory-checked">Inspect this frozen listing, choose an organization, then preview a Resource copy. Eligibility and organization review stay unknown until your team records them.</p>
+          <details class="directory-sources"><summary>Frozen directory source</summary><p>Captured {capturedAt}. This preserves the listing; it does not establish current availability.</p><p><a href={`/data/directory-resources/captures/${captureId}/entries/${kind}/${entry.id}.json`}>Exact source entry</a> · <a href={`/data/directory-resources/captures/${captureId}/capture.json`}>Capture record</a></p><p style="overflow-wrap:anywhere">Entry SHA-256: {entryHashes[entry.id]}</p></details>
         </div>
       </article>
     ))}
@@ -111,6 +114,7 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
   .directory-card dt { font: 600 .72rem/1.5 var(--font-sans); color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; margin: .65rem 0 .2rem; }
   .directory-card dd { margin: 0; font-size: .9rem; line-height: 1.55; }
   .directory-card-bottom { margin-top: auto; padding-top: .8rem; border-top: 1px solid var(--rule); }
+  .directory-copy { display: inline-block; margin-top: .8rem; font: 600 .85rem/1.5 var(--font-sans); }
   .directory-provider { font: 600 .85rem/1.5 var(--font-sans); }
   .directory-sources { margin-top: .7rem; font: .77rem/1.55 var(--font-sans); }
   .directory-sources summary { color: var(--ink-3); cursor: pointer; }

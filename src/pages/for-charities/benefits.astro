@@ -1,7 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import NonprofitDirectory from '../../components/NonprofitDirectory.astro';
-import entries from '../../data/nonprofit-benefits.json';
+import { headDirectoryEntries, directoryCatalog, directoryEntrySha256 } from '../../../services/charity-os/lib/directory-catalog.mjs';
+const capture = directoryCatalog.captures.at(-1)!;
+const frozenEntries = headDirectoryEntries('benefits');
+const entries = frozenEntries.map((entry) => entry.listing);
+const entryHashes = Object.fromEntries(frozenEntries.map((entry) => [entry.listing.id, directoryEntrySha256(entry)]));
 import { url } from '../../lib/site';
 ---
 <Base title="Nonprofit benefits" description="A sourced directory of nonprofit software donations, service credits and discounts, with eligibility, limits and provider application routes.">
@@ -16,7 +20,7 @@ import { url } from '../../lib/site';
       <p>These provider offers were checked on October 25, 2026. Availability, prices and eligibility can change. The provider makes the eligibility decision; a listing is not an approval, endorsement or promise of savings. Editorial source review is still pending.</p>
       <p>Every offer links to the provider’s current terms and application route. Charitology does not apply on your behalf or collect your documents. For a broader set of options, see <a href={url('/for-charities/tools/')}>tools for charities</a>.</p>
     </div>
-    <NonprofitDirectory entries={entries} kind="benefits" />
+    <NonprofitDirectory entries={entries} kind="benefits" captureId={capture.captureId} capturedAt={capture.core.capturedAt} entryHashes={entryHashes} />
     <aside class="directory-note prose">
       <h2>Before you apply</h2>
       <p>Check the country rules, excluded organization types, eligible users, renewal terms and any charges beyond the offer. Prepare your organization’s registration documents only for the provider’s own application. You may need approval before paying.</p>

@@ -319,3 +319,28 @@ DROP POLICY IF EXISTS tenant ON os_task_recurrence_occurrences;
 CREATE POLICY tenant ON os_task_recurrence_occurrences USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
 DROP TRIGGER IF EXISTS immutable_task_recurrence_occurrences ON os_task_recurrence_occurrences;
 CREATE TRIGGER immutable_task_recurrence_occurrences BEFORE UPDATE OR DELETE ON os_task_recurrence_occurrences FOR EACH ROW EXECUTE FUNCTION os_immutable();
+
+-- Explicit directory copies and dated reviews; recovered evidence grants no authority.
+CREATE TABLE IF NOT EXISTS os_resource_directory_history (
+ org_id text NOT NULL REFERENCES os_orgs(id),id text NOT NULL CHECK(id ~ '^[a-f0-9]{64}$'),
+ row_kind text NOT NULL CHECK(row_kind IN ('capture','event')),capture_id text NOT NULL CHECK(capture_id ~ '^[a-f0-9]{64}$'),
+ binding_id text,sequence integer,resource_id text,catalog_kind text,listing_id text,
+ origin_mode text NOT NULL CHECK(origin_mode IN ('live','recovered')),
+ command_hash text,request_hash text,actor_binding_hash text,
+ payload jsonb NOT NULL CHECK(jsonb_typeof(payload)='object' AND octet_length(payload::text)<=32768),
+ budget_bytes integer NOT NULL CHECK(budget_bytes=octet_length(payload::text)+4096),
+ created_at timestamptz NOT NULL DEFAULT now(),PRIMARY KEY(org_id,id),
+ CHECK((row_kind='capture' AND binding_id IS NULL AND sequence IS NULL AND resource_id IS NULL AND catalog_kind IS NULL AND listing_id IS NULL AND command_hash IS NULL AND request_hash IS NULL AND actor_binding_hash IS NULL)
+ OR(row_kind='event' AND binding_id IS NOT NULL AND sequence IS NOT NULL AND resource_id IS NOT NULL AND catalog_kind IS NOT NULL AND listing_id IS NOT NULL AND binding_id ~ '^[A-Za-z0-9_-]{1,100}$' AND sequence BETWEEN 1 AND 32 AND resource_id ~ '^[A-Za-z0-9_-]{1,100}$' AND catalog_kind IN ('tools','benefits') AND listing_id ~ '^[a-z0-9][a-z0-9-]{0,63}$'
+ AND((origin_mode='live' AND command_hash IS NOT NULL AND request_hash IS NOT NULL AND actor_binding_hash IS NOT NULL AND command_hash ~ '^[a-f0-9]{64}$' AND request_hash ~ '^[a-f0-9]{64}$' AND actor_binding_hash ~ '^[a-f0-9]{64}$') OR(origin_mode='recovered' AND command_hash IS NULL AND request_hash IS NULL AND actor_binding_hash IS NULL))))
+);
+CREATE UNIQUE INDEX IF NOT EXISTS os_resource_directory_capture ON os_resource_directory_history(org_id,capture_id) WHERE row_kind='capture';
+CREATE UNIQUE INDEX IF NOT EXISTS os_resource_directory_sequence ON os_resource_directory_history(org_id,binding_id,sequence) WHERE row_kind='event';
+CREATE UNIQUE INDEX IF NOT EXISTS os_resource_directory_root ON os_resource_directory_history(org_id,catalog_kind,listing_id) WHERE row_kind='event' AND sequence=1;
+CREATE UNIQUE INDEX IF NOT EXISTS os_resource_directory_command ON os_resource_directory_history(org_id,command_hash) WHERE command_hash IS NOT NULL;
+ALTER TABLE os_resource_directory_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_resource_directory_history FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_resource_directory_history;
+CREATE POLICY tenant ON os_resource_directory_history USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+DROP TRIGGER IF EXISTS immutable_resource_directory_history ON os_resource_directory_history;
+CREATE TRIGGER immutable_resource_directory_history BEFORE UPDATE OR DELETE ON os_resource_directory_history FOR EACH ROW EXECUTE FUNCTION os_immutable();

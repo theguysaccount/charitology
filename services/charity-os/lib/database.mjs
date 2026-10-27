@@ -202,12 +202,13 @@ export async function logicalBackupBytes(c, org) {
     "os_grant_report_previews",
     "os_task_recurrence_series",
     "os_task_recurrence_occurrences",
+    "os_resource_directory_history",
   ];
   const sql =
     tables
       .map(
         (table) =>
-          `SELECT COALESCE(sum(${["os_participation_outbox", "os_task_recurrence_series"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
+          `SELECT COALESCE(sum(${["os_participation_outbox", "os_task_recurrence_series", "os_resource_directory_history"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
       )
       .join(" UNION ALL ") +
     " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1";
