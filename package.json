@@ -13,7 +13,7 @@
     "dev": "astro dev",
     "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
-    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions && npm run check:observations && npm run check:program-record-recovery && npm run check:remaining-record-recovery",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions && npm run check:observations && npm run check:program-record-recovery && npm run check:remaining-record-recovery && npm run check:directory-resources",
     "test": "npm run build && npm run check",
     "extension:zip": "node scripts/zip-extension.mjs",
     "images": "node scripts/make-images.mjs",
@@ -41,7 +41,10 @@
     "observations:prepare": "node scripts/prepare-observations.mjs",
     "observations:capture": "node scripts/capture-observations.mjs",
     "check:program-record-recovery": "node scripts/check-program-record-recovery-schemas.mjs && node scripts/check-program-record-recovery-engine.mjs && node scripts/check-program-record-recovery-controls.mjs && node scripts/check-program-record-recovery-os.mjs && node scripts/check-program-record-recovery-programs.mjs",
-    "check:remaining-record-recovery": "node scripts/check-remaining-record-recovery-schemas.mjs && node scripts/check-remaining-record-recovery-formats.mjs && node scripts/check-remaining-record-recovery-engine.mjs && node scripts/check-remaining-record-recovery-controls.mjs && node scripts/check-remaining-record-recovery-autosave.mjs && node scripts/check-remaining-record-recovery-research.mjs && node scripts/check-remaining-record-recovery-partners.mjs && node scripts/check-remaining-record-recovery-other-callers.mjs"
+    "check:remaining-record-recovery": "node scripts/check-remaining-record-recovery-schemas.mjs && node scripts/check-remaining-record-recovery-formats.mjs && node scripts/check-remaining-record-recovery-engine.mjs && node scripts/check-remaining-record-recovery-controls.mjs && node scripts/check-remaining-record-recovery-autosave.mjs && node scripts/check-remaining-record-recovery-research.mjs && node scripts/check-remaining-record-recovery-partners.mjs && node scripts/check-remaining-record-recovery-other-callers.mjs",
+    "check:directory-resources": "node scripts/check-directory-resources.mjs && node scripts/check-directory-resources-git.mjs && node scripts/check-directory-resources-ui-build.mjs",
+    "check:directory-resources-history": "node scripts/check-directory-resources-history.mjs",
+    "directory:resources:capture": "node scripts/capture-directory-resources.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",

@@ -36,6 +36,8 @@ jobs:
         run: npm run check:publication-history
       - name: Verify exact committed observation history
         run: npm run check:observations-history
+      - name: Verify exact committed directory Resource history
+        run: npm run check:directory-resources-history
       - name: Build (validates every entry against its schema)
         run: npm run build
       - name: Check content cross-references and links

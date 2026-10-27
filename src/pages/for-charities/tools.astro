@@ -1,7 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import NonprofitDirectory from '../../components/NonprofitDirectory.astro';
-import entries from '../../data/nonprofit-tools.json';
+import { headDirectoryEntries, directoryCatalog, directoryEntrySha256 } from '../../../services/charity-os/lib/directory-catalog.mjs';
+const capture = directoryCatalog.captures.at(-1)!;
+const frozenEntries = headDirectoryEntries('tools');
+const entries = frozenEntries.map((entry) => entry.listing);
+const entryHashes = Object.fromEntries(frozenEntries.map((entry) => [entry.listing.id, directoryEntrySha256(entry)]));
 import { url } from '../../lib/site';
 ---
 <Base title="Tools for charities" description="A sourced directory of external tools for nonprofit fundraising, donor records, data, participation and daily work. Compare cost models and practical limits.">
@@ -16,7 +20,7 @@ import { url } from '../../lib/site';
       <p>Listings summarize provider documentation checked on October 25, 2026. They are starting points, not endorsements or tested recommendations. Charitology has not independently tested these products. Editorial source review is still pending.</p>
       <p>Looking for donated software or a discount? See <a href={url('/for-charities/benefits/')}>nonprofit benefits</a>. For tools made here, see <a href={url('/tools/')}>Charitology’s tools</a>.</p>
     </div>
-    <NonprofitDirectory entries={entries} kind="tools" />
+    <NonprofitDirectory entries={entries} kind="tools" captureId={capture.captureId} capturedAt={capture.core.capturedAt} entryHashes={entryHashes} />
     <aside class="directory-note prose">
       <h2>Choose around the work</h2>
       <p>Start with one task and test a small example. Check whether your team can export its records, manage access and keep the tool running. A product’s privacy or security claims are its own; decide what evidence your organization needs before moving sensitive information.</p>

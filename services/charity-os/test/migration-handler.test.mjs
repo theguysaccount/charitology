@@ -116,11 +116,13 @@ function fixture({
         sql ===
           "SELECT packet FROM os_task_recurrence_occurrences WHERE org_id=$1 ORDER BY series_id,sequence" ||
         sql ===
-          "SELECT 1 FROM os_task_recurrence_series WHERE org_id=$1 LIMIT 1"
+          "SELECT 1 FROM os_task_recurrence_series WHERE org_id=$1 LIMIT 1" ||
+        sql === "SELECT * FROM os_resource_directory_history WHERE org_id=$1 ORDER BY row_kind,capture_id,binding_id,sequence,id"
       )
         return { rows: [] };
       if (
-        sql === "SELECT count(*) FROM os_task_recurrence_series WHERE org_id=$1"
+        sql === "SELECT count(*) FROM os_task_recurrence_series WHERE org_id=$1" ||
+        sql === "SELECT count(*) AS count FROM os_resource_directory_history WHERE org_id=$1"
       )
         return { rows: [{ count: 0 }] };
       if (sql.startsWith("SELECT * FROM os_members"))

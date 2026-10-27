@@ -55,6 +55,9 @@ import { validateFile, FILE_QUOTA } from "./files.mjs";
 import { uploadPart, uploadedBackup, downloadJson } from "./uploads.mjs";
 import { memberRoutes, acceptInvite } from "./members.mjs";
 import { integrationRoutes } from "./integrations.mjs";
+import { directoryResourceRoutes } from "./directory-resources.mjs";
+import { exportDirectoryResources, restoredDirectoryResources, restoreDirectoryResources } from "./directory-resource-backup.mjs";
+import { readBackupBody } from "./backup-json.mjs";
 import { publicIntakeRoutes, intakeRoutes } from "./intake.mjs";
 import { participantRoutes } from "./participants.mjs";
 import {
@@ -326,12 +329,16 @@ export function createHandler({
       }
       if (path === "/api/modules" && method === "GET")
         return okay({ modules: MODULES, roles: ROLES, currencies: CURRENCIES });
+      const directoryResponse = await directoryResourceRoutes({ request, url, db, settings, session });
+      if (directoryResponse) return directoryResponse;
       const input = ["GET", "HEAD"].includes(method)
         ? {}
         : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/task-recurrence(?:\/|$)/.test(
               path,
             )
           ? await readTaskRecurrenceBody(request)
+          : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/import\/preview$/.test(path)
+            ? await readBackupBody(request)
           : await body(
               request,
               path.startsWith("/api/participant/") ||
@@ -558,6 +565,10 @@ export function createHandler({
             settings,
           });
           if (grantReportResponse) return grantReportResponse;
+          if (tail === "export" && method === "GET") {
+            await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
+            requireAdmin(await membership(c, org, user));
+          }
           const records = await allRecords(c, org),
             visible = records
               .map((r) => visibleRecord(r, member))
@@ -667,6 +678,7 @@ export function createHandler({
               participation: await exportParticipation(c, org),
               delivery: await exportDelivery(c, org),
               taskRecurrence: await exportTaskRecurrence(c, org),
+              directoryResources: await exportDirectoryResources(c, org, { records, trash }),
             });
             await audit(c, org, user, "backup.exported", null, {
               count: records.length,
@@ -695,6 +707,7 @@ export function createHandler({
               backup.taskRecurrence,
               { records: backup.records, trash: backup.trash || [] },
             );
+            const directoryResources = restoredDirectoryResources(backup.directoryResources, { records: backup.records, trash: backup.trash || [] });
             const issues = [];
             const existingRecurrence = Number(
               (
@@ -704,6 +717,7 @@ export function createHandler({
                 )
               ).rows[0].count,
             );
+            const existingDirectory = Number((await c.query("SELECT count(*) AS count FROM os_resource_directory_history WHERE org_id=$1", [org])).rows[0].count);
             const existingIntake = Number(
               (
                 await c.query(
@@ -722,7 +736,7 @@ export function createHandler({
                 ).rows[0].count,
               ) ||
               existingIntake ||
-              existingRecurrence
+              existingRecurrence || existingDirectory
             )
               issues.push({
                 field: "organization",
@@ -755,12 +769,15 @@ export function createHandler({
                 taskRecurrenceSeriesRecovered: taskRecurrence.series.length,
                 taskRecurrenceOccurrencesRetained:
                   taskRecurrence.occurrences.length,
+                directoryResourceBindingsRecovered: directoryResources?.bindings.length || 0,
+                directoryResourceEventsRetained: directoryResources?.bindings.reduce((n, b) => n + b.events.length, 0) || 0,
                 ...(migration ? { migration: migration.summary } : {}),
               },
               issues,
               warnings: [
                 ...(migration?.warnings || []),
                 ...participation.warnings,
+                ...(directoryResources?.bindings.length ? [{ field: "directoryResources", message: "Directory review history restores inactive. Earlier assessments are historical; inspect current retained sources and explicitly adopt a restored Resource before recording a new review. Source trash remains in the private source archive." }] : []),
                 ...(taskRecurrence.series.length
                   ? [
                       {
@@ -821,6 +838,9 @@ export function createHandler({
               p.payload.taskRecurrence,
               { records: p.payload.records, trash: p.payload.trash || [] },
             );
+            const directoryResources = restoredDirectoryResources(p.payload.directoryResources, { records: p.payload.records, trash: p.payload.trash || [] });
+            if (Number((await c.query("SELECT count(*) AS count FROM os_resource_directory_history WHERE org_id=$1", [org])).rows[0].count))
+              fail(409, "restore_conflict", "Restore requires an organization without directory review history.");
             if (
               Number(
                 (
@@ -927,6 +947,7 @@ export function createHandler({
             await restoreParticipation(c, org, user, participation);
             await restoreDelivery(c, org, user, delivery);
             await restoreTaskRecurrence(c, org, user, taskRecurrence);
+            await restoreDirectoryResources(c, org, p.payload.directoryResources, { records: p.payload.records, trash: p.payload.trash || [] });
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
               checksum: p.checksum,

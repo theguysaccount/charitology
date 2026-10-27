@@ -15,6 +15,11 @@ on:
         required: true
         type: string
 
+      directory_resources_base_sha:
+        description: Exact previous directory Resource commit SHA available in this repository
+        required: true
+        type: string
+
 permissions:
   contents: read
   pages: write
@@ -54,6 +59,8 @@ jobs:
         run: npm run check:publication-history
       - name: Verify exact committed observation history
         run: npm run check:observations-history
+      - name: Verify exact committed directory Resource history
+        run: npm run check:directory-resources-history
       - name: Build
         run: npm run build
         env:

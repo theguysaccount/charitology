@@ -20,6 +20,7 @@ For private workflow hashes, define H(tag,value)=hash({namespace:'charitology:di
     selectionSha256 = H('selection',selection)
     beforeSha256 = H('before',plan.before)
     planSha256 = H('plan',closedPlanWithoutPlanSha256)
+    proposalSha256 = H('proposal',exactOwnedRawProposal)
     command_hash = H('command',{orgId,actorId,createdAtExact,commandKey})
     request_hash = H('request',{previewToken,proposal})
     actor_binding_hash = H('actor-binding',{actorId,sessionSha256,createdAtExact})
@@ -203,7 +204,7 @@ Active disposition returns the normal current Resource projection, not embedded 
 
 Dedicated command intake precedes generic8MiB parsing: session/Origin/CSRF/rate, then actual streamed≤32,768 bytes, fatal UTF-8/no BOM, depth≤8, duplicate decoded key detection at every level and exact/trailing syntax checks before JSON.parse. Cancel overflow. Per-account rates120 reads/60 commands per hour before expensive preparation.
 
-Ten-minute HMAC proof, domain-separated existing secret, constant-time comparison. Token≤4,096 bytes; decoded payload≤2,048 with the same strict reader. Closed payload: {version:1,method,orgId,intent,bindingId,resourceId,actorId,sessionSha256,membershipSha256,selectionSha256,registrySha256,beforeSha256,planSha256,issuedAt,expiresAt}; integral epoch milliseconds and expiry=issue+600000. Include no free text/private notes.
+Reviewed correction after contract freeze: ten-minute HMAC proof, domain-separated existing secret, constant-time comparison. The exact MAC input is `os:directory-resource:v1:` + H(`proposal`, exact raw Proposal) + U+0000 + the base64url encoded closed payload. The fixed internal `proposal` hash tag uses the same H namespace convention. At preview and commit, retain an owned detached raw Proposal after strict lexical and full closed validation, before further awaits; normalization must not erase notes or equivalent-link choices. A caller supplies no digest. The closed payload remains unchanged and contains no proposal text. Token≤4,096 bytes; decoded payload≤2,048 with the same strict reader. Closed payload: {version:1,method,orgId,intent,bindingId,resourceId,actorId,sessionSha256,membershipSha256,selectionSha256,registrySha256,beforeSha256,planSha256,issuedAt,expiresAt}; integral epoch milliseconds and expiry=issue+600000. Include no free text/private notes.
 
 Membership hash covers userId/role/sorted programIds preserving admitted duplicates/revision and exact persisted created_at microseconds. Read under org lock; the existing helper drops that timestamp. Session hash binds actual Better Auth session ID. Signature integrity never substitutes for current authorization.
 

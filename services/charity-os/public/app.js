@@ -8,6 +8,12 @@ import {
 import { createStaffParticipationWorkspace } from "./participation.js";
 import { createGrantReportWorkspace } from "./grant-reports.js";
 import {
+  createDirectoryResourceWorkspace,
+  createDirectoryCatalogPicker,
+  directorySelectionFromFragment,
+  DIRECTORY_VISIBILITY_NOTICE,
+} from "./directory-resources.js";
+import {
   blank,
   recordTitle,
   labelFor,
@@ -56,6 +62,7 @@ const state = {
   invitation: null,
   grantReportWorkspace: null,
   taskRecurrencePanel: null,
+  directoryResourceWorkspace: null,
 };
 function node(tag, attrs = {}, ...children) {
   const element = document.createElement(tag);
@@ -301,6 +308,8 @@ function safeRoute() {
 }
 function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
+  state.directoryResourceWorkspace?.dispose();
+  state.directoryResourceWorkspace = null;
   state.taskRecurrencePanel = null;
   if (state.grantReportWorkspace) {
     state.grantReportWorkspace.dispose?.();
@@ -357,7 +366,11 @@ async function discardEditor() {
   return true;
 }
 async function discardPage() {
-  if (!state.pageDirty && !state.taskRecurrencePanel?.isDirty()) return true;
+  if (
+    !state.pageDirty &&
+    !state.taskRecurrencePanel?.isDirty() &&
+    !state.directoryResourceWorkspace?.isDirty()
+  ) return true;
   if (
     !(await confirmAction(
       "Leave this unsaved form?",
@@ -371,6 +384,7 @@ async function discardPage() {
 }
 function configureEditor(eyebrow, title, saveLabel, fields, onSave) {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   state.dirty = false;
   $("#editor-eyebrow").textContent = eyebrow;
   $("#editor-title").textContent = title;
@@ -462,6 +476,7 @@ function renderAccount() {
         "Sign out",
         async (event) => {
           state.taskRecurrencePanel?.invalidate();
+          state.directoryResourceWorkspace?.invalidate();
           if (!(await discardEditor()) || !(await discardPage())) return;
           await action(async () => {
             await api.logout();
@@ -570,6 +585,10 @@ function showSignedOut() {
   $("#workspace").hidden = true;
   $("#auth-screen").hidden = false;
   renderAccount();
+  if (directorySelectionFromFragment(location.hash))
+    announce(
+      "Your exact public directory source is kept in this tab’s fragment. Sign in, then use the refresh button in this tab to choose an organization and inspect a preview.",
+    );
   if (state.invitation)
     announce(
       "You have an organization invitation. Sign in with the invited email address, then return to this tab and refresh to review it.",
@@ -619,6 +638,7 @@ async function loadMembersIfOrg() {
 }
 async function route() {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   const current = ++state.epoch;
   state.route = safeRoute();
   renderNav();
@@ -629,7 +649,9 @@ async function route() {
   if (!state.org) return renderCreateOrganization();
   setContent(loading());
   try {
-    if (state.route.startsWith("module/")) {
+    if (state.route.startsWith("directory/")) {
+      await renderDirectoryCopy(current);
+    } else if (state.route.startsWith("module/")) {
       const [, module, id] = state.route.split("/");
       if (id) await renderDetail(module, id, current);
       else await renderModule(module, current);
@@ -688,6 +710,110 @@ async function route() {
     );
     if (error.status === 401) showError(error);
   }
+}
+async function renderDirectoryCopy(epoch) {
+  const selection = directorySelectionFromFragment(location.hash);
+  if (!selection)
+    throw new ApiError(
+      "Choose an exact public directory source link. Extra fragment fields are not accepted.",
+      422,
+    );
+  const fragment = location.hash;
+  const session = state.session;
+  let choiceVersion = 0;
+  const orgChoice = node(
+    "select",
+    { required: true, "data-directory-org-choice": "true" },
+    node("option", { value: "" }, "Choose the destination organization…"),
+    state.orgs
+      .filter((org) => can(moduleById("resources"), "write", org.role))
+      .map((org) => node("option", { value: org.id }, org.name)),
+  );
+  const host = node("div", { class: "stack" });
+  const choiceStatus = node("p", { role: "status" });
+  const choose = button(
+    "Inspect for this organization",
+    async (event) => {
+      if (!orgChoice.value) {
+        choiceStatus.textContent =
+          "Choose an organization explicitly before inspecting this copy.";
+        return;
+      }
+      const choiceEpoch = ++choiceVersion;
+      const destination = state.orgs.find((org) => org.id === orgChoice.value);
+      if (
+        !destination || epoch !== state.epoch ||
+        location.hash !== fragment || state.session !== session
+      ) return;
+      await action(async () => {
+        state.directoryResourceWorkspace?.invalidate();
+        state.org = destination.id;
+        invalidateModules();
+        rememberOrg(state.org);
+        await loadMembers();
+        if (
+          choiceEpoch !== choiceVersion || epoch !== state.epoch ||
+          location.hash !== fragment || state.session !== session
+        ) return;
+        renderOrgControl();
+        const orgId = state.org;
+        const workspace = createDirectoryResourceWorkspace({
+          orgId,
+          api,
+          initialSelection: selection,
+          currencies: state.currencies,
+          isCurrent: () =>
+            epoch === state.epoch && orgId === state.org &&
+            location.hash === fragment && state.session === session &&
+            !!session?.user,
+          editorOpen: () => !!state.editor,
+          onDirty: (value) => {
+            if (epoch === state.epoch) state.pageDirty = value;
+          },
+          onSaved: () => {
+            invalidateModules(orgId, ["resources"]);
+            state.pageDirty = false;
+          },
+          onTrash: () => showTrash(moduleById("resources")),
+          onError: (error) => {
+            if (error.status === 401) showError(error);
+          },
+          download,
+        });
+        state.directoryResourceWorkspace?.dispose();
+        state.directoryResourceWorkspace = workspace;
+        host.replaceChildren(
+          notice(`Destination: ${destination.name}. This source selection stays exact.`, true),
+          workspace.element,
+        );
+        await workspace.load();
+      }, event.currentTarget, choiceStatus);
+    },
+    "primary",
+  );
+  orgChoice.addEventListener("change", () => {
+    ++choiceVersion;
+    state.directoryResourceWorkspace?.invalidate();
+    state.directoryResourceWorkspace?.dispose();
+    state.directoryResourceWorkspace = null;
+    host.replaceChildren();
+  });
+  setContent(
+    heading(
+      "Public directory source",
+      "Choose where to review this listing",
+      "No Resource is saved until you confirm its preview.",
+    ),
+    node(
+      "section",
+      { class: "panel stack" },
+      notice(DIRECTORY_VISIBILITY_NOTICE, true),
+      field("Destination organization", orgChoice),
+      choose,
+      choiceStatus,
+    ),
+    host,
+  );
 }
 function renderCreateOrganization() {
   const name = node("input", {
@@ -751,7 +877,7 @@ function renderCreateOrganization() {
             rememberOrg(org.id);
             await loadMembers();
             renderOrgControl();
-            location.hash = "home";
+            if (!directorySelectionFromFragment(location.hash)) location.hash = "home";
             await route();
             toast("Organization created.");
           },
@@ -1140,6 +1266,19 @@ async function renderModule(id, epoch) {
       ),
     ),
   );
+  const catalogOrgId = state.org;
+  const catalogSession = state.session;
+  const directoryCatalogPicker =
+    id === "resources" && can(module, "write", role())
+      ? createDirectoryCatalogPicker({
+          api,
+          isCurrent: () =>
+            epoch === state.epoch &&
+            catalogOrgId === state.org &&
+            catalogSession === state.session &&
+            safeRoute() === "module/resources",
+        })
+      : null;
   setContent(
     heading(
       module.category || module.group || "Workspace module",
@@ -1153,6 +1292,7 @@ async function renderModule(id, epoch) {
           true,
         )
       : null,
+    directoryCatalogPicker?.element,
     node(
       "div",
       { class: "toolbar" },
@@ -1516,6 +1656,7 @@ async function referenceOptions(module, record) {
 }
 async function openRecordEditor(module, record = null) {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   if (!can(module, "write", role()))
     return toast("Your role can read this module but cannot edit it.");
   const org = state.org;
@@ -1849,8 +1990,11 @@ async function openRecordEditor(module, record = null) {
 async function renderDetail(moduleId, id, epoch) {
   const orgId = state.org;
   const detailRoute = `module/${moduleId}/${id}`;
+  const detailSession = state.session;
   const ownsDetail = () =>
-    epoch === state.epoch && orgId === state.org && safeRoute() === detailRoute;
+    epoch === state.epoch && orgId === state.org &&
+    state.session === detailSession && !!detailSession?.user &&
+    safeRoute() === detailRoute;
   if (!ownsDetail()) return;
   const module = moduleById(moduleId);
   if (!module || !can(module, "read", role()))
@@ -1869,6 +2013,7 @@ async function renderDetail(moduleId, id, epoch) {
         "Move to trash",
         async (event) => {
           state.taskRecurrencePanel?.invalidate();
+          state.directoryResourceWorkspace?.invalidate();
           if (
             !(await confirmAction(
               "Move this record to trash?",
@@ -1958,6 +2103,35 @@ async function renderDetail(moduleId, id, epoch) {
           onTrash: () => showTrash(module),
         })
       : null;
+  const directoryWorkspace =
+    moduleId === "resources" && can(module, "write", role())
+      ? createDirectoryResourceWorkspace({
+          orgId,
+          api,
+          record,
+          currencies: state.currencies,
+          isCurrent: ownsDetail,
+          editorOpen: () => !!state.editor,
+          onDirty: (value) => {
+            if (ownsDetail()) state.pageDirty = value;
+          },
+          onSaved: async () => {
+            if (ownsDetail()) {
+              state.pageDirty = false;
+              invalidateModules(orgId, [moduleId]);
+              await route();
+            }
+          },
+          onTrash: () => showTrash(module),
+          onReload: async () => {
+            if (!(await discardEditor()) || !(await discardPage())) return;
+            await route();
+          },
+          onError: (error) => {
+            if (error.status === 401) showError(error);
+          },
+          download,
+        }) : null;
   setContent(
     heading(
       module.title,
@@ -1994,13 +2168,16 @@ async function renderDetail(moduleId, id, epoch) {
         { class: "stack" },
         workflow,
         recurrence?.element,
+        directoryWorkspace?.element,
         renderReminder(module, record),
         history,
       ),
     ),
   );
+  state.directoryResourceWorkspace = directoryWorkspace;
   state.taskRecurrencePanel = recurrence;
   recurrence?.load();
+  directoryWorkspace?.load();
 }
 // Tokens and exact interrupted commands belong only to this mounted detail view.
 function createTaskRecurrencePanel({
@@ -2648,6 +2825,7 @@ function renderWorkflow(module, record) {
             onsubmit: (event) => {
               event.preventDefault();
               state.taskRecurrencePanel?.invalidate();
+              state.directoryResourceWorkspace?.invalidate();
               action(
                 async () => {
                   await api.transition(state.org, module.id, record.id, {
@@ -5120,10 +5298,16 @@ $("#sign-in-form").addEventListener("submit", (event) => {
   );
 });
 $("#editor-form").addEventListener("input", () => {
-  if (state.editor) state.dirty = true;
+  if (state.editor) {
+    state.dirty = true;
+    state.directoryResourceWorkspace?.invalidate();
+  }
 });
 $("#editor-form").addEventListener("change", () => {
-  if (state.editor) state.dirty = true;
+  if (state.editor) {
+    state.dirty = true;
+    state.directoryResourceWorkspace?.invalidate();
+  }
 });
 $("#editor-form").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -5138,6 +5322,7 @@ $("#editor-dialog").addEventListener("cancel", (event) => {
 });
 $("#org-switch").addEventListener("change", async (event) => {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   const next = event.target.value;
   if (next === state.org) return;
   if (!(await discardEditor()) || !(await discardPage())) {
@@ -5156,6 +5341,7 @@ $("#org-switch").addEventListener("change", async (event) => {
 });
 $("#new-org").addEventListener("click", async () => {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   if (!(await discardEditor()) || !(await discardPage())) return;
   renderCreateOrganization();
   $("#sidebar").classList.remove("open");
@@ -5180,6 +5366,7 @@ $("#content").addEventListener("change", (event) => {
 });
 window.addEventListener("hashchange", async () => {
   state.taskRecurrencePanel?.invalidate();
+  state.directoryResourceWorkspace?.invalidate();
   if ((state.editor && !(await discardEditor())) || !(await discardPage())) {
     history.replaceState(null, "", `#${state.route}`);
     return;
@@ -5188,7 +5375,10 @@ window.addEventListener("hashchange", async () => {
   else if (safeRoute() === "privacy") showPrivacy();
 });
 window.addEventListener("beforeunload", (event) => {
-  if (state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty()) {
+  if (
+    state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty() ||
+    state.directoryResourceWorkspace?.isDirty()
+  ) {
     event.preventDefault();
     event.returnValue = "";
   }

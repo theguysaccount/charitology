@@ -20,7 +20,7 @@ const invalid=(message="Use the documented bounded directory Resource fields.")=
 const conflict=(message)=>fail(409,"directory_ownership",message);
 const clone=v=>directoryOwned(v);
 const H=(tag,value)=>hash({namespace:`charitology:directory-resource:${tag}:v1`,value});
-const TAGS=new Set(["binding","record","capture-row","membership","session","selection","before","plan","command","request","actor-binding"]);
+const TAGS=new Set(["binding","record","capture-row","membership","session","selection","before","plan","proposal","command","request","actor-binding"]);
 export function directoryPrivateHash(tag,value){if(!TAGS.has(tag))invalid();return H(tag,value);}
 export function directoryBindingId(orgId,catalogKind,listingId){if(!opaque(orgId)||!["tools","benefits"].includes(catalogKind)||!directoryIsListingId(listingId))invalid();return H("binding",{orgId,catalogKind,listingId});}
 export function directoryResourceId(bindingId){if(!opaque(bindingId))invalid();return H("record",{bindingId});}
