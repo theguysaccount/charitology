@@ -33,7 +33,9 @@ test(
     skip: configured
       ? false
       : "Set isolated owner and constrained app database URLs.",
-    timeout: process.env.OS_INTAKE_BROWSER_PORT ? 1200000 : 600000,
+    // Optional operator mode may run the normal 10-minute DB suite, then a
+    // bounded 20-minute browser window, with time left for setup and cleanup.
+    timeout: process.env.OS_INTAKE_BROWSER_PORT ? 33 * 60000 : 600000,
   },
   async (t) => {
     const schema = "os_intake_" + randomBytes(8).toString("hex"),
@@ -935,12 +937,20 @@ async function serveBrowserFixture({ db, makeOrg, base, settings, user }) {
   const port = Number(process.env.OS_INTAKE_BROWSER_PORT);
   if (!Number.isInteger(port) || port < 1024 || port > 65535)
     throw new Error("Use a valid nonprivileged fixture port.");
+  const minutes = Number(process.env.OS_INTAKE_BROWSER_MINUTES ?? 10);
+  if (!Number.isInteger(minutes) || minutes < 1 || minutes > 20)
+    throw new Error("Browser fixture minutes must be an integer from 1 to 20.");
   const origin = `http://localhost:${port}`,
     browserOrg = "synthetic-browser-org",
     adminMode = process.env.OS_INTAKE_BROWSER_ADMIN === "1";
   if (adminMode && process.env.OS_INTAKE_BROWSER_ONLY !== "1")
     throw new Error(
       "Synthetic admin mode requires the explicit browser-only fixture.",
+    );
+  const seedReviewed = process.env.OS_INTAKE_BROWSER_SEED_REVIEWED === "1";
+  if (seedReviewed && !adminMode)
+    throw new Error(
+      "Synthetic reviewed-request setup requires explicit browser admin mode.",
     );
   await makeOrg(browserOrg);
   if (adminMode) {
@@ -1000,6 +1010,65 @@ async function serveBrowserFixture({ db, makeOrg, base, settings, user }) {
       ).json(),
     { lock: true },
   );
+  if (seedReviewed) {
+    const key = "synthetic-browser-seeded-request";
+    const submitted = await publicIntakeRoutes({
+      request: new Request(
+        `${origin}/api/public/intake/${browserOrg}/${publication.publication.id}/submissions`,
+        {
+          method: "POST",
+          headers: { origin, "content-type": "application/json" },
+          body: JSON.stringify({
+            answers: {
+              name: "Synthetic intake requester",
+              email: "synthetic-reviewed@example.invalid",
+            },
+            consent: true,
+            website: "",
+            idempotencyKey: key,
+          }),
+        },
+      ),
+      db,
+      settings: fixtureSettings,
+    });
+    assert.equal(submitted.status, 201);
+    // Discard the public capability rather than print or persist its raw value.
+    await submitted.json();
+    const seed = (
+      await db.tx(user, browserOrg, (c) =>
+        c.query(
+          "SELECT id,revision FROM os_intake WHERE org_id=$1 AND publication_id=$2 AND idempotency_hash=$3",
+          [browserOrg, publication.publication.id, hash(key)],
+        ),
+      )
+    ).rows[0];
+    const advance = (revision, action) =>
+      db.tx(
+        user,
+        browserOrg,
+        async (c) =>
+          (
+            await intakeRoutes({
+              c,
+              org: browserOrg,
+              user,
+              member: { ...admin, role: "owner" },
+              tail: `intake/submissions/${seed.id}/review`,
+              method: "POST",
+              input: { revision, action },
+              settings: fixtureSettings,
+            })
+          ).json(),
+        { lock: true },
+      );
+    const reviewed = await advance(seed.revision, "review");
+    const converted = await advance(reviewed.submission.revision, "convert");
+    assert.equal(converted.submission.status, "converted");
+    assert.equal(converted.records.length, 1);
+    assert.equal(converted.records[0].moduleId, "contacts");
+    assert.equal(converted.records[0].status, "draft");
+  }
   const handle = createHandler({
     settings: fixtureSettings,
     db,
@@ -1096,11 +1165,15 @@ async function serveBrowserFixture({ db, makeOrg, base, settings, user }) {
     console.log(
       `Synthetic admin acceptance fixture (auth stub, no real sign-in or mail): ${origin}/#intake`,
     );
+  if (seedReviewed)
+    console.log(
+      "One fictional converted request was prepared through public submission and explicit review/convert helpers; its linked contact remains a draft.",
+    );
   console.log(
-    `Create ${withdrawFile} to withdraw its source; create ${stopFile} to stop and remove its temporary schema. Maximum wait: 10 minutes.`,
+    `Create ${withdrawFile} to withdraw its source; create ${stopFile} to stop and remove its temporary schema. Maximum wait: ${minutes} minutes.`,
   );
   try {
-    const until = Date.now() + 600000;
+    const until = Date.now() + minutes * 60000;
     while (Date.now() < until) {
       if (
         await access(stopFile).then(
