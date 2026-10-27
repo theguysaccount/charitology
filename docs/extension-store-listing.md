@@ -82,6 +82,7 @@ Opening the Chrome developer console through the available Chrome automation was
 - `public/extension-store/small-promo-440x280.png`: promotional artwork.
 - `public/extension-store/marquee-1400x560.png`: promotional artwork.
 - `public/extension-store/popup-screenshot-1280x800.png`: a historical 0.1.1 capture of the popup HTML/JS rendered locally, placed in a labeled presentation frame. It is a developer preview, not evidence of an installed or store-approved extension. The checklist interaction was verified in the browser.
+- `public/extension-store/popup-0.1.2-developer-preview.jpg`: actual current Chrome HTML developer preview, visibly labeled as missing extension APIs and not an installed/store test. It demonstrates current appearance and recovery, not a store-approved screenshot or installed extension.
 - `extension/icons/icon-128.png`: package icon.
 
 The promo SVGs are editable and `scripts/make-extension-store-images.mjs` rebuilds the promotional PNGs. The popup screenshot is a browser capture; refresh it after UI changes. Historical 0.1.1 Firefox lint after adding the desktop/Android declarations reported **0 errors, 0 warnings, 0 notices**. That result is not a 0.1.2 lint or installed-browser check. Refresh the submission screenshot from the current installed package before store submission.
