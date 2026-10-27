@@ -9,7 +9,7 @@ import { url } from '../../lib/site';
   </div>
 
   <div id="os-storage" class="callout" hidden><p id="os-storage-message"></p></div>
-  <div id="os-record-recovery"></div>
+  <div id="os-record-recovery-home"><div id="os-record-recovery"></div></div>
 
   <details class="os-context" id="os-context">
     <summary>Mission and context <span id="os-org-label">· Start here</span></summary>
@@ -83,8 +83,9 @@ import { url } from '../../lib/site';
       <p class="note" id="os-editor-hint"></p>
       <div id="os-editor-fields" class="os-fields"></div>
       <p id="os-editor-error" class="os-error" role="alert" hidden></p>
-      <div class="btn-row"><button type="submit" class="btn btn-small" id="os-editor-save" disabled>Save record</button><button type="button" class="btn btn-ghost btn-small" id="os-editor-cancel">Cancel</button></div>
+      <div class="btn-row"><button type="submit" class="btn btn-small" id="os-editor-save" disabled>Save record</button><button type="button" class="btn btn-ghost btn-small" id="os-editor-cancel">Cancel</button><button type="button" class="btn btn-ghost btn-small" id="os-editor-backups" aria-controls="os-editor-recovery-slot" aria-expanded="false" disabled>Backups for this form</button></div>
     </form>
+    <div id="os-editor-recovery-slot"></div>
   </dialog>
   <noscript><p class="callout">Charity OS needs JavaScript to work locally. Context fields stay disabled until it is ready. Its records are saved in your browser.</p></noscript>
 </section>
@@ -181,6 +182,15 @@ import { url } from '../../lib/site';
   const editorForm = $<HTMLFormElement>("#os-editor-form");
   editorForm.addEventListener("submit", (event) => event.preventDefault());
   const dialog = $<HTMLDialogElement>("#os-editor");
+  const recoveryHost = $("#os-record-recovery"),
+    recoveryHome = $("#os-record-recovery-home"),
+    recoverySlot = $("#os-editor-recovery-slot");
+  const editorBackups = $<HTMLButtonElement>("#os-editor-backups");
+  function restoreRecoveryHome() {
+    if (recoveryHost.parentElement !== recoveryHome)
+      recoveryHome.append(recoveryHost);
+    editorBackups.setAttribute("aria-expanded", "false");
+  }
   const key = "charitology.charity-os" as const;
   const view = createProgramRecordView(key);
   let session: PRSession<typeof key> | undefined;
@@ -265,6 +275,7 @@ import { url } from '../../lib/site';
       (button) => (button.disabled = busy || !writable),
     );
     $<HTMLButtonElement>("#os-editor-save").disabled = busy || !writable;
+    editorBackups.disabled = disposed || !session;
     const contextSubmit = contextForm.querySelector<HTMLButtonElement>(
       'button[type="submit"]',
     );
@@ -336,6 +347,7 @@ import { url } from '../../lib/site';
     workspace = structuredClone(state.value) as Workspace;
     if (reset) {
       syncContext();
+      restoreRecoveryHome();
       if (dialog.open) dialog.close();
       editing = undefined;
       for (const form of view.snapshot().dirtyForms) view.markClean(form, token!);
@@ -1003,8 +1015,13 @@ import { url } from '../../lib/site';
     ($("input,select,textarea", fields) as HTMLElement).focus();
   }
 
-  const editorChanged = () => {
-    if (editing) changed(`editor:${editing.kind}`);
+  const editorChanged = (event: Event) => {
+    if (
+      editing &&
+      event.target instanceof Node &&
+      $("#os-editor-fields").contains(event.target)
+    )
+      changed(`editor:${editing.kind}`);
   };
   editorForm.addEventListener("input", editorChanged);
   editorForm.addEventListener("change", editorChanged);
@@ -1054,6 +1071,7 @@ import { url } from '../../lib/site';
         view.isCurrent(result.token) &&
         editing === selected
       ) {
+        restoreRecoveryHome();
         dialog.close();
         $<HTMLButtonElement>(`[data-add="${selected.kind}"]`).focus();
       } else if (!result.saved && editing === selected) {
@@ -1076,12 +1094,29 @@ import { url } from '../../lib/site';
       return;
     changed();
     if (form) view.markClean(form, view.capture());
+    restoreRecoveryHome();
     dialog.close();
   }
   for (const id of ["#os-editor-close", "#os-editor-cancel"])
     $(id).addEventListener("click", closeEditor);
   dialog.addEventListener("close", () => {
+    restoreRecoveryHome();
     editing = undefined;
+  });
+  editorBackups.addEventListener("click", () => {
+    if (disposed || !session || !controls || !dialog.open) return;
+    // Move the same controller-owned panel into the native modal's accessible
+    // subtree. The slot is outside the editor form, so recovery fields cannot
+    // mark record text dirty or revoke their own file previews.
+    recoverySlot.append(recoveryHost);
+    editorBackups.setAttribute("aria-expanded", "true");
+    controls.refresh();
+    const panel =
+      recoveryHost.querySelector<HTMLDetailsElement>("[data-pr-recovery]");
+    if (panel) {
+      panel.open = true;
+      panel.querySelector<HTMLElement>("summary")?.focus();
+    }
   });
   dialog.addEventListener("cancel", (event) => {
     event.preventDefault();
@@ -1282,6 +1317,8 @@ import { url } from '../../lib/site';
   function dispose() {
     if (disposed) return;
     disposed = true;
+    restoreRecoveryHome();
+    editorBackups.disabled = true;
     controls?.dispose();
     session?.dispose();
     if (!session) view.dispose();
@@ -1297,7 +1334,7 @@ import { url } from '../../lib/site';
     }
     session = opened;
     controls = mountProgramRecordRecoveryControls({
-      host: $("#os-record-recovery"),
+      host: recoveryHost,
       session,
       view,
       readForms,

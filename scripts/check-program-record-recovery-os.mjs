@@ -124,6 +124,55 @@ async function editRecord(d, kind, title) {
     .click();
   assert.equal(d.$("#os-editor").open, true);
 }
+const otherPrograms = [
+  "university-chapters",
+  "local-charitology",
+  "time-charitology",
+  "corporate-program",
+  "policy-program",
+];
+function seedOtherProgramKeys(d) {
+  return new Map(
+    otherPrograms.map((program) => {
+      const key = "charitology.program-workspace-v1." + program,
+        raw = "FICTIONAL unopened key " + program;
+      d.values.set(key, raw);
+      return [key, raw];
+    }),
+  );
+}
+function assertOnlyOsKeyAccessed(d, others) {
+  for (const [key, raw] of others)
+    assert.equal(d.values.get(key), raw, "other fixed keys are untouched");
+  assert.ok(
+    d.operations.every(([, key]) => key === "charitology.charity-os"),
+    "the caller does not read or mutate another fixed key",
+  );
+  assert.equal(
+    d.document.querySelectorAll("#os-record-recovery").length,
+    1,
+    "there is one existing recovery host",
+  );
+}
+async function openModalRecovery(d) {
+  await d.$("#os-editor-backups").click();
+  const host = d.$("#os-record-recovery"),
+    panel = host.querySelector("[data-pr-recovery]");
+  assert.equal(host.parentElement, d.$("#os-editor-recovery-slot"));
+  assert.equal(host.closest("dialog"), d.$("#os-editor"));
+  assert.equal(
+    host.closest("form"),
+    null,
+    "the same panel is outside the editor form",
+  );
+  assert.equal(panel.open, true);
+  assert.equal(d.document.activeElement, panel.querySelector("summary"));
+  assert.equal(d.$("#os-editor-backups").getAttribute("aria-expanded"), "true");
+  assert.ok(
+    host.querySelectorAll("button").every((button) => button.type === "button"),
+  );
+  return { host, panel };
+}
 async function idle(d) {
   await settleTools(() => !d.action("reload").disabled);
 }
@@ -617,6 +666,127 @@ check(
     assert.equal(d.get("#os-field-title"), "Newer task draft");
     assert.equal(d.values.get("charitology.charity-os"), before);
     await d.window.fire("pagehide");
+  },
+);
+check(
+  "modal recovery exposes exact raw fields and Retry without discarding a failed newer editor",
+  async () => {
+    const d = await start(),
+      others = seedOtherProgramKeys(d),
+      host = d.$("#os-record-recovery"),
+      panel = host.querySelector("[data-pr-recovery]");
+    await d.$('[data-add="tasks"]').click();
+    await d.set("#os-field-title", "Desired fictional failed task");
+    d.flags.failWrite = true;
+    await d.$("#os-editor-form").fire("submit");
+    await callerSettled(d);
+    assert.equal(d.$("#os-editor").open, true);
+    assert.equal(d.$("#os-editor-backups").disabled, false);
+    await d.set("#os-field-title", "Newer unfinished fictional task");
+    await openModalRecovery(d);
+    assert.equal(d.$("#os-record-recovery"), host);
+    assert.equal(host.querySelector("[data-pr-recovery]"), panel);
+    await d.action("forms").click();
+    const forms = JSON.parse(await d.downloads.at(-1).text()).forms,
+      raw = forms.find((form) => form.form === "editor:tasks");
+    assert.equal(raw.values.title, "Newer unfinished fictional task");
+    assert.equal(raw.editingId, null);
+    assert.equal(d.$("#os-editor").open, true);
+    await d.action("backup").click();
+    const candidate = JSON.parse(await d.downloads.at(-1).text()),
+      id = candidate.workspace.tasks[0].id;
+    assert.equal(
+      candidate.workspace.tasks[0].title,
+      "Desired fictional failed task",
+    );
+    assert.equal(d.values.has("charitology.charity-os"), false);
+    d.flags.failWrite = false;
+    await d.action("retry").click();
+    await idle(d);
+    assert.equal(
+      d.saved().workspace.tasks[0].title,
+      "Desired fictional failed task",
+    );
+    assert.equal(d.get("#os-field-title"), "Newer unfinished fictional task");
+    assert.equal(d.$("#os-editor").open, true);
+    assert.equal(host.parentElement, d.$("#os-editor-recovery-slot"));
+    await d.$("#os-editor-form").fire("submit");
+    await settleTools(() => !d.$("#os-editor").open);
+    assert.equal(d.saved().workspace.tasks.length, 1);
+    assert.equal(d.saved().workspace.tasks[0].id, id);
+    assert.equal(
+      d.saved().workspace.tasks[0].title,
+      "Newer unfinished fictional task",
+    );
+    assert.equal(host.parentElement, d.$("#os-record-recovery-home"));
+    assert.equal(host.querySelector("[data-pr-recovery]"), panel);
+    assertOnlyOsKeyAccessed(d, others);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "modal recovery file inputs do not dirty the editor or revoke their own preview; real editor input does",
+  async () => {
+    const d = await start({ "charity-os": osEnvelope() }),
+      others = seedOtherProgramKeys(d),
+      before = d.values.get("charitology.charity-os");
+    await editRecord(d, "projects", "Fictional project");
+    const { host, panel } = await openModalRecovery(d),
+      selected = osEnvelope();
+    selected.workspace.organization = "Reviewed fictional modal restoration";
+    assert.equal(d.file().closest("form"), null);
+    d.discard().checked = true;
+    await d.discard().fire("change");
+    await choose(d, JSON.stringify(selected));
+    assert.equal(d.action("apply").hidden, false);
+    assert.doesNotMatch(d.$("#os-save-state").textContent, /unfinished/);
+    assert.equal(d.values.get("charitology.charity-os"), before);
+    await d.set("#os-field-title", "Real newer unfinished editor");
+    assert.equal(d.action("apply").hidden, true);
+    assert.match(d.$("#os-save-state").textContent, /unfinished/);
+    await choose(d, JSON.stringify(selected));
+    assert.equal(d.action("apply").hidden, false);
+    await d.action("apply").click();
+    await idle(d);
+    assert.equal(
+      d.saved().workspace.organization,
+      selected.workspace.organization,
+    );
+    assert.equal(d.$("#os-editor").open, false);
+    assert.equal(host.parentElement, d.$("#os-record-recovery-home"));
+    assert.equal(host.querySelector("[data-pr-recovery]"), panel);
+    assert.equal(
+      d.$("#os-editor-backups").getAttribute("aria-expanded"),
+      "false",
+    );
+    assertOnlyOsKeyAccessed(d, others);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "modal close and disposal restore the single recovery host without changing saved keys",
+  async () => {
+    const d = await start({ "charity-os": osEnvelope() }),
+      others = seedOtherProgramKeys(d),
+      before = d.values.get("charitology.charity-os"),
+      host = d.$("#os-record-recovery"),
+      panel = host.querySelector("[data-pr-recovery]");
+    await editRecord(d, "projects", "Fictional project");
+    await openModalRecovery(d);
+    await d.$("#os-editor-close").click();
+    assert.equal(d.$("#os-editor").open, false);
+    assert.equal(host.parentElement, d.$("#os-record-recovery-home"));
+    assert.equal(host.querySelector("[data-pr-recovery]"), panel);
+    assert.equal(d.values.get("charitology.charity-os"), before);
+    await editRecord(d, "projects", "Fictional project");
+    await openModalRecovery(d);
+    await d.window.fire("pagehide");
+    assert.equal(host.parentElement, d.$("#os-record-recovery-home"));
+    assert.equal(host.querySelector("[data-pr-recovery]"), null);
+    assert.equal(d.$("#os-editor-recovery-slot").children.length, 0);
+    assert.equal(d.$("#os-editor-backups").disabled, true);
+    assert.equal(d.values.get("charitology.charity-os"), before);
+    assertOnlyOsKeyAccessed(d, others);
   },
 );
 check(
