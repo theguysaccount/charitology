@@ -1,6 +1,6 @@
 # Charity OS module contracts
 
-Implementation contract · October 26, 2026 · AI-assisted. The registry implements 26 typed module models, 331 fields and validation. Authentication, persistence, delivery, connectors and deployment have their own acceptance checks. A schema does not establish that an external system has been integrated or that an organization has tested the workflow.
+Implementation contract · October 26, 2026 · AI-assisted. The registry implements 26 typed module models, 339 fields and validation. Authentication, persistence, delivery, connectors and deployment have their own acceptance checks. A schema does not establish that an external system has been integrated or that an organization has tested the workflow.
 
 Charitology studies the system that directs generosity. Program design connects resources, work, intended change, evidence and review. Depth remains an optional descriptive hypothesis from 0 through 4. The workspace does not rate named charities or turn an activity count into a causal impact claim.
 
@@ -21,6 +21,12 @@ Event sessions and volunteer shifts can deliberately publish `participationPurpo
 The participation ledger is a separate fulfillment authority for managed occurrences. Current typed approval is still required before a new confirmation, but a later edit or review state cannot release an already confirmed place. Central write guards protect typed edits, transitions, import, deletion and recovery; confirmed volunteer overlap uses frozen commitments. Requested/waitlisted entries reserve no capacity. Cancellation and reapplication are explicit separate operations. [The booking contract](../../../docs/PARTICIPATION_BOOKINGS_PLAN.md) defines exact legacy adoption, revisions, consent, scope, quotas and inactive recovery.
 
 Operational email has its own versioned verified-participant consent, administrator preview/activation and purpose-limited delivery worker. Historical preference-only values and paused events have no send authority. Both services default participation delivery off and controlled-recipient mode on; deployment and inbox acceptance are separate evidence. Typed communications/template approval cannot dispatch it. [The delivery implementation record](../../../docs/PARTICIPATION_DELIVERY.md) explains daily bounded work, privacy withdrawal, conservative unknown outcomes and disabled recovery; [the frozen plan](../../../docs/PARTICIPATION_DELIVERY_PLAN.md) preserves the contract.
+
+## Grant-period reporting
+
+The bounded grant-report assembler uses eight nullable additions: Fundraising `agreementId`; Finance `actualClass` and `actualDate`; Reporting `assemblyMethod`, `sourceDigest`, `receiptIds`, `supersedesReportId` and `revisionReason`. Existing records keep their earlier meaning. Only explicit agreement-linked gift references enter receipt totals; only dated `cash-spent` references enter spending totals. Awards, commitments and budgets remain separate. A selected unknown amount makes the complete total unknown while retaining its known subtotal and missing count.
+
+An ordinary Reporting record becomes a one-agreement, one-program selection manifest when its method is `grant-report-v1`. Prepare derives the exact source digest; normal saving clears earlier approval; final preview/freeze requires a current independently approved manifest and factual source closure. Board readers receive a fixed safe projection selected by the server, while staff reads require current source read/export permissions and scope. A generic snapshot cannot bypass those report rules. Immutable corrections append a new edition; restored reports remain private source provenance without active approval or reader authority. [The grant-report record](../../../docs/GRANT_REPORTS.md) explains exact limits, recorded release checks and remaining review gates. Typed fields and synthetic tests do not establish actual human review or certified accounts.
 
 ## Types and missingness
 

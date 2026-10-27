@@ -20,6 +20,8 @@ related: [/tools/impact-measurement-toolkit/, /tools/grant-evaluator/, /tools/du
 
 Keep working drafts, comments and decisions together. Another authorized reviewer must approve a revision before it can become an approved snapshot. Board and external readers see permitted approved snapshots. Frozen reports retain the source revisions and a checksum so later edits do not quietly rewrite a past report.
 
+The shared service also has a grant-period report workflow. Select one agreement, one program and a period; prepare approved sources, save their versions for separate approval, then preview and freeze an immutable report. Awards, external receipts, spending references and planning remain distinct. Unknown amounts stay unknown, and observations retain their units and limits without becoming causal claims. An eligible board reader receives a separate approved projection rather than private source records. This does not certify accounts, submit a funder report or establish actual human review of test records.
+
 Read-only CiviCRM, OpenProject, Kobo and CSV connections have an explicit preview before import. Configure your own credentials; a connection is not automatic two-way synchronization. Files, revision checks, recoverable trash and private JSON backups support handover and recovery. Original import archives can be downloaded separately. Personal reminders run in the daily dispatch after their due time.
 
 Accounting records hold external references and reconciliation controls. The OS does not post a ledger, run payroll, move money or issue tax receipts. Casework and safeguarding hold opaque codes and specialist-system references rather than private case narratives.
