@@ -6,6 +6,10 @@ summary: "A reproducible proposal for classifying activities across relief, repa
 volume: 0
 issue: 2
 review: draft
+sources:
+  - title: "Humanity's Checklist"
+    url: https://humanityschecklist.org/
+    note: "The proposed source framework cited in this draft, not established causal evidence."
 ---
 
 **Article type: proposed method. Peer review: not completed.** This paper makes no claim that the depth framework predicts impact. Its purpose is to make that hypothesis testable and its classifications reproducible.

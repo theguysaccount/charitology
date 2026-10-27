@@ -34,11 +34,11 @@ export function hrefFor(collection: CollectionKey, id: string): string {
 }
 
 export async function conditionsInOrder() {
-  return (await getCollection('conditions')).sort((a, b) => a.data.number - b.data.number);
+  return (await getCollection('conditions')).sort((a: CollectionEntry<'conditions'>, b: CollectionEntry<'conditions'>) => a.data.number - b.data.number);
 }
 
 export async function problemsInOrder() {
-  return (await getCollection('problems')).sort((a, b) => a.data.number - b.data.number);
+  return (await getCollection('problems')).sort((a: CollectionEntry<'problems'>, b: CollectionEntry<'problems'>) => a.data.number - b.data.number);
 }
 
 type CatalogKey = 'programs' | 'tools' | 'record';
@@ -66,7 +66,7 @@ export async function treatmentsFor(conditionId: string) {
   const out: { collection: CatalogKey; entry: CatalogEntry }[] = [];
   for (const collection of ['programs', 'tools', 'record'] as const) {
     for (const entry of (await getCollection(collection)) as CatalogEntry[]) {
-      if (entry.data.conditions.some((c) => c.id === conditionId)) out.push({ collection, entry });
+      if (entry.data.conditions.some((c: { id: string }) => c.id === conditionId)) out.push({ collection, entry });
     }
   }
   return out;
@@ -126,6 +126,9 @@ export const STATIC_PAGES: Record<string, string> = {
 
 export async function statusCounts(collection: CatalogKey) {
   const counts = { live: 0, seeded: 0, designed: 0, partners: 0 };
-  for (const e of (await getCollection(collection)) as CatalogEntry[]) counts[e.data.status] += 1;
+  for (const e of (await getCollection(collection)) as CatalogEntry[]) {
+    const status: keyof typeof counts = e.data.status;
+    counts[status] += 1;
+  }
   return counts;
 }

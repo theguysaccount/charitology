@@ -13,7 +13,7 @@
     "dev": "astro dev",
     "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
-    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register",
     "test": "npm run build && npm run check",
     "extension:zip": "node scripts/zip-extension.mjs",
     "images": "node scripts/make-images.mjs",
@@ -24,11 +24,13 @@
     "data:countries": "node scripts/update-country-data.mjs",
     "audio:podcast": "node scripts/make-podcast.mjs",
     "check:references": "node scripts/check-reference-libraries.mjs",
-    "check:types": "node scripts/check-publication-types.mjs"
+    "check:types": "node scripts/check-publication-types.mjs",
+    "check:study-register": "node scripts/check-study-register.mjs && node scripts/check-study-register-store.mjs && node scripts/check-study-register-ui.mjs && node scripts/check-study-register-catalog.mjs && node scripts/check-study-register-types.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",
     "@fontsource-variable/source-serif-4": "5.3.0",
+    "@noble/hashes": "2.4.0",
     "astro": "5.18.2"
   },
   "devDependencies": {

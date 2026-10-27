@@ -208,6 +208,7 @@ const journal = defineCollection({
     summary: z.string(),
     volume: z.number().int().nonnegative(),
     issue: z.number().int().positive(),
+    sources,
     review,
   }),
 });

@@ -1,5 +1,5 @@
-// Builds the Evidence Library: every source cited anywhere on the site,
-// deduplicated by URL, with the pages that cite it.
+// Builds the public bibliography from registered source-bearing collections
+// and explicit datasets, deduplicated by URL with citing-page backlinks.
 import { getCollection, type CollectionKey } from "astro:content";
 import { hrefFor } from "./content";
 import figures from "../data/figures.json";
@@ -37,6 +37,7 @@ const COLLECTIONS: CollectionKey[] = [
   "principles",
   "forecasts",
   "charities",
+  "journal",
 ];
 
 const normalize = (u: string) =>

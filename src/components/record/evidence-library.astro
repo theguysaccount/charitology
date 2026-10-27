@@ -1,12 +1,16 @@
 ---
 import { allCitations } from '../../lib/sources';
 import { url } from '../../lib/site';
+import StudyRegister from '../StudyRegister.astro';
 
 const citations = await allCitations();
 const pages = new Set(citations.flatMap((c) => c.citedBy.map((b) => b.href))).size;
 ---
 
+<StudyRegister view="browse" />
+
 <section class="lib">
+  <h2>Published bibliography</h2>
   <p class="meta">{citations.length} sources, cited across {pages} pages.</p>
   <ol class="cites">
     {
