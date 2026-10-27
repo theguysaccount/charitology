@@ -1,6 +1,14 @@
 # Changelog
 
-- Prepared manual shared-OS recurring task drafts: explicit dated preview and one unapproved successor, current scopes, retained command Retry, separately confirmed End and inactive backup history. The 309-unit/90-PostgreSQL suites, full static checks and bounded real signed-in fictional Chrome pass; production release identities remain pending in `docs/OS_RECURRENCE_ACCEPTANCE.md`.
+## October 27, 2026: remaining local-record recovery
+
+- Added guarded recovery across the remaining twenty original research, partner, manuscript, nomination, Depth and country-note keys. Native v1 formats, IDs, exact strings, unknown/zero distinctions and calculations remain compatible. Literal unfinished forms and protected/observed saved copies have separate exports; failed intent, reviewed replacement and exact-key removal/Undo stay explicit.
+- Preserved dirty editor identity through failed save, newer typing, exact Retry and resubmission. Frozen Replication versions require explicit Fork/New. Country navigation resolves the preceding note save; comparison does not refill notes. Persisted-page lifecycle handling extends through existing APIs to the six older general/local OS desks.
+- Complete local build/check passes with 546 pages, 46,600 links/assets, 235 focused groups and the preserved privacy checks. Actual fictional Chrome passed twenty exact native backups, eighty narrow light/dark cases and fifteen recovery journeys. Complete native FileReader input and retained output were verified at 32 MB research and 39 MB country sizes after storage quota refusal. Native OS Save and native BFCache remain unverified. [Acceptance](docs/REMAINING_RECORDS_RECOVERY_ACCEPTANCE.md) tracks publication separately.
+
+## October 27, 2026: manual OS task recurrence
+
+- Published manual shared-OS recurring task drafts: explicit dated preview and one unapproved successor, current scopes, retained command Retry, separately confirmed End and inactive backup history. The 309-unit/90-PostgreSQL suites, complete static checks and bounded real signed-in fictional Chrome pass. PR #26 and Pages 40556871347 passed; the exact tested service stage is promoted after 35 canonical checks. [Acceptance](docs/OS_RECURRENCE_ACCEPTANCE.md) records deployment, preserved production rows and public-byte evidence, with normal future auto-assignment and operating limits.
 
 ## October 27, 2026: program records and local OS recovery prepared
 
