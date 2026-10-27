@@ -108,6 +108,21 @@ function fixture({
   const c = {
     query: async (sql, args = []) => {
       state.queryCount++;
+      if (
+        sql ===
+          "SELECT s.* FROM os_task_recurrence_series s WHERE s.org_id=$1 AND (s.root_record_id=$2 OR EXISTS(SELECT 1 FROM os_task_recurrence_occurrences o WHERE o.org_id=s.org_id AND o.series_id=s.id AND (o.source_record_id=$2 OR o.generated_record_id=$2)))" ||
+        sql ===
+          "SELECT * FROM os_task_recurrence_series WHERE org_id=$1 ORDER BY id" ||
+        sql ===
+          "SELECT packet FROM os_task_recurrence_occurrences WHERE org_id=$1 ORDER BY series_id,sequence" ||
+        sql ===
+          "SELECT 1 FROM os_task_recurrence_series WHERE org_id=$1 LIMIT 1"
+      )
+        return { rows: [] };
+      if (
+        sql === "SELECT count(*) FROM os_task_recurrence_series WHERE org_id=$1"
+      )
+        return { rows: [{ count: 0 }] };
       if (sql.startsWith("SELECT * FROM os_members"))
         return {
           rows:

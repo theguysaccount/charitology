@@ -55,6 +55,7 @@ const state = {
   importPreview: null,
   invitation: null,
   grantReportWorkspace: null,
+  taskRecurrencePanel: null,
 };
 function node(tag, attrs = {}, ...children) {
   const element = document.createElement(tag);
@@ -299,6 +300,8 @@ function safeRoute() {
   }
 }
 function setContent(...content) {
+  state.taskRecurrencePanel?.dispose();
+  state.taskRecurrencePanel = null;
   if (state.grantReportWorkspace) {
     state.grantReportWorkspace.dispose?.();
     state.pageDirty = false;
@@ -354,7 +357,7 @@ async function discardEditor() {
   return true;
 }
 async function discardPage() {
-  if (!state.pageDirty) return true;
+  if (!state.pageDirty && !state.taskRecurrencePanel?.isDirty()) return true;
   if (
     !(await confirmAction(
       "Leave this unsaved form?",
@@ -367,6 +370,7 @@ async function discardPage() {
   return true;
 }
 function configureEditor(eyebrow, title, saveLabel, fields, onSave) {
+  state.taskRecurrencePanel?.invalidate();
   state.dirty = false;
   $("#editor-eyebrow").textContent = eyebrow;
   $("#editor-title").textContent = title;
@@ -457,6 +461,7 @@ function renderAccount() {
       button(
         "Sign out",
         async (event) => {
+          state.taskRecurrencePanel?.invalidate();
           if (!(await discardEditor()) || !(await discardPage())) return;
           await action(async () => {
             await api.logout();
@@ -613,6 +618,7 @@ async function loadMembersIfOrg() {
   if (state.org) await loadMembers();
 }
 async function route() {
+  state.taskRecurrencePanel?.invalidate();
   const current = ++state.epoch;
   state.route = safeRoute();
   renderNav();
@@ -1509,6 +1515,7 @@ async function referenceOptions(module, record) {
   return result;
 }
 async function openRecordEditor(module, record = null) {
+  state.taskRecurrencePanel?.invalidate();
   if (!can(module, "write", role()))
     return toast("Your role can read this module but cannot edit it.");
   const org = state.org;
@@ -1840,15 +1847,20 @@ async function openRecordEditor(module, record = null) {
   );
 }
 async function renderDetail(moduleId, id, epoch) {
+  const orgId = state.org;
+  const detailRoute = `module/${moduleId}/${id}`;
+  const ownsDetail = () =>
+    epoch === state.epoch && orgId === state.org && safeRoute() === detailRoute;
+  if (!ownsDetail()) return;
   const module = moduleById(moduleId);
   if (!module || !can(module, "read", role()))
     throw new ApiError("This record is not available to your role.", 403);
-  const result = await api.record(state.org, moduleId, id);
-  if (epoch !== state.epoch) return;
+  const result = await api.record(orgId, moduleId, id);
+  if (!ownsDetail()) return;
   const record = result.record;
   if (!record) throw new ApiError("This record could not be found.", 404);
   const references = await referenceOptions(module, record);
-  if (epoch !== state.epoch) return;
+  if (!ownsDetail()) return;
   const titles = new Map();
   for (const list of references.values())
     for (const r of list) titles.set(r.id, recordTitle(r));
@@ -1856,6 +1868,7 @@ async function renderDetail(moduleId, id, epoch) {
     ? button(
         "Move to trash",
         async (event) => {
+          state.taskRecurrencePanel?.invalidate();
           if (
             !(await confirmAction(
               "Move this record to trash?",
@@ -1929,7 +1942,22 @@ async function renderDetail(moduleId, id, epoch) {
   const comments = renderComments(module, record, result.comments || []);
   const attachmentPanel =
     module.id === "documents" ? await renderFiles(module, record) : null;
-  if (epoch !== state.epoch) return;
+  if (!ownsDetail()) return;
+  const recurrence =
+    moduleId === "projects" && can(module, "write", role())
+      ? createTaskRecurrencePanel({
+          orgId,
+          record,
+          module,
+          isCurrent: ownsDetail,
+          onGenerated: async (saved) => {
+            invalidateModules(orgId, [moduleId]);
+            location.hash = recordHref(moduleId, saved.id);
+            if (state.route === `module/${moduleId}/${saved.id}`) await route();
+          },
+          onTrash: () => showTrash(module),
+        })
+      : null;
   setContent(
     heading(
       module.title,
@@ -1965,11 +1993,621 @@ async function renderDetail(moduleId, id, epoch) {
         "div",
         { class: "stack" },
         workflow,
+        recurrence?.element,
         renderReminder(module, record),
         history,
       ),
     ),
   );
+  state.taskRecurrencePanel = recurrence;
+  recurrence?.load();
+}
+// Tokens and exact interrupted commands belong only to this mounted detail view.
+function createTaskRecurrencePanel({
+  orgId,
+  record,
+  module,
+  isCurrent,
+  onGenerated,
+  onTrash,
+  transport = api,
+  confirm = confirmAction,
+  newKey = () => crypto.randomUUID(),
+}) {
+  const element = node("section", {
+    class: "panel task-recurrence",
+    "aria-label": "Recurring task drafts",
+  });
+  let epoch = 0,
+    disposed = false,
+    working = null,
+    needsReload = false;
+  let saved = null,
+    preview = null,
+    resolution = null,
+    choice = null;
+  let command = null,
+    reason = "",
+    message = "",
+    errorMessage = false;
+  let result = null;
+  const current = (owned) => !disposed && isCurrent() && owned === epoch;
+  const revoke = () => {
+    ++epoch;
+    preview = null;
+    resolution = null;
+    choice = null;
+  };
+  const approval = (value) =>
+    value === "current"
+      ? "Current approval is recorded for the source revision."
+      : "The source revision has no current approval. Approval is never copied.";
+  const row = (label, value) =>
+    node("div", {}, node("dt", {}, label), node("dd", {}, value));
+  const offset = (candidate) =>
+    candidate.dueAt?.match(/(Z|[+-]\d{2}:\d{2})$/)?.[0] || "Not recorded";
+  const instantRows = (candidate, civil, zone) => [
+    row("Local date and time", civil),
+    row("Named time zone", zone),
+    row(
+      "Written due instant and offset",
+      `${candidate.dueAt} · ${offset(candidate)}`,
+    ),
+    row("Exact UTC instant", candidate.instant),
+  ];
+  function existingView(existing) {
+    if (!existing) return null;
+    if (existing.kind === "active-record") {
+      const found = existing.record;
+      return node(
+        "div",
+        {},
+        node("h3", {}, "Existing next task"),
+        node(
+          "p",
+          {},
+          "This is the current saved result. Later edits and workflow changes remain in effect.",
+        ),
+        node(
+          "dl",
+          { class: "detail-fields" },
+          row("Current title", recordTitle(found)),
+          row("Current workflow", stateLabel(module, found.status)),
+          row("Current revision", found.revision),
+          row("Sequence", existing.sequence),
+        ),
+        link("Open existing task", recordHref("projects", found.id), {
+          class: "button subtle",
+        }),
+      );
+    }
+    if (existing.kind === "trashed-record")
+      return node(
+        "div",
+        {},
+        node(
+          "p",
+          {},
+          `The next saved task, sequence ${existing.sequence}, is currently in recoverable trash. No replacement is generated.`,
+        ),
+        button("Open Projects trash", onTrash, "subtle"),
+      );
+    return node(
+      "p",
+      {},
+      "The next occurrence survives only as inactive historical provenance. There is no current task or ordinary trash link to open here. It cannot be generated again.",
+    );
+  }
+  function render() {
+    if (disposed || !isCurrent()) return;
+    const series = saved?.series;
+    const blocked = Boolean(working || command || needsReload);
+    const sourceCurrent = saved?.source?.revision === record.revision;
+    const existing = result || saved?.existing;
+    const mayPreview =
+      sourceCurrent &&
+      !existing &&
+      (saved?.kind === "eligible" ||
+        (saved?.kind === "series" && series?.state === "active"));
+    const previewButton = button(
+      choice ? "Preview selected instant" : "Preview next draft",
+      runPreview,
+      "subtle",
+      { disabled: blocked || !mayPreview },
+    );
+    const children = [
+      node("h2", {}, "Recurring task drafts"),
+      node(
+        "p",
+        { class: "fine" },
+        "Preview one next task from this saved revision. Each new task starts planned and unapproved. Nothing runs on a schedule or sends a message.",
+      ),
+      node(
+        "p",
+        { class: "fine" },
+        `Saved source revision ${record.revision}. Unsaved editor values are never used.`,
+      ),
+      saved?.source ? node("p", {}, approval(saved.source.approval)) : null,
+      series
+        ? node(
+            "div",
+            {},
+            node(
+              "p",
+              {},
+              `Series state: ${series.state}. Current tip sequence: ${series.tipSequence}.`,
+            ),
+            series.state === "recovered"
+              ? notice(
+                  "This series was recovered as inactive history. It cannot generate or resume. Original state: " +
+                    (series.recoveredState || "not recorded") +
+                    ".",
+                  true,
+                )
+              : series.state === "ended"
+                ? notice(
+                    "This series is permanently ended. Existing tasks keep their current workflow. A fresh series requires a deliberately created task with a new ID.",
+                    true,
+                  )
+                : node(
+                    "p",
+                    { class: "fine" },
+                    "While active, kind, program and schedule are fixed for every series member. End the series before changing those fields.",
+                  ),
+            node(
+              "dl",
+              { class: "detail-fields" },
+              row("Original local anchor", series.anchor?.anchorCivil),
+              row("Original zone", series.anchor?.originalTimeZone),
+              row("Frequency", series.anchor?.frequency),
+            ),
+          )
+        : null,
+      saved?.kind === "unavailable"
+        ? notice(
+            saved.message ||
+              "This saved record cannot generate a recurring task.",
+            true,
+          )
+        : null,
+      saved?.source && !sourceCurrent
+        ? notice(
+            "A newer saved source revision exists. Reload the saved task before making a new preview.",
+            true,
+          )
+        : null,
+      existingView(existing),
+    ];
+    if (resolution?.kind === "fold") {
+      children.push(
+        node("h3", {}, "Choose the repeated local time"),
+        node(
+          "p",
+          {},
+          "This local time occurs twice. Choose an exact instant, then preview that choice. Neither is selected for you.",
+        ),
+        node(
+          "div",
+          { role: "group", "aria-label": "Repeated local time choice" },
+          resolution.candidates.map((candidate) =>
+            node(
+              "label",
+              { class: "block-message" },
+              node("input", {
+                type: "radio",
+                name: "task-recurrence-fold",
+                value: candidate.choice,
+                checked: choice === candidate.choice,
+                disabled: blocked,
+                onchange: () => {
+                  if (blocked || disposed || !isCurrent()) return;
+                  const retained = resolution;
+                  revoke();
+                  resolution = retained;
+                  choice = candidate.choice;
+                  message =
+                    "Review this exact choice with Preview selected instant.";
+                  errorMessage = false;
+                  render();
+                },
+              }),
+              ` ${labelFor(candidate.choice)}: ${candidate.dueAt} · UTC ${candidate.instant}`,
+            ),
+          ),
+        ),
+      );
+    } else if (resolution?.kind === "gap") {
+      children.push(
+        notice(
+          `The local time ${resolution.civil} does not exist in this zone. Generation is refused. End this series and create a separate task if the schedule must change.`,
+          true,
+        ),
+      );
+    } else if (resolution?.kind === "unsupported") {
+      children.push(
+        notice(
+          "This date or time-zone result is outside the supported calendar policy. Nothing was generated.",
+          true,
+        ),
+      );
+    }
+    if (preview) {
+      const plan = preview.preview;
+      children.push(
+        node(
+          "div",
+          { "data-recurrence-preview": "true" },
+          node("h3", {}, `Next draft · sequence ${plan.sequence}`),
+          node("p", {}, approval(plan.sourceApproval)),
+          node(
+            "dl",
+            { class: "detail-fields" },
+            instantRows(
+              plan.chosen,
+              plan.chosen.dueAt.replace(/(Z|[+-]\d{2}:\d{2})$/, ""),
+              plan.anchor.originalTimeZone,
+            ),
+            row("Original local anchor", plan.anchor.anchorCivil),
+            row("Original anchor instant", plan.anchor.anchorInstant),
+            row("Frequency", plan.anchor.frequency),
+            row("Draft owner", ownerName(plan.candidate.ownerId)),
+            row(
+              "Workflow and approval",
+              "Planned · no approval · no approved snapshot",
+            ),
+            row("Preview expires", preview.expiresAt),
+          ),
+          node(
+            "p",
+            { class: "fine" },
+            "Dates always use the original anchor. Months clamp to the original day or the month's last day; weeks use local calendar days. Repeated times require a choice each time. Missing local times are refused.",
+          ),
+          node(
+            "details",
+            {},
+            node("summary", {}, "Exact fields copied into the draft"),
+            node(
+              "dl",
+              { class: "detail-fields" },
+              module.fields.map((spec) =>
+                row(
+                  spec.label,
+                  formatValue(spec, plan.candidate.data[spec.key]),
+                ),
+              ),
+            ),
+          ),
+          node(
+            "p",
+            { class: "fine" },
+            "Parent and dependency IDs stay unchanged. The draft belongs to the acting member. Source approval, owner assignment, external connection identity, files, comments and reminders are not copied.",
+          ),
+          button("Generate one unapproved draft", generate, "primary", {
+            disabled: blocked,
+          }),
+        ),
+      );
+    }
+    if (mayPreview) children.push(previewButton);
+    if (series?.state === "active") {
+      const control = node(
+        "textarea",
+        {
+          id: "task-recurrence-end-reason",
+          rows: 3,
+          maxlength: 2000,
+          disabled: Boolean(working || command),
+          oninput: (event) => {
+            reason = event.currentTarget.value;
+            revoke();
+            message = "Any earlier generation preview has been cancelled.";
+            errorMessage = false;
+            // Preserve the same textarea and caret while removing old authority.
+            element.querySelector("[data-recurrence-preview]")?.remove();
+            const status = element.querySelector("[data-recurrence-status]");
+            if (status) status.textContent = message;
+          },
+        },
+        reason,
+      );
+      children.push(
+        node("hr"),
+        field(
+          "Reason for permanently ending this series",
+          control,
+          "Existing tasks will keep their workflow. This action cannot resume the series.",
+        ),
+        button("End recurrence…", end, "danger", {
+          disabled: Boolean(working || command || needsReload),
+        }),
+      );
+    }
+    if (command)
+      children.push(
+        notice(
+          "The last command's outcome needs confirmation. Retry the exact retained command or reload the recurrence state. A new command will not be substituted.",
+          true,
+        ),
+        button("Retry exact command", retry, "subtle", {
+          disabled: Boolean(working || needsReload),
+        }),
+      );
+    children.push(
+      node(
+        "div",
+        { class: "actions" },
+        button("Reload recurrence state", load, "subtle", {
+          disabled: Boolean(working),
+        }),
+        button(
+          "Cancel preview",
+          () => {
+            revoke();
+            needsReload = Boolean(command || working);
+            message =
+              command || working
+                ? "The in-flight or interrupted command may have completed. Reload recurrence state to confirm it."
+                : "Preview cancelled. No new command was sent.";
+            errorMessage = false;
+            render();
+          },
+          "subtle",
+          { disabled: !preview && !resolution && !working },
+        ),
+      ),
+      node(
+        "p",
+        {
+          class: `form-status${errorMessage ? " error" : ""}`,
+          role: "status",
+          "aria-live": "polite",
+          "data-recurrence-status": "true",
+        },
+        working
+          ? working === "load"
+            ? "Reading current recurrence state…"
+            : working === "preview"
+              ? "Preparing the exact next date…"
+              : working === "confirm"
+                ? "Review the permanent End confirmation."
+                : "Waiting for the command result…"
+          : message,
+      ),
+    );
+    element.replaceChildren(...children.filter(Boolean));
+  }
+  async function load() {
+    if (disposed || !isCurrent() || working) return;
+    revoke();
+    const owned = epoch;
+    working = "load";
+    message = "";
+    errorMessage = false;
+    render();
+    try {
+      const value = await transport.taskRecurrence(orgId, record.id);
+      if (!current(owned)) return;
+      saved = value;
+      result = null;
+      command = null;
+      needsReload = false;
+      message =
+        "Current saved recurrence state loaded. Review a new preview before generating.";
+    } catch (error) {
+      if (!current(owned)) return;
+      message = error.message;
+      errorMessage = true;
+    } finally {
+      working = null;
+      render();
+    }
+  }
+  async function runPreview() {
+    if (disposed || !isCurrent() || working || command || needsReload) return;
+    if (resolution?.kind === "fold" && !choice) {
+      message = "Choose the earlier or later exact instant first.";
+      errorMessage = true;
+      render();
+      return;
+    }
+    const selected = choice;
+    revoke();
+    const owned = epoch;
+    working = "preview";
+    message = "";
+    errorMessage = false;
+    render();
+    try {
+      const value = await transport.previewTaskRecurrence(orgId, record.id, {
+        sourceRevision: record.revision,
+        seriesRevision: saved?.series?.revision ?? null,
+        resolution: selected,
+      });
+      if (!current(owned)) return;
+      if (value.kind === "ready") preview = value;
+      else if (value.kind === "needs-resolution") resolution = value.resolution;
+      else if (value.kind === "existing") result = value.existing;
+      else {
+        resolution = value.resolution || null;
+        message = value.message || "This task cannot generate the next date.";
+      }
+    } catch (error) {
+      if (!current(owned)) return;
+      message = error.message;
+      errorMessage = true;
+    } finally {
+      working = null;
+      render();
+    }
+  }
+  async function sendCommand(ownedCommand) {
+    if (disposed || !isCurrent() || working || command !== ownedCommand) return;
+    const owned = epoch;
+    working = ownedCommand.kind;
+    message = "";
+    errorMessage = false;
+    render();
+    let generatedRecord = null;
+    try {
+      const value =
+        ownedCommand.kind === "generate"
+          ? await transport.generateTaskRecurrence(
+              orgId,
+              record.id,
+              ownedCommand.body,
+            )
+          : await transport.endTaskRecurrence(
+              orgId,
+              ownedCommand.seriesId,
+              ownedCommand.body,
+            );
+      if (!current(owned)) return;
+      if (ownedCommand.kind === "generate") {
+        if (!["generated", "existing"].includes(value.kind) || !value.existing)
+          throw new Error(
+            "The result was incomplete. Reload recurrence state or retry the exact command.",
+          );
+        result = value.existing;
+        preview = null;
+        command = null;
+        message =
+          value.kind === "generated"
+            ? "One planned, unapproved draft was created."
+            : "The existing saved result was found. No second task was created.";
+        if (value.kind === "generated" && result.kind === "active-record")
+          generatedRecord = result.record;
+      } else {
+        if (
+          value.kind !== "ended" ||
+          !value.series ||
+          typeof value.auditRecorded !== "boolean"
+        )
+          throw new Error(
+            "The End result was incomplete. Reload recurrence state or retry the exact command.",
+          );
+        saved = { ...saved, series: value.series };
+        command = null;
+        reason = "";
+        preview = null;
+        message = value.auditRecorded
+          ? "Recurrence permanently ended. The audit event was recorded. Existing tasks keep their workflow."
+          : "Recurrence permanently ended. Audit storage was exhausted, so this End event was not recorded. Existing tasks keep their workflow.";
+      }
+    } catch (error) {
+      if (!current(owned)) return;
+      message = `${error.message} The exact command is retained for recovery.`;
+      errorMessage = true;
+    } finally {
+      working = null;
+      render();
+    }
+    if (generatedRecord && current(owned)) {
+      try {
+        await onGenerated(generatedRecord);
+      } catch {
+        if (!current(owned)) return;
+        message =
+          "The saved task exists. Use Open existing task to continue; no second task is needed.";
+        errorMessage = true;
+        render();
+      }
+    }
+  }
+  async function generate() {
+    if (
+      !preview ||
+      disposed ||
+      !isCurrent() ||
+      working ||
+      command ||
+      needsReload
+    )
+      return;
+    command = Object.freeze({
+      kind: "generate",
+      body: Object.freeze({
+        previewToken: preview.previewToken,
+        idempotencyKey: newKey(),
+      }),
+    });
+    await sendCommand(command);
+  }
+  async function retry() {
+    if (!command || needsReload) return;
+    await sendCommand(command);
+  }
+  async function end() {
+    const series = saved?.series;
+    if (
+      disposed ||
+      !isCurrent() ||
+      working ||
+      command ||
+      needsReload ||
+      series?.state !== "active"
+    )
+      return;
+    revoke();
+    const owned = epoch;
+    const captured = { seriesId: series.id, revision: series.revision, reason };
+    working = "confirm";
+    render();
+    let accepted;
+    try {
+      accepted = await confirm(
+        "Permanently end recurrence?",
+        "This series cannot resume. Existing tasks will keep their workflow; no task is deleted or cancelled. A fresh series requires a new task ID.",
+        "End recurrence permanently",
+      );
+    } finally {
+      working = null;
+    }
+    if (!current(owned)) {
+      render();
+      return;
+    }
+    if (!accepted) {
+      message = "End cancelled. No command was sent.";
+      render();
+      return;
+    }
+    command = Object.freeze({
+      kind: "end",
+      seriesId: captured.seriesId,
+      body: Object.freeze({
+        seriesRevision: captured.revision,
+        idempotencyKey: newKey(),
+        reason: captured.reason,
+      }),
+    });
+    await sendCommand(command);
+  }
+  render();
+  return {
+    element,
+    load,
+    isDirty: () =>
+      Boolean(
+        reason ||
+        command ||
+        (working && !["load", "preview"].includes(working)),
+      ),
+    invalidate() {
+      if (disposed) return;
+      revoke();
+      needsReload = true;
+      message =
+        "The source view or editor changed. Reload recurrence state and review again.";
+      errorMessage = false;
+      render();
+    },
+    dispose() {
+      revoke();
+      disposed = true;
+      preview = null;
+      command = null;
+    },
+  };
 }
 function renderWorkflow(module, record) {
   const transitions = permittedTransitions(module, record, role());
@@ -2009,6 +2647,7 @@ function renderWorkflow(module, record) {
           {
             onsubmit: (event) => {
               event.preventDefault();
+              state.taskRecurrencePanel?.invalidate();
               action(
                 async () => {
                   await api.transition(state.org, module.id, record.id, {
@@ -4498,6 +5137,7 @@ $("#editor-dialog").addEventListener("cancel", (event) => {
   discardEditor();
 });
 $("#org-switch").addEventListener("change", async (event) => {
+  state.taskRecurrencePanel?.invalidate();
   const next = event.target.value;
   if (next === state.org) return;
   if (!(await discardEditor()) || !(await discardPage())) {
@@ -4515,6 +5155,7 @@ $("#org-switch").addEventListener("change", async (event) => {
   await route();
 });
 $("#new-org").addEventListener("click", async () => {
+  state.taskRecurrencePanel?.invalidate();
   if (!(await discardEditor()) || !(await discardPage())) return;
   renderCreateOrganization();
   $("#sidebar").classList.remove("open");
@@ -4538,6 +5179,7 @@ $("#content").addEventListener("change", (event) => {
   if (event.target.closest("form")) state.pageDirty = true;
 });
 window.addEventListener("hashchange", async () => {
+  state.taskRecurrencePanel?.invalidate();
   if ((state.editor && !(await discardEditor())) || !(await discardPage())) {
     history.replaceState(null, "", `#${state.route}`);
     return;
@@ -4546,7 +5188,7 @@ window.addEventListener("hashchange", async () => {
   else if (safeRoute() === "privacy") showPrivacy();
 });
 window.addEventListener("beforeunload", (event) => {
-  if (state.dirty || state.pageDirty) {
+  if (state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty()) {
     event.preventDefault();
     event.returnValue = "";
   }

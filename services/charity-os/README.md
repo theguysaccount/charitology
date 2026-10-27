@@ -24,6 +24,12 @@ Accounting and payroll records hold external references, aggregate reconciliatio
 
 The public AI Charitologist remains a source-retrieval tool. This service does not introduce an autonomous recommendation model or claim independently verified impact.
 
+## Manual recurring task drafts
+
+Projects tasks support explicit preview → generate for one weekly, monthly or quarterly successor. The preview retains the original calendar anchor, requires an instant choice for repeated local times and refuses missing local times. New tasks start planned and unapproved, with the acting member as owner. Source approvals, connection identity, files, comments and reminders are not copied. Nothing generates on a schedule or sends a message.
+
+One source has one saved successor across retries and later edits. Active series keep kind, program and schedule fixed until a separately confirmed End; cancellation/deletion also ends generation without cancelling children. Current organization/program permissions are rechecked. Backup restores recurrence only as inactive history. The [acceptance record](../../docs/OS_RECURRENCE_ACCEPTANCE.md) records exact limits, real signed-in fictional browser checks, 309 units and 90 isolated PostgreSQL tests. Publication identities remain pending there.
+
 ## Grant-period reports
 
 The new bounded grant-report implementation selects one agreement, one explicit program and one inclusive date period. It separates awards and commitments from selected external receipts, dated cash-spent references and planning context. Unknown amounts keep an unknown headline total with a known subtotal and missing-reference count; empty selections are not reported as zero activity. Individual observations retain their own units, periods, denominators, evidence and limitations without pooling or causal inference.

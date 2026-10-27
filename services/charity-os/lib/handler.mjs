@@ -94,6 +94,16 @@ import {
   restoreIntake,
 } from "./intake-backup.mjs";
 import { runJobs, runOrgJobs, enqueue } from "./jobs.mjs";
+import {
+  taskRecurrenceRoutes,
+  readTaskRecurrenceBody,
+  guardTaskRecurrenceWrite,
+} from "./task-recurrence.mjs";
+import {
+  exportTaskRecurrence,
+  restoredTaskRecurrence,
+  restoreTaskRecurrence,
+} from "./task-recurrence-backup.mjs";
 const okay = (value) => json({ ok: true, ...value });
 const iso = (x) => x?.toISOString?.() || x;
 const stale = (input, record) => {
@@ -318,15 +328,29 @@ export function createHandler({
         return okay({ modules: MODULES, roles: ROLES, currencies: CURRENCIES });
       const input = ["GET", "HEAD"].includes(method)
         ? {}
-        : await body(
-            request,
-            path.startsWith("/api/participant/") ||
-              /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/grant-reports(?:\/|$)/.test(
-                path,
-              )
-              ? 16384
-              : 8 * 1024 * 1024,
-          );
+        : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/task-recurrence(?:\/|$)/.test(
+              path,
+            )
+          ? await readTaskRecurrenceBody(request)
+          : await body(
+              request,
+              path.startsWith("/api/participant/") ||
+                /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/grant-reports(?:\/|$)/.test(
+                  path,
+                )
+                ? 16384
+                : 8 * 1024 * 1024,
+            );
+      if (
+        /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/task-recurrence(?:\/|$)/.test(path)
+      ) {
+        const read = ["GET", "HEAD"].includes(method);
+        await db.limit(
+          `task-recurrence-${read ? "read" : "write"}:${hash(session.user.id)}`,
+          read ? 120 : 60,
+          3600,
+        );
+      }
       if (
         /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/grant-reports(?:\/|$)/.test(path)
       ) {
@@ -450,6 +474,19 @@ export function createHandler({
               return okay({ updated: true });
             }
           }
+          const recurrenceResponse = await taskRecurrenceRoutes({
+            c,
+            org,
+            user,
+            session,
+            member,
+            tail,
+            method,
+            input,
+            url,
+            settings,
+          });
+          if (recurrenceResponse) return recurrenceResponse;
           const memberResponse = await memberRoutes({
             c,
             org,
@@ -629,6 +666,7 @@ export function createHandler({
               intake: await exportIntake(c, org),
               participation: await exportParticipation(c, org),
               delivery: await exportDelivery(c, org),
+              taskRecurrence: await exportTaskRecurrence(c, org),
             });
             await audit(c, org, user, "backup.exported", null, {
               count: records.length,
@@ -653,7 +691,19 @@ export function createHandler({
             const intake = restoredIntake(backup);
             const participation = restoredParticipation(backup);
             const delivery = restoredDelivery(backup);
+            const taskRecurrence = restoredTaskRecurrence(
+              backup.taskRecurrence,
+              { records: backup.records, trash: backup.trash || [] },
+            );
             const issues = [];
+            const existingRecurrence = Number(
+              (
+                await c.query(
+                  "SELECT count(*) FROM os_task_recurrence_series WHERE org_id=$1",
+                  [org],
+                )
+              ).rows[0].count,
+            );
             const existingIntake = Number(
               (
                 await c.query(
@@ -671,7 +721,8 @@ export function createHandler({
                   )
                 ).rows[0].count,
               ) ||
-              existingIntake
+              existingIntake ||
+              existingRecurrence
             )
               issues.push({
                 field: "organization",
@@ -701,12 +752,24 @@ export function createHandler({
                 participationTargetsRecovered: participation.targets.length,
                 participationsRecovered: participation.participations.length,
                 participationDeliveryDisabled: !!delivery.policy,
+                taskRecurrenceSeriesRecovered: taskRecurrence.series.length,
+                taskRecurrenceOccurrencesRetained:
+                  taskRecurrence.occurrences.length,
                 ...(migration ? { migration: migration.summary } : {}),
               },
               issues,
               warnings: [
                 ...(migration?.warnings || []),
                 ...participation.warnings,
+                ...(taskRecurrence.series.length
+                  ? [
+                      {
+                        field: "taskRecurrence",
+                        message:
+                          "Recurring-task history restores inactive. Earlier commands grant no authority. Source trash stays in the private source archive and is not restored as live or recoverable task rows.",
+                      },
+                    ]
+                  : []),
                 ...(intake.publications.length
                   ? [
                       {
@@ -754,6 +817,25 @@ export function createHandler({
             const intake = restoredIntake(p.payload);
             const participation = restoredParticipation(p.payload);
             const delivery = restoredDelivery(p.payload);
+            const taskRecurrence = restoredTaskRecurrence(
+              p.payload.taskRecurrence,
+              { records: p.payload.records, trash: p.payload.trash || [] },
+            );
+            if (
+              Number(
+                (
+                  await c.query(
+                    "SELECT count(*) FROM os_task_recurrence_series WHERE org_id=$1",
+                    [org],
+                  )
+                ).rows[0].count,
+              )
+            )
+              fail(
+                409,
+                "restore_conflict",
+                "Restore requires an organization without recurrence history.",
+              );
             if (
               Number(
                 (
@@ -844,6 +926,7 @@ export function createHandler({
             await restoreIntake(c, org, user, intake);
             await restoreParticipation(c, org, user, participation);
             await restoreDelivery(c, org, user, delivery);
+            await restoreTaskRecurrence(c, org, user, taskRecurrence);
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
               checksum: p.checksum,
@@ -855,6 +938,9 @@ export function createHandler({
               intakeRequests: intake.submissions.length,
               participationTargetsRecovered: participation.targets.length,
               participationsRecovered: participation.participations.length,
+              taskRecurrenceSeriesRecovered: taskRecurrence.series.length,
+              taskRecurrenceOccurrencesRetained:
+                taskRecurrence.occurrences.length,
             });
             return okay({ imported: imported.length });
           }
@@ -1071,6 +1157,7 @@ export function createHandler({
             });
             checkReferences(module, r.data, records, member);
             await guardParticipationWrite(c, r, { operation: "restore" });
+            await guardTaskRecurrenceWrite(c, r, { operation: "restore" });
             await c.query(
               "UPDATE os_records SET deleted_at=NULL WHERE org_id=$1 AND id=$2",
               [org, r.id],
@@ -1258,6 +1345,7 @@ export function createHandler({
           stale(input, record);
           if (method === "DELETE") {
             await guardParticipationWrite(c, record, { operation: "delete" });
+            await guardTaskRecurrenceWrite(c, record, { operation: "delete" });
             const linked = records.some(
               (r) =>
                 r.id !== record.id &&
