@@ -2,9 +2,9 @@
 title: Methods Lab
 group: Research
 order: 3
-summary: Design alternatives across seven ways of giving and compare their user-entered scenarios within a common outcome, scope, currency and horizon.
+summary: Compare ways of giving, preserve exact plan versions and connect artifact descriptions to self-recorded results and limitations.
 status: live
-statusNote: Live scenario and experiment-planning software is available. Its ranges are user assumptions, not empirical estimates; staffed comparative research and published findings remain milestones.
+statusNote: Local scenario planning and a protocol-to-artifact-to-result register are available. Ranges remain assumptions; file hashes and entered results establish no performed study or independent review. Staffed comparative research remains a milestone.
 conditions: [single-lens, symptom-trap]
 firstMilestone: A published comparison of all seven methods on one shared problem, with the evidence for each method graded and its place on the depth scale stated.
 help:
@@ -22,6 +22,10 @@ sources:
 ## Use the live research desk
 
 Use the [experiment workspace](#workspace-methods-lab) to plan several approaches to one problem. Matching population, outcome unit, currency and time horizon groups saved scenarios for comparison. Enter evidence and uncertainty before interpreting cost per expected outcome. Blank inputs stay unknown. These scenario bounds are not confidence intervals, effectiveness scores or forecasts validated against results.
+
+The artifact and results register preserves an exact plan version before connecting it to an artifact manifest and a dated, self-recorded result. Start a plan there or preview selected saved records from a Methods or Replication JSON export. A changed plan becomes an explicit amendment; earlier plans, artifacts and results remain distinct. Selecting a local file records a checksum without uploading or executing it.
+
+Keep the original claim beside the later report, with sources, deviations and limitations. An unavailable observation is different from a reported null finding or a zero estimate. The optional arithmetic difference requires an explicit comparability statement and matching known measures, units, populations and time horizons. It is not a pooled effect or causal verdict. This same private register opens in the [Replication Program](/programs/replication-program/). A complete backup includes every project and its saved raw draft, even when CSV or memo exports select fewer projects.
 
 Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 

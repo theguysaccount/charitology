@@ -1,5 +1,7 @@
 ---
 import ResearchWorkspace from "./ResearchWorkspace.astro";
+import ArtifactResults from "../ArtifactResults.astro";
+import { METHODS_RESEARCH_FIELDS } from "../../data/research-artifact-adapters";
 import { url } from "../../lib/site";
 const methods = [
   {
@@ -45,124 +47,7 @@ const methods = [
       "What result can be judged fairly and who can afford to work before payment?",
   },
 ];
-const fields = [
-  {
-    key: "title",
-    label: "Approach or scenario name",
-    required: true,
-    group: "Shared comparison",
-  },
-  {
-    key: "problem",
-    label: "Specific problem and population",
-    required: true,
-    group: "Shared comparison",
-  },
-  {
-    key: "unit",
-    label: "One common outcome unit",
-    required: true,
-    group: "Shared comparison",
-    hint: "Use the same exact unit, population, time horizon and currency to group records for comparison.",
-  },
-  {
-    key: "horizon",
-    label: "Outcome horizon",
-    required: true,
-    group: "Shared comparison",
-  },
-  {
-    key: "currency",
-    label: "Cost currency and price year",
-    required: true,
-    group: "Shared comparison",
-  },
-  {
-    key: "method",
-    label: "Method",
-    type: "select" as const,
-    required: true,
-    group: "Approach",
-    options: methods,
-  },
-  {
-    key: "chain",
-    label: "How the method reaches the outcome",
-    type: "textarea" as const,
-    required: true,
-    group: "Approach",
-  },
-  {
-    key: "costLow",
-    label: "Total cost: lower scenario",
-    type: "number" as const,
-    min: 0,
-    group: "Assumption ranges",
-  },
-  {
-    key: "costHigh",
-    label: "Total cost: upper scenario",
-    type: "number" as const,
-    min: 0,
-    group: "Assumption ranges",
-  },
-  {
-    key: "probabilityLow",
-    label: "Chance of success: lower (%)",
-    type: "number" as const,
-    min: 0,
-    max: 100,
-    group: "Assumption ranges",
-  },
-  {
-    key: "probabilityHigh",
-    label: "Chance of success: upper (%)",
-    type: "number" as const,
-    min: 0,
-    max: 100,
-    group: "Assumption ranges",
-  },
-  {
-    key: "unitsLow",
-    label: "Outcome units if successful: lower",
-    type: "number" as const,
-    min: 0,
-    group: "Assumption ranges",
-  },
-  {
-    key: "unitsHigh",
-    label: "Outcome units if successful: upper",
-    type: "number" as const,
-    min: 0,
-    group: "Assumption ranges",
-  },
-  {
-    key: "assumptions",
-    label: "Why these bounds, and what is missing?",
-    type: "textarea" as const,
-    required: true,
-    group: "Evidence and limits",
-  },
-  {
-    key: "source",
-    label: "Primary evidence URL (optional for a hypothetical plan)",
-    type: "url" as const,
-    group: "Evidence and limits",
-  },
-  {
-    key: "harm",
-    label: "Possible harms, displacement and outcomes outside the chosen unit",
-    type: "textarea" as const,
-    required: true,
-    group: "Evidence and limits",
-  },
-  {
-    key: "next",
-    label: "Cheapest useful test before acting",
-    type: "textarea" as const,
-    group: "Evidence and limits",
-  },
-];
+const fields = METHODS_RESEARCH_FIELDS;
 ---
 
 <section class="tool" id="ml-intro" data-methods={JSON.stringify(methods)}>
@@ -213,6 +98,8 @@ const fields = [
     not confidence intervals or forecasts validated by data.
   </p>
 </section>
+<ArtifactResults program="methods-lab" />
+
 <ResearchWorkspace
   id="methods-lab"
   title="Methods experiment workspace"
