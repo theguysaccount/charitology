@@ -11,7 +11,6 @@ import { parse } from "parse5";
 import ts from "typescript";
 import postcss from "postcss";
 import { Element as BaseElement } from "../test-fixtures/artifact-results/ui-dom.mjs";
-import { fictionalObservationFiles } from "../test-fixtures/observations/factory.mjs";
 import {
   validateObservationFiles,
   observationProjection,
@@ -27,6 +26,29 @@ const check = async (name, run) => {
   groups++;
   console.log(`✓ ${name}`);
 };
+// Keep all facts fictional while using codes admitted by the closed local-note
+// form facade. Generate the complete graph with these identities before the
+// existing fixture hashes its source bytes, records and provenance references.
+let fixtureSource = await readFile(
+  "test-fixtures/observations/factory.mjs",
+  "utf8",
+);
+for (const [before, after] of [
+  ['id: "AAA",', 'id: "KEN",'],
+  ['iso2Code: "AA",', 'iso2Code: "KE",'],
+  ['id: "BBB",', 'id: "UGA",'],
+  ['iso2Code: "BB",', 'iso2Code: "UG",'],
+]) {
+  assert.equal(fixtureSource.split(before).length, 2, before);
+  fixtureSource = fixtureSource.replace(before, () => after);
+}
+fixtureSource = fixtureSource.replace(
+  '"../../src/lib/observation-model.mjs"',
+  JSON.stringify(pathToFileURL(resolve("src/lib/observation-model.mjs")).href),
+);
+const { fictionalObservationFiles } = await import(
+  "data:text/javascript;base64," + Buffer.from(fixtureSource).toString("base64")
+);
 const files = fictionalObservationFiles({ financial: true });
 const input = validateObservationFiles(files);
 const projection = observationProjection(input, input.registry.current.id);
@@ -36,6 +58,7 @@ globalThis.__observationUiFixture = {
   countries: legacyCountriesProjection(projection),
 };
 class Element extends BaseElement {
+  style = {};
   get options() {
     return this.children.filter((child) => child.tagName === "OPTION");
   }
@@ -454,7 +477,7 @@ try {
           } else assert.equal(row.dataset.observationId, undefined);
         }
       const missing = Object.values(
-        ui.countryMissingFacts(projection, "BBB"),
+        ui.countryMissingFacts(projection, "UGA"),
       )[0];
       assert.equal(missing.coverage.cells[missing.index], missing.cell);
     },
@@ -772,7 +795,10 @@ try {
         };
       assert.equal(declarations(".ob-desk table.data")["min-width"], "48rem");
       assert.equal(declarations(".ob-desk table.data").display, "table");
-      assert.equal(declarations(".ob-desk table.data")["table-layout"], "fixed");
+      assert.equal(
+        declarations(".ob-desk table.data")["table-layout"],
+        "fixed",
+      );
       assert.deepEqual(declarations(".ob-desk .ob-table-scroll"), {
         "max-width": "100%",
         "overflow-x": "auto",
@@ -824,6 +850,17 @@ try {
       };
       globalThis.__obDownloads = [];
       await mountInline("src/components/record/country-profiles.astro", d);
+      for (
+        let i = 0;
+        i < 200 && desk.dataset.rrInitialization === "opening";
+        i++
+      )
+        await new Promise((resolve) => setTimeout(resolve, 5));
+      assert.equal(
+        desk.dataset.rrInitialization,
+        "ready",
+        d.getElementById("country-storage").textContent,
+      );
       assert.equal(writes, 0);
       const countries = globalThis.__observationUiFixture.countries.countries;
       const second = d.getElementById("country-b");
