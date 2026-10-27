@@ -2,9 +2,9 @@
 title: Replication Program
 group: Research
 order: 6
-summary: Write and freeze local replication protocols, fork amendments and export the design, analysis rules and review plan.
+summary: Preserve replication plans, describe versioned artifacts and connect sourced, self-recorded results to their exact protocol and deviations.
 status: live
-statusNote: Live replication-planning software saves immutable local versions and exports protocols. Browser timestamps are not public registration; studies, participant safeguards and independent replications still need people and resources.
+statusNote: Local protocols, artifact manifests, results and descriptive comparisons can be saved and exported. Browser timestamps and checksums are not public registration or verified execution; studies, safeguards and independent replications still need people and resources.
 conditions: [silence-about-failure, measurement-gap]
 firstMilestone: A list of 20 influential charity impact findings, chosen by published rules, with a replication plan for each registered before any results are known.
 help:
@@ -30,6 +30,10 @@ sources:
 ## Use the live research desk
 
 Choose a claim from a primary study and fill in the [replication planner](#workspace-replication-program). State the population, outcome, analysis, exclusions and stopping rule before inspecting the result. Freeze a local version, fork any amendment and export it for independent review or an external registry. This software does not conduct experiments or independently timestamp a preregistration.
+
+Use the artifact and results register to connect an exact protocol to a versioned manifest of code, data or reports. You can start there or preview saved records from an existing Methods or Replication JSON export. Only deliberately selected saved records become protocol snapshots; an unfinished source draft does not. Files stay on your device. A selected file's checksum identifies bytes, while an entered external checksum or registration reference stays a user-supplied declaration.
+
+Record the later result and its date separately from the time you entered it. Preserve the original estimate, reported estimate, missing values, source references, deviations and limitations. Reported null, inconclusive, stopped and not observed remain distinct. A descriptive comparison can show an arithmetic difference only for explicitly matched, known units and scope; it never determines whether a replication succeeded. Changed plans or manifests do not silently inherit earlier outputs. The same register opens in [Methods Lab](/programs/methods-lab/), and its full JSON backup includes all projects and the saved raw form draft.
 
 Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 

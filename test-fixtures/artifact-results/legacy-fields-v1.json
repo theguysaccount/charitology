@@ -1,0 +1,307 @@
+{
+  "sourceCommit": "975bbbbbd198d4b3c4e1777013d0410588a838b3",
+  "programs": {
+    "methods-lab": {
+      "file": "src/components/programs/methods-lab.astro",
+      "sourceSha256": "ff794d15a60f225558fe9a7644e41fcc4eebd6212706e14cb626e737a9a4ef01",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Approach or scenario name",
+          "required": true,
+          "group": "Shared comparison"
+        },
+        {
+          "key": "problem",
+          "label": "Specific problem and population",
+          "required": true,
+          "group": "Shared comparison"
+        },
+        {
+          "key": "unit",
+          "label": "One common outcome unit",
+          "required": true,
+          "group": "Shared comparison",
+          "hint": "Use the same exact unit, population, time horizon and currency to group records for comparison."
+        },
+        {
+          "key": "horizon",
+          "label": "Outcome horizon",
+          "required": true,
+          "group": "Shared comparison"
+        },
+        {
+          "key": "currency",
+          "label": "Cost currency and price year",
+          "required": true,
+          "group": "Shared comparison"
+        },
+        {
+          "key": "method",
+          "label": "Method",
+          "type": "select",
+          "required": true,
+          "group": "Approach",
+          "options": [
+            {
+              "value": "cash",
+              "label": "Direct cash",
+              "question": "What can recipients choose for themselves, and which shared goods need another route?"
+            },
+            {
+              "value": "advocacy",
+              "label": "Policy advocacy",
+              "question": "Which rule could change, who else must act and how would you assess contribution?"
+            },
+            {
+              "value": "research",
+              "label": "Research",
+              "question": "Whose decision would an answer change, and what happens if the result is negative?"
+            },
+            {
+              "value": "mutual-aid",
+              "label": "Mutual aid",
+              "question": "Who belongs to the network, who is missed and how are decisions shared?"
+            },
+            {
+              "value": "volunteering",
+              "label": "Volunteering",
+              "question": "Which skill is needed and what does coordination cost the organization?"
+            },
+            {
+              "value": "investing",
+              "label": "Impact investing",
+              "question": "What changes because of this capital that an ordinary investor would not fund?"
+            },
+            {
+              "value": "prizes",
+              "label": "Prizes",
+              "question": "What result can be judged fairly and who can afford to work before payment?"
+            }
+          ]
+        },
+        {
+          "key": "chain",
+          "label": "How the method reaches the outcome",
+          "type": "textarea",
+          "required": true,
+          "group": "Approach"
+        },
+        {
+          "key": "costLow",
+          "label": "Total cost: lower scenario",
+          "type": "number",
+          "min": 0,
+          "group": "Assumption ranges"
+        },
+        {
+          "key": "costHigh",
+          "label": "Total cost: upper scenario",
+          "type": "number",
+          "min": 0,
+          "group": "Assumption ranges"
+        },
+        {
+          "key": "probabilityLow",
+          "label": "Chance of success: lower (%)",
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "group": "Assumption ranges"
+        },
+        {
+          "key": "probabilityHigh",
+          "label": "Chance of success: upper (%)",
+          "type": "number",
+          "min": 0,
+          "max": 100,
+          "group": "Assumption ranges"
+        },
+        {
+          "key": "unitsLow",
+          "label": "Outcome units if successful: lower",
+          "type": "number",
+          "min": 0,
+          "group": "Assumption ranges"
+        },
+        {
+          "key": "unitsHigh",
+          "label": "Outcome units if successful: upper",
+          "type": "number",
+          "min": 0,
+          "group": "Assumption ranges"
+        },
+        {
+          "key": "assumptions",
+          "label": "Why these bounds, and what is missing?",
+          "type": "textarea",
+          "required": true,
+          "group": "Evidence and limits"
+        },
+        {
+          "key": "source",
+          "label": "Primary evidence URL (optional for a hypothetical plan)",
+          "type": "url",
+          "group": "Evidence and limits"
+        },
+        {
+          "key": "harm",
+          "label": "Possible harms, displacement and outcomes outside the chosen unit",
+          "type": "textarea",
+          "required": true,
+          "group": "Evidence and limits"
+        },
+        {
+          "key": "next",
+          "label": "Cheapest useful test before acting",
+          "type": "textarea",
+          "group": "Evidence and limits"
+        }
+      ]
+    },
+    "replication-program": {
+      "file": "src/components/programs/replication-program.astro",
+      "sourceSha256": "49df2fdcd2b0826b347c7f92a4ce23e86b6fe4a893678557fe2c09a2a8728203",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Replication project and version",
+          "required": true,
+          "group": "Claim and scope"
+        },
+        {
+          "key": "source",
+          "label": "Original study URL",
+          "type": "url",
+          "required": true,
+          "group": "Claim and scope"
+        },
+        {
+          "key": "claim",
+          "label": "Exact claim, outcome, population and follow-up period",
+          "type": "textarea",
+          "required": true,
+          "group": "Claim and scope"
+        },
+        {
+          "key": "kind",
+          "label": "Replication approach",
+          "type": "select",
+          "required": true,
+          "group": "Claim and scope",
+          "options": [
+            {
+              "value": "reproduce",
+              "label": "Reproduce original data and code"
+            },
+            {
+              "value": "reanalyse",
+              "label": "Reanalyze original data with a new method"
+            },
+            {
+              "value": "direct",
+              "label": "Collect new data with the original design"
+            },
+            {
+              "value": "context",
+              "label": "Test in another population or setting"
+            }
+          ]
+        },
+        {
+          "key": "change",
+          "label": "What differs from the original, and why?",
+          "type": "textarea",
+          "required": true,
+          "group": "Design"
+        },
+        {
+          "key": "hypotheses",
+          "label": "Hypotheses and directional predictions",
+          "type": "textarea",
+          "required": true,
+          "group": "Design"
+        },
+        {
+          "key": "sample",
+          "label": "Population, recruitment, assignment and sample-size rationale",
+          "type": "textarea",
+          "required": true,
+          "group": "Design"
+        },
+        {
+          "key": "outcome",
+          "label": "Primary outcome, unit, measurement and time point",
+          "type": "textarea",
+          "required": true,
+          "group": "Design"
+        },
+        {
+          "key": "estimand",
+          "label": "Effect to estimate and smallest meaningful difference",
+          "type": "textarea",
+          "required": true,
+          "group": "Analysis"
+        },
+        {
+          "key": "analysis",
+          "label": "Estimator, uncertainty interval and decision criteria",
+          "type": "textarea",
+          "required": true,
+          "group": "Analysis"
+        },
+        {
+          "key": "missing",
+          "label": "Missing data, exclusions and stopping rule",
+          "type": "textarea",
+          "required": true,
+          "group": "Analysis"
+        },
+        {
+          "key": "multiple",
+          "label": "Multiple outcomes, subgroups and robustness checks",
+          "type": "textarea",
+          "required": true,
+          "group": "Analysis"
+        },
+        {
+          "key": "access",
+          "label": "Data/code access, dependencies, license and audit trail",
+          "type": "textarea",
+          "required": true,
+          "group": "Delivery and review"
+        },
+        {
+          "key": "ethics",
+          "label": "Consent, ethics review and safeguards, or why not applicable",
+          "type": "textarea",
+          "required": true,
+          "group": "Delivery and review"
+        },
+        {
+          "key": "review",
+          "label": "Independent review and original-author response plan",
+          "type": "textarea",
+          "required": true,
+          "group": "Delivery and review"
+        },
+        {
+          "key": "due",
+          "label": "Planned completion date",
+          "type": "date",
+          "group": "Delivery and review"
+        },
+        {
+          "key": "amendments",
+          "label": "Changes since the previous version and whether results were known",
+          "type": "textarea",
+          "group": "Version record"
+        }
+      ]
+    }
+  },
+  "adapterHashes": {
+    "methods-research-v1": "49258dedda7ef0c39bde48dbc5a1faa48b85cfd21ec4359613a87e3c1fc1d4f6",
+    "replication-research-v1": "0f8e08674b73ecf66b6788aadd0c4e8a69705aa6277ba95d44d1d5fb095c152e"
+  }
+}

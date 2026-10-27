@@ -13,7 +13,7 @@
     "dev": "astro dev",
     "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
-    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results",
     "test": "npm run build && npm run check",
     "extension:zip": "node scripts/zip-extension.mjs",
     "images": "node scripts/make-images.mjs",
@@ -25,7 +25,8 @@
     "audio:podcast": "node scripts/make-podcast.mjs",
     "check:references": "node scripts/check-reference-libraries.mjs",
     "check:types": "node scripts/check-publication-types.mjs",
-    "check:study-register": "node scripts/check-study-register.mjs && node scripts/check-study-register-store.mjs && node scripts/check-study-register-ui.mjs && node scripts/check-study-register-catalog.mjs && node scripts/check-study-register-types.mjs"
+    "check:study-register": "node scripts/check-study-register.mjs && node scripts/check-study-register-store.mjs && node scripts/check-study-register-ui.mjs && node scripts/check-study-register-catalog.mjs && node scripts/check-study-register-types.mjs",
+    "check:artifact-results": "node scripts/check-artifact-results.mjs && node scripts/check-artifact-results-store.mjs && node scripts/check-artifact-results-ui.mjs && node scripts/check-artifact-results-adapters.mjs && node scripts/check-artifact-results-types.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",

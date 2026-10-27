@@ -1,0 +1,209 @@
+.artifact-results {
+  --ar-accent: var(--accent);
+  --ar-muted: var(--ink-3);
+  --ar-border: var(--rule);
+  color: var(--ink);
+}
+.artifact-results .ar-workspace {
+  margin-block: 1.5rem;
+  border: 1px solid var(--ar-border);
+  background: var(--surface);
+  border-radius: 0.5rem;
+  padding: clamp(0.8rem, 2vw, 1.5rem);
+}
+.artifact-results .ar-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: start;
+  border-bottom: 1px solid var(--ar-border);
+  padding-bottom: 1rem;
+}
+.artifact-results .ar-header > div:first-child {
+  flex: 2 1 20rem;
+}
+.artifact-results .ar-save-state {
+  flex: 1 1 14rem;
+}
+.artifact-results .ar-tabs,
+.artifact-results .ar-actions,
+.artifact-results .ar-pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 1rem;
+  align-items: center;
+}
+.artifact-results .ar-tabs .ar-button[aria-current="page"] {
+  color: var(--on-accent);
+  background: var(--ar-accent);
+  border-color: var(--ar-accent);
+}
+.artifact-results .ar-button {
+  font: inherit;
+  line-height: 1.35;
+  padding: 0.65rem 0.85rem;
+  min-height: 44px;
+  background: var(--surface);
+  border: 1px solid var(--ar-border);
+  border-radius: 0.3rem;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.artifact-results .ar-button:hover {
+  background: var(--bg-2);
+}
+.artifact-results .ar-primary:hover {
+  background: var(--accent-2);
+  color: var(--on-accent);
+}
+.artifact-results .ar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.artifact-results .ar-primary {
+  background: var(--ar-accent);
+  color: var(--on-accent);
+}
+.artifact-results
+  :is(button, input, textarea, select, a, summary):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.artifact-results .ar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-block: 1rem;
+  min-width: 0;
+}
+.artifact-results .ar-field label,
+.artifact-results legend {
+  font-weight: 600;
+}
+.artifact-results :is(input:not([type="checkbox"]), textarea, select) {
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--ink-3);
+  border-radius: 0.25rem;
+  padding: 0.6rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.artifact-results textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+.artifact-results .ar-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-block: 0.9rem;
+  padding: 0.3rem 0;
+}
+.artifact-results input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.2rem;
+  accent-color: var(--ar-accent);
+}
+.artifact-results .ar-card {
+  min-width: 0;
+  margin-block: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--ar-border);
+  background: var(--surface);
+  border-radius: 0.35rem;
+}
+.artifact-results .ar-note {
+  color: var(--ar-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.artifact-results .ar-warning,
+.artifact-results .ar-guard:not(:empty) {
+  border-left: 4px solid var(--accent);
+  padding: 0.8rem 1rem;
+  margin-block: 1rem;
+  background: var(--highlight);
+}
+.artifact-results .ar-status {
+  padding-block: 0.5rem;
+  overflow-wrap: anywhere;
+}
+.artifact-results .ar-error {
+  color: var(--accent);
+}
+.artifact-results :is(p, dd, dt, h3, h4, h5, legend) {
+  overflow-wrap: anywhere;
+}
+.artifact-results .ar-details {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 3fr);
+  gap: 0.5rem 1rem;
+}
+.artifact-results dt {
+  font-weight: 600;
+}
+.artifact-results dd {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.artifact-results .ar-history {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--ar-border);
+  padding-top: 1rem;
+}
+.artifact-results .ar-history summary {
+  cursor: pointer;
+  padding-block: 0.7rem;
+}
+.artifact-results .ar-history > .ar-button {
+  margin: 0.25rem;
+}
+.artifact-results .ar-content {
+  min-width: 0;
+}
+@media (max-width: 560px) {
+  .artifact-results .ar-details {
+    display: block;
+  }
+  .artifact-results dd {
+    margin-block: 0.25rem 1rem;
+  }
+  .artifact-results .ar-tabs .ar-button {
+    flex: 1 1 9rem;
+  }
+  .artifact-results .ar-actions .ar-button {
+    width: 100%;
+  }
+  .artifact-results .ar-card {
+    padding: 0.7rem;
+  }
+}
+@media print {
+  .artifact-results .ar-tabs,
+  .artifact-results .ar-header button,
+  .artifact-results .ar-actions,
+  .artifact-results .ar-guard {
+    display: none;
+  }
+  .artifact-results .ar-workspace {
+    border: 0;
+    padding: 0;
+  }
+  .artifact-results .ar-card {
+    break-inside: avoid;
+  }
+}
+
+.artifact-results :is(.ar-warning, .ar-guard) .ar-note {
+  color: var(--ink-2);
+}

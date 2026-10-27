@@ -1,0 +1,66 @@
+---
+import "../styles/artifact-results.css";
+const { program } = Astro.props as {
+  program: "methods-lab" | "replication-program";
+};
+---
+
+<section
+  class="tool artifact-results"
+  data-artifact-results
+  data-artifact-program={program}
+  data-base={import.meta.env.BASE_URL.replace(/\/$/, "")}
+>
+  <h2>Protocol, artifact and results register</h2>
+  <p>
+    Connect an exact local plan to artifact descriptions, self-recorded results
+    and a comparison. This private register opens in both Methods Lab and the
+    Replication Program in this browser. Keep the original and later report,
+    their sources and any deviations together.
+  </p>
+  <p class="note">
+    Files stay on your device; selecting a file records its checksum and
+    description. No file is uploaded or executed. A local time, file hash or
+    registration reference establishes no independent registration, verified
+    study or reviewer. Nothing is submitted or published automatically.
+  </p>
+  <div class="artifact-results-mount" aria-live="polite">
+    <p>The local register is loading. The existing planning desk remains available below.</p>
+  </div>
+  <noscript>
+    <p>The private register needs JavaScript. The program description and published references remain readable.</p>
+  </noscript>
+</section>
+
+<script>
+  import { mountArtifactResults } from "../lib/client/artifact-results-ui";
+  import { download } from "../lib/client/files";
+  document.querySelectorAll<HTMLElement>("[data-artifact-results]").forEach((root) => {
+    mountArtifactResults(root).catch(() => {
+      const host = root.querySelector<HTMLElement>(".artifact-results-mount");
+      if (!host) return;
+      host.replaceChildren();
+      const message = document.createElement("p");
+      message.setAttribute("role", "alert");
+      message.textContent = "The local register could not open safely. Keep a recovery copy of saved work; the existing planning desk remains available.";
+      const recovery = document.createElement("button");
+      recovery.type = "button";
+      recovery.className = "btn btn-ghost";
+      recovery.textContent = "Download saved recovery copy";
+      recovery.addEventListener("click", () => {
+        try {
+          const raw = localStorage.getItem("charitology.artifact-results.v1");
+          if (raw === null) {
+            message.textContent = "No saved artifact/results register was found. Nothing was changed.";
+            return;
+          }
+          download("charitology-artifact-results-saved-recovery.txt", raw, "text/plain");
+          message.textContent = "A download of the unchanged saved bytes was requested. This raw recovery file may need repair before it can be restored.";
+        } catch {
+          message.textContent = "The browser could not read or download the saved copy. No replacement was attempted.";
+        }
+      });
+      host.append(message, recovery);
+    });
+  });
+</script>
