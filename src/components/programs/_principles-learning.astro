@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import { courseLessons } from "../../data/program-course";
+import { courseCapstoneInstructions } from "../../data/course-capstone";
 import { url } from "../../lib/site";
 import SourceList from "../SourceList.astro";
 const { certificate = false } = Astro.props;
@@ -172,10 +173,7 @@ const readings = await Promise.all(
   }
   <form id="pc-capstone-form">
     <h3>Your capstone decision</h3><p class="note">
-      Use a hypothetical decision if you prefer. State the choice and
-      alternative, depth, causal chain, evidence and its limits, moral lenses,
-      community voice, counterfactual and follow-up date. Do not include private
-      information about people served.
+      {courseCapstoneInstructions}
     </p><div class="field">
       <label for="pc-name">Name on your completion record (optional)</label
       ><input id="pc-name" maxlength="120" />
@@ -338,6 +336,7 @@ const readings = await Promise.all(
 <script>
   import { $, $$ } from "../../lib/client/dom";
   import { courseLessons } from "../../data/program-course";
+import { courseCapstoneInstructions } from "../../data/course-capstone";
   import {
     COURSE_KEY,
     readCourse,
