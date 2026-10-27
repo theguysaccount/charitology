@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-counterfactual-problem-v1",
+  "recordId": "problem:the-counterfactual-problem",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Counterfactual Problem",
+      "number": 4,
+      "statement": "How can a giver estimate what would have happened without their gift, cheaply and at scale?",
+      "progress": "A method that produces counterfactual estimates for ordinary gifts, with error ranges, at a cost small relative to the gift.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "missing-feedback-loop"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThe real effect of a gift is the difference between the world with it and the world without it. Most givers never see that difference, which is part of why the [feedback loop](/diagnosis/missing-feedback-loop/) is missing.\n\n## Where to start\n\nFunding-gap disclosures (how much a charity could productively absorb), matched comparisons between funded and unfunded applicants, and published “room for more funding” analyses are partial answers. The open problem is making them routine.\n"
+  },
+  "subjectHash": "4d5aaafd6bde299f0b51c8f64625b67706ba01e47e96d9a8a503587243b054a6",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-counterfactual-problem",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "ddf0093aebfea5ad127e016c4e888ce134eecc51ad5ace9a998798686a2a49db"
+}

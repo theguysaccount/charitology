@@ -1,0 +1,37 @@
+{
+  "id": "version:claim-ten-dollars-framing-v1",
+  "recordId": "claim:ten-dollars-framing",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "claim",
+    "parentId": "manuscript:ten-dollars",
+    "title": "Framing of the founding poem",
+    "statement": "The founding manifesto. In 2026 the name for the science of doing the most good was available for about ten dollars. That says something about the field.",
+    "context": null,
+    "evidence": "not-applicable",
+    "sources": []
+  },
+  "subjectHash": "38c02e1fa76b1065d922ad738ba9b5e71afb266b0b8b5296a2b17d251d3ecfa8",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:pr-3-before-ten-dollars",
+      "selector": {
+        "kind": "claim",
+        "adapter": "ten-dollars-framing-v1",
+        "frontmatterKeys": [
+          "summary"
+        ],
+        "bodyExcerpt": null
+      }
+    }
+  ],
+  "hash": "a7cb59a7e58e02f20264a29d086c7eda6bf28d4eb299d07268c196e7ace10c81"
+}

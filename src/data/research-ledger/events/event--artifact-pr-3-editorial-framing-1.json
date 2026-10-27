@@ -1,0 +1,78 @@
+{
+  "id": "event:artifact-pr-3-editorial-framing-1",
+  "ordinal": 43,
+  "recordId": "artifact:pr-3-editorial-framing",
+  "sequence": 1,
+  "previousId": null,
+  "previousHash": null,
+  "occurredAt": "2026-10-26T05:24:43.000Z",
+  "timeBasis": "pr-merge",
+  "recordedAt": "2026-10-27T08:31:31.000Z",
+  "actorIds": [],
+  "refs": [
+    {
+      "url": "https://github.com/theguysaccount/charitology/pull/3",
+      "title": "PR #3: editorial scope and founding-poem framing correction",
+      "locator": null
+    },
+    {
+      "url": "https://github.com/theguysaccount/charitology/blob/905bdd27bb5f16027c3b3ad3c0f5ee3fc18e3e45/src/content/problems/the-depth-census.md",
+      "title": "PR #3 before: problems/the-depth-census",
+      "locator": null
+    },
+    {
+      "url": "https://github.com/theguysaccount/charitology/blob/510320528e89f45caa9c42eb5a6eda3d6ad1bede/src/content/problems/the-depth-census.md",
+      "title": "PR #3 after: problems/the-depth-census",
+      "locator": null
+    },
+    {
+      "url": "https://github.com/theguysaccount/charitology/blob/905bdd27bb5f16027c3b3ad3c0f5ee3fc18e3e45/src/content/journal/ten-dollars.md",
+      "title": "PR #3 before: journal/ten-dollars",
+      "locator": null
+    },
+    {
+      "url": "https://github.com/theguysaccount/charitology/blob/510320528e89f45caa9c42eb5a6eda3d6ad1bede/src/content/journal/ten-dollars.md",
+      "title": "PR #3 after: journal/ten-dollars",
+      "locator": null
+    }
+  ],
+  "observationIds": [
+    "observation:pr-3",
+    "observation:pr-3-reviews"
+  ],
+  "reason": "Record the genuine merged editorial correction and its two exact before/after claim subjects. No reviewer, challenge, research finding or scientific disposition is inferred from the merge or the observed empty review-submission list.",
+  "type": "artifact-recorded",
+  "artifact": {
+    "recordId": "artifact:pr-3-editorial-framing",
+    "version": 1,
+    "subjectHash": "7936f7c866ab53a3fe65764cd65fff2857bbfd985ba8ffc1354a58da9267c1fe"
+  },
+  "changes": [
+    {
+      "before": {
+        "recordId": "claim:depth-census-knowledge",
+        "version": 1,
+        "subjectHash": "9792de6050cabd1ef2715b6145183702a6a1e5f448563b7474d82c066fd64b4e"
+      },
+      "after": {
+        "recordId": "claim:depth-census-knowledge",
+        "version": 2,
+        "subjectHash": "6f3b6d06a2d61893e35d33ae513a3959f44f1321c2bd43d30ff95c54b25fe9a3"
+      }
+    },
+    {
+      "before": {
+        "recordId": "claim:ten-dollars-framing",
+        "version": 1,
+        "subjectHash": "38c02e1fa76b1065d922ad738ba9b5e71afb266b0b8b5296a2b17d251d3ecfa8"
+      },
+      "after": {
+        "recordId": "claim:ten-dollars-framing",
+        "version": 2,
+        "subjectHash": "d32dca610a5ca31c8a179497ebcc580f5d4ce05b80b88bfef2c8409ada1f7f59"
+      }
+    }
+  ],
+  "challengeIds": [],
+  "hash": "a4e4bd529e5f3d70b1fa636a77a03a42568cb7804b02d337549aa5d2c177a92c"
+}

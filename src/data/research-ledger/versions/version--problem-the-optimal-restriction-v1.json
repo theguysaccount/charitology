@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-optimal-restriction-v1",
+  "recordId": "problem:the-optimal-restriction",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Optimal Restriction",
+      "number": 8,
+      "statement": "When does restricting a gift help, and when does it harm?",
+      "progress": "Evidence from natural experiments or trials on how restriction affects outcomes, including the conditions under which each kind of funding works better.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "restriction-reflex"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThe case for unrestricted funding is strong but mostly built on surveys of what charities prefer. A science of giving needs outcome evidence, including any cases where restriction does better.\n\n## Where to start\n\nLarge shifts toward unrestricted giving, such as funders that relaxed restrictions in 2020, are natural experiments. Comparing grantee outcomes before and after is a feasible first study.\n"
+  },
+  "subjectHash": "c4bc869f65f89b0a779459b13dd14f8ee97b0deb8ad61ab161c123e970559340",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-optimal-restriction",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "b8b0fe912ce8d386cedab983365342f07b52847fac4e57678322937971a1302a"
+}

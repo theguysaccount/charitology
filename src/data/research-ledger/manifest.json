@@ -1,0 +1,514 @@
+{
+  "schemaVersion": 1,
+  "adapterVersion": "research-content-v1",
+  "currentEditionId": "edition:2026-10-27-initial",
+  "capture": {
+    "id": "capture:2026-10-27-initial",
+    "at": "2026-10-27T08:31:31.000Z",
+    "commit": "8df2d0ddbc6d91b9841c6bbb94dbde1fc7c00137"
+  },
+  "coverage": {
+    "includedSourceKeys": [
+      "cases/carnegie-libraries",
+      "cases/dare",
+      "cases/green-revolution",
+      "cases/haiti-earthquake-reconstruction",
+      "cases/hookworm-campaign",
+      "cases/ice-bucket-challenge",
+      "cases/one-laptop-per-child",
+      "cases/oral-rehydration-therapy-spread",
+      "cases/playpumps",
+      "cases/polio-eradication",
+      "cases/rosenwald-schools",
+      "cases/scared-straight",
+      "cases/smallpox-eradication",
+      "journal/depth-without-a-ladder",
+      "journal/ten-dollars",
+      "journal/the-feedback-contract",
+      "problems/closing-the-feedback-loop",
+      "problems/discounting-the-future",
+      "problems/measuring-the-source",
+      "problems/moral-parliament-in-practice",
+      "problems/proximity-and-obligation",
+      "problems/story-without-bias",
+      "problems/the-agency-premium",
+      "problems/the-counterfactual-problem",
+      "problems/the-depth-census",
+      "problems/the-enough-question",
+      "problems/the-exchange-rate-problem",
+      "problems/the-failure-commons",
+      "problems/the-fragmentation-question",
+      "problems/the-government-question",
+      "problems/the-money-time-exchange",
+      "problems/the-optimal-restriction",
+      "problems/the-overhead-replacement",
+      "problems/the-payout-question",
+      "problems/the-profession-question",
+      "problems/the-question-of-questions",
+      "problems/the-replication-rate",
+      "problems/the-status-flip",
+      "problems/when-charity-harms",
+      "record/methodology"
+    ],
+    "excludedKinds": [
+      "Private local research registers",
+      "Other content collections and unregistered method claims",
+      "Unprovided scientific review and disposition records"
+    ],
+    "limitations": [
+      "This initial capture establishes current draft coverage, not a known January baseline or an earlier status history.",
+      "The one PR-backed artifact is an editorial correction to two claim subjects; it is not a scientific result, independent review or problem resolution.",
+      "Source-derived case descriptions and manuscript bylines do not establish performed Charitology fieldwork or documented complete human authorship.",
+      "Public GitHub observations describe only the named objects at their recorded inspection time. An empty returned review list is not proof about reviews elsewhere."
+    ]
+  },
+  "currentSources": [
+    {
+      "sourceKey": "cases/carnegie-libraries",
+      "recordId": "case:carnegie-libraries",
+      "sourceId": "source:current-cases-carnegie-libraries",
+      "currentVersion": {
+        "recordId": "case:carnegie-libraries",
+        "version": 1,
+        "subjectHash": "bcda64a86f6e6e9778c118317fc74b56a726642cb21c834787515454e4ad30a3"
+      },
+      "href": "/record/case-studies/carnegie-libraries/"
+    },
+    {
+      "sourceKey": "cases/dare",
+      "recordId": "case:dare",
+      "sourceId": "source:current-cases-dare",
+      "currentVersion": {
+        "recordId": "case:dare",
+        "version": 1,
+        "subjectHash": "3126fb425edb00a4ea9488673672e1e18c4130c1c4158c917963ef23280d0352"
+      },
+      "href": "/record/case-studies/dare/"
+    },
+    {
+      "sourceKey": "cases/green-revolution",
+      "recordId": "case:green-revolution",
+      "sourceId": "source:current-cases-green-revolution",
+      "currentVersion": {
+        "recordId": "case:green-revolution",
+        "version": 1,
+        "subjectHash": "1404e48632c4609f31213b0a4a6e41434b2c1960341512c42d50ffeb984b8a3b"
+      },
+      "href": "/record/case-studies/green-revolution/"
+    },
+    {
+      "sourceKey": "cases/haiti-earthquake-reconstruction",
+      "recordId": "case:haiti-earthquake-reconstruction",
+      "sourceId": "source:current-cases-haiti-earthquake-reconstruction",
+      "currentVersion": {
+        "recordId": "case:haiti-earthquake-reconstruction",
+        "version": 1,
+        "subjectHash": "cda759498993af70a94cdf464eec144dc5e45ba645e72094d1b7aabc1c75d14e"
+      },
+      "href": "/record/case-studies/haiti-earthquake-reconstruction/"
+    },
+    {
+      "sourceKey": "cases/hookworm-campaign",
+      "recordId": "case:hookworm-campaign",
+      "sourceId": "source:current-cases-hookworm-campaign",
+      "currentVersion": {
+        "recordId": "case:hookworm-campaign",
+        "version": 1,
+        "subjectHash": "6a45a22def2f400bd29ad3ea4dddd03466c55ef2b7405c3e82cecbbf5573cfaf"
+      },
+      "href": "/record/case-studies/hookworm-campaign/"
+    },
+    {
+      "sourceKey": "cases/ice-bucket-challenge",
+      "recordId": "case:ice-bucket-challenge",
+      "sourceId": "source:current-cases-ice-bucket-challenge",
+      "currentVersion": {
+        "recordId": "case:ice-bucket-challenge",
+        "version": 1,
+        "subjectHash": "820b323d149fa9a22f34cb549c344707e350fa7218826babbac8ffa747df0fcd"
+      },
+      "href": "/record/case-studies/ice-bucket-challenge/"
+    },
+    {
+      "sourceKey": "cases/one-laptop-per-child",
+      "recordId": "case:one-laptop-per-child",
+      "sourceId": "source:current-cases-one-laptop-per-child",
+      "currentVersion": {
+        "recordId": "case:one-laptop-per-child",
+        "version": 1,
+        "subjectHash": "0febc7d1c97487b03a32ae2c77138f38672b84c4a34b62202947d488cd6e6d45"
+      },
+      "href": "/record/case-studies/one-laptop-per-child/"
+    },
+    {
+      "sourceKey": "cases/oral-rehydration-therapy-spread",
+      "recordId": "case:oral-rehydration-therapy-spread",
+      "sourceId": "source:current-cases-oral-rehydration-therapy-spread",
+      "currentVersion": {
+        "recordId": "case:oral-rehydration-therapy-spread",
+        "version": 1,
+        "subjectHash": "1cbc32aa6561c34f73efd94e4c9828c89bb0c9edba46b2b893ff3711be268a27"
+      },
+      "href": "/record/case-studies/oral-rehydration-therapy-spread/"
+    },
+    {
+      "sourceKey": "cases/playpumps",
+      "recordId": "case:playpumps",
+      "sourceId": "source:current-cases-playpumps",
+      "currentVersion": {
+        "recordId": "case:playpumps",
+        "version": 1,
+        "subjectHash": "88662c2c0b2104a1a7f774fdfbbfa34fd27358c3479dceb4f5f0daab8c5e5feb"
+      },
+      "href": "/record/case-studies/playpumps/"
+    },
+    {
+      "sourceKey": "cases/polio-eradication",
+      "recordId": "case:polio-eradication",
+      "sourceId": "source:current-cases-polio-eradication",
+      "currentVersion": {
+        "recordId": "case:polio-eradication",
+        "version": 1,
+        "subjectHash": "09ec8c9bb0654ef47795c7c9f7088aeabfd81fea2f64082d85a71e5ae0697831"
+      },
+      "href": "/record/case-studies/polio-eradication/"
+    },
+    {
+      "sourceKey": "cases/rosenwald-schools",
+      "recordId": "case:rosenwald-schools",
+      "sourceId": "source:current-cases-rosenwald-schools",
+      "currentVersion": {
+        "recordId": "case:rosenwald-schools",
+        "version": 1,
+        "subjectHash": "32f334ba8b0fe49a7905e2fe2fa411983ff9bdcc6a1e54ff7a8db5ba1ddf24e4"
+      },
+      "href": "/record/case-studies/rosenwald-schools/"
+    },
+    {
+      "sourceKey": "cases/scared-straight",
+      "recordId": "case:scared-straight",
+      "sourceId": "source:current-cases-scared-straight",
+      "currentVersion": {
+        "recordId": "case:scared-straight",
+        "version": 1,
+        "subjectHash": "5990f287523474ab76d71a7c9aad34c283b714a2e395de27a42216c74f5b2454"
+      },
+      "href": "/record/case-studies/scared-straight/"
+    },
+    {
+      "sourceKey": "cases/smallpox-eradication",
+      "recordId": "case:smallpox-eradication",
+      "sourceId": "source:current-cases-smallpox-eradication",
+      "currentVersion": {
+        "recordId": "case:smallpox-eradication",
+        "version": 1,
+        "subjectHash": "826756971a4d7fccc34860688b8b7178512fd675477661b8f3a2cd84a5d1af63"
+      },
+      "href": "/record/case-studies/smallpox-eradication/"
+    },
+    {
+      "sourceKey": "journal/depth-without-a-ladder",
+      "recordId": "manuscript:depth-without-a-ladder",
+      "sourceId": "source:current-journal-depth-without-a-ladder",
+      "currentVersion": {
+        "recordId": "manuscript:depth-without-a-ladder",
+        "version": 1,
+        "subjectHash": "6f9e81cf213139edc9a1f3c36a913ba5806793bf34f63e0cc2fc374740186708"
+      },
+      "href": "/record/journal/depth-without-a-ladder/"
+    },
+    {
+      "sourceKey": "journal/ten-dollars",
+      "recordId": "manuscript:ten-dollars",
+      "sourceId": "source:current-journal-ten-dollars",
+      "currentVersion": {
+        "recordId": "manuscript:ten-dollars",
+        "version": 1,
+        "subjectHash": "5b46f78f4ff3fbad153d4a2e2c902dc908d6a775ffd73f2d5426f1415595c836"
+      },
+      "href": "/record/journal/ten-dollars/"
+    },
+    {
+      "sourceKey": "journal/the-feedback-contract",
+      "recordId": "manuscript:the-feedback-contract",
+      "sourceId": "source:current-journal-the-feedback-contract",
+      "currentVersion": {
+        "recordId": "manuscript:the-feedback-contract",
+        "version": 1,
+        "subjectHash": "40b575ce4271462dbf2ca4e6abff3f5c5cf15d9a2bf1e39a7d5241aedd56427e"
+      },
+      "href": "/record/journal/the-feedback-contract/"
+    },
+    {
+      "sourceKey": "problems/closing-the-feedback-loop",
+      "recordId": "problem:closing-the-feedback-loop",
+      "sourceId": "source:current-problems-closing-the-feedback-loop",
+      "currentVersion": {
+        "recordId": "problem:closing-the-feedback-loop",
+        "version": 1,
+        "subjectHash": "f9865c4a1ff827fc65bc2bc14226d063c41d5529fac674c14941e334aec8ecaa"
+      },
+      "href": "/open-problems/closing-the-feedback-loop/"
+    },
+    {
+      "sourceKey": "problems/discounting-the-future",
+      "recordId": "problem:discounting-the-future",
+      "sourceId": "source:current-problems-discounting-the-future",
+      "currentVersion": {
+        "recordId": "problem:discounting-the-future",
+        "version": 1,
+        "subjectHash": "8e1d5aaf29db2c5927c4633b156c99a37928354332b9261756cb017a1517e9a5"
+      },
+      "href": "/open-problems/discounting-the-future/"
+    },
+    {
+      "sourceKey": "problems/measuring-the-source",
+      "recordId": "problem:measuring-the-source",
+      "sourceId": "source:current-problems-measuring-the-source",
+      "currentVersion": {
+        "recordId": "problem:measuring-the-source",
+        "version": 1,
+        "subjectHash": "5998a2220b5dc20e4cab2a388a454b3fa554b674fe09a9affbf6afc495a22951"
+      },
+      "href": "/open-problems/measuring-the-source/"
+    },
+    {
+      "sourceKey": "problems/moral-parliament-in-practice",
+      "recordId": "problem:moral-parliament-in-practice",
+      "sourceId": "source:current-problems-moral-parliament-in-practice",
+      "currentVersion": {
+        "recordId": "problem:moral-parliament-in-practice",
+        "version": 1,
+        "subjectHash": "9db796c7b98733c7758349e182aba71107e5b6172d358fb2fec9865cf0da9547"
+      },
+      "href": "/open-problems/moral-parliament-in-practice/"
+    },
+    {
+      "sourceKey": "problems/proximity-and-obligation",
+      "recordId": "problem:proximity-and-obligation",
+      "sourceId": "source:current-problems-proximity-and-obligation",
+      "currentVersion": {
+        "recordId": "problem:proximity-and-obligation",
+        "version": 1,
+        "subjectHash": "9cc43abf5a4e1b3eb75d6661951b1e87c24c8add90b1a5267538b10b7d7b1e86"
+      },
+      "href": "/open-problems/proximity-and-obligation/"
+    },
+    {
+      "sourceKey": "problems/story-without-bias",
+      "recordId": "problem:story-without-bias",
+      "sourceId": "source:current-problems-story-without-bias",
+      "currentVersion": {
+        "recordId": "problem:story-without-bias",
+        "version": 1,
+        "subjectHash": "b3952a1ab1c983beeecb28cbf6f6a05bd2add49e61b6fd17ad724a406aead345"
+      },
+      "href": "/open-problems/story-without-bias/"
+    },
+    {
+      "sourceKey": "problems/the-agency-premium",
+      "recordId": "problem:the-agency-premium",
+      "sourceId": "source:current-problems-the-agency-premium",
+      "currentVersion": {
+        "recordId": "problem:the-agency-premium",
+        "version": 1,
+        "subjectHash": "4f818cd1f381dc4a159152c34731b185e1030d292eecd877f20c1a5fe904ee7d"
+      },
+      "href": "/open-problems/the-agency-premium/"
+    },
+    {
+      "sourceKey": "problems/the-counterfactual-problem",
+      "recordId": "problem:the-counterfactual-problem",
+      "sourceId": "source:current-problems-the-counterfactual-problem",
+      "currentVersion": {
+        "recordId": "problem:the-counterfactual-problem",
+        "version": 1,
+        "subjectHash": "4d5aaafd6bde299f0b51c8f64625b67706ba01e47e96d9a8a503587243b054a6"
+      },
+      "href": "/open-problems/the-counterfactual-problem/"
+    },
+    {
+      "sourceKey": "problems/the-depth-census",
+      "recordId": "problem:the-depth-census",
+      "sourceId": "source:current-problems-the-depth-census",
+      "currentVersion": {
+        "recordId": "problem:the-depth-census",
+        "version": 1,
+        "subjectHash": "7b530c516e616ae16488901f3ead08f98fdee50a723e15796b0d4c7b2e22949a"
+      },
+      "href": "/open-problems/the-depth-census/"
+    },
+    {
+      "sourceKey": "problems/the-enough-question",
+      "recordId": "problem:the-enough-question",
+      "sourceId": "source:current-problems-the-enough-question",
+      "currentVersion": {
+        "recordId": "problem:the-enough-question",
+        "version": 1,
+        "subjectHash": "fea194e60a4adb4fe7472553e3750c59a740bf70db6f7c76ad0ce796a671b781"
+      },
+      "href": "/open-problems/the-enough-question/"
+    },
+    {
+      "sourceKey": "problems/the-exchange-rate-problem",
+      "recordId": "problem:the-exchange-rate-problem",
+      "sourceId": "source:current-problems-the-exchange-rate-problem",
+      "currentVersion": {
+        "recordId": "problem:the-exchange-rate-problem",
+        "version": 1,
+        "subjectHash": "1a4c4522a053129c8654668fade099456696dd6e732d57c68b13c2f0aa4ee83d"
+      },
+      "href": "/open-problems/the-exchange-rate-problem/"
+    },
+    {
+      "sourceKey": "problems/the-failure-commons",
+      "recordId": "problem:the-failure-commons",
+      "sourceId": "source:current-problems-the-failure-commons",
+      "currentVersion": {
+        "recordId": "problem:the-failure-commons",
+        "version": 1,
+        "subjectHash": "8dbc79668c734967d9eb2b3da7bd48f91f712fd53723283f8e26a6b6bf535345"
+      },
+      "href": "/open-problems/the-failure-commons/"
+    },
+    {
+      "sourceKey": "problems/the-fragmentation-question",
+      "recordId": "problem:the-fragmentation-question",
+      "sourceId": "source:current-problems-the-fragmentation-question",
+      "currentVersion": {
+        "recordId": "problem:the-fragmentation-question",
+        "version": 1,
+        "subjectHash": "14c9ab14663ae82c7b050afb381b6285c95aed6a63d4c409c87957b3d018e515"
+      },
+      "href": "/open-problems/the-fragmentation-question/"
+    },
+    {
+      "sourceKey": "problems/the-government-question",
+      "recordId": "problem:the-government-question",
+      "sourceId": "source:current-problems-the-government-question",
+      "currentVersion": {
+        "recordId": "problem:the-government-question",
+        "version": 1,
+        "subjectHash": "86fd2dad2a84367a460d2f25e2481e686400141dd5e868e869fecaac4d437963"
+      },
+      "href": "/open-problems/the-government-question/"
+    },
+    {
+      "sourceKey": "problems/the-money-time-exchange",
+      "recordId": "problem:the-money-time-exchange",
+      "sourceId": "source:current-problems-the-money-time-exchange",
+      "currentVersion": {
+        "recordId": "problem:the-money-time-exchange",
+        "version": 1,
+        "subjectHash": "edd3e19fd5350f9c0a79017f0cd4aeff0512b821ed50781667a475e9170c90d9"
+      },
+      "href": "/open-problems/the-money-time-exchange/"
+    },
+    {
+      "sourceKey": "problems/the-optimal-restriction",
+      "recordId": "problem:the-optimal-restriction",
+      "sourceId": "source:current-problems-the-optimal-restriction",
+      "currentVersion": {
+        "recordId": "problem:the-optimal-restriction",
+        "version": 1,
+        "subjectHash": "c4bc869f65f89b0a779459b13dd14f8ee97b0deb8ad61ab161c123e970559340"
+      },
+      "href": "/open-problems/the-optimal-restriction/"
+    },
+    {
+      "sourceKey": "problems/the-overhead-replacement",
+      "recordId": "problem:the-overhead-replacement",
+      "sourceId": "source:current-problems-the-overhead-replacement",
+      "currentVersion": {
+        "recordId": "problem:the-overhead-replacement",
+        "version": 1,
+        "subjectHash": "8cba48ac86bd078af6d8d35c8080bf1cc8f8ad1cb279675e7c2d61b0ad70320d"
+      },
+      "href": "/open-problems/the-overhead-replacement/"
+    },
+    {
+      "sourceKey": "problems/the-payout-question",
+      "recordId": "problem:the-payout-question",
+      "sourceId": "source:current-problems-the-payout-question",
+      "currentVersion": {
+        "recordId": "problem:the-payout-question",
+        "version": 1,
+        "subjectHash": "0953cea7cff9cb26de0438e2c6b807fea24bf5d0c7bb8ac3857cf38f2e08d32e"
+      },
+      "href": "/open-problems/the-payout-question/"
+    },
+    {
+      "sourceKey": "problems/the-profession-question",
+      "recordId": "problem:the-profession-question",
+      "sourceId": "source:current-problems-the-profession-question",
+      "currentVersion": {
+        "recordId": "problem:the-profession-question",
+        "version": 1,
+        "subjectHash": "2e79ab989f3b58bf7000693a2940f8d3ff88c90b3431a599faa32ae539243f14"
+      },
+      "href": "/open-problems/the-profession-question/"
+    },
+    {
+      "sourceKey": "problems/the-question-of-questions",
+      "recordId": "problem:the-question-of-questions",
+      "sourceId": "source:current-problems-the-question-of-questions",
+      "currentVersion": {
+        "recordId": "problem:the-question-of-questions",
+        "version": 1,
+        "subjectHash": "04bc6511dbed2c14d6dfd2586007a3bfc2f2024f87250e04e252df17bff2b841"
+      },
+      "href": "/open-problems/the-question-of-questions/"
+    },
+    {
+      "sourceKey": "problems/the-replication-rate",
+      "recordId": "problem:the-replication-rate",
+      "sourceId": "source:current-problems-the-replication-rate",
+      "currentVersion": {
+        "recordId": "problem:the-replication-rate",
+        "version": 1,
+        "subjectHash": "22e313fa3bf8aeb4c22448662a5fd4f76c09a4545fa0b6d0354e1234b2c0d669"
+      },
+      "href": "/open-problems/the-replication-rate/"
+    },
+    {
+      "sourceKey": "problems/the-status-flip",
+      "recordId": "problem:the-status-flip",
+      "sourceId": "source:current-problems-the-status-flip",
+      "currentVersion": {
+        "recordId": "problem:the-status-flip",
+        "version": 1,
+        "subjectHash": "75ccb73d8f4e616d91ac22f7effa791b89e8acb56ece25bd36882cd7fd240272"
+      },
+      "href": "/open-problems/the-status-flip/"
+    },
+    {
+      "sourceKey": "problems/when-charity-harms",
+      "recordId": "problem:when-charity-harms",
+      "sourceId": "source:current-problems-when-charity-harms",
+      "currentVersion": {
+        "recordId": "problem:when-charity-harms",
+        "version": 1,
+        "subjectHash": "17ccebba01d250e3cb1b350a3e3601bcfc785909c698698a265b35d58a9e86b3"
+      },
+      "href": "/open-problems/when-charity-harms/"
+    },
+    {
+      "sourceKey": "record/methodology",
+      "recordId": "method:methodology",
+      "sourceId": "source:current-record-methodology",
+      "currentVersion": {
+        "recordId": "method:methodology",
+        "version": 1,
+        "subjectHash": "4991dd8a98d678d2919340a34d9d559ad3cc65f08d1c3a9b4100b74a799516da"
+      },
+      "href": "/record/methodology/"
+    }
+  ],
+  "aliases": [
+    {
+      "sourceKey": "manifesto/ten-dollars",
+      "recordId": "manuscript:ten-dollars",
+      "href": "/manifesto/"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "id": "version:artifact-pr-3-editorial-framing-v1",
+  "recordId": "artifact:pr-3-editorial-framing",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "artifact",
+    "kind": "editorial-correction",
+    "title": "PR #3: bounded knowledge claim and founding-poem context",
+    "summary": "The Depth Census paragraph replaced a claim that nobody had checked with a statement about what Charitology has established. The founding poem received a narrower summary and an editorial note distinguishing literary framing from a history of philanthropy.",
+    "targets": [
+      {
+        "recordId": "claim:depth-census-knowledge",
+        "version": 2,
+        "subjectHash": "6f3b6d06a2d61893e35d33ae513a3959f44f1321c2bd43d30ff95c54b25fe9a3"
+      },
+      {
+        "recordId": "claim:ten-dollars-framing",
+        "version": 2,
+        "subjectHash": "d32dca610a5ca31c8a179497ebcc580f5d4ce05b80b88bfef2c8409ada1f7f59"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://github.com/theguysaccount/charitology/pull/3",
+        "title": "PR #3: editorial scope and founding-poem framing correction",
+        "locator": null
+      },
+      {
+        "url": "https://github.com/theguysaccount/charitology/blob/905bdd27bb5f16027c3b3ad3c0f5ee3fc18e3e45/src/content/problems/the-depth-census.md",
+        "title": "PR #3 before: problems/the-depth-census",
+        "locator": null
+      },
+      {
+        "url": "https://github.com/theguysaccount/charitology/blob/510320528e89f45caa9c42eb5a6eda3d6ad1bede/src/content/problems/the-depth-census.md",
+        "title": "PR #3 after: problems/the-depth-census",
+        "locator": null
+      },
+      {
+        "url": "https://github.com/theguysaccount/charitology/blob/905bdd27bb5f16027c3b3ad3c0f5ee3fc18e3e45/src/content/journal/ten-dollars.md",
+        "title": "PR #3 before: journal/ten-dollars",
+        "locator": null
+      },
+      {
+        "url": "https://github.com/theguysaccount/charitology/blob/510320528e89f45caa9c42eb5a6eda3d6ad1bede/src/content/journal/ten-dollars.md",
+        "title": "PR #3 after: journal/ten-dollars",
+        "locator": null
+      }
+    ],
+    "finding": "not-applicable",
+    "limitations": "This source-backed editorial change does not verify the underlying research claims, establish independent human review or solve an open problem. No challenge submission is asserted. Historical poem source files declare October 26; the separately captured current manuscript declares October 25, so the whole manuscripts are not byte-identical.",
+    "funding": {
+      "state": "unknown",
+      "note": null,
+      "refs": []
+    },
+    "conflicts": {
+      "state": "unknown",
+      "note": null,
+      "refs": []
+    }
+  },
+  "subjectHash": "7936f7c866ab53a3fe65764cd65fff2857bbfd985ba8ffc1354a58da9267c1fe",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [],
+  "hash": "cf913db297db6537ca2e2a4af8bd181ad9fda852eef04c275665f310b8ad10ad"
+}

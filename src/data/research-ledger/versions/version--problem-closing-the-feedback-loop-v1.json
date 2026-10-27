@@ -1,0 +1,46 @@
+{
+  "id": "version:problem-closing-the-feedback-loop-v1",
+  "recordId": "problem:closing-the-feedback-loop",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "Closing the Feedback Loop",
+      "number": 5,
+      "statement": "What mechanism lets the people a charity serves send a signal that moves money, the way prices do in markets?",
+      "progress": "A working mechanism in which feedback from the people served measurably changes funding, tested against a comparison group.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "missing-feedback-loop"
+        },
+        {
+          "collection": "conditions",
+          "id": "missing-voice"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThis is the root condition of the [Diagnosis](/diagnosis/). Charitology hypothesizes that improving this loop could also change other conditions.\n\n## Where to start\n\nBeneficiary feedback surveys, participatory grantmaking and cash transfers (where recipients choose what to buy) are three existing mechanisms that give the people served some say. The open question is which of them, if any, can be scaled into a signal donors actually follow.\n"
+  },
+  "subjectHash": "f9865c4a1ff827fc65bc2bc14226d063c41d5529fac674c14941e334aec8ecaa",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-closing-the-feedback-loop",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "828a83f2edc3417a37d779e4d67464e519775ff845780d733a54199c55ac92d1"
+}

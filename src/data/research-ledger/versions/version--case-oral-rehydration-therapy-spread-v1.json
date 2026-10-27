@@ -1,0 +1,82 @@
+{
+  "id": "version:case-oral-rehydration-therapy-spread-v1",
+  "recordId": "case:oral-rehydration-therapy-spread",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "cases",
+    "frontmatter": {
+      "title": "How oral rehydration therapy spread",
+      "summary": "A drink of clean water, sugar and salt can save a child from dying of diarrhea. After it was used to treat refugees during a 1971 cholera outbreak, it spread through health programs and door-to-door teaching, while child deaths from diarrhea fell from an estimated 4.6 million a year in 1980 to about 1.5 million by 2000.",
+      "kind": "success",
+      "era": "1971–2000",
+      "place": "Bangladesh, India and worldwide",
+      "depth": 0,
+      "lessons": [
+        "The cheapest fix can be one of the biggest. Oral rehydration salts cost a few cents per treatment.",
+        "Putting treatment in families’ hands, not only in clinics, is what let it reach millions. That meant convincing doctors that people with little training could give it.",
+        "Checking whether people can really do what they were taught is part of the intervention. Years after BRAC’s campaign, researchers tested the solutions mothers made at home.",
+        "Relief at scale is not a lesser good. A treatment that meets the need today, everywhere, can save more lives than far more ambitious programs."
+      ],
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "missing-voice"
+        },
+        {
+          "collection": "conditions",
+          "id": "measurement-gap"
+        }
+      ],
+      "sources": [
+        {
+          "title": "Reducing deaths from diarrhoea through oral rehydration therapy",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2560623/",
+          "publisher": "Cesar G. Victora, Jennifer Bryce, Olivier Fontaine and Roeland Monasch, Bulletin of the World Health Organization 78(10)",
+          "year": 2000,
+          "note": null
+        },
+        {
+          "title": "Miracle cure for an old scourge",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2636196/",
+          "publisher": "Bulletin of the World Health Organization 87(2)",
+          "year": 2009,
+          "note": null
+        },
+        {
+          "title": "The status of ORT (oral rehydration therapy) in Bangladesh: how widely is it used?",
+          "url": "https://doi.org/10.1093/heapol/12.1.58",
+          "publisher": "A. Mushtaque R. Chowdhury, Fazlul Karim, Sanjit K. Sarkar, Richard A. Cash and Abbas Bhuiya, Health Policy and Planning 12(1)",
+          "year": 1997,
+          "note": null
+        },
+        {
+          "title": "Diarrhoeal disease, fact sheet",
+          "url": "https://www.who.int/news-room/fact-sheets/detail/diarrhoeal-disease",
+          "publisher": "World Health Organization",
+          "year": 2024,
+          "note": null
+        }
+      ]
+    },
+    "body": "\n## What happened\n\nFor most of history, diarrhea killed mainly through dehydration, draining the body of water and salts. Oral rehydration salts, a mix of clean water, sugar and salt, are absorbed in the small intestine and replace what is lost. A treatment costs a few cents.\n\nThe formula came out of years of studies in Kolkata and Dhaka. In 1971, during a cholera outbreak among refugees from what is now Bangladesh, Dilip Mahalanabis of the Johns Hopkins center in Kolkata treated patients at Bangaon, India, with the solution, dispensed from drums. He and Dhiman Barua of the World Health Organization had to persuade a skeptical medical profession that people with little training could give it. In 1978 Barua set up WHO’s program to control diarrheal diseases. After oral rehydration therapy was introduced in 1979, it quickly became the cornerstone of diarrhea control programs. The Lancet called it “potentially the most important medical advance” of the century.\n\nIn Bangladesh, the nonprofit BRAC took it door to door. Between 1980 and 1990 it taught more than 12 million mothers to make the solution at home with common salt and unrefined brown sugar. In 1993 researchers revisited more than 9,000 households and tested solutions made by a sample of mothers. More than 70 percent of mothers could make one that was chemically safe and effective, and many of them had been very young during the campaign. The solution was used in 60 percent of recent bouts of diarrhea.\n\nWorldwide, deaths of children under five from diarrhea fell from an estimated 4.6 million in 1980 to about 1.5 million by 2000. Oral rehydration played a significant part, though not the only one.\n\n## Where it sits in the system\n\nOn the [depth scale](/method/#depth) this is **relief** (level 0). It treats the illness in front of you and does not stop diarrhea from happening. That is the point of the case: depth describes, it doesn’t grade, and relief delivered everywhere saved millions of lives.\n\nThe spread is a counterexample to the [Missing Voice](/diagnosis/missing-voice/). The breakthrough was trusting families, not only doctors, to deliver care. And it shows the [Measurement Gap](/diagnosis/measurement-gap/) from both sides. Researchers in Bangladesh tested what mothers could actually do, while a 2000 review of the global record found that patchy data and differing definitions of the therapy made trends hard to track.\n\n## What carries over\n\nSimple, cheap, taught at home and checked: that combination carried a relief treatment to millions of families. Relief does not end the need, though. Diarrhea still kills around 443,832 children under five a year, according to WHO, and preventing it takes safe water, sanitation, handwashing and rotavirus vaccines. See the [Intervention Database entry](/record/interventions/oral-rehydration-therapy/).\n"
+  },
+  "subjectHash": "1cbc32aa6561c34f73efd94e4c9828c89bb0c9edba46b2b893ff3711be268a27",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-cases-oral-rehydration-therapy-spread",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "cd55f1fb3e94ba4475ae3110090ebb06467f926fcff62d8d9aa531eb1e169066"
+}

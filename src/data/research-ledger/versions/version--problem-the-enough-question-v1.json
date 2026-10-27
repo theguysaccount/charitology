@@ -1,0 +1,50 @@
+{
+  "id": "version:problem-the-enough-question-v1",
+  "recordId": "problem:the-enough-question",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Enough Question",
+      "number": 22,
+      "statement": "How much money would it take to fix a specific problem at its source, and is it true that money isn’t the bottleneck?",
+      "progress": "Costed source-level plans for specific problems, judged by independent experts, and a record of what happened when such plans were funded.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "symptom-trap"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": [
+        {
+          "title": "Humanity’s Checklist",
+          "url": "https://humanityschecklist.org/",
+          "publisher": "Humanity’s Checklist",
+          "year": 2026,
+          "note": null
+        }
+      ]
+    },
+    "body": "\n## Why it matters\n\nHumanity’s Checklist points out that hundreds of billions of dollars go to charity every year, and asks what would happen if $5 million, spent correctly, were enough to go after the six sources upstream of every world problem. Charitology treats that as a hypothesis to test, not a slogan. If money really isn’t the bottleneck, the field should find out what is.\n\n## Where to start\n\nPick one problem, write the source-level plan, cost it, fund it and publish what happens, including if it fails.\n"
+  },
+  "subjectHash": "fea194e60a4adb4fe7472553e3750c59a740bf70db6f7c76ad0ce796a671b781",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-enough-question",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "ee0cb55bef111457ab48793164827b68bb12326ba21d6073d26f8934db42bfb7"
+}

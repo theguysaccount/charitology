@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-moral-parliament-in-practice-v1",
+  "recordId": "problem:moral-parliament-in-practice",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "Moral Parliament in Practice",
+      "number": 16,
+      "statement": "How should a real giver allocate money when unsure which moral framework is right, and do different methods give stable answers?",
+      "progress": "A comparison of allocation methods, such as credence-weighted averaging, moral parliaments and maximizing expected choice-worthiness, on real portfolios, with their sensitivity reported.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "single-lens"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThe [Single Lens](/diagnosis/single-lens/) is the condition Charitology was founded to treat. Treating it means giving people a sound way to act on several frameworks at once.\n\n## Where to start\n\nThe [Portfolio Builder](/tools/portfolio-builder/) implements a simple credence-weighted method. The open problem is whether more sophisticated methods give meaningfully different, and more defensible, answers.\n"
+  },
+  "subjectHash": "9db796c7b98733c7758349e182aba71107e5b6172d358fb2fec9865cf0da9547",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-moral-parliament-in-practice",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "8436f32ecfedbe8b77e2d8dd2e967207dfcfcd603069e86076fb0cf77a43d31f"
+}

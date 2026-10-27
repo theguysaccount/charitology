@@ -1,0 +1,11 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumbs from '../../components/Crumbs.astro';
+import ResearchLedger from '../../components/ResearchLedger.astro';
+import { loadResearchLedger } from '../../lib/research-ledger';
+const ledger = await loadResearchLedger();
+---
+<Base title="Public research ledger" description="Exact source versions, editorial corrections, recorded review and dated research progress.">
+  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'Record',href:'/record/'},{label:'Research ledger'}]}/><h1>Public research ledger</h1><p class="lede">Follow a claim from its source wording through recorded changes and review.</p></div></header>
+  <section class="wrap section-tight"><ResearchLedger projection={ledger.current} currentEditionId={ledger.input.manifest.currentEditionId}/></section>
+</Base>
