@@ -77,8 +77,60 @@ async function start(initial = {}, options = {}) {
   );
   return d;
 }
+// Deterministic native-value boundary simulation, not browser evidence. The
+// actual Chrome acceptance separately confirms the real hydration behavior.
+async function nativeControlSanitization(run) {
+  const own = Object.getOwnPropertyDescriptor(ToolElement.prototype, "value");
+  Object.defineProperty(ToolElement.prototype, "value", {
+    ...own,
+    set(value) {
+      let text = String(value);
+      if (this.tagName === "TEXTAREA") text = text.replace(/\r\n?/g, "\n");
+      if (this.tagName === "INPUT") {
+        const type = this.type || "text";
+        if (
+          ["text", "search", "tel", "password", "url", "email"].includes(type)
+        )
+          text = text.replace(/[\r\n]/g, "");
+        if (["url", "email"].includes(type))
+          text = text.replace(/^[\t\n\f\r ]+|[\t\n\f\r ]+$/g, "");
+      }
+      own.set.call(this, text);
+    },
+  });
+  try {
+    await run();
+  } finally {
+    Object.defineProperty(ToolElement.prototype, "value", own);
+  }
+}
+function rawContextEnvelope() {
+  const value = osEnvelope();
+  value.workspace.organization = "FICTIONAL raw\r\norganization";
+  value.workspace.mission = "FICTIONAL first line\r\nSecond source line";
+  return value;
+}
+async function editRecord(d, kind, title) {
+  const list = {
+    projects: "project",
+    grants: "grant",
+    tasks: "task",
+    outcomes: "outcome",
+  }[kind];
+  await d
+    .$("#os-" + list + "-list")
+    .querySelectorAll("button")
+    .find((button) => button.getAttribute("aria-label") === "Edit " + title)
+    .click();
+  assert.equal(d.$("#os-editor").open, true);
+}
 async function idle(d) {
   await settleTools(() => !d.action("reload").disabled);
+}
+async function callerSettled(d) {
+  await settleTools(
+    () => !d.$("#os-editor-save").disabled || !d.action("retry").disabled,
+  );
 }
 async function submitContext(d, name) {
   await d.set("#os-organization", name);
@@ -171,6 +223,222 @@ check(
     assert.match(d.saved().exportedAt, /\.\d{3}Z$/);
     assert.match(d.$("#os-status").textContent, /Saved mission/);
     await d.window.fire("pagehide");
+  },
+);
+check(
+  "native-sanitized context keeps untouched admitted strings on unrelated save and literal raw recovery",
+  async () => {
+    await nativeControlSanitization(async () => {
+      const value = rawContextEnvelope(),
+        d = await start({ "charity-os": value });
+      assert.equal(d.get("#os-organization"), "FICTIONAL raworganization");
+      assert.equal(
+        d.get("#os-mission"),
+        "FICTIONAL first line\nSecond source line",
+      );
+      await d.action("forms").click();
+      const raw = JSON.parse(await d.downloads.at(-1).text()).forms[0].values;
+      assert.equal(raw.organization, d.get("#os-organization"));
+      assert.equal(raw.mission, d.get("#os-mission"));
+      await d.set("#os-community", "Changed only the fictional context");
+      await d.$("#os-context-form").fire("submit");
+      await callerSettled(d);
+      assert.equal(
+        d.saved().workspace.organization,
+        value.workspace.organization,
+      );
+      assert.equal(d.saved().workspace.mission, value.workspace.mission);
+      assert.equal(
+        d.saved().workspace.community,
+        "Changed only the fictional context",
+      );
+      await d.$("#os-json").click();
+      const native = JSON.parse(await d.downloads.at(-1).text());
+      assert.equal(native.workspace.organization, value.workspace.organization);
+      assert.equal(native.workspace.mission, value.workspace.mission);
+      assert.equal(d.saved().workspace.outcomes[0].value, null);
+      assert.equal(d.saved().workspace.outcomes[1].value, 0);
+      assert.equal(d.saved().workspace.outcomes[2].value, -1.25);
+      await d.window.fire("pagehide");
+    });
+  },
+);
+check(
+  "explicit context input/change, equal display and away/back never resurrect the original source",
+  async () => {
+    await nativeControlSanitization(async () => {
+      const value = rawContextEnvelope(),
+        d = await start({ "charity-os": value }),
+        name = d.get("#os-organization"),
+        mission = d.get("#os-mission");
+      await d.set("#os-organization", name, "change");
+      await d.set("#os-mission", "Intermediate explicit edit");
+      await d.set("#os-mission", mission);
+      await d.set("#os-community", "", "change");
+      await d.$("#os-context-form").fire("submit");
+      await callerSettled(d);
+      assert.equal(d.saved().workspace.organization, name);
+      assert.equal(d.saved().workspace.mission, mission);
+      assert.equal(d.saved().workspace.community, "");
+      await d.set("#os-community", "Another unrelated context save");
+      await d.$("#os-context-form").fire("submit");
+      await callerSettled(d);
+      assert.equal(d.saved().workspace.organization, name);
+      assert.equal(
+        d.saved().workspace.mission,
+        mission,
+        "sync after successful save cannot revive the former CRLF source",
+      );
+      await d.set("#os-organization", "", "input");
+      await d.$("#os-context-form").fire("submit");
+      await callerSettled(d);
+      assert.equal(d.saved().workspace.organization, "");
+      await d.window.fire("pagehide");
+    });
+  },
+);
+check(
+  "dynamic editor strings retain their source while native numeric/null fields keep existing semantics",
+  async () => {
+    await nativeControlSanitization(async () => {
+      const value = rawContextEnvelope(),
+        project = value.workspace.projects[0];
+      project.title = "FICTIONAL raw\r\nproject";
+      project.owner = "\r\n";
+      project.goal = "Goal first\r\nGoal second";
+      project.notes = "Notes first\r\nNotes second";
+      const outcome = value.workspace.outcomes[1];
+      outcome.source = "  https://example.invalid/fixture  ";
+      outcome.unit = "FICTIONAL\r\nvisits";
+      const d = await start({ "charity-os": value });
+      await editRecord(d, "projects", project.title);
+      assert.equal(d.get("#os-field-title"), "FICTIONAL rawproject");
+      assert.equal(d.get("#os-field-owner"), "");
+      assert.equal(d.get("#os-field-goal"), "Goal first\nGoal second");
+      await d.set("#os-field-budget", "125.5");
+      await d.set("#os-field-owner", "", "change");
+      await d.$("#os-editor-form").fire("submit");
+      await callerSettled(d);
+      const saved = d.saved().workspace.projects[0];
+      assert.equal(saved.title, project.title);
+      assert.equal(saved.owner, "");
+      assert.equal(saved.goal, project.goal);
+      assert.equal(saved.notes, project.notes);
+      assert.equal(saved.budget, 125.5);
+      assert.equal(saved.spent, 0);
+      assert.equal(saved.depth, null);
+      assert.equal(saved.id, project.id);
+      await settleTools(() => !d.$("#os-editor").open);
+      await editRecord(d, "outcomes", outcome.indicator);
+      assert.equal(d.get("#os-field-source"), outcome.source);
+      assert.equal(d.get("#os-field-unit"), "FICTIONALvisits");
+      await d.set(
+        "#os-field-indicator",
+        "Changed only the fictional indicator",
+      );
+      await d.$("#os-editor-form").fire("submit");
+      await callerSettled(d);
+      const result = d.saved().workspace.outcomes[1];
+      assert.equal(result.source, outcome.source);
+      assert.equal(result.unit, outcome.unit);
+      assert.equal(result.value, 0);
+      assert.equal(result.id, outcome.id);
+      assert.equal(
+        d.saved().workspace.organization,
+        value.workspace.organization,
+      );
+      await d.window.fire("pagehide");
+    });
+  },
+);
+check(
+  "failed context save and Retry preserve untouched source before a later deliberate edit",
+  async () => {
+    await nativeControlSanitization(async () => {
+      const value = rawContextEnvelope(),
+        d = await start({ "charity-os": value }),
+        before = d.values.get("charitology.charity-os");
+      d.flags.failWrite = true;
+      await d.set("#os-community", "Desired failed-save context");
+      await d.$("#os-context-form").fire("submit");
+      await callerSettled(d);
+      assert.equal(d.values.get("charitology.charity-os"), before);
+      await d.$("#os-json").click();
+      const retained = JSON.parse(await d.downloads.at(-1).text());
+      assert.equal(
+        retained.workspace.organization,
+        value.workspace.organization,
+      );
+      assert.equal(retained.workspace.mission, value.workspace.mission);
+      assert.equal(
+        d.$("#os-context-controls").disabled,
+        true,
+        "pending record intent is read-only until Retry or explicit recovery",
+      );
+      await d.action("forms").click();
+      assert.equal(
+        JSON.parse(await d.downloads.at(-1).text()).forms[0].values
+          .organization,
+        "FICTIONAL raworganization",
+      );
+      d.flags.failWrite = false;
+      await d.action("retry").click();
+      await idle(d);
+      assert.equal(
+        d.saved().workspace.organization,
+        value.workspace.organization,
+      );
+      assert.equal(d.$("#os-context-controls").disabled, false);
+      await d.set("#os-organization", "Newer raw organization");
+      await d.$("#os-context-form").fire("submit");
+      await callerSettled(d);
+      assert.equal(d.saved().workspace.organization, "Newer raw organization");
+      assert.equal(d.saved().workspace.mission, value.workspace.mission);
+      await d.window.fire("pagehide");
+    });
+  },
+);
+check(
+  "failed editor Retry leaves newer field ownership intact and later saves only its actual spelling",
+  async () => {
+    await nativeControlSanitization(async () => {
+      const value = rawContextEnvelope(),
+        project = value.workspace.projects[0];
+      project.title = "FICTIONAL raw\r\nproject";
+      project.goal = "First goal\r\nSecond goal";
+      const d = await start({ "charity-os": value });
+      await editRecord(d, "projects", project.title);
+      d.flags.failWrite = true;
+      await d.set("#os-field-budget", "200");
+      await d.$("#os-editor-form").fire("submit");
+      await callerSettled(d);
+      assert.equal(d.$("#os-editor").open, true);
+      await d.$("#os-json").click();
+      const retained = JSON.parse(await d.downloads.at(-1).text());
+      assert.equal(retained.workspace.projects[0].title, project.title);
+      assert.equal(retained.workspace.projects[0].goal, project.goal);
+      assert.equal(
+        d.$("#os-field-title").disabled,
+        false,
+        "the open editor's unfinished raw text remains editable",
+      );
+      const normalized = d.get("#os-field-title");
+      await d.set("#os-field-title", "Temporary new title");
+      await d.set("#os-field-title", normalized, "change");
+      d.flags.failWrite = false;
+      await d.action("retry").click();
+      await idle(d);
+      assert.equal(d.saved().workspace.projects[0].title, project.title);
+      assert.equal(d.get("#os-field-title"), normalized);
+      assert.equal(d.$("#os-editor").open, true);
+      await d.$("#os-editor-form").fire("submit");
+      await callerSettled(d);
+      assert.equal(d.saved().workspace.projects[0].title, normalized);
+      assert.equal(d.saved().workspace.projects[0].goal, project.goal);
+      assert.equal(d.saved().workspace.projects[0].budget, 200);
+      assert.equal(d.saved().workspace.projects[0].id, project.id);
+      await d.window.fire("pagehide");
+    });
   },
 );
 check(

@@ -219,6 +219,30 @@ import { url } from '../../lib/site';
     "mission",
     "community",
   ] as const;
+  type StringControl = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+  // Native controls may sanitize an admitted string while showing it. Preserve
+  // the original only until an explicit input/change owns the displayed text.
+  const hydratedStrings = new WeakMap<
+    StringControl,
+    { original: string; display: string }
+  >();
+  const boundStrings = new WeakSet<StringControl>();
+  function hydrateString(input: StringControl, original: string) {
+    input.value = original;
+    hydratedStrings.set(input, { original, display: input.value });
+    if (!boundStrings.has(input)) {
+      const edited = () => hydratedStrings.delete(input);
+      input.addEventListener("input", edited);
+      input.addEventListener("change", edited);
+      boundStrings.add(input);
+    }
+  }
+  function stringValue(input: StringControl) {
+    const hydrated = hydratedStrings.get(input);
+    return hydrated && input.value === hydrated.display
+      ? hydrated.original
+      : input.value;
+  }
   function invalidateSample() {
     sample = undefined;
     $("#os-sample-preview").hidden = true;
@@ -376,8 +400,7 @@ import { url } from '../../lib/site';
   }
   function syncContext() {
     for (const name of contextKeys)
-      ($(`#os-${name}`) as HTMLInputElement | HTMLTextAreaElement).value =
-        workspace[name];
+      hydrateString($(`#os-${name}`) as StringControl, workspace[name]);
   }
 
   function currency(amount: number) {
@@ -964,8 +987,9 @@ import { url } from '../../lib/site';
             : {}),
         });
       input.required = !!field.required;
-      input.value =
-        record[field.key] === null ? "" : String(record[field.key] ?? "");
+      const source = record[field.key];
+      if (typeof source === "string") hydrateString(input, source);
+      else input.value = source === null ? "" : String(source ?? "");
       if (field.hint) {
         input.setAttribute("aria-describedby", `${controlId}-hint`);
         wrap.append(
@@ -979,19 +1003,22 @@ import { url } from '../../lib/site';
     ($("input,select,textarea", fields) as HTMLElement).focus();
   }
 
-  editorForm.addEventListener("input", () => {
+  const editorChanged = () => {
     if (editing) changed(`editor:${editing.kind}`);
-  });
+  };
+  editorForm.addEventListener("input", editorChanged);
+  editorForm.addEventListener("change", editorChanged);
   editorForm.addEventListener("submit", (event) => {
     event.preventDefault();
     if (!editing || !session?.snapshot().canWrite || busy) return;
     const selected = editing;
     const record: Record<string, unknown> = { id: selected.draftId };
     for (const field of fieldConfig(selected.kind)) {
-      const raw = (
-        $(`[name="${field.key}"]`, editorForm) as
-          HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-      ).value;
+      const input = $(`[name="${field.key}"]`, editorForm) as StringControl;
+      const raw =
+        field.type === "number" || field.key === "depth"
+          ? input.value
+          : stringValue(input);
       const numeric = raw.trim();
       record[field.key] =
         field.type === "number"
@@ -1067,14 +1094,13 @@ import { url } from '../../lib/site';
     );
   });
   contextForm.addEventListener("input", () => changed("context"));
+  contextForm.addEventListener("change", () => changed("context"));
   contextForm.addEventListener("submit", (event) => {
     event.preventDefault();
     if (!session?.snapshot().canWrite || busy) return;
     const next = structuredClone(workspace);
     for (const name of contextKeys)
-      next[name] = (
-        $(`#os-${name}`) as HTMLInputElement | HTMLTextAreaElement
-      ).value;
+      next[name] = stringValue($(`#os-${name}`) as StringControl);
     if (
       next.currency !== workspace.currency &&
       kinds.some((kind) => workspace[kind].length) &&
