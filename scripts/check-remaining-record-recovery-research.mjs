@@ -101,6 +101,24 @@ async function submit(d) {
     ),
   );
 }
+async function withAdvancingDate(start, run) {
+  const OriginalDate = globalThis.Date;
+  let instant = OriginalDate.parse(start);
+  assert.ok(Number.isFinite(instant));
+  class AdvancingDate extends OriginalDate {
+    constructor(...args) {
+      // Every no-argument construction crosses a millisecond. Separate timestamp
+      // captures cannot accidentally agree just because the machine was fast.
+      super(...(args.length ? args : [instant++]));
+    }
+  }
+  globalThis.Date = AdvancingDate;
+  try {
+    return await run();
+  } finally {
+    globalThis.Date = OriginalDate;
+  }
+}
 const sameIdButton = (d, attr, id) =>
   d
     .$("[data-records]")
@@ -306,29 +324,33 @@ check(
   },
 );
 check(
-  "failed-new then newer rawtyping Retry and resubmit keeps one identical admittedID",
+  "advancing-clock failed-new Retry and resubmit retain one admittedID and original createdAt",
   async () => {
     const d = await start("methods-lab", null),
       v = sample(d.program).records[0].values;
     await inputAll(d, v);
     d.flags.failWrite = true;
-    await submit(d);
+    await withAdvancingDate("2026-10-27T12:00:00.000Z", () => submit(d));
     await settleTools(() => !d.action("retry").disabled);
     const failed = await d.native(),
-      id = failed.records[0].id;
+      id = failed.records[0].id,
+      created = failed.records[0].createdAt;
     assert.equal(failed.records.length, 1);
     assert.equal(failed.records[0].createdAt, failed.records[0].updatedAt);
     await d.set(field(d.program, "title"), "newer raw title");
     d.flags.failWrite = false;
     await d.action("retry").click();
     await settleTools(() => d.saved().records.length === 1);
+    assert.deepEqual(d.saved().records[0], failed.records[0]);
     assert.equal(d.get(field(d.program, "title")), "newer raw title");
-    await submit(d);
+    await withAdvancingDate("2026-10-27T12:01:00.000Z", () => submit(d));
     await settleTools(
       () => d.saved().records[0].values.title === "newer raw title",
     );
     assert.equal(d.saved().records.length, 1);
     assert.equal(d.saved().records[0].id, id);
+    assert.equal(d.saved().records[0].createdAt, created);
+    assert.equal(d.saved().records[0].updatedAt, "2026-10-27T12:01:00.000Z");
     await d.dispose();
   },
 );
