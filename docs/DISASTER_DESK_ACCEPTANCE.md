@@ -1,0 +1,68 @@
+# Disaster Desk acceptance
+
+This record covers a bounded, dated source desk beside the existing Disaster Response Guide. It does not establish current worldwide needs, independent source review, disaster severity, charity ratings or a staffed response service. The [implementation contract](DISASTER_DESK_PLAN.md) and [closed interfaces](DISASTER_DESK_INTERFACES.md) preserve the wider requirements and limits.
+
+## Captured source and artifact identities
+
+- Source A: `6559193bdac7499c434e5703ad9cd77866d49f0e`. The dataset root was absent and the no-artifacts gate examined all 197 reachable commits. The method pins 37 complete semantic source files, including the immutable v1 interpreter, source adapters, capture/install/history logic, public projection, renderer, routes and package files.
+- Artifact B: `a5b000286614a9843ee6acadba8e7b252f704a8c`, containing only 19 dataset files. Its complete semantic source bytes equal A. Actual committed-history verification examined 198 commits, one artifact introduction, one retained edition and 18 immutable files. Later test/documentation changes do not change those captured bytes.
+- Edition: `initial-bounded-capture`, version 1, SHA-256 `1772d938df28bbdf5455343d302200cf5aa13173e05f2696afffb938ec671e11`.
+- Method: `bounded-issuer-note`, version 1, SHA-256 `2ddd8446460b4c4c6fd5ed14696dfe967d4270e9c06730f51c9f0663df536141`.
+- Registry: `852ea37532349fe854334d957951082d6832b22077a65fe6ddac74150ebb7fcf`.
+- Fixed `asOf` and `capturedAt`: `2026-10-27T21:53:51.848Z`. The November 3 recheck is an explicitly editorial seven-day reminder; it is not a needs expiry, source update or incident end.
+- Reviewed proposal: `8c00d4e0c8e4d260554254e6a8f0ea50537a29176dc51a4ddf5b3c8af30697e4`. The real installer activated the registry last, read back the whole inventory and returned installed. Exact Retry returned already-installed without another edition. No pending journal remains.
+
+The public inventory contains 32,456 core bytes and 74,048 derived artifact bytes. The 3,506,935 bytes of external original bodies remain beneath the private Git directory and are not committed or redistributed. The complete prepared candidate used 3,618,833 bytes, including request/proposal metadata and originals. A separate AI-assisted reviewer checked the private initial builder and fresh source basis; all public records remain draft. This is not independent human review.
+
+## Actual evidence and its scope
+
+Four allowlisted requests succeeded after A, through the real bounded CLI. Each exact body was hashed, retained privately and parsed again during candidate preparation. The authored factual notes preserve the original URL, access instant, content type, body size/hash and locator. The public capture contains two incident identities and two attributed status claims.
+
+| Source | Retrieved at (UTC) | Original SHA-256 | Admitted statement |
+| --- | --- | --- | --- |
+| [County recovery introduction](https://www.mauirecovers.org/recoveryprojects) | 2026-10-27T21:52:25.898Z | `1c87a4c6b255f868abdfd0b7369109c3fc7fcbb65371839791cc7fc76eeab03f` | County-described recovery from the August 2023 wildfires; coarse Lahaina/Maui County geography. Project categories, progress and completion remain uncollected. |
+| [Official website identity](https://mauirecovers.org/) | 2026-10-27T21:52:44.544Z | `997eb606c7a15164d9fb9a41188ec33705daa0c7011108bb153289ee17a34d2d` | County website identity, with exact footer paragraph and no unsupported heading ancestry. |
+| [County terms](https://mauirecovers.org/termsandconditions) | 2026-10-27T21:52:48.129Z | `56c69361630b7460c916f5af4e0814f749d8a4d053725419f20f0b226fe6b04a` | Contributed-listing and endorsement/accuracy caveats; no general republishing grant established. |
+| [IFRC MDRTR004 final report](https://go-api.ifrc.org/api/DownloadFile/83904/MDRTR004far) | 2026-10-27T21:52:52.657Z | `cf8f025d3066f295508fbad92953843f3090d93d2cedd3eb0483096b27c9c20e` | The named operation's February 7, 2023–February 28, 2025 period ended. Incident-wide lifecycle remains unknown; archive placement is editorial. |
+
+Maui's month phrase remains literal without an invented day. IFRC's printed `03/11/2025` is retained with the source-specific day-month-year mapping to November 3,2025. Its creation/modification metadata instead records June 1, 2026; exact parser observation/version, offset and discrepancy remain separate from publication and publisher-update fields. Its Internal marking remains visible. No original reuse permission is established for any of these four bodies. Only small Charitology-authored factual notes and metadata are public; no original PDF, full extraction, photograph, comment or contact is copied into the public packet.
+
+## Public behavior
+
+The [index](https://charitology.org/disasters/), fixed edition, selected-incident, incident-alias and retained-source routes read one admitted offline inventory. HTML, two new API datasets, complete/selected JSON and reversible normalized CSV share the fixed capture. A complete retained-history JSON is separate from a selected factual packet. Packet exports explicitly describe their incomplete history and excluded external originals; neither is presented as a history restore file.
+
+The new APIs are `disaster-incidents` and `disaster-incident-coverage`. Their exact four-field envelopes are `{name,generated,license,data}`, with the full captured instant and source-specific rights. The previous 36 API descriptors and their existing envelope/date behavior remain unchanged. There are 38 available datasets after B. Ordinary builds perform no source requests, source-date inference or build-clock update.
+
+Incident lifecycle, a named operation/appeal's status, editorial follow-up/archive and fixed-capture review freshness render independently. Unknown or uncollected fields stay explicit. Source pages retain their own retrieval/date evidence; navigation to a selected edition does not grant an older source that edition's as-of date. Source locators, exact record pins, changes, previous-version references and coverage omissions are readable without client filtering.
+
+Optional filters have a closed fragment grammar pinned to an exact edition. Malformed/duplicate or different-edition state is refused explicitly, with no latest-edition retargeting. A device-clock comparison is labeled as an unverified display and cannot change facts or exports. Copying an incident label and opening the original planner do not fill or save a gift. The desk is a sibling outside the existing D1 tool root and has no storage or source-network client.
+
+## Implementation checks
+
+The actual production modules have focused model, type, source-adapter, Git, I/O, public-loader, Astro/controller and built-output checks. The 57 model groups include strict closed parsing, typed status/target/reference closure, exact packet disclosures, retained interpreter binding, selected packet context, array order, reversible CSV, historical reproduction and full simultaneous 905-file capacity. Strict compilation has zero diagnostics and no declaration shims. An independent Python standard-library CSV reader also reconstructed the complete first edition and both selected incidents with whole typed DTO and canonical JSON byte equality, including all nested array order, headers, hashes, paths and boundary pins. The complete JSON/CSV use 32,144/39,875 bytes; Maui uses 24,033/30,057 bytes; Türkiye uses 22,218/28,011 bytes. The active 19-file dataset remained equal to committed B before and after. This is file-format proof, not native Save or source verification. Nine ordinary source-adapter groups use synthetic inputs without network; an optional tenth previously inspected all four retained private originals. The fresh real-source preparation independently reparsed all four actual new bodies.
+
+Fourteen Git/filesystem groups exercise actual temporary repositories, full reachable ancestry/merge parents, explicit available bases, source-A/artifact-B byte equality, worktree/common grafts and included partial-clone configuration. Sixteen I/O groups cover bounded request/body parsing, revocation/cancellation, candidate closure, owned staging/additions, stale input, head-last activation and crash/retry reconciliation. Eight public-loader groups cover absent versus partial roots, complete production admission, immutable/fresh returned bytes and a pending journal appearing after cache admission. Fourteen actual Astro/controller groups cover fictional full/selected/source props, null dates, closed fragments, device qualifiers and D1 source preservation. Twelve actual built-output groups check the real first edition, both selected packets, all four sources, exact exports,38 APIs and shared metadata.
+
+The first full post-capture run exposed a test that assumed the dataset root was absent. Test-only `d94e8fc` instead captures the actual bounded inventory before fictional fixtures and proves identical presence, paths and bytes after all 57 groups. It changes no model, source, data or UI behavior. The link check also found a relative acceptance link in the imported OS plan; documentation-only `32b80a7` makes it absolute. The complete local `npm run build` and clean final `npm run check` passed: 556 HTML pages, 38 APIs and every required suite, including all 130 focused Disaster groups plus zero strict diagnostics. Exact-head CI/release results are recorded below when finished.
+
+## Controlled Chrome and native file acceptance
+
+Root tested actual built assets on the isolated owned origin `http://127.0.0.1:41937`. Three owned Chrome tabs covered filters, search, reset, exact shared links, different/duplicate fragment refusal, device-clock qualification, both copied labels, planner navigation, retained history, source drill-down, selected incident boundaries and provenance. Keyboard text search, Tab focus, Enter reset and source-link activation passed. Native-select ArrowDown attempts left the control unchanged through this transport and are not claimed as proof of a native select keyboard change.
+
+The existing planner was created through its controls with amount 0, shares 100/0/0 and a 120-UTF-16-unit fictional label. A separate visible inspector read only its exact known key on that unique test origin. All 37 recorded post-action observations preserved the identical saved string and SHA-256 `09a675d9144cc34ed1339cb7fda679bed1fd38d66dd3b1d5ff165e027d3863fc`. No user origin or unrelated storage was inspected.
+
+One actual native Save produced a 386-byte v1 backup, SHA-256 `f70957b5d4e881c3978d6520f5b92094cc2060175b275e0a70f3cffe4e8042a6`. The production parser and exact serializer roundtrip that file. The actual file chooser, preview, separately allowed replacement and reload restored the same amount, shares, full label and exact saved string. Changing recovery consent correctly invalidated an older preview; choosing the file again produced fresh authority before Apply. These are not 37 native Save operations. Per-action serialization from each observed saved string is byte-exact against its own v1 baseline using the original export instant. Its canonical saved-object key order differs from the earlier in-memory native backup order; both strict files preserve the identical typed value. This private harness distinction is not a product data loss or schema change.
+
+All four actual 320/390-pixel light/dark filter layouts fit without horizontal overflow. The narrow retained-source and selected-incident views also fit. A labeled private server fixture omitted every script element from the real built index/source HTML; Chrome still read both incidents, distinct operation/incident status, source dates, locators and rights, with filters hidden. The native browser JavaScript preference was not changed. Native BFCache and additional native artifact downloads are unverified.
+
+Bounded last 100-entry warning/error reads per tab found zero application warnings/errors. All 54 observed warnings came from the unrelated MetaMask extension and are retained separately. Cleanup removed only the owned fictional planner key, returned the owned theme control to system, closed all three owned tabs, reset the viewport and stopped the private server.
+
+## Recovery and operating limits
+
+Pending or uncertain local capture journals block offline public loading, even after a prior cache admission. Original bodies and transaction evidence stay private. Cleanup can remove only exact ordinary files whose bytes and filesystem identities remain owned. Missing/replaced ownership sidecars require manual recovery, including the final sidecar-delete/journal-remove cleanup window. A committed head is never rolled back by Cancel. This cooperating-maintainer filesystem protocol supplies neither external authenticity nor protection against a privileged hostile process.
+
+The first source slice is intentionally narrow. It supplies no worldwide current disaster census, verified current needs, independent field evidence, financial totals, beneficiary counts, responder recommendations, payments or automatic gift decisions. Genuine review, current coverage and institutional operations remain people/operating gates in the original mega list. This release does not close the plan-to-observation OS bridge, cause-funding coverage or voluntary reproducible model bundles.
+
+## Release record
+
+At this documentation point the first edition, bounded Chrome acceptance, 556-page build and clean full-check rerun are complete locally. Exact-head CI, main merge, Pages publication and canonical byte/browser checks are still pending. Do not describe this candidate as published until that evidence is appended here.
