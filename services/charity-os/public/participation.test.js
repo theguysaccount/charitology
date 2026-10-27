@@ -358,6 +358,7 @@ test("staff adoption requires explicit review and sends source revision plus the
     assert.equal(picker.children.length, 2);
     assert.equal(picker.children[1].tagName, "OPTION");
     assert.equal(picker.children[1].value, "target");
+    assert.match(picker.children[1].textContent, / · unmanaged$/);
     await h.click("Preview legacy adoption");
     const form = h.root.querySelector("form");
     await form.emit("submit");
@@ -378,6 +379,26 @@ test("staff adoption requires explicit review and sends source revision plus the
     assert.equal(call.body.expectedLegacyHash, "frozen-preview");
     assert.ok(call.body.idempotencyKey);
     assert.match(h.root.textContent, /no consent was invented/);
+    assert.match(picker.children[1].textContent, / · managed$/);
+    assert.equal(picker.value, "target");
+    await h.click("Refresh occurrence");
+    assert.match(picker.children[1].textContent, / · managed$/);
+    assert.equal(picker.value, "target");
+  } finally {
+    h.cleanup();
+  }
+});
+
+test("refresh reconciles an occurrence adopted elsewhere without losing the selection", async () => {
+  const h = await staffHarness();
+  try {
+    const picker = h.root.querySelector("#participation-target-picker");
+    assert.match(picker.children[1].textContent, / · unmanaged$/);
+    h.model.managed = true;
+    await h.click("Refresh occurrence");
+    assert.match(picker.children[1].textContent, / · managed$/);
+    assert.equal(picker.value, "target");
+    assert.match(h.root.textContent, /Ledger managed/);
   } finally {
     h.cleanup();
   }

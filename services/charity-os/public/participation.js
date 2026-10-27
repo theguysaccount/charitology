@@ -174,6 +174,23 @@ export async function createStaffParticipationWorkspace({
     queueHost = node("section", { class: "panel section-gap" }),
     formHost = node("section", { class: "panel section-gap", hidden: true });
   const path = (id = state.target?.targetId) => `${base}/${part(id)}`;
+  function renderPicker(selected = picker.value) {
+    picker.replaceChildren(
+      node(
+        "option",
+        { value: "" },
+        "Choose an event session or volunteer shift",
+      ),
+      ...state.targets.map((target) =>
+        node(
+          "option",
+          { value: target.targetId },
+          `${target.title || "Occurrence"} · ${target.moduleId === "events" ? "event" : "volunteer shift"} · ${target.mode}`,
+        ),
+      ),
+    );
+    picker.value = selected;
+  }
   function dirty(value) {
     state.dirty = value;
     onDirty(value);
@@ -305,6 +322,10 @@ export async function createStaffParticipationWorkspace({
       throw new Error(
         "The occurrence response is incomplete. Refresh before making a decision.",
       );
+    state.targets = state.targets.map((target) =>
+      target.targetId === id ? { ...target, ...state.target } : target,
+    );
+    renderPicker(id);
     renderTarget();
     if (state.target.mode === "unmanaged") {
       state.rows = [];
@@ -1119,16 +1140,7 @@ export async function createStaffParticipationWorkspace({
   const result = await request(base);
   if (!isCurrent()) return root;
   state.targets = targetChoices(result.targets);
-  picker.replaceChildren(
-    node("option", { value: "" }, "Choose an event session or volunteer shift"),
-    ...state.targets.map((target) =>
-      node(
-        "option",
-        { value: target.targetId },
-        `${target.title || "Occurrence"} · ${target.moduleId === "events" ? "event" : "volunteer shift"} · ${target.mode}`,
-      ),
-    ),
-  );
+  renderPicker();
   writeStatus(
     notice,
     state.targets.length
