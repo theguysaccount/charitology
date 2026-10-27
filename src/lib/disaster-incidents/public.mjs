@@ -6,7 +6,7 @@ import { admitProductionHistory, historyRegistry, historyInventory, editionPacke
 import { packetJSON, packetCSV, historyJSON } from "./formats.mjs";
 import { canonicalBytes, parseJSON, freezeJSON } from "./canonical.mjs";
 import { projectPacket } from "./projection.mjs";
-import { DISASTER_ROOT, readWorkingDisasterInventory } from "./git.mjs";
+import { DISASTER_ROOT, readWorkingDisasterInventory, assertNoDisasterCaptureJournal } from "./git.mjs";
 const ID = /^[a-z][a-z0-9-]{0,63}$/;
 export function disasterId(id) {
     if (typeof id !== "string" || !ID.test(id))
@@ -32,9 +32,11 @@ function publicSnapshot(data) {
         sources: data.sources, history: new Uint8Array(data.history), selectedIncident: data.selectedIncident });
 }
 export function loadDisasters() {
+    const repo = resolve(".");
+    assertNoDisasterCaptureJournal(repo);
     if (cached !== undefined)
         return cached === null ? null : publicSnapshot(cached);
-    const repo = resolve("."), inventory = readWorkingDisasterInventory(repo);
+    const inventory = readWorkingDisasterInventory(repo);
     if (inventory.size === 0) {
         try {
             lstatSync(resolve(repo, DISASTER_ROOT));

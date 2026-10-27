@@ -44,7 +44,7 @@ const locatorText = (l: Locator) => l.kind === 'html' ? `HTML headings: ${l.head
 const targetText = (c: { target: Claim['target'] }) => c.target.kind === 'incident' ? 'Incident-wide statement' : c.target.kind === 'response-operation' ? `Response operation: ${c.target.issuer} · ${c.target.code}` : `Appeal: ${c.target.issuer} · ${c.target.code}`;
 const sameTarget = (a: Claim['target'], b: Claim['target']) => a.kind === b.kind && a.incidentId === b.incidentId && (a.kind === 'incident' || (b.kind !== 'incident' && a.issuer === b.issuer && a.code === b.code && a.originalUrl === b.originalUrl));
 const hasStatusRef = (c: Claim) => c.content.kind === 'status' && c.refs.some(ref => ref.role === 'status' && packet.notes.some(note => note.value.sourceId === ref.source.id && note.value.sourceVersion === ref.source.version && note.value.items.some(item => item.id === ref.item && item.basis === 'source-self-report' && sameTarget(item.target, c.target) && item.status !== null && item.status.targetKind === c.target.kind && c.content.kind === 'status' && item.status.value === c.content.value)));
-const geographyText = (g: Incident['geography']) => [...g.countries.map(c => `${c.reportedName} (${c.code})`), ...g.areas].join(' · ') || 'Geography not reported';
+const geographyText = (g: Incident['geography']) => [...g.countries.map(c => `${c.reportedName} (${c.code})`), ...g.areas].join(' · ') || 'Geography not collected in this capture';
 const noteFor = (s: Source) => sourceView && sourceNote ? sourceNote : packet.notes.find(n => n.value.sourceId === s.id && n.value.sourceVersion === s.version)?.value;
 const filters = {
   hazards: ['wildfire', 'earthquake', 'flood', 'storm', 'drought', 'other', 'unclassified'],

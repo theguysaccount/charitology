@@ -265,6 +265,13 @@ try {
           r = pub.disasterArtifactResponse(input, "edition.json");
         input.fill(0);
         assert.equal(await r.text(), "ABC");
+        const pending = join(realRoot, ".git/charitology-disasters");
+        await mkdir(pending, { recursive: true });
+        await writeFile(join(pending, "journal.json"), "{}\n");
+        assert.throws(() => pub.loadDisasters(), /pending local capture journal/,
+          "A cached admitted view cannot bypass a later pending capture journal.");
+        await rm(join(pending, "journal.json"));
+        assert.deepEqual(Buffer.from(pub.loadDisasters().history), history);
       } finally {
         restore();
       }
