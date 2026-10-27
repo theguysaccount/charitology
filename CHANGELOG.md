@@ -1,5 +1,7 @@
 # Changelog
 
+- Prepared manual shared-OS recurring task drafts: explicit dated preview and one unapproved successor, current scopes, retained command Retry, separately confirmed End and inactive backup history. The 309-unit/90-PostgreSQL suites, full static checks and bounded real signed-in fictional Chrome pass; production release identities remain pending in `docs/OS_RECURRENCE_ACCEPTANCE.md`.
+
 ## October 27, 2026: program records and local OS recovery prepared
 
 - Added exact-key asynchronous saving, retained failed intent, separate native/raw recovery, reviewed file replacement and guarded removal/Undo across five program desks and the browser-local Charity OS. All six existing keys and v1 formats remain compatible.

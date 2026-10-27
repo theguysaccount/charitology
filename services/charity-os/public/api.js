@@ -113,6 +113,23 @@ export const api = {
       method: "PATCH",
       body: data,
     }),
+  taskRecurrence: (org, id) =>
+    request(`${orgPath(org)}/task-recurrence/tasks/${part(id)}`),
+  previewTaskRecurrence: (org, id, body) =>
+    request(`${orgPath(org)}/task-recurrence/tasks/${part(id)}/preview`, {
+      method: "POST",
+      body,
+    }),
+  generateTaskRecurrence: (org, id, body) =>
+    request(`${orgPath(org)}/task-recurrence/tasks/${part(id)}/generate`, {
+      method: "POST",
+      body,
+    }),
+  endTaskRecurrence: (org, id, body) =>
+    request(`${orgPath(org)}/task-recurrence/series/${part(id)}/end`, {
+      method: "POST",
+      body,
+    }),
   trashRecords: (org, module) =>
     request(`${orgPath(org)}/modules/${part(module)}/trash`),
   restoreRecord: (org, module, id, revision) =>

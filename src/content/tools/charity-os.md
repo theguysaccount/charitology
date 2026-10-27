@@ -30,6 +30,12 @@ The shared service also supports public operational requests. Approved, version-
 
 The Participation console adds explicit confirmation and waitlists for one place per event session or volunteer shift. A reviewed interest request reserves no capacity. Staff must enable the occurrence, associate the typed candidate and obtain specific consent before confirming a place. Promotion is manual. Confirmed capacity stays reserved through later review edits, and cancellation releases it once. Your linked request can show your own participation and let you cancel it; withdrawing the original request alone does not cancel a confirmed place. Operational email requires a separate fresh choice from the verified participant. An administrator reviews current confirmations before activating delivery; old preferences and paused history are never mailed automatically. The fixed notice links to the signed-in portal without putting occurrence details or receipts in email. Delivery runs in a bounded daily dispatch, so it is not an urgent or exact-time alert. Turning updates off, erasing answers or unlinking access stops unsent updates; a message already attempted may still arrive. Broader workflows and operational acceptance remain in the [implementation plan](/for-charities/os-plan/).
 
+## Draft the next recurring task
+
+In the shared OS, open a saved weekly, monthly or quarterly task and preview its next occurrence. Review the exact local time, time zone, UTC instant and copied fields before generating one planned, unapproved draft. Monthly dates retain the original anchor, so a January 31 schedule returns to March 31 after February. Repeated local times need an explicit instant choice; nonexistent local times refuse generation.
+
+Each source has one next task across retries. End the series before changing its kind, program or schedule. A separately confirmed End stops future drafts and keeps existing tasks. Recovered history stays inactive. This is a manual planning workflow; it sends no reminder, assigns no participant place and makes no claim that the work happened.
+
 ## Start with the local workspace
 
 Write down your mission and the community's role in shaping it. Add each program or project with its intended change, owner, budget, spending and target date. Depth is an optional working description, from relief to source. It does not grade the work, and unknown can stay unknown.

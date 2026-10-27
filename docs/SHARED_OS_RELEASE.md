@@ -2,6 +2,10 @@
 
 Evidence checkpoint: **26 October 2026** (local date). Bounded grant-period reports are promoted at https://os.charitology.org. Their evidence is recorded first; earlier consented delivery, booking, own-request, public intake, foundation, recovery and controlled login/reminder evidence follows separately.
 
+## Manual recurring task drafts: local acceptance
+
+The [recurrence acceptance record](OS_RECURRENCE_ACCEPTANCE.md) records the frozen-before-code contract, 309 complete OS units, 90 actual PostgreSQL tests, independent bounded review and actual signed-in fictional Chrome checks. Preview/generate, current scopes, End and inactive backup recovery work locally. Four 320/390 light/dark preview cases pass. Production migration, exact runtime CI, staging and promotion remain pending; no publication or real pilot is claimed.
+
 ## Grant-period reports
 
 Runtime **`c9750a92f0ac6d5f2b717875f5e0a85f08e98edb`** was promoted as **`dpl_6FZTpTgrSCfiJcsPazysjGdNfW5D`** to https://os.charitology.org. The post-promotion deployment lookup confirmed that exact ID and commit. [PR #13](https://github.com/theguysaccount/charitology/pull/13), [the frozen contract](GRANT_REPORT_PLAN.md) and [the report acceptance record](GRANT_REPORTS.md) preserve implementation, workflow and limits. Eight nullable typed fields bring the registry to **26 modules / 339 fields**.

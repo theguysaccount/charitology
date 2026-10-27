@@ -285,3 +285,37 @@ DROP POLICY IF EXISTS tenant ON os_grant_report_previews;
 CREATE POLICY tenant ON os_grant_report_previews USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
 CREATE UNIQUE INDEX IF NOT EXISTS os_grant_report_command ON os_reports(org_id,(payload#>>'{command,actorId}'),(payload#>>'{command,keyHash}')) WHERE payload->>'kind'='grant-period' AND payload->>'methodVersion'='grant-report-v1';
 CREATE UNIQUE INDEX IF NOT EXISTS os_grant_report_edition ON os_reports(org_id,(payload#>>'{manifest,id}'),(payload#>>'{manifest,revision}'),(payload#>>'{manifest,sourceDigest}')) WHERE payload->>'kind'='grant-period' AND payload->>'methodVersion'='grant-report-v1';
+
+-- Explicit, manual task drafting. Historical identities may outlive source trash.
+CREATE TABLE IF NOT EXISTS os_task_recurrence_series (
+ org_id text NOT NULL REFERENCES os_orgs(id), id text NOT NULL,
+ root_record_id text NOT NULL, method text NOT NULL CHECK(method='task-recurrence-v1'),
+ anchor jsonb NOT NULL CHECK(jsonb_typeof(anchor)='object' AND octet_length(anchor::text)<=8192),
+ state text NOT NULL CHECK(state IN ('active','ended','recovered')),
+ revision integer NOT NULL CHECK(revision>0),tip_record_id text NOT NULL,
+ tip_sequence integer NOT NULL CHECK(tip_sequence BETWEEN 0 AND 2000),
+ created_by text NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),ended_at timestamptz,
+ end_code text CHECK(end_code IN ('explicit','record-cancelled','record-deleted','backup-recovery')),
+ recovered_state text CHECK(recovered_state IN ('active','ended','recovered')),
+ budget_bytes integer NOT NULL CHECK(budget_bytes>0),
+ last_end_command jsonb CHECK(last_end_command IS NULL OR (jsonb_typeof(last_end_command)='object' AND octet_length(last_end_command::text)<=512)),
+ PRIMARY KEY(org_id,id),UNIQUE(org_id,root_record_id)
+);
+CREATE TABLE IF NOT EXISTS os_task_recurrence_occurrences (
+ org_id text NOT NULL REFERENCES os_orgs(id),series_id text NOT NULL,
+ sequence integer NOT NULL CHECK(sequence BETWEEN 1 AND 2000),source_record_id text NOT NULL,
+ generated_record_id text NOT NULL,accepted_command_hash text NOT NULL CHECK(accepted_command_hash ~ '^[a-f0-9]{64}$'),
+ packet jsonb NOT NULL CHECK(jsonb_typeof(packet)='object' AND octet_length(packet::text)<=8192),
+ PRIMARY KEY(org_id,series_id,sequence),UNIQUE(org_id,source_record_id),UNIQUE(org_id,generated_record_id),
+ UNIQUE(org_id,accepted_command_hash),FOREIGN KEY(org_id,series_id) REFERENCES os_task_recurrence_series(org_id,id)
+);
+ALTER TABLE os_task_recurrence_series ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_task_recurrence_series FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_task_recurrence_series;
+CREATE POLICY tenant ON os_task_recurrence_series USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+ALTER TABLE os_task_recurrence_occurrences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_task_recurrence_occurrences FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_task_recurrence_occurrences;
+CREATE POLICY tenant ON os_task_recurrence_occurrences USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+DROP TRIGGER IF EXISTS immutable_task_recurrence_occurrences ON os_task_recurrence_occurrences;
+CREATE TRIGGER immutable_task_recurrence_occurrences BEFORE UPDATE OR DELETE ON os_task_recurrence_occurrences FOR EACH ROW EXECUTE FUNCTION os_immutable();
