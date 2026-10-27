@@ -15,6 +15,7 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
   </div>
 
   <form id="ge-form" novalidate>
+    <fieldset data-private-form-controls disabled>
     <div class="ge-layout">
       <div class="ge-main">
         <div class="field">
@@ -122,7 +123,11 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
         </div>
       </div>
     </div>
+    </fieldset>
   </form>
+  <noscript>
+    <p>This private local form needs JavaScript. Its fields stay disabled until local editing is ready.</p>
+  </noscript>
 
   <div class="result">
     <h3>Saved proposals</h3>
@@ -144,6 +149,12 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 </section>
 
 <style>
+  [data-private-form-controls] {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
   .ge-layout {
     display: grid;
     gap: 1.5rem 2rem;
@@ -471,6 +482,8 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
   import type { Proposal, Range, Score, Weights } from '../../lib/client/rubric';
 
   async function initializeDonorTool(): Promise<void> {
+  const form = $<HTMLFormElement>('#ge-form');
+  form.addEventListener('submit', event => event.preventDefault(), true);
 
 
   const KEY = 'grant-proposals';
@@ -479,7 +492,7 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   const absolute = (path: string) => new URL(base + path, location.origin).href;
 
-  const form = $<HTMLFormElement>('#ge-form');
+
   const nameEl = $<HTMLInputElement>('#ge-name');
   const msg = $('#ge-msg');
   const sliders = $$<HTMLInputElement>('.ge-w input[type="range"]');
@@ -841,6 +854,8 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
   else { current = readForm(); for (const el of sliders) weights[el.dataset.dim!] = Number(el.value); }
   renderAll();
   if (hydrate && isDirty()) say(current.id ? 'Restored your unsaved changes to this proposal.' : 'Restored your unsaved draft.');
+
+  form.querySelector<HTMLFieldSetElement>('[data-private-form-controls]')!.disabled = false;
 
   }
   void initializeDonorTool().catch(error => {

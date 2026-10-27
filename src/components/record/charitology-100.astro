@@ -9,6 +9,7 @@ import { url } from "../../lib/site";
     remains closed until independent red-team review. A complete packet is ready
     for discussion, not a recommendation.
   </p><form id="nomination-form">
+    <fieldset data-private-form-controls disabled>
     <label
       >Public activity or research title<input
         name="title"
@@ -79,7 +80,13 @@ import { url } from "../../lib/site";
         type="button"
         id="nomination-new">Start another</button>
     </div>
-  </form><p id="nomination-status" role="status"></p><div id="nomination-list">
+    </fieldset>
+  </form><noscript
+    ><p>
+      This local form needs JavaScript. Its fields stay disabled until local
+      editing is ready; nothing is submitted by this form.
+    </p></noscript
+  ><p id="nomination-status" role="status"></p><div id="nomination-list">
   </div><div class="lab-actions">
     <button class="btn" id="nomination-export"
       >Download nomination packets</button
@@ -122,8 +129,9 @@ import { url } from "../../lib/site";
   import { validateNominations as valid } from "../../lib/client/completion-models";
   const root = document.querySelector("#hundred-lab");
   if (root) {
-    const draft = guardedDraft("charitology-nominations-v1");
     const form = root.querySelector<HTMLFormElement>("form")!;
+    form.addEventListener("submit", (event) => event.preventDefault(), true);
+    const draft = guardedDraft("charitology-nominations-v1");
     const fields = [
       "title",
       "subject",
@@ -321,9 +329,20 @@ import { url } from "../../lib/site";
       root!.querySelector<HTMLElement>("#nomination-preview")!.hidden = true;
     });
     render();
+    root.querySelector<HTMLFieldSetElement>(
+      "[data-private-form-controls]",
+    )!.disabled = false;
   }
 </script>
 <style>
+  [data-private-form-controls] {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    display: grid;
+    gap: 1rem;
+  }
   #hundred-lab {
     margin-block: 2rem;
   }

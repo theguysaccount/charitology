@@ -19,6 +19,7 @@ const causes = causesData.causes;
   </div>
 
   <form id="gd-form" class="gd-form" novalidate>
+    <fieldset data-private-form-controls disabled>
     <h3 id="gd-form-title">Log a gift</h3>
     <div class="gd-fields">
       <div class="field">
@@ -69,7 +70,11 @@ const causes = causesData.causes;
       <button class="btn btn-ghost" type="button" id="gd-cancel" hidden>Cancel editing</button>
     </div>
     <p id="gd-status" class="note gd-status" role="status"></p>
+    </fieldset>
   </form>
+  <noscript>
+    <p>This private giving log needs JavaScript. Its fields stay disabled until local editing is ready.</p>
+  </noscript>
 
   <div class="result">
     <div class="gd-bar">
@@ -161,6 +166,12 @@ const causes = causesData.causes;
 </section>
 
 <style>
+  [data-private-form-controls] {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
   /* The global .btn, .field and grid classes set display, which would otherwise override [hidden]. */
   .gd-tool :global([hidden]) {
     display: none !important;
@@ -301,9 +312,11 @@ const causes = causesData.causes;
   import { splitWhole } from '../../lib/client/split';
 
   async function initializeDonorTool(): Promise<void> {
-
-
   const form = $<HTMLFormElement>('#gd-form');
+  form.addEventListener('submit', event => event.preventDefault(), true);
+
+
+
   const dateEl = $<HTMLInputElement>('#gd-date');
   const orgEl = $<HTMLInputElement>('#gd-org');
   const amountEl = $<HTMLInputElement>('#gd-amount');
@@ -721,6 +734,7 @@ const causes = causesData.causes;
 
   showDepthHint();
   render();
+  form.querySelector<HTMLFieldSetElement>('[data-private-form-controls]')!.disabled = false;
 
   }
   void initializeDonorTool().catch(error => {

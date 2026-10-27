@@ -1,8 +1,15 @@
 # Changelog
 
+## October 27, 2026: program records and local OS recovery prepared
+
+- Added exact-key asynchronous saving, retained failed intent, separate native/raw recovery, reviewed file replacement and guarded removal/Undo across five program desks and the browser-local Charity OS. All six existing keys and v1 formats remain compatible.
+- Preserved untouched imported source strings through native control sanitization and retained a newly admitted record ID through failure, newer input, Retry and resubmission. The local OS native editor keeps its recovery controls accessible while unfinished fields remain open.
+- Kept fifteen additional private form mounts disabled until local submit interception and initialization are ready, covering script-blocked and startup-failure default-GET privacy. Their storage and business behavior remain unchanged.
+- Runtime `d222c13da2e917235fd7eb2a776309901cb48069` passes the complete 546-page build/check, 46,600 links/assets, 199 focused groups and ten existing scenarios. Controlled fictional Chrome covers all six formats, native file selection, failures/conflicts/recovery and 28 narrow light/dark layouts including the final modal recovery. [Acceptance](docs/PROGRAM_RECORD_RECOVERY_ACCEPTANCE.md) records bounded application-warning checks and fictional-state cleanup; release CI/Pages/publication and native operating-system Save remain explicitly pending. No provider, mail, payment or shared-service operation occurred.
+
 ## October 27, 2026: guarded donor records
 
-- Added a source-bound observation desk, immutable editions and source pages, exact country facts/missing cells and scoped consolidated financial comparison. Current HTML/API/exports read one admitted projection; refresh requires real committed interpretation inputs and preserves earlier records. Source-specific rights and private-original exclusions stay visible. Final publication evidence is recorded in [observation acceptance](docs/OBSERVATIONS_ACCEPTANCE.md).
+- Published a source-bound observation desk in PR #24/Pages 40537946952, immutable editions and source pages, exact country facts/missing cells and scoped consolidated financial comparison. Current HTML/API/exports read one admitted projection; refresh requires real committed interpretation inputs and preserves earlier records. Source-specific rights and private-original exclusions stay visible. Final publication evidence is recorded in [observation acceptance](docs/OBSERVATIONS_ACCEPTANCE.md).
 - Published the local OS context form correction in PR #23/Pages 40529490305: when JavaScript is unavailable or startup fails, fields remain disabled until local submission handling is ready, preventing private text from entering a default GET URL. Three actual-render/script groups and four exact live page/asset comparisons cover the boundary.
 - Added exact-key asynchronous saving and explicit recovery across twelve existing tools, preserving all fourteen saved keys and v1 formats. Failed writes and protected copies remain exportable; newer tab edits and file choices revoke older apply authority.
 - Added separately confirmed three-step grant repair with visible partial states and exact retry. Compass and other tools distinguish an empty start from a saved record; Wrapped examples stay on the page.
