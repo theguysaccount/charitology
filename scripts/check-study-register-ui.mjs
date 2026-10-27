@@ -257,14 +257,12 @@ try {
     ).draft.form.fields.partitions,
     "{unfinished partition text",
   );
-  const partitions = merged.revisions
-    .at(-1)
-    .occurrenceIds.map((id, index) => ({
-      label: `g${index}`,
-      occurrenceIds: [id],
-      title: index === 0 ? "" : "Synthetic alternate",
-      retainOriginal: index === 1,
-    }));
+  const partitions = merged.revisions.at(-1).occurrenceIds.map((id, index) => ({
+    label: `g${index}`,
+    occurrenceIds: [id],
+    title: index === 0 ? "" : "Synthetic alternate",
+    retainOriginal: index === 1,
+  }));
   preservedSplit.draft.form.fields.partitions = JSON.stringify(partitions);
   dom = installStudyDom(JSON.stringify(preservedSplit));
   await ui.mountStudyRegister(dom.root);
@@ -390,6 +388,87 @@ try {
   await dom.findButton("Keep current work").click();
   assert.equal(dom.values.get(key), "{not valid JSON");
 
+  // Real mounted recovery must expose both text copies and reject a stale B preview after C.
+  {
+    const corrupt = "{fictional corrupt A " + String.fromCharCode(0xd800),
+      b = JSON.stringify(await imported(ui)),
+      c = b + " ";
+    dom = installStudyDom(corrupt);
+    const blobs = [],
+      originalCreate = URL.createObjectURL,
+      originalRevoke = URL.revokeObjectURL;
+    URL.createObjectURL = (blob) => {
+      blobs.push(blob);
+      return `blob:fictional-study-recovery/${blobs.length}`;
+    };
+    URL.revokeObjectURL = () => {};
+    try {
+      await ui.mountStudyRegister(dom.root);
+      await dom.findButton("Flow and recovery").click();
+      dom.values.set(key, b);
+      await dom.findButton("Preview clearing this register").click();
+      await settleStudyUi(() =>
+        dom.root.textContent.includes("Another tab changed"),
+      );
+      assert.equal(dom.values.get(key), b);
+      assert.equal(dom.findButton("Confirm this recovery action"), undefined);
+      assert.ok(
+        dom.findButton("Download last observed saved text"),
+        "Newly observed B recovery must be available immediately after the refused preview.",
+      );
+      const download = async (label) => {
+        const n = blobs.length;
+        const button = dom.findButton(label);
+        assert.ok(button, label);
+        assert.equal(button.disabled, false);
+        await button.click();
+        await settleStudyUi(() => blobs.length === n + 1);
+        return blobs.at(-1);
+      };
+      const aText = await (
+        await download("Download protected saved bytes")
+      ).text();
+      assert.equal(JSON.parse(aText).raw, corrupt);
+      assert.ok(!aText.includes(String.fromCharCode(0xfffd)));
+      const bBlob = await download("Download last observed saved text");
+      assert.equal(await bBlob.text(), b);
+      assert.deepEqual(
+        new Uint8Array(await bBlob.arrayBuffer()),
+        new TextEncoder().encode(b),
+      );
+      await dom.findButton("Preview clearing this register").click();
+      await settleStudyUi(() =>
+        Boolean(dom.findButton("Confirm this recovery action")),
+      );
+      dom.values.set(key, c);
+      const observedBControl = dom.findButton(
+        "Download last observed saved text",
+      );
+      await dom.findButton("Confirm this recovery action").click();
+      await settleStudyUi(
+        () =>
+          dom.findButton("Download last observed saved text") !==
+            observedBControl &&
+          dom.findButton("Download last observed saved text")?.disabled ===
+            false,
+      );
+      assert.equal(dom.values.get(key), c);
+      assert.equal(
+        await (await download("Download last observed saved text")).text(),
+        c,
+      );
+      assert.equal(
+        JSON.parse(
+          await (await download("Download protected saved bytes")).text(),
+        ).raw,
+        corrupt,
+      );
+    } finally {
+      URL.createObjectURL = originalCreate;
+      URL.revokeObjectURL = originalRevoke;
+    }
+  }
+
   const priorBytes = JSON.stringify(frozen);
   dom = installStudyDom(priorBytes, { failWrite: true });
   await ui.mountStudyRegister(dom.root);
@@ -501,7 +580,7 @@ try {
     "Unsupported Web Locks never fall back to an optimistic write.",
   );
   console.log(
-    "Study register UI: helper invariants and 11 actual-controller scenarios passed (route/mount, draft/save/reload/freeze, invalid raw draft repair, split raw/title preservation, stale revision, external save, corrupt recovery, failed clear, mapped import/unmapping, mapping-only dirty guard, unsupported locks).",
+    "Study register UI: helper invariants and 12 actual-controller scenarios passed (route/mount, draft/save/reload/freeze, invalid raw draft repair, split raw/title preservation, stale revision, external save, corrupt recovery, distinct corrupt/observed recovery downloads with stale-preview refusal, failed clear, mapped import/unmapping, mapping-only dirty guard, unsupported locks).",
   );
 } finally {
   await rm(temporary, { recursive: true, force: true });

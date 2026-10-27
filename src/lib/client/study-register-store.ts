@@ -236,7 +236,11 @@ export async function createStudyRegisterStore(
       );
   }
   function sameDisk(expected: string | null) {
-    if (readRaw() !== expected) {
+    const raw = readRaw();
+    if (raw !== expected) {
+      // Keep memory separate; expose the exact newly observed saved copy for
+      // recovery without granting an ordinary write against it.
+      observed = raw;
       generation++;
       markBlocked("external_change", external);
       error("external_change", external);
@@ -346,7 +350,9 @@ export async function createStudyRegisterStore(
         raw === null ? options.initialState : JSON.parse(raw),
       );
       sameMemory(epoch, expected);
-      if (readRaw() !== raw) {
+      const currentRaw = readRaw();
+      if (currentRaw !== raw) {
+        observed = currentRaw;
         generation++;
         markBlocked("external_change", external);
         return snapshot();
@@ -412,7 +418,11 @@ export async function createStudyRegisterStore(
       const raw = readRaw();
       // An undelivered storage event must not turn a routine preview into
       // permission to discard a newer copy the user has not seen yet.
-      if (!hardBlocked && observed !== undefined && raw !== observed) {
+      if (raw !== observed) {
+        // A corrupt/read-blocked copy is not permission to discard a different
+        // unseen saved value. Retain protected original text separately, warn
+        // on every newly observed value, then require a fresh preview.
+        observed = raw;
         generation++;
         markBlocked("external_change", external);
         error("external_change", external);

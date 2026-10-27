@@ -25,7 +25,7 @@ import {
 const result = await build({
   stdin: {
     contents:
-      "export * from './src/lib/client/program-graph-ui.ts';export * from './src/lib/client/program-graph-ui-helpers.ts';export * from './src/lib/client/program-graph-model.ts';export * from './src/lib/client/program-graph-import.ts';",
+      "export * from './src/lib/client/program-graph-ui.ts';export * from './src/lib/client/program-graph-ui-helpers.ts';export * from './src/lib/client/program-graph-model.ts';export * from './src/lib/client/program-graph-import.ts';export {rawStorageRecoveryDownload} from './src/lib/client/raw-storage-recovery.ts';",
     resolveDir: process.cwd(),
   },
   bundle: true,
@@ -524,6 +524,78 @@ await check(
     );
     await click(d, "Preview clearing this graph");
     assert.ok(d.findButton("Confirm clear of companion graph"));
+  },
+);
+await check(
+  "shared raw-storage helper preserves exact malformed UTF-16 and leaves valid UTF-8 unchanged",
+  async () => {
+    for (const text of [
+      "ordinary text",
+      "paired 😀 and 漢",
+      "",
+      "high " + String.fromCharCode(0xd800),
+      "low " + String.fromCharCode(0xdc00),
+      String.fromCharCode(0xd800, 0xd800),
+      String.fromCharCode(0xd800) + "x",
+    ]) {
+      const result = m.rawStorageRecoveryDownload(text),
+        blob = new Blob([result.text]);
+      if (result.wrapped) {
+        assert.equal(JSON.parse(await blob.text()).raw, text);
+        assert.equal(
+          JSON.parse(result.text).format,
+          "charitology-raw-storage-text-recovery",
+        );
+        assert.ok(!result.text.includes(String.fromCharCode(0xfffd)));
+      } else {
+        assert.equal(result.text, text);
+        assert.equal(await blob.text(), text);
+        assert.deepEqual(
+          new Uint8Array(await blob.arrayBuffer()),
+          new TextEncoder().encode(text),
+        );
+      }
+    }
+  },
+);
+await check(
+  "corrupt original A and unseen valid B have distinct byte-exact downloads and a B preview cannot remove later C",
+  async () => {
+    const corrupt = "{fictional corrupt A " + String.fromCharCode(0xd800),
+      b = JSON.stringify(await withGraph(m)),
+      c = b + " ",
+      d = dom(corrupt);
+    await m.mountProgramGraph(d.root);
+    d.values.set(key, b);
+    await click(d, "Preview clearing this graph");
+    assert.equal(d.values.get(key), b);
+    assert.ok(d.root.textContent.includes("Another tab changed"));
+    assert.equal(d.findButton("Confirm clear of companion graph"), undefined);
+    const protectedText = await downloadText(
+      d,
+      "Download protected saved bytes unchanged",
+    );
+    assert.equal(JSON.parse(protectedText).raw, corrupt);
+    assert.ok(!protectedText.includes(String.fromCharCode(0xfffd)));
+    const observed = await downloadText(d, "Download last observed saved text");
+    assert.equal(observed, b);
+    assert.deepEqual(
+      new Uint8Array(await d.downloads.at(-1).blob.arrayBuffer()),
+      new TextEncoder().encode(b),
+    );
+    await click(d, "Preview clearing this graph");
+    assert.ok(d.findButton("Confirm clear of companion graph"));
+    d.values.set(key, c);
+    await click(d, "Confirm clear of companion graph");
+    assert.equal(d.values.get(key), c);
+    assert.ok(d.root.textContent.includes("Another tab changed"));
+    assert.equal(await downloadText(d, "Download last observed saved text"), c);
+    assert.equal(
+      JSON.parse(
+        await downloadText(d, "Download protected saved bytes unchanged"),
+      ).raw,
+      corrupt,
+    );
   },
 );
 await check(

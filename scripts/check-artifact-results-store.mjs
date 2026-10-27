@@ -809,6 +809,77 @@ await check(
 );
 
 await check(
+  "corrupt protected A cannot hide an unseen foreign B or C during recovery",
+  async () => {
+    for (const action of ["clear", "restore"]) {
+      const s = storage(),
+        original = "{corrupt protected original A";
+      s.values.set(key, original);
+      const store = await open(s, locks()),
+        replacementStore = await open(storage(), locks()),
+        own = await replacementStore.backup(at),
+        before = store.snapshot();
+      const foreignB = JSON.stringify(blank()),
+        foreignC = JSON.stringify(blank());
+      s.values.set(key, foreignB);
+      const preview = () =>
+        action === "clear"
+          ? store.previewClear(blank())
+          : store.previewRestore(own);
+      await assert.rejects(preview(), rejected("external_change"));
+      assert.equal(store.snapshot().observedRaw, foreignB);
+      assert.equal(store.rawSavedCopy(), original);
+      assert.equal(store.snapshot().state, before.state);
+      assert.equal(store.snapshot().hash, before.hash);
+      assert.equal(s.values.get(key), foreignB);
+      assert.equal(store.snapshot().canWrite, false);
+      const reviewedB = await preview();
+      s.values.set(key, foreignC);
+      await assert.rejects(
+        store[action](reviewedB),
+        rejected("external_change"),
+      );
+      assert.equal(store.snapshot().observedRaw, foreignC);
+      assert.equal(store.rawSavedCopy(), original);
+      assert.equal(s.values.get(key), foreignC);
+      const reviewedC = await preview();
+      await store[action](reviewedC);
+      assert.equal(store.rawSavedCopy(), original);
+      if (action === "clear") assert.equal(s.values.has(key), false);
+      else
+        assert.equal(
+          store.snapshot().state.id,
+          replacementStore.snapshot().state.id,
+        );
+    }
+  },
+);
+await check(
+  "each newly unseen saved copy triggers a fresh warning even while already blocked",
+  async () => {
+    const s = storage(),
+      store = await open(s, locks()),
+      before = store.snapshot().hash;
+    const foreignB = JSON.stringify(blank()),
+      foreignC = JSON.stringify(blank());
+    s.values.set(key, foreignB);
+    await assert.rejects(
+      store.previewClear(blank()),
+      rejected("external_change"),
+    );
+    s.values.set(key, foreignC);
+    await assert.rejects(
+      store.previewClear(blank()),
+      rejected("external_change"),
+    );
+    assert.equal(store.snapshot().observedRaw, foreignC);
+    assert.equal(store.snapshot().hash, before);
+    assert.equal(s.values.get(key), foreignC);
+    await store.clear(await store.previewClear(blank()));
+    assert.equal(s.values.has(key), false);
+  },
+);
+await check(
   "actual new store and final model pass strict TypeScript",
   async () => {
     const config = ts.readConfigFile("tsconfig.json", ts.sys.readFile),

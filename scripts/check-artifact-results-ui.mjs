@@ -425,6 +425,78 @@ try {
   );
   groups++;
 
+  // Real mounted recovery: keep the corrupt original and newly observed saved copy distinct.
+  {
+    const corrupt = "{fictional corrupt A " + String.fromCharCode(0xd800),
+      b = JSON.stringify(await workflow(ui)),
+      c = b + " ";
+    dom = installArtifactDom(corrupt);
+    await ui.mountArtifactResults(dom.root);
+    await dom.findButton("Review recovery choices").click();
+    dom.values.set(key, b);
+    await dom.findButton("Review clearing this register").click();
+    await settleArtifactUi(() =>
+      dom.root.textContent.includes("Another tab changed"),
+    );
+    assert.equal(dom.values.get(key), b);
+    assert.equal(
+      dom.findButton("Clear the new artifact/results register"),
+      undefined,
+    );
+    assert.ok(
+      dom.findButton("Download last observed saved text"),
+      "Newly observed B recovery must be available immediately after the refused preview.",
+    );
+    const download = async (label) => {
+      const n = dom.downloads.length;
+      const button = dom.findButton(label);
+      assert.ok(button, label);
+      assert.equal(button.disabled, false);
+      await button.click();
+      await settleArtifactUi(() => dom.downloads.length === n + 1);
+      return dom.downloads.at(-1).blob;
+    };
+    const aBlob = await download(
+      "Download protected raw saved bytes (unverified)",
+    );
+    const aText = await aBlob.text();
+    assert.equal(JSON.parse(aText).raw, corrupt);
+    assert.ok(!aText.includes(String.fromCharCode(0xfffd)));
+    const bBlob = await download("Download last observed saved text");
+    assert.equal(await bBlob.text(), b);
+    assert.deepEqual(
+      new Uint8Array(await bBlob.arrayBuffer()),
+      new TextEncoder().encode(b),
+    );
+    await dom.findButton("Review clearing this register").click();
+    await settleArtifactUi(() =>
+      Boolean(dom.findButton("Clear the new artifact/results register")),
+    );
+    dom.values.set(key, c);
+    const observedBControl = dom.findButton(
+      "Download last observed saved text",
+    );
+    await dom.findButton("Clear the new artifact/results register").click();
+    await settleArtifactUi(
+      () =>
+        dom.findButton("Download last observed saved text") !==
+          observedBControl &&
+        dom.findButton("Download last observed saved text")?.disabled === false,
+    );
+    assert.equal(dom.values.get(key), c);
+    const cBlob = await download("Download last observed saved text");
+    assert.equal(await cBlob.text(), c);
+    assert.equal(
+      JSON.parse(
+        await (
+          await download("Download protected raw saved bytes (unverified)")
+        ).text(),
+      ).raw,
+      corrupt,
+    );
+    groups++;
+  }
+
   // Quota-failed writes retain the valid candidate and explicit unsaved copy.
   dom = installArtifactDom(JSON.stringify(source), { failWrite: true });
   await ui.mountArtifactResults(dom.root);
