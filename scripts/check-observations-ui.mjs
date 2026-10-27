@@ -771,6 +771,7 @@ try {
           );
         };
       assert.equal(declarations(".ob-desk table.data")["min-width"], "48rem");
+      assert.equal(declarations(".ob-desk table.data").display, "table");
       assert.equal(declarations(".ob-desk table.data")["table-layout"], "fixed");
       assert.deepEqual(declarations(".ob-desk .ob-table-scroll"), {
         "max-width": "100%",
