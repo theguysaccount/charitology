@@ -1188,7 +1188,7 @@ export async function mountPublicationProposal(
         async () => {
           if (dirty || form)
             throw Error(
-              "Download or explicitly discard the current unfinished form before clearing.",
+              "Download your work first. Explicitly discard the unfinished form, then use Save unfinished form locally before reviewing clear again.",
             );
           clearPreview = await store.previewClear(
             blankPublicationProposals(newId(), now()),
@@ -1288,7 +1288,7 @@ export async function mountPublicationProposal(
         async () => {
           if (dirty)
             throw Error(
-              "Download or explicitly discard this unfinished form before undo.",
+              "Save your unfinished form before undo, or explicitly discard its tab-only changes and save the empty form.",
             );
           const out = await store.undo();
           adopt();
