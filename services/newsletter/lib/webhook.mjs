@@ -1,8 +1,10 @@
 import { normalizeEmail } from './security.mjs';
+import { applyOsMailFeedback } from './os-mail.mjs';
 export async function applyWebhook(db, event, id, settings) {
   return db.tx(async client => {
     const inserted = await client.query('INSERT INTO newsletter_webhook_events(id,type) VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING id', [id, event.type]);
     if (!inserted.rowCount) return;
+    await applyOsMailFeedback(client,event,settings);
     const topicWithdrawal = event.type === 'contact.topics.updated' && Array.isArray(event.data?.topics) && event.data.topics.some(x => x.id === settings.topicId && x.subscription === 'opt_out');
     if (topicWithdrawal) {
       const email = normalizeEmail(event.data.email); if (!email) return;

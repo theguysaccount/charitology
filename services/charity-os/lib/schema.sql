@@ -193,3 +193,75 @@ ALTER TABLE os_participation_outbox ENABLE ROW LEVEL SECURITY;
 ALTER TABLE os_participation_outbox FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS tenant ON os_participation_outbox;
 CREATE POLICY tenant ON os_participation_outbox USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
+
+-- Delivery consent is a new authority; historical preference-only consent is not migrated.
+ALTER TABLE os_participations ADD COLUMN IF NOT EXISTS delivery_consent jsonb;
+ALTER TABLE os_participations DROP CONSTRAINT IF EXISTS os_participations_delivery_consent_size;
+ALTER TABLE os_participations ADD CONSTRAINT os_participations_delivery_consent_size CHECK(delivery_consent IS NULL OR (jsonb_typeof(delivery_consent)='object' AND octet_length(delivery_consent::text)<=4096));
+CREATE TABLE IF NOT EXISTS os_participation_delivery_policies (
+ org_id text PRIMARY KEY REFERENCES os_orgs(id), revision integer NOT NULL DEFAULT 1 CHECK(revision>0),
+ enabled boolean NOT NULL DEFAULT false, epoch text NOT NULL, activated_at timestamptz,
+ template_version text NOT NULL, last_command jsonb, updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS os_participation_delivery_previews (
+ org_id text NOT NULL REFERENCES os_orgs(id),id text NOT NULL,actor_id text NOT NULL,
+ policy_revision integer NOT NULL CHECK(policy_revision>0),review_hash text NOT NULL,
+ bindings jsonb NOT NULL CHECK(octet_length(bindings::text)<=65536),
+ expires_at timestamptz NOT NULL,committed_at timestamptz,created_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(org_id,id)
+);
+ALTER TABLE os_participation_delivery_policies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participation_delivery_policies FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participation_delivery_policies;
+CREATE POLICY tenant ON os_participation_delivery_policies USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
+ALTER TABLE os_participation_delivery_previews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participation_delivery_previews FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participation_delivery_previews;
+CREATE POLICY tenant ON os_participation_delivery_previews USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
+ALTER TABLE os_job_tenants ADD COLUMN IF NOT EXISTS participation_last_run_at timestamptz NOT NULL DEFAULT '1970-01-01T00:00:00Z';
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS participation_revision integer;
+UPDATE os_participation_outbox SET participation_revision=event_revision WHERE participation_revision IS NULL;
+ALTER TABLE os_participation_outbox ALTER COLUMN participation_revision SET NOT NULL;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS intent_kind text NOT NULL DEFAULT 'legacy';
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS consent_revision integer NOT NULL DEFAULT 0;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS consent_copy text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS user_id text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS link_id text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS link_revision integer;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS recipient_hash text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS policy_epoch text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS template_version text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS relay_key text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS payload_hash text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS first_attempt_at timestamptz;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS attempts integer NOT NULL DEFAULT 0;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS lease_owner text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS lease_until timestamptz;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS next_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS last_checked_at timestamptz;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS safe_code text;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS provider_event_at timestamptz;
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS budget_bytes integer NOT NULL DEFAULT 0;
+ALTER TABLE os_participation_outbox DROP CONSTRAINT IF EXISTS os_participation_outbox_state_check;
+ALTER TABLE os_participation_outbox ADD CONSTRAINT os_participation_outbox_state_check CHECK(state IN ('paused','pending','leased','accepted','delivered','suppressed','failed','unknown','cancelled'));
+ALTER TABLE os_participation_outbox DROP CONSTRAINT IF EXISTS os_participation_outbox_delivery_bounds;
+ALTER TABLE os_participation_outbox ADD CONSTRAINT os_participation_outbox_delivery_bounds CHECK(
+ participation_revision>0 AND intent_kind IN ('legacy','snapshot','transition') AND consent_revision>=0
+ AND attempts>=0 AND budget_bytes BETWEEN 0 AND 16384
+ AND (safe_code IS NULL OR length(safe_code)<=100)
+ AND (relay_key IS NULL OR length(relay_key)<=128)
+ AND (template_version IS NULL OR length(template_version)<=100)
+ AND (consent_copy IS NULL OR length(consent_copy)<=100)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS os_participation_delivery_causal ON os_participation_outbox(org_id,participation_id,participation_revision,consent_revision,template_version,intent_kind) WHERE intent_kind<>'legacy' AND relay_key IS NOT NULL;
+CREATE INDEX IF NOT EXISTS os_participation_delivery_due ON os_participation_outbox(org_id,state,next_at) WHERE intent_kind<>'legacy';
+-- Preserve legacy paused-journal writes while keeping a non-null causal revision.
+CREATE OR REPLACE FUNCTION os_participation_legacy_revision() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+ IF NEW.participation_revision IS NULL THEN NEW.participation_revision=NEW.event_revision; END IF;
+ RETURN NEW;
+END $$;
+DROP TRIGGER IF EXISTS os_participation_legacy_revision ON os_participation_outbox;
+CREATE TRIGGER os_participation_legacy_revision BEFORE INSERT OR UPDATE ON os_participation_outbox FOR EACH ROW EXECUTE FUNCTION os_participation_legacy_revision();
+
+ALTER TABLE os_participation_outbox ADD COLUMN IF NOT EXISTS recovered_state text CHECK(recovered_state IS NULL OR recovered_state IN ('paused','pending','leased','accepted','delivered','suppressed','failed','unknown','cancelled'));

@@ -1,3 +1,4 @@
+import { suppressParticipationDelivery } from "./participation-delivery.mjs";
 import { audit, rowRecord } from "./database.mjs";
 import {
   intakeAnswers,
@@ -432,6 +433,11 @@ async function ownRequest({ db, user, org, intakeId, action, input }) {
           "UPDATE os_participation_outbox o SET state='cancelled' FROM os_participations p WHERE o.org_id=$1 AND p.org_id=o.org_id AND p.id=o.participation_id AND p.intake_id=$2 AND o.state='paused'",
           [org, intakeId],
         );
+        await suppressParticipationDelivery(c, {
+          org,
+          intakeId,
+          reason: "unlink",
+        });
         await audit(c, org, user.id, "participant.unlinked", null, {
           intakeId,
           publicationId: row.publication_id,
@@ -513,6 +519,11 @@ async function ownRequest({ db, user, org, intakeId, action, input }) {
             [org, intakeId],
           )
         ).rows[0];
+        await suppressParticipationDelivery(c, {
+          org,
+          intakeId,
+          reason: "erased",
+        });
         await audit(c, org, user.id, "intake.erased", null, {
           intakeId,
           publicationId: row.publication_id,

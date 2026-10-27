@@ -1,7 +1,17 @@
 import { getToken } from '@vercel/connect';
 import { FROM } from './config.mjs';
+import { normalizeEmail } from './security.mjs';
 export class ProviderError extends Error {
-  constructor(status, ambiguous = false) { super('Mail provider operation failed'); this.status = status; this.ambiguous = ambiguous; }
+  constructor(status, ambiguous = false, suppressionAbsent = false) { super('Mail provider operation failed'); this.status = status; this.ambiguous = ambiguous; this.suppressionAbsent = suppressionAbsent; }
+}
+async function boundedJson(response, maximum) {
+  if (Number(response.headers.get('content-length')) > maximum) throw new Error('Bounded provider response exceeded');
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error('Missing provider response');
+  const chunks=[];let size=0;
+  try { while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>maximum){await reader.cancel();throw new Error('Bounded provider response exceeded');}chunks.push(value);} }
+  finally { reader.releaseLock(); }
+  return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 export function provider(settings, { credential = () => {
   if (!settings.subjectId) throw new Error('Authorized server-side Connect subject is required');
@@ -12,7 +22,7 @@ export function provider(settings, { credential = () => {
     if (milliseconds <= 0) throw new Error('Maintenance time budget reached');
     return Math.min(8000, milliseconds);
   };
-  const call = async (method, path, body, key) => {
+  const call = async (method, path, body, key, options = {}) => {
     let token;
     if (Number.isFinite(deadline)) {
       const timeout = remaining(); let timer;
@@ -28,8 +38,16 @@ export function provider(settings, { credential = () => {
         ...(body ? { body: body instanceof FormData ? body : JSON.stringify(body) } : {}),
       });
     } catch { throw new ProviderError(503, method !== 'GET'); }
-    if (!response.ok) throw new ProviderError(response.status, method !== 'GET' && response.status >= 500);
-    return response.status === 204 ? null : response.json();
+    if (!response.ok) {
+      let absent=false;
+      if(options.maximum){
+        try {const error=await boundedJson(response,Math.min(options.maximum,16384));absent=options.suppressionLookup===true&&method==='GET'&&/^\/suppressions\/[^/?#]+$/.test(path)&&response.status===404&&error?.name==='not_found'&&error?.message==='Suppression not found';} catch {}
+      }
+      throw new ProviderError(response.status, method !== 'GET' && response.status >= 500, absent);
+    }
+    if(response.status===204)return null;
+    if(options.maximum){try{return await boundedJson(response,options.maximum);}catch{throw new ProviderError(502,method!=='GET');}}
+    return response.json();
   };
   const e = encodeURIComponent;
   const all = async path => {
@@ -89,7 +107,24 @@ export function provider(settings, { credential = () => {
     getBroadcast: id => call('GET', `/broadcasts/${e(id)}`),
     createBroadcast: edition => call('POST', '/broadcasts', { segment_id: settings.segmentId, topic_id: settings.topicId, from: FROM, reply_to: ['hello@charitology.org'], name: `Charitology ${edition.id} ${edition.hash.slice(0, 12)}`, subject: edition.subject, html: edition.html, text: edition.text, send: false }),
     sendBroadcast: id => call('POST', `/broadcasts/${e(id)}/send`, {}),
-    sendOsMail: (message, key) => call('POST', '/emails', { from: FROM, to: [message.to], reply_to: 'hello@charitology.org', subject: message.subject, html: message.html, text: message.text }, key),
+    async suppression(email) {
+      if(normalizeEmail(email)!==email)throw new ProviderError(400);
+      try {
+        const value=await call('GET',`/suppressions/${e(email)}`,undefined,undefined,{maximum:16384,suppressionLookup:true});
+        if(value?.object!=='suppression'||normalizeEmail(value.email)!==email||typeof value.id!=='string'||value.id.length>100||!['bounce','complaint','manual'].includes(value.origin))throw new ProviderError(502);
+        return {suppressed:true};
+      } catch(error){if(error.suppressionAbsent===true)return null;throw error;}
+    },
+    async getEmail(id) {
+      if(typeof id!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(id))throw new ProviderError(400);
+      const value=await call('GET',`/emails/${e(id)}`,undefined,undefined,{maximum:65536});
+      if(value?.id!==id||!Array.isArray(value.to)||value.to.length!==1||!normalizeEmail(value.to[0])||typeof value.last_event!=='string')throw new ProviderError(502);
+      return value;
+    },
+    sendOsMail: (message, key, {correlationTag} = {}) => {
+      if(correlationTag!==undefined&&!/^[a-f0-9]{64}$/.test(correlationTag))throw new ProviderError(400);
+      return call('POST', '/emails', { from: FROM, to: [message.to], reply_to: 'hello@charitology.org', subject: message.subject, html: message.html, text: message.text,...(correlationTag?{tags:[{name:'os_delivery',value:correlationTag}]}:{}) }, key,correlationTag?{maximum:16384}:{});
+    },
     sendConfirmation: (attempt, origin, htmlEscape) => {
       const confirm = `${origin}/confirm?token=${attempt.confirm}`;
       const unsubscribe = `${origin}/unsubscribe?token=${attempt.unsubscribe}`;

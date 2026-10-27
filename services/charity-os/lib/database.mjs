@@ -75,6 +75,8 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
       "participant.unlinked",
       "participation.cancelled",
       "participation.preferences",
+      "participation.delivery.disabled",
+      "participation.delivery.preference_off",
     ].includes(action);
     if (accessControl) {
       detail = {
@@ -191,12 +193,14 @@ export async function logicalBackupBytes(c, org) {
     "os_participation_targets",
     "os_participations",
     "os_participation_outbox",
+    "os_participation_delivery_policies",
+    "os_participation_delivery_previews",
   ];
   const sql =
     tables
       .map(
         (table) =>
-          `SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS size FROM ${table} t WHERE org_id=$1`,
+          `SELECT COALESCE(sum(${table === "os_participation_outbox" ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
       )
       .join(" UNION ALL ") +
     " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1";

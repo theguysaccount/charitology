@@ -1,3 +1,4 @@
+import { suppressParticipationDelivery } from "./participation-delivery.mjs";
 import { createHmac, randomBytes } from "node:crypto";
 import { requireAdmin, visibleRecord } from "./access.mjs";
 import { allRecords, rowRecord, saveRecord, audit } from "./database.mjs";
@@ -737,6 +738,11 @@ export async function intakeRoutes({
         [org, row.id],
       )
     ).rows[0];
+    await suppressParticipationDelivery(c, {
+      org,
+      intakeId: row.id,
+      reason: "erased",
+    });
     await audit(c, org, user, "intake.erased", null, {
       intakeId: row.id,
       converted: row.converted_ids.length > 0,

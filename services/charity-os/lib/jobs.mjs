@@ -15,9 +15,16 @@ export async function runOrgJobs({
   send,
   settings,
   deadline = Date.now() + 45000,
+  budget = { deadline, remaining: 20 },
 }) {
-  let processed = 0;
-  for (let i = 0; i < 20 && Date.now() < deadline - 23000; i++) {
+  deadline = Math.min(deadline, budget.deadline);
+  let processed = 0,
+    operations = 0;
+  for (
+    let i = 0;
+    i < 20 && budget.remaining > 0 && Date.now() < deadline - 23000;
+    i++
+  ) {
     const job = await db.tx("", org, async (c) => {
       const r = (
         await c.query(
@@ -36,6 +43,12 @@ export async function runOrgJobs({
       return r;
     });
     if (!job) break;
+    budget.remaining--;
+    operations++;
+    if (!["reminder", "invitation"].includes(job.kind)) {
+      await finish(db, org, job.id, "cancelled", { unsupportedKind: true });
+      continue;
+    }
     let message = job.payload;
     try {
       if (job.kind === "reminder") {
@@ -103,7 +116,7 @@ export async function runOrgJobs({
       );
     }
   }
-  return { processed };
+  return { processed, operations };
 }
 async function finish(db, org, job, status, result) {
   await db.tx("", org, (c) =>
@@ -113,8 +126,13 @@ async function finish(db, org, job, status, result) {
     ),
   );
 }
-export async function runJobs({ db, send, settings }) {
-  const deadline = Date.now() + 45000;
+export async function runJobs({
+  db,
+  send,
+  settings,
+  budget = { deadline: Date.now() + 45000, remaining: 20 },
+}) {
+  const deadline = budget.deadline;
   const orgs = (
     await db.pool.query(
       "SELECT org_id FROM os_job_tenants ORDER BY last_run_at,org_id LIMIT 50",
@@ -123,13 +141,14 @@ export async function runJobs({ db, send, settings }) {
   let processed = 0,
     visited = 0;
   for (const org of orgs) {
-    if (Date.now() >= deadline - 25000) break;
+    if (budget.remaining <= 0 || Date.now() >= deadline - 25000) break;
     await db.pool.query(
       "UPDATE os_job_tenants SET last_run_at=now() WHERE org_id=$1",
       [org],
     );
-    processed += (await runOrgJobs({ db, org, send, settings, deadline }))
-      .processed;
+    processed += (
+      await runOrgJobs({ db, org, send, settings, deadline, budget })
+    ).processed;
     visited++;
   }
   return { processed, visited, budgetLimited: visited < orgs.length };

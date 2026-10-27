@@ -98,7 +98,7 @@ export async function exportParticipation(c, org) {
   }));
   const outbox = (
     await c.query(
-      "SELECT id,participation_id,event_revision,purpose,channel,state,payload,created_at FROM os_participation_outbox WHERE org_id=$1 ORDER BY created_at,id",
+      "SELECT * FROM os_participation_outbox WHERE org_id=$1 ORDER BY created_at,id",
       [org],
     )
   ).rows.map((o) => ({
@@ -110,8 +110,19 @@ export async function exportParticipation(c, org) {
     state: o.state,
     payload: o.payload,
     createdAt: iso(o.created_at),
+    participationRevision: o.participation_revision || o.event_revision,
+    intentKind: o.intent_kind || "legacy",
+    consentRevision: o.consent_revision || 0,
+    consentCopy: o.consent_copy || null,
+    templateVersion: o.template_version || null,
+    attemptedAt: iso(o.first_attempt_at),
+    attempts: o.attempts || 0,
+    lastCheckedAt: iso(o.last_checked_at),
+    safeCode: o.safe_code || null,
+    providerEventAt: iso(o.provider_event_at),
+    recoveredState: o.recovered_state || null,
   }));
-  return { version: 1, targets, participations, outbox };
+  return { version: 2, targets, participations, outbox };
 }
 
 export function restoredParticipation(backup) {
@@ -121,7 +132,7 @@ export function restoredParticipation(backup) {
     return { targets: [], participations: [], outbox: [], warnings: [] };
   if (
     !plain(input) ||
-    input.version !== 1 ||
+    ![1, 2].includes(input.version) ||
     !Array.isArray(input.targets) ||
     !Array.isArray(input.participations) ||
     !Array.isArray(input.outbox) ||
@@ -323,7 +334,21 @@ export function restoredParticipation(backup) {
       !positive(o.eventRevision) ||
       o.purpose !== "participation" ||
       o.channel !== "email" ||
-      !["paused", "cancelled"].includes(o.state) ||
+      !(
+        input.version === 1
+          ? ["paused", "cancelled"]
+          : [
+              "paused",
+              "pending",
+              "leased",
+              "accepted",
+              "delivered",
+              "suppressed",
+              "failed",
+              "unknown",
+              "cancelled",
+            ]
+      ).includes(o.state) ||
       !stamp(o.createdAt) ||
       !o.payload ||
       Object.keys(o.payload).some(
@@ -337,12 +362,65 @@ export function restoredParticipation(backup) {
       Buffer.byteLength(JSON.stringify(o.payload)) > 2048
     )
       bad();
+    if (
+      input.version === 2 &&
+      (!positive(o.participationRevision) ||
+        !["legacy", "snapshot", "transition"].includes(o.intentKind) ||
+        !Number.isSafeInteger(o.consentRevision) ||
+        o.consentRevision < 0 ||
+        !Number.isSafeInteger(o.attempts) ||
+        o.attempts < 0 ||
+        [o.attemptedAt, o.lastCheckedAt, o.providerEventAt].some(
+          (v) => v != null && !stamp(v),
+        ) ||
+        [o.consentCopy, o.templateVersion].some(
+          (v) => v != null && (typeof v !== "string" || v.length > 100),
+        ) ||
+        (o.safeCode != null &&
+          (typeof o.safeCode !== "string" ||
+            !/^[a-z_]{1,100}$/.test(o.safeCode))) ||
+        (o.recoveredState != null &&
+          ![
+            "paused",
+            "pending",
+            "leased",
+            "accepted",
+            "delivered",
+            "suppressed",
+            "failed",
+            "unknown",
+            "cancelled",
+          ].includes(o.recoveredState)))
+    )
+      bad();
     outboxIds.add(o.id);
     const key = o.participationId + ":" + o.eventRevision;
     if (eventKeys.has(key)) bad();
     eventKeys.add(key);
     if (retained.has(o.participationId))
-      outbox.push({ ...o, state: "cancelled" });
+      outbox.push({
+        id: o.id,
+        participationId: o.participationId,
+        eventRevision: o.eventRevision,
+        purpose: "participation",
+        channel: "email",
+        state: "cancelled",
+        payload: o.payload,
+        createdAt: o.createdAt,
+        participationRevision:
+          input.version === 2 ? o.participationRevision : o.eventRevision,
+        intentKind: "legacy",
+        recoveredState:
+          input.version === 2 ? o.recoveredState || o.state : o.state,
+        consentRevision: input.version === 2 ? o.consentRevision : 0,
+        consentCopy: input.version === 2 ? o.consentCopy || null : null,
+        templateVersion: input.version === 2 ? o.templateVersion || null : null,
+        attemptedAt: input.version === 2 ? o.attemptedAt || null : null,
+        attempts: input.version === 2 ? o.attempts : 0,
+        lastCheckedAt: input.version === 2 ? o.lastCheckedAt || null : null,
+        safeCode: input.version === 2 ? o.safeCode || null : null,
+        providerEventAt: input.version === 2 ? o.providerEventAt || null : null,
+      });
     else omitted++;
   }
   const used = new Set(participations.map((p) => p.targetId)),
@@ -405,7 +483,7 @@ export async function restoreParticipation(c, org, user, normalized) {
     );
   for (const o of normalized.outbox)
     await c.query(
-      "INSERT INTO os_participation_outbox(org_id,id,participation_id,event_revision,purpose,channel,state,payload,created_at) VALUES($1,$2,$3,$4,'participation','email','cancelled',$5,$6)",
+      "INSERT INTO os_participation_outbox(org_id,id,participation_id,event_revision,purpose,channel,state,payload,created_at,participation_revision,intent_kind,recovered_state,consent_revision,consent_copy,template_version,first_attempt_at,attempts,last_checked_at,safe_code,provider_event_at) VALUES($1,$2,$3,$4,'participation','email','cancelled',$5,$6,$7,'legacy',$8,$9,$10,$11,$12,$13,$14,$15,$16)",
       [
         org,
         o.id,
@@ -413,6 +491,16 @@ export async function restoreParticipation(c, org, user, normalized) {
         o.eventRevision,
         JSON.stringify(o.payload),
         o.createdAt,
+        o.participationRevision,
+        o.recoveredState,
+        o.consentRevision,
+        o.consentCopy,
+        o.templateVersion,
+        o.attemptedAt,
+        o.attempts,
+        o.lastCheckedAt,
+        o.safeCode,
+        o.providerEventAt,
       ],
     );
   await participationQuota(c, org);

@@ -72,6 +72,37 @@ export function consentInstant(value) {
     throw new Error("Use a real ISO consent instant with an explicit offset.");
   return new Date(value).toISOString();
 }
+export function deliverySelection(ids) {
+  if (
+    !Array.isArray(ids) ||
+    ids.length < 1 ||
+    ids.length > 20 ||
+    new Set(ids).size !== ids.length ||
+    ids.some(
+      (id) => typeof id !== "string" || !/^[A-Za-z0-9_-]{1,100}$/.test(id),
+    )
+  )
+    throw new Error(
+      "Select 1–20 distinct current confirmations for this preview.",
+    );
+  return [...ids];
+}
+function deliveryOutcomeLabel(value) {
+  const labels = {
+    paused: "Paused historical event — not queued",
+    pending: "Queued",
+    leased: "Queued / in progress",
+    unknown: "Acceptance unknown — no automatic resend",
+    accepted: "Accepted by email provider",
+    delivered: "Delivered to receiving mail server",
+    suppressed: "Blocked by email suppression",
+    failed: "Delivery failed",
+    cancelled: "Unsent update cancelled",
+  };
+  return Object.hasOwn(labels, value)
+    ? labels[value]
+    : "Delivery status unavailable";
+}
 function node(tag, attrs = {}, ...children) {
   const element = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
@@ -227,6 +258,550 @@ export async function createStaffParticipationWorkspace({
     queueHost,
     formHost,
   );
+  const deliveryBase = `/api/orgs/${part(orgId)}/participation-delivery`;
+  const deliveryState = {
+    version: 0,
+    policy: null,
+    candidates: [],
+    candidateCursor: null,
+    selected: new Set(),
+    outbox: [],
+    outboxCursor: null,
+    preview: null,
+    available: false,
+    controlledMode: false,
+    canManage: false,
+  };
+  const deliveryIntent = commandIntent(),
+    disableIntent = commandIntent();
+  const deliveryHost = node("section", {
+    class: "panel section-gap participation-delivery-admin",
+  });
+  const deliveryNotice = output("Reading operational email policy…");
+  const deliveryControls = node("div", {}),
+    previewHost = node("div", {}),
+    outboxHost = node("div", {});
+  deliveryHost.append(
+    node("h2", {}, "Operational email delivery"),
+    node(
+      "p",
+      { class: "fine" },
+      "Participation and delivery are separate. Only a participant can enable their verified address. An administrator can review current confirmations and explicitly activate delivery; no old paused history is replayed.",
+    ),
+    deliveryNotice,
+    deliveryControls,
+    previewHost,
+    outboxHost,
+  );
+  root.append(deliveryHost);
+  const deliveryLive = (version) =>
+    isCurrent() && version === deliveryState.version;
+  async function loadDelivery(append = false, summaryOnly = false) {
+    const version = ++deliveryState.version;
+    const result = await request(
+      `${deliveryBase}${append && !summaryOnly && deliveryState.candidateCursor ? `?cursor=${part(deliveryState.candidateCursor)}` : ""}`,
+    );
+    if (!deliveryLive(version)) return;
+    if (
+      !result.policy ||
+      !Number.isSafeInteger(result.policy.revision) ||
+      result.policy.revision < 0 ||
+      typeof result.policy.enabled !== "boolean" ||
+      !Array.isArray(result.candidates) ||
+      result.candidates.length > 20
+    )
+      throw new Error(
+        "The delivery policy response could not be verified. Refresh before making a delivery decision.",
+      );
+    const policyChanged =
+      deliveryState.policy &&
+      deliveryState.policy.revision !== result.policy.revision;
+    deliveryState.policy = result.policy;
+    deliveryState.available = result.available === true;
+    deliveryState.controlledMode = result.controlledMode === true;
+    deliveryState.canManage = admin && result.canManage === true;
+    if (!summaryOnly) {
+      deliveryState.candidates = [
+        ...new Map(
+          [
+            ...(append ? deliveryState.candidates : []),
+            ...result.candidates,
+          ].map((row) => [row.participationId, row]),
+        ).values(),
+      ];
+      deliveryState.candidateCursor = result.nextCursor || null;
+    }
+    if ((!append && !summaryOnly) || policyChanged) {
+      deliveryState.selected.clear();
+      deliveryState.preview = null;
+      deliveryIntent.clear();
+      disableIntent.clear();
+      previewHost.replaceChildren();
+    }
+    renderDeliveryControls(result.counts);
+    writeStatus(
+      deliveryNotice,
+      deliveryState.available
+        ? "Service readiness is available. A preview and deliberate activation are still required."
+        : "Delivery is unavailable under the current service or controlled-recipient configuration. Booking controls remain available. A saved email choice does not mean a message was sent.",
+    );
+    if (summaryOnly && policyChanged)
+      writeStatus(
+        deliveryNotice,
+        "Delivery policy changed. The earlier selection and preview were cleared; review the current policy before choosing again.",
+      );
+  }
+  function renderDeliveryControls(counts) {
+    const policy = deliveryState.policy;
+    deliveryControls.replaceChildren(
+      node(
+        "p",
+        { class: "notice" },
+        `Organization delivery policy: ${policy.enabled ? "active" : "disabled"} · revision ${policy.revision}. Disabling delivery does not cancel participation.`,
+      ),
+      node(
+        "p",
+        { class: "fine" },
+        deliveryState.available
+          ? "Service available; delivery still requires deliberate activation and current participant consent."
+          : "Delivery service unavailable. Booking controls remain available; no acceptance is implied.",
+      ),
+      ...(deliveryState.controlledMode
+        ? [
+            node(
+              "p",
+              { class: "fine" },
+              "Controlled-recipient mode is active. The private allowed address is not shown here.",
+            ),
+          ]
+        : []),
+      node(
+        "p",
+        { class: "fine" },
+        "A queued update is not provider acceptance. Unknown acceptance is never an automatic resend. Delivery feedback refers to the receiving mail server, never a read or inbox receipt.",
+      ),
+      button("Refresh delivery policy", () =>
+        work(() => loadDelivery(), deliveryNotice),
+      ),
+    );
+    if (counts && typeof counts === "object") {
+      const summary = node("dl", { class: "participation-delivery-counts" });
+      for (const key of [
+        "paused",
+        "pending",
+        "leased",
+        "unknown",
+        "accepted",
+        "delivered",
+        "suppressed",
+        "failed",
+        "cancelled",
+      ])
+        if (Number.isSafeInteger(counts[key]) && counts[key] >= 0)
+          summary.append(
+            node(
+              "div",
+              {},
+              node("dt", {}, deliveryOutcomeLabel(key)),
+              node("dd", {}, String(counts[key])),
+            ),
+          );
+      deliveryControls.append(summary);
+    }
+    if (deliveryState.canManage) {
+      const selectionStatus = output(
+        `${deliveryState.selected.size} selected; choose 1–20 current confirmations.`,
+      );
+      const choices = node("div", { class: "participation-delivery-choices" });
+      deliveryState.candidates.forEach((candidate, index) => {
+        const input = node("input", {
+          id: `delivery-candidate-${candidate.participationId}`,
+          type: "checkbox",
+          checked: deliveryState.selected.has(candidate.participationId),
+        });
+        input.addEventListener("change", () => {
+          if (input.checked && deliveryState.selected.size >= 20) {
+            input.checked = false;
+            writeStatus(
+              selectionStatus,
+              "Choose at most 20 confirmations for one preview.",
+              true,
+            );
+            return;
+          }
+          if (input.checked)
+            deliveryState.selected.add(candidate.participationId);
+          else deliveryState.selected.delete(candidate.participationId);
+          deliveryState.preview = null;
+          previewHost.replaceChildren();
+          deliveryIntent.clear();
+          writeStatus(
+            selectionStatus,
+            `${deliveryState.selected.size} selected; choose 1–20 current confirmations.`,
+          );
+        });
+        choices.append(
+          node(
+            "div",
+            { class: "participation-delivery-choice" },
+            node(
+              "label",
+              { class: "intake-consent", for: input.id },
+              input,
+              node(
+                "span",
+                {},
+                `Confirmation ${index + 1} · ${candidate.label || "Approved occurrence"} · revision ${candidate.revision}`,
+              ),
+            ),
+            node(
+              "p",
+              { class: "fine" },
+              candidate.eligible
+                ? "Current eligibility recorded; checked again at activation."
+                : candidate.reason || "Not currently eligible.",
+            ),
+          ),
+        );
+      });
+      deliveryControls.append(
+        node("h3", {}, "Select current confirmations"),
+        node(
+          "p",
+          { class: "fine" },
+          "Selections identify participation entries, not a recipient list. Only fresh address-bound operational email consent can make an entry eligible. Selecting a row does not send or reserve a place.",
+        ),
+        choices,
+        selectionStatus,
+      );
+      if (!deliveryState.candidates.length)
+        deliveryControls.append(
+          node(
+            "p",
+            { class: "fine" },
+            "No scoped current confirmations are available on this page.",
+          ),
+        );
+      if (deliveryState.candidateCursor)
+        deliveryControls.append(
+          button("Load more confirmations", () =>
+            work(() => loadDelivery(true), deliveryNotice),
+          ),
+        );
+      deliveryControls.append(
+        button(
+          "Preview selected confirmations",
+          () =>
+            work(async () => {
+              const ids = deliverySelection([...deliveryState.selected]);
+              const result = await request(`${deliveryBase}/preview`, {
+                method: "POST",
+                body: {
+                  policyRevision: policy.revision,
+                  participationIds: ids,
+                },
+              });
+              if (!isCurrent()) return;
+              if (
+                typeof result.previewId !== "string" ||
+                !/^[A-Za-z0-9_-]{1,100}$/.test(result.previewId) ||
+                !/^[a-f0-9]{64}$/.test(result.reviewHash || "") ||
+                result.policyRevision !== policy.revision ||
+                !Array.isArray(result.rows) ||
+                result.rows.length !== ids.length ||
+                new Set(result.rows.map((row) => row.participationId)).size !==
+                  ids.length ||
+                result.rows.some(
+                  (row) =>
+                    !ids.includes(row.participationId) ||
+                    typeof row.eligible !== "boolean",
+                ) ||
+                !result.summary ||
+                result.summary.selected !== ids.length ||
+                result.summary.eligible !==
+                  result.rows.filter((row) => row.eligible).length ||
+                result.summary.ineligible !==
+                  result.rows.filter((row) => !row.eligible).length ||
+                !Number.isFinite(Date.parse(result.expiresAt))
+              )
+                throw new Error(
+                  "The preview could not be verified. Refresh delivery policy before continuing.",
+                );
+              deliveryState.preview = result;
+              deliveryIntent.clear();
+              renderDeliveryPreview();
+              writeStatus(
+                deliveryNotice,
+                "Preview prepared. Review every result and explicitly activate it before any current-state update is queued.",
+              );
+            }, selectionStatus),
+          "subtle",
+        ),
+      );
+      if (policy.enabled)
+        deliveryControls.append(
+          button(
+            "Disable organization email delivery",
+            () => {
+              previewHost.replaceChildren();
+              const confirm = node("input", {
+                id: "delivery-disable-confirm",
+                type: "checkbox",
+                required: true,
+              });
+              const status = output();
+              const form = node(
+                "form",
+                { id: "participation-delivery-disable" },
+                node("h3", {}, "Disable delivery without cancelling places?"),
+                node(
+                  "p",
+                  {},
+                  "Eligible unsent updates will be cancelled. An email already attempted may still arrive. Disabling policy sends no confirmation email and does not change participation.",
+                ),
+                node(
+                  "label",
+                  { class: "intake-consent", for: confirm.id },
+                  confirm,
+                  node(
+                    "span",
+                    {},
+                    "Disable this organization’s operational participation email delivery.",
+                  ),
+                ),
+                node(
+                  "button",
+                  { type: "submit", class: "button danger" },
+                  "Confirm delivery disable",
+                ),
+                button("Keep delivery policy", () =>
+                  previewHost.replaceChildren(),
+                ),
+                status,
+              );
+              form.addEventListener("submit", (event) => {
+                event.preventDefault();
+                if (state.busy || !form.reportValidity()) return;
+                void work(async () => {
+                  if (!confirm.checked)
+                    throw new Error(
+                      "Explicitly confirm delivery disable first.",
+                    );
+                  const endpoint = `${deliveryBase}/disable`,
+                    body = disableIntent.prepare(endpoint, {
+                      policyRevision: policy.revision,
+                    });
+                  let result;
+                  try {
+                    result = await request(endpoint, { method: "POST", body });
+                  } catch (error) {
+                    disableIntent.rejected(error.status);
+                    throw error;
+                  }
+                  if (!isCurrent()) return;
+                  if (!result.policy || result.policy.enabled !== false)
+                    throw new Error(
+                      "The disabled policy response could not be verified. Refresh saved policy.",
+                    );
+                  await loadDelivery();
+                  await loadDeliveryOutbox();
+                  writeStatus(
+                    deliveryNotice,
+                    "Organization delivery disabled. Eligible unsent updates are cancelled; places are unchanged.",
+                  );
+                }, status);
+              });
+              previewHost.append(form);
+              form.querySelector("h3")?.setAttribute("tabindex", "-1");
+              form.querySelector("h3")?.focus();
+            },
+            "danger",
+          ),
+        );
+    } else
+      deliveryControls.append(
+        node(
+          "p",
+          { class: "fine" },
+          "Only an organization administrator can preview, activate or disable delivery. Your scoped delivery outcomes are shown below.",
+        ),
+      );
+  }
+  function renderDeliveryPreview() {
+    const preview = deliveryState.preview;
+    if (!preview) return;
+    const agree = node("input", {
+      id: "delivery-activate-confirm",
+      type: "checkbox",
+      required: true,
+    });
+    const status = output();
+    const blocked =
+      preview.summary.ineligible !== 0 ||
+      preview.summary.eligible !== preview.summary.selected ||
+      !deliveryState.available;
+    const form = node(
+      "form",
+      { id: "participation-delivery-activation" },
+      node("h3", { tabindex: "-1" }, "Review current-state delivery preview"),
+      node(
+        "p",
+        {},
+        `${preview.summary.selected} selected · ${preview.summary.eligible} eligible · ${preview.summary.ineligible} ineligible. Expires ${new Date(preview.expiresAt).toLocaleString()}.`,
+      ),
+      ...preview.rows.map((row) =>
+        node(
+          "p",
+          { class: row.eligible ? "fine" : "notice fine" },
+          `${deliveryState.candidates.find((candidate) => candidate.participationId === row.participationId)?.label || "Selected confirmation"}: ${row.eligible ? "Eligible for this preview" : row.reason || "Not eligible"}`,
+        ),
+      ),
+      node(
+        "p",
+        { class: "fine" },
+        "Activation rechecks the exact policy, participation, link and fresh delivery consent. It queues only these current snapshots and admits later eligible transitions. It never sends old paused history or retries an uncertain provider attempt.",
+      ),
+      node(
+        "label",
+        { class: "intake-consent", for: agree.id },
+        agree,
+        node(
+          "span",
+          {},
+          "I reviewed this exact bounded selection and authorize current-state snapshots plus later eligible updates under this policy.",
+        ),
+      ),
+      node(
+        "button",
+        { type: "submit", class: "button primary", disabled: blocked },
+        "Activate this exact preview",
+      ),
+      button("Discard delivery preview", () => {
+        deliveryState.preview = null;
+        previewHost.replaceChildren();
+      }),
+      status,
+    );
+    if (blocked)
+      form.append(
+        node(
+          "p",
+          { class: "notice" },
+          "Activation is unavailable until every selected row is eligible and the service is available. No partial activation is performed.",
+        ),
+      );
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (state.busy || !form.reportValidity()) return;
+      void work(async () => {
+        if (blocked || !agree.checked)
+          throw new Error(
+            "Review and explicitly authorize a fully eligible preview first.",
+          );
+        if (Date.parse(preview.expiresAt) <= Date.now())
+          throw new Error(
+            "This preview expired. Refresh the policy and prepare another preview.",
+          );
+        const endpoint = `${deliveryBase}/activate`,
+          body = deliveryIntent.prepare(endpoint, {
+            previewId: preview.previewId,
+            reviewHash: preview.reviewHash,
+            policyRevision: preview.policyRevision,
+          });
+        let result;
+        try {
+          result = await request(endpoint, { method: "POST", body });
+        } catch (error) {
+          deliveryIntent.rejected(error.status);
+          throw error;
+        }
+        if (!isCurrent()) return;
+        if (
+          !result.policy ||
+          result.policy.enabled !== true ||
+          !Number.isSafeInteger(result.queued) ||
+          !Number.isSafeInteger(result.alreadyRecorded)
+        )
+          throw new Error(
+            "The activation response could not be verified. Refresh the saved policy before repeating a command.",
+          );
+        await loadDelivery();
+        await loadDeliveryOutbox();
+        writeStatus(
+          deliveryNotice,
+          `Policy activated. ${result.queued} new current-state updates queued; ${result.alreadyRecorded} already recorded. Queuing does not establish provider acceptance or receipt.`,
+        );
+      }, status);
+    });
+    previewHost.replaceChildren(form);
+    form.querySelector("h3")?.focus();
+  }
+  async function loadDeliveryOutbox(append = false) {
+    const version = deliveryState.version;
+    const result = await request(
+      `${deliveryBase}/outbox${append && deliveryState.outboxCursor ? `?cursor=${part(deliveryState.outboxCursor)}` : ""}`,
+    );
+    if (!deliveryLive(version)) return;
+    if (!Array.isArray(result.outbox) || result.outbox.length > 20)
+      throw new Error(
+        "The scoped delivery outcome page could not be verified.",
+      );
+    deliveryState.outbox = [
+      ...new Map(
+        [...(append ? deliveryState.outbox : []), ...result.outbox].map(
+          (row) => [row.id, row],
+        ),
+      ).values(),
+    ];
+    deliveryState.outboxCursor = result.nextCursor || null;
+    outboxHost.replaceChildren(
+      node("h3", {}, "Scoped delivery outcomes"),
+      node(
+        "p",
+        { class: "fine" },
+        "No recipient address, provider identity, private answers or relay credentials are shown. An outcome does not change a booked place.",
+      ),
+      button("Refresh delivery outcomes", () =>
+        work(async () => {
+          await loadDelivery(false, true);
+          await loadDeliveryOutbox();
+        }, deliveryNotice),
+      ),
+    );
+    if (!deliveryState.outbox.length)
+      outboxHost.append(
+        node("p", { class: "fine" }, "No scoped delivery outcomes returned."),
+      );
+    deliveryState.outbox.forEach((row) =>
+      outboxHost.append(
+        node(
+          "article",
+          { class: "participation-delivery-outcome" },
+          node("h4", {}, deliveryOutcomeLabel(row.state)),
+          row.providerEventAt
+            ? node(
+                "p",
+                { class: "fine" },
+                `Provider event: ${new Date(row.providerEventAt).toLocaleString()}`,
+              )
+            : node("p", { class: "fine" }, "No provider event time recorded."),
+          row.state === "unknown"
+            ? node(
+                "p",
+                { class: "notice fine" },
+                "A provider attempt may have completed. This update will not be resent automatically. Check saved delivery status, and use the portal or the organizer’s approved contact route for current participation.",
+              )
+            : null,
+        ),
+      ),
+    );
+    if (deliveryState.outboxCursor)
+      outboxHost.append(
+        button("Load more delivery outcomes", () =>
+          work(() => loadDeliveryOutbox(true), deliveryNotice),
+        ),
+      );
+  }
   function closeForm() {
     formHost.replaceChildren();
     formHost.hidden = true;
@@ -401,7 +976,7 @@ export async function createStaffParticipationWorkspace({
       node(
         "p",
         { class: "notice fine" },
-        "Email updates are not enabled. Notification events remain paused; the portal is the current status view. No confirmation, cancellation or promotion here sends a message.",
+        "Operational email requires a fresh participant opt-in and an active delivery policy. Booking changes commit independently of transport. Review current delivery policy and outcomes below; this portal remains the current status view.",
       ),
     );
     if (target.recoveryBlock)
@@ -769,7 +1344,7 @@ export async function createStaffParticipationWorkspace({
         node(
           "p",
           { class: "fine" },
-          "Email updates not active; outbox events remain paused.",
+          "Email consent and delivery outcomes are separate from this participation state. Review the scoped delivery section below.",
         ),
       );
       const actions = node("div", { class: "actions" });
@@ -907,7 +1482,7 @@ export async function createStaffParticipationWorkspace({
             {},
             action === "cancel"
               ? "I intend to cancel this participation, without automatically promoting another person."
-              : "I reviewed the saved candidate, specific consent and occurrence. I understand this does not record attendance or send email.",
+              : "I reviewed the saved candidate, specific consent and occurrence. This does not record attendance. A separately authorized operational update may be queued.",
           ),
         ),
         node(
@@ -959,10 +1534,10 @@ export async function createStaffParticipationWorkspace({
           writeStatus(
             notice,
             action === "cancel"
-              ? "Cancellation recorded. No waitlist promotion or message occurred."
+              ? "Cancellation recorded. No automatic waitlist promotion occurred. Any eligible delivery update is handled separately."
               : action === "waitlist"
-                ? "Waitlist recorded. No place reserved and no message sent."
-                : "Confirmation recorded. Attendance is separate; email updates remain paused.",
+                ? "Waitlist recorded. No place reserved. Any eligible delivery update is handled separately."
+                : "Confirmation recorded. Attendance and operational email delivery remain separate.",
           );
         }, status);
       });
@@ -1063,7 +1638,7 @@ export async function createStaffParticipationWorkspace({
         node(
           "p",
           { class: "notice fine" },
-          "Email updates remain off and not active in this release.",
+          "Offline participation consent cannot enable operational email. Only the verified participant can make that separate choice.",
         ),
         node(
           "div",
@@ -1154,5 +1729,26 @@ export async function createStaffParticipationWorkspace({
     picker.value = initialTargetId;
     await loadTarget(initialTargetId);
   }
+  void (async () => {
+    try {
+      await loadDelivery();
+      await loadDeliveryOutbox();
+    } catch (error) {
+      if (!isCurrent()) return;
+      writeStatus(
+        deliveryNotice,
+        "Delivery controls are unavailable. Booking controls remain usable. Refresh delivery policy to try again.",
+        true,
+      );
+      deliveryControls.append(
+        button("Refresh delivery policy", () =>
+          work(async () => {
+            await loadDelivery();
+            await loadDeliveryOutbox();
+          }, deliveryNotice),
+        ),
+      );
+    }
+  })();
   return root;
 }

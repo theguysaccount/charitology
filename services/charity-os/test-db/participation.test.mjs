@@ -63,6 +63,15 @@ test(
       await owner.pool.query(`CREATE SCHEMA ${quote(schema)}`);
       migration = database(direct(process.env.DATABASE_URL), { schema });
       await migration.migrate();
+      // Synthetic auth projection only; actual Better Auth sessions are covered
+      // by runtime.test.mjs. This table exists solely in this random schema.
+      await migration.pool.query(
+        'CREATE TABLE "user" (id text PRIMARY KEY,email text NOT NULL,"emailVerified" boolean NOT NULL)',
+      );
+      await migration.pool.query(
+        'INSERT INTO "user"(id,email,"emailVerified") VALUES($1,$2,true)',
+        [ownSession.user.id, ownSession.user.email],
+      );
       const appRole = decodeURIComponent(
         new URL(process.env.OS_DATABASE_URL).username,
       );

@@ -493,3 +493,63 @@ test("participant query/CSRF/session failures occur before any tenant access", a
   );
   assert.equal(calls, 0);
 });
+
+test("version-two delivery recovery keeps outcome provenance but removes send and recipient authority", () => {
+  const b = backup();
+  b.participation.version = 2;
+  b.participation.participations[0].delivery_consent = {
+    enabled: true,
+    userId: "untrusted-source-user",
+  };
+  b.participation.outbox = [
+    {
+      id: "historical-notice",
+      participationId: "p",
+      eventRevision: 42,
+      participationRevision: 5,
+      purpose: "participation",
+      channel: "email",
+      state: "unknown",
+      payload: { state: "confirmed", participationId: "p", revision: 42 },
+      createdAt: "2026-10-26T00:00:00.000Z",
+      intentKind: "snapshot",
+      consentRevision: 1,
+      consentCopy: "participation-email-v1",
+      templateVersion: "participation-notice-v1",
+      attemptedAt: "2026-10-26T00:01:00.000Z",
+      attempts: 1,
+      lastCheckedAt: null,
+      safeCode: "attempt_unconfirmed",
+      providerEventAt: null,
+      recoveredState: null,
+      relayKey: "untrusted-source-relay-key",
+      userId: "untrusted-source-user",
+      recipientHash: "untrusted-source-recipient",
+    },
+  ];
+  const normalized = restoredParticipation(b),
+    row = normalized.outbox[0];
+  assert.equal(row.eventRevision, 42);
+  assert.equal(row.participationRevision, 5);
+  assert.equal(row.state, "cancelled");
+  assert.equal(row.recoveredState, "unknown");
+  assert.equal(row.intentKind, "legacy");
+  assert.equal(row.safeCode, "attempt_unconfirmed");
+  assert.equal(row.relayKey, undefined);
+  assert.equal(row.userId, undefined);
+  assert.equal(row.recipientHash, undefined);
+  assert.equal(normalized.participations[0].delivery_consent, undefined);
+  for (const patch of [
+    { attempts: -1 },
+    { participationRevision: null },
+    { state: "send-again" },
+    { providerEventAt: "2026-10-26" },
+  ]) {
+    const forged = structuredClone(b);
+    Object.assign(forged.participation.outbox[0], patch);
+    assert.throws(
+      () => restoredParticipation(forged),
+      code("participation_backup"),
+    );
+  }
+});

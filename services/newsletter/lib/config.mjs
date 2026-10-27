@@ -27,5 +27,8 @@ export function config(env = process.env) {
     webhookSecret: env.RESEND_WEBHOOK_SECRET || '',
     osOrigin,
     osMailSecret: env.OS_MAIL_RELAY_SECRET || '',
+    participationEnabled: env.OS_PARTICIPATION_DELIVERY_ENABLED === 'true',
+    participationTestOnly: env.OS_PARTICIPATION_TEST_ONLY !== 'false',
+    participationTestRecipient: (env.OS_PARTICIPATION_TEST_RECIPIENT || '').trim().toLowerCase(),
   };
 }
