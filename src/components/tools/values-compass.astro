@@ -12,6 +12,7 @@ import { url } from '../../lib/site';
   </div>
 
   <form id="vc-form" novalidate>
+    <fieldset data-private-form-controls disabled>
     <h3>1. Where would you aim your giving?</h3>
     <div class="tool-grid">
       {
@@ -51,7 +52,11 @@ import { url } from '../../lib/site';
       <button class="btn" type="submit">See my compass</button>
       <button class="btn btn-ghost" type="reset">Start over</button>
     </div>
+    </fieldset>
   </form>
+  <noscript>
+    <p>This private local form needs JavaScript. Its fields stay disabled until local editing is ready.</p>
+  </noscript>
 
   <div id="vc-result" class="result" hidden aria-live="polite">
     <div class="tool-grid">
@@ -89,6 +94,12 @@ import { url } from '../../lib/site';
 </section>
 
 <style>
+  [data-private-form-controls] {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
   .vc-gap {
     margin-top: 1.75rem;
   }
@@ -191,13 +202,15 @@ import { url } from '../../lib/site';
   import type { D1ValueMap } from '../../lib/client/donor-recovery-schemas';
 
   async function initializeDonorTool(): Promise<void> {
+  const form = $<HTMLFormElement>('#vc-form');
+  form.addEventListener('submit', event => event.preventDefault(), true);
 
 
 
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   const link = (path: string) => base + path;
 
-  const form = $<HTMLFormElement>('#vc-form');
+
   const result = $('#vc-result');
   type Answers = { d: number[]; s: number[] };
 
@@ -343,6 +356,8 @@ import { url } from '../../lib/site';
   const saved = d1Session.snapshot();
   const answers = shared ? decodeState<Answers>(shared) : saved.persistence === 'saved' && saved.hasState ? saved.value.answers : undefined;
   if (d1FinishLoad() && answers && validAnswers(answers)) { fill(answers); show(answers); }
+
+  form.querySelector<HTMLFieldSetElement>('[data-private-form-controls]')!.disabled = false;
 
   }
   void initializeDonorTool().catch(error => {

@@ -5,6 +5,7 @@
     Classifications are your hypotheses; evidence quality and impact are
     separate questions.
   </p><form id="census-form">
+    <fieldset data-private-form-controls disabled>
     <div class="census-controls">
       <label>Activity<input name="activity" maxlength="200" required /></label
       ><label
@@ -37,7 +38,13 @@
     <button class="btn btn-ghost" type="button" id="census-new"
       >Start another</button
     >
-  </form><label
+    </fieldset>
+  </form><noscript
+    ><p>
+      This local form needs JavaScript. Its fields stay disabled until local
+      editing is ready; nothing is submitted by this form.
+    </p></noscript
+  ><label
     >Currency for the whole sample<input
       id="census-currency"
       value="USD"
@@ -74,6 +81,8 @@
   } from "../lib/client/completion-models";
   const root = document.querySelector("#depth-census");
   if (root) {
+    const form = root.querySelector<HTMLFormElement>("form")!;
+    form.addEventListener("submit", (event) => event.preventDefault(), true);
     type Row = {
       id: string;
       activity: string;
@@ -88,7 +97,6 @@
     const draft = guardedDraft("charitology-depth-census-v1");
     let writable = true;
     let editing = "";
-    const form = root.querySelector<HTMLFormElement>("form")!;
     const currency = root.querySelector<HTMLInputElement>("#census-currency")!;
     const status = root.querySelector<HTMLElement>("#census-status")!;
 
@@ -362,9 +370,18 @@
       root!.querySelector<HTMLElement>("#census-preview")!.hidden = true;
     });
     render();
+    root.querySelector<HTMLFieldSetElement>(
+      "[data-private-form-controls]",
+    )!.disabled = false;
   }
 </script>
 <style>
+  [data-private-form-controls] {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
   #depth-census {
     border: 1px solid var(--rule);
     border-radius: var(--radius);

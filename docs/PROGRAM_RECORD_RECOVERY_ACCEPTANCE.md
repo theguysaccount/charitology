@@ -1,0 +1,31 @@
+# Program records and local OS recovery acceptance
+
+October 27, 2026 · AI-assisted engineering · implementation in progress. Read the committed pre-runtime [plan](PROGRAM_RECORD_RECOVERY_PLAN.md) and [interfaces](PROGRAM_RECORD_RECOVERY_INTERFACES.md). This document does not claim publication or native browser acceptance.
+
+## Preserved scope
+
+The five general desks—University Chapters, Local Charitology, Time Charitology, Corporate Program and Policy Program—and the smaller browser-local Charity OS retain their six exact existing keys and native version-1 formats. No extra saved key, automatic migration, server submission, account, mail or money movement is introduced. The separately hosted shared OS retains its own authenticated service and permissions.
+
+Strict fixed schemas retain IDs, array order, free text, source strings, null/zero distinctions and existing calculations. Unsupported future fields, duplicate keys and noncanonical identity/date/enum values are protected as raw data, not repaired or silently dropped. Whole native JSON capacity is 8,000,000 UTF-8 bytes; the local OS additionally retains its compact 4,500,000-byte workspace bound. Original raw-saved-copy archives are separately bounded at 64,000,000 bytes; unfinished-form recovery at 524,288 bytes. The whole bound wins without truncation.
+
+The fixed schema table is inert and checked against all five actual configurations. All six real empty/sample producer exports are admitted. The OS native envelope remains compatible with explicit shared-OS migration; this work does not reinterpret legacy observations as causal results or introduce accounting precision the old model did not have.
+
+## Guarded actions
+
+One exact-key Web Lock coordinates updated tabs. Every write rechecks exact observed saved bytes and the owned current memory/view immediately before persistence. Missing Web Locks means read-only access and recovery exports. Old cached clients and arbitrary direct localStorage writes do not become transactions through this mechanism; reload older open tabs after an update.
+
+A failed set/remove keeps its exact candidate and operation for export or deliberate retry. New ordinary saves cannot silently replace that pending intent. Absent storage, a saved empty object, unreadable bytes and valid unsaved memory are distinct. Clear reviews removal of one selected key and leaves an unsaved empty default. One guarded Undo retains the previous valid model/presence. Original protected A and currently observed B remain separately downloadable; successful reload without explicit discard retains protected A.
+
+Native backups contain complete validated records, including retained failed-save memory. They exclude unfinished controls. Separate raw-form and raw-saved-copy downloads are inert recovery documents and cannot be passed off as native restore files. Downloading does not clean forms or grant discard permission. Recovery Apply uses an instance-owned one-use preview, never rereads the file and rechecks the captured local version. Invalid new file choices, cancel, newer edits, external change and disposal revoke earlier authority.
+
+The session bounds all full-replacement preparation to one running job and one replaceable pending job. Caller values/options are synchronously detached before queueing. Final lock guards inspect owned state, without calling application validators or reflecting through caller objects. Browser reflection cannot promise trap-free detection of a transparent Proxy; native JSON/byte admission is plain by construction. A constructor-only status notification updates record/capability views after Retry or failed replacement while keeping raw forms; explicit successful adoption remains the separate reset seam. These implementation refinements are recorded after the original contract freeze at `c6445482401b0052350f2bf3de6c355d9291649c`.
+
+## Current executable evidence
+
+Twenty-five schema/format groups pass, including real producer compatibility, explicit choices/defaults, exact 8,000,000-byte valid native general backup and +1 refusal, OS compact bound, whole raw/form limits and strict duplicate-key/UTF-8/depth admission. Thirty-five actual engine groups and strict types pass: two cooperating sessions, unavailable reads, quota/remove failure and exact retry, raw A/B/C recovery, one-use authority, detached inputs, held digest/lock queues and disposal. Thirty-one actual mounted-controls groups pass, including malformed/late/canceled file choices, synchronous refusals, readonly reload, native Apply, retained failed memory, separate form backup, callback failure and disposal while removal waits for a lock.
+
+Those 91 core groups use actual production modules with fictional records and controlled DOM/storage/locks. They are not native browser or operating-system file-save evidence. The local OS integration additionally passes 22 actual Astro SSR/mounted groups and strict inline types, including retained newer fields/IDs, exact linked-record deletion, failed replacement status and initialization disposal. Its three original default-GET privacy groups still pass. Fifteen other proved private form mounts now default to disabled controls until early submit interception and complete initialization; 47 actual SSR/script/inventory/type groups pass, alongside the existing donor and research checks. No storage/business behavior changed in those additional privacy corrections. Five general caller integrations, complete build/check, controlled Chrome, exact-head CI and public-byte proof remain pending. Native Save remains a separate pending capability; no generated Blob, file chooser input or response-byte check is labeled as a saved file.
+
+## Remaining operating work
+
+These are local planning records. A chapter role is not an appointed officer, a volunteer plan is not a confirmed placement, a financial scenario is not a payment or approved budget, and an observation is not proof of causal impact. Actual organizations, consented participants, independent review, permissions and accountable operations remain separate from engineering fixtures.

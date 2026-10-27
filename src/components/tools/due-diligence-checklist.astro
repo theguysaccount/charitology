@@ -83,6 +83,7 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
   </nav>
 
   <form id="dd-form" novalidate>
+    <fieldset data-private-form-controls disabled>
     {
       groups.map((g) => (
         <section class={g.flag ? 'dd-group dd-flags' : 'dd-group'} id={`dd-g-${g.id}`} aria-labelledby={`dd-gh-${g.id}`}>
@@ -145,7 +146,11 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
         </section>
       ))
     }
+    </fieldset>
   </form>
+  <noscript>
+    <p>This private local form needs JavaScript. Its fields stay disabled until local editing is ready.</p>
+  </noscript>
 
   <div class="result">
     <h3>Summary</h3>
@@ -199,6 +204,12 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
 </section>
 
 <style>
+  [data-private-form-controls] {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
   .dd-orgbar {
     display: grid;
     gap: 0 1rem;
@@ -380,6 +391,9 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
   import type { D1ValueMap } from '../../lib/client/donor-recovery-schemas';
 
   async function initializeDonorTool(): Promise<void> {
+  const form = $<HTMLFormElement>('#dd-form');
+  form.addEventListener('submit', event => event.preventDefault(), true);
+
 
 
 
@@ -611,6 +625,8 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
     const ok = await copy(report());
     flash(e.currentTarget as HTMLElement, ok ? 'Report copied' : 'Copy failed');
   });
+
+  form.querySelector<HTMLFieldSetElement>('[data-private-form-controls]')!.disabled = false;
 
   }
   void initializeDonorTool().catch(error => {
