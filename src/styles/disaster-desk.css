@@ -1,0 +1,227 @@
+.disaster-desk {
+  margin-block: 2rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius,12px);
+  padding: clamp(.85rem,3vw,1.65rem);
+  background: var(--paper,var(--bg));
+  color: var(--ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.disaster-desk * {
+  box-sizing: border-box;
+  min-width: 0;
+}
+.disaster-desk [hidden] {
+  display: none!important;
+}
+.disaster-desk h2,.disaster-desk h3,.disaster-desk h4,.disaster-desk h5,.disaster-desk h6 {
+  color: var(--ink);
+  line-height: 1.25;
+}
+.disaster-desk h5,.disaster-desk h6 {
+  font-size: 1rem;
+}
+.disaster-desk p,.disaster-desk li {
+  max-width: 80ch;
+}
+.disaster-desk code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: .85em;
+}
+.disaster-desk a {
+  overflow-wrap: anywhere;
+}
+.disaster-desk input,.disaster-desk select {
+  width: 100%;
+  max-width: 100%;
+  font: inherit;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: .55rem;
+}
+.disaster-desk label {
+  display: grid;
+  gap: .35rem;
+  font-size: .9rem;
+}
+.disaster-desk button {
+  font: inherit;
+  cursor: pointer;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: .5rem .7rem;
+  white-space: normal;
+}
+.disaster-desk :is(a,button,input,select,summary):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.disaster-desk summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 600;
+}
+.disaster-desk details {
+  margin-block: .8rem;
+  padding: .8rem;
+  border: 1px solid var(--rule-2,var(--rule));
+  border-radius: 6px;
+}
+.dd-header {
+  margin-bottom: 1.3rem;
+}
+.dd-kicker,.dd-labels {
+  font-size: .8rem;
+  color: var(--ink-2);
+  letter-spacing: .015em;
+}
+.dd-note,.dd-locator {
+  font-size: .88rem;
+  color: var(--ink-2);
+}
+.dd-warning {
+  padding: .85rem 1rem;
+  border-left: 4px solid var(--accent);
+  background: var(--bg);
+  color: var(--ink);
+}
+.dd-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .65rem 1rem;
+  margin-block: .8rem;
+}
+.dd-facts {
+  display: grid;
+  grid-template-columns: minmax(8rem,.8fr) minmax(0,3fr);
+  gap: .6rem 1rem;
+  margin-block: 1rem;
+}
+.dd-facts dt {
+  font-weight: 600;
+}
+.dd-facts dd {
+  margin: 0;
+}
+.dd-facts dd p {
+  margin: .3rem 0;
+}
+.dd-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(min(100%,12rem),1fr));
+  gap: .85rem;
+  padding: 1rem;
+  margin-block: 1rem;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+.dd-filters>p,.dd-filters>.dd-links {
+  grid-column: 1/-1;
+}
+.dd-search {
+  grid-column: 1/-1;
+}
+.dd-device {
+  margin-block: 1rem;
+  padding: .8rem;
+  border: 1px dashed var(--rule);
+  border-radius: 6px;
+}
+.dd-incidents {
+  display: grid;
+  gap: 1.5rem;
+}
+.dd-incident,.dd-source {
+  padding: clamp(.8rem,2vw,1.25rem);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+}
+.dd-incident h3,.dd-source h4 {
+  margin-top: 0;
+}
+.dd-claim {
+  margin-block: 1rem;
+  border-top: 1px solid var(--rule-2,var(--rule));
+  padding-top: 1rem;
+}
+.dd-claim h5 {
+  margin-top: 0;
+}
+.dd-refs {
+  font-size: .85rem;
+}
+.dd-planner-copy {
+  margin-top: 1rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+}
+.dd-planner-copy input {
+  max-width: 40rem;
+}
+.dd-sources {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+.dd-sources>h3 {
+  margin-bottom: 0;
+}
+.dd-note-item {
+  padding: .6rem .8rem;
+  margin-block: .7rem;
+  border-left: 2px solid var(--rule);
+  background: var(--paper,var(--bg));
+}
+.dd-note-item h6 {
+  margin: .1rem 0 .5rem;
+}
+.dd-hash {
+  font-size: .82rem;
+}
+.dd-related {
+  display: block;
+  margin-block: .35rem;
+}
+.dd-changes {
+  margin-top: 1.5rem;
+}
+.dd-changes li {
+  margin-block: .9rem;
+}
+.dd-history {
+  margin-top: 1rem;
+}
+@media(max-width:540px) {
+  .dd-facts {
+    grid-template-columns: 1fr;
+    gap: .25rem;
+  }
+  .dd-facts dd {
+    margin-bottom: .7rem;
+  }
+  .dd-links {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .dd-links a,.dd-links button {
+    max-width: 100%;
+  }
+  .disaster-desk details {
+    padding: .65rem;
+  }
+  .dd-note-item {
+    padding: .5rem;
+  }
+  .dd-filters {
+    padding: .7rem;
+  }
+}

@@ -20,6 +20,11 @@ on:
         required: true
         type: string
 
+      disaster_incidents_base_sha:
+        description: Exact previous Disaster Desk commit SHA available in this repository
+        required: true
+        type: string
+
 permissions:
   contents: read
   pages: write
@@ -61,6 +66,8 @@ jobs:
         run: npm run check:observations-history
       - name: Verify exact committed directory Resource history
         run: npm run check:directory-resources-history
+      - name: Verify exact committed Disaster Desk history
+        run: npm run check:disasters-history
       - name: Build
         run: npm run build
         env:

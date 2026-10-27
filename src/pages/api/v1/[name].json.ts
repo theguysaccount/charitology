@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
-import { ENDPOINTS, buildEndpoint } from '../../../lib/api';
+import { availableEndpoints, buildEndpoint } from '../../../lib/api';
 
-export function getStaticPaths() {
-  return ENDPOINTS.map((e) => ({ params: { name: e.name } }));
+export async function getStaticPaths() {
+  return (await availableEndpoints()).map((e) => ({ params: { name: e.name } }));
 }
 
 export const GET: APIRoute = async ({ params }) => {

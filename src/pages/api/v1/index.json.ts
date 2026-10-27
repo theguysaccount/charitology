@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { API_LICENSE_SUMMARY, ENDPOINTS } from "../../../lib/api";
+import { API_LICENSE_SUMMARY, availableEndpoints } from "../../../lib/api";
 import { absolute } from "../../../lib/site";
 
 export const GET: APIRoute = async ({ site }) => {
@@ -8,7 +8,7 @@ export const GET: APIRoute = async ({ site }) => {
     version: 1,
     license: API_LICENSE_SUMMARY,
     docs: absolute("/tools/public-api/", site),
-    endpoints: ENDPOINTS.map((e) => ({
+    endpoints: (await availableEndpoints()).map((e) => ({
       name: e.name,
       description: e.description,
       url: absolute(`/api/v1/${e.name}.json`, site),

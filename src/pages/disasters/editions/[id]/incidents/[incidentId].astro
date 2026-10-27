@@ -1,0 +1,11 @@
+---
+import Entry from "../../../../../layouts/Entry.astro";
+import DisasterDesk from "../../../../../components/DisasterDesk.astro";
+import { loadDisasters, requireDisasters, disasterEditionHref } from "../../../../../lib/disaster-incidents/public.mjs";
+export function getStaticPaths() { return (loadDisasters()?.editions ?? []).flatMap(e=>e.projection.incidents.map(({incident})=>({params:{id:e.pin.id,incidentId:incident.id}}))); }
+const data=requireDisasters(), selected=data.selectedIncident(Astro.params.id!,Astro.params.incidentId!);
+const incident=selected.projection.packet.incidents[0];
+---
+<Entry title={incident.name} eyebrow="Incident in a fixed edition" summary="This exact source selection remains fixed as later reports arrive." crumbs={[{label:"Disaster Desk",href:"/disasters/"},{label:selected.projection.editionId,href:disasterEditionHref(selected.projection.editionId)},{label:incident.name}]}>
+  <DisasterDesk projection={selected.projection} view="incident" incidentId={incident.id} editions={data.editions.map(e=>e.projection.packet.edition)} />
+</Entry>

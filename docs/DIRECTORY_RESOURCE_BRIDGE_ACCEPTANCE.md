@@ -1,6 +1,6 @@
 # Directory to Resource review: acceptance
 
-October 27, 2026 · AI-assisted engineering · implemented and tested in a protected production stage. Canonical promotion, main merge and public Pages publication remain pending. The [plan](DIRECTORY_RESOURCE_BRIDGE_PLAN.md) and [interfaces](DIRECTORY_RESOURCE_BRIDGE_INTERFACES.md) were reviewed and frozen at `31a640e0e7f12f3f052635030ab524ec1d5ac6d7` before implementation. These are bounded software checks with fictional organizations, not independent human review or a real organizational pilot.
+October 27, 2026 · AI-assisted engineering · published after exact final-head CI, protected staging and canonical checks. The [plan](DIRECTORY_RESOURCE_BRIDGE_PLAN.md) and [interfaces](DIRECTORY_RESOURCE_BRIDGE_INTERFACES.md) were reviewed and frozen at `31a640e0e7f12f3f052635030ab524ec1d5ac6d7` before implementation. These are bounded software checks with fictional organizations, not independent human review or a real organizational pilot.
 
 ## Working flow and source evidence
 
@@ -67,7 +67,19 @@ The private release harness preserved three corrections honestly. Its first migr
 
 Exact stage **`dpl_F2ACtEYm5CLHDUwwyKQQCJBfJxdE`**, [immutable URL](https://charitology-4bjce7cq7-jacksonjezio-7345s-projects.vercel.app), is READY with production target, Node 24, the correct team/project/service root and all three exact runtime metadata fields. Its 3,290-file Git package has manifest SHA-256 `e63ca0904da55cd9528aaf6ffd0ab606cdb34596d5a304d9441b0f7dbecdeac6`. **43 protected HTTP checks and 13 exact committed asset comparisons pass.** Protection stayed enabled. No accepted production login, mail, provider, cron or job operation was invoked.
 
-The stage was created with `--prod --skip-domain`. Canonical inspection still identified the previous `dpl_GGsw6RHvUEFEmqiwaDkvHSxgDzPm` deployment. **No canonical promotion, main merge or public Pages publication is claimed here.** Those require coordinator approval and exact final-head CI. Normal future Git auto-assignment remains enabled and must be inspected before any later promotion claim.
+The stage was created with `--prod --skip-domain`. At that protected-stage proof, canonical inspection still identified the previous `dpl_GGsw6RHvUEFEmqiwaDkvHSxgDzPm` deployment. That earlier proof did not establish canonical promotion, main merge or public Pages publication; the later release evidence is recorded below. Normal future Git auto-assignment remains enabled and must be inspected before any later promotion claim.
+
+## Published release verification
+
+Final documentation head `670f132fdfcd7e0d36d95388fa6ead8b2776a547` passed both exact CI runs [40582966527](https://github.com/theguysaccount/charitology/actions/runs/40582966527) and [40582978314](https://github.com/theguysaccount/charitology/actions/runs/40582978314). Its only changes from tested runtime `02cc6cfc` are four release documents. [PR #28](https://github.com/theguysaccount/charitology/pull/28) merged as `c0d509a0e132e91b7f5d6b764eabce421015b125`; [Pages Deploy 40584685952](https://github.com/theguysaccount/charitology/actions/runs/40584685952) succeeded.
+
+The Git-main production deployment finished and received the OS domain before the coordinator-authorized promotion of the exact tested production stage `dpl_F2ACtEYm5CLHDUwwyKQQCJBfJxdE`. Canonical HTTPS verification passed **44 HTTP checks and 13 exact committed assets**. A fresh authenticated alias inspection at **21:19:59.635 UTC** identified that stage at `os.charitology.org`. Normal future Git auto-assignment remains enabled; this is a dated deployment-identity observation.
+
+Post-promotion inspection at **21:15:00.423 UTC** again preserved all **31 prior tables, 60 rows, original columns and ACLs**, with snapshot SHA-256 `0281c5fe7f3d4fa3a6f2ee032f46371e1bcc7bf81d6a8558f8326cda2acde809`. All 25 tenant tables force RLS, the new history table remains empty and constrained-role/context-free checks pass. No accepted production authentication, provider, mail, job, cron or settings action was invoked.
+
+The public feature verifier matched **62 of 62 selected files exactly**, including both directory HTML pages, all 31 card/source fragments, all 35 retained capture files and their declared script/style/font/icon/manifest/media dependencies. Favicon, OG image and video bytes match; homepage social declarations also match. Unrelated search files, navigation destinations and feeds were explicitly outside this check, with no byte exceptions accepted for selected files.
+
+Actual live Chrome filtered CiviCRM to one listing, read the unchanged October25 source-check date and exact retained capture/hash, then opened the pinned link on the unsigned OS. The OS preserved the exact public source fragment and required sign-in before organization selection or copying. Both owned tabs closed. Among the bounded last100 warning/error logs per tab there were zero application messages; twelve unrelated MetaMask extension warnings were retained and excluded. This read does not establish another accepted sign-in or a production organization copy.
 
 ## Rollback and operating work
 

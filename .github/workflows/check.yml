@@ -38,6 +38,8 @@ jobs:
         run: npm run check:observations-history
       - name: Verify exact committed directory Resource history
         run: npm run check:directory-resources-history
+      - name: Verify exact committed Disaster Desk history
+        run: npm run check:disasters-history
       - name: Build (validates every entry against its schema)
         run: npm run build
       - name: Check content cross-references and links
