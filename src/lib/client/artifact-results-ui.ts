@@ -1,3 +1,4 @@
+import { rawStorageRecoveryDownload } from "./raw-storage-recovery";
 import { h, clear } from "./dom";
 import { download } from "./files";
 import { RESEARCH_ARTIFACT_ADAPTERS } from "../../data/research-artifact-adapters";
@@ -226,6 +227,15 @@ export async function mountArtifactResults(root: HTMLElement): Promise<void> {
       await action();
     } catch (error) {
       say(artifactErrorMessage(error), true);
+      if (tab === "exports" && store.snapshot().code === "external_change") {
+        // The recovery view must expose the newly observed copy immediately.
+        // Form data stays in its existing state object; old replacement authority
+        // is revoked before rendering fresh recovery controls.
+        restorePreview = null;
+        clearPreview = null;
+        clear(guard);
+        pendingRender = true;
+      }
     } finally {
       busy = false;
       controls.forEach(({ el, disabled }) => {
@@ -2554,14 +2564,38 @@ export async function mountArtifactResults(root: HTMLElement): Promise<void> {
             );
             return;
           }
-          download("charitology-artifact-results-protected-raw.txt", raw);
+          const recovery = rawStorageRecoveryDownload(raw);
+          download(
+            `charitology-artifact-results-protected-raw.${recovery.wrapped ? "json" : "txt"}`,
+            recovery.text,
+          );
           say(
-            "Exact protected bytes download requested. They may be corrupt and are not being labeled a validated backup.",
+            recovery.wrapped
+              ? "Protected UTF-16 text recovery requested as escaped JSON, preserving every code unit. This is not a validated backup."
+              : "Exact protected bytes download requested. They may be corrupt and are not being labeled a validated backup.",
           );
         },
         { disabled: typeof savedBytes !== "string" },
       ),
     );
+    const observedCopy = store.snapshot().observedRaw;
+    if (typeof observedCopy === "string" && observedCopy !== savedBytes) {
+      content.append(
+        p(
+          "The last observed saved text differs from the protected original. Preserve both before replacing either.",
+        ),
+        b("Download last observed saved text", () => {
+          const recovery = rawStorageRecoveryDownload(observedCopy);
+          download(
+            `charitology-artifact-results-last-observed.${recovery.wrapped ? "json" : "txt"}`,
+            recovery.text,
+          );
+          say(
+            "A last-observed text recovery download was requested. The protected original remains separately available; no replacement was made.",
+          );
+        }),
+      );
+    }
     const restore = h("input", {
       type: "file",
       accept: ".json,application/json",

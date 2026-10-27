@@ -1,3 +1,4 @@
+import { rawStorageRecoveryDownload } from "./raw-storage-recovery";
 import { h, clear } from "./dom";
 import { download } from "./files";
 import {
@@ -259,6 +260,15 @@ export async function mountStudyRegister(root: HTMLElement): Promise<void> {
       await action();
     } catch (error) {
       say(studyErrorMessage(error), true);
+      if (tab === "exports" && store.snapshot().code === "external_change") {
+        // The recovery view must expose the newly observed copy immediately.
+        // Form data stays in its existing state object; old replacement authority
+        // is revoked before rendering fresh recovery controls.
+        restorePreview = null;
+        clearPreview = null;
+        clear(guard);
+        renderPending = true;
+      }
     } finally {
       busy = false;
       controls.forEach(({ el, disabled }) => {
@@ -2940,19 +2950,44 @@ export async function mountStudyRegister(root: HTMLElement): Promise<void> {
         "Recovery affects only charitology.study-register.v1 on this origin. Legacy extraction desks and unrelated tool keys are untouched. Export current work before reloading, restoring, clearing or undoing.",
       ),
     );
+    const observedCopy = store.snapshot().observedRaw;
+    if (
+      typeof observedCopy === "string" &&
+      observedCopy !== store.rawSavedCopy()
+    ) {
+      recovery.append(
+        note(
+          "The last observed saved text differs from the protected original. Preserve both before replacing either.",
+        ),
+        button("Download last observed saved text", () => {
+          const copy = rawStorageRecoveryDownload(observedCopy);
+          download(
+            `charitology-study-last-observed.${copy.wrapped ? "json" : "txt"}`,
+            copy.text,
+            "text/plain;charset=utf-8",
+          );
+          say(
+            "A last-observed text recovery download was requested. The protected original remains separately available; no replacement was made.",
+          );
+        }),
+      );
+    }
     recovery.append(
       button("Download protected saved bytes", () => {
         try {
           const raw = store.rawSavedCopy();
           if (raw === null || raw === undefined)
             throw Error("No readable saved bytes are available.");
+          const recovery = rawStorageRecoveryDownload(raw);
           download(
-            "charitology-study-protected-saved.txt",
-            raw,
+            `charitology-study-protected-saved.${recovery.wrapped ? "json" : "txt"}`,
+            recovery.text,
             "text/plain;charset=utf-8",
           );
           say(
-            "Protected original bytes downloaded. This may need repair before it is a valid backup.",
+            recovery.wrapped
+              ? "Protected UTF-16 text recovery requested as escaped JSON, preserving every code unit. This is not a validated backup."
+              : "Protected original bytes download requested. This may need repair before it is a valid backup.",
           );
         } catch (error) {
           say(studyErrorMessage(error), true);

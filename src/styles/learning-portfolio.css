@@ -1,0 +1,200 @@
+.learning-portfolio {
+  min-width: 0;
+  color: var(--ink);
+}
+.learning-portfolio .lp-workspace {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+  min-width: 0;
+}
+.learning-portfolio .lp-tabs,
+.learning-portfolio .lp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.learning-portfolio .lp-button {
+  font: inherit;
+  min-height: 44px;
+  color: var(--ink);
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.learning-portfolio .lp-primary,
+.learning-portfolio .lp-tabs [aria-current="page"] {
+  color: var(--on-accent);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.learning-portfolio .lp-primary:hover {
+  color: var(--on-accent);
+  background: var(--accent-2);
+}
+.learning-portfolio button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.learning-portfolio
+  :is(button, input, select, textarea, a, summary):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.learning-portfolio .lp-card {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin: 1rem 0;
+  min-width: 0;
+}
+.learning-portfolio .lp-note {
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+.learning-portfolio .lp-warning {
+  background: var(--highlight);
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem;
+  margin: 0.7rem 0;
+}
+.learning-portfolio .lp-error {
+  color: var(--accent);
+  font-weight: 650;
+}
+.learning-portfolio .lp-status {
+  padding: 0.6rem 0;
+  overflow-wrap: anywhere;
+}
+.learning-portfolio .lp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 0.8rem;
+}
+.learning-portfolio .lp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.65rem 0;
+  min-width: 0;
+}
+.learning-portfolio .lp-field > span {
+  font-weight: 600;
+}
+.learning-portfolio :is(input:not([type="checkbox"]), select, textarea) {
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font: inherit;
+  box-sizing: border-box;
+}
+.learning-portfolio textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+.learning-portfolio .lp-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0.65rem 0;
+}
+.learning-portfolio input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  accent-color: var(--accent);
+}
+.learning-portfolio :is(pre, code, .lp-hash) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.learning-portfolio :is(p, li, dd, h3, h4, a, label, legend) {
+  overflow-wrap: anywhere;
+}
+.learning-portfolio fieldset {
+  margin: 0.8rem 0;
+  border: 1px solid var(--rule);
+  padding: 0.8rem;
+  min-width: 0;
+}
+.learning-portfolio legend {
+  padding: 0 0.2rem;
+}
+.learning-portfolio dl {
+  margin: 0.6rem 0;
+}
+.learning-portfolio dt {
+  color: var(--ink-2);
+  font-weight: 650;
+  margin-top: 0.6rem;
+}
+.learning-portfolio dd {
+  margin-left: 0;
+  white-space: pre-wrap;
+}
+.learning-portfolio details {
+  margin: 0.65rem 0;
+  border-top: 1px solid var(--rule);
+  padding-top: 0.6rem;
+}
+.learning-portfolio summary {
+  cursor: pointer;
+  padding: 0.4rem 0;
+}
+.learning-portfolio .lp-readings {
+  margin: 1.5rem 0;
+}
+.learning-portfolio .lp-print {
+  display: none;
+}
+@media (max-width: 389px) {
+  .learning-portfolio .lp-tabs .lp-button {
+    flex: 1 1 40%;
+  }
+  .learning-portfolio .lp-actions .lp-button {
+    width: 100%;
+  }
+}
+@media print {
+  .lp-print-path {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .lp-print-path > :not(.lp-print-path):not(.lp-print-ready) {
+    display: none !important;
+  }
+  .learning-portfolio.lp-print-ready > :not(.learning-portfolio-mount),
+  .learning-portfolio.lp-print-ready .lp-workspace > :not(.lp-print) {
+    display: none !important;
+  }
+  .learning-portfolio.lp-print-ready .lp-print {
+    display: block;
+  }
+  .learning-portfolio.lp-print-ready .lp-workspace {
+    border: 0;
+    padding: 0;
+  }
+  .learning-portfolio .lp-print :is(pre, dd, p) {
+    overflow-wrap: anywhere;
+  }
+}

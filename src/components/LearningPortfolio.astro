@@ -1,0 +1,51 @@
+---
+import { getCollection, render } from 'astro:content';
+import '../styles/learning-portfolio.css';
+import SourceList from './SourceList.astro';
+import { url } from '../lib/site';
+import { learningMountJson, type LearningMountProps } from '../lib/client/learning-portfolio-ui-helpers';
+const props = Astro.props as LearningMountProps;
+const chapters = await getCollection('principles');
+const readings = await Promise.all(props.currentCriteria.units.map(async unit => {
+  const entry = chapters.find(chapter => chapter.id === unit.id);
+  if (!entry || entry.data.chapter !== unit.chapter) throw new Error('Current learning criteria do not match the published chapter identities.');
+  return { unit, entry, ...(await render(entry)) };
+}));
+const serialized = learningMountJson(props);
+---
+
+<section class="tool learning-portfolio" data-learning-portfolio>
+  <h2 id="pc-title">{props.mode === 'completion' ? 'Your self-recorded study portfolio' : 'Learn, practice and preserve your study'}</h2>
+  <p>Work through the ten chapters, check your answers and keep your reasoning. Deliberately capture a private portfolio record when you want to preserve the exact checks and reading edition used for a present evaluation.</p>
+  <p class="note">This is self-study with public answer keys. Reading assertions and text-length checks do not assess identity, reasoning or competence. No accreditation, independent assessor, professional credential, admission or permission to rate charities is supplied. Nothing is uploaded or submitted.</p>
+  <p><a href={url('/record/principles/read/')}>Read or print the complete current textbook</a></p>
+  <div class="learning-portfolio-mount"><p>The guarded local course and portfolio are loading.</p></div>
+  <script type="application/json" class="learning-portfolio-config" set:html={serialized} />
+  {props.mode === 'course' && <section class="lp-readings" aria-label="Current full textbook chapters">
+    <h3>Current full readings</h3>
+    <p class="note">These are the current published chapters. Archived criteria in a portfolio record keep their own inert source text; they do not silently open these current readings as an older edition.</p>
+    {readings.map(({ unit, entry, Content }) => <details id={`lp-reading-${unit.id}`}>
+      <summary>{unit.chapter}. {entry.data.title}</summary>
+      <p>{unit.takeaway}</p><p><a href={url(`/record/principles/${entry.id}/`)}>Open the current chapter page</a></p>
+      <div class="prose"><Content /><SourceList sources={entry.data.sources ?? []} heading={`Sources for current chapter ${unit.chapter}`} /></div>
+      <p class="note">Edition 0 draft reading. Sources and framing remain open to correction and independent human review.</p>
+    </details>)}
+  </section>}
+  <noscript><p>The private editor needs JavaScript. Current readings and published program descriptions remain available.</p></noscript>
+</section>
+<script>
+  import { mountLearningPortfolio } from '../lib/client/learning-portfolio-ui';
+  import { download } from '../lib/client/files';
+  import { learningSavedTextRecovery } from '../lib/client/learning-portfolio-ui-helpers';
+  document.querySelectorAll<HTMLElement>('[data-learning-portfolio]').forEach(root => {
+    mountLearningPortfolio(root).catch(() => {
+      const host = root.querySelector<HTMLElement>('.learning-portfolio-mount'); if (!host) return;
+      host.replaceChildren(); const message = document.createElement('p'); message.setAttribute('role', 'alert');
+      message.textContent = 'The learning editor could not open safely. No saved work was replaced. Preserve exact saved bytes before trying recovery.'; host.append(message);
+      for (const [label, key] of [['course', 'charitology.principles-course-v1'], ['portfolio', 'charitology.learning-portfolio.v1']]) {
+        const button = document.createElement('button'); button.type = 'button'; button.textContent = `Download saved ${label} recovery text`;
+        button.addEventListener('click', () => { try { const raw = localStorage.getItem(key); if (raw === null) { message.textContent = `No saved ${label} was found. Nothing changed.`; return; } download(`charitology-${label}-saved-text-recovery.json`, learningSavedTextRecovery(raw,label), 'application/json'); message.textContent = 'A JSON recovery wrapper preserving the exact saved JavaScript text was requested. It is not a validated workspace backup.'; } catch { message.textContent = 'The saved bytes could not be read. No replacement was attempted.'; } }); host.append(button);
+      }
+    });
+  });
+</script>
