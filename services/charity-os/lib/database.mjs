@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { verifiedNeonConnectionString } from "./connection.mjs";
 import { id, fail } from "./security.mjs";
 import { guardParticipationWrite } from "./participation-guards.mjs";
+import { guardTaskRecurrenceWrite } from "./task-recurrence.mjs";
 export function database(url, { schema } = {}) {
   if (schema && !/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("Invalid schema.");
@@ -63,8 +64,9 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
     usage + Buffer.byteLength(JSON.stringify(detail)) + 1000 >
     60 * 1024 * 1024
   ) {
-    if (action === "backup.exported") return;
+    if (action === "backup.exported") return false;
     const accessControl = [
+      "task-recurrence.ended",
       "membership.revoked",
       "membership.changed",
       "invitation.revoked",
@@ -97,7 +99,7 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
         console.warn(
           "Charity OS access control completed after its audit reserve was exhausted.",
         );
-        return;
+        return false;
       }
     } else
       fail(
@@ -117,6 +119,7 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
       JSON.stringify(detail),
     ],
   );
+  return true;
 }
 export function rowRecord(r) {
   return {
@@ -145,6 +148,7 @@ export async function allRecords(c, org) {
 }
 export async function saveRecord(c, r, options = {}) {
   await guardParticipationWrite(c, r, options);
+  await guardTaskRecurrenceWrite(c, r, options);
   const size = Buffer.byteLength(JSON.stringify(r.data));
   const usage = (
     await c.query(
@@ -196,12 +200,14 @@ export async function logicalBackupBytes(c, org) {
     "os_participation_delivery_policies",
     "os_participation_delivery_previews",
     "os_grant_report_previews",
+    "os_task_recurrence_series",
+    "os_task_recurrence_occurrences",
   ];
   const sql =
     tables
       .map(
         (table) =>
-          `SELECT COALESCE(sum(${table === "os_participation_outbox" ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
+          `SELECT COALESCE(sum(${["os_participation_outbox", "os_task_recurrence_series"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
       )
       .join(" UNION ALL ") +
     " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1";
