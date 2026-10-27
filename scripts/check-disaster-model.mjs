@@ -38,6 +38,17 @@ import {
   projectPacket,
 } from "../src/lib/disaster-incidents/projection.mjs";
 import { disasterFixture } from "./lib/disaster-model-fixtures.mjs";
+import {
+  DISASTER_ROOT,
+  readWorkingDisasterInventory,
+} from "../src/lib/disaster-incidents/git.mjs";
+// Capture before creating any fictional fixture. An absent root and a reviewed
+// real dataset are both valid starting states; neither may be changed by tests.
+const activeDataset = () => ({
+  present: existsSync(DISASTER_ROOT),
+  files: readWorkingDisasterInventory(process.cwd()),
+});
+const activeDatasetBefore = activeDataset();
 let groups = 0;
 const test = (name, run) => {
   run();
@@ -190,8 +201,6 @@ test("captured bytes, returned data and inventory are detached", () => {
     before,
   );
 });
-test("source roots absent before actual A", () =>
-  assert.equal(existsSync("src/data/disaster-incidents"), false));
 test("fictional structural memory never becomes production history or projection", () => {
   refuse(() => assertProductionHistory(h), /Nonproduction/);
   refuse(() => admitProductionHistory(f.files), /Nonproduction/);
@@ -935,5 +944,8 @@ test("full simultaneous capacity uses actual complete production validators and 
     null,
   );
   refuse(() => assertProductionHistory(bh));
+});
+test("fictional fixture suite preserves actual dataset presence, paths and exact bytes", () => {
+  assert.deepEqual(activeDataset(), activeDatasetBefore);
 });
 console.log(`${groups} Disaster model groups passed.`);
