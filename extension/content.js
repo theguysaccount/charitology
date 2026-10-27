@@ -3,24 +3,35 @@
 // pages. It reads only the page title, and only to pre-fill a lookup when the
 // visitor clicks. Nothing is sent anywhere.
 (() => {
-  const SITE_SETTING = '__CHARITOLOGY_SITE__';
-  const SITE = SITE_SETTING.startsWith('__') ? 'https://charitology.org' : SITE_SETTING;
+  const SITE_SETTING = "__CHARITOLOGY_SITE__";
+  const SITE = SITE_SETTING.startsWith("__")
+    ? "https://charitology.org"
+    : SITE_SETTING;
   const api = globalThis.browser ?? globalThis.chrome;
   const KEY = `hidden:${location.hostname}`;
-  if (document.getElementById('charitology-before-you-give')) return;
+  if (document.getElementById("charitology-before-you-give")) return;
 
   const QUESTIONS = [
-    'Symptom or source? Where on the chain does this gift act?',
-    'What happens if I don’t give? Would it be funded anyway?',
-    'How would anyone find out if it stopped working?',
+    "Symptom or source? Where on the chain does this gift act?",
+    "What happens if I don’t give? Would it be funded anyway?",
+    "How would anyone find out if it stopped working?",
   ];
 
   const cleanTitle = () =>
     document.title
-      .replace(/\s*[|·–—-]\s*(GoFundMe|JustGiving|Every\.org).*$/i, '')
-      .replace(/^(Donate to|Fundraiser for|Fundraiser by [^:]+:)\s*/i, '')
-      .trim()
-      .slice(0, 120);
+      .replace(/\s*[|·–—-]\s*(GoFundMe|JustGiving|Every\.org).*$/i, "")
+      .replace(/^(Donate to|Fundraiser for|Fundraiser by [^:]+:)\s*/i, "")
+      .trim();
+
+  function boundedTitle() {
+    let bounded = "";
+    for (const point of cleanTitle()) {
+      if (bounded.length + point.length > 120) break;
+      const code = point.codePointAt(0);
+      bounded += code >= 0xd800 && code <= 0xdfff ? "\uFFFD" : point;
+    }
+    return bounded;
+  }
 
   async function hidden() {
     try {
@@ -34,8 +45,8 @@
   function el(tag, attrs = {}, ...children) {
     const node = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
-      if (k === 'text') node.textContent = v;
-      else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+      if (k === "text") node.textContent = v;
+      else if (k.startsWith("on")) node.addEventListener(k.slice(2), v);
       else node.setAttribute(k, v);
     }
     node.append(...children);
@@ -44,9 +55,11 @@
 
   async function show() {
     if (await hidden()) return;
-    const host = el('div', { id: 'charitology-before-you-give' });
-    const root = host.attachShadow({ mode: 'closed' });
-    const style = el('style', {
+    // Storage reads yield: another initialization may already have mounted it.
+    if (document.getElementById("charitology-before-you-give")) return;
+    const host = el("div", { id: "charitology-before-you-give" });
+    const root = host.attachShadow({ mode: "closed" });
+    const style = el("style", {
       text: `
         :host { all: initial; }
         .card { position: fixed; right: 16px; bottom: 16px; z-index: 2147483646; width: min(340px, calc(100vw - 32px));
@@ -76,41 +89,79 @@
     });
     const close = () => host.remove();
     const lookup = `${SITE}/tools/charity-lookup/`;
-    const lookupButton = el('a', { class: 'btn primary', href: lookup, target: '_blank', rel: 'noopener noreferrer', text: 'Look it up' });
+    const lookupButton = el("a", {
+      class: "btn primary",
+      href: lookup,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      text: "Look it up",
+    });
     // Read the title only when the visitor chooses a lookup. The fragment is
     // consumed locally by the lookup page and is absent from its HTTP request.
-    lookupButton.addEventListener('click', () => {
-      lookupButton.href = `${lookup}#q=${encodeURIComponent(cleanTitle())}`;
+    lookupButton.addEventListener("click", () => {
+      lookupButton.href = `${lookup}#q=${encodeURIComponent(boundedTitle())}`;
     });
+    const preferenceStatus = el("p", {
+      role: "status",
+      style: "margin: 0 14px 12px; font-size: 12px;",
+    });
+    let hiding = false;
     const card = el(
-      'aside',
-      { class: 'card', role: 'complementary', 'aria-label': 'Charitology: before you give' },
+      "aside",
+      {
+        class: "card",
+        role: "complementary",
+        "aria-label": "Charitology: before you give",
+      },
       el(
-        'div',
-        { class: 'head' },
-        el('span', { class: 'brand' }, el('span', { class: 'dot' }), 'Before you give'),
-        el('button', { class: 'x', type: 'button', 'aria-label': 'Close', onclick: close, text: '×' }),
+        "div",
+        { class: "head" },
+        el(
+          "span",
+          { class: "brand" },
+          el("span", { class: "dot" }),
+          "Before you give",
+        ),
+        el("button", {
+          class: "x",
+          type: "button",
+          "aria-label": "Close",
+          onclick: close,
+          text: "×",
+        }),
       ),
-      el('ol', {}, ...QUESTIONS.map((q) => el('li', { text: q }))),
+      el("ol", {}, ...QUESTIONS.map((q) => el("li", { text: q }))),
       el(
-        'div',
-        { class: 'actions' },
+        "div",
+        { class: "actions" },
         lookupButton,
-        el('a', { class: 'btn ghost', href: `${SITE}/method/#checklist`, target: '_blank', rel: 'noopener', text: 'All 10 questions' }),
+        el("a", {
+          class: "btn ghost",
+          href: `${SITE}/method/#checklist`,
+          target: "_blank",
+          rel: "noopener",
+          text: "All 10 questions",
+        }),
       ),
-      el('button', {
-        class: 'never',
-        type: 'button',
+      el("button", {
+        class: "never",
+        type: "button",
         text: `Don’t show on ${location.hostname}`,
         onclick: async () => {
+          if (hiding) return;
+          hiding = true;
           try {
             await api.storage.local.set({ [KEY]: true });
+            close();
           } catch {
-            /* storage unavailable: just close */
+            preferenceStatus.textContent =
+              "Could not save this preference. Use Close to hide this card for this page.";
+          } finally {
+            hiding = false;
           }
-          close();
         },
       }),
+      preferenceStatus,
     );
     root.append(style, card);
     document.documentElement.append(host);

@@ -1,6 +1,6 @@
 # Before You Give: store publication kit
 
-Prepared October 25, 2026 with AI assistance. This is submission material, not a claim that either store has accepted or listed the extension.
+Updated October 27, 2026 for candidate 0.1.2 with AI assistance. This is submission material, not a claim that either store has accepted or listed the extension.
 
 ## Packages
 
@@ -9,6 +9,8 @@ Run `npm ci`, then `npm run extension:zip` and `npm run check:extension`.
 - Chrome Web Store: `public/downloads/charitology-chrome.zip`. The Chrome manifest omits Firefox-specific settings.
 - Firefox Add-ons: `public/downloads/charitology-firefox.zip`. Firefox 140 or later; the manifest declares no data collection.
 - Developer install: `public/downloads/charitology-extension.zip`.
+
+The [0.1.2 compatibility record](EXTENSION_COMPATIBILITY.md) and generated `public/downloads/extension-release.json` contain exact current source/package hashes and test limits. Python 3 standard-library ZIP checks are included.
 
 The source is plain JavaScript, HTML, CSS and JSON. There is no bundling, minification, remote executable code or separate source build to reproduce. The package script copies the checklist, bakes the site address into the scripts and creates reproducible ZIP archives. `npm run check:extension` validates all three archives and tests that the popup passes the suggested name in a URL fragment, outside the HTTP request.
 
@@ -79,7 +81,7 @@ Opening the Chrome developer console through the available Chrome automation was
 
 - `public/extension-store/small-promo-440x280.png`: promotional artwork.
 - `public/extension-store/marquee-1400x560.png`: promotional artwork.
-- `public/extension-store/popup-screenshot-1280x800.png`: an actual capture of the shipped popup HTML/JS rendered locally, placed in a labeled presentation frame. It is a developer preview, not evidence of an installed or store-approved extension. The checklist interaction was verified in the browser.
+- `public/extension-store/popup-screenshot-1280x800.png`: a historical 0.1.1 capture of the popup HTML/JS rendered locally, placed in a labeled presentation frame. It is a developer preview, not evidence of an installed or store-approved extension. The checklist interaction was verified in the browser.
 - `extension/icons/icon-128.png`: package icon.
 
-The promo SVGs are editable and `scripts/make-extension-store-images.mjs` rebuilds the promotional PNGs. The popup screenshot is a browser capture; refresh it after UI changes. Firefox validation after adding the desktop/Android version declarations: **0 errors, 0 warnings, 0 notices**.
+The promo SVGs are editable and `scripts/make-extension-store-images.mjs` rebuilds the promotional PNGs. The popup screenshot is a browser capture; refresh it after UI changes. Historical 0.1.1 Firefox lint after adding the desktop/Android declarations reported **0 errors, 0 warnings, 0 notices**. That result is not a 0.1.2 lint or installed-browser check. Refresh the submission screenshot from the current installed package before store submission.
