@@ -1804,6 +1804,75 @@ textarea[aria-invalid="true"] {
 .participant-privacy-actions {
   margin-top: 1rem;
 }
+.participation-workspace {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.participation-workspace .field {
+  margin: 1rem 0;
+  min-width: 0;
+}
+.participation-workspace .field input,
+.participation-workspace .field select,
+.participation-workspace .field textarea {
+  width: 100%;
+}
+.participation-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.participation-metrics > div {
+  padding: 1rem;
+  background: var(--bg2);
+  border-radius: 6px;
+  min-width: 0;
+}
+.participation-metrics strong {
+  display: block;
+  font: 550 2rem/1.2 var(--display);
+  margin-top: 0.4rem;
+}
+.participation-schedule {
+  padding: 1rem 0;
+}
+.participation-schedule h3,
+.participation-schedule h4 {
+  margin-bottom: 0.5rem;
+}
+.participation-ledger-row {
+  border-top: 1px solid var(--rule);
+  padding: 1.5rem 0;
+}
+.participation-ledger-row:last-of-type {
+  margin-bottom: 1rem;
+}
+.participation-confirmation {
+  margin-top: 1.5rem;
+}
+.own-participations {
+  border-top: 2px solid var(--rule);
+  padding-top: 1.75rem;
+}
+.own-participation-card {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1.25rem 0;
+  min-width: 0;
+}
+.own-participation-card h4 {
+  margin: 0.5rem 0;
+}
+.participant-participation-consent {
+  margin: 1rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+.participant-participation-consent .intake-consent {
+  margin-top: 1rem;
+}
 @media (max-width: 760px) {
   .participant-auth,
   .participant-request-layout,
@@ -1830,6 +1899,22 @@ textarea[aria-invalid="true"] {
   .participant-confirmation {
     padding: 1rem;
   }
+  .participation-metrics {
+    gap: 0.5rem;
+  }
+  .participation-metrics > div {
+    padding: 0.65rem;
+  }
+  .participation-metrics strong {
+    font-size: 1.5rem;
+  }
+  .participation-ledger-row .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .own-participation-card .actions {
+    align-items: stretch;
+  }
 }
 @media print {
   .participant-page #participant-link-panel,
@@ -1837,6 +1922,7 @@ textarea[aria-invalid="true"] {
   .participant-page .participant-account,
   .participant-page .participant-correction,
   .participant-page .participant-confirmation,
+  .participant-page .participant-participation-consent,
   .participant-page .participant-list-panel,
   .participant-page .intake-footer {
     display: none !important;

@@ -481,6 +481,11 @@ test("existing-contact conversion preserves all associations while creating only
     let storedRefs;
     const c = {
       query: async (sql, args = []) => {
+        if (sql.startsWith("SELECT pg_advisory_xact_lock")) return { rows: [] };
+        if (/FROM os_participation(?:_targets|s)\b/.test(sql))
+          return { rows: [] };
+        if (sql.startsWith("SELECT data,status FROM os_records"))
+          return { rows: records.filter((r) => r.id === args[1]).map(raw) };
         if (sql.startsWith("SELECT * FROM os_intake"))
           return { rows: [submission] };
         if (sql.startsWith("SELECT * FROM os_publications"))

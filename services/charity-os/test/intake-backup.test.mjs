@@ -75,6 +75,19 @@ test("intake recovery retains expired schemas and answers without restoring publ
   );
   input.intake.submissions[0].status = "cancelled";
   assert.equal(restoredIntake(input).submissions[0].status, "cancelled");
+  assert.equal(
+    restoredIntake(input).submissions[0].cancelledAt,
+    null,
+    "An unknown historical withdrawal time must not be invented from creation or erasure time.",
+  );
+  input.intake.submissions[0].cancelledAt = "2026-01-01T01:00:00.000Z";
+  assert.equal(
+    restoredIntake(input).submissions[0].cancelledAt,
+    "2026-01-01T01:00:00.000Z",
+  );
+  input.intake.submissions[0].cancelledAt = "unknown";
+  assert.throws(() => restoredIntake(input), /withdrawal timestamp/);
+  delete input.intake.submissions[0].cancelledAt;
   input.intake.submissions[0].erasedAt = stamp;
   input.intake.submissions[0].answers = {};
   assert.deepEqual(restoredIntake(input).submissions[0].answers, {});

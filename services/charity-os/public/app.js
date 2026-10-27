@@ -1,4 +1,11 @@
-import { api, allRecords, ApiError, setCsrfToken } from "./api.js";
+import {
+  api,
+  allRecords,
+  ApiError,
+  setCsrfToken,
+  request as apiRequest,
+} from "./api.js";
+import { createStaffParticipationWorkspace } from "./participation.js";
 import {
   blank,
   recordTitle,
@@ -484,6 +491,18 @@ function renderNav() {
     document.querySelector(".secondary-nav").prepend(intakeLink);
   }
   intakeLink.hidden = !admin();
+  let participationLink = document.querySelector('[data-nav="participation"]');
+  if (!participationLink) {
+    participationLink = link("Participation and places", "#participation", {
+      "data-nav": "participation",
+    });
+    document.querySelector(".secondary-nav").prepend(participationLink);
+  }
+  participationLink.hidden =
+    !admin() &&
+    !["events", "volunteers"].some((id) =>
+      can(moduleById(id), "write", role()),
+    );
   const q = $("#module-search").value.trim().toLocaleLowerCase();
   const modules = readable().filter((m) =>
     `${m.title} ${m.description}`.toLocaleLowerCase().includes(q),
@@ -602,7 +621,46 @@ async function route() {
     } else if (state.route === "reports") await renderReports(current);
     else if (state.route === "data") renderData();
     else if (state.route === "intake") await renderIntake(current);
-    else if (state.route === "members") await renderMembers(current);
+    else if (
+      state.route === "participation" ||
+      state.route.startsWith("participation/")
+    ) {
+      if (
+        !admin() &&
+        !["events", "volunteers"].some((id) =>
+          can(moduleById(id), "write", role()),
+        )
+      )
+        throw new ApiError(
+          "Participation decisions require an authorized event or volunteer writer.",
+          403,
+        );
+      const orgId = state.org,
+        [
+          ,
+          initialTargetId = "",
+          initialCandidateId = "",
+          initialIntakeId = "",
+        ] = state.route.split("/");
+      const view = await createStaffParticipationWorkspace({
+        orgId,
+        admin: admin(),
+        request: apiRequest,
+        loadRecords: (id) => allRecords(orgId, id),
+        isCurrent: () => current === state.epoch && orgId === state.org,
+        onChanged: () => {
+          invalidateModules(orgId, ["events", "volunteers"]);
+          renderNav();
+        },
+        onDirty: (value) => {
+          if (current === state.epoch) state.pageDirty = value;
+        },
+        initialTargetId,
+        initialCandidateId,
+        initialIntakeId,
+      });
+      if (current === state.epoch) setContent(view);
+    } else if (state.route === "members") await renderMembers(current);
     else if (state.route === "integrations") await renderIntegrations(current);
     else if (state.route === "settings") await renderSettings(current);
     else await renderHome(current);
@@ -4164,6 +4222,17 @@ async function openIntakeConversion(org, submission, publication) {
           { class: "button subtle" },
         ),
       );
+      const participationCandidate = drafts.find((record) =>
+        ["events", "volunteers"].includes(record.moduleId),
+      );
+      if (publication?.targetId && participationCandidate)
+        links.push(
+          link(
+            "Review participation and places",
+            `#participation/${encodeURIComponent(publication.targetId)}/${encodeURIComponent(participationCandidate.id)}/${encodeURIComponent(submission.id)}`,
+            { class: "button subtle" },
+          ),
+        );
       await route();
       if (org === state.org)
         $("#content").prepend(

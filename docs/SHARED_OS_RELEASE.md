@@ -1,6 +1,18 @@
 # Shared Charity OS release evidence
 
-Evidence checkpoint: **26 October 2026** (local date). The participant own-request follow-up is promoted at https://os.charitology.org. Its evidence is recorded first; the earlier public intake, foundation, recovery and controlled login/reminder evidence follows separately.
+Evidence checkpoint: **26 October 2026** (local date). Confirmed participation and manual waitlists are promoted at https://os.charitology.org. Their evidence is recorded first; earlier own-request, public intake, foundation, recovery and controlled login/reminder evidence follows separately.
+
+## Confirmed participation and manual waitlists
+
+Runtime **`e6c880d6bb2f89b4ca2fa507372d25cb964c4f69`** was promoted as **`dpl_4Zs32Y794voSwEkcPnEbrMgygJCG`** to https://os.charitology.org, and the custom-domain lookup confirmed that exact deployment and commit. [PR #11](https://github.com/theguysaccount/charitology/pull/11) holds the public implementation history. [The full acceptance record](PARTICIPATION_BOOKINGS.md) separates the pre-implementation plan, exact CI, production isolation, controlled browser evidence and remaining limits.
+
+[Exact runtime CI](https://github.com/theguysaccount/charitology/actions/runs/40448380106) passed **159 service unit/browser-model checks**, **44 actual OS Postgres checks**, newsletter safety/actual-database checks and the **447-page** public build/check. The additive migration and read-only inspection passed all three new forced-RLS tables, all **19** tenant tables, constrained runtime privileges and zero context-free rows. **19 protected-stage and 20 public-origin checks** passed, including **8 exact asset/shell SHA comparisons** and HTTPS enforcement.
+
+The actual Chrome/constrained-Postgres synthetic journey covered exact adoption, own receipt-plus-verified-email linking, specific consent, confirmation, full-capacity waitlisting, withdrawal-blocked promotion, cancellation without auto-promotion, renewed consent, manual promotion, own cancellation, answer erasure and unlinking. Final occupancy was zero, outbox rows remained paused/cancelled and no provider jobs were created. That core journey preceded the narrow preference opt-in quota correction; exact-code Postgres checks cover the correction. A separate exact-head Chrome fixture checked the final native managed-picker status after adoption/refresh. Both fixtures exited successfully and asserted schema removal. Seeded approval provenance is not actual human review, and no real participant/adoption or production booking data was created.
+
+Production Chrome opened the clean signed-out portal. The final deployment's inspected error/fatal log window contained no entries; that is a bounded observation. No new real email was sent. **Participation notifications remain paused** and the historical preference cannot silently become delivery consent. [The next delivery contract](PARTICIPATION_DELIVERY_PLAN.md) requires fresh address-bound consent, explicit bounded activation, conservative uncertain-acceptance handling and no old paused-backlog flush.
+
+The pre-booking application was main `f457bd9` / `dpl_HNLam6TVJogzw2K9hrRt8tAkTDuZ`; its files match the earlier participant runtime. Preserve additive data and current-version backups/source archives on rollback. That application cannot manage/export new fulfillment history. Broader participant operations, delivery, pilots, specialist systems and independent privacy/security/accessibility review remain open.
 
 ## Participant own-request follow-up
 

@@ -26,6 +26,11 @@ const state = {
   lastSessionAt: 0,
   autoRefreshStopped: false,
   pendingRefresh: false,
+  requestDirty: false,
+  participationDirty: false,
+  participations: [],
+  participationVersion: 0,
+  bookingIntents: new Map(),
 };
 
 export function parseReceipt(value, origin) {
@@ -196,6 +201,11 @@ async function request(path, { method = "GET", body } = {}) {
 function clearPrivate() {
   state.accessVersion++;
   state.detailVersion++;
+  state.participationVersion++;
+  state.participations = [];
+  state.bookingIntents.clear();
+  state.requestDirty = false;
+  state.participationDirty = false;
   state.requests = [];
   state.cursor = null;
   state.current = null;
@@ -270,6 +280,7 @@ async function mutation(fn, output) {
   }
   state.mutationBusy = true;
   state.detailVersion++;
+  state.participationVersion++;
   const controls = [
     ...document.querySelectorAll(
       "button, #participant-private input, #participant-private select, #participant-private textarea",
@@ -389,10 +400,12 @@ async function openRequest(item, { preserveDraft = false, focus = true } = {}) {
     state.dirty &&
     sameRequest(state.current, result.request) &&
     state.current.revision === result.request.revision &&
-    result.request.editable;
+    (!state.requestDirty || result.request.editable);
   const discardedDraft = preserveDraft && state.dirty && !keepDraft;
   if (!keepDraft) renderDetail(result.request);
   else state.current = result.request;
+  if (keepDraft)
+    await loadOwnParticipations(result.request, { preserveDraft: true });
   if (discardedDraft)
     $("#participant-detail").prepend(
       node(
@@ -574,6 +587,9 @@ function questionInput(question, value) {
 function renderDetail(item) {
   state.current = item;
   state.dirty = false;
+  state.requestDirty = false;
+  state.participationDirty = false;
+  state.participations = [];
   const target = $("#participant-detail"),
     publication = item.publication || {},
     heading = node(
@@ -686,7 +702,7 @@ function renderDetail(item) {
           onclick: (event) =>
             confirmPanel(
               "Withdraw this request?",
-              "The organization will see that you withdrew. Your submitted answers and any separately prepared contacts or drafts remain for retention review. Earlier source archives and downloaded backups are not changed.",
+              "The organization will see that you withdrew this original request. Any confirmed participation remains until separately cancelled. A requested or waitlisted participation needs fresh specific agreement after withdrawal before it can be confirmed. Submitted answers, separate records and earlier backups remain for retention review.",
               "Confirm withdrawal",
               () => changeRequest(item, "withdraw", output),
               event.currentTarget,
@@ -705,7 +721,7 @@ function renderDetail(item) {
           onclick: (event) =>
             confirmPanel(
               "Erase your submitted answers?",
-              "This clears the answers in this request and closes an active request. Its status and minimal history remain. Separately prepared contacts or drafts, earlier source archives, recovery copies and downloaded backups are not changed.",
+              "This clears the answers in this request and closes an active request. It does not withdraw separately recorded participation consent or cancel a place. Its status and minimal history remain. Separate contacts, drafts, earlier source archives, recovery copies and downloaded backups are not changed.",
               "Erase submitted answers",
               () => changeRequest(item, "erase", output),
               event.currentTarget,
@@ -720,19 +736,541 @@ function renderDetail(item) {
       {
         type: "button",
         class: "button subtle",
-        onclick: (event) =>
+        onclick: (event) => {
           confirmPanel(
             "Permanently unlink account access?",
-            "This permanently removes this account’s access to this request. This account cannot link it again with the same receipt. Unlinking does not withdraw the request or erase submitted answers, separate records or earlier backups. Your saved private receipt retains only its limited status and withdrawal controls.",
+            `This permanently removes this account’s access to this request and its participation view. This account cannot link it again with the same receipt. ${state.participations.some((entry) => entry.state !== "cancelled") ? "An active participation is still recorded. Cancel it separately first, or use the approved organizer contact route below after unlinking. " : ""}Unlinking does not cancel participation, withdraw the request or erase submitted answers, separate records or earlier backups. Your saved private receipt cannot cancel a confirmed place; it retains only its request status and withdrawal controls.`,
             "Permanently unlink this request",
             () => changeRequest(item, "unlink", output),
             event.currentTarget,
-          ),
+          );
+          const panel = $("#participant-confirmation");
+          if (panel)
+            panel.append(
+              node(
+                "div",
+                { class: "actions" },
+                state.participations.flatMap((entry) =>
+                  organizerRoutes(participationTerms(entry)),
+                ),
+              ),
+            );
+        },
       },
       "Unlink account access",
     ),
   );
   target.append(actions, output);
+  const ownHost = node(
+    "section",
+    {
+      id: "participant-participations",
+      class: "own-participations section-gap",
+      "aria-label": "Your separate participation",
+    },
+    node("h3", {}, "Participation, separate from your request"),
+    node(
+      "p",
+      { class: "fine" },
+      "Checking whether a separate participation is associated with this request…",
+    ),
+  );
+  target.append(ownHost);
+  void loadOwnParticipations(item).catch((error) => {
+    denyIfAccessLost(error);
+    if (ownHost.isConnected)
+      ownHost.replaceChildren(
+        node("h3", {}, "Participation could not be checked."),
+        node(
+          "p",
+          { class: "form-status error", role: "status" },
+          error.message,
+        ),
+        node(
+          "button",
+          {
+            type: "button",
+            class: "button subtle",
+            onclick: () => chooseRequest(item),
+          },
+          "Reload saved request and participation",
+        ),
+      );
+  });
+}
+function participationTerms(row) {
+  return ["confirmed", "cancelled"].includes(row.state) && row.frozenTerms
+    ? row.frozenTerms
+    : row.terms || row.frozenTerms;
+}
+function organizerRoutes(terms) {
+  const links = [];
+  if (
+    typeof terms?.organizerEmail === "string" &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(terms.organizerEmail) &&
+    !/[\r\n]/.test(terms.organizerEmail)
+  )
+    links.push(
+      node(
+        "a",
+        {
+          href: `mailto:${terms.organizerEmail}`,
+          class: "button small subtle",
+        },
+        "Email the organizer",
+      ),
+    );
+  try {
+    const url = new URL(terms?.organizerUrl);
+    if (url.protocol === "https:" && !url.username && !url.password)
+      links.push(
+        node(
+          "a",
+          {
+            href: url.href,
+            class: "button small subtle",
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+          "Organizer’s published contact page ↗",
+        ),
+      );
+  } catch {}
+  return links;
+}
+function ownSchedule(terms) {
+  const format = (value) => {
+    if (!value || !terms?.timeZone || !Number.isFinite(Date.parse(value)))
+      return "Not recorded";
+    try {
+      return new Intl.DateTimeFormat(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: terms.timeZone,
+      }).format(new Date(value));
+    } catch {
+      return "Schedule needs review";
+    }
+  };
+  return node(
+    "div",
+    { class: "participation-schedule" },
+    node("h4", {}, terms?.title || "Occurrence details"),
+    node(
+      "dl",
+      { class: "participant-answers" },
+      node(
+        "div",
+        {},
+        node("dt", {}, "Starts"),
+        node("dd", {}, format(terms?.startAt)),
+      ),
+      node(
+        "div",
+        {},
+        node("dt", {}, "Ends"),
+        node("dd", {}, format(terms?.endAt)),
+      ),
+      node(
+        "div",
+        {},
+        node("dt", {}, "Time zone"),
+        node("dd", {}, terms?.timeZone || "Not recorded"),
+      ),
+    ),
+    terms?.participationPurpose
+      ? node("p", {}, terms.participationPurpose)
+      : null,
+    terms?.participantInstructions
+      ? node("p", { class: "fine" }, terms.participantInstructions)
+      : null,
+    node("div", { class: "actions" }, organizerRoutes(terms)),
+  );
+}
+function bookingBody(row, action, payload) {
+  const key = `${row.id}:${action}`,
+    canonical = JSON.stringify(payload),
+    old = state.bookingIntents.get(key);
+  if (old && old.canonical !== canonical)
+    throw new Error(
+      "The earlier response may have been interrupted. Reload the saved request and participation before submitting different choices.",
+    );
+  if (!old)
+    state.bookingIntents.set(key, { canonical, key: crypto.randomUUID() });
+  return { ...payload, idempotencyKey: state.bookingIntents.get(key).key };
+}
+async function loadOwnParticipations(item, { preserveDraft = false } = {}) {
+  const version = ++state.participationVersion,
+    user = state.user?.id,
+    access = state.accessVersion;
+  let result;
+  try {
+    result = await request(`${detailPath(item)}/participations`);
+  } catch (error) {
+    if (
+      error.status === 404 &&
+      sameRequest(state.current, item) &&
+      alive(user, access)
+    ) {
+      clearPrivate();
+      state.privateSuspended = true;
+      renderSession();
+      $("#participant-retry-session").hidden = false;
+      message(
+        $("#participant-status"),
+        "Saved participation access could not be verified. Private answers were cleared; refresh your session before continuing.",
+        true,
+      );
+    }
+    throw error;
+  }
+  if (
+    version !== state.participationVersion ||
+    !alive(user, access) ||
+    !sameRequest(state.current, item) ||
+    state.current.revision !== item.revision
+  )
+    return;
+  if (
+    !Array.isArray(result.participations) ||
+    result.participations.length > 2000
+  )
+    throw new Error(
+      "The own-participation response could not be verified. Reload the saved request.",
+    );
+  const unchanged =
+    state.participations.length === result.participations.length &&
+    state.participations.every((old) =>
+      result.participations.some(
+        (row) =>
+          row.id === old.id &&
+          row.revision === old.revision &&
+          row.targetRevision === old.targetRevision &&
+          row.sourceRevision === old.sourceRevision &&
+          row.termsHash === old.termsHash &&
+          row.canConsent === old.canConsent,
+      ),
+    );
+  const discarded = preserveDraft && state.participationDirty && !unchanged;
+  state.participations = result.participations;
+  state.bookingIntents.clear();
+  if (!(preserveDraft && state.participationDirty && unchanged)) {
+    state.participationDirty = false;
+    state.dirty = state.requestDirty;
+    renderOwnParticipations(item);
+    if (discarded)
+      $("#participant-participations")?.prepend(
+        node(
+          "p",
+          { class: "notice", role: "status" },
+          "The saved participation or its permission changed. Unsaved participation choices were discarded; review the current saved details.",
+        ),
+      );
+  }
+}
+function renderOwnParticipations(item) {
+  const host = $("#participant-participations");
+  if (!host) return;
+  host.replaceChildren(
+    node("h3", {}, "Participation, separate from your request"),
+    node(
+      "p",
+      { class: "fine" },
+      "Request review, participation consent and a confirmed place are different steps. Only an explicit organization confirmation reserves a place. Attendance remains separate.",
+    ),
+  );
+  if (!state.participations.length) {
+    host.append(
+      node(
+        "p",
+        { class: "notice fine" },
+        "No separate participation is associated with this request. It does not reserve a place. Contact the organizer through its original form or usual channel for next steps.",
+      ),
+    );
+    return;
+  }
+  const labels = {
+    requested: "Awaiting a staff decision — no place reserved",
+    waitlisted: "Waitlisted — no place reserved",
+    confirmed: "Participation confirmed by the organization",
+    cancelled: "Participation cancelled",
+  };
+  for (const row of state.participations) {
+    const terms = participationTerms(row),
+      status = outputNode(),
+      card = node(
+        "article",
+        { class: "own-participation-card" },
+        node(
+          "div",
+          { class: "section-header" },
+          node(
+            "h4",
+            {},
+            labels[row.state] || "Participation status unavailable",
+          ),
+          node("span", { class: "tag" }, `Revision ${row.revision}`),
+        ),
+        ownSchedule(terms),
+      );
+    if (row.recovered)
+      card.append(
+        node(
+          "p",
+          { class: "notice" },
+          "This is inactive recovered provenance. It does not establish a new confirmed place. Contact the organizer to reconcile it.",
+        ),
+      );
+    card.append(
+      node(
+        "p",
+        { class: "notice fine" },
+        row.notifications?.requested
+          ? "Preference only — no messages are sent in this release. Your stored email-update choice does not mean queued, sent or delivered. Check this portal for current status."
+          : "Email updates are off and not active in this release. Check this portal for current status.",
+      ),
+    );
+    if (row.consent?.at)
+      card.append(
+        node(
+          "p",
+          { class: "fine" },
+          `Specific participation agreement recorded ${dateLabel(row.consent.at)}${row.consent.waitlistAllowed ? "; waitlist allowed" : "; waitlist not selected"}. This is separate from the original request’s collection purpose.`,
+        ),
+      );
+    else
+      card.append(
+        node(
+          "p",
+          { class: "fine" },
+          "Specific participation agreement has not been recorded here.",
+        ),
+      );
+    if (row.canConsent && ["requested", "waitlisted"].includes(row.state)) {
+      const consent = node("input", {
+          id: `participation-own-consent-${row.id}`,
+          type: "checkbox",
+          required: true,
+        }),
+        waitlist = node("input", {
+          id: `participation-own-waitlist-${row.id}`,
+          type: "checkbox",
+        }),
+        email = node("input", {
+          id: `participation-own-email-${row.id}`,
+          type: "checkbox",
+        }),
+        ack = node("input", {
+          id: `participation-own-withdrawal-${row.id}`,
+          type: "checkbox",
+          required: true,
+        });
+      const form = node(
+        "form",
+        { class: "participant-participation-consent" },
+        node("h4", {}, "Current approved details for this agreement"),
+        ownSchedule(row.terms),
+        node(
+          "p",
+          {},
+          "Review these exact whole-occurrence details, then make a specific participation agreement. This agreement does not create or change a reserved place.",
+        ),
+        node(
+          "label",
+          { class: "intake-consent", for: consent.id },
+          consent,
+          node(
+            "span",
+            {},
+            "I ask to take part in this full occurrence under the displayed schedule, purpose and instructions.",
+          ),
+        ),
+        node(
+          "label",
+          { class: "intake-consent", for: waitlist.id },
+          waitlist,
+          node(
+            "span",
+            {},
+            "I separately agree to remain on a waitlist if no place is available. A waitlist does not reserve a place.",
+          ),
+        ),
+        node(
+          "label",
+          { class: "intake-consent", for: email.id },
+          email,
+          node(
+            "span",
+            {},
+            "Store my preference for operational email updates about this participation only. Preference only — no messages are sent in this release.",
+          ),
+        ),
+        row.withdrawalAcknowledgementRequired
+          ? node(
+              "label",
+              { class: "intake-consent", for: ack.id },
+              ack,
+              node(
+                "span",
+                {},
+                "I am making a new participation request even though I withdrew the original request.",
+              ),
+            )
+          : null,
+        node(
+          "button",
+          { type: "submit", class: "button primary" },
+          row.state === "confirmed"
+            ? "Save agreement — confirmation state unchanged"
+            : "Save specific participation request — no place reserved",
+        ),
+      );
+      const mark = () => {
+        state.participationDirty = true;
+        state.dirty = true;
+      };
+      form.addEventListener("input", mark);
+      form.addEventListener("change", mark);
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (state.mutationBusy || !form.reportValidity()) return;
+        void mutation(async () => {
+          if (
+            !consent.checked ||
+            (row.withdrawalAcknowledgementRequired && !ack.checked)
+          )
+            throw new Error(
+              "Read and explicitly agree to the displayed participation request and any withdrawal acknowledgement before saving.",
+            );
+          const payload = {
+            revision: row.revision,
+            intakeRevision: item.revision,
+            targetRevision: row.targetRevision,
+            sourceRevision: row.sourceRevision,
+            termsHash: row.termsHash,
+            consent: true,
+            waitlistAllowed: waitlist.checked,
+            emailUpdates: email.checked,
+            ...(row.withdrawalAcknowledgementRequired
+              ? { withdrawalAcknowledged: true }
+              : {}),
+          };
+          await saveOwnParticipation(item, row, "consent", payload, status);
+        }, status);
+      });
+      card.append(form);
+    } else if (row.consentUnavailableReason)
+      card.append(node("p", { class: "fine" }, row.consentUnavailableReason));
+    const actions = node("div", { class: "actions" });
+    if (row.canCancel)
+      actions.append(
+        node(
+          "button",
+          {
+            type: "button",
+            class: "button danger",
+            onclick: (event) =>
+              confirmPanel(
+                "Cancel this participation?",
+                "This cancels this separate participation, releasing one place only if it was confirmed. It does not erase your request or automatically select someone from the waitlist. Email updates are not active.",
+                "Confirm participation cancellation",
+                () =>
+                  saveOwnParticipation(
+                    item,
+                    row,
+                    "cancel",
+                    { revision: row.revision, intakeRevision: item.revision },
+                    status,
+                  ),
+                event.currentTarget,
+              ),
+          },
+          "Cancel participation",
+        ),
+      );
+    if (row.notifications?.requested)
+      actions.append(
+        node(
+          "button",
+          {
+            type: "button",
+            class: "button subtle",
+            onclick: () => {
+              void mutation(
+                () =>
+                  saveOwnParticipation(
+                    item,
+                    row,
+                    "preferences",
+                    {
+                      revision: row.revision,
+                      intakeRevision: item.revision,
+                      emailUpdates: false,
+                    },
+                    status,
+                  ),
+                status,
+              );
+            },
+          },
+          "Disable stored email preference",
+        ),
+      );
+    card.append(actions, status);
+    host.append(card);
+  }
+}
+function outputNode() {
+  return node("p", { class: "form-status", role: "status" });
+}
+async function saveOwnParticipation(item, row, action, payload, status) {
+  const user = state.user.id,
+    access = state.accessVersion,
+    body = bookingBody(row, action, payload);
+  message(
+    status,
+    action === "cancel"
+      ? "Cancelling this separate participation…"
+      : action === "preferences"
+        ? "Disabling the stored email preference…"
+        : "Recording your specific participation request…",
+  );
+  let result;
+  try {
+    result = await request(
+      `${detailPath(item)}/participations/${part(row.id)}/${action}`,
+      { method: "POST", body },
+    );
+  } catch (error) {
+    if ([400, 401, 403, 404, 413, 422, 429].includes(error.status))
+      state.bookingIntents.delete(`${row.id}:${action}`);
+    throw error;
+  }
+  if (!alive(user, access) || !sameRequest(state.current, item)) return;
+  if (!result.participation || result.participation.id !== row.id)
+    throw new Error(
+      "The participation response is incomplete. Reload the saved request before repeating a change.",
+    );
+  state.participations = state.participations.map((entry) =>
+    entry.id === row.id ? result.participation : entry,
+  );
+  state.participationDirty = false;
+  state.dirty = state.requestDirty;
+  state.bookingIntents.delete(`${row.id}:${action}`);
+  renderOwnParticipations(item);
+  $("#participant-confirmation")?.remove();
+  message(
+    $("#participant-status"),
+    action === "cancel"
+      ? "Participation cancelled. Your original request is separate; no automatic promotion or message occurred."
+      : action === "preferences"
+        ? "Stored email preference disabled. Participation is unchanged; no message was sent."
+        : result.participation.state === "confirmed"
+          ? "Specific participation agreement recorded. The existing confirmation is unchanged; email updates remain inactive."
+          : "Specific participation request recorded. No place is reserved until the organization explicitly confirms it. Email updates remain inactive.",
+  );
+  $("#participant-participations h3")?.setAttribute("tabindex", "-1");
+  $("#participant-participations h3")?.focus();
 }
 function renderCorrection(item, questions, target, output) {
   const controls = new Map(),
@@ -775,9 +1313,11 @@ function renderCorrection(item, questions, target, output) {
   );
   form.addEventListener("input", () => {
     state.dirty = true;
+    state.requestDirty = true;
   });
   form.addEventListener("change", () => {
     state.dirty = true;
+    state.requestDirty = true;
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -842,6 +1382,11 @@ async function changeRequest(item, action, output) {
     state.detailVersion++;
     state.current = null;
     state.dirty = false;
+    state.requestDirty = false;
+    state.participationDirty = false;
+    state.participations = [];
+    state.participationVersion++;
+    state.bookingIntents.clear();
     state.requests = state.requests.filter(
       (entry) => !sameRequest(entry, item),
     );

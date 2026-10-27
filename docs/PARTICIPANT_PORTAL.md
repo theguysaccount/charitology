@@ -2,7 +2,7 @@
 
 Design and bounded release acceptance · October 26, 2026 · AI-assisted planning and checks
 
-This is the agreed plan for the `participant-self-service` release, written before implementation and updated with the approved contract and explicitly recorded checks below. The portal implementation is under review; deployment and final-commit acceptance remain pending. The earlier account-free [public intake release](PUBLIC_PARTICIPATION.md) remains available. Its receipt-only status/withdrawal path does not become a general organization account.
+This is the agreed plan for the `participant-self-service` release, written before implementation and updated with the approved contract and explicitly recorded checks below. The bounded portal is now deployed; the recorded evidence identifies its exact runtime, CI, production isolation and controlled delivery checks. The earlier account-free [public intake release](PUBLIC_PARTICIPATION.md) remains available. Its receipt-only status/withdrawal path does not become a general organization account.
 
 ## Bounded outcome
 

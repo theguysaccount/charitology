@@ -31,7 +31,7 @@ export async function exportIntake(c, org) {
   }));
   const submissions = (
     await c.query(
-      "SELECT id,publication_id,answers,consent_at,status,converted_ids,created_at,erased_at FROM os_intake WHERE org_id=$1 ORDER BY created_at,id",
+      "SELECT id,publication_id,answers,consent_at,status,converted_ids,created_at,erased_at,cancelled_at FROM os_intake WHERE org_id=$1 ORDER BY created_at,id",
       [org],
     )
   ).rows.map((r) => ({
@@ -43,6 +43,7 @@ export async function exportIntake(c, org) {
     convertedIds: r.converted_ids,
     createdAt: iso(r.created_at),
     erasedAt: iso(r.erased_at),
+    cancelledAt: iso(r.cancelled_at),
   }));
   return { version: 1, publications, submissions };
 }
@@ -138,6 +139,8 @@ export function restoredIntake(backup) {
         "Invalid or duplicate intake submission identity.",
       );
     ids.add(s.id);
+    if (s.cancelledAt != null && !stamp(s.cancelledAt))
+      fail(422, "intake_backup", "Invalid request withdrawal timestamp.");
     if (
       s.erasedAt != null &&
       (!stamp(s.erasedAt) ||
@@ -185,6 +188,7 @@ export function restoredIntake(backup) {
       convertedIds,
       createdAt: s.createdAt,
       erasedAt: s.erasedAt || null,
+      cancelledAt: s.cancelledAt || null,
     };
   });
   if (
@@ -219,7 +223,7 @@ export async function restoreIntake(c, org, user, intake) {
     );
   for (const s of intake.submissions)
     await c.query(
-      "INSERT INTO os_intake(org_id,id,publication_id,answers,consent_at,status,revision,converted_ids,created_at,erased_at) VALUES($1,$2,$3,$4,$5,$6,1,$7,$8,$9)",
+      "INSERT INTO os_intake(org_id,id,publication_id,answers,consent_at,status,revision,converted_ids,created_at,erased_at,cancelled_at) VALUES($1,$2,$3,$4,$5,$6,1,$7,$8,$9,$10)",
       [
         org,
         s.id,
@@ -230,6 +234,7 @@ export async function restoreIntake(c, org, user, intake) {
         JSON.stringify(s.convertedIds),
         s.createdAt,
         s.erasedAt,
+        s.cancelledAt,
       ],
     );
   if (!intake.submissions.length) return;

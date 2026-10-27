@@ -1,6 +1,6 @@
 # Charity OS module contracts
 
-Implementation contract · October 26, 2026 · AI-assisted. The registry implements 26 typed module models and validation. Authentication, persistence, delivery, connectors and deployment have their own acceptance checks. A schema does not establish that an external system has been integrated or that an organization has tested the workflow.
+Implementation contract · October 26, 2026 · AI-assisted. The registry implements 26 typed module models, 331 fields and validation. Authentication, persistence, delivery, connectors and deployment have their own acceptance checks. A schema does not establish that an external system has been integrated or that an organization has tested the workflow.
 
 Charitology studies the system that directs generosity. Program design connects resources, work, intended change, evidence and review. Depth remains an optional descriptive hypothesis from 0 through 4. The workspace does not rate named charities or turn an activity count into a causal impact claim.
 
@@ -13,6 +13,12 @@ The API owns an envelope containing opaque `id`, `orgId`, `moduleId`, `revision`
 Use server-generated IDs before validation. Every mutation takes the expected revision. Resolve and lock the organization membership, access scope and relevant records inside the same database transaction. Serialize capacity, allocation and uniqueness checks with the write: two concurrent requests must not both consume the final place or final budget amount. A pure validator alone cannot provide transaction isolation.
 
 `validateRecord(moduleId,data,{records,recordId,orgId,status,previous})` returns a fresh normalized object or throws `ModuleValidationError`, with HTTP status 422 and structured `issues: [{field,message}]`. `records` accepts an array or Map of envelopes. Pass the complete relevant organization dataset, including existing approved allocations and active assignments. A linked ID without reference context is refused. The server must enforce program/team scope before allowing either a link or a read; a matching organization is not sufficient authorization.
+
+## Managed participation
+
+Event sessions and volunteer shifts can deliberately publish `participationPurpose`, `participantInstructions` and an organizer email or HTTPS contact route. Those bounded fields, title, kind and explicit schedule form the participant terms; private venue/joining fields are not copied automatically. Existing records remain valid without these fields, but cannot enable managed participation until complete terms are independently approved.
+
+The participation ledger is a separate fulfillment authority for managed occurrences. Current typed approval is still required before a new confirmation, but a later edit or review state cannot release an already confirmed place. Central write guards protect typed edits, transitions, import, deletion and recovery; confirmed volunteer overlap uses frozen commitments. Requested/waitlisted entries reserve no capacity. Cancellation and reapplication are explicit separate operations. [The booking contract](../../../docs/PARTICIPATION_BOOKINGS_PLAN.md) defines exact legacy adoption, revisions, consent, scope, quotas and inactive recovery. Participation email remains paused under [its separate delivery plan](../../../docs/PARTICIPATION_DELIVERY_PLAN.md).
 
 ## Types and missingness
 
