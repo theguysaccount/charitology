@@ -1,10 +1,10 @@
 # Shared Charity OS release evidence
 
-Evidence checkpoint: **26 October 2026** (local date). The public operational intake follow-up is promoted at https://os.charitology.org. Its evidence is recorded first; the earlier foundation, recovery and controlled login/reminder evidence follows separately.
+Evidence checkpoint: **26 October 2026** (local date). The participant own-request follow-up is promoted at https://os.charitology.org. Its evidence is recorded first; the earlier public intake, foundation, recovery and controlled login/reminder evidence follows separately.
 
 ## Participant own-request follow-up
 
-Implementation is on `participant-self-service`; promotion is pending. The [participant plan and acceptance record](PARTICIPANT_PORTAL.md) was written before implementation and freezes the bounded outcome and threat model. No production form, real participant request, actual human approval or model provider was created for these checks.
+Runtime **`a6202f32a7fa7b9ac610bfc5676717530c1ba5ee`** was staged, tested and promoted as **`dpl_39nM5eZuamArw2rLYv5DyogcFkxF`** to https://os.charitology.org/participant. Post-promotion lookup confirmed that exact deployment and commit. [PR #10](https://github.com/theguysaccount/charitology/pull/10) contains the implementation. [Exact-commit CI run 40442361881](https://github.com/theguysaccount/charitology/actions/runs/40442361881) passed **132 service tests**, **31 actual OS Postgres tests**, **61 newsletter unit tests plus two database groups**, and the **447-page** public build/check. The [participant plan and acceptance record](PARTICIPANT_PORTAL.md) was written before implementation and freezes the bounded outcome and threat model. No production form, real participant request, actual human approval or model provider was created for these checks.
 
 - **Actual authentication:** the full existing isolated Postgres/Better Auth runtime suite passed 12 tests, including real verified email session creation, scanner-safe GET, deliberate POST, fixed participant return, no receipt in the login message and no memberships in the participant session response. Its email transport is an injected synthetic capture, not provider delivery.
 - **Actual participant database:** nine new separate-role Postgres checks passed using temporary schemas and synthetic trusted-server identity fixtures. They cover forced RLS, unchanged private tenant boundaries, claim combinations/concurrency, 22-link pagination at 20/2, safe detail fields, correction/review races, permanent unlink/no transfer, concurrent final quota slots, inactive-grant recovery and privacy actions above the audit reserve. These fixtures are not independent authentication evidence; the preceding Better Auth suite supplies that separate proof.
@@ -13,7 +13,12 @@ Implementation is on `participant-self-service`; promotion is pending. The [part
 
 The first disposable Chrome fixture crashed because it attempted a second HTTP header write after a missing static file; it was removed and restarted. The successful journey used the repaired fixture. The development server now reads response bytes before sending headers and handles missing static files without crashing. The fixture initially logs the expected absence of auth tables before its isolated migrations; production schema state is not inferred from that setup log.
 
-Deployment, exact-commit CI and final production isolation/asset checks remain pending for this follow-up. Existing production intake evidence below remains separate.
+- **Production isolation:** the additive migration completed; both new tables have forced RLS, while intake/publication tenant policies remain forced. The constrained runtime is neither superuser nor RLS-bypassing; context-free reads from the new tables returned zero rows.
+- **Protected stage and public origin:** 15 protected-stage and 16 live production checks passed, including anonymous session, unauthorized own-list/detail rejection, receipt-query and foreign-Origin rejection, allowlisted confirmation, six exact asset/shell SHA-256 comparisons and HTTP-to-HTTPS 308. No production form or request/grant was created.
+- **Real provider delivery and live browser:** one message to the approved owner inbox arrived in Gmail INBOX with HTML/plain text and DKIM pass. The login link carried token plus participant destination only. Chrome opening that confirmation GET left the original portal signed out; deliberate POST opened the clean live portal with a verified account and zero linked requests. Logout cleared the private view. This checks that controlled relay/provider/inbox/auth path, not general deliverability or participant adoption. No newsletter operation was performed.
+- **Cleanup and logs:** the successful disposable browser fixture exited 0, and a catalog query found no temporary participant schemas. The inspected production deployment's error/fatal log scan for the hour returned no entries. This is a bounded observation, not an uptime claim.
+
+The compatible pre-portal runtime is the prior main `93cf8a1` (intake implementation `98ebea5`). Its application ignores participant grants. Preserve the additive tables and a current backup on rollback; do not down-migrate or infer that a backup recreates participant access. Comprehensive accessibility/security review, real organizational pilots, wider participant profiles, confirmed booking/waitlists and notifications remain open. Existing production intake evidence below remains separate.
 
 ## Public operational intake follow-up
 
@@ -39,7 +44,7 @@ The optional fixtures serve only synthetic data, use separate temporary schemas,
 
 The compatible pre-intake application was **`f2722ae` / `dpl_As6sDYZweoP8spRHdeo95QQb5ZLu`**. The migration is additive: preserve all tables and data on rollback. That older application cannot operate or export the new intake queue, so retain a current-version backup and its separate source archives before using it. Do not use a destructive down-migration.
 
-Authenticated participant portals, confirmed booking/waitlists, participant/staff notifications, real connector contracts, consented pilots and independent privacy/security/accessibility review remain separate work. The original 66-item register retains its partial, adapted and people-dependent labels; this release does not turn software workflows into operating institutions.
+At the intake checkpoint, authenticated participant portals remained open; the bounded own-request follow-up above now adds that slice. Wider participant workflows, confirmed booking/waitlists, participant/staff notifications, real connector contracts, consented pilots and independent privacy/security/accessibility review remain separate work. The original 66-item register retains its partial, adapted and people-dependent labels; this release does not turn software workflows into operating institutions.
 
 ## Scope
 
