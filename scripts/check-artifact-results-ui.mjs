@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { build } from "esbuild";
-import { mkdtemp, rm } from "node:fs/promises";
+import postcss from "postcss";
+import { mkdtemp, rm, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -19,6 +20,87 @@ import {
 const temporary = await mkdtemp(join(tmpdir(), "charitology-artifact-ui-"));
 let groups = 0;
 try {
+  // Check the actual component palette against both published theme palettes, including hover and warnings.
+  // This catches light component surfaces inheriting nearly-white site text in dark mode.
+  const globalCss = postcss.parse(
+    await readFile("src/styles/global.css", "utf8"),
+  );
+  const localCss = postcss.parse(
+    await readFile("src/styles/artifact-results.css", "utf8"),
+  );
+  const declarations = (tree, selector) => {
+    let result = {};
+    tree.walkRules((rule) => {
+      if (rule.selector === selector)
+        rule.walkDecls((d) => (result[d.prop] = d.value));
+    });
+    return result;
+  };
+  const baseTheme = declarations(globalCss, ":root"),
+    darkTheme = declarations(globalCss, ":root[data-theme='dark']");
+  const luminance = (hex) => {
+    assert.match(hex, /^#[0-9a-f]{6}$/i);
+    const rgb = [1, 3, 5]
+      .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
+  };
+  for (const [theme, values] of [
+    ["light", baseTheme],
+    ["dark", { ...baseTheme, ...darkTheme }],
+  ]) {
+    const vars = { ...values, ...declarations(localCss, ".artifact-results") };
+    const resolve = (value) =>
+      value.replace(/var\((--[a-z0-9-]+)\)/g, (_all, key) => {
+        assert.ok(vars[key], key);
+        return resolve(vars[key]);
+      });
+    const declaration = (selector, key) =>
+      resolve(declarations(localCss, selector)[key]);
+    const contrast = (fg, bg, description) => {
+      const pair = [luminance(resolve(fg)), luminance(resolve(bg))].sort(
+        (a, b) => b - a,
+      );
+      assert.ok(
+        (pair[0] + 0.05) / (pair[1] + 0.05) >= 4.5,
+        `${theme}: ${description} must have at least 4.5:1 text contrast`,
+      );
+    };
+    const surface = declaration(
+      ".artifact-results .ar-workspace",
+      "background",
+    );
+    contrast(values["--ink"], surface, "heading on workspace");
+    contrast(values["--ink-2"], surface, "body on workspace");
+    contrast(
+      declaration(".artifact-results .ar-note", "color"),
+      surface,
+      "small note on workspace",
+    );
+    contrast(
+      declaration(".artifact-results .ar-button", "color"),
+      declaration(".artifact-results .ar-button", "background"),
+      "ordinary button",
+    );
+    contrast(
+      declaration(".artifact-results .ar-primary", "color"),
+      declaration(".artifact-results .ar-primary", "background"),
+      "primary button",
+    );
+    contrast(
+      declaration(".artifact-results .ar-primary:hover", "color"),
+      declaration(".artifact-results .ar-primary:hover", "background"),
+      "primary hover",
+    );
+    contrast(values["--ink-2"], values["--highlight"], "warning body and note");
+    contrast(
+      declaration(".artifact-results .ar-error", "color"),
+      surface,
+      "validation error",
+    );
+  }
+  groups++;
+
   const outfile = join(temporary, "ui.mjs");
   await build({
     stdin: {

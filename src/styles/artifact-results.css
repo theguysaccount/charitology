@@ -1,13 +1,13 @@
 .artifact-results {
-  --ar-accent: #2e5044;
-  --ar-muted: #68665e;
-  --ar-border: #d9d8cc;
-  color: #272c27;
+  --ar-accent: var(--accent);
+  --ar-muted: var(--ink-3);
+  --ar-border: var(--rule);
+  color: var(--ink);
 }
 .artifact-results .ar-workspace {
   margin-block: 1.5rem;
   border: 1px solid var(--ar-border);
-  background: #fbfaf5;
+  background: var(--surface);
   border-radius: 0.5rem;
   padding: clamp(0.8rem, 2vw, 1.5rem);
 }
@@ -35,7 +35,7 @@
   align-items: center;
 }
 .artifact-results .ar-tabs .ar-button[aria-current="page"] {
-  color: #fff;
+  color: var(--on-accent);
   background: var(--ar-accent);
   border-color: var(--ar-accent);
 }
@@ -44,17 +44,21 @@
   line-height: 1.35;
   padding: 0.65rem 0.85rem;
   min-height: 44px;
-  background: #fffef9;
-  border: 1px solid #93998c;
+  background: var(--surface);
+  border: 1px solid var(--ar-border);
   border-radius: 0.3rem;
-  color: #22382f;
+  color: var(--ink);
   cursor: pointer;
   text-align: left;
   max-width: 100%;
   overflow-wrap: anywhere;
 }
 .artifact-results .ar-button:hover {
-  background: #eeeee3;
+  background: var(--bg-2);
+}
+.artifact-results .ar-primary:hover {
+  background: var(--accent-2);
+  color: var(--on-accent);
 }
 .artifact-results .ar-button:disabled {
   opacity: 0.5;
@@ -62,11 +66,11 @@
 }
 .artifact-results .ar-primary {
   background: var(--ar-accent);
-  color: white;
+  color: var(--on-accent);
 }
 .artifact-results
   :is(button, input, textarea, select, a, summary):focus-visible {
-  outline: 3px solid #9c6230;
+  outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
 .artifact-results .ar-field {
@@ -84,8 +88,8 @@
   box-sizing: border-box;
   font: inherit;
   color: inherit;
-  background: #fffefb;
-  border: 1px solid #969a8b;
+  background: var(--bg);
+  border: 1px solid var(--ink-3);
   border-radius: 0.25rem;
   padding: 0.6rem;
   width: 100%;
@@ -115,7 +119,7 @@
   margin-block: 1rem;
   padding: 1rem;
   border: 1px solid var(--ar-border);
-  background: #fffef9;
+  background: var(--surface);
   border-radius: 0.35rem;
 }
 .artifact-results .ar-note {
@@ -125,17 +129,17 @@
 }
 .artifact-results .ar-warning,
 .artifact-results .ar-guard:not(:empty) {
-  border-left: 4px solid #967130;
+  border-left: 4px solid var(--accent);
   padding: 0.8rem 1rem;
   margin-block: 1rem;
-  background: #f6efdd;
+  background: var(--highlight);
 }
 .artifact-results .ar-status {
   padding-block: 0.5rem;
   overflow-wrap: anywhere;
 }
 .artifact-results .ar-error {
-  color: #8b2929;
+  color: var(--accent);
 }
 .artifact-results :is(p, dd, dt, h3, h4, h5, legend) {
   overflow-wrap: anywhere;
@@ -198,4 +202,8 @@
   .artifact-results .ar-card {
     break-inside: avoid;
   }
+}
+
+.artifact-results :is(.ar-warning, .ar-guard) .ar-note {
+  color: var(--ink-2);
 }
