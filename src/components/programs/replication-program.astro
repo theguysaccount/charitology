@@ -1,135 +1,11 @@
 ---
 import ResearchWorkspace from "./ResearchWorkspace.astro";
+import ArtifactResults from "../ArtifactResults.astro";
+import { REPLICATION_RESEARCH_FIELDS } from "../../data/research-artifact-adapters";
 import { researchProgramCatalog } from "../../lib/research-program-catalog";
 import { url } from "../../lib/site";
 const { interventions } = await researchProgramCatalog();
-const fields = [
-  {
-    key: "title",
-    label: "Replication project and version",
-    required: true,
-    group: "Claim and scope",
-  },
-  {
-    key: "source",
-    label: "Original study URL",
-    type: "url" as const,
-    required: true,
-    group: "Claim and scope",
-  },
-  {
-    key: "claim",
-    label: "Exact claim, outcome, population and follow-up period",
-    type: "textarea" as const,
-    required: true,
-    group: "Claim and scope",
-  },
-  {
-    key: "kind",
-    label: "Replication approach",
-    type: "select" as const,
-    required: true,
-    group: "Claim and scope",
-    options: [
-      { value: "reproduce", label: "Reproduce original data and code" },
-      {
-        value: "reanalyse",
-        label: "Reanalyze original data with a new method",
-      },
-      { value: "direct", label: "Collect new data with the original design" },
-      { value: "context", label: "Test in another population or setting" },
-    ],
-  },
-  {
-    key: "change",
-    label: "What differs from the original, and why?",
-    type: "textarea" as const,
-    required: true,
-    group: "Design",
-  },
-  {
-    key: "hypotheses",
-    label: "Hypotheses and directional predictions",
-    type: "textarea" as const,
-    required: true,
-    group: "Design",
-  },
-  {
-    key: "sample",
-    label: "Population, recruitment, assignment and sample-size rationale",
-    type: "textarea" as const,
-    required: true,
-    group: "Design",
-  },
-  {
-    key: "outcome",
-    label: "Primary outcome, unit, measurement and time point",
-    type: "textarea" as const,
-    required: true,
-    group: "Design",
-  },
-  {
-    key: "estimand",
-    label: "Effect to estimate and smallest meaningful difference",
-    type: "textarea" as const,
-    required: true,
-    group: "Analysis",
-  },
-  {
-    key: "analysis",
-    label: "Estimator, uncertainty interval and decision criteria",
-    type: "textarea" as const,
-    required: true,
-    group: "Analysis",
-  },
-  {
-    key: "missing",
-    label: "Missing data, exclusions and stopping rule",
-    type: "textarea" as const,
-    required: true,
-    group: "Analysis",
-  },
-  {
-    key: "multiple",
-    label: "Multiple outcomes, subgroups and robustness checks",
-    type: "textarea" as const,
-    required: true,
-    group: "Analysis",
-  },
-  {
-    key: "access",
-    label: "Data/code access, dependencies, license and audit trail",
-    type: "textarea" as const,
-    required: true,
-    group: "Delivery and review",
-  },
-  {
-    key: "ethics",
-    label: "Consent, ethics review and safeguards, or why not applicable",
-    type: "textarea" as const,
-    required: true,
-    group: "Delivery and review",
-  },
-  {
-    key: "review",
-    label: "Independent review and original-author response plan",
-    type: "textarea" as const,
-    required: true,
-    group: "Delivery and review",
-  },
-  {
-    key: "due",
-    label: "Planned completion date",
-    type: "date" as const,
-    group: "Delivery and review",
-  },
-  {
-    key: "amendments",
-    label: "Changes since the previous version and whether results were known",
-    type: "textarea" as const,
-    group: "Version record",
-  },
-];
+const fields = REPLICATION_RESEARCH_FIELDS;
 ---
 
 <section class="tool">
@@ -153,6 +29,8 @@ const fields = [
       >The replication-rate open problem</a>
   </p>
 </section>
+<ArtifactResults program="replication-program" />
+
 <ResearchWorkspace
   id="replication-program"
   title="Preregistration and replication planner"
