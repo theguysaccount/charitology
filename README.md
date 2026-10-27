@@ -14,7 +14,7 @@ Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025
 | **[Programs](src/content/programs/)**          | 26 programs have usable browser functions. Institutional operations still need people, resources and governance. Each page states its exact scope.                                                |
 | **[Tools](src/content/tools/)**                | 20 catalog tools, including the shared and local Charity OS: Values Compass, Portfolio Builder, Impact Calculator, Cost-Effectiveness Model Kit, Giving Dashboard, Forecasting Platform and more. |
 | **[The Record](src/content/record/)**          | 21 information bases: Encyclopedia, Intervention Database, Cause Atlas, Gap Map, Failure Archive, Disagreement Register, Principles textbook, Lexicon and more.                                   |
-| **[Public API](src/lib/api.ts)**               | 33 datasets as static JSON at `/api/v1/*.json`, CC BY 4.0.                                                                                                                                        |
+| **[Public API](src/lib/api.ts)**               | 36 static JSON datasets at `/api/v1/*.json`, with exact factual source/edition pins and source-specific reuse terms. |
 | **[Browser extension](extension/)**            | The Giver’s Checklist on supported donation pages, without analytics or background data transmission.                                                                                             |
 
 Every page follows [the Charitology Standard](STYLE.md): a source for every factual claim, honest evidence labels, unknowns left unknown, and no ratings of named charities until a rating method has survived public red-team review.
