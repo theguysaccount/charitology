@@ -1,0 +1,106 @@
+{
+  "format": "charitology-observation-definitions",
+  "version": 1,
+  "review": "draft",
+  "window": {
+    "startYear": 2020,
+    "endYear": 2025
+  },
+  "series": [
+    {
+      "code": "SP.POP.TOTL",
+      "family": "population",
+      "display": {
+        "id": "SP.POP.TOTL",
+        "label": "Population",
+        "unit": "people",
+        "note": "The number of residents; not a measure of need.",
+        "url": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+        "apiUrl": "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "lastUpdated": "2026-10-08",
+        "definition": "Total population is based on the de facto definition of population, which counts all residents regardless of legal status or citizenship. The values shown are midyear estimates.",
+        "organization": "World Population Prospects, United Nations (UN), uri: https://population.un.org/wpp/, publisher: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), uri: https://unstats.un.org/home/nso_sites/, publisher: National Statistical Offices;\nEurostat: Demographic Statistics, Eurostat (ESTAT), uri: https://ec.europa.eu/eurostat/data/database?node_code=earn_ses_monthly, publisher: Eurostat;\nPopulation and Vital Statistics Report (various years), United Nations (UN), uri: https://unstats.un.org, publisher: UN Statistics Division"
+      }
+    },
+    {
+      "code": "SP.DYN.LE00.IN",
+      "family": "life-expectancy",
+      "display": {
+        "id": "SP.DYN.LE00.IN",
+        "label": "Life expectancy at birth",
+        "unit": "years",
+        "note": "A period estimate based on mortality patterns; not a prediction for an individual.",
+        "url": "https://data.worldbank.org/indicator/SP.DYN.LE00.IN",
+        "apiUrl": "https://api.worldbank.org/v2/country/all/indicator/SP.DYN.LE00.IN?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "lastUpdated": "2026-10-08",
+        "definition": "Life expectancy at birth indicates the number of years a newborn infant would live if prevailing patterns of mortality at the time of its birth were to stay the same throughout its life.",
+        "organization": "World Population Prospects, United Nations (UN), uri: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), note: Derived from male and female life expectancy at birth from sources such as statistical databases and publications from national statistical offices.;\nDemographic Statistics, Eurostat (ESTAT), note: Derived from male and female life expectancy at birth from sources such as Eurostat: Demographic Statistics."
+      }
+    },
+    {
+      "code": "SH.DYN.MORT",
+      "family": "under-five-mortality",
+      "display": {
+        "id": "SH.DYN.MORT",
+        "label": "Under-five mortality",
+        "unit": "per 1,000 live births",
+        "note": "A population rate, not the number of children who died.",
+        "url": "https://data.worldbank.org/indicator/SH.DYN.MORT",
+        "apiUrl": "https://api.worldbank.org/v2/country/all/indicator/SH.DYN.MORT?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "lastUpdated": "2026-10-08",
+        "definition": "Under-five mortality rate is the probability per 1,000 that a newborn baby will die before reaching age five, if subject to age-specific mortality rates of the specified year.",
+        "organization": "UN Inter-agency Group for Child Mortality Estimation, UN Children's Fund (UNICEF), uri: www.childmortality.org, publisher: UNICEF, WHO, World Bank, United Nations Population Division;\nWorld Health Organization (WHO), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nWorld Bank (WB), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation;\nUnited Nations (UN), uri: www.childmortality.org, note: UN Inter-agency Group for Child Mortality Estimation, publisher: UN Population Division"
+      }
+    },
+    {
+      "code": "EG.ELC.ACCS.ZS",
+      "family": "electricity-access",
+      "display": {
+        "id": "EG.ELC.ACCS.ZS",
+        "label": "Access to electricity",
+        "unit": "% of population",
+        "note": "Access does not establish reliability or affordability.",
+        "url": "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS",
+        "apiUrl": "https://api.worldbank.org/v2/country/all/indicator/EG.ELC.ACCS.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "lastUpdated": "2026-10-08",
+        "definition": "Access to electricity is the percentage of population with access to electricity. Electrification data are collected from industry, national surveys and international sources.",
+        "organization": "SDG 7.1.1 Electrification Dataset, World Bank (WB), uri: https://trackingsdg7.esmap.org/downloads, note: Data is downloaded from ESMAP website. Data is released when a new Tracking SDG7 report is released., publisher: World Bank (WB), date accessed: 2024-05-16, date published: 2023"
+      }
+    },
+    {
+      "code": "SH.H2O.BASW.ZS",
+      "family": "basic-water-access",
+      "display": {
+        "id": "SH.H2O.BASW.ZS",
+        "label": "At least basic drinking water",
+        "unit": "% of population",
+        "note": "Basic service is not the same as safely managed water.",
+        "url": "https://data.worldbank.org/indicator/SH.H2O.BASW.ZS",
+        "apiUrl": "https://api.worldbank.org/v2/country/all/indicator/SH.H2O.BASW.ZS?date=2020:2025&footnote=y&format=json&per_page=20000",
+        "lastUpdated": "2026-10-08",
+        "definition": "The percentage of people using at least basic water services.  This indicator encompasses both people using basic water services as well as those using safely managed water services.  Basic drinking water services is defined as drinking water from an improved source, provided collection time is not more than 30 minutes for a round trip.  Improved water sources include piped water, boreholes or tubewells, protected dug wells, protected springs, and packaged or delivered water.",
+        "organization": "WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene, World Health Organization (WHO), uri: washdata.org, publisher: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene (washdata.org), date accessed: 2025-09-30, date published: 2025-08-25;\nUN Children's Fund (UNICEF), uri: washdata.org, note: WHO/UNICEF Joint Monitoring Programme (JMP) for Water Supply, Sanitation and Hygiene"
+      }
+    }
+  ],
+  "countryProjection": {
+    "title": "Country data profiles",
+    "window": "2020–2025; latest non-empty observation per indicator",
+    "publisher": "World Bank World Development Indicators and original statistical producers",
+    "licenseSummary": "Source-specific indicator CC BY 4.0 and publisher-default metadata terms; author inference with human review pending.",
+    "scope": "World Bank countries and economies, excluding aggregate regions. No local coauthor or recommendation is implied.",
+    "countrySourceUrl": "https://api.worldbank.org/v2/country?format=json&per_page=20000",
+    "retrievalRule": "maximum-input-retrieval-day",
+    "review": "draft",
+    "reviewNote": "Statistical source transcription checked with AI assistance. Independent human review and local narrative authorship are not claimed."
+  },
+  "legacyComparison": {
+    "path": "src/data/countries.json",
+    "sha256": "8f4a71e525a8b7765691f211b7d94a6d4fed02746a19060b88f196d137f74543",
+    "declaredRetrievedDay": "2026-10-25"
+  },
+  "limitations": [
+    "Selected historical financial facts and country indicators; no comparative effectiveness or impact inference.",
+    "AI-assisted source transcription; independent human and rights review remain pending."
+  ]
+}
