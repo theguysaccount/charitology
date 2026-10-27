@@ -114,6 +114,14 @@ await check('actual API preserves forecast milliseconds but leaves other dataset
     assert.equal((await api.buildEndpoint('forecasts')).data[0].closes, stamp);
     assert.equal((await api.buildEndpoint('forecasts')).data[0].forecasts[0].date, stamp);
     assert.equal((await api.buildEndpoint('conditions')).data[0].date, '2020-01-02');
+    const conditionsEndpoint = api.ENDPOINTS.find(entry => entry.name === 'conditions');
+    conditionsEndpoint.capturedAt = async () => stamp;
+    assert.equal((await api.buildEndpoint('conditions')).generated, '2020-01-02');
+    for (const invalid of ['', undefined, null, '2020-02-30T03:04:05.678Z', '2020-01-02']) {
+      conditionsEndpoint.capturedAt = async () => invalid;
+      await assert.rejects(() => api.buildEndpoint('conditions'), /Invalid pinned API capture/);
+    }
+    delete conditionsEndpoint.capturedAt;
   } finally { delete globalThis.__forecastFixtures; }
 });
 await check('forecast model and actual drafter script pass strict TypeScript', () => {

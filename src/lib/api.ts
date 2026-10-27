@@ -68,8 +68,7 @@ export const ENDPOINTS: Endpoint[] = [
     description:
       "Pinned public source versions, editorial corrections and recorded review declarations; no private local workspaces or automatic scientific qualification.",
     build: async () => (await researchLedger()).current,
-    capturedAt: async () =>
-      (await researchLedger()).current.edition.capturedAt,
+    capturedAt: async () => (await researchLedger()).current.edition.capturedAt,
     preserveShape: true,
   },
   {
@@ -77,8 +76,7 @@ export const ENDPOINTS: Endpoint[] = [
     description:
       "Explicit as-of research progress: present states, dated editorial corrections, recorded decisions and support limits; unknown historical baseline stays unknown.",
     build: async () => (await researchLedger()).progress,
-    capturedAt: async () =>
-      (await researchLedger()).current.edition.capturedAt,
+    capturedAt: async () => (await researchLedger()).current.edition.capturedAt,
     preserveShape: true,
   },
   {
@@ -257,8 +255,9 @@ export async function buildEndpoint(name: string): Promise<unknown> {
   const data = await endpoint.build();
   const capture = endpoint.capturedAt ? await endpoint.capturedAt() : null;
   if (
-    capture &&
-    (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(capture) ||
+    endpoint.capturedAt &&
+    (typeof capture !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(capture) ||
       new Date(capture).toISOString() !== capture)
   )
     throw new Error("Invalid pinned API capture.");
