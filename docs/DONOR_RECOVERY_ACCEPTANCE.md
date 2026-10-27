@@ -1,6 +1,6 @@
 # Donor record recovery acceptance
 
-Implementation in progress · October 27, 2026 · AI-assisted · review: draft. Read the [plan](DONOR_RECOVERY_PLAN.md) and [exact interfaces](DONOR_RECOVERY_INTERFACES.md). This record separates implemented code and focused checks from integrated build, browser and publication evidence. No full-release claim is made by the plan or a synthetic test.
+Implemented and controlled-browser checked · October 27, 2026 · AI-assisted · review: draft. Read the [plan](DONOR_RECOVERY_PLAN.md) and [exact interfaces](DONOR_RECOVERY_INTERFACES.md). This record separates actual code, automated checks, controlled Chrome and publication evidence. It supplies no independent review or real donor activity.
 
 ## Scope and compatibility
 
@@ -36,4 +36,20 @@ Actual-module synthetic checks exercise the canonical schemas/formats, async cel
 
 Two independently reproduced controller findings were repaired during review: the grant editor must stay inert while individual Apply waits for a lock, and a discard checkbox must clear after newer form input. Both now have mounted regressions. The shared CSS also honors hidden preview controls and bounds native file/select elements and long button labels for narrow screens.
 
-The final focused group counts, exact runtime revision, complete build/CI, controlled Chrome results and public response checks will be recorded here after those gates run. Native saved-file proof remains pending while the previously reported locked-Mac limitation is unresolved. No provider, payment, mail send, user-origin storage discovery or real private recipient was involved in this slice.
+The final runtime is `924cf5350349c8868c1cfeacf4badbf4b248395f`. There are **133 focused groups**: 28 schema/format, 28 engine, 22 grant-coordinator, 27 mounted shared-control, 22 mounted actual-tool and six gift-record groups. Strict TypeScript checks report zero diagnostics, including all twelve actual tool scripts. The complete build/check at implementation `aa9e7507e4e8a48af1f78a2bb77c4a590501d13c` passed with 520 HTML pages, 37,182 links/assets and none broken, 34 API datasets, favicon, 1200×630 OG image and ten-second fast-start H.264 OG video. Both exact-head CI runs 40514843417 and 40514780587 passed public, OS and mail suites. Subsequent browser-discovered corrections passed the affected strict/mounted checks and production builds; final-head CI and public response evidence are a separate release gate below.
+
+## Controlled Chrome evidence
+
+Actual Chrome used owned, fictional localhost origins and unchanged frozen product bytes. The initial `aa9e750` journey exercised all twelve tools: unknown versus depth-zero gifts and totals, Portfolio tilt −100 and explicit source copying, saved cost-model library, all three separately confirmed grant restore steps, Measurement delayed drafts, exact-cent Split, Legacy/card/diligence saves and reloads, a zero-relief disaster plan, and Wrapped preferences with the original gift-log bytes unchanged. This was real native-control interaction, not the mounted synthetic fixture.
+
+A separately labeled private fault fixture altered only the fourteen literal legacy keys through authored buttons. It reproduced an orphan grant, a failed final draft write and exact-step retry without an extra member or regenerated identity; delayed valid-file A followed by invalid B left B's error and no Apply authority. Two normal card tabs confirmed that the older editor could not replace the newer saved bytes. Actual native file selection worked. Generated Dashboard JSON (4,045 bytes) and CSV (2,084 bytes) preserved null versus zero and blank versus zero. These are captured Blob payloads, **not evidence of native saved files**.
+
+All twelve routes passed **48 actual-width layout cases** at 320/390 pixels in light/dark mode, including a keyboard-opened recovery section and visible focus. Fresh-state checks on `1ed8d8a133bf50bcd78cef27aee238facdd4e731` verified empty versus saved versus unavailable status and an initially hidden Compass result; all five dimensions and eight answers persisted after explicit submission/reload. Another 48 layout cases passed. That pass found Wrapped's stale empty-sample note; final `924cf535` passed empty → sample → remove, preference-only save with the gifts key absent, and four additional Wrapped narrow light/dark cases. On the two final tabs a bounded console read found zero application errors or warnings; 18 extension listener/stream warnings were classified separately without changing browser settings.
+
+These journeys used three frozen builds. Between `aa9e750` and `1ed8d8a`, 66/75 JS/CSS assets and the three untouched tool HTML files were byte-identical; the shared recovery-controls asset was unchanged. Between `1ed8d8a` and final `924cf535`, 74/75 assets and the other eleven tool HTML files were byte-identical. Earlier native fault scenarios were not repeated against every changed entry script. All eighteen owned tabs were closed, and all fourteen exact keys were absent on all three test origins after reviewed cleanup. Existing user-origin data and other task tabs were untouched.
+
+Native saved-file proof remains unverified while the previously reported locked-Mac limitation is unresolved. No provider, payment, mail send, user-origin storage discovery or real private recipient was involved in this slice. Private proof and byte-comparison records remain outside the repository; no injected fixture ships.
+
+## Publication
+
+[PR #22](https://github.com/theguysaccount/charitology/pull/22) contains this slice. Final-head CI, merge/Pages identity and public byte checks are pending at this documentation capture. The runtime/build/browser evidence above does not stand in for those release gates.
