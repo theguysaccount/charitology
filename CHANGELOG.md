@@ -5,7 +5,7 @@
 - Added exact-key asynchronous saving and explicit recovery across twelve existing tools, preserving all fourteen saved keys and v1 formats. Failed writes and protected copies remain exportable; newer tab edits and file choices revoke older apply authority.
 - Added separately confirmed three-step grant repair with visible partial states and exact retry. Compass and other tools distinguish an empty start from a saved record; Wrapped examples stay on the page.
 - Fixed an OS email-worker completion race found by release CI: known provider outcomes now wait briefly for the tenant lock within the existing deadline. A forced PostgreSQL contention test confirms one send and later status-only reconciliation.
-- [Acceptance](docs/DONOR_RECOVERY_ACCEPTANCE.md) records 133 focused groups, strict types, complete builds and controlled Chrome flows/layouts. Native file saving remains unverified; no donation, provider action or message was sent.
+- [Acceptance](docs/DONOR_RECOVERY_ACCEPTANCE.md) records 133 focused groups, strict types, complete builds and controlled Chrome flows/layouts. PR #22 and Pages publication passed, with 36 public byte matches and the tested OS stage promoted after 29 staged/30 production checks. Native file saving remains unverified; no donation, provider send or message occurred.
 
 ## October 27, 2026: fixed publications and guarded issue operations
 
