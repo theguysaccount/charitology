@@ -1,4 +1,5 @@
 ---
+import ProgramGraph from "../ProgramGraph.astro";
 import { programWorkspaces } from "../../data/partner-programs";
 const { program } = Astro.props;
 const config = programWorkspaces[program];
@@ -151,6 +152,7 @@ const config = programWorkspaces[program];
     exports. The program charter above remains readable.</noscript
   >
 </section>
+<ProgramGraph initialProgram={program} />
 <style>
   .pw-tool :global([hidden]) {
     display: none !important;
