@@ -397,6 +397,28 @@ test("complete plain packet re-admission requires all sources", () => {
   p.notes.pop();
   refuse(() => packetJSON(p));
 });
+test("standalone complete serializers verify exact internal and repeated boundary hashes", () => {
+  const p = structuredClone(editionPacket(h, last));
+  p.edition.changes[0].after = { ...pinOf(p.claims[0]), hash: "0".repeat(64) };
+  p.edition = seal(p.edition);
+  refuse(() => packetJSON(p), /changed exact pin/);
+  const q = structuredClone(editionPacket(h, last)),
+    index = q.claims.findIndex((c) => c.version === 2);
+  const changed = structuredClone(q.claims[index]);
+  changed.previous.hash = "0".repeat(64);
+  q.claims[index] = seal(changed);
+  q.edition.claims = q.edition.claims.map((x) =>
+    x.id === changed.id && x.version === changed.version
+      ? pinOf(q.claims[index])
+      : x,
+  );
+  q.edition = seal(q.edition);
+  refuse(() => packetCSV(q), /changed exact pin/);
+  const r = structuredClone(editionPacket(h, last));
+  r.edition.changes[0].before = { ...r.edition.previous, hash: "0".repeat(64) };
+  r.edition = seal(r.edition);
+  refuse(() => packetJSON(r), /changed exact boundary/);
+});
 test("status evidence cannot change operation/appeal scope to incident ended", () =>
   refuse(
     () =>

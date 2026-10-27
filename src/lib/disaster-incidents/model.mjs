@@ -42,8 +42,8 @@ const INTERPRETATION_FILES = [
   },
   {
     path: "src/lib/disaster-incidents/interpretations/v1/runtime.mjs",
-    bytes: 25774,
-    sha256: "422ac5c23c7d2ca92fe637a58182bd120b6b078aeb98ea9f2e5a7ebc718ea782",
+    bytes: 25876,
+    sha256: "526bbeb432292a9dc579778d81fdbeb2cdced52ba4448c2b5a3675f8aa89f3ec",
   },
   {
     path: "src/lib/disaster-incidents/interpretations/v1/schema.mjs",

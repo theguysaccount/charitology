@@ -648,9 +648,11 @@ export function packetState(input) {
   }
   if (!equal([...expectedBoundary.values()], p.boundaryPins))
     fail("Exact boundary closure/order mismatch");
-  for (const q of typedPins(p))
-    if (!state.records.has(keyOf(q)) && !boundary.has(keyOf(q)))
-      fail("Unclassified pin");
+  for (const q of typedPins(p)) {
+    if (state.records.has(keyOf(q))) resolve(state, q);
+    else if (!boundary.has(keyOf(q)) || !equal(boundary.get(keyOf(q)).pin, q))
+      fail("Unclassified or changed exact boundary pin");
+  }
   for (const r of [...p.incidents, ...p.claims]) validateFacts(state, r);
   for (const s of p.sources) {
     const n = state.notes.get(s.publicNote.path);
