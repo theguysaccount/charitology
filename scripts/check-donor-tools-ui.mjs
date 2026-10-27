@@ -364,6 +364,31 @@ try {
     },
   );
   await check(
+    "Wrapped empty-log sample removal clears visible and announced fictional state",
+    async () => {
+      const d = await mount("charitology-wrapped");
+      assert.equal(d.$("#wr-unsample").hidden, true);
+      await clicks(d, "#wr-try");
+      const note = d.root
+        .querySelectorAll("p")
+        .find((p) =>
+          p.textContent.startsWith("Page-only fictional sample preview."),
+        );
+      assert.ok(note);
+      assert.equal(note.hidden, false);
+      await clicks(d, "#wr-unsample");
+      assert.equal(note.hidden, true);
+      assert.equal(note.textContent, "");
+      assert.equal(d.$("#wr-unsample").hidden, true);
+      assert.equal(d.$("#wr-none").hidden, false);
+      assert.match(
+        d.$("#wr-live").textContent,
+        /No page-only sample is active/,
+      );
+      assert.equal(d.values.has("charitology.gifts"), false);
+    },
+  );
+  await check(
     "grant draft-only New removes only draft, blanks the form and retains proposal library",
     async () => {
       const f = donorFixtures(),

@@ -498,7 +498,13 @@ import { url } from '../../lib/site';
     const any = gifts.length > 0;
     $('#wr-none').hidden = any;
     $('#wr-main').hidden = !any;
-    if (!any) return;
+    samplePreviewNote.hidden = !pageSample;
+    samplePreviewNote.textContent = pageSample ? 'Page-only fictional sample preview. The saved gift log is unchanged. Reload or remove the preview to return to it.' : '';
+    $('#wr-unsample').hidden = !pageSample;
+    if (!any) {
+      $('#wr-live').textContent = 'No gifts are available for this view. No page-only sample is active.';
+      return;
+    }
     renderYears();
     const w = build();
     $('#wr-c-year').textContent = w.year;
@@ -514,9 +520,6 @@ import { url } from '../../lib/site';
     renderMix(w);
     $('#wr-sample').hidden = !w.sample;
     $('#wr-live').textContent = `${w.year}: ${bigText(w)} ${subText(w)}. Top cause: ${w.top?.name ?? 'none'}. Source share ${w.source}%. Archetype: ${w.arch.name}.`;
-    samplePreviewNote.hidden = !pageSample;
-    samplePreviewNote.textContent = pageSample ? 'Page-only fictional sample preview. The saved gift log is unchanged. Reload or remove the preview to return to it.' : '';
-    $('#wr-unsample').hidden = !pageSample;
   }
 
   function summary(w: Wrap): string {
