@@ -205,12 +205,12 @@ test(
         return { response, value };
       }
       let actorNumber = 10;
-      async function signIn(label, { scannerCheck = false } = {}) {
+      async function signIn(label, { scannerCheck = false, destination } = {}) {
         const address = `os-${label}-${suffix}@example.invalid`;
         const ip = `198.51.100.${++actorNumber}`;
         await call({ ip }, "/api/auth/request-link", {
           method: "POST",
-          body: { email: address },
+          body: { email: address, ...(destination ? { destination } : {}) },
         });
         const message = sent.findLast(
           (item) =>
@@ -223,6 +223,11 @@ test(
         const link = new URL(message.url);
         assert.equal(link.pathname, "/auth/confirm");
         const token = link.searchParams.get("token");
+        assert.equal(link.searchParams.get("destination"), destination || null);
+        assert.deepEqual(
+          [...link.searchParams.keys()].sort(),
+          destination ? ["destination", "token"] : ["token"],
+        );
         assert.ok(token);
         const ownSessionCount = async () =>
           Number(
@@ -250,12 +255,19 @@ test(
               "x-forwarded-for": ip,
               "content-type": "application/x-www-form-urlencoded",
             },
-            body: new URLSearchParams({ token }).toString(),
+            body: new URLSearchParams({
+              token,
+              ...(destination ? { destination } : {}),
+            }).toString(),
           }),
         );
         assert.ok(
           [302, 303].includes(response.status),
           `A deliberate confirmation for ${label} must redirect; got HTTP${response.status}.`,
+        );
+        assert.equal(
+          new URL(response.headers.get("location"), settings.origin).pathname,
+          destination === "participant" ? "/participant" : "/",
         );
         const cookies = response.headers.getSetCookie();
         assert.ok(
@@ -322,6 +334,30 @@ test(
           ip,
         };
       }
+      await t.test(
+        "participant return uses real verified Better Auth session without disclosing memberships or carrying receipts",
+        async () => {
+          const participant = await signIn("participant", {
+            destination: "participant",
+            scannerCheck: true,
+          });
+          const own = (await call(participant, "/api/participant/session"))
+            .value;
+          assert.deepEqual(own.user, {
+            id: participant.id,
+            email: participant.email,
+            emailVerified: true,
+          });
+          assert.ok(own.csrfToken);
+          assert.equal(Object.hasOwn(own, "orgs"), false);
+          await call(participant, "/api/participant/session?receipt=private", {
+            expect: 400,
+          });
+          const anonymous = (await call(null, "/api/participant/session"))
+            .value;
+          assert.deepEqual(anonymous, { ok: true, user: null });
+        },
+      );
       let a,
         b,
         reviewer,

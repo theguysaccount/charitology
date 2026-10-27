@@ -56,6 +56,12 @@ import { uploadPart, uploadedBackup, downloadJson } from "./uploads.mjs";
 import { memberRoutes, acceptInvite } from "./members.mjs";
 import { integrationRoutes } from "./integrations.mjs";
 import { publicIntakeRoutes, intakeRoutes } from "./intake.mjs";
+import { participantRoutes } from "./participants.mjs";
+import {
+  authDestination,
+  confirmDestination,
+  confirmForm,
+} from "./auth-return.mjs";
 import {
   exportIntake,
   restoredIntake,
@@ -113,10 +119,11 @@ export function createHandler({ settings, db, auth, send }) {
       }
       if (path === "/auth/confirm" && method === "GET") {
         const token = url.searchParams.get("token") || "";
+        const destination = confirmDestination(url.searchParams);
         if (!/^[A-Za-z0-9_-]{20,300}$/.test(token))
           fail(400, "token", "This sign-in link is invalid.");
         return new Response(
-          `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta name="referrer" content="no-referrer"><link rel="stylesheet" href="/os.css"><title>Confirm sign in · Charity OS</title><main class="auth-card"><img src="/mark.svg" width="54" height="54" alt=""><h1>Sign in to Charity OS</h1><p>Continue only if you requested this link. It expires after10 minutes and can be used once.</p><form method="post" action="/auth/confirm"><input type="hidden" name="token" value="${escape(token)}"><button type="submit">Confirm sign in</button></form></main></html>`,
+          `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta name="referrer" content="no-referrer"><link rel="stylesheet" href="/os.css"><title>Confirm sign in · Charity OS</title><main class="auth-card"><img src="/mark.svg" width="54" height="54" alt=""><h1>Sign in to ${destination.name === "participant" ? "your requests" : "Charity OS"}</h1><p>Continue only if you requested this link. It expires after 10 minutes and can be used once.</p><form method="post" action="/auth/confirm"><input type="hidden" name="token" value="${escape(token)}"><input type="hidden" name="destination" value="${destination.name}"><button type="submit">Confirm sign in</button></form></main></html>`,
           {
             headers: {
               "content-type": "text/html; charset=utf-8",
@@ -132,13 +139,14 @@ export function createHandler({ settings, db, auth, send }) {
         const origin = request.headers.get("origin");
         if (origin !== settings.origin && origin !== "null")
           fail(403, "origin", "Return to the sign-in link in your email.");
-        const form = await request.formData();
+        const form = await confirmForm(request);
+        const destination = confirmDestination(form);
         const token = String(form.get("token") || "");
         if (!/^[A-Za-z0-9_-]{20,300}$/.test(token))
           fail(400, "token", "Invalid sign-in link.");
         const target = new URL("/api/auth/magic-link/verify", settings.origin);
         target.searchParams.set("token", token);
-        target.searchParams.set("callbackURL", "/");
+        target.searchParams.set("callbackURL", destination.path);
         const headers = new Headers(request.headers);
         headers.set("origin", settings.origin);
         headers.delete("content-length");
@@ -148,6 +156,18 @@ export function createHandler({ settings, db, auth, send }) {
       if (path === "/api/auth/request-link" && method === "POST") {
         checkOrigin(request, settings.origin);
         const input = await body(request, 2000);
+        if (
+          !input ||
+          typeof input !== "object" ||
+          Array.isArray(input) ||
+          Object.keys(input).some((k) => !["email", "destination"].includes(k))
+        )
+          fail(
+            400,
+            "login_fields",
+            "Use only email and a supported sign-in destination.",
+          );
+        const destination = authDestination(input.destination);
         const address = email(input.email);
         await db.limit(`login:${hash(address)}`, 4, 900);
         await db.limit(
@@ -156,7 +176,11 @@ export function createHandler({ settings, db, auth, send }) {
           3600,
         );
         await auth.api.signInMagicLink({
-          body: { email: address, callbackURL: "/" },
+          body: {
+            email: address,
+            callbackURL: destination.path,
+            metadata: { destination: destination.name },
+          },
           headers: request.headers,
         });
         return okay({
@@ -177,6 +201,32 @@ export function createHandler({ settings, db, auth, send }) {
       });
       if (publicIntakeResponse) return publicIntakeResponse;
       const session = await auth.api.getSession({ headers: request.headers });
+      if (path === "/api/participant/session" && method === "GET") {
+        const query = new URLSearchParams(url.search);
+        if (
+          query.getAll("path").length === 1 &&
+          query.get("path") === path.slice(5)
+        )
+          query.delete("path");
+        if ([...query.keys()].length)
+          fail(
+            400,
+            "participant_query",
+            "Do not include private data in query parameters.",
+          );
+        return okay(
+          session
+            ? {
+                user: {
+                  id: session.user.id,
+                  email: session.user.email,
+                  emailVerified: session.user.emailVerified === true,
+                },
+                csrfToken: csrf(session.session.id, settings.secret),
+              }
+            : { user: null },
+        );
+      }
       if (path === "/api/session" && method === "GET") {
         if (!session) return okay({ user: null });
         const orgs = await db.tx(session.user.id, null, async (c) =>
@@ -226,7 +276,35 @@ export function createHandler({ settings, db, auth, send }) {
       }
       if (path === "/api/modules" && method === "GET")
         return okay({ modules: MODULES, roles: ROLES, currencies: CURRENCIES });
-      const input = ["GET", "HEAD"].includes(method) ? {} : await body(request);
+      const input = ["GET", "HEAD"].includes(method)
+        ? {}
+        : await body(
+            request,
+            path.startsWith("/api/participant/") ? 16384 : 8 * 1024 * 1024,
+          );
+      if (path.startsWith("/api/participant/")) {
+        const bucket = hash(session.user.id);
+        if (method === "GET")
+          await db.limit(`participant-read:${bucket}`, 120, 3600);
+        else if (/\/link$/.test(path)) {
+          await db.limit(`participant-link:${bucket}`, 10, 3600);
+          await db.limit(
+            `participant-link-ip:${hash(request.headers.get("x-forwarded-for")?.split(",")[0] || "local")}`,
+            30,
+            3600,
+          );
+        } else await db.limit(`participant-write:${bucket}`, 60, 3600);
+        const response = await participantRoutes({
+          request,
+          url,
+          db,
+          settings,
+          session,
+          input,
+        });
+        if (response) return response;
+        fail(404, "route", "This route is unavailable.");
+      }
       if (path === "/api/invitations/accept" && method === "POST")
         return okay(await acceptInvite({ db, session, input }));
       if (path === "/api/orgs" && method === "POST") {

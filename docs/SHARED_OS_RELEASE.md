@@ -2,6 +2,19 @@
 
 Evidence checkpoint: **26 October 2026** (local date). The public operational intake follow-up is promoted at https://os.charitology.org. Its evidence is recorded first; the earlier foundation, recovery and controlled login/reminder evidence follows separately.
 
+## Participant own-request follow-up
+
+Implementation is on `participant-self-service`; promotion is pending. The [participant plan and acceptance record](PARTICIPANT_PORTAL.md) was written before implementation and freezes the bounded outcome and threat model. No production form, real participant request, actual human approval or model provider was created for these checks.
+
+- **Actual authentication:** the full existing isolated Postgres/Better Auth runtime suite passed 12 tests, including real verified email session creation, scanner-safe GET, deliberate POST, fixed participant return, no receipt in the login message and no memberships in the participant session response. Its email transport is an injected synthetic capture, not provider delivery.
+- **Actual participant database:** nine new separate-role Postgres checks passed using temporary schemas and synthetic trusted-server identity fixtures. They cover forced RLS, unchanged private tenant boundaries, claim combinations/concurrency, 22-link pagination at 20/2, safe detail fields, correction/review races, permanent unlink/no transfer, concurrent final quota slots, inactive-grant recovery and privacy actions above the audit reserve. These fixtures are not independent authentication evidence; the preceding Better Auth suite supplies that separate proof.
+- **Frontend regressions:** the current 132-test service suite includes 12 new participant cases for receipt parsing and no-JS fallback safety, typed unknown/zero/false values, deliberate claim/CSRF/fragment clearing, failed authority checks, correction draft preservation, changed revision warnings, logout/unlink cleanup and late stale-response rejection after correction or erasure.
+- **Controlled Chrome journey:** actual local Better Auth and temporary constrained Postgres with synthetic mail capture: public request with zero/No, private receipt, separate clean login tab with no receipt and zero discovered requests, original-tab deliberate claim, cleared fragment, own answers, reload, preserved unsaved correction through unchanged authority refresh, fresh consent, correction revision 2, withdrawal revision 3, answer erasure revision 4, permanent unlink to zero own links, and logout clearing the view. Another tab's next authority refresh showed signed-out controls. No provider email was sent. These checks preceded a later narrowly scoped late-response fix covered by the frontend regressions; they do not establish comprehensive mobile/accessibility acceptance.
+
+The first disposable Chrome fixture crashed because it attempted a second HTTP header write after a missing static file; it was removed and restarted. The successful journey used the repaired fixture. The development server now reads response bytes before sending headers and handles missing static files without crashing. The fixture initially logs the expected absence of auth tables before its isolated migrations; production schema state is not inferred from that setup log.
+
+Deployment, exact-commit CI and final production isolation/asset checks remain pending for this follow-up. Existing production intake evidence below remains separate.
+
 ## Public operational intake follow-up
 
 Runtime commit **`98ebea527b6a5b382d5e143acf207205eccd172b`** was staged, tested and promoted as **`dpl_1yFKcLN8m2x8QkXs4Sf1sZbeBdYd`**. A post-promotion lookup of `os.charitology.org` resolved to that exact deployment and commit. [PR #9](https://github.com/theguysaccount/charitology/pull/9) contains the implementation and its documentation. The later `9713128` change only extends the optional disposable test fixture; it does not change the deployed application.

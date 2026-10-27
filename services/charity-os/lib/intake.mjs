@@ -17,7 +17,7 @@ const kinds = ["contact", "event-interest", "volunteer-interest"];
 const statuses = ["pending", "reviewed", "dismissed", "converted", "cancelled"];
 const message =
   "Request received. This is not a confirmed booking, payment or newsletter subscription.";
-const consentText =
+export const consentText =
   "I agree that this organization may review these operational answers and contact me about this request. I will not include sensitive personal or case information.";
 const opaque = (v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,100}$/.test(v);
 const plain = (v) =>
@@ -246,7 +246,12 @@ export function publicationAccepting(publication, source, target) {
     target.data.kind === (volunteer ? "shift" : "session")
   );
 }
-async function publicationState(c, org, publicationId, unavailable = true) {
+export async function publicationState(
+  c,
+  org,
+  publicationId,
+  unavailable = true,
+) {
   const publication = (
     await c.query("SELECT * FROM os_publications WHERE org_id=$1 AND id=$2", [
       org,
@@ -390,7 +395,21 @@ export async function publicIntakeRoutes({
           });
           row.status = "cancelled";
         }
-        return okay(publicStatus(row));
+        const publication = (
+          await c.query(
+            "SELECT * FROM os_publications WHERE org_id=$1 AND id=$2",
+            [org, publicationId],
+          )
+        ).rows[0];
+        return okay({
+          ...publicStatus(row),
+          participantClaimAvailable:
+            !row.erased_at &&
+            typeof row.answers?.email === "string" &&
+            !!row.answers.email.trim() &&
+            publication?.schema?.questions?.some((q) => q.key === "email") ===
+              true,
+        });
       },
       { lock: true },
     );

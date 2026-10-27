@@ -38,6 +38,14 @@ The separate, revision-checked erasure action clears queue answers and IP/payloa
 
 The server bounds forms at 30 questions/12,000 schema bytes, total submissions at 16,384 bytes, new requests at 100 per organization/UTC day, and the pending/reviewed queue at 1,000 rows/8 MiB of measured row data. General text answers have a 300-character limit; reserved contact fields have narrower bounds. Durable IP-derived limits are 20 submissions/hour and 60 receipt actions/hour. The full workspace export budget also applies. See [intake.mjs](lib/intake.mjs) for the exact validation and [intake-backup.mjs](lib/intake-backup.mjs) for recovery.
 
+## Participant self-service
+
+`/participant` is a separate own-request portal. A current verified Better Auth account, an unguessable receipt, explicit linking consent and an exact trim/lowercase match to the submitted reserved email are all required. Signing in alone discovers no requests and grants no organization membership. Login emails carry only the sign-in token and a fixed portal destination; the receipt stays in the original tab until deliberately claimed, then clears from its fragment and memory.
+
+The portal paginates 20 own requests, shows only submitted answers/public schema/status, and permits revision-checked corrections while a request is pending and its approved publication is current. Corrections require fresh purpose consent and cannot change the original verified email. Withdrawal, answer erasure and permanent account unlinking have separate confirmations and consequences. They do not erase separate contacts or earlier backups. After unlinking, this request cannot be claimed by another account or re-linked with the same receipt.
+
+A forced own-user RLS index provides cross-organization navigation; intake and publication tables retain their strict tenant policies. Links are capped at 100/account and 1,000/organization including revoked links, under organization-then-user locks. Durable limits cover claims, reads and writes. Private exports restore no account grants, and existing publication/receipt recovery stays inactive. [The pre-implementation plan and acceptance record](../../docs/PARTICIPANT_PORTAL.md) distinguishes actual authentication, simulated frontend checks, controlled browser evidence and deployment status. Booking, waitlists and staff/participant notifications remain open.
+
 ## Architecture and access
 
 - [api/index.mjs](api/index.mjs) connects the authenticated request handler to the database and mail relay. [public/](public/) contains the browser client and local fonts.

@@ -1,5 +1,11 @@
 # Changelog
 
+## October 26, 2026: own-request participant portal
+
+- Added a separate participant portal requiring both a private receipt and a matching verified email, with explicit account-linking consent. Signing in alone discovers no requests or team membership.
+- Added own-only pagination and details, revision-checked pending corrections with renewed purpose consent, withdrawal, bounded answer erasure and permanent account unlinking. Submitted identity cannot be transferred; backup imports restore no participant access grants.
+- Kept receipt capabilities out of login emails, callbacks, query parameters and browser storage. [The participant acceptance record](docs/PARTICIPANT_PORTAL.md) preserves the planning, threat model, test results and deployment status without claiming actual participant adoption or human review.
+
 ## October 26, 2026: public participation in Charity OS
 
 - Added public operational forms from independently approved, published revisions, with explicit purpose consent, typed answers, bounded private queues and receipt links for status and withdrawal.

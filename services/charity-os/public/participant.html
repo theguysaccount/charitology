@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#f6f3ec" />
+    <title>Your requests · Charity OS</title>
+    <link rel="icon" type="image/svg+xml" href="/mark.svg" />
+    <link rel="stylesheet" href="/os.css" />
+    <script type="module" src="/participant.js"></script>
+  </head>
+  <body class="participant-page">
+    <a class="skip" href="#participant-main">Skip to your requests</a>
+    <header class="masthead">
+      <a class="brand" href="/participant">
+        <img src="/mark.svg" width="44" height="44" alt="" />
+        <span><strong>Charity OS</strong><small>Your requests</small></span>
+      </a>
+      <a class="site-link" href="https://charitology.org/"
+        >About Charitology ↗</a
+      >
+    </header>
+    <main id="participant-main" class="participant-main" tabindex="-1">
+      <div class="participant-heading">
+        <span class="eyebrow">A clear next step</span>
+        <h1>Your request.<br /><em>Your next step.</em></h1>
+        <p class="lede">
+          Keep track of the requests you choose to link here. Review your
+          answers and manage what happens next.
+        </p>
+        <p class="fine">
+          A request is not a confirmed booking or volunteer assignment. This
+          portal does not add you to an organization’s team or subscribe you to
+          a newsletter.
+        </p>
+      </div>
+      <p
+        id="participant-status"
+        class="form-status participant-global-status"
+        role="status"
+        aria-live="polite"
+      >
+        Checking your session…
+      </p>
+      <button
+        id="participant-retry-session"
+        type="button"
+        class="button subtle"
+        hidden
+      >
+        Retry session and access check
+      </button>
+      <section id="participant-auth" class="participant-auth panel" hidden>
+        <div>
+          <span class="eyebrow">Private access, one deliberate link</span>
+          <h2>Sign in with the email used for your request.</h2>
+          <p>
+            You need both that verified email and the private receipt saved
+            after submitting. Signing in alone does not find or reveal requests.
+          </p>
+          <ol class="intake-steps fine">
+            <li>Keep this original tab open with your saved receipt.</li>
+            <li>
+              Open the sign-in email and deliberately confirm sign-in. It opens
+              a clean portal without your receipt.
+            </li>
+            <li>
+              Return to this tab, refresh your session and choose whether to
+              link the request.
+            </li>
+          </ol>
+        </div>
+        <div>
+          <form id="participant-login-form">
+            <label for="participant-email">Email used for the request</label>
+            <input
+              id="participant-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              inputmode="email"
+              maxlength="254"
+              required
+            />
+            <button type="submit" class="button primary wide">
+              Send a sign-in link
+            </button>
+          </form>
+          <p
+            id="participant-login-status"
+            class="form-status"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <button
+            id="participant-check-session"
+            type="button"
+            class="button subtle wide"
+          >
+            I confirmed sign-in — refresh this tab
+          </button>
+          <p class="fine section-gap">
+            Use only a sign-in link you requested. Your private receipt is not
+            included in the email.
+          </p>
+        </div>
+      </section>
+      <section
+        id="participant-link-panel"
+        class="panel section-gap"
+        aria-labelledby="participant-link-title"
+      >
+        <div class="section-header">
+          <div>
+            <span class="eyebrow">A saved request</span>
+            <h2 id="participant-link-title">Link a private receipt.</h2>
+          </div>
+          <span id="participant-receipt-badge" class="tag">Receipt needed</span>
+        </div>
+        <p>
+          Only a request that included the same email address as your verified
+          account can be linked. Keep receipt links private; anyone holding one
+          can still check status or withdraw that request.
+        </p>
+        <form id="participant-receipt-form" class="participant-receipt-form">
+          <div class="field">
+            <label for="participant-receipt"
+              >Saved private receipt link or code</label
+            >
+            <input
+              id="participant-receipt"
+              type="password"
+              disabled
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="1800"
+              aria-describedby="participant-receipt-help"
+            />
+            <p id="participant-receipt-help" class="fine">
+              Paste a receipt from this Charity OS service. This tab keeps the
+              code only in its private fragment and memory until you link or
+              clear it.
+            </p>
+          </div>
+          <button
+            id="participant-use-receipt"
+            type="submit"
+            class="button"
+            disabled
+          >
+            Use this receipt
+          </button>
+        </form>
+        <p
+          id="participant-receipt-status"
+          class="form-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <div id="participant-claim" hidden>
+          <label for="participant-claim-consent" class="intake-consent">
+            <input id="participant-claim-consent" type="checkbox" />
+            <span
+              >I agree to link this request to my signed-in account so I can
+              read its submitted answers and use the permitted self-service
+              controls.</span
+            >
+          </label>
+          <div class="actions">
+            <button
+              id="participant-claim-button"
+              type="button"
+              class="button primary"
+            >
+              Link this request to my account
+            </button>
+            <button
+              id="participant-clear-receipt"
+              type="button"
+              class="button subtle"
+            >
+              Clear saved receipt from this tab
+            </button>
+          </div>
+        </div>
+        <p class="fine section-gap">
+          Linking proves mailbox access and receipt possession. It does not
+          establish legal identity, approval or acceptance by the organization.
+          Without a saved receipt, contact the organization through another
+          channel.
+        </p>
+      </section>
+      <div id="participant-private" hidden>
+        <section
+          class="participant-account panel section-gap"
+          aria-label="Signed-in account"
+        >
+          <div>
+            <span class="eyebrow">Your signed-in account</span>
+            <p id="participant-identity"></p>
+            <p id="participant-verification" class="fine"></p>
+          </div>
+          <div class="actions">
+            <button
+              id="participant-refresh"
+              type="button"
+              class="button subtle"
+            >
+              Refresh session and requests
+            </button>
+            <button id="participant-logout" type="button" class="button subtle">
+              Sign out
+            </button>
+          </div>
+        </section>
+        <div
+          id="participant-request-layout"
+          class="participant-request-layout section-gap"
+        >
+          <section
+            class="panel participant-list-panel"
+            aria-labelledby="participant-list-title"
+          >
+            <span class="eyebrow">Only requests you linked</span>
+            <h2 id="participant-list-title">Your requests</h2>
+            <p id="participant-list-status" class="fine" role="status"></p>
+            <div id="participant-list" class="stack"></div>
+            <button
+              id="participant-more"
+              class="button subtle wide section-gap"
+              type="button"
+              hidden
+            >
+              Load more requests
+            </button>
+          </section>
+          <section
+            id="participant-detail"
+            class="panel participant-detail"
+            aria-label="Selected request"
+          >
+            <h2>Choose a linked request.</h2>
+            <p>
+              Your submitted answers and available controls appear here. Staff
+              notes and separate operational records are not part of this
+              portal.
+            </p>
+          </section>
+        </div>
+      </div>
+      <noscript
+        ><section class="panel section-gap">
+          <h2>JavaScript is needed for these private controls.</h2>
+          <p>
+            Contact the organization through its usual channel for an
+            alternative way to check or manage your request. Do not send a
+            private receipt in a public message.
+          </p>
+        </section></noscript
+      >
+    </main>
+    <footer class="intake-footer">
+      <p>
+        Withdrawal, answer erasure and account unlinking are different actions.
+        None deletes separately prepared contacts or drafts, earlier source
+        archives or downloaded backups. The form’s retention review date closes
+        collection; it is not automatic deletion.
+      </p>
+      <p>
+        No receipt or answer is saved in browser storage by this portal. Private
+        fragments may remain in browser history until cleared. Sign out when you
+        finish on a shared device.
+      </p>
+      <a href="https://charitology.org/for-charities/"
+        >About the shared Charity OS ↗</a
+      >
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,138 @@
+# Participant portal plan
+
+Design and acceptance draft · October 26, 2026 · AI-assisted planning
+
+This is the agreed plan for the `participant-self-service` release, written before implementation and updated with the approved contract and explicitly recorded checks below. The portal implementation is under review; deployment and final-commit acceptance remain pending. The earlier account-free [public intake release](PUBLIC_PARTICIPATION.md) remains available. Its receipt-only status/withdrawal path does not become a general organization account.
+
+## Bounded outcome
+
+A person who controls a verified sign-in email and possesses the private receipt for a request submitted with that same reserved email may explicitly link that request to their account. The portal lists only that account's linked requests, across organizations, without granting team membership or a staff role. It exposes the person's own submitted answers, the deliberately published form schema, request status and erasure timestamp. It exposes no staff notes, comments, approval identities, contact records, converted-record identifiers, private organization records or other participants.
+
+The participant can correct an eligible pending request, withdraw it, erase its submitted answers or unlink account access. None of these actions confirms an event place, assigns a volunteer, changes a separately created contact, sends staff/participant notifications, subscribes to a newsletter or moves money. Participant selection, bookings, waitlists, screening decisions and case services remain separate work.
+
+## Claim and sign-in flow
+
+1. Open `/participant` and explicitly paste a same-origin private receipt link, or follow a receipt-to-portal link containing only `#organization.publication.receipt`. Do not put the receipt in a query string, pathname, login callback, email or storage API.
+2. If signed out, request the existing scanner-safe magic-link sign-in with a fixed allowlisted destination of `/participant`. The login email contains only the sign-in capability. Its confirmation page must preserve the existing deliberate GET-then-POST behavior; opening it cannot claim a request.
+3. Keep the original portal tab open with its receipt fragment. Sign-in confirmation opens a clean portal without the receipt. Return to the original tab and refresh its server session, automatically on focus/visibility when appropriate or with an explicit refresh control. No cross-tab message carries the receipt.
+4. Require a valid current Better Auth session whose server-returned user has `emailVerified === true`. A client checkbox or submitted verification flag cannot satisfy this rule.
+5. Show separate claim-purpose consent: linking lets this signed-in account access this request's answers and permitted self-service actions. A deliberate same-origin, CSRF-protected JSON POST submits the receipt and explicit claim consent.
+6. Under the appropriate locks, match the receipt hash, its organization/publication and the submitted reserved `email` answer to the verified account email. Apply only the existing email trim/lowercase convention. Do not infer dot aliases, plus aliases, household identity or name similarity. No request can be discovered by supplying an email alone.
+7. Create or idempotently reuse one active access link. Clear the raw fragment, receipt input and in-memory capability after success. Do not echo the raw receipt or put it in audit details. Reload subsequent request views through the authenticated link.
+
+The verified email establishes access to that mailbox through the sign-in flow. The receipt establishes possession of a separate bearer. Together they authorize this bounded claim; they do not prove legal identity, that the account holder personally wrote the original answers or that the organization accepted the request. A shared or reassigned mailbox remains an operating risk. If the first original intake response was lost without saving its receipt, this portal does not provide an email-only recovery shortcut.
+
+The bearer-scoped receipt response may include a preliminary `participantClaimAvailable` boolean when the published form has a reserved email question, the stored request has a nonempty email answer and that answer has not been erased. It reveals no address, account existence or account match and grants no authority; the frontend uses it only to offer the claim route. A form closing must not prevent an otherwise valid receipt holder from reaching that flow or the existing status/withdrawal control. All claim verification still occurs on its deliberate POST.
+
+## Data and route contract
+
+The approved API contract is:
+
+| Method and path | Input or output |
+| --- | --- |
+| `GET /api/participant/session` | A minimal current-account/verification/CSRF response; no organization memberships or roles. |
+| `GET /api/participant/requests?cursor=…` | `{ok:true,requests:[safeSummary],nextCursor}`; at most 20 active own links. |
+| `POST /api/participant/intake/:orgId/:publicationId/link` | `{receipt,consent:true}`; verified account plus original private capability. |
+| `GET /api/participant/orgs/:orgId/requests/:intakeId` | `{ok:true,request:ownRequest}` after active-link and tenant checks. |
+| `POST .../requests/:intakeId/correct` | `{revision,answers,consent:true}` with typed answers and fresh collection-purpose consent. |
+| `POST .../requests/:intakeId/withdraw` | `{revision}`; deliberate withdrawal. |
+| `POST .../requests/:intakeId/erase` | `{revision}`; deliberate answer erasure. |
+| `POST .../requests/:intakeId/unlink` | `{revision}`; returns `{ok:true,unlinked:true}` after permanent unlink. |
+
+Link, detail, correction, withdrawal and erasure return `{ok:true,request:ownRequest}`. The allowlisted detail fields are `orgId`, intake `id`, `publicationId`, `organizationName`, `title`, `status`, `revision`, `erasedAt`, `editable`, `linkedAt`, `answers`, `editUnavailableReason`, `consentAt`, `createdAt` and a `publication` object containing only `title`, `purpose`, `questions`, `retentionUntil`, `kind` and `consentText`. Summary responses omit answers and the schema. The link-row identity is used only as an opaque pagination cursor, not as a staff record or member identity. Claim mismatches use generic 404/409 failures that do not disclose an address or another account.
+
+The required authority separation is:
+
+| Operation | Authority and returned data | Bound |
+| --- | --- | --- |
+| List links | Verified current account; only its own active access-link index. Return opaque navigation identity and minimal display metadata, never answers from a global join. | Keyset/cursor pages of 20; a cursor cannot select another user or expand the page. |
+| Read request | Resolve an active own-user link, then set that request's organization context and fetch only the matching intake row and public schema. | Explicit response allowlist. Closed/withdrawn forms still permit own status/answers and safe privacy actions. |
+| Claim | Verified account, receipt, exact submitted email match, explicit claim consent, same-origin JSON and current session CSRF. | At most 100 links per user and 1,000 per organization, counting revoked rows; idempotent repeats do not consume new slots. |
+| Correct answers | Active own link, expected intake revision, pending/nonerased request, current approved/published source and target where applicable, fresh collection-purpose consent. | Reuse typed answer/body/queue-byte validation; explicit zero/false and unknown nulls preserved. |
+| Withdraw | Active own link and expected revision, deliberate CSRF-protected POST. | Changes request status only; submitted answers and separately prepared records remain for retention review. |
+| Erase answers | Active own link and expected revision, separate explicit confirmation. | Clear the queue answers and derived IP/payload hashes; close pending/reviewed items, record erasure and retain minimal provenance. Separate contacts, archives and downloaded copies remain unchanged. |
+| Unlink | Active own link and expected current intake revision, checked transactionally. | Permanently revoke account access without cancelling the request or erasing answers. It must work when ordinary storage/audit capacity is full. |
+
+The normalized reserved email submitted originally is immutable for participant corrections and must also still equal the account's current verified email. A correction cannot silently move the claimed request to somebody else's mailbox. If the account's email changes, its established link can still read, withdraw or erase its own request, but corrections are disabled. After erasure, ownership checks rely on that link rather than requiring a now-erased email answer. An active link must not become general access when a publication closes or a request changes state.
+
+Unlink is permanent for that account/request. A database uniqueness constraint on organization/request also prevents transferring the request to another account. Neither a receipt, login, page refresh nor backup restore can reactivate a revoked grant. The existing public receipt retains only its original limited status/withdrawal capability. Explain these consequences before unlinking.
+
+## Database and concurrency rules
+
+The access-link table has an own-user RLS policy and a bounded index for the account-wide list. A separate strictly tenant-scoped monotonic usage counter enforces the organization cap: own-user RLS cannot safely count other participants' links. Both the 100/user and 1,000/organization counts include revoked links. The current intake/publication tables retain their strict tenant-only RLS policies. Do not add a broad participant clause to staff record, member, comment, contact or tenant policies to make a query convenient.
+
+An account-wide list transaction sets only the verified user context and reads only its link index. Per-request detail or mutation first proves an active own link and then sets the single organization context. Every subsequent query includes both the organization and request identity. A participant cannot select a tenant and read its queue, even when they know valid record identifiers. The runtime role must remain constrained, with enabled/forced RLS on the new table and no bypass capability.
+
+Use organization-then-user lock ordering. Claim, correction, staff review/conversion, withdrawal, erasure and unlink must serialize their shared state or recheck it under a common lock. A claim racing receipt cancellation or erasure must not grant access based on stale answers. An edit racing staff review must either win before review or return a revision/state conflict; it cannot rewrite a reviewed or converted request. Two claim attempts must create at most one intended link. Two edits from the same revision must not overwrite each other.
+
+Use durable limits alongside the existing login/intake controls: claims at 10 per user/hour and 30 per IP/hour; participant reads at 120 per user/hour; mutations at 60 per user/hour. Count revoked links toward the hard lifetime caps; reject excess claims without changing existing access. Audit opaque action/target identifiers and revisions only, with no answers, addresses or raw tokens. Withdrawal, erasure and unlink remain possible after the ordinary workspace budget fills, through the established minimal-audit reserve behavior. Storage availability does not override rate/authentication checks.
+
+## Privacy and recovery rules
+
+- The raw receipt is a temporary capability. No local/session storage, IndexedDB, cookie, cross-tab broadcast, analytics, error log or audit event stores it. Keep it only in the original fragment and memory until explicit claim or clearing. Fragment links still reside in the user's browser history until cleared; warn users to keep their receipts private.
+- Login callbacks accept only fixed destinations. Reject or ignore external origins, protocol-relative values, extra paths, queries and receipt-bearing destinations. Redirects and login emails must never transfer the receipt capability.
+- Native HTML behavior must also protect the receipt. Keep receipt controls hidden/disabled until the script installs its handlers, and never give a receipt input a successful native GET submission path. A missing, delayed or failed script must show an unavailable explanation rather than send the token in a query string.
+- Session loss, unverified email, unlink, revocation or a different account stops authenticated reads and mutations on the next request. A UI cache must not keep showing private answers after logout/unlink. On focus, visibility restoration or a browser back/forward-cache restore, refresh authority before exposing stale detail. Do not promise that software can remove a copy a person already downloaded or saw.
+- A participant read uses a distinct allowlisted response, not the administrator queue serializer. Staff comments, reviewer identity, receipt/idempotency/IP hashes and converted contact/draft references remain excluded even when the participant submitted the original request.
+- Corrections do not invent evidence or copy unsupported personal fields into generic staff notes. This remains minimal operational intake; prompt keyword checks cannot guarantee that an answer contains no sensitive information.
+- Withdrawal, answer erasure and unlink are separate actions with separate consequences. Each confirmation states what remains, including separately prepared contacts/drafts and historical archives/downloads. Erasure cannot be presented as deletion everywhere; unlink cannot be presented as withdrawal.
+- Native organization exports omit participant access grants and account-link credentials. Import source archives are private provenance only; even an untrusted original containing user IDs or grant assertions cannot recreate authority. A restored organization has closed publications, disabled receipts and no restored participant links. Imported user IDs, earlier claims and account email fields grant no access.
+- Request retention review dates still close collection rather than automatically deleting answers. The portal adds deliberate self-service; it does not certify legal compliance, verify a person's real-world identity or establish that a human reviewed the request.
+
+## Threat model and required defenses
+
+| Threat | Required defense and failure behavior |
+| --- | --- |
+| Receipt theft without mailbox access | Verified matching account required for answer access. Public receipt keeps its earlier status/withdrawal-only scope; never upgrade it to answer access by itself. |
+| Verified mailbox holder tries email-only discovery | No email search/list/claim endpoint; require the unguessable receipt and exact organization/publication association. Use generic mismatch responses that reveal no submitted address. |
+| Cross-user or cross-organization identifier guessing | Own-user RLS index, active-link check and strict per-organization intake scope. A foreign cursor/link/request cannot disclose data or mutate a row. |
+| Staff authority through participant login | Claim creates an access link only, never a membership or role. Participant endpoints do not return staff records or approve/convert requests. |
+| Stale edit races staff review, cancellation or erase | Expected revisions plus shared serialization; only a current pending/nonerased row may change. Fail without partial writes or loss of the winning revision. |
+| A delayed detail GET finishes after correction, erasure or unlink | Invalidate older detail reads when mutation starts and reject responses from an obsolete user/access/detail generation. A stale response cannot replace a newer saved revision or display erased answers again. |
+| CSRF, open redirect or token leakage | Exact-origin JSON/CSRF for authenticated mutations, fixed destination allowlist, no query receipts, no receipt in mail/storage/logs and text-only rendering. |
+| Missing or delayed frontend script | Receipt controls remain unavailable until handlers are installed; native form submission cannot put the receipt in a GET query. Test the initial HTML and script-failure path, not only the interactive happy path. |
+| Claim spam or quota exhaustion | Durable rate limits, input bounds and 100/user/1,000/org caps including revoked rows. Privacy/access-removal actions remain available at full quota. |
+| Restore reactivates an old account's access | Exclude grants from export/restore and keep imported publication/receipt authority inactive. Knowledge of a restored source user ID is insufficient. |
+| Account change, unverified session or unlink | Recheck server verification and active own link on every call. Clear private client state immediately after access changes. Define re-claim deliberately. |
+| Misleading identity, booking or deletion claim | State that this verifies mailbox access plus receipt possession only. Keep request/booking, withdrawal/erasure and unlink/withdrawal visibly distinct. |
+
+## Acceptance before release
+
+The checklist below defines required results; only the separate recorded evidence section establishes completed checks. Test code, a page or a source inspection alone does not mark a scenario passed. Record the exact commit, command, identities, data source, transport and limits of each result. Synthetic authentication must be labeled; an actual Better Auth session test is a separate result. Do not send login emails to an unspecified recipient or publish a production form merely to fill this checklist.
+
+| Scenario | Required result and evidence |
+| --- | --- |
+| Actual sign-in and verification | A real isolated Better Auth magic-link GET leaves no session; deliberate POST creates a server-verified email session. Login callback is fixed and contains no receipt. Provider transport can be a test double, stated explicitly. |
+| Claim combinations | Correct verified email + receipt + explicit consent succeeds. Missing receipt, wrong org/publication, wrong email, unverified server flag, missing consent, foreign/null Origin or missing CSRF fails without a link. No name/alias inference. |
+| Repeated/concurrent claim | One intended link and one quota slot. Revoked behavior follows the agreed policy. Raw receipt never appears in the row, response, audit or log. |
+| Global list and cursors | At least 21 own links paginate 20/1; another account and foreign/malformed cursor cannot disclose even metadata. Empty accounts learn no organization's queue size. |
+| Private detail allowlist | Own answers/public schema/status/erased timestamp only. Staff notes, reviewer/role identities, contact links, converted-record IDs, hashes and another participant's answers stay absent. |
+| Pending correction | Fresh typed answers and renewed consent save one higher revision. Unknown, zero and false survive. A reserved email change to another mailbox is refused. Oversized changes leave the previous answers untouched. |
+| Review/closure/erase races | Staff review or conversion, source/target edit/closure, request cancellation and erasure prevent stale correction. A closed publication still permits existing own status and safe privacy actions. |
+| Withdrawal, erasure and unlink | Distinct explicit actions. Answer erasure frees the active queue and leaves a tombstone; separate contact remains. Unlink immediately stops authenticated detail access without cancelling the request. Full ordinary/reserve quota does not block safe actions. |
+| Recovery | Export has no participant grants; forged grants cannot reactivate access. Native restore retains private provenance only and leaves publications/receipts/links inactive. Original downloaded/source archives remain separately governed. |
+| Limits and abuse | 100/user and 1,000/org caps count revoked rows; an idempotent repeat does not consume another slot. Durable rate and byte limits reject before partial writes. Concurrent final-slot claims produce only one accepted allocation. |
+| Browser claim journey | Original tab retains fragment through separate clean login confirmation, refreshes verified session and needs deliberate claim consent. Successful claim clears fragment/memory; reload lists only saved links. Check signed-out/unverified/error/retry states and no token storage. |
+| Script failure and native form fallback | With the module disabled or delayed, no enabled receipt input can submit a native GET carrying the token. A clear unavailable/no-script state appears. Inspect the actual initial HTML and a browser failure path. |
+| Browser privacy and usability | Logout/unlink clear displayed private answers. Keyboard labels/focus, preserved fragment skip link, narrow viewport, validation errors and separate action confirmations work. Comprehensive independent accessibility/security review remains separately identified. |
+| Delayed response after a mutation | A simulated delayed pre-mutation GET cannot re-display old answers after erasure or replace a newer correction/withdrawal result. Changed users, unlink and session refresh also invalidate obsolete responses. |
+| Deployment | Exact-commit CI, constrained production role, new-table forced RLS/context-free isolation, protected-stage assets/routes and controlled hosted checks are recorded before promotion. No real participant adoption or human approval is inferred. |
+
+## Recorded implementation checks
+
+These are working-tree integration results, not final-commit or production acceptance. The new portal has not been promoted by this record.
+
+| Layer | Observed result and limit |
+| --- | --- |
+| Independent service test run | After the review fixes, `npm test` in `services/charity-os` passed **132 tests**, with no failures, skips or cancellations, at the inspected working-tree snapshot. This includes twelve direct/client-state portal tests. The state harness executes the actual client with a minimal synthetic DOM/transport; it does not drive Chrome or replace native browser validation, layout or authentication checks. |
+| Actual authentication/database fixture | The coordinator reported **12 passing actual runtime Postgres tests**, including the new real Better Auth participant return/verification path. Synthetic recipients and a mocked mail transport were used. This establishes the exercised authentication path, not actual inbox delivery. |
+| Participant business-rule/database fixture | The backend owner reported **nine passing actual isolated Postgres tests/groups**, with no failures, skips or cancellations, and completed temporary-schema cleanup. These use explicit trusted-server identity fixtures, not actual sign-ins. They cover 22 own links paginated 20/2; wrong-user/RLS and tenant-boundary rejection; correction/races/closure; the final user and organization quota slots across organizations/accounts; permanent unlink/no transfer; recovery without grants; and privacy actions after a 62 MiB exhausted reserve while an associated draft contact remains unchanged. Real Better Auth verification is exercised separately above. |
+| Controlled Chrome sign-in and claim | An isolated actual Postgres fixture used real Better Auth and a synthetic mocked mailer. A public request preserved zero and false; its receipt CTA led to the portal. The login request used the allowlisted participant destination and its mail URL carried only sign-in metadata/token, never the receipt. Deliberate confirmation opened a clean portal with zero links. Returning to the original tab and refreshing the session still required explicit claim consent. Claim cleared the receipt fragment and showed own answers as zero/No. Reload preserved the own link. This was not production, actual inbox delivery or a real participant. Scanner-safe nonconsuming GET is additionally covered by the authentication fixture; no fresh browser-only scanner-safety proof is inferred. |
+| Controlled Chrome correction and privacy actions | Editing the pending name and refreshing the same saved revision preserved the unsaved draft. Fresh collection consent saved correction revision 2; withdrawal saved revision 3; answer erasure displayed the revision-4 tombstone; permanent unlink left the own list empty. The coordinator captured synthetic-only correction/erasure screenshots. Actual Chrome logout completed; refreshing the session in a second tab showed signed-out controls with no private answers displayed. No separate contact, booking or staff role was created by claiming. |
+| Source review and fixes | Review identified a native HTML GET receipt leak when JavaScript was absent, private-detail visibility during a failed authority refresh, silent draft loss when a fresh revision/editability changed and a delayed-GET-after-mutation race. Fixes now include initial disabled/no-name receipt controls, immediate authority-check suspension, explicit discarded-draft notices and invalidation of older detail reads with lower-revision refusal. The passing direct/client-state tests cover native-fallback markup, failed-refresh hiding, unchanged-draft preservation, changed-draft notice and delayed reads after erasure/correction. Safe withdrawal/erasure audit actions reuse existing emergency reserve paths. Source inspection is not independent certification. |
+
+Still unclaimed: final exact-commit CI, protected-stage/production portal deployment and isolation checks, comprehensive mobile/keyboard/accessibility/security acceptance, real inbox delivery for this portal flow and consented organizational adoption. Update these only from actual results. The delayed-response regressions passed in the synthetic client-state harness; a delayed network-response browser simulation is not claimed. [SHARED_OS_RELEASE.md](SHARED_OS_RELEASE.md) records the coordinator's detailed transport and fixture evidence.
+
+## Coordination decisions
+
+The coordinator approved immutable submitted/current verified email matching for corrections, permanent unlink/no transfer, own-user RLS plus the strictly tenant-scoped monotonic counter, the stated routes/rates and organization-then-user lock ordering. Backend and frontend owners supplied the synchronized response and browser-flow contract above. The plan is frozen for implementation; recorded working-tree results are separated from pending final/deployment checks. Keep this document within the bounded own-request scope. Broader participant profiles, bookings, notifications, payments, case histories and operating/pilot claims require their own design and evidence.

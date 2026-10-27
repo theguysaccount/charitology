@@ -262,8 +262,29 @@ function received(result) {
           "Copy private link",
         ),
         node("a", { class: "button", href: url }, "Check status or cancel"),
+        publication?.questions?.some(
+          (question) => question.key === "email" && question.type === "text",
+        )
+          ? node(
+              "a",
+              {
+                class: "button subtle",
+                href: `/participant#${scope[0]}.${scope[1]}.${result.receipt}`,
+              },
+              "Manage through your account",
+            )
+          : null,
       ),
       output,
+      publication?.questions?.some(
+        (question) => question.key === "email" && question.type === "text",
+      )
+        ? node(
+            "p",
+            { class: "fine" },
+            "If you supplied an email for this request, you can separately verify that same email and deliberately link the saved receipt to read or manage your own answers. Signing in does not find requests by email alone.",
+          )
+        : null,
     );
   } else
     target.append(
@@ -473,6 +494,14 @@ async function checkReceipt(parts, action = "status") {
               ]),
           },
           "Cancel this request",
+        ),
+      );
+    if (result.participantClaimAvailable === true)
+      actions.append(
+        node(
+          "a",
+          { class: "button subtle", href: `/participant#${parts.join(".")}` },
+          "Manage through your account",
         ),
       );
     target.append(

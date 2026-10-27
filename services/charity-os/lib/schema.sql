@@ -106,3 +106,32 @@ ALTER TABLE os_intake ENABLE ROW LEVEL SECURITY;
 ALTER TABLE os_intake FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS tenant ON os_intake;
 CREATE POLICY tenant ON os_intake USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
+
+-- This index exposes only an authenticated user's own opaque access links.
+-- Intake answers and publication schemas keep their unchanged tenant policies.
+CREATE TABLE IF NOT EXISTS os_participant_links (
+  id text NOT NULL UNIQUE CHECK(id ~ '^[a-f0-9]{32}$'),
+  org_id text NOT NULL REFERENCES os_orgs(id), intake_id text NOT NULL,
+  publication_id text NOT NULL, user_id text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+  revoked_at timestamptz, revision integer NOT NULL DEFAULT 1 CHECK(revision>0),
+  PRIMARY KEY(user_id,org_id,intake_id), UNIQUE(org_id,intake_id),
+  FOREIGN KEY(org_id,intake_id) REFERENCES os_intake(org_id,id),
+  FOREIGN KEY(org_id,publication_id) REFERENCES os_publications(org_id,id)
+);
+CREATE INDEX IF NOT EXISTS os_participant_own ON os_participant_links(user_id,created_at DESC,id DESC);
+ALTER TABLE os_participant_links ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participant_links FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS participant_own ON os_participant_links;
+CREATE POLICY participant_own ON os_participant_links
+  USING (user_id=current_setting('app.user_id',true))
+  WITH CHECK (user_id=current_setting('app.user_id',true) AND org_id=current_setting('app.org_id',true));
+-- Monotonic tenant counter counts revoked grants too without exposing other
+-- users' index rows through their own-user RLS policy. Never restored from backup.
+CREATE TABLE IF NOT EXISTS os_participant_org_usage (
+  org_id text PRIMARY KEY REFERENCES os_orgs(id), total integer NOT NULL DEFAULT 0 CHECK(total BETWEEN 0 AND 1000)
+);
+ALTER TABLE os_participant_org_usage ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participant_org_usage FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participant_org_usage;
+CREATE POLICY tenant ON os_participant_org_usage USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));

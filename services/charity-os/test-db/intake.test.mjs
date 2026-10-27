@@ -441,7 +441,7 @@ test(
                 action: "status",
               })
             ).value,
-            { ok: true, status: "pending" },
+            { ok: true, status: "pending", participantClaimAvailable: true },
           );
           await assert.rejects(
             publicCall(
@@ -885,7 +885,11 @@ test(
               action: "cancel",
             })
           ).value;
-          assert.deepEqual(cancel, { ok: true, status: "cancelled" });
+          assert.deepEqual(cancel, {
+            ok: true,
+            status: "cancelled",
+            participantClaimAvailable: true,
+          });
           const remaining = (
             await callAdmin("submissions", undefined, "GET")
           ).value.submissions.find((r) => r.status === "pending");
