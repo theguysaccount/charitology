@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-xkx",
+  "entity": {
+    "kind": "entity",
+    "id": "country-xkx",
+    "version": 1,
+    "hash": "99b2d01097d1f608fc5230b17caaf40449d631ed9ed89108314558179e5eb5e8"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Kosovo statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-xkx",
+      "version": 1,
+      "hash": "99b2d01097d1f608fc5230b17caaf40449d631ed9ed89108314558179e5eb5e8"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-xkx",
+      "version": 1,
+      "hash": "99b2d01097d1f608fc5230b17caaf40449d631ed9ed89108314558179e5eb5e8"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ad376a1205528029f625ed4b703a6c5845d671be490b592e271159faad0c6804"
+}

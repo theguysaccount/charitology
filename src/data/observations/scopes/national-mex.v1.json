@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mex",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mex",
+    "version": 1,
+    "hash": "0b60e582a606549713ff43c1ff76e374955ea6bbfe28e2413710b370c7c4aa5f"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Mexico statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mex",
+      "version": 1,
+      "hash": "0b60e582a606549713ff43c1ff76e374955ea6bbfe28e2413710b370c7c4aa5f"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mex",
+      "version": 1,
+      "hash": "0b60e582a606549713ff43c1ff76e374955ea6bbfe28e2413710b370c7c4aa5f"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "40764f03abb62581dbc0ce66f931fb1b03afb07cb70f28894c027429b7066786"
+}

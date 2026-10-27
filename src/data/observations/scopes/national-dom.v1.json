@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-dom",
+  "entity": {
+    "kind": "entity",
+    "id": "country-dom",
+    "version": 1,
+    "hash": "c493702f1bf77418f654616c87298266d722d1ac3db8ee36e767e4e96b801390"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Dominican Republic statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-dom",
+      "version": 1,
+      "hash": "c493702f1bf77418f654616c87298266d722d1ac3db8ee36e767e4e96b801390"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-dom",
+      "version": 1,
+      "hash": "c493702f1bf77418f654616c87298266d722d1ac3db8ee36e767e4e96b801390"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "5b282029e6bd74d496b869c0d89b8e0a676834dbfaf44ccd674827cee594aad4"
+}

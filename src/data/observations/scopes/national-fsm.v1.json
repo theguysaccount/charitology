@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-fsm",
+  "entity": {
+    "kind": "entity",
+    "id": "country-fsm",
+    "version": 1,
+    "hash": "326e82958069f185e346db7aa39d02ee46d9c13ed6baf3c0979ee28853617189"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Micronesia, Fed. Sts. statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-fsm",
+      "version": 1,
+      "hash": "326e82958069f185e346db7aa39d02ee46d9c13ed6baf3c0979ee28853617189"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-fsm",
+      "version": 1,
+      "hash": "326e82958069f185e346db7aa39d02ee46d9c13ed6baf3c0979ee28853617189"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a383e59d70bb037c921a04c668b0e098f179ab069584bc36fa6cf75dd7f04d68"
+}

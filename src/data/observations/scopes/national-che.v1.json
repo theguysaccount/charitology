@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-che",
+  "entity": {
+    "kind": "entity",
+    "id": "country-che",
+    "version": 1,
+    "hash": "9f5ca5a254042b7b7d209edb7a7a96dff1cde6b5b3c4b98a99e51438e2007a94"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Switzerland statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-che",
+      "version": 1,
+      "hash": "9f5ca5a254042b7b7d209edb7a7a96dff1cde6b5b3c4b98a99e51438e2007a94"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-che",
+      "version": 1,
+      "hash": "9f5ca5a254042b7b7d209edb7a7a96dff1cde6b5b3c4b98a99e51438e2007a94"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "88580bac74b24ee72d4849f92fbdf37df76976e5dd1b13872b77b2598a6997a9"
+}

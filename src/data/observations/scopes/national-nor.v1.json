@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-nor",
+  "entity": {
+    "kind": "entity",
+    "id": "country-nor",
+    "version": 1,
+    "hash": "00918040ffb5638801cce0946e924c8d31e83b439c3db344034d4bd51f6c6a33"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Norway statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-nor",
+      "version": 1,
+      "hash": "00918040ffb5638801cce0946e924c8d31e83b439c3db344034d4bd51f6c6a33"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-nor",
+      "version": 1,
+      "hash": "00918040ffb5638801cce0946e924c8d31e83b439c3db344034d4bd51f6c6a33"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "1e7770607e6e6dfb9ebb92f9dcb1d7ba6ee56d90beedd9ca65f9358390103be4"
+}

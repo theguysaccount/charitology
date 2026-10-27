@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-ncl",
+  "entity": {
+    "kind": "entity",
+    "id": "country-ncl",
+    "version": 1,
+    "hash": "3295b7131ed47451ea1b7b89651d249044e058e70a12561fd33a9b3c8a536174"
+  },
+  "scopeKind": "national-statistics",
+  "label": "New Caledonia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-ncl",
+      "version": 1,
+      "hash": "3295b7131ed47451ea1b7b89651d249044e058e70a12561fd33a9b3c8a536174"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-ncl",
+      "version": 1,
+      "hash": "3295b7131ed47451ea1b7b89651d249044e058e70a12561fd33a9b3c8a536174"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "bf4cd856648ee2baca2c592fa7470261ab1a84f53b4f7e9a247213f6e69d7d39"
+}

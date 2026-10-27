@@ -1,0 +1,106 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "country-sau",
+  "entityKind": "country-economy",
+  "label": "Saudi Arabia",
+  "identifiers": [
+    {
+      "kind": "iso2",
+      "value": "SA",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/233/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "iso3",
+      "value": "SAU",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/233/id",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "producer-country",
+      "value": "SA",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/233/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    }
+  ],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [],
+  "countryMetadata": {
+    "producerRegionId": "MEA",
+    "producerRegionLabel": "Middle East, North Africa, Afghanistan & Pakistan"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-country-metadata",
+        "version": 1,
+        "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+      },
+      "role": "identity",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/233",
+        "matches": [
+          {
+            "pointer": "/1/233/id",
+            "expected": {
+              "kind": "string",
+              "value": "SAU"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "bfc614f5c5436c8f045209442ac56614ce027cc1684522c62f19fb9dc9b0015f"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-jpn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-jpn",
+    "version": 1,
+    "hash": "653370383c46e9eb7265a628a58a4ab2b4e622bffb9ab341c0bfd8fdf6a06215"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Japan statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-jpn",
+      "version": 1,
+      "hash": "653370383c46e9eb7265a628a58a4ab2b4e622bffb9ab341c0bfd8fdf6a06215"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-jpn",
+      "version": 1,
+      "hash": "653370383c46e9eb7265a628a58a4ab2b4e622bffb9ab341c0bfd8fdf6a06215"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7c7a0c85789aea26753970308dbc52d8c969d92ab2a7f85ddf736f5903a8210d"
+}

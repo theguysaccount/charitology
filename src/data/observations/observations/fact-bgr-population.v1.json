@@ -1,0 +1,118 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-bgr-population",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bgr",
+    "version": 1,
+    "hash": "85b2d2e19211d298f0b45c0a884f6928950a82836b03aeb581cd7e20e4937d73"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-bgr",
+    "version": 1,
+    "hash": "bd15b61fc0a4aa6fc4cd16e8884b10d8068998edd5852a0b3fd0c72bb4d50eb9"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-population",
+    "version": 1,
+    "hash": "34a26175e5b5483546f01d37cc3ddd0d757f73bcee30231fd1eb23a7d90fe4df"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2025
+  },
+  "reported": {
+    "token": "6433302",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sp-pop-totl",
+        "version": 1,
+        "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/468/value",
+        "matches": [
+          {
+            "pointer": "/1/468/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "BG"
+            }
+          },
+          {
+            "pointer": "/1/468/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "BGR"
+            }
+          },
+          {
+            "pointer": "/1/468/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SP.POP.TOTL"
+            }
+          },
+          {
+            "pointer": "/1/468/date",
+            "expected": {
+              "kind": "string",
+              "value": "2025"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "6433302",
+    "exponent": 0
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [
+    {
+      "verbatim": "Extrapolated assuming the same growth rate as previous 6 months.",
+      "sourceRef": {
+        "source": {
+          "kind": "source",
+          "id": "wb-values-sp-pop-totl",
+          "version": 1,
+          "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+        },
+        "role": "annotation",
+        "locator": {
+          "kind": "json",
+          "pointer": "/1/468/footnote",
+          "matches": []
+        }
+      }
+    }
+  ],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7c50f51c84c823aac6d06a2f7bb1142e54bbedca3b056ecb4312dfd42f78ba01"
+}

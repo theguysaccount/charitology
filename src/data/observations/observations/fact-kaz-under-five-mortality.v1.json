@@ -1,0 +1,145 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-kaz-under-five-mortality",
+  "entity": {
+    "kind": "entity",
+    "id": "country-kaz",
+    "version": 1,
+    "hash": "4301231da76e8e61baef6851942c486084285217947dc507c50812eb43887d8d"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-kaz",
+    "version": 1,
+    "hash": "fe8216b3a30cc4e6821ff9ccdd14c524c7856f6f83647518504d2232b3c93de0"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-under-five-mortality",
+    "version": 1,
+    "hash": "8c607101dca23e1254c36ea3a06611a49398a5083b2be11ea2d8ee406ebcd146"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2024
+  },
+  "reported": {
+    "token": "9.4",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sh-dyn-mort",
+        "version": 1,
+        "hash": "3fca4dd30092df1af0e73a5afa1b35c154657f4bdd02d2412160c3cdb9695c3a"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/895/value",
+        "matches": [
+          {
+            "pointer": "/1/895/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "KZ"
+            }
+          },
+          {
+            "pointer": "/1/895/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "KAZ"
+            }
+          },
+          {
+            "pointer": "/1/895/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SH.DYN.MORT"
+            }
+          },
+          {
+            "pointer": "/1/895/date",
+            "expected": {
+              "kind": "string",
+              "value": "2024"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "94",
+    "exponent": -1
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": {
+    "kind": "producer-reported-bounds",
+    "lower": {
+      "coefficient": "89",
+      "exponent": -1
+    },
+    "upper": {
+      "coefficient": "1",
+      "exponent": 1
+    },
+    "confidence": null,
+    "verbatimNote": "Uncertainty bound is 8.9 - 10",
+    "sourceRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sh-dyn-mort",
+        "version": 1,
+        "hash": "3fca4dd30092df1af0e73a5afa1b35c154657f4bdd02d2412160c3cdb9695c3a"
+      },
+      "role": "annotation",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/895/footnote",
+        "matches": []
+      }
+    },
+    "parser": "world-bank-mortality-bound-v1"
+  },
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [
+    {
+      "verbatim": "Uncertainty bound is 8.9 - 10",
+      "sourceRef": {
+        "source": {
+          "kind": "source",
+          "id": "wb-values-sh-dyn-mort",
+          "version": 1,
+          "hash": "3fca4dd30092df1af0e73a5afa1b35c154657f4bdd02d2412160c3cdb9695c3a"
+        },
+        "role": "annotation",
+        "locator": {
+          "kind": "json",
+          "pointer": "/1/895/footnote",
+          "matches": []
+        }
+      }
+    }
+  ],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "117f3eaa0aae40273f6f6fe83cd43db12f428a864a3a8aabd026861e643bcee7"
+}

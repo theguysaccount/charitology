@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-grd",
+  "entity": {
+    "kind": "entity",
+    "id": "country-grd",
+    "version": 1,
+    "hash": "f30048178d095b3155e75c2c856a0d7e9b74bb9e5b9c1ba21294388dba5180cd"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Grenada statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-grd",
+      "version": 1,
+      "hash": "f30048178d095b3155e75c2c856a0d7e9b74bb9e5b9c1ba21294388dba5180cd"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-grd",
+      "version": 1,
+      "hash": "f30048178d095b3155e75c2c856a0d7e9b74bb9e5b9c1ba21294388dba5180cd"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "1a54ef26e5e9918b9a569015d2a055ef2209a0ecd949bd8e9ed01d0120051637"
+}

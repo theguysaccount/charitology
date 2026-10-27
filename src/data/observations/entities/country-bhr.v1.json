@@ -1,0 +1,106 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "country-bhr",
+  "entityKind": "country-economy",
+  "label": "Bahrain",
+  "identifiers": [
+    {
+      "kind": "iso2",
+      "value": "BH",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/26/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "iso3",
+      "value": "BHR",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/26/id",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "producer-country",
+      "value": "BH",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/26/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    }
+  ],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [],
+  "countryMetadata": {
+    "producerRegionId": "MEA",
+    "producerRegionLabel": "Middle East, North Africa, Afghanistan & Pakistan"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-country-metadata",
+        "version": 1,
+        "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+      },
+      "role": "identity",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/26",
+        "matches": [
+          {
+            "pointer": "/1/26/id",
+            "expected": {
+              "kind": "string",
+              "value": "BHR"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "51faf1b9b5ebea70cf4d5d2991859777fc906defad22b5aa41c2495bc3f1822c"
+}

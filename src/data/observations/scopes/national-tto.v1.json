@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-tto",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tto",
+    "version": 1,
+    "hash": "b0ae4fc0b16ccae2285f2f883b55c62c61feb592df36345a90c80c3223721284"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Trinidad and Tobago statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-tto",
+      "version": 1,
+      "hash": "b0ae4fc0b16ccae2285f2f883b55c62c61feb592df36345a90c80c3223721284"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-tto",
+      "version": 1,
+      "hash": "b0ae4fc0b16ccae2285f2f883b55c62c61feb592df36345a90c80c3223721284"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7ea438d5064841918ed87e94dfcd7d5738e342b9fba33187a0f3fcb35d368265"
+}

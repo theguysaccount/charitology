@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-lbr",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lbr",
+    "version": 1,
+    "hash": "00a266e1019592ef69462ed9dc83c2abfa8c4edab17d1732c026f93585f9d258"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Liberia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-lbr",
+      "version": 1,
+      "hash": "00a266e1019592ef69462ed9dc83c2abfa8c4edab17d1732c026f93585f9d258"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-lbr",
+      "version": 1,
+      "hash": "00a266e1019592ef69462ed9dc83c2abfa8c4edab17d1732c026f93585f9d258"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "2387955a7564d0eb3b0ed8b026339eaad0a2be54c993a57332b443d4f0731d55"
+}

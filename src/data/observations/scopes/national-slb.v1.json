@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-slb",
+  "entity": {
+    "kind": "entity",
+    "id": "country-slb",
+    "version": 1,
+    "hash": "34818aa305f40b4d71b831fe0789975676934dd484a70a2f716cbc18d0f5a581"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Solomon Islands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-slb",
+      "version": 1,
+      "hash": "34818aa305f40b4d71b831fe0789975676934dd484a70a2f716cbc18d0f5a581"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-slb",
+      "version": 1,
+      "hash": "34818aa305f40b4d71b831fe0789975676934dd484a70a2f716cbc18d0f5a581"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "b0e717d4cf9336924ec7c92411d540519a1193dee4f8297ee6f911ba66c93619"
+}

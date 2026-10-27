@@ -1,0 +1,106 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "country-bgd",
+  "entityKind": "country-economy",
+  "label": "Bangladesh",
+  "identifiers": [
+    {
+      "kind": "iso2",
+      "value": "BD",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/23/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "iso3",
+      "value": "BGD",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/23/id",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "producer-country",
+      "value": "BD",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/23/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    }
+  ],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [],
+  "countryMetadata": {
+    "producerRegionId": "SAS",
+    "producerRegionLabel": "South Asia"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-country-metadata",
+        "version": 1,
+        "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+      },
+      "role": "identity",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/23",
+        "matches": [
+          {
+            "pointer": "/1/23/id",
+            "expected": {
+              "kind": "string",
+              "value": "BGD"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f2d9095dcd8515f00652afaa188ec995c77a3dd75ea075d9a7d2f0eb2a5815ae"
+}

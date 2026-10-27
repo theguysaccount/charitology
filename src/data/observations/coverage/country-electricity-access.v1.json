@@ -1,0 +1,2550 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "coverage",
+  "id": "country-electricity-access",
+  "selection": {
+    "kind": "country-latest-window",
+    "startYear": 2020,
+    "endYear": 2025,
+    "rule": "latest-non-null",
+    "indicator": "EG.ELC.ACCS.ZS",
+    "countryMetadataSource": {
+      "kind": "source",
+      "id": "wb-country-metadata",
+      "version": 1,
+      "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+    },
+    "valuesSource": {
+      "kind": "source",
+      "id": "wb-values-eg-elc-accs-zs",
+      "version": 1,
+      "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+    },
+    "indicatorMetadataSource": {
+      "kind": "source",
+      "id": "wb-metadata-eg-elc-accs-zs",
+      "version": 1,
+      "hash": "542602afe84dfb726a34a3ca72dc3d1dd9fa39916a44ddd6c31c0c19e56708df"
+    },
+    "measure": {
+      "kind": "measure",
+      "id": "country-electricity-access",
+      "version": 1,
+      "hash": "a6e896fe7a8769fc5bab41f1f4b1e329873e251227a9ea68a4598a2be25a7c73"
+    },
+    "nonaggregateRule": "country-metadata-region-id-not-NA"
+  },
+  "cells": [
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-abw-electricity-access",
+        "version": 1,
+        "hash": "19cde31d66b796b227c647640ae5fc6c7321e4e80ece0638137f011bc2e195b7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-afg-electricity-access",
+        "version": 1,
+        "hash": "7430f59cb4b001d2f74b59206d9b8ae79d2fef8cda260eba8c1532896cdd8791"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ago-electricity-access",
+        "version": 1,
+        "hash": "c13121d3c7c1c5970299f4b8ee531b8cb8c429d6983709eaaba91c1b89bcd392"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-alb-electricity-access",
+        "version": 1,
+        "hash": "a702a47ce4d567997a5604e31e0d358da5bb386ab1dbc43401ef35884bd3c4be"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-and-electricity-access",
+        "version": 1,
+        "hash": "0c53688ee8f71b9e7dbaa016c5bb61b01e64aa38c3ab501a3b9f63f883e2c919"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-are-electricity-access",
+        "version": 1,
+        "hash": "c0773272cf0c0300e5936ff1786f638f1e26a234f9a981881578ff168f4fef52"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-arg-electricity-access",
+        "version": 1,
+        "hash": "976256852461a48b31e7322cf70c85cb490c940e74359567de7d5321e3be8f43"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-arm-electricity-access",
+        "version": 1,
+        "hash": "e70ae59091a2697fd337d6b2475769f1cb4b55e55eede754b97709b6b76bde88"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-asm",
+        "version": 1,
+        "hash": "03826f7b421db2dbfed0b426ac059a06dd886f8536d590c23f679817441cca69"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-asm",
+        "version": 1,
+        "hash": "0e126b02cae5bdd6e8a0aa5b6b18be1ce207eae198e0d9d1dc04418907c2a073"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-electricity-access",
+        "version": 1,
+        "hash": "a6e896fe7a8769fc5bab41f1f4b1e329873e251227a9ea68a4598a2be25a7c73"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/312/value",
+            "matches": [
+              {
+                "pointer": "/1/312/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AS"
+                }
+              },
+              {
+                "pointer": "/1/312/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ASM"
+                }
+              },
+              {
+                "pointer": "/1/312/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/312/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/313/value",
+            "matches": [
+              {
+                "pointer": "/1/313/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AS"
+                }
+              },
+              {
+                "pointer": "/1/313/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ASM"
+                }
+              },
+              {
+                "pointer": "/1/313/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/313/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/314/value",
+            "matches": [
+              {
+                "pointer": "/1/314/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AS"
+                }
+              },
+              {
+                "pointer": "/1/314/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ASM"
+                }
+              },
+              {
+                "pointer": "/1/314/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/314/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/315/value",
+            "matches": [
+              {
+                "pointer": "/1/315/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AS"
+                }
+              },
+              {
+                "pointer": "/1/315/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ASM"
+                }
+              },
+              {
+                "pointer": "/1/315/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/315/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/316/value",
+            "matches": [
+              {
+                "pointer": "/1/316/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AS"
+                }
+              },
+              {
+                "pointer": "/1/316/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ASM"
+                }
+              },
+              {
+                "pointer": "/1/316/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/316/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/317/value",
+            "matches": [
+              {
+                "pointer": "/1/317/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "AS"
+                }
+              },
+              {
+                "pointer": "/1/317/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "ASM"
+                }
+              },
+              {
+                "pointer": "/1/317/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/317/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-atg-electricity-access",
+        "version": 1,
+        "hash": "8022307dd1e02e6d5be149b1ea9462777c23914f2b1c80b6c6055cb1a312b41a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aus-electricity-access",
+        "version": 1,
+        "hash": "0b89e4eaa12d3b55db1900432a8c6e9455de4845eb325e6e05a77c79599e0693"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aut-electricity-access",
+        "version": 1,
+        "hash": "644d90be139abd87a6f1783f25c158f819d23664791824ee31b9a8d0958f1d2f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aze-electricity-access",
+        "version": 1,
+        "hash": "43527807dfc50618c4a8bbf98835f729b9dd2fdfd479b079cd336908c031f46e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bdi-electricity-access",
+        "version": 1,
+        "hash": "5cb4a16675ef082c5da975509021070e3d8eaad98c442d48c2b67b1b818073fd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bel-electricity-access",
+        "version": 1,
+        "hash": "3a53fb929513fe99d92e262bc858bc0fb6d9c076ee59d22e4afe43536cf0e025"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ben-electricity-access",
+        "version": 1,
+        "hash": "538650f2f3d0ab06cdaa84c7427be7405ea20e05e9ca70274379e60cd8ec2af6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bfa-electricity-access",
+        "version": 1,
+        "hash": "7b55e731e71d856f34b7e984c39530ec85bb6c450c140ce772bff5b635c5a4ca"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bgd-electricity-access",
+        "version": 1,
+        "hash": "cea5b53b61340ef75f3ff616dbc7df071d32caba813821eec02e17600763952a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bgr-electricity-access",
+        "version": 1,
+        "hash": "2c0103402b7883f3ce413ba599b0c0e2d1c3ecf773cd5cc6d19d80dcb98e9ede"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bhr-electricity-access",
+        "version": 1,
+        "hash": "bf4708bc355ce3ff04990dcf58a304479922063172f205ce783c26f541ae58ae"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bhs-electricity-access",
+        "version": 1,
+        "hash": "473f705f50e524ae92496f194804b208730e13d7515bc3215e8aab98f31fb7da"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bih-electricity-access",
+        "version": 1,
+        "hash": "3dd10f2f22a6aabd44f1e3896bb094356b2284d86d44d6aad44e923229b7a4b2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-blr-electricity-access",
+        "version": 1,
+        "hash": "4b2106203a2a8d900332e96cb13233ff6ffe5bc082cf1c99398d021e19fa9eff"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-blz-electricity-access",
+        "version": 1,
+        "hash": "8ff18e691fd3d4372ba66a8a9d79c37ee8ea13d0a1b0f9bab0ed11cf6b24c39f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bmu-electricity-access",
+        "version": 1,
+        "hash": "d208446df7296ef4f7e1195fce7c4603c9a1e7ab7df88d927ee598c55f64e052"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bol-electricity-access",
+        "version": 1,
+        "hash": "ebe468799e37327939a00a7815ab00017d040a93a1f8f83deece6982581ad079"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bra-electricity-access",
+        "version": 1,
+        "hash": "ba7cda40245b4b65e25cbbea0a874e1d4ec4ed72054693580290e7ad923f2e77"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-brb-electricity-access",
+        "version": 1,
+        "hash": "669e38bf4904d7fad5964b4e3c2d001ab119ecd638b5af1f2c7ef45f3d5565ab"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-brn-electricity-access",
+        "version": 1,
+        "hash": "2cd30e2aafbbb6c9318b28097d1c1f705dd8c6a9f65998aa46733232b02cc613"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-btn-electricity-access",
+        "version": 1,
+        "hash": "51dc0b5499630cd7ad8f1d73791757ce4d357a228bdd01f742ee596f99881f88"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bwa-electricity-access",
+        "version": 1,
+        "hash": "48fe0de76d8544a107b2d5254714c2ee704b3964b2fc31580518d95e4666eecb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-caf-electricity-access",
+        "version": 1,
+        "hash": "de98f6509050d2d3365258905c59e6976ef3e7d35c9754ac49cbda8f7c4ad16e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-can-electricity-access",
+        "version": 1,
+        "hash": "9b778541c86fb3675002a686106b3a121e8818964c9d03c05cf33bd6b38f8828"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-che-electricity-access",
+        "version": 1,
+        "hash": "6f8b917d87b5abde465352b411dc14fbb5ff6a1112783d0641063951c3c29954"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chi-electricity-access",
+        "version": 1,
+        "hash": "29a5a1b103f8efbaba82f7e50ccf98339f16f7a5962a0908aa5664ee583422b4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chl-electricity-access",
+        "version": 1,
+        "hash": "dbec8ad79cb68e5fea8df72768423e46717c0e48920a377cdce16c9cd7de9567"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chn-electricity-access",
+        "version": 1,
+        "hash": "387cfeebc9fb294e661b5868b0645449d226389348eb20cb96c4dc21bff632dc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-civ-electricity-access",
+        "version": 1,
+        "hash": "9c92d3f2cc7a5b4632879832a45b095e119d3c0b9493355fb9ea26e39efcfc0e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cmr-electricity-access",
+        "version": 1,
+        "hash": "cbe54691ad7188567b4f3d53df629aa76f116e70ba34cc02ef99db327c45127e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cod-electricity-access",
+        "version": 1,
+        "hash": "69b94485d9bf71e709ba5ea96dccb82113fff5351c9311a173d074417018a96c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cog-electricity-access",
+        "version": 1,
+        "hash": "72cf326120059ec8d5f83d02b6fc14a1f94399edf55ec2da73860f9d47215a25"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-col-electricity-access",
+        "version": 1,
+        "hash": "6570f110b951068c39ea425a2296b276226b94442ac83f5ab257de69fa91bb23"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-com-electricity-access",
+        "version": 1,
+        "hash": "ba285a19dabeea65b1c8c7e2374686a3acf1a807193f352ddc98ed9aea821081"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cpv-electricity-access",
+        "version": 1,
+        "hash": "737b478542e08d6f887715f806c831be9ca18f5fc398774daf75d5653241e784"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cri-electricity-access",
+        "version": 1,
+        "hash": "fead474770361cedf0a054b7062fcf9269849eb8afa6bd3f102179d48272f2b6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cub-electricity-access",
+        "version": 1,
+        "hash": "0bf795021e941ca94d5aad64b814d5822f924f8e6e9faf960db679970ef3a650"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cuw-electricity-access",
+        "version": 1,
+        "hash": "c5aaf56ca9fc773c5d620e3309ae23b0b47067a42934ab85b96d39a0333532b7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cym-electricity-access",
+        "version": 1,
+        "hash": "c92408afe86b07b701c4329a5a45ec83c37bc489e81a4f7cf3373845d7a407b0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cyp-electricity-access",
+        "version": 1,
+        "hash": "82ae8de17e5e264b0bb5ca60d41e80327e46def53aef6075cba6555e62499d13"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cze-electricity-access",
+        "version": 1,
+        "hash": "7359e04961a5b6de9f2d13e0aa51155923ad8aac25118efd036b2b0fa0230963"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-deu-electricity-access",
+        "version": 1,
+        "hash": "15b11f80e88427d08f61de1172f23bc8baa3d9b7f431f7c1a083aa42642d581c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dji-electricity-access",
+        "version": 1,
+        "hash": "0a7704b1d7752f0e7a16ded452edd17324c1355984800d072e0df6f70a32a53b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dma-electricity-access",
+        "version": 1,
+        "hash": "d10faa23ca6ee0bd7f3a694f4776cf39151719e5379b7afe42cadff969c5fa81"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dnk-electricity-access",
+        "version": 1,
+        "hash": "52169450ca7ba3533afa4fefa06f64fe69cddf8e8c48b323687cff4581f7141b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dom-electricity-access",
+        "version": 1,
+        "hash": "168e02522d0a1abbb8160fb319226212708abc32db33f8e8a1aa4f7790797afc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dza-electricity-access",
+        "version": 1,
+        "hash": "a15a362264d541f86e17e209c281424cbf803195627c0bbb1f1eff1f2c1d69a3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ecu-electricity-access",
+        "version": 1,
+        "hash": "0c1689dc2347fee661423efa4ec0d2f37c4b121112d1446e604f62ba9b7120a7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-egy-electricity-access",
+        "version": 1,
+        "hash": "e455fa3cb0c9c416164a5a46c71d3217a62444873b75f84ff883729a261aacf5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-eri-electricity-access",
+        "version": 1,
+        "hash": "6722029843b4d96b9cef72bcf782e63680a80afa4e0dac3d4cdb9989b1e3a54b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-esp-electricity-access",
+        "version": 1,
+        "hash": "f75c9f77fd57932cc9cc1afd4b74a930722d417710fc3ca4d498a149f492fa43"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-est-electricity-access",
+        "version": 1,
+        "hash": "1e51d474e6fe9fb1b589c8df1dbdd6f11833687401da292d079eeded47a70a5e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-eth-electricity-access",
+        "version": 1,
+        "hash": "ddf5369c2c1152373166ab30fe80bbdaf105d28b09cd799f20863e6cf78a4b87"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fin-electricity-access",
+        "version": 1,
+        "hash": "8f472ec258e794ce412d7e2068ddf6cb1e5b39bd8b1ff25be5a6672483fa806d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fji-electricity-access",
+        "version": 1,
+        "hash": "6da3cabc5ab17a6eecedbaec6f3abc286bce2c20547486357f22610e9aa565d1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fra-electricity-access",
+        "version": 1,
+        "hash": "6a161498d4afacdb76f83d4b3572cfe24fbe2a5691b2d4db15f7c2d6e7a0540c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fro-electricity-access",
+        "version": 1,
+        "hash": "0bb98fd797e5660ac84c9f8aae1ae31209ba9e82dfef52264c9abab555c2ad2b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fsm-electricity-access",
+        "version": 1,
+        "hash": "355d948069a17f9d7afd38a54e6138d672a1c22f353e786ed11eb2494f74bb55"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gab-electricity-access",
+        "version": 1,
+        "hash": "db01d1c20c1e47b220b46056fa05092d393abdad52b70e3c4fa714529993917c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gbr-electricity-access",
+        "version": 1,
+        "hash": "40ebb44e77cbdaa01cbd0ca87a5db862e1829523ceb183a3b2685a6c2c08c66b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-geo-electricity-access",
+        "version": 1,
+        "hash": "5740f2a85ecbde5afc307e7e1b680c7333ee7dd7956aa0b3bece86bc95959737"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gha-electricity-access",
+        "version": 1,
+        "hash": "e777e769f61afd346c6864920c26fb35970630fa5771dc7ecf605ea516dc2751"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gib-electricity-access",
+        "version": 1,
+        "hash": "8fc98d6797465b1f990cdb0fa6b8040aced33053a0e9646ea2acae0b48193cbe"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gin-electricity-access",
+        "version": 1,
+        "hash": "e7394d02e4b5342a320bef99ab7a9edd3c1f4d34e4706fec627518730dc2fd38"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gmb-electricity-access",
+        "version": 1,
+        "hash": "445f5161526b7a14f43d4a85ee5156ffd98247edd0e6fac249605bdf3e16ace2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gnb-electricity-access",
+        "version": 1,
+        "hash": "ac73abe4db314d9bf3c8e780f42568726d20707e22b23fa22b2eecf89521c62a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gnq-electricity-access",
+        "version": 1,
+        "hash": "7ad7618059656f1f369fc3cfa8c10dad1f8fb725a31eefc64b85086076e91dc9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grc-electricity-access",
+        "version": 1,
+        "hash": "295033652e2c4c0bec9e99856c3e3b6abc620ade14432bc944f1a47fe8215b93"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grd-electricity-access",
+        "version": 1,
+        "hash": "db21accbc08cbb5b08054df8720e0b8838115b66fc7cb1abf64c2a301f021763"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grl-electricity-access",
+        "version": 1,
+        "hash": "c1e56f355846c6042e1878b189075a17eeebc221ad629487ca1dbb5637a98591"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gtm-electricity-access",
+        "version": 1,
+        "hash": "690f4e37314bd100aa66236d24c8e5d2a01b211c58e17d61914e272a90577efe"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gum-electricity-access",
+        "version": 1,
+        "hash": "d6c929d6d2c5b234f3f6188456bea40c8bcea263ae1da861282d7d00f95d1254"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-guy-electricity-access",
+        "version": 1,
+        "hash": "0cc603e8f71b41a54eba43035d9e4774f363da9f63677b97f300da4c88c9e0c3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hkg-electricity-access",
+        "version": 1,
+        "hash": "9032f033320ee15a4d3acdc21b013e04972ab03ddeaeb6efb3480a369bff2a4c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hnd-electricity-access",
+        "version": 1,
+        "hash": "20a68abb57b267d7efd8208a9122756e57d3eb18abccc71f50eb11486cf250fa"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hrv-electricity-access",
+        "version": 1,
+        "hash": "8b86fa330486aa3fb4b524be13776df810bd02a62c1857fe15c4a1bfb3a8da62"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hti-electricity-access",
+        "version": 1,
+        "hash": "75a3fa6f91100e9950cd51be6162ea9468402f96bb22299a00310d56ff246670"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hun-electricity-access",
+        "version": 1,
+        "hash": "c1b0b86aa08d582bee03e3fe28577b71f40ed7c8f32df44d66216a4c6c8b1c19"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-idn-electricity-access",
+        "version": 1,
+        "hash": "f7c91da4cd3096314b76f40d57954d4d1afa7700cc25caef466b191f326ee094"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-imn-electricity-access",
+        "version": 1,
+        "hash": "fb7578321df93127db8ad016ec48cc2bf15dc70098b563fff20dc03c54b54722"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ind-electricity-access",
+        "version": 1,
+        "hash": "6be782b2cc2112a2f9358dd6d41bf5cfbb09b55ae95e3bb1e340ba02e39f7bc0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irl-electricity-access",
+        "version": 1,
+        "hash": "5142a7a104cf139bc9d6050d2501951c112dd637006ab35c12fb6ba96901678a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irn-electricity-access",
+        "version": 1,
+        "hash": "2cd6ac3378db53ce8c3b529c4adfd59810f40dd20bff7ebff4267179461df404"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irq-electricity-access",
+        "version": 1,
+        "hash": "a7d019bc6f15de0ed2f811ef31d6e7e76b93d0c4c38a0a4f63e14fc7b11d1a0a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-isl-electricity-access",
+        "version": 1,
+        "hash": "3c907a9eb0b9fa73ba917ca4a7047bee60f70d2acb00f48142dbdc6bd86d069a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-isr-electricity-access",
+        "version": 1,
+        "hash": "4689e161f19cd59805acac166e9d758a8e82aeb2cf1a600f20d8e6595c8aa55c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ita-electricity-access",
+        "version": 1,
+        "hash": "7ea2bdbea9c1c17fa2079639890be4f41870e24659dd45322f814316a0820a03"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jam-electricity-access",
+        "version": 1,
+        "hash": "4aa94a5a1d33058525e7e75414fcb890a75de47e2eb2f4cc12b60acec9d25fa0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jor-electricity-access",
+        "version": 1,
+        "hash": "79f1a97187e3c2ada940c8f571018d14a0e2ae4788ee70e7c74da39ce7193de4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jpn-electricity-access",
+        "version": 1,
+        "hash": "22b3a820f924e99153986ab29880312387dc321ba667bc44635144b91f09ea15"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kaz-electricity-access",
+        "version": 1,
+        "hash": "c7bce19ac9c6b39f928a13a63841634c0f26c2e1788685d4205cac51fe9eef02"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ken-electricity-access",
+        "version": 1,
+        "hash": "8223dd555e146c8ac206d30d547b2419ea43dbf303d3808f6afc3d52c8390345"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kgz-electricity-access",
+        "version": 1,
+        "hash": "f1fa3d0ba217c716a318c164bb9d6425efdb17d7835ce79942bca6d2d86e0691"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-khm-electricity-access",
+        "version": 1,
+        "hash": "0454a5e014e7d63b650755cec3c9d85ff94bdb73c9dc1fc10c9ff9abe863b0ee"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kir-electricity-access",
+        "version": 1,
+        "hash": "6abfaaacd8e43c0e080a7bcb011b07517fb7f8de201f8e7dd37ba1f3d5a57065"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kna-electricity-access",
+        "version": 1,
+        "hash": "dc46aee5ef437b5c812efaa58cf454523a7ab174c38768c40223358b6b253ad4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kor-electricity-access",
+        "version": 1,
+        "hash": "8dc13811f912c4d982953ced3401668b87a0a68d30d20d5724a5f5bfd41c4ec3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kwt-electricity-access",
+        "version": 1,
+        "hash": "6f7abef6c2f7a1e77a82ecd326da43358bedfac205f99d8f7e248e04f664e69b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lao-electricity-access",
+        "version": 1,
+        "hash": "c467605781f76106fb518825d08aca56a8d13c91bf494ff33ff9b57e5122887d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lbn-electricity-access",
+        "version": 1,
+        "hash": "0fae043fe9d47a289b335ee47e906197fdcda4994edde153d7d64f4d38e43601"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lbr-electricity-access",
+        "version": 1,
+        "hash": "80c1b250aa497bde540a8fc353a29810f3c9681fb5d9201aa54ee1152251bfc7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lby-electricity-access",
+        "version": 1,
+        "hash": "e7d4c5e1d3dcbf904f77ff70173b10166032c7f051b0867e3033deb79b30ea6e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lca-electricity-access",
+        "version": 1,
+        "hash": "4ded351ee004ec9a544da77c29ce22764b8d10f11d86c0f62085abef143cec62"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lie-electricity-access",
+        "version": 1,
+        "hash": "8ab18e8779a2620cc11769a91623bf46ead4f53c2fe23b4a9e5d9807ca4c622a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lka-electricity-access",
+        "version": 1,
+        "hash": "115e163e3e826fe10d4c7765d1fa199eac6f5cca0d68127c8231574f80d583ed"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lso-electricity-access",
+        "version": 1,
+        "hash": "c8365ce2e9fc21b26b4396317622db227c23f5d30c630e3e3a7378db8cda4b14"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ltu-electricity-access",
+        "version": 1,
+        "hash": "3337c5d3bd82dede3bce52c90f56c21e5c925f1c25aca429ea0f461a4f5f7dcc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lux-electricity-access",
+        "version": 1,
+        "hash": "76f486ebcf09e7d5296c08da13b458c399ba849f70eb2ee40a65159cd20c8901"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lva-electricity-access",
+        "version": 1,
+        "hash": "d066fe13cda2f110248d4dcf97ee9c84c48e86d03961621fdab174c0cadbfa6a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mac-electricity-access",
+        "version": 1,
+        "hash": "f5929e7329cf4c84dfa9449c5f55d839573e46e9d17fb3948260df20a3993192"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-maf-electricity-access",
+        "version": 1,
+        "hash": "0aa5df46ef6ff32e9888693b8e67cfe16a260da356b7b5e0701d93419b1e5409"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mar-electricity-access",
+        "version": 1,
+        "hash": "5d7acb1e1a331bc52cf31154c445c9f0a245b7336c4cd821002f9939d69977a3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mco-electricity-access",
+        "version": 1,
+        "hash": "661d3c2744a941ebbad0d0272922a92f9c475b78d2903ba15ec1a2d87a1c151d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mda-electricity-access",
+        "version": 1,
+        "hash": "0592950c68c5273c122190eefa200e4577aac59da40f441c75dda0b214cb50bf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mdg-electricity-access",
+        "version": 1,
+        "hash": "8535126e4dade2ddecc304d1fdd0ffd8e3b220d366d6aef4a9d551d9e9e2df27"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mdv-electricity-access",
+        "version": 1,
+        "hash": "e37dcd236458953d3c62be2777114d4d93e21b643013607af1ad56ce6e095f0b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mex-electricity-access",
+        "version": 1,
+        "hash": "fadd660d3c185b725ba939bd2132e6eabe98f988cfc72855eb9058d5afb59f5f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mhl-electricity-access",
+        "version": 1,
+        "hash": "c79ca39e8e4ca1d950f4dec947129829c37034da0fb8df3913c1207c65ec3ceb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mkd-electricity-access",
+        "version": 1,
+        "hash": "399b61a438b8008fef596e7ff76cc586d0bebec2c9dcdd8a055493e2a02c7224"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mli-electricity-access",
+        "version": 1,
+        "hash": "bc951f572c0e1bd995c80c55ca8c92cc5d144f3b1376756917a333068bd491c0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mlt-electricity-access",
+        "version": 1,
+        "hash": "49e52dcb72da596bb2295f48c52ecf15c07e57b5686022563ca03d68ab503724"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mmr-electricity-access",
+        "version": 1,
+        "hash": "929894f6a516048ee3d4e38e475e8c8d22cb6cbdcc9df84452c6c3715d9ee831"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mne-electricity-access",
+        "version": 1,
+        "hash": "cd7b5b3f9c376a272a72434723aa0a8c4444806f1c1d9cb712be5abfb94998f9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mng-electricity-access",
+        "version": 1,
+        "hash": "0e38ae2e716bf8cbabe3c540b3742a0b8232b04e5e45ba582ae39997a4165be8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mnp-electricity-access",
+        "version": 1,
+        "hash": "97eb1cb5b14800d6da839b4a4f78c879c2855c536a99d48655feaf1fc505c1d8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-moz-electricity-access",
+        "version": 1,
+        "hash": "87ac1022dc973e37d0d32904318fb6aa6b430c9b85c1b7a2811e4fe525108027"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mrt-electricity-access",
+        "version": 1,
+        "hash": "059377627e2359b2492f7a369e3c627afee3d3658fb46ea0a510637ad0c8dcd9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mus-electricity-access",
+        "version": 1,
+        "hash": "9416ce277fac09e01e6942840774170dbbec57c31018f8d2bd6760663a2743b9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mwi-electricity-access",
+        "version": 1,
+        "hash": "fe09c2b1edeb66ac698e387ccd6dc29333b73db4aad68c8e5875aae7e5f72a6b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mys-electricity-access",
+        "version": 1,
+        "hash": "43ff3f40d83d7b2fb467c9493cc1a92ec185ecd4d089dd54706c3ef52582d18a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nam-electricity-access",
+        "version": 1,
+        "hash": "3e1e342a82b14e3be644e08528c0356afc50a3a1e629e9033bd51e96af0ed223"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ncl-electricity-access",
+        "version": 1,
+        "hash": "23b277183914cd489b7b874bcc4122606a8222a192022206f8388d9816bb0990"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ner-electricity-access",
+        "version": 1,
+        "hash": "4d50bf2209b4d4b346123aaf673505cce46743daf4560be7c6375725ff066133"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nga-electricity-access",
+        "version": 1,
+        "hash": "3800617cfe14cefe698250ed0edd5722f92fe6772955fc1b2dd6ef8a06a62fae"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nic-electricity-access",
+        "version": 1,
+        "hash": "d93150af2b4811a54a7dadad2440029e9e8aa915aec6d2b58d4d0a88e7e0fb75"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nld-electricity-access",
+        "version": 1,
+        "hash": "7808ac2edc11556e923ce8017fd7ef4b3bcc5060625d222b6e50f8a80ad9c7f5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nor-electricity-access",
+        "version": 1,
+        "hash": "a8e44f79b070c1821fe2df99c5242f21e741dd4e6a89607b4ba17fd3e10d59d1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-npl-electricity-access",
+        "version": 1,
+        "hash": "b18891f4bf7f8a34e6ab9adc92314f74aed2722396f0d7376d62c74e2c7492be"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nru-electricity-access",
+        "version": 1,
+        "hash": "36393536b8e39bd8a047123894319b1621ff56a13028165038db7e0c21d67419"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nzl-electricity-access",
+        "version": 1,
+        "hash": "96910c537d3b66d49efccc05e02834b35982513342c46ac1779a74bcecda9bbb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-omn-electricity-access",
+        "version": 1,
+        "hash": "36e52e969e897f678f164dc4616fafebb025623f2897ce8d23f5c74f66ea3324"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pak-electricity-access",
+        "version": 1,
+        "hash": "b8b1525b17d5c5d79d77f8dadde925984935e97023f5c4b34ed3cb6c3ea83c60"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pan-electricity-access",
+        "version": 1,
+        "hash": "812e96bf83e57d3da4f38024c4e84a01f4935d176b838d2ce82f43412131041c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-per-electricity-access",
+        "version": 1,
+        "hash": "bd1b7efff139e3a90f19c1b17e65c4364ec1574f600ab706666fb058e96b55a3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-phl-electricity-access",
+        "version": 1,
+        "hash": "0e8ad16072b86bb8310f2d22688c9ec0b0825bd080a39d038c43d01d59fc487b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-plw-electricity-access",
+        "version": 1,
+        "hash": "ff741d4f83338d373eeeee0e654ae9a1561170614ca2f2e6361b15fef05454a4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-png-electricity-access",
+        "version": 1,
+        "hash": "7e8abb83d05da08b757e461165986e02d4c284446b1ec9dc9bb79df8ea847022"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pol-electricity-access",
+        "version": 1,
+        "hash": "f0225197a30dd81a0c1387255fb780de77ec4cc6cc6ce867b79c738055ad3534"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pri-electricity-access",
+        "version": 1,
+        "hash": "0ce30f10ee166cc0236ef082c9cb58f3ec98c922eb565a7799dabf90b7d6e452"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-prk-electricity-access",
+        "version": 1,
+        "hash": "021fb8e9092a5e98a805e08983eba110eade325c83e86ea83de046cd8ce28804"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-prt-electricity-access",
+        "version": 1,
+        "hash": "dca8980cc2ca58e240142eea07a913d9469a23c9c64fd7690cf9719ccad85d9f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pry-electricity-access",
+        "version": 1,
+        "hash": "8ab8873d22ea491b0f590931dedc30dccea01c0257c3ed7bb6dd54404ca29802"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pse-electricity-access",
+        "version": 1,
+        "hash": "2ae36db20ed38bab148e48b29fdc4481f7eab5b53624a4c19b696e430bd33b65"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pyf-electricity-access",
+        "version": 1,
+        "hash": "1fc665b37405cc86b69a2dc92e99b4cc8a314de994ad2b5fd6e8e340d1318b51"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-qat-electricity-access",
+        "version": 1,
+        "hash": "4d478b0160a3a31392e5b14547a9da47111b8224673bf5ed6c9dc00a466328cb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rou-electricity-access",
+        "version": 1,
+        "hash": "e158b26e0f1886f665e6fab8b0ef94d2916493732177cc60c91c1ce8faf2842f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rus-electricity-access",
+        "version": 1,
+        "hash": "709eb6654f3ff5165bd3f1b9ea89005c476bd58885b7884e2de95abababfb787"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rwa-electricity-access",
+        "version": 1,
+        "hash": "6857aa861a3966f36ca6cbfdd030d8d0f40866da4a4e93a42fa8db0cce65bf2a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sau-electricity-access",
+        "version": 1,
+        "hash": "e918b19ddc6c07f130cf6e747d83147d8565b9dad25770019e1bdaa9343b1c73"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sdn-electricity-access",
+        "version": 1,
+        "hash": "88acb62e2069f8d3500597d816c08b19a94a154d2e7d32f9e2ae6cf509ecf29e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sen-electricity-access",
+        "version": 1,
+        "hash": "3a4b862309096037ae1a4c96fdbe59df6208d024a2df46090167e566e0d0cfb7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sgp-electricity-access",
+        "version": 1,
+        "hash": "057e5ab6c3da1d3e67cf95a790e6a5a9c3279d52c443ff5e055040be63d65406"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-slb-electricity-access",
+        "version": 1,
+        "hash": "489f024eedd848512bf8a84b2b31ab439023ffaff4bafa6451a3de9c35280806"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sle-electricity-access",
+        "version": 1,
+        "hash": "7ee8dd8b368f99362df5bc3e4c3fe1e91e0f88233e188c1df4244682fd21dbd7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-slv-electricity-access",
+        "version": 1,
+        "hash": "563ae416d112a93e69cb6895f3e00af26fe2b6b1f980f22f0712e0e079648d3e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-smr-electricity-access",
+        "version": 1,
+        "hash": "f27c50794d802db48dee78a3fbdd498b8ebadd1acf5ed0e0d2a1d5d6af17e9f7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-som-electricity-access",
+        "version": 1,
+        "hash": "0b697aeb5ed453a63a10a55d47bf07a5003576e1afd162a67c88ff12e2873a6b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-srb-electricity-access",
+        "version": 1,
+        "hash": "23f4e83f31eac5e07669e97aa67e2f28b20ff796cfbc5d7cb498c7611b3f5d28"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ssd-electricity-access",
+        "version": 1,
+        "hash": "ee5ee19d525c26cba64f296e2585bffde55c51b7dcd5c893749928073a79e6ac"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-stp-electricity-access",
+        "version": 1,
+        "hash": "1660bf4c66a9a0af471e3ce81f4ccb13b0223865bd05a519658a157fc948d5e7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sur-electricity-access",
+        "version": 1,
+        "hash": "b9f95f8ddb9559f44ac87f9f5f13f4464ea40fdefe3e73c0b9972c42a961ca12"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-svk-electricity-access",
+        "version": 1,
+        "hash": "2edd854b687fd6db63af0ab8ac91647816ad1a178c055a45fd3add48f03c07d6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-svn-electricity-access",
+        "version": 1,
+        "hash": "79ab458d017418488bc92db9a279be3a89c46fcd927358e2f8c0f538668d8fee"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-swe-electricity-access",
+        "version": 1,
+        "hash": "d5f520dc2b321ccf846bf8ecb7a7f1594215501f3a4b01fc955a000031d34cf7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-swz-electricity-access",
+        "version": 1,
+        "hash": "80168d37539309a6425f67ea0e2c27264cdb10ce75a6e0488f0bafee6aa89407"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sxm-electricity-access",
+        "version": 1,
+        "hash": "b39db81735c9ae85369601d4aab1e574dfbc24580803085c1efcf1ac3ccf2cd4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-syc-electricity-access",
+        "version": 1,
+        "hash": "a492d98764fd93ceb5320bbead7cbe65b2cd6104b294b9e355cd0e223bc3ce61"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-syr-electricity-access",
+        "version": 1,
+        "hash": "b6fa7e6cef5d7e948afed1f8b52da6b584d9bcc1414546644d8e9f4048a41bf0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tca-electricity-access",
+        "version": 1,
+        "hash": "7cde28bb9d94ab65d5dcf3e5641c3d0b8cc4192390a32504e72f0218750ff82b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tcd-electricity-access",
+        "version": 1,
+        "hash": "b1f743d5648491d8f65e907410a27d8a7bd2f72f5c178b6f782d6b667015f809"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tgo-electricity-access",
+        "version": 1,
+        "hash": "c6e3bb9d1d83abaaeb699029f0b295e02c6045b0a1807b61ee9b756b9eaa54bf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tha-electricity-access",
+        "version": 1,
+        "hash": "31967a26e4ac4647c37115a612229c6c6abf854f0c39902faf2249bed63c86c0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tjk-electricity-access",
+        "version": 1,
+        "hash": "08734b3114e1cb5746b0316954828d01e4219fda0e74645084f7061697be8cd8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tkm-electricity-access",
+        "version": 1,
+        "hash": "af416c7e53b96123aa60822e8b42b7722aec90d799afba03d629f03a2ded7c9d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tls-electricity-access",
+        "version": 1,
+        "hash": "8ab215b6b77751466487ae3fdd1774e55536137906c0fa5720c43aa06d25846f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ton-electricity-access",
+        "version": 1,
+        "hash": "e931d94311838e7e60c5d1b8beab4195d5c811ee932a6cb0b24e592a47cbef27"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tto-electricity-access",
+        "version": 1,
+        "hash": "3a3cdb41f1e5ad959b3b52753e2cb7f65a9472e64892f118f8c2d9884eef9f4a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tun-electricity-access",
+        "version": 1,
+        "hash": "a53c3677025aac32852f4e5a11c982a425d4584f7beeecba6209e4c5e64faf92"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tur-electricity-access",
+        "version": 1,
+        "hash": "599fc2238a649a72e376118d24048d86e6c49275a3427ed9178c9c4db24bc218"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tuv-electricity-access",
+        "version": 1,
+        "hash": "c3fa34be65ff4f8b37992be0c4812f935236f27578d8485456561ab775b3d6a5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tza-electricity-access",
+        "version": 1,
+        "hash": "1c7dbca44362accaa374ea1d505653ffb934d00fbf13b360e4dff216ee677e07"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-uga-electricity-access",
+        "version": 1,
+        "hash": "95bf4f5afb79d7df215cefa315a1d432d65e018cc24bf294bde106877c1ae4c7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ukr-electricity-access",
+        "version": 1,
+        "hash": "f11907f31a7fb056ed45b0f3b79a59b204a71cc3a8467e7b9abc392abcc65971"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ury-electricity-access",
+        "version": 1,
+        "hash": "56dd90df277217761422e9ffb3fc0ebbe7a2fd1bc552ffaf47f9b2b05c70a4a5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-usa-electricity-access",
+        "version": 1,
+        "hash": "84d102944a601269fa7202725ca7436f5ca5937ea68efa0832d7d4815fc7723d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-uzb-electricity-access",
+        "version": 1,
+        "hash": "7e17c0a6c66db249215abcb58e3d591edfd2961233ed1785e81de9b74082755e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vct-electricity-access",
+        "version": 1,
+        "hash": "f30b7edb078f886efaffe101aacd355e2420e6b820b591184455d7506569d5f2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ven-electricity-access",
+        "version": 1,
+        "hash": "6c2d4de5525d5b68b5957adaab769fda1676c99675bf37f4ca59ae9f9c634552"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vgb-electricity-access",
+        "version": 1,
+        "hash": "80abd46c4bae63604ae102de155bad33ae8a8617e8f7b7d39cf42f2194b0d869"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vir-electricity-access",
+        "version": 1,
+        "hash": "41d924f164575206f645e145614eba232b7a668a3b136cf4318c369de54249fc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vnm-electricity-access",
+        "version": 1,
+        "hash": "555725b4d966c6be695fd135a892b6c6a04e20d64b585ea7e81778a2e9de9e4a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vut-electricity-access",
+        "version": 1,
+        "hash": "5a6a226139dc13a38a62dfe007cca6b3a91f94bb7787b37d05e89e645cf6bd4a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-wsm-electricity-access",
+        "version": 1,
+        "hash": "13deb7248ebafc76b746fe2e94a378426fbc2bd32617609254334ca3ae56b43d"
+      }
+    },
+    {
+      "state": "missing",
+      "entity": {
+        "kind": "entity",
+        "id": "country-xkx",
+        "version": 1,
+        "hash": "99b2d01097d1f608fc5230b17caaf40449d631ed9ed89108314558179e5eb5e8"
+      },
+      "scope": {
+        "kind": "scope",
+        "id": "national-xkx",
+        "version": 1,
+        "hash": "ad376a1205528029f625ed4b703a6c5845d671be490b592e271159faad0c6804"
+      },
+      "measure": {
+        "kind": "measure",
+        "id": "country-electricity-access",
+        "version": 1,
+        "hash": "a6e896fe7a8769fc5bab41f1f4b1e329873e251227a9ea68a4598a2be25a7c73"
+      },
+      "reason": "producer-null-throughout-window",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/924/value",
+            "matches": [
+              {
+                "pointer": "/1/924/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/924/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/924/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/924/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2025"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/925/value",
+            "matches": [
+              {
+                "pointer": "/1/925/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/925/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/925/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/925/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2024"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/926/value",
+            "matches": [
+              {
+                "pointer": "/1/926/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/926/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/926/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/926/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2023"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/927/value",
+            "matches": [
+              {
+                "pointer": "/1/927/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/927/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/927/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/927/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2022"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/928/value",
+            "matches": [
+              {
+                "pointer": "/1/928/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/928/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/928/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/928/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2021"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-values-eg-elc-accs-zs",
+            "version": 1,
+            "hash": "893de7ab2dbd1dd2678f97f94f8ea1e7690a614ebb069d2738273a40386b46b7"
+          },
+          "role": "value",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/929/value",
+            "matches": [
+              {
+                "pointer": "/1/929/country/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "XK"
+                }
+              },
+              {
+                "pointer": "/1/929/countryiso3code",
+                "expected": {
+                  "kind": "string",
+                  "value": "XKX"
+                }
+              },
+              {
+                "pointer": "/1/929/indicator/id",
+                "expected": {
+                  "kind": "string",
+                  "value": "EG.ELC.ACCS.ZS"
+                }
+              },
+              {
+                "pointer": "/1/929/date",
+                "expected": {
+                  "kind": "string",
+                  "value": "2020"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-yem-electricity-access",
+        "version": 1,
+        "hash": "d517c83bfd07b3f25435a8fbf3195c77092c4f5829ff2b422a2f2aa0be605527"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zaf-electricity-access",
+        "version": 1,
+        "hash": "4043296d9ba508cb3e0ce250e6a6fc09bb107c0d247ef8b65d5a1fa11d9b52b6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zmb-electricity-access",
+        "version": 1,
+        "hash": "c6d51c5ee3843cf892f3eafc84477ab1b03e6ff20b4164f6ea4452cc7b1d3eeb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zwe-electricity-access",
+        "version": 1,
+        "hash": "bcfcbaacfa0e8246e73031e855f5155d60b93b28325f73688c941d0934a18828"
+      }
+    }
+  ],
+  "sourceRefs": [],
+  "exclusions": [
+    "Aggregate regions are retained in raw source context but excluded from this country matrix."
+  ],
+  "limitations": [
+    "Latest non-null fact per fixed window; not a normalized six-year time series."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "0931ce1a824f91fe3cfb7b0d1ba4287d044094090cd77051e3586053b4d5b62d"
+}

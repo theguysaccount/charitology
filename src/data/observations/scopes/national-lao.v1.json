@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-lao",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lao",
+    "version": 1,
+    "hash": "ed5b7c5dfbea98cff701e45203b71f050b67321961637206a2efb1619571d8c4"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Lao PDR statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-lao",
+      "version": 1,
+      "hash": "ed5b7c5dfbea98cff701e45203b71f050b67321961637206a2efb1619571d8c4"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-lao",
+      "version": 1,
+      "hash": "ed5b7c5dfbea98cff701e45203b71f050b67321961637206a2efb1619571d8c4"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "b9de20d89de6db1341f520699db665c50f62b378b9fb364cdd1a6d10992cefe6"
+}

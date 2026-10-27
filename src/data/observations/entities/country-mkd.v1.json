@@ -1,0 +1,106 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "country-mkd",
+  "entityKind": "country-economy",
+  "label": "North Macedonia",
+  "identifiers": [
+    {
+      "kind": "iso2",
+      "value": "MK",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/181/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "iso3",
+      "value": "MKD",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/181/id",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "producer-country",
+      "value": "MK",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/181/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    }
+  ],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [],
+  "countryMetadata": {
+    "producerRegionId": "ECS",
+    "producerRegionLabel": "Europe & Central Asia"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-country-metadata",
+        "version": 1,
+        "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+      },
+      "role": "identity",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/181",
+        "matches": [
+          {
+            "pointer": "/1/181/id",
+            "expected": {
+              "kind": "string",
+              "value": "MKD"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "fd96f848287d9ee2df76e7522ef0d73fe5743befa74d2d5da1644b767dafff70"
+}

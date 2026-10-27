@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-brb",
+  "entity": {
+    "kind": "entity",
+    "id": "country-brb",
+    "version": 1,
+    "hash": "3343dcb2701f451195baed12fbe6322d77303efb82d6e333b6601d073cf8f76c"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Barbados statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-brb",
+      "version": 1,
+      "hash": "3343dcb2701f451195baed12fbe6322d77303efb82d6e333b6601d073cf8f76c"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-brb",
+      "version": 1,
+      "hash": "3343dcb2701f451195baed12fbe6322d77303efb82d6e333b6601d073cf8f76c"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "d4931f6ff303f343a9fee462f47e7510ac16dd00e1b5b4197d60c6660b5263aa"
+}

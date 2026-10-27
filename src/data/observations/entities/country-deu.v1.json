@@ -1,0 +1,106 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "country-deu",
+  "entityKind": "country-economy",
+  "label": "Germany",
+  "identifiers": [
+    {
+      "kind": "iso2",
+      "value": "DE",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/70/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "iso3",
+      "value": "DEU",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/70/id",
+            "matches": []
+          }
+        }
+      ]
+    },
+    {
+      "kind": "producer-country",
+      "value": "DE",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "wb-country-metadata",
+            "version": 1,
+            "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "json",
+            "pointer": "/1/70/iso2Code",
+            "matches": []
+          }
+        }
+      ]
+    }
+  ],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [],
+  "countryMetadata": {
+    "producerRegionId": "ECS",
+    "producerRegionLabel": "Europe & Central Asia"
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-country-metadata",
+        "version": 1,
+        "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+      },
+      "role": "identity",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/70",
+        "matches": [
+          {
+            "pointer": "/1/70/id",
+            "expected": {
+              "kind": "string",
+              "value": "DEU"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "51b500fd2bdba1af3a1230c9bc3b69da66804c5ca9f76ff5cfd63a9bece57c59"
+}

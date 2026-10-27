@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mdg",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mdg",
+    "version": 1,
+    "hash": "c119f7f85db315c9a93a8eea42ef10dae1543bd4f8d608c0bd6415d7377d3296"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Madagascar statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mdg",
+      "version": 1,
+      "hash": "c119f7f85db315c9a93a8eea42ef10dae1543bd4f8d608c0bd6415d7377d3296"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mdg",
+      "version": 1,
+      "hash": "c119f7f85db315c9a93a8eea42ef10dae1543bd4f8d608c0bd6415d7377d3296"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "8aa947ebfd8e209b958825303509c1ea8e6e9ea718d08124d30a5ad90571cd91"
+}

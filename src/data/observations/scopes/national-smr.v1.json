@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-smr",
+  "entity": {
+    "kind": "entity",
+    "id": "country-smr",
+    "version": 1,
+    "hash": "7ec6ff5192cf98947adafbae7fb2f239499936094a8b29661caaf86e9ca07120"
+  },
+  "scopeKind": "national-statistics",
+  "label": "San Marino statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-smr",
+      "version": 1,
+      "hash": "7ec6ff5192cf98947adafbae7fb2f239499936094a8b29661caaf86e9ca07120"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-smr",
+      "version": 1,
+      "hash": "7ec6ff5192cf98947adafbae7fb2f239499936094a8b29661caaf86e9ca07120"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "63cc85f282d275bbeecceb03e795db6752025afb027d8b34326e5900b33f6b35"
+}

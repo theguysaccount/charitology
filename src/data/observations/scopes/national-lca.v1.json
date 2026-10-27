@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-lca",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lca",
+    "version": 1,
+    "hash": "033d25babff9c15b20bd2b67b03ed06f6a6c9030739fbcbad94c0f26cf1a4a87"
+  },
+  "scopeKind": "national-statistics",
+  "label": "St. Lucia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-lca",
+      "version": 1,
+      "hash": "033d25babff9c15b20bd2b67b03ed06f6a6c9030739fbcbad94c0f26cf1a4a87"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-lca",
+      "version": 1,
+      "hash": "033d25babff9c15b20bd2b67b03ed06f6a6c9030739fbcbad94c0f26cf1a4a87"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "1d3a0056a24cab654d3db979a3b9142f5665449ad9e3958757c5cde72c239b5f"
+}

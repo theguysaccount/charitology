@@ -1,0 +1,118 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-hrv-population",
+  "entity": {
+    "kind": "entity",
+    "id": "country-hrv",
+    "version": 1,
+    "hash": "bc12074698202efcb1f72c2d177b38f4c8c02dc8fbc81e063197a85c96c1101b"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-hrv",
+    "version": 1,
+    "hash": "4d27393da4c1fc0b634c0ef46a8446c8045cf8b38aa94a3f95e7fb37cffd7319"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-population",
+    "version": 1,
+    "hash": "34a26175e5b5483546f01d37cc3ddd0d757f73bcee30231fd1eb23a7d90fe4df"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2025
+  },
+  "reported": {
+    "token": "3876200",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sp-pop-totl",
+        "version": 1,
+        "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/582/value",
+        "matches": [
+          {
+            "pointer": "/1/582/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "HR"
+            }
+          },
+          {
+            "pointer": "/1/582/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "HRV"
+            }
+          },
+          {
+            "pointer": "/1/582/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SP.POP.TOTL"
+            }
+          },
+          {
+            "pointer": "/1/582/date",
+            "expected": {
+              "kind": "string",
+              "value": "2025"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "38762",
+    "exponent": 2
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [
+    {
+      "verbatim": "Preliminary.",
+      "sourceRef": {
+        "source": {
+          "kind": "source",
+          "id": "wb-values-sp-pop-totl",
+          "version": 1,
+          "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+        },
+        "role": "annotation",
+        "locator": {
+          "kind": "json",
+          "pointer": "/1/582/footnote",
+          "matches": []
+        }
+      }
+    }
+  ],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "0b4073d22daa72aae4ac5d275dfd0c195318f8a130cfa1b36789f0ecbf8d922f"
+}

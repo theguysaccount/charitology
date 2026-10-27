@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-cod",
+  "entity": {
+    "kind": "entity",
+    "id": "country-cod",
+    "version": 1,
+    "hash": "c8f0f43f222335e25b831ae1f220111e09c58c3b4cb7e55c71326d8039e1847a"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Congo, Dem. Rep. statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-cod",
+      "version": 1,
+      "hash": "c8f0f43f222335e25b831ae1f220111e09c58c3b4cb7e55c71326d8039e1847a"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-cod",
+      "version": 1,
+      "hash": "c8f0f43f222335e25b831ae1f220111e09c58c3b4cb7e55c71326d8039e1847a"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "26f44651b1639765466da2c031c6910b4f6f50dd5799a7f321e7759c2b240281"
+}

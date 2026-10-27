@@ -1,0 +1,54 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "givewell-group",
+  "entityKind": "reporting-group",
+  "label": "The Clear Fund d.b.a. GiveWell and GiveWell UK, consolidated",
+  "identifiers": [],
+  "aliases": [],
+  "memberEntities": [
+    {
+      "kind": "entity",
+      "id": "givewell-legal",
+      "version": 1,
+      "hash": "3f71990c90897ce78488f54088c891d8c7b697019c0d577b75e2af18d2961f71"
+    },
+    {
+      "kind": "entity",
+      "id": "givewell-subsidiary",
+      "version": 1,
+      "hash": "8759736ff642f7713b19d5d49f255a80708cee81338fa085429e9b3f5730954f"
+    }
+  ],
+  "profileRefs": [],
+  "countryMetadata": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "gw-audit",
+        "version": 1,
+        "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 9,
+        "printedPage": "7",
+        "section": [
+          "Organization and consolidation notes"
+        ],
+        "row": [],
+        "column": []
+      }
+    }
+  ],
+  "limitations": [
+    "Group identity differs from the parent EIN legal entity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4f18449b88e5618f4c78f215deae703189e23cf113ff8b72fc149c880b24db3e"
+}

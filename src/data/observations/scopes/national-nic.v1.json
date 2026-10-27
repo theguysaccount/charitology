@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-nic",
+  "entity": {
+    "kind": "entity",
+    "id": "country-nic",
+    "version": 1,
+    "hash": "89e0200228eeff9851799d5457832dfb8100437f7e1e9498b0039008c68510a9"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Nicaragua statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-nic",
+      "version": 1,
+      "hash": "89e0200228eeff9851799d5457832dfb8100437f7e1e9498b0039008c68510a9"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-nic",
+      "version": 1,
+      "hash": "89e0200228eeff9851799d5457832dfb8100437f7e1e9498b0039008c68510a9"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a10f6b8b88c8b724483b305cc9b5da39e998dc60d6017cb86ec56bb91da1bab0"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mus",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mus",
+    "version": 1,
+    "hash": "50d75311332a261b7dd7eadf3816b511ea2a6ec461ea4184a8539d8fc2aeb3fc"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Mauritius statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mus",
+      "version": 1,
+      "hash": "50d75311332a261b7dd7eadf3816b511ea2a6ec461ea4184a8539d8fc2aeb3fc"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mus",
+      "version": 1,
+      "hash": "50d75311332a261b7dd7eadf3816b511ea2a6ec461ea4184a8539d8fc2aeb3fc"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "6579349c15a65b500d748684664d3e1d314dce2bf7b21a14385d9344469845fc"
+}

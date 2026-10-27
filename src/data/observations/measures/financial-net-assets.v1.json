@@ -1,0 +1,74 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "measure",
+  "id": "financial-net-assets",
+  "label": "Total net assets",
+  "measureKind": "stock",
+  "family": "net-assets",
+  "producerCode": null,
+  "definition": "Source-reported total net assets for the consolidated scope on its stock date.",
+  "unit": {
+    "kind": "currency",
+    "label": "USD",
+    "currency": "USD",
+    "denominator": null
+  },
+  "method": "Selected historical audited-statement transcription, not an effectiveness estimate.",
+  "legacyCountry": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wm-audit",
+        "version": 1,
+        "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Statement of financial position"
+        ],
+        "row": [
+          "Total net assets"
+        ],
+        "column": [
+          "2024"
+        ]
+      }
+    },
+    {
+      "source": {
+        "kind": "source",
+        "id": "gw-audit",
+        "version": 1,
+        "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Statement of financial position"
+        ],
+        "row": [
+          "Total net assets"
+        ],
+        "column": [
+          "2024"
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "No marginal impact, service geography or charitable rating is inferred."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ad6235d127b120cce2d84bac155fc1ca6ad6cd53ddc8f7f2406c97388c986c96"
+}

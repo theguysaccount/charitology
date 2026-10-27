@@ -1,0 +1,48 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "wm-audit",
+  "url": "https://upload.wikimedia.org/wikipedia/foundation/f/f6/Wikimedia_Foundation_2024_Audited_Financial_Statements.pdf",
+  "publisher": "Wikimedia Foundation",
+  "title": "2024 consolidated audited statements",
+  "retrievedAt": "2026-10-27T12:34:00.744Z",
+  "sourceUpdatedDay": null,
+  "reportDay": "2024-10-08",
+  "publishedAt": null,
+  "rawSha256": "0560f7324670b44dcd89a8505f8fef398a5e73487bb80870796f784e624739ef",
+  "rawBytes": 417936,
+  "payload": {
+    "kind": "external-document",
+    "mediaType": "application/pdf",
+    "publicExcerpt": {
+      "path": "evidence/bf3f8fb488f73095f73d78ae4773fe95f9f2c1deb53da4b2a487847ae6fbe62d.json",
+      "sha256": "bf3f8fb488f73095f73d78ae4773fe95f9f2c1deb53da4b2a487847ae6fbe62d",
+      "bytes": 8171,
+      "mediaType": "application/json"
+    }
+  },
+  "producerMetadata": [
+    {
+      "field": "originalRetrievalRecord",
+      "literal": "2026-10-27T12:34:00.744934Z"
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "linked-document-only",
+      "note": "Original PDF retained privately; no reuse grant inferred from a website footer."
+    },
+    "attribution": "Wikimedia Foundation",
+    "originalProducerCredit": "Wikimedia Foundation and Wikimedia, LLC",
+    "limitations": [
+      "Small factual transcription only. An audit opinion does not review this dataset or compare impact."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+}

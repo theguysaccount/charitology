@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-chi",
+  "entity": {
+    "kind": "entity",
+    "id": "country-chi",
+    "version": 1,
+    "hash": "f531fbd66b84ce468b4dcebcd0a8343776a8bfda04462928a93eed2e3a8db656"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Channel Islands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-chi",
+      "version": 1,
+      "hash": "f531fbd66b84ce468b4dcebcd0a8343776a8bfda04462928a93eed2e3a8db656"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-chi",
+      "version": 1,
+      "hash": "f531fbd66b84ce468b4dcebcd0a8343776a8bfda04462928a93eed2e3a8db656"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4dd7516757d3693499632bab06b104a951f81c0f3a1e260cecc54d92df751521"
+}

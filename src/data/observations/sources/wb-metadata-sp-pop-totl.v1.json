@@ -1,0 +1,67 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "wb-metadata-sp-pop-totl",
+  "url": "https://api.worldbank.org/v2/indicator/SP.POP.TOTL?format=json&per_page=20000",
+  "publisher": "World Bank",
+  "title": "metadata-SP.POP.TOTL",
+  "retrievedAt": "2026-10-27T12:27:35.431Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "2e38279185f7c166d36de81a60f040590c0a4badfb82028380e342b4e9e0b502",
+  "rawBytes": 1102,
+  "payload": {
+    "kind": "public-json",
+    "raw": {
+      "path": "raw/2e38279185f7c166d36de81a60f040590c0a4badfb82028380e342b4e9e0b502.json",
+      "sha256": "2e38279185f7c166d36de81a60f040590c0a4badfb82028380e342b4e9e0b502",
+      "bytes": 1102,
+      "mediaType": "application/json"
+    },
+    "adapter": "world-bank-indicator-v1"
+  },
+  "producerMetadata": [
+    {
+      "field": "unit",
+      "literal": ""
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "explicit-license",
+      "label": "CC BY 4.0",
+      "termsUrl": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+      "evidence": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "rights-population-license",
+            "version": 1,
+            "hash": "cbe441957dbabe82095d138475cbd91dc9cbe858118c9771914db2eaeed47d42"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Retained rights evidence"
+            ],
+            "excerpt": "CC BY-4.0"
+          }
+        }
+      ]
+    },
+    "attribution": "World Bank World Development Indicators and named original statistical producers",
+    "originalProducerCredit": "World Population Prospects, United Nations (UN), uri: https://population.un.org/wpp/, publisher: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), uri: https://unstats.un.org/home/nso_sites/, publisher: National Statistical Offices;\nEurostat: Demographic Statistics, Eurostat (ESTAT), uri: https://ec.europa.eu/eurostat/data/database?node_code=earn_ses_monthly, publisher: Eurostat;\nPopulation and Vital Statistics Report (various years), United Nations (UN), uri: https://unstats.un.org, publisher: UN Statistics Division",
+    "limitations": [
+      "The source unit field is empty; normalized unit comes from its retained definition."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "221eff895f67a4e1449daa26f7a240e45fbde3abb13a805ced6c42e48243b3af"
+}

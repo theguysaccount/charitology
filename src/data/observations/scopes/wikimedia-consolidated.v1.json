@@ -1,0 +1,62 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "wikimedia-consolidated",
+  "entity": {
+    "kind": "entity",
+    "id": "wikimedia-group",
+    "version": 1,
+    "hash": "81a66fc28f48990d6f1ebb693914f2d8eb82cfc03e3571b2eb0f7c3ad7fbe96f"
+  },
+  "scopeKind": "consolidated-reporting-group",
+  "label": "Wikimedia Foundation, Inc. and Wikimedia, LLC, consolidated",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "wikimedia-legal",
+      "version": 1,
+      "hash": "2bf409a486b83aafc9629806100047f88bab9f2ac16bb9756de7eefec80de4ff"
+    },
+    {
+      "kind": "entity",
+      "id": "wikimedia-subsidiary",
+      "version": 1,
+      "hash": "6bceb9974f860f436fd5ea27ed2d90e7b5e16e2c1d45d4999e8ae0e5ba7dbda3"
+    }
+  ],
+  "consolidation": "consolidated-unspecified-eliminations",
+  "geography": {
+    "kind": "unknown",
+    "note": "Service geography is not supplied by these financial rows."
+  },
+  "exclusions": [
+    "Movement affiliates and the Wikimedia Endowment are outside this reporting group."
+  ],
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wm-audit",
+        "version": 1,
+        "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 8,
+        "printedPage": "6",
+        "section": [
+          "Organization and consolidation notes"
+        ],
+        "row": [],
+        "column": []
+      }
+    }
+  ],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "83ab7c5d7d217ff1e625b1876e22581b459b840e571383baba023654644088ab"
+}

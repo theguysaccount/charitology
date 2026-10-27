@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-cub",
+  "entity": {
+    "kind": "entity",
+    "id": "country-cub",
+    "version": 1,
+    "hash": "a85275eeea3fd3ba841ce2cbdbbcadcc045a20b2a7087b89ee7871b458d2c170"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Cuba statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-cub",
+      "version": 1,
+      "hash": "a85275eeea3fd3ba841ce2cbdbbcadcc045a20b2a7087b89ee7871b458d2c170"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-cub",
+      "version": 1,
+      "hash": "a85275eeea3fd3ba841ce2cbdbbcadcc045a20b2a7087b89ee7871b458d2c170"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "25df3d45a30b3788149f3c362944b53adcbe37ef1a27ac26a3feec62b66530e0"
+}

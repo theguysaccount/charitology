@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-are",
+  "entity": {
+    "kind": "entity",
+    "id": "country-are",
+    "version": 1,
+    "hash": "8cef10ed218ad6abe66b1be127e1b2f10d8e0a307a2dfb9e2aa38f8dac172e72"
+  },
+  "scopeKind": "national-statistics",
+  "label": "United Arab Emirates statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-are",
+      "version": 1,
+      "hash": "8cef10ed218ad6abe66b1be127e1b2f10d8e0a307a2dfb9e2aa38f8dac172e72"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-are",
+      "version": 1,
+      "hash": "8cef10ed218ad6abe66b1be127e1b2f10d8e0a307a2dfb9e2aa38f8dac172e72"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "0a48c70409453265263e28cfbe1da8e19c358b4c96f88ca00426439a637935e4"
+}

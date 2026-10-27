@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-wsm",
+  "entity": {
+    "kind": "entity",
+    "id": "country-wsm",
+    "version": 1,
+    "hash": "d2ff730dff46afe96493b597b33c3fb910ea6841048e5e2654adecbe77e2fc00"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Samoa statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-wsm",
+      "version": 1,
+      "hash": "d2ff730dff46afe96493b597b33c3fb910ea6841048e5e2654adecbe77e2fc00"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-wsm",
+      "version": 1,
+      "hash": "d2ff730dff46afe96493b597b33c3fb910ea6841048e5e2654adecbe77e2fc00"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "98344ec49a97b03d53f67140b3075523c7b28488116ca8364c0f1b7d445dfa64"
+}

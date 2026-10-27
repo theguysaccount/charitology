@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mhl",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mhl",
+    "version": 1,
+    "hash": "f9864bd24df964014a6eea3bd028e7e225e6170b00e9bd4de5fa09f57f5f8728"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Marshall Islands statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mhl",
+      "version": 1,
+      "hash": "f9864bd24df964014a6eea3bd028e7e225e6170b00e9bd4de5fa09f57f5f8728"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mhl",
+      "version": 1,
+      "hash": "f9864bd24df964014a6eea3bd028e7e225e6170b00e9bd4de5fa09f57f5f8728"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ba5b8836677bb3245f1b6919ad697b0eb9bb70dfad742585aab2fe0f93e6b8a9"
+}

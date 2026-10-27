@@ -1,0 +1,2004 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "coverage",
+  "id": "country-population",
+  "selection": {
+    "kind": "country-latest-window",
+    "startYear": 2020,
+    "endYear": 2025,
+    "rule": "latest-non-null",
+    "indicator": "SP.POP.TOTL",
+    "countryMetadataSource": {
+      "kind": "source",
+      "id": "wb-country-metadata",
+      "version": 1,
+      "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+    },
+    "valuesSource": {
+      "kind": "source",
+      "id": "wb-values-sp-pop-totl",
+      "version": 1,
+      "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+    },
+    "indicatorMetadataSource": {
+      "kind": "source",
+      "id": "wb-metadata-sp-pop-totl",
+      "version": 1,
+      "hash": "221eff895f67a4e1449daa26f7a240e45fbde3abb13a805ced6c42e48243b3af"
+    },
+    "measure": {
+      "kind": "measure",
+      "id": "country-population",
+      "version": 1,
+      "hash": "34a26175e5b5483546f01d37cc3ddd0d757f73bcee30231fd1eb23a7d90fe4df"
+    },
+    "nonaggregateRule": "country-metadata-region-id-not-NA"
+  },
+  "cells": [
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-abw-population",
+        "version": 1,
+        "hash": "013d056a2a13d25d3d47915bdfee9581450aaa1453181adb89fcd61755484a10"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-afg-population",
+        "version": 1,
+        "hash": "79109a60ada822fdb406e64bb366070a8204579d1953f27b13648844979c24cd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ago-population",
+        "version": 1,
+        "hash": "889633f219485a534bcd684e03bcaee46daef97c1d66c15c54da2a29087b2118"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-alb-population",
+        "version": 1,
+        "hash": "4c78ac3857b3a261551f1d61cc4490ce601820b7a397deab350851c90a587266"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-and-population",
+        "version": 1,
+        "hash": "b9423e4a943d408a91465e2d2a249589e18a4a3ced9ae84bb629e284643bfd2d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-are-population",
+        "version": 1,
+        "hash": "d9ebae8a04af1800480744f1b2e6ebcab3d35ccd6dbc7ebc5f3e448055020307"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-arg-population",
+        "version": 1,
+        "hash": "d6d7c0942c289a89b75408e5fac629084a5abec35a73c731ce664839942b544f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-arm-population",
+        "version": 1,
+        "hash": "9743f57ddb69bf4f457e72d91d78db9c6abeabd0959efcf31b99b9c05870bfa6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-asm-population",
+        "version": 1,
+        "hash": "ead077b2fa8424cf6db62fe623f8c23b8393880ee71bd11e848e3469fcdf6649"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-atg-population",
+        "version": 1,
+        "hash": "0f9d9c33d3a78d3870092e964383d44d62b3b0e190ff82f66e736d2d2638c3dd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aus-population",
+        "version": 1,
+        "hash": "0e4a80f47d1d66d13c957bca5f636993f5d0d92d7425cc1a9595dbc4abf04104"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aut-population",
+        "version": 1,
+        "hash": "583499f6e948251f45897fdd78e6e0adc89c6c28d33d3420824fc457b0815db8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aze-population",
+        "version": 1,
+        "hash": "65d8d9183708b1000f1cd27f5a299f6278a6d34899dc95ef8ed3a52a3655e73e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bdi-population",
+        "version": 1,
+        "hash": "c9cbfed5234d1c9b4e79f405335a49f0385b52f4f2117622dbabd3dd3e7ac305"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bel-population",
+        "version": 1,
+        "hash": "7f38eb72994689a86999760285a95140bcf717b0c2f7eb01769ab3f3f34209d0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ben-population",
+        "version": 1,
+        "hash": "b8ade9e7c9a9bc2262f8b52e90f27a7a838fc46cbf0dbf4571172db6aa84182b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bfa-population",
+        "version": 1,
+        "hash": "d83aad1b05727030e447b9232b69edb8ad4298ecefa3ce5b929b499a375b7d6e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bgd-population",
+        "version": 1,
+        "hash": "a4bbacde7a613b5dfba841f152d4a242314b1e36ad03c75540ffd60ac413573c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bgr-population",
+        "version": 1,
+        "hash": "7c50f51c84c823aac6d06a2f7bb1142e54bbedca3b056ecb4312dfd42f78ba01"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bhr-population",
+        "version": 1,
+        "hash": "3ae63f641514b89a880c8712665fb23e846693cd629e6964e808107999a943bb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bhs-population",
+        "version": 1,
+        "hash": "77c37a10a8338e4ae098768e77a0c2370736167b4cc9aa11ef17b8500d6bdf7b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bih-population",
+        "version": 1,
+        "hash": "66c54a4372e1a26d9ebfd19bb5de00a090300d1dd10ea77c1a20e176e2fdb26c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-blr-population",
+        "version": 1,
+        "hash": "e2dba4c6a84daccafe316bebfc2de824c56cfaecc3309a1a0aa318ba821f75b8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-blz-population",
+        "version": 1,
+        "hash": "6b05fa52f54a1f0af0423dd5bf9db35f98c3fb5c2420ae5f7c3cbc146e7c5b45"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bmu-population",
+        "version": 1,
+        "hash": "0a4f5e955d9c931855c64ffba5361673aaf870eae029dd066917ff03014fca83"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bol-population",
+        "version": 1,
+        "hash": "189ed11ad75f77f208c89775ab29362e5dd401d6d4ffb238f0ede5eb0115666c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bra-population",
+        "version": 1,
+        "hash": "d13947f69c390d67cf28314dd234d0160db5024768e30d077f6d94fd1f5b301a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-brb-population",
+        "version": 1,
+        "hash": "4e1aaff8fe59a985e844fef826aaea7931b9e41f4de3783e1724ddbb2ff961f2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-brn-population",
+        "version": 1,
+        "hash": "c93e0088ad914b16ea79efe18bef698fa2034eab417bf0bd29bd2a8c3d98889e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-btn-population",
+        "version": 1,
+        "hash": "9730720895d6201c3ff86f3149638cf9cd26d98a5c11635b1d95d9ca63f1fa75"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bwa-population",
+        "version": 1,
+        "hash": "9805037ca8838ae2016d96b6d54f87df04dca9531ce6cad599650395f3f1c4ba"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-caf-population",
+        "version": 1,
+        "hash": "e17dd9a3697104f1c883c8b7e8409f6fe8d8a5f773c4955ecf5e494c7bed5648"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-can-population",
+        "version": 1,
+        "hash": "478aabcdd9766766acc596b2c2977ffe5f6132ce0d67b158b16750d0ad2b6f1f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-che-population",
+        "version": 1,
+        "hash": "b17b80eec71966e4ca5ca73319dd2bba863cd3c6732846f5f7669e5a13b34b14"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chi-population",
+        "version": 1,
+        "hash": "a00c7b8104dd4893307b049408ba2b396b252b6f7e1d7f206b0c28bcda0be142"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chl-population",
+        "version": 1,
+        "hash": "937e475efb988175fe278494b9cdbc107c5a8281ebcbaeab3a899dbb96299a26"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chn-population",
+        "version": 1,
+        "hash": "4901b49ee6d491efc662755c195fb7c22a8d13f8cd41f8fa02f013d777cf722d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-civ-population",
+        "version": 1,
+        "hash": "1dbf41857fa4968f6e2771d0e0506fde482e328f13de1747521451df9026bc6a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cmr-population",
+        "version": 1,
+        "hash": "bab306e13bf037932b5705a7ce8caea7bb7014183bd04afe9d891d75be055b15"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cod-population",
+        "version": 1,
+        "hash": "7d1d9d7a0c2110009c3317fe6c5a9d3e644c5cd8d43207c1b2405c65391a576d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cog-population",
+        "version": 1,
+        "hash": "ef04fbd0215a943e591fe4190340fb8d20524e4827d4530a5ac7637f2dc51644"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-col-population",
+        "version": 1,
+        "hash": "df80be95f6f7b56176320f863d0c532d0f0f7fc623d0432c6633b4c6a3f9a627"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-com-population",
+        "version": 1,
+        "hash": "14acb1174ffbc7fe623210d7aa3182a4691bb311611e5086fce7d4b50580eb2a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cpv-population",
+        "version": 1,
+        "hash": "77276ea8930b537f1b8609e4fa8578ab58c41233e5d88c941467b124524992a6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cri-population",
+        "version": 1,
+        "hash": "72898de291f57f72d5661ee5fd713800fb91f202be007a0a4371c68772dc641b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cub-population",
+        "version": 1,
+        "hash": "c385c8881022fc9a27ecb064fd388bcd09dfea942f771d2856d8d5dc0ce86ce8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cuw-population",
+        "version": 1,
+        "hash": "a7c8da5d347e8f0348433d927527482f3b8ef43394f16950c9193bbbc9a5bf56"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cym-population",
+        "version": 1,
+        "hash": "d0c7fb1e1046ee63cfe2cc888da779828f7e53bd654a154894814f8cedca4c62"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cyp-population",
+        "version": 1,
+        "hash": "bc0139d3b12d031ed5174564229d8ab15926c6daee5895b2a8f708f4a98ca6fa"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cze-population",
+        "version": 1,
+        "hash": "0b49d30ed17e5e420c07f771871dd31c27f34dbcbf033da78ccc52ad1177a9a1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-deu-population",
+        "version": 1,
+        "hash": "8fba1dfaf3b2a94795c75cc7ff193b0bec9e4f2cea128f477c12a59df01e3cc5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dji-population",
+        "version": 1,
+        "hash": "a557fbd154cfa033ce3a1690f0826d583a4431266fa3372dc8d08ea43b9ed6c1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dma-population",
+        "version": 1,
+        "hash": "16198a485a476559e746f1c3c474622453b0162af7ba599dabe81fda8425af2c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dnk-population",
+        "version": 1,
+        "hash": "1806a3a790e0a08d3b62dfdf75a5f818501796454a178e1e4875d6f4d59f1452"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dom-population",
+        "version": 1,
+        "hash": "40f1f7ed1f4bad72d9532c8f1ea2d66e12316c023cfaef1d44214ee5b70c9cd3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dza-population",
+        "version": 1,
+        "hash": "50013042c721c6bd1c4d328231e50d8064a97576e48164916e251bca94c9bbaf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ecu-population",
+        "version": 1,
+        "hash": "455f8d5f3fcc43e6e93defb9973295d6b96c854325259c07e439b40524afe4b6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-egy-population",
+        "version": 1,
+        "hash": "0bc687f99ff41bfa9f2173da8e260205289744785aac7fbeb1ae39bcc0f85cd9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-eri-population",
+        "version": 1,
+        "hash": "cda2cd7bff98c9a6f54222adfef76bf809effd6d463a21f5215427ec9e21a422"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-esp-population",
+        "version": 1,
+        "hash": "62f50d17c2c7f5651ed80c42d2978006618b8af7b42a7f40a352634bc3f1c6d1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-est-population",
+        "version": 1,
+        "hash": "cbb7a4911541d4124f8b388070647f29bd4e0100d5b4d127b9e156497ecd992b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-eth-population",
+        "version": 1,
+        "hash": "f7752f68da8228f2db27fdf4a0c49d3c0cad758c9466562c4a4af0045519de87"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fin-population",
+        "version": 1,
+        "hash": "86a2e524f0eb7b3b9cedb1e592f73d18ad86d70edc5a82e3388f5e68e0606ad4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fji-population",
+        "version": 1,
+        "hash": "8e3cc8c7ed33c679f1b0e8d5e0b1fd3c272172c056b5f73b5a1a96f10f247949"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fra-population",
+        "version": 1,
+        "hash": "f6d4b4550a74da31accf5655bc281aac58c5da3ac83849845510786388a1eb3b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fro-population",
+        "version": 1,
+        "hash": "94a41dd24d5b6c7480ca44e6cfb67b391a212a765071b8aa5582a44787650a75"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fsm-population",
+        "version": 1,
+        "hash": "03e7efafb7f1b5b7c8b00afb0ac4ea5b9336555ba436a6e05091f18c8cfeaeb7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gab-population",
+        "version": 1,
+        "hash": "0b42b2339fc90d56ac7384d29e5570587c4b4f7483efc0b3348454bb4dff3245"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gbr-population",
+        "version": 1,
+        "hash": "5dff2deb48b53240fa78449dc1217aee95681810f67f2cf207da0445333bd5d6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-geo-population",
+        "version": 1,
+        "hash": "ccd9cdfabde15651843c58d1d27a95ccb7d4a3096f200b9484f45495f60e2a87"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gha-population",
+        "version": 1,
+        "hash": "08bfbfb1be238fa4a61a3d42d53fc4fe1d3cf9e11ae8ed452df531846cffccf9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gib-population",
+        "version": 1,
+        "hash": "e0f8bdb772831742345f9c25850856e3f7682539a54f9c943f587d2df32de459"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gin-population",
+        "version": 1,
+        "hash": "8fd714c958397adbc5927272baedbf8d97ff5a54dbdfeea74499c0db6b9dd026"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gmb-population",
+        "version": 1,
+        "hash": "9c08a918744aa42ae29b6deef912d1806c74a293330012b353016237a94faf36"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gnb-population",
+        "version": 1,
+        "hash": "de3e3285fb69cfaf258ddfe75037b4ccfd6dc04282d4f44b45a6bf929d5da43e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gnq-population",
+        "version": 1,
+        "hash": "f8b9db8f7e5604241c01c90e22cb911699816fef88a38770a0ae0e8910ae7e6f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grc-population",
+        "version": 1,
+        "hash": "120f8fcf2d6e849e5bad3c81c1e8a893e5e4d755dbb6634d343f7776bde02d04"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grd-population",
+        "version": 1,
+        "hash": "1c110ef3263ed749b4d7121969998e1f62487f0b0201ab6876f609429840dea8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grl-population",
+        "version": 1,
+        "hash": "0d101859c353ae51bc186fcf81817e6b713928be3ca8ea7035760600b0923f4d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gtm-population",
+        "version": 1,
+        "hash": "749f28750badff6127af6dc55d94676125f098bf80712f4324f65de51c6485ee"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gum-population",
+        "version": 1,
+        "hash": "35d13dac2dc3865e2b9b2eac2ffe0461133d65c0828ffe7ff28d9638b56f669d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-guy-population",
+        "version": 1,
+        "hash": "a84fe6d7ec92b662e519b0fea381243a519a16414842ca383a9d80e34c2eedb3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hkg-population",
+        "version": 1,
+        "hash": "4bbfba28030eb3dc137761c9dc80e8e0e731165d9862769349b141690bd8b60e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hnd-population",
+        "version": 1,
+        "hash": "1a55455cbf1b660b95fc1d84bd50b01651b44d0b0a23119c8a8710206a8aebc3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hrv-population",
+        "version": 1,
+        "hash": "0b4073d22daa72aae4ac5d275dfd0c195318f8a130cfa1b36789f0ecbf8d922f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hti-population",
+        "version": 1,
+        "hash": "904fa5ac6678b883e0dc96a65446079272f08bfad95bcb6d82c1bfc64943bba5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hun-population",
+        "version": 1,
+        "hash": "1098783924e539eea2a117876594f6acc8f06f7caefaa79f5dbe55ad6f181e8d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-idn-population",
+        "version": 1,
+        "hash": "8d5ea06d08105d7962ff97bfd392ed1b9ac5ef480da3f3fc96786928135bca16"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-imn-population",
+        "version": 1,
+        "hash": "f18e57aae4f6a864c40e9727139fb01485bac998951abc15f44a6b0c9d8ccffc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ind-population",
+        "version": 1,
+        "hash": "ef9e76e64775a14a69a320d23933743d3e15df73f0bc9e6dce6b8103c5b80b0d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irl-population",
+        "version": 1,
+        "hash": "b4eba51f9d5d55941e2f2939ddd3fbb765fd77a3eb8a2cd4803254a2ca9fbd5d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irn-population",
+        "version": 1,
+        "hash": "a7ac80d1a8be2ff9671c6792a690fabdab35cd02679d81fbe46a66c65bb29bb0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irq-population",
+        "version": 1,
+        "hash": "8d0ea44800a564a7effca9100a46636ef60ac332c1b172257456a65fa3a97a26"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-isl-population",
+        "version": 1,
+        "hash": "7e9b364588aa8250c1c3370cfc0111d94abab3d9e3a4e42e5f0eec5475cc0bff"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-isr-population",
+        "version": 1,
+        "hash": "7644b1f369dc90d751e666caf0aad1df1a196d33ca3a85c60323a65bcf354088"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ita-population",
+        "version": 1,
+        "hash": "0c74098f92c9245a22718713fdb4b284d0d70d2974d4bb8357c46a5d426949db"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jam-population",
+        "version": 1,
+        "hash": "760ac24c6074dd6e18091199a95588bb21dbad65e4b80fb93913e38a632bce64"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jor-population",
+        "version": 1,
+        "hash": "8e9abd848d3c7f1460dbe2514cc4d2ddeefa08a2bb44dbae1ea7d8d9c4f1e27a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jpn-population",
+        "version": 1,
+        "hash": "05da02bf234ca48e1c4ff2988ff54ab964f6fdd9c3e4a1c6345fbfad97c4c2c6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kaz-population",
+        "version": 1,
+        "hash": "06651fc5bcd8b5b75e22bd3acf8ddc8eccaa26364d66856cf55d5b424bd73416"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ken-population",
+        "version": 1,
+        "hash": "2568c185d6bed37386339157643f2fcd276d78c127a815d290d41198201d77f1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kgz-population",
+        "version": 1,
+        "hash": "075cf8f1e91cfeb4cf7a6a117d46024d83e307b750a96d77985dc545a84e3a3c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-khm-population",
+        "version": 1,
+        "hash": "82ee85a68fd384d8def4be36be7219c48f94f47a66dbd2e25084e1b29e2c781c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kir-population",
+        "version": 1,
+        "hash": "5dbce2f04c790ab3633937297a2c9cd0b68e23c600b49b0d7f592e168635aa9c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kna-population",
+        "version": 1,
+        "hash": "b6d151590e7d81a812ecc634ba1e4fb36dec8633d6fc1f7cf104bdbf23f08713"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kor-population",
+        "version": 1,
+        "hash": "6647a6eb1d297d8131f384db8e74e1c81110f077bcde158d8e8f26485fecb68a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kwt-population",
+        "version": 1,
+        "hash": "af86958e3a87dc83946547d6fc2eb372787e09769385533ec6998215f9acb241"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lao-population",
+        "version": 1,
+        "hash": "b761aa5eb4bebeeca36c92030fc78ba509009966eed2a04c1076d37d0e60537b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lbn-population",
+        "version": 1,
+        "hash": "d313c282aafb7e928bab37943164c9e0b0e14b66dd72e7655f38b55694d8eee2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lbr-population",
+        "version": 1,
+        "hash": "15ac347e4c2b5a14b02ca44bafb9e5b9ba11db6faec800dba0f59608aea226af"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lby-population",
+        "version": 1,
+        "hash": "da9a53315f7679138ddc3ae8b35d97d0c59fe4acc724045e0028055bec294b6d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lca-population",
+        "version": 1,
+        "hash": "4573803280399bf18b3f5ef914bd6d496fdb5b44d200ca55d2c118a8c4c97e7f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lie-population",
+        "version": 1,
+        "hash": "c7037ea447c9ea3637da7a7c83b69e530b3263ae13cece38e3021097c8f7150e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lka-population",
+        "version": 1,
+        "hash": "762efb91758d058ee0664a25e149119f9a0ecd541ecd8d0735a0a1dff767fae9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lso-population",
+        "version": 1,
+        "hash": "8d787d39c7a03f7d95752e9c832178d5ff515f721240fb9177a5e219f4b7958d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ltu-population",
+        "version": 1,
+        "hash": "33613172b648361deea1daf1e58a01c1a81c99ddbc9117406a76b730cf71cba3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lux-population",
+        "version": 1,
+        "hash": "8a1bc63fd26ca172e512d7d570f24c53471eea8c655f80646dce79d58b8762a8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lva-population",
+        "version": 1,
+        "hash": "9288200da7637d107f62619867ae8481771355e2aefc5ab864e44062d2bc4303"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mac-population",
+        "version": 1,
+        "hash": "70356d6a099d942524b889a67f5f003f4b5846965422daf54c0f83633fb24996"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-maf-population",
+        "version": 1,
+        "hash": "b7ad5eee4e661ef91005fa85ea4f98253d6fa1015964e50b26a5a515c0509aad"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mar-population",
+        "version": 1,
+        "hash": "6c4c12c9b81b024465decbb9ee3c245ca90357101f1f72577952f829732ebc99"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mco-population",
+        "version": 1,
+        "hash": "c4c98adec4d5cd0a0f881bec0ec8564dc6d5390577bbbb0450a65f7a476ddf4a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mda-population",
+        "version": 1,
+        "hash": "bfbe50024543eb1ef19820808ae5a04790aa95850f2f4bd92489024d19296940"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mdg-population",
+        "version": 1,
+        "hash": "216a8f7465981d4e72ab38dde9093fbe6f66e2ada16e68b2e4d2d5893deeecc4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mdv-population",
+        "version": 1,
+        "hash": "8f027a3656b3af2f74a9c1cfcd6a75129970cc46062be20818bbc6eb78310b84"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mex-population",
+        "version": 1,
+        "hash": "acb88c49f355a92c92b8e488de3ce21dde03af2fef0bf6edc1825359b38fa736"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mhl-population",
+        "version": 1,
+        "hash": "c8dfd3040450c733b130a106989ad25bca86c30da9e9a03e0369c4769be4a88f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mkd-population",
+        "version": 1,
+        "hash": "709df36f0ddb5a24a49eab7684c07bb6366ebb54dc8b18fc9aad2a0f11e36e65"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mli-population",
+        "version": 1,
+        "hash": "92b65b032f5496ecb0ca7fced12f2466d51096a6049e5406088205c684a9fb32"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mlt-population",
+        "version": 1,
+        "hash": "58c6c31d5f04735d83b819c152dd9b8415b04bb123885e643ee770f92b21d7e8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mmr-population",
+        "version": 1,
+        "hash": "b2db5eba7c9a6b113df35b8e2e007647d8974c80558a10eecd2bc95d4b51d728"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mne-population",
+        "version": 1,
+        "hash": "a2dfd72f1821bf77697a4c2c403e966b60c0b0b79710b4ab826a3bfc7373e157"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mng-population",
+        "version": 1,
+        "hash": "2d79ff5cd961f68773e63b753a1f4cbebc219ba96ac1314b1bd2b41fdd61f71c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mnp-population",
+        "version": 1,
+        "hash": "81666740f79dd6fbf5ec841771ba4184d68d81b67f36765735e4c50697d5d93a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-moz-population",
+        "version": 1,
+        "hash": "054055af284dc736a062cc83abbbef623b413a1b3fa6fdebe2cfe3fc44004988"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mrt-population",
+        "version": 1,
+        "hash": "a66bc1e3ad8e864d2df7adbc831c7cbb90f1249c61813ac74752ba0d5764a2cf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mus-population",
+        "version": 1,
+        "hash": "f27d8a566a6155e568280f8eff72241577d4503e785113556029dad418b7cab7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mwi-population",
+        "version": 1,
+        "hash": "ce2789f93b45610816adb219b0dfce110f348f21ab16066e520b0cbb635e9511"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mys-population",
+        "version": 1,
+        "hash": "e352f35ffc8061da9c8abdc55a2b1b9d6a1495b62fd44dc048d05a6c805fa684"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nam-population",
+        "version": 1,
+        "hash": "a7a5afff5db87acbd75da043dac08b1a7fe6c7156932a374802bd04307199855"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ncl-population",
+        "version": 1,
+        "hash": "81437e1adf0f372369aa0e986b68541bcd1ec34754b4f641c71742ebb2ed3e75"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ner-population",
+        "version": 1,
+        "hash": "2d62d17d0b19916fef71e63dbb7068c5e0f16680e61175e2e8d3153197402a2a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nga-population",
+        "version": 1,
+        "hash": "6054a91d4ecd5038747f089db73f49cacffc8c7df5dee76e42f7bcb4eda69f66"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nic-population",
+        "version": 1,
+        "hash": "40f4a25a778996bf15e30cc763e473a59d025a8a2ad892f7a4228a3ce1472bb2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nld-population",
+        "version": 1,
+        "hash": "99be6359d90fb0ae5cb2c655f2037b88d515d7750ca29df1cbe2a3c5536dc162"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nor-population",
+        "version": 1,
+        "hash": "65923be1979a5e84743fe6be93c803c0675d45c6a1ccd0974ae9bbdc9302bea9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-npl-population",
+        "version": 1,
+        "hash": "aba5ee9f24a76f63f8056ea8000ec9cfb6cf4f134769bc1edad376b8718ab15c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nru-population",
+        "version": 1,
+        "hash": "beb27eb6224b42819b723d0978ca3771889a2964909b746b78e919b9b458860e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nzl-population",
+        "version": 1,
+        "hash": "764b09722824b106f6a6d0873a24f21d44c7b55ae0070417b55d80fc1fb3026a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-omn-population",
+        "version": 1,
+        "hash": "94cce2cddb51bf95ecf7dce2638c3fb44b4841ebd1dfa6895d554d260e55459b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pak-population",
+        "version": 1,
+        "hash": "f232f4aa51c15155e557a3b66a7c904099eeae1022ae74d6886db4ba60b1b6e9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pan-population",
+        "version": 1,
+        "hash": "5fb7a13ae7e4af54f260cd30bcf2d5e2cddd9a55102accb61347b45e24805fc9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-per-population",
+        "version": 1,
+        "hash": "39244a53a7414f172cfeffced0b6ab7675ef985b99b1a86afc01174aef078772"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-phl-population",
+        "version": 1,
+        "hash": "67383f278c6abe0e71e0efb0a6cdc1ab40e7237a8d522dde4cd28d999b3a7e32"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-plw-population",
+        "version": 1,
+        "hash": "46dc0392cf5565d7125aa07da368e7631ad895e2d714e85af218b38d36b8e429"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-png-population",
+        "version": 1,
+        "hash": "e9e058310b84bebd8a4cd0bbe6e8f85aeacbe1a687dc82c8db53e24b6d8da413"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pol-population",
+        "version": 1,
+        "hash": "ae021ee52baaea2ec83269af03bd2ebec86b5699b045572744c5a2e6722123d6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pri-population",
+        "version": 1,
+        "hash": "7208220ee2f01195113ba462ee7ac5132969d6a69cb469f261f29d2f78de4051"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-prk-population",
+        "version": 1,
+        "hash": "9d2f4590f7ded7f35510f175ef67fe194e967c48fd80f16ded6d121ac9a9a9a6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-prt-population",
+        "version": 1,
+        "hash": "a5c86a1f9b8a739af20b235763a25d7a182fb4ff2718ea74c9ce3d1e0a0f82cc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pry-population",
+        "version": 1,
+        "hash": "2402739e747169aa396a9ca31c28e3464c12baef7afcc5cdf886b0fd3c918ca0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pse-population",
+        "version": 1,
+        "hash": "ec43f6d95b7a753729ea99c00c9b8625a1dd186dd91b2f91e3370ee504d72198"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pyf-population",
+        "version": 1,
+        "hash": "67a80166b158fe78aaa643222d141e4401f93d19ef1263df393842af25f74b08"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-qat-population",
+        "version": 1,
+        "hash": "4f0eb34daa1f931d879429ac9a73e31a25071272efb23830cebe54efb42b43e1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rou-population",
+        "version": 1,
+        "hash": "479a8f878deb6a8c7a3599357c9b69469d0bcfb532ce38afd602b5ed4024d49e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rus-population",
+        "version": 1,
+        "hash": "1e2e9851367186981f3e34a22a19c22cc5e9196127cad33f7f3553741e5bcb05"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rwa-population",
+        "version": 1,
+        "hash": "aed5368933ee397c9eb76724a9f5995aad4dce6b6d31c47899e239ac5d4282c1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sau-population",
+        "version": 1,
+        "hash": "22c215b54f79a8d065ecbabd1ec281ff51848bc1a7e79ca27e49fec8507c0e16"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sdn-population",
+        "version": 1,
+        "hash": "9af3e88bd141d47a3c75f70323ee57d89fd4569096998249b5fb0059d3b421ad"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sen-population",
+        "version": 1,
+        "hash": "b31b54f0121de92477b6d96c824787e9f5aed60d33f47e38f93be9fadd997b36"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sgp-population",
+        "version": 1,
+        "hash": "fd7a7bca56501b4e0b0fb644c99a7c57accf0eb997f8f15ee5e07f8ab20f9022"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-slb-population",
+        "version": 1,
+        "hash": "1d953169ff010120917bbff40ea930302972d6c8ad681c3b222be08bd1e81af7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sle-population",
+        "version": 1,
+        "hash": "eafacbb0dfa5ffd87debba7eb585bbed12072a0a78ff771518f15b26a8e58576"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-slv-population",
+        "version": 1,
+        "hash": "38fb6980647b31a4d1cb455a41a0094e47966beb7fe3944d4941ee4c2cbf3af4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-smr-population",
+        "version": 1,
+        "hash": "550fa7415d805c4b4ae7195cdeec57a3a3fa15e4fb56efc48b4133824e2e2ffc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-som-population",
+        "version": 1,
+        "hash": "81fa3db98143ae97638b5d3c4e78891b6762639403188cb0d6edc8feecbc56c8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-srb-population",
+        "version": 1,
+        "hash": "66f4e34c9e4376872523d9a93a0041ba211bde574e1ffec746a7c65cc12382ab"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ssd-population",
+        "version": 1,
+        "hash": "d872c98d4844f923e1b1f77a1487873a62836657d5361ccf80d1308591d632fe"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-stp-population",
+        "version": 1,
+        "hash": "d690d762fedf49b187b2fb823dd7ab65eca877a40a4baea7e9b3f559b36b014c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sur-population",
+        "version": 1,
+        "hash": "a17603507511bd237308e9587ff0b159c2d6078305595b03467e11ed24a7e5d9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-svk-population",
+        "version": 1,
+        "hash": "4560a265d85097aab3d3db34b366258bd942dddff0768032f9f4a58606f2c2c5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-svn-population",
+        "version": 1,
+        "hash": "06aec5b548195baa63e2570bca872c928af0fa7afc89a219da91347edd1b494b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-swe-population",
+        "version": 1,
+        "hash": "4f4b7f12130a5afe50b877e4e93eaac891d0c68737b4bc168988cdd8151a6a23"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-swz-population",
+        "version": 1,
+        "hash": "fcf50e6bafcee2f9ef9dbd2de977163a524aec69dab4ddd447ed74ddbcaf2f70"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sxm-population",
+        "version": 1,
+        "hash": "624c11f08551d77450e0b10fb8c30476e63b6b3da1dd8640dd38b84107874216"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-syc-population",
+        "version": 1,
+        "hash": "01e09927671312f9b737d12c67fd5524399423300be128b513ae9b1539057b1a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-syr-population",
+        "version": 1,
+        "hash": "afd7dae6bc1ae5b62e63beaf7662a9997c47b5a121827ada626f242d537cf88b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tca-population",
+        "version": 1,
+        "hash": "de402dec330b95e5b4350523dc574485f90bb1022599ea83ddf0056095c22c6f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tcd-population",
+        "version": 1,
+        "hash": "a80fce84f06fb7a7705326894ef10afa605683cfc8f210c6fb712b143fcd72c0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tgo-population",
+        "version": 1,
+        "hash": "5b807c029e879439f21f758f59db891525690e71ad6fb4c870413ea501a25850"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tha-population",
+        "version": 1,
+        "hash": "893d4ea37e49da227afa1b56f306307983d1c233ca9a37e1a5a585f5e868cd92"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tjk-population",
+        "version": 1,
+        "hash": "3b0441db9bf0791ee03501257466b967d51bea3bf22313e869ee46786379a604"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tkm-population",
+        "version": 1,
+        "hash": "4e963e90ffcc25c21f1c70ec48a3fd1d17eef5e513e227f63f32acf673dd9773"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tls-population",
+        "version": 1,
+        "hash": "bbcc58ba13db7e07c330b47d91c08a387b1773d7a06f3e911983d9249ec734a4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ton-population",
+        "version": 1,
+        "hash": "24e71bafea946d0a28c5e90d070162744ecc8572ded55fe5c95f4e8e07494b89"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tto-population",
+        "version": 1,
+        "hash": "ca0f5eedc4d4ab8034d0bf34c5b957b1e6c9cdf116497d1e46981f7adfded992"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tun-population",
+        "version": 1,
+        "hash": "c3e14094445b4e7b3733de62978b245a6c81b4c42aaf19bae9c3d17615519914"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tur-population",
+        "version": 1,
+        "hash": "a5573944db2e0e2a82889d815684b3facb8c09789a0b82761ef2960ea57baa41"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tuv-population",
+        "version": 1,
+        "hash": "095c8b5f2072e80dd77b7b35945da026d1c436e379e34e243a9de6264195f36a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tza-population",
+        "version": 1,
+        "hash": "073436179043a575a61ad03ca5ec8776dac022c62e8b3e58741d015b81c265d9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-uga-population",
+        "version": 1,
+        "hash": "c907f03f49d4abb3fbb0b958a9508ad2dc6f424fb588b39e2611d744df3610ef"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ukr-population",
+        "version": 1,
+        "hash": "b76d31825bc5e41514fcd232d0731456936be943a20d7715f8d2d79b2b0ce238"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ury-population",
+        "version": 1,
+        "hash": "6e818fc83ebaf3b09e2cd2376163e9aefc5cd4ffe4f89831e8dcc9ea6c3b6dc4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-usa-population",
+        "version": 1,
+        "hash": "2b5c2544d744b35f75c18d999f3b605472befcfaba17e735127e661454682658"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-uzb-population",
+        "version": 1,
+        "hash": "6232f6dba8c5b3c2e165fad6054e1430a0ed61f7683c25e801f67f7d784dac2e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vct-population",
+        "version": 1,
+        "hash": "ea598111c29951c97d2586f9b7a98fbd649c071dbb8bac6fa99c64959ab65422"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ven-population",
+        "version": 1,
+        "hash": "145e209e01c55581757ed172b50650cbcc5972d60db63a68573bb420d417174d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vgb-population",
+        "version": 1,
+        "hash": "3457448b3b7d162817294dfaae005149c441783caf052735d033c4fb37e48646"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vir-population",
+        "version": 1,
+        "hash": "4301fcc1b926ebd8af56736c2485838c75477ce2e8d421f291cf7b475ddbf2c5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vnm-population",
+        "version": 1,
+        "hash": "1545de7876d4473d9624d5e6a4797c8984087663bd7c062e62ac0a161c902cdd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vut-population",
+        "version": 1,
+        "hash": "7d367113998ee7b22e6928cfc22117663e70a42155c34f2589224640b6b81ca0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-wsm-population",
+        "version": 1,
+        "hash": "5884281cd868855f6e2ccf6093a9ca67e94f668b6901ac471026509136f3b7e2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-xkx-population",
+        "version": 1,
+        "hash": "b5c212a0c3ae2576a21bf0472ec266457295753c5cd2bc6e08a98ec7599b89f0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-yem-population",
+        "version": 1,
+        "hash": "651cfd9d05ee5726532e6643f00775d007edc961a881a0437cb3e455e7fd77bd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zaf-population",
+        "version": 1,
+        "hash": "cd5c252879e2b8c24f1cb90ef7a23771effda8a4413858d5cf390ba877981a1c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zmb-population",
+        "version": 1,
+        "hash": "c5359e90e4fc5c7099d1511896089fe1babe1e8b3991da7544ca4a336480bb21"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zwe-population",
+        "version": 1,
+        "hash": "36da38c21a1909c5d234a9c128634ca9b6faa1290f8121c839aa03979506b7db"
+      }
+    }
+  ],
+  "sourceRefs": [],
+  "exclusions": [
+    "Aggregate regions are retained in raw source context but excluded from this country matrix."
+  ],
+  "limitations": [
+    "Latest non-null fact per fixed window; not a normalized six-year time series."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "1cfd043d82dea3d98cf5fe074f5a91f90c416be88a0fe6893924516a3a8bc966"
+}

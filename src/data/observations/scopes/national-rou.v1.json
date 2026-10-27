@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-rou",
+  "entity": {
+    "kind": "entity",
+    "id": "country-rou",
+    "version": 1,
+    "hash": "48fe8ddbcc06a16684f2d5638a0fc3520db3c87300fbad1ecbd358d7978465be"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Romania statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-rou",
+      "version": 1,
+      "hash": "48fe8ddbcc06a16684f2d5638a0fc3520db3c87300fbad1ecbd358d7978465be"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-rou",
+      "version": 1,
+      "hash": "48fe8ddbcc06a16684f2d5638a0fc3520db3c87300fbad1ecbd358d7978465be"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "d20fb7ffff4efd8a5890eac8eee349c209327eefed74c5d44d0efb508768ad29"
+}

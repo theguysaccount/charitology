@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mar",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mar",
+    "version": 1,
+    "hash": "eab19f086294a97137dce52a2505bf8c5964cd58542c5a345f31a9fbaa6860fe"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Morocco statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mar",
+      "version": 1,
+      "hash": "eab19f086294a97137dce52a2505bf8c5964cd58542c5a345f31a9fbaa6860fe"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mar",
+      "version": 1,
+      "hash": "eab19f086294a97137dce52a2505bf8c5964cd58542c5a345f31a9fbaa6860fe"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a315b67857f275d4a6d3a7bd4654ffc236592fa7a7e0f083d336cb1b07c41b02"
+}

@@ -1,0 +1,67 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "wb-metadata-eg-elc-accs-zs",
+  "url": "https://api.worldbank.org/v2/indicator/EG.ELC.ACCS.ZS?format=json&per_page=20000",
+  "publisher": "World Bank",
+  "title": "metadata-EG.ELC.ACCS.ZS",
+  "retrievedAt": "2026-10-27T12:27:35.326Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "f94a984e2c0749a6d29e56ec3f2fe352a265fd6959ef7bdf18bde51ccd5543ea",
+  "rawBytes": 815,
+  "payload": {
+    "kind": "public-json",
+    "raw": {
+      "path": "raw/f94a984e2c0749a6d29e56ec3f2fe352a265fd6959ef7bdf18bde51ccd5543ea.json",
+      "sha256": "f94a984e2c0749a6d29e56ec3f2fe352a265fd6959ef7bdf18bde51ccd5543ea",
+      "bytes": 815,
+      "mediaType": "application/json"
+    },
+    "adapter": "world-bank-indicator-v1"
+  },
+  "producerMetadata": [
+    {
+      "field": "unit",
+      "literal": ""
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "explicit-license",
+      "label": "CC BY 4.0",
+      "termsUrl": "https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS",
+      "evidence": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "rights-electricity-license",
+            "version": 1,
+            "hash": "efb54fd7f41dcd989a8c54e5b17e8f5b79974f43e3364643889aa5f86275d336"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Retained rights evidence"
+            ],
+            "excerpt": "CC BY-4.0"
+          }
+        }
+      ]
+    },
+    "attribution": "World Bank World Development Indicators and named original statistical producers",
+    "originalProducerCredit": "SDG 7.1.1 Electrification Dataset, World Bank (WB), uri: https://trackingsdg7.esmap.org/downloads, note: Data is downloaded from ESMAP website. Data is released when a new Tracking SDG7 report is released., publisher: World Bank (WB), date accessed: 2024-05-16, date published: 2023",
+    "limitations": [
+      "The source unit field is empty; normalized unit comes from its retained definition."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "542602afe84dfb726a34a3ca72dc3d1dd9fa39916a44ddd6c31c0c19e56708df"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-gmb",
+  "entity": {
+    "kind": "entity",
+    "id": "country-gmb",
+    "version": 1,
+    "hash": "574fb3d529b3cca5154eab11db34b470493f44ad0c0f98cf3f2a6e6c9bf0fb5a"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Gambia, The statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-gmb",
+      "version": 1,
+      "hash": "574fb3d529b3cca5154eab11db34b470493f44ad0c0f98cf3f2a6e6c9bf0fb5a"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-gmb",
+      "version": 1,
+      "hash": "574fb3d529b3cca5154eab11db34b470493f44ad0c0f98cf3f2a6e6c9bf0fb5a"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "192d63c8eb27b2e51f73522aeeea12e7c1bcf9dd30638a3f130ba2138e0124e2"
+}

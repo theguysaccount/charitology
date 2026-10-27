@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-deu",
+  "entity": {
+    "kind": "entity",
+    "id": "country-deu",
+    "version": 1,
+    "hash": "51b500fd2bdba1af3a1230c9bc3b69da66804c5ca9f76ff5cfd63a9bece57c59"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Germany statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-deu",
+      "version": 1,
+      "hash": "51b500fd2bdba1af3a1230c9bc3b69da66804c5ca9f76ff5cfd63a9bece57c59"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-deu",
+      "version": 1,
+      "hash": "51b500fd2bdba1af3a1230c9bc3b69da66804c5ca9f76ff5cfd63a9bece57c59"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "719fc836d94e0adbfd13a967eae2f7c3b485ba80caf9b1d7855cf2431d6da841"
+}

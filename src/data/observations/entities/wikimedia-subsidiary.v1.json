@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "wikimedia-subsidiary",
+  "entityKind": "legal-organization",
+  "label": "Wikimedia, LLC",
+  "identifiers": [],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [],
+  "countryMetadata": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wm-audit",
+        "version": 1,
+        "hash": "f20f37d4b3cf16b3ef7fc52299a91efb7fef767e1358e2846e214af1d8e57725"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 8,
+        "printedPage": "6",
+        "section": [
+          "Organization and consolidation notes"
+        ],
+        "row": [],
+        "column": []
+      }
+    }
+  ],
+  "limitations": [
+    "External identifier not verified in this collection."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "6bceb9974f860f436fd5ea27ed2d90e7b5e16e2c1d45d4999e8ae0e5ba7dbda3"
+}

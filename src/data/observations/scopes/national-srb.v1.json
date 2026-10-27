@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-srb",
+  "entity": {
+    "kind": "entity",
+    "id": "country-srb",
+    "version": 1,
+    "hash": "12218658d8343f51afd0d58fbe60c3c0763607ece5b01d21c9242a4d3ab67c99"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Serbia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-srb",
+      "version": 1,
+      "hash": "12218658d8343f51afd0d58fbe60c3c0763607ece5b01d21c9242a4d3ab67c99"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-srb",
+      "version": 1,
+      "hash": "12218658d8343f51afd0d58fbe60c3c0763607ece5b01d21c9242a4d3ab67c99"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c15210efec82cefcfde5dfaefc4c4348f333f3144586d3bac449b5222e83a6c7"
+}

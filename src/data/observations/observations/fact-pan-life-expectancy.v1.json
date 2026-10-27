@@ -1,0 +1,100 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-pan-life-expectancy",
+  "entity": {
+    "kind": "entity",
+    "id": "country-pan",
+    "version": 1,
+    "hash": "ebf609a1c4312110ec9672c1b0a13eba1c7b9d962621df5bc96d7a38200868af"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-pan",
+    "version": 1,
+    "hash": "d13589eee51de06a3f8db08aea0ec1b47127285ca0f4019725c7b5bcc72f3467"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-life-expectancy",
+    "version": 1,
+    "hash": "1e63c27f141ec4a648b59ff898a1a1d48b56700968139e67d5db95f488d6c97e"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2024
+  },
+  "reported": {
+    "token": "79.775",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sp-dyn-le00-in",
+        "version": 1,
+        "hash": "1b5ccb99674d00ae13781e2e829a4ecf3b575d7cbeb78e880f4482bac4c77d29"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/1201/value",
+        "matches": [
+          {
+            "pointer": "/1/1201/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "PA"
+            }
+          },
+          {
+            "pointer": "/1/1201/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "PAN"
+            }
+          },
+          {
+            "pointer": "/1/1201/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SP.DYN.LE00.IN"
+            }
+          },
+          {
+            "pointer": "/1/1201/date",
+            "expected": {
+              "kind": "string",
+              "value": "2024"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "79775",
+    "exponent": -3
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "a2fce79a54b1eb925a7f670b73aba31ba08914124bb5e924375f357bbd5f1f75"
+}

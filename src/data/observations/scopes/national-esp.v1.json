@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-esp",
+  "entity": {
+    "kind": "entity",
+    "id": "country-esp",
+    "version": 1,
+    "hash": "8a5f523ef0f9488918583549a7f26f4447157f09ef61bca9eb7f38a23676c452"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Spain statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-esp",
+      "version": 1,
+      "hash": "8a5f523ef0f9488918583549a7f26f4447157f09ef61bca9eb7f38a23676c452"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-esp",
+      "version": 1,
+      "hash": "8a5f523ef0f9488918583549a7f26f4447157f09ef61bca9eb7f38a23676c452"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "dd67c2e0a39e423d440ca5e5fbf34ee8502a8dd83af48b9666473748ad9c9f1c"
+}

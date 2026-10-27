@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-imn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-imn",
+    "version": 1,
+    "hash": "cd41d0bb0ba812d05b05c3e4e8f70d6b0f91a5d725a52b6b61ad93624805f7ad"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Isle of Man statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-imn",
+      "version": 1,
+      "hash": "cd41d0bb0ba812d05b05c3e4e8f70d6b0f91a5d725a52b6b61ad93624805f7ad"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-imn",
+      "version": 1,
+      "hash": "cd41d0bb0ba812d05b05c3e4e8f70d6b0f91a5d725a52b6b61ad93624805f7ad"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "de76b7aeef0ccb5641e754eb3bd5ad45d885f5b1414d7bb2eb6062dd855629ec"
+}

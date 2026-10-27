@@ -1,0 +1,64 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "measure",
+  "id": "country-life-expectancy",
+  "label": "Life expectancy at birth",
+  "measureKind": "period-duration",
+  "family": "life-expectancy",
+  "producerCode": "SP.DYN.LE00.IN",
+  "definition": "Life expectancy at birth indicates the number of years a newborn infant would live if prevailing patterns of mortality at the time of its birth were to stay the same throughout its life.",
+  "unit": {
+    "kind": "duration",
+    "label": "years",
+    "denominator": null
+  },
+  "method": "Latest non-null producer value in the explicitly fixed 2020–2025 window.",
+  "legacyCountry": {
+    "id": "SP.DYN.LE00.IN",
+    "label": "Life expectancy at birth",
+    "unit": "years",
+    "note": "A period estimate based on mortality patterns; not a prediction for an individual.",
+    "indicatorUrl": "https://data.worldbank.org/indicator/SP.DYN.LE00.IN",
+    "queryUrl": "https://api.worldbank.org/v2/country/all/indicator/SP.DYN.LE00.IN?date=2020:2025&footnote=y&format=json&per_page=20000",
+    "definition": "Life expectancy at birth indicates the number of years a newborn infant would live if prevailing patterns of mortality at the time of its birth were to stay the same throughout its life.",
+    "organization": "World Population Prospects, United Nations (UN), uri: UN Population Division;\nStatistical databases and publications from national statistical offices, National Statistical Offices (NSOs), note: Derived from male and female life expectancy at birth from sources such as statistical databases and publications from national statistical offices.;\nDemographic Statistics, Eurostat (ESTAT), note: Derived from male and female life expectancy at birth from sources such as Eurostat: Demographic Statistics."
+  },
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-sp-dyn-le00-in",
+        "version": 1,
+        "hash": "85606cc158b0dff5d99afceb3d8c0312361b983a3bb417719858a68a92e6bd18"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/sourceNote",
+        "matches": []
+      }
+    },
+    {
+      "source": {
+        "kind": "source",
+        "id": "wb-metadata-sp-dyn-le00-in",
+        "version": 1,
+        "hash": "85606cc158b0dff5d99afceb3d8c0312361b983a3bb417719858a68a92e6bd18"
+      },
+      "role": "unit",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/0/name",
+        "matches": []
+      }
+    }
+  ],
+  "limitations": [
+    "A period estimate based on mortality patterns; not a prediction for an individual."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "1e63c27f141ec4a648b59ff898a1a1d48b56700968139e67d5db95f488d6c97e"
+}

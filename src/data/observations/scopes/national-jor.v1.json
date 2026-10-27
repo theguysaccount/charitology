@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-jor",
+  "entity": {
+    "kind": "entity",
+    "id": "country-jor",
+    "version": 1,
+    "hash": "1512fda4856433f544f958e118b591106af8b51795183291c187026c719db325"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Jordan statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-jor",
+      "version": 1,
+      "hash": "1512fda4856433f544f958e118b591106af8b51795183291c187026c719db325"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-jor",
+      "version": 1,
+      "hash": "1512fda4856433f544f958e118b591106af8b51795183291c187026c719db325"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "44d519e097ac208ef701097d3a865394134e583a0ee4c989177c0453a449ba73"
+}

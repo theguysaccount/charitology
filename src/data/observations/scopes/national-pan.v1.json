@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-pan",
+  "entity": {
+    "kind": "entity",
+    "id": "country-pan",
+    "version": 1,
+    "hash": "ebf609a1c4312110ec9672c1b0a13eba1c7b9d962621df5bc96d7a38200868af"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Panama statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-pan",
+      "version": 1,
+      "hash": "ebf609a1c4312110ec9672c1b0a13eba1c7b9d962621df5bc96d7a38200868af"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-pan",
+      "version": 1,
+      "hash": "ebf609a1c4312110ec9672c1b0a13eba1c7b9d962621df5bc96d7a38200868af"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "d13589eee51de06a3f8db08aea0ec1b47127285ca0f4019725c7b5bcc72f3467"
+}

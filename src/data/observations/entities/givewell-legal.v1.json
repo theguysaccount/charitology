@@ -1,0 +1,67 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "givewell-legal",
+  "entityKind": "legal-organization",
+  "label": "The Clear Fund d.b.a. GiveWell",
+  "identifiers": [
+    {
+      "kind": "ein",
+      "value": "208625442",
+      "sourceRefs": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "gw-identity",
+            "version": 1,
+            "hash": "3b79842838d9bdc05a0ba1d8a4350605c06fe99ab9277fac7029a158a09b0468"
+          },
+          "role": "identity",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 1,
+            "printedPage": "1",
+            "section": [
+              "Form 990 Part I fields C and D"
+            ],
+            "row": [],
+            "column": []
+          }
+        }
+      ]
+    }
+  ],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [
+    "givewell"
+  ],
+  "countryMetadata": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "gw-audit",
+        "version": 1,
+        "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 9,
+        "printedPage": "7",
+        "section": [
+          "Organization and consolidation notes"
+        ],
+        "row": [],
+        "column": []
+      }
+    }
+  ],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "3f71990c90897ce78488f54088c891d8c7b697019c0d577b75e2af18d2961f71"
+}

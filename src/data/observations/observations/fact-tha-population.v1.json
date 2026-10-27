@@ -1,0 +1,100 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-tha-population",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tha",
+    "version": 1,
+    "hash": "20f4dc40e1003d3ac81efcd2cadfc9c06090ac3e74990808d895fb05a11bd0ee"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-tha",
+    "version": 1,
+    "hash": "2d8fd10095cc836d7fb28c21f337eb7b5d8747e64b5f79a5c2779be84cb40c20"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-population",
+    "version": 1,
+    "hash": "34a26175e5b5483546f01d37cc3ddd0d757f73bcee30231fd1eb23a7d90fe4df"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2025
+  },
+  "reported": {
+    "token": "71619863",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sp-pop-totl",
+        "version": 1,
+        "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/1446/value",
+        "matches": [
+          {
+            "pointer": "/1/1446/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "TH"
+            }
+          },
+          {
+            "pointer": "/1/1446/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "THA"
+            }
+          },
+          {
+            "pointer": "/1/1446/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SP.POP.TOTL"
+            }
+          },
+          {
+            "pointer": "/1/1446/date",
+            "expected": {
+              "kind": "string",
+              "value": "2025"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "71619863",
+    "exponent": 0
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "893d4ea37e49da227afa1b56f306307983d1c233ca9a37e1a5a585f5e868cd92"
+}

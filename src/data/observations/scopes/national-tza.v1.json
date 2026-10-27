@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-tza",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tza",
+    "version": 1,
+    "hash": "03e6b92e46109df394349cb8fea98bd28dc2ff4678ed83e42f893443465a9dde"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Tanzania statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-tza",
+      "version": 1,
+      "hash": "03e6b92e46109df394349cb8fea98bd28dc2ff4678ed83e42f893443465a9dde"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-tza",
+      "version": 1,
+      "hash": "03e6b92e46109df394349cb8fea98bd28dc2ff4678ed83e42f893443465a9dde"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "00dc6761e7b1abcbe981146d779317a4e4e091cb864224941ed3deb09a1e40c0"
+}

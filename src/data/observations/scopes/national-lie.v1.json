@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-lie",
+  "entity": {
+    "kind": "entity",
+    "id": "country-lie",
+    "version": 1,
+    "hash": "a3e974e129629668404183c9a276505a9884ffe44f99e7087a51e713bdc124eb"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Liechtenstein statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-lie",
+      "version": 1,
+      "hash": "a3e974e129629668404183c9a276505a9884ffe44f99e7087a51e713bdc124eb"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-lie",
+      "version": 1,
+      "hash": "a3e974e129629668404183c9a276505a9884ffe44f99e7087a51e713bdc124eb"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "0ab11d73b560049d752f5dceb40cbeb979dc3a58f64bf633c7afd4416197b0c3"
+}

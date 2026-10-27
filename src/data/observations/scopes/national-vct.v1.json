@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-vct",
+  "entity": {
+    "kind": "entity",
+    "id": "country-vct",
+    "version": 1,
+    "hash": "1feb3cbe040014e2537b1e8e8bfb149f1a559faa686b93c5d6fffb1dbfcd20f3"
+  },
+  "scopeKind": "national-statistics",
+  "label": "St. Vincent and the Grenadines statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-vct",
+      "version": 1,
+      "hash": "1feb3cbe040014e2537b1e8e8bfb149f1a559faa686b93c5d6fffb1dbfcd20f3"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-vct",
+      "version": 1,
+      "hash": "1feb3cbe040014e2537b1e8e8bfb149f1a559faa686b93c5d6fffb1dbfcd20f3"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "d58c9dc8a3e4a3f5d588fd950b2181f9cb9eb6db076b8e8891c6271d030c50cc"
+}

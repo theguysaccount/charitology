@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-hrv",
+  "entity": {
+    "kind": "entity",
+    "id": "country-hrv",
+    "version": 1,
+    "hash": "bc12074698202efcb1f72c2d177b38f4c8c02dc8fbc81e063197a85c96c1101b"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Croatia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-hrv",
+      "version": 1,
+      "hash": "bc12074698202efcb1f72c2d177b38f4c8c02dc8fbc81e063197a85c96c1101b"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-hrv",
+      "version": 1,
+      "hash": "bc12074698202efcb1f72c2d177b38f4c8c02dc8fbc81e063197a85c96c1101b"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4d27393da4c1fc0b634c0ef46a8446c8045cf8b38aa94a3f95e7fb37cffd7319"
+}

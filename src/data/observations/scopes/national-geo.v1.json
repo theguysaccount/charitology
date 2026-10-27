@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-geo",
+  "entity": {
+    "kind": "entity",
+    "id": "country-geo",
+    "version": 1,
+    "hash": "6f3f8c5d9c0b8b73f7999e846c858550c08dbbabee27b214937d516a68b2506e"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Georgia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-geo",
+      "version": 1,
+      "hash": "6f3f8c5d9c0b8b73f7999e846c858550c08dbbabee27b214937d516a68b2506e"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-geo",
+      "version": 1,
+      "hash": "6f3f8c5d9c0b8b73f7999e846c858550c08dbbabee27b214937d516a68b2506e"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "f68c4afaf3577910565108e0e8364d9bd4de618373fb2373491d615be5d44f15"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-blr",
+  "entity": {
+    "kind": "entity",
+    "id": "country-blr",
+    "version": 1,
+    "hash": "a207ae41afeac186b0a6b569c32d4af58b2365a3b4511b5e672652bed547a781"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Belarus statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-blr",
+      "version": 1,
+      "hash": "a207ae41afeac186b0a6b569c32d4af58b2365a3b4511b5e672652bed547a781"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-blr",
+      "version": 1,
+      "hash": "a207ae41afeac186b0a6b569c32d4af58b2365a3b4511b5e672652bed547a781"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "fa0d7cac2ac3bd71086236becb6e5ea291474403307b6a20ef010845de96c45e"
+}

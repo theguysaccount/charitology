@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-zaf",
+  "entity": {
+    "kind": "entity",
+    "id": "country-zaf",
+    "version": 1,
+    "hash": "a696f53a9fe34335d8658bdb3d8d5a00d3101463e864bb81945d962200980d12"
+  },
+  "scopeKind": "national-statistics",
+  "label": "South Africa statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-zaf",
+      "version": 1,
+      "hash": "a696f53a9fe34335d8658bdb3d8d5a00d3101463e864bb81945d962200980d12"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-zaf",
+      "version": 1,
+      "hash": "a696f53a9fe34335d8658bdb3d8d5a00d3101463e864bb81945d962200980d12"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "241dbc713fc2fbfff1fa6866591938a3c8d77d46b38412ddc6d2b698aaf19611"
+}

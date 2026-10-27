@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-gbr",
+  "entity": {
+    "kind": "entity",
+    "id": "country-gbr",
+    "version": 1,
+    "hash": "96bd7f3f696f9e46bb01a67cce30e1bc9e7f2b993c40c78cad04dc46601fbde0"
+  },
+  "scopeKind": "national-statistics",
+  "label": "United Kingdom statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-gbr",
+      "version": 1,
+      "hash": "96bd7f3f696f9e46bb01a67cce30e1bc9e7f2b993c40c78cad04dc46601fbde0"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-gbr",
+      "version": 1,
+      "hash": "96bd7f3f696f9e46bb01a67cce30e1bc9e7f2b993c40c78cad04dc46601fbde0"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4f01722551cebeca458cb2ccf81886124d705efb2bd562c3c5bca8980755cd76"
+}

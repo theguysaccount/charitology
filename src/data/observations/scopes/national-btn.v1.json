@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-btn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-btn",
+    "version": 1,
+    "hash": "6179373b1555394bbf1ec814ff5cef85542f5a023b2f9f49e2c37f0841a27213"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Bhutan statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-btn",
+      "version": 1,
+      "hash": "6179373b1555394bbf1ec814ff5cef85542f5a023b2f9f49e2c37f0841a27213"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-btn",
+      "version": 1,
+      "hash": "6179373b1555394bbf1ec814ff5cef85542f5a023b2f9f49e2c37f0841a27213"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "81fd09306eb35ae5087fac161a5497267782088595454a272d8067a17b02d6ee"
+}

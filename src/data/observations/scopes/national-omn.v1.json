@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-omn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-omn",
+    "version": 1,
+    "hash": "91f0aa0dfb6807830bec0bd5534fae65f978c90c7e9663eb976ab9e6178a482c"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Oman statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-omn",
+      "version": 1,
+      "hash": "91f0aa0dfb6807830bec0bd5534fae65f978c90c7e9663eb976ab9e6178a482c"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-omn",
+      "version": 1,
+      "hash": "91f0aa0dfb6807830bec0bd5534fae65f978c90c7e9663eb976ab9e6178a482c"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "d64a27633b29b1813d2f7247b5c111ef33a8e1d4f28741244544449e546160bf"
+}

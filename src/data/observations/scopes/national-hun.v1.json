@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-hun",
+  "entity": {
+    "kind": "entity",
+    "id": "country-hun",
+    "version": 1,
+    "hash": "7c77779931b8b9b046ba0f68d29900dd64bfa81cc7c21bb3e38725e28a07716a"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Hungary statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-hun",
+      "version": 1,
+      "hash": "7c77779931b8b9b046ba0f68d29900dd64bfa81cc7c21bb3e38725e28a07716a"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-hun",
+      "version": 1,
+      "hash": "7c77779931b8b9b046ba0f68d29900dd64bfa81cc7c21bb3e38725e28a07716a"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "04c238dca0816837a60ad9b1b75267372b14cdb2e3c39ddaf5785978938f3a2a"
+}

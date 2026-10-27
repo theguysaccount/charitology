@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-hkg",
+  "entity": {
+    "kind": "entity",
+    "id": "country-hkg",
+    "version": 1,
+    "hash": "45be5969469ad4124c90c12471f45ce7e5c8447f286a1b4f6e93d484e99fe766"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Hong Kong SAR, China statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-hkg",
+      "version": 1,
+      "hash": "45be5969469ad4124c90c12471f45ce7e5c8447f286a1b4f6e93d484e99fe766"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-hkg",
+      "version": 1,
+      "hash": "45be5969469ad4124c90c12471f45ce7e5c8447f286a1b4f6e93d484e99fe766"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "b77b2a3e0342a9042c230b91a986e622c98e3d206cc449e885f525dd9a95cca5"
+}

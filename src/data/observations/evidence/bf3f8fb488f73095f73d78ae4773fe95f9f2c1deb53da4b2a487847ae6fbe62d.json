@@ -1,0 +1,316 @@
+{
+  "format": "charitology-financial-transcription",
+  "schemaVersion": 1,
+  "documentSha256": "0560f7324670b44dcd89a8505f8fef398a5e73487bb80870796f784e624739ef",
+  "assertions": [
+    {
+      "id": "wikimedia-assertion-1",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Consolidated Statements of Financial Position"
+        ],
+        "row": [
+          "Total assets"
+        ],
+        "column": [
+          "2024"
+        ]
+      },
+      "token": "286,759,938",
+      "parser": "printed-integer-v1",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 0
+      },
+      "support": [
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 8,
+            "printedPage": "6",
+            "section": [
+              "Organization and consolidation notes"
+            ],
+            "row": [],
+            "column": []
+          }
+        },
+        {
+          "kind": "other-source",
+          "ref": {
+            "source": {
+              "kind": "source",
+              "id": "wm-usd",
+              "version": 1,
+              "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+            },
+            "role": "unit",
+            "locator": {
+              "kind": "text",
+              "section": [
+                "Financial statements header"
+              ],
+              "excerpt": "2024 (USD)"
+            }
+          }
+        },
+        {
+          "kind": "other-source",
+          "ref": {
+            "source": {
+              "kind": "source",
+              "id": "wm-period",
+              "version": 1,
+              "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+            },
+            "role": "period",
+            "locator": {
+              "kind": "text",
+              "section": [
+                "Fiscal interval"
+              ],
+              "excerpt": "1 July 2023 - 30 June 2024"
+            }
+          }
+        }
+      ],
+      "note": "AI-assisted selected historical transcription; no independent human review."
+    },
+    {
+      "id": "wikimedia-assertion-2",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Consolidated Statements of Financial Position"
+        ],
+        "row": [
+          "Total liabilities"
+        ],
+        "column": [
+          "2024"
+        ]
+      },
+      "token": "15,204,548",
+      "parser": "printed-integer-v1",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 0
+      },
+      "support": [
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 8,
+            "printedPage": "6",
+            "section": [
+              "Organization and consolidation notes"
+            ],
+            "row": [],
+            "column": []
+          }
+        },
+        {
+          "kind": "other-source",
+          "ref": {
+            "source": {
+              "kind": "source",
+              "id": "wm-usd",
+              "version": 1,
+              "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+            },
+            "role": "unit",
+            "locator": {
+              "kind": "text",
+              "section": [
+                "Financial statements header"
+              ],
+              "excerpt": "2024 (USD)"
+            }
+          }
+        },
+        {
+          "kind": "other-source",
+          "ref": {
+            "source": {
+              "kind": "source",
+              "id": "wm-period",
+              "version": 1,
+              "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+            },
+            "role": "period",
+            "locator": {
+              "kind": "text",
+              "section": [
+                "Fiscal interval"
+              ],
+              "excerpt": "1 July 2023 - 30 June 2024"
+            }
+          }
+        }
+      ],
+      "note": "AI-assisted selected historical transcription; no independent human review."
+    },
+    {
+      "id": "wikimedia-assertion-3",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 5,
+        "printedPage": "3",
+        "section": [
+          "Consolidated Statements of Financial Position"
+        ],
+        "row": [
+          "Total net assets"
+        ],
+        "column": [
+          "2024"
+        ]
+      },
+      "token": "271,555,390",
+      "parser": "printed-integer-v1",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 0
+      },
+      "support": [
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 8,
+            "printedPage": "6",
+            "section": [
+              "Organization and consolidation notes"
+            ],
+            "row": [],
+            "column": []
+          }
+        },
+        {
+          "kind": "other-source",
+          "ref": {
+            "source": {
+              "kind": "source",
+              "id": "wm-usd",
+              "version": 1,
+              "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+            },
+            "role": "unit",
+            "locator": {
+              "kind": "text",
+              "section": [
+                "Financial statements header"
+              ],
+              "excerpt": "2024 (USD)"
+            }
+          }
+        },
+        {
+          "kind": "other-source",
+          "ref": {
+            "source": {
+              "kind": "source",
+              "id": "wm-period",
+              "version": 1,
+              "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+            },
+            "role": "period",
+            "locator": {
+              "kind": "text",
+              "section": [
+                "Fiscal interval"
+              ],
+              "excerpt": "1 July 2023 - 30 June 2024"
+            }
+          }
+        }
+      ],
+      "note": "AI-assisted selected historical transcription; no independent human review."
+    },
+    {
+      "id": "wikimedia-assertion-4",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 6,
+        "printedPage": "4",
+        "section": [
+          "Consolidated Statements of Activities"
+        ],
+        "row": [
+          "Total operating expenses"
+        ],
+        "column": [
+          "2024"
+        ]
+      },
+      "token": "178,471,109",
+      "parser": "printed-integer-v1",
+      "scale": {
+        "coefficient": "1",
+        "exponent": 0
+      },
+      "support": [
+        {
+          "kind": "same-document",
+          "locator": {
+            "kind": "pdf",
+            "pdfPage": 8,
+            "printedPage": "6",
+            "section": [
+              "Organization and consolidation notes"
+            ],
+            "row": [],
+            "column": []
+          }
+        },
+        {
+          "kind": "other-source",
+          "ref": {
+            "source": {
+              "kind": "source",
+              "id": "wm-usd",
+              "version": 1,
+              "hash": "cf577aeb4ee0b7175012a98e3bed9164231b266b3645aaf20dbb5524514d6616"
+            },
+            "role": "unit",
+            "locator": {
+              "kind": "text",
+              "section": [
+                "Financial statements header"
+              ],
+              "excerpt": "2024 (USD)"
+            }
+          }
+        },
+        {
+          "kind": "other-source",
+          "ref": {
+            "source": {
+              "kind": "source",
+              "id": "wm-period",
+              "version": 1,
+              "hash": "ae8054eda35ef89cb2d62df1ed3f54e894d2786158ab934573e4f31e7b01ff47"
+            },
+            "role": "period",
+            "locator": {
+              "kind": "text",
+              "section": [
+                "Fiscal interval"
+              ],
+              "excerpt": "1 July 2023 - 30 June 2024"
+            }
+          }
+        }
+      ],
+      "note": "AI-assisted selected historical transcription; no independent human review."
+    }
+  ],
+  "review": "draft"
+}

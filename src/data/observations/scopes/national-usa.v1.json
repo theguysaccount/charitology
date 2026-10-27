@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-usa",
+  "entity": {
+    "kind": "entity",
+    "id": "country-usa",
+    "version": 1,
+    "hash": "5804a4772b2600b832dc3b1f125ab4f25b2dc9f721871741be50bbebcc2258bd"
+  },
+  "scopeKind": "national-statistics",
+  "label": "United States statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-usa",
+      "version": 1,
+      "hash": "5804a4772b2600b832dc3b1f125ab4f25b2dc9f721871741be50bbebcc2258bd"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-usa",
+      "version": 1,
+      "hash": "5804a4772b2600b832dc3b1f125ab4f25b2dc9f721871741be50bbebcc2258bd"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "56fca76dd3d92137c4a455f8a4eede6db9f4a9f72d5fb0b2d3a222ee8dc99c2f"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-hnd",
+  "entity": {
+    "kind": "entity",
+    "id": "country-hnd",
+    "version": 1,
+    "hash": "46b37b67d1febcb75107a83b14269c936aa4925b77ef65faa6ab8a82d3a8d51f"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Honduras statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-hnd",
+      "version": 1,
+      "hash": "46b37b67d1febcb75107a83b14269c936aa4925b77ef65faa6ab8a82d3a8d51f"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-hnd",
+      "version": 1,
+      "hash": "46b37b67d1febcb75107a83b14269c936aa4925b77ef65faa6ab8a82d3a8d51f"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "8f008da7beb4d664de2033f4fb04f42bd1938d34557d60d0d6ae03cdd4955439"
+}

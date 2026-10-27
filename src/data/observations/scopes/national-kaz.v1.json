@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-kaz",
+  "entity": {
+    "kind": "entity",
+    "id": "country-kaz",
+    "version": 1,
+    "hash": "4301231da76e8e61baef6851942c486084285217947dc507c50812eb43887d8d"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Kazakhstan statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-kaz",
+      "version": 1,
+      "hash": "4301231da76e8e61baef6851942c486084285217947dc507c50812eb43887d8d"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-kaz",
+      "version": 1,
+      "hash": "4301231da76e8e61baef6851942c486084285217947dc507c50812eb43887d8d"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "fe8216b3a30cc4e6821ff9ccdd14c524c7856f6f83647518504d2232b3c93de0"
+}

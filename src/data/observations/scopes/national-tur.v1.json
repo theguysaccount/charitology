@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-tur",
+  "entity": {
+    "kind": "entity",
+    "id": "country-tur",
+    "version": 1,
+    "hash": "8016d36268dab5b133b110b4cbd70635f279b19f266b1addc1ddb1f4eb40104b"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Turkiye statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-tur",
+      "version": 1,
+      "hash": "8016d36268dab5b133b110b4cbd70635f279b19f266b1addc1ddb1f4eb40104b"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-tur",
+      "version": 1,
+      "hash": "8016d36268dab5b133b110b4cbd70635f279b19f266b1addc1ddb1f4eb40104b"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "08f2b331e17e3c833ca395eef4583139ee0ecb579f9ac32846132f4c22e948e2"
+}

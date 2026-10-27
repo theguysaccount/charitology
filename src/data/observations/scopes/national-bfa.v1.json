@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-bfa",
+  "entity": {
+    "kind": "entity",
+    "id": "country-bfa",
+    "version": 1,
+    "hash": "29a8c5de6cf09c4f8c6a42bd05547b0dec16045c365ecf7b058bf67849cfd672"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Burkina Faso statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-bfa",
+      "version": 1,
+      "hash": "29a8c5de6cf09c4f8c6a42bd05547b0dec16045c365ecf7b058bf67849cfd672"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-bfa",
+      "version": 1,
+      "hash": "29a8c5de6cf09c4f8c6a42bd05547b0dec16045c365ecf7b058bf67849cfd672"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "af5418456a65c7208c8f7a395b2d2a0d7db6a32f37d1d73dda1ec956a6584743"
+}

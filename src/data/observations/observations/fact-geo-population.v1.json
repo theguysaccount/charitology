@@ -1,0 +1,118 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "observation",
+  "id": "fact-geo-population",
+  "entity": {
+    "kind": "entity",
+    "id": "country-geo",
+    "version": 1,
+    "hash": "6f3f8c5d9c0b8b73f7999e846c858550c08dbbabee27b214937d516a68b2506e"
+  },
+  "scope": {
+    "kind": "scope",
+    "id": "national-geo",
+    "version": 1,
+    "hash": "f68c4afaf3577910565108e0e8364d9bd4de618373fb2373491d615be5d44f15"
+  },
+  "measure": {
+    "kind": "measure",
+    "id": "country-population",
+    "version": 1,
+    "hash": "34a26175e5b5483546f01d37cc3ddd0d757f73bcee30231fd1eb23a7d90fe4df"
+  },
+  "period": {
+    "kind": "calendar-year",
+    "year": 2025
+  },
+  "reported": {
+    "token": "3935766",
+    "parser": "json-number-v1",
+    "scale": {
+      "coefficient": "1",
+      "exponent": 0
+    },
+    "valueRef": {
+      "source": {
+        "kind": "source",
+        "id": "wb-values-sp-pop-totl",
+        "version": 1,
+        "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+      },
+      "role": "value",
+      "locator": {
+        "kind": "json",
+        "pointer": "/1/726/value",
+        "matches": [
+          {
+            "pointer": "/1/726/country/id",
+            "expected": {
+              "kind": "string",
+              "value": "GE"
+            }
+          },
+          {
+            "pointer": "/1/726/countryiso3code",
+            "expected": {
+              "kind": "string",
+              "value": "GEO"
+            }
+          },
+          {
+            "pointer": "/1/726/indicator/id",
+            "expected": {
+              "kind": "string",
+              "value": "SP.POP.TOTL"
+            }
+          },
+          {
+            "pointer": "/1/726/date",
+            "expected": {
+              "kind": "string",
+              "value": "2025"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "value": {
+    "coefficient": "3935766",
+    "exponent": 0
+  },
+  "precision": {
+    "kind": "unknown"
+  },
+  "uncertainty": null,
+  "producerStatus": "",
+  "producerUnit": "",
+  "producerDecimal": "0",
+  "annotations": [
+    {
+      "verbatim": "Average of January 1st populations that are based on the results of the 2024 census.",
+      "sourceRef": {
+        "source": {
+          "kind": "source",
+          "id": "wb-values-sp-pop-totl",
+          "version": 1,
+          "hash": "f7e7ea80589751a07c0c1d8beb4f404a959aab2de5a940cb45b1200355ec1f4b"
+        },
+        "role": "annotation",
+        "locator": {
+          "kind": "json",
+          "pointer": "/1/726/footnote",
+          "matches": []
+        }
+      }
+    }
+  ],
+  "priceBasis": {
+    "kind": "unknown"
+  },
+  "sourceRefs": [],
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ccd9cdfabde15651843c58d1d27a95ccb7d4a3096f200b9484f45495f60e2a87"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-chn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-chn",
+    "version": 1,
+    "hash": "bfd4a55d148df4e153e7f2367d310468ac295435766c1c136f30a24237e15458"
+  },
+  "scopeKind": "national-statistics",
+  "label": "China statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-chn",
+      "version": 1,
+      "hash": "bfd4a55d148df4e153e7f2367d310468ac295435766c1c136f30a24237e15458"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-chn",
+      "version": 1,
+      "hash": "bfd4a55d148df4e153e7f2367d310468ac295435766c1c136f30a24237e15458"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7e0d4d11afeeef9e1204d656e2c46430b4d0604d351f90b0e9c8b5aa0c0828da"
+}

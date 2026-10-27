@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mys",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mys",
+    "version": 1,
+    "hash": "5df947b5f49c15567f1c02cae682d068dbeeb13247c4a3d5bbf6c37e2a5ba86a"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Malaysia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mys",
+      "version": 1,
+      "hash": "5df947b5f49c15567f1c02cae682d068dbeeb13247c4a3d5bbf6c37e2a5ba86a"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mys",
+      "version": 1,
+      "hash": "5df947b5f49c15567f1c02cae682d068dbeeb13247c4a3d5bbf6c37e2a5ba86a"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "3d3851dc511c2bad7f1ce88873d3bbb9625effb9b87a51022547a9298ae6d35f"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-jam",
+  "entity": {
+    "kind": "entity",
+    "id": "country-jam",
+    "version": 1,
+    "hash": "3dd0bf8a93de226c391ceeab75317e5e13df2946900bdcac5f55f4d80e1fac52"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Jamaica statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-jam",
+      "version": 1,
+      "hash": "3dd0bf8a93de226c391ceeab75317e5e13df2946900bdcac5f55f4d80e1fac52"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-jam",
+      "version": 1,
+      "hash": "3dd0bf8a93de226c391ceeab75317e5e13df2946900bdcac5f55f4d80e1fac52"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "4e3ee3d09ff85f5b08eb1dc6fecb4538c01351fe4330dc2d2fc9898d66d61103"
+}

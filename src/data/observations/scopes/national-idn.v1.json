@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-idn",
+  "entity": {
+    "kind": "entity",
+    "id": "country-idn",
+    "version": 1,
+    "hash": "f56d3d4ad36897ef78009cee7eee17ef4fe94f7cc24f05bd81b12782dbc567f4"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Indonesia statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-idn",
+      "version": 1,
+      "hash": "f56d3d4ad36897ef78009cee7eee17ef4fe94f7cc24f05bd81b12782dbc567f4"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-idn",
+      "version": 1,
+      "hash": "f56d3d4ad36897ef78009cee7eee17ef4fe94f7cc24f05bd81b12782dbc567f4"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "ed4c212ba331071402660d3ecda8fae2f13dc155da5a0d6fff12d50c371ab434"
+}

@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "entity",
+  "id": "givewell-subsidiary",
+  "entityKind": "legal-organization",
+  "label": "GiveWell UK",
+  "identifiers": [],
+  "aliases": [],
+  "memberEntities": [],
+  "profileRefs": [],
+  "countryMetadata": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "gw-audit",
+        "version": 1,
+        "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "pdf",
+        "pdfPage": 9,
+        "printedPage": "7",
+        "section": [
+          "Organization and consolidation notes"
+        ],
+        "row": [],
+        "column": []
+      }
+    }
+  ],
+  "limitations": [
+    "External identifier not verified in this collection."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "8759736ff642f7713b19d5d49f255a80708cee81338fa085429e9b3f5730954f"
+}

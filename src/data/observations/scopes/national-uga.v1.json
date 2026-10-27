@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-uga",
+  "entity": {
+    "kind": "entity",
+    "id": "country-uga",
+    "version": 1,
+    "hash": "20de35c3488b6e5d1b2a8790f915d275cac0b6772eb4d74daa514707e329598f"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Uganda statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-uga",
+      "version": 1,
+      "hash": "20de35c3488b6e5d1b2a8790f915d275cac0b6772eb4d74daa514707e329598f"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-uga",
+      "version": 1,
+      "hash": "20de35c3488b6e5d1b2a8790f915d275cac0b6772eb4d74daa514707e329598f"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "5786f7349449f2f565c6b0edee7915293d4bdbad7293c797696269981bfccddf"
+}

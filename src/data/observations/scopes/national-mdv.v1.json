@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-mdv",
+  "entity": {
+    "kind": "entity",
+    "id": "country-mdv",
+    "version": 1,
+    "hash": "629dec618c2bb06c2236f85b5fa55d8a57e810f464b04e66c5f70d48843fc79e"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Maldives statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-mdv",
+      "version": 1,
+      "hash": "629dec618c2bb06c2236f85b5fa55d8a57e810f464b04e66c5f70d48843fc79e"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-mdv",
+      "version": 1,
+      "hash": "629dec618c2bb06c2236f85b5fa55d8a57e810f464b04e66c5f70d48843fc79e"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "771e75d5bf448c48d410305ac6b874848e1a94c2955eb0340b0cb83f3d257fdd"
+}

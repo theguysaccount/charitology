@@ -1,0 +1,2004 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "coverage",
+  "id": "country-life-expectancy",
+  "selection": {
+    "kind": "country-latest-window",
+    "startYear": 2020,
+    "endYear": 2025,
+    "rule": "latest-non-null",
+    "indicator": "SP.DYN.LE00.IN",
+    "countryMetadataSource": {
+      "kind": "source",
+      "id": "wb-country-metadata",
+      "version": 1,
+      "hash": "9b643ff77135f64b2d7f68222989c6a90f4f8ec667ea4fb5cda3dceacf748dd1"
+    },
+    "valuesSource": {
+      "kind": "source",
+      "id": "wb-values-sp-dyn-le00-in",
+      "version": 1,
+      "hash": "1b5ccb99674d00ae13781e2e829a4ecf3b575d7cbeb78e880f4482bac4c77d29"
+    },
+    "indicatorMetadataSource": {
+      "kind": "source",
+      "id": "wb-metadata-sp-dyn-le00-in",
+      "version": 1,
+      "hash": "85606cc158b0dff5d99afceb3d8c0312361b983a3bb417719858a68a92e6bd18"
+    },
+    "measure": {
+      "kind": "measure",
+      "id": "country-life-expectancy",
+      "version": 1,
+      "hash": "1e63c27f141ec4a648b59ff898a1a1d48b56700968139e67d5db95f488d6c97e"
+    },
+    "nonaggregateRule": "country-metadata-region-id-not-NA"
+  },
+  "cells": [
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-abw-life-expectancy",
+        "version": 1,
+        "hash": "d10f7d265d1a2e6c2cd8bd0d883be95842f6f67c99672c3274e5b1dfea27349d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-afg-life-expectancy",
+        "version": 1,
+        "hash": "cb32e7e4efda6910961ce00f7260846e993781519c1c94999e406119255f830e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ago-life-expectancy",
+        "version": 1,
+        "hash": "2cbd158fb0020a706f8ddd71633dba34ae4dfaa870c05f7cf04c21246c0d1531"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-alb-life-expectancy",
+        "version": 1,
+        "hash": "f1421262dbaf890ffdacd3f5948495844066e7dd89665d8b5483de7e4b4b176a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-and-life-expectancy",
+        "version": 1,
+        "hash": "e91e99cb65ad8c7a8aa9de1b964eddd4c4ee9f142ed33946f9763d53c9e344f8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-are-life-expectancy",
+        "version": 1,
+        "hash": "9997b03bd6815837c4407b86fc48260e175b6760c6311928a2ff15c619e08699"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-arg-life-expectancy",
+        "version": 1,
+        "hash": "038dce01e78893e3e02ee47f3dfaa7e28daa4954a1211d6fe1d760c79c14e12b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-arm-life-expectancy",
+        "version": 1,
+        "hash": "da17a6c8b3349bc3b2a1c46302fadbcd533b2f58fe90514687a7c0993457fc29"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-asm-life-expectancy",
+        "version": 1,
+        "hash": "f7a28f3e92e50ca1d8d15f6072728416420e3e835d4c30eb59e604a497406826"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-atg-life-expectancy",
+        "version": 1,
+        "hash": "08ebec45a6a411ef7af9b10b72d580e529975d0ef6ac13b7d84dda7250338d07"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aus-life-expectancy",
+        "version": 1,
+        "hash": "d055277c8a3c6113a2fba0bb75f315aa7d6cdc601b444052bef3c245514bfcde"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aut-life-expectancy",
+        "version": 1,
+        "hash": "fab803e970197ad90ac85d7a59e2a48b39ce7400be23b931cd454727e57aa6f1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-aze-life-expectancy",
+        "version": 1,
+        "hash": "60cfc66d5bd231ba48d665705af913ee7e0b892cf6e92a222420768b087cddab"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bdi-life-expectancy",
+        "version": 1,
+        "hash": "efc0594846e2515bf0c7c9e01f8a70ceae9dabac283adf6c9217b3fae873116a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bel-life-expectancy",
+        "version": 1,
+        "hash": "698c76e9cc44e14004c1f80617036e9e9c7226bbcb13bdecd4a27bc0c773c43f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ben-life-expectancy",
+        "version": 1,
+        "hash": "a69025cbda7a4f2892ddcdec289a8d1882db6c739ad66cac6e6f2dbae02475ba"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bfa-life-expectancy",
+        "version": 1,
+        "hash": "180a0f151bb632a78162a9fa6ca11ceac322902161bf562b409898b381cd2a5a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bgd-life-expectancy",
+        "version": 1,
+        "hash": "cb4a9579f01156bc2ada8616cabd2904f43fe32af9d478239b3537bfb751ec6a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bgr-life-expectancy",
+        "version": 1,
+        "hash": "321219f05e61a2778632e77a83b158390a19e430b65d4ef95cc91c1a3e1f1ca5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bhr-life-expectancy",
+        "version": 1,
+        "hash": "d569fbe192884cd6bdc37b7b8ecd64207a343989e7365ad2cdc6a61ba272deb7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bhs-life-expectancy",
+        "version": 1,
+        "hash": "afece70863c142f588c04194109517fd6fa9bfb3039dc317d96bf7cfd208ce92"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bih-life-expectancy",
+        "version": 1,
+        "hash": "12bf28e400366e39b0c4289db80c027bf7c8ce629a776702ebcced7286e0b81e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-blr-life-expectancy",
+        "version": 1,
+        "hash": "9da6c88390494641e12219b76b62f25d2dfbbbc022537c08dfd00407d633c00d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-blz-life-expectancy",
+        "version": 1,
+        "hash": "13d844b5ea5842fc5db883790e37567473952eaca07f0a7395c70d3b0ea0b6b0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bmu-life-expectancy",
+        "version": 1,
+        "hash": "4b29b605ffc1fc220fa8ab561e35443521dbefda3d6567dda5cf761b4af62c92"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bol-life-expectancy",
+        "version": 1,
+        "hash": "27607aa91ab2f0cb49c59c951c8376e97a15f933990ea6c256a230849788d77a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bra-life-expectancy",
+        "version": 1,
+        "hash": "186c257e1c93ac8e221fe32743241f81903b3a1f941068b86baaab407d73fd8e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-brb-life-expectancy",
+        "version": 1,
+        "hash": "85946cd3f75dc27f4f41bb30e219cd81c153e53012c1b40eb24be91b84f651f8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-brn-life-expectancy",
+        "version": 1,
+        "hash": "88c6677a44d86a19c07d17cf84a7c7afa7d7cbba6f1aa4f50e80848cd0687467"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-btn-life-expectancy",
+        "version": 1,
+        "hash": "9530b7008921fd966053751da2fec3cb7281e9823800a648c9f34ed96beee868"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-bwa-life-expectancy",
+        "version": 1,
+        "hash": "9f54bfda2bd15519e4a4dffe8532311904378995053699c5759201727cee2912"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-caf-life-expectancy",
+        "version": 1,
+        "hash": "e50d7c58c4fedd0f46ceb8e87a8b449026ed85b70a605441a98b237597304490"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-can-life-expectancy",
+        "version": 1,
+        "hash": "478f2fa85481933950f6595eb6cec854110089acc0ad3971e2802a7d119f0cfe"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-che-life-expectancy",
+        "version": 1,
+        "hash": "b7fa2ba2ab7fc6a7f210c6193debf0e18dcb4d8c152ba4858c6cbf07a613b95c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chi-life-expectancy",
+        "version": 1,
+        "hash": "72d0cc69690af345cd6a7b719c3a6c5a8c647598757bc47057fb833eadd15e9c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chl-life-expectancy",
+        "version": 1,
+        "hash": "aa4fb93ec2664e3b3bebfd534f7e2fe39e15cb677a853773189f9a74a05b2df1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-chn-life-expectancy",
+        "version": 1,
+        "hash": "01034d3bc77830715a12e8988d2e246f9506e01ae605c1c676eb9176e723d5db"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-civ-life-expectancy",
+        "version": 1,
+        "hash": "c1be4ff3f7b438fd06ea3a6c6d0ab70d23b7a04dba04f3b39c119d9544fb14ca"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cmr-life-expectancy",
+        "version": 1,
+        "hash": "8fcd63ab2982edc0a481177866f4aa0e6583ad6b8ac29f387383d4133e30e3bc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cod-life-expectancy",
+        "version": 1,
+        "hash": "878fb8f267d5370e00c8c122d0a307d7a4b3d3f71fccc6f84df57c4687849762"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cog-life-expectancy",
+        "version": 1,
+        "hash": "8c2fe5ef6f5e9db0782e4d83001ede01f52c40ac5387368330a5504961519863"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-col-life-expectancy",
+        "version": 1,
+        "hash": "bb8442f085ba8de2cb3499c4934acd8fe620a32de4c231a841deaa29a5118306"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-com-life-expectancy",
+        "version": 1,
+        "hash": "c7e1bc6ac0bb3458ef8c761c25f4184dc356273341e0299f40a4af920675bfb6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cpv-life-expectancy",
+        "version": 1,
+        "hash": "010c964a3df1c5ec10d03ddb6515ce2b120c3dce3af639c5d61f9954919269dd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cri-life-expectancy",
+        "version": 1,
+        "hash": "216445880c9182b2a3dce008357edd190f33fc24f7d48dd8197b10f2d334a4d5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cub-life-expectancy",
+        "version": 1,
+        "hash": "94289d1381d23138b6dfb925d131001a53725f2d64a127cb59b71723666b2aea"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cuw-life-expectancy",
+        "version": 1,
+        "hash": "62e6b4c5e3eecebfe057f453cb2a3998c0266bdfef66f211c98a8801345f1138"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cym-life-expectancy",
+        "version": 1,
+        "hash": "157230580b26f47cfbc30769b340dbde5056ff18c1c0b0ddd2e80f86a97fdb73"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cyp-life-expectancy",
+        "version": 1,
+        "hash": "eb8cb6cca65f074cf056bc1d432b37510917c0b1c9ea58a5829601aba73a097e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-cze-life-expectancy",
+        "version": 1,
+        "hash": "4443934c539d8246cabb8a94d491fa37ce01bde336690ae6b6dc3ab64f9d02ef"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-deu-life-expectancy",
+        "version": 1,
+        "hash": "b00e57e6b55d85fc56479f59c397f42009a68eb32091f51aa601ddfef69aa12d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dji-life-expectancy",
+        "version": 1,
+        "hash": "2e58af6084cd05cd8819e28468db8f190f3fd2a5ecd4272a106c7ea02b63947f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dma-life-expectancy",
+        "version": 1,
+        "hash": "d343f2dec3fe34b3e2210a0343ddd764c6af455e46eda38a240e62bdb2ed83d9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dnk-life-expectancy",
+        "version": 1,
+        "hash": "459a4d2f6234208ac0e1ed0cdb4d8599345a0ccad0c0b04bdb9959e9e30a8e82"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dom-life-expectancy",
+        "version": 1,
+        "hash": "5e98494cd0a75f811ad4d8760fdab89131a3b24086b1f621f2982c8939e24ff1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-dza-life-expectancy",
+        "version": 1,
+        "hash": "75880dd29e9db8e1d3d4aeac59a6ae26af8beacad861bda0da8e5310f4e1c6aa"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ecu-life-expectancy",
+        "version": 1,
+        "hash": "85696c8e8d141c6189aff52da9c736d6ae3ec482f31fe5b165c6e5815c152adc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-egy-life-expectancy",
+        "version": 1,
+        "hash": "0d4b78d76452100bd4ee36afe0885b61e3d3947ec740d9513cf4a62aeaed12f3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-eri-life-expectancy",
+        "version": 1,
+        "hash": "0971a6cd490085b138b1647b5bf05a6dbd2eeb9a44e459a340c029449bb0d3c8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-esp-life-expectancy",
+        "version": 1,
+        "hash": "bb209bc8ebe3086c32fde8cc3d39f0bcf2b10cbc2fce128347d078e57a945aca"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-est-life-expectancy",
+        "version": 1,
+        "hash": "91c2ebd2320a02982c4747bd43c4c371f60d247dae86a21c1e1fa9dcdd07d3c1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-eth-life-expectancy",
+        "version": 1,
+        "hash": "66c675b00d7dd25e2b1ec2aff30d174f0829a164d6d0de4cd5688c5fb351fc12"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fin-life-expectancy",
+        "version": 1,
+        "hash": "4e5935fd4ecd6d3e012d5c9500f7ba1a1ad5deed14cacfc48dc7bd7e2f25ae2b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fji-life-expectancy",
+        "version": 1,
+        "hash": "97b7efecd248de83c50aee2cc1fc371c0e6f11360e450b8be86360dfc17c0c33"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fra-life-expectancy",
+        "version": 1,
+        "hash": "f778b1aa21261b6d9d77fe9310d18e1149ef6827da7f5620586306db20b59d8b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fro-life-expectancy",
+        "version": 1,
+        "hash": "2fc8954e711a7f5b3ef06834406e404e2a1d608733d10ede9594868eb0e3b25e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-fsm-life-expectancy",
+        "version": 1,
+        "hash": "6356f454220f5b8cd8c3299714816196c90d812331e9897023166fb0b3acd0f1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gab-life-expectancy",
+        "version": 1,
+        "hash": "f53a145ae6b7a8ab8f3d222ba3d31f2132e03ba3e006e90ae59f424f3e295078"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gbr-life-expectancy",
+        "version": 1,
+        "hash": "d5a3566974ec707cadc12b5b06b42f13c024239afd49de48158ecc46cf56bab7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-geo-life-expectancy",
+        "version": 1,
+        "hash": "d484b88a14e19b9f3f76fd5f94d4f422ff61db122730cc03377534173b29a5a0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gha-life-expectancy",
+        "version": 1,
+        "hash": "21343e0ff9e11e136b4de23460da74cb0c5f8abfd0db383f7e0410af76c7d042"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gib-life-expectancy",
+        "version": 1,
+        "hash": "d7975dc7cc71f528c7b162ba00257b2851cdcd3fd4b126d7e9d197886abeec4c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gin-life-expectancy",
+        "version": 1,
+        "hash": "fc9e5b1a58127fa660de180c7c2d839836fa9b56dfa614f448ff59912d1080d6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gmb-life-expectancy",
+        "version": 1,
+        "hash": "3e41ddeca377a78c75e92d0f55edc2338e4bf91efe478211fbc538909897a8de"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gnb-life-expectancy",
+        "version": 1,
+        "hash": "6650cbca38e3709eb6cef4b0bd89edb1a2d4a2834126eb7786f72cea1a2533dc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gnq-life-expectancy",
+        "version": 1,
+        "hash": "20eb7ea70bd5da72035959ae2899cf9a3517eccc4c13e80d5b8afdb2df23ee47"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grc-life-expectancy",
+        "version": 1,
+        "hash": "36aa743241b048aee7b5c8254050346011993210e0144c0efaf106f41b45242f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grd-life-expectancy",
+        "version": 1,
+        "hash": "6b13ddbb54b3d54a16239a5a718f44b69566a004b3912e9326781481167f1092"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-grl-life-expectancy",
+        "version": 1,
+        "hash": "ef7c8fe88d41650199cd586f3041704e772a27dd2666994693feee1c6aedc3c0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gtm-life-expectancy",
+        "version": 1,
+        "hash": "a2fa16b7ff9442b5fb138397a53b7d635591bc2c80933c223cc2a9ec487dfb88"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-gum-life-expectancy",
+        "version": 1,
+        "hash": "cb144af0d0a7fe4d5a99664c6e01bb596ac57317bb18e5ae3dc7bc8f98ad997b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-guy-life-expectancy",
+        "version": 1,
+        "hash": "697b0f0e7216cca8c69044a588dbc97ae5f603f19ac426fd2560f4810aff6c80"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hkg-life-expectancy",
+        "version": 1,
+        "hash": "a2fe6d5fcb9c684ae91ae8cbcf75a85d56e47bb17c4c9b1e482595ef03a9a02a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hnd-life-expectancy",
+        "version": 1,
+        "hash": "a8781320e522c3a72872000df41da67198469cb51bbe20bf5d71ab41197311fe"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hrv-life-expectancy",
+        "version": 1,
+        "hash": "05ec32f28b50514b6cb171e4129642327ca47badfb1c9674d8e18fc9c26aee50"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hti-life-expectancy",
+        "version": 1,
+        "hash": "71792a472403ba77d57b88f6b806cc96bbff984f9c8801155083e58e04620688"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-hun-life-expectancy",
+        "version": 1,
+        "hash": "a219e19cbf93f8e042df4b42fc29f0d61ebebeda5c8e9478248f9538700fb6f8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-idn-life-expectancy",
+        "version": 1,
+        "hash": "ecaa1616b645da1a3e808b769728df9d0185f11281baa830602bed60e3087624"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-imn-life-expectancy",
+        "version": 1,
+        "hash": "45b0408e95884944787d3e0700891b39d74d61d89e0d90cf61bb0e1f7921d6c2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ind-life-expectancy",
+        "version": 1,
+        "hash": "eada3bf511f8f1041c836f15a34b2837a9a1ba09c4d3eb899a7e37d09368e5fb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irl-life-expectancy",
+        "version": 1,
+        "hash": "7e4dff961b082fc190c0ce55a3da402a397886b61276d92c78a640971521f5d8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irn-life-expectancy",
+        "version": 1,
+        "hash": "846b6cb1ca46341e8b696439311a4fe2bc709dbb6fff00b45c103a6ae5c291d0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-irq-life-expectancy",
+        "version": 1,
+        "hash": "daf92c38878aa37e15978e57a85ccfebdf1e8b3d395b435e1821ba981e7c9e8c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-isl-life-expectancy",
+        "version": 1,
+        "hash": "680af47bfaf1d3b8d6eac2f4383fe8795ebd105706c5f6e012079f46d9c8962a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-isr-life-expectancy",
+        "version": 1,
+        "hash": "8dc3b2165c99602402737f7d042eba2f0a881d917edb8c17781b26fe86be2a39"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ita-life-expectancy",
+        "version": 1,
+        "hash": "2b90264924dbabe57e1c2beed7235672b6e454cd0ce4ffa6b5a9e9c70a5c65c7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jam-life-expectancy",
+        "version": 1,
+        "hash": "8048b07971797d0b3623da8f64580dcc53bdf49a990f2315f8c65dffd26fb8cb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jor-life-expectancy",
+        "version": 1,
+        "hash": "30117e9a0823d36a83504dc56c98413ebd4c71c22e4ec23b5cc7d8d2e827e877"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-jpn-life-expectancy",
+        "version": 1,
+        "hash": "68e95bd6b727cb423e871494378911698ae86e394ee31c4dfb05580d15a618f8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kaz-life-expectancy",
+        "version": 1,
+        "hash": "76b58fb51f58f192c516b61507d598f127d7fa93b7c9bf20f08e5b02afc7f439"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ken-life-expectancy",
+        "version": 1,
+        "hash": "88df1d2f3b91c92273ca4c611f4a6dbda88ec7fd46e4c07ef92819b5028e48bf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kgz-life-expectancy",
+        "version": 1,
+        "hash": "a9ef4d6416d6038765fa8032ca9f5a6cb2ed8ebc60701366c9603870af2bb2ec"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-khm-life-expectancy",
+        "version": 1,
+        "hash": "01f9ab652e69d7127788222a1f5a82bb4267f7824e2c82f3c6290a8165bc79d7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kir-life-expectancy",
+        "version": 1,
+        "hash": "b20302e6661c4b30040ab96a236d48842367aa751ec5eb7f2540a35cd423d069"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kna-life-expectancy",
+        "version": 1,
+        "hash": "cda0e012e7e9183b296d6096ef6445bec926a325870fda88157d90903c78e7e1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kor-life-expectancy",
+        "version": 1,
+        "hash": "d928ea632c567129ccd2dc55000eda43f67e4bf21b20b5eb5ade6ad81f876edb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-kwt-life-expectancy",
+        "version": 1,
+        "hash": "52ffa24860fe7e2db15fec42e371fb547f2629188fa219ccee0a54d125801ac2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lao-life-expectancy",
+        "version": 1,
+        "hash": "c1e84657c2ba29129840ba9ba6698560bd1afea14534ed1837518c5c658f57e0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lbn-life-expectancy",
+        "version": 1,
+        "hash": "f6a96d8ca8674cf26e7a8c33701156fbf3d3891432c6f7185c6ecc187cd4342e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lbr-life-expectancy",
+        "version": 1,
+        "hash": "001806eda72f956292b089594061a562f4c70f515d9bf0b80a5a16071f7f45c1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lby-life-expectancy",
+        "version": 1,
+        "hash": "7c82997963354d72d61e88b7b2dbc86370658af748af12445b06942de5a7a063"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lca-life-expectancy",
+        "version": 1,
+        "hash": "698b6b5707353e56dbbeb4af4c533d245f1e1702f25b6fecc71562c38531c591"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lie-life-expectancy",
+        "version": 1,
+        "hash": "964bf8e1ab5728edb5345989a432eeae8df70ab106aaa09ceda87f9e91cdd6d4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lka-life-expectancy",
+        "version": 1,
+        "hash": "04387ecbafba24536b7f552f33a80e061006dfc0ae0f65d08a61cb25dead50f5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lso-life-expectancy",
+        "version": 1,
+        "hash": "cec5a28dd60560797ec20396aa7a9ee2a37eb5309ee367c602f52c3e29b29d77"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ltu-life-expectancy",
+        "version": 1,
+        "hash": "6e764e833a8bfcb6b150b2124d7950c9c7e90377a121864481dd710fe428f47f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lux-life-expectancy",
+        "version": 1,
+        "hash": "af98ddd7102cb9d437f832ed3610d6dc08daa13695c8913c07c6b59c3c5cf0e1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-lva-life-expectancy",
+        "version": 1,
+        "hash": "17afe98bf00b157683fc01835ae6d463e7294ae86a563800e78de63582f7c898"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mac-life-expectancy",
+        "version": 1,
+        "hash": "4ea1bbf9951b369489a4f87f7956643d0a53567336f20f1a9f68c5659bb6d25e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-maf-life-expectancy",
+        "version": 1,
+        "hash": "73b76557e9bfe5598097221ce48f1b79a7e1451b9a3affbb52eb74a4c8cc7a13"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mar-life-expectancy",
+        "version": 1,
+        "hash": "04e5798f345382b38812e0758cec4ea988f9a7dd56e28da1ebfd2515bf07fabf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mco-life-expectancy",
+        "version": 1,
+        "hash": "6a28f1bde9037d9817958e34e857f5d689b372597479a895f30b2a23d3c563d1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mda-life-expectancy",
+        "version": 1,
+        "hash": "ba874287429d1f3e4730dff516a1e99d04ca7dddbca02b746549dcc66275e03e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mdg-life-expectancy",
+        "version": 1,
+        "hash": "69739245c0452befe6689ee971d0549b48c397ac1e11a9a8607a541076165b59"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mdv-life-expectancy",
+        "version": 1,
+        "hash": "e382123300d7f12f24ce1224b6d24be39bed3451d6f753ad1e632ab352560088"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mex-life-expectancy",
+        "version": 1,
+        "hash": "54cd32454952bf46a9b207e3b937d221c0902f221aa0fef329e58484000048f1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mhl-life-expectancy",
+        "version": 1,
+        "hash": "9197c863ffa7ff8c8dec507905b96b1a5559ddcf87cc07073e6a56f88936562c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mkd-life-expectancy",
+        "version": 1,
+        "hash": "11272d102c73c8fa313d24ee5302f6d47c8eada47c56ea94227d373be2dfb5b1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mli-life-expectancy",
+        "version": 1,
+        "hash": "53d52ccdccc64db7af163927f2e9818b2aa82a3a7f02e91d69fcb2e9259b0545"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mlt-life-expectancy",
+        "version": 1,
+        "hash": "da40c815f44986cf793c8eb464ba045a7622c7055ea4dd9a3aa13a6bf63ddbb5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mmr-life-expectancy",
+        "version": 1,
+        "hash": "88798e765ea4b5dc1f185be39ed23277b67e6b333e2506443259668c48b943f2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mne-life-expectancy",
+        "version": 1,
+        "hash": "c24062f73d60e7d2c51f6380e39f8354af4c7d36551b790c787324880edf3ef6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mng-life-expectancy",
+        "version": 1,
+        "hash": "78f777acbd35d4532e5adaf5a41079667a1a66c716004264a1318fd62af216c0"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mnp-life-expectancy",
+        "version": 1,
+        "hash": "68ae2975c8fdd8647b67f2906d8b9ad95fc936d9cd8791ce4bb1075c2ad97194"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-moz-life-expectancy",
+        "version": 1,
+        "hash": "b7d5c6ee57e9653900e94b4fe7cdffe09476d0d57fac4b0425ae2f28fbf8ce34"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mrt-life-expectancy",
+        "version": 1,
+        "hash": "4eed92b7632495fc23c0178604c1f19c47cceaf950516e7406eb5c180f9e7d3f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mus-life-expectancy",
+        "version": 1,
+        "hash": "3c9443b961128760756edf30e2e564ef168bef08576a06e49ccac137501a553b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mwi-life-expectancy",
+        "version": 1,
+        "hash": "e8fe436fe60f4429088f0ec2c6ed7055d70e1465a1fd391baa16ef77f1b6ca04"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-mys-life-expectancy",
+        "version": 1,
+        "hash": "70a842a48c9c9bcffc046ddf36d3de5f85254327f5e1cbb6b57fb668a7f0f241"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nam-life-expectancy",
+        "version": 1,
+        "hash": "b3007e10a9814de65be99c1f89b8feb075fbf8676239f2fbc5ee0c4f847d21a1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ncl-life-expectancy",
+        "version": 1,
+        "hash": "dad218a268ae8598d4e49a3821717de71999b847254cb787c98f2acd2bb5a08f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ner-life-expectancy",
+        "version": 1,
+        "hash": "40ebcdb82333e4452eea3d81d90ae34714c652f0860f71629c596ad83eb03580"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nga-life-expectancy",
+        "version": 1,
+        "hash": "a68e916eb4a8a71119b5b81563d6f6de52f7ef3bd08c13d6bff33f07d8530ec7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nic-life-expectancy",
+        "version": 1,
+        "hash": "941ac9d82b0c93f7038bcd0ab06034865940c4d7485a93047b878efd9f30f9e2"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nld-life-expectancy",
+        "version": 1,
+        "hash": "6fc2c2b4ac576c0293338d2419ea8333319553dbcdb98a466d444262c7355b17"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nor-life-expectancy",
+        "version": 1,
+        "hash": "02dabd3dadb904fbbdfa43555318cea946f89d721c6119d355450608ce8cc1b7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-npl-life-expectancy",
+        "version": 1,
+        "hash": "b6815e678a0e04186bcb7ed6c05dad470e64106e9d788bb7060badd89bf2feea"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nru-life-expectancy",
+        "version": 1,
+        "hash": "7b6556c3f1c59ac6076e375c1d91d7ad74e5b56a1560f86d109111d357f57f88"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-nzl-life-expectancy",
+        "version": 1,
+        "hash": "964b51d2dbda9e89af2cb1eec8c9ee9e598cd1c2f218411608acb6b0b1ece4c6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-omn-life-expectancy",
+        "version": 1,
+        "hash": "9163371359b4d09891cdb2dabc48366dc2812708634050c9fe0a321285ec5bfb"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pak-life-expectancy",
+        "version": 1,
+        "hash": "afdae193f367439d1f2a709eb4492a4f871c63dce512a075e225aef76d0bbef9"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pan-life-expectancy",
+        "version": 1,
+        "hash": "a2fce79a54b1eb925a7f670b73aba31ba08914124bb5e924375f357bbd5f1f75"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-per-life-expectancy",
+        "version": 1,
+        "hash": "e738ebca54161da383a42c1e4bc463e53a0051e766708469a203496074d84c75"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-phl-life-expectancy",
+        "version": 1,
+        "hash": "dabb223ad2273bec5cd3029ef71ed85e6a4a3720e64805021f5ef539682252fd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-plw-life-expectancy",
+        "version": 1,
+        "hash": "85c107062eb8541bdf83b5da5af20f90fe03c57ffa7ec11a50a20f043749489a"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-png-life-expectancy",
+        "version": 1,
+        "hash": "822b7ab76f0171598ea5bab013a717ee93312635a991ceab19e8baf845fda07d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pol-life-expectancy",
+        "version": 1,
+        "hash": "fee4fc38800621600c591bf7271b9338840272be34be5448d4014de41f745097"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pri-life-expectancy",
+        "version": 1,
+        "hash": "8fa390643752d26d85524c3c68bfbfcf8715714578978a391fb40417b06a4e12"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-prk-life-expectancy",
+        "version": 1,
+        "hash": "19a47b6aebffac0fdc6cc66e06b9ce96cd7028be23cc814304f4c48cdb45c808"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-prt-life-expectancy",
+        "version": 1,
+        "hash": "8aa1194a8cd0d063171ebd2a8b92c2c9d448906a1e5307543f43e8fd69e14396"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pry-life-expectancy",
+        "version": 1,
+        "hash": "19e82199cf657f7073b501bfc047ec34b216e99c92821db5347ab218ea1c7953"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pse-life-expectancy",
+        "version": 1,
+        "hash": "011923f6ee68ae7f2c4d1a7a0833c0fb1dec1dc88cd784870451614776d2dd24"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-pyf-life-expectancy",
+        "version": 1,
+        "hash": "9789b3b09e08a1035836158c8b83af0ef4ca3ebf64fed6fc96fb425c2d5a3051"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-qat-life-expectancy",
+        "version": 1,
+        "hash": "4191266f8582b936a79dc8ee9076ad53865d88ae453a82d0ec779ef19358032b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rou-life-expectancy",
+        "version": 1,
+        "hash": "e90a0a606a96cd5bdbf8a8cbaad2fba089d357bf9c4d927ed5d11da1a2b2f3cf"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rus-life-expectancy",
+        "version": 1,
+        "hash": "251552e297ebfebdf1cfa706b525b4fcd24d6cfcb274eb90aa621bc0d415b207"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-rwa-life-expectancy",
+        "version": 1,
+        "hash": "e93e7b6d272ff031212018939be2b81fa59c2059b2b733fbab8494e157bd3cf1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sau-life-expectancy",
+        "version": 1,
+        "hash": "1eebc74d48acabe9ca54baa4b5f1b2fab5b772a997c54de52dd6063f6a98449d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sdn-life-expectancy",
+        "version": 1,
+        "hash": "b8c9d7d0ec443f058f047d8200c372b214681f26aef5367c441f71f29db7c1ea"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sen-life-expectancy",
+        "version": 1,
+        "hash": "fe4cf8ff976be84526c5e5d2d02da05b652e1d99509e46ce2abae7ac7556f752"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sgp-life-expectancy",
+        "version": 1,
+        "hash": "1b37a31ae31f8d3dffdc834d9f65c182526835e38ac1cf29630a3ec751f25aa1"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-slb-life-expectancy",
+        "version": 1,
+        "hash": "e7ada74956a1a3b72328f3cd053f7d7970db47d7f0e08f984ce37c8f9444f2c6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sle-life-expectancy",
+        "version": 1,
+        "hash": "73ca42a68cefb93e315b73c213b517aa86df0b650234db6f82a98a41e5eb5477"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-slv-life-expectancy",
+        "version": 1,
+        "hash": "e882b56777c89f2a62c16ca8d7c05cd01d5cc178c4ffcc4076bd0dc8c25ed718"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-smr-life-expectancy",
+        "version": 1,
+        "hash": "806d2305b27624ae9cebc5567b20f1164bf3e1a36f78b1d81a647c29794f68ee"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-som-life-expectancy",
+        "version": 1,
+        "hash": "15e822fbe17e7b522d9b902cb87ae2cd328d176e8aecf2cc2ebbb862f51bdb64"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-srb-life-expectancy",
+        "version": 1,
+        "hash": "d8dc92b2cc5cef689e1bb429aafb2cb33a390c97bc7ed03dc58baca9c98752ee"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ssd-life-expectancy",
+        "version": 1,
+        "hash": "dd5c4ee6ca21d9ee90ecfbd5a859105086c8e05ff165e33bac8a2511c702ca8d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-stp-life-expectancy",
+        "version": 1,
+        "hash": "749fe918bc18212a1bb32af49ce9d0b000f9a54e9319b12a2f5a13bb3b2556d3"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sur-life-expectancy",
+        "version": 1,
+        "hash": "81b25691b8e2f90272402dd357ceb33f5d917fce1b6412e8ccbf1658d961dc6b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-svk-life-expectancy",
+        "version": 1,
+        "hash": "1790c2d60bb4000593da1f45dc1ff748d64f058117883ab1a82f6001d50cda37"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-svn-life-expectancy",
+        "version": 1,
+        "hash": "1b76ace5bb6d59af74577ee592f6460d6282a1f7747fb8b67575559b8e76082c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-swe-life-expectancy",
+        "version": 1,
+        "hash": "15866d22054168295fe126d7c4b8530219d07691b88b233d55801ee8712b131f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-swz-life-expectancy",
+        "version": 1,
+        "hash": "607486b5a4f40fb9ad7c0d22899f0867b843ddd567ee67bc9c880a72aa3a30aa"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-sxm-life-expectancy",
+        "version": 1,
+        "hash": "fda256c168a88489b7c0b91a219ac7820d82723c96f962b36599c008c16f024e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-syc-life-expectancy",
+        "version": 1,
+        "hash": "dd448902e0a930f9e3a89fa9ced3d430d6f5b9c46c6085b17ec8853c456b62e6"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-syr-life-expectancy",
+        "version": 1,
+        "hash": "0fb1ef8090352b3b4b6ab86baf1de02f62005355b615f9da5a873a6097b40d8d"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tca-life-expectancy",
+        "version": 1,
+        "hash": "a720d0dc699e94042d72560e33b6ae61d4c2a2e164823be9b811383433b8e877"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tcd-life-expectancy",
+        "version": 1,
+        "hash": "5a75c2598dce29fbc3477de9f548e9a04612a98f637c925f5e063ae8dc5ac459"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tgo-life-expectancy",
+        "version": 1,
+        "hash": "7c938de561676e17c3ebbf1aad043b486dd4ae4d6d995fd46499fe196c5f3492"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tha-life-expectancy",
+        "version": 1,
+        "hash": "8bd6b4706308da059d823b0cb06352cc978d3d6e8aca5f6aa37adfa96f51c368"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tjk-life-expectancy",
+        "version": 1,
+        "hash": "85515530d3de86a63c06fb17b4ef3ec8500f0ad96a2f58a27a7cf79c17e76ac4"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tkm-life-expectancy",
+        "version": 1,
+        "hash": "d321b2bffb19d9fba85acfa526e29b44b4b7595f97accb4d8bf794bf88db578f"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tls-life-expectancy",
+        "version": 1,
+        "hash": "6b412a9f0d5152f04c5a59416ad808194ee71fc923d4daefb9577413cfa97e32"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ton-life-expectancy",
+        "version": 1,
+        "hash": "bfde2ba2a65fe81f7c0fadcc642b23ca5e5ffa10e839cbcc893f7b702e489191"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tto-life-expectancy",
+        "version": 1,
+        "hash": "ef0a3e5c26a3c98e64297aa81fb67c7521b12ae5fe1f4fac3acd5e361b6f81bd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tun-life-expectancy",
+        "version": 1,
+        "hash": "5e2c426106159704423c998bf3bb51ed5e4992ba91e6e45081af64cbb73f58fc"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tur-life-expectancy",
+        "version": 1,
+        "hash": "a6bce8876891e1430b0671f01671b09d10bac7204c437032d4f0f609057c3fe5"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tuv-life-expectancy",
+        "version": 1,
+        "hash": "11c54546f85022ec48765ab02a14fdd9e42e648fef698d63e1eeebf1c91b5055"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-tza-life-expectancy",
+        "version": 1,
+        "hash": "61b68623ac9990f8b3398440fed33e9d86426274dd9cf2b7d6fc436a92df6126"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-uga-life-expectancy",
+        "version": 1,
+        "hash": "fe5565fb3f0ef624eadb82970e8225386ba0189d87775e86cba85c7c517c4343"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ukr-life-expectancy",
+        "version": 1,
+        "hash": "f4c0a6e2457a1c2b996282fa1ffdd40c706606bdf1711fb375d002f6dd4d917c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ury-life-expectancy",
+        "version": 1,
+        "hash": "1a570f8abb28ccb8881b79535e3e6ce3d902bdeb28ee563d21f2efd9bffe7e0b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-usa-life-expectancy",
+        "version": 1,
+        "hash": "24ae8b3741b8ec124d255a470c28147dd3e71f9e53f93de32d9d13252b81d651"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-uzb-life-expectancy",
+        "version": 1,
+        "hash": "ecb28aad862f30e071b6b440158a1a27aa59e43a86eb9f92f2b47ff87ff3cb71"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vct-life-expectancy",
+        "version": 1,
+        "hash": "e6b1287a83c91e63613d7450456eaf5ae3fa3cac9c3dba1fef672288a041caf7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-ven-life-expectancy",
+        "version": 1,
+        "hash": "8277f59069db1cffa2cb64087f385f2b8d65cc2f8e5e33317d28551fc15dfb78"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vgb-life-expectancy",
+        "version": 1,
+        "hash": "95e1eec3e9adc05622831cf2225c2c6cc898ccb6f8bdcb61e901f2cf10f4a9cd"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vir-life-expectancy",
+        "version": 1,
+        "hash": "5037abc39bc1b87a665320d025b9b9e1bae9196b5e608f1d8fac10ca91336fa8"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vnm-life-expectancy",
+        "version": 1,
+        "hash": "ad8c338f4eb1f94abe926972ec1032f63fddd607bbe74219e93f53a20eaa88ad"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-vut-life-expectancy",
+        "version": 1,
+        "hash": "9e3206c489063c0a6bf688e704c5ce0952b4b91b48ae67d77307d6e43e1de50b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-wsm-life-expectancy",
+        "version": 1,
+        "hash": "926da262f240ecb5a43fbe89f6527f648cf90606cb5baa1e08f46a05f7441f82"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-xkx-life-expectancy",
+        "version": 1,
+        "hash": "ecf66c419cdcd640a161507ecaec281769ceab75c2889f5ff3441b96969ad38e"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-yem-life-expectancy",
+        "version": 1,
+        "hash": "582632f55e80dc41707f0372aee2645e274f6098f75ad70a77d5743f047679d7"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zaf-life-expectancy",
+        "version": 1,
+        "hash": "0051d73941a3d39e86a78556421a1125420f25a11dd8c9dec0b86885191bf276"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zmb-life-expectancy",
+        "version": 1,
+        "hash": "c99523febf82b73186f96727c886b3b932b2f7d67d3d158f4acbf4dc3c09453c"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "fact-zwe-life-expectancy",
+        "version": 1,
+        "hash": "298e9075b064ca9e7f9dcd746ade0f4ddf83261507d1606be9143b74661bf80d"
+      }
+    }
+  ],
+  "sourceRefs": [],
+  "exclusions": [
+    "Aggregate regions are retained in raw source context but excluded from this country matrix."
+  ],
+  "limitations": [
+    "Latest non-null fact per fixed window; not a normalized six-year time series."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "79e5976689b1aa3cd1efc842d9438bff3fa18394c011bb0288b14f035d584220"
+}

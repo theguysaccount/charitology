@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-pol",
+  "entity": {
+    "kind": "entity",
+    "id": "country-pol",
+    "version": 1,
+    "hash": "20b7b6d30e59a5f1f41f60f4d66150f534409eae9533e0e5bfb19aa45c426e67"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Poland statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-pol",
+      "version": 1,
+      "hash": "20b7b6d30e59a5f1f41f60f4d66150f534409eae9533e0e5bfb19aa45c426e67"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-pol",
+      "version": 1,
+      "hash": "20b7b6d30e59a5f1f41f60f4d66150f534409eae9533e0e5bfb19aa45c426e67"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "7c01cb5d1e83e7e1c541c7027268ded762eaba5e22187d100e08dccf0bcd1b97"
+}

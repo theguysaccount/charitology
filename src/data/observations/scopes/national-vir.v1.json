@@ -1,0 +1,41 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "national-vir",
+  "entity": {
+    "kind": "entity",
+    "id": "country-vir",
+    "version": 1,
+    "hash": "7c39fbe25bdaaedca8e2998bedc3a18bcaae91e21047986a96fac2c822a98ce0"
+  },
+  "scopeKind": "national-statistics",
+  "label": "Virgin Islands (U.S.) statistical scope",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-vir",
+      "version": 1,
+      "hash": "7c39fbe25bdaaedca8e2998bedc3a18bcaae91e21047986a96fac2c822a98ce0"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-vir",
+      "version": 1,
+      "hash": "7c39fbe25bdaaedca8e2998bedc3a18bcaae91e21047986a96fac2c822a98ce0"
+    }
+  },
+  "exclusions": [],
+  "sourceRefs": [],
+  "limitations": [
+    "National indicator scope does not measure local need or charitable activity."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "305564c2d4a0f1194d85674273273cb264b5ca0815f74f6de77ac66b67f07752"
+}

@@ -1,0 +1,43 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "gw-identity",
+  "url": "https://files.givewell.org/files/ClearFund/Clear_Fund_2024_tax_return_Form_990.pdf",
+  "publisher": "GiveWell",
+  "title": "gw identity",
+  "retrievedAt": "2026-10-27T12:34:00.744Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "fbaf96db5d3b6b3a30edf4a7a607b2f72bebca9118bc388e4d28c4a951b56a34",
+  "rawBytes": 478862,
+  "payload": {
+    "kind": "external-document",
+    "mediaType": "application/pdf",
+    "publicExcerpt": null
+  },
+  "producerMetadata": [
+    {
+      "field": "originalRetrievalRecord",
+      "literal": "2026-10-27T12:34:00.744934Z"
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "linked-document-only",
+      "note": "Original retained privately. Only bounded source-linked factual evidence/excerpts enter this prototype."
+    },
+    "attribution": "GiveWell",
+    "originalProducerCredit": "The Clear Fund d.b.a. GiveWell",
+    "limitations": [
+      "No human review or blanket relicensing is established."
+    ]
+  },
+  "limitations": [],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "3b79842838d9bdc05a0ba1d8a4350605c06fe99ab9277fac7029a158a09b0468"
+}
