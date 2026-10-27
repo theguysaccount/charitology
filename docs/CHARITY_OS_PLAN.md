@@ -16,7 +16,9 @@ The [shared Charity OS](https://os.charitology.org) now implements the organizat
 
 The implementation has domain and browser-model regressions and a real Postgres/Better Auth scenario using separate owner and constrained runtime roles, synthetic recipients and mocked delivery. Those checks do not establish user adoption, independent security review, successful connections to a pilot’s actual systems or improved charitable outcomes. The [service guide](https://github.com/theguysaccount/charitology/blob/main/services/charity-os/README.md) describes exact behavior and limits.
 
-The typed modules provide back-office records. Public intake, participant self-service, automatic recurring gifts, a certified ledger/payroll system, two-way provider synchronization and specialist case handling are not completed by naming a module. Phases 3–5 below retain those gates. No consented pilot or architecture comparison with an operating CiviCRM installation has occurred.
+The deployed service also implements bounded public operational intake: a standalone approved/version-bound form, explicit consent, private administrator queue, status/withdrawal receipt, separate staff review and draft conversion, and answer erasure. Restored publications and receipt capabilities stay inactive. Exact-commit CI, production inspection of both new forced-RLS tables and controlled synthetic Chrome/isolated-database checks support this scope; [PUBLIC_PARTICIPATION.md](PUBLIC_PARTICIPATION.md) records the deployment and evidence limits. The browser administrator fixture used explicitly fake authentication, not an actual sign-in or human approval. No participant adoption or production form publication is claimed. The retention date closes collection for review, not automatic answer deletion. Erasure cannot remove separate contacts/drafts, historical source archives or downloaded copies.
+
+Authenticated participant self-service, confirmed bookings/waitlists, staff/participant notifications, automatic recurring gifts, a certified ledger/payroll system, two-way provider synchronization and specialist case handling remain open. Phases 3–5 below retain those gates. No consented pilot or architecture comparison with an operating CiviCRM installation has occurred. Neither typed modules nor public request forms establish staffed operations or actual human review.
 
 The [current Charity OS](https://charitology.org/tools/charity-os/) stores organization context, projects, grant stages, tasks and observations in one browser. It supports editing, deletion, undo, search, filters and validated JSON backups plus CSV export. It has storage-error and conflicting-tab notices.
 
@@ -156,6 +158,7 @@ Phases are ordered by dependency, not promised dates. Each ships a complete work
 
 ### Phase 3: people and participation
 
+- **Deployed intake slice with bounded acceptance evidence:** independently approved current forms collect minimal contact/event/volunteer interest without accounts; private administrators can review, prepare drafts and erase queue answers. CI, production isolation checks and controlled synthetic browser flows passed within the limits in [the acceptance record](PUBLIC_PARTICIPATION.md). No actual human approval, participant adoption, booking, newsletter subscription or sensitive case intake is implied.
 - CRM connector with contact role mapping and consent purposes.
 - Volunteer self-service, partial/overnight shifts, capacity and screening-completion status where needed.
 - Membership or event workflow chosen by a pilot, with offline alternatives and accessible reminders.
@@ -202,4 +205,4 @@ Before a shared pilot, name a technical maintainer and an organization administr
 5. Which integrations are genuinely required for the first report, with whose API access?
 6. Who conducts independent source, security, accessibility and domain review?
 
-The shared implementation is available for controlled evaluation. Continue the uncompleted pilot, provider-connection, public-participation and independent-review gates above; do not mark an entire phase complete from the presence of typed record forms alone.
+The shared implementation is available for controlled evaluation. Continue the uncompleted pilot, provider-connection, participant-portal/booking/notification and independent-review gates above, including real organizational intake use and comprehensive accessibility acceptance; do not mark an entire phase complete from typed records or an account-free form alone.

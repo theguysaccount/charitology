@@ -68,10 +68,18 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
       "membership.changed",
       "invitation.revoked",
       "integration.disabled",
+      "intake.cancelled",
+      "intake.publication.withdrawn",
+      "intake.erased",
     ].includes(action);
     if (accessControl) {
       detail = {
-        targetId: detail.userId || detail.id || null,
+        targetId:
+          detail.userId ||
+          detail.id ||
+          detail.intakeId ||
+          detail.publicationId ||
+          null,
         previousRole: detail.previousRole || null,
         role: detail.role || null,
         quotaReserve: true,
@@ -172,6 +180,8 @@ export async function logicalBackupBytes(c, org) {
     "os_comments",
     "os_reports",
     "os_integrations",
+    "os_publications",
+    "os_intake",
   ];
   const sql =
     tables

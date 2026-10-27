@@ -48,6 +48,7 @@ jobs:
       - name: Check browser entry syntax and execute server/browser-model regressions
         run: |
           node --check public/app.js
+          node --check public/intake.js
           node --test test/*.test.mjs public/*.test.js
       - name: Create a separate constrained application role
         run: |

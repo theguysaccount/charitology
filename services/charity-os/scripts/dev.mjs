@@ -46,7 +46,9 @@ const server = createServer(async (req, res) => {
         "." +
           (["/", "/app", "/invite"].includes(url.pathname)
             ? "/index.html"
-            : url.pathname),
+            : url.pathname.startsWith("/p/")
+              ? "/intake.html"
+              : url.pathname),
       );
       if (!path.startsWith(root + "/")) {
         res.writeHead(404).end();

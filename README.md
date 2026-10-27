@@ -37,6 +37,8 @@ npm run preview  # serve dist/ (search works here, not in dev)
 
 The public site is static HTML with browser-local TypeScript workspaces and requires no keys or database to build. Separate services run [newsletter delivery](services/newsletter/README.md) and the [shared Charity OS](services/charity-os/README.md); their private configuration is not part of the public build.
 
+The shared OS now includes bounded public operational request forms: explicit consent, revision-bound approved publication, a private administrator queue, status/withdrawal receipts, draft conversion and answer erasure. The release is promoted to https://os.charitology.org. [The intake acceptance record](docs/PUBLIC_PARTICIPATION.md) distinguishes CI, production isolation checks and controlled synthetic browser evidence. These forms do not establish participant accounts, bookings, newsletters, payments, sensitive case intake or actual review by a human.
+
 ## How it’s built
 
 - [Astro](https://astro.build) 5 with content collections. Every collection is validated by a schema in [`src/content.config.ts`](src/content.config.ts), so a malformed entry fails the build.

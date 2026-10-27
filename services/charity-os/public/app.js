@@ -476,6 +476,14 @@ function renderOrgControl() {
   renderNav();
 }
 function renderNav() {
+  let intakeLink = document.querySelector('[data-nav="intake"]');
+  if (!intakeLink) {
+    intakeLink = link("Public forms and requests", "#intake", {
+      "data-nav": "intake",
+    });
+    document.querySelector(".secondary-nav").prepend(intakeLink);
+  }
+  intakeLink.hidden = !admin();
   const q = $("#module-search").value.trim().toLocaleLowerCase();
   const modules = readable().filter((m) =>
     `${m.title} ${m.description}`.toLocaleLowerCase().includes(q),
@@ -593,6 +601,7 @@ async function route() {
       else await renderModule(module, current);
     } else if (state.route === "reports") await renderReports(current);
     else if (state.route === "data") renderData();
+    else if (state.route === "intake") await renderIntake(current);
     else if (state.route === "members") await renderMembers(current);
     else if (state.route === "integrations") await renderIntegrations(current);
     else if (state.route === "settings") await renderSettings(current);
@@ -3459,6 +3468,730 @@ function openIntegrationEditor() {
       closeSavedEditor();
       toast("Connection saved. Test access before importing.");
       await route();
+    },
+  );
+}
+const intakeKinds = {
+  contact: "General request",
+  "event-interest": "Event interest",
+  "volunteer-interest": "Volunteer interest",
+};
+const intakeStates = {
+  pending: "Awaiting review",
+  reviewed: "Reviewed",
+  converted: "Converted for follow-up",
+  dismissed: "Dismissed",
+  cancelled: "Withdrawn by requester",
+};
+function approvedIntakeSource(record, states) {
+  return (
+    states.includes(record.status) &&
+    record.approval?.status === "approved" &&
+    record.approval.revision === record.revision &&
+    typeof record.approval.actorId === "string" &&
+    record.approval.actorId !== record.lastEditedBy
+  );
+}
+function intakePublicationUrl(publication) {
+  const fallback = new URL(
+    `/p/${state.org}.${publication.id}`,
+    location.origin,
+  );
+  try {
+    const provided = new URL(publication.url, location.origin);
+    return ["https:", "http:"].includes(provided.protocol) &&
+      provided.pathname === fallback.pathname &&
+      !provided.search &&
+      !provided.hash
+      ? provided.href
+      : fallback.href;
+  } catch {
+    return fallback.href;
+  }
+}
+async function renderIntake(epoch) {
+  if (!admin())
+    throw new ApiError(
+      "Public forms and request review require an organization owner or administrator.",
+      403,
+    );
+  const org = state.org;
+  const result = await api.intakePublications(org);
+  if (epoch !== state.epoch) return;
+  const publications = result.publications || [];
+  const publicationNames = new Map(
+    publications.map((item) => [item.id, item.title || "Public form"]),
+  );
+  const publicationCards = publications.map((publication) => {
+    const url = intakePublicationUrl(publication);
+    const output = node("p", { class: "form-status", role: "status" });
+    const stateLabel = publication.withdrawnAt
+      ? "Withdrawn"
+      : publication.accepting
+        ? "Accepting requests"
+        : "Not accepting requests";
+    return node(
+      "article",
+      { class: "intake-publication" },
+      node(
+        "div",
+        { class: "section-header" },
+        node("h3", {}, publication.title || "Public form"),
+        tag(stateLabel),
+      ),
+      node(
+        "p",
+        { class: "fine" },
+        `${intakeKinds[publication.kind] || "Request"} · approved source revision ${publication.sourceRevision}`,
+      ),
+      node(
+        "p",
+        { class: "fine" },
+        publication.accepting
+          ? "This link accepts requests for private review. It does not promise places or assignments."
+          : "Source changes, a retention review date or withdrawal can stop new requests. Review the source before publishing another version.",
+      ),
+      node(
+        "div",
+        { class: "actions" },
+        link("View source form", recordHref("forms", publication.recordId), {
+          class: "button small subtle",
+        }),
+        publication.accepting
+          ? link("Open public form ↗", url, {
+              class: "button small",
+              target: "_blank",
+              rel: "noopener noreferrer",
+            })
+          : null,
+        button(
+          "Copy public link",
+          (event) =>
+            action(
+              async () => {
+                await navigator.clipboard.writeText(url);
+                output.textContent = "Public form link copied.";
+              },
+              event.currentTarget,
+              output,
+            ),
+          "small subtle",
+        ),
+        !publication.withdrawnAt
+          ? button(
+              "Withdraw form",
+              (event) =>
+                action(
+                  async () => {
+                    if (
+                      !(await confirmAction(
+                        "Withdraw this public form?",
+                        "Stop new requests through this link. Existing requests remain available for private review, and requesters retain their receipts.",
+                        "Withdraw form",
+                      ))
+                    )
+                      return;
+                    await api.withdrawIntake(org, publication.id);
+                    toast("Public form withdrawn.");
+                    await route();
+                  },
+                  event.currentTarget,
+                  output,
+                ),
+              "small danger",
+            )
+          : null,
+      ),
+      output,
+    );
+  });
+  const publicationFilter = node(
+    "select",
+    { id: "intake-publication-filter" },
+    node("option", { value: "" }, "All public forms"),
+    publications.map((item) =>
+      node("option", { value: item.id }, item.title || "Public form"),
+    ),
+  );
+  const stateFilter = node(
+    "select",
+    { id: "intake-status-filter" },
+    node("option", { value: "" }, "All request states"),
+    Object.entries(intakeStates).map(([id, label]) =>
+      node("option", { value: id }, label),
+    ),
+  );
+  const queue = node("div", { class: "stack" }),
+    queueStatus = node("p", { class: "form-status", role: "status" });
+  let cursor = null,
+    queueVersion = 0,
+    rows = [];
+  const more = button(
+    "Load more requests",
+    (event) => action(() => loadQueue(true), event.currentTarget, queueStatus),
+    "subtle",
+    { hidden: true },
+  );
+  async function loadQueue(append = false) {
+    const version = ++queueVersion;
+    queueStatus.textContent = "Loading private requests…";
+    const response = await api.intakeSubmissions(org, {
+      publicationId: publicationFilter.value,
+      status: stateFilter.value,
+      ...(append && cursor ? { cursor } : {}),
+    });
+    if (version !== queueVersion || epoch !== state.epoch || org !== state.org)
+      return;
+    rows = append
+      ? [...rows, ...(response.submissions || [])]
+      : response.submissions || [];
+    cursor = response.nextCursor || null;
+    const unique = [...new Map(rows.map((item) => [item.id, item])).values()];
+    queue.replaceChildren(
+      ...unique.map((submission) =>
+        node(
+          "article",
+          { class: "intake-queue-row" },
+          node(
+            "div",
+            {},
+            node(
+              "h3",
+              {},
+              publicationNames.get(submission.publicationId) || "Request",
+            ),
+            node(
+              "p",
+              { class: "fine" },
+              `${formatDate(submission.createdAt, true)} · revision ${submission.revision}`,
+            ),
+          ),
+          tag(intakeStates[submission.status] || labelFor(submission.status)),
+          button(
+            "Review request",
+            (event) =>
+              action(
+                () => openIntakeSubmission(org, submission.id, publications),
+                event.currentTarget,
+                queueStatus,
+              ),
+            "small",
+          ),
+        ),
+      ),
+    );
+    if (!unique.length)
+      queue.append(
+        node(
+          "p",
+          { class: "fine" },
+          "No requests match these filters. New submissions appear here after a public form is sent.",
+        ),
+      );
+    more.hidden = !cursor;
+    queueStatus.textContent = `${unique.length} private requests shown${cursor ? "; more are available" : ""}.`;
+  }
+  for (const control of [publicationFilter, stateFilter])
+    control.addEventListener("change", () =>
+      action(() => loadQueue(), null, queueStatus),
+    );
+  setContent(
+    heading(
+      "Participation, with review",
+      "Public forms and private requests.",
+      "Publish an approved question set, then review each request before preparing any operational record.",
+      [
+        button(
+          "Publish an approved form",
+          (event) =>
+            action(() => openIntakePublication(org), event.currentTarget),
+          "primary",
+        ),
+      ],
+    ),
+    node(
+      "section",
+      { class: "panel" },
+      node("h2", {}, "A clear path from invitation to decision"),
+      node(
+        "ol",
+        { class: "intake-steps" },
+        node(
+          "li",
+          {},
+          "Prepare a form with its questions, collection purpose, version and retention review date. That date closes new requests for review; it does not automatically delete answers.",
+        ),
+        node(
+          "li",
+          {},
+          "Ask another authorized person to review and approve the saved revision, then move the form to Published in its workflow. Approve any event or volunteer shift separately.",
+        ),
+        node(
+          "li",
+          {},
+          "Publish that version and share its public link. People explicitly consent before submitting.",
+        ),
+        node(
+          "li",
+          {},
+          "Review the private request. Conversion prepares drafts; a person still checks identity, capacity, eligibility and any further approval.",
+        ),
+      ),
+      link("Open Forms and intake", "#module/forms", {
+        class: "button subtle",
+      }),
+    ),
+    node(
+      "section",
+      { class: "panel section-gap" },
+      node(
+        "div",
+        { class: "section-header" },
+        node("h2", {}, "Published forms"),
+        tag(publications.length),
+      ),
+      publicationCards.length
+        ? node("div", { class: "stack" }, publicationCards)
+        : node(
+            "p",
+            { class: "fine" },
+            "No public link has been created. Start with an independently approved form revision in the Published workflow state.",
+          ),
+    ),
+    node(
+      "section",
+      { class: "panel section-gap" },
+      node("h2", {}, "Request review queue"),
+      node(
+        "p",
+        { class: "fine" },
+        "Answers are private to authorized organization administrators. Consent is for the stated collection purpose; it is not newsletter consent.",
+      ),
+      node(
+        "div",
+        { class: "inline-fields" },
+        field("Public form", publicationFilter),
+        field("Request state", stateFilter),
+        button(
+          "Refresh requests",
+          (event) =>
+            action(() => loadQueue(), event.currentTarget, queueStatus),
+          "subtle",
+        ),
+      ),
+      queueStatus,
+      queue,
+      more,
+    ),
+  );
+  await loadQueue();
+}
+async function openIntakePublication(org) {
+  const [forms, events, volunteers] = await Promise.all([
+    allRecords(org, "forms"),
+    allRecords(org, "events"),
+    allRecords(org, "volunteers"),
+  ]);
+  if (org !== state.org) return;
+  const approvedForms = forms.filter(
+    (record) =>
+      record.data.kind === "form" &&
+      approvedIntakeSource(record, ["published"]),
+  );
+  if (!approvedForms.length) {
+    configureEditor(
+      "Public forms",
+      "First, approve a form revision.",
+      "Close",
+      [
+        node(
+          "p",
+          { class: "full-width" },
+          "Prepare a form definition with questions, purpose, version and a retention review date. Another authorized reviewer must approve its current saved revision. Move that revision to Published in the form’s workflow before an owner or administrator creates its public link here.",
+        ),
+        link("Open Forms and intake", "#module/forms", {
+          class: "button subtle",
+          onclick: () => closeSavedEditor(),
+        }),
+      ],
+      async () => closeSavedEditor(),
+    );
+    return;
+  }
+  const form = node(
+    "select",
+    { id: "publication-source", required: true },
+    node("option", { value: "" }, "Choose an approved form"),
+    approvedForms.map((record) =>
+      node(
+        "option",
+        { value: record.id },
+        `${recordTitle(record)} · revision ${record.revision}`,
+      ),
+    ),
+  );
+  const kind = node(
+    "select",
+    { id: "publication-kind", required: true },
+    Object.entries(intakeKinds).map(([id, label]) =>
+      node("option", { value: id }, label),
+    ),
+  );
+  const target = node("select", { id: "publication-target" });
+  const targetField = field(
+    "Approved session or shift (optional)",
+    target,
+    "A public interest form does not reserve capacity. Its approved target remains subject to later review.",
+  );
+  let targets = [];
+  function chooseKind() {
+    targets =
+      kind.value === "event-interest"
+        ? events.filter(
+            (record) =>
+              record.data.kind === "session" &&
+              approvedIntakeSource(record, ["approved", "scheduled", "open"]),
+          )
+        : kind.value === "volunteer-interest"
+          ? volunteers.filter(
+              (record) =>
+                record.data.kind === "shift" &&
+                approvedIntakeSource(record, ["approved", "open"]),
+            )
+          : [];
+    targetField.hidden = kind.value === "contact";
+    target.required = false;
+    target.replaceChildren(
+      node("option", { value: "" }, "General interest; no session or shift"),
+      ...targets.map((record) =>
+        node(
+          "option",
+          { value: record.id },
+          `${recordTitle(record)} · revision ${record.revision}`,
+        ),
+      ),
+    );
+  }
+  kind.addEventListener("change", chooseKind);
+  chooseKind();
+  configureEditor(
+    "A reviewed invitation",
+    "Publish a public request form.",
+    "Publish approved version",
+    [
+      node(
+        "p",
+        { class: "full-width fine" },
+        "This public link uses the independently approved form in its Published workflow state. Its organization name, title, purpose, questions and retention review date become public; answers enter this organization’s private request queue. Editing the source stops new requests until the new revision is independently approved, moved to Published and linked again.",
+      ),
+      field("Approved form revision", form),
+      field("Purpose of the request", kind),
+      targetField,
+    ],
+    async () => {
+      const source = approvedForms.find((record) => record.id === form.value),
+        selected = targets.find((record) => record.id === target.value);
+      if (!source)
+        throw new Error(
+          "Choose a current independently approved form in its Published workflow state.",
+        );
+      const result = await api.publishIntake(org, {
+        recordId: source.id,
+        revision: source.revision,
+        kind: kind.value,
+        ...(selected
+          ? { targetId: selected.id, targetRevision: selected.revision }
+          : {}),
+      });
+      if (!result.publication?.id)
+        throw new Error(
+          "The publication response is incomplete. Refresh published forms before trying again.",
+        );
+      closeSavedEditor();
+      toast("Approved public form published.");
+      await route();
+    },
+  );
+}
+async function openIntakeSubmission(org, id, publications) {
+  const result = await api.intakeSubmission(org, id);
+  if (org !== state.org) return;
+  const submission = result.submission;
+  if (!submission) throw new Error("This private request could not be loaded.");
+  const publication = publications.find(
+    (item) => item.id === submission.publicationId,
+  );
+  const status = node("p", { class: "form-status full-width", role: "status" });
+  const fields = [
+    node(
+      "p",
+      { class: "full-width" },
+      `${intakeStates[submission.status] || labelFor(submission.status)} · received ${formatDate(submission.createdAt, true)} · revision ${submission.revision}`,
+    ),
+    node(
+      "p",
+      { class: "full-width fine" },
+      `Explicit purpose consent recorded ${formatDate(submission.consentAt, true)}. These answers are not newsletter consent or a booking confirmation.`,
+    ),
+    node(
+      "dl",
+      { class: "detail-fields full-width" },
+      Object.entries(submission.answers || {}).map(([key, value]) =>
+        node(
+          "div",
+          {},
+          node("dt", {}, labelFor(key)),
+          node(
+            "dd",
+            {},
+            value === null
+              ? "Not provided"
+              : typeof value === "boolean"
+                ? value
+                  ? "Yes"
+                  : "No"
+                : typeof value === "object"
+                  ? JSON.stringify(value)
+                  : String(value),
+          ),
+        ),
+      ),
+    ),
+  ];
+  const actions = [];
+  if (submission.status === "pending" && !submission.erasedAt)
+    actions.push(
+      button(
+        "Mark reviewed",
+        (event) =>
+          action(
+            async () => {
+              await api.reviewIntake(org, id, {
+                revision: submission.revision,
+                action: "review",
+              });
+              closeSavedEditor();
+              toast(
+                "Request marked reviewed. No operational record was created.",
+              );
+              await route();
+            },
+            event.currentTarget,
+            status,
+          ),
+        "primary",
+      ),
+    );
+  if (submission.status === "reviewed" && !submission.erasedAt)
+    actions.push(
+      button(
+        "Prepare draft records",
+        (event) =>
+          action(
+            async () => {
+              closeSavedEditor();
+              await openIntakeConversion(org, submission, publication);
+            },
+            event.currentTarget,
+            status,
+          ),
+        "primary",
+      ),
+    );
+  if (["pending", "reviewed"].includes(submission.status))
+    actions.push(
+      button(
+        "Dismiss request",
+        (event) =>
+          action(
+            async () => {
+              if (
+                !(await confirmAction(
+                  "Dismiss this request?",
+                  "Close this request without creating operational records. The requester can see its closed status using their private receipt.",
+                  "Dismiss request",
+                ))
+              )
+                return;
+              await api.reviewIntake(org, id, {
+                revision: submission.revision,
+                action: "dismiss",
+              });
+              closeSavedEditor();
+              toast("Request dismissed.");
+              await route();
+            },
+            event.currentTarget,
+            status,
+          ),
+        "danger",
+      ),
+    );
+  if (!submission.erasedAt)
+    actions.push(
+      button(
+        "Erase submitted answers",
+        (event) =>
+          action(
+            async () => {
+              if (
+                !(await confirmAction(
+                  "Erase these submitted answers?",
+                  "Erase submitted answers; previously prepared contacts and drafts remain. Their retention is managed separately. Earlier source archives and downloaded backups are not changed. The request’s status and minimal receipt history remain.",
+                  "Erase answers",
+                ))
+              )
+                return;
+              await api.reviewIntake(org, id, {
+                revision: submission.revision,
+                action: "erase",
+              });
+              closeSavedEditor();
+              toast(
+                "Submitted answers erased. Prepared records remain separate.",
+              );
+              await route();
+            },
+            event.currentTarget,
+            status,
+          ),
+        "danger",
+      ),
+    );
+  if (submission.erasedAt)
+    fields.push(
+      node(
+        "p",
+        { class: "full-width notice" },
+        `Submitted answers were erased ${formatDate(submission.erasedAt, true)}. Request status, minimal receipt history and any prepared records are retained separately.`,
+      ),
+    );
+  if (Array.isArray(submission.convertedIds))
+    fields.push(
+      node(
+        "div",
+        { class: "actions full-width" },
+        submission.convertedIds
+          .filter((record) => record?.id && moduleById(record.moduleId))
+          .map((record) =>
+            link(
+              `Open linked ${moduleById(record.moduleId).title} record`,
+              recordHref(record.moduleId, record.id),
+              { class: "button small subtle" },
+            ),
+          ),
+      ),
+    );
+  fields.push(node("div", { class: "actions full-width" }, actions), status);
+  if (submission.status === "converted")
+    fields.push(
+      node(
+        "p",
+        { class: "full-width fine" },
+        "Records are linked for follow-up. Review them before taking the next operational step. Conversion does not confirm a booking or assignment. A requester’s later cancellation does not delete linked records; review withdrawal before advancing them.",
+      ),
+    );
+  configureEditor(
+    "Private request",
+    publication?.title || "Review a request",
+    "Close",
+    fields,
+    async () => closeSavedEditor(),
+  );
+}
+async function openIntakeConversion(org, submission, publication) {
+  const contacts = await allRecords(org, "contacts");
+  if (org !== state.org) return;
+  const identifiable =
+    (typeof submission.answers?.name === "string" &&
+      submission.answers.name.trim()) ||
+    (typeof submission.answers?.email === "string" &&
+      submission.answers.email.trim());
+  const contact = node(
+    "select",
+    { id: "intake-contact", required: !identifiable },
+    node(
+      "option",
+      { value: "" },
+      identifiable
+        ? "Create a minimal draft contact from submitted name or email"
+        : "Choose an existing contact",
+    ),
+    contacts.map((record) =>
+      node("option", { value: record.id }, recordTitle(record)),
+    ),
+  );
+  configureEditor(
+    "Reviewed request",
+    "Prepare drafts for the next decision.",
+    "Create draft records",
+    [
+      node(
+        "p",
+        { class: "full-width" },
+        `${intakeKinds[publication?.kind] || "Request"}: this prepares a draft contact or links an existing one${publication?.targetId && publication.kind === "event-interest" ? ", with a draft event registration" : publication?.targetId && publication.kind === "volunteer-interest" ? ", with a draft volunteer assignment" : ""}. Nothing is booked, assigned, emailed or subscribed automatically.`,
+      ),
+      field(
+        "Contact identity",
+        contact,
+        "Choose an existing contact when the person is already known. If the form did not collect a name or email, an existing contact is required.",
+      ),
+      node(
+        "p",
+        { class: "full-width fine" },
+        "Check identity, purpose, eligibility, target capacity and any safeguarding requirements before advancing the prepared drafts. Only submitted fields explicitly named name and email can prepare a new contact.",
+      ),
+    ],
+    async () => {
+      if (!contact.value && !identifiable)
+        throw new Error(
+          "Choose an existing contact before preparing draft records.",
+        );
+      const result = await api.reviewIntake(org, submission.id, {
+        revision: submission.revision,
+        action: "convert",
+        ...(contact.value ? { contactId: contact.value } : {}),
+      });
+      closeSavedEditor();
+      const drafts = result.records || [];
+      invalidateModules(org, [
+        ...new Set(drafts.map((record) => record.moduleId)),
+      ]);
+      const links = (result.submission?.convertedIds || drafts).map((record) =>
+        link(
+          `Open linked ${moduleById(record.moduleId)?.title || record.moduleId} record`,
+          recordHref(record.moduleId, record.id),
+          { class: "button subtle" },
+        ),
+      );
+      await route();
+      if (org === state.org)
+        $("#content").prepend(
+          node(
+            "section",
+            { class: "panel section-gap", role: "status" },
+            node(
+              "h2",
+              {},
+              drafts.length
+                ? "Draft records prepared."
+                : "Request linked for follow-up.",
+            ),
+            node(
+              "p",
+              {},
+              drafts.length
+                ? "Review the drafts before taking the next operational step. This did not confirm a place, assignment or booking."
+                : "No new record was needed. Review the linked record before taking the next operational step. This did not confirm a place, assignment or booking.",
+            ),
+            node("div", { class: "actions" }, links),
+          ),
+        );
+      toast(
+        drafts.length
+          ? "Reviewed request converted to drafts."
+          : "Request linked for follow-up. No new record was needed.",
+      );
     },
   );
 }

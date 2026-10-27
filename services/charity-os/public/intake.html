@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#f6f3ec" />
+    <title>A request, with a clear next step · Charity OS</title>
+    <link rel="icon" type="image/svg+xml" href="/mark.svg" />
+    <link rel="stylesheet" href="/os.css" />
+    <script type="module" src="/intake.js"></script>
+  </head>
+  <body class="intake-page">
+    <a class="skip" href="#intake-main">Skip to the form</a>
+    <header class="masthead">
+      <a class="brand" href="https://charitology.org/for-charities/">
+        <img src="/mark.svg" width="44" height="44" alt="" />
+        <span
+          ><strong>Charity OS</strong
+          ><small>A clear way to take part</small></span
+        >
+      </a>
+      <a class="site-link" href="https://charitology.org/"
+        >About Charitology ↗</a
+      >
+    </header>
+    <main id="intake-main" class="intake-main" tabindex="-1">
+      <section id="intake-loading" class="panel" aria-live="polite">
+        <span class="eyebrow">A request, with a next step</span>
+        <h1>Opening the form.</h1>
+        <p>Checking whether the organization is accepting requests.</p>
+      </section>
+      <section id="intake-error" class="panel" role="alert" hidden></section>
+      <div id="intake-workspace" class="intake-layout" hidden>
+        <aside class="intake-context">
+          <span id="intake-organization" class="eyebrow"></span>
+          <h1 id="intake-title"></h1>
+          <p id="intake-purpose" class="lede"></p>
+          <div class="intake-boundary">
+            <h2>A request comes first.</h2>
+            <p>
+              The organization reviews your answers before deciding the next
+              step. Sending this form does not confirm a booking, place or
+              volunteer assignment.
+            </p>
+            <p class="fine">
+              No account is needed. This form does not subscribe you to a
+              newsletter. Share only what the questions ask; leave out sensitive
+              service histories.
+            </p>
+          </div>
+          <p id="intake-retention" class="fine"></p>
+        </aside>
+        <section
+          class="panel intake-form-panel"
+          aria-labelledby="intake-form-title"
+        >
+          <h2 id="intake-form-title">Your request</h2>
+          <p class="fine">
+            Questions marked “required” need an answer. A “No” answer or a
+            measured zero remains an answer.
+          </p>
+          <form id="intake-form">
+            <div id="intake-questions" class="stack"></div>
+            <div class="intake-honeypot" aria-hidden="true">
+              <label for="intake-website">Leave this field empty</label
+              ><input
+                id="intake-website"
+                name="website"
+                type="text"
+                tabindex="-1"
+                autocomplete="off"
+              />
+            </div>
+            <label class="intake-consent" for="intake-consent"
+              ><input id="intake-consent" type="checkbox" required /><span
+                id="intake-consent-text"
+              ></span
+            ></label>
+            <p
+              id="intake-form-status"
+              class="form-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+            <button
+              id="intake-submit"
+              type="submit"
+              class="button primary wide"
+            >
+              Send request
+            </button>
+          </form>
+        </section>
+      </div>
+      <section
+        id="intake-received"
+        class="panel intake-received"
+        hidden
+      ></section>
+      <section id="intake-receipt" class="panel intake-received" hidden>
+        <span class="eyebrow">Your private receipt</span>
+        <h1>Your request’s next step.</h1>
+        <p>
+          Use the complete private receipt link you saved when you sent the
+          form. It lets you check status or cancel the request. It does not show
+          your answers.
+        </p>
+        <form id="receipt-entry-form">
+          <label for="receipt-entry">Private receipt link or code</label
+          ><input
+            id="receipt-entry"
+            type="password"
+            autocomplete="off"
+            spellcheck="false"
+            required
+            maxlength="500"
+          /><button type="submit" class="button primary section-gap">
+            Check status
+          </button>
+        </form>
+        <div id="receipt-result" class="section-gap"></div>
+        <p
+          id="receipt-status"
+          class="form-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+      </section>
+      <noscript
+        ><section class="panel">
+          <h1>JavaScript is needed to send this request.</h1>
+          <p>
+            The form checks its current publication and sends your answers to
+            the organization’s shared workspace. No request has been sent.
+          </p>
+        </section></noscript
+      >
+    </main>
+    <footer class="intake-footer">
+      <p>
+        Your answers go to the organization named on this form. Authorized
+        organization administrators can review them and prepare private draft
+        records. Public receipt checks show status only.
+      </p>
+      <a href="https://charitology.org/"
+        >Charitology · The science of doing the most good</a
+      >
+    </footer>
+  </body>
+</html>

@@ -55,6 +55,12 @@ import { validateFile, FILE_QUOTA } from "./files.mjs";
 import { uploadPart, uploadedBackup, downloadJson } from "./uploads.mjs";
 import { memberRoutes, acceptInvite } from "./members.mjs";
 import { integrationRoutes } from "./integrations.mjs";
+import { publicIntakeRoutes, intakeRoutes } from "./intake.mjs";
+import {
+  exportIntake,
+  restoredIntake,
+  restoreIntake,
+} from "./intake-backup.mjs";
 import { runJobs, runOrgJobs, enqueue } from "./jobs.mjs";
 const okay = (value) => json({ ok: true, ...value });
 const iso = (x) => x?.toISOString?.() || x;
@@ -163,6 +169,13 @@ export function createHandler({ settings, db, auth, send }) {
       // Better Auth's consuming GET is intentionally not exposed. Email scanners only see the confirmation page.
       if (path.startsWith("/api/auth/") && path !== "/api/auth/logout")
         fail(404, "route", "This route is unavailable.");
+      const publicIntakeResponse = await publicIntakeRoutes({
+        request,
+        url,
+        db,
+        settings,
+      });
+      if (publicIntakeResponse) return publicIntakeResponse;
       const session = await auth.api.getSession({ headers: request.headers });
       if (path === "/api/session" && method === "GET") {
         if (!session) return okay({ user: null });
@@ -309,6 +322,18 @@ export function createHandler({ settings, db, auth, send }) {
             settings,
           });
           if (integrationResponse) return integrationResponse;
+          const intakeResponse = await intakeRoutes({
+            c,
+            org,
+            user,
+            member,
+            tail,
+            method,
+            input,
+            url,
+            settings,
+          });
+          if (intakeResponse) return intakeResponse;
           const records = await allRecords(c, org),
             visible = records
               .map((r) => visibleRecord(r, member))
@@ -414,6 +439,7 @@ export function createHandler({ settings, db, auth, send }) {
               trash,
               trashFiles,
               integrations,
+              intake: await exportIntake(c, org),
             });
             await audit(c, org, user, "backup.exported", null, {
               count: records.length,
@@ -435,7 +461,16 @@ export function createHandler({ settings, db, auth, send }) {
               : null;
             if (migration) backup = migration.backup;
             const imported = validateBackup(backup, org, user);
+            const intake = restoredIntake(backup);
             const issues = [];
+            const existingIntake = Number(
+              (
+                await c.query(
+                  "SELECT (SELECT count(*) FROM os_publications WHERE org_id=$1)+(SELECT count(*) FROM os_intake WHERE org_id=$1) AS count",
+                  [org],
+                )
+              ).rows[0].count,
+            );
             if (
               Number(
                 (
@@ -444,7 +479,8 @@ export function createHandler({ settings, db, auth, send }) {
                     [org],
                   )
                 ).rows[0].count,
-              )
+              ) ||
+              existingIntake
             )
               issues.push({
                 field: "organization",
@@ -469,10 +505,23 @@ export function createHandler({ settings, db, auth, send }) {
                 rejected: issues.length,
                 skipped: 0,
                 approvalsReset: imported.length,
+                intakePublicationsClosed: intake.publications.length,
+                intakeRequests: intake.submissions.length,
                 ...(migration ? { migration: migration.summary } : {}),
               },
               issues,
-              warnings: migration?.warnings || [],
+              warnings: [
+                ...(migration?.warnings || []),
+                ...(intake.publications.length
+                  ? [
+                      {
+                        field: "intake",
+                        message:
+                          "Publications restore closed, all receipt links are disabled and earlier reviews confer no authority. Request answers stay private to administrators. Publish a newly approved form for new requests; handle recovered requests manually.",
+                      },
+                    ]
+                  : []),
+              ],
             });
           }
           if (tail === "import/commit" && method === "POST") {
@@ -507,6 +556,7 @@ export function createHandler({ settings, db, auth, send }) {
               );
             const imported = validateBackup(p.payload, org, user);
             const connections = restoredIntegrations(p.payload);
+            const intake = restoredIntake(p.payload);
             if (
               Number(
                 (
@@ -521,6 +571,21 @@ export function createHandler({ settings, db, auth, send }) {
                 409,
                 "restore_conflict",
                 "Restore requires an organization without existing connections.",
+              );
+            if (
+              Number(
+                (
+                  await c.query(
+                    "SELECT (SELECT count(*) FROM os_publications WHERE org_id=$1)+(SELECT count(*) FROM os_intake WHERE org_id=$1) AS count",
+                    [org],
+                  )
+                ).rows[0].count,
+              )
+            )
+              fail(
+                409,
+                "restore_conflict",
+                "Restore requires an organization without existing public intake records.",
               );
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -579,6 +644,7 @@ export function createHandler({ settings, db, auth, send }) {
                 ],
               );
             }
+            await restoreIntake(c, org, user, intake);
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
               checksum: p.checksum,
@@ -586,6 +652,8 @@ export function createHandler({ settings, db, auth, send }) {
               sourceHistoryCount: p.payload.events?.length || 0,
               sourceCommentCount: p.payload.comments?.length || 0,
               sourceReportCount: p.payload.reports?.length || 0,
+              intakePublicationsClosed: intake.publications.length,
+              intakeRequests: intake.submissions.length,
             });
             return okay({ imported: imported.length });
           }

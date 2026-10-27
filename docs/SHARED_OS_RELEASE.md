@@ -1,6 +1,32 @@
 # Shared Charity OS release evidence
 
-Evidence checkpoint: **26 October 2026**. The shared service is promoted at https://os.charitology.org. Exact-commit CI, constrained-role database checks, production HTTP recovery and controlled login/reminder inbox tests passed. Browser evidence and remaining unexercised boundaries are recorded separately below.
+Evidence checkpoint: **26 October 2026** (local date). The public operational intake follow-up is promoted at https://os.charitology.org. Its evidence is recorded first; the earlier foundation, recovery and controlled login/reminder evidence follows separately.
+
+## Public operational intake follow-up
+
+Runtime commit **`98ebea527b6a5b382d5e143acf207205eccd172b`** was staged, tested and promoted as **`dpl_1yFKcLN8m2x8QkXs4Sf1sZbeBdYd`**. A post-promotion lookup of `os.charitology.org` resolved to that exact deployment and commit. [PR #9](https://github.com/theguysaccount/charitology/pull/9) contains the implementation and its documentation. The later `9713128` change only extends the optional disposable test fixture; it does not change the deployed application.
+
+| Check | Recorded result and limit |
+| --- | --- |
+| Exact runtime CI | [Run 40437664958](https://github.com/theguysaccount/charitology/actions/runs/40437664958) passed **106 unit/browser-model tests**, **21 actual OS Postgres tests**, newsletter safety/isolated-database checks and the **447-page** public build/check. [Fixture follow-up CI](https://github.com/theguysaccount/charitology/actions/runs/40438583603) also passed. |
+| Intake database boundaries | Actual separate-role Postgres tests cover one-time receipts/concurrent deduplication, tenant/admin isolation, revisions, draft conversion/capacity, source/target withdrawal, daily/row/byte limits, erasure and inactive recovery. Cancellation, withdrawal and erasure still commit after the audit reserve fills. No mail transport is used. |
+| Production migration and role | The additive migration completed. Both `os_publications` and `os_intake` enable and force tenant RLS. The constrained runtime has neither superuser nor RLS-bypass privilege; context-free reads returned zero rows from both new tables. The earlier twelve tenant tables retain their separate foundation evidence below. |
+| Protected staged requests | **13 checks passed:** health 200; nonexistent publication 404; query receipt 400; unsigned private queue 401; foreign-origin submission 403; three HTML shells and five assets 200. The deployed `app.js`, `intake.js`, `api.js`, stylesheet and compass bytes matched local SHA-256 hashes. |
+| Live production requests | **12 checks passed** after promotion: the same API boundaries, receipt shell and five exact asset comparisons, plus HTTP-to-HTTPS 308. This checks the real public origin, not only a preview URL. No production form was published or participant record created. |
+| Public browser journey | Actual Chrome and an isolated constrained Postgres schema: fictional form submission, explicit purpose consent, accepted receipt, status, in-page withdrawal confirmation and displayed **Cancelled**. Editing/closing a synthetic source made its public form unavailable while its existing receipt status remained readable. Accepted answers were removed from the page. Skip navigation preserved the receipt fragment and directly focused the main landmark. |
+| Staff browser journey | A separate temporary fixture used an explicit synthetic session stub, actual tenant membership, the real handler and CSRF checks. A public request appeared in the private queue; review advanced revision 1→2; conversion prepared an unapproved contact draft and revision 3. Erasure advanced to revision 4; reopening showed the erasure notice and no answer fields. The linked contact still opened as **Draft, revision 1, Permission needed**, with its creation history. This is not a real sign-in, human review, participant or booking claim. |
+| Recovery | Unit and actual Postgres checks preserve private answers/erasure tombstones while omitting receipt, idempotency, payload and IP hashes. Restored publications are withdrawn, capabilities disabled and earlier reviews confer no authority. A new intake-specific hosted/browser backup round trip was not executed; earlier local-to-shared browser recovery remains a separate result. |
+| Cleanup and logs | All disposable intake fixtures exited successfully; a catalog check found zero remaining temporary intake schemas. The final deployment's error/fatal log scan for the inspected hour returned no entries. This is a bounded log observation, not an uptime guarantee. |
+
+Staging exposed a hosting-specific issue before promotion: Vercel forwards unused rewrite captures as query parameters. The intake route now removes only one exact `path` capture matching its pathname and refuses every remaining, wrong or duplicate query field. [Vercel's rewrite documentation](https://vercel.com/docs/routing/rewrites) describes that forwarding behavior. Unit and staged/live requests verify the correction without accepting receipt tokens in queries.
+
+Two initial GETs in a fresh local Neon fixture returned sanitized internal errors before the browser's retry recovered. The original error message was not retained, so their cause remains unconfirmed; a connection/transport explanation is an inference. The later fixture, staged and public-origin checks passed. Native browser confirmation was replaced by an in-page deliberate confirmation; no browser-modal acceptance is claimed.
+
+The optional fixtures serve only synthetic data, use separate temporary schemas, disable mail and are excluded from deployment. They do not establish real participant adoption or independent human approval. Newsletter consent, suppression and the previously accepted issue were untouched. No AI provider or additional paid plan was introduced.
+
+The compatible pre-intake application was **`f2722ae` / `dpl_As6sDYZweoP8spRHdeo95QQb5ZLu`**. The migration is additive: preserve all tables and data on rollback. That older application cannot operate or export the new intake queue, so retain a current-version backup and its separate source archives before using it. Do not use a destructive down-migration.
+
+Authenticated participant portals, confirmed booking/waitlists, participant/staff notifications, real connector contracts, consented pilots and independent privacy/security/accessibility review remain separate work. The original 66-item register retains its partial, adapted and people-dependent labels; this release does not turn software workflows into operating institutions.
 
 ## Scope
 

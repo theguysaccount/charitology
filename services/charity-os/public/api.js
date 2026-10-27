@@ -217,6 +217,31 @@ export const api = {
   },
   commitImport: (org, data) =>
     request(`${orgPath(org)}/import/commit`, { method: "POST", body: data }),
+  intakePublications: (org) => request(`${orgPath(org)}/intake/publications`),
+  publishIntake: (org, body) =>
+    request(`${orgPath(org)}/intake/publications`, { method: "POST", body }),
+  withdrawIntake: (org, id) =>
+    request(`${orgPath(org)}/intake/publications/${part(id)}/withdraw`, {
+      method: "POST",
+      body: {},
+    }),
+  intakeSubmissions: (org, filters = {}) => {
+    const query = new URLSearchParams(
+      Object.entries(filters).filter(
+        ([, value]) => value !== "" && value !== null && value !== undefined,
+      ),
+    );
+    return request(
+      `${orgPath(org)}/intake/submissions${query.size ? `?${query}` : ""}`,
+    );
+  },
+  intakeSubmission: (org, id) =>
+    request(`${orgPath(org)}/intake/submissions/${part(id)}`),
+  reviewIntake: (org, id, body) =>
+    request(`${orgPath(org)}/intake/submissions/${part(id)}/review`, {
+      method: "POST",
+      body,
+    }),
   integrations: (org) => request(`${orgPath(org)}/integrations`),
   createIntegration: (org, data) =>
     request(`${orgPath(org)}/integrations`, { method: "POST", body: data }),
