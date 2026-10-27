@@ -63,7 +63,10 @@ export async function allCitations(): Promise<Citation[]> {
   };
 
   for (const collection of COLLECTIONS) {
-    for (const entry of (await getCollection(collection)) as any[]) {
+    const entries = [...(await getCollection(collection))].sort((a, b) =>
+      a.id < b.id ? -1 : a.id > b.id ? 1 : 0,
+    );
+    for (const entry of entries as any[]) {
       const d = entry.data;
       const by = {
         title: d.title ?? d.name,
@@ -104,7 +107,16 @@ export async function allCitations(): Promise<Citation[]> {
       },
       { title: "Country data profiles", href: "/record/country-profiles/" },
     );
-  return [...map.values()].sort((a, b) =>
-    a.title.localeCompare(b.title, "en", { sensitivity: "base" }),
-  );
+  return [...map.values()]
+    .map((citation) => ({
+      ...citation,
+      citedBy: [...citation.citedBy].sort((a, b) =>
+        a.href < b.href ? -1 : a.href > b.href ? 1 : 0,
+      ),
+    }))
+    .sort(
+      (a, b) =>
+        a.title.localeCompare(b.title, "en", { sensitivity: "base" }) ||
+        (a.url < b.url ? -1 : a.url > b.url ? 1 : 0),
+    );
 }
