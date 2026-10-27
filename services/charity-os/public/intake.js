@@ -399,7 +399,7 @@ function confirmCancellation(target, trigger, parts) {
     node(
       "p",
       {},
-      "The organization will see that you withdrew this request. Submitted answers and previously prepared contacts and drafts remain for separate retention review. Earlier archives and downloaded backups are not changed.",
+      "The organization will see that you withdrew this original request. This does not cancel a separately confirmed place or volunteer assignment. Use Cancel participation in your verified account, or contact the organizer, for that action. Submitted answers and previously prepared contacts and drafts remain for separate retention review. Earlier archives and downloaded backups are not changed.",
     ),
     node("div", { class: "actions" }, confirmButton, keep),
   );
@@ -509,7 +509,7 @@ async function checkReceipt(parts, action = "status") {
       node(
         "p",
         { class: "fine section-gap" },
-        "Keep the private receipt link. This page does not display your answers or email address. Cancellation withdraws the request; it does not erase submitted answers or previously prepared contacts and drafts. Ask the organization about its separate retention process.",
+        "Keep the private receipt link. This page does not display your answers or email address. Cancellation withdraws the original request; it does not cancel a separately confirmed participation or erase submitted answers, contacts or drafts. Use your verified account's separate Cancel participation control, or contact the organizer, to cancel a place. Ask the organization about its retention process.",
       ),
     );
     status(

@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
+import { webcrypto } from "node:crypto";
 import { parseReceipt, typedAnswer } from "./participant.js";
 
 const html = await readFile(
@@ -52,6 +53,38 @@ const detail = () => ({
       { key: "available", label: "Available", type: "boolean", required: true },
     ],
   },
+});
+const participation = (patch = {}) => ({
+  id: "participation",
+  state: "requested",
+  revision: 1,
+  targetRevision: 2,
+  sourceRevision: 7,
+  termsHash: "a".repeat(64),
+  terms: {
+    title: "Fictional whole shift",
+    kind: "shift",
+    startAt: "2099-01-01T23:00:00Z",
+    endAt: "2099-01-02T03:00:00Z",
+    timeZone: "UTC",
+    participationPurpose: "Help with a fictional event.",
+    participantInstructions: "Read the organizer's public instructions.",
+    organizerEmail: "organizer@example.invalid",
+    organizerUrl: "https://example.invalid/contact",
+  },
+  frozenTerms: null,
+  consent: null,
+  canConsent: true,
+  consentUnavailableReason: null,
+  canCancel: true,
+  recovered: false,
+  notifications: {
+    enabled: false,
+    preferenceOnly: true,
+    requested: false,
+    state: "paused",
+  },
+  ...patch,
 });
 
 test("participant receipts accept only the intended same-origin fragment capability", () => {
@@ -134,6 +167,7 @@ async function harness({
   user = verified,
   linked = true,
   fragment = false,
+  participations = [],
 } = {}) {
   let document;
   class Element {
@@ -350,6 +384,8 @@ async function harness({
       sessionFailure: false,
       sessionGate: null,
       detailGate: null,
+      participations: structuredClone(participations),
+      participationGate: null,
     };
   const response = (value, status = 200) =>
     new Response(JSON.stringify({ ok: status < 400, ...value }), {
@@ -380,6 +416,46 @@ async function harness({
           : [],
         nextCursor: null,
       });
+    const participationBase =
+      "/api/participant/orgs/org/requests/request/participations";
+    if (path === participationBase) {
+      const snapshot = structuredClone(model.participations);
+      if (model.participationGate) await model.participationGate;
+      return response({ participations: snapshot });
+    }
+    if (path.startsWith(`${participationBase}/`)) {
+      const [, pid, action] = path.slice(participationBase.length).split("/");
+      const old = model.participations.find((row) => row.id === pid);
+      if (!old) throw new Error("Unknown synthetic participation");
+      const next = { ...old, revision: old.revision + 1 };
+      if (action === "cancel") {
+        next.state = "cancelled";
+        next.canCancel = false;
+        next.canConsent = false;
+      } else if (action === "consent") {
+        next.consent = {
+          revision: 1,
+          at: "2026-01-02T00:00:00.000Z",
+          waitlistAllowed: body.waitlistAllowed,
+          emailUpdates: body.emailUpdates,
+          sourceRevision: body.sourceRevision,
+          termsHash: body.termsHash,
+        };
+        next.notifications = {
+          ...old.notifications,
+          requested: body.emailUpdates,
+        };
+      } else if (action === "preferences") {
+        next.notifications = {
+          ...old.notifications,
+          requested: body.emailUpdates,
+        };
+      } else throw new Error("Unknown synthetic participation action");
+      model.participations = model.participations.map((row) =>
+        row.id === pid ? next : row,
+      );
+      return response({ participation: next });
+    }
     if (path.endsWith("/link")) {
       model.linked = true;
       return response({ request: model.detail });
@@ -445,6 +521,7 @@ async function harness({
     AbortSignal,
     TextEncoder,
     URL,
+    crypto: webcrypto,
     console,
   });
   vm.runInContext(source.replace(/^export /gm, ""), context);
@@ -618,7 +695,7 @@ test("unlink requires a separate inline confirmation, sends one revision and rem
   );
   assert.match(
     h.get("participant-confirmation").textContent,
-    /does not withdraw/,
+    /does not cancel participation, withdraw the request or erase submitted answers/,
   );
   await h.click("Permanently unlink this request");
   assert.deepEqual(h.calls.find((call) => call.path.endsWith("/unlink")).body, {
@@ -710,3 +787,171 @@ test("a delayed old read cannot replace a newer saved correction", async () => {
   );
   assert.match(h.get("participant-detail").textContent, /Revision 2/);
 });
+
+test("specific participation consent starts unchecked and binds the exact schedule without claiming a place or delivery", async () => {
+  const h = await harness({
+    participations: [
+      participation({ withdrawalAcknowledgementRequired: true }),
+    ],
+  });
+  await h.open();
+  assert.equal(h.get("participation-own-consent-participation").checked, false);
+  assert.equal(
+    h.get("participation-own-waitlist-participation").checked,
+    false,
+  );
+  assert.equal(h.get("participation-own-email-participation").checked, false);
+  assert.equal(
+    h.get("participation-own-withdrawal-participation").checked,
+    false,
+  );
+  const form = h.get("participant-participations").querySelector("form");
+  await form.emit("submit");
+  await h.flush();
+  assert.equal(
+    h.calls.some((call) => call.path.endsWith("/consent")),
+    false,
+  );
+  h.get("participation-own-consent-participation").checked = true;
+  h.get("participation-own-withdrawal-participation").checked = true;
+  await form.emit("submit");
+  await h.flush();
+  const call = h.calls.find((entry) => entry.path.endsWith("/consent"));
+  assert.equal(call.body.revision, 1);
+  assert.equal(call.body.intakeRevision, 1);
+  assert.equal(call.body.targetRevision, 2);
+  assert.equal(call.body.sourceRevision, 7);
+  assert.equal(call.body.termsHash, "a".repeat(64));
+  assert.equal(call.body.consent, true);
+  assert.equal(call.body.waitlistAllowed, false);
+  assert.equal(call.body.emailUpdates, false);
+  assert.equal(call.body.withdrawalAcknowledged, true);
+  assert.equal(call.options.headers["X-CSRF-Token"], "synthetic-csrf");
+  assert.match(
+    h.get("participant-participations").textContent,
+    /no place reserved/,
+  );
+  assert.match(
+    h.get("participant-participations").textContent,
+    /not active in this release/,
+  );
+  assert.equal(
+    h.model.detail.status,
+    "pending",
+    "Participation consent does not change the original request.",
+  );
+});
+
+test("participation cancellation is deliberate and distinct from original request withdrawal", async () => {
+  const row = participation({ state: "confirmed", canConsent: false });
+  row.frozenTerms = { ...row.terms };
+  const h = await harness({ participations: [row] });
+  await h.open();
+  await h.click("Cancel participation");
+  assert.equal(
+    h.calls.some((call) => call.path.endsWith("/cancel")),
+    false,
+  );
+  assert.match(
+    h.get("participant-confirmation").textContent,
+    /does not erase your request/,
+  );
+  await h.click("Confirm participation cancellation");
+  const call = h.calls.find((entry) => entry.path.endsWith("/cancel"));
+  assert.equal(call.body.revision, 1);
+  assert.equal(call.body.intakeRevision, 1);
+  assert.ok(call.body.idempotencyKey);
+  assert.equal(h.model.detail.status, "pending");
+  assert.equal(h.model.detail.revision, 1);
+  assert.match(
+    h.get("participant-participations").textContent,
+    /Participation cancelled/,
+  );
+  assert.doesNotMatch(
+    h.get("participant-participations").textContent,
+    /Participation confirmed by/,
+  );
+});
+
+test("a confirmed participation keeps its frozen schedule without offering a new consent and unlink supplies an organizer route", async () => {
+  const row = participation({ state: "confirmed" });
+  row.frozenTerms = { ...row.terms, title: "Original confirmed occurrence" };
+  row.terms = { ...row.terms, title: "Current details for consent" };
+  const h = await harness({ participations: [row] });
+  await h.open();
+  assert.match(
+    h.get("participant-participations").textContent,
+    /Original confirmed occurrence/,
+  );
+  assert.equal(h.get("participant-participations").querySelector("form"), null);
+  assert.doesNotMatch(
+    h.get("participant-participations").textContent,
+    /Current details for consent/,
+  );
+  await h.click("Unlink account access");
+  assert.match(
+    h.get("participant-confirmation").textContent,
+    /active participation is still recorded/,
+  );
+  assert.ok(
+    h
+      .get("participant-confirmation")
+      .querySelectorAll("a")
+      .some(
+        (entry) => entry.attributes.href === "mailto:organizer@example.invalid",
+      ),
+  );
+});
+
+for (const action of ["consent", "cancel", "preferences"])
+  test(`an old participation GET cannot repaint state after ${action}`, async () => {
+    const row = participation();
+    if (action === "preferences") row.notifications.requested = true;
+    const h = await harness({ participations: [row] });
+    await h.open();
+    let release;
+    h.model.participationGate = new Promise((resolve) => {
+      release = resolve;
+    });
+    const stale = vm.runInContext(
+      "loadOwnParticipations(state.current)",
+      h.context,
+    );
+    if (action === "consent") {
+      h.get("participation-own-consent-participation").checked = true;
+      h.get("participation-own-waitlist-participation").checked = true;
+      await h
+        .get("participant-participations")
+        .querySelector("form")
+        .emit("submit");
+      await h.flush();
+    } else if (action === "cancel") {
+      await h.click("Cancel participation");
+      await h.click("Confirm participation cancellation");
+    } else await h.click("Disable stored email preference");
+    release();
+    await stale;
+    assert.match(h.get("participant-participations").textContent, /Revision 2/);
+    if (action === "consent")
+      assert.match(
+        h.get("participant-participations").textContent,
+        /waitlist allowed/,
+      );
+    if (action === "cancel")
+      assert.match(
+        h.get("participant-participations").textContent,
+        /Participation cancelled/,
+      );
+    if (action === "preferences")
+      assert.equal(
+        h
+          .get("participant-participations")
+          .querySelectorAll("button")
+          .some(
+            (button) =>
+              button.textContent === "Disable stored email preference",
+          ),
+        false,
+      );
+    assert.equal(h.model.detail.status, "pending");
+  });

@@ -3,6 +3,7 @@ import { requireAdmin, visibleRecord } from "./access.mjs";
 import { allRecords, rowRecord, saveRecord, audit } from "./database.mjs";
 import { getModule, validateRecord } from "./modules.mjs";
 import { body, checkOrigin, fail, hash, id, json } from "./security.mjs";
+import { isManagedParticipationTarget } from "./participation-guards.mjs";
 
 export const INTAKE_LIMITS = Object.freeze({
   requestBytes: 16384,
@@ -386,7 +387,7 @@ export async function publicIntakeRoutes({
         if (!row) fail(404, "intake_receipt", "This receipt is unavailable.");
         if (input.action === "cancel" && row.status !== "cancelled") {
           await c.query(
-            "UPDATE os_intake SET status='cancelled',revision=revision+1,updated_at=now() WHERE org_id=$1 AND id=$2",
+            "UPDATE os_intake SET status='cancelled',cancelled_at=now(),revision=revision+1,updated_at=now() WHERE org_id=$1 AND id=$2",
             [org, row.id],
           );
           await audit(c, org, "public-intake", "intake.cancelled", null, {
@@ -851,13 +852,15 @@ export async function intakeRoutes({
         [key]: target.id,
         programId: target.data.programId,
       });
-      // Check live capacity/duplicates/overlaps without representing the result as a booking.
-      validateRecord(moduleId, draft.data, {
-        orgId: org,
-        recordId: draft.id,
-        status: moduleId === "events" ? "scheduled" : "assigned",
-        records,
-      });
+      // Managed targets prepare nonallocating candidates, including waitlists.
+      // Their allocation gateway owns the final capacity/overlap check.
+      if (!(await isManagedParticipationTarget(c, org, target.id)))
+        validateRecord(moduleId, draft.data, {
+          orgId: org,
+          recordId: draft.id,
+          status: moduleId === "events" ? "scheduled" : "assigned",
+          records,
+        });
       draft.data = validateRecord(moduleId, draft.data, {
         orgId: org,
         recordId: draft.id,

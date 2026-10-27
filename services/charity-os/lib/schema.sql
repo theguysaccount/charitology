@@ -135,3 +135,61 @@ ALTER TABLE os_participant_org_usage ENABLE ROW LEVEL SECURITY;
 ALTER TABLE os_participant_org_usage FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS tenant ON os_participant_org_usage;
 CREATE POLICY tenant ON os_participant_org_usage USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
+
+-- Request withdrawal is distinct from erasure and future participation consent.
+ALTER TABLE os_intake ADD COLUMN IF NOT EXISTS cancelled_at timestamptz;
+
+-- Fulfillment is independent of the typed record's working approval state.
+CREATE TABLE IF NOT EXISTS os_participation_targets (
+  org_id text NOT NULL REFERENCES os_orgs(id), target_id text NOT NULL,
+  module_id text NOT NULL CHECK(module_id IN ('events','volunteers')),
+  revision integer NOT NULL DEFAULT 1 CHECK(revision>0),
+  mode text NOT NULL DEFAULT 'managed' CHECK(mode IN ('managed','paused')),
+  source_revision integer NOT NULL CHECK(source_revision>0),
+  terms jsonb NOT NULL, terms_hash text NOT NULL,
+  recovery_block boolean NOT NULL DEFAULT false,
+  created_by text NOT NULL, created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(), last_command jsonb,
+  PRIMARY KEY(org_id,target_id),
+  FOREIGN KEY(org_id,target_id) REFERENCES os_records(org_id,id)
+);
+CREATE TABLE IF NOT EXISTS os_participations (
+  org_id text NOT NULL REFERENCES os_orgs(id), id text NOT NULL, target_id text NOT NULL,
+  module_id text NOT NULL CHECK(module_id IN ('events','volunteers')),
+  booking_record_id text NOT NULL, contact_id text NOT NULL, intake_id text,
+  state text NOT NULL DEFAULT 'requested' CHECK(state IN ('requested','waitlisted','confirmed','cancelled')),
+  revision integer NOT NULL DEFAULT 1 CHECK(revision>0),
+  source text NOT NULL CHECK(source IN ('staff','intake','legacy','recovered')),
+  consent jsonb, frozen jsonb, waitlist_sequence bigint,
+  confirmed_at timestamptz, cancelled_at timestamptz,
+  created_by text NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+  recovered boolean NOT NULL DEFAULT false, recovered_state text, last_command jsonb,
+  PRIMARY KEY(org_id,id), UNIQUE(org_id,booking_record_id),
+  FOREIGN KEY(org_id,target_id) REFERENCES os_participation_targets(org_id,target_id),
+  FOREIGN KEY(org_id,booking_record_id) REFERENCES os_records(org_id,id),
+  FOREIGN KEY(org_id,contact_id) REFERENCES os_records(org_id,id),
+  FOREIGN KEY(org_id,intake_id) REFERENCES os_intake(org_id,id)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS os_participation_active_contact ON os_participations(org_id,target_id,contact_id) WHERE state<>'cancelled';
+CREATE UNIQUE INDEX IF NOT EXISTS os_participation_intake ON os_participations(org_id,target_id,intake_id) WHERE intake_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS os_participation_target_state ON os_participations(org_id,target_id,state,waitlist_sequence,id);
+CREATE TABLE IF NOT EXISTS os_participation_outbox (
+  org_id text NOT NULL REFERENCES os_orgs(id), id text NOT NULL, participation_id text NOT NULL,
+  event_revision integer NOT NULL CHECK(event_revision>0), purpose text NOT NULL DEFAULT 'participation',
+  channel text NOT NULL DEFAULT 'email', state text NOT NULL DEFAULT 'paused' CHECK(state IN ('paused','cancelled')),
+  payload jsonb NOT NULL CHECK(octet_length(payload::text)<=2048), created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(org_id,id), FOREIGN KEY(org_id,participation_id) REFERENCES os_participations(org_id,id),
+  UNIQUE(org_id,participation_id,event_revision,purpose,channel)
+);
+ALTER TABLE os_participation_targets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participation_targets FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participation_targets;
+CREATE POLICY tenant ON os_participation_targets USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
+ALTER TABLE os_participations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participations FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participations;
+CREATE POLICY tenant ON os_participations USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));
+ALTER TABLE os_participation_outbox ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participation_outbox FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participation_outbox;
+CREATE POLICY tenant ON os_participation_outbox USING (org_id=current_setting('app.org_id',true)) WITH CHECK (org_id=current_setting('app.org_id',true));

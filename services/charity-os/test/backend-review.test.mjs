@@ -135,6 +135,8 @@ function fixture(
         return { rows: [{ size: 0 }] };
       if (sql.startsWith("SELECT (SELECT count(*) FROM os_publications"))
         return { rows: [{ count: 0 }] };
+      if (/FROM os_participation(?:_targets|_outbox|s)\b/.test(sql))
+        return { rows: [] };
       if (
         sql.startsWith("SELECT id,record_id,source_revision") ||
         sql.startsWith("SELECT id,publication_id,answers")

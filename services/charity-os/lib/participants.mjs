@@ -428,6 +428,10 @@ async function ownRequest({ db, user, org, intakeId, action, input }) {
           "UPDATE os_participant_links SET revoked_at=now(),updated_at=now(),revision=revision+1 WHERE user_id=$1 AND org_id=$2 AND intake_id=$3 AND revoked_at IS NULL",
           [user.id, org, intakeId],
         );
+        await c.query(
+          "UPDATE os_participation_outbox o SET state='cancelled' FROM os_participations p WHERE o.org_id=$1 AND p.org_id=o.org_id AND p.id=o.participation_id AND p.intake_id=$2 AND o.state='paused'",
+          [org, intakeId],
+        );
         await audit(c, org, user.id, "participant.unlinked", null, {
           intakeId,
           publicationId: row.publication_id,
@@ -493,7 +497,7 @@ async function ownRequest({ db, user, org, intakeId, action, input }) {
       } else if (action === "withdraw" && row.status !== "cancelled") {
         loaded.row = (
           await c.query(
-            "UPDATE os_intake SET status='cancelled',revision=revision+1,updated_at=now() WHERE org_id=$1 AND id=$2 RETURNING id,publication_id,answers,status,revision,consent_at,created_at,erased_at",
+            "UPDATE os_intake SET status='cancelled',cancelled_at=now(),revision=revision+1,updated_at=now() WHERE org_id=$1 AND id=$2 RETURNING id,publication_id,answers,status,revision,consent_at,created_at,erased_at",
             [org, intakeId],
           )
         ).rows[0];

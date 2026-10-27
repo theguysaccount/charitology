@@ -107,15 +107,13 @@ function module(id, title, group, description, fields, states, settings = {}) {
   const approve = ["owner", "admin", ...(settings.approve || ["program_lead"])];
   const approvalStates = settings.approvalStates || ["approved"];
   const snapshotStates = settings.snapshotStates || [];
-  const transitions = states
-    .slice(0, -1)
-    .map((from, i) => ({
-      from,
-      to: states[i + 1],
-      roles: approvalStates.includes(states[i + 1]) ? approve : write,
-      requiresApproval: approvalStates.includes(states[i + 1]),
-      requiresSnapshot: snapshotStates.includes(states[i + 1]),
-    }));
+  const transitions = states.slice(0, -1).map((from, i) => ({
+    from,
+    to: states[i + 1],
+    roles: approvalStates.includes(states[i + 1]) ? approve : write,
+    requiresApproval: approvalStates.includes(states[i + 1]),
+    requiresSnapshot: snapshotStates.includes(states[i + 1]),
+  }));
   if (states.includes("cancelled"))
     for (const from of states.filter((x) => x !== "cancelled"))
       if (!transitions.some((x) => x.from === from && x.to === "cancelled"))
@@ -572,6 +570,14 @@ export const MODULES = [
       integer("participants", "Attendance count"),
       integer("minutes", "Recorded minutes"),
       ref("safeguardingId", "Required training status", "safeguarding"),
+      area("participationPurpose", "Public participation purpose", {
+        maxLength: 600,
+      }),
+      area("participantInstructions", "Public participant instructions", {
+        maxLength: 600,
+      }),
+      text("organizerEmail", "Public organizer email", { maxLength: 254 }),
+      url("organizerUrl", "Public organizer contact page", { maxLength: 500 }),
     ],
     [
       "draft",
@@ -612,6 +618,14 @@ export const MODULES = [
       integer("walkInCount", "Walk-in count"),
       bool("accessCoordinatorNeeded", "Access coordinator requested"),
       url("joiningUrl", "Joining or venue information"),
+      area("participationPurpose", "Public participation purpose", {
+        maxLength: 600,
+      }),
+      area("participantInstructions", "Public participant instructions", {
+        maxLength: 600,
+      }),
+      text("organizerEmail", "Public organizer email", { maxLength: 254 }),
+      url("organizerUrl", "Public organizer contact page", { maxLength: 500 }),
     ],
     [
       "draft",

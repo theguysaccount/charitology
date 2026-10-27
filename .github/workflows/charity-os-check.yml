@@ -50,6 +50,7 @@ jobs:
           node --check public/app.js
           node --check public/intake.js
           node --check public/participant.js
+          node --check public/participation.js
           node --test test/*.test.mjs public/*.test.js
       - name: Create a separate constrained application role
         run: |

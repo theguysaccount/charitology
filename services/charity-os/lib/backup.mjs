@@ -1,6 +1,7 @@
 import { MODULE_MAP, SCHEMA_VERSION, validateRecord } from "./modules.mjs";
 import { hash, fail } from "./security.mjs";
 import { restoredIntake } from "./intake-backup.mjs";
+import { restoredParticipation } from "./participation-backup.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -38,6 +39,7 @@ export function validateBackup(input, orgId, userId) {
     );
   const connections = restoredIntegrations(input);
   restoredIntake(input);
+  restoredParticipation(input);
   const seen = new Set();
   const records = input.records.map((r) => {
     if (

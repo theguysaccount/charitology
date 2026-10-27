@@ -2,6 +2,7 @@ import pg from "pg";
 import { readFile } from "node:fs/promises";
 import { verifiedNeonConnectionString } from "./connection.mjs";
 import { id, fail } from "./security.mjs";
+import { guardParticipationWrite } from "./participation-guards.mjs";
 export function database(url, { schema } = {}) {
   if (schema && !/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("Invalid schema.");
@@ -72,6 +73,8 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
       "intake.publication.withdrawn",
       "intake.erased",
       "participant.unlinked",
+      "participation.cancelled",
+      "participation.preferences",
     ].includes(action);
     if (accessControl) {
       detail = {
@@ -138,7 +141,8 @@ export async function allRecords(c, org) {
     )
   ).rows.map(rowRecord);
 }
-export async function saveRecord(c, r) {
+export async function saveRecord(c, r, options = {}) {
+  await guardParticipationWrite(c, r, options);
   const size = Buffer.byteLength(JSON.stringify(r.data));
   const usage = (
     await c.query(
@@ -184,6 +188,9 @@ export async function logicalBackupBytes(c, org) {
     "os_publications",
     "os_intake",
     "os_participant_org_usage",
+    "os_participation_targets",
+    "os_participations",
+    "os_participation_outbox",
   ];
   const sql =
     tables

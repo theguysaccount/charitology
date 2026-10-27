@@ -58,6 +58,16 @@ import { integrationRoutes } from "./integrations.mjs";
 import { publicIntakeRoutes, intakeRoutes } from "./intake.mjs";
 import { participantRoutes } from "./participants.mjs";
 import {
+  participationRoutes,
+  participantParticipationRoutes,
+} from "./participation.mjs";
+import { guardParticipationWrite } from "./participation-guards.mjs";
+import {
+  exportParticipation,
+  restoredParticipation,
+  restoreParticipation,
+} from "./participation-backup.mjs";
+import {
   authDestination,
   confirmDestination,
   confirmForm,
@@ -294,6 +304,15 @@ export function createHandler({ settings, db, auth, send }) {
             3600,
           );
         } else await db.limit(`participant-write:${bucket}`, 60, 3600);
+        const participationResponse = await participantParticipationRoutes({
+          request,
+          url,
+          db,
+          settings,
+          session,
+          input,
+        });
+        if (participationResponse) return participationResponse;
         const response = await participantRoutes({
           request,
           url,
@@ -412,6 +431,18 @@ export function createHandler({ settings, db, auth, send }) {
             settings,
           });
           if (intakeResponse) return intakeResponse;
+          const participationResponse = await participationRoutes({
+            c,
+            org,
+            user,
+            member,
+            tail,
+            method,
+            input,
+            url,
+            settings,
+          });
+          if (participationResponse) return participationResponse;
           const records = await allRecords(c, org),
             visible = records
               .map((r) => visibleRecord(r, member))
@@ -518,6 +549,7 @@ export function createHandler({ settings, db, auth, send }) {
               trashFiles,
               integrations,
               intake: await exportIntake(c, org),
+              participation: await exportParticipation(c, org),
             });
             await audit(c, org, user, "backup.exported", null, {
               count: records.length,
@@ -540,6 +572,7 @@ export function createHandler({ settings, db, auth, send }) {
             if (migration) backup = migration.backup;
             const imported = validateBackup(backup, org, user);
             const intake = restoredIntake(backup);
+            const participation = restoredParticipation(backup);
             const issues = [];
             const existingIntake = Number(
               (
@@ -585,11 +618,14 @@ export function createHandler({ settings, db, auth, send }) {
                 approvalsReset: imported.length,
                 intakePublicationsClosed: intake.publications.length,
                 intakeRequests: intake.submissions.length,
+                participationTargetsRecovered: participation.targets.length,
+                participationsRecovered: participation.participations.length,
                 ...(migration ? { migration: migration.summary } : {}),
               },
               issues,
               warnings: [
                 ...(migration?.warnings || []),
+                ...participation.warnings,
                 ...(intake.publications.length
                   ? [
                       {
@@ -635,6 +671,7 @@ export function createHandler({ settings, db, auth, send }) {
             const imported = validateBackup(p.payload, org, user);
             const connections = restoredIntegrations(p.payload);
             const intake = restoredIntake(p.payload);
+            const participation = restoredParticipation(p.payload);
             if (
               Number(
                 (
@@ -723,6 +760,7 @@ export function createHandler({ settings, db, auth, send }) {
               );
             }
             await restoreIntake(c, org, user, intake);
+            await restoreParticipation(c, org, user, participation);
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
               checksum: p.checksum,
@@ -732,6 +770,8 @@ export function createHandler({ settings, db, auth, send }) {
               sourceReportCount: p.payload.reports?.length || 0,
               intakePublicationsClosed: intake.publications.length,
               intakeRequests: intake.submissions.length,
+              participationTargetsRecovered: participation.targets.length,
+              participationsRecovered: participation.participations.length,
             });
             return okay({ imported: imported.length });
           }
@@ -936,6 +976,7 @@ export function createHandler({ settings, db, auth, send }) {
               status: r.status,
             });
             checkReferences(module, r.data, records, member);
+            await guardParticipationWrite(c, r, { operation: "restore" });
             await c.query(
               "UPDATE os_records SET deleted_at=NULL WHERE org_id=$1 AND id=$2",
               [org, r.id],
@@ -1122,6 +1163,7 @@ export function createHandler({ settings, db, auth, send }) {
             return await fileRoute({ c, org, user, record, input, method });
           stale(input, record);
           if (method === "DELETE") {
+            await guardParticipationWrite(c, record, { operation: "delete" });
             const linked = records.some(
               (r) =>
                 r.id !== record.id &&
