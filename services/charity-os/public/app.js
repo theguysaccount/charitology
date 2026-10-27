@@ -5,6 +5,7 @@ import {
   setCsrfToken,
   request as apiRequest,
 } from "./api.js";
+import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
 import { createGrantReportWorkspace } from "./grant-reports.js";
 import {
@@ -763,6 +764,7 @@ async function renderDirectoryCopy(epoch) {
           initialSelection: selection,
           currencies: state.currencies,
           canExport: can(moduleById("resources"), "export", destination.role),
+          confirmSourceChange: () => confirmAction("Discard unsaved directory choices?", "This selects a different frozen source. Your unsaved directory choices and notes will be lost. Keep or copy them before switching.", "Discard choices"),
           isCurrent: () =>
             epoch === state.epoch && orgId === state.org &&
             location.hash === fragment && state.session === session &&
@@ -2112,6 +2114,7 @@ async function renderDetail(moduleId, id, epoch) {
           record,
           currencies: state.currencies,
           canExport: can(module, "export", role()),
+          confirmSourceChange: () => confirmAction("Discard unsaved directory choices?", "This selects a different frozen source. Your unsaved directory choices and notes will be lost. Keep or copy them before switching.", "Discard choices"),
           isCurrent: ownsDetail,
           editorOpen: () => !!state.editor,
           onDirty: (value) => {
@@ -3505,6 +3508,9 @@ async function showReport(id) {
   );
 }
 function renderData() {
+  const pageOrg = state.org, pageSession = state.session, pageEpoch = state.epoch;
+  const ownsDataPage = () => state.org === pageOrg && state.session === pageSession && state.epoch === pageEpoch;
+  let importSelection = 0;
   const status = node("p", { class: "form-status", role: "status" });
   const previewTarget = node("div", {});
   state.importPreview = null;
@@ -3535,79 +3541,87 @@ function renderData() {
     async (event) =>
       action(
         async () => {
+          if (!ownsDataPage()) return;
           state.importPreview = null;
           previewTarget.replaceChildren();
-          const selected = file.files?.[0];
-          if (!selected)
-            throw new Error("Choose a JSON organization backup first.");
-          if (selected.size > 64 * 1024 * 1024)
-            throw new Error("The backup exceeds the 64 MiB import limit.");
-          status.textContent = "Reading the selected backup…";
-          let text, readTimeout;
+          const selected = file.files?.[0], selectedEpoch = importSelection;
+          const ownsImport = () => ownsDataPage() && importSelection === selectedEpoch && file.files?.[0] === selected;
           try {
-            text = await Promise.race([
-              selected.text(),
-              new Promise((_, reject) => {
-                readTimeout = setTimeout(
-                  () =>
-                    reject(
-                      new Error(
-                        "Reading this file timed out. Choose a fresh local copy and preview it again. No saved records were changed.",
+            if (!selected)
+              throw new Error("Choose a JSON organization backup first.");
+            if (selected.size > 64 * 1024 * 1024)
+              throw new Error("The backup exceeds the 64 MiB import limit.");
+            status.textContent = "Reading the selected backup…";
+            let bytes, readTimeout;
+            try {
+              bytes = await Promise.race([
+                selected.arrayBuffer(),
+                new Promise((_, reject) => {
+                  readTimeout = setTimeout(
+                    () =>
+                      reject(
+                        new Error(
+                          "Reading this file timed out. Choose a fresh local copy and preview it again. No saved records were changed.",
+                        ),
                       ),
-                    ),
-                  30000,
-                );
-              }),
-            ]);
-          } finally {
-            clearTimeout(readTimeout);
-          }
-          let backup;
-          try {
-            backup = JSON.parse(text);
-          } catch {
-            throw new Error(
-              "This file is not valid JSON. The saved workspace has not changed.",
-            );
-          }
-          if (
-            new TextEncoder().encode(JSON.stringify({ backup })).byteLength >
-            64 * 1024 * 1024
-          )
-            throw new Error(
-              "The parsed import request exceeds the service’s 64 MiB limit.",
-            );
-          status.textContent = "Checking the backup with the shared service…";
-          const result = await api.previewImport(state.org, { backup });
-          state.importPreview = { org: state.org, id: result.previewId };
-          renderImportPreview(previewTarget, result, async () => {
-            const context = state.importPreview;
-            if (!context || context.org !== state.org)
-              throw new Error(
-                "Choose and preview the backup again for this organization.",
-              );
+                    30000,
+                  );
+                }),
+              ]);
+            } finally {
+              clearTimeout(readTimeout);
+            }
+            if (!ownsImport()) return;
+            let backup;
+            try {
+              backup = parseSelectedBackupJson(new Uint8Array(bytes));
+            } catch (error) {
+              throw new Error(`${error.message || "This file is not valid UTF-8 JSON."} The saved workspace has not changed.`);
+            }
             if (
-              !(await confirmAction(
-                "Apply this reviewed import?",
-                `Import the previewed records into ${activeOrg().name}? Keep a current organization backup before applying it.`,
-                "Import reviewed backup",
-              ))
+              new TextEncoder().encode(JSON.stringify({ backup })).byteLength >
+              64 * 1024 * 1024
             )
-              return;
-            const committed = await api.commitImport(context.org, {
-              previewId: context.id,
+              throw new Error(
+                "The parsed import request exceeds the service’s 64 MiB limit.",
+              );
+            status.textContent = "Checking the backup with the shared service…";
+            const result = await api.previewImport(pageOrg, { backup });
+            if (!ownsImport()) return;
+            state.importPreview = { org: pageOrg, id: result.previewId };
+            renderImportPreview(previewTarget, result, async () => {
+              const context = state.importPreview;
+              if (!ownsImport() || !context || context.org !== state.org)
+                throw new Error(
+                  "Choose and preview the backup again for this organization.",
+                );
+              if (
+                !(await confirmAction(
+                  "Apply this reviewed import?",
+                  `Import the previewed records into ${activeOrg().name}? Keep a current organization backup before applying it.`,
+                  "Import reviewed backup",
+                ))
+              )
+                return;
+              if (!ownsImport()) return;
+              const committed = await api.commitImport(context.org, {
+                previewId: context.id,
+              });
+              if (!ownsImport()) return;
+              invalidateModules(context.org);
+              state.importPreview = null;
+              previewTarget.replaceChildren(
+                notice(
+                  `Import completed. ${typeof committed.imported === "number" ? `${committed.imported} records imported.` : "The service recorded the imported result."}`,
+                ),
+              );
+              file.value = "";
+              toast("Reviewed backup imported.");
             });
-            invalidateModules(context.org);
-            state.importPreview = null;
-            previewTarget.replaceChildren(
-              notice(
-                `Import completed. ${typeof committed.imported === "number" ? `${committed.imported} records imported.` : "The service recorded the imported result."}`,
-              ),
-            );
-            file.value = "";
-            toast("Reviewed backup imported.");
-          });
-          status.textContent = "Review the preview below.";
+            status.textContent = "Review the preview below.";
+          } catch (error) {
+            if (ownsImport()) throw error;
+          }
         },
         event.currentTarget,
         status,
@@ -3615,6 +3629,7 @@ function renderData() {
     "",
   );
   file.addEventListener("change", () => {
+    importSelection++;
     state.importPreview = null;
     previewTarget.replaceChildren();
   });
