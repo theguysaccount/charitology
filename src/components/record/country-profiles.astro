@@ -1,10 +1,21 @@
 ---
-import countries from "../../data/countries.json";
+import { loadObservations, observationEditionHref, observationSourceHref } from "../../lib/observations";
+import { countryObservationFacts, countryMissingFacts, observationCoverageAnchor } from "../../lib/observation-view";
 import { url } from "../../lib/site";
+const { countries, projection } = loadObservations();
 const regions = [...new Set(countries.countries.map((c) => c.region))].sort();
+const factViews = Object.fromEntries(countries.countries.map(c=>[c.id,Object.fromEntries(Object.entries(countryObservationFacts(projection,c.id)).map(([key,f])=>[key,{
+  value:f.valueText,token:f.record.reported.token,scale:f.scaleText,unit:f.unitText,period:f.periodText,
+  source:url(observationSourceHref(f.source.id,f.source.version)),sourceUrl:f.source.url,retrievedAt:f.source.retrievedAt,
+  sourceId:f.source.id,sourceVersion:f.source.version,sourceHash:f.source.hash,observationId:f.record.id,observationVersion:f.record.version,observationHash:f.record.hash,precision:f.precisionText,uncertainty:f.uncertaintyText,refs:JSON.stringify([f.record.reported.valueRef,...f.record.sourceRefs]),
+}]))]));
+const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fromEntries(Object.entries(countryMissingFacts(projection,c.id)).map(([key,m])=>[key,{
+  source:m.source?url(observationSourceHref(m.source.id,m.source.version)):null,sourceUrl:m.source?.url??null,sourceId:m.source?.id??null,sourceVersion:m.source?.version??null,sourceHash:m.source?.hash??null,
+  coverageId:m.coverage.id,coverageVersion:m.coverage.version,coverageHash:m.coverage.hash,cellIndex:m.index,cellHref:url(`${observationEditionHref(projection.edition.id)}#${observationCoverageAnchor(m.coverage.id,m.coverage.version,m.index)}`),refs:JSON.stringify(m.cell.sourceRefs),
+}]))]));
 ---
 
-<section id="country-desk" data-countries={JSON.stringify(countries)}>
+<section id="country-desk" data-countries={JSON.stringify(countries)} data-facts={JSON.stringify(factViews)} data-missing={JSON.stringify(missingViews)} data-edition={projection.edition.id} data-edition-hash={projection.edition.hash}>
   <h2>Country data desk</h2>
   <p>
     Search {countries.countries.length} countries and economies. This is a reproducible
@@ -52,10 +63,11 @@ const regions = [...new Set(countries.countries.map((c) => c.region))].sort();
   <p class="note">
     Source: World Bank World Development Indicators and the original statistical
     producers linked below. Snapshot retrieved {countries.retrieved}; latest
-    non-empty observations in 2020–2025. Rounded only for display; exports
-    retain source values. National averages can hide differences within a
+    non-empty observations in 2020–2025. Exact source-normalized decimals and
+    reported tokens remain visible. National averages can hide differences within a
     country. No combined need score is calculated.
   </p>
+  <p><a href={url(observationEditionHref(projection.edition.id))}>Read this fixed edition, missing coverage and source-specific reuse terms</a>. Captured {projection.capturedAt}; source retrieval and observation years are distinct.</p>
   <div class="country-controls">
     <button id="country-csv" class="btn">Download comparison CSV</button><button
       id="country-note"
@@ -138,7 +150,9 @@ const regions = [...new Set(countries.countries.map((c) => c.region))].sort();
   import { guardedDraft } from "../../lib/client/guarded-draft";
   const root = document.querySelector<HTMLElement>("#country-desk");
   if (root) {
-    const data = JSON.parse(root.dataset.countries!);
+    const data = JSON.parse(root!.dataset.countries!);
+    const facts = JSON.parse(root!.dataset.facts!) as Record<string, Record<string,{value:string;token:string;scale:string;unit:string;period:string;source:string;sourceUrl:string;retrievedAt:string;sourceId:string;sourceVersion:number;sourceHash:string;observationId:string;observationVersion:number;observationHash:string;precision:string;uncertainty:string;refs:string}>>;
+    const missing=JSON.parse(root!.dataset.missing!) as Record<string, Record<string,{source:string|null;sourceUrl:string|null;sourceId:string|null;sourceVersion:number|null;sourceHash:string|null;coverageId:string;coverageVersion:number;coverageHash:string;cellIndex:number;cellHref:string;refs:string}>>;
     const countries = data.countries as any[];
     const indicators = data.indicators as any[];
     const a = root.querySelector<HTMLSelectElement>("#country-a")!;
@@ -223,13 +237,22 @@ const regions = [...new Set(countries.countries.map((c) => c.region))].sort();
         th.scope = "row";
         row.append(th);
         for (const c of cs) {
-          const v = c.values[i.id];
+          const v = c.values[i.id], fact=facts[c.id]?.[i.id];
           const td = row.insertCell();
-          td.textContent = v
-            ? `${v.value.toLocaleString("en-US", { maximumFractionDigits: i.unit === "people" ? 0 : 2 })} · ${v.year}${v.status ? " · status " + v.status : ""}`
-            : "Unknown in snapshot";
+          td.dataset.editionId=root!.dataset.edition!;
+          td.dataset.editionHash=root!.dataset.editionHash!;
+          td.textContent = fact
+            ? `${fact.value} ${fact.unit} · ${fact.period}${v.status ? " · status " + v.status : ""}`
+            : "Unknown: producer null throughout the selection window";
           if (v?.footnote)
             td.append(document.createTextNode(" · " + v.footnote));
+          if (fact) { const link=document.createElement("a");link.href=fact.source;link.textContent=" Source, exact token and limits";td.append(link); }
+          else if(missing[c.id]?.[i.id]?.source){const link=document.createElement("a");link.href=missing[c.id][i.id].source!;link.textContent=" Source for missing-coverage finding";td.append(link);}
+          const identity=document.createElement("details"),summary=document.createElement("summary"),description=document.createElement("p");
+          summary.textContent=fact?"Observation identity":"Missing-cell identity";identity.append(summary,description);
+          if(fact){td.dataset.observationId=fact.observationId;td.dataset.observationVersion=String(fact.observationVersion);td.dataset.observationHash=fact.observationHash;description.textContent=`Observation ${fact.observationId} v${fact.observationVersion}; hash ${fact.observationHash}. Edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}. Source ${fact.sourceId} v${fact.sourceVersion}; hash ${fact.sourceHash}.`;}
+          else {const absent=missing[c.id]?.[i.id];if(absent){td.dataset.coverageId=absent.coverageId;td.dataset.coverageVersion=String(absent.coverageVersion);td.dataset.coverageHash=absent.coverageHash;td.dataset.cellIndex=String(absent.cellIndex);description.textContent=`Coverage ${absent.coverageId} v${absent.coverageVersion}, cell ${absent.cellIndex}; hash ${absent.coverageHash}. Edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}.`;const exact=document.createElement("a");exact.href=absent.cellHref;exact.textContent="Read this exact missing cell";identity.append(exact);}}
+          td.append(identity);
         }
       }
       root!.querySelector("#country-comparison")!.replaceChildren(table);
@@ -285,18 +308,39 @@ const regions = [...new Set(countries.countries.map((c) => c.region))].sort();
           code: c.id,
           indicator: i.id,
           label: i.label,
-          unit: i.unit,
-          value: c.values[i.id]?.value ?? "",
+          unit: facts[c.id]?.[i.id]?.unit ?? i.unit,
+          definition:i.definition,
+          value: facts[c.id]?.[i.id]?.value ?? "",
+          reported_token: facts[c.id]?.[i.id]?.token ?? "",
+          source_multiplier: facts[c.id]?.[i.id]?.scale ?? "",
+          coverage: facts[c.id]?.[i.id] ? "present" : "producer-null-throughout-window",
           year: c.values[i.id]?.year ?? "",
           status: c.values[i.id]?.status ?? "",
           footnote: c.values[i.id]?.footnote ?? "",
-          source: i.url,
+          source: facts[c.id]?.[i.id]?.sourceUrl ?? missing[c.id]?.[i.id]?.sourceUrl ?? i.apiUrl,
+          source_detail: facts[c.id]?.[i.id]?.source ?? missing[c.id]?.[i.id]?.source ?? "",
+          source_hash: facts[c.id]?.[i.id]?.sourceHash ?? missing[c.id]?.[i.id]?.sourceHash ?? "",
+          source_id:facts[c.id]?.[i.id]?.sourceId??missing[c.id]?.[i.id]?.sourceId??"",
+          source_version:facts[c.id]?.[i.id]?.sourceVersion??missing[c.id]?.[i.id]?.sourceVersion??"",
+          source_refs_json:facts[c.id]?.[i.id]?.refs??missing[c.id]?.[i.id]?.refs??"[]",
+          coverage_hash:missing[c.id]?.[i.id]?.coverageHash??"",
+          coverage_id:missing[c.id]?.[i.id]?.coverageId??"",
+          coverage_version:missing[c.id]?.[i.id]?.coverageVersion??"",
+          coverage_cell_index:missing[c.id]?.[i.id]?.cellIndex??"",
+          coverage_cell_detail:missing[c.id]?.[i.id]?.cellHref??"",
+          observation_hash: facts[c.id]?.[i.id]?.observationHash ?? "",
+          observation_id:facts[c.id]?.[i.id]?.observationId??"",
+          observation_version:facts[c.id]?.[i.id]?.observationVersion??"",
+          reporting_precision: facts[c.id]?.[i.id]?.precision ?? "",
+          numerical_uncertainty: facts[c.id]?.[i.id]?.uncertainty ?? "",
+          edition: root!.dataset.edition,
+          edition_hash: root!.dataset.editionHash,
           retrieved: data.retrieved,
         })),
       );
       download(
         "charitology-country-comparison.csv",
-        toCsv(rows),
+        toCsv(rows.map(row=>Object.fromEntries(Object.entries(row).map(([key,value])=>[key,typeof value === "string" && (/^[\s\u0000-\u001f]*[=+\-@]/.test(value)||/^[\t\r\n]/.test(value)) ? "'"+value : value])))),
         "text/csv;charset=utf-8",
       );
     });
@@ -306,10 +350,11 @@ const regions = [...new Set(countries.countries.map((c) => c.region))].sort();
       const brief = [
         `# Research brief: ${c.name}`,
         "Statistical snapshot; not locally coauthored, not reviewed, not a donation recommendation.",
-        `Retrieved ${data.retrieved}.`,
+        `Retrieved ${data.retrieved}. Fixed edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}.`,
         ...indicators.map((i) => {
-          const v = c.values[i.id];
-          return `- ${i.label}: ${v ? v.value + " " + i.unit + " (" + v.year + ")" : "Unknown"}.${v?.footnote ? " Observation note: " + v.footnote + "." : ""}${v?.status ? " Observation status: " + v.status + "." : ""} Interpretation: ${i.note} Source: ${i.url}`;
+          const v = c.values[i.id], fact=facts[c.id]?.[i.id];
+          const absent=missing[c.id]?.[i.id];
+          return `- ${i.label}: ${fact ? fact.value + " " + fact.unit + " (" + fact.period + ")" : "Unknown — producer null throughout selected window"}.${v?.footnote ? " Observation note: " + v.footnote + "." : ""}${v?.status ? " Observation status: " + v.status + "." : ""} Interpretation: ${i.note} Source: ${fact?.sourceUrl??absent?.sourceUrl??i.apiUrl}${fact ? ` Exact token: ${fact.token}; multiplier ${fact.scale}. ${fact.precision}. ${fact.uncertainty}. Source detail: ${new URL(fact.source,location.origin).href}; source ${fact.sourceId} v${fact.sourceVersion}, hash ${fact.sourceHash}; observation ${fact.observationId} v${fact.observationVersion}, hash ${fact.observationHash}.` : absent ? ` Missing coverage ${absent.coverageId} v${absent.coverageVersion}, cell ${absent.cellIndex}; hash ${absent.coverageHash}; exact cell ${new URL(absent.cellHref,location.origin).href}; source detail ${absent.source?new URL(absent.source,location.origin).href:"not available"}.` : ""}`;
         }),
         ...notes.map(
           (n) => `\n## ${n}\n${memory[c.id]?.[n] || "Not recorded."}`,
@@ -328,6 +373,7 @@ const regions = [...new Set(countries.countries.map((c) => c.region))].sort();
   }
 </script>
 <style>
+  #country-comparison :global(td details) { overflow-wrap: anywhere; }
   .country-controls {
     display: flex;
     gap: 0.8rem;

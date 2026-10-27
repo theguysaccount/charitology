@@ -1,5 +1,9 @@
 // Every page on the site with its title and summary, for the RSS feed and the sitemap.
-import countries from "../data/countries.json";
+import {
+  loadObservations,
+  observationEditionHref,
+  observationSourceHref,
+} from "./observations";
 import podcast from "../data/podcast.json";
 import newsletter from "../data/newsletter.json";
 import { getCollection, type CollectionKey } from "astro:content";
@@ -32,6 +36,8 @@ const SECTIONS: [CollectionKey, string][] = [
 ];
 
 export async function allPages(): Promise<PageInfo[]> {
+  const observations = loadObservations();
+  const countries = observations.countries;
   const pages: PageInfo[] = Object.entries(STATIC_PAGES)
     .filter(([path]) => path.endsWith("/"))
     .map(([path, title]) => ({ path, title, section: "Charitology" }));
@@ -79,6 +85,27 @@ export async function allPages(): Promise<PageInfo[]> {
       title: edition.core.title,
       summary: `Fixed ${edition.core.provenance.replaceAll("-", " ")} · editorial draft · ${edition.core.coverage.scope}`,
       section: "Fixed publications",
+    });
+  pages.push({
+    path: "/observations/",
+    title: "Dated observations and coverage",
+    summary:
+      "Exact source-linked facts, definitions, periods and missing coverage; no charity ratings.",
+    section: "Observations",
+  });
+  for (const edition of observations.input.registry.editions)
+    pages.push({
+      path: observationEditionHref(edition.id),
+      title: `Observation edition ${edition.sequence}: ${edition.id}`,
+      section: "Observations",
+    });
+  for (const pin of observations.input.registry.records.filter(
+    (pin) => pin.kind === "source",
+  ))
+    pages.push({
+      path: observationSourceHref(pin.id, pin.version),
+      title: `Observation source: ${pin.id}, version ${pin.version}`,
+      section: "Observation sources",
     });
   return pages;
 }

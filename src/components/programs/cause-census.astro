@@ -141,6 +141,8 @@ const fields = [
             data-search={`${cause.name} ${cause.summary} ${entries.map((entry) => entry.title).join(" ")}`.toLowerCase()}
             data-sources={cause.upstream.join(" ")}
           >
+            <h3>{cause.name}</h3>
+            <p>{cause.summary}</p>
             <ul>
               {entries.map((entry) => (
                 <li>
@@ -178,6 +180,7 @@ const fields = [
     not used as census measurements here. Add a source, unit, year, coverage and
     uncertainty for each estimate below.
   </p>
+  <p><a href={url("/observations/")}>Inspect sourced observations and explicit coverage</a>. The national statistics and two selected financial panels do not measure funding by cause, unmet need or tractability. They are context, not substitutes for a cause census.</p>
 </section>
 <ResearchWorkspace
   id="cause-census"

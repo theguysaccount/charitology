@@ -1,0 +1,22 @@
+---
+import Entry from "../../../layouts/Entry.astro";
+import ObservationDesk from "../../../components/ObservationDesk.astro";
+import { loadObservations, observationEditionHref, observationSourceHref } from "../../../lib/observations";
+import { observationProjection } from "../../../lib/observation-model.mjs";
+import { url } from "../../../lib/site";
+export function getStaticPaths() { return loadObservations().input.registry.editions.map(e=>({params:{id:e.id}})); }
+const { input } = loadObservations();
+const id = Astro.params.id!;
+const p = observationProjection(input,id);
+const edition = input.registry.editions.find(e=>e.id===id)!;
+const current = input.registry.current.id===id;
+---
+<Entry title={`Observation edition ${edition.sequence}`} eyebrow="Fixed evidence snapshot" summary="Exact facts, coverage and source versions retained together. Later updates do not rewrite this edition." crumbs={[{label:"Record",href:"/record/"},{label:"Observations",href:"/observations/"},{label:`Edition ${edition.sequence}`}]}>
+  <p>{current ? "This is the selected current edition." : "Historical edition: this page remains as captured. It is not a current-source lookup."} Captured <time datetime={p.capturedAt}>{p.capturedAt}</time>. Independent source review remains pending.</p>
+  <nav class="ob-actions" aria-label="Fixed edition downloads"><a class="btn" href={url(`${observationEditionHref(id)}observations.json`)}>Complete edition JSON</a><a class="btn btn-ghost" href={url(`${observationEditionHref(id)}observations.csv`)}>Facts and coverage CSV</a><a href={url("/observations/history.json")}>All public history JSON</a></nav>
+  <p class="note">JSON includes the complete selected factual closure and source text. CSV is a normalized facts/coverage table with separate source and rights rows; it is not a full recovery archive. Private originals are not included. Spreadsheet text is formula-neutralized; JSON retains exact source strings.</p>
+  <ObservationDesk projection={p}/>
+  <h2>Source editions</h2><ul>{p.sources.map(s=><li><a href={url(observationSourceHref(s.id,s.version))}>{s.title} · version {s.version}</a> · retrieved {s.retrievedAt}</li>)}</ul>
+  <h2>Coverage and limitations</h2><ul>{p.limitations.map(l=><li>{l}</li>)}</ul>
+  <details><summary>Edition identity</summary><p class="ob-hash">{p.edition.id} · {p.edition.hash}</p></details>
+</Entry>

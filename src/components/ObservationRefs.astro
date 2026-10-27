@@ -1,0 +1,12 @@
+---
+import type { ObservationProjection, ObservationSourceRef } from "../lib/observation-types";
+import { observationLocatorText, observationPinned } from "../lib/observation-view";
+import { observationSourceHref } from "../lib/observations";
+import { url } from "../lib/site";
+interface Props { projection: ObservationProjection; refs: readonly ObservationSourceRef[]; }
+const { projection, refs } = Astro.props;
+---
+<ul class="ob-refs">{refs.map(ref => {
+  const source = observationPinned(projection.sources, ref.source);
+  return <li><a href={url(observationSourceHref(source.id, source.version))}>{source.title}</a> · {ref.role}<span class="ob-locator">{observationLocatorText(ref)}</span></li>;
+})}</ul>

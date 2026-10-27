@@ -5,6 +5,7 @@
 import { getCollection } from 'astro:content';
 import causesData from '../../data/causes.json';
 import { url } from '../../lib/site';
+import OrganizationComparison from '../OrganizationComparison.astro';
 
 const conditions = new Map((await getCollection('conditions')).map((c) => [c.id, { title: c.data.title, number: c.data.number }]));
 const causeName = (id: string) => causesData.causes.find((c) => c.id === id)?.name ?? id;
@@ -96,6 +97,7 @@ const slots = [
 
   <script type="application/json" id="ct-data" set:html={json} />
 </section>
+<OrganizationComparison />
 
 <style>
   .ct-picks {
@@ -351,7 +353,7 @@ const slots = [
       value: (x) => (x.cost ? `${x.cost.outcome}|${x.cost.low}|${x.cost.high}` : 'none'),
       cell: (x) => {
         const c = x.cost;
-        if (!c) return h('span', { class: 'ct-unknown' }, 'No reliable per-dollar estimate published');
+        if (!c) return h('span', { class: 'ct-unknown' }, 'No estimate is recorded in this database');
         const by = c.source.publisher ?? c.source.title;
         return [
           h('span', {}, h('strong', {}, c.low === c.high ? dollars(c.low) : `${dollars(c.low)}–${dollars(c.high)}`), ` per ${c.outcome}`),
@@ -493,7 +495,7 @@ const slots = [
     const costed = chosen.filter((x) => x.cost);
     if (many && costed.length === 1) {
       notes.append(
-        h('p', { class: 'note' }, `Only ${costed[0].title} has a published cost per outcome. A missing figure means nobody has measured it, not that the work is expensive.`),
+        h('p', { class: 'note' }, `Only ${costed[0].title} has a cost estimate recorded here. No estimate is recorded in this database for the others; that does not establish whether a measurement exists elsewhere.`),
       );
     } else if (costed.length > 1 && new Set(costed.map((x) => x.cost!.outcome)).size > 1) {
       notes.append(h('p', { class: 'note' }, 'The cost figures count different outcomes, so they can’t be compared with each other directly.'));

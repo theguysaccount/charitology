@@ -2,9 +2,20 @@
 import RecordLibrary from "./RecordLibrary.astro";
 import { buildReferenceLibrary } from "../../lib/record-library";
 import RegistrySearch from "../RegistrySearch.astro";
-const library = await buildReferenceLibrary("charity-index");
+import { loadObservations, observationEditionHref } from "../../lib/observations";
+import { url } from "../../lib/site";
+import { financialScopesForProfile } from "../../lib/observation-view";
+import ObservationRefs from "../ObservationRefs.astro";
+const original = await buildReferenceLibrary("charity-index");
+const { projection } = loadObservations();
+const library = {...original,entries:original.entries.map(entry=>{
+  const scopes=financialScopesForProfile(projection,entry.id);
+  return {...entry,links:[...entry.links,...scopes.map(s=>({label:`Selected historical consolidated financial panel: ${s.label}`,href:`/tools/compare-tool/#orgA=${s.id}&orgB=${projection.scopes.find(other=>other.scopeKind==="consolidated-reporting-group"&&other.id!==s.id)?.id??""}`}))],fields:[...entry.fields,{label:"Financial observation coverage",values:scopes.length?scopes.map(s=>s.label):["Not collected in this edition; no inference from name, address or IRS identity"]}]};
+})};
 ---
 
 <RecordLibrary library={library} />
+<p><a href={url(observationEditionHref(projection.edition.id))}>Read the exact financial scopes and country coverage</a>. A parent EIN identifies a legal entity, not every member of its consolidated reporting group. No name matching supplies a financial panel or a rating.</p>
+<details><summary>Explicit parent identity mappings for the selected financial panels</summary>{projection.entities.filter(e=>e.entityKind==="legal-organization"&&e.identifiers.some(i=>i.kind==="ein")).map(e=><section><h3>{e.label}</h3><p>{e.identifiers.filter(i=>i.kind==="ein").map(i=>`Parent legal-entity EIN ${i.value}`).join("; ")}. Financial values belong to the separately labeled consolidated scope, not this EIN alone.</p><ObservationRefs projection={projection} refs={e.identifiers.filter(i=>i.kind==="ein").flatMap(i=>i.sourceRefs)}/></section>)}</details>
 
 <RegistrySearch id="index" />

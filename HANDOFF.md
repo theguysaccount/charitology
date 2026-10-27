@@ -124,7 +124,7 @@ npm run check
 - The schema in `src/content.config.ts` validates content. Build creates extension ZIPs, Astro pages and Pagefind.
 - Checks cover content cross-references, every internal link, actual favicon/social files and metadata, extension packages/privacy, original roadmap data, reference export/source retention, country/podcast assets and research/learning/publication models.
 - Workflows use verified Node 24 action releases, pinned by commit SHA.
-- `npm run data:countries` refreshes the fixed 2020–2025 World Bank snapshot explicitly. `FFMPEG=/path/to/ffmpeg npm run audio:podcast` regenerates audio on macOS. Ordinary builds use committed data and media.
+- `npm run data:countries` now refuses: the historical country snapshot is retained unchanged. Use explicit `observations:prepare` and reviewed `observations:capture` for new factual editions; see [observation acceptance](docs/OBSERVATIONS_ACCEPTANCE.md) and the capture CLI's required arguments. Ordinary builds use committed sources without network access. `FFMPEG=/path/to/ffmpeg npm run audio:podcast` regenerates audio on macOS.
 - Markdown links are root-relative. The build adds `BASE_PATH`. Delete `node_modules/.astro` if switching the base locally.
 - `npm run images` rebuilds static artwork on macOS. `npm run images -- --video` also renders the video and needs ffmpeg (set `FFMPEG` to its executable if not on PATH). Promotional store artwork: `node scripts/make-extension-store-images.mjs`.
 

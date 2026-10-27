@@ -1,0 +1,110 @@
+.observations {
+  padding-block: 2rem 4rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ob-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-block: 1rem;
+}
+.ob-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 1rem;
+}
+.ob-fact,
+.ob-card {
+  min-width: 0;
+  border: 1px solid var(--rule);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+}
+.ob-fact h3,
+.ob-card h3 {
+  margin-top: 0;
+  font-size: 1.05rem;
+}
+.ob-value {
+  font-size: 1.2rem;
+}
+.ob-hash,
+.ob-locator {
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+}
+.ob-locator {
+  display: block;
+  color: var(--muted);
+}
+.ob-fact details {
+  margin-top: 0.7rem;
+}
+.ob-fact li,
+.ob-refs li {
+  overflow-wrap: anywhere;
+}
+.ob-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+  margin-block: 1rem;
+}
+.ob-controls label {
+  display: grid;
+  gap: 0.4rem;
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.ob-controls input,
+.ob-controls select {
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+}
+.ob-rows {
+  display: grid;
+  gap: 1rem;
+}
+.ob-rows [hidden],
+.observations [hidden] {
+  display: none !important;
+}
+.ob-source-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 28rem;
+  overflow: auto;
+}
+.observations :focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+@media (max-width: 430px) {
+  .ob-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ob-controls label {
+    min-width: 0;
+  }
+  .ob-fact,
+  .ob-card {
+    padding: 0.8rem;
+  }
+}
+@media print {
+  .ob-controls,
+  .ob-actions {
+    display: none;
+  }
+  .ob-fact {
+    break-inside: avoid;
+  }
+  .ob-rows [hidden] {
+    display: block !important;
+  }
+}
