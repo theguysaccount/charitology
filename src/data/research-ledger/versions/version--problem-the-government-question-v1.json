@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-government-question-v1",
+  "recordId": "problem:the-government-question",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Government Question",
+      "number": 21,
+      "statement": "When does philanthropy add to public spending, when does it replace it, and when does it shape public policy without public accountability?",
+      "progress": "Evidence on whether private giving crowds public budgets in or out, and shared norms for when private money should shape public policy.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "missing-voice"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nPrivate giving and public spending interact. A gift can unlock government money, replace it or steer it. Each has different consequences for the people served and for democracy.\n\n## Where to start\n\nEconomists have studied crowding-in and crowding-out for decades, with mixed results. The open problem is turning that literature into guidance a giver can use.\n"
+  },
+  "subjectHash": "86fd2dad2a84367a460d2f25e2481e686400141dd5e868e869fecaac4d437963",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-government-question",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "4435a1ed85c3e03eaac5aafeec26e2f8a65e8aada2882e547442da9887e317e9"
+}

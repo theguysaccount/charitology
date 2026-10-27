@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-the-overhead-replacement-v1",
+  "recordId": "problem:the-overhead-replacement",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Overhead Replacement",
+      "number": 6,
+      "statement": "What simple public measure could replace overhead ratios as the default way donors judge a charity, without being easy to game?",
+      "progress": "A measure computable from public data for most large charities, shown to track independently assessed effectiveness better than overhead does.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "overhead-myth"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nTelling donors to stop using overhead has been tried. The [Overhead Myth](/diagnosis/overhead-myth/) persists partly because nothing equally simple replaced it.\n\n## Where to start\n\nCandidate measures include published outcome data, the presence of independent evaluations, transparency about failures and feedback from the people served. Each has to be tested for whether it can be gamed. Open Form 990 data from [Charity Impact Media](https://theguysaccount.github.io/charity-impact-media/) provides source-linked spending records.\n"
+  },
+  "subjectHash": "8cba48ac86bd078af6d8d35c8080bf1cc8f8ad1cb279675e7c2d61b0ad70320d",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-overhead-replacement",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "f75a1bd5800f5f15f100e23fe55c4a8b1465ca047ea3a312757208d8d1e1b493"
+}

@@ -114,6 +114,7 @@ export const STATIC_PAGES: Record<string, string> = {
   '/open-problems/': 'The Open Problems of Charitology',
   '/contribute/': 'Become a charitologist',
   '/contribute/review/': 'Review a draft',
+  '/research-ledger/': 'Public research ledger',
   '/roadmap/': 'The full roadmap',
   '/for-charities/': 'For charities',
   '/for-charities/tools/': 'Tools for charities',

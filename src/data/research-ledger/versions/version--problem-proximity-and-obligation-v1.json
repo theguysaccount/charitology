@@ -1,0 +1,42 @@
+{
+  "id": "version:problem-proximity-and-obligation-v1",
+  "recordId": "problem:proximity-and-obligation",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "Proximity and Obligation",
+      "number": 18,
+      "statement": "How should distance weigh in giving, and what do givers choose when they see honest comparisons?",
+      "progress": "Experimental evidence on how givers allocate with and without comparisons, alongside a clear account of the moral positions.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "proximity-pull"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThe [Proximity Pull](/diagnosis/proximity-pull/) is partly a moral question and partly an information gap. The information gap can be closed, and then we can see what people choose.\n\n## Where to start\n\nA scoped survey experiment could test how comparisons across distance affect choices, with its cost and limits stated. The moral side is mapped in the [Disagreement Register](/record/disagreements/).\n"
+  },
+  "subjectHash": "9cc43abf5a4e1b3eb75d6661951b1e87c24c8add90b1a5267538b10b7d7b1e86",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-proximity-and-obligation",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "9a108ac483faf3420bae567175b03e5acbb12983658e119dfe8b227ad07713f3"
+}

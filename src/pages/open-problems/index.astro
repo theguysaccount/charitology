@@ -1,12 +1,13 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Crumbs from '../../components/Crumbs.astro';
+import { loadResearchLedger } from '../../lib/research-ledger';
 import { problemsInOrder } from '../../lib/content';
 import { pad, url, SITE } from '../../lib/site';
 
 const problems = await problemsInOrder();
-const open = problems.filter((p) => p.data.status === 'open').length;
-const solved = problems.filter((p) => p.data.status === 'solved').length;
+const { current } = await loadResearchLedger();
+const { open, partial, solved, underReview } = current.counters;
 ---
 
 <Base
@@ -23,7 +24,7 @@ const solved = problems.filter((p) => p.data.status === 'solved').length;
         century. These are charitology’s. Each turns a condition of the charity system into a question precise enough to
         work on. Solve one and you change where billions of dollars go.
       </p>
-      <p class="meta tally">{open} open · {problems.length - open - solved} partly answered · {solved} solved</p>
+      <p class="meta tally">{open} open · {partial} partly answered · {solved} solved · {underReview} under review</p>
     </div>
   </header>
 

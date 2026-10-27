@@ -382,6 +382,17 @@ hr {
   margin-left: auto;
 }
 
+/* Keep every header control reachable on narrow screens without shrinking targets. */
+@media (max-width: 389px) {
+  :root { --header-h: 110px; }
+  .site-header .bar {
+    flex-wrap: wrap;
+    align-content: center;
+    row-gap: 0.2rem;
+  }
+  .site-header .brand { flex-basis: 100%; }
+}
+
 @media (min-width: 1040px) {
   .nav {
     display: flex;

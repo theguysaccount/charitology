@@ -11,17 +11,17 @@ Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025
 | **[The Diagnosis](src/content/conditions/)**   | Fifteen conditions of the charity system, each labeled established, documented, debated or hypothesis. No judgment of the good being done; the system is the subject.                             |
 | **[The Method](src/pages/method.astro)**       | Nine instruments a charitologist uses, from the five-level depth scale (relief → repair → prevention → structure → source) to the Giver’s Checklist.                                              |
 | **[The Open Problems](src/content/problems/)** | Twenty-three unanswered questions, Hilbert-style, each with a test for what counts as progress.                                                                                                   |
-| **[Programs](src/content/programs/)**          | 26 programs have usable browser functions. Institutional operations still need people, resources and governance. Each page states its exact scope.                                                                            |
+| **[Programs](src/content/programs/)**          | 26 programs have usable browser functions. Institutional operations still need people, resources and governance. Each page states its exact scope.                                                |
 | **[Tools](src/content/tools/)**                | 20 catalog tools, including the shared and local Charity OS: Values Compass, Portfolio Builder, Impact Calculator, Cost-Effectiveness Model Kit, Giving Dashboard, Forecasting Platform and more. |
 | **[The Record](src/content/record/)**          | 21 information bases: Encyclopedia, Intervention Database, Cause Atlas, Gap Map, Failure Archive, Disagreement Register, Principles textbook, Lexicon and more.                                   |
-| **[Public API](src/lib/api.ts)**               | 31 datasets as static JSON at `/api/v1/*.json`, CC BY 4.0.                                                                                                                                        |
+| **[Public API](src/lib/api.ts)**               | 33 datasets as static JSON at `/api/v1/*.json`, CC BY 4.0.                                                                                                                                        |
 | **[Browser extension](extension/)**            | The Giver’s Checklist on supported donation pages, without analytics or background data transmission.                                                                                             |
 
 Every page follows [the Charitology Standard](STYLE.md): a source for every factual claim, honest evidence labels, unknowns left unknown, and no ratings of named charities until a rating method has survived public red-team review.
 
 **[All 31 formerly seeded/designed items now have implemented software or published editions](docs/IMPLEMENTATION_NOTES.md)**, including the self-paced course, research desks, 217 country/economy data profiles, reference workbenches and six actual narrated podcast episodes. The [full roadmap](https://charitology.org/roadmap/) preserves every original idea and its current boundaries.
 
-**Edition 0 was drafted with AI assistance and is being reviewed in public.** Every page shows whether a second contributor has reviewed it yet.
+**Edition 0 was drafted with AI assistance and is being reviewed in public.** Review labels require recorded independent human declarations bound to the exact source version; manuscript peer review has a separate gate. The [public research ledger](https://charitology.org/research-ledger/) preserves exact sources, revisions and qualification limits.
 
 ## Run it
 
@@ -40,6 +40,8 @@ The public site is static HTML with browser-local TypeScript workspaces and requ
 The shared OS at https://os.charitology.org includes [approved public request forms](docs/PUBLIC_PARTICIPATION.md), an [own-request portal](docs/PARTICIPANT_PORTAL.md), [confirmed participation and manual waitlists](docs/PARTICIPATION_BOOKINGS.md), [separately consented email notices](docs/PARTICIPATION_DELIVERY.md) and [immutable grant-period reports](docs/GRANT_REPORTS.md). The linked records distinguish automated checks, controlled browser/inbox evidence and remaining real-pilot and independent-review gates. Money movement and sensitive case narratives remain outside its scope.
 
 The [study register](docs/STUDY_REGISTER.md) connects the Evidence Library and Evidence Reviews in one browser-local workspace: citation imports, frozen protocols, recorded screening decisions, retrieval/extraction inputs, flow counts and guarded backups. Local labels and hashes establish no independent reviewer or performed study.
+
+The [research ledger](docs/RESEARCH_LEDGER_ACCEPTANCE.md) connects the 23 Open Problems, journal manuscripts, historical cases and methodology to pinned source versions and public correction history. Its initial capture contains one editorial correction affecting two claims, with no qualifying research result or independent review. It preserves unknown historical baselines and adds complete edition JSON/CSV and inert source downloads.
 
 ## How it’s built
 

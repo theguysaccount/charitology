@@ -18,10 +18,17 @@ import nonprofitBenefits from "../data/nonprofit-benefits.json";
 import osProviders from "../data/os-providers.json";
 import osUserNeeds from "../data/os-user-needs.json";
 
+async function researchLedger() {
+  const { loadResearchLedger } = await import("./research-ledger");
+  return loadResearchLedger();
+}
+
 export interface Endpoint {
   name: string;
   description: string;
   build: () => Promise<unknown>;
+  capturedAt?: () => Promise<string>;
+  preserveShape?: boolean;
 }
 
 const entries = (collection: CollectionKey) => async () =>
@@ -34,8 +41,12 @@ const entries = (collection: CollectionKey) => async () =>
 
 /** Replace content references ({ id, collection }) with plain ids so the JSON is easy to use. */
 function flattenRefs(value: unknown, preserveInstants = false): unknown {
-  if (Array.isArray(value)) return value.map((item) => flattenRefs(item, preserveInstants));
-  if (value instanceof Date) return preserveInstants ? value.toISOString() : value.toISOString().slice(0, 10);
+  if (Array.isArray(value))
+    return value.map((item) => flattenRefs(item, preserveInstants));
+  if (value instanceof Date)
+    return preserveInstants
+      ? value.toISOString()
+      : value.toISOString().slice(0, 10);
   if (value && typeof value === "object") {
     const v = value as Record<string, unknown>;
     if (
@@ -52,6 +63,22 @@ function flattenRefs(value: unknown, preserveInstants = false): unknown {
 }
 
 export const ENDPOINTS: Endpoint[] = [
+  {
+    name: "research-ledger",
+    description:
+      "Pinned public source versions, editorial corrections and recorded review declarations; no private local workspaces or automatic scientific qualification.",
+    build: async () => (await researchLedger()).current,
+    capturedAt: async () => (await researchLedger()).current.edition.capturedAt,
+    preserveShape: true,
+  },
+  {
+    name: "research-progress",
+    description:
+      "Explicit as-of research progress: present states, dated editorial corrections, recorded decisions and support limits; unknown historical baseline stays unknown.",
+    build: async () => (await researchLedger()).progress,
+    capturedAt: async () => (await researchLedger()).current.edition.capturedAt,
+    preserveShape: true,
+  },
   {
     name: "os-providers",
     description:
@@ -216,7 +243,8 @@ export const ENDPOINTS: Endpoint[] = [
   },
   {
     name: "sources",
-    description: "Sources in Charitology's bibliography, with the pages that cite them; wider literature coverage is unknown.",
+    description:
+      "Sources in Charitology's bibliography, with the pages that cite them; wider literature coverage is unknown.",
     build: allCitations,
   },
 ];
@@ -224,12 +252,25 @@ export const ENDPOINTS: Endpoint[] = [
 export async function buildEndpoint(name: string): Promise<unknown> {
   const endpoint = ENDPOINTS.find((e) => e.name === name);
   if (!endpoint) throw new Error(`Unknown endpoint: ${name}`);
+  const data = await endpoint.build();
+  const capture = endpoint.capturedAt ? await endpoint.capturedAt() : null;
+  if (
+    endpoint.capturedAt &&
+    (typeof capture !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(capture) ||
+      new Date(capture).toISOString() !== capture)
+  )
+    throw new Error("Invalid pinned API capture.");
   return {
     name,
     description: endpoint.description,
     license: "CC BY 4.0. Cite “Charitology (charitology.org)”.",
-    generated: new Date().toISOString().slice(0, 10),
+    generated: capture
+      ? capture.slice(0, 10)
+      : new Date().toISOString().slice(0, 10),
     // Forecast timestamps are scoring cutoffs, not calendar-only dates.
-    data: flattenRefs(await endpoint.build(), name === "forecasts"),
+    data: endpoint.preserveShape
+      ? data
+      : flattenRefs(data, name === "forecasts"),
   };
 }

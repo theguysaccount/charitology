@@ -81,7 +81,7 @@ const problems = defineCollection({
     statement: z.string(),
     progress: z.string(),
     conditions,
-    status: z.enum(['open', 'partial', 'solved']).default('open'),
+    status: z.enum(['open', 'partial', 'solved', 'under-review']).default('open'),
     bounty: z.string().optional(),
     sources,
     review,

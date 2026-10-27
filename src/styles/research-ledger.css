@@ -1,0 +1,284 @@
+.research-ledger {
+  min-width: 0;
+  color: var(--ink);
+  --rl-panel: var(--surface);
+}
+.research-ledger * {
+  min-width: 0;
+}
+.research-ledger [hidden] {
+  display: none !important;
+}
+.research-ledger .rl-panel,
+.research-ledger .rl-record,
+.research-ledger .rl-event,
+.research-ledger .rl-version,
+.research-ledger .rl-source {
+  padding: clamp(14px, 3vw, 24px);
+  margin: 20px 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--rl-panel);
+  color: var(--ink);
+}
+.research-ledger .rl-kicker,
+.research-ledger .rl-note,
+.research-ledger .rl-meta {
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+}
+.research-ledger .rl-kicker {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.research-ledger .rl-warning {
+  padding: 14px;
+  background: var(--highlight);
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+}
+.research-ledger .rl-badges,
+.research-ledger .rl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.research-ledger .rl-badge {
+  border: 1px solid var(--rule);
+  padding: 3px 9px;
+  border-radius: 999px;
+  font: 600 0.78rem/1.5 var(--font-sans);
+  color: var(--ink-2);
+  background: var(--bg-2);
+}
+.research-ledger .rl-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 12px;
+  padding: 0;
+}
+.research-ledger .rl-stat {
+  list-style: none;
+  border-top: 2px solid var(--rule);
+  padding: 8px 0;
+  font: 0.9rem/1.45 var(--font-sans);
+  color: var(--ink-2);
+}
+.research-ledger .rl-stat strong {
+  display: block;
+  color: var(--ink);
+  font: 600 1.7rem/1.3 var(--font-display);
+}
+.research-ledger .rl-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+  background: var(--bg-2);
+  border-radius: var(--radius-sm);
+  margin: 18px 0;
+  font: 0.88rem/1.5 var(--font-sans);
+}
+.research-ledger .rl-control {
+  flex: 1 1 150px;
+}
+.research-ledger .rl-control label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.research-ledger input,
+.research-ledger select {
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 9px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+.research-ledger .rl-button {
+  display: inline-block;
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 0.85rem/1.5 var(--font-sans);
+  text-decoration: none;
+  cursor: pointer;
+}
+.research-ledger .rl-button:hover {
+  background: var(--bg-2);
+}
+.research-ledger .rl-button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.research-ledger :is(a, button, input, select, summary):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+.research-ledger .rl-paging {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.research-ledger .rl-page-status {
+  margin: 0;
+  flex: 1 1 100%;
+  color: var(--ink-2);
+  font-size: 0.83rem;
+}
+.research-ledger .rl-batch {
+  margin: 14px 0;
+}
+.research-ledger .rl-batch > summary {
+  padding: 8px 0;
+  font: 600 0.9rem/1.5 var(--font-sans);
+  cursor: pointer;
+}
+.research-ledger .rl-enhanced > .rl-batch > summary {
+  display: none;
+}
+.research-ledger .rl-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  margin: 12px 0 24px;
+  font: 0.9rem/1.5 var(--font-sans);
+}
+.research-ledger .rl-table :is(th, td) {
+  text-align: left;
+  padding: 12px 8px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+  overflow-wrap: anywhere;
+}
+.research-ledger .rl-table th {
+  color: var(--ink-2);
+  font-size: 0.78rem;
+}
+.research-ledger .rl-table th:first-child {
+  width: 48%;
+}
+.research-ledger .rl-definitions {
+  display: grid;
+  grid-template-columns: minmax(110px, 1fr) minmax(0, 3fr);
+  gap: 8px 18px;
+}
+.research-ledger .rl-definitions dt {
+  font: 600 0.85rem/1.5 var(--font-sans);
+  color: var(--ink-2);
+}
+.research-ledger .rl-definitions dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.research-ledger code,
+.research-ledger pre,
+.research-ledger a,
+.research-ledger .rl-hash {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.research-ledger pre {
+  white-space: pre-wrap;
+  max-width: 100%;
+  padding: 12px;
+  background: var(--bg-2);
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+  font: 0.82rem/1.6 var(--font-mono);
+}
+.research-ledger .rl-excerpt {
+  white-space: pre-wrap;
+  font: inherit;
+  padding: 12px 16px;
+  border-left: 3px solid var(--rule);
+  margin: 12px 0;
+  background: var(--bg-2);
+  color: var(--ink);
+}
+.research-ledger .rl-comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.research-ledger .rl-links {
+  padding-left: 22px;
+}
+.research-ledger .rl-links li {
+  margin: 8px 0;
+}
+.research-ledger .rl-event {
+  border-radius: 0;
+  border-width: 0 0 0 3px;
+}
+.research-ledger .rl-event h4,
+.research-ledger .rl-version h4 {
+  margin-top: 0;
+}
+.research-ledger .rl-archive > summary {
+  cursor: pointer;
+  font: 600 1.15rem/1.5 var(--font-display);
+}
+@media (max-width: 560px) {
+  .research-ledger .rl-comparison {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .research-ledger .rl-definitions {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3px;
+  }
+  .research-ledger .rl-definitions dd {
+    margin-bottom: 12px;
+  }
+  .research-ledger .rl-table :is(thead, tbody, tr, th, td) {
+    display: block;
+    width: 100%;
+  }
+  .research-ledger .rl-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .research-ledger .rl-table tr {
+    margin: 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .research-ledger .rl-table td {
+    padding: 5px 0;
+    border: 0;
+  }
+  .research-ledger .rl-table td[data-label]::before {
+    content: attr(data-label) ": ";
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+}
+@media print {
+  .research-ledger .rl-controls {
+    display: none !important;
+  }
+  .research-ledger .rl-panel,
+  .research-ledger .rl-event,
+  .research-ledger .rl-version {
+    break-inside: avoid;
+  }
+  .research-ledger .rl-badge {
+    border-radius: 0;
+  }
+}

@@ -1,6 +1,8 @@
 ---
 // One template for every entry inside an info base:
 // /record/encyclopedia/<id>/, /record/interventions/<id>/, /record/case-studies/<id>/ and so on.
+import { loadResearchLedger } from "../../../lib/research-ledger";
+import { ledgerHref } from "../../../lib/research-ledger-model.mjs";
 import ReaderNotebook from "../../../components/ReaderNotebook.astro";
 import { getCollection, render } from "astro:content";
 import Entry from "../../../layouts/Entry.astro";
@@ -77,6 +79,14 @@ const eyebrow =
         ? `Journal of Charitology · Vol. ${d.volume}, No. ${d.issue}`
         : sectionLabel;
 const title = collection === "myths" ? `“${d.title}”` : d.title;
+let manuscriptHistory: any = null;
+if (collection === "journal") {
+  const ledger = await loadResearchLedger();
+  const binding = ledger.input.manifest.currentSources.find((item: any) => item.sourceKey === `journal/${entry.id}`);
+  const view = ledger.current.views.find((item: any) => item.id === binding?.recordId);
+  if (!binding || !view) throw new Error(`Missing manuscript history: ${entry.id}`);
+  manuscriptHistory = { binding, view };
+}
 ---
 
 <Entry
@@ -139,6 +149,7 @@ const title = collection === "myths" ? `“${d.title}”` : d.title;
     )
   }
 
+  {manuscriptHistory && <p class="note">{manuscriptHistory.view.qualification.peerReview === "peer-reviewed" ? "Recorded peer review qualifies for this exact manuscript version." : "This manuscript has not met the recorded peer-review gate."} <a href={url(ledgerHref(manuscriptHistory.binding.recordId))}>Inspect the source versions, declarations and limits</a>.</p>}
   <Content />
   {
     collection === "principles" && (

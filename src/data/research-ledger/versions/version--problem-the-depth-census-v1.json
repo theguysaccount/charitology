@@ -1,0 +1,46 @@
+{
+  "id": "version:problem-the-depth-census-v1",
+  "recordId": "problem:the-depth-census",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Depth Census",
+      "number": 1,
+      "statement": "What share of the world’s charitable money goes to relief, repair, prevention, structure and source work?",
+      "progress": "A public, reproducible estimate of the depth mix for at least one country’s giving, with a method others can rerun and a stated error range.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "symptom-trap"
+        },
+        {
+          "collection": "conditions",
+          "id": "measurement-gap"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nCharitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Charitology has not established the current mix. If the hypothesis is wrong, the field should be the first to say so. The census would supply a descriptive baseline. Deciding whether a mix is appropriate also requires an explicit standard tied to the goals being considered.\n\n## Where to start\n\nDraw a random sample of organizations from a public registry and code each one on the [depth scale](/method/#depth), weighting by spending. Program descriptions from Form 990 filings, published openly by [Charity Impact Media](https://theguysaccount.github.io/charity-impact-media/), and the foundation grants in [WHOFUNDS](https://theguysaccount.github.io/whofunds-open-grant-graph/) are open starting points. How often two independent coders agree is itself a finding: if people can’t agree on depth, the scale needs work first.\n"
+  },
+  "subjectHash": "7b530c516e616ae16488901f3ead08f98fdee50a723e15796b0d4c7b2e22949a",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-depth-census",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "8bcaf70dfa2fd3a04e82f965317308a64b1c36c9de29d19fbc2daea2432457f5"
+}

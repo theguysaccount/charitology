@@ -3,6 +3,7 @@ import { getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Crumbs from '../components/Crumbs.astro';
 import Seal from '../components/Seal.astro';
+import ReviewNote from '../components/ReviewNote.astro';
 import { url } from '../lib/site';
 
 const entry = await getEntry('journal', 'ten-dollars');
@@ -19,6 +20,7 @@ const { Content } = await render(entry);
       <div class="poem">
         <Content />
       </div>
+      <ReviewNote filePath={entry.filePath} review={entry.data.review} title={entry.data.title}/>
       <div class="sign">
         <Seal id="manifesto-seal" size={120} />
         <div class="btn-row">

@@ -1,0 +1,46 @@
+{
+  "id": "version:problem-the-payout-question-v1",
+  "recordId": "problem:the-payout-question",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "problems",
+    "frontmatter": {
+      "title": "The Payout Question",
+      "number": 12,
+      "statement": "What is the best rate to spend philanthropic money now versus later?",
+      "progress": "A model that ties the payout rate to measurable inputs, such as investment returns, how fast the best opportunities are used up and discount rates, and gives ranges a funder can act on.",
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "parked-money"
+        },
+        {
+          "collection": "conditions",
+          "id": "short-horizon"
+        }
+      ],
+      "bounty": "Unfunded. The Question Bounties program will attach prizes once it is funded.",
+      "sources": []
+    },
+    "body": "\n## Why it matters\n\nThe Annual DAF Report 2025 estimated about $326 billion in donor-advised fund assets in 2024. Whether assets should be spent sooner is a substantial allocation question; the asset total alone cannot answer it. See [Parked Money](/diagnosis/parked-money/).\n\n## Where to start\n\nEconomists have written “give now or give later” models. The open problem is grounding them in real data on how the cost of doing good changes over time.\n"
+  },
+  "subjectHash": "0953cea7cff9cb26de0438e2c6b807fea24bf5d0c7bb8ac3857cf38f2e08d32e",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-problems-the-payout-question",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "3dadb33b9aba113332981d1b22b4fca82491c3c0310f42b10c71090d798a23f3"
+}

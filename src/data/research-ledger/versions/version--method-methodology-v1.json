@@ -1,0 +1,57 @@
+{
+  "id": "version:method-methodology-v1",
+  "recordId": "method:methodology",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-content-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "record",
+    "frontmatter": {
+      "title": "Methodology Handbook",
+      "group": "Thought and teaching",
+      "order": 6,
+      "summary": "Exactly how Charitology labels evidence, classifies depth, reviews pages and handles corrections.",
+      "status": "live",
+      "statusNote": null,
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "silence-about-failure"
+        },
+        {
+          "collection": "conditions",
+          "id": "missing-profession"
+        }
+      ],
+      "firstMilestone": null,
+      "help": [
+        "Propose a change to the method in an issue labeled methodology.",
+        "Red-team a rule below."
+      ],
+      "related": [
+        "/method/",
+        "/contribute/",
+        "/programs/red-team/"
+      ],
+      "sources": []
+    },
+    "body": "\n## Evidence labels\n\nClaims about the charity system carry one of four labels:\n\n- **Established** means strong published evidence from several independent sources.\n- **Documented** means credible sources report it; the size of the effect is less certain.\n- **Debated** means credible people disagree. Both sides are shown.\n- **Hypothesis** means Charitology’s own working claim, untested, and testing it is the work.\n\nInterventions carry an evidence grade: *strong*, *moderate*, *mixed*, *weak* or *unknown*. The grade applies to the specific outcome claimed.\n\n## Depth classification\n\nWork is classified by where it acts, using the five levels in [the Method](/method/#depth): relief, repair, prevention, structure, source. Classify by the primary mechanism of the work, not its aspirations. When work spans levels, classify by where most of the money goes and note the rest. Depth classifications of named organizations are hypotheses and cite the organization’s own description of its work.\n\n## Sources\n\nEvery factual claim has a source the writer has read. Primary sources come first. Paywalled sources get a free alternative where one exists. If no source can be found, the claim is removed.\n\n## Review\n\nNew pages start as **drafts**. A page becomes **reviewed** when a second contributor has checked every source and the framing against [the Standard](https://github.com/theguysaccount/charitology/blob/main/STYLE.md). Reviews happen in public pull requests.\n\n## Corrections and red-teaming\n\nEvery page links to a prefilled issue for corrections and one for challenges. Corrections are fixed in public. Significant corrections are noted in the pull request that makes them. A red-team challenge stays open until it is answered with evidence, either by changing the page or by explaining why it stands.\n\n## AI assistance\n\nAI tools may help draft pages. Their use is disclosed in the pull request, and a human contributor is responsible for checking every claim. Edition 0 was drafted with AI assistance and is being reviewed in public.\n\n## Ratings\n\nCharitology publishes no ratings of named organizations. That changes only after a rating method has been published and has survived public red-team review.\n"
+  },
+  "subjectHash": "4991dd8a98d678d2919340a34d9d559ad3cc65f08d1c3a9b4100b74a799516da",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:current-record-methodology",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "49b063b25523519e0be5b457f7559079e2f42b3ddfd187bcec7c6d753bdc8a70"
+}

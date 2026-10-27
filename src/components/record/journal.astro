@@ -1,7 +1,17 @@
 ---
 import { getCollection } from "astro:content";
 import EntryList from "../EntryList.astro";
-import { formatDate } from "../../lib/site";
+import { formatDate, url } from "../../lib/site";
+import { loadResearchLedger } from "../../lib/research-ledger";
+import { ledgerHref } from "../../lib/research-ledger-model.mjs";
+
+const ledger = await loadResearchLedger();
+const journalView = (id: string) => {
+  const binding = ledger.input.manifest.currentSources.find((item: any) => item.sourceKey === `journal/${id}`);
+  const view = ledger.current.views.find((item: any) => item.id === binding?.recordId);
+  if (!binding || !view) throw new Error(`Missing journal source history: ${id}`);
+  return { binding, view };
+};
 
 const issues = (await getCollection("journal")).sort(
   (a, b) => a.data.volume - b.data.volume || a.data.issue - b.data.issue,
@@ -11,11 +21,15 @@ const items = issues.map((j) => ({
   title: j.data.title,
   summary: j.data.summary,
   kicker: `Vol. ${j.data.volume}, No. ${j.data.issue}`,
-  tags: [j.data.author, formatDate(j.data.date)],
+  tags: [j.data.author, formatDate(j.data.date), journalView(j.id).view.qualification.peerReview === "peer-reviewed" ? "Recorded peer review" : "Not peer-reviewed"],
 }));
 ---
 
 <EntryList items={items} layout="cards" />
+<details>
+  <summary>Source versions and peer-review history</summary>
+  <ul>{issues.map((j) => <li><a href={url(ledgerHref(journalView(j.id).binding.recordId))}>{j.data.title}: exact versions and recorded declarations</a></li>)}</ul>
+</details>
 <section id="journal-desk">
   <h2>Prepare a submission</h2><p>
     This browser desk produces a manuscript and review checklist. Nothing is
@@ -93,9 +107,7 @@ const items = issues.map((j) => ({
     <a
       href="https://github.com/theguysaccount/charitology/blob/main/CONTRIBUTING.md"
       >Open the contribution instructions</a
-    >. Two independent human approvals and the public review thread are required
-    before a manuscript can be described as peer-reviewed. The browser form
-    cannot grant those approvals.
+    >. Peer review requires recorded statements from two distinct eligible humans, independent of the manuscript’s authors, bound to its exact source version and inspected by a different human maintainer. Ordinary source review is a separate gate. The public ledger records the declarations and their limits; this browser form cannot grant them.
   </p>
 </section>
 <script>
