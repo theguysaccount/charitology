@@ -675,6 +675,41 @@ try {
     },
   );
   await check(
+    "actual intervention copy feedback survives native currentTarget clearing after asynchronous dispatch",
+    async () => {
+      const d = dom(await render("tools/compare-tool")),
+        descriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+      let copied, resolveCopy;
+      const copying = new Promise((resolve) => (resolveCopy = resolve));
+      Object.defineProperty(globalThis, "navigator", {
+        configurable: true,
+        value: {
+          clipboard: {
+            async writeText(value) {
+              copied = value;
+              await copying;
+            },
+          },
+        },
+      });
+      try {
+        await mountInline("src/components/tools/compare-tool.astro", d);
+        const button = d.getElementById("ct-share"),
+          event = { currentTarget: button },
+          pending = button.listeners.get("click")[0](event);
+        event.currentTarget = null;
+        resolveCopy();
+        await pending;
+        assert.equal(copied, location.href);
+        assert.equal(button.textContent, "Link copied");
+      } finally {
+        if (descriptor)
+          Object.defineProperty(globalThis, "navigator", descriptor);
+        else delete globalThis.navigator;
+      }
+    },
+  );
+  await check(
     "all actual observation/country/context Astro templates compile and CSS retains narrow/print/focus behavior",
     async () => {
       for (const file of [
@@ -707,6 +742,39 @@ try {
         /@media print/,
       ])
         assert.match(css, p);
+    },
+  );
+  await check(
+    "the narrow observation table retains readable column width inside a named keyboard-scrollable region",
+    async () => {
+      const d = dom(desk),
+        region = d.querySelector(".ob-table-scroll");
+      assert.equal(region.getAttribute("role"), "region");
+      assert.equal(region.getAttribute("tabindex"), "0");
+      assert.equal(
+        region.getAttribute("aria-label"),
+        "Source-linked facts table",
+      );
+      assert.match(d.textContent, /scroll the table horizontally/);
+      const rules = postcss.parse(
+          await readFile("src/styles/observations.css", "utf8"),
+        ),
+        declarations = (selector) => {
+          const rule = rules.nodes.find(
+            (n) => n.type === "rule" && n.selector === selector,
+          );
+          assert.ok(rule, selector);
+          return Object.fromEntries(
+            rule.nodes
+              .filter((n) => n.type === "decl")
+              .map((n) => [n.prop, n.value]),
+          );
+        };
+      assert.equal(declarations(".ob-desk table.data")["min-width"], "48rem");
+      assert.deepEqual(declarations(".ob-desk .ob-table-scroll"), {
+        "max-width": "100%",
+        "overflow-x": "auto",
+      });
     },
   );
   await check(

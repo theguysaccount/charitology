@@ -535,8 +535,9 @@ const slots = [
   picks.forEach((s) => s.addEventListener('change', () => render(true)));
   diffOnly.addEventListener('change', () => render(true));
   $('#ct-share').addEventListener('click', async (e) => {
+    const button = e.currentTarget as HTMLElement;
     const ok = await copy(location.href);
-    flash(e.currentTarget as HTMLElement, ok ? 'Link copied' : 'Copy failed');
+    flash(button, ok ? 'Link copied' : 'Copy failed');
   });
   render();
 </script>

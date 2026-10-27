@@ -69,6 +69,13 @@
   display: grid;
   gap: 1rem;
 }
+.ob-desk .ob-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.ob-desk table.data {
+  min-width: 48rem;
+}
 .ob-rows [hidden],
 .observations [hidden] {
   display: none !important;
