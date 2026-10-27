@@ -50,6 +50,8 @@ A forced own-user RLS index provides cross-organization navigation; intake and p
 
 ## Confirmed participation and waitlists
 
+Runtime `e6c880d6bb2f89b4ca2fa507372d25cb964c4f69` / `dpl_4Zs32Y794voSwEkcPnEbrMgygJCG` is promoted to https://os.charitology.org. [The acceptance record](../../docs/PARTICIPATION_BOOKINGS.md) records exact CI (159 service/44 actual OS Postgres checks), forced-RLS migration, staged/live HTTP checks and controlled fictional Chrome evidence. No production participant adoption is claimed.
+
 The Participation console manages one person and one place for a whole event session or volunteer shift. Before enabling an occurrence, an administrator reviews and accepts an exact, hashed inventory of existing active typed registrations or assignments. Unknown old consent remains unknown. Duplicate, overlapping or over-capacity legacy occupancy blocks adoption.
 
 A scoped writer deliberately associates a typed registration or assignment draft with a contact and, where applicable, its converted intake request. Association reserves no capacity. The participant can affirm the current independently approved purpose, instructions, schedule and organizer contact through their own linked request. A staff member can instead record a specific offline affirmation with its method and evidence reference. Collection consent and an interest request alone do not authorize participation.

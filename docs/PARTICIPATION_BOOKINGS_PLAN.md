@@ -4,6 +4,8 @@ Frozen pre-implementation contract · October 26, 2026 · AI-assisted planning
 
 This is a proposed next Charity OS slice, written before implementation. It does not change the participant portal release or establish that booking software, notification delivery, real participation or independent human approval exists. [The OS plan](CHARITY_OS_PLAN.md), [public intake](PUBLIC_PARTICIPATION.md) and [participant portal](PARTICIPANT_PORTAL.md) retain their separate implementation and evidence records. This planning task makes no runtime, migration, provider, integration, payment or production participant changes.
 
+Implementation and subsequent acceptance are tracked separately in [the bookings acceptance record](PARTICIPATION_BOOKINGS.md). The contract below retains its pre-implementation wording.
+
 ## Outcome and limits
 
 An authorized staff member can record one confirmed event place or volunteer assignment for one operational contact at one occurrence, after current independent approval, specific participation consent and an atomic capacity check. A full occurrence can retain an explicitly consented waitlist without reserving places. Cancellation releases a place once. Staff deliberately review and promote a waiting request; releasing a place never selects a replacement automatically.
