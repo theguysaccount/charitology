@@ -979,6 +979,34 @@ a.list-row:hover h3 {
   align-items: center;
 }
 
+/* D1 recovery is mounted beside each tool; its private text and native file
+   control must fit a narrow screen. Explicit display rules must honor hidden. */
+.d1-recovery {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.d1-recovery [hidden] {
+  display: none !important;
+}
+.d1-recovery .btn {
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.35;
+  text-align: center;
+}
+.d1-recovery label {
+  display: block;
+  margin-block: 1rem 0.5rem;
+}
+.d1-recovery :is(input[type='file'], select) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  color: inherit;
+  font: inherit;
+}
+
 /* ---------- Tool kit (shared by every interactive tool) ---------- */
 
 .tool {

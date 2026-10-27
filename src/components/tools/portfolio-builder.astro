@@ -109,7 +109,14 @@ const frameworks = frameworksData.frameworks;
   import { renderBars } from '../../lib/client/bars';
   import { copy, download, flash, toCsv } from '../../lib/client/files';
   import { money, pct } from '../../lib/client/format';
-  import { decodeState, encodeState, load, readHash, save, writeHash, validateToolStorage } from '../../lib/client/durable-store';
+  import { decodeState, encodeState, readHash, writeHash } from '../../lib/client/store';
+  import { createD1ViewTracker, openD1ToolSession, readD1Dependency } from '../../lib/client/donor-recovery';
+  import { mountD1RecoveryControls } from '../../lib/client/donor-recovery-controls';
+  import type { D1ValueMap } from '../../lib/client/donor-recovery-schemas';
+
+  async function initializeDonorTool(): Promise<void> {
+
+
 
   const sliders = $$<HTMLInputElement>('input[data-framework]');
   const budgetEl = $<HTMLInputElement>('#pb-budget');
@@ -141,7 +148,7 @@ const frameworks = frameworksData.frameworks;
 
   let current: { shares: Allocation; best: Allocation; budget: number } | undefined;
 
-  function render(persistDraft = true) {
+  function render() {
     const s = state();
     const weights: Weights = Object.fromEntries(FRAMEWORKS.map((f, i) => [f.id, s.w[i]]));
     const w = normalize(weights);
@@ -162,35 +169,64 @@ const frameworks = frameworksData.frameworks;
         ? 'The two methods disagree a lot for your credences. Which method is right is an open question: Open Problem 16, Moral Parliament in Practice.'
         : 'The two methods mostly agree for your credences, so the answer doesn’t depend much on the method.';
     current = { shares, best, budget: s.b };
-    if (persistDraft) save('portfolio', { allocation: shares, alternative: best, budget: s.b, state: s, method: 'shares', savedAt: new Date().toISOString() });
+
     writeHash('p', encodeState(s));
+  }
+
+
+  const d1View = createD1ViewTracker();
+  const d1Root = budgetEl.closest<HTMLElement>('section.tool') ?? budgetEl.parentElement!;
+  const d1EarlyInput = () => { d1View.changedForm(); };
+  d1Root.addEventListener('input', d1EarlyInput, true);
+  d1Root.addEventListener('change', d1EarlyInput, true);
+  d1Root.addEventListener('submit', event => event.preventDefault(), true);
+  const d1Session = await openD1ToolSession('portfolio', { view: d1View });
+  const d1Host = document.createElement('div'); d1Root.append(d1Host);
+  const d1Status = document.createElement('p'); d1Status.className = 'note'; d1Status.setAttribute('role', 'status'); d1Root.append(d1Status);
+  const d1Controls = mountD1RecoveryControls({ host: d1Host, session: d1Session, view: d1View });
+  d1Status.textContent = d1Session.snapshot().message;
+  function d1Changed() { d1View.changedForm(); d1Controls.noteViewMutation(); }
+  function d1FinishLoad() {
+    d1Root.removeEventListener('input', d1EarlyInput, true);
+    d1Root.removeEventListener('change', d1EarlyInput, true);
+    return d1View.snapshot().formGeneration === 0;
+  }
+  async function d1Save(value: D1ValueMap['portfolio']): Promise<boolean> {
+    const epoch = d1View.snapshot().formGeneration;
+    try {
+      const result = await d1Session.saveCaptured(d1Session.captureSave(value));
+      if (result.formGeneration !== d1View.snapshot().formGeneration) return false;
+      const ok = result.outcome === 'saved' || result.outcome === 'no-op';
+      if (ok) d1View.markFormSaved(result.formGeneration);
+      d1Status.textContent = ok ? 'This record is saved in this browser.' : result.snapshot.message;
+      return ok;
+    } catch (error) {
+      if (epoch === d1View.snapshot().formGeneration) d1Status.textContent = error instanceof Error ? error.message : 'Saving was refused. Your current form remains in this tab.';
+      return false;
+    } finally { d1Controls.refresh(); }
   }
 
   const shared = readHash('p');
   const fromLink = shared ? decodeState<State>(shared) : undefined;
-  const validState = (s: State) => !!s && Array.isArray(s.w) && s.w.length === FRAMEWORKS.length && s.w.every(n => Number.isFinite(n) && n >= 0 && n <= 100) && Number.isFinite(s.b) && s.b >= 0 && Number.isFinite(s.t) && s.t >= 0 && s.t <= 100;
-  validateToolStorage('portfolio', value => {
-    const v = value as { allocation: Record<string, number>; alternative?: Record<string, number>; budget: number; state?: State };
-    const allocation = (a: unknown) => !!a && typeof a === 'object' && !Array.isArray(a) && Object.entries(a).length > 0 && Object.entries(a).every(([id, n]) => CAUSES.some(c => c.id === id) && typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 1);
-    return !!v && allocation(v.allocation) && (!v.alternative || allocation(v.alternative)) && typeof v.budget === 'number' && Number.isFinite(v.budget) && v.budget >= 0 && (!v.state || validState(v.state));
-  });
-  const savedPortfolio = load<{ state?: State } | null>('portfolio', null);
-  const fromCompass = load<{ weights?: Weights } | null>('compass', null);
-  if (fromLink && validState(fromLink)) {
-    apply(fromLink);
-    $('#pb-loaded').textContent = 'Loaded from a share link.';
-  } else if (savedPortfolio?.state && validState(savedPortfolio.state)) {
-    apply(savedPortfolio.state);
-    $('#pb-loaded').textContent = 'Loaded your saved portfolio controls.';
-  } else if (fromCompass?.weights) {
-    const w = normalize(fromCompass.weights);
-    const top = Math.max(...Object.values(w));
-    sliders.forEach((el) => (el.value = String(Math.round((w[el.dataset.framework!] / top) * 100))));
-    $('#pb-loaded').textContent = 'Started from your Values Compass answers.';
+  const validState = (v: State) => !!v && Array.isArray(v.w) && v.w.length === FRAMEWORKS.length && v.w.every(n => Number.isFinite(n) && n >= 0 && n <= 100) && Number.isFinite(v.b) && v.b >= 0 && Number.isFinite(v.t) && v.t >= -100 && v.t <= 100;
+  const stored = d1Session.snapshot();
+  const fromCompass = await readD1Dependency('portfolio-builder');
+  if (d1FinishLoad()) {
+    if (fromLink && validState(fromLink)) { apply(fromLink); $('#pb-loaded').textContent = 'Loaded share-link controls into this tab. Change a control to save them.'; }
+    else if (stored.persistence === 'saved' && stored.hasState && stored.value.state && validState(stored.value.state)) { apply(stored.value.state); $('#pb-loaded').textContent = 'Loaded your saved portfolio controls.'; }
+    else if (stored.code === 'ready' && fromCompass.code === 'saved') {
+      const w = normalize(fromCompass.value.weights), top = Math.max(...Object.values(w));
+      sliders.forEach(el => el.value = String(top ? Math.round(w[el.dataset.framework!] / top * 100) : 50));
+      $('#pb-loaded').textContent = 'Started from a saved Values Compass snapshot. Nothing was saved automatically.';
+    }
   }
-
-  [...sliders, budgetEl, tiltEl].forEach((el) => el.addEventListener('input', () => render()));
-  render(false);
+  [...sliders, budgetEl, tiltEl].forEach(el => el.addEventListener('input', async () => {
+    d1Changed(); render();
+    const v = state();
+    if (!current || !validState(v)) return;
+    await d1Save({ allocation: current.shares, alternative: current.best, budget: v.b, state: v, method: 'shares', savedAt: new Date().toISOString() });
+  }));
+  render();
 
   $('#pb-csv').addEventListener('click', () => {
     if (!current) return;
@@ -208,5 +244,12 @@ const frameworks = frameworksData.frameworks;
   $('#pb-share').addEventListener('click', async (e) => {
     const ok = await copy(location.href);
     flash(e.currentTarget as HTMLElement, ok ? 'Link copied' : 'Copy failed');
+  });
+
+  }
+  void initializeDonorTool().catch(error => {
+    const note = document.createElement("p"); note.className = "callout"; note.setAttribute("role", "status");
+    note.textContent = error instanceof Error ? error.message : "The saved copy could not be opened safely. Reload or keep a recovery copy.";
+    document.querySelector("main")?.append(note);
   });
 </script>
