@@ -32,14 +32,14 @@ The held implementation passed **309 complete OS unit/browser-model tests**, **9
 
 Actual Chrome used two real Better Auth browser sessions and disposable constrained PostgreSQL schemas. Thirteen recorded journeys cover original-anchor monthly generation through March, no inherited approval, explicit later New York fold selection, missing-time refusal, quarterly clamping, current scoped access, generic refusal outside the assigned program, existing-result reuse, separately confirmed End and actual authenticated export → preview → commit into inactive recovery. Fixture assistance is explicit: fictional login delivery capture, direct scoped-membership seeding and a labeled backup-orchestration button. No native file Save is claimed. The original workflow fixture ended with two series, three occurrences, zero jobs and zero provider calls.
 
-Four additional actual 320/390 light/dark cases show the recurrence preview fitting the viewport. Width is controlled by a private same-origin iframe fixture; only that fixture's document frame policy permits embedding, while frozen product assets and authenticated APIs remain unchanged. The product's own theme control supplies both palettes. Bounded browser logs contained no application warnings after excluding extension messages. Both fictional browser accounts signed out, and owned tabs closed. Private fixture cleanup is recorded separately.
+Four additional actual 320/390 light/dark cases show the recurrence preview fitting the viewport. Width is controlled by a private same-origin iframe fixture; only that fixture's document frame policy permits embedding, while frozen product assets and authenticated APIs remain unchanged. The product's own theme control supplies both palettes. Bounded browser logs contained no application warnings after excluding extension messages. Both fictional browser accounts signed out, and owned tabs closed. All private fixture schemas were removed and absence verified; the earlier orphaned setup schema was also explicitly removed.
 
 The model's near-quota projection admits a valid 16,707,576-byte structured workspace whose former whole-context copy occupied 34,687,239 bytes. It projects only necessary fields rather than copying irrelevant snapshots. This is bounded engineering feasibility, not a low-memory-device guarantee.
 
 ## Release record
 
-- Final runtime and release head: pending.
-- Complete static build/check and exact-head required CI: pending.
+- Final runtime: `ffdbf7af612985492dd415bd7b0af4ffdaf7b398`; release head and PR CI pending.
+- Complete static build/check: passed, 546 pages and 46,600 internal links/assets with none broken; social assets and strict checks pass. Exact-head required CI: pending.
 - Additive production migration and forced-RLS inspection: pending.
 - Protected production stage, canonical promotion and exact public assets: pending.
 
