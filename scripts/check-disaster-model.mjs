@@ -388,7 +388,14 @@ test("mutated selected packet and detached selected scope refuse", () => {
   p.claims.pop();
   refuse(() => packetJSON(p));
   const q = editionPacket(h, last, f.incidents[0][0].id);
-  q.limitations[0] = "Different scope claim";
+  q.incidents[0] = seal({
+    ...q.incidents[0],
+    limitations: [...q.incidents[0].limitations, "A different incident caveat"],
+  });
+  q.edition.incidents = q.edition.incidents.map((p) =>
+    p.id === q.incidents[0].id ? pinOf(q.incidents[0]) : p,
+  );
+  q.edition = seal(q.edition);
   refuse(() => packetCSV(q), /changed/);
 });
 test("complete plain packet re-admission requires all sources", () => {
@@ -396,6 +403,19 @@ test("complete plain packet re-admission requires all sources", () => {
   p.sources.pop();
   p.notes.pop();
   refuse(() => packetJSON(p));
+});
+test("v1 complete packet disclosure cannot be stripped replaced reordered or extended", () => {
+  for (const alter of [
+    (p) => (p.limitations = []),
+    (p) => (p.limitations[0] = "Replacement scope disclaimer"),
+    (p) => p.limitations.reverse(),
+    (p) => p.limitations.push("Additional packet disclaimer"),
+  ]) {
+    const p = structuredClone(editionPacket(h, last));
+    alter(p);
+    refuse(() => packetJSON(p), /exact v1 packet scope/);
+    refuse(() => packetCSV(p), /exact v1 packet scope/);
+  }
 });
 test("standalone complete serializers verify exact internal and repeated boundary hashes", () => {
   const p = structuredClone(editionPacket(h, last));

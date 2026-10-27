@@ -581,6 +581,8 @@ export function packetState(input) {
   array(p.limitations, 8, (x) => {
     if (typeof x !== "string" || x.length > 1200) fail("Invalid limitation");
   });
+  if (!equal(p.limitations, PACKET_LIMITATIONS))
+    fail("Use exact v1 packet scope limitations");
   const state = {
     records: new Map([
       [keyOf(e), e],
