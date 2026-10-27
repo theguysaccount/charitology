@@ -802,7 +802,7 @@ async function mount(root: HTMLElement) {
       const row = {
           id: identity.id,
           createdAt: old?.createdAt ?? identity.createdAt,
-          updatedAt: new Date().toISOString(),
+          updatedAt: at,
           values: current,
         },
         candidate = {
