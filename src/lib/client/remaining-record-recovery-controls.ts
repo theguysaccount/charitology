@@ -55,7 +55,7 @@ export function mountRemainingRecordRecoveryControls<K extends RRKey>(
   const help = document.createElement("p");
   help.className = "note";
   help.textContent =
-    "Keep private backups somewhere safe. A native JSON backup includes the complete validated records, including retained failed-save memory. Unsubmitted fields and original unreadable saved bytes have separate downloads. Reload older open tabs after an update; locks coordinate updated pages only.";
+    "Keep private backups somewhere safe. A native JSON backup includes the complete validated native model, including retained failed-save memory and its last admitted draft or notes where the format contains them. Newer unfinished fields may not be admitted; their literal exposed values and original unreadable saved bytes have separate downloads. Reload older open tabs after an update; locks coordinate updated pages only.";
   const buttons = document.createElement("div");
   buttons.className = "btn-row";
   const recoveries = document.createElement("div");
@@ -223,7 +223,7 @@ export function mountRemainingRecordRecoveryControls<K extends RRKey>(
           "application/json;charset=utf-8",
         );
         say(
-          `Requested the complete native record backup (${saved.persistence}). Unsubmitted forms are excluded.`,
+          `Requested the complete native model backup (${saved.persistence}), including its last admitted draft or notes where the format contains them. Newer unfinished fields may need their separate literal-form backup.`,
         );
       } catch (error) {
         say(errorText(error));

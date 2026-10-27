@@ -47,6 +47,7 @@
   ><label
     >Currency for the whole sample<input
       id="census-currency"
+      disabled
       value="USD"
       pattern="[A-Z]{3}"
       maxlength="3"
@@ -58,81 +59,175 @@
     <button class="btn" id="census-csv">Export sample CSV</button><button
       class="btn btn-ghost"
       id="census-json">Export JSON backup</button
-    ><label class="btn btn-ghost"
-      >Preview JSON import<input
-        id="census-import"
-        type="file"
-        accept=".json,application/json"
-      /></label
     >
-  </div><div id="census-preview" hidden>
-    <p></p><button class="btn" id="census-replace"
-      >Replace current sample</button
-    ><button class="btn btn-ghost" id="census-cancel">Cancel</button>
-  </div>
+  </div><div id="census-recovery"></div>
 </section>
 <script>
   import { download, toCsv } from "../lib/client/files";
-  import { guardedDraft } from "../lib/client/guarded-draft";
   import {
-    validateDepthSample as valid,
     depthCoverage,
     safeCsvText,
+    type DepthSample,
+    type DepthRow,
   } from "../lib/client/completion-models";
-  const root = document.querySelector("#depth-census");
+  import {
+    createRemainingRecordView,
+    openRemainingRecordSession,
+    remainingRecordHydratedString,
+    type RRSession,
+    type RRReadonly,
+    type RRHydratedString,
+    type RRViewToken,
+  } from "../lib/client/remaining-record-recovery";
+  import {
+    mountRemainingRecordRecoveryControls,
+    type RRRecoveryControls,
+  } from "../lib/client/remaining-record-recovery-controls";
+  const root = document.querySelector<HTMLElement>("#depth-census");
   if (root) {
+    let resumeCheckRequested = false;
+    root.dataset.rrInitialization = "opening";
     const form = root.querySelector<HTMLFormElement>("form")!;
     form.addEventListener("submit", (event) => event.preventDefault(), true);
-    type Row = {
-      id: string;
-      activity: string;
-      amount: number;
-      depth: string;
-      source: string;
+    const key = "charitology-depth-census-v1" as const,
+      view = createRemainingRecordView(key),
+      fields = ["activity", "amount", "depth", "source"] as const;
+    const fieldset = root.querySelector<HTMLFieldSetElement>(
+        "[data-private-form-controls]",
+      )!,
+      currency = root.querySelector<HTMLInputElement>("#census-currency")!,
+      status = root.querySelector<HTMLElement>("#census-status")!;
+    let session: RRSession<typeof key> | null = null,
+      controls: RRRecoveryControls | null = null,
+      sample: RRReadonly<DepthSample> | null = null,
+      initialized = false,
+      disposed = false,
+      busy = false;
+    let editing: { id: string; admittedNew: boolean } | null = null;
+    const hydrated = new Map<string, RRHydratedString>();
+    const field = (name: string) => {
+      const el = form.elements.namedItem(name);
+      if (!(
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLSelectElement ||
+        el instanceof HTMLTextAreaElement
+      ))
+        throw Error("Missing activity field: " + name);
+      return el;
     };
-    type Sample = { currency: string; rows: Row[] };
-    let sample: Sample = { currency: "USD", rows: [] };
-    let pending: Sample | null = null;
-    let undo: Sample | null = null;
-    const draft = guardedDraft("charitology-depth-census-v1");
-    let writable = true;
-    let editing = "";
-    const currency = root.querySelector<HTMLInputElement>("#census-currency")!;
-    const status = root.querySelector<HTMLElement>("#census-status")!;
-
-    try {
-      const raw = draft.read();
-      if (raw) {
-        const data = JSON.parse(raw);
-        if (!valid(data)) throw Error();
-        sample = data;
-      }
-    } catch {
-      writable = false;
-      status.textContent =
-        "Stored sample unreadable or saving unavailable. Existing data is untouched. Export new work before leaving.";
+    const read = (name: string) =>
+      remainingRecordHydratedString(
+        field(name).value,
+        hydrated.get(name) ?? null,
+      );
+    const rawValues = () =>
+      Object.fromEntries(fields.map((name) => [name, field(name).value]));
+    function reset() {
+      editing = null;
+      hydrated.clear();
+      form.reset();
+      root!.querySelector("#census-submit")!.textContent = "Add activity";
     }
-    currency.value = sample.currency;
-    function save() {
+    function intent() {
+      view.changedView();
+      controls?.noteViewMutation();
+    }
+    function dispose() {
+      if (disposed) return;
+      disposed = true;
+      initialized = false;
+      controls?.dispose();
+      session?.dispose();
+      view.dispose();
+      fieldset.disabled = true;
+      if (currency) currency.disabled = true;
+    }
+    function capabilities() {
+      if (!session || disposed) return;
+      const state = session.snapshot();
+      fieldset.disabled = !state.hasCurrent;
+      currency.disabled = !state.hasCurrent;
+      root!.querySelector<HTMLButtonElement>("#census-submit")!.disabled =
+        busy || !state.canWrite;
+    }
+    async function persist(
+      candidate: DepthSample,
+      formId: "activity" | "currency",
+      onAdmitted?: () => void,
+      resetEditor = false,
+    ) {
+      if (!session || disposed || busy) return;
+      controls?.noteViewMutation();
+      let captured;
+      let token = view.capture();
       try {
-        if (!writable) throw Error();
-        draft.write(JSON.stringify(sample));
-        status.textContent =
-          "Saved in this browser. User classifications remain hypotheses.";
+        try {
+          captured = session.captureSave(candidate, { form: formId });
+        } finally {
+          token = view.capture();
+        }
       } catch (error) {
-        status.textContent =
-          error instanceof Error
-            ? error.message + " Export your sample before leaving."
-            : "Saving unavailable; export your sample before leaving.";
+        if (!disposed && view.isCurrent(token))
+          status.textContent =
+            error instanceof Error
+              ? error.message
+              : "Saving was refused. Unfinished fields remain.";
+        return;
+      }
+      onAdmitted?.();
+      busy = true;
+      root!.dataset.rrBusy = "true";
+      capabilities();
+      try {
+        const result = await session.saveCaptured(captured);
+        if (disposed) return;
+        sample = result.snapshot.hasCurrent ? result.snapshot.value : null;
+        render();
+        controls?.refresh();
+        if (view.isCurrent(result.view)) {
+          if (result.outcome === "saved" || result.outcome === "no-op") {
+            if (resetEditor) {
+              reset();
+              view.markClean("activity", result.view);
+            }
+            if (formId === "currency") view.markClean("currency", result.view);
+            status.textContent =
+              "Saved in this browser. User classifications remain hypotheses.";
+          } else
+            status.textContent =
+              "The exact sample is retained in memory. Keep native and unfinished-field backups or Retry; newer fields remain on this page.";
+        }
+      } catch (error) {
+        if (!disposed && view.isCurrent(token))
+          status.textContent =
+            error instanceof Error
+              ? error.message
+              : "Saving was refused. Unfinished fields remain.";
+      } finally {
+        busy = false;
+        root!.dataset.rrBusy = "false";
+        capabilities();
       }
     }
     function render() {
-      const { total, unknown } = depthCoverage(sample);
-      const container = root!.querySelector("#census-results")!;
-      container.replaceChildren();
-      const p = document.createElement("p");
-      p.textContent = `${sample.rows.length} activities · ${sample.currency} ${total.toLocaleString("en-US", { maximumFractionDigits: 2 })} recorded · ${total ? (((total - unknown) / total) * 100).toFixed(1) + "% of recorded money classified" : "Money coverage undefined for a zero total"}. Unclassified is not zero need.`;
-      container.append(p);
+      const results = root!.querySelector<HTMLElement>("#census-results")!,
+        list = root!.querySelector<HTMLElement>("#census-rows")!;
+      results.replaceChildren();
+      list.replaceChildren();
+      if (!sample) {
+        const p = document.createElement("p");
+        p.textContent =
+          "No validated current sample is available. Keep protected saved bytes and use reviewed recovery below.";
+        results.append(p);
+        return;
+      }
+      const { total, unknown } = depthCoverage({
+        currency: sample.currency,
+        rows: sample.rows.map((row) => ({ ...row })),
+      });
+      const summary = document.createElement("p");
+      summary.textContent = `${sample.rows.length} activities · ${sample.currency} ${total.toLocaleString("en-US", { maximumFractionDigits: 2 })} recorded · ${total ? (((total - unknown) / total) * 100).toFixed(1) + "% of recorded money classified" : "Money coverage undefined for a zero total"}. Unclassified is not zero need.`;
+      results.append(summary);
       const table = document.createElement("table");
       table.className = "data";
       const body = table.createTBody();
@@ -145,11 +240,11 @@
         ["unknown", "Unclassified"],
       ]) {
         const amount =
-          sample.rows
-            .filter((r) => r.depth === value)
-            .reduce((n, r) => n + Math.round(r.amount * 100), 0) / 100;
-        const tr = body.insertRow();
-        const th = document.createElement("th");
+            sample.rows
+              .filter((row) => row.depth === value)
+              .reduce((n, row) => n + Math.round(row.amount * 100), 0) / 100,
+          tr = body.insertRow(),
+          th = document.createElement("th");
         th.scope = "row";
         th.textContent = label;
         tr.append(th);
@@ -161,218 +256,378 @@
           ? ((100 * amount) / total).toFixed(1) + "%"
           : "Undefined";
       }
-      container.append(table);
-      const list = root!.querySelector("#census-rows")!;
-      list.replaceChildren();
+      results.append(table);
       if (!sample.rows.length) {
-        const empty = document.createElement("p");
-        empty.textContent =
+        const p = document.createElement("p");
+        p.textContent =
           "No activity records yet. Add an actual record with a source or rationale.";
-        list.append(empty);
+        list.append(p);
       }
       for (const row of sample.rows) {
         const card = document.createElement("div");
         card.className = "census-row";
-        const text = document.createElement("p");
-        text.textContent = `${row.activity} · ${sample.currency} ${row.amount} · ${row.depth === "unknown" ? "Unclassified" : "Depth " + row.depth}`;
+        card.dataset.recordId = row.id;
+        const p = document.createElement("p");
+        p.textContent = `${row.activity} · ${sample.currency} ${row.amount} · ${row.depth === "unknown" ? "Unclassified" : "Depth " + row.depth}`;
         const source = document.createElement("p");
         source.textContent = row.source;
         const edit = document.createElement("button");
         edit.type = "button";
         edit.className = "btn btn-small btn-ghost";
         edit.textContent = "Edit";
-        edit.onclick = () => {
-          editing = row.id;
-          for (const f of ["activity", "amount", "depth", "source"])
-            (form.elements.namedItem(f) as HTMLInputElement).value = String(
-              row[f as keyof Row],
-            );
+        edit.addEventListener("click", () => {
+          if (!initialized || disposed || busy) return;
+          intent();
+          const token = view.capture();
+          if (
+            view.snapshot().dirtyForms.includes("activity") &&
+            !window.confirm(
+              "Replace this unfinished activity with the selected saved row? Keep a field backup first if needed.",
+            )
+          )
+            return;
+          if (!view.isCurrent(token)) return;
+          editing = { id: row.id, admittedNew: false };
+          hydrated.clear();
+          for (const name of fields) {
+            const el = field(name),
+              original = String(row[name]);
+            el.value = original;
+            hydrated.set(name, Object.freeze({ original, display: el.value }));
+          }
+          view.markClean("activity", token);
           root!.querySelector("#census-submit")!.textContent = "Save activity";
           form.scrollIntoView({ block: "center" });
-        };
+        });
         const del = document.createElement("button");
+        del.type = "button";
         del.className = "btn btn-small btn-ghost";
         del.textContent = "Delete";
-        let armed = false;
-        del.onclick = () => {
-          if (!armed) {
-            armed = true;
+        let armed: RRViewToken | null = null;
+        del.addEventListener("click", () => {
+          if (!initialized || disposed || busy || !sample) return;
+          if (!armed || !view.isCurrent(armed)) {
+            intent();
+            armed = view.capture();
             del.textContent = "Confirm delete";
+            status.textContent =
+              "Press Confirm delete again for this activity and this version of unfinished fields. Keep copies first if needed.";
             return;
           }
-          undo = structuredClone(sample);
-          sample.rows = sample.rows.filter((r) => r.id !== row.id);
-          if (editing === row.id) {
-            editing = "";
-            form.reset();
-            root!.querySelector("#census-submit")!.textContent = "Add activity";
-          }
-          save();
-          render();
-        };
-        card.append(text, source, edit, document.createTextNode(" "), del);
+          const next = {
+            currency: sample.currency,
+            rows: sample.rows
+              .filter((item) => item.id !== row.id)
+              .map((item) => ({ ...item })),
+          };
+          void persist(next, "activity", undefined, editing?.id === row.id).catch(
+            (error) => {
+              if (!disposed)
+                status.textContent =
+                  error instanceof Error
+                    ? error.message
+                    : "The deletion was refused. Fields remain.";
+            },
+          );
+        });
+        del.disabled = !session?.snapshot().canWrite;
+        card.append(p, source, edit, document.createTextNode(" "), del);
         list.append(card);
       }
-      if (undo) {
-        const b = document.createElement("button");
-        b.textContent = "Undo last change";
-        b.className = "btn btn-small";
-        b.onclick = () => {
-          sample = undo!;
-          currency.value = sample.currency;
-          undo = null;
-          save();
-          render();
-        };
-        list.append(b);
-      }
     }
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (!editing && sample.rows.length >= 1000) {
+    const changed = (event: Event) => {
+      if (!initialized || disposed) return;
+      const target = event.target as HTMLInputElement | null;
+      if (target && fields.includes(target.name as (typeof fields)[number]))
+        hydrated.delete(target.name);
+      else hydrated.clear();
+      view.changedForm("activity");
+      controls?.noteViewMutation();
+    };
+    form.addEventListener("input", changed);
+    form.addEventListener("change", changed);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!initialized || disposed || busy || !sample) return;
+      try {
+        if (
+          editing &&
+          !editing.admittedNew &&
+          !sample.rows.some((row) => row.id === editing!.id)
+        )
+          throw Error(
+            "The activity being edited disappeared from current records. Keep the form and start a deliberate new activity.",
+          );
+        const amountInput = field("amount") as HTMLInputElement,
+          amountRaw = read("amount");
+        if (!amountRaw.trim() || amountInput.validity.badInput)
+          throw Error(
+            "Enter a nonnegative amount. Incomplete numeric input remains on this page; it is not converted to zero.",
+          );
+        const proposed = editing ?? {
+            id: crypto.randomUUID(),
+            admittedNew: true,
+          },
+          row: DepthRow = {
+            id: proposed.id,
+            activity: read("activity"),
+            source: read("source"),
+            depth: read("depth"),
+            amount: Math.round(Number(amountRaw) * 100) / 100,
+          };
+        const next = {
+          currency: sample.currency,
+          rows: sample.rows.some((item) => item.id === row.id)
+            ? sample.rows.map((item) => (item.id === row.id ? row : { ...item }))
+            : [...sample.rows.map((item) => ({ ...item })), row],
+        };
+        void persist(
+          next,
+          "activity",
+          () => {
+            editing = proposed;
+          },
+          true,
+        ).catch((error) => {
+          if (!disposed)
+            status.textContent =
+              error instanceof Error
+                ? error.message
+                : "Saving was refused; keep the current fields.";
+        });
+      } catch (error) {
         status.textContent =
-          "This sample supports up to 1,000 activities. Export and start another sample.";
-        return;
+          error instanceof Error
+            ? error.message
+            : "Saving was refused; keep the current fields.";
       }
-      const activity = (
-        form.elements.namedItem("activity") as HTMLInputElement
-      ).value.trim();
-      const source = (
-        form.elements.namedItem("source") as HTMLInputElement
-      ).value.trim();
-      const amount =
-        Math.round(
-          Number(
-            (form.elements.namedItem("amount") as HTMLInputElement).value,
-          ) * 100,
-        ) / 100;
-      const depth = (form.elements.namedItem("depth") as HTMLSelectElement)
-        .value;
-      const row = {
-        id: editing || crypto.randomUUID(),
-        activity,
-        amount,
-        depth,
-        source,
-      };
-      const next = {
-        currency: currency.value,
-        rows: editing
-          ? sample.rows.map((r) => (r.id === editing ? row : r))
-          : [...sample.rows, row],
-      };
-      if (!valid(next)) {
-        status.textContent =
-          "Enter a three-letter uppercase currency, an activity, a nonnegative amount and a rationale.";
-        return;
-      }
-      undo = structuredClone(sample);
-      sample = next;
-      editing = "";
-      form.reset();
-      root!.querySelector("#census-submit")!.textContent = "Add activity";
-      save();
-      render();
     });
     root.querySelector("#census-new")!.addEventListener("click", () => {
-      editing = "";
-      form.reset();
-      root!.querySelector("#census-submit")!.textContent = "Add activity";
+      if (!initialized || disposed || busy) return;
+      intent();
+      const token = view.capture();
+      if (
+        view.snapshot().dirtyForms.includes("activity") &&
+        !window.confirm(
+          "Discard this unfinished activity form? Keep a field backup first if needed.",
+        )
+      )
+        return;
+      if (!view.isCurrent(token)) return;
+      reset();
+      view.markClean("activity", token);
+    });
+    currency.addEventListener("input", () => {
+      if (!initialized || disposed) return;
+      view.changedForm("currency");
+      controls?.noteViewMutation();
     });
     currency.addEventListener("change", () => {
+      if (!initialized || disposed || busy || !sample) return;
+      view.changedForm("currency");
+      controls?.noteViewMutation();
       if (!/^[A-Z]{3}$/.test(currency.value)) {
-        status.textContent = "Use a three-letter uppercase currency code.";
-        currency.value = sample.currency;
+        status.textContent =
+          "Use a three-letter uppercase currency code. The unfinished text remains here.";
         return;
       }
       if (sample.rows.length && currency.value !== sample.currency) {
         status.textContent =
-          "Currency cannot change after adding amounts. Export and import a separately converted sample with documented rates.";
-        currency.value = sample.currency;
+          "Currency cannot change after adding amounts. Keep this field; export a separately converted sample with documented rates.";
         return;
       }
-      sample.currency = currency.value;
-      save();
-      render();
-    });
-    root
-      .querySelector("#census-json")!
-      .addEventListener("click", () =>
-        download(
-          "depth-census.json",
-          JSON.stringify(sample, null, 2),
-          "application/json",
-        ),
-      );
-    root.querySelector("#census-csv")!.addEventListener("click", () =>
-      download(
-        "depth-census.csv",
-        toCsv(
-          sample.rows.map((r) => ({
-            activity: safeCsvText(r.activity),
-            currency: sample.currency,
-            amount: r.amount,
-            depth: r.depth,
-            source: safeCsvText(r.source),
-            classification: "User hypothesis",
-          })),
-          [
-            "activity",
-            "currency",
-            "amount",
-            "depth",
-            "source",
-            "classification",
-          ],
-        ),
-        "text/csv;charset=utf-8",
-      ),
-    );
-    root
-      .querySelector<HTMLInputElement>("#census-import")!
-      .addEventListener("change", async (e) => {
-        const input = e.target as HTMLInputElement;
-        const file = input.files?.[0];
-        if (!file) return;
-        try {
-          if (file.size > 32000000) throw Error("Backup exceeds 32 MB.");
-          const data = JSON.parse(await file.text());
-          if (!valid(data))
-            throw Error(
-              "Invalid currency, amounts, fields or duplicate record IDs.",
-            );
-          pending = data;
-          root!.querySelector<HTMLElement>("#census-preview")!.hidden = false;
-          root!.querySelector("#census-preview p")!.textContent =
-            `${data.rows.length} ${data.currency} records will replace ${sample.rows.length} current records. Export the current backup before replacing it.`;
-        } catch (err) {
-          pending = null;
+      void persist(
+        {
+          currency: currency.value,
+          rows: sample.rows.map((row) => ({ ...row })),
+        },
+        "currency",
+      ).catch((error) => {
+        if (!disposed)
           status.textContent =
-            err instanceof Error ? err.message : "Invalid import";
-        }
-        input.value = "";
+            error instanceof Error
+              ? error.message
+              : "Currency save refused; fields remain.";
       });
-    root.querySelector("#census-replace")!.addEventListener("click", () => {
-      if (!pending) return;
-      undo = structuredClone(sample);
-      sample = pending;
-      pending = null;
-      editing = "";
-      form.reset();
-      root!.querySelector("#census-submit")!.textContent = "Add activity";
-      currency.value = sample.currency;
-      root!.querySelector<HTMLElement>("#census-preview")!.hidden = true;
-      save();
+    });
+    window.addEventListener("beforeunload", (event) => {
+      if (!session || disposed) return;
+      const state = session.snapshot();
+      if (
+        busy ||
+        state.pendingPersist ||
+        state.persistence === "unsaved" ||
+        view.snapshot().dirtyForms.length
+      ) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    });
+    window.addEventListener("pagehide", (event) => {
+      if (!event.persisted) {
+        dispose();
+        return;
+      }
+      if (disposed || !initialized) return;
+
+      view.changedView();
+      controls?.noteViewMutation();
       render();
+      status.textContent =
+        "This page is preserved with its unfinished fields. Pending review and save authority was canceled.";
     });
-    root.querySelector("#census-cancel")!.addEventListener("click", () => {
-      pending = null;
-      root!.querySelector<HTMLElement>("#census-preview")!.hidden = true;
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted || disposed) return;
+      if (!initialized || !session) {
+        resumeCheckRequested = true;
+        return;
+      }
+
+      controls?.noteViewMutation();
+      const notice = session.noticeExternalChange(),
+        token = view.capture();
+      void notice
+        .then((state) => {
+          if (disposed || !view.isCurrent(token)) return;
+          controls?.refresh();
+          status.textContent = state.pendingPersist
+            ? "The saved copy was rechecked. The exact failed operation is still pending; use Retry. Newer unfinished fields were retained."
+            : state.code === "conflict" ||
+                state.code === "unavailable" ||
+                state.code === "corrupt"
+              ? state.message +
+                " Unfinished fields were retained. Review recovery before saving."
+              : "The actual saved copy was rechecked. Unfinished fields were retained. Submit deliberately to save current unfinished fields, or keep a form backup.";
+        })
+        .catch((error) => {
+          if (!disposed && view.isCurrent(token))
+            status.textContent =
+              (error instanceof Error
+                ? error.message
+                : "Saved-copy check was refused.") +
+              " Unfinished fields remain here.";
+        });
     });
-    render();
-    root.querySelector<HTMLFieldSetElement>(
-      "[data-private-form-controls]",
-    )!.disabled = false;
+    async function initializeRemainingDepth() {
+      try {
+        session = await openRemainingRecordSession(key, { view });
+        if (resumeCheckRequested) {
+          resumeCheckRequested = false;
+          await session.noticeExternalChange();
+        }
+        const initial = session.snapshot();
+        sample = initial.hasCurrent ? initial.value : null;
+        if (sample) currency.value = sample.currency;
+        controls = mountRemainingRecordRecoveryControls({
+          host: root!.querySelector<HTMLElement>("#census-recovery")!,
+          session,
+          view,
+          readForms: () => [
+            {
+              form: "activity",
+              editingId: editing?.id ?? null,
+              values: rawValues(),
+            },
+            {
+              form: "currency",
+              editingId: null,
+              values: { currency: currency.value },
+            },
+          ],
+          onStatus(state) {
+            if (disposed) return;
+            sample = state.hasCurrent ? state.value : null;
+            render();
+            capabilities();
+          },
+          onAdopt(state, token) {
+            if (disposed || !state.hasCurrent || !view.isCurrent(token)) return;
+            sample = state.value;
+            reset();
+            currency.value = sample.currency;
+            view.markClean("activity", token);
+            view.markClean("currency", token);
+            render();
+          },
+        });
+        root!.querySelector("#census-json")!.addEventListener("click", () => {
+          try {
+            if (!session || disposed) return;
+            const out = session.exportNative();
+            download(
+              "depth-census.json",
+              out.text,
+              "application/json;charset=utf-8",
+            );
+            status.textContent = `Requested the complete admitted sample (${out.persistence}). Unfinished fields have a separate backup.`;
+          } catch (error) {
+            status.textContent =
+              error instanceof Error
+                ? error.message
+                : "No admitted sample is available.";
+          }
+        });
+        root!.querySelector("#census-csv")!.addEventListener("click", () => {
+          if (!sample || !session || disposed) return;
+          download(
+            "depth-census.csv",
+            toCsv(
+              sample.rows.map((row) => ({
+                activity: safeCsvText(row.activity),
+                currency: sample!.currency,
+                amount: row.amount,
+                depth: row.depth,
+                source: safeCsvText(row.source),
+                classification: "User hypothesis",
+              })),
+              [
+                "activity",
+                "currency",
+                "amount",
+                "depth",
+                "source",
+                "classification",
+              ],
+            ),
+            "text/csv;charset=utf-8",
+          );
+          status.textContent = `Requested all admitted sample rows (${session.snapshot().persistence}). Unfinished fields remain separate.`;
+        });
+        window.addEventListener("storage", (event) => {
+          if (disposed || (event.key !== key && event.key !== null) || !session)
+            return;
+          controls?.noteViewMutation();
+          const notice = session.noticeExternalChange(),
+            noticeToken = view.capture();
+          void notice
+            .then(() => {
+              if (!disposed) controls?.refresh();
+            })
+            .catch((error) => {
+              if (!disposed && view.isCurrent(noticeToken))
+                status.textContent =
+                  error instanceof Error
+                    ? error.message
+                    : "Saved sample changed; keep unfinished fields.";
+            });
+        });
+        initialized = true;
+        render();
+        capabilities();
+        root!.dataset.rrInitialization = "ready";
+        status.textContent =
+          initial.message ||
+          "Sample editing is ready. Classifications remain hypotheses.";
+      } catch (error) {
+        dispose();
+        root!.dataset.rrInitialization = "failed";
+        status.textContent =
+          "Local editing could not start. Fields stay disabled. " +
+          (error instanceof Error ? error.message : "");
+        throw error;
+      }
+    }
+    void initializeRemainingDepth().catch(() => {});
   }
 </script>
 <style>
