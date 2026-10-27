@@ -1681,3 +1681,167 @@ textarea[aria-invalid="true"] {
     display: none;
   }
 }
+
+/* A participant's own requests, separate from organization administration. */
+.participant-main {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 4vw, 2.5rem);
+}
+.participant-heading {
+  max-width: 750px;
+}
+.participant-heading h1 {
+  font-size: clamp(2.6rem, 5.5vw, 4.6rem);
+}
+.participant-heading h1 em {
+  color: var(--accent);
+  font-weight: 450;
+}
+.participant-global-status {
+  min-height: 1.6em;
+  margin: 1.5rem 0;
+}
+.participant-auth {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: start;
+}
+.participant-auth input,
+.participant-receipt-form input {
+  width: 100%;
+}
+.participant-auth button[type="submit"] {
+  margin-top: 1rem;
+}
+.participant-receipt-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.participant-receipt-form > button {
+  margin-top: 1.75rem;
+}
+.participant-account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.participant-account p {
+  margin: 0.3rem 0 0;
+}
+.participant-account #participant-identity {
+  font-weight: 550;
+}
+.participant-request-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.3fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.participant-request-layout > *,
+.participant-auth > *,
+.participant-receipt-form > * {
+  min-width: 0;
+}
+.participant-request-card {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.participant-request-card h3 {
+  margin: 0.4rem 0;
+}
+.participant-request-card button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+.participant-answers {
+  margin: 1rem 0;
+}
+.participant-answers > div {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.participant-answers dt {
+  font: 550 0.8rem/1.5 var(--sans);
+  color: var(--muted);
+}
+.participant-answers dd {
+  margin: 0.35rem 0 0;
+  white-space: pre-wrap;
+}
+.participant-correction {
+  padding: 1.5rem 0;
+  margin: 1.5rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.participant-correction .field {
+  margin: 1rem 0;
+}
+.participant-correction input,
+.participant-correction select {
+  width: 100%;
+}
+.participant-correction input[type="checkbox"] {
+  width: 1.1rem;
+}
+.participant-correction input[readonly] {
+  background: var(--bg2);
+  color: var(--muted);
+}
+.participant-confirmation {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+}
+.participant-confirmation .form-status:empty {
+  display: none;
+}
+.participant-privacy-actions {
+  margin-top: 1rem;
+}
+@media (max-width: 760px) {
+  .participant-auth,
+  .participant-request-layout,
+  .participant-receipt-form {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+  .participant-receipt-form > button {
+    margin-top: 0;
+  }
+  .participant-account {
+    display: block;
+  }
+  .participant-account .actions {
+    margin-top: 1rem;
+  }
+  .participant-privacy-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .participant-privacy-actions .button {
+    width: 100%;
+  }
+  .participant-confirmation {
+    padding: 1rem;
+  }
+}
+@media print {
+  .participant-page #participant-link-panel,
+  .participant-page #participant-auth,
+  .participant-page .participant-account,
+  .participant-page .participant-correction,
+  .participant-page .participant-confirmation,
+  .participant-page .participant-list-panel,
+  .participant-page .intake-footer {
+    display: none !important;
+  }
+  .participant-page .participant-request-layout {
+    display: block;
+  }
+}

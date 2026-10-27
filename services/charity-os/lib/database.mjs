@@ -71,6 +71,7 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
       "intake.cancelled",
       "intake.publication.withdrawn",
       "intake.erased",
+      "participant.unlinked",
     ].includes(action);
     if (accessControl) {
       detail = {
@@ -182,6 +183,7 @@ export async function logicalBackupBytes(c, org) {
     "os_integrations",
     "os_publications",
     "os_intake",
+    "os_participant_org_usage",
   ];
   const sql =
     tables

@@ -24,6 +24,7 @@
     { "source": "/api/:path*", "destination": "/api/index" },
     { "source": "/auth/:path*", "destination": "/api/index" },
     { "source": "/p/:path*", "destination": "/intake.html" },
+    { "source": "/participant", "destination": "/participant.html" },
     { "source": "/invite", "destination": "/index.html" },
     { "source": "/app", "destination": "/index.html" }
   ]

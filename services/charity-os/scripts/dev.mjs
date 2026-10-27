@@ -31,6 +31,7 @@ const server = createServer(async (req, res) => {
           : {}),
       });
       const response = await handle(request);
+      const bytes = Buffer.from(await response.arrayBuffer());
       const headers = Object.fromEntries(response.headers);
       delete headers["set-cookie"];
       res.writeHead(response.status, {
@@ -39,31 +40,35 @@ const server = createServer(async (req, res) => {
           ? { "set-cookie": response.headers.getSetCookie() }
           : {}),
       });
-      res.end(Buffer.from(await response.arrayBuffer()));
+      res.end(bytes);
     } else {
       const path = resolve(
         root,
         "." +
           (["/", "/app", "/invite"].includes(url.pathname)
             ? "/index.html"
-            : url.pathname.startsWith("/p/")
-              ? "/intake.html"
-              : url.pathname),
+            : url.pathname === "/participant"
+              ? "/participant.html"
+              : url.pathname.startsWith("/p/")
+                ? "/intake.html"
+                : url.pathname),
       );
       if (!path.startsWith(root + "/")) {
         res.writeHead(404).end();
         return;
       }
+      const bytes = await readFile(path);
       res.writeHead(200, {
         "content-type": types[extname(path)] || "application/octet-stream",
         "x-content-type-options": "nosniff",
         "content-security-policy":
           "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'",
       });
-      res.end(await readFile(path));
+      res.end(bytes);
     }
   } catch (e) {
-    res.writeHead(500).end("Request unavailable.");
+    if (!res.headersSent) res.writeHead(e.code === "ENOENT" ? 404 : 500);
+    res.end("Request unavailable.");
   }
 });
 server.listen(new URL(settings.origin).port || 4344, "127.0.0.1", () =>

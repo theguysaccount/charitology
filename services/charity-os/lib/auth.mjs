@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { magicLink } from "better-auth/plugins/magic-link";
+import { authDestination } from "./auth-return.mjs";
 export function authentication({ settings, db, send }) {
   return betterAuth({
     appName: "Charitology OS",
@@ -26,9 +27,12 @@ export function authentication({ settings, db, send }) {
       magicLink({
         expiresIn: 60 * 10,
         storeToken: "hashed",
-        sendMagicLink: async ({ email, token }) => {
+        sendMagicLink: async ({ email, token, metadata }) => {
           const url = new URL("/auth/confirm", settings.origin);
           url.searchParams.set("token", token);
+          const destination = authDestination(metadata?.destination);
+          if (destination.name === "participant")
+            url.searchParams.set("destination", destination.name);
           await send(
             { purpose: "login", to: email, url: url.toString() },
             `login-${token}`,
