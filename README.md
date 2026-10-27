@@ -37,7 +37,9 @@ npm run preview  # serve dist/ (search works here, not in dev)
 
 The public site is static HTML with browser-local TypeScript workspaces and requires no keys or database to build. Separate services run [newsletter delivery](services/newsletter/README.md) and the [shared Charity OS](services/charity-os/README.md); their private configuration is not part of the public build.
 
-The shared OS now includes bounded public operational request forms: explicit consent, revision-bound approved publication, a private administrator queue, status/withdrawal receipts, draft conversion and answer erasure. The release is promoted to https://os.charitology.org. [The intake acceptance record](docs/PUBLIC_PARTICIPATION.md) distinguishes CI, production isolation checks and controlled synthetic browser evidence. A separate own-request portal now adds deliberate receipt-plus-verified-email account linking, pending corrections, withdrawal, bounded answer erasure and permanent unlinking. See [its plan and acceptance record](docs/PARTICIPANT_PORTAL.md) for current verification and deployment status. These workflows do not establish bookings, newsletters, payments, sensitive case intake or actual review by a human.
+The shared OS at https://os.charitology.org includes [approved public request forms](docs/PUBLIC_PARTICIPATION.md), an [own-request portal](docs/PARTICIPANT_PORTAL.md), [confirmed participation and manual waitlists](docs/PARTICIPATION_BOOKINGS.md), [separately consented email notices](docs/PARTICIPATION_DELIVERY.md) and [immutable grant-period reports](docs/GRANT_REPORTS.md). The linked records distinguish automated checks, controlled browser/inbox evidence and remaining real-pilot and independent-review gates. Money movement and sensitive case narratives remain outside its scope.
+
+The [study register](docs/STUDY_REGISTER.md) connects the Evidence Library and Evidence Reviews in one browser-local workspace: citation imports, frozen protocols, recorded screening decisions, retrieval/extraction inputs, flow counts and guarded backups. Local labels and hashes establish no independent reviewer or performed study.
 
 ## How it’s built
 
