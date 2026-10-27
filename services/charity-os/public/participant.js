@@ -8,6 +8,52 @@ const statusLabels = {
   dismissed: "Closed by the organization",
   cancelled: "Withdrawn",
 };
+const deliveryConsentVersion = "participation-email-v1";
+const deliveryConsentCopy =
+  "Email me operational updates about this participation. I can turn them off here. This does not subscribe me to The Charitology Letter.";
+export function deliveryStateLabel(value) {
+  const labels = {
+    paused: "Paused historical event — not queued",
+    pending: "Queued",
+    leased: "Queued / in progress",
+    unknown: "Acceptance unknown — no automatic resend",
+    accepted: "Accepted by email provider",
+    delivered: "Delivered to receiving mail server",
+    suppressed: "Blocked by email suppression",
+    failed: "Delivery failed",
+    cancelled: "Unsent update cancelled",
+  };
+  return Object.hasOwn(labels, value)
+    ? labels[value]
+    : "Delivery status unavailable";
+}
+function currentDelivery(row) {
+  const value = row.delivery;
+  return value &&
+    typeof value.enabled === "boolean" &&
+    typeof value.available === "boolean" &&
+    typeof value.canEnable === "boolean" &&
+    Number.isSafeInteger(value.consentRevision) &&
+    value.consentRevision >= 0
+    ? value
+    : null;
+}
+function deliveryAuthority(row) {
+  const value = currentDelivery(row);
+  return JSON.stringify(
+    value
+      ? [
+          value.enabled,
+          value.consentVersion,
+          value.consentRevision,
+          value.canEnable,
+          value.available,
+          value.serviceEnabled,
+          value.policyEnabled,
+        ]
+      : null,
+  );
+}
 const state = {
   user: null,
   csrf: "",
@@ -28,6 +74,7 @@ const state = {
   pendingRefresh: false,
   requestDirty: false,
   participationDirty: false,
+  participationDraftKeys: new Set(),
   participations: [],
   participationVersion: 0,
   bookingIntents: new Map(),
@@ -206,6 +253,7 @@ function clearPrivate() {
   state.bookingIntents.clear();
   state.requestDirty = false;
   state.participationDirty = false;
+  state.participationDraftKeys.clear();
   state.requests = [];
   state.cursor = null;
   state.current = null;
@@ -589,6 +637,7 @@ function renderDetail(item) {
   state.dirty = false;
   state.requestDirty = false;
   state.participationDirty = false;
+  state.participationDraftKeys.clear();
   state.participations = [];
   const target = $("#participant-detail"),
     publication = item.publication || {},
@@ -721,7 +770,7 @@ function renderDetail(item) {
           onclick: (event) =>
             confirmPanel(
               "Erase your submitted answers?",
-              "This clears the answers in this request and closes an active request. It does not withdraw separately recorded participation consent or cancel a place. Its status and minimal history remain. Separate contacts, drafts, earlier source archives, recovery copies and downloaded backups are not changed.",
+              "This clears the answers in this request and closes an active request. It also disables operational email updates and cancels unsent updates. It does not withdraw separately recorded participation consent or cancel a place. An email already attempted may still arrive. Its status and minimal history remain. Separate contacts, drafts, earlier source archives, recovery copies and downloaded backups are not changed.",
               "Erase submitted answers",
               () => changeRequest(item, "erase", output),
               event.currentTarget,
@@ -739,7 +788,7 @@ function renderDetail(item) {
         onclick: (event) => {
           confirmPanel(
             "Permanently unlink account access?",
-            `This permanently removes this account’s access to this request and its participation view. This account cannot link it again with the same receipt. ${state.participations.some((entry) => entry.state !== "cancelled") ? "An active participation is still recorded. Cancel it separately first, or use the approved organizer contact route below after unlinking. " : ""}Unlinking does not cancel participation, withdraw the request or erase submitted answers, separate records or earlier backups. Your saved private receipt cannot cancel a confirmed place; it retains only its request status and withdrawal controls.`,
+            `This permanently removes this account’s access to this request and its participation view. This account cannot link it again with the same receipt. ${state.participations.some((entry) => entry.state !== "cancelled") ? "An active participation is still recorded. Cancel it separately first, or use the approved organizer contact route below after unlinking. " : ""}Unlinking cancels unsent email updates; an email already attempted may still arrive. It does not cancel participation, withdraw the request or erase submitted answers, separate records or earlier backups. Your saved private receipt cannot cancel a confirmed place; it retains only its request status and withdrawal controls.`,
             "Permanently unlink this request",
             () => changeRequest(item, "unlink", output),
             event.currentTarget,
@@ -948,7 +997,8 @@ async function loadOwnParticipations(item, { preserveDraft = false } = {}) {
           row.targetRevision === old.targetRevision &&
           row.sourceRevision === old.sourceRevision &&
           row.termsHash === old.termsHash &&
-          row.canConsent === old.canConsent,
+          row.canConsent === old.canConsent &&
+          deliveryAuthority(row) === deliveryAuthority(old),
       ),
     );
   const discarded = preserveDraft && state.participationDirty && !unchanged;
@@ -956,6 +1006,7 @@ async function loadOwnParticipations(item, { preserveDraft = false } = {}) {
   state.bookingIntents.clear();
   if (!(preserveDraft && state.participationDirty && unchanged)) {
     state.participationDirty = false;
+    state.participationDraftKeys.clear();
     state.dirty = state.requestDirty;
     renderOwnParticipations(item);
     if (discarded)
@@ -1021,15 +1072,15 @@ function renderOwnParticipations(item) {
           "This is inactive recovered provenance. It does not establish a new confirmed place. Contact the organizer to reconcile it.",
         ),
       );
-    card.append(
-      node(
-        "p",
-        { class: "notice fine" },
-        row.notifications?.requested
-          ? "Preference only — no messages are sent in this release. Your stored email-update choice does not mean queued, sent or delivered. Check this portal for current status."
-          : "Email updates are off and not active in this release. Check this portal for current status.",
-      ),
-    );
+    card.append(renderDeliveryPreference(item, row));
+    if (row.notifications?.requested)
+      card.append(
+        node(
+          "p",
+          { class: "fine" },
+          "An earlier preference-only choice is retained as history. It does not authorize operational email delivery.",
+        ),
+      );
     if (row.consent?.at)
       card.append(
         node(
@@ -1054,10 +1105,6 @@ function renderOwnParticipations(item) {
         }),
         waitlist = node("input", {
           id: `participation-own-waitlist-${row.id}`,
-          type: "checkbox",
-        }),
-        email = node("input", {
-          id: `participation-own-email-${row.id}`,
           type: "checkbox",
         }),
         ack = node("input", {
@@ -1095,16 +1142,6 @@ function renderOwnParticipations(item) {
             "I separately agree to remain on a waitlist if no place is available. A waitlist does not reserve a place.",
           ),
         ),
-        node(
-          "label",
-          { class: "intake-consent", for: email.id },
-          email,
-          node(
-            "span",
-            {},
-            "Store my preference for operational email updates about this participation only. Preference only — no messages are sent in this release.",
-          ),
-        ),
         row.withdrawalAcknowledgementRequired
           ? node(
               "label",
@@ -1126,6 +1163,7 @@ function renderOwnParticipations(item) {
         ),
       );
       const mark = () => {
+        state.participationDraftKeys.add(`${row.id}:consent`);
         state.participationDirty = true;
         state.dirty = true;
       };
@@ -1150,7 +1188,7 @@ function renderOwnParticipations(item) {
             termsHash: row.termsHash,
             consent: true,
             waitlistAllowed: waitlist.checked,
-            emailUpdates: email.checked,
+            emailUpdates: row.notifications?.requested === true,
             ...(row.withdrawalAcknowledgementRequired
               ? { withdrawalAcknowledged: true }
               : {}),
@@ -1172,7 +1210,7 @@ function renderOwnParticipations(item) {
             onclick: (event) =>
               confirmPanel(
                 "Cancel this participation?",
-                "This cancels this separate participation, releasing one place only if it was confirmed. It does not erase your request or automatically select someone from the waitlist. Email updates are not active.",
+                "This cancels this separate participation, releasing one place only if it was confirmed. It does not erase your request or automatically select someone from the waitlist. If you previously enabled operational email updates and organization delivery is active, a cancellation update may be queued. This action does not enable email.",
                 "Confirm participation cancellation",
                 () =>
                   saveOwnParticipation(
@@ -1213,12 +1251,128 @@ function renderOwnParticipations(item) {
               );
             },
           },
-          "Disable stored email preference",
+          "Clear earlier preference-only choice",
         ),
       );
     card.append(actions, status);
     host.append(card);
   }
+}
+function renderDeliveryPreference(item, row) {
+  const box = node(
+    "section",
+    { class: "participation-delivery-preference" },
+    node("h4", {}, "Operational email updates"),
+  );
+  const delivery = currentDelivery(row);
+  if (!delivery) {
+    box.append(
+      node(
+        "p",
+        { class: "notice fine" },
+        "Email delivery information is unavailable. This does not change your participation. Check this portal for current status.",
+      ),
+    );
+    return box;
+  }
+  const enabled =
+    delivery.enabled && delivery.consentVersion === deliveryConsentVersion;
+  box.append(
+    node(
+      "p",
+      { class: "notice fine" },
+      enabled
+        ? delivery.available
+          ? "Email updates enabled — ready for a future eligible update. Saving this choice does not send a message."
+          : "Your email choice is enabled, but delivery is currently unavailable. Saving a choice does not send a message. Check this portal for current status."
+        : "Email updates are off. An earlier preference-only choice does not enable delivery.",
+    ),
+  );
+  if (delivery.unavailableReason)
+    box.append(node("p", { class: "fine" }, delivery.unavailableReason));
+  if (delivery.controlledMode)
+    box.append(
+      node(
+        "p",
+        { class: "fine" },
+        "Delivery is limited to an authorized controlled recipient. A saved choice does not mean this account can receive updates yet.",
+      ),
+    );
+  if (delivery.latest)
+    box.append(
+      node(
+        "p",
+        { class: "fine" },
+        `Latest recorded update: ${deliveryStateLabel(delivery.latest.state)}${delivery.latest.providerEventAt ? ` · provider event ${dateLabel(delivery.latest.providerEventAt)}` : ""}. This is not evidence that a message was read or reached an inbox.`,
+      ),
+    );
+  if (delivery.canEnable || enabled) {
+    const choice = node("input", {
+      id: `participation-delivery-choice-${row.id}`,
+      type: "checkbox",
+      checked: enabled,
+    });
+    const status = outputNode();
+    const form = node(
+      "form",
+      { class: "participant-delivery-form" },
+      node(
+        "p",
+        { class: "fine" },
+        row.state === "confirmed"
+          ? "This email choice uses the frozen confirmed details above. It does not change your agreement, place, schedule or attendance."
+          : "This email choice is separate from your participation request, waitlist agreement and any reserved place.",
+      ),
+      node(
+        "label",
+        { class: "intake-consent", for: choice.id },
+        choice,
+        node("span", {}, deliveryConsentCopy),
+      ),
+      node(
+        "p",
+        { class: "fine" },
+        `Consent copy ${deliveryConsentVersion}. Delivery still needs an active organization policy and service readiness. Turn this choice off to cancel eligible unsent updates; an already attempted message may still arrive.`,
+      ),
+      node(
+        "button",
+        { type: "submit", class: "button subtle" },
+        "Save email update choice",
+      ),
+      status,
+    );
+    const mark = () => {
+      state.participationDraftKeys.add(`${row.id}:delivery-preference`);
+      state.participationDirty = true;
+      state.dirty = true;
+    };
+    form.addEventListener("input", mark);
+    form.addEventListener("change", mark);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (state.mutationBusy || !form.reportValidity()) return;
+      void mutation(async () => {
+        if (choice.checked && !delivery.canEnable && !enabled)
+          throw new Error(
+            "Email updates cannot be enabled from this saved state. Reload the request to check current access.",
+          );
+        await saveOwnParticipation(
+          item,
+          row,
+          "delivery-preference",
+          {
+            revision: row.revision,
+            intakeRevision: item.revision,
+            enabled: choice.checked,
+            consentVersion: deliveryConsentVersion,
+          },
+          status,
+        );
+      }, status);
+    });
+    box.append(form);
+  }
+  return box;
 }
 function outputNode() {
   return node("p", { class: "form-status", role: "status" });
@@ -1229,11 +1383,13 @@ async function saveOwnParticipation(item, row, action, payload, status) {
     body = bookingBody(row, action, payload);
   message(
     status,
-    action === "cancel"
-      ? "Cancelling this separate participation…"
-      : action === "preferences"
-        ? "Disabling the stored email preference…"
-        : "Recording your specific participation request…",
+    action === "delivery-preference"
+      ? "Saving your separate operational email choice…"
+      : action === "cancel"
+        ? "Cancelling this separate participation…"
+        : action === "preferences"
+          ? "Clearing the earlier preference-only choice…"
+          : "Recording your specific participation request…",
   );
   let result;
   try {
@@ -1244,31 +1400,70 @@ async function saveOwnParticipation(item, row, action, payload, status) {
   } catch (error) {
     if ([400, 401, 403, 404, 413, 422, 429].includes(error.status))
       state.bookingIntents.delete(`${row.id}:${action}`);
+    if (
+      action === "delivery-preference" &&
+      error.status === 409 &&
+      alive(user, access) &&
+      sameRequest(state.current, item)
+    ) {
+      await loadOwnParticipations(item);
+      throw new Error(
+        "The saved participation changed. Your email choice was not saved; the current state has been reloaded. Review it before choosing again.",
+      );
+    }
     throw error;
   }
   if (!alive(user, access) || !sameRequest(state.current, item)) return;
+  if (action === "delivery-preference") {
+    if (
+      result.participationId !== row.id ||
+      !Number.isSafeInteger(result.revision) ||
+      result.revision < row.revision ||
+      result.intakeRevision !== item.revision ||
+      !currentDelivery({ delivery: result.delivery })
+    )
+      throw new Error(
+        "The email preference response could not be verified. Reload the saved request before repeating a change.",
+      );
+    result.participation = {
+      ...row,
+      revision: result.revision,
+      delivery: result.delivery,
+    };
+  }
   if (!result.participation || result.participation.id !== row.id)
     throw new Error(
       "The participation response is incomplete. Reload the saved request before repeating a change.",
     );
+  const discardedOtherChoices = [...state.participationDraftKeys].some(
+    (key) => key !== `${row.id}:${action}`,
+  );
   state.participations = state.participations.map((entry) =>
     entry.id === row.id ? result.participation : entry,
   );
   state.participationDirty = false;
+  state.participationDraftKeys.clear();
   state.dirty = state.requestDirty;
   state.bookingIntents.delete(`${row.id}:${action}`);
   renderOwnParticipations(item);
   $("#participant-confirmation")?.remove();
   message(
     $("#participant-status"),
-    action === "cancel"
-      ? "Participation cancelled. Your original request is separate; no automatic promotion or message occurred."
-      : action === "preferences"
-        ? "Stored email preference disabled. Participation is unchanged; no message was sent."
-        : result.participation.state === "confirmed"
-          ? "Specific participation agreement recorded. The existing confirmation is unchanged; email updates remain inactive."
-          : "Specific participation request recorded. No place is reserved until the organization explicitly confirms it. Email updates remain inactive.",
+    action === "delivery-preference"
+      ? result.delivery.enabled
+        ? "Operational email choice saved. No message was sent by this preference change; your participation is unchanged."
+        : "Operational email updates disabled. Eligible unsent updates are cancelled; an email already attempted may still arrive. Participation is unchanged."
+      : action === "cancel"
+        ? "Participation cancelled. Your original request is separate; no automatic promotion occurred. Any eligible email update is handled separately."
+        : action === "preferences"
+          ? "Earlier preference-only choice cleared. Live operational email choices and participation are unchanged."
+          : result.participation.state === "confirmed"
+            ? "Specific participation agreement recorded. The existing confirmation is unchanged; operational email is a separate choice."
+            : "Specific participation request recorded. No place is reserved until the organization explicitly confirms it. Operational email is a separate choice.",
   );
+  if (discardedOtherChoices)
+    $("#participant-status").textContent +=
+      " Other unsaved participation choices were discarded because the saved revision changed. Review those choices again before saving.";
   $("#participant-participations h3")?.setAttribute("tabindex", "-1");
   $("#participant-participations h3")?.focus();
 }
@@ -1384,6 +1579,7 @@ async function changeRequest(item, action, output) {
     state.dirty = false;
     state.requestDirty = false;
     state.participationDirty = false;
+    state.participationDraftKeys.clear();
     state.participations = [];
     state.participationVersion++;
     state.bookingIntents.clear();

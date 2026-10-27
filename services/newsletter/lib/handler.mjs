@@ -4,7 +4,7 @@ import { edition, escapeHtml, renderPage } from './content.mjs';
 import { authorized, boundedBody, fields, InputError, normalizeEmail, rateKeys, validToken } from './security.mjs';
 import { campaign, reconcileSubscribers, syncSubscriber } from './operations.mjs';
 import { applyWebhook } from './webhook.mjs';
-import { handleOsMail } from './os-mail.mjs';
+import { handleOsMail, handleOsMailStatus } from './os-mail.mjs';
 
 const generic = 'If this address can receive signup mail, a confirmation message will arrive. Open it and press Confirm to subscribe.';
 const headers = {
@@ -23,6 +23,10 @@ export function createHandler({ db, mail, settings = config(), logger = () => co
     const page = (title, body, status = 200) => new Response(renderPage(title, body), { status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8' } });
     const reply = (ok, message, status = 200) => wantsJson ? json({ ok, message }, status) : page(ok ? 'The Charitology Letter' : 'Please try again', `<p>${escapeHtml(message)}</p><p><a href="https://charitology.org/record/podcast-and-newsletter/">Return to Charitology</a> · <a href="/privacy">Privacy</a></p>`, status);
     try {
+      if(request.method==='POST'&&path==='/api/system/os-mail/status'){
+        const response=await handleOsMailStatus(request,{db,mail,settings,logger});
+        return json(response.body,response.status);
+      }
       if (request.method === 'POST' && path === '/api/system/os-mail') {
         const response = await handleOsMail(request, { db, mail, settings, logger });
         return json(response.body, response.status);

@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { CONSENT_VERSION } from './config.mjs';
 import { hashToken, newToken } from './security.mjs';
 import { verifiedNeonConnectionString } from './connection.mjs';
+import { mergeProviderFacts } from './os-mail.mjs';
 // Transactions always use one checked-out client. No subscriber data is logged.
 export function database(connectionString, { schema } = {}) {
   const providerLockKey = schema ? parseInt(hashToken(schema).slice(0, 12), 16) : 716231430;
@@ -53,16 +54,22 @@ export function database(connectionString, { schema } = {}) {
       exclusive: action => tx(action, { providerLock: true, deadline }),
     }),
     close: () => pool.end(),
-    reserveOsMail: ({ keyHash, payloadHash, purpose, recipientHash, rateKeys }) => tx(async client => {
+    reserveOsMail: ({ keyHash, payloadHash, purpose, recipientHash, rateKeys, correlationHash = null }) => tx(async client => {
       // Duplicate callers fail busy before waiting on the unique INSERT. They
       // must not occupy every pooled client while the reservation commits.
       const lockKey = BigInt('0x' + hashToken(`${schema || 'public'}:os-mail:${keyHash}`).slice(0, 15)).toString();
       const locked = await client.query('SELECT pg_try_advisory_xact_lock($1::bigint) AS acquired', [lockKey]);
       if (!locked.rows[0].acquired) return { state: 'creating', reserved: false };
-      const inserted = await client.query("INSERT INTO newsletter_os_mail_intents(key_hash,payload_hash,purpose,recipient_hash,state) VALUES($1,$2,$3,$4,'creating') ON CONFLICT DO NOTHING RETURNING key_hash", [keyHash, payloadHash, purpose, recipientHash]);
+      const inserted = await client.query("INSERT INTO newsletter_os_mail_intents(key_hash,payload_hash,purpose,recipient_hash,state,correlation_hash) VALUES($1,$2,$3,$4,'creating',$5) ON CONFLICT DO NOTHING RETURNING key_hash", [keyHash, payloadHash, purpose, recipientHash, correlationHash]);
       if (!inserted.rowCount) {
-        const { rows } = await client.query('SELECT payload_hash,state FROM newsletter_os_mail_intents WHERE key_hash=$1', [keyHash]);
-        return { state: rows[0]?.payload_hash === payloadHash ? rows[0].state : 'conflict', reserved: false };
+        const { rows } = await client.query('SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1 FOR UPDATE', [keyHash]);
+        const row=rows[0];
+        if(row?.payload_hash!==payloadHash)return {state:'conflict',reserved:false};
+        if(purpose==='participation'&&row.purpose==='participation'&&row.state==='preflight'&&!row.attempted_at){
+          await client.query("UPDATE newsletter_os_mail_intents SET state='creating',safe_code=NULL,updated_at=now() WHERE key_hash=$1",[keyHash]);
+          return {reserved:true};
+        }
+        return {...row,reserved:false};
       }
       let limited = false;
       for (const { key, limit } of [...rateKeys].sort((a, b) => a.key.localeCompare(b.key))) {
@@ -78,6 +85,36 @@ export function database(connectionString, { schema } = {}) {
     finishOsMail: (keyHash, payloadHash, state, providerId = null) => tx(async client => {
       if (!['accepted','unknown','failed'].includes(state)) throw new Error('Invalid transactional mail state');
       return client.query("UPDATE newsletter_os_mail_intents SET state=$3,provider_id=$4,updated_at=now() WHERE key_hash=$1 AND payload_hash=$2 AND state='creating'", [keyHash, payloadHash, state, providerId]);
+    }),
+    osMailIntent: keyHash=>tx(async client=>(await client.query('SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1',[keyHash])).rows[0]||null),
+    markOsMailAttempt: ({keyHash,payloadHash,rateKeys})=>tx(async client=>{
+      const row=(await client.query('SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1 FOR UPDATE',[keyHash])).rows[0];
+      if(!row||row.purpose!=='participation'||row.payload_hash!==payloadHash)throw new Error('Unbound participation attempt');
+      if(row.state!=='creating'||row.attempted_at)return {...row,attempt:false};
+      let limited=false;
+      for(const {key,limit}of [...rateKeys].sort((a,b)=>a.key.localeCompare(b.key))){
+        const {rows}=await client.query("INSERT INTO newsletter_rate_limits(key,hits,expires_at) VALUES($1,1,now()+interval '2 days') ON CONFLICT(key) DO UPDATE SET hits=newsletter_rate_limits.hits+1 RETURNING hits",[key]);
+        if(rows[0].hits>limit)limited=true;
+      }
+      const saved=(await client.query(limited?"UPDATE newsletter_os_mail_intents SET state='limited',safe_code='rate_limited',updated_at=now() WHERE key_hash=$1 RETURNING *":"UPDATE newsletter_os_mail_intents SET attempted_at=now(),safe_code='provider_attempt_started',updated_at=now() WHERE key_hash=$1 RETURNING *",[keyHash])).rows[0];
+      return {...saved,attempt:!limited};
+    }),
+    finishParticipationMail: (keyHash,payloadHash,state,safeCode,{providerId=null,facts={}}={})=>tx(async client=>{
+      if(!['accepted','unknown','failed','preflight'].includes(state)||!/^[a-z_]{1,64}$/.test(safeCode)||providerId!==null&&!/^[A-Za-z0-9_-]{1,100}$/.test(providerId))throw new Error('Invalid participation outcome');
+      const row=(await client.query('SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1 FOR UPDATE',[keyHash])).rows[0];
+      if(!row||row.purpose!=='participation'||row.payload_hash!==payloadHash)throw new Error('Unbound participation outcome');
+      if(row.state!=='creating')return row;
+      if(state==='preflight'&&row.attempted_at){state='unknown';safeCode='attempt_unconfirmed';}
+      let merged=row.provider_facts;for(const [type,at]of Object.entries(facts))merged=mergeProviderFacts(merged,type,at);
+      return (await client.query('UPDATE newsletter_os_mail_intents SET state=$3,safe_code=$4,provider_id=COALESCE(provider_id,$5),provider_facts=$6,updated_at=now() WHERE key_hash=$1 AND payload_hash=$2 RETURNING *',[keyHash,payloadHash,state,safeCode,providerId,JSON.stringify(merged)])).rows[0];
+    }),
+    observeParticipationMail: (keyHash,providerId,type)=>tx(async client=>{
+      const row=(await client.query("SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1 AND purpose='participation' AND provider_id=$2 FOR UPDATE",[keyHash,providerId])).rows[0];
+      if(!row)throw new Error('Unbound provider observation');
+      // Retrieval has no last-event timestamp. Preserve verified callback time,
+      // otherwise the observation is deliberately timestamp-null.
+      const facts=mergeProviderFacts(row.provider_facts,type);
+      return (await client.query("UPDATE newsletter_os_mail_intents SET state=CASE WHEN state IN ('creating','unknown') THEN 'accepted' ELSE state END,provider_facts=$3,updated_at=now() WHERE key_hash=$1 AND provider_id=$2 RETURNING *",[keyHash,providerId,JSON.stringify(facts)])).rows[0];
     }),
     rate: keys => tx(async client => {
       let allowed = true;

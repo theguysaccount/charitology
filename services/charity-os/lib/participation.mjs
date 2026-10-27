@@ -1,4 +1,8 @@
 import {
+  queueParticipationTransition,
+  ownDeliverySummary,
+} from "./participation-delivery.mjs";
+import {
   audit,
   allRecords,
   rowRecord,
@@ -220,7 +224,7 @@ export async function participationQuota(c, org) {
   ]) {
     const r = (
       await c.query(
-        `SELECT count(*) AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS bytes FROM ${table} t WHERE org_id=$1`,
+        `SELECT count(*) AS count,COALESCE(sum(${table === "os_participation_outbox" ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS bytes FROM ${table} t WHERE org_id=$1`,
         [org],
       )
     ).rows[0];
@@ -344,45 +348,15 @@ function candidateFor(records, p, member, { approval = true } = {}) {
     );
   return r;
 }
-async function outbox(c, org, p, { safe = false } = {}) {
-  const payload = {
-    state: p.state,
-    participationId: p.id,
-    revision: p.revision,
-  };
-  if (
-    Buffer.byteLength(JSON.stringify(payload)) >
-    PARTICIPATION_LIMITS.payloadBytes
-  )
-    fail(422, "participation_outbox", "The notification event is too large.");
-  const usage = (
-    await c.query(
-      "SELECT count(*) AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS bytes FROM os_participation_outbox t WHERE org_id=$1",
-      [org],
-    )
-  ).rows[0];
-  const fits =
-    Number(usage.count) < PARTICIPATION_LIMITS.outbox &&
-    Number(usage.bytes) + Buffer.byteLength(JSON.stringify(payload)) + 1000 <=
-      PARTICIPATION_LIMITS.outboxBytes &&
-    (await logicalBackupBytes(c, org)) +
-      Buffer.byteLength(JSON.stringify(payload)) +
-      2000 <=
-      60 * 1024 * 1024;
-  if (!fits) {
-    if (safe) return false;
-    fail(
-      422,
-      "participation_quota",
-      "The paused notification journal is full. No new allocation was recorded.",
-    );
-  }
-  await c.query(
-    "INSERT INTO os_participation_outbox(org_id,id,participation_id,event_revision,purpose,channel,state,payload) VALUES($1,$2,$3,$4,'participation','email','paused',$5) ON CONFLICT(org_id,participation_id,event_revision,purpose,channel) DO NOTHING",
-    [org, id(), p.id, p.revision, JSON.stringify(payload)],
-  );
-  return true;
+async function outbox(c, org, p, { safe = false, settings } = {}) {
+  return queueParticipationTransition(c, {
+    org,
+    participation: p,
+    settings,
+    safe,
+  });
 }
+
 const consentSummary = (p) =>
   p.consent
     ? {
@@ -1189,6 +1163,7 @@ async function preferences({
 }
 
 async function cancel({
+  settings,
   c,
   org,
   user,
@@ -1236,7 +1211,7 @@ async function cancel({
     c,
     org,
     { ...p, ...changes, revision: p.revision + 1 },
-    { safe: true },
+    { safe: true, settings },
   );
   const next = await update(c, org, p, changes, {
     ...intent,
@@ -1251,6 +1226,7 @@ async function cancel({
 }
 
 async function staffCommand({
+  settings,
   c,
   org,
   user,
@@ -1292,7 +1268,7 @@ async function staffCommand({
   candidateFor(records, p, member, { approval: false });
   if (action === "cancel") {
     text(input.reason, 300, true);
-    const result = await cancel({ c, org, user, p, records, input });
+    const result = await cancel({ c, org, user, p, records, input, settings });
     return okay({
       participation: staffObject(result.p, t, source, records, member),
       notificationQueued: result.notificationQueued,
@@ -1405,7 +1381,7 @@ async function staffCommand({
     };
   }
   const next = await update(c, org, p, changes, intent);
-  await outbox(c, org, next);
+  await outbox(c, org, next, { settings });
   await participationQuota(c, org);
   await audit(c, org, user, `participation.${next.state}`, null, {
     participationId: p.id,
@@ -1416,6 +1392,7 @@ async function staffCommand({
 }
 
 export async function participationRoutes({
+  settings,
   c,
   org,
   user,
@@ -1548,6 +1525,7 @@ export async function participationRoutes({
     ).rows[0];
     if (!p) unavailable();
     return staffCommand({
+      settings,
       c,
       org,
       user,
@@ -1622,7 +1600,7 @@ export async function participantParticipationRoutes({
     async (c) => {
       const intake = (
         await c.query(
-          "SELECT i.id,i.revision,i.status,i.cancelled_at FROM os_participant_links l JOIN os_intake i ON i.org_id=l.org_id AND i.id=l.intake_id AND i.publication_id=l.publication_id WHERE l.user_id=$1 AND l.org_id=$2 AND l.intake_id=$3 AND l.revoked_at IS NULL FOR UPDATE OF i,l",
+          "SELECT i.id,i.revision,i.status,i.cancelled_at,i.publication_id,i.answers,i.erased_at FROM os_participant_links l JOIN os_intake i ON i.org_id=l.org_id AND i.id=l.intake_id AND i.publication_id=l.publication_id WHERE l.user_id=$1 AND l.org_id=$2 AND l.intake_id=$3 AND l.revoked_at IS NULL FOR UPDATE OF i,l",
           [actor.id, org, intakeId],
         )
       ).rows[0];
@@ -1633,6 +1611,16 @@ export async function participantParticipationRoutes({
           [org, intakeId],
         )
       ).rows;
+      const safeOwn = async (row, target, source) => ({
+        ...ownObject(row, target, source, intake),
+        delivery: await ownDeliverySummary(c, {
+          org,
+          participation: row,
+          intake,
+          settings,
+          actor,
+        }),
+      });
       const objects = [];
       for (const p of rows) {
         const { source, records } = await sources(c, org, p.target_id, {
@@ -1640,7 +1628,7 @@ export async function participantParticipationRoutes({
           }),
           t = await managed(c, org, p.target_id);
         if (!action) {
-          objects.push(ownObject(p, t, source, intake));
+          objects.push(await safeOwn(p, t, source));
           continue;
         }
         if (p.id !== pid) continue;
@@ -1676,7 +1664,7 @@ export async function participantParticipationRoutes({
             own: true,
             intake,
           });
-          return okay({ participation: ownObject(next, t, source, intake) });
+          return okay({ participation: await safeOwn(next, t, source) });
         }
         if (action === "preferences") {
           const next = await preferences({
@@ -1690,9 +1678,10 @@ export async function participantParticipationRoutes({
             source,
             t,
           });
-          return okay({ participation: ownObject(next, t, source, intake) });
+          return okay({ participation: await safeOwn(next, t, source) });
         }
         const result = await cancel({
+          settings,
           c,
           org,
           user: actor.id,
@@ -1703,7 +1692,7 @@ export async function participantParticipationRoutes({
           intake,
         });
         return okay({
-          participation: ownObject(result.p, t, source, intake),
+          participation: await safeOwn(result.p, t, source),
           notificationQueued: result.notificationQueued,
         });
       }

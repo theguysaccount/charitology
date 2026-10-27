@@ -3,7 +3,11 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 import { webcrypto } from "node:crypto";
-import { parseReceipt, typedAnswer } from "./participant.js";
+import {
+  parseReceipt,
+  typedAnswer,
+  deliveryStateLabel,
+} from "./participant.js";
 
 const html = await readFile(
   new URL("./participant.html", import.meta.url),
@@ -53,6 +57,21 @@ const detail = () => ({
       { key: "available", label: "Available", type: "boolean", required: true },
     ],
   },
+});
+const delivery = (patch = {}) => ({
+  enabled: false,
+  consentVersion: "participation-email-v1",
+  consentRevision: 0,
+  consentedAt: null,
+  available: false,
+  canEnable: true,
+  unavailableReason: "Organization delivery is disabled.",
+  serviceEnabled: false,
+  policyEnabled: false,
+  controlledMode: false,
+  templateVersion: "participation-notice-v1",
+  latest: null,
+  ...patch,
 });
 const participation = (patch = {}) => ({
   id: "participation",
@@ -427,7 +446,40 @@ async function harness({
       const [, pid, action] = path.slice(participationBase.length).split("/");
       const old = model.participations.find((row) => row.id === pid);
       if (!old) throw new Error("Unknown synthetic participation");
+      if (action === "delivery-preference" && model.deliveryFailure) {
+        if (model.deliveryFailure === "network")
+          throw new Error("Synthetic interrupted preference write");
+        if (model.deliveryFailure === 409) {
+          model.participations = model.participations.map((row) => ({
+            ...row,
+            revision: row.revision + 1,
+            delivery: { ...row.delivery, canEnable: false },
+          }));
+        }
+        return response(
+          { message: "Synthetic preference rejected", code: "revision" },
+          model.deliveryFailure,
+        );
+      }
       const next = { ...old, revision: old.revision + 1 };
+      if (action === "delivery-preference") {
+        next.delivery = {
+          ...old.delivery,
+          enabled: body.enabled,
+          consentVersion: body.consentVersion,
+          consentRevision: (old.delivery.consentRevision || 0) + 1,
+          consentedAt: "2026-01-02T00:00:00Z",
+        };
+        model.participations = model.participations.map((row) =>
+          row.id === pid ? next : row,
+        );
+        return response({
+          participationId: pid,
+          revision: next.revision,
+          intakeRevision: model.detail.revision,
+          delivery: next.delivery,
+        });
+      }
       if (action === "cancel") {
         next.state = "cancelled";
         next.canCancel = false;
@@ -800,7 +852,7 @@ test("specific participation consent starts unchecked and binds the exact schedu
     h.get("participation-own-waitlist-participation").checked,
     false,
   );
-  assert.equal(h.get("participation-own-email-participation").checked, false);
+  assert.equal(h.get("participation-own-email-participation"), null);
   assert.equal(
     h.get("participation-own-withdrawal-participation").checked,
     false,
@@ -833,7 +885,7 @@ test("specific participation consent starts unchecked and binds the exact schedu
   );
   assert.match(
     h.get("participant-participations").textContent,
-    /not active in this release/,
+    /delivery information is unavailable/,
   );
   assert.equal(
     h.model.detail.status,
@@ -903,10 +955,19 @@ test("a confirmed participation keeps its frozen schedule without offering a new
   );
 });
 
-for (const action of ["consent", "cancel", "preferences"])
+for (const action of [
+  "consent",
+  "cancel",
+  "preferences",
+  "delivery-preference",
+])
   test(`an old participation GET cannot repaint state after ${action}`, async () => {
     const row = participation();
     if (action === "preferences") row.notifications.requested = true;
+    if (action === "delivery-preference") {
+      row.delivery = delivery();
+      row.canConsent = false;
+    }
     const h = await harness({ participations: [row] });
     await h.open();
     let release;
@@ -928,7 +989,14 @@ for (const action of ["consent", "cancel", "preferences"])
     } else if (action === "cancel") {
       await h.click("Cancel participation");
       await h.click("Confirm participation cancellation");
-    } else await h.click("Disable stored email preference");
+    } else if (action === "delivery-preference") {
+      h.get("participation-delivery-choice-participation").checked = true;
+      await h
+        .get("participant-participations")
+        .querySelector(".participant-delivery-form")
+        .emit("submit");
+      await h.flush();
+    } else await h.click("Clear earlier preference-only choice");
     release();
     await stale;
     assert.match(h.get("participant-participations").textContent, /Revision 2/);
@@ -949,9 +1017,206 @@ for (const action of ["consent", "cancel", "preferences"])
           .querySelectorAll("button")
           .some(
             (button) =>
-              button.textContent === "Disable stored email preference",
+              button.textContent === "Clear earlier preference-only choice",
           ),
         false,
       );
     assert.equal(h.model.detail.status, "pending");
   });
+
+test("fresh operational email consent is separate from historical preference and preserves frozen confirmation terms", async () => {
+  const row = participation({
+    state: "confirmed",
+    canConsent: false,
+    delivery: delivery(),
+    notifications: { requested: true },
+  });
+  row.frozenTerms = { ...row.terms, title: "Frozen confirmed occurrence" };
+  row.terms = { ...row.terms, title: "Later working draft" };
+  const h = await harness({ participations: [row] });
+  await h.open();
+  const input = h.get("participation-delivery-choice-participation");
+  assert.equal(input.checked, false);
+  assert.match(
+    h.get("participant-participations").textContent,
+    /Frozen confirmed occurrence/,
+  );
+  assert.doesNotMatch(
+    h.get("participant-participations").textContent,
+    /Later working draft/,
+  );
+  assert.match(
+    h.get("participant-participations").textContent,
+    /does not authorize operational email/,
+  );
+  assert.match(
+    h.get("participant-participations").textContent,
+    /participation-email-v1/,
+  );
+  assert.equal(h.get("participation-own-consent-participation"), null);
+  input.checked = true;
+  await h
+    .get("participant-participations")
+    .querySelector(".participant-delivery-form")
+    .emit("submit");
+  await h.flush();
+  const call = h.calls.find((call) =>
+    call.path.endsWith("/delivery-preference"),
+  );
+  assert.deepEqual(
+    Object.keys(call.body).sort(),
+    [
+      "consentVersion",
+      "enabled",
+      "idempotencyKey",
+      "intakeRevision",
+      "revision",
+    ].sort(),
+  );
+  assert.equal(call.body.enabled, true);
+  assert.equal(call.body.consentVersion, "participation-email-v1");
+  assert.equal(call.options.headers["X-CSRF-Token"], "synthetic-csrf");
+  assert.equal(h.model.participations[0].state, "confirmed");
+  assert.equal(h.model.detail.revision, 1);
+  assert.match(
+    h.get("participant-status").textContent,
+    /No message was sent by this preference change/,
+  );
+  assert.match(
+    h.get("participant-participations").textContent,
+    /delivery is currently unavailable/,
+  );
+});
+
+test("a failed email preference write keeps its unsaved choice and a definitive rejection allows correction", async () => {
+  const h = await harness({
+    participations: [
+      participation({ delivery: delivery(), canConsent: false }),
+    ],
+  });
+  await h.open();
+  const input = h.get("participation-delivery-choice-participation"),
+    form = h
+      .get("participant-participations")
+      .querySelector(".participant-delivery-form");
+  input.checked = true;
+  await form.emit("change");
+  h.model.deliveryFailure = 422;
+  await form.emit("submit");
+  await h.flush();
+  assert.equal(input.checked, true);
+  assert.equal(h.model.participations[0].delivery.enabled, false);
+  assert.match(form.textContent, /Synthetic preference rejected/);
+  h.model.deliveryFailure = null;
+  input.checked = false;
+  await form.emit("submit");
+  await h.flush();
+  const calls = h.calls.filter((call) =>
+    call.path.endsWith("/delivery-preference"),
+  );
+  assert.equal(calls.length, 2);
+  assert.notEqual(calls[0].body.idempotencyKey, calls[1].body.idempotencyKey);
+  assert.match(h.get("participant-status").textContent, /updates disabled/);
+});
+
+test("a stale email preference re-reads authority and explicitly discards the unsaved choice", async () => {
+  const h = await harness({
+    participations: [
+      participation({ delivery: delivery(), canConsent: false }),
+    ],
+  });
+  await h.open();
+  const input = h.get("participation-delivery-choice-participation"),
+    form = h
+      .get("participant-participations")
+      .querySelector(".participant-delivery-form");
+  input.checked = true;
+  await form.emit("change");
+  h.model.deliveryFailure = 409;
+  await form.emit("submit");
+  await h.flush();
+  assert.equal(h.get("participation-delivery-choice-participation"), null);
+  assert.match(
+    h.get("participant-status").textContent,
+    /choice was not saved.*current state has been reloaded/,
+  );
+  assert.match(h.get("participant-participations").textContent, /Revision 2/);
+});
+
+test("email opt-out remains available without enable authority and does not cancel participation", async () => {
+  const h = await harness({
+    participations: [
+      participation({
+        state: "confirmed",
+        canConsent: false,
+        delivery: delivery({
+          enabled: true,
+          consentRevision: 2,
+          canEnable: false,
+          available: false,
+        }),
+      }),
+    ],
+  });
+  await h.open();
+  const input = h.get("participation-delivery-choice-participation");
+  assert.equal(input.checked, true);
+  input.checked = false;
+  await h
+    .get("participant-participations")
+    .querySelector(".participant-delivery-form")
+    .emit("submit");
+  await h.flush();
+  assert.equal(h.model.participations[0].state, "confirmed");
+  assert.equal(h.model.participations[0].delivery.enabled, false);
+  assert.match(
+    h.get("participant-status").textContent,
+    /already attempted may still arrive/,
+  );
+});
+
+test("delivery evidence labels distinguish unknown, provider acceptance and receiving-server delivery", () => {
+  assert.match(deliveryStateLabel("unknown"), /unknown.*no automatic resend/);
+  assert.equal(deliveryStateLabel("accepted"), "Accepted by email provider");
+  assert.equal(
+    deliveryStateLabel("delivered"),
+    "Delivered to receiving mail server",
+  );
+  assert.equal(deliveryStateLabel("leased"), "Queued / in progress");
+  assert.equal(
+    deliveryStateLabel("constructor"),
+    "Delivery status unavailable",
+  );
+  assert.equal(
+    deliveryStateLabel("<script>private provider error"),
+    "Delivery status unavailable",
+  );
+});
+
+test("saving participation does not silently discard a different unsaved email choice", async () => {
+  const h = await harness({
+    participations: [participation({ delivery: delivery() })],
+  });
+  await h.open();
+  const email = h.get("participation-delivery-choice-participation");
+  email.checked = true;
+  await h
+    .get("participant-participations")
+    .querySelector(".participant-delivery-form")
+    .emit("change");
+  h.get("participation-own-consent-participation").checked = true;
+  await h
+    .get("participant-participations")
+    .querySelector(".participant-participation-consent")
+    .emit("submit");
+  await h.flush();
+  assert.equal(h.model.participations[0].delivery.enabled, false);
+  assert.match(
+    h.get("participant-status").textContent,
+    /Other unsaved participation choices were discarded because the saved revision changed/,
+  );
+  assert.equal(
+    h.calls.some((call) => call.path.endsWith("/delivery-preference")),
+    false,
+  );
+});

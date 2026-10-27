@@ -63,6 +63,17 @@ import {
 } from "./participation.mjs";
 import { guardParticipationWrite } from "./participation-guards.mjs";
 import {
+  deliveryRoutes,
+  ownDeliveryRoutes,
+  runParticipationDelivery,
+} from "./participation-delivery.mjs";
+import {
+  exportDelivery,
+  restoredDelivery,
+  restoreDelivery,
+} from "./participation-delivery-backup.mjs";
+import { participationMailer } from "./mail.mjs";
+import {
   exportParticipation,
   restoredParticipation,
   restoreParticipation,
@@ -103,7 +114,13 @@ const snapshot = (r) => ({
   updatedAt: r.updatedAt,
   files: r.snapshot?.files || [],
 });
-export function createHandler({ settings, db, auth, send }) {
+export function createHandler({
+  settings,
+  db,
+  auth,
+  send,
+  participationTransport = participationMailer(settings),
+}) {
   return async function handle(request) {
     try {
       const url = new URL(request.url),
@@ -125,7 +142,15 @@ export function createHandler({ settings, db, auth, send }) {
           )
         )
           fail(401, "cron", "Unauthorized.");
-        return okay(await runJobs({ db, send, settings }));
+        const budget = { deadline: Date.now() + 45000, remaining: 20 };
+        const jobs = await runJobs({ db, send, settings, budget });
+        const participation = await runParticipationDelivery({
+          db,
+          transport: participationTransport,
+          settings,
+          budget,
+        });
+        return okay({ ...jobs, participation });
       }
       if (path === "/auth/confirm" && method === "GET") {
         const token = url.searchParams.get("token") || "";
@@ -304,6 +329,15 @@ export function createHandler({ settings, db, auth, send }) {
             3600,
           );
         } else await db.limit(`participant-write:${bucket}`, 60, 3600);
+        const deliveryResponse = await ownDeliveryRoutes({
+          request,
+          url,
+          db,
+          settings,
+          session,
+          input,
+        });
+        if (deliveryResponse) return deliveryResponse;
         const participationResponse = await participantParticipationRoutes({
           request,
           url,
@@ -431,6 +465,18 @@ export function createHandler({ settings, db, auth, send }) {
             settings,
           });
           if (intakeResponse) return intakeResponse;
+          const deliveryResponse = await deliveryRoutes({
+            c,
+            org,
+            user,
+            member,
+            tail,
+            method,
+            input,
+            url,
+            settings,
+          });
+          if (deliveryResponse) return deliveryResponse;
           const participationResponse = await participationRoutes({
             c,
             org,
@@ -550,6 +596,7 @@ export function createHandler({ settings, db, auth, send }) {
               integrations,
               intake: await exportIntake(c, org),
               participation: await exportParticipation(c, org),
+              delivery: await exportDelivery(c, org),
             });
             await audit(c, org, user, "backup.exported", null, {
               count: records.length,
@@ -573,6 +620,7 @@ export function createHandler({ settings, db, auth, send }) {
             const imported = validateBackup(backup, org, user);
             const intake = restoredIntake(backup);
             const participation = restoredParticipation(backup);
+            const delivery = restoredDelivery(backup);
             const issues = [];
             const existingIntake = Number(
               (
@@ -620,6 +668,7 @@ export function createHandler({ settings, db, auth, send }) {
                 intakeRequests: intake.submissions.length,
                 participationTargetsRecovered: participation.targets.length,
                 participationsRecovered: participation.participations.length,
+                participationDeliveryDisabled: !!delivery.policy,
                 ...(migration ? { migration: migration.summary } : {}),
               },
               issues,
@@ -672,6 +721,7 @@ export function createHandler({ settings, db, auth, send }) {
             const connections = restoredIntegrations(p.payload);
             const intake = restoredIntake(p.payload);
             const participation = restoredParticipation(p.payload);
+            const delivery = restoredDelivery(p.payload);
             if (
               Number(
                 (
@@ -761,6 +811,7 @@ export function createHandler({ settings, db, auth, send }) {
             }
             await restoreIntake(c, org, user, intake);
             await restoreParticipation(c, org, user, participation);
+            await restoreDelivery(c, org, user, delivery);
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
               checksum: p.checksum,

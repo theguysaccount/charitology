@@ -103,6 +103,12 @@ export function settings(env = process.env) {
       env.OS_MAIL_RELAY_URL ||
       "https://mail.charitology.org/api/system/os-mail",
     relaySecret: env.OS_MAIL_RELAY_SECRET || "",
+    participationDeliveryEnabled:
+      env.OS_PARTICIPATION_DELIVERY_ENABLED === "true",
+    participationTestOnly: env.OS_PARTICIPATION_TEST_ONLY !== "false",
+    participationTestRecipient: (env.OS_PARTICIPATION_TEST_RECIPIENT || "")
+      .trim()
+      .toLowerCase(),
     encryptionKey: env.OS_ENCRYPTION_KEY || "",
     cronSecret: env.CRON_SECRET || "",
     production: env.NODE_ENV === "production",

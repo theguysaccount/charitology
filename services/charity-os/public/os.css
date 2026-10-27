@@ -1931,3 +1931,56 @@ textarea[aria-invalid="true"] {
     display: block;
   }
 }
+
+.participation-delivery-preference {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  min-width: 0;
+}
+.participant-delivery-form .intake-consent {
+  margin: 1rem 0;
+}
+.participation-delivery-counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.participation-delivery-counts > div,
+.participation-delivery-choice,
+.participation-delivery-outcome {
+  padding: 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.participation-delivery-counts dt {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.participation-delivery-counts dd {
+  margin: 0.25rem 0 0;
+  font-size: 1.3rem;
+  font-weight: 650;
+}
+.participation-delivery-choices,
+.participation-delivery-outcome {
+  margin: 1rem 0;
+}
+.participation-delivery-choice + .participation-delivery-choice {
+  margin-top: 0.75rem;
+}
+.participation-delivery-admin form {
+  border-top: 1px solid var(--rule);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+}
+@media print {
+  .participant-page .participant-delivery-form {
+    display: none !important;
+  }
+}
