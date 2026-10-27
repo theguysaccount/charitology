@@ -13,7 +13,7 @@
     "dev": "astro dev",
     "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
-    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:publication-editions",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions",
     "test": "npm run build && npm run check",
     "extension:zip": "node scripts/zip-extension.mjs",
     "images": "node scripts/make-images.mjs",
@@ -32,6 +32,7 @@
     "check:learning-portfolio": "node scripts/check-learning-portfolio.mjs && node scripts/check-course-progress-store.mjs && node scripts/check-learning-portfolio-store.mjs && node scripts/check-learning-portfolio-ui.mjs && node scripts/check-course-criteria.mjs && node scripts/check-learning-portfolio-build.mjs",
     "course:criteria": "node scripts/capture-course-criteria.mjs",
     "check:domain-redirect": "node scripts/check-domain-redirect.mjs",
+    "check:donor-recovery": "node scripts/check-donor-recovery-schemas.mjs && node scripts/check-donor-recovery-engine.mjs && node scripts/check-donor-recovery-grants.mjs && node scripts/check-donor-recovery-controls.mjs && node scripts/check-donor-tools-ui.mjs",
     "check:publication-editions": "node scripts/check-publication-editions.mjs && node scripts/check-publication-editions-model.mjs && node scripts/check-publication-editions-store.mjs && node scripts/check-publication-editions-ui.mjs && node scripts/check-publication-editions-view.mjs && node services/newsletter/scripts/check-editions-generation.mjs && node services/newsletter/scripts/generate-editions.mjs --select-file src/data/publication-edition-requests/initial-mail-selection.json --check && node scripts/check-publication-editions-build.mjs",
     "check:publication-history": "node scripts/check-publication-editions-ci.mjs",
     "publication:capture": "node scripts/capture-publication-edition.mjs"

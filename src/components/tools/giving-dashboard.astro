@@ -280,7 +280,6 @@ const causes = causesData.causes;
     hasSamples,
     inYear,
     localToday,
-    loadGifts,
     mergeGifts,
     newId,
     parseGiftFile,
@@ -295,8 +294,14 @@ const causes = causesData.causes;
     yearsOf,
     type Gift,
   } from '../../lib/client/gifts';
-  import { canPersist } from '../../lib/client/persist';
+  import { createD1ViewTracker, openD1ToolSession, readD1Dependency } from '../../lib/client/donor-recovery';
+  import { mountD1RecoveryControls } from '../../lib/client/donor-recovery-controls';
+  import type { D1ValueMap } from '../../lib/client/donor-recovery-schemas';
+
   import { splitWhole } from '../../lib/client/split';
+
+  async function initializeDonorTool(): Promise<void> {
+
 
   const form = $<HTMLFormElement>('#gd-form');
   const dateEl = $<HTMLInputElement>('#gd-date');
@@ -313,16 +318,51 @@ const causes = causesData.causes;
   const depthHint = $('#gd-depth-hint');
   const depthHintDefault = depthHint.innerHTML;
 
-  let gifts: Gift[] = loadGifts();
+
+  const d1View = createD1ViewTracker();
+  const d1Root = form.closest<HTMLElement>('section.tool') ?? form.parentElement!;
+  const d1EarlyInput = () => { d1View.changedForm(); };
+  d1Root.addEventListener('input', d1EarlyInput, true);
+  d1Root.addEventListener('change', d1EarlyInput, true);
+  d1Root.addEventListener('submit', event => event.preventDefault(), true);
+  const d1Session = await openD1ToolSession('gifts', { view: d1View });
+  const d1Host = document.createElement('div'); d1Root.append(d1Host);
+  const d1Status = document.createElement('p'); d1Status.className = 'note'; d1Status.setAttribute('role', 'status'); d1Root.append(d1Status);
+  const d1Controls = mountD1RecoveryControls({ host: d1Host, session: d1Session, view: d1View });
+  d1Status.textContent = d1Session.snapshot().message;
+  function d1Changed() { d1View.changedForm(); d1Controls.noteViewMutation(); }
+  function d1FinishLoad() {
+    d1Root.removeEventListener('input', d1EarlyInput, true);
+    d1Root.removeEventListener('change', d1EarlyInput, true);
+    return d1View.snapshot().formGeneration === 0;
+  }
+
+  const initialGifts = d1Session.snapshot();
+  let gifts: Gift[] = initialGifts.hasState ? structuredClone(initialGifts.value) : [];
+  const hydrate = d1FinishLoad();
   let year = 'all';
   let editing: string | null = null;
   let yearsKey = '';
 
-  $('#gd-storage').hidden = canPersist();
-  dateEl.value = localToday();
+  $('#gd-storage').hidden = d1Session.snapshot().persistence === 'saved';
+  if (hydrate) dateEl.value = localToday();
+  form.addEventListener('input', d1Changed);
+  form.addEventListener('change', d1Changed);
 
-  function persist() {
-    $('#gd-storage').hidden = saveGifts(gifts);
+  async function persist(savesForm = false): Promise<boolean> {
+    const epoch = d1View.snapshot().formGeneration;
+    try {
+      const result = await saveGifts(d1Session, gifts);
+      if (epoch !== d1View.snapshot().formGeneration) return false;
+      const saved = result.outcome === 'saved' || result.outcome === 'no-op';
+      if (saved && savesForm) d1View.markFormSaved(result.formGeneration);
+      $('#gd-storage').hidden = saved;
+      d1Status.textContent = saved ? 'The current gift log is saved in this browser.' : result.snapshot.message;
+      return saved;
+    } catch (error) {
+      if (epoch === d1View.snapshot().formGeneration) { $('#gd-storage').hidden = false; d1Status.textContent = error instanceof Error ? error.message : 'The current log remains in this tab.'; }
+      return false;
+    } finally { d1Controls.refresh(); }
   }
 
   const amountText = (n: number) => money(n, { cents: !Number.isInteger(n) });
@@ -506,6 +546,7 @@ const causes = causesData.causes;
   }
 
   function startEdit(id: string) {
+    d1Changed();
     const g = gifts.find((x) => x.id === id);
     if (!g) return;
     editing = id;
@@ -526,14 +567,15 @@ const causes = causesData.causes;
     orgEl.focus({ preventScroll: true });
   }
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    d1Changed();
     const gift = readForm();
     if (!gift) return;
     const wasEditing = editing;
     if (wasEditing) gifts = gifts.map((g) => (g.id === wasEditing ? gift : g));
     else gifts.push(gift);
-    persist();
+    const pendingSave = persist(true);
     let where = '';
     if (year !== 'all' && yearOf(gift) !== year) {
       year = yearOf(gift);
@@ -544,35 +586,33 @@ const causes = causesData.causes;
     const totals = summarize(inYear(gifts, year));
     say(
       statusEl,
-      `${wasEditing ? 'Saved changes to' : `Added ${amountText(gift.amount)} to`} ${gift.organization}.${where} ${plural(totals.count, 'gift')}, ${amountText(totals.total)} in total.`,
+      `${wasEditing ? 'Updated the working gift to' : `Added ${amountText(gift.amount)} to the working log for`} ${gift.organization}.${where} ${plural(totals.count, 'gift')}, ${amountText(totals.total)} in total.`,
     );
     if (wasEditing) orgEl.focus();
+    await pendingSave;
   });
 
   $('#gd-cancel').addEventListener('click', () => {
-    resetForm();
+    d1Changed(); resetForm(); d1View.discardedForm();
     render();
     say(statusEl, 'Editing canceled. Nothing was changed.');
   });
 
   depthEl.addEventListener('change', showDepthHint);
 
-  $('#gd-rows').addEventListener('click', (e) => {
+  $('#gd-rows').addEventListener('click', async (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('button');
     if (!btn) return;
     if (btn.dataset.edit) startEdit(btn.dataset.edit);
     if (btn.dataset.delete) {
       const i = gifts.findIndex((g) => g.id === btn.dataset.delete);
       if (i < 0) return;
+      d1Changed();
       const [removed] = gifts.splice(i, 1);
       if (editing === removed.id) resetForm();
-      persist();
       render();
-      say(statusEl, `Deleted the gift to ${removed.organization}.`, () => {
-        gifts.splice(Math.min(i, gifts.length), 0, removed);
-        persist();
-        render();
-      });
+      say(statusEl, `Removed the gift to ${removed.organization} from the working log. Use the local-copy controls for a reviewed undo.`);
+      await persist();
     }
   });
 
@@ -581,24 +621,26 @@ const causes = causesData.causes;
     render();
   });
 
-  $('#gd-sample').addEventListener('click', () => {
+  $('#gd-sample').addEventListener('click', async () => {
+    d1Changed();
     const merged = mergeGifts(gifts, sampleGifts());
     gifts = merged.gifts;
     year = 'all';
-    persist();
     render();
     say(statusEl, `Added ${merged.added} fictional sample gifts, each marked Sample. Remove them in one click when you’re done.`);
     $('#gd-unsample').focus();
+    await persist();
   });
 
-  $('#gd-unsample').addEventListener('click', () => {
+  $('#gd-unsample').addEventListener('click', async () => {
+    d1Changed();
     const before = gifts.length;
     gifts = gifts.filter((g) => !g.sample);
     if (editing && !gifts.some((g) => g.id === editing)) resetForm();
-    persist();
     render();
     say(statusEl, `Removed ${plural(before - gifts.length, 'sample gift')}.`);
     $('#gd-sample').focus();
+    await persist();
   });
 
   function exportName(ext: string) {
@@ -619,17 +661,24 @@ const causes = causesData.causes;
 
   $('#gd-import').addEventListener('click', () => fileEl.click());
 
+  let giftFileGeneration = 0;
   fileEl.addEventListener('change', async () => {
+    const fileGeneration = ++giftFileGeneration;
+    d1Controls.noteFileChoice();
+    const viewAtFile = d1View.snapshot();
     const file = fileEl.files?.[0];
     fileEl.value = '';
     if (!file) return;
     if (file.size > 5_000_000) return say(ioStatusEl, 'That file is larger than 5 MB, which is more than a gift log should be. Nothing was imported.');
     let text = '';
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
-      text = await file.text();
+      text = await Promise.race([file.text(), new Promise<never>((_, reject) => { timeout = setTimeout(() => reject(new Error('File read timed out.')), 30_000); })]);
+      const now = d1View.snapshot();
+      if (fileGeneration !== giftFileGeneration || now.formGeneration !== viewAtFile.formGeneration || now.recoveryGeneration !== viewAtFile.recoveryGeneration) return say(ioStatusEl, 'That file review is stale. Select it again; newer work was preserved.');
     } catch {
       return say(ioStatusEl, 'That file couldn’t be read. Nothing was imported.');
-    }
+    } finally { if (timeout !== undefined) clearTimeout(timeout); }
     const parsed = parseGiftFile(text, file.name);
     if (parsed.error) return say(ioStatusEl, `${parsed.error} Nothing was imported.`);
     if (!parsed.gifts.length) {
@@ -638,10 +687,10 @@ const causes = causesData.causes;
         `No gifts could be read from ${file.name}. Each row needs a date, an organization and an amount above zero. Depth may be blank or 0–4.`,
       );
     }
+    d1Changed();
     const merged = mergeGifts(gifts, parsed.gifts);
     gifts = merged.gifts;
     year = 'all';
-    persist();
     render();
     const parts = [merged.added ? `added ${plural(merged.added, 'new gift')}` : 'no new gifts'];
     if (merged.updated) parts.push(`updated ${plural(merged.updated, 'gift')}`);
@@ -651,21 +700,32 @@ const causes = causesData.causes;
       text2 += ` ${plural(parsed.skipped, 'row')} couldn’t be read: each needs a date, an organization, an amount above zero and an optional valid depth from 0 to 4.`;
     }
     say(ioStatusEl, text2);
+    await persist();
   });
 
-  $('#gd-clear').addEventListener('click', () => {
-    if (!gifts.length) return;
-    const ok = confirm(`Delete all ${plural(gifts.length, 'gift')} from this browser? This can’t be undone. Export a copy first if you want to keep them.`);
-    if (!ok) return;
-    gifts = [];
-    resetForm();
-    persist();
-    render();
-    say(ioStatusEl, 'Deleted every gift from this browser.');
+  $('#gd-clear').addEventListener('click', async () => {
+    if (!confirm('Remove the saved gift log? Keep an export first. A failed removal will remain visible and retryable.')) return;
+    d1View.changedRecovery(); d1Controls.noteViewMutation();
+    const epoch = d1View.snapshot().formGeneration;
+    try {
+      const preview = await d1Session.previewRemove({ discardUnsaved: true });
+      const result = await d1Session.remove(preview);
+      if (epoch === d1View.snapshot().formGeneration && result.persistence === 'absent' && !result.unsaved) {
+        gifts = []; resetForm(); render(); d1View.discardedForm(); say(ioStatusEl, 'Removed the saved gift log.');
+      } else say(ioStatusEl, result.message);
+    } catch(error) { say(ioStatusEl, error instanceof Error ? error.message : 'Removal was refused.'); }
+    finally { d1Controls.refresh(); }
   });
 
   // Durable storage shows a conflict notice instead of replacing an open draft.
 
   showDepthHint();
   render();
+
+  }
+  void initializeDonorTool().catch(error => {
+    const note = document.createElement("p"); note.className = "callout"; note.setAttribute("role", "status");
+    note.textContent = error instanceof Error ? error.message : "The saved copy could not be opened safely. Reload or keep a recovery copy.";
+    document.querySelector("main")?.append(note);
+  });
 </script>

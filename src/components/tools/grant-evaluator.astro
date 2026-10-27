@@ -453,7 +453,8 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
   import { $, $$, clear, h } from '../../lib/client/dom';
   import { download } from '../../lib/client/files';
   import { slugify } from '../../lib/client/format';
-  import { load, remove, save, validateToolStorage, sameToolValue } from '../../lib/client/durable-store';
+  import { createD1ViewTracker, openD1GrantCoordinator, type D1GrantWriteSet } from '../../lib/client/donor-recovery';
+  import { mountD1GrantRecoveryControls } from '../../lib/client/donor-recovery-controls';
   import { confirmTwice } from '../../lib/client/confirm';
   import {
     DEFAULT_WEIGHT,
@@ -468,6 +469,9 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
     weightedRange,
   } from '../../lib/client/rubric';
   import type { Proposal, Range, Score, Weights } from '../../lib/client/rubric';
+
+  async function initializeDonorTool(): Promise<void> {
+
 
   const KEY = 'grant-proposals';
   const WEIGHTS_KEY = 'grant-weights';
@@ -488,37 +492,6 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
   // ---------- Stored data, checked on the way in ----------
 
-  function clean(p: unknown, allowNew = false): Proposal | null {
-    if (!p || typeof p !== 'object') return null;
-    const o = p as Record<string, any>;
-    if (typeof o.id !== 'string' || (!o.id && !allowNew)) return null;
-    const scores: Record<string, Score> = {};
-    const notes: Record<string, string> = {};
-    for (const d of DIMENSIONS) {
-      const s = o.scores?.[d.id];
-      scores[d.id] = Number.isInteger(s) && s >= 0 && s <= 4 ? (s as Score) : null;
-      notes[d.id] = typeof o.notes?.[d.id] === 'string' ? o.notes[d.id].slice(0, 4000) : '';
-    }
-    return {
-      id: o.id,
-      name: typeof o.name === 'string' ? o.name.slice(0, 120) : '',
-      savedAt: typeof o.savedAt === 'string' ? o.savedAt : undefined,
-      scores,
-      notes,
-    };
-  }
-
-  function cleanWeights(w: unknown): Weights {
-    const out = equalWeights();
-    if (w && typeof w === 'object') {
-      for (const d of DIMENSIONS) {
-        const v = (w as Record<string, unknown>)[d.id];
-        if (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= MAX_WEIGHT) out[d.id] = v;
-      }
-    }
-    return out;
-  }
-
   const blank = (): Proposal => ({
     id: '',
     name: '',
@@ -526,15 +499,37 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
     notes: Object.fromEntries(DIMENSIONS.map((d) => [d.id, ''])),
   });
 
-  validateToolStorage(KEY, value => Array.isArray(value) && value.every(p => sameToolValue(p, clean(p))) && new Set(value.map(p => p.id)).size === value.length);
-  validateToolStorage(WEIGHTS_KEY, value => sameToolValue(value, cleanWeights(value)));
-  validateToolStorage(DRAFT_KEY, value => sameToolValue(value, clean(value, true)));
-  const stored = load<unknown>(KEY, []);
-  let proposals: Proposal[] = Array.isArray(stored) ? stored.map((p) => clean(p)).filter((p): p is Proposal => p !== null) : [];
-  let weights: Weights = cleanWeights(load<unknown>(WEIGHTS_KEY, null));
-  let current: Proposal = clean(load<unknown>(DRAFT_KEY, null), true) ?? blank();
-  if (current.id && !proposals.some((p) => p.id === current.id)) current.id = '';
-  let storageOk = true;
+  const d1View = createD1ViewTracker();
+  const d1Editor = form.closest<HTMLElement>('section.tool') ?? form.parentElement!;
+  const early = () => { d1View.changedForm(); };
+  d1Editor.addEventListener('input', early, true); d1Editor.addEventListener('change', early, true);
+  d1Editor.addEventListener('submit', event => event.preventDefault(), true);
+  const coordinator = await openD1GrantCoordinator({ view: d1View });
+  const recoveryHost = document.createElement('div'); d1Editor.after(recoveryHost);
+  const d1Controls = mountD1GrantRecoveryControls({ host: recoveryHost, editor: d1Editor, coordinator, view: d1View });
+  d1Editor.removeEventListener('input', early, true); d1Editor.removeEventListener('change', early, true);
+  const initial = coordinator.snapshot();
+  const library = initial.members['grant-proposals'], weightRecord = initial.members['grant-weights'], draftRecord = initial.members['grant-draft'];
+  let proposals: Proposal[] = library.hasState ? structuredClone(library.value) : [];
+  let weights: Weights = weightRecord.hasState ? structuredClone(weightRecord.value) : equalWeights();
+  let current: Proposal = draftRecord.hasState && draftRecord.value !== null ? structuredClone(draftRecord.value) : blank();
+  const hydrate = d1View.snapshot().formGeneration === 0;
+  let storageOk = [library,weightRecord,draftRecord].every(v => v.persistence === 'saved' || v.persistence === 'absent') && initial.consistency === 'consistent';
+  function d1Changed() { d1View.changedForm(); d1Controls.noteViewMutation(); }
+  async function persist(values: D1GrantWriteSet): Promise<boolean> {
+    const epoch = d1View.snapshot().formGeneration;
+    try {
+      const result = await coordinator.saveCaptured(coordinator.captureSave(values));
+      if (epoch !== d1View.snapshot().formGeneration) return false;
+      storageOk = Object.keys(values).every(key => ['saved','no-op'].includes(result.outcomes[key as keyof D1GrantWriteSet] ?? 'not-attempted')) && !result.snapshot.pending;
+      if (storageOk && Object.hasOwn(values, 'grant-draft')) d1View.markFormSaved(result.formGeneration);
+      if (!storageOk) say(result.snapshot.message);
+      renderStatus(); return storageOk;
+    } catch(error) {
+      if (epoch === d1View.snapshot().formGeneration) { storageOk = false; say(error instanceof Error ? error.message : 'The grant operation was refused. Keep the working form or recover its complete intended bundle.'); renderStatus(); }
+      return false;
+    } finally { d1Controls.refresh(); }
+  }
 
   const content = (p: Proposal) => JSON.stringify([p.name.trim(), DIMENSIONS.map((d) => [p.scores[d.id], (p.notes[d.id] ?? '').trim()])]);
   const hasContent = (p: Proposal) => content(p) !== content(blank());
@@ -659,7 +654,7 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
     let text: string;
     if (saved) text = dirty ? `Editing “${saved.name}”: unsaved changes.` : `Editing “${saved.name}”, saved ${localDate(saved.savedAt)}.`;
     else text = dirty ? 'New proposal, not saved yet.' : 'New proposal.';
-    if (!storageOk) text += ' Storage is blocked, so nothing outlasts this page.';
+    if (!storageOk) text += ' This working view has not completed saving. See the separate grant recovery controls for exact member status.';
     $('#ge-status').textContent = text;
   }
 
@@ -715,26 +710,27 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
             message: `You have unsaved changes. Click Open again to open “${p.name}” without saving them.`,
             needed: () => isDirty() && current.id !== p.id,
             announce: say,
-            action: () => {
-              current = { ...p };
+            action: async () => {
+              d1Changed();
+              current = structuredClone(p);
               fillForm(current);
-              save(DRAFT_KEY, current);
+
               say(`Opened “${p.name}”.`);
               renderAll();
               nameEl.focus();
+              await persist({ 'grant-draft': current });
             },
           });
           confirmTwice(delBtn, {
             prompt: 'Confirm delete',
             message: `Click again to delete “${p.name}”.`,
             announce: say,
-            action: () => {
-              proposals = proposals.filter((x) => x.id !== p.id);
-              storageOk = save(KEY, proposals) && storageOk;
-              if (current.id === p.id) current = { ...current, id: '', savedAt: undefined };
-              save(DRAFT_KEY, current);
-              say(`Deleted “${p.name}”.`);
-              renderAll();
+            action: async () => {
+              d1Changed();
+              proposals = proposals.filter(x => x.id !== p.id);
+              if (current.id === p.id) { const { savedAt: _savedAt, ...other } = current; current = { ...other, id: '' }; }
+              say(`Removed “${p.name}” from the working library.`); renderAll();
+              await persist({ 'grant-proposals': proposals, 'grant-draft': current });
             },
           });
           return h(
@@ -762,84 +758,48 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
   // ---------- Actions ----------
 
-  function onEdit() {
-    current = readForm();
-    storageOk = save(DRAFT_KEY, current) && storageOk;
-    renderGuides();
-    renderResult();
-    renderStatus();
+  async function onEdit() {
+    d1Changed(); current = readForm(); renderGuides(); renderResult(); renderStatus();
+    await persist({ 'grant-draft': current });
   }
-
-  form.addEventListener('submit', (e) => e.preventDefault());
-  form.addEventListener('change', (e) => {
-    if ((e.target as HTMLElement).matches('input[type="radio"]')) onEdit();
-  });
-  form.addEventListener('input', (e) => {
+  form.addEventListener('submit', e => e.preventDefault());
+  form.addEventListener('change', async e => { if ((e.target as HTMLElement).matches('input[type="radio"]')) await onEdit(); });
+  form.addEventListener('input', async e => {
     const t = e.target as HTMLInputElement;
     if (t.matches('.ge-w input[type="range"]')) {
-      weights = { ...weights, [t.dataset.dim!]: Number(t.value) };
-      storageOk = save(WEIGHTS_KEY, weights) && storageOk;
-      renderWeights();
-      renderResult();
-      renderSaved();
+      d1Changed(); weights = { ...weights, [t.dataset.dim!]: Number(t.value) }; renderWeights(); renderResult(); renderSaved();
+      await persist({ 'grant-weights': weights });
     } else if (t.matches('input[type="text"], textarea')) {
-      if (t === nameEl && nameEl.value.trim()) {
-        $('#ge-name-err').textContent = '';
-        nameEl.setAttribute('aria-invalid', 'false');
-      }
-      onEdit();
+      if (t === nameEl && nameEl.value.trim()) { $('#ge-name-err').textContent = ''; nameEl.setAttribute('aria-invalid','false'); }
+      await onEdit();
     }
   });
-
-  $('#ge-w-reset').addEventListener('click', () => {
-    weights = equalWeights();
-    storageOk = save(WEIGHTS_KEY, weights) && storageOk;
-    renderAll();
-    say('Weights reset to equal.');
+  $('#ge-w-reset').addEventListener('click', async () => {
+    d1Changed(); weights = equalWeights(); renderAll(); say('Reset the working weights to equal.');
+    await persist({ 'grant-weights': weights });
   });
-
-  $('#ge-save').addEventListener('click', () => {
-    current = readForm();
-    const name = current.name.trim();
-    if (!name) {
-      $('#ge-name-err').textContent = 'Give the proposal a name before saving it.';
-      nameEl.setAttribute('aria-invalid', 'true');
-      nameEl.focus();
-      say('Give the proposal a name before saving it.');
-      return;
-    }
-    const entry: Proposal = {
-      ...current,
-      id: current.id || `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
-      name,
-      savedAt: new Date().toISOString(),
-    };
-    const exists = proposals.some((p) => p.id === entry.id);
-    proposals = exists ? proposals.map((p) => (p.id === entry.id ? entry : p)) : [...proposals, entry];
-    current = entry;
-    nameEl.value = name;
-    const ok = save(KEY, proposals);
-    storageOk = ok && save(DRAFT_KEY, current);
-    say(
-      ok
-        ? `${exists ? 'Updated' : 'Saved'} “${name}” in this browser.`
-        : `Your browser is blocking storage, so “${name}” is kept only until you leave this page. Download the JSON to keep it.`,
-    );
+  $('#ge-save').addEventListener('click', async () => {
+    d1Changed(); current = readForm(); const name = current.name.trim();
+    if (!name) { $('#ge-name-err').textContent = 'Give the proposal a name before saving it.'; nameEl.setAttribute('aria-invalid','true'); nameEl.focus(); return; }
+    const entry: Proposal = { ...current, id: current.id || `${Date.now().toString(36)}${Math.random().toString(36).slice(2,6)}`, name, savedAt: new Date().toISOString() };
+    const exists = proposals.some(p => p.id === entry.id);
+    proposals = exists ? proposals.map(p => p.id === entry.id ? entry : p) : [...proposals,entry]; current = entry; nameEl.value = name;
+    say(`Updated the working library for “${name}”. The proposal library and draft save separately; their exact outcomes appear in recovery controls.`);
     renderAll();
+    await persist({ 'grant-proposals': proposals, 'grant-draft': current });
   });
-
   confirmTwice($<HTMLButtonElement>('#ge-new'), {
-    prompt: 'Discard unsaved changes?',
-    message: 'You have unsaved changes. Click New proposal again to discard them and start over.',
-    needed: isDirty,
-    announce: say,
-    action: () => {
-      current = blank();
-      fillForm(current);
-      remove(DRAFT_KEY);
-      say('Started a new proposal.');
-      renderAll();
-      nameEl.focus();
+    prompt: 'Discard unsaved changes?', message: 'Click again to remove the saved current draft and start a new proposal. The proposal library is retained.', needed: isDirty, announce: say,
+    action: async () => {
+      d1View.changedRecovery(); d1Controls.noteViewMutation(); const epoch = d1View.snapshot().formGeneration;
+      try {
+        const preview = await coordinator.previewRemove('grant-draft', { discardUnsaved: true });
+        const result = await coordinator.remove(preview);
+        if (epoch === d1View.snapshot().formGeneration && result.snapshot.members['grant-draft'].persistence === 'absent' && result.outcome !== 'unsaved') {
+          current = blank(); fillForm(current); renderAll(); d1View.discardedForm(); say('Started a new proposal.'); nameEl.focus();
+        } else say(result.snapshot.message);
+      } catch(error) { say(error instanceof Error ? error.message : 'Removal was refused.'); }
+      finally { d1Controls.refresh(); }
     },
   });
 
@@ -877,7 +837,15 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
   // ---------- Start ----------
 
-  fillForm(current);
+  if (hydrate) fillForm(current);
+  else { current = readForm(); for (const el of sliders) weights[el.dataset.dim!] = Number(el.value); }
   renderAll();
-  if (isDirty()) say(current.id ? 'Restored your unsaved changes to this proposal.' : 'Restored your unsaved draft.');
+  if (hydrate && isDirty()) say(current.id ? 'Restored your unsaved changes to this proposal.' : 'Restored your unsaved draft.');
+
+  }
+  void initializeDonorTool().catch(error => {
+    const note = document.createElement("p"); note.className = "callout"; note.setAttribute("role", "status");
+    note.textContent = error instanceof Error ? error.message : "The saved copy could not be opened safely. Reload or keep a recovery copy.";
+    document.querySelector("main")?.append(note);
+  });
 </script>

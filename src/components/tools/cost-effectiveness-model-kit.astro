@@ -440,12 +440,18 @@ const parts = [
   import { $, clear, h } from '../../lib/client/dom';
   import { download, toCsv } from '../../lib/client/files';
   import { num, parseAmount, slugify } from '../../lib/client/format';
-  import { load, save, validateToolStorage } from '../../lib/client/durable-store';
+  import { createD1ViewTracker, openD1ToolSession, readD1Dependency } from '../../lib/client/donor-recovery';
+  import { mountD1RecoveryControls } from '../../lib/client/donor-recovery-controls';
+  import type { D1ValueMap } from '../../lib/client/donor-recovery-schemas';
+
   import { histogram, quantile } from '../../lib/client/montecarlo';
   import { RANGED, dollars, dollarsTick, runModel, sensitivity, sig } from '../../lib/client/models';
   import type { ModelInputs, ModelRun, RangedKey } from '../../lib/client/models';
   import { renderHistogram, renderRangeBars } from '../../lib/client/charts';
   import { confirmTwice } from '../../lib/client/confirm';
+
+  async function initializeDonorTool(): Promise<void> {
+
 
   const DRAWS = 5000;
   const PARTS = ['low', 'likely', 'high'] as const;
@@ -509,11 +515,11 @@ const parts = [
   }
 
   function fillRaw(r: Partial<Raw>) {
-    nameEl.value = String(r.name ?? '').slice(0, 120);
-    unitEl.value = String(r.unit ?? '').slice(0, 80);
-    for (const k of RANGED) PARTS.forEach((p, i) => (cell(k, p).value = String(r.values?.[k]?.[i] ?? '').slice(0, 40)));
-    discountEl.value = String(r.discount ?? '').slice(0, 20);
-    seedEl.value = String(r.seed ?? '1').slice(0, 12);
+    nameEl.value = String(r.name ?? '');
+    unitEl.value = String(r.unit ?? '');
+    for (const k of RANGED) PARTS.forEach((p, i) => (cell(k, p).value = String(r.values?.[k]?.[i] ?? '')));
+    discountEl.value = String(r.discount ?? '');
+    seedEl.value = String(r.seed ?? '1');
     syncLabels();
   }
 
@@ -695,16 +701,41 @@ const parts = [
     const d = new Date(iso);
     return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
-  const isSaved = (m: unknown): m is Saved => {
-    if (!m || typeof m !== 'object') return false;
-    const v = m as Saved;
-    return ['id', 'name', 'unit', 'discount', 'seed', 'savedAt'].every(key => typeof (v as unknown as Record<string, unknown>)[key] === 'string') && !!v.id && !Number.isNaN(Date.parse(v.savedAt)) && !!v.values && RANGED.every(key => Array.isArray(v.values[key]) && v.values[key].length === 3 && v.values[key].every(value => typeof value === 'string'));
-  };
-  validateToolStorage(KEY, value => Array.isArray(value) && value.every(isSaved) && new Set(value.map(m => m.id)).size === value.length);
-  let models: Saved[] = (() => {
-    const stored = load<unknown>(KEY, []);
-    return Array.isArray(stored) ? stored.filter(isSaved) : [];
-  })();
+
+  const d1View = createD1ViewTracker();
+  const d1Root = form.closest<HTMLElement>('section.tool') ?? form.parentElement!;
+  const d1EarlyInput = () => { d1View.changedForm(); };
+  d1Root.addEventListener('input', d1EarlyInput, true);
+  d1Root.addEventListener('change', d1EarlyInput, true);
+  d1Root.addEventListener('submit', event => event.preventDefault(), true);
+  const d1Session = await openD1ToolSession('ce-models', { view: d1View });
+  const d1Host = document.createElement('div'); d1Root.append(d1Host);
+  const d1Status = document.createElement('p'); d1Status.className = 'note'; d1Status.setAttribute('role', 'status'); d1Root.append(d1Status);
+  const d1Controls = mountD1RecoveryControls({ host: d1Host, session: d1Session, view: d1View });
+  d1Status.textContent = d1Session.snapshot().message;
+  function d1Changed() { d1View.changedForm(); d1Controls.noteViewMutation(); }
+  function d1FinishLoad() {
+    d1Root.removeEventListener('input', d1EarlyInput, true);
+    d1Root.removeEventListener('change', d1EarlyInput, true);
+    return d1View.snapshot().formGeneration === 0;
+  }
+  async function d1Save(value: D1ValueMap['ce-models'], savesForm = true): Promise<boolean> {
+    const epoch = d1View.snapshot().formGeneration;
+    try {
+      const result = await d1Session.saveCaptured(d1Session.captureSave(value));
+      if (result.formGeneration !== d1View.snapshot().formGeneration) return false;
+      const ok = result.outcome === 'saved' || result.outcome === 'no-op';
+      if (ok && savesForm) d1View.markFormSaved(result.formGeneration);
+      d1Status.textContent = ok ? 'This record is saved in this browser.' : result.snapshot.message;
+      return ok;
+    } catch (error) {
+      if (epoch === d1View.snapshot().formGeneration) d1Status.textContent = error instanceof Error ? error.message : 'Saving was refused. Your current form remains in this tab.';
+      return false;
+    } finally { d1Controls.refresh(); }
+  }
+  const initialModels = d1Session.snapshot();
+  let models: Saved[] = initialModels.hasState ? structuredClone(initialModels.value) : [];
+  d1FinishLoad();
 
   function refreshSaved(selectId?: string) {
     clear(savedSel);
@@ -719,7 +750,8 @@ const parts = [
 
   const tell = (text: string) => (storeMsg.textContent = text);
 
-  $('#ce-save').addEventListener('click', () => {
+  $('#ce-save').addEventListener('click', async () => {
+    d1Changed();
     const raw = readRaw();
     const name = raw.name.trim() || 'Untitled model';
     nameEl.value = name;
@@ -727,15 +759,18 @@ const parts = [
     const existing = models.find((m) => m.name.toLowerCase() === name.toLowerCase());
     const entry: Saved = { ...raw, id: existing?.id ?? `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`, savedAt: new Date().toISOString() };
     models = existing ? models.map((m) => (m.id === existing.id ? entry : m)) : [...models, entry];
-    const ok = save(KEY, models);
+    const pending = d1Save(models);
+    const epoch = d1View.snapshot().formGeneration;
     refreshSaved(entry.id);
-    storeMsg.textContent = ok
-      ? `${existing ? 'Updated' : 'Saved'} “${name}” in this browser.`
-      : `Your browser is blocking storage, so “${name}” is kept only until you leave this page. Download the CSV to keep a copy.`;
+    syncLabels();
+    const ok = await pending;
+    if (epoch !== d1View.snapshot().formGeneration) return;
+    storeMsg.textContent = ok ? `${existing ? 'Updated' : 'Saved'} “${name}” in this browser.` : `“${name}” is in the working library. ${d1Session.snapshot().message}`;
     syncLabels();
   });
 
   loadBtn.addEventListener('click', () => {
+    d1Changed();
     const m = models.find((x) => x.id === savedSel.value);
     if (!m) return;
     fillRaw(m);
@@ -747,13 +782,14 @@ const parts = [
     prompt: 'Click again to delete',
     message: 'Click Delete again to delete the selected model.',
     announce: tell,
-    action: () => {
+    action: async () => {
+      d1Changed();
       const m = models.find((x) => x.id === savedSel.value);
       if (!m) return;
       models = models.filter((x) => x.id !== m.id);
-      const ok = save(KEY, models);
       refreshSaved();
-      storeMsg.textContent = `Deleted “${m.name}”.${ok ? '' : ' Storage is blocked, so this lasts only until you leave the page.'}`;
+      storeMsg.textContent = `Removed “${m.name}” from the working library.`;
+      await d1Save(models, false);
     },
   });
   savedSel.addEventListener('change', resetDelete);
@@ -764,6 +800,7 @@ const parts = [
     needed: hasInput,
     announce: tell,
     action: () => {
+      d1Changed();
       fillRaw(EXAMPLE);
       storeMsg.textContent = 'Loaded the example. Its numbers are made up.';
       run();
@@ -776,6 +813,7 @@ const parts = [
     needed: hasInput,
     announce: tell,
     action: () => {
+      d1Changed();
       fillRaw({ seed: '1' });
       showErrors({});
       last = undefined;
@@ -829,6 +867,7 @@ const parts = [
     if (run(true)) $('#ce-kpis').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
   form.addEventListener('input', () => {
+    d1Changed();
     syncLabels();
     let note = '';
     if (last && !out.hidden) {
@@ -841,4 +880,11 @@ const parts = [
   });
   refreshSaved();
   syncLabels();
+
+  }
+  void initializeDonorTool().catch(error => {
+    const note = document.createElement("p"); note.className = "callout"; note.setAttribute("role", "status");
+    note.textContent = error instanceof Error ? error.message : "The saved copy could not be opened safely. Reload or keep a recovery copy.";
+    document.querySelector("main")?.append(note);
+  });
 </script>

@@ -252,9 +252,14 @@ import { url } from '../../lib/site';
   import { copy, download, flash, toCsv } from '../../lib/client/files';
   import { money, parseAmount } from '../../lib/client/format';
   import { CAUSES, OTHER, causeName, displayDate, isoDate, localToday, newId, plural } from '../../lib/client/gifts';
-  import { canPersist } from '../../lib/client/persist';
   import { checkUrl, shareTotal, sharesComplete, splitWhole } from '../../lib/client/split';
-  import { load, save, validateToolStorage, sameToolValue } from '../../lib/client/durable-store';
+  import { createD1ViewTracker, openD1ToolSession, readD1Dependency } from '../../lib/client/donor-recovery';
+  import { mountD1RecoveryControls } from '../../lib/client/donor-recovery-controls';
+  import type { D1ValueMap } from '../../lib/client/donor-recovery-schemas';
+
+  async function initializeDonorTool(): Promise<void> {
+
+
 
   interface Row {
     id: string;
@@ -284,39 +289,7 @@ import { url } from '../../lib/site';
   const methodEl = $<HTMLSelectElement>('#ocs-method');
   const CAUSE_IDS = new Set(CAUSES.map((c) => c.id));
 
-  const str = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '');
-  const safeId = (v: unknown) => (typeof v === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(v) ? v : newId());
-
-  function blankRow(share: number | null = null): Row {
-    return { id: newId(), cause: OTHER.id, name: '', url: '', share, done: false };
-  }
-
-  function cleanPlan(raw: unknown): Plan | undefined {
-    if (!raw || typeof raw !== 'object') return undefined;
-    const p = raw as Record<string, unknown>;
-    if (!Array.isArray(p.rows)) return undefined;
-    const rows: Row[] = p.rows
-      .filter((r): r is Record<string, unknown> => !!r && typeof r === 'object')
-      .map((r) => ({
-        id: safeId(r.id),
-        cause: typeof r.cause === 'string' && CAUSE_IDS.has(r.cause) ? r.cause : OTHER.id,
-        name: str(r.name, 120),
-        url: str(r.url, 2000),
-        share: typeof r.share === 'number' && Number.isFinite(r.share) && r.share >= 0 ? r.share : null,
-        done: r.done === true,
-      }));
-    if (!rows.length) return undefined;
-    const total = typeof p.total === 'number' && p.total > 0 && p.total < 1e10 ? Math.round(p.total) : null;
-    return { total, rows, source: str(p.source, 200), savedAt: str(p.savedAt, 40) || undefined };
-  }
-
-  function cleanPortfolio(raw: unknown): Portfolio | undefined {
-    if (!raw || typeof raw !== 'object') return undefined;
-    const p = raw as Portfolio;
-    const ok = (a: unknown) => !!a && typeof a === 'object' && Object.values(a as object).some((v) => typeof v === 'number' && v > 0);
-    if (!ok(p.allocation)) return undefined;
-    return { ...p, alternative: ok(p.alternative) ? p.alternative : undefined };
-  }
+  function blankRow(share: number | null = null): Row { return { id: newId(), cause: OTHER.id, name: '', url: '', share, done: false }; }
 
   /** A stored timestamp as a date in the viewer's time zone. */
   const day = (iso: string) => {
@@ -335,33 +308,55 @@ import { url } from '../../lib/site';
     return entries.map(([cause], i) => ({ ...blankRow(shares[i]), cause })).filter((r) => (r.share ?? 0) > 0);
   }
 
-  validateToolStorage('portfolio', value => sameToolValue(value, cleanPortfolio(value)));
-  validateToolStorage('split', value => sameToolValue(value, cleanPlan(value)));
-  const portfolio = cleanPortfolio(load<unknown>('portfolio', null));
-  const savedPlan = cleanPlan(load<unknown>('split', null));
-  let plan: Plan;
-  if (savedPlan) {
-    plan = savedPlan;
-  } else if (portfolio) {
-    const which = portfolio.method === 'best' ? 'alternative' : 'allocation';
-    plan = {
-      total: portfolio.budget && portfolio.budget > 0 ? Math.round(portfolio.budget) : null,
-      rows: rowsFromPortfolio(portfolio, which),
-      source: `From your Portfolio Builder portfolio: ${METHOD_NAMES[which]}.`,
-    };
-    if (!plan.rows.length) plan.rows = [blankRow(50), blankRow(50)];
-  } else {
-    plan = { total: null, rows: [blankRow(50), blankRow(50)], source: 'Started from a blank plan.' };
+
+  const d1View = createD1ViewTracker();
+  const d1Root = totalEl.closest<HTMLElement>('section.tool') ?? totalEl.parentElement!;
+  const d1EarlyInput = () => { d1View.changedForm(); };
+  d1Root.addEventListener('input', d1EarlyInput, true);
+  d1Root.addEventListener('change', d1EarlyInput, true);
+  d1Root.addEventListener('submit', event => event.preventDefault(), true);
+  const d1Session = await openD1ToolSession('split', { view: d1View });
+  const d1Host = document.createElement('div'); d1Root.append(d1Host);
+  const d1Status = document.createElement('p'); d1Status.className = 'note'; d1Status.setAttribute('role', 'status'); d1Root.append(d1Status);
+  const d1Controls = mountD1RecoveryControls({ host: d1Host, session: d1Session, view: d1View });
+  d1Status.textContent = d1Session.snapshot().message;
+  function d1Changed() { d1View.changedForm(); d1Controls.noteViewMutation(); }
+  function d1FinishLoad() {
+    d1Root.removeEventListener('input', d1EarlyInput, true);
+    d1Root.removeEventListener('change', d1EarlyInput, true);
+    return d1View.snapshot().formGeneration === 0;
   }
+  async function d1Save(value: D1ValueMap['split']): Promise<boolean> {
+    const epoch = d1View.snapshot().formGeneration;
+    try {
+      const result = await d1Session.saveCaptured(d1Session.captureSave(value));
+      if (result.formGeneration !== d1View.snapshot().formGeneration) return false;
+      const ok = result.outcome === 'saved' || result.outcome === 'no-op';
+      if (ok) d1View.markFormSaved(result.formGeneration);
+      d1Status.textContent = ok ? 'This record is saved in this browser.' : result.snapshot.message;
+      return ok;
+    } catch (error) {
+      if (epoch === d1View.snapshot().formGeneration) d1Status.textContent = error instanceof Error ? error.message : 'Saving was refused. Your current form remains in this tab.';
+      return false;
+    } finally { d1Controls.refresh(); }
+  }
+  const sourcePortfolio = await readD1Dependency('one-click-split');
+  const portfolio: Portfolio | undefined = sourcePortfolio.code === 'saved' ? structuredClone(sourcePortfolio.value) : undefined;
+  const saved = d1Session.snapshot();
+  const hydrate = d1FinishLoad();
+  let plan: Plan = saved.hasState && hydrate ? structuredClone(saved.value) : { total: null, rows: [blankRow(50), blankRow(50)], source: 'Started from a blank plan.' };
+  if (!hydrate) plan.total = Number.isFinite(totalEl.valueAsNumber) ? totalEl.valueAsNumber : null;
 
   function loadedNote() {
     const saved = plan.savedAt ? ` Saved ${day(plan.savedAt)}.` : '';
     $('#ocs-loaded').textContent = `${plan.source || 'Your plan.'}${saved}`;
   }
 
-  function persist() {
+  async function persist() {
     plan.savedAt = new Date().toISOString();
-    $('#ocs-storage').hidden = save('split', plan);
+    const epoch = d1View.snapshot().formGeneration;
+    const ok = await d1Save(plan);
+    if (epoch === d1View.snapshot().formGeneration) $('#ocs-storage').hidden = ok;
   }
 
   // ---------- Rows ----------
@@ -552,111 +547,59 @@ import { url } from '../../lib/site';
 
   // ---------- Events ----------
 
-  rowsEl.addEventListener('input', (e) => {
+  rowsEl.addEventListener('input', async (e) => {
     const el = e.target as HTMLInputElement | HTMLSelectElement;
-    const rowId = el.closest<HTMLElement>('[data-row]')?.dataset.row;
-    const r = plan.rows.find((x) => x.id === rowId);
+    const r = plan.rows.find(x => x.id === el.closest<HTMLElement>('[data-row]')?.dataset.row);
     if (!r) return;
+    d1Changed();
     const field = el.dataset.field;
     if (field === 'cause') r.cause = el.value;
-    if (field === 'name') {
-      r.name = el.value;
-      const i = plan.rows.indexOf(r);
-      document.querySelector(`[data-remove="${r.id}"]`)?.setAttribute('aria-label', `Remove ${r.name.trim() || `charity ${i + 1}`}`);
-    }
-    if (field === 'url') {
-      r.url = el.value.trim();
-      if (!checkUrl(r.url).error) showUrlState(r);
-    }
-    if (field === 'share') {
-      const n = (el as HTMLInputElement).valueAsNumber;
-      r.share = Number.isFinite(n) && n >= 0 ? n : null;
-    }
-    update();
-    persist();
+    if (field === 'name') { r.name = el.value; document.querySelector(`[data-remove="${r.id}"]`)?.setAttribute('aria-label', `Remove ${r.name.trim() || 'charity'}`); }
+    if (field === 'url') { r.url = el.value; if (!checkUrl(r.url).error) showUrlState(r); }
+    if (field === 'share') { const n = (el as HTMLInputElement).valueAsNumber; r.share = Number.isFinite(n) && n >= 0 ? n : null; }
+    update(); await persist();
   });
-
-  rowsEl.addEventListener('change', (e) => {
+  rowsEl.addEventListener('change', async e => {
     const el = e.target as HTMLInputElement;
     if (el.dataset.field !== 'url') return;
-    const r = plan.rows.find((x) => x.id === el.closest<HTMLElement>('[data-row]')?.dataset.row);
+    const r = plan.rows.find(x => x.id === el.closest<HTMLElement>('[data-row]')?.dataset.row);
     if (!r) return;
-    const checked = checkUrl(el.value);
-    if (checked.url) {
-      r.url = checked.url;
-      el.value = checked.url;
-    }
-    showUrlState(r);
-    update();
-    persist();
+    d1Changed(); const checked = checkUrl(el.value);
+    if (checked.url) { r.url = checked.url; el.value = checked.url; }
+    showUrlState(r); update(); await persist();
   });
-
-  rowsEl.addEventListener('click', (e) => {
+  rowsEl.addEventListener('click', async e => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-remove]');
     if (!btn) return;
-    const i = plan.rows.findIndex((r) => r.id === btn.dataset.remove);
+    const i = plan.rows.findIndex(r => r.id === btn.dataset.remove);
     if (i < 0) return;
-    const [removed] = plan.rows.splice(i, 1);
-    renderRows();
-    update();
-    persist();
-    statusEl.textContent = `Removed ${removed.name.trim() || `charity ${i + 1}`}. Shares now add up to ${shareTotal(plan.rows.map((r) => r.share ?? 0))}%.`;
+    d1Changed(); const [removed] = plan.rows.splice(i, 1); renderRows(); update();
+    statusEl.textContent = `Removed ${removed.name.trim() || `charity ${i + 1}`} from the working plan.`;
     const next = plan.rows[i] ?? plan.rows[i - 1];
-    (next ? (document.getElementById(`ocs-${next.id}-cause`) as HTMLElement) : $('#ocs-add')).focus();
+    (next ? document.getElementById(`ocs-${next.id}-cause`) : $('#ocs-add'))?.focus();
+    await persist();
   });
-
-  totalEl.addEventListener('input', () => {
-    update();
-    persist();
+  totalEl.addEventListener('input', async () => { d1Changed(); update(); await persist(); });
+  totalEl.addEventListener('change', () => { const total = totalValue(); if (Number.isFinite(total)) totalEl.value = String(total); });
+  $('#ocs-add').addEventListener('click', async () => {
+    d1Changed();
+    const left = Math.max(0, Math.round((100 - shareTotal(plan.rows.map(r => r.share ?? 0))) * 1000) / 1000);
+    const r = blankRow(left > 0 ? left : null); plan.rows.push(r); renderRows(); update();
+    document.getElementById(`ocs-${r.id}-cause`)?.focus(); await persist();
   });
-  totalEl.addEventListener('change', () => {
-    const total = totalValue();
-    if (Number.isFinite(total)) totalEl.value = String(total);
-  });
-
-  $('#ocs-add').addEventListener('click', () => {
-    const left = Math.max(0, Math.round((100 - shareTotal(plan.rows.map((r) => r.share ?? 0))) * 1000) / 1000);
-    const r = blankRow(left > 0 ? left : null);
-    plan.rows.push(r);
-    renderRows();
-    update();
-    persist();
-    (document.getElementById(`ocs-${r.id}-cause`) as HTMLElement).focus();
-  });
-
-  function setShares(shares: number[], message: string) {
-    plan.rows.forEach((r, i) => {
-      r.share = shares[i];
-      const input = document.getElementById(`ocs-${r.id}-share`) as HTMLInputElement | null;
-      if (input) input.value = String(shares[i]);
-    });
-    update();
-    persist();
-    statusEl.textContent = message;
+  async function setShares(shares: number[], message: string) {
+    d1Changed(); plan.rows.forEach((r, i) => { r.share = shares[i]; const el = document.getElementById(`ocs-${r.id}-share`) as HTMLInputElement | null; if (el) el.value = String(shares[i]); });
+    update(); statusEl.textContent = message; await persist();
   }
-
-  $('#ocs-even').addEventListener('click', () => {
-    if (!plan.rows.length) return;
-    setShares(splitWhole(100, plan.rows.map(() => 1)), `Split evenly across ${plural(plan.rows.length, 'charity', 'charities')}.`);
+  $('#ocs-even').addEventListener('click', async () => { if (plan.rows.length) await setShares(splitWhole(100, plan.rows.map(() => 1)), 'Split the working shares evenly.'); });
+  $('#ocs-scale').addEventListener('click', async () => {
+    const shares = plan.rows.map(r => r.share ?? 0);
+    if (!shares.some(v => v > 0)) { statusEl.textContent = 'Give at least one charity a share first, or use Split evenly.'; return; }
+    await setShares(splitWhole(1000, shares).map(v => v / 10), 'Scaled the working shares to 100%.');
   });
-
-  $('#ocs-scale').addEventListener('click', () => {
-    const shares = plan.rows.map((r) => r.share ?? 0);
-    if (!shares.some((s) => s > 0)) {
-      statusEl.textContent = 'Give at least one charity a share first, or use Split evenly.';
-      return;
-    }
-    setShares(splitWhole(1000, shares).map((x) => x / 10), 'Scaled the shares so they add up to 100%, keeping their proportions.');
-  });
-
-  $('#ocs-steps').addEventListener('change', (e) => {
-    const box = e.target as HTMLInputElement;
-    const r = plan.rows.find((x) => x.id === box.dataset.done);
-    if (!r) return;
-    r.done = box.checked;
-    box.closest('li')?.classList.toggle('is-done', r.done);
-    progress();
-    persist();
+  $('#ocs-steps').addEventListener('change', async e => {
+    const box = e.target as HTMLInputElement; const r = plan.rows.find(x => x.id === box.dataset.done); if (!r) return;
+    d1Changed(); r.done = box.checked; box.closest('li')?.classList.toggle('is-done', r.done); progress(); await persist();
   });
 
   $('#ocs-steps').addEventListener('click', async (e) => {
@@ -667,10 +610,11 @@ import { url } from '../../lib/site';
     statusEl.textContent = ok ? `Copied ${btn.dataset.copy}. Paste it into the donation form.` : 'Your browser blocked copying.';
   });
 
-  $('#ocs-use').addEventListener('click', () => {
+  $('#ocs-use').addEventListener('click', async () => {
     if (!portfolio) return;
     const filled = plan.rows.some((r) => r.name.trim() || r.url.trim());
     if (filled && !confirm('Replace the charities in this plan with the causes from your portfolio? Names and addresses you typed will be cleared.')) return;
+    d1Changed();
     const which = methodEl.value;
     const rows = rowsFromPortfolio(portfolio, which);
     if (!rows.length) {
@@ -685,22 +629,23 @@ import { url } from '../../lib/site';
     totalEl.value = plan.total ? String(plan.total) : '';
     renderRows();
     update();
-    persist();
     loadedNote();
     statusEl.textContent = `Loaded ${plural(rows.length, 'cause')} from your portfolio. Add a charity and its donation page for each.`;
     (document.getElementById(`ocs-${rows[0].id}-name`) as HTMLElement).focus();
+    await persist();
   });
 
-  $('#ocs-reset').addEventListener('click', () => {
+  $('#ocs-reset').addEventListener('click', async () => {
     if (!confirm('Start a new plan? This clears the charities, shares and Done marks saved in this browser.')) return;
+    d1Changed();
     plan = { total: null, rows: [blankRow(50), blankRow(50)], source: 'Started from a blank plan.' };
     totalEl.value = '';
     renderRows();
     update();
-    persist();
     loadedNote();
     statusEl.textContent = 'Started a new plan.';
     totalEl.focus();
+    await persist();
   });
 
   // ---------- Exports ----------
@@ -765,16 +710,24 @@ import { url } from '../../lib/site';
     const when = portfolio.savedAt ? ` from ${day(portfolio.savedAt)}` : '';
     const budget = portfolio.budget && portfolio.budget > 0 ? `, a budget of ${money(portfolio.budget)}` : '';
     $('#ocs-portfolio-text').textContent = `You have a Portfolio Builder portfolio${when}: ${plural(count, 'cause')}${budget}.`;
-    methodEl.value = portfolio.method === 'best' ? 'alternative' : 'allocation';
+    if (hydrate) methodEl.value = portfolio.method === 'best' ? 'alternative' : 'allocation';
     const best = methodEl.querySelector<HTMLOptionElement>('option[value="alternative"]');
     if (best && !portfolio.alternative) best.disabled = true;
   } else {
     $('#ocs-no-portfolio').hidden = false;
   }
 
-  if (!canPersist()) $('#ocs-storage').hidden = false;
-  totalEl.value = plan.total ? String(plan.total) : '';
+  $('#ocs-storage').hidden = saved.persistence === 'saved';
+  if (sourcePortfolio.code !== 'saved' && sourcePortfolio.code !== 'absent') d1Status.textContent = sourcePortfolio.message;
+  if (hydrate) totalEl.value = plan.total ? String(plan.total) : '';
   loadedNote();
   renderRows();
   update();
+
+  }
+  void initializeDonorTool().catch(error => {
+    const note = document.createElement("p"); note.className = "callout"; note.setAttribute("role", "status");
+    note.textContent = error instanceof Error ? error.message : "The saved copy could not be opened safely. Reload or keep a recovery copy.";
+    document.querySelector("main")?.append(note);
+  });
 </script>
