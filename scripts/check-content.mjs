@@ -64,6 +64,7 @@ for (const iv of load('interventions')) {
 await import('./check-forecasts.mjs');
 await import('./check-donor-records.mjs');
 await import('./check-program-record-form-privacy.mjs');
+await import('./check-program-private-form-privacy.mjs');
 await import('./check-irs-registry.mjs');
 
 // Pages still in draft (informational).

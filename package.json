@@ -13,7 +13,7 @@
     "dev": "astro dev",
     "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
-    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions && npm run check:observations",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions && npm run check:observations && npm run check:program-record-recovery",
     "test": "npm run build && npm run check",
     "extension:zip": "node scripts/zip-extension.mjs",
     "images": "node scripts/make-images.mjs",
@@ -39,7 +39,8 @@
     "check:observations": "node scripts/check-observation-model.mjs && node scripts/check-observation-capture.mjs && node scripts/check-observation-git.mjs && node scripts/check-observation-git-offline.mjs && node scripts/check-observations-ui.mjs && node scripts/check-observations-build.mjs",
     "check:observations-history": "node scripts/check-observations-history.mjs",
     "observations:prepare": "node scripts/prepare-observations.mjs",
-    "observations:capture": "node scripts/capture-observations.mjs"
+    "observations:capture": "node scripts/capture-observations.mjs",
+    "check:program-record-recovery": "node scripts/check-program-record-recovery-schemas.mjs && node scripts/check-program-record-recovery-engine.mjs && node scripts/check-program-record-recovery-controls.mjs && node scripts/check-program-record-recovery-os.mjs && node scripts/check-program-record-recovery-programs.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",
