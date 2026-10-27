@@ -1188,16 +1188,23 @@ const config = programWorkspaces[program];
   });
   window.addEventListener("pageshow", async (event) => {
     if (!event.persisted || disposed) return;
-    if (!session || !controls) { resumeCheckRequested = true; return; }
+    if (!session || !controls) {
+      resumeCheckRequested = true;
+      return;
+    }
     changed();
-    const notice = session.noticeExternalChange(), token = view.capture();
+    const notice = session.noticeExternalChange(),
+      token = view.capture();
     try {
       const snapshot = await notice;
       if (disposed) return;
       accept(snapshot);
-      if (view.isCurrent(token)) say(snapshot.code === "ready"
-        ? "Returned to this workspace. Unfinished fields remain here; save them deliberately."
-        : "Saved bytes changed while this page was away. Unfinished fields remain here; review recovery before saving.");
+      if (view.isCurrent(token))
+        say(
+          snapshot.code === "ready"
+            ? "Returned to this workspace. Unfinished fields remain here; save them deliberately."
+            : "Saved bytes changed while this page was away. Unfinished fields remain here; review recovery before saving.",
+        );
     } catch (error) {
       if (!disposed && view.isCurrent(token)) say(errorText(error));
     }
@@ -1217,9 +1224,15 @@ const config = programWorkspaces[program];
     session = opened;
     while (resumeCheckRequested) {
       resumeCheckRequested = false;
-      await session.noticeExternalChange();
-      if (disposed) { opened.dispose(); return; }
-      if (!view.snapshot().dirtyForms.length) initialView = view.capture();
+      const ownedInitial = view.isCurrent(initialView);
+      const pending = session.noticeExternalChange(),
+        noticeView = view.capture();
+      await pending;
+      if (disposed) {
+        opened.dispose();
+        return;
+      }
+      if (ownedInitial && view.isCurrent(noticeView)) initialView = noticeView;
     }
     controls = mountRemainingRecordRecoveryControls({
       host: $("#pw-record-recovery"),

@@ -75,6 +75,7 @@ async function start(p = "the-charitology-fund", value = sample(p), opts = {}) {
       .querySelectorAll("input")
       .find((n) => n.dataset.rrFile === "true");
   d.saved = () => JSON.parse(d.values.get(fullKey(p)));
+  if (opts.beforeRun) await opts.beforeRun(d);
   const release = opts.holdInitial ? await d.hold(key(p)) : null;
   const output = join(temp, "run-" + serial++ + ".mjs");
   await writeFile(output, script);
@@ -763,46 +764,106 @@ check(
     assert.doesNotMatch(d.$("#pw-save-state").textContent, /unfinished fields/);
   },
 );
-check("persisted history during held initialization opens without losing the disabled editor", async () => {
-  const p="nonprofit-advisory",d=await start(p,sample(p),{holdInitial:true,early:async d=>{
-    await d.window.fire("pagehide",{persisted:true});await d.window.fire("pageshow",{persisted:true});
-  }});
-  const f=model.programWorkspaces[p].context[0].key;
-  assert.equal(d.get("#pw-context-"+f),sample(p).context[f]);
-  assert.equal(d.$('#pw-context button[type="submit"]').disabled,false);
-  assert.equal(hasWrite(d),false);
-});
-check("persisted history return keeps raw fields and a live editor", async () => {
-  const d = await start(), f=model.programWorkspaces[d.program].context[0].key;
-  await d.set("#pw-context-"+f,"Unfinished history-return text");
-  await d.window.fire("pagehide",{persisted:true});
-  await d.window.fire("pageshow",{persisted:true});
-  assert.equal(d.get("#pw-context-"+f),"Unfinished history-return text");
-  assert.equal(d.$('#pw-context button[type="submit"]').disabled,false);
-  await d.$("#pw-context").fire("submit");
-  assert.equal(d.saved().context[f],"Unfinished history-return text");
-});
-check("history return observes silent external bytes without hydrating dirty forms", async () => {
-  const d = await start(), f=model.programWorkspaces[d.program].context[0].key;
-  await d.set("#pw-context-"+f,"Private retained history form");
-  await d.window.fire("pagehide",{persisted:true});
-  const foreign=sample(d.program);foreign.context[f]="Foreign during cached navigation";
-  const raw=JSON.stringify(foreign);d.values.set(fullKey(d.program),raw);
-  await d.window.fire("pageshow",{persisted:true});
-  assert.equal(d.get("#pw-context-"+f),"Private retained history form");
-  assert.equal(d.$('#pw-context button[type="submit"]').disabled,true);
-  assert.equal(d.values.get(fullKey(d.program)),raw);
-});
-check("persisted hide revokes a held save before cached document returns", async () => {
-  const d=await start(), f=model.programWorkspaces[d.program].context[0].key;
-  const raw=d.values.get(fullKey(d.program)),release=await d.hold(key(d.program));
-  await d.set("#pw-context-"+f,"Held cached-page input");
-  const pending=d.$("#pw-context").fire("submit");await Promise.resolve();
-  await d.window.fire("pagehide",{persisted:true});release();await pending;
-  await d.window.fire("pageshow",{persisted:true});
-  assert.equal(d.values.get(fullKey(d.program)),raw);
-  assert.equal(d.get("#pw-context-"+f),"Held cached-page input");
-});
+check(
+  "persisted history during held initialization opens without losing the disabled editor",
+  async () => {
+    const p = "nonprofit-advisory",
+      d = await start(p, sample(p), {
+        holdInitial: true,
+        early: async (d) => {
+          await d.window.fire("pagehide", { persisted: true });
+          await d.window.fire("pageshow", { persisted: true });
+        },
+      });
+    const f = model.programWorkspaces[p].context[0].key;
+    assert.equal(d.get("#pw-context-" + f), sample(p).context[f]);
+    assert.equal(d.$('#pw-context button[type="submit"]').disabled, false);
+    assert.equal(hasWrite(d), false);
+  },
+);
+check(
+  "held-init resume does not reacquire initial hydration ownership after a newer view-only intent",
+  async () => {
+    const p = "nonprofit-advisory",
+      field = model.programWorkspaces[p].context[0].key;
+    let reads = 0,
+      changed = false;
+    const d = await start(p, sample(p), {
+      holdInitial: true,
+      beforeRun: async (d) => {
+        const get = d.storage.getItem.bind(d.storage);
+        d.storage.getItem = (k) => {
+          const raw = get(k);
+          if (k === fullKey(p) && ++reads === 3)
+            queueMicrotask(() => {
+              d.$("#pw-context-" + field).value =
+                "Retain newer view-owned text";
+              void d.$("#pw-sample-discard").fire("change");
+              changed = true;
+            });
+          return raw;
+        };
+      },
+      early: async (d) => {
+        await d.window.fire("pagehide", { persisted: true });
+        await d.window.fire("pageshow", { persisted: true });
+      },
+    });
+    assert.equal(changed, true);
+    assert.equal(d.get("#pw-context-" + field), "Retain newer view-owned text");
+    assert.equal(hasWrite(d), false);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "persisted history return keeps raw fields and a live editor",
+  async () => {
+    const d = await start(),
+      f = model.programWorkspaces[d.program].context[0].key;
+    await d.set("#pw-context-" + f, "Unfinished history-return text");
+    await d.window.fire("pagehide", { persisted: true });
+    await d.window.fire("pageshow", { persisted: true });
+    assert.equal(d.get("#pw-context-" + f), "Unfinished history-return text");
+    assert.equal(d.$('#pw-context button[type="submit"]').disabled, false);
+    await d.$("#pw-context").fire("submit");
+    assert.equal(d.saved().context[f], "Unfinished history-return text");
+  },
+);
+check(
+  "history return observes silent external bytes without hydrating dirty forms",
+  async () => {
+    const d = await start(),
+      f = model.programWorkspaces[d.program].context[0].key;
+    await d.set("#pw-context-" + f, "Private retained history form");
+    await d.window.fire("pagehide", { persisted: true });
+    const foreign = sample(d.program);
+    foreign.context[f] = "Foreign during cached navigation";
+    const raw = JSON.stringify(foreign);
+    d.values.set(fullKey(d.program), raw);
+    await d.window.fire("pageshow", { persisted: true });
+    assert.equal(d.get("#pw-context-" + f), "Private retained history form");
+    assert.equal(d.$('#pw-context button[type="submit"]').disabled, true);
+    assert.equal(d.values.get(fullKey(d.program)), raw);
+  },
+);
+check(
+  "persisted hide revokes a held save before cached document returns",
+  async () => {
+    const d = await start(),
+      f = model.programWorkspaces[d.program].context[0].key;
+    const raw = d.values.get(fullKey(d.program)),
+      release = await d.hold(key(d.program));
+    await d.set("#pw-context-" + f, "Held cached-page input");
+    const pending = d.$("#pw-context").fire("submit");
+    await Promise.resolve();
+    await d.window.fire("pagehide", { persisted: true });
+    release();
+    await pending;
+    await d.window.fire("pageshow", { persisted: true });
+    assert.equal(d.values.get(fullKey(d.program)), raw);
+    assert.equal(d.get("#pw-context-" + f), "Held cached-page input");
+  },
+);
 check(
   "dispose during held open never hydrates editors or mounts live recovery",
   async () => {

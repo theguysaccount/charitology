@@ -662,7 +662,9 @@ hr {
   border: 1px solid var(--rule);
   background: var(--surface);
   color: var(--ink-2);
-  white-space: nowrap;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .badge .glyph {

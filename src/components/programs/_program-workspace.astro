@@ -217,6 +217,8 @@ const config = programWorkspaces[program];
     config = programWorkspaces[root.dataset.program!];
   const key = ("charitology.program-workspace-v1." + config.id) as PRProgramKey;
   const view = createProgramRecordView(key);
+  let initialized = false,
+    resumeCheckRequested = false;
   let session: PRSession<typeof key> | undefined,
     controls: PRRecoveryControls | undefined;
   let state = emptyWorkspace(config); // Form defaults only until actual admission.
@@ -391,7 +393,7 @@ const config = programWorkspaces[program];
         retained: result.outcome !== "superseded",
       };
     } catch (error) {
-      say(errorText(error));
+      if (!disposed && view.isCurrent(captured.view)) say(errorText(error));
       return { saved: false, current: false, retained: false };
     } finally {
       busy = false;
@@ -939,7 +941,7 @@ const config = programWorkspaces[program];
     void session
       .applyRestore(selected)
       .then((result) => {
-        if (disposed) return;
+        if (disposed || !view.isCurrent(selected.view)) return;
         if (
           (result.outcome === "saved" || result.outcome === "no-op") &&
           result.viewCurrent &&
@@ -956,7 +958,9 @@ const config = programWorkspaces[program];
           );
         }
       })
-      .catch((error) => say(errorText(error)))
+      .catch((error) => {
+        if (!disposed && view.isCurrent(selected.view)) say(errorText(error));
+      })
       .finally(() => {
         busy = false;
         refreshStatus();
@@ -972,16 +976,19 @@ const config = programWorkspaces[program];
     if (disposed || !session || (event.key !== key && event.key !== null)) return;
     controls?.noteViewMutation();
     invalidateSample();
-    void session
-      .noticeExternalChange()
+    const notice = session.noticeExternalChange(),
+      noticeToken = view.capture();
+    void notice
       .then((snapshot) => {
-        if (disposed) return;
+        if (disposed || !view.isCurrent(noticeToken)) return;
         accept(snapshot);
         say(
           "Saved bytes changed in another tab. Current records and unfinished fields stay here; review the saved copy in recovery.",
         );
       })
-      .catch((error) => say(errorText(error)));
+      .catch((error) => {
+        if (!disposed && view.isCurrent(noticeToken)) say(errorText(error));
+      });
   });
   window.addEventListener("beforeunload", (event) => {
     const snapshot = session?.snapshot();
@@ -1003,13 +1010,53 @@ const config = programWorkspaces[program];
     session?.dispose();
     if (!session) view.dispose();
   }
-  window.addEventListener("pagehide", dispose);
+  window.addEventListener("pagehide", (event) => {
+    if (!event.persisted) {
+      dispose();
+      return;
+    }
+    if (disposed || !initialized) return;
+    view.changedView();
+    controls?.noteViewMutation();
+    invalidateSample();
+    render();
+    refreshStatus();
+    say(
+      "This page is preserved with unfinished fields and editor identities. Pending save and review authority was canceled.",
+    );
+  });
+  window.addEventListener("pageshow", async (event) => {
+    if (!event.persisted || disposed) return;
+    if (!initialized || !session || !controls) {
+      resumeCheckRequested = true;
+      return;
+    }
+    controls.noteViewMutation();
+    invalidateSample();
+    const pending = session.noticeExternalChange(),
+      token = view.capture();
+    try {
+      const snapshot = await pending;
+      if (disposed || !view.isCurrent(token)) return;
+      controls.refresh();
+      say(
+        snapshot.pendingOperation
+          ? "The saved copy was rechecked. The exact failed operation remains pending; use Retry. Newer unfinished fields were retained."
+          : ["ready", "unsupported"].includes(snapshot.code)
+            ? "The actual saved copy was rechecked. Unfinished fields and editor identities remain here. Submit deliberately to save them, or keep a form backup."
+            : snapshot.message +
+              " Unfinished fields remain here; review recovery before saving.",
+      );
+    } catch (error) {
+      if (!disposed && view.isCurrent(token)) say(errorText(error));
+    }
+  });
   document.addEventListener("astro:before-swap", dispose);
   renderContext();
   buildCollections();
   render();
   refreshStatus();
-  const initialView = view.capture();
+  let initialView = view.capture();
   async function initialize() {
     const opened = await openProgramRecordSession(key, { view });
     if (disposed) {
@@ -1017,6 +1064,18 @@ const config = programWorkspaces[program];
       return;
     }
     session = opened;
+    while (resumeCheckRequested) {
+      resumeCheckRequested = false;
+      const ownedInitial = view.isCurrent(initialView);
+      const pending = session.noticeExternalChange(),
+        noticeView = view.capture();
+      await pending;
+      if (disposed) {
+        opened.dispose();
+        return;
+      }
+      if (ownedInitial && view.isCurrent(noticeView)) initialView = noticeView;
+    }
     controls = mountProgramRecordRecoveryControls({
       host: $("#pw-record-recovery"),
       session,
@@ -1034,6 +1093,7 @@ const config = programWorkspaces[program];
       "[data-pw-field]",
     ).forEach((field) => (field.disabled = false));
     refreshStatus();
+    initialized = true;
     root.dataset.prInitialization = "ready";
   }
   void initialize().catch((error) => {
