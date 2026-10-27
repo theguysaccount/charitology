@@ -2,7 +2,8 @@
 import type { Member } from "../lib/publication-editions-types";
 import { renderPublicationMarkdown } from "../lib/publication-editions-view";
 import { url } from "../lib/site";
-import { ledgerEditionHref, ledgerHref } from "../lib/research-ledger";
+import { ledgerEditionHref } from "../lib/research-ledger";
+import { ledgerHref } from "../lib/research-ledger-model.mjs";
 const { member } = Astro.props as { member: Member };
 const p = member.payload;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
