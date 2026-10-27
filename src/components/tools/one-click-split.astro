@@ -18,8 +18,8 @@ import { url } from '../../lib/site';
     own donation page, one at a time. <a href="#why-payment-isnt-built-in">Why payment isn’t built in</a>
   </div>
   <div id="ocs-storage" class="callout ocs-space" hidden>
-    <strong>This browser isn’t saving your plan.</strong> Storage is blocked or full, so the plan will be gone when you close this page.
-    Download it as CSV or Markdown to keep a copy.
+    <strong>The current plan is not confirmed saved.</strong> Review the local-copy controls for the reason and a complete record backup.
+    CSV and Markdown retain the displayed instructions; unsubmitted fields may be outside a saved-record backup.
   </div>
 
   <div id="ocs-portfolio" class="ocs-portfolio ocs-space" hidden>
@@ -717,7 +717,7 @@ import { url } from '../../lib/site';
     $('#ocs-no-portfolio').hidden = false;
   }
 
-  $('#ocs-storage').hidden = saved.persistence === 'saved';
+  $('#ocs-storage').hidden = saved.canWrite;
   if (sourcePortfolio.code !== 'saved' && sourcePortfolio.code !== 'absent') d1Status.textContent = sourcePortfolio.message;
   if (hydrate) totalEl.value = plan.total ? String(plan.total) : '';
   loadedNote();

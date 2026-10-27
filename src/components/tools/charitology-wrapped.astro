@@ -22,7 +22,7 @@ import { url } from '../../lib/site';
       <button class="btn btn-ghost" type="button" id="wr-try">Try sample data</button>
     </div>
     <p class="note wr-gap" id="wr-blocked" hidden>
-      This browser is blocking storage, so Wrapped can’t see gifts saved by the dashboard. Sample data still works on this page.
+      The saved gift log could not be loaded safely. Review its status in the Giving Dashboard. The page-only fictional sample remains available.
     </p>
   </div>
 
@@ -699,7 +699,7 @@ import { url } from '../../lib/site';
 
   // Durable storage offers explicit reload instead of silently replacing work.
 
-  $('#wr-blocked').hidden = prefSnapshot.persistence === 'saved';
+  $('#wr-blocked').hidden = giftRead.code === 'saved' || giftRead.code === 'absent';
   render();
 
   }

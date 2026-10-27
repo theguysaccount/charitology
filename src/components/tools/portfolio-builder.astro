@@ -213,7 +213,7 @@ const frameworks = frameworksData.frameworks;
   const fromCompass = await readD1Dependency('portfolio-builder');
   if (d1FinishLoad()) {
     if (fromLink && validState(fromLink)) { apply(fromLink); $('#pb-loaded').textContent = 'Loaded share-link controls into this tab. Change a control to save them.'; }
-    else if (stored.hasState && stored.value.state && validState(stored.value.state)) { apply(stored.value.state); $('#pb-loaded').textContent = 'Loaded your saved portfolio controls.'; }
+    else if (stored.persistence === 'saved' && stored.hasState && stored.value.state && validState(stored.value.state)) { apply(stored.value.state); $('#pb-loaded').textContent = 'Loaded your saved portfolio controls.'; }
     else if (stored.code === 'ready' && fromCompass.code === 'saved') {
       const w = normalize(fromCompass.value.weights), top = Math.max(...Object.values(w));
       sliders.forEach(el => el.value = String(top ? Math.round(w[el.dataset.framework!] / top * 100) : 50));

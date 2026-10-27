@@ -64,8 +64,8 @@ const frequencies = ['Every session', 'Weekly', 'Monthly', 'Every term', 'Every 
   </div>
   <div class="callout imt-storage" id="imt-storage" hidden>
     <p>
-      <strong>This browser isn’t letting the page save.</strong> Your draft lasts only while this tab is open. Download it as
-      Markdown or JSON to keep it.
+      <strong>The current change is not confirmed saved.</strong> The local-copy controls explain whether saving is unavailable,
+      another tab changed the record or a saved copy needs recovery. Keep a complete library backup and any unsubmitted fields before leaving.
     </p>
   </div>
   <p class="note imt-status" id="imt-status" role="status" aria-live="polite"></p>
@@ -805,7 +805,7 @@ const frequencies = ['Every session', 'Weekly', 'Monthly', 'Every term', 'Every 
     renderRows(d);
   }
   renderPreview();
-  storageNote.hidden = initial.persistence === 'saved';
+  storageNote.hidden = initial.canWrite;
 
   }
   void initializeDonorTool().catch(error => {

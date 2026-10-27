@@ -341,7 +341,7 @@ import { url } from '../../lib/site';
   const shared = readHash('c');
   const validAnswers = (a: Answers) => !!a && Array.isArray(a.d) && a.d.length === compass.dimensions.length && a.d.every(n => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 100) && Array.isArray(a.s) && a.s.length === compass.statements.length && a.s.every(n => Number.isInteger(n) && n >= 0 && n < compass.scale.length);
   const saved = d1Session.snapshot();
-  const answers = shared ? decodeState<Answers>(shared) : saved.hasState ? saved.value.answers : undefined;
+  const answers = shared ? decodeState<Answers>(shared) : saved.persistence === 'saved' && saved.hasState ? saved.value.answers : undefined;
   if (d1FinishLoad() && answers && validAnswers(answers)) { fill(answers); show(answers); }
 
   }

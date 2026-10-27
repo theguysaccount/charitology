@@ -56,6 +56,17 @@ export class ToolElement {
   get ownerDocument() {
     return globalThis.document;
   }
+  get elements() {
+    if (this.tagName !== "FORM") return undefined;
+    const controls = this.querySelectorAll("input,select,textarea,button");
+    Object.defineProperty(controls, "namedItem", {
+      value: (name) =>
+        controls.find(
+          (control) => control.name === name || control.id === name,
+        ) ?? null,
+    });
+    return controls;
+  }
   get id() {
     return this.attributes.get("id") || "";
   }

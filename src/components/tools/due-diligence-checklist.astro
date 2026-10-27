@@ -63,8 +63,8 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
   </p>
   <div class="callout dd-storage" id="dd-storage" hidden>
     <p>
-      <strong>This browser isn’t letting the page save.</strong> Your answers last only while this tab is open. Download the report
-      to keep them.
+      <strong>The current answers are not confirmed saved.</strong> Review the local-copy controls for the reason and a complete library backup.
+      The report contains only the selected organization; keep any unsubmitted fields separately.
     </p>
   </div>
 
@@ -530,7 +530,7 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
     writeHash('org', undefined);
   }
   renderAll();
-  storageNote.hidden = initial.persistence === "saved" || initial.persistence === "absent";
+  storageNote.hidden = initial.canWrite;
 
   orgSelect.addEventListener('change', async () => {
     state.current = orgSelect.value;

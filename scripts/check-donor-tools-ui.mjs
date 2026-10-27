@@ -189,6 +189,11 @@ try {
     "all real stored producer shapes hydrate without rewritten IDs or startup writes",
     async () => {
       const fixtures = donorFixtures();
+      fixtures.legacy.name = "Fictional saved testator";
+      fixtures["gift-card"].to = "Fictional saved recipient";
+      fixtures["ce-models"][0].name = "Fictional saved model";
+      fixtures.split.rows[0].name = "Fictional saved destination";
+      fixtures.wrapped.hide = true;
       for (const name of names) {
         const initial =
           name === "grant-evaluator"
@@ -207,7 +212,92 @@ try {
         );
         for (const [k, v] of Object.entries(initial))
           assert.deepEqual(value(d, k), v);
+        if (name === "giving-dashboard")
+          assert.equal(d.$("#gd-rows").querySelectorAll("tr").length, 1);
+        if (name === "portfolio-builder")
+          assert.equal(d.get("#pb-budget"), String(fixtures.portfolio.budget));
+        if (name === "values-compass")
+          assert.equal(d.$("#vc-result").hidden, false);
+        if (name === "legacy-planner")
+          assert.equal(d.get("#lp-name"), fixtures.legacy.name);
+        if (name === "gift-giving")
+          assert.equal(d.get("#gg-to"), fixtures["gift-card"].to);
+        if (name === "cost-effectiveness-model-kit")
+          assert.match(d.$("#ce-saved").textContent, /Fictional saved model/);
+        if (name === "due-diligence-checklist")
+          assert.equal(
+            d.get("#dd-name"),
+            fixtures["due-diligence"].orgs[0].name,
+          );
+        if (name === "grant-evaluator")
+          assert.equal(d.get("#ge-name"), fixtures["grant-draft"].name);
+        if (name === "impact-measurement-toolkit")
+          assert.equal(
+            d.get("#imt-f-name"),
+            fixtures["impact-drafts"].drafts[0].name,
+          );
+        if (name === "one-click-split")
+          assert.ok(
+            d
+              .$("#ocs-rows")
+              .querySelectorAll("input")
+              .some((input) => input.value === fixtures.split.rows[0].name),
+          );
+        if (name === "disaster-response-guide")
+          assert.equal(
+            d.get("#dr-amount"),
+            String(fixtures["disaster-plan"].amount),
+          );
+        if (name === "charitology-wrapped")
+          assert.equal(d.$("#wr-hide").checked, true);
       }
+    },
+  );
+  await check(
+    "absent Portfolio and Compass defaults never claim a saved record or completed quiz",
+    async () => {
+      const portfolio = await mount("portfolio-builder");
+      assert.doesNotMatch(
+        portfolio.$("#pb-loaded").textContent,
+        /Loaded your saved/,
+      );
+      const compass = await mount("values-compass");
+      assert.equal(compass.$("#vc-result").hidden, true);
+      const f = donorFixtures();
+      const savedPortfolio = await mount("portfolio-builder", {
+        portfolio: f.portfolio,
+      });
+      assert.match(
+        savedPortfolio.$("#pb-loaded").textContent,
+        /Loaded your saved/,
+      );
+      const savedCompass = await mount("values-compass", {
+        compass: f.compass,
+      });
+      assert.equal(savedCompass.$("#vc-result").hidden, false);
+    },
+  );
+  await check(
+    "healthy absent keys show no blocked-storage claim, while unavailable writers retain a warning",
+    async () => {
+      for (const [name, selector] of [
+        ["giving-dashboard", "#gd-storage"],
+        ["impact-measurement-toolkit", "#imt-storage"],
+        ["one-click-split", "#ocs-storage"],
+        ["due-diligence-checklist", "#dd-storage"],
+        ["legacy-planner", "#lp-storage"],
+      ]) {
+        const healthy = await mount(name);
+        assert.equal(healthy.$(selector).hidden, true, name);
+        const unavailable = await mount(name, {}, { unsupported: true });
+        assert.equal(unavailable.$(selector).hidden, false, name);
+      }
+      const wrapped = await mount("charitology-wrapped");
+      assert.equal(wrapped.$("#wr-blocked").hidden, true);
+      const corruptGifts = await mount("charitology-wrapped", {
+        gifts: "{corrupt",
+      });
+      assert.equal(corruptGifts.$("#wr-blocked").hidden, false);
     },
   );
   await check(

@@ -344,7 +344,7 @@ const causes = causesData.causes;
   let editing: string | null = null;
   let yearsKey = '';
 
-  $('#gd-storage').hidden = d1Session.snapshot().persistence === 'saved';
+  $('#gd-storage').hidden = d1Session.snapshot().canWrite;
   if (hydrate) dateEl.value = localToday();
   form.addEventListener('input', d1Changed);
   form.addEventListener('change', d1Changed);

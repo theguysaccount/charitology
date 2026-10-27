@@ -514,7 +514,7 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
   let weights: Weights = weightRecord.hasState ? structuredClone(weightRecord.value) : equalWeights();
   let current: Proposal = draftRecord.hasState && draftRecord.value !== null ? structuredClone(draftRecord.value) : blank();
   const hydrate = d1View.snapshot().formGeneration === 0;
-  let storageOk = [library,weightRecord,draftRecord].every(v => v.persistence === 'saved' || v.persistence === 'absent') && initial.consistency === 'consistent';
+  let storageOk = [library,weightRecord,draftRecord].every(v => v.canWrite) && initial.consistency === 'consistent';
   function d1Changed() { d1View.changedForm(); d1Controls.noteViewMutation(); }
   async function persist(values: D1GrantWriteSet): Promise<boolean> {
     const epoch = d1View.snapshot().formGeneration;

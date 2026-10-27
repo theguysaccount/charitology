@@ -18,8 +18,8 @@ import { url } from '../../lib/site';
     draft or review your will.
   </div>
   <div id="lp-storage" class="callout lp-space" hidden>
-    <strong>This browser isn’t saving your worksheet.</strong> Storage is blocked or full, so it will be gone when you close this
-    page. Print the summary or copy the sample language to keep it.
+    <strong>The current worksheet is not confirmed saved.</strong> Review the local-copy controls for the reason and a complete record backup.
+    The printed summary and sample language have their own scope; keep any unsubmitted fields separately.
   </div>
 
   <form id="lp-form" novalidate>
@@ -749,7 +749,7 @@ import { url } from '../../lib/site';
     renderSummary();
   }
 
-  $('#lp-storage').hidden = initial.persistence === 'saved' || initial.persistence === 'absent';
+  $('#lp-storage').hidden = initial.canWrite;
   $('#lp-saved').textContent = initial.persistence === 'saved' ? 'Loaded the saved worksheet.' : 'Tab worksheet; check saved-copy controls before leaving.';
   fill();
 
