@@ -6,7 +6,7 @@ This is a Node 24 ESM service with a plain JavaScript browser client, a Postgres
 
 ## What the service does
 
-All 26 modules share typed forms, linked records, table/board views, applicable calendar views, ownership, revisions, comments and workflows. Their fields and validation are defined in [modules.mjs](lib/modules.mjs), rather than being interchangeable free-text forms.
+All 26 modules share typed forms, linked records, table/board views, applicable calendar views, ownership, revisions, comments and workflows. The registry now contains 339 fields. Their definitions and validation are in [modules.mjs](lib/modules.mjs), rather than being interchangeable free-text forms.
 
 | Area | Module IDs |
 | --- | --- |
@@ -23,6 +23,16 @@ The rules include dependency cycles, allocation and grant caps, restriction code
 Accounting and payroll records hold external references, aggregate reconciliation and control results. They do not post a ledger, run payroll, move money or issue tax receipts. Casework and safeguarding support opaque codes, status and specialist-system references; they do not accept beneficiary histories, case notes, allegations or medical narratives. Form records describe operational definitions and aggregate response batches. The separate public intake workflow below accepts only minimal operational requests; it is not a sensitive-service intake backend. Resource and benefit records do not enroll an organization with a provider.
 
 The public AI Charitologist remains a source-retrieval tool. This service does not introduce an autonomous recommendation model or claim independently verified impact.
+
+## Grant-period reports
+
+The new bounded grant-report implementation selects one agreement, one explicit program and one inclusive date period. It separates awards and commitments from selected external receipts, dated cash-spent references and planning context. Unknown amounts keep an unknown headline total with a known subtotal and missing-reference count; empty selections are not reported as zero activity. Individual observations retain their own units, periods, denominators, evidence and limitations without pooling or causal inference.
+
+An authorized contributor prepares sources from a saved Reporting manifest, explicitly saves the source digest through the normal revision workflow, then obtains a different authorized contributor's approval. A final approved preview expires after ten minutes. Freeze recomputes current source/approval/membership authority and appends one immutable edition. Later corrections require changed manifest data, fresh preparation/approval and a reason; old bytes remain unchanged. Interrupted commands can recover the original report without duplicating the approved edition.
+
+Staff access requires current source read/export permissions and scope. Eligible board readers receive only a separately checksummed allowlisted projection for a board-audience manifest; they do not receive private application context, contacts, external source identities/URLs, actor metadata or raw source records. External reviewers are excluded. Authors still need to inspect approved summary/limitations for personal information. Reports are not automatically published, mailed or submitted to a funder, and software approval is not an accounting certification or verification of impact.
+
+[GRANT_REPORTS.md](../../docs/GRANT_REPORTS.md) records the exact workflow, API, limits and evidence. Runtime `c9750a92f0ac6d5f2b717875f5e0a85f08e98edb` is promoted as `dpl_6FZTpTgrSCfiJcsPazysjGdNfW5D`. Exact CI passed 244 OS unit/browser-model and 69 actual OS PostgreSQL checks, plus mail and static checks. Controlled actual Chrome with synthetic Better Auth accounts verified preparation, separate-account API approval, freeze, downloaded JSON/checksums, print preview, board privacy, stale-source rejection and logout. All 29 staged/30 public-origin checks and production forced-RLS inspection passed. Narrow-screen browser acceptance, independent review and a real reporting-cycle pilot remain open. Existing generic module-snapshot reports retain their prior behavior.
 
 ## Public operational requests
 
@@ -78,6 +88,7 @@ Backups preserve bounded fulfillment provenance, not live authority or restored 
 - [integrations.mjs](lib/integrations.mjs) supports read-only CiviCRM, OpenProject and Kobo previews plus local CSV rows. Credentials are encrypted server-side. HTTPS hosts must resolve to public addresses; the checked address is pinned and redirects are refused. Import is an explicit preview/commit operation, not unattended two-way synchronization.
 - [participation.mjs](lib/participation.mjs) manages confirmed occupancy and consent separately from generic review state. Central [write guards](lib/participation-guards.mjs) protect generic mutations and [recovery](lib/participation-backup.mjs) restores inactive provenance.
 - [participation-delivery.mjs](lib/participation-delivery.mjs) adds verified versioned email consent, exact administrator activation, safe scoped status, bounded leases and status-only recovery of uncertain attempts. [Delivery recovery](lib/participation-delivery-backup.mjs) restores disabled policies and no recipient authority.
+- [grant-report-model.mjs](lib/grant-report-model.mjs) assembles deterministic one-grant period reports. [grant-reports.mjs](lib/grant-reports.mjs) binds current authority, transient previews, immutable freeze/replay and the server-selected board projection.
 - [intake.mjs](lib/intake.mjs) exposes only explicit publication schemas and bearer-receipt status through fixed anonymous routes. Private answers stay in separately scoped owner/admin tables with forced RLS. [intake-backup.mjs](lib/intake-backup.mjs) omits capabilities and restores publications closed.
 
 Roles are `owner`, `admin`, `program_lead`, `grants_lead`, `finance_reviewer`, `contributor`, `board_reader` and `external_reviewer`. Owners and administrators manage access across the organization. Other roles receive module-specific permissions; optional program assignments narrow linked work. An owner field assigns responsibility and cannot grant access. An organization-profile record cannot change membership.
@@ -153,6 +164,8 @@ Test commands and workflow configuration are not evidence that a hosted deployme
 
 The current delivery implementation passed 188 local service/browser-model checks and the full 60-check actual PostgreSQL suite, including 16 delivery checks. Transport was injected; the separate hosted CI, controlled Chrome and actual owned-inbox evidence are recorded in [the delivery record](../../docs/PARTICIPATION_DELIVERY.md).
 
+The new grant-report slice separately passed 33 focused model/service tests and nine isolated actual Postgres tests, including eight workflow groups and their parent. They cover current source approval, synthetic historical submission artifacts, replay/concurrency, board privacy, quotas and inactive recovery. They use injected server identities rather than claiming real sign-in or human review. Full final CI and hosted/browser evidence remain pending; see [the report acceptance record](../../docs/GRANT_REPORTS.md).
+
 ## API outline
 
 Authenticated browser mutations send same-origin cookies, exact `Origin`, `Content-Type: application/json` and the `X-CSRF-Token` returned by `/api/session`. Account-free intake mutations use exact-origin JSON plus explicit collection consent or a private receipt bearer; they do not require a session or grant general organization access. Token confirmation and the independent cron bearer have their own narrow authentication paths. Do not call Better Auth's consuming verification GET directly; it is not publicly dispatched.
@@ -176,6 +189,8 @@ All organization paths below start with `/api/orgs/:orgId`. Current membership a
 | `GET /modules/:module/trash`, `POST .../records/:id/restore` | Inspect and recover eligible soft-deleted records. |
 | `GET /modules/:module/export?format=csv` | Scoped module export; JSON is the default. |
 | `GET, POST /reports`, `GET /reports/:id` | List permitted frozen reports, create a report or read its frozen payload. |
+| `POST /grant-reports/prepare`, `/preview`, `/freeze`                       | Prepare selected approved sources, cache a reviewed proof or freeze an immutable one-grant edition with a body-bound command key. |
+| `GET /grant-reports`, `GET /grant-reports/:id`                             | Twenty-row scoped pages and the current-authority-selected staff payload or board projection.                                     |
 | `GET /members`, `PATCH, DELETE /members/:userId` | Inspect the team or administratively change/revoke access. |
 | `POST /invitations`, `DELETE /invitations/:id` | Issue or revoke an invitation. Acceptance uses `POST /api/invitations/accept` and the invited authenticated email. |
 | `GET, POST /integrations` | Inspect connections or create one. |
@@ -220,6 +235,7 @@ Current storage and request bounds are defined in code:
 - Each file may be at most 2 MiB; the workspace file quota is 25 MiB and 1,000 files. Allowed types are PDF, UTF-8 text/CSV, PNG and JPEG, with signatures checked where applicable. File downloads use attachment disposition and restrictive headers.
 - Structured record data has a 16 MiB workspace quota, with a 64,000-byte bound per normalized domain record. The central save path limits the workspace to 2,000 active records, including bulk callers. Connection creation and restore are limited to 30 connections.
 - A conservative 60 MiB current-workspace export budget covers records, history, comments, reports, connections, publication/intake rows, participation history/outbox, delivery policy/reviews and base64 file data. Ordinary mutations stop before exceeding it, leaving room inside the 64 MiB restore envelope. Original import archives and temporary uploads are stored separately from this projected export budget.
+- Grant reports allow 100 selected sources, 250 records in the dependency closure and 2 MiB canonical final JSON. Four live report previews share 8 MiB of measured row data and expire after ten minutes; they count toward the ordinary workspace budget rather than committed source-archive slots. Commands are at most 16 KiB, with separate per-account limits of 120 reads/hour and 60 preparation/preview/freeze commands/hour. Report recovery retains historical payloads only in the private source archive, with no active report, preview or approval authority.
 - A separate 1 MiB audit reserve records minimal access-control changes after the ordinary budget is full. Revocation, access changes, connection disablement, public-request cancellation, publication withdrawal, answer erasure, participation cancellation, preference-off and delivery-policy disable must still complete even if that reserve is exhausted. In that emergency case the service emits a redacted operational warning instead of promising another durable audit event. Export remains available at the budget limit; retain the recovery copy and resolve storage before ordinary work continues.
 - Session and organization access are separate from these storage controls. A planning record called a cost limit does not provision a service or enforce provider billing.
 
