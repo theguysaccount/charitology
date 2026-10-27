@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { parse as parseHtml } from "parse5";
 import { readLedgerInput } from "../src/lib/research-ledger-data.mjs";
 import { seedOptions } from "./capture-research-ledger.mjs";
+import { readPublicationRegistryDirectory } from "../src/lib/publication-editions-capture.mjs";
 import {
   canonicalResearchJson,
   ledgerHref,
@@ -346,8 +347,30 @@ check(
 );
 
 check(
-  "The built progress table and compatibility API agree on every current problem state",
+  "The built progress table preserves every state from its fixed publication and the current API keeps its own ledger scope",
   () => {
+    const publications = readPublicationRegistryDirectory(
+      join(root, "src/data/publication-editions"),
+    );
+    const report = publications.editions.find(
+      (e) => e.core.id === publications.registry.current["progress-report"],
+    );
+    const payload = report.core.members.find(
+      (m) => m.payload.kind === "r4-progress-v1",
+    ).payload;
+    const captured = JSON.parse(payload.progressJson);
+    const pinned = projectResearchLedger(graph, {
+      editionId: payload.ledgerEditionId,
+    });
+    assert.deepEqual(
+      captured,
+      researchProgress(graph, {
+        editionId: payload.ledgerEditionId,
+        from: payload.from,
+        to: payload.to,
+      }),
+    );
+    assert.equal(payload.ledgerEditionHash, pinned.edition.hash);
     const doc = htmlAt("/record/progress-report/");
     const section = find(doc, (node) => hasClass(node, "pr"));
     assert.ok(section);
@@ -358,11 +381,12 @@ check(
     const bindings = input.manifest.currentSources.filter((entry) =>
       entry.sourceKey.startsWith("problems/"),
     );
-    assert.equal(rows.length, 23);
-    for (const binding of bindings) {
-      const state = current.problemStates.find(
-        (entry) => entry.recordId === binding.recordId,
+    assert.equal(rows.length, captured.endingStates.length);
+    for (const state of captured.endingStates) {
+      const binding = bindings.find(
+        (entry) => entry.recordId === state.recordId,
       );
+      assert.ok(binding, `Missing retained problem binding: ${state.recordId}`);
       const row = rows.find((entry) =>
         links(entry).includes(href(binding.href)),
       );
@@ -370,22 +394,36 @@ check(
       const cells = (row.childNodes || []).filter(
         (entry) => entry.tagName === "td",
       );
-      assert.equal(tidy(text(cells[2])), state.effectiveStatus);
+      assert.equal(
+        tidy(text(cells[1])),
+        captured.startingStates.find((s) => s.recordId === state.recordId)
+          ?.status ?? "unknown",
+      );
+      assert.equal(tidy(text(cells[2])), state.status ?? "unknown");
       assert.ok(links(row).includes(href(ledgerHref(binding.recordId))));
       assert.equal(
         compatibility.data.find(
           (entry) => `problems/${entry.id}` === binding.sourceKey,
         )?.status,
-        state.effectiveStatus,
+        current.problemStates.find((s) => s.recordId === binding.recordId)
+          ?.effectiveStatus,
       );
     }
     assert.ok(
       all(section, (node) => node.tagName === "time").some(
-        (node) => attr(node, "datetime") === current.edition.capturedAt,
+        (node) => attr(node, "datetime") === payload.to,
       ),
     );
     assert.match(tidy(text(section)), /No January baseline was recorded/);
-    assert.match(tidy(text(section)), /0 qualifying research results/);
+    assert.ok(
+      links(section).includes(href(editionPath(payload.ledgerEditionId))),
+    );
+    assert.match(text(section), new RegExp(payload.ledgerEditionHash));
+    assert.ok(
+      all(section, (node) => node.tagName === "pre").some(
+        (node) => text(node) === payload.progressJson,
+      ),
+    );
   },
 );
 

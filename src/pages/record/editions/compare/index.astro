@@ -1,0 +1,15 @@
+---
+import Base from "../../../../layouts/Base.astro";
+import { loadPublicationEditions } from "../../../../lib/publication-editions";
+import { publicationComparisonHref, publicationHref, PUBLICATION_FAMILIES } from "../../../../lib/publication-editions-view";
+import { url } from "../../../../lib/site";
+import "../../../../styles/publication-editions.css";
+const editions = loadPublicationEditions().input.editions;
+---
+<Base title="Compare fixed publication captures" description="Inspect source-linked differences between fixed captures, including unknown baselines and incompatible scopes.">
+  <main class="wrap publication-editions"><p class="eyebrow">The Record · fixed comparisons</p><h1>What changed, and what can be compared?</h1><p>Choose two captures. A compatible project count can show a recorded difference; it does not establish improvement in the charity system. Source periods, definitions, currencies and coverage stay attached. Missing earlier observations remain unknown.</p>
+    <p><a href={url("/record/editions/")}>Return to all fixed captures</a></p>
+    {editions.length < 2 && <p class="pe-empty">There is no second capture to compare yet.</p>}
+    {editions.map(from=><section class="pe-card"><h2>From {from.core.title}</h2><p>{PUBLICATION_FAMILIES[from.core.family]} · captured {from.core.capturedAt} · <a href={url(publicationHref(from.core.id))}>Read this capture</a></p><ul>{editions.filter(to=>to.core.id!==from.core.id).map(to=><li><a href={url(publicationComparisonHref(from.core.id,to.core.id))}>Compare with {to.core.title}</a>{to.core.family!==from.core.family&&" · different families; not comparable as a trend"}</li>)}</ul></section>)}
+  </main>
+</Base>

@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-markdown-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "264ab56cf038ef60fe251678e958073f1f9b691df52a33f0d7ba63a50c048a6d",
+  "id": "source-27355e4315bdef86f57e5c223e096c7c6eaf0f6e30bd7d742961dd0bcf7f5abe",
+  "path": "src/content/tools/forecasting-platform.md",
+  "projectionHash": "8edcfbd84aa34820b6a48e5e3a13ce58ffbe8e16760a45790d170c3561bcbac9",
+  "rawSha256": "565b8ae26dfa461f540330ddc4056fae4980a5197a4c4378067047ff1bb996e0",
+  "rawUtf8": "---\ntitle: Forecasting Platform\ngroup: For everyone\norder: 3\nsummary: Predict what will happen in the charity system, put a number on it and get scored when the answer arrives. Forecasts are pull requests, so the record is public and permanent.\nstatus: live\nconditions: [missing-feedback-loop, short-horizon]\nhelp:\n  - Add a forecast to any open question with a pull request.\n  - Propose a new question with clear resolution criteria in src/content/forecasts/.\n  - Resolve a closed question by citing the source that settles it.\nrelated: [/programs/forecasting-tournaments/, /open-problems/the-question-of-questions/]\n---\n\n## How it works\n\nEach question has a precise resolution rule and a closing date. To forecast, add your GitHub handle, a probability and the date to the question’s file. The tool on this page writes the exact lines for you. When a question resolves, every forecaster’s latest forecast is scored.\n\n## Scoring\n\nForecasts are scored with the **Brier score**: the square of the difference between your probability and what happened, where YES counts as 1 and NO as 0. Lower is better. A perfect forecast scores 0. Always saying 50 percent scores 0.25. Being confidently wrong scores close to 1. The leaderboard averages each forecaster’s scores across resolved questions.\n\n## Why forecasting belongs in charitology\n\nCharity has almost no feedback loop: predictions about what will work are rarely written down, so nobody learns whose judgment to trust. Public, scored forecasts are a cheap way to build that track record, a small treatment for [the Missing Feedback Loop](/diagnosis/missing-feedback-loop/).\n\n## What it isn’t\n\nIt isn’t a betting market. No money changes hands, and no personal data is collected beyond the handle you choose to publish.\n"
+}

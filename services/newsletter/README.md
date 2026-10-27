@@ -46,17 +46,52 @@ Bodies are capped at 16 KiB, signed webhooks at 64 KiB. Email input is bounded A
 
 All admin routes require `Authorization: Bearer <NEWSLETTER_ADMIN_TOKEN>`. Use a private client reading its environment, never a command containing the secret value or a public browser bundle.
 
-| Route | Action |
-| --- | --- |
-| `GET /api/admin/status` | Counts and campaign states; no subscriber export |
-| `GET /api/admin/readiness` | Verified sender, tracking and topic/segment readiness; bounded error class/code/status only |
-| `GET /api/admin/preview` | Edition 1 HTML/text, subject and SHA-256 content hash |
-| `POST /api/admin/reconcile` | Retry at most 20 pending preference updates; stop on provider error |
-| `POST /api/admin/cleanup` | Remove expired limits, old pending requests/confirmation tokens and old webhook IDs |
-| `GET /api/cron/maintenance` | Cleanup, then guarded bounded preference recovery when enabled/ready; independent `CRON_SECRET` bearer |
-| `POST /api/admin/campaign/prepare` | Body `contentHash`; create one unsent scoped native draft |
-| `POST /api/admin/campaign/send` | Body `contentHash`, `confirm=SEND THIS REVIEWED ISSUE`; verify draft and queue once |
-| `POST /api/admin/campaign/reconcile` | Read saved provider status; never resend |
+| Route                                | Action                                                                                                 |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `GET /api/admin/status`              | Counts and campaign states; no subscriber export                                                       |
+| `GET /api/admin/readiness`           | Verified sender, tracking and topic/segment readiness; bounded error class/code/status only            |
+| `GET /api/admin/preview`             | Edition 1 HTML/text, subject and SHA-256 content hash                                                  |
+| `POST /api/admin/reconcile`          | Retry at most 20 pending preference updates; stop on provider error                                    |
+| `POST /api/admin/cleanup`            | Remove expired limits, old pending requests/confirmation tokens and old webhook IDs                    |
+| `GET /api/cron/maintenance`          | Cleanup, then guarded bounded preference recovery when enabled/ready; independent `CRON_SECRET` bearer |
+| `POST /api/admin/campaign/prepare`   | Edition 1 alias; fresh work also requires the exact prepare-phase `reviewId`/`reviewHash`              |
+| `POST /api/admin/campaign/send`      | Edition 1 alias; exact fresh send-phase proof and `confirm=SEND THIS REVIEWED ISSUE`                   |
+| `POST /api/admin/campaign/reconcile` | Read saved provider status; never resend                                                               |
+
+### Fixed issue publications and operational review
+
+The R5 implementation adds an immutable service-root registry under `editions/`. It preserves the exact Edition 1 HTML, plain text and ordered content hash. Its public publication binding is generated from the fixed public registry, never supplied by an operator request. New issues require an explicitly selected fixed Letter edition; the initial capture registers no new send. Public publication, editorial labels and operational acknowledgement do not establish independent human review or delivery.
+
+Generation is a root/build task after the root dependencies are installed. It does not run in a deployed Function. Use an explicit selection file with `{ "format": "charitology-mail-selection", "version": 1, "selections": [{ "publicationId": "letter-edition-one-preserved", "issueId": "edition-1" }] }`:
+
+```sh
+# From the repository root. Preview only; no provider or database access.
+node services/newsletter/scripts/generate-editions.mjs --select-file /private/path/selection.json
+# After inspecting that exact preview, append its immutable files.
+node services/newsletter/scripts/generate-editions.mjs --select-file /private/path/selection.json --write --review-hash <reviewed-hash>
+node services/newsletter/scripts/generate-editions.mjs --select-file /private/path/selection.json --check
+node services/newsletter/scripts/check-editions-generation.mjs
+```
+
+`registry.json` is the only changing index. Existing issue and lineage blobs must remain byte-identical. Generation validates the complete previous closure and rechecks it before writing. An interrupted local file write requires inspection; do not remove historical blobs to force a new preview. The runtime has no dependency on the public source tree. `vercel.json` explicitly includes `editions/**` in the Node Function; release verification must inspect the actual packaged files.
+
+| Route                                       | Exact purpose                                                                                                       |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/admin/issues?cursor=…`            | Up to 20 safe metadata/state rows; optional returned cursor only                                                    |
+| `GET /api/admin/issues/:id/preview`         | Fixed content and public/content hashes, available when sending is disabled                                         |
+| `POST /api/admin/issues/:id/review-preview` | JSON `{phase,contentHash}`; inspect current issue, audience and, for send, exact saved native draft                 |
+| `POST /api/admin/issues/:id/review`         | JSON `{phase,previewHash,previewToken,contentHash,acknowledgement}`; persist a proof only if recomputed facts match |
+| `POST /api/admin/issues/:id/prepare`        | JSON `{contentHash,reviewId,reviewHash}`; consume a prepare proof before one unsent native create                   |
+| `POST /api/admin/issues/:id/send`           | Same fields plus `confirm:"SEND THIS REVIEWED ISSUE"`; consume a separate send proof before one native send         |
+| `POST /api/admin/issues/:id/reconcile`      | Empty JSON object or empty body; observe only the already saved native ID                                           |
+
+The acknowledgement is exactly `I CHECKED THIS EXACT ISSUE AND INTENDED NEWSLETTER AUDIENCE`. The signed transient token expires after 15 minutes, contains hashes/counts rather than recipient addresses and is not a send capability. Its durable proof is bound to the bearer instance, phase, registered content, full registry, transport and current consent-generation audience. Audience or registry changes require a fresh preview. A shared bearer identifies operational access; it does not identify a named reviewer. Provider changes after the last read remain a race; native preferences and suppression still apply.
+
+All issue requests retain the existing bearer and exact configured Origin rules, private/no-store headers and a 16 KiB body bound. Strict JSON rejects duplicate keys and malformed UTF-8. Only one exact harmless hosting `path` capture is tolerated; private query values are rejected. Hourly limits are 120 new reads, 20 review/prepare/send commands and a separate 20 reconciliations, overall and per bearer-instance hash. At most 20 live unconsumed proofs and 2 MiB of actual proof-row bytes are admitted. Each creating campaign reserves 8 KiB within a separate 2 MiB campaign-row bound so final outcome recording does not depend on new quota.
+
+Checkpoint consumption and the creating/sending state commit together before the single native call. Existing accepted or uncertain history is retained even when sending is disabled. Correction ancestry crosses non-mailed intermediate editions; a recorded uncertain ancestor stops a new correction attempt. Reconciliation updates observations only. It cannot adopt an unknown native create, reset a stop, reauthorize a send or prove that recipients read the issue. Additive migration preserves legacy nullable evidence; it never invents review or attempt timestamps. Duplicate saved native IDs stop migration for private inspection.
+
+Provider credential, fetch and streaming reads have an 8-second ceiling per operation inside a shared 45-second request deadline. Success bodies are at most 2 MiB, errors 16 KiB and native membership pages 512 KiB each, at most 30 pages of 100 unique IDs. Malformed or ambiguous responses stop the checkpoint without another call. These are application and isolated-test guarantees; the R5 production migration, packaged-artifact inspection and live operational acceptance remain coordinator release steps.
 
 Readiness is a private operational check. It does not create a subscriber, send mail or prove inbox delivery. A production Connect grant must work in the deployed service; a successful local token request alone is insufficient. After a failed signup readiness check, respect the address request limit before retrying.
 

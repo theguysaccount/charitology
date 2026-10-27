@@ -64,6 +64,23 @@ function flattenRefs(value: unknown, preserveInstants = false): unknown {
 
 export const ENDPOINTS: Endpoint[] = [
   {
+    name: "publication-editions",
+    description:
+      "Fixed public capture metadata and registry hash. The endpoint wrapper generated date is build metadata; each edition retains its own capture/source dates. No private proposal or subscriber data.",
+    build: async () => {
+      const { loadPublicationEditions } =
+        await import("./publication-editions");
+      const { publicationRegistryMetadata } =
+        await import("./publication-editions-model.mjs");
+      const archive = loadPublicationEditions();
+      return {
+        ...publicationRegistryMetadata(archive.input),
+        inventory: archive.inventory,
+      };
+    },
+    preserveShape: true,
+  },
+  {
     name: "research-ledger",
     description:
       "Pinned public source versions, editorial corrections and recorded review declarations; no private local workspaces or automatic scientific qualification.",

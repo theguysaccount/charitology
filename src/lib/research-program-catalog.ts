@@ -4,8 +4,10 @@ export async function researchProgramCatalog() {
     getCollection("cases"),
     getCollection("interventions"),
   ]);
+  const byId = (a: { id: string }, b: { id: string }) =>
+    a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
   return {
-    cases: cases.map((entry) => ({
+    cases: [...cases].sort(byId).map((entry) => ({
       id: entry.id,
       title: entry.data.title,
       summary: entry.data.summary,
@@ -18,7 +20,7 @@ export async function researchProgramCatalog() {
       review: entry.data.review,
       href: `/record/case-studies/${entry.id}/`,
     })),
-    interventions: interventions.map((entry) => ({
+    interventions: [...interventions].sort(byId).map((entry) => ({
       id: entry.id,
       title: entry.data.title,
       summary: entry.data.summary,

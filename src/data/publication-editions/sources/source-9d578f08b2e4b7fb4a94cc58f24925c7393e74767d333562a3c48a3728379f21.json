@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-markdown-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "20284a47e02f3fdac9e4580b4eb38abb0e1c41e4353d23dfc57daf9788bdf3f5",
+  "id": "source-9d578f08b2e4b7fb4a94cc58f24925c7393e74767d333562a3c48a3728379f21",
+  "path": "src/content/record/journal.md",
+  "projectionHash": "74f5c0a9694b6998865ba24967d087497999d241462841115112172d40b9f3c4",
+  "rawSha256": "196cc79385ab5ef7b23ce96d063fe1d32efb17b5ce8e252d19df493076bd428d",
+  "rawUtf8": "---\ntitle: \"Journal of Charitology\"\ngroup: \"Thought and teaching\"\norder: 1\nsummary: \"Essays and research for the field, reviewed in public. Volume 0 opens with the manifesto.\"\nstatus: live\nstatusNote: \"Real proposed-method papers and a manuscript desk. Independent peer review is not completed.\"\nconditions: [\"missing-profession\", \"silence-about-failure\"]\nfirstMilestone: \"Volume 1, with at least five peer-reviewed papers, including one reporting a null result.\"\nhelp:\n  - \"Submit an essay or paper as a pull request to src/content/journal/.\"\n  - \"Review a submission in public.\"\nrelated: [\"/manifesto/\", \"/record/principles/\"]\n---\n\nVolume 0 publishes the founding manifesto and two substantial proposed-method papers. They remain editorial drafts, not peer-reviewed findings. The submission desk builds a complete source-linked manuscript and saves a private draft; public submission and human review take place through a pull request.\n\n## How review works\n\nSubmissions are pull requests. Two independent human contributors must check the sources and approve a paper before it is described as peer-reviewed. Their public review thread stays linked. AI assistance, conflicts, methods, missing data and null results must be disclosed.\n"
+}

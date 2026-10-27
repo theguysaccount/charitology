@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-r4-json-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "7ff62a7f87afe3b3b8ed93c50870bf2868749156ce699ce78164b594b3b3244f",
+  "id": "source-ac743f4dc9421ea9e7d63f69b8cb33717ec586dc36b18ffad2e943a445c9cae5",
+  "path": "src/data/research-ledger/versions/version--claim-depth-census-knowledge-v1.json",
+  "projectionHash": "f844f8793b6e0c2da296480d95e7d127513fcfaad6ec18f344b8e53decbfbb29",
+  "rawSha256": "cf0440e5bb9ceecf267c640b52fd1c29e2aa284a37bb802ce42f32a892063dea",
+  "rawUtf8": "{\n  \"id\": \"version:claim-depth-census-knowledge-v1\",\n  \"recordId\": \"claim:depth-census-knowledge\",\n  \"version\": 1,\n  \"previousId\": null,\n  \"adapterVersion\": \"research-content-v1\",\n  \"subject\": {\n    \"type\": \"claim\",\n    \"parentId\": \"problem:the-depth-census\",\n    \"title\": \"Scope of the Depth Census knowledge claim\",\n    \"statement\": \"Charitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Nobody has checked. If the hypothesis is wrong, the field should be the first to say so. If it’s right, the census gives every later effort a baseline to move.\",\n    \"context\": \"Why it matters\",\n    \"evidence\": \"not-applicable\",\n    \"sources\": []\n  },\n  \"subjectHash\": \"9792de6050cabd1ef2715b6145183702a6a1e5f448563b7474d82c066fd64b4e\",\n  \"authorship\": {\n    \"state\": \"unknown\",\n    \"complete\": false,\n    \"actorIds\": [],\n    \"refs\": []\n  },\n  \"sources\": [\n    {\n      \"sourceId\": \"source:pr-3-before-depth-census\",\n      \"selector\": {\n        \"kind\": \"claim\",\n        \"adapter\": \"depth-census-knowledge-v1\",\n        \"frontmatterKeys\": [],\n        \"bodyExcerpt\": \"Charitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Nobody has checked. If the hypothesis is wrong, the field should be the first to say so. If it’s right, the census gives every later effort a baseline to move.\"\n      }\n    }\n  ],\n  \"hash\": \"78292a918c91a6f6b80b3148da6531f9fab51aedcc3d1206fe833de7fd92843e\"\n}\n"
+}

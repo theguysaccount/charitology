@@ -1,0 +1,43 @@
+---
+import { loadPublicationEditions } from "../lib/publication-editions";
+import { projectPublicationEdition } from "../lib/publication-editions-model.mjs";
+import { PUBLICATION_FAMILIES, publicationHref, publicationSourceHref } from "../lib/publication-editions-view";
+import { url } from "../lib/site";
+import PublicationMember from "./PublicationMember.astro";
+import type { Edition, Pin } from "../lib/publication-editions-types";
+import "../styles/publication-editions.css";
+const { editionId } = Astro.props as { editionId: string };
+const { input } = loadPublicationEditions();
+const projection = projectPublicationEdition(input, editionId) as {edition: Edition; supersededBy: Pin[]};
+const edition = projection.edition;
+const core = edition.core;
+const sources = core.sourcePins.map((p: {id: string}) => input.sources.find(s=>s.id===p.id)!);
+---
+<article class="publication-editions" data-publication-edition={core.id}>
+  <p class="eyebrow">{PUBLICATION_FAMILIES[core.family]} · fixed capture {core.sequence} · editorial draft</p>
+  <h2>{core.title}</h2>
+  <p class="pe-note">{core.provenance === "new-source-capture" ? "This is a new capture of explicitly committed sources, not a claim about exact bytes served on an earlier date." : core.provenance === "preserved-artifact" ? "This preserves an existing artifact. Its declared publication date and its later registry capture time are different facts." : "This is an explicitly labeled reconstruction; it does not establish exact historical served bytes."} Freezing content does not establish independent review, a staffed institution or a research result.</p>
+  <dl><dt>Captured</dt><dd><time datetime={core.capturedAt}>{core.capturedAt}</time></dd><dt>Declared publication day</dt><dd>{core.declaredPublicationDate ?? "Unknown / not declared"}</dd><dt>Source label</dt><dd>{core.sourceLabel ?? "Not supplied"}</dd><dt>Scope</dt><dd>{core.coverage.scope}</dd><dt>Geography</dt><dd>{core.coverage.geography}</dd><dt>Source baseline</dt><dd class="pe-hash">{core.sourceCommit}</dd></dl>
+  <ul>{[...core.coverage.limitations, ...core.editorial.limitations].map((s: string)=><li>{s}</li>)}</ul>
+  <p>AI assistance: {core.editorial.aiAssistance}</p>
+  <nav class="pe-actions" aria-label="Edition files">
+    <a class="btn" href={url(`${publicationHref(core.id)}edition.json`)}>Download exact edition JSON</a>
+    <a class="btn btn-ghost" href={url(`${publicationHref(core.id)}edition.md`)}>Download complete Markdown</a>
+    <a class="btn btn-ghost" href={url(`${publicationHref(core.id)}edition.txt`)}>Download complete plain text</a>
+    <button class="btn btn-ghost" data-print-publication>Print this reading</button>
+  </nav>
+  <p class="pe-hash">Edition {core.id} · final hash {edition.hash}<br/>Content core {edition.coreHash}</p>
+  {core.supersedes && <p class="pe-note">Correction to <a href={url(publicationHref(core.supersedes))}>{core.supersedes}</a>: {core.correction?.reason}. The earlier edition remains readable.</p>}
+  {projection.supersededBy.length > 0 && <p class="pe-note">Later corrections: {projection.supersededBy.map((p: {id:string}, i:number)=><>{i>0&&" · "}<a href={url(publicationHref(p.id))}>{p.id}</a></>)}. This page retains the selected earlier edition.</p>}
+  <nav aria-label="Edition contents"><h3>In this capture</h3><ol>{core.members.map((m: any)=><li><a href={`#member-${m.id}`}>{m.payload.title ?? m.payload.label ?? (m.kind === "project-census" ? "Project census" : "Pinned research progress")}</a></li>)}</ol></nav>
+  {core.members.map((member: any)=><PublicationMember member={member}/>)}
+  <details><summary>Inspect all {sources.length} exact source snapshots and artifact hashes</summary>
+    <p>Snapshot text is inert. Original source commits are retained; a later edition baseline can reuse unchanged snapshots only after explicit byte verification. A capture does not establish fresh retrieval of a cited external website.</p>
+    <ul>{sources.map(source=><li><a href={url(publicationSourceHref(source.id))}>{source.path}</a> · <a href={`https://github.com/theguysaccount/charitology/blob/${source.commit}/${source.path}`}>Committed source</a><p class="pe-hash">Raw SHA-256 {source.rawSha256}<br/>Snapshot {source.id} · {source.hash}</p></li>)}</ul>
+    <h3>Text artifacts</h3><ul>{edition.artifacts.map((a: any)=><li>{a.fileName} · {a.byteLength} UTF-8 bytes<p class="pe-hash">{a.sha256}</p></li>)}</ul>
+  </details>
+  <p><a href={url("/record/editions/")}>All fixed captures and the private proposal desk</a> · <a href={url("/record/editions/compare/")}>Compare captures with their limits</a></p>
+</article>
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-print-publication]").forEach(button=>button.addEventListener("click",()=>window.print()));
+</script>

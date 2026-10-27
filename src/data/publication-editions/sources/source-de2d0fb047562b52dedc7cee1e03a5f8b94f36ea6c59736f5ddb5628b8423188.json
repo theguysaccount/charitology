@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-r4-json-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "274e6770ca1c760695b934b1c63d2e990acd1e6dd3aeafb8b3e9579d1ad65105",
+  "id": "source-de2d0fb047562b52dedc7cee1e03a5f8b94f36ea6c59736f5ddb5628b8423188",
+  "path": "src/data/research-ledger/versions/version--problem-the-question-of-questions-v1.json",
+  "projectionHash": "1829b600f3f4e53c1db982ef53dd6ae97908bc38488c5b772d315bfe18411e92",
+  "rawSha256": "c4a71b8fcc52fb406139934292c99cbf313461baf8ae011460cfcd37ec7c1b3f",
+  "rawUtf8": "{\n  \"id\": \"version:problem-the-question-of-questions-v1\",\n  \"recordId\": \"problem:the-question-of-questions\",\n  \"version\": 1,\n  \"previousId\": null,\n  \"adapterVersion\": \"research-content-v1\",\n  \"subject\": {\n    \"type\": \"entry\",\n    \"collection\": \"problems\",\n    \"frontmatter\": {\n      \"title\": \"The Question of Questions\",\n      \"number\": 23,\n      \"statement\": \"How should the field decide which open problem to work on first?\",\n      \"progress\": \"A published value-of-information estimate for each open problem, updated as problems are solved.\",\n      \"conditions\": [\n        {\n          \"collection\": \"conditions\",\n          \"id\": \"missing-profession\"\n        }\n      ],\n      \"bounty\": \"Unfunded. The Question Bounties program will attach prizes once it is funded.\",\n      \"sources\": []\n    },\n    \"body\": \"\\n## Why it matters\\n\\nResearch money is limited too. The first problems solved should be the ones whose answers would change the most decisions.\\n\\n## Where to start\\n\\nFor each problem, estimate how much money would move if it were solved and how likely a solution is in the next five years. Publish the estimates and let the [Forecasting Platform](/tools/forecasting-platform/) test them.\\n\"\n  },\n  \"subjectHash\": \"04bc6511dbed2c14d6dfd2586007a3bfc2f2024f87250e04e252df17bff2b841\",\n  \"authorship\": {\n    \"state\": \"unknown\",\n    \"complete\": false,\n    \"actorIds\": [],\n    \"refs\": []\n  },\n  \"sources\": [\n    {\n      \"sourceId\": \"source:current-problems-the-question-of-questions\",\n      \"selector\": {\n        \"kind\": \"entry\"\n      }\n    }\n  ],\n  \"hash\": \"17b20e2d14c5ca44d2a48f55ed42f27359dba5be93e5b8ea214e1a09ff3aa682\"\n}\n"
+}

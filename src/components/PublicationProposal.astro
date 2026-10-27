@@ -1,0 +1,31 @@
+---
+import '../styles/publication-editions.css';
+import { validateProposalCatalog } from '../lib/client/publication-editions-model';
+import type { ProposalCatalog } from '../lib/publication-editions-types';
+const { catalog } = Astro.props as { catalog: ProposalCatalog };
+const fixedCatalog = validateProposalCatalog(catalog);
+const serialized = JSON.stringify(fixedCatalog).replace(/</g, '\\u003c');
+---
+<section class="publication-editions publication-proposal" id="proposal-desk" data-publication-proposal>
+  <h2>Private publication proposal desk</h2>
+  <p>Choose a fixed public basis, write and freeze local proposal versions, then download a packet for manual review. These self-recorded drafts do not publish content, establish independent review or send email.</p>
+  <p class="pe-note">Files and private writing stay in this browser. Explicitly selected public basis files are fetched from this site. Full backups include all private versions, notes and the open unfinished form.</p>
+  <script type="application/json" class="publication-proposal-catalog" set:html={serialized} />
+  <div class="publication-proposal-mount"><p>The private proposal desk is loading.</p></div>
+  <noscript><p>The proposal desk requires JavaScript, Web Locks and secure-context hashing. Fixed public editions above remain readable.</p></noscript>
+</section>
+<script>
+  import { mountPublicationProposal } from '../lib/client/publication-editions-ui';
+  import { rawStorageRecoveryDownload } from '../lib/client/raw-storage-recovery';
+  import { download } from '../lib/client/files';
+  document.querySelectorAll<HTMLElement>('[data-publication-proposal]').forEach(root => {
+    mountPublicationProposal(root).catch(() => {
+      const host = root.querySelector<HTMLElement>('.publication-proposal-mount');
+      if (!host) return;
+      host.replaceChildren();
+      const message = document.createElement('p');message.setAttribute('role','alert');message.textContent='The desk could not open safely. No private writing was replaced.';
+      const button = document.createElement('button');button.type='button';button.textContent='Download saved proposal recovery text';
+      button.addEventListener('click',()=>{try{const raw=localStorage.getItem('charitology.publication-editions.v1');if(raw===null){message.textContent='No saved proposal desk was found.';return;}download('publication-proposals-saved-recovery.txt',rawStorageRecoveryDownload(raw).text);message.textContent='Raw recovery download requested; this is not a validated backup.';}catch{message.textContent='Saved bytes could not be read. No replacement was attempted.';}});host.append(message,button);
+    });
+  });
+</script>
