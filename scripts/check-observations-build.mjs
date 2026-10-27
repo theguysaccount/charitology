@@ -545,7 +545,13 @@ check(
     );
     const firstCountries = legacyCountriesProjection(initial);
     assert.equal(firstCountries.countries.length, 217);
-    assert.deepEqual(firstCountries.countries, legacy.countries);
+    // The current projection orders ISO IDs; the historical file orders names.
+    // Compare every unchanged row/field by stable identity, not presentation order.
+    const byId = (rows) =>
+      [...rows].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+    assert.equal(new Set(firstCountries.countries.map((c) => c.id)).size, 217);
+    assert.equal(new Set(legacy.countries.map((c) => c.id)).size, 217);
+    assert.deepEqual(byId(firstCountries.countries), byId(legacy.countries));
     assert.deepEqual(
       firstCountries.indicators.map((i) => i.id),
       legacy.indicators.map((i) => i.id),

@@ -143,12 +143,13 @@ export function mountOrganizationComparisons(
       if (both) both.hidden = same || !left?.scopeId || !right?.scopeId;
     }
     function fromLink() {
-      const q = new URLSearchParams(location.hash.slice(1));
+      const q = new URL(location.href).searchParams,
+        legacy = new URLSearchParams(location.hash.slice(1));
       for (const [select, key] of [
         [a, "orgA"],
         [b, "orgB"],
       ] as const) {
-        const id = q.get(key);
+        const id = q.get(key) ?? legacy.get(key);
         if (id && data.choices.some((c) => c.id === id)) select.value = id;
       }
       render();
@@ -161,11 +162,10 @@ export function mountOrganizationComparisons(
     root
       .querySelector<HTMLButtonElement>("[data-org-share]")!
       .addEventListener("click", async (e) => {
-        const target = new URL(location.href),
-          q = new URLSearchParams(target.hash.slice(1));
-        q.set("orgA", a.value);
-        q.set("orgB", b.value);
-        target.hash = q.toString();
+        const target = new URL(location.href);
+        target.searchParams.set("orgA", a.value);
+        target.searchParams.set("orgB", b.value);
+        target.hash = "organizations";
         const button = e.currentTarget as HTMLButtonElement;
         try {
           await navigator.clipboard.writeText(target.href);

@@ -10,7 +10,7 @@ const original = await buildReferenceLibrary("charity-index");
 const { projection } = loadObservations();
 const library = {...original,entries:original.entries.map(entry=>{
   const scopes=financialScopesForProfile(projection,entry.id);
-  return {...entry,links:[...entry.links,...scopes.map(s=>({label:`Selected historical consolidated financial panel: ${s.label}`,href:`/tools/compare-tool/#orgA=${s.id}&orgB=${projection.scopes.find(other=>other.scopeKind==="consolidated-reporting-group"&&other.id!==s.id)?.id??""}`}))],fields:[...entry.fields,{label:"Financial observation coverage",values:scopes.length?scopes.map(s=>s.label):["Not collected in this edition; no inference from name, address or IRS identity"]}]};
+  return {...entry,links:[...entry.links,...scopes.map(s=>({label:`Selected historical consolidated financial panel: ${s.label}`,href:`/tools/compare-tool/?${new URLSearchParams({orgA:s.id,orgB:projection.scopes.find(other=>other.scopeKind==="consolidated-reporting-group"&&other.id!==s.id)?.id??""})}#organizations`}))],fields:[...entry.fields,{label:"Financial observation coverage",values:scopes.length?scopes.map(s=>s.label):["Not collected in this edition; no inference from name, address or IRS identity"]}]};
 })};
 ---
 

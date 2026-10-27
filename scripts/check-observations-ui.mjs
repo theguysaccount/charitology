@@ -36,6 +36,10 @@ globalThis.__observationUiFixture = {
   countries: legacyCountriesProjection(projection),
 };
 class Element extends BaseElement {
+  select() {
+    this.selectionStart = 0;
+    this.selectionEnd = this.value.length;
+  }
   append(...children) {
     for (let child of children) {
       if (!(child instanceof BaseElement))
@@ -578,6 +582,36 @@ try {
           .length,
         2,
       );
+    },
+  );
+  await check(
+    "organization query selections and copied URLs retain the real section anchor, with old-fragment compatibility",
+    async () => {
+      const d = dom(comparison),
+        root = d.querySelector("[data-organization-comparison]"),
+        data = JSON.parse(root.querySelector("[data-org-data]").textContent);
+      location.href = `https://example.invalid/charitology/tools/compare-tool/?${new URLSearchParams({ orgA: data.second, orgB: data.first })}#organizations`;
+      location.hash = "#organizations";
+      ui.mountOrganizationComparisons(d);
+      assert.equal(root.querySelector("[data-org-a]").value, data.second);
+      assert.equal(root.querySelector("[data-org-b]").value, data.first);
+      await root.querySelector("[data-org-share]").click();
+      const shared = new URL(
+        root
+          .querySelectorAll("input")
+          .find((e) => e.dataset.orgCopy !== undefined).value,
+      );
+      assert.equal(shared.pathname, "/charitology/tools/compare-tool/");
+      assert.equal(shared.hash, "#organizations");
+      assert.equal(shared.searchParams.get("orgA"), data.second);
+      assert.equal(shared.searchParams.get("orgB"), data.first);
+      assert.ok(d.getElementById(shared.hash.slice(1)));
+      const old = dom(comparison),
+        oldRoot = old.querySelector("[data-organization-comparison]");
+      location.hash = `#${new URLSearchParams({ orgA: data.second, orgB: data.first })}`;
+      ui.mountOrganizationComparisons(old);
+      assert.equal(oldRoot.querySelector("[data-org-a]").value, data.second);
+      assert.equal(oldRoot.querySelector("[data-org-b]").value, data.first);
     },
   );
   await check(
