@@ -1,0 +1,40 @@
+/** Offline adversarial history fixtures. Every Git mutation is confined to this owned temp tree. */
+import assert from "node:assert/strict";
+import { mkdtempSync,mkdirSync,writeFileSync,rmSync } from "node:fs";
+import { dirname,join } from "node:path";
+import { tmpdir } from "node:os";
+import { pathToFileURL } from "node:url";
+import { execFileSync } from "node:child_process";
+import { stable } from "../services/charity-os/lib/security.mjs";
+import { headDirectoryEntries } from "../services/charity-os/lib/directory-catalog.mjs";
+import { prepareDirectoryCapture } from "./capture-directory-resources.mjs";
+import { DIRECTORY_ROOT,DIRECTORY_BUNDLE,checkDirectoryResourcesGit,readDirectoryGitTree } from "./check-directory-resources.mjs";
+const root=mkdtempSync(join(tmpdir(),"charitology-directory-history-")),repo=join(root,"repo");mkdirSync(repo);
+const git=(...args)=>execFileSync("git",["-C",repo,...args],{encoding:"utf8",maxBuffer:16*1024*1024,stdio:["ignore","pipe","pipe"],timeout:30000}).trim();
+const write=(path,value)=>{const target=join(repo,path);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,value);};
+const commit=message=>{git("add","--",".");git("commit","--quiet","-m",message);return git("rev-parse","HEAD");};
+const rows=Object.fromEntries(["tools","benefits"].map(k=>[k,[structuredClone(headDirectoryEntries(k)[0].listing)]]));
+let sourceBytes=Object.fromEntries(Object.entries(rows).map(([k,v])=>[k,Buffer.from(stable(v)+"\n")]));
+const source=()=>{for(const k of ["tools","benefits"])write(`src/data/nonprofit-${k}.json`,sourceBytes[k]);};
+const dataset=prepared=>{rmSync(join(repo,DIRECTORY_ROOT),{recursive:true,force:true});for(const [path,content]of Object.entries(prepared.files))write(`${DIRECTORY_ROOT}/${path}`,content);write(DIRECTORY_BUNDLE,prepared.bundleBytes);};
+let groups=0;const test=(name,fn)=>{fn();groups++;console.log("✓ "+name);};
+try{
+  git("init","--quiet","-b","main");git("config","user.name","Fictional directory fixture");git("config","user.email","fixture@example.invalid");source();const A=commit("Fictional exact source A");
+  const first=prepareDirectoryCapture({sourceCommit:A,capturedAt:"2026-10-26T10:00:00.000Z",sources:sourceBytes});dataset(first);
+  test("explicit pending review proves committed source A but never claims committed artifact B",()=>{assert.equal(checkDirectoryResourcesGit({repo,exactBase:A,exactHead:A,pending:true}).mode,"pending-uncommitted-review");assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase:A,exactHead:A}));});
+  const B=commit("Fictional immutable artifact B");
+  test("real committed source A precedes artifact B and complete generated bundle verifies",()=>{const proof=checkDirectoryResourcesGit({repo,exactBase:A,exactHead:B});assert.equal(proof.mode,"committed-verified");assert.equal(proof.captures,1);assert.equal(Object.keys(readDirectoryGitTree(repo,B)).length,6);});
+  test("all-zero, missing and inferred comparison bases cannot bootstrap an empty history",()=>{for(const exactBase of ["0".repeat(40),"f".repeat(40),"main",undefined])assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase,exactHead:B}));});
+  test("untracked and dirty artifacts cannot borrow a committed proof",()=>{write(`${DIRECTORY_ROOT}/orphan.json`,"{}\n");assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase:A,exactHead:B}),/Uncommitted/);rmSync(join(repo,DIRECTORY_ROOT,"orphan.json"));write(DIRECTORY_BUNDLE,Buffer.concat([first.bundleBytes,Buffer.from(" ")]));assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase:A,exactHead:B}),/Uncommitted/);write(DIRECTORY_BUNDLE,first.bundleBytes);});
+  rows.tools[0].summary+=" Fictional unpublished source-only edit.";sourceBytes=Object.fromEntries(Object.entries(rows).map(([k,v])=>[k,Buffer.from(stable(v)+"\n")]));source();const A2=commit("Fictional source-only unpublished edit");
+  test("source-only authoring can leave public head and complete frozen entries unchanged",()=>{const proof=checkDirectoryResourcesGit({repo,exactBase:B,exactHead:A2});assert.equal(proof.captures,1);assert.equal(proof.immutableOldFiles,5);assert.deepEqual(readDirectoryGitTree(repo,A2),readDirectoryGitTree(repo,B));});
+  const second=prepareDirectoryCapture({existing:first.files,sourceCommit:A2,capturedAt:"2026-10-26T10:01:00.000Z",sources:sourceBytes});dataset(second);const C=commit("Fictional later capture C");
+  test("append advances head with exact old blobs, raw source and complete new versions",()=>{const proof=checkDirectoryResourcesGit({repo,exactBase:B,exactHead:C});assert.equal(proof.captures,2);assert.equal(proof.immutableOldFiles,5);for(const [path,bytes]of Object.entries(first.files))if(path!=="registry.json")assert.ok(second.files[path].equals(bytes));});
+  test("a model-valid replacement of old captures cannot hide history behind a bootstrap comparison base",()=>{const replacement=prepareDirectoryCapture({sourceCommit:A2,capturedAt:"2026-10-26T10:02:00.000Z",sources:sourceBytes});dataset(replacement);const bad=commit("Fictional forbidden historical rewrite");for(const exactBase of [A,C])assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase,exactHead:bad}),/rewrite|immutable|removed|replaced/);git("checkout","--quiet",C);});
+  test("registry rewind cannot disappear earlier published captures even with an early comparison base",()=>{dataset(first);const bad=commit("Fictional forbidden head rewind");for(const exactBase of [A,C])assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase,exactHead:bad}),/rewind|removed|replaced|immutable/);git("checkout","--quiet",C);});
+  test("exact selected head must equal the checkout HEAD",()=>{assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase:A,exactHead:B}),/HEAD differs/);});
+  test("sibling source A cannot be attributed to artifact B or admitted as comparison base",()=>{git("checkout","--quiet",A);write("sibling.txt","fictional\n");const sibling=commit("Fictional sibling source");git("checkout","--quiet",C);assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase:sibling,exactHead:C}),/ancestor/);const unrelated=prepareDirectoryCapture({existing:second.files,sourceCommit:sibling,capturedAt:"2026-10-26T10:03:00.000Z",sources:{tools:first.files[`captures/${first.captureId}/sources/nonprofit-tools.json`],benefits:first.files[`captures/${first.captureId}/sources/nonprofit-benefits.json`]}});dataset(unrelated);const bad=commit("Fictional unrelated source artifact");assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase:C,exactHead:bad}),/Source commit A must precede/);git("checkout","--quiet",C);});
+  test("a Git-valid source mismatch is refused even when canonical entry hashes are self-consistent",()=>{const wrong=prepareDirectoryCapture({existing:second.files,sourceCommit:A,capturedAt:"2026-10-26T10:04:00.000Z",sources:sourceBytes});dataset(wrong);const bad=commit("Fictional wrong raw source attribution");assert.throws(()=>checkDirectoryResourcesGit({repo,exactBase:C,exactHead:bad}),/exact committed source A blob/);git("checkout","--quiet",C);});
+  test("unavailable shallow ancestry fails without fetching or inventing another baseline",()=>{const shallow=join(root,"shallow");execFileSync("git",["clone","--quiet","--depth","1",pathToFileURL(repo).href,shallow],{stdio:["ignore","pipe","pipe"],timeout:30000});assert.throws(()=>checkDirectoryResourcesGit({repo:shallow,exactBase:A,exactHead:C}));});
+  console.log(`${groups} actual offline directory Git-history groups passed.`);
+}finally{rmSync(root,{recursive:true,force:true});}
