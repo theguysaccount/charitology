@@ -13,7 +13,7 @@
     "dev": "astro dev",
     "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
-    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect",
     "test": "npm run build && npm run check",
     "extension:zip": "node scripts/zip-extension.mjs",
     "images": "node scripts/make-images.mjs",
@@ -30,7 +30,8 @@
     "check:research-ledger": "node scripts/check-research-ledger.mjs && node scripts/check-research-ledger-seed.mjs && node scripts/check-research-ledger-ui.mjs && node scripts/check-research-ledger-types.mjs && node scripts/check-research-ledger-build.mjs",
     "check:program-graph": "node scripts/check-program-graph.mjs && node scripts/check-program-graph-adapters.mjs && node scripts/check-program-graph-store.mjs && node scripts/check-program-graph-ui.mjs && node scripts/check-program-graph-build.mjs",
     "check:learning-portfolio": "node scripts/check-learning-portfolio.mjs && node scripts/check-course-progress-store.mjs && node scripts/check-learning-portfolio-store.mjs && node scripts/check-learning-portfolio-ui.mjs && node scripts/check-course-criteria.mjs && node scripts/check-learning-portfolio-build.mjs",
-    "course:criteria": "node scripts/capture-course-criteria.mjs"
+    "course:criteria": "node scripts/capture-course-criteria.mjs",
+    "check:domain-redirect": "node scripts/check-domain-redirect.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",
