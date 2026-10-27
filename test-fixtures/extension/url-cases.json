@@ -1,0 +1,165 @@
+[
+  {
+    "url": "https://www.gofundme.com/f/fictional",
+    "match": true,
+    "case": "exact www host and f slash prefix"
+  },
+  {
+    "url": "https://gofundme.com/f/fictional?x=1#donate",
+    "match": true,
+    "case": "exact apex host, query and fragment"
+  },
+  {
+    "url": "https://www.gofundme.com/f/",
+    "match": true,
+    "case": "empty wildcard suffix"
+  },
+  {
+    "url": "https://www.gofundme.com/f/a/b?q=%23x#other",
+    "match": true,
+    "case": "nested path and encoded query"
+  },
+  {
+    "url": "https://WWW.GOFUNDME.COM/f/fictional",
+    "match": true,
+    "case": "URL hostname canonicalization"
+  },
+  {
+    "url": "https://www.gofundme.com:444/f/fictional",
+    "match": true,
+    "case": "Chrome omitted-pattern-port wildcard"
+  },
+  {
+    "url": "https://www.gofundme.com/f",
+    "match": true,
+    "case": "Chromium source: terminal slash-star also matches exact prefix without slash",
+    "authority": "chromium-source-model; no installed Firefox claim"
+  },
+  {
+    "url": "https://www.gofundme.com/fake/fictional",
+    "match": false,
+    "case": "similar path does not match"
+  },
+  {
+    "url": "https://www.gofundme.com/F/fictional",
+    "match": false,
+    "case": "path is case-sensitive"
+  },
+  {
+    "url": "https://www.gofundme.com/%66/fictional",
+    "match": true,
+    "case": "Chromium source: normal percent unescaping makes literal f segment",
+    "authority": "chromium-source-model; no installed Firefox claim"
+  },
+  {
+    "url": "https://www.gofundme.com/?target=/f/fictional",
+    "match": false,
+    "case": "query cannot replace required path prefix"
+  },
+  {
+    "url": "https://www.gofundme.com/other#/f/fictional",
+    "match": false,
+    "case": "fragment cannot replace path prefix"
+  },
+  {
+    "url": "https://www.gofundme.com/f/../other",
+    "match": false,
+    "case": "URL dot-segment normalization"
+  },
+  {
+    "url": "https://other.gofundme.com/f/fictional",
+    "match": false,
+    "case": "no subdomain wildcard"
+  },
+  {
+    "url": "https://www.gofundme.com.example.invalid/f/fictional",
+    "match": false,
+    "case": "suffix lookalike"
+  },
+  {
+    "url": "https://www.justgiving.com/",
+    "match": true,
+    "case": "exact host all paths, not a fundraiser classification"
+  },
+  {
+    "url": "https://www.justgiving.com/account/settings?x=1#profile",
+    "match": true,
+    "case": "informational/account paths included"
+  },
+  {
+    "url": "https://justgiving.com/fictional",
+    "match": false,
+    "case": "apex host absent from manifest"
+  },
+  {
+    "url": "https://api.justgiving.com/fictional",
+    "match": false,
+    "case": "other subdomain absent"
+  },
+  {
+    "url": "https://www.every.org/",
+    "match": true,
+    "case": "exact www host all paths"
+  },
+  {
+    "url": "https://www.every.org/about?query=/f/a#info",
+    "match": true,
+    "case": "non-donation path matches exact host"
+  },
+  {
+    "url": "https://every.org/fictional",
+    "match": false,
+    "case": "apex host absent from manifest"
+  },
+  {
+    "url": "https://foo.www.every.org/fictional",
+    "match": false,
+    "case": "no nested subdomain wildcard"
+  },
+  {
+    "url": "http://www.every.org/fictional",
+    "match": false,
+    "case": "HTTPS only"
+  },
+  {
+    "url": "http://www.gofundme.com/f/fictional",
+    "match": false,
+    "case": "HTTP GoFundMe excluded"
+  },
+  {
+    "url": "https://example.invalid/f/fictional",
+    "match": false,
+    "case": "unrelated host"
+  },
+  {
+    "url": "file:///tmp/fictional.html",
+    "match": false,
+    "case": "file URL unsupported by these patterns"
+  },
+  {
+    "url": "about:blank",
+    "match": false,
+    "case": "internal document not promised injection"
+  },
+  {
+    "url": "chrome://settings/",
+    "match": false,
+    "case": "restricted browser scheme"
+  },
+  {
+    "url": "not a URL",
+    "match": false,
+    "case": "malformed URL"
+  },
+  {
+    "url": "https://www.gofundme.com/f#ignored",
+    "match": true,
+    "case": "Chromium terminal prefix matching still excludes fragment",
+    "authority": "chromium-source-model; no installed Firefox claim"
+  },
+  {
+    "url": "https://www.gofundme.com/f?x=1",
+    "match": false,
+    "case": "query is part of path matching and prevents terminal-prefix shortcut"
+  }
+]
