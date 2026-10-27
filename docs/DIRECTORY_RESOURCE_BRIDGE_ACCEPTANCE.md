@@ -1,0 +1,74 @@
+# Directory to Resource review: acceptance
+
+October 27, 2026 · AI-assisted engineering · implemented and tested in a protected production stage. Canonical promotion, main merge and public Pages publication remain pending. The [plan](DIRECTORY_RESOURCE_BRIDGE_PLAN.md) and [interfaces](DIRECTORY_RESOURCE_BRIDGE_INTERFACES.md) were reviewed and frozen at `31a640e0e7f12f3f052635030ab524ec1d5ac6d7` before implementation. These are bounded software checks with fictional organizations, not independent human review or a real organizational pilot.
+
+## Working flow and source evidence
+
+The public Tools and Benefits directories and the hosted Resources index offer the same explicit source selection. An authorized member inspects the complete retained listing, chooses fields and organization notes, reviews a preview, then deliberately copies an unapproved Resource. Later rechecks show the before and after, exact source version, changed working data and any dated organization declaration. Recovered history requires a separate explicit adoption before it supplies a live binding.
+
+The registry still has **26 modules and 339 fields**. Resources remain organization-wide under existing permissions, including for a program-scoped contributor. The UI states that visibility before copying and offers no program picker. Contributors can write but cannot export or approve; board readers receive only the normal approved snapshot. Copy, recheck and adoption use ordinary validation, revision, workflow and snapshot rules. They do not create provider access, eligibility approval, enrollment, reminders, email or jobs.
+
+The initial artifact retains all **15 tool and 16 benefit entries**, with their complete sources and original JSON. All 31 remain editorial `draft`, checked `2026-10-25`; this release does not refresh vendor terms or turn those dates into current verification. Source age is shown without inventing an expiration policy. Unknown dates, eligibility and money remain unknown; explicit zero remains zero.
+
+| Source identity | Exact value |
+| --- | --- |
+| Source commit A | `366d59b8920ec90858bf7fb376a75bc8b6b65490` |
+| Artifact commit B | `453249a0a20b89e89f0da47d938af9725db3728a` |
+| Captured at | `2026-10-27T19:33:03.315Z` |
+| Capture ID | `95530cd1f6ac28ef9f1935f867ba217f13b3b044b8c308630fbad948ebb173f6` |
+| Service bundle SHA-256 | `9b511e350798b3a4cf5d96e715b1a972b42836edbbca48e199cb0b0268b7942d` |
+| Registry semantic SHA-256 | `fbd1326ee1211b8f90b37f55e384b1df8e209ed60e5bf8d6b601dd9ac6dc0d7b` |
+
+The [capture generator](../scripts/capture-directory-resources.mjs), [artifact check](../scripts/check-directory-resources.mjs) and [committed-history gate](../scripts/check-directory-resources-history.mjs) verify immutable captures, exact raw files, canonical entry hashes, the service bundle and A-before-B ancestry. The retained public tree is 67,299 bytes. Twelve actual offline Git-history groups and 31 built card → fragment → exact-entry checks pass. A missing or altered source cannot become authority through a URL or caller-provided hash.
+
+## Authority, ownership and recovery
+
+Ten-minute proofs and exact command keys stay in page memory. The proof binds the exact raw closed proposal, source/head, record and history state, organization, actor, actual session and membership incarnation/revision/scopes. Commit rereads the persisted Better Auth session after obtaining the organization lock, using actual post-wait time. It rechecks current permissions and all fingerprints. Same-key changed requests refuse, including differences that normalization would otherwise erase. One primary binding survives retries, changed keys, trash and recovered history; identity collisions refuse.
+
+Copied limitations retain their exact generated block and separately owned organization notes. Keeping current text preserves it completely. Replacing a mapped block requires its complete last rendering to match; replacing all text is explicit and shows the full change. The 4,000-character limit refuses overflow without truncation. Organization declarations have an explicit selected basis and date; they are not provider verification. Existing active-state requirements still apply. Recheck clears approval while preserving the existing frozen reader snapshot.
+
+One append-only, forced-RLS table holds typed capture cores and binding events. Limits are 250 bindings, 1,000 capture/event rows, 32 events per binding, 32 KiB measured PostgreSQL JSON payload per row and 4 MiB charged history. Each row reserves another 4 KiB of recovery overhead. Existing 2,000-record, 16 MiB structured-data, 64,000-byte record and 60 MiB logical export limits remain. Copy/recheck/adoption commit the ordinary record, history and audit together or roll back together.
+
+Full organization JSON adds optional complete source history; CSV and selected Resource evidence remain partial. Full export gathers a fresh record/history inventory under the organization lock. Restore resets ordinary records to the restoring owner and initial workflow state, without approval or snapshot. Historical events stay exact and inactive, with no live command, proof, session or membership authority. Source trash stays in its source archive; archive-only identities do not fabricate current records or links. Older backups without this section remain readable; a present malformed section refuses.
+
+The command reader rejects malformed UTF-8, duplicate decoded keys, unknown fields and nonfinite numbers before generic intake. Full backup intake uses a separate iterative strict reader with the complete 64 MiB bound. The browser validates the exact selected file bytes before parsing or transport, including both direct and chunked uploads. A valid older 58,345,965-byte backup and exact 64 MiB lexical boundary remain admitted; the new section's small command/depth limits are not imposed on whole backups.
+
+## Executed checks and corrections
+
+Final runtime is **`02cc6cfc3ee45c4c7f5427c56e4f2d86bca6bac2`**. The complete OS suite passed **408 unit/browser-model tests**. The complete actual isolated PostgreSQL suite passed **116 tests**, including 26 directory workflow groups with real Better Auth boundaries and a constrained runtime role. Tests cover all eight roles, queued session deletion and expiry, independent approval/snapshots, exact proposal binding, concurrency/replay/trash, complete inactive recovery/adoption, measured PostgreSQL history and whole-workspace quotas, audit-failure rollback and migration grant preservation. Owned regression schemas were removed. No provider or delivered mail is supplied by these fixtures.
+
+Independent bounded review found and fixed three release blockers:
+
+1. The file chooser used replacement UTF-8 decoding and `JSON.parse` before transport, erasing duplicate keys and nonfinite values. Final `02cc6cfc` admits exact `arrayBuffer` bytes with a fatal decoder and duplicate/nonfinite lexer before any parse, stringify or chunking. Destination/session/file-generation guards also discard stale asynchronous results. Actual chooser/API/server regressions cover small and chunked escaped duplicates, overflow and malformed UTF-8.
+2. Same-source reinspection rebuilt the form and lost unfinished notes, declarations and dates. `f4aee0f999ce21702137270752fef071e7e916b0` preserves all literal controls for the exact same source and requires explicit confirmation before switching a dirty source. Both trusted app callers supply that confirmation.
+3. An older failed source request could clear a newer successful source/form. The same correction guards failure handling with the owned request/selection epoch, including late 401/403, export and history responses. Stale editor/navigation/disposal results cannot repaint current work.
+
+The final focused independent rerun passed 49 groups: 32 source-controller, five actual chooser/transport and 12 server-backup groups. This is bounded engineering review, not a comprehensive security or accessibility audit.
+
+The full **546-page build and complete check** pass, including 46,600 internal links/assets with none broken. Exact-runtime [push CI 40578658892](https://github.com/theguysaccount/charitology/actions/runs/40578658892) and [PR CI 40578762477](https://github.com/theguysaccount/charitology/actions/runs/40578762477) passed all static, OS and newsletter jobs. [PR #28](https://github.com/theguysaccount/charitology/pull/28) records AI assistance. Later documentation commits require their own exact-head CI before merge.
+
+## Controlled actual Chrome
+
+The coordinator recorded **25 versioned journeys** against the final runtime, with actual verified fictional Better Auth accounts, HttpOnly sessions and two uniquely named disposable PostgreSQL schemas. They cover partial-response loss → retained exact Retry → one Resource, separate-account approval, old board snapshot isolation, program-scoped contributor writes without export/approval, literal preservation of 16 raw controls on keyboard reinspection, zero-USD declaration, edit invalidation, stale 409 with preserved notes and deliberate reload, delayed preview after editor cancellation, source/hash/capture refusals and full recovery/adoption. An initially incomplete wrong-hash observation is retained separately from its later completed refusal.
+
+Eight actual file-chooser cases rejected small and chunked malformed inputs before preview/Apply. Valid direct and chunked files completed preview; explicit Apply into a UI-created empty fictional organization restored inactive source history and required fresh adoption. The exact browser-saved full organization backup was also chosen and restored: **47,185 bytes**, SHA-256 `9c91fe57f3b7902378b6c529aae71c4bb1e8b2d303474e6451cd0421dfdf01c4`. Its checksum and production validators passed; two Resource records and both original events restored inactive, followed by an explicit third live adoption event. The known saved file establishes saved bytes and chooser recovery; the native Downloads UI was not inspected.
+
+An earlier `517869e256bb4c9730fb2f5e51b39a81b3aaba84` journey supplies separate functional and saved partial-evidence proof: **16,519 bytes**, SHA-256 `af33c38f70200c38142fd9f8c4a82c7d009151c16796e5fac64fab28de63c31f`. Its source/event validation passed. The final chooser correctly refused that partial file as a complete organization backup. Earlier functional journeys are not relabeled as final-runtime reruns.
+
+Fixture assistance was limited to local fictional login capture, direct initial membership/plain-record seeding and explicit transport faults. A separate **excluded catalog-data variant** supplied a fictional changed, absent and unknown-date source; all other application bytes matched. It proves those UI branches, not a real vendor change or published second capture. Four 320/390 light/dark layouts use its exact copy UI; four more use the canonical-data Resource recheck with expanded identity/declaration fields. All eight had no horizontal overflow. Bounded checks of the last 100 log entries per tab found no application warnings/errors; extension messages were excluded.
+
+Seven owned tabs across five fixture hosts used visible cleanup UI to clear only their fictional remembered-organization and theme keys, then closed. Both owned schemas were dropped and absence verified at **20:49:18.102 UTC**. No real person, participating charity, independent human review, provider eligibility or enrollment was invented.
+
+## Additive migration and protected stage
+
+The additive production migration committed the exact reviewed SQL fragment, SHA-256 **`9aee947b50300915df5f85d33b829151c38d763e51249cb4dcd03f9cea264f18`**. A single repeatable-read transaction preserved every original column, row and ACL across **31 existing tables and 60 rows**, including both already-deployed recurrence tables. The new history table is empty; forced-RLS tenant tables increased **24 → 25**. The constrained role has no superuser, RLS-bypass, role/database-creation or inheritance flags, and has only SELECT/INSERT on the new immutable table. Context-free rows and nonexistent-tenant logical usage are zero. Post-smoke inspection at **20:55:12.746 UTC** repeated all old-table/row/ACL checks; combined snapshot SHA-256 is `0281c5fe7f3d4fa3a6f2ee032f46371e1bcc7bf81d6a8558f8326cda2acde809`.
+
+The private release harness preserved three corrections honestly. Its first migration attempt refused and rolled back before DDL because it expected the pre-recurrence 29-table count. Read-only comparison identified only the two empty recurrence tables; the coordinator reviewed the unchanged original snapshots and explicitly approved the corrected 31-table baseline. The SQL fragment did not change. The deployment wrapper then rejected an ambiguous generic URL regex after successfully creating the stage; the explicit structured immutable URL was recovered through read-only lookup without redeploying. Finally, a smoke manifest mistakenly requested nonexistent `task-recurrence.js`; that controller is inline in `app.js`. The private check was corrected to actual imported `model.js`, and the entire smoke reran. These were private harness findings, not runtime bugs.
+
+Exact stage **`dpl_F2ACtEYm5CLHDUwwyKQQCJBfJxdE`**, [immutable URL](https://charitology-4bjce7cq7-jacksonjezio-7345s-projects.vercel.app), is READY with production target, Node 24, the correct team/project/service root and all three exact runtime metadata fields. Its 3,290-file Git package has manifest SHA-256 `e63ca0904da55cd9528aaf6ffd0ab606cdb34596d5a304d9441b0f7dbecdeac6`. **43 protected HTTP checks and 13 exact committed asset comparisons pass.** Protection stayed enabled. No accepted production login, mail, provider, cron or job operation was invoked.
+
+The stage was created with `--prod --skip-domain`. Canonical inspection still identified the previous `dpl_GGsw6RHvUEFEmqiwaDkvHSxgDzPm` deployment. **No canonical promotion, main merge or public Pages publication is claimed here.** Those require coordinator approval and exact final-head CI. Normal future Git auto-assignment remains enabled and must be inspected before any later promotion claim.
+
+## Rollback and operating work
+
+Preserve the additive table, immutable events, source captures and backups. Once history exists, older writers/exporters that omit it are incompatible; use a reviewed compatible fix rather than deleting evidence to reuse an older binary. A dated source listing or organization declaration does not establish current provider terms, eligibility, enrollment, independent review or impact. Real pilots, current source checks, support ownership and independent privacy/security/accessibility review remain operating work.
