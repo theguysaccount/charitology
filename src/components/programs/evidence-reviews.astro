@@ -1,5 +1,6 @@
 ---
 import ResearchWorkspace from "./ResearchWorkspace.astro";
+import StudyRegister from "../StudyRegister.astro";
 import { researchProgramCatalog } from "../../lib/research-program-catalog";
 import { url } from "../../lib/site";
 const { interventions } = await researchProgramCatalog();
@@ -116,6 +117,8 @@ const fields = [
 ];
 ---
 
+<StudyRegister view="review" />
+
 <section
   class="tool"
   id="er-catalog"
@@ -152,7 +155,7 @@ const fields = [
 </section>
 <ResearchWorkspace
   id="evidence-reviews"
-  title="Evidence review desk"
+  title="Narrative extraction desk"
   description="Define a reproducible question and search, extract a study, examine its limits and write a synthesis that preserves disagreement."
   fields={fields}
 />

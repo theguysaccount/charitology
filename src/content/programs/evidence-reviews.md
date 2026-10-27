@@ -2,9 +2,9 @@
 title: Evidence Reviews
 group: Research
 order: 5
-summary: Plan a review, inspect linked intervention sources and save study extractions, bias appraisals and an evidence synthesis.
+summary: Import citation records, freeze a local protocol, reconcile screening decisions and export traceable review inputs alongside narrative extractions.
 status: live
-statusNote: Live protocol and study-extraction software links the draft Intervention Database. The workspace does not run literature searches or publish independently reviewed systematic reviews.
+statusNote: A private local study register connects the bibliography to protocol versions, recorded screening and extraction inputs. Reviewer labels are self-recorded. Actual searches, independent source checks and systematic-review publication require people and evidence.
 conditions: [measurement-gap]
 firstMilestone: Reviews of 25 widely funded interventions, each graded and checked against its sources by a second contributor.
 help:
@@ -23,7 +23,11 @@ sources:
 
 ## Use the live research desk
 
-Choose an intervention and inspect its linked sources, then use the [review desk](#workspace-evidence-reviews) to define a question, search and selection rules. Save an extraction for each study, record bias and uncertainty, and write a synthesis that preserves disagreement. A completed form is a research note, not an independent evidence review.
+Use the study register to freeze a local question and protocol, then preview references from the [Evidence Library](/record/evidence-library/) or a mapped CSV. Inspect proposed duplicates before combining reports. Preserve the original citation rows, recorded search provenance, screening reasons and protocol/source revisions.
+
+Record title/abstract decisions in two labeled lanes, resolve a disagreement with a reason, record whether a full report was obtained, then screen that report. Both lanes can be entered by the same person. The software counts included reports and unresolved work exactly; it establishes no independent review or unique-study count. Optional extraction inputs preserve an estimate, unit, interval, source reference and unknown fields without pooling effects.
+
+The existing [narrative extraction desk](#workspace-evidence-reviews) remains available for intervention-specific question, bias and synthesis notes. Its earlier saved records and key are unchanged. There is no automatic migration or approval between the two workspaces.
 
 Your workspace stays in this browser. Save records, edit them or fork frozen versions, export JSON, a research memo or CSV, and import a backup with an explicit replacement step. Deleting or clearing offers an undo while the page remains open. No notes are submitted to Charitology. The institutional goals below remain the program’s longer-term charter.
 

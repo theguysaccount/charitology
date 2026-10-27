@@ -1,0 +1,74 @@
+---
+import { studyCatalog } from "../lib/study-catalog";
+import "../styles/study-register.css";
+const { view = "browse" } = Astro.props as { view?: "browse" | "review" };
+const catalog = await studyCatalog();
+const payload = JSON.stringify(catalog.entries).replace(/</g, "\\u003c");
+---
+
+<section
+  class="tool study-register"
+  data-study-register
+  data-view={view}
+  data-base={import.meta.env.BASE_URL.replace(/\/$/, "")}
+>
+  <h2>Study register</h2>
+  <p>
+    Keep a question, citation records and screening decisions together. This
+    private register is shared between the Evidence Library and Evidence Reviews
+    in this browser. Reviewer labels are self-recorded; they do not establish
+    independent review. Nothing is submitted or published automatically.
+  </p>
+  <p class="note">
+    {catalog.entries.length} published references can be selected for import.
+    References begin with unknown classification. A source on this site is not
+    automatically a study, an executed search or evidence of an intervention's effect.
+  </p>
+  {catalog.omitted.length > 0 && (
+    <details class="callout">
+      <summary>{catalog.omitted.length} bibliography references cannot be imported here</summary>
+      <p>These references remain in the full bibliography. Their values were not shortened or rewritten.</p>
+      <ul>{catalog.omitted.map((entry) => <li>{entry.title}: {entry.reason}</li>)}</ul>
+    </details>
+  )}
+  <script type="application/json" class="study-register-catalog" set:html={payload} />
+  <div class="study-register-mount" aria-live="polite">
+    <p>The register is loading. The published sources and existing extraction desk remain readable below.</p>
+  </div>
+  <noscript>
+    <p>The local register needs JavaScript. The full published bibliography remains readable without it.</p>
+  </noscript>
+</section>
+
+<script>
+  import { mountStudyRegister } from "../lib/client/study-register-ui";
+  import { download } from "../lib/client/files";
+  document.querySelectorAll<HTMLElement>("[data-study-register]").forEach((root) => {
+    mountStudyRegister(root).catch(() => {
+      const host = root.querySelector<HTMLElement>(".study-register-mount");
+      if (!host) return;
+      host.replaceChildren();
+      const message = document.createElement("p");
+      message.setAttribute("role", "alert");
+      message.textContent = "The local register could not open. Keep a recovery copy of saved work; the published bibliography remains available.";
+      const recovery = document.createElement("button");
+      recovery.type = "button";
+      recovery.className = "btn btn-ghost";
+      recovery.textContent = "Download saved recovery copy";
+      recovery.addEventListener("click", () => {
+        try {
+          const raw = localStorage.getItem("charitology.study-register.v1");
+          if (raw === null) {
+            message.textContent = "No saved register was found in this browser. Nothing was changed.";
+            return;
+          }
+          download("charitology-study-register-saved-recovery.txt", raw, "text/plain");
+          message.textContent = "A download of the unchanged saved bytes was requested. This raw recovery file may need repair before it can be restored.";
+        } catch {
+          message.textContent = "The browser could not read or download the protected saved copy. No replacement was attempted.";
+        }
+      });
+      host.append(message, recovery);
+    });
+  });
+</script>

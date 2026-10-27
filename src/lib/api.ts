@@ -216,7 +216,7 @@ export const ENDPOINTS: Endpoint[] = [
   },
   {
     name: "sources",
-    description: "Every source cited on the site, with the pages that cite it.",
+    description: "Sources in Charitology's bibliography, with the pages that cite them; wider literature coverage is unknown.",
     build: allCitations,
   },
 ];
