@@ -1,6 +1,6 @@
 .publication-editions { margin-block: 2rem; overflow-wrap: anywhere; }
 .publication-editions :is(button,input,select,textarea) { max-width: 100%; font: inherit; }
-.publication-editions :is(input,select,textarea) { color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: .25rem; padding: .6rem; min-width: 0; }
+.publication-editions :is(input,select,textarea) { color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: .25rem; padding: .6rem; min-width: 0; }
 .publication-editions textarea { width: 100%; min-height: 7rem; resize: vertical; }
 .publication-editions label { display: grid; gap: .35rem; margin-block: .8rem; }
 .publication-editions :is(button,a):focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
@@ -8,8 +8,8 @@
 .publication-editions .pe-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; margin-block: 1rem; }
 .publication-editions .pe-actions > * { min-width: 0; }
 .publication-editions .pe-tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin-block: 1.4rem; }
-.publication-editions .pe-tabs button { padding: .6rem .8rem; border: 1px solid var(--rule); color: var(--ink); background: var(--paper); cursor: pointer; }
-.publication-editions .pe-tabs button[aria-pressed="true"] { color: var(--paper); background: var(--ink); }
+.publication-editions .pe-tabs button { padding: .6rem .8rem; border: 1px solid var(--rule); color: var(--ink); background: var(--bg); cursor: pointer; }
+.publication-editions .pe-tabs button[aria-pressed="true"] { color: var(--bg); background: var(--ink); }
 .publication-editions :disabled { cursor: not-allowed; opacity: .6; }
 .publication-editions .pe-note { padding: 1rem; border-inline-start: 3px solid var(--rule); margin-block: 1rem; }
 .publication-editions .pe-warning { border-inline-start-color: currentColor; }

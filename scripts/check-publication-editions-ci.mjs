@@ -34,11 +34,12 @@ try {
   if (process.env.GITHUB_EVENT_NAME === "pull_request")
     baseCommit = event.pull_request?.base?.sha;
   else if (process.env.GITHUB_EVENT_NAME === "push") {
-    baseCommit = sha(event.before)
-      ? event.before
-      : git(["merge-base", headCommit, "refs/remotes/origin/main"]);
+    if (sha(event.before)) baseCommit = event.before;
+    else if (event.created === true && event.before === "0".repeat(40))
+      baseCommit = git(["merge-base", headCommit, "refs/remotes/origin/main"]);
+    else throw Error("The push event must identify its exact previous commit.");
   } else if (process.env.GITHUB_EVENT_NAME === "workflow_dispatch")
-    baseCommit = git(["rev-parse", "--verify", "HEAD^1"]);
+    baseCommit = event.inputs?.publication_base_sha;
   else throw Error("Unsupported publication release event.");
   if (!sha(baseCommit))
     throw Error(
