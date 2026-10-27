@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-r4-json-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "efedd0012f17f63fe13575477cbdd5df18e7228af013fbb5834d60c298ef7672",
+  "id": "source-cf554bc6fd16dfba51eaaaeec7aee1c30d62fcf993348b89488e4c035e79ccb2",
+  "path": "src/data/research-ledger/events/event--claim-depth-census-knowledge-1.json",
+  "projectionHash": "f6de69dc68534777a8c16474004700e465b9ac4126e7f01dd252e29bd419dffe",
+  "rawSha256": "c959cd538bffcbdadc6f75acaed9da77eb90dff59e79127af5b857cc8f57c597",
+  "rawUtf8": "{\n  \"id\": \"event:claim-depth-census-knowledge-1\",\n  \"ordinal\": 41,\n  \"recordId\": \"claim:depth-census-knowledge\",\n  \"sequence\": 1,\n  \"previousId\": null,\n  \"previousHash\": null,\n  \"occurredAt\": null,\n  \"timeBasis\": \"undated\",\n  \"recordedAt\": \"2026-10-27T08:31:31.000Z\",\n  \"actorIds\": [],\n  \"refs\": [],\n  \"observationIds\": [],\n  \"reason\": \"Capture the corrected claim as the current baseline while retaining its archived predecessor. The later-listed editorial artifact records the actual PR merge; this baseline does not invent an earlier ledger receipt.\",\n  \"type\": \"baseline\",\n  \"version\": {\n    \"recordId\": \"claim:depth-census-knowledge\",\n    \"version\": 2,\n    \"subjectHash\": \"6f3b6d06a2d61893e35d33ae513a3959f44f1321c2bd43d30ff95c54b25fe9a3\"\n  },\n  \"initialProblemState\": null,\n  \"hash\": \"3f522ae1d8122f6a9996300705a0b6a34c1a06a4e684edf1d2bba80d73cc57b7\"\n}\n"
+}

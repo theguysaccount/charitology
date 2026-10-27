@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-r4-json-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "61e1c6e511a9ec59b94b10d39680c94f02dde61db951c194c9ce4f266f930742",
+  "id": "source-5157fb51a5642e3afdd2611a8feaa97fe707770147f7fa7e2c10ee8b9883edef",
+  "path": "src/data/research-ledger/versions/version--claim-ten-dollars-framing-v1.json",
+  "projectionHash": "450634f7cbc605fbe1d692ef07407c80f4ddd4e9aa55ee004f6cf5837fe4b99f",
+  "rawSha256": "611e9563ff43b588217df531a5a537e0b38a34826eaf92675e45e21fea9915b9",
+  "rawUtf8": "{\n  \"id\": \"version:claim-ten-dollars-framing-v1\",\n  \"recordId\": \"claim:ten-dollars-framing\",\n  \"version\": 1,\n  \"previousId\": null,\n  \"adapterVersion\": \"research-content-v1\",\n  \"subject\": {\n    \"type\": \"claim\",\n    \"parentId\": \"manuscript:ten-dollars\",\n    \"title\": \"Framing of the founding poem\",\n    \"statement\": \"The founding manifesto. In 2026 the name for the science of doing the most good was available for about ten dollars. That says something about the field.\",\n    \"context\": null,\n    \"evidence\": \"not-applicable\",\n    \"sources\": []\n  },\n  \"subjectHash\": \"38c02e1fa76b1065d922ad738ba9b5e71afb266b0b8b5296a2b17d251d3ecfa8\",\n  \"authorship\": {\n    \"state\": \"unknown\",\n    \"complete\": false,\n    \"actorIds\": [],\n    \"refs\": []\n  },\n  \"sources\": [\n    {\n      \"sourceId\": \"source:pr-3-before-ten-dollars\",\n      \"selector\": {\n        \"kind\": \"claim\",\n        \"adapter\": \"ten-dollars-framing-v1\",\n        \"frontmatterKeys\": [\n          \"summary\"\n        ],\n        \"bodyExcerpt\": null\n      }\n    }\n  ],\n  \"hash\": \"a7cb59a7e58e02f20264a29d086c7eda6bf28d4eb299d07268c196e7ace10c81\"\n}\n"
+}

@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-r4-json-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "70953d612c40d2f0244ddbaeca09d6e49f47f2fd9bbc19c4bab13a6bbe76e11a",
+  "id": "source-5a7fc06e85f148bbb22fe4ecf6b50b681b039ddb7dc49927f75dfa0d3ba0d526",
+  "path": "src/data/research-ledger/sources/source--pr-3-before-depth-census.json",
+  "projectionHash": "86c37f23de7cba8c6b56fe1f217ec335306a8b68c7e3df39bb9e0238462c06ee",
+  "rawSha256": "d28f864c825bb4420a2282dc50848e89743d0bc8957fd1bbab52b32c62082c06",
+  "rawUtf8": "{\n  \"id\": \"source:pr-3-before-depth-census\",\n  \"commit\": \"905bdd27bb5f16027c3b3ad3c0f5ee3fc18e3e45\",\n  \"path\": \"src/content/problems/the-depth-census.md\",\n  \"sha256\": \"722a15f583ff361c70c6758503d12a7464746bd013d8276b9f1b896cf42654c0\",\n  \"byteLength\": 1340,\n  \"text\": \"---\\ntitle: \\\"The Depth Census\\\"\\nnumber: 1\\nstatement: \\\"What share of the world’s charitable money goes to relief, repair, prevention, structure and source work?\\\"\\nprogress: \\\"A public, reproducible estimate of the depth mix for at least one country’s giving, with a method others can rerun and a stated error range.\\\"\\nconditions: [\\\"symptom-trap\\\", \\\"measurement-gap\\\"]\\nstatus: open\\nbounty: \\\"Unfunded. The Question Bounties program will attach prizes once it is funded.\\\"\\n---\\n\\n## Why it matters\\n\\nCharitology’s founding hypothesis, [the Symptom Trap](/diagnosis/symptom-trap/), says the charity system is weighted toward symptoms. Nobody has checked. If the hypothesis is wrong, the field should be the first to say so. If it’s right, the census gives every later effort a baseline to move.\\n\\n## Where to start\\n\\nDraw a random sample of organizations from a public registry and code each one on the [depth scale](/method/#depth), weighting by spending. Program descriptions from Form 990 filings, published openly by [Charity Impact Media](https://theguysaccount.github.io/charity-impact-media/), and the foundation grants in [WHOFUNDS](https://theguysaccount.github.io/whofunds-open-grant-graph/) are open starting points. How often two independent coders agree is itself a finding: if people can’t agree on depth, the scale needs work first.\\n\",\n  \"hash\": \"3c37a0a52235feec6c13584ccd96f6cf50905dd7c438c989b25f69a0ab3602c6\"\n}\n"
+}

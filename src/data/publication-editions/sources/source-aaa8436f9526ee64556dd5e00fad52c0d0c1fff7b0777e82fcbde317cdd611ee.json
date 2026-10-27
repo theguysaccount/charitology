@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-markdown-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "06b5abdf593197ce043c2f6b485fd873306b1f4edf786e72b1dcb23ad54e9db8",
+  "id": "source-aaa8436f9526ee64556dd5e00fad52c0d0c1fff7b0777e82fcbde317cdd611ee",
+  "path": "src/content/record/cause-atlas.md",
+  "projectionHash": "d15f7be084475f1f893930a953191bfc2feaf7cd56f0ae5082951931326dac7b",
+  "rawSha256": "ef2f1a1301c48465c0127c7327dd614ffd385b4a380d696dc40ef404c3617aea",
+  "rawUtf8": "---\ntitle: \"Cause Atlas\"\ngroup: \"Flagship references\"\norder: 4\nsummary: \"A map of the cause areas and the problems they touch, from symptoms on the surface to the six sources underneath.\"\nstatus: live\nstatusNote: \"A working cause browser with linked intervention evidence. Worldwide funding is not estimated.\"\nconditions: [\"symptom-trap\", \"single-lens\", \"story-bias\"]\nfirstMilestone: \"Each cause area has sourced estimates of scale and current funding.\"\nhelp:\n  - \"Challenge a cause’s position on the five dimensions with a pull request to src/data/causes.json.\"\n  - \"Propose a missing cause area.\"\n  - \"Help the Cause Census add scale and neglect data with sources.\"\nrelated: [\"/programs/cause-census/\", \"/tools/values-compass/\", \"/record/gap-map/\"]\nsources:\n  - {\"title\": \"Humanity’s Checklist\", \"publisher\": \"Humanity’s Checklist\", \"year\": 2026, \"url\": \"https://humanityschecklist.org/\"}\n---\n\nThe Atlas maps Charitology’s cause areas, links them to the sourced Intervention Database and makes the editorial dimensions and source hypotheses inspectable. It does not turn those dimensions into impact scores.\n\nThe source map below preserves the six proposed sources and eighteen problems in Humanity’s Checklist. Its links are hypotheses for investigation, not an established causal graph.\n"
+}

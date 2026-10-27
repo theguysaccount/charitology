@@ -1,0 +1,11 @@
+{
+  "adapterId": "publication-r4-json-v1",
+  "adapterVersion": 1,
+  "commit": "d98f9560b866055971ddea7176c8e5e1028ec58d",
+  "hash": "96b2d54654a2f51149b7e962ea6c8cb3d195c5dc847f35ee42f6259079d80948",
+  "id": "source-e04e3d988808c5867c877e5f94c5aa298a580d4db997b9c143d372abd913e880",
+  "path": "src/data/research-ledger/versions/version--problem-the-agency-premium-v1.json",
+  "projectionHash": "7c2b7434ebdb179b50f70d3a0b369cccfbd58d670cf6ac01b0b241dbfad2807e",
+  "rawSha256": "1a0f34f715c88417494f1caa65fddc014bf4f2882b43adabd9748172a0c0c42a",
+  "rawUtf8": "{\n  \"id\": \"version:problem-the-agency-premium-v1\",\n  \"recordId\": \"problem:the-agency-premium\",\n  \"version\": 1,\n  \"previousId\": null,\n  \"adapterVersion\": \"research-content-v1\",\n  \"subject\": {\n    \"type\": \"entry\",\n    \"collection\": \"problems\",\n    \"frontmatter\": {\n      \"title\": \"The Agency Premium\",\n      \"number\": 14,\n      \"statement\": \"Do community-led programs outperform top-down ones on the same outcome, and by how much?\",\n      \"progress\": \"Head-to-head comparisons of community-led and expert-led versions of the same intervention, in several contexts.\",\n      \"conditions\": [\n        {\n          \"collection\": \"conditions\",\n          \"id\": \"missing-voice\"\n        }\n      ],\n      \"bounty\": \"Unfunded. The Question Bounties program will attach prizes once it is funded.\",\n      \"sources\": []\n    },\n    \"body\": \"\\n## Why it matters\\n\\nThe case for [listening to the people served](/diagnosis/missing-voice/) is strong in principle. A measured premium would make it impossible to ignore, and a measured cost would show where expertise should lead.\\n\\n## Where to start\\n\\nLook for interventions that have been delivered both ways, such as community-driven development programs evaluated against centrally planned ones.\\n\"\n  },\n  \"subjectHash\": \"4f818cd1f381dc4a159152c34731b185e1030d292eecd877f20c1a5fe904ee7d\",\n  \"authorship\": {\n    \"state\": \"unknown\",\n    \"complete\": false,\n    \"actorIds\": [],\n    \"refs\": []\n  },\n  \"sources\": [\n    {\n      \"sourceId\": \"source:current-problems-the-agency-premium\",\n      \"selector\": {\n        \"kind\": \"entry\"\n      }\n    }\n  ],\n  \"hash\": \"a4303c37c44cd3673cb390bb52b53f9cb50aa6b02c6278f488c0bf71a7f939ab\"\n}\n"
+}
