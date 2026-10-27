@@ -1171,11 +1171,20 @@ async function preferences({
       [org, p.id],
     );
   if (input.emailUpdates) await participationQuota(c, org);
-  await audit(c, org, user, "participation.preferences", null, {
-    participationId: p.id,
-    targetId: p.target_id,
-    emailUpdates: input.emailUpdates,
-  });
+  await audit(
+    c,
+    org,
+    user,
+    input.emailUpdates
+      ? "participation.preferences.enabled"
+      : "participation.preferences",
+    null,
+    {
+      participationId: p.id,
+      targetId: p.target_id,
+      emailUpdates: input.emailUpdates,
+    },
+  );
   return next;
 }
 

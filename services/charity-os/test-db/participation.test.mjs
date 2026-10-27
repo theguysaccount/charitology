@@ -1224,8 +1224,38 @@ test(
         },
       );
       await t.test(
-        "safe cancellation commits with a full paused journal and exhausted workspace audit reserve",
+        "full-budget cancellation and notification opt-out commit while opt-in rolls back",
         async () => {
+          const preferenceTarget = await makeTarget("preference-quota-target"),
+            preferenceCandidate = await makeCandidate(
+              "preference-quota-candidate",
+              preferenceTarget,
+              "preference-quota-contact",
+              { withIntake: true },
+            );
+          await adopt(preferenceTarget);
+          await associate(preferenceTarget, preferenceCandidate);
+          let preference = (await ownCall(preferenceCandidate.intakeId))
+            .participations[0];
+          preference = (
+            await ownCall(
+              preferenceCandidate.intakeId,
+              preference.id,
+              "consent",
+              {
+                revision: preference.revision,
+                intakeRevision: 1,
+                targetRevision: preference.targetRevision,
+                sourceRevision: preference.sourceRevision,
+                termsHash: preference.termsHash,
+                consent: true,
+                waitlistAllowed: false,
+                emailUpdates: true,
+                idempotencyKey: key(),
+              },
+            )
+          ).participation;
+          assert.equal(preference.notifications.requested, true);
           const p = (
             await staffCall("volunteer-shift/participations")
           ).participations.find((p) => p.state === "confirmed");
@@ -1246,6 +1276,38 @@ test(
           assert.equal(result.participation.state, "cancelled");
           assert.equal(result.notificationQueued, false);
           assert.equal((await staffCall("volunteer-shift")).occupied, 0);
+          const disabled = (
+            await ownCall(
+              preferenceCandidate.intakeId,
+              preference.id,
+              "preferences",
+              {
+                revision: preference.revision,
+                intakeRevision: 1,
+                emailUpdates: false,
+                idempotencyKey: key(),
+              },
+            )
+          ).participation;
+          assert.equal(disabled.notifications.requested, false);
+          await assert.rejects(
+            ownCall(
+              preferenceCandidate.intakeId,
+              preference.id,
+              "preferences",
+              {
+                revision: disabled.revision,
+                intakeRevision: 1,
+                emailUpdates: true,
+                idempotencyKey: key(),
+              },
+            ),
+            err("quota"),
+          );
+          const kept = (await ownCall(preferenceCandidate.intakeId))
+            .participations[0];
+          assert.equal(kept.revision, disabled.revision);
+          assert.equal(kept.notifications.requested, false);
         },
       );
     } finally {
