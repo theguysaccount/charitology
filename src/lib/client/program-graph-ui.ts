@@ -1,3 +1,4 @@
+import { rawStorageRecoveryDownload } from "./raw-storage-recovery";
 import {
   PROGRAM_GRAPH_LIMITS,
   PROGRAM_GRAPH_FORM_NAMES,
@@ -2127,12 +2128,39 @@ export async function mountProgramGraph(root: HTMLElement): Promise<void> {
             "The saved bytes could not be read. No replacement was attempted.",
           );
         if (raw === null) throw Error("There is no saved graph copy.");
-        download("charitology-program-graph-saved-recovery.txt", raw);
+        const recovery = rawStorageRecoveryDownload(raw);
+        download(
+          `charitology-program-graph-saved-recovery.${recovery.wrapped ? "json" : "txt"}`,
+          recovery.text,
+        );
         say(
-          "A raw-copy download was requested. These bytes are not claimed to be a validated backup.",
+          recovery.wrapped
+            ? "The protected UTF-16 text was JSON-wrapped to preserve every code unit. This recovery file is not a graph backup."
+            : "A raw-copy download was requested. These bytes are not claimed to be a validated backup.",
         );
       }),
     );
+    const observedCopy = store.snapshot().observedRaw;
+    if (
+      typeof observedCopy === "string" &&
+      observedCopy !== store.rawSavedCopy()
+    ) {
+      parent.append(
+        paragraph(
+          "The last observed saved text differs from the protected original. Preserve both before replacing either.",
+        ),
+        button("Download last observed saved text", () => {
+          const recovery = rawStorageRecoveryDownload(observedCopy);
+          download(
+            `charitology-program-graph-last-observed.${recovery.wrapped ? "json" : "txt"}`,
+            recovery.text,
+          );
+          say(
+            "A last-observed text recovery download was requested. The protected original remains separately available; no replacement was made.",
+          );
+        }),
+      );
+    }
     const previewRestore = async () => {
       const version = epoch;
       const token = await store.previewRestore(recoveryBytes!);
