@@ -32,6 +32,9 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Check pinned model interpretation before the longer suites
+        if: ${{ hashFiles('src/lib/model-bundles/registry-v1.generated.mjs') != '' }}
+        run: node scripts/generate-model-engine-registry.mjs --check
       - name: Verify exact committed publication history
         run: npm run check:publication-history
       - name: Verify exact committed observation history

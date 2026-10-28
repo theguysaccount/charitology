@@ -81,6 +81,64 @@ async function readSources() {
   }
   return files;
 }
+
+/** Bounded diagnostics only; it never admits a mismatch or writes replacement v1 data. */
+function registryMismatchDiagnostic(files, actualGolden, actualEngine, priorRegistry, priorGoldenBytes, generated, goldenBytes) {
+  const maxDifferences = 12, differences = []; let visited = 0;
+  const scalar = value => {
+    if (typeof value === 'number') {
+      const view = new DataView(new ArrayBuffer(8)); view.setFloat64(0, value, false);
+      const binary64 = Array.from({ length: 8 }, (_, i) => view.getUint8(i).toString(16).padStart(2, '0')).join('');
+      return { type: 'number', decimal: String(value), binary64 };
+    }
+    if (typeof value === 'string') return { type: 'string', value: value.slice(0, 160), truncated: value.length > 160 };
+    if (value === undefined) return { type: 'missing' };
+    if (Array.isArray(value)) return { type: 'array', length: value.length };
+    if (value !== null && typeof value === 'object') return { type: 'object' };
+    return { type: typeof value, value };
+  };
+  function compare(expected, actual, path = '$') {
+    if (differences.length >= maxDifferences || ++visited > 20000 || Object.is(expected, actual)) return;
+    const expectedArray = Array.isArray(expected), actualArray = Array.isArray(actual);
+    if (expected === null || actual === null || typeof expected !== 'object' || typeof actual !== 'object' || expectedArray !== actualArray) {
+      differences.push({ path: path.slice(0, 240), expected: scalar(expected), actual: scalar(actual) }); return;
+    }
+    if (expectedArray) {
+      if (expected.length !== actual.length) { differences.push({ path: path + '.length', expected: scalar(expected.length), actual: scalar(actual.length) }); return; }
+      for (let i = 0; i < expected.length && differences.length < maxDifferences; i++) {
+        const label = path === '$.cases' && typeof actual[i]?.id === 'string' ? `[${i}:${actual[i].id.slice(0, 80)}]` : `[${i}]`;
+        compare(expected[i], actual[i], path + label);
+      }
+    } else {
+      for (const key of [...new Set([...Object.keys(expected), ...Object.keys(actual)])].sort()) {
+        if (differences.length >= maxDifferences) break;
+        compare(expected[key], actual[key], path + '.' + key);
+      }
+    }
+  }
+  let priorEngine = null, registryParse = 'unavailable', goldenParse = 'unavailable';
+  try {
+    const beginMarker = 'export const ENGINE = ', endMarker = ';\nexport const GOLDEN = ';
+    const begin = priorRegistry.indexOf(beginMarker), end = priorRegistry.indexOf(endMarker, begin);
+    if (begin < 0 || end < 0) throw Error('format');
+    priorEngine = JSON.parse(priorRegistry.slice(begin + beginMarker.length, end)); registryParse = 'parsed-fixed-ENGINE-json';
+  } catch { registryParse = 'fixed-ENGINE-json-unavailable'; }
+  try { compare(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(priorGoldenBytes)), actualGolden); goldenParse = 'parsed-fixed-golden-json'; }
+  catch { goldenParse = 'fixed-golden-json-unavailable'; }
+  const sources = files.map((file, i) => {
+    const expected = priorEngine?.files?.[i];
+    return { path: file.path, expected: expected ? { byteLength: expected.byteLength, sha256: expected.sha256 } : null,
+      actual: { byteLength: file.byteLength, sha256: file.sha256 },
+      exactSourceMatch: !!expected && expected.path === file.path && expected.byteLength === file.byteLength && expected.sha256 === file.sha256 && expected.rawUtf8 === file.rawUtf8 };
+  });
+  return { diagnosticVersion: 1, runtime: { node: process.version, v8: process.versions.v8, platform: process.platform, arch: process.arch },
+    registry: { parse: registryParse, exactTextMatch: priorRegistry === generated, expectedBytes: Buffer.byteLength(priorRegistry), actualBytes: Buffer.byteLength(generated),
+      expectedDefinitionHash: priorEngine?.definitionHash ?? null, actualDefinitionHash: actualEngine.definitionHash },
+    sources, golden: { parse: goldenParse, exactBytesMatch: Buffer.compare(priorGoldenBytes, goldenBytes) === 0,
+      expectedBytes: priorGoldenBytes.byteLength, actualBytes: goldenBytes.byteLength, expectedHash: priorEngine?.definition?.goldenVectorsHash ?? null,
+      actualHash: actualEngine.definition.goldenVectorsHash, firstDifferences: differences, differenceLimit: maxDifferences } };
+}
+
 try {
   const files = await readSources(), golden = await goldenVectors();
   const after = await readSources();
@@ -104,8 +162,12 @@ try {
     await writeFile(goldenPath, goldenBytes, { flag: 'wx' });
     await writeFile(dataPath, generated, { flag: 'wx' });
   } else {
-    if (await readFile(dataPath, 'utf8') !== generated || Buffer.compare(await readFile(goldenPath), goldenBytes) !== 0)
+    const priorRegistry = await readFile(dataPath, 'utf8'), priorGoldenBytes = await readFile(goldenPath);
+    if (priorRegistry !== generated || Buffer.compare(priorGoldenBytes, goldenBytes) !== 0) {
+      const diagnostic = registryMismatchDiagnostic(files, golden, engine, priorRegistry, priorGoldenBytes, generated, goldenBytes);
+      process.stderr.write(`Model engine registry mismatch diagnostic: ${JSON.stringify(diagnostic)}\n`);
       throw new Error('Existing v1 bytes differ. This interpretation cannot be silently replaced; use a new engine version.');
+    }
   }
   process.stdout.write(JSON.stringify({ mode: create ? 'created-candidate' : 'checked', definitionHash: engine.definitionHash,
     goldenVectorsHash: definition.goldenVectorsHash, cases: golden.cases.length,

@@ -37,4 +37,8 @@ The command-line verifier also reproduced the selected controlled review payload
 
 ## Remaining limits
 
+The first public CI head `21dc84ded0327335d71374c03f768487949d973c` is **not release-ready**. The pull-request check passed the normal build and every preceding suite, then the readonly registry regeneration refused different existing v1 bytes on Linux x64/Node 24.21.0. No differing field or cause was reported by that version. The same official Node 24.21.0 on macOS arm64 passes the exact unmodified registry check, so a Node-version cause is not established. A subsequent diagnostic-only change reports bounded runtime, source-pin and first golden-field differences while preserving refusal. Existing v1 sources, registry and golden bytes remain unchanged. Do not merge or publish the candidate until the platform difference is understood and resolved explicitly.
+
+The first new-branch push also refused a zero event base at the committed-history gate, as designed. Its separate PR run supplied the actual nonzero main base and reached the registry failure above. Neither failure is a successful release check.
+
 Actual mobile layouts, browser BFCache return, a second browser and broad installed-browser compatibility are not established by the journey above. Mounted lifecycle tests and responsive source checks are separate evidence. No public source-model admission, independent human review, shared OS import, provider operation or mail send is supplied. Deployment and exact-head CI are separate release gates and must be recorded when they occur.
