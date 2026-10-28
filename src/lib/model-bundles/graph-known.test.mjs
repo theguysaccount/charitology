@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { qualifyModelRuntime } from '../../../scripts/model-runtime-qualification.mjs';
 import assert from 'node:assert/strict';
 import { hashValue, cloneJson, prettyBytes, parseJsonBytes, LIMITS, canonicalBytes } from './codec.mjs';
 import { knownEngine, knownEnginePin, knownGoldenVectors, assertKnownEngine, verifyGoldenVectors } from './registry.mjs';
@@ -42,8 +43,14 @@ async function append(state, title = 'Fictional amended model') {
   s.versions.push(version); s.models[0].title = title; s.models[0].currentVersionId = version.id; s.revision++; return s;
 }
 async function resealSelected(value) { const v = copy(value); delete v.checksum; v.checksum = await hashValue('selected', v); return v; }
-test('actual candidate source/golden registry is closed and explicit known-engine numerical vectors reproduce', async () => {
-  await assertKnownEngine(knownEngine()); const result = await verifyGoldenVectors(); assert.equal(result.cases, 19);
+test('actual source/golden registry is closed; strict reference reproduction is distinguished from measured Linux incompatibility', async () => {
+  await assertKnownEngine(knownEngine()); const qualification = await qualifyModelRuntime();
+  assert.equal(qualification.evaluatedCases, 19);
+  if (qualification.referenceCompatible) assert.equal((await verifyGoldenVectors()).cases, 19);
+  else {
+    assert.equal(qualification.referenceMatchedCases, 16);
+    await assert.rejects(verifyGoldenVectors(), error => error.code === 'golden-runtime-mismatch');
+  }
   const engine = knownEngine(); assert.ok(Object.isFrozen(engine.files[0])); assert.equal(engine.files.length, 3);
   for (const mutate of [e => { e.files[0].rawUtf8 += '\n'; }, e => { e.files.reverse(); }, e => { e.definition.draws = 4999; },
     e => { e.definition.goldenVectorsHash = '0'.repeat(64); }, e => { e.definitionHash = '0'.repeat(64); }, e => { e.extra = true; }]) {

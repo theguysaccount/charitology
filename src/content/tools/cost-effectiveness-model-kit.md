@@ -47,7 +47,7 @@ Contributors can also check one selected bundle from a cloned repository:
 npm run model:verify -- /absolute/path/model-selected.json --json
 ```
 
-The verifier reads one local regular file up to 2 MiB and uses the installed interpretation in a bounded worker. It accepts no URL or supplied executable source. Its result distinguishes a match, mismatch, invalid file, unsupported interpretation, arithmetic refusal and unavailable runtime. This is a calculation check, not an assessment of a charity.
+The verifier reads one local regular file up to 2 MiB and uses the installed interpretation in a bounded worker. It accepts no URL or supplied executable source. Its result distinguishes a match, mismatch, invalid file, unsupported interpretation, arithmetic refusal and unavailable runtime. The comparison is exact on this runtime; a file from another platform can differ in its complete-array hashes even when displayed summaries agree. This is a calculation check, not an assessment of a charity.
 
 ## The method
 
@@ -55,7 +55,7 @@ The verifier reads one local regular file up to 2 MiB and uses the installed int
 
 **Discounting.** The first year of effect counts in full. Each later year counts 1 ÷ (1 + rate) as much as the one before, so at 4% the second year counts about 96% as much as the first. A rate of 0 counts every year the same. Whether future outcomes should count less at all is [Open Problem 13, Discounting the Future](/open-problems/discounting-the-future/).
 
-**The draws.** Each input follows a triangular distribution: it never falls below low or above high, and it is most likely near likely. Draws come from a seeded random number generator. Admitted inputs and their seed determine the calculation under the pinned interpretation; an explicit reproduction checks whether another supported runtime matches its numerical fingerprints. Changing the seed shows how much the results move by chance alone.
+**The draws.** Each input follows a triangular distribution: it never falls below low or above high, and it is most likely near likely. Draws come from a seeded random number generator. Admitted inputs and their seed determine the calculation under the pinned interpretation on this runtime; an explicit reproduction checks whether another supported runtime matches its numerical fingerprints. Changing the seed shows how much the results move by chance alone.
 
 **The outputs.** The headline is the median cost per outcome, the middle of the 5,000 draws, with a 90% interval: 90% of draws fall between its two ends. The histogram shows how the draws spread. The sensitivity chart takes one input at a time from its low to its high value, with every other input at likely, and shows how far the cost per outcome moves. Its longest bar shows the largest change in this calculation when that input varies alone; it does not determine a research priority.
 

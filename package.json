@@ -13,7 +13,7 @@
     "dev": "astro dev",
     "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
-    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions && npm run check:observations && npm run check:program-record-recovery && npm run check:remaining-record-recovery && npm run check:directory-resources && npm run check:disasters && npm run check:model-bundles",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions && npm run check:observations && npm run check:program-record-recovery && npm run check:remaining-record-recovery && npm run check:directory-resources && npm run check:disasters && npm run check:model-bundles && npm run check:fundraising",
     "test": "npm run build && npm run check",
     "extension:zip": "node scripts/zip-extension.mjs",
     "images": "node scripts/make-images.mjs",
@@ -49,8 +49,11 @@
     "check:disasters-history": "node scripts/check-disaster-history.mjs",
     "disasters:prepare": "node scripts/disasters-prepare.mjs",
     "disasters:capture": "node scripts/disasters-capture.mjs",
-    "check:model-bundles": "node scripts/generate-model-engine-registry.mjs --check && node --test --test-concurrency=1 src/lib/model-bundles/*.test.mjs scripts/verify-model-bundle.test.mjs && node scripts/check-model-bundles-build.mjs",
-    "model:verify": "node scripts/verify-model-bundle.mjs"
+    "check:model-bundles": "node scripts/generate-model-engine-registry.mjs --check-integrity && npm run check:model-runtime && node --test --test-concurrency=1 src/lib/model-bundles/*.test.mjs scripts/verify-model-bundle.test.mjs scripts/model-runtime-qualification.test.mjs && node scripts/check-model-bundles-build.mjs",
+    "model:verify": "node scripts/verify-model-bundle.mjs",
+    "check:fundraising": "node --test --test-concurrency=1 src/lib/fundraising/planner.test.mjs && node scripts/check-fundraising-build.mjs",
+    "check:model-reference": "node scripts/generate-model-engine-registry.mjs --check",
+    "check:model-runtime": "node scripts/check-model-runtime.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",

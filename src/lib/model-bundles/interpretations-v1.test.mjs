@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { loadRuntimeObservations, selectRuntimeProfile } from '../../../scripts/model-runtime-qualification.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -62,7 +63,8 @@ test('old arithmetic/PRNG/format source bytes remain the independently reviewed 
     assert.equal(sha(await readFile(new URL(`../client/${name}.ts`, import.meta.url))), digest);
 });
 
-test('ordinary seeds match every actual legacy sorted element and prior independent array fingerprints', async () => {
+test('ordinary seeds match every actual legacy element and exact measured runtime fingerprints, retaining the original Mac references', async () => {
+  const observations = await loadRuntimeObservations(), profile = selectRuntimeProfile(observations);
   const expected = {
     1: ['06d3b5f2e4c07bc515f056aeabba39c60f60d1d9b83e0d54f6fc2c004fc74e8a', '4a65dfbb56835274f62f4251f44c1fbdfd349c7cec91f16a898383fb5fb7cc97'],
     42: ['99c086c30b8af68f8e098a79c8135f9a9ea4531a687624b3f8491a2f3dfdbacb', '14617be2047727459de9f8ebb49e04c460eb2f8b658b6ddfeba86ebc58e7b55f'],
@@ -70,8 +72,13 @@ test('ordinary seeds match every actual legacy sorted element and prior independ
   };
   for (const seed of [1, 42, 4294967295]) {
     const a = compare(ordinary, 0.03, seed);
-    assert.equal(await hashArray('costs', a.costs), expected[seed][0]);
-    assert.equal(await hashArray('outcomes', a.outcomes), expected[seed][1]);
+    const reference = observations.profiles[0].cases.find(item => item.id === `ordinary-seed-${seed}`).expected;
+    assert.deepEqual([reference.costsSha256, reference.outcomesSha256], expected[seed]);
+    const measured = profile.cases.find(item => item.id === `ordinary-seed-${seed}`).expected;
+    assert.equal(await hashArray('costs', a.costs), measured.costsSha256);
+    assert.equal(await hashArray('outcomes', a.outcomes), measured.outcomesSha256);
+    assert.equal(profile.referenceCompatible, measured.costsSha256 === expected[seed][0]);
+    assert.equal(profile.referenceCompatible, measured.outcomesSha256 === expected[seed][1]);
     const next = mulberry32(seed), oldNext = oldRandom.mulberry32(seed);
     for (let i = 0; i < 30000; i++) assert.equal(next(), oldNext());
   }

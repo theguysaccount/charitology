@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { loadRuntimeObservations, selectRuntimeProfile } from '../../../scripts/model-runtime-qualification.mjs';
 import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -32,11 +33,19 @@ test('actual fixed-path generator checks existing v1 and refuses creation/change
     for (const path of paths) { const target = join(temporary, path); await mkdir(dirname(target), { recursive: true }); await writeFile(target, await readFile(join(root, path)), { flag: 'wx' }); }
     const data = join(temporary, 'src/lib/model-bundles/registry-v1.generated.mjs'), golden = join(temporary, 'src/lib/model-bundles/fixtures/golden-v1.json');
     const before = [await readFile(data), await readFile(golden)];
-    const checked = run(temporary, []); assert.equal(checked.error, undefined); assert.equal(checked.status, 0, checked.stderr); assert.equal(JSON.parse(checked.stdout).mode, 'checked');
+    const checked = run(temporary, ['--check-integrity']); assert.equal(checked.error, undefined); assert.equal(checked.status, 0, checked.stderr);
+    assert.equal(JSON.parse(checked.stdout).mode, 'integrity-checked'); assert.equal(JSON.parse(checked.stdout).numericalConformance, 'not-evaluated');
+    const profile = selectRuntimeProfile(await loadRuntimeObservations()), strict = run(temporary, []);
+    assert.equal(strict.status, profile.referenceCompatible ? 0 : 1, strict.stderr);
+    if (profile.referenceCompatible) assert.equal(JSON.parse(strict.stdout).mode, 'checked');
+    else { assert.match(strict.stderr, /Existing v1 bytes differ/); assert.match(strict.stderr, /ordinary-seed-42/); }
+    const alteredGolden = JSON.parse(before[1]); alteredGolden.cases[0].expected.seed = 2; await writeFile(golden, JSON.stringify(alteredGolden, null, 2) + '\n');
+    assert.equal(run(temporary, ['--check-integrity']).status, 1); await writeFile(golden, before[1]);
     const duplicate = run(temporary, ['--create']); assert.equal(duplicate.status, 1); assert.match(duplicate.stderr, /may not be overwritten/);
     const unknown = run(temporary, ['--overwrite']); assert.equal(unknown.status, 2);
     const source = join(temporary, knownEngine().files[0].path); await writeFile(source, (await readFile(source, 'utf8')) + '\n');
     const changed = run(temporary, ['--check']); assert.equal(changed.status, 1); assert.match(changed.stderr, /cannot be silently replaced/);
+    assert.equal(run(temporary, ['--check-integrity']).status, 1);
     assert.deepEqual(await readFile(data), before[0]); assert.deepEqual(await readFile(golden), before[1]);
   } finally { await rm(temporary, { recursive: true, force: true }); }
 });

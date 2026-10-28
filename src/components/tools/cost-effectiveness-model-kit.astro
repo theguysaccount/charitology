@@ -1,7 +1,7 @@
 ---
 // Cost-Effectiveness Model Kit: a Monte Carlo cost-per-outcome model that runs in
-// the browser. Triangular distributions, a seeded generator so runs repeat
-// exactly, a histogram and a one-at-a-time sensitivity chart.
+// the browser. Triangular distributions, a seeded generator for repeat runs on
+// this runtime, a histogram and a one-at-a-time sensitivity chart.
 // Guarded Run and bounded charts use src/lib/model-bundles. Original saved
 // formats and the older shared math/format source files remain unchanged.
 import { url } from '../../lib/site';
@@ -111,7 +111,7 @@ const parts = [
       <div class="field">
         <label for="ce-seed">Random seed</label>
         <input type="text" inputmode="numeric" id="ce-seed" value="1" autocomplete="off" aria-describedby="ce-seed-hint ce-seed-err" />
-        <span class="hint" id="ce-seed-hint">The same seed always gives the same draws. Change it to see how much the results move by chance alone.</span>
+        <span class="hint" id="ce-seed-hint">The same inputs and seed repeat this runtime’s calculation. Another platform may produce different complete-array fingerprints. Change the seed to explore simulation variation.</span>
         <span class="ce-err" id="ce-seed-err"></span>
       </div>
     </div>

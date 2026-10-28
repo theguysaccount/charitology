@@ -3,17 +3,26 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { normalizeRaw, validateInput, evaluateInput, NumericalError } from '../src/lib/model-bundles/interpretations/v1/arithmetic.mjs';
 import { hashArray } from '../src/lib/model-bundles/interpretations/v1/encoding.mjs';
-import { canonicalJson, cloneJson, hashValue, sha256Bytes, prettyBytes, LIMITS } from '../src/lib/model-bundles/codec.mjs';
+import { canonicalJson, cloneJson, hashValue, sha256Bytes, prettyBytes, parseJsonBytes, LIMITS } from '../src/lib/model-bundles/codec.mjs';
 const root = new URL('../', import.meta.url);
 const sourcePaths = ['src/lib/model-bundles/interpretations/v1/arithmetic.mjs',
   'src/lib/model-bundles/interpretations/v1/encoding.mjs', 'src/lib/model-bundles/interpretations/v1/random.mjs'];
 const dataPath = new URL('src/lib/model-bundles/registry-v1.generated.mjs', root);
 const goldenPath = new URL('src/lib/model-bundles/fixtures/golden-v1.json', root);
 const args = process.argv.slice(2);
-if (args.length > 1 || args.length === 1 && !['--create', '--check'].includes(args[0])) {
-  process.stderr.write('Use --check (default), or --create only for the first v1 registry.\n'); process.exit(2);
+if (args.length > 1 || args.length === 1 && !['--create', '--check', '--check-integrity'].includes(args[0])) {
+  process.stderr.write('Use --check (default, strict runtime), --check-integrity (retained bytes only), or --create only for the first v1 registry.\n'); process.exit(2);
 }
-const create = args[0] === '--create';
+const create = args[0] === '--create', integrity = args[0] === '--check-integrity';
+const FIXED_V1 = Object.freeze({
+  definitionHash: '3826f798e0dc55defdd59cbdfd697a5eef40931f99dd3181abe12c5d8a28f30e',
+  goldenHash: 'ff19a5fe1b56a0452a225ae801fadeff54d30441683dc705197973943896d527',
+  files: Object.freeze([
+    Object.freeze({ path: sourcePaths[0], byteLength: 12005, sha256: 'b7c48885f919ed1c6287a6a430b8d1bb5b54d1c273db831e0959aad2c476f63a' }),
+    Object.freeze({ path: sourcePaths[1], byteLength: 6904, sha256: 'b53be55bbe01cc88ddb0b0657c80b22a2387afc69bd6f312d52f4a5fc70091a5' }),
+    Object.freeze({ path: sourcePaths[2], byteLength: 9075, sha256: '5393a30d75b30ba7e0d11e3e6915b9b1dc64ff1d62889e4631a5b9bf9462fd2e' }),
+  ]),
+});
 const ordinary = { cost: [100, 200, 500], people: [10, 20, 40], works: [0.2, 0.6, 0.9],
   effect: [0.1, 1, 2], years: [0.5, 1, 3], anyway: [0, 0.1, 0.5] };
 const rowOrder = ['cost', 'people', 'works', 'effect', 'years', 'anyway'];
@@ -140,7 +149,9 @@ function registryMismatchDiagnostic(files, actualGolden, actualEngine, priorRegi
 }
 
 try {
-  const files = await readSources(), golden = await goldenVectors();
+  const files = await readSources();
+  // Integrity mode never evaluates reference arithmetic or asserts runtime compatibility.
+  const golden = integrity ? parseJsonBytes(new Uint8Array(await readFile(goldenPath)), { maxBytes: LIMITS.golden }) : await goldenVectors();
   const after = await readSources();
   if (canonicalJson(files) !== canonicalJson(after)) throw new Error('Source changed during registry generation.');
   const definition = { id: 'charitology-ce-triangular-js-v1', version: 1, language: 'ecmascript-binary64',
@@ -149,6 +160,9 @@ try {
     sensitivity: 'one-at-a-time-mode-v1', numericalPolicy: 'guarded-finite-intermediates-v1',
     sourceFiles: files.map(({ rawUtf8: _, ...pin }) => pin), goldenVectorsHash: await hashValue('golden', golden) };
   const engine = { definition, definitionHash: await hashValue('engine', definition), files };
+  if (integrity && (definition.goldenVectorsHash !== FIXED_V1.goldenHash || engine.definitionHash !== FIXED_V1.definitionHash ||
+      canonicalJson(definition.sourceFiles) !== canonicalJson(FIXED_V1.files)))
+    throw new Error('Fixed v1 pins differ. This interpretation cannot be silently replaced; use a new engine version.');
   prettyBytes(engine, LIMITS.engine);
   const generated = `// Generated only by scripts/generate-model-engine-registry.mjs --create.\n// Candidate v1 interpretation. Existing bytes are never silently replaced.\nexport const ENGINE = ${JSON.stringify(engine, null, 2)};\nexport const GOLDEN = ${JSON.stringify(golden, null, 2)};\n`;
   const goldenBytes = prettyBytes(golden, LIMITS.golden);
@@ -169,7 +183,7 @@ try {
       throw new Error('Existing v1 bytes differ. This interpretation cannot be silently replaced; use a new engine version.');
     }
   }
-  process.stdout.write(JSON.stringify({ mode: create ? 'created-candidate' : 'checked', definitionHash: engine.definitionHash,
+  process.stdout.write(JSON.stringify({ mode: create ? 'created-candidate' : integrity ? 'integrity-checked' : 'checked', ...(integrity ? { numericalConformance: 'not-evaluated' } : {}), definitionHash: engine.definitionHash,
     goldenVectorsHash: definition.goldenVectorsHash, cases: golden.cases.length,
     files: files.map(({ rawUtf8: _, ...pin }) => pin), goldenBytes: goldenBytes.byteLength,
     engineBytes: prettyBytes(engine, LIMITS.engine).byteLength }) + '\n');
