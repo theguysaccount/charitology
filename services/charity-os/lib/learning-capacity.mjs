@@ -15,6 +15,7 @@ import { directoryPrivateHash } from './directory-resource-model.mjs';
 import { END_GROWTH_RESERVE_BYTES } from './task-recurrence.mjs';
 import { participationQuota, PARTICIPATION_LIMITS } from './participation.mjs';
 import { DELIVERY_CONSENT_VERSION } from './participation-delivery.mjs';
+import { participationTimestampParameter } from './participation-timestamp.mjs';
 
 export const LEARNING_RESTORE_CAPACITY = Object.freeze({ logicalBytes: 60 * 1024 * 1024, backupBytes: 64 * 1024 * 1024,
   auditCheckReserveBytes: 1000, worstOrgId: 'o'.repeat(100), worstActorId: 'u'.repeat(100),
@@ -111,20 +112,13 @@ async function measure(c, table, rows) {
   if (!rows.length) return [];
   // Composite JSON timestamp transport only: payload/data/proof objects retain their exact original strings.
   const sqlRows = rows.map(value => Object.fromEntries(Object.entries(value).map(([key, field]) => [key,
-    typeof field === 'string' && key.endsWith('_at') ? pgTimestamp(field) : field])));
+    typeof field === 'string' && key.endsWith('_at') ? participationTimestampParameter(field) : field])));
   const result = await c.query(`SELECT item.ordinality::integer AS position,octet_length(to_jsonb(r)::text) AS bytes${table === 'os_records' ? ',octet_length(r.data::text) AS data_bytes' : ''} FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS item(value,ordinality) CROSS JOIN LATERAL jsonb_populate_record(NULL::${table},item.value) AS r ORDER BY item.ordinality`, [JSON.stringify(sqlRows)]);
   if (result.rows.length !== rows.length) badSchema();
   return result.rows.map((value, index) => {
     if (Number(value.position) !== index + 1 || !Number.isSafeInteger(Number(value.bytes)) || Number(value.bytes) < 0) badSchema();
     return { bytes: Number(value.bytes), dataBytes: Number(value.data_bytes) || 0 };
   });
-}
-function pgTimestamp(value) {
-  if (/^\+\d{6}-/.test(value)) return value.slice(1);
-  const bc = value.match(/^-(\d{6})(-.+)$/);
-  if (bc) return String(Number(bc[1]) + 1).padStart(4, '0') + bc[2] + ' BC';
-  if (value.startsWith('0000-')) return '0001' + value.slice(4) + ' BC';
-  return value;
 }
 function wireRow(value) {
   return Object.fromEntries(Object.entries(value).map(([key, field]) => [key,

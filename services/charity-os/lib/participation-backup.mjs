@@ -1,4 +1,5 @@
 import { fail, hash, stable } from "./security.mjs";
+import { participationTimestampParameter } from './participation-timestamp.mjs';
 import {
   participationTerms,
   participationQuota,
@@ -459,7 +460,7 @@ export async function restoreParticipation(c, org, user, normalized) {
         JSON.stringify(t.terms),
         t.termsHash,
         user,
-        t.createdAt,
+        participationTimestampParameter(t.createdAt),
       ],
     );
   for (const p of normalized.participations)
@@ -475,9 +476,9 @@ export async function restoreParticipation(c, org, user, normalized) {
         p.intakeId,
         p.state,
         p.frozen ? JSON.stringify(p.frozen) : null,
-        p.cancelledAt,
+        participationTimestampParameter(p.cancelledAt),
         user,
-        p.createdAt,
+        participationTimestampParameter(p.createdAt),
         p.recoveredState,
       ],
     );
@@ -490,17 +491,17 @@ export async function restoreParticipation(c, org, user, normalized) {
         o.participationId,
         o.eventRevision,
         JSON.stringify(o.payload),
-        new Date(o.createdAt),
+        participationTimestampParameter(o.createdAt),
         o.participationRevision,
         o.recoveredState,
         o.consentRevision,
         o.consentCopy,
         o.templateVersion,
-        o.attemptedAt === null ? null : new Date(o.attemptedAt),
+        participationTimestampParameter(o.attemptedAt),
         o.attempts,
-        o.lastCheckedAt === null ? null : new Date(o.lastCheckedAt),
+        participationTimestampParameter(o.lastCheckedAt),
         o.safeCode,
-        o.providerEventAt === null ? null : new Date(o.providerEventAt),
+        participationTimestampParameter(o.providerEventAt),
       ],
     );
   await participationQuota(c, org);

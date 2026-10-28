@@ -1,5 +1,6 @@
 import { fail } from "./security.mjs";
 import { intakeSchema, intakeAnswers, INTAKE_LIMITS } from "./intake.mjs";
+import { participationTimestampParameter } from "./participation-timestamp.mjs";
 
 const opaque = (v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,100}$/.test(v);
 const stamp = (v) =>
@@ -218,7 +219,7 @@ export async function restoreIntake(c, org, user, intake) {
         p.targetRevision,
         JSON.stringify(p.schema),
         user,
-        p.createdAt,
+        participationTimestampParameter(p.createdAt),
       ],
     );
   for (const s of intake.submissions)
@@ -229,12 +230,12 @@ export async function restoreIntake(c, org, user, intake) {
         s.id,
         s.publicationId,
         JSON.stringify(s.answers),
-        s.consentAt,
+        participationTimestampParameter(s.consentAt),
         s.status,
         JSON.stringify(s.convertedIds),
-        s.createdAt,
-        s.erasedAt,
-        s.cancelledAt,
+        participationTimestampParameter(s.createdAt),
+        participationTimestampParameter(s.erasedAt),
+        participationTimestampParameter(s.cancelledAt),
       ],
     );
   if (!intake.submissions.length) return;

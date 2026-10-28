@@ -7,13 +7,16 @@ import { makeBackup, validateBackup } from '../lib/backup.mjs';
 import { validateRecord, MODULE_MAP } from '../lib/modules.mjs';
 import { hash } from '../lib/security.mjs';
 import { participationTerms } from '../lib/participation.mjs';
-import { restoreParticipation, restoredParticipation } from '../lib/participation-backup.mjs';
+import { restoreParticipation, restoredParticipation, exportParticipation } from '../lib/participation-backup.mjs';
+import { restoreIntake, restoredIntake, exportIntake } from '../lib/intake-backup.mjs';
+import { intakeSchema } from '../lib/intake.mjs';
 import { DELIVERY_CONSENT_VERSION } from '../lib/participation-delivery.mjs';
 import { restoreLearningBridge } from '../lib/learning-backup.mjs';
 import { learningWriteCapability } from '../lib/learning-guards.mjs';
 import { assembleWorkspaceBackup, checkWorkspaceExportCapacity } from '../lib/workspace-backup.mjs';
 import { measureLearningRestoreCapacity, measureLearningOperationalCapacity, LEARNING_OPERATIONAL_CAPACITY as O, LEARNING_RESTORE_CAPACITY as C } from '../lib/learning-capacity.mjs';
 import { learningMappedFixture } from '../test/learning-fixtures.mjs';
+import { participationTimestampParameter as parameter } from '../lib/participation-timestamp.mjs';
 const configured = !!(process.env.DATABASE_URL && process.env.OS_DATABASE_URL), at = '2026-10-27T00:00:00.000Z';
 const quote = value => '"' + value.replaceAll('"', '""') + '"';
 const direct = value => { const url = new URL(value); url.hostname = url.hostname.replace(/-pooler(?=\.)/, ''); return url.toString(); };
@@ -57,7 +60,7 @@ test('actual PostgreSQL finite worker metadata reserve preserves source bytes an
       await restoreLearningBridge(c, org, bridge, { records: input.records });
     });
     await t.test('actual admitted extended provider year has27 wire characters and measured PG width', async () => {
-      const result = (await tx(c => c.query('SELECT $1::timestamptz AS provider,octet_length(to_jsonb($1::timestamptz)::text) AS provider_bytes,octet_length(to_jsonb($2::timestamptz)::text) AS service_bytes,octet_length(to_jsonb($3::timestamptz)::text) AS physical_bytes,$4::timestamptz AS bc,$5::timestamptz AS zero_year', [new Date(O.providerTime), C.timestamp, O.providerPhysicalTime, new Date(O.providerPhysicalWireTime), new Date('0000-01-01T00:00:00.000Z')]), org, { readOnly: true })).rows[0];
+      const result = (await tx(c => c.query('SELECT $1::timestamptz AS provider,octet_length(to_jsonb($1::timestamptz)::text) AS provider_bytes,octet_length(to_jsonb($2::timestamptz)::text) AS service_bytes,octet_length(to_jsonb($3::timestamptz)::text) AS physical_bytes,$4::timestamptz AS bc,$5::timestamptz AS zero_year', [parameter(O.providerTime), C.timestamp, O.providerPhysicalTime, parameter(O.providerPhysicalWireTime), parameter('0000-01-01T00:00:00.000Z')]), org, { readOnly: true })).rows[0];
       assert.equal(result.provider.toISOString(), O.providerTime); assert.equal(result.provider.toISOString().length, 27);
       assert.equal(result.bc.toISOString(), O.providerPhysicalWireTime); assert.equal(result.zero_year.toISOString(), '0000-01-01T00:00:00.000Z');
       assert.ok(result.provider_bytes >= 31); assert.ok(result.service_bytes >= result.provider_bytes); assert.ok(result.physical_bytes > result.service_bytes);
@@ -79,7 +82,7 @@ test('actual PostgreSQL finite worker metadata reserve preserves source bytes an
     });
     await t.test('actual worst worker-shaped metadata remains inside source reserves without provider actions', async () => {
       await tx(async c => {
-        await c.query("UPDATE os_participation_outbox SET state='suppressed',safe_code=$2,attempts=$3,first_attempt_at=$4,last_checked_at=$4,provider_event_at=$5,lease_owner=$6,lease_until=$4,next_at=$4 WHERE org_id=$1 AND intent_kind<>'legacy'", [org, O.safeCode, O.attempts, C.timestamp, new Date(O.providerTime), 'f'.repeat(32)]);
+        await c.query("UPDATE os_participation_outbox SET state='suppressed',safe_code=$2,attempts=$3,first_attempt_at=$4,last_checked_at=$4,provider_event_at=$5,lease_owner=$6,lease_until=$4,next_at=$4 WHERE org_id=$1 AND intent_kind<>'legacy'", [org, O.safeCode, O.attempts, C.timestamp, parameter(O.providerTime), 'f'.repeat(32)]);
         await c.query("UPDATE os_participation_outbox SET state='cancelled',safe_code='authority_withdrawn',lease_owner=NULL,lease_until=NULL WHERE org_id=$1 AND intent_kind='legacy'", [org]);
         await c.query("UPDATE os_participations SET revision=$2,updated_at=$3,delivery_consent=jsonb_build_object('version',$4::text,'enabled',false,'revision',$2::integer,'at',$5::text) WHERE org_id=$1", [org, O.attempts, C.timestamp, DELIVERY_CONSENT_VERSION, O.serviceTime]);
       });
@@ -118,6 +121,47 @@ test('actual PostgreSQL finite worker metadata reserve preserves source bytes an
         await assert.rejects(measureLearningOperationalCapacity(c, org, sourceBackup.participation), error => error.code === 'learning_operational_capacity');
       }, { rollback: true });
       assert.equal((await tx(c => c.query("SELECT budget_bytes FROM os_participation_outbox WHERE intent_kind<>'legacy'"), org, { readOnly: true })).rows[0].budget_bytes, 8192);
+    });
+    await t.test('admitted intake and participation scalar timestamps retain exact UTC wire values across supported years', async () => {
+      const bcTarget = 'b'.repeat(100), portable = structuredClone(sourceBackup.participation);
+      const expected = { createdAt: O.providerPhysicalWireTime, attemptedAt: '0000-01-01T00:00:00.000Z', lastCheckedAt: O.providerTime, providerEventAt: '-000001-01-01T00:00:00.000Z' };
+      Object.assign(portable.outbox.find(value => value.id === 'fictional-legacy'), expected);
+      portable.targets[0].createdAt = O.providerTime;
+      Object.assign(portable.participations[0], { state: 'cancelled', createdAt: '0000-02-01T00:00:00.000Z', cancelledAt: '-000001-03-01T00:00:00.000Z' });
+      const form = ordinary('forms', 'fictional-form', { title: 'Fictional UTC form', kind: 'form', version: 1,
+        definition: JSON.stringify([{ key: 'name', label: 'Operational name', type: 'text', required: true }]),
+        purpose: 'Arrange a fictional response.', retentionUntil: '2099-01-01', consentRequired: true, anonymous: false });
+      const intake = { version: 1, publications: [{ id: 'fictional-publication', recordId: form.id, sourceRevision: 1, kind: 'contact',
+        targetId: null, targetModule: null, targetRevision: null, schema: intakeSchema(form, 'contact'), createdAt: '0000-04-01T00:00:00.000Z', withdrawnAt: null }],
+        submissions: [{ id: 'fictional-request', publicationId: 'fictional-publication', answers: {}, consentAt: '0000-05-01T00:00:00.000Z',
+          status: 'cancelled', convertedIds: [], createdAt: '0000-06-01T00:00:00.000Z', erasedAt: '0000-07-01T00:00:00.000Z', cancelledAt: '0000-08-01T00:00:00.000Z' }] };
+      const copied = makeBackup({ name: 'Fictional UTC transport', currency: 'USD', time_zone: 'UTC' }, [event, contact, booking, form], { participation: portable, intake });
+      const originalCopy = JSON.stringify(copied), imported = validateBackup(copied, bcTarget, actor);
+      const admitted = restoredParticipation(copied), admittedIntake = restoredIntake(copied);
+      // Intake's existing admission requires four-digit years. The transport fix does not widen it.
+      for (const value of [O.providerTime, O.providerPhysicalWireTime]) {
+        const invalid = structuredClone(copied); invalid.intake.publications[0].createdAt = value;
+        assert.throws(() => restoredIntake(invalid), error => error.code === 'intake_backup');
+      }
+      const proof = await tx(c => measureLearningRestoreCapacity(c, copied), org, { readOnly: true });
+      await tx(async c => {
+        await c.query("INSERT INTO os_orgs(id,name,slug,currency,time_zone) VALUES($1,'Fictional UTC transport',$1,'USD','UTC')", [bcTarget]);
+        for (const record of imported) await c.query('INSERT INTO os_records(org_id,id,module_id,data,status,owner_id,last_editor_id,revision) VALUES($1,$2,$3,$4,$5,$6,$6,1)', [bcTarget, record.id, record.moduleId, JSON.stringify(record.data), record.status, actor]);
+        await restoreIntake(c, bcTarget, actor, admittedIntake);
+        await restoreParticipation(c, bcTarget, actor, admitted);
+      }, bcTarget);
+      const recovered = await tx(c => exportParticipation(c, bcTarget), bcTarget, { readOnly: true });
+      const row = recovered.outbox.find(value => value.id === 'fictional-legacy');
+      for (const [key, value] of Object.entries(expected)) assert.equal(row[key], value, key);
+      assert.equal(recovered.targets[0].createdAt, portable.targets[0].createdAt);
+      for (const key of ['createdAt', 'cancelledAt']) assert.equal(recovered.participations[0][key], portable.participations[0][key], key);
+      const recoveredIntake = await tx(c => exportIntake(c, bcTarget), bcTarget, { readOnly: true });
+      assert.equal(recoveredIntake.publications[0].createdAt, intake.publications[0].createdAt);
+      for (const key of ['consentAt', 'createdAt', 'erasedAt', 'cancelledAt']) assert.equal(recoveredIntake.submissions[0][key], intake.submissions[0][key], key);
+      assert.ok(await tx(c => logicalBackupBytes(c, bcTarget), bcTarget, { readOnly: true }) <= proof.logicalBytes);
+      assert.ok(Buffer.byteLength(JSON.stringify(await tx(c => assembleWorkspaceBackup(c, bcTarget), bcTarget, { readOnly: true }))) <= proof.backupBytes);
+      assert.equal(JSON.stringify(copied), originalCopy, 'Admission, projection and restore never rewrite original source JSON.');
+      assert.equal(sourceBackup.participation.outbox.find(value => value.id === 'fictional-legacy').createdAt === expected.createdAt, false, 'Original source was never rewritten.');
     });
     await t.test('ordinary admission rejects source physical growth at60MiB before commit', async () => {
       const proof = await tx(c => measureLearningOperationalCapacity(c, org, sourceBackup.participation), org, { readOnly: true });

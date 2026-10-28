@@ -12,6 +12,7 @@ import {
   verifiedParticipant,
 } from "./participants.mjs";
 import { body, checkCsrf, fail, hash, id, json, stable } from "./security.mjs";
+import { participationTimestampParameter } from './participation-timestamp.mjs';
 
 export const DELIVERY_CONSENT_VERSION = "participation-email-v1";
 export const DELIVERY_TEMPLATE_VERSION = "participation-notice-v1";
@@ -1424,7 +1425,7 @@ async function completeWork(db, org, job, result, budget) {
           job.lease_owner,
           next,
           safeCode,
-          providerEventAt == null ? null : new Date(providerEventAt),
+          participationTimestampParameter(providerEventAt),
           result.provenNoAttempt === true && job.operation === "send",
         ],
       );
