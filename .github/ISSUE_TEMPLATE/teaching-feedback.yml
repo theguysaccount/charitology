@@ -1,0 +1,36 @@
+name: Teaching material feedback or adaptation
+description: Improve a lesson, syllabus or club resource with a specific correction or proposed adaptation.
+title: "Teaching material: "
+labels: [program, idea]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue is public. Do not include student names, contact details, grades, school login information, identifiable work, photographs, safeguarding concerns or private classroom records.
+        A report is a contribution to editorial review. It does not establish adoption, learning benefits, course credit, club recognition or a partnership. Use fictional examples or permissioned aggregate descriptions.
+  - type: input
+    id: resource
+    attributes:
+      label: Page or material and version
+      description: Link the resource and identify its edition or download filename.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Specific correction or adaptation
+      description: Describe the change, its purpose and any source. Explain your proposed audience without identifying learners.
+    validations:
+      required: true
+  - type: textarea
+    id: observation
+    attributes:
+      label: What supports the suggestion?
+      description: Separate a proposal from an actual observation. If reporting use, state what was observed, the scope and limits, using only permissioned aggregate information. Do not infer causal learning benefits from favorable feedback.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Official sources or permissions, if relevant
+      description: Cite current public teaching or institutional guidance. State unknowns. Do not share confidential approval paperwork or student consent records here.

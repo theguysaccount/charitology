@@ -1,5 +1,11 @@
 # Changelog
 
+## October 28, 2026 UTC: teach and learn
+
+- Added five teaching/adoption pages and seven editable Markdown downloads with a complete fictional lesson, worked answers, university syllabus, rubric and club/school starter materials. All remain untested editorial drafts.
+- Added official-source examples of university, school and student-group routes, distinct from approval, credit or institutional partnerships. A source-required public correction form excludes student records.
+- Prepared a proposed adoption plan plus eight private unsent drafts across six primary institution groups and two held alternatives. No outbound contact, application, registration, learner study or service change occurred. Existing course criteria, storage and all 66 original items remain preserved. [Source audit](docs/EDUCATION_SOURCE_AUDIT.md) and [acceptance](docs/EDUCATION_ACCEPTANCE.md) preserve scope and verification.
+
 ## October 28, 2026 UTC: charity networks and discovery outreach
 
 - Added an 18-organization searchable directory and three six-entry annotated guides for charity founders, leadership/professional peers and sector support. Every listing keeps official sources, actual reading dates, access conditions, limits and draft status. Entries are alphabetical within each guide; no scores, endorsements or partnership claims are supplied.
