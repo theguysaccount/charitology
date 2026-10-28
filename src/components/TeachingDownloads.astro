@@ -1,0 +1,7 @@
+---
+import {teachingMaterials} from '../data/education-kit.mjs';
+import {url} from '../lib/site';
+const {ids=[]}=Astro.props;
+const materials=ids.map((id:string)=>{const m=teachingMaterials.find(m=>m.id===id);if(!m)throw Error(`Missing teaching material ${id}`);return m;});
+---
+<div class="education-downloads">{materials.map(m=><a href={url(`/learn/materials/${m.id}.md`)} download={`${m.id}.md`}><strong>{m.title} ↓</strong><span>Editable Markdown · teaching draft 0.1</span></a>)}</div>

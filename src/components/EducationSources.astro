@@ -1,0 +1,6 @@
+---
+import {educationSources} from '../data/education-sources.mjs';
+const {ids=[]}=Astro.props;
+const sources=ids.map((id:string)=>{const s=educationSources.find(s=>s.id===id);if(!s)throw Error(`Missing education source ${id}`);return s;});
+---
+<section class="education-sources" aria-labelledby="education-sources-title"><p class="eyebrow">Official-source examples</p><h2 id="education-sources-title">Check the local process.</h2><p>These source notes describe particular institutions or programs. Their rules do not grant permission elsewhere, and none is presented as a Charitology partner.</p><ul>{sources.map(source=><li><a href={source.url}>{source.title}</a><span class="education-source-date">Read {source.readOn} UTC · editorial draft{source.readStatus==='limited'?' · limited access':''}</span><p>{source.summary}</p><p class="education-limit">{source.limits}</p></li>)}</ul></section>
