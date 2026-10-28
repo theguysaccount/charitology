@@ -5,6 +5,7 @@ import { database, logicalBackupBytes } from "../lib/database.mjs";
 import { applicationGrantsSql } from "../lib/migration-grants.mjs";
 import { learningMappedFixture, buildLearningFixture } from "../test/learning-fixtures.mjs";
 import { learningHash } from "../lib/learning-json.mjs";
+import { validateRecord, validateTransition } from "../lib/modules.mjs";
 import { learningJSONBBytes, learningReportReserveBytes, measureLearningBackup, restoreLearningBridge, exportLearningBridge } from "../lib/learning-backup.mjs";
 
 const configured = !!(process.env.DATABASE_URL && process.env.OS_DATABASE_URL);
@@ -27,6 +28,35 @@ const receiptFor = event => {
       report: frozen ? { id: payload.reportId, checksum: payload.reportChecksum } : null,
     } };
 };
+
+// A live history belongs to the same complete ordinary-record inventory that
+// production commits before the shared export/restore capacity gate runs.
+async function insertLiveRecords(c, fixture, actor) {
+  const frozen = fixture.events.find(event => event.payload.kind === "report-frozen")?.payload.frozenManifest;
+  for (const original of fixture.records) {
+    const record = structuredClone(original);
+    if (record.id === frozen?.recordId) {
+      validateTransition("reporting", record.status, "frozen", {
+        role: "admin", actorId: actor, ownerId: record.lastEditedBy,
+        approved: true, snapshotApproved: true,
+      });
+      record.data = validateRecord("reporting", record.data, {
+        orgId: fixture.orgId, recordId: record.id, status: "frozen",
+        records: fixture.records, previous: record.data,
+      });
+      assert.equal(frozen.revision, record.revision + 1);
+      assert.equal(frozen.dataSha256, learningHash("data", record.data));
+      record.status = "frozen";
+      record.revision = frozen.revision;
+      record.approval.revision = frozen.revision;
+      record.snapshot = { ...record.snapshot, status: "frozen", revision: frozen.revision };
+    }
+    await c.query("INSERT INTO os_records(org_id,id,module_id,data,status,owner_id,last_editor_id,revision,approval,snapshot,source,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
+      [fixture.orgId, record.id, record.moduleId, JSON.stringify(record.data), record.status, record.ownerId,
+        record.lastEditedBy, record.revision, JSON.stringify(record.approval), JSON.stringify(record.snapshot),
+        record.source === null ? null : JSON.stringify(record.source), record.createdAt, record.updatedAt]);
+  }
+}
 
 test("actual isolated PostgreSQL learning backup representation, category and inactive recovery", {
   skip: configured ? false : "Set owner and constrained URLs for isolated schema checks.", timeout: 300000,
@@ -123,6 +153,7 @@ test("actual isolated PostgreSQL learning backup representation, category and in
       const live = learningMappedFixture({ orgId: liveOrg }), section = mappedBackup(live);
       const receipt = receiptFor(live.root);
       await tx(async c => {
+        await insertLiveRecords(c, live, actor);
         for (const [kind, payload, sequence, version, program, retainedReceipt] of [
           ["source", live.source, null, 1, null, null], ["event", live.root, 1, null, live.programId, receipt],
         ]) await c.query("INSERT INTO os_learning_history(org_id,id,row_kind,origin_mode,origin_org_id,binding_id,sequence,source_version,program_id,payload,receipt,budget_bytes) VALUES($1,$2,$3,'live',$1,$4,$5,$6,$7,$8,$9,octet_length($8::jsonb::text)+COALESCE(octet_length($9::jsonb::text),0)+4096)", [liveOrg, payload.sha256, kind, live.bindingId, sequence, version, program, JSON.stringify(payload), retainedReceipt ? JSON.stringify(retainedReceipt) : null]);
@@ -156,8 +187,10 @@ test("actual isolated PostgreSQL learning backup representation, category and in
 
     await t.test("live report charge pays the recovery reserve once and duplicate inventories refuse atomically", async () => {
       const measured = await tx(c => measureLearningBackup(c, complete.backup), reportOrg);
-      let receipts = 0;
+      let receipts = 0, ordinaryBytes = 0;
       await tx(async c => {
+        await insertLiveRecords(c, complete, actor);
+        ordinaryBytes = await logicalBackupBytes(c, reportOrg);
         for (const row of measured.rows) {
           if (row.rowKind === "recovered-report") {
             await c.query("INSERT INTO os_reports(org_id,id,created_by,title,checksum,payload) VALUES($1,$2,$3,$4,$5,$6)", [reportOrg, row.payload.id, row.payload.createdBy, row.payload.title, row.payload.checksum, JSON.stringify(row.payload)]);
@@ -168,7 +201,7 @@ test("actual isolated PostgreSQL learning backup representation, category and in
           }
         }
       }, reportOrg);
-      assert.equal(await tx(c => logicalBackupBytes(c, reportOrg), reportOrg), measured.totalBytes + receipts);
+      assert.equal(await tx(c => logicalBackupBytes(c, reportOrg), reportOrg), ordinaryBytes + measured.totalBytes + receipts);
       const exported = await tx(c => exportLearningBridge(c, reportOrg, reportContext), reportOrg);
       assert.deepEqual(exported, complete.backup);
       assert.equal(exported.reports.length, 1);

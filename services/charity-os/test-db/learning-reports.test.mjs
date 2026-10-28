@@ -107,7 +107,27 @@ test('actual isolated PostgreSQL report preparation, normal transition and priva
     });
 
     await t.test('private reader admits only strict actual live report envelope and current full source scope', async () => {
-      await tx(c => c.query('INSERT INTO os_reports(org_id,id,created_by,title,checksum,payload) VALUES($1,$2,$3,$4,$5,$6)', [org, plan.report.id, actor, plan.report.title, plan.report.checksum, JSON.stringify(plan.report)]));
+      // A preview is deliberately read-only. Its newly resolved approval proofs,
+      // frozen event and ordinary transition become durable together at commit.
+      await tx(async c => {
+        for (const evidence of plan.approvedEvidence) await insertLearningHistory(c, org, 'evidence', evidence);
+        const event = plan.event, frozenManifest = event.payload.frozenManifest;
+        await insertLearningHistory(c, org, 'event', event, { receipt: {
+          version: 1, operation: 'freeze', commandHash: learningHash('command', { event: event.sha256 }),
+          requestHash: learningHash('request', { event: event.sha256 }), actorBindingHash: 'a'.repeat(64), actorId: actor,
+          sessionSha256: 'b'.repeat(64), membershipSha256: 'c'.repeat(64), memberCreatedAtExact: member.createdAtExact,
+          restoreEpochSha256: 'd'.repeat(64), previewId: 'fictional-preview-' + event.sequence,
+          reviewSha256: 'e'.repeat(64), acceptedAt: preparedAt, result: {
+            outcome: 'frozen', head: { originOrgId: org, bindingId: event.bindingId, sequence: event.sequence, eventSha256: event.sha256 },
+            records: [frozenManifest], report: { id: plan.report.id, checksum: plan.report.checksum },
+          },
+        } });
+        const transition = plan.transition;
+        await c.query('UPDATE os_records SET data=$3,status=$4,revision=$5,approval=$6,snapshot=$7 WHERE org_id=$1 AND id=$2',
+          [org, transition.id, JSON.stringify(transition.data), transition.status, transition.revision,
+            JSON.stringify(transition.approval), JSON.stringify(transition.snapshot)]);
+        await c.query('INSERT INTO os_reports(org_id,id,created_by,title,checksum,payload) VALUES($1,$2,$3,$4,$5,$6)', [org, plan.report.id, actor, plan.report.title, plan.report.checksum, JSON.stringify(plan.report)]);
+      });
       assert.deepEqual(await tx(c => readLearningReport(c, { org, id: plan.report.id, member })), plan.report);
       for (const role of ['board_reader', 'external_reviewer', 'contributor'])
         await assert.rejects(tx(c => readLearningReport(c, { org, id: plan.report.id, member: { ...member, role } })), error => error.status === 403);
