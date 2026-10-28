@@ -1,0 +1,3275 @@
+{
+  "format": "charitology-model-golden",
+  "version": 1,
+  "cases": [
+    {
+      "kind": "run",
+      "id": "ordinary-seed-1",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            200,
+            500
+          ],
+          "people": [
+            10,
+            20,
+            40
+          ],
+          "works": [
+            0.2,
+            0.6,
+            0.9
+          ],
+          "effect": [
+            0.1,
+            1,
+            2
+          ],
+          "years": [
+            0.5,
+            1,
+            3
+          ],
+          "anyway": [
+            0,
+            0.1,
+            0.5
+          ]
+        },
+        "discount": 0.03,
+        "seed": 1,
+        "draws": 5000
+      },
+      "raw": {
+        "parser": "strict-decimal-v1",
+        "name": "Illustrative numerical fixture",
+        "unit": "fictional outcome",
+        "values": {
+          "cost": [
+            "100",
+            "200",
+            "500"
+          ],
+          "people": [
+            "10",
+            "20",
+            "40"
+          ],
+          "works": [
+            "20",
+            "60",
+            "90"
+          ],
+          "effect": [
+            "0.1",
+            "1",
+            "2"
+          ],
+          "years": [
+            "0.5",
+            "1",
+            "3"
+          ],
+          "anyway": [
+            "0",
+            "10",
+            "50"
+          ]
+        },
+        "discount": "3",
+        "seed": "1"
+      },
+      "expected": {
+        "draws": 5000,
+        "seed": 1,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 19.45432046347664
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 5.841870873584707
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 76.01506012061621
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 13.141176005429216
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 3.669760831642208
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 37.6455947998321
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 18.51851851851852
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10.8
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 18.51851851851852
+          },
+          "rows": [
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 185.18518518518513
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 185.18518518518513
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 175.92592592592587
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 55.55555555555556
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 12.345679012345679
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 12.345679012345679
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 55.55555555555556
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 43.20987654320988
+              }
+            },
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 46.29629629629629
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 46.29629629629629
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 37.03703703703703
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 36.76535700304249
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 6.356173378723446
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 6.356173378723446
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 36.76535700304249
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 30.40918362431904
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 37.03703703703704
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 37.03703703703704
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 27.77777777777778
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              }
+            }
+          ]
+        },
+        "costsSha256": "06d3b5f2e4c07bc515f056aeabba39c60f60d1d9b83e0d54f6fc2c004fc74e8a",
+        "outcomesSha256": "4a65dfbb56835274f62f4251f44c1fbdfd349c7cec91f16a898383fb5fb7cc97",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "ordinary-seed-42",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            200,
+            500
+          ],
+          "people": [
+            10,
+            20,
+            40
+          ],
+          "works": [
+            0.2,
+            0.6,
+            0.9
+          ],
+          "effect": [
+            0.1,
+            1,
+            2
+          ],
+          "years": [
+            0.5,
+            1,
+            3
+          ],
+          "anyway": [
+            0,
+            0.1,
+            0.5
+          ]
+        },
+        "discount": 0.03,
+        "seed": 42,
+        "draws": 5000
+      },
+      "raw": {
+        "parser": "strict-decimal-v1",
+        "name": "Illustrative numerical fixture",
+        "unit": "fictional outcome",
+        "values": {
+          "cost": [
+            "100",
+            "200",
+            "500"
+          ],
+          "people": [
+            "10",
+            "20",
+            "40"
+          ],
+          "works": [
+            "20",
+            "60",
+            "90"
+          ],
+          "effect": [
+            "0.1",
+            "1",
+            "2"
+          ],
+          "years": [
+            "0.5",
+            "1",
+            "3"
+          ],
+          "anyway": [
+            "0",
+            "10",
+            "50"
+          ]
+        },
+        "discount": "3",
+        "seed": "42"
+      },
+      "expected": {
+        "draws": 5000,
+        "seed": 42,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 18.67177314954123
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 5.803718275982337
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 81.74179828482208
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 13.67315717656894
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 3.586768895000968
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 38.372963382492614
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 18.51851851851852
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10.8
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 18.51851851851852
+          },
+          "rows": [
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 185.18518518518513
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 185.18518518518513
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 175.92592592592587
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 55.55555555555556
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 12.345679012345679
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 12.345679012345679
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 55.55555555555556
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 43.20987654320988
+              }
+            },
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 46.29629629629629
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 46.29629629629629
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 37.03703703703703
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 36.76535700304249
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 6.356173378723446
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 6.356173378723446
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 36.76535700304249
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 30.40918362431904
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 37.03703703703704
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 37.03703703703704
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 27.77777777777778
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              }
+            }
+          ]
+        },
+        "costsSha256": "99c086c30b8af68f8e098a79c8135f9a9ea4531a687624b3f8491a2f3dfdbacb",
+        "outcomesSha256": "14617be2047727459de9f8ebb49e04c460eb2f8b658b6ddfeba86ebc58e7b55f",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "ordinary-seed-4294967295",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            200,
+            500
+          ],
+          "people": [
+            10,
+            20,
+            40
+          ],
+          "works": [
+            0.2,
+            0.6,
+            0.9
+          ],
+          "effect": [
+            0.1,
+            1,
+            2
+          ],
+          "years": [
+            0.5,
+            1,
+            3
+          ],
+          "anyway": [
+            0,
+            0.1,
+            0.5
+          ]
+        },
+        "discount": 0.03,
+        "seed": 4294967295,
+        "draws": 5000
+      },
+      "raw": {
+        "parser": "strict-decimal-v1",
+        "name": "Illustrative numerical fixture",
+        "unit": "fictional outcome",
+        "values": {
+          "cost": [
+            "100",
+            "200",
+            "500"
+          ],
+          "people": [
+            "10",
+            "20",
+            "40"
+          ],
+          "works": [
+            "20",
+            "60",
+            "90"
+          ],
+          "effect": [
+            "0.1",
+            "1",
+            "2"
+          ],
+          "years": [
+            "0.5",
+            "1",
+            "3"
+          ],
+          "anyway": [
+            "0",
+            "10",
+            "50"
+          ]
+        },
+        "discount": "3",
+        "seed": "4294967295"
+      },
+      "expected": {
+        "draws": 5000,
+        "seed": 4294967295,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 18.38226300226583
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 5.666233342532147
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 71.55592823210836
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 13.69098230935716
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 3.8921619874224747
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 38.75936577691576
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 18.51851851851852
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10.8
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 18.51851851851852
+          },
+          "rows": [
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 185.18518518518513
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 185.18518518518513
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 175.92592592592587
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 55.55555555555556
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 12.345679012345679
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 12.345679012345679
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 55.55555555555556
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 43.20987654320988
+              }
+            },
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 46.29629629629629
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 46.29629629629629
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 37.03703703703703
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 36.76535700304249
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 6.356173378723446
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 6.356173378723446
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 36.76535700304249
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 30.40918362431904
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 37.03703703703704
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 37.03703703703704
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 27.77777777777778
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 16.666666666666668
+              }
+            }
+          ]
+        },
+        "costsSha256": "d0981d015049a40afdecaf869f7d2a2e2f705c364a63ca1a9e3d01167708ccdf",
+        "outcomesSha256": "6319f6ad93a4450a6f70aeeb02bb33995875029cd6cac1e2add829b33a8cc785",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "constant-six-draws",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "people": [
+            10,
+            10,
+            10
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1,
+            1,
+            1
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 42,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 10
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 10
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 10
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 10
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 10
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 10
+          },
+          "rows": [
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "costsSha256": "eb19233ca3da38e34600072c1d06f018927f486288f87a270d056bf0fbf20805",
+        "outcomesSha256": "f51247ff234381d6e05656a71f81c6053c582431cf796d51b5a58d0fae1f72f6",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "cost-low-mode",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            500
+          ],
+          "people": [
+            10,
+            10,
+            10
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1,
+            1,
+            1
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 42,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 21.77037087731724
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 11.024869742135062
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 41.092264990640714
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 10
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 10
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 10
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 10
+          },
+          "rows": [
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 50
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 50
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 40
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "costsSha256": "a129b53bc269da0ea49ee5737477bba9e5546ad274f1ed78747bdffdd53c104b",
+        "outcomesSha256": "f51247ff234381d6e05656a71f81c6053c582431cf796d51b5a58d0fae1f72f6",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "cost-high-mode",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            500,
+            500
+          ],
+          "people": [
+            10,
+            10,
+            10
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1,
+            1,
+            1
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 42,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 38.338807742287855
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 18.996621422554696
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 48.99554141209446
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 10
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 10
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 50
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 50
+          },
+          "rows": [
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 50
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 50
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 40
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 50
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 50
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 50
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 50
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 50
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 50
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 50
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 50
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 50
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 50
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 50
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 50
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 50
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 50
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 50
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 50
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 50
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 50
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 50
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 50
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "costsSha256": "3f1c942feb504a03ba4549333b5a78e39934b21a46754b5c6733852f65aab13e",
+        "outcomesSha256": "f51247ff234381d6e05656a71f81c6053c582431cf796d51b5a58d0fae1f72f6",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "fractional-years-undiscounted",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            200,
+            500
+          ],
+          "people": [
+            10,
+            20,
+            40
+          ],
+          "works": [
+            0.2,
+            0.6,
+            0.9
+          ],
+          "effect": [
+            0.1,
+            1,
+            2
+          ],
+          "years": [
+            0,
+            0.5,
+            2
+          ],
+          "anyway": [
+            0,
+            0.1,
+            0.5
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 42,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 35.37960451839561
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 9.444891309329568
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 211.29079199230543
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 7.230398947394819
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 1.3631351064523411
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 23.642035988538016
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 37.03703703703704
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 5.4
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 37.03703703703704
+          },
+          "rows": [
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "no-outcome"
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 9.25925925925926
+              },
+              "hi": {
+                "kind": "no-outcome"
+              },
+              "swing": {
+                "kind": "unbounded"
+              }
+            },
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 370.37037037037027
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 18.51851851851852
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 18.51851851851852
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 370.37037037037027
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 351.85185185185173
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 111.11111111111111
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 24.691358024691358
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 24.691358024691358
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 111.11111111111111
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 86.41975308641976
+              }
+            },
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 18.51851851851852
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 92.59259259259258
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 18.51851851851852
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 92.59259259259258
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 74.07407407407406
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 74.07407407407408
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 18.51851851851852
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 18.51851851851852
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 74.07407407407408
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 55.55555555555556
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 66.66666666666667
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 66.66666666666667
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 33.333333333333336
+              }
+            }
+          ]
+        },
+        "costsSha256": "b2ff5b5351edc234a245115f911ca6338f4cbee869d5c8614a98d2786931ccd9",
+        "outcomesSha256": "03b9c5afd7faf2c3aa383789fc2c61b1d62fdc127818689f59aad9146a341ee9",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "finite-subnormal-costs",
+      "input": {
+        "values": {
+          "cost": [
+            2e-322,
+            2e-322,
+            2e-322
+          ],
+          "people": [
+            1,
+            5,
+            10
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1,
+            1,
+            1
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 42,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 4e-323
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 2.5e-323
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 8.4e-323
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 5.272938762790803
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 2.341020679301872
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 8.474771496826817
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 4e-323
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 5
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 4e-323
+          },
+          "rows": [
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 2e-322
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 2e-323
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 2e-323
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 2e-322
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 1.8e-322
+              }
+            },
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 4e-323
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "costsSha256": "80940a5b9fc6f535388e144bbbeb58c94294ad57425768c2cca16d97b6173c72",
+        "outcomesSha256": "d5b3da2fc8370c4374475750c627ef83284650658e4d0e701eecfbeabbe4dfd9",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "finite-subnormal-outcomes",
+      "input": {
+        "values": {
+          "cost": [
+            5e-324,
+            5e-324,
+            5e-324
+          ],
+          "people": [
+            1,
+            1,
+            1
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            5e-324,
+            5e-324,
+            5e-324
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 42,
+        "none": 0,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 1
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 1
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 1
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 5e-324
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 5e-324
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 5e-324
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 1
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 5e-324
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 1
+          },
+          "rows": [
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 1
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 1
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 1
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 1
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 1
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 1
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 1
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 1
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 1
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 1
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 1
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 1
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 1
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 1
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 1
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 1
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 1
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 1
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 1
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 1
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 1
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 1
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 1
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 1
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "costsSha256": "ad7d5fc693a63c162a026dfff33a3cd16c40540abd669cc1359f4b7f903bc50c",
+        "outcomesSha256": "3ee315d16c60f69b668fc4f7a5290ac6f248c059cd9f9a9601195c76745a32e8",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "genuine-zero-works",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "people": [
+            10,
+            10,
+            10
+          ],
+          "works": [
+            0,
+            1,
+            1
+          ],
+          "effect": [
+            1,
+            1,
+            1
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 3095237153,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 3095237153,
+        "none": 1,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 14.144630614309033
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 10.263340414715206
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 46.5933524790534
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 7.069820632996734
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 2.146228907819313
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 9.743416467906574
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 10
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 10
+          },
+          "rows": [
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "no-outcome"
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "no-outcome"
+              },
+              "swing": {
+                "kind": "unbounded"
+              }
+            },
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "costsSha256": "875492516e13599805954d0632a651446c6f57362c7c06af2204a0d0d946c7be",
+        "outcomesSha256": "18151421f8f49bdd1adc061417e725f4d4036d175d882bcee8d91a1e27925963",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "genuine-zero-effect",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "people": [
+            10,
+            10,
+            10
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            0,
+            1,
+            1
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 1263671340,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 1263671340,
+        "none": 1,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 14.144630614309033
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 10.263340414715206
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 46.5933524790534
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 7.069820632996734
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 2.146228907819313
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 9.743416467906574
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 10
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 10
+          },
+          "rows": [
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "no-outcome"
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "no-outcome"
+              },
+              "swing": {
+                "kind": "unbounded"
+              }
+            },
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "costsSha256": "875492516e13599805954d0632a651446c6f57362c7c06af2204a0d0d946c7be",
+        "outcomesSha256": "18151421f8f49bdd1adc061417e725f4d4036d175d882bcee8d91a1e27925963",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "run",
+      "id": "genuine-zero-years",
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "people": [
+            10,
+            10,
+            10
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1,
+            1,
+            1
+          ],
+          "years": [
+            0,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 3727072823,
+        "draws": 5000
+      },
+      "raw": null,
+      "expected": {
+        "draws": 5000,
+        "seed": 3727072823,
+        "none": 1,
+        "cost": {
+          "median": {
+            "kind": "finite",
+            "value": 14.144630614309033
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 10.263340414715206
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 46.5933524790534
+          }
+        },
+        "outcome": {
+          "median": {
+            "kind": "finite",
+            "value": 7.069820632996734
+          },
+          "p5": {
+            "kind": "finite",
+            "value": 2.146228907819313
+          },
+          "p95": {
+            "kind": "finite",
+            "value": 9.743416467906574
+          }
+        },
+        "likely": {
+          "cost": {
+            "kind": "finite",
+            "value": 10
+          },
+          "outcome": {
+            "kind": "finite",
+            "value": 10
+          }
+        },
+        "sensitivity": {
+          "base": {
+            "kind": "finite",
+            "value": 10
+          },
+          "rows": [
+            {
+              "key": "years",
+              "atLow": {
+                "kind": "no-outcome"
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "no-outcome"
+              },
+              "swing": {
+                "kind": "unbounded"
+              }
+            },
+            {
+              "key": "cost",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "people",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "works",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "effect",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            },
+            {
+              "key": "anyway",
+              "atLow": {
+                "kind": "finite",
+                "value": 10
+              },
+              "atHigh": {
+                "kind": "finite",
+                "value": 10
+              },
+              "lo": {
+                "kind": "finite",
+                "value": 10
+              },
+              "hi": {
+                "kind": "finite",
+                "value": 10
+              },
+              "swing": {
+                "kind": "finite",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "costsSha256": "875492516e13599805954d0632a651446c6f57362c7c06af2204a0d0d946c7be",
+        "outcomesSha256": "18151421f8f49bdd1adc061417e725f4d4036d175d882bcee8d91a1e27925963",
+        "numericalPolicy": "guarded-finite-intermediates-v1"
+      }
+    },
+    {
+      "kind": "refusal",
+      "id": "discount-rounds-to-one",
+      "raw": null,
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "people": [
+            10,
+            10,
+            10
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1,
+            1,
+            1
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 1e-17,
+        "seed": 42,
+        "draws": 5000
+      },
+      "issue": {
+        "code": "numeric-domain",
+        "phase": "discount",
+        "path": "discount.v",
+        "context": {
+          "kind": "draw",
+          "index": 0
+        }
+      }
+    },
+    {
+      "kind": "refusal",
+      "id": "outcome-product-overflow",
+      "raw": null,
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "people": [
+            1e+308,
+            1e+308,
+            1e+308
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1e+308,
+            1e+308,
+            1e+308
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "issue": {
+        "code": "numeric-overflow",
+        "phase": "outcome",
+        "path": "outcome.effect",
+        "context": {
+          "kind": "draw",
+          "index": 0
+        }
+      }
+    },
+    {
+      "kind": "refusal",
+      "id": "positive-cost-ratio-collapse",
+      "raw": null,
+      "input": {
+        "values": {
+          "cost": [
+            1e-120,
+            1e-120,
+            1e-120
+          ],
+          "people": [
+            1e+120,
+            1e+120,
+            1e+120
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1e+120,
+            1e+120,
+            1e+120
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "issue": {
+        "code": "numeric-underflow",
+        "phase": "cost",
+        "path": "cost.ratio",
+        "context": {
+          "kind": "draw",
+          "index": 0
+        }
+      }
+    },
+    {
+      "kind": "refusal",
+      "id": "triangle-positive-product-collapse",
+      "raw": null,
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "people": [
+            1,
+            1,
+            1
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            0,
+            5e-201,
+            1e-200
+          ],
+          "years": [
+            1,
+            1,
+            1
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0,
+        "seed": 42,
+        "draws": 5000
+      },
+      "issue": {
+        "code": "numeric-underflow",
+        "phase": "sample",
+        "path": "sample.effect.right-product",
+        "context": {
+          "kind": "draw",
+          "index": 0
+        }
+      }
+    },
+    {
+      "kind": "refusal",
+      "id": "discount-positive-power-collapse",
+      "raw": null,
+      "input": {
+        "values": {
+          "cost": [
+            100,
+            100,
+            100
+          ],
+          "people": [
+            10,
+            10,
+            10
+          ],
+          "works": [
+            1,
+            1,
+            1
+          ],
+          "effect": [
+            1,
+            1,
+            1
+          ],
+          "years": [
+            1e+308,
+            1e+308,
+            1e+308
+          ],
+          "anyway": [
+            0,
+            0,
+            0
+          ]
+        },
+        "discount": 0.5,
+        "seed": 42,
+        "draws": 5000
+      },
+      "issue": {
+        "code": "numeric-underflow",
+        "phase": "discount",
+        "path": "discount.power",
+        "context": {
+          "kind": "draw",
+          "index": 0
+        }
+      }
+    },
+    {
+      "kind": "refusal",
+      "id": "raw-positive-percent-collapse",
+      "raw": {
+        "parser": "legacy-amount-strip-v1",
+        "name": "Illustrative numerical fixture",
+        "unit": "fictional outcome",
+        "values": {
+          "cost": [
+            "100",
+            "200",
+            "500"
+          ],
+          "people": [
+            "10",
+            "20",
+            "40"
+          ],
+          "works": [
+            "20",
+            "60",
+            "90"
+          ],
+          "effect": [
+            "0.1",
+            "1",
+            "2"
+          ],
+          "years": [
+            "0.5",
+            "1",
+            "3"
+          ],
+          "anyway": [
+            "0",
+            "10",
+            "50"
+          ]
+        },
+        "discount": "0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+        "seed": "42"
+      },
+      "input": null,
+      "issue": {
+        "code": "numeric-underflow",
+        "phase": "normalize",
+        "path": "raw.discount",
+        "context": {
+          "kind": "normalization"
+        }
+      }
+    },
+    {
+      "kind": "refusal",
+      "id": "raw-positive-number-collapse",
+      "raw": {
+        "parser": "legacy-amount-strip-v1",
+        "name": "Illustrative numerical fixture",
+        "unit": "fictional outcome",
+        "values": {
+          "cost": [
+            "100",
+            "200",
+            "500"
+          ],
+          "people": [
+            "10",
+            "20",
+            "40"
+          ],
+          "works": [
+            "20",
+            "60",
+            "90"
+          ],
+          "effect": [
+            "0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+            "0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+            "0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+          ],
+          "years": [
+            "0.5",
+            "1",
+            "3"
+          ],
+          "anyway": [
+            "0",
+            "10",
+            "50"
+          ]
+        },
+        "discount": "3",
+        "seed": "42"
+      },
+      "input": null,
+      "issue": {
+        "code": "numeric-underflow",
+        "phase": "normalize",
+        "path": "raw.values.effect.low",
+        "context": {
+          "kind": "normalization"
+        }
+      }
+    }
+  ]
+}

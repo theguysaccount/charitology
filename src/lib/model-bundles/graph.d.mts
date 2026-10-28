@@ -1,0 +1,18 @@
+import type { EditorForm, Draft, FrozenVersion, SelectedBundle, State, FullBackup, Instant, Id, TextForm, JsonForm } from './types.js';
+export const LOCAL_KEY: 'charitology.model-bundles.v1';
+export const SELECTED_LABEL: 'User-entered model; not measured or independently reviewed.';
+export const SELECTED_OMISSION: 'Other versions, unrelated models and unfinished private writing are excluded.';
+export const TEXT_FORM_KEYS: readonly (keyof TextForm)[];
+export const JSON_FORM_KEYS: readonly (keyof JsonForm)[];
+export function validateEditorForm(value: unknown): EditorForm;
+export function validateDraft(value: unknown): Draft;
+export function validateFrozenVersion(value: unknown): Promise<FrozenVersion>;
+export function validateSelected(value: unknown): Promise<SelectedBundle>;
+export function parseSelected(bytes: Uint8Array): Promise<SelectedBundle>;
+export function validateState(value: unknown): Promise<State>;
+export function validateBackup(value: unknown): Promise<FullBackup>;
+export function parseBackup(bytes: Uint8Array): Promise<State>;
+export function makeBackup(state: State, exportedAt: Instant): Promise<Uint8Array>;
+export function makeSelected(state: State, versionId: Id, exportedAt: Instant): Promise<Uint8Array>;
+export function assertGraphExtension(before: State, after: State): Promise<State>;
+export function formSize(value: unknown): { leaves: 58; canonicalBytes: number };
