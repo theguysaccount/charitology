@@ -73,6 +73,8 @@ Actual live Chrome searched for MDRTR004, showed one of two incidents, followed 
 
 The initial branch-creation push at `09ef9b401d4ac1baeadc3690bb50c982dbbdcd76` had an all-zero previous SHA. Push run 40593495059 correctly refused it at the existing observation-history gate because an actual nonzero committed base is mandatory. This is not a passing CI run. A documentation follow-up uses that now-existing commit as its real push comparison base; the PR independently supplies its actual main base. No history validator, source bytes or comparison rule is weakened.
 
+A post-publication follow-up push at `5fcb8cc` exposed an observation-timer race in the actual temporary-repository crash test (run 40597769141): SIGKILL could arrive after the child began its next unjournaled file. Production correctly refused uncertain recovery. The test now kills at the actual next exclusive active-file open, before that file exists; its post-head counterpart kills immediately after a real staged-file unlink, while the ownership sidecar is still present. Both execute the unchanged production installer. No journal, ownership, source-pin or recovery rule was relaxed. All 16 maintainer I/O groups pass locally; exact follow-up CI is recorded separately.
+
 ## Version 2 follow-up: documentation publication and live native CSV
 
 Recorded October 28, 2026 UTC. This follow-up adds later evidence without replacing the earlier failed CI or native Save observations above.
