@@ -1,0 +1,141 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Crumbs from '../../../components/Crumbs.astro';
+import ReviewNote from '../../../components/ReviewNote.astro';
+import { fundraisingMethods, fundraisingSources } from '../../../data/fundraising.mjs';
+import type { FundraisingMethod } from '../../../data/fundraising.mjs';
+import { url } from '../../../lib/site';
+
+export function getStaticPaths() {
+  return fundraisingMethods.map((method) => ({ params: { slug: method.id }, props: { method } }));
+}
+interface Props { method: FundraisingMethod }
+const { method } = Astro.props;
+const sources = method.sourceIds.map((id) => {
+  const source = fundraisingSources.find((item) => item.id === id);
+  if (!source) throw new Error(`Unknown fundraising source: ${id}`);
+  return source;
+});
+const moduleLabels: Record<string, string> = {
+  fundraising: 'Giving and fundraising', projects: 'Projects and tasks',
+  communications: 'Communications', events: 'Events and learning',
+  'grant-seeking': 'Grant seeking', 'grant-delivery': 'Grant delivery',
+  evaluation: 'Evaluation and learning', outcomes: 'Outcome records', documents: 'Documents',
+};
+const index = fundraisingMethods.findIndex((item) => item.id === method.id);
+const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
+---
+<Base title={`${method.title}: fundraising playbook`} description={method.summary}>
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'For charities', href: '/for-charities/' }, { label: 'Fundraising', href: '/for-charities/fundraising/' }, { label: method.title }]} />
+      <p class="eyebrow">Fundraising · An editorial playbook</p>
+      <h1>{method.title}</h1>
+      <p class="lede">{method.summary}</p>
+      <p class="method-status"><span class="badge">{method.review === 'draft' ? 'Draft' : method.review}</span> <span>Untested proposal · Hypothesis</span></p>
+    </div>
+  </header>
+  <div class="wrap method-layout">
+    <nav class="method-contents" aria-label="On this page">
+      <p class="eyebrow">Work through the decision</p>
+      <ol>
+        <li><a href="#fit">Goal and fit</a></li>
+        <li><a href="#costs">Full costs</a></li>
+        <li><a href="#preflight">Before you start</a></li>
+        <li><a href="#steps">A proposed workflow</a></li>
+        <li><a href="#measure">What to measure</a></li>
+        <li><a href="#experiment">A bounded experiment</a></li>
+        <li><a href="#followup">Follow through</a></li>
+        <li><a href="#pitfalls">Watch for</a></li>
+        <li><a href="#sources">Sources and limits</a></li>
+        <li><a href="#workspace">Keep a working record</a></li>
+      </ol>
+      <a class="planner-link" href={url('/for-charities/fundraising/#planner')}>Draft your own fundraising plan →</a>
+    </nav>
+    <article class="method-reading">
+      <div class="proposal-note prose">
+        <p>This is Charitology’s proposed workflow, not a tested intervention or a claim that this method is best. Adapt it to your mission, audience and capacity. The sources below offer context and further reading; they have not validated this playbook.</p>
+      </div>
+      <section class="prose" id="fit" aria-labelledby="fit-title">
+        <h2 id="fit-title">Goal and fit</h2>
+        <p>{method.goal}</p><p>{method.fit}</p>
+      </section>
+      <section class="prose" id="costs" aria-labelledby="costs-title">
+        <h2 id="costs-title">Count the full costs</h2>
+        <ul>{method.costs.map((item) => <li>{item}</li>)}</ul>
+      </section>
+      <section class="prose" id="preflight" aria-labelledby="preflight-title">
+        <h2 id="preflight-title">Before you start</h2>
+        <ul>{method.preflight.map((item) => <li>{item}</li>)}</ul>
+      </section>
+      <section class="prose" id="steps" aria-labelledby="steps-title">
+        <h2 id="steps-title">A proposed workflow</h2>
+        <ol class="workflow">{method.steps.map((item) => <li>{item}</li>)}</ol>
+      </section>
+      <section class="prose" id="measure" aria-labelledby="measure-title">
+        <h2 id="measure-title">What to measure</h2>
+        <ul>{method.measure.map((item) => <li>{item}</li>)}</ul>
+      </section>
+      <section class="experiment prose" id="experiment" aria-labelledby="experiment-title">
+        <p class="eyebrow">Keep the uncertainty visible</p>
+        <h2 id="experiment-title">Try a bounded experiment</h2>
+        <p>{method.experiment}</p>
+        <p>Write the decision rule, spending limit and review date before you begin. Keep negative and inconclusive results. An improvement in fundraising is a separate question from an improvement in the outcomes of the work funded.</p>
+      </section>
+      <section class="prose" id="followup" aria-labelledby="followup-title">
+        <h2 id="followup-title">Follow through</h2>
+        <ul>{method.followup.map((item) => <li>{item}</li>)}</ul>
+      </section>
+      <section class="prose" id="pitfalls" aria-labelledby="pitfalls-title">
+        <h2 id="pitfalls-title">Watch for</h2>
+        <ul>{method.pitfalls.map((item) => <li>{item}</li>)}</ul>
+      </section>
+      <section id="sources" aria-labelledby="sources-title">
+        <div class="prose"><h2 id="sources-title">Sources and their limits</h2><p>These are starting points for your own review. Benchmarks describe particular cohorts; practice guidance and provider experiments answer different questions. No named-charity rating or universal return forecast is supplied.</p></div>
+        <div class="method-sources">{sources.map((source) => <article class="source-capsule">
+          <p class="meta">{source.kind} · Draft source note · Checked <time datetime={source.checkedAt}>{source.checkedAt}</time></p>
+          <h3><a href={source.url} rel="noopener">{source.title}</a></h3>
+          <p>{source.summary}</p><p class="source-limit"><strong>Limit.</strong> {source.limits}</p>
+        </article>)}</div>
+      </section>
+      <aside class="workspace prose" id="workspace" aria-labelledby="workspace-title">
+        <p class="eyebrow">Make the plan usable</p>
+        <h2 id="workspace-title">Keep a working record in your own OS</h2>
+        <p>After signing in and choosing your organization, you can manually create the records your team needs. These links open a module; they do not copy this playbook, import donors, send a campaign or confirm a payment.</p>
+        <ul class="os-links">{method.osModules.map((id) => <li><a href={`https://os.charitology.org/#module/${id}`}>Open {moduleLabels[id] ?? id} →</a></li>)}</ul>
+        <p>Use Giving and fundraising for campaign plans, separate pledges, externally confirmed gift references and acknowledgments. In Communications, keep the specific purpose, consent evidence, reviewed template and provider references; an approved template is not sending permission. Use Projects and tasks for accountable owners and explicit due dates.</p>
+        {method.id === 'grants' && <p>Keep opportunity and application versions in Grant seeking. An accepted agreement and its delivery obligations belong in Grant delivery. Submissions and receipts remain actions you complete and verify through the funder’s own process.</p>}
+        {method.id === 'fundraising-events' && <p>Use Events for session timing, capacity, registration and actual attendance. Keep ticket and donation reconciliation in the relevant finance records; attendance does not establish a received gift.</p>}
+        <p><a href={url('/for-charities/fundraising/#planner')}>Start with a private plan on the fundraising hub</a> or <a href={url('/for-charities/os-plan/')}>read the OS scope and implementation plan</a>.</p>
+      </aside>
+      <p class="prose">Tried an approach and learned something? <a href={url('/for-charities/fundraising/#share')}>Share a public learning note</a> with its context, costs and limitations. Keep donor identities and unpublished stories private.</p>
+      <ReviewNote title={`Fundraising playbook: ${method.title}`} filePath="src/data/fundraising.mjs" review={method.review} />
+      <nav class="method-next" aria-label="More fundraising playbooks">
+        <a href={url('/for-charities/fundraising/')}>← All fundraising methods</a>
+        <a href={url(`/for-charities/fundraising/${next.id}/`)}>Next: {next.title} →</a>
+      </nav>
+    </article>
+  </div>
+</Base>
+<style>
+  .method-status{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;color:var(--ink-2);font: .88rem var(--font-sans)}
+  .method-layout{display:grid;gap:2rem;align-items:start;padding-bottom:4rem}
+  .method-contents{border-block:1px solid var(--rule);padding:1rem 0;font: .9rem/1.5 var(--font-sans)}
+  .method-contents ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.4rem 1rem;padding-left:1.3rem;margin:.8rem 0 1rem}
+  .planner-link{display:block;font-weight:600}
+  .method-reading{min-width:0;max-width:75ch}
+  .method-reading>section,.method-reading>aside{margin-top:2.5rem}
+  .proposal-note{border-left:3px solid var(--accent);padding:.15rem 0 .15rem 1rem;color:var(--ink-2)}
+  .proposal-note p{margin:0}
+  .workflow li{padding-left:.25rem}.workflow li+li{margin-top:.85rem}
+  .experiment,.workspace{padding:1.3rem;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--radius-sm)}
+  .experiment h2,.workspace h2{margin-top:.35rem}
+  .method-sources{display:grid;gap:1rem;margin-top:1rem}
+  .source-capsule{padding:1.1rem;border:1px solid var(--rule);border-radius:var(--radius-sm);background:var(--surface);overflow-wrap:anywhere}
+  .source-capsule h3{font-size:1.15rem;margin:.35rem 0 .6rem}.source-capsule p{margin:.5rem 0}.source-capsule .meta{margin:0}
+  .source-limit{color:var(--ink-2);font-size:.95rem}.os-links{display:grid;gap:.35rem}
+  .method-next{display:flex;justify-content:space-between;gap:1.25rem;flex-wrap:wrap;border-top:1px solid var(--rule);margin-top:2rem;padding-top:1rem;font: .9rem/1.5 var(--font-sans)}
+  @media(min-width:900px){.method-layout{grid-template-columns:15rem minmax(0,1fr);gap:3rem}.method-contents{position:sticky;top:calc(var(--header-h) + 1.25rem)}.method-contents ol{grid-template-columns:1fr}}
+  @media(max-width:380px){.method-contents ol{grid-template-columns:1fr}.experiment,.workspace{padding:1rem}}
+  @media print{.method-contents,.workspace,.method-next{display:none}.method-layout{display:block}.source-capsule{break-inside:avoid}}
+</style>
