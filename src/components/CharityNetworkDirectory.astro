@@ -1,0 +1,62 @@
+---
+import { charityNetworks } from '../data/charity-networks.mjs';
+import { networkGuides, guideForNetwork } from '../data/charity-network-guides.mjs';
+import { url } from '../lib/site';
+---
+<section class="network-directory" data-network-directory aria-labelledby="directory-title">
+  <div class="directory-heading"><div><p class="eyebrow">Browse the connections</p><h2 id="directory-title">Find a useful starting point.</h2></div><p>{charityNetworks.length} sourced listings · editorial drafts</p></div>
+  <fieldset class="network-filters" disabled data-network-controls>
+    <legend class="visually-hidden">Filter the network directory</legend>
+    <label>Search by name, place or need<input type="search" maxlength="160" autocomplete="off" data-network-search placeholder="For example, Scotland or founder" /></label>
+    <label>Type of support<select data-network-kind><option value="">All types</option>{networkGuides.map(g => <option value={g.kind}>{g.label}</option>)}</select></label>
+    <button type="button" class="btn btn-ghost" data-network-clear>Clear filters</button>
+  </fieldset>
+  <p role="status" aria-live="polite" data-network-status>All {charityNetworks.length} listings are shown. Enable JavaScript to filter them.</p>
+  <div class="network-grid">
+    {charityNetworks.map(entry => {
+      const guide = guideForNetwork(entry)!;
+      return <article class="network-card" data-network-card data-kind={entry.kind} data-search={[entry.name, entry.networkType, entry.region, entry.audience, entry.summary, ...entry.helps].join(' ')}>
+        <div class="network-meta"><span>{entry.networkType}</span><span>{entry.region}</span></div>
+        <h3><a href={url(`/for-charities/networks/${guide.id}/#${entry.id}`)}>{entry.name}</a></h3>
+        <p>{entry.summary}</p>
+        <p class="network-audience"><strong>For:</strong> {entry.audience}</p>
+        <div class="network-links"><a href={url(`/for-charities/networks/${guide.id}/#${entry.id}`)}>Read the fit and limits →</a><a href={entry.officialUrl}>Official website ↗</a></div>
+      </article>;
+    })}
+  </div>
+  <p class="network-empty" data-network-empty hidden>No listings match those filters. Try a broader term or clear the filters. This directory is a selected starting set, not complete global coverage.</p>
+  <noscript><p>All listings and their guide links remain readable without filtering.</p></noscript>
+</section>
+<script>
+  const root = document.querySelector<HTMLElement>('[data-network-directory]');
+  if (root) {
+    const controls = root.querySelector<HTMLFieldSetElement>('[data-network-controls]')!;
+    const search = root.querySelector<HTMLInputElement>('[data-network-search]')!;
+    const kind = root.querySelector<HTMLSelectElement>('[data-network-kind]')!;
+    const clear = root.querySelector<HTMLButtonElement>('[data-network-clear]')!;
+    const status = root.querySelector<HTMLElement>('[data-network-status]')!;
+    const empty = root.querySelector<HTMLElement>('[data-network-empty]')!;
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-network-card]')];
+    const normalize = (value: string) => value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().trim();
+    const haystacks = new Map(cards.map(card => [card, normalize(card.dataset.search ?? '')]));
+    function filter() {
+      const terms = normalize(search.value).split(/\s+/).filter(Boolean);
+      let count = 0;
+      for (const card of cards) {
+        const match = (!kind.value || card.dataset.kind === kind.value) && terms.every(term => haystacks.get(card)!.includes(term));
+        card.hidden = !match; if (match) count++;
+      }
+      status.textContent = `${count} of ${cards.length} listings shown. Listing order is not a ranking.`;
+      empty.hidden = count !== 0;
+    }
+    search.addEventListener('input', filter);
+    kind.addEventListener('change', filter);
+    clear.addEventListener('click', () => { search.value = ''; kind.value = ''; filter(); search.focus(); });
+    controls.disabled = false;
+    filter();
+  }
+</script>
+<style>
+  .directory-heading{display:flex;justify-content:space-between;align-items:end;gap:2rem}.directory-heading>p{color:var(--ink-2);font-size:.9rem}.network-filters{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto;gap:1rem;align-items:end;border:0;padding:0;margin:1.5rem 0}.network-filters label{display:flex;flex-direction:column;gap:.4rem;font-family:var(--font-sans);font-size:.9rem}.network-filters input,.network-filters select{width:100%;min-width:0;box-sizing:border-box;font:inherit;min-height:2.75rem;padding:.7rem;background:var(--bg);color:var(--ink);border:1px solid var(--rule);border-radius:6px}.network-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.network-card{display:flex;flex-direction:column;padding:1.5rem;border:1px solid var(--rule);border-radius:var(--radius);background:var(--surface);min-width:0}.network-card[hidden],.network-empty[hidden]{display:none!important}.network-meta{display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap;font-family:var(--font-sans);font-size:.75rem;color:var(--ink-3)}.network-card h3{font-size:1.5rem;margin:.75rem 0}.network-card p{color:var(--ink-2);font-size:1rem}.network-audience{font-size:.9rem!important}.network-links{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:auto;padding-top:.7rem;font-family:var(--font-sans);font-size:.9rem}.network-card a{overflow-wrap:anywhere}.network-empty{padding:1.5rem;border:1px solid var(--rule);border-radius:var(--radius)}[data-network-status]{font-size:.9rem;color:var(--ink-2)}
+  @media(max-width:700px){.directory-heading{display:block}.network-filters,.network-grid{grid-template-columns:1fr}.network-filters .btn{justify-self:start}}@media print{.network-filters{display:none}.network-grid{display:block}.network-card{break-inside:avoid;margin-bottom:1rem}}
+</style>

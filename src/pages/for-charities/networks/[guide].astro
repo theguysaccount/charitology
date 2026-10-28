@@ -1,0 +1,35 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Crumbs from '../../../components/Crumbs.astro';
+import ReviewNote from '../../../components/ReviewNote.astro';
+import { networkGuides, entriesForGuide } from '../../../data/charity-network-guides.mjs';
+import { url } from '../../../lib/site';
+export function getStaticPaths() { return networkGuides.map(guide => ({params:{guide:guide.id},props:{guide}})); }
+const { guide } = Astro.props;
+const entries = entriesForGuide(guide);
+const title = `${entries.length} ${guide.title.charAt(0).toLowerCase()}${guide.title.slice(1)}`;
+---
+<Base title={title} description={guide.description}>
+  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'For charities',href:'/for-charities/'},{label:'Networks',href:'/for-charities/networks/'},{label:guide.label}]} /><p class="eyebrow">An annotated guide · editorial draft</p><h1>{title}</h1><p class="lede">{guide.description}</p><p class="list-notice">A selected starting list in alphabetical order, not a ranking. No listed organization is presented as a Charitology partner.</p></div></header>
+  <div class="wrap guide-layout">
+    <nav class="guide-contents" aria-label="Organizations in this guide"><p class="eyebrow">In this guide</p><ol>{entries.map(entry => <li><a href={`#${entry.id}`}>{entry.name}</a></li>)}</ol><a href={url('/for-charities/networks/#directory')}>Browse all networks →</a></nav>
+    <div>
+      <section class="prose guide-intro"><p>{guide.intro}</p><h2>Before you join or apply</h2><ul>{guide.questions.map(q => <li>{q}</li>)}</ul><p>The fit questions are Charitology’s editorial suggestions. The descriptions below summarize each organization’s own published material; they are not an independent assessment of its results.</p></section>
+      <ol class="network-list" role="list">{entries.map((entry,index) => <li id={entry.id} class="network-entry">
+        <p class="entry-meta"><span>{String(index+1).padStart(2,'0')}</span> {entry.networkType} · {entry.region}</p>
+        <h2>{entry.name}</h2><p class="entry-summary">{entry.summary}</p>
+        <p><strong>Who it serves.</strong> {entry.audience}</p>
+        <h3>What you can explore</h3><ul>{entry.helps.map(help => <li>{help}</li>)}</ul>
+        <p><strong>Access and engagement.</strong> {entry.access}</p>
+        <p class="entry-limit"><strong>Check the limits.</strong> {entry.limits}</p>
+        <div class="entry-actions"><a class="btn btn-small" href={entry.engagement.url}>{entry.engagement.label} ↗</a><a href={entry.officialUrl}>Official website</a></div>
+        <details class="entry-sources"><summary>Official sources and check date</summary><p>Editorial source note · Draft · Checked <time datetime={entry.checkedAt}>{entry.checkedAt.slice(0,10)} UTC</time>. Conditions may change; confirm them before acting.</p><ul>{entry.sources.map(source => <li><a href={source.url}>{source.title}</a>{source.readStatus === 'limited' && <strong> · Limited access</strong>}<p>{source.supports}</p></li>)}</ul></details>
+      </li>)}</ol>
+      <aside class="prose keep-working"><h2>Make the connection useful.</h2><p>{guide.closing}</p><p>Our <a href={url('/for-charities/fundraising/')}>fundraising guides</a> connect an appeal to its acknowledgment and learning. For shared work, <a href="https://os.charitology.org/#module/projects">Charity OS Projects and tasks</a> can keep owners and due dates visible. <a href="https://os.charitology.org/#module/resources">Resources</a> can hold your manually entered reference. Opening a link creates no record, membership or message.</p><p><a href={url('/for-charities/collaborate/')}>Help shape Charitology with your experience</a>, or <a href="https://github.com/theguysaccount/charitology/issues/new?template=charity-network.yml">suggest an organization or correction</a>.</p></aside>
+      <ReviewNote filePath="src/data/charity-networks.mjs" title={title} />
+    </div>
+  </div>
+</Base>
+<style>
+  h1{max-width:23ch;font-size:clamp(2.4rem,4.6vw,4.5rem)}.list-notice{font-size:.9rem;color:var(--ink-2);max-width:75ch}.guide-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:2rem;padding-bottom:3rem}.guide-contents{align-self:start;border-block:1px solid var(--rule);padding:1rem 0}.guide-contents ol{padding-left:1.35rem;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem 1rem}.guide-contents>a{font-family:var(--font-sans);font-size:.9rem}.guide-intro{max-width:75ch}.network-list{list-style:none;margin:2.5rem 0 0;padding:0;counter-reset:none}.network-entry{padding:2rem 0;border-top:1px solid var(--rule);scroll-margin-top:5rem;min-width:0}.entry-meta{font-family:var(--font-sans);font-size:.8rem;color:var(--ink-3)}.entry-meta>span{font-family:var(--font-mono);margin-right:.7rem;color:var(--accent)}.network-entry h2{font-size:2rem;margin:.7rem 0}.network-entry h3{font-size:1.2rem;margin-top:1.4rem}.entry-summary{font-size:1.25rem}.network-entry p,.network-entry ul{max-width:75ch}.network-entry li{margin:.45rem 0}.entry-limit{padding:1rem;background:var(--surface);border-left:3px solid var(--rule);font-size:1rem}.entry-actions{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin:1.2rem 0}.entry-sources{font-size:.9rem;color:var(--ink-2);max-width:75ch}.entry-sources summary{cursor:pointer;text-decoration:underline;text-underline-offset:.2em}.entry-sources li p{font-size:.9rem;margin-top:.3rem}.keep-working{border-block:1px solid var(--rule);padding:2rem 0;margin-bottom:1rem;max-width:75ch}a{overflow-wrap:anywhere}@media(min-width:1000px){.guide-layout{grid-template-columns:15rem minmax(0,1fr);gap:3rem}.guide-contents{position:sticky;top:calc(var(--header-h) + 1.25rem)}.guide-contents ol{grid-template-columns:1fr}}@media(max-width:380px){.guide-contents ol{grid-template-columns:1fr}}@media print{.guide-contents,.entry-actions{display:none}.guide-layout{display:block}.entry-sources{display:block}}
+</style>

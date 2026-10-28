@@ -88,6 +88,9 @@ A full course, source-linked country data profiles and a nomination lab are avai
 - [Charity OS](https://charitology.org/tools/charity-os/): local projects, budgets, grant pipeline, tasks, evidence and backups.
 - [Tools for charities](https://charitology.org/for-charities/tools/): 15 sourced external tools.
 - [Benefits for charities](https://charitology.org/for-charities/benefits/): 16 sourced offers with eligibility and application links.
+- [Fundraising knowledge and practice](https://charitology.org/for-charities/fundraising/): ten practical guides, a page-only full-cost planner and follow-up schedule exports.
+- [Charity networks](https://charitology.org/for-charities/networks/): 18 official-source draft listings in three annotated founder, leadership and sector guides; selected coverage, no rankings or partnership claims.
+- [Help shape Charitology](https://charitology.org/for-charities/collaborate/): a public invitation to voluntary discovery conversations and bounded fictional OS examples. [The outreach plan](docs/CHARITY_NETWORKS_OUTREACH_PLAN.md) prepares a first batch without authorizing or sending messages.
 
 ## Work that software does not establish
 
