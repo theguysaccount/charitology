@@ -1,5 +1,11 @@
 # Changelog
 
+## October 28, 2026 UTC: charity networks and discovery outreach
+
+- Added an 18-organization searchable directory and three six-entry annotated guides for charity founders, leadership/professional peers and sector support. Every listing keeps official sources, actual reading dates, access conditions, limits and draft status. Entries are alphabetical within each guide; no scores, endorsements or partnership claims are supplied.
+- Added a public invitation to help shape practical resources and Charity OS, a source-required public network suggestion form, and manual OS Resources/Projects links. Search fields have no form or names and do not store or transmit queries. All listings remain readable without JavaScript.
+- Prepared a listening-first outreach plan and eight private personalized drafts with an unsent tracking sheet. No messages, applications, subscriptions, memberships, real-data pilots or service changes were made. The original 66-item brief remains unchanged. [Source audit](docs/CHARITY_NETWORKS_SOURCE_AUDIT.md) and [local acceptance](docs/CHARITY_NETWORKS_ACCEPTANCE.md) state the checks and limits.
+
 ## October 27, 2026: remaining local-record recovery
 
 - Added guarded recovery across the remaining twenty original research, partner, manuscript, nomination, Depth and country-note keys. Native v1 formats, IDs, exact strings, unknown/zero distinctions and calculations remain compatible. Literal unfinished forms and protected/observed saved copies have separate exports; failed intent, reviewed replacement and exact-key removal/Undo stay explicit.
