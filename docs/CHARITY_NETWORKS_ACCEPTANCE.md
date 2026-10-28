@@ -26,3 +26,14 @@ Private logs and browser screenshots retain the actual local receipts. GitHub’
 This release was prepared in an isolated clone. The original shared checkout and other unfinished releases were not reset, staged or merged. The previous fundraising publication/native-download acceptance update is included as documentation only. The new feature changes no mail provider, database, OS runtime, job, payment, API key or dependency.
 
 Only task-created preview resources should be closed after verification. Preserve the owner’s Cause Census tab and the older fictional Learning service used by the ongoing OS acceptance task. The earlier unresolved Chrome cleanup issue belongs to its existing fundraising receipt; do not imply it was resolved here.
+
+## Exact runtime identity
+
+Runtime commit: `25a1ab8d4faf6d063d5b01902b556111a2efb122`. The subsequent acceptance update changes documentation only. [Release PR #34](https://github.com/theguysaccount/charitology/pull/34) supplies the committed-head check history.
+
+- Network data SHA-256: `e55b5d747614301288ff4f36a81d4b4d6eecd10d012e775c8be9b22bba3e8202`.
+- Guide configuration: `53dcf413e976c285850aeaf2b4da5fdba2cbb4e393ed84e488d0ce4d7e4da146`.
+- Final filter component: `36d59d7ab7f99cf0a8ff2deef2ca14ee406934558e744eade9d1cbc03c86de01`.
+- Final annotated guide template: `9ee0d7be2336d26580bfa55dc1c5511f04d026fe4d51338f345e13ca306d92cd`.
+
+After the final styling build, actual IAB search again returned Scotland alone, Clear restored all 18 entries, and controls measured at least 44 pixels tall. At 320 pixels both controls were 288 pixels wide, with document width/scroll width equal to 320. Final default-width and mobile screenshots were retained privately. A separate read-only AI pass also reopened all four charity-team contact routes, NCVO and the excluded Water For People route; it found no meaningful defect in the eight drafts or tracking-state separation. This supplies no send permission or evidence of interest.
