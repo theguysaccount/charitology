@@ -68,3 +68,7 @@ Read the [UK Fundraising Regulator's Code of Fundraising Practice landing page](
 - Links to Charity OS must name actual modules and describe a manual handoff. The public planner does not import records, create tasks, authorize fundraising messages, send emails or verify delivery.
 
 This file records source reading and review limits. Root owns later test and release receipts; passing those engineering checks would not establish fundraising efficacy.
+
+## Root implementation verification, October 28
+
+The final source joins and source/method draft fields were checked. The isolated 567-page build and complete normal check passed, including twelve planner groups and 48,093 links/assets with none broken. Actual Chrome covered arithmetic, unknown/zero, invalid-writing retention, explicit review/invalidation, exact calendar preview and measured 320-pixel hub/planner layouts. [The acceptance record](FUNDRAISING_HUB_ACCEPTANCE.md) preserves the runtime version, exact reviewed-text hashes and independently decoded dates/line formatting. Native saved exports, warning coverage, CI/public publication and final cleanup remain separately identified; no completed native Save is inferred from generated/reviewed bytes.
