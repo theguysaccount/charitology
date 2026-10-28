@@ -24,6 +24,21 @@ Accounting and payroll records hold external references, aggregate reconciliatio
 
 The public AI Charitologist remains a source-retrieval tool. This service does not introduce an autonomous recommendation model or claim independently verified impact.
 
+## Learning and review
+
+The current implementation connects an explicitly chosen native theory-of-change export or Nonprofit Advisory backup to an existing program. It creates ordinary indicator and protocol drafts, then connects approved observations to an authored review decision and a fixed private report. The [contract](../../docs/OS_LEARNING_BRIDGE_PLAN.md) defines the exact source and approval boundaries. The [acceptance record](../../docs/OS_LEARNING_BRIDGE_ACCEPTANCE.md) records which versions have passed tests; production release and actual browser acceptance remain pending in this checkpoint.
+
+1. Save the native source file, choose the existing program in **Learning and review**, and inspect the exact source selection.
+2. Explicitly adopt, adapt, leave uncollected or decline each source intention. Define the indicators' units, population and intended period, then preview and create the ordinary drafts.
+3. Complete the ordinary workflows and ask a different authorized account to approve each exact final state. A prior-state approval does not authorize a later state.
+4. Record each observation with its actual period. Zero and a missing value remain different. Correcting an approved point requires a separate candidate, ordinary approval and deliberate apply; an incorrect candidate can be abandoned without approval.
+5. Select the exact observations and discussed definitions, author the rule assessment and actual feedback, and complete the decision's ordinary approval.
+6. Create a Reporting template with assembly method `learning-review-v1`. Prepare its digest, save that revision, obtain ordinary approval, then preview and freeze the private edition. New editions use a new template and identify any preceding report.
+
+Sources and reports are restricted to currently authorized staff. Authored ordinary indicator, protocol, observation and decision blocks retain existing approved-record visibility, including eligible board and external readers. Uploading a large file temporarily stores its complete original as private parts; successful inspection removes those parts, while interrupted parts expire from access after 30 minutes and are physically removed on a later upload cleanup. Only the selected source enters learning history and full backups. Recovery retains history inactive; explicit adoption creates fresh ordinary drafts and never revives imported approvals or measurements.
+
+The report preserves separate observations and their limitations. It calculates no causal impact, pooled total or automatic threshold result. A source's narrative baseline, result, method, date or status does not become a measured value or an approval.
+
 ## Directory source review for Resources
 
 The public Tools/Benefits directories and the hosted Resources index support an explicit retained-source selection → inspection → preview → unapproved Resource copy. Rechecks show exact source versions, field changes, owned organization notes and optional dated declarations. Resources remain organization-wide, including for program-scoped writers; the UI states that boundary before copying. No program field, provider connection, eligibility approval, enrollment, reminder or job is added. All 31 retained entries remain editorial drafts checked October 25, 2026.

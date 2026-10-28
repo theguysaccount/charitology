@@ -1,0 +1,80 @@
+{
+  "format": "charitology-learning-native-admission",
+  "version": 1,
+  "sourceFiles": [
+    {
+      "path": "services/charity-os/lib/learning-native-entry.ts",
+      "byteLength": 6070,
+      "sha256": "5ff5c2cd0f8765e8fa70b3c5daa8b8d760fb37c64bbfb0c9f404e2d244f6f5f9"
+    },
+    {
+      "path": "services/charity-os/lib/learning-transport.mjs",
+      "byteLength": 8607,
+      "sha256": "bb0e94a791799ebc3256cb71f1b27480de511f87addb9d0dffdb10e3a19fb133"
+    },
+    {
+      "path": "services/charity-os/node_modules/@noble/hashes/_md.js",
+      "byteLength": 9175,
+      "sha256": "60cf3010fda89e3e4d3f0e7ff1ce249e9c467f34b4fd41b6fd6101d9f69be763"
+    },
+    {
+      "path": "services/charity-os/node_modules/@noble/hashes/_u64.js",
+      "byteLength": 4794,
+      "sha256": "b09da8c07fe8187c07649494cdb7cd0bcf13df90b506a9473d19e4d5f8c2e102"
+    },
+    {
+      "path": "services/charity-os/node_modules/@noble/hashes/sha2.js",
+      "byteLength": 18997,
+      "sha256": "471746bba6ec4c6238ca41358d1d3b40b6ff31cf3363f0b4d550c649c1a8e83b"
+    },
+    {
+      "path": "services/charity-os/node_modules/@noble/hashes/utils.js",
+      "byteLength": 26035,
+      "sha256": "037ad49adb78168b6b699598fd33f85f7877456b1d28b4d032e2a1a16807947c"
+    },
+    {
+      "path": "src/data/causes.json",
+      "byteLength": 7372,
+      "sha256": "1a3193009e02f928992758ca1adba7b53588fd136f2a8f6bb929701cbe0df571"
+    },
+    {
+      "path": "src/data/due-diligence.json",
+      "byteLength": 14940,
+      "sha256": "c67d77d78143c557daa221b2a1f73f8a47824afd268d23fdb8c07e395aa38344"
+    },
+    {
+      "path": "src/data/frameworks.json",
+      "byteLength": 5552,
+      "sha256": "459d64e3913ce1fb486441ffc06bf6ed030fcc171da1d75d65919db9b50666cf"
+    },
+    {
+      "path": "src/data/program-graph-adapters.ts",
+      "byteLength": 145206,
+      "sha256": "f138e38985df23c3476f95fe7a3391d23bd3d49a9b273e620ed090b9eaded35c"
+    },
+    {
+      "path": "src/lib/client/donor-recovery-schemas.ts",
+      "byteLength": 27556,
+      "sha256": "9bc2b0250e8f6ff7b3f387d2ed775bdad025bc46ef2bc46d38ad9fbc72252e86"
+    },
+    {
+      "path": "src/lib/client/remaining-record-recovery-formats.ts",
+      "byteLength": 11408,
+      "sha256": "b1a05760ffa95ffe3ed3df571ffbffadf601d5d63c58a8ce4355b10069dd8ce9"
+    },
+    {
+      "path": "src/lib/client/remaining-record-recovery-schemas.ts",
+      "byteLength": 45912,
+      "sha256": "d139dbd5a850ce7cac5abbc860c6ea1ae50eabb030e22662b9d8c13a21ca5a40"
+    },
+    {
+      "path": "src/lib/compass.ts",
+      "byteLength": 5712,
+      "sha256": "238039ebb361305390af129fca826442fe2c67b1d569103315ada51ac780339d"
+    }
+  ],
+  "bundle": {
+    "byteLength": 254934,
+    "sha256": "e12d1dd103db4cb83d2d0abd0809a05449d019be3ef0ced2a2784cb6fe766324"
+  }
+}
