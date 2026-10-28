@@ -2,7 +2,8 @@
 // Cost-Effectiveness Model Kit: a Monte Carlo cost-per-outcome model that runs in
 // the browser. Triangular distributions, a seeded generator so runs repeat
 // exactly, a histogram and a one-at-a-time sensitivity chart.
-// Math in src/lib/client/models.ts and montecarlo.ts, charts in charts.ts.
+// Guarded Run and bounded charts use src/lib/model-bundles. Original saved
+// formats and the older shared math/format source files remain unchanged.
 import { url } from '../../lib/site';
 
 const rows = [
@@ -434,26 +435,35 @@ const parts = [
       display: none;
     }
   }
+  .ce-hist :global(.mb-legacy-chart svg) { display: block; max-width: 100%; color: var(--accent); }
+  .ce-sens :global(.mb-legacy-range) { display: grid; gap: .3rem; padding: .65rem 0; border-bottom: 1px solid var(--border); }
+  .ce-sens :global(.mb-legacy-range > span:last-child) { color: var(--ink-3); font-size: .8rem; }
+  .ce-sens :global(.mb-legacy-track) { height: .55rem; position: relative; background: var(--surface-2); }
+  .ce-sens :global(.mb-legacy-track > span) { position: absolute; height: 100%; background: var(--accent); }
 </style>
 
 <script>
   import { $, clear, h } from '../../lib/client/dom';
   import { download, toCsv } from '../../lib/client/files';
   import { num, parseAmount, slugify } from '../../lib/client/format';
-  import { createD1ViewTracker, openD1ToolSession, readD1Dependency } from '../../lib/client/donor-recovery';
+  import { createD1ViewTracker, openD1ToolSession } from '../../lib/client/donor-recovery';
   import { mountD1RecoveryControls } from '../../lib/client/donor-recovery-controls';
   import type { D1ValueMap } from '../../lib/client/donor-recovery-schemas';
 
-  import { histogram, quantile } from '../../lib/client/montecarlo';
-  import { RANGED, dollars, dollarsTick, runModel, sensitivity, sig } from '../../lib/client/models';
-  import type { ModelInputs, ModelRun, RangedKey } from '../../lib/client/models';
-  import { renderHistogram, renderRangeBars } from '../../lib/client/charts';
+  import { RANGED } from '../../lib/client/models';
+  import { createLegacyCalculator, ModelWorkerError } from '../../lib/model-bundles/legacy-calculator.mjs';
+  import { formatMoney as dollars, formatNumber as sig, histogram, sensitivityChartDomain } from '../../lib/model-bundles/legacy-display.mjs';
+  import { buildLegacyHistogram, buildLegacySensitivity } from '../../lib/model-bundles/legacy-charts.mjs';
+  import { installCalculatorCopyProvider } from '../../lib/model-bundles/calculator-copy-provider.mjs';
+  import type { LegacySensitivityProjection, LegacyRunProjection } from '../../lib/model-bundles/types';
+  import type { D1ToolSession, D1RecoveryControls } from '../../lib/client/donor-recovery';
+  import type { ModelInputs, RangedKey } from '../../lib/client/models';
   import { confirmTwice } from '../../lib/client/confirm';
 
+  let calculatorOwnerClosed = false;
   async function initializeDonorTool(): Promise<void> {
 
 
-  const DRAWS = 5000;
   const PARTS = ['low', 'likely', 'high'] as const;
   type Three = [string, string, string];
   interface Raw {
@@ -507,6 +517,75 @@ const parts = [
   const deleteBtn = $<HTMLButtonElement>('#ce-delete');
   const cell = (key: RangedKey, part: (typeof PARTS)[number]) => $<HTMLInputElement>(`#ce-${key}-${part}`);
 
+  const calculator = createLegacyCalculator();
+  const d1View = createD1ViewTracker();
+  const d1Root = form.closest<HTMLElement>('section.tool') ?? form.parentElement!;
+  let liveSession: D1ToolSession<D1ValueMap['ce-models']> | null = null;
+  let liveControls: D1RecoveryControls | null = null;
+  let revokeProvider: (() => void) | null = null;
+  let runEpoch = 0, runAbort: AbortController | null = null;
+  let disposed = false, suspended = false, initialized = false, resumeCheckRequested = false;
+  function revokeRun() {
+    runEpoch++;
+    runAbort?.abort(); runAbort = null; calculator.cancel();
+    form.removeAttribute('aria-busy');
+  }
+  const recoveryEntry = (event: Event) => {
+    if ((event.target as Element | null)?.closest?.('.d1-recovery')) revokeRun();
+  };
+  d1Root.addEventListener('click', recoveryEntry, true);
+  d1Root.addEventListener('change', recoveryEntry, true);
+  d1Root.addEventListener('cancel', recoveryEntry, true);
+  function checkResumedSavedBytes() {
+    if (disposed || !liveSession || !liveControls) return;
+    let message = '';
+    try {
+      // Status only for this calculator's already-owned key. Never adopt bytes.
+      const observed = liveSession.observedRawCopy();
+      const current = localStorage.getItem('charitology.ce-models');
+      if (observed === undefined || current !== observed) {
+        liveSession.noticeExternalChange();
+        message = 'The saved model library changed or could not be compared. Your fields and previous result remain in this tab. Review recovery before saving.';
+      }
+    } catch {
+      liveSession.noticeExternalChange();
+      message = 'The saved model library could not be rechecked. Your fields and previous result remain in this tab. Review recovery before saving.';
+    }
+    liveControls.refresh();
+    if (message) d1Status.textContent = message;
+  }
+  const storageChanged = (event: StorageEvent) => {
+    if (!disposed && (event.key === null || event.key === 'charitology.ce-models')) revokeRun();
+  };
+  const pageHidden = (event: PageTransitionEvent) => {
+    if (disposed) return;
+    suspended = true; revokeRun();
+    if (event.persisted) {
+      if (initialized) { d1View.changedRecovery(); liveControls?.noteViewMutation(); }
+      return;
+    }
+    disposed = true; calculatorOwnerClosed = true; revokeProvider?.(); revokeProvider = null;
+    calculator.dispose(); liveControls?.dispose(); liveSession?.dispose(); d1View.dispose();
+    d1Root.removeEventListener('input', d1EarlyInput, true);
+    d1Root.removeEventListener('change', d1EarlyInput, true);
+    d1Root.removeEventListener('click', recoveryEntry, true);
+    d1Root.removeEventListener('change', recoveryEntry, true);
+    d1Root.removeEventListener('cancel', recoveryEntry, true);
+    window.removeEventListener('storage', storageChanged);
+    window.removeEventListener('pagehide', pageHidden);
+    window.removeEventListener('pageshow', pageShown);
+  };
+  const pageShown = (event: PageTransitionEvent) => {
+    if (!event.persisted || disposed) return;
+    suspended = false;
+    if (!initialized) resumeCheckRequested = true;
+    else checkResumedSavedBytes();
+  };
+  window.addEventListener('storage', storageChanged);
+  window.addEventListener('pagehide', pageHidden);
+  window.addEventListener('pageshow', pageShown);
+
+
   // ---------- Reading and writing the form ----------
 
   function readRaw(): Raw {
@@ -522,8 +601,6 @@ const parts = [
     seedEl.value = String(r.seed ?? '1');
     syncLabels();
   }
-
-  const unitName = () => unitEl.value.trim() || 'outcome';
 
   function syncLabels() {
     const u = unitEl.value.trim();
@@ -592,13 +669,15 @@ const parts = [
   interface Last {
     raw: Raw;
     model: ModelInputs;
-    run: ModelRun;
-    sens: ReturnType<typeof sensitivity>;
+    run: LegacyRunProjection;
+    sens: LegacySensitivityProjection;
     unit: string;
   }
   let last: Last | undefined;
 
-  function run(focusOnError = false): boolean {
+  async function run(focusOnError = false): Promise<boolean> {
+    revokeRun();
+    if (disposed || suspended) return false;
     const raw = readRaw();
     const c = check(raw);
     showErrors(c.errors);
@@ -616,12 +695,41 @@ const parts = [
       }
       return false;
     }
-    last = { raw, model: c.model, run: runModel(c.model, DRAWS, c.seed), sens: sensitivity(c.model), unit: unitName() };
-    // Show the results first, so the charts measure their real width.
-    out.hidden = false;
-    out.classList.remove('ce-stale');
-    draw(last);
-    return true;
+    const epoch = runEpoch, view = d1View.snapshot(), controller = new AbortController();
+    runAbort = controller;
+    const current = () => !disposed && !suspended && epoch === runEpoch && !controller.signal.aborted &&
+      d1View.snapshot().formGeneration === view.formGeneration && d1View.snapshot().recoveryGeneration === view.recoveryGeneration;
+    if (last) out.classList.add('ce-stale');
+    summary.textContent = 'Calculating this exact input set. The previous CSV remains available until a complete new result is ready.';
+    form.setAttribute('aria-busy', 'true');
+    try {
+      const result = await calculator.calculate(raw, { epoch: epoch + 1, formGeneration: view.formGeneration, signal: controller.signal, isCurrent: current });
+      if (!current() || result.kind === 'cancelled') return false;
+      if (result.kind === 'invalid') {
+        showErrors(result.errors);
+        summary.textContent = 'These inputs could not be admitted. Check the highlighted fields; your previous CSV remains available.';
+        return false;
+      }
+      if (result.kind === 'refused') {
+        summary.textContent = `This numerical range cannot be calculated safely (${result.issue.code}, ${result.issue.path}). Adjust the inputs and run again. Your previous CSV remains available.`;
+        return false;
+      }
+      const next: Last = { raw: result.raw, model: result.model, run: result.run, sens: result.sensitivity, unit: result.unit };
+      const display = prepareDisplay(next);
+      if (!current()) return false;
+      out.hidden = false;
+      commitDisplay(display);
+      last = next;
+      out.classList.remove('ce-stale');
+      return true;
+    } catch (error) {
+      if (!current()) return false;
+      summary.textContent = error instanceof ModelWorkerError ? error.message : 'The complete result could not be displayed. Your writing and previous CSV remain available.';
+      if (last) out.classList.add('ce-stale');
+      return false;
+    } finally {
+      if (epoch === runEpoch) { form.removeAttribute('aria-busy'); runAbort = null; }
+    }
   }
 
   function show(k: RangedKey, v: number, unit: string): string {
@@ -636,62 +744,43 @@ const parts = [
     return h('div', { class: 'kpi' }, h('div', { class: 'k-label' }, label), h('div', { class: 'k-value' }, value), h('div', { class: 'k-note' }, note));
   }
 
-  function draw({ model, run: r, sens, unit }: Last) {
-    const per = `per “${unit}”`;
-    const top = sens.rows[0];
-    const moves = top && top.swing > 0;
-    summary.textContent =
-      `Median cost ${per}: ${dollars(r.cost.median)}. 90% of the ${num(r.draws)} draws fall between ${dollars(r.cost.p5)} and ${dollars(r.cost.p95)}.` +
+  function prepareDisplay({ model, run: r, sens, unit }: Last) {
+    const per = `per “${unit}”`, top = sens.rows[0], moves = top && top.swing > 0;
+    const text = `Median cost ${per}: ${dollars(r.cost.median)}. 90% of the ${num(r.draws)} draws fall between ${dollars(r.cost.p5)} and ${dollars(r.cost.p95)}.` +
       (moves ? ` The result depends most on ${LABELS[top.key].toLowerCase()}.` : '');
-
-    const kpis = $('#ce-kpis');
-    clear(kpis);
-    kpis.append(
+    const kpis = [
       kpi(`Median cost ${per}`, dollars(r.cost.median), `90% interval: ${dollars(r.cost.p5)} to ${dollars(r.cost.p95)}`),
       kpi('All inputs at likely', dollars(sens.base), 'One calculation with no uncertainty, for comparison'),
       kpi(`Total “${unit}”, median`, sig(r.outcome.median), `90% interval: ${sig(r.outcome.p5)} to ${sig(r.outcome.p95)}`),
-    );
-
-    // Histogram of the middle of the distribution; the far tails are reported, not drawn.
-    const finite = r.costs.subarray(0, r.draws - r.none);
-    const { bins, below, above } = histogram(finite, quantile(finite, 0.005), quantile(finite, 0.995), 28);
+    ];
+    const hist = histogram(r), bins = hist.kind === 'available' ? hist.bins : [];
     const share = (n: number) => `${(Math.round((n / r.draws) * 1000) / 10).toFixed(1)}%`;
-    renderHistogram($('#ce-hist'), bins, {
-      total: r.draws,
+    const chart = buildLegacyHistogram(hist, { total: r.draws,
       label: `Histogram of cost ${per} across ${num(r.draws)} draws. Median ${dollars(r.cost.median)}; 90% of draws between ${dollars(r.cost.p5)} and ${dollars(r.cost.p95)}.`,
-      xTitle: `Cost ${per}`,
-      yTitle: 'Share of draws',
-      tick: dollarsTick,
-      tip: (b) => `${dollars(b.x0)} to ${dollars(b.x1)}: ${num(b.count)} ${b.count === 1 ? 'draw' : 'draws'} (${share(b.count)})`,
-      marker: { value: r.cost.median, label: `Median ${dollars(r.cost.median)}` },
+      xTitle: `Cost ${per}`, tip: b => `${dollars(b.x0)} to ${dollars(b.x1)}: ${num(b.count)} ${b.count === 1 ? 'draw' : 'draws'} (${share(b.count)})`,
     });
-    const left = below + above;
-    $('#ce-hist-note').textContent =
-      `Each bar is the share of the ${num(r.draws)} draws whose cost ${per} landed in that range. The line marks the median.` +
-      (left && bins.length
-        ? ` ${num(left)} ${left === 1 ? 'draw falls' : 'draws fall'} outside ${dollars(bins[0].x0)} to ${dollars(bins[bins.length - 1].x1)}, so ${left === 1 ? 'it is' : 'they are'} left out of the chart but not out of the numbers.`
-        : '') +
+    const outside = hist.kind === 'available' ? hist.below + hist.above : 0;
+    const note = (hist.kind === 'available' ? `Each bar is the share of the ${num(r.draws)} draws whose cost ${per} landed in that range.` : 'The histogram is unavailable for this numerical range. The calculated numbers and CSV remain available.') +
+      (outside && bins.length ? ` ${num(outside)} draws fall outside ${dollars(bins[0].x0)} to ${dollars(bins[bins.length - 1].x1)}; they remain in the numerical results.` : '') +
       (r.none ? ` ${num(r.none)} ${r.none === 1 ? 'draw' : 'draws'} produced no outcome at all.` : '');
-    const tbody = $('#ce-hist-rows');
-    clear(tbody);
-    for (const b of bins) {
-      tbody.append(h('tr', {}, h('td', {}, `${dollars(b.x0)} to ${dollars(b.x1)}`), h('td', { class: 'num' }, num(b.count)), h('td', { class: 'num' }, share(b.count))));
-    }
-
-    renderRangeBars(
-      $('#ce-sens'),
-      sens.rows.map((row) => ({
-        label: LABELS[row.key],
-        lo: row.lo,
-        hi: row.hi,
-        display: row.swing > 0 ? `${dollars(row.lo)} to ${dollars(row.hi)}` : `${dollars(row.lo)}, no range`,
-        tip: `${LABELS[row.key]}: at low (${show(row.key, model[row.key][0], unit)}), ${dollars(row.atLow)} ${per}; at high (${show(row.key, model[row.key][2], unit)}), ${dollars(row.atHigh)}`,
-      })),
-      { label: `Cost ${per} as each input moves from low to high, biggest swing first`, tick: dollarsTick, base: sens.base },
-    );
-    $('#ce-driver').textContent = moves
-      ? `The result moves most with ${LABELS[top.key].toLowerCase()}: from its low to its high value, the cost ${per} goes from ${dollars(top.atLow)} to ${dollars(top.atHigh)}. Better evidence on that input would narrow the result the most.`
-      : 'None of the inputs has a range, so nothing moves the result. Add low and high values to see what it depends on.';
+    const rows = bins.map(b => h('tr', {}, h('td', {}, `${dollars(b.x0)} to ${dollars(b.x1)}`), h('td', { class: 'num' }, num(b.count)), h('td', { class: 'num' }, share(b.count))));
+    const range = buildLegacySensitivity(sensitivityChartDomain(sens), sens.rows.map(row => ({
+      label: LABELS[row.key], lo: row.lo, hi: row.hi,
+      display: row.swing > 0 ? `${dollars(row.lo)} to ${dollars(row.hi)}` : `${dollars(row.lo)}, no range`,
+      tip: `${LABELS[row.key]}: at low (${show(row.key, model[row.key][0], unit)}), ${dollars(row.atLow)} ${per}; at high (${show(row.key, model[row.key][2], unit)}), ${dollars(row.atHigh)}.`,
+    })), `Cost ${per} as each input moves from low to high, biggest swing first`);
+    const driver = moves ? `The result moves most with ${LABELS[top.key].toLowerCase()}: from its low to its high value, the cost ${per} goes from ${dollars(top.atLow)} to ${dollars(top.atHigh)}. Better evidence on that input would narrow the result the most.` :
+      'None of the inputs has a range, so nothing moves the result. Add low and high values to see what it depends on.';
+    return { text, kpis, chart, note, rows, range, driver };
+  }
+  function commitDisplay(display: ReturnType<typeof prepareDisplay>) {
+    $('#ce-kpis').replaceChildren(...display.kpis);
+    $('#ce-hist').replaceChildren(display.chart);
+    $('#ce-hist-note').textContent = display.note;
+    $('#ce-hist-rows').replaceChildren(...display.rows);
+    $('#ce-sens').replaceChildren(display.range);
+    $('#ce-driver').textContent = display.driver;
+    summary.textContent = display.text;
   }
 
   // ---------- Saved models ----------
@@ -702,18 +791,19 @@ const parts = [
     return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
-  const d1View = createD1ViewTracker();
-  const d1Root = form.closest<HTMLElement>('section.tool') ?? form.parentElement!;
-  const d1EarlyInput = () => { d1View.changedForm(); };
+  function d1EarlyInput() { if (!disposed) d1View.changedForm(); }
   d1Root.addEventListener('input', d1EarlyInput, true);
   d1Root.addEventListener('change', d1EarlyInput, true);
   d1Root.addEventListener('submit', event => event.preventDefault(), true);
   const d1Session = await openD1ToolSession('ce-models', { view: d1View });
+  liveSession = d1Session;
+  if (disposed) { d1Session.dispose(); return; }
   const d1Host = document.createElement('div'); d1Root.append(d1Host);
   const d1Status = document.createElement('p'); d1Status.className = 'note'; d1Status.setAttribute('role', 'status'); d1Root.append(d1Status);
   const d1Controls = mountD1RecoveryControls({ host: d1Host, session: d1Session, view: d1View });
+  liveControls = d1Controls;
   d1Status.textContent = d1Session.snapshot().message;
-  function d1Changed() { d1View.changedForm(); d1Controls.noteViewMutation(); }
+  function d1Changed() { if (disposed || suspended) return false; revokeRun(); d1View.changedForm(); d1Controls.noteViewMutation(); return true; }
   function d1FinishLoad() {
     d1Root.removeEventListener('input', d1EarlyInput, true);
     d1Root.removeEventListener('change', d1EarlyInput, true);
@@ -723,16 +813,20 @@ const parts = [
     const epoch = d1View.snapshot().formGeneration;
     try {
       const result = await d1Session.saveCaptured(d1Session.captureSave(value));
+      if (disposed || suspended) return false;
       if (result.formGeneration !== d1View.snapshot().formGeneration) return false;
       const ok = result.outcome === 'saved' || result.outcome === 'no-op';
       if (ok && savesForm) d1View.markFormSaved(result.formGeneration);
       d1Status.textContent = ok ? 'This record is saved in this browser.' : result.snapshot.message;
       return ok;
     } catch (error) {
+      if (disposed || suspended) return false;
       if (epoch === d1View.snapshot().formGeneration) d1Status.textContent = error instanceof Error ? error.message : 'Saving was refused. Your current form remains in this tab.';
       return false;
-    } finally { d1Controls.refresh(); }
+    } finally { if (!disposed) d1Controls.refresh(); }
   }
+  initialized = true;
+  if (resumeCheckRequested) { resumeCheckRequested = false; checkResumedSavedBytes(); }
   const initialModels = d1Session.snapshot();
   let models: Saved[] = initialModels.hasState ? structuredClone(initialModels.value) : [];
   d1FinishLoad();
@@ -751,7 +845,7 @@ const parts = [
   const tell = (text: string) => (storeMsg.textContent = text);
 
   $('#ce-save').addEventListener('click', async () => {
-    d1Changed();
+    if (!d1Changed()) return;
     const raw = readRaw();
     const name = raw.name.trim() || 'Untitled model';
     nameEl.value = name;
@@ -764,18 +858,19 @@ const parts = [
     refreshSaved(entry.id);
     syncLabels();
     const ok = await pending;
+    if (disposed || suspended) return;
     if (epoch !== d1View.snapshot().formGeneration) return;
     storeMsg.textContent = ok ? `${existing ? 'Updated' : 'Saved'} “${name}” in this browser.` : `“${name}” is in the working library. ${d1Session.snapshot().message}`;
     syncLabels();
   });
 
-  loadBtn.addEventListener('click', () => {
-    d1Changed();
+  loadBtn.addEventListener('click', async () => {
+    if (!d1Changed()) return;
     const m = models.find((x) => x.id === savedSel.value);
     if (!m) return;
     fillRaw(m);
     storeMsg.textContent = `Loaded “${m.name}”.`;
-    run();
+    await run();
   });
 
   const resetDelete = confirmTwice(deleteBtn, {
@@ -783,7 +878,7 @@ const parts = [
     message: 'Click Delete again to delete the selected model.',
     announce: tell,
     action: async () => {
-      d1Changed();
+      if (!d1Changed()) return;
       const m = models.find((x) => x.id === savedSel.value);
       if (!m) return;
       models = models.filter((x) => x.id !== m.id);
@@ -792,18 +887,18 @@ const parts = [
       await d1Save(models, false);
     },
   });
-  savedSel.addEventListener('change', resetDelete);
+  savedSel.addEventListener('change', () => { revokeRun(); resetDelete(); });
 
   confirmTwice($<HTMLButtonElement>('#ce-example'), {
     prompt: 'Click again to replace your inputs',
     message: 'The example will replace your inputs. Click again to load it.',
     needed: hasInput,
     announce: tell,
-    action: () => {
-      d1Changed();
+    action: async () => {
+      if (!d1Changed()) return;
       fillRaw(EXAMPLE);
       storeMsg.textContent = 'Loaded the example. Its numbers are made up.';
-      run();
+      await run();
     },
   });
 
@@ -813,7 +908,7 @@ const parts = [
     needed: hasInput,
     announce: tell,
     action: () => {
-      d1Changed();
+      if (!d1Changed()) return;
       fillRaw({ seed: '1' });
       showErrors({});
       last = undefined;
@@ -862,12 +957,12 @@ const parts = [
 
   // ---------- Wiring ----------
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (run(true)) $('#ce-kpis').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (await run(true)) $('#ce-kpis').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
-  form.addEventListener('input', () => {
-    d1Changed();
+  const inputChanged = () => {
+    if (!d1Changed()) return;
     syncLabels();
     let note = '';
     if (last && !out.hidden) {
@@ -877,12 +972,19 @@ const parts = [
       note = 'Run the model again to check your changes.';
     }
     if (note && summary.textContent !== note) summary.textContent = note;
-  });
+  };
+  form.addEventListener('input', inputChanged);
+  form.addEventListener('change', inputChanged);
   refreshSaved();
   syncLabels();
+  revokeProvider = installCalculatorCopyProvider(d1Root, {
+    capture: () => { if (disposed || suspended) throw new Error('Calculator unavailable.'); return { raw: readRaw(), formGeneration: d1View.snapshot().formGeneration }; },
+    isCurrent: generation => !disposed && !suspended && generation === d1View.snapshot().formGeneration,
+  });
 
   }
   void initializeDonorTool().catch(error => {
+    if (calculatorOwnerClosed) return;
     const note = document.createElement("p"); note.className = "callout"; note.setAttribute("role", "status");
     note.textContent = error instanceof Error ? error.message : "The saved copy could not be opened safely. Reload or keep a recovery copy.";
     document.querySelector("main")?.append(note);

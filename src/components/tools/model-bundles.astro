@@ -1,0 +1,68 @@
+---
+import '../../lib/model-bundles/ui.css';
+const rows = [['cost','Total cost, USD'],['people','People reached'],['works','Chance, percent'],['effect','Outcome per person'],['years','Years'],['anyway','Happening anyway, percent']];
+const textFields = [
+  ['classification','Classification (illustrative or user-authored)'], ['title','Model title'], ['purpose','Purpose'], ['programDescription','Program description'],
+  ['populationDescription','Population'], ['populationGeography','Geography (blank means unknown)'], ['populationEligibility','Eligibility'], ['populationTimeHorizon','Population time horizon'],
+  ['periodLabel','Period label'], ['periodFrom','Period start (PartialDate JSON or blank)'], ['periodTo','Period end (PartialDate JSON or blank)'],
+  ['outcomeName','One outcome name (same as raw unit)'], ['outcomeDefinition','Outcome definition'], ['outcomeMeasurement','How the outcome is measured'],
+  ['moneyPriceYear','USD price year (1900–2200 or blank)'], ['moneyBasis','Money basis (nominal, constant-price or unknown)'], ['moneyInclusions','Costs included'], ['moneyExclusions','Costs excluded'], ['moneyAdjustment','Price adjustment (required for constant-price; otherwise blank)'],
+  ['independence','Independence assumption'], ['chanceAsScale','Chance as an expected scaling factor'], ['counterfactual','Counterfactual assumption'], ['discountRationale','Discount rationale'], ['harmsAndSpillovers','Harms and spillovers'], ['sourceDepthLimit','Source and depth limits'], ['other','Other assumptions (may be blank)'], ['amendmentReason','Reason for amendment (required after the first version)']
+];
+const jsonFields = [['sources','Source descriptions'],['sourceModel','Claimed source-model mapping'],...rows.map(([key,label])=>[key+'Basis',label+' point bases']),['discountBasis','Discount basis']];
+---
+<section id="model-bundles" class="mb-desk" aria-labelledby="mb-title">
+  <header><p class="mb-eyebrow">Private local workspace</p><h2 id="mb-title">Reproducible model bundles</h2>
+    <p>Record one outcome, its assumptions and the exact calculation. Inputs remain user descriptions. A reproduced calculation is not measured impact or independent review.</p>
+    <p>Your writing stays in this browser until you deliberately download it. This desk has its own local library. The public model registry is empty.</p>
+  </header>
+  <p id="mb-status" role="status" aria-live="polite">Private controls are disabled until this workspace opens. JavaScript is required.</p>
+  <p id="mb-error" role="alert" hidden></p>
+  <noscript><p>This desk requires JavaScript. Its private fields cannot submit without it.</p></noscript>
+  <form id="mb-editor" novalidate>
+    <fieldset><legend>Literal inputs</legend>
+      <div class="mb-actions"><button type="button" data-mb-action="copy-current" disabled>Review current calculator inputs</button><button type="button" data-mb-action="example" disabled>Review an illustrative example</button></div>
+      <p>Copying reads only the calculator’s current visible inputs. It does not copy a saved model or establish a source. No example loads automatically.</p>
+      <label for="mb-raw-parser">Number parser</label><select id="mb-raw-parser" data-mb-field="raw.parser" disabled><option value="strict-decimal-v1">Strict decimal</option><option value="legacy-amount-strip-v1">Original calculator amount stripping</option></select>
+      <div class="mb-grid"><label>Raw model name<input id="mb-raw-name" data-mb-field="raw.name" type="text" disabled /></label><label>Raw outcome unit<input id="mb-raw-unit" data-mb-field="raw.unit" type="text" disabled /></label></div>
+      <div class="mb-ranges">{rows.map(([key,label])=><fieldset><legend>{label}</legend><div class="mb-three">{['low','likely','high'].map((part,i)=><label>{part}<input id={`mb-${key}-${part}`} data-mb-field={`raw.values.${key}.${i}`} type="text" inputmode="decimal" disabled /></label>)}</div></fieldset>)}</div>
+      <div class="mb-grid"><label>Discount, percent<input data-mb-field="raw.discount" type="text" inputmode="decimal" disabled /></label><label>Seed<input data-mb-field="raw.seed" type="text" inputmode="numeric" disabled /></label></div>
+      <p>Zero is a value. Unknown inputs need an explicit authored assumption before freezing; blank does not become zero. Chance scales expected outcomes. Only USD and one outcome are supported.</p>
+    </fieldset>
+    <details open><summary>Authored context and assumptions</summary><div class="mb-grid mb-writing">{textFields.map(([key,label])=><label for={`mb-text-${key}`}>{label}<textarea id={`mb-text-${key}`} data-mb-field={`text.${key}`} rows="2" disabled></textarea></label>)}</div></details>
+    <details><summary>Sources and point bases — exact JSON writing</summary>
+      <p>Unfinished JSON stays literal when saving a draft. Freeze parses it. Sources is an array, sourceModel is null or its explicit mapping. Every row basis is an object with low, likely and high PointBasis objects; discountBasis is one PointBasis. Each point is <code>{'{"kind":"user-assumption","sourceIds":[],"rationale":"Your reason"}'}</code>. Source-informed points name up to three source IDs. Dates use <code>{'{"precision":"year","value":"2026"}'}</code>, month or day precision.</p>
+      <p>A source description has id, title, publisher, url, locator, published, accessedOn, access, license, note and checksum. Optional values use null. Access is public, restricted, not-shared or unknown. A local checksum describes bytes you chose; it does not verify a claim or redistribution rights.</p>
+      <p>Use null for an unknown checksum, or <code>{'{"kind":"declared","sha256":"64 lowercase hexadecimal characters"}'}</code> for a declared hash. The checksum chooser creates local-bytes claims. A claimed source-model mapping is <code>{'{"sourceId":"your-source-id","artifactSha256":"that source checksum","interpretation":"Your explicit mapping to these six inputs"}'}</code>. This description does not reproduce another source’s model. Unused sources need an explanation in note.</p>
+      <div class="mb-writing">{jsonFields.map(([key,label])=><label for={`mb-json-${key}`}>{label}<textarea id={`mb-json-${key}`} data-mb-field={`json.${key}`} rows="5" spellcheck="false" disabled></textarea></label>)}</div>
+    </details>
+    <p id="mb-draft-status"></p>
+    <div class="mb-actions"><button type="button" data-mb-action="save-draft" disabled>Review save draft</button><button type="button" data-mb-action="freeze" disabled>Calculate and review freeze</button><button type="button" data-mb-action="raw-form" disabled>Review unfinished form recovery</button></div>
+  </form>
+  <fieldset><legend>Source file checksum</legend><p>Choose an existing source ID from your sources JSON, then one file up to 8 MiB. Only its local checksum enters the source description. The file body and path are excluded.</p>
+    <label>Source ID<input id="mb-source-id" type="text" disabled /></label><label>Source file<input id="mb-checksum-file" type="file" disabled /></label><pre id="mb-checksum-status"></pre>
+  </fieldset>
+  <fieldset><legend>Local history</legend><p>Stored and restored versions are declared historical results, not recalculated on this browser. Local copies retain their source; amendments append a version.</p>
+    <label>Version<select id="mb-version" disabled></select></label><pre id="mb-version-detail"></pre>
+    <div class="mb-actions"><button type="button" data-mb-action="new-draft" disabled>Review new blank draft</button><button type="button" data-mb-action="amend" disabled>Review amend current head</button><button type="button" data-mb-action="copy-local" disabled>Review local draft copy</button><button type="button" data-mb-action="export-selected" disabled>Review selected JSON</button><button type="button" data-mb-action="export-backup" disabled>Review full private backup</button></div>
+  </fieldset>
+  <fieldset><legend>Inspect a file</legend><p>Choose one selected bundle or full private backup, up to 2 MiB. Inspection has no saved effect. Supplied engine text stays inert; an unknown engine cannot be recalculated or copied. Keep the original file for exact raw-file recovery.</p>
+    <label>File kind<select id="mb-file-kind" disabled><option value="selected">Selected model bundle</option><option value="backup">Full workspace backup</option></select></label><label>Local file<input id="mb-import-file" type="file" disabled /></label>
+    <div class="mb-actions"><button type="button" data-mb-action="cancel-file" disabled>Cancel file or calculation</button><button type="button" data-mb-action="recalculate" disabled>Recalculate selected model here</button><button type="button" data-mb-action="copy-reproduced" disabled>Review copy reproduced version</button><button type="button" data-mb-action="draws" disabled>Review reproduced draws</button><button type="button" data-mb-action="proposal" disabled>Review optional proposal</button><button type="button" data-mb-action="restore" disabled>Review replace from full backup</button></div>
+    <p id="mb-inspection-status">No file inspected.</p><pre id="mb-inspection"></pre><pre id="mb-comparison"></pre>
+    <label>Draft-copy purpose<select id="mb-copy-purpose" disabled><option value="comparison-mismatch-or-refusal">After mismatch or arithmetic refusal</option><option value="intentional-new-branch">Intentional separate branch</option></select></label>
+    <label class="mb-check"><input id="mb-copy-ack" type="checkbox" disabled />Copy inputs to a new draft without a reproduction claim.</label><button type="button" data-mb-action="copy-selected-draft" disabled>Review draft-only copy</button>
+  </fieldset>
+  <fieldset><legend>Saved state and recovery</legend><p>Retry covers the original reviewed candidate, even if you have edited the form since. Reload deliberately replaces local writing. Clear removes only this desk’s key. Undo is available only for the most recent successful Clear or Restore.</p>
+    <div class="mb-actions"><button type="button" data-mb-action="retry" disabled>Retry exact retained candidate</button><button type="button" data-mb-action="pending-recovery" disabled>Review retained candidate recovery</button><button type="button" data-mb-action="reload" disabled>Review reload saved workspace</button><button type="button" data-mb-action="clear" disabled>Review Clear workspace</button><button type="button" data-mb-action="undo" disabled>Review Undo Clear or Restore</button><button type="button" data-mb-action="raw-saved" disabled>Review saved-string recovery</button></div>
+  </fieldset>
+  <section id="mb-review" class="mb-review" aria-labelledby="mb-review-title" hidden><h3 id="mb-review-title" tabindex="-1">Review the complete operation</h3><p id="mb-review-notice"></p><pre id="mb-review-body" tabindex="0"></pre><label class="mb-check"><input id="mb-review-ack" type="checkbox" disabled />I reviewed all fields and intend this exact operation.</label><div class="mb-actions"><button type="button" id="mb-confirm" disabled>Confirm this reviewed operation</button><button type="button" id="mb-dismiss" disabled>Keep writing without this operation</button></div></section>
+</section>
+<script>
+  import { mountModelBundles } from '../../lib/model-bundles/ui.mjs';
+  const root = document.querySelector<HTMLElement>('#model-bundles');
+  if (root) void mountModelBundles(root).catch(() => {
+    const status = root.querySelector('#mb-status');
+    if (status) status.textContent = 'This desk could not initialize. Private controls remain disabled. Current writing is not submitted.';
+  });
+</script>
