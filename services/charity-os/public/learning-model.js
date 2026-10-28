@@ -29,11 +29,12 @@ export async function resolveLearningRecordRoute({ fragment, api, isCurrent, can
   if (!session?.user) throw Object.assign(new Error("Sign in before opening this organization-pinned record."), { status: 401 });
   // Reread actual current memberships. Do not trust a remembered/default org,
   // copied tab state, old role, ordinary record title or a supplied approval pin.
-  const response = await api.orgs({ signal }); assert();
-  if (!Array.isArray(response.orgs)) throw new Error("Current organization memberships could not be verified.");
-  const memberships = response.orgs.filter((org) => org.id === target.orgId);
+  // The actual GET /api/session response rereads memberships under RLS. There
+  // is no GET /api/orgs route; never substitute remembered/default memberships.
+  if (!Array.isArray(session.orgs)) throw new Error("Current organization memberships could not be verified.");
+  const memberships = session.orgs.filter((org) => org.id === target.orgId);
   if (memberships.length !== 1 || !canRead(target.moduleId, memberships[0].role)) throw Object.assign(new Error("This exact organization record is unavailable to your current membership and role. No default organization was substituted."), { status: 403 });
-  return { target, session, orgs: response.orgs, org: memberships[0] };
+  return { target, session, orgs: session.orgs, org: memberships[0] };
 }
 export function stableLearning(value) {
   if (Array.isArray(value)) return `[${value.map(stableLearning).join(",")}]`;

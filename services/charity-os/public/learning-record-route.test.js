@@ -48,19 +48,21 @@ test("actual mounted standard detail and API use exact org when two authorized t
   const requests = [];
   const h = mountedStandardDetail(t, async (path) => {
     requests.push(path);
-    const body = path === "/api/session" ? { user: { id: "staff" }, csrfToken: "current" } : path === "/api/orgs" ? { orgs: [membership("org-A"), membership("org-B")] } : { record: { id: "shared-ID", orgId: path.includes("org-B") ? "org-B" : "org-A", moduleId: "outcomes", data: { title: path.includes("org-B") ? "B exact target" : "A exact target" }, status: "approved", revision: 3, createdAt: "2026-10-27", updatedAt: "2026-10-27" } };
+    assert.notEqual(path, "/api/orgs", "The actual service has no organization-list GET endpoint.");
+    const body = path === "/api/session" ? { user: { id: "staff" }, csrfToken: "current", orgs: [membership("org-A"), membership("org-B")] } : { record: { id: "shared-ID", orgId: path.includes("org-B") ? "org-B" : "org-A", moduleId: "outcomes", data: { title: path.includes("org-B") ? "B exact target" : "A exact target" }, status: "approved", revision: 3, createdAt: "2026-10-27", updatedAt: "2026-10-27" } };
     return { ok: true, async json() { return body; } };
   });
   await h.open("#learning-record/org-B/outcomes/shared-ID");
   assert.equal(h.state.org, "org-B"); assert.match(h.content.textContent, /B exact target/); assert.doesNotMatch(h.content.textContent, /A exact target/);
   assert.equal(requests.at(-1), "/api/orgs/org-B/modules/outcomes/records/shared-ID");
   await h.open("#learning-record/org-A/outcomes/shared-ID"); assert.match(h.content.textContent, /A exact target/); assert.equal(requests.at(-1), "/api/orgs/org-A/modules/outcomes/records/shared-ID");
-  assert.equal(requests.filter((path) => path === "/api/orgs").length, 2, "Each pinned navigation reloads actual memberships.");
+  assert.equal(requests.filter((path) => path === "/api/session").length, 2, "Each pinned navigation reloads actual session memberships.");
 });
 
 test("stale/revoked/unknown membership or role refuses before any ordinary record lookup and never falls back", async (t) => {
   const requests = [], h = mountedStandardDetail(t, async (path) => {
-    requests.push(path); return { ok: true, async json() { return path === "/api/session" ? { user: { id: "staff" } } : { orgs: [membership("org-A"), membership("org-B", "unknown-role")] }; } };
+    requests.push(path); assert.equal(path, "/api/session");
+    return { ok: true, async json() { return { user: { id: "staff" }, orgs: [membership("org-A"), membership("org-B", "unknown-role")] }; } };
   });
   for (const fragment of ["#learning-record/org-B/outcomes/shared-ID", "#learning-record/no-membership/outcomes/shared-ID"]) await assert.rejects(h.open(fragment), (error) => error.status === 403);
   assert.equal(requests.some((path) => path.includes("/modules/")), false); assert.equal(h.state.org, "org-A"); assert.equal(h.content.textContent, "");
@@ -69,7 +71,8 @@ test("stale/revoked/unknown membership or role refuses before any ordinary recor
 test("actual standard record permission and backend refusal remain authoritative after route membership resolution", async (t) => {
   const h = mountedStandardDetail(t, async (path) => {
     if (path.includes("/modules/")) return { ok: false, status: 403, async json() { return { ok: false, code: "forbidden", message: "Standard record permission refused" }; } };
-    return { ok: true, async json() { return path === "/api/session" ? { user: { id: "staff" } } : { orgs: [membership("org-B")] }; } };
+    assert.equal(path, "/api/session");
+    return { ok: true, async json() { return { user: { id: "staff" }, orgs: [membership("org-B")] }; } };
   });
   await assert.rejects(h.open("#learning-record/org-B/outcomes/shared-ID"), (error) => error.status === 403 && error.message === "Standard record permission refused");
   assert.equal(h.content.textContent, "");
@@ -77,10 +80,27 @@ test("actual standard record permission and backend refusal remain authoritative
 
 test("late membership response cannot select org or mount a detail under a new route/auth epoch", async (t) => {
   let current = true, resolve;
-  const h = mountedStandardDetail(t, async (path) => path === "/api/session" ? { ok: true, async json() { return { user: { id: "staff" } }; } } : new Promise((done) => { resolve = () => done({ ok: true, async json() { return { orgs: [membership("org-B")] }; } }); }));
+  const h = mountedStandardDetail(t, async (path) => {
+    assert.equal(path, "/api/session");
+    return new Promise((done) => { resolve = () => done({ ok: true, async json() { return { user: { id: "staff" }, orgs: [membership("org-B")] }; } }); });
+  });
   const pending = h.open("#learning-record/org-B/outcomes/shared-ID", () => current);
   while (!resolve) await Promise.resolve(); current = false; resolve(); await assert.rejects(pending, (error) => error.name === "AbortError");
   assert.equal(h.state.org, "org-A"); assert.equal(h.content.textContent, "");
   assert.match(appSource, /window\.open\(learningRecordFragment\(org, moduleId, recordId\), "_blank", "noopener,noreferrer"\)/);
   assert.match(appSource, /await renderDetail\(resolved\.target\.moduleId, resolved\.target\.recordId, current\)/);
+});
+
+test("missing or malformed fresh session memberships never fall back to a remembered organization", async (t) => {
+  const requests = [];
+  let memberships;
+  const h = mountedStandardDetail(t, async (path) => {
+    requests.push(path); assert.equal(path, "/api/session");
+    return { ok: true, async json() { return { user: { id: "staff" }, ...(memberships === undefined ? {} : { orgs: memberships }) }; } };
+  });
+  for (memberships of [undefined, null, {}, [membership("org-B"), membership("org-B")]]) {
+    await assert.rejects(h.open("#learning-record/org-B/outcomes/shared-ID"), /memberships could not be verified|unavailable to your current membership/);
+    assert.equal(h.state.org, "org-A"); assert.equal(h.content.textContent, "");
+  }
+  assert.equal(requests.length, 4);
 });
