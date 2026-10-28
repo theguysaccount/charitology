@@ -1,6 +1,6 @@
 # Education activation acceptance
 
-Status: implementation and local verification in progress, October 28, 2026 UTC. AI-assisted content and source review; all teaching resources remain untested editorial drafts.
+Status: local implementation acceptance, October 28, 2026 UTC. The release record is [PR #35](https://github.com/theguysaccount/charitology/pull/35). AI-assisted content and source review; all teaching resources remain untested editorial drafts.
 
 ## Scope
 
@@ -35,4 +35,6 @@ The owned local preview tab closed and its viewport override was reset. The task
 
 ## Release and public checks
 
-Pending exact-head CI, Pages deployment and bounded canonical response verification. No publication claim is made yet.
+[PR #35](https://github.com/theguysaccount/charitology/pull/35) records the final release head, exact CI outcomes, merge and Pages identity, and bounded canonical checks after completion. Local acceptance alone does not establish publication. Merge requires the final head’s public, OS and newsletter checks, followed by successful Pages deployment and exact-byte checks of the five new pages, three existing entry points, all seven Markdown files and their selected linked runtime/media assets. The public comparison is selected coverage, not an HTTP read of every one of the 577 HTML pages.
+
+The first new-branch push at runtime `1c7407964a5c8a0229cb3bab726f730a884a49a6` failed the observation-history gate because the push event supplied no nonzero committed base. Its failure remains recorded; no gate was bypassed. Later documentation commits have a real parent and require fresh exact-head push/PR CI. Private release/public-response receipts preserve the final identities and actual saved bodies.
