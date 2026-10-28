@@ -719,7 +719,7 @@ export async function intakeRoutes({
   if (!item) fail(404, "intake_route", "This intake action is unavailable.");
   const row = (
     await c.query(
-      "SELECT * FROM os_intake WHERE org_id=$1 AND id=$2 FOR UPDATE",
+      `SELECT * FROM os_intake WHERE org_id=$1 AND id=$2${["GET", "HEAD"].includes(method) ? "" : " FOR UPDATE"}`,
       [org, item[1]],
     )
   ).rows[0];

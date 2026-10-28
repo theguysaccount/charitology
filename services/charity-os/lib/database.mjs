@@ -4,6 +4,18 @@ import { verifiedNeonConnectionString } from "./connection.mjs";
 import { id, fail } from "./security.mjs";
 import { guardParticipationWrite } from "./participation-guards.mjs";
 import { guardTaskRecurrenceWrite } from "./task-recurrence.mjs";
+import { guardLearningWrite } from "./learning-guards.mjs";
+// Only server calls to audit classify a completed transaction. HTTP inputs
+// cannot supply a deferral flag or a replacement capacity validator.
+const transactionAudits = new WeakMap();
+const safetyActions = new Set([
+  "task-recurrence.ended", "membership.revoked", "membership.changed",
+  "invitation.revoked", "integration.disabled", "intake.cancelled",
+  "intake.publication.withdrawn", "intake.erased", "participant.unlinked",
+  "participation.cancelled", "participation.preferences",
+  "participation.delivery.disabled", "participation.delivery.preference_off",
+]);
+const projectionExemptActions = new Set([...safetyActions, "backup.exported"]);
 export function database(url, { schema } = {}) {
   if (schema && !/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("Invalid schema.");
@@ -16,10 +28,15 @@ export function database(url, { schema } = {}) {
   });
   return {
     pool,
-    async tx(userId, orgId, fn, { lock = false } = {}) {
+    async tx(userId, orgId, fn, { lock = false, readOnly = false } = {}) {
       const c = await pool.connect();
+      const state = { orgId, locked: Boolean(lock && orgId), actions: new Set() };
+      transactionAudits.set(c, state);
       try {
         await c.query("BEGIN");
+        // Enforce the trusted read classification in PostgreSQL, before any
+        // query can acquire a snapshot or perform a write.
+        if (readOnly) await c.query("SET TRANSACTION READ ONLY");
         await c.query(
           "SELECT set_config('app.org_id',$1,true),set_config('app.user_id',$2,true)",
           [orgId || "", userId || ""],
@@ -30,12 +47,24 @@ export function database(url, { schema } = {}) {
             [orgId],
           );
         const result = await fn(c);
+        // A complete source graph exists here, after all ordinary records,
+        // immutable history and mandatory audits. Intermediate audit checks
+        // intentionally retain raw SQL accounting below.
+        if (!readOnly && orgId && (state.locked || state.actions.size) &&
+            (!state.actions.size || [...state.actions].some(action => !projectionExemptActions.has(action)))) {
+          const learning = (await c.query("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present", [orgId])).rows[0].present;
+          if (learning) {
+            const { checkWorkspaceExportCapacity } = await import("./workspace-backup.mjs");
+            await checkWorkspaceExportCapacity(c, orgId);
+          }
+        }
         await c.query("COMMIT");
         return result;
       } catch (e) {
         await c.query("ROLLBACK");
         throw e;
       } finally {
+        transactionAudits.delete(c);
         c.release();
       }
     },
@@ -59,27 +88,22 @@ export function database(url, { schema } = {}) {
   };
 }
 export async function audit(c, org, user, action, record = null, detail = {}) {
+  const transaction = transactionAudits.get(c);
+  if (transaction && transaction.orgId === org) {
+    // Track intent even when an optional or emergency-reserve audit is skipped.
+    transaction.actions.add(action);
+    if (!transaction.locked) {
+      await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
+      transaction.locked = true;
+    }
+  }
   const usage = await logicalBackupBytes(c, org);
   if (
     usage + Buffer.byteLength(JSON.stringify(detail)) + 1000 >
     60 * 1024 * 1024
   ) {
     if (action === "backup.exported") return false;
-    const accessControl = [
-      "task-recurrence.ended",
-      "membership.revoked",
-      "membership.changed",
-      "invitation.revoked",
-      "integration.disabled",
-      "intake.cancelled",
-      "intake.publication.withdrawn",
-      "intake.erased",
-      "participant.unlinked",
-      "participation.cancelled",
-      "participation.preferences",
-      "participation.delivery.disabled",
-      "participation.delivery.preference_off",
-    ].includes(action);
+    const accessControl = safetyActions.has(action);
     if (accessControl) {
       detail = {
         targetId:
@@ -149,6 +173,7 @@ export async function allRecords(c, org) {
 export async function saveRecord(c, r, options = {}) {
   await guardParticipationWrite(c, r, options);
   await guardTaskRecurrenceWrite(c, r, options);
+  await guardLearningWrite(c, r, options);
   const size = Buffer.byteLength(JSON.stringify(r.data));
   const usage = (
     await c.query(
@@ -203,12 +228,14 @@ export async function logicalBackupBytes(c, org) {
     "os_task_recurrence_series",
     "os_task_recurrence_occurrences",
     "os_resource_directory_history",
+    "os_learning_history",
+    "os_learning_previews",
   ];
   const sql =
     tables
       .map(
         (table) =>
-          `SELECT COALESCE(sum(${["os_participation_outbox", "os_task_recurrence_series", "os_resource_directory_history"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
+          `SELECT COALESCE(sum(${table === "os_reports" ? "CASE WHEN payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%' THEN GREATEST(octet_length(to_jsonb(t)::text),octet_length(payload::text)+4096) ELSE octet_length(to_jsonb(t)::text) END" : ["os_participation_outbox", "os_task_recurrence_series", "os_resource_directory_history", "os_learning_history"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
       )
       .join(" UNION ALL ") +
     " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1";

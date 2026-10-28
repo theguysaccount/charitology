@@ -985,7 +985,7 @@ export async function ownDeliveryRoutes({
     async (c) => {
       const intake = (
         await c.query(
-          "SELECT i.* FROM os_participant_links l JOIN os_intake i ON i.org_id=l.org_id AND i.id=l.intake_id AND i.publication_id=l.publication_id WHERE l.user_id=$1 AND l.org_id=$2 AND l.intake_id=$3 AND l.revoked_at IS NULL FOR UPDATE OF i,l",
+          `SELECT i.* FROM os_participant_links l JOIN os_intake i ON i.org_id=l.org_id AND i.id=l.intake_id AND i.publication_id=l.publication_id WHERE l.user_id=$1 AND l.org_id=$2 AND l.intake_id=$3 AND l.revoked_at IS NULL${request.method === "GET" ? "" : " FOR UPDATE OF i,l"}`,
           [actor.id, org, intakeId],
         )
       ).rows[0];
@@ -993,7 +993,7 @@ export async function ownDeliveryRoutes({
         intake &&
         (
           await c.query(
-            "SELECT * FROM os_participations WHERE org_id=$1 AND id=$2 AND intake_id=$3 FOR UPDATE",
+            `SELECT * FROM os_participations WHERE org_id=$1 AND id=$2 AND intake_id=$3${request.method === "GET" ? "" : " FOR UPDATE"}`,
             [org, pid, intakeId],
           )
         ).rows[0];
@@ -1083,7 +1083,7 @@ export async function ownDeliveryRoutes({
         }),
       });
     },
-    { lock: true },
+    { lock: true, readOnly: request.method === "GET" },
   );
 }
 
@@ -1424,7 +1424,7 @@ async function completeWork(db, org, job, result, budget) {
           job.lease_owner,
           next,
           safeCode,
-          providerEventAt,
+          providerEventAt == null ? null : new Date(providerEventAt),
           result.provenNoAttempt === true && job.operation === "send",
         ],
       );

@@ -344,3 +344,79 @@ DROP POLICY IF EXISTS tenant ON os_resource_directory_history;
 CREATE POLICY tenant ON os_resource_directory_history USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
 DROP TRIGGER IF EXISTS immutable_resource_directory_history ON os_resource_directory_history;
 CREATE TRIGGER immutable_resource_directory_history BEFORE UPDATE OR DELETE ON os_resource_directory_history FOR EACH ROW EXECUTE FUNCTION os_immutable();
+
+-- Private learning provenance. Restored histories never restore command authority.
+CREATE TABLE IF NOT EXISTS os_learning_history (
+ org_id text NOT NULL REFERENCES os_orgs(id),
+ id text NOT NULL CHECK(id ~ '^[a-f0-9]{64}$'),
+ row_kind text NOT NULL CHECK(row_kind IN ('source','evidence','event','recovered-report')),
+ origin_mode text NOT NULL CHECK(origin_mode IN ('live','recovered')),
+ origin_org_id text NOT NULL CHECK(origin_org_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ binding_id text CHECK(binding_id IS NULL OR binding_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ sequence integer, source_version integer,
+ program_id text CHECK(program_id IS NULL OR program_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ payload jsonb NOT NULL CHECK(jsonb_typeof(payload)='object' AND octet_length(payload::text)<=4194304),
+ receipt jsonb CHECK(receipt IS NULL OR (jsonb_typeof(receipt)='object' AND octet_length(receipt::text)<=8192)),
+ budget_bytes integer NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(org_id,id),
+ CHECK(budget_bytes=octet_length(payload::text)+COALESCE(octet_length(receipt::text),0)+4096),
+ CHECK((row_kind='source' AND binding_id IS NOT NULL AND source_version BETWEEN 1 AND 8
+        AND sequence IS NULL AND program_id IS NULL
+        AND payload->>'format'='charitology-learning-source' AND payload->>'version'='1'
+        AND payload->>'sha256'=id AND payload->>'originOrgId'=origin_org_id
+        AND payload->>'bindingId'=binding_id AND (payload->>'sourceVersion')::integer=source_version)
+    OR (row_kind='evidence' AND binding_id IS NULL AND source_version IS NULL
+        AND sequence IS NULL AND program_id IS NULL AND octet_length(payload::text)<=262144
+        AND payload->>'format'='charitology-learning-approved-evidence' AND payload->>'version'='1'
+        AND payload->>'sha256'=id AND payload#>>'{pin,originOrgId}'=origin_org_id)
+    OR (row_kind='event' AND binding_id IS NOT NULL AND source_version IS NULL
+        AND sequence BETWEEN 1 AND 1000 AND program_id IS NOT NULL AND octet_length(payload::text)<=131072
+        AND payload->>'format'='charitology-learning-event' AND payload->>'version'='1'
+        AND payload->>'sha256'=id AND payload->>'originOrgId'=origin_org_id
+        AND payload->>'bindingId'=binding_id AND payload->>'programId'=program_id
+        AND (payload->>'sequence')::integer=sequence)
+    OR (row_kind='recovered-report' AND origin_mode='recovered' AND binding_id IS NULL
+        AND source_version IS NULL AND sequence IS NULL AND program_id IS NOT NULL
+        AND payload->>'format'='charitology-os-report' AND payload->>'kind'='learning-review'
+        AND payload->>'version'='1' AND payload->>'methodVersion'='learning-review-v1'
+        AND payload->>'checksum'=id AND payload->>'orgId'=origin_org_id
+        AND payload#>>'{selection,selection,program,recordId}'=program_id)),
+ CHECK((row_kind='event' AND origin_mode='live' AND receipt IS NOT NULL
+        AND receipt->>'version'='1' AND receipt->>'commandHash' ~ '^[a-f0-9]{64}$'
+        AND receipt->>'requestHash' ~ '^[a-f0-9]{64}$'
+        AND receipt->>'actorBindingHash' ~ '^[a-f0-9]{64}$')
+       OR ((row_kind<>'event' OR origin_mode='recovered') AND receipt IS NULL))
+);
+CREATE UNIQUE INDEX IF NOT EXISTS os_learning_event_sequence ON os_learning_history(org_id,origin_org_id,binding_id,sequence) WHERE row_kind='event';
+CREATE UNIQUE INDEX IF NOT EXISTS os_learning_source_version ON os_learning_history(org_id,origin_org_id,binding_id,source_version) WHERE row_kind='source';
+CREATE UNIQUE INDEX IF NOT EXISTS os_learning_command ON os_learning_history(org_id,(receipt->>'commandHash')) WHERE receipt IS NOT NULL;
+CREATE INDEX IF NOT EXISTS os_learning_program_history ON os_learning_history(org_id,program_id,binding_id,sequence);
+CREATE UNIQUE INDEX IF NOT EXISTS os_learning_correction_terminal ON os_learning_history(org_id,origin_org_id,binding_id,(payload#>>'{payload,correctionEventSha256}')) WHERE row_kind='event' AND payload#>>'{payload,kind}' IN ('correction-applied','correction-abandoned');
+CREATE UNIQUE INDEX IF NOT EXISTS os_learning_correction_edge ON os_learning_history(org_id,origin_org_id,binding_id,(payload#>>'{payload,replaces,recordId}')) WHERE row_kind='event' AND payload#>>'{payload,kind}'='correction-applied';
+ALTER TABLE os_learning_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_learning_history FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_learning_history;
+CREATE POLICY tenant ON os_learning_history USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+DROP TRIGGER IF EXISTS immutable_learning_history ON os_learning_history;
+CREATE TRIGGER immutable_learning_history BEFORE UPDATE OR DELETE ON os_learning_history FOR EACH ROW EXECUTE FUNCTION os_immutable();
+
+CREATE TABLE IF NOT EXISTS os_learning_previews (
+ org_id text NOT NULL REFERENCES os_orgs(id),id text NOT NULL CHECK(id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ actor_id text NOT NULL CHECK(actor_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ session_sha256 text NOT NULL CHECK(session_sha256 ~ '^[a-f0-9]{64}$'),
+ membership_sha256 text NOT NULL CHECK(membership_sha256 ~ '^[a-f0-9]{64}$'),
+ restore_epoch_sha256 text NOT NULL CHECK(restore_epoch_sha256 ~ '^[a-f0-9]{64}$'),
+ kind text NOT NULL CHECK(kind IN ('inspection','map','measure','correct','apply-correction','abandon-correction','decide','adopt','freeze')),
+ payload jsonb NOT NULL CHECK(jsonb_typeof(payload)='object' AND octet_length(payload::text)<=4194304),
+ review_sha256 text NOT NULL CHECK(review_sha256 ~ '^[a-f0-9]{64}$'),
+ expires_at timestamptz NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(org_id,id)
+);
+CREATE INDEX IF NOT EXISTS os_learning_preview_expiry ON os_learning_previews(expires_at);
+CREATE INDEX IF NOT EXISTS os_learning_preview_actor ON os_learning_previews(org_id,actor_id,created_at);
+ALTER TABLE os_learning_previews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_learning_previews FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_learning_previews;
+CREATE POLICY tenant ON os_learning_previews USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+CREATE UNIQUE INDEX IF NOT EXISTS os_learning_report_edition ON os_reports(org_id,(payload#>>'{selection,selection,manifestRecordId}'),(payload#>>'{selection,manifest,revision}'),(payload#>>'{selection,sourceDigest}')) WHERE payload->>'kind'='learning-review' AND payload->>'methodVersion'='learning-review-v1';

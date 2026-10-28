@@ -260,7 +260,7 @@ async function listRequests({ db, user, query }) {
             (await loadOwn(c, user, org, ids)).map((item) =>
               serialize(item, user, org),
             ),
-          { lock: true },
+          { lock: true, readOnly: true },
         ),
       ),
     )
@@ -532,7 +532,7 @@ async function ownRequest({ db, user, org, intakeId, action, input }) {
       }
       return okay({ request: serialize(loaded, user, org) });
     },
-    { lock: true },
+    { lock: true, readOnly: !action },
   );
 }
 
