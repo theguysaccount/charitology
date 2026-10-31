@@ -4,7 +4,7 @@
   "framework": null,
   "buildCommand": "",
   "outputDirectory": "public",
-  "functions": { "api/index.mjs": { "maxDuration": 60 } },
+  "functions": { "api/index.mjs": { "maxDuration": 60 }, "api/public-mcp.mjs": { "maxDuration": 15 } },
   "crons": [{ "path": "/api/cron/maintenance", "schedule": "0 7 * * *" }],
   "headers": [
     {
@@ -21,6 +21,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/mcp", "destination": "/api/public-mcp" },
     { "source": "/api/:path*", "destination": "/api/index" },
     { "source": "/auth/:path*", "destination": "/api/index" },
     { "source": "/p/:path*", "destination": "/intake.html" },
