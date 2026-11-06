@@ -297,7 +297,7 @@ function mount(root, supplied = null) {
     if (name === 'cancel-file') { invalidate(); status('File and calculation work cancelled. Current writing remains here.'); refresh(); return; }
     if (name === 'retry') {
       hideReview(); const token = serial; busy = true; refresh();
-      try { const result = await session.retry(); if (!disposed) { if (snapshot().pending === 'none') pendingCandidate = null; if (['saved', 'removed', 'noop'].includes(result.kind)) draftBase = clone(snapshot().memory.draft); } if (!current(token)) return; revokeFiles('Retry completed; earlier file comparisons are no longer current. Choose the original file again to recalculate.'); renderState(result.snapshot); if (result.kind === 'refused') error(result.message); }
+      try { const result = await session.retry(); if (!disposed) { if (snapshot().pending === 'none') pendingCandidate = null; if (['saved', 'removed'].includes(result.kind)) draftBase = clone(snapshot().memory.draft); } if (!current(token)) return; revokeFiles('Retry completed; earlier file comparisons are no longer current. Choose the original file again to recalculate.'); renderState(result.snapshot); if (result.kind === 'refused') error(result.message); }
       catch (e) { if (current(token)) error(fixedError(e)); } finally { if (current(token)) busy = false; refresh(); } return;
     }
     if (name === 'pending-recovery' && pendingCandidate) {
@@ -333,9 +333,12 @@ function mount(root, supplied = null) {
         if (bytes.byteLength > LIMITS.checksumFile) throw Object.assign(new Error(), { code: 'byte-limit' }); return bytes;
       }, 'unfinished-model-form-recovery.txt', 'text/plain', 'Exact escaped unfinished writing. This is not accepted by any bundle import. If it exceeds 8 MiB, copy fields manually; no output is truncated.');
     }
-    if (name === 'raw-saved') {
-      invalidate(); return exportReview(async () => { const bytes = await session.rawSavedRecovery(); if (!bytes) throw Object.assign(new Error(), { code: 'no-readable-saved-string' }); return bytes; },
-        'model-saved-string-recovery.txt', 'text/plain', 'Protected saved string escaped exactly as JSON. This recovery is not a valid workspace backup.');
+    if (name === 'raw-saved' || name === 'raw-observed') {
+      const protectedCopy = name === 'raw-saved';
+      invalidate(); return exportReview(async () => { const bytes = await session.rawSavedRecovery(protectedCopy ? 'protected' : 'observed'); if (!bytes) throw Object.assign(new Error(), { code: 'no-readable-saved-string' }); return bytes; },
+        protectedCopy ? 'model-saved-string-recovery.txt' : 'model-last-observed-string-recovery.txt', 'text/plain',
+        protectedCopy ? 'Protected saved string from this session, escaped exactly as JSON. Later storage notices do not replace it. This recovery is not a valid workspace backup.'
+          : 'Last successfully observed saved string, escaped exactly as JSON. It may differ from the protected copy and from current storage. This recovery is not a valid workspace backup.');
     }
   }
   for (const button of root.querySelectorAll('[data-mb-action]')) on(button, 'click', async () => {
@@ -361,14 +364,15 @@ function mount(root, supplied = null) {
       } else {
         const result = await session.commit(chosen.prepared.handle);
         if (!disposed) pendingCandidate = snapshot().pending === 'retry' ? { review: clone(chosen.prepared.review), exportedAt: now() } : null;
-        if (!disposed && ['saved', 'removed', 'noop'].includes(result.kind)) draftBase = clone(snapshot().memory.draft);
+        if (!disposed && ['saved', 'removed'].includes(result.kind)) draftBase = clone(snapshot().memory.draft);
         if (!current(chosen.token)) return;
-        if (['saved', 'removed', 'noop'].includes(result.kind)) {
+        if (['saved', 'removed'].includes(result.kind)) {
           if (NAVIGATION.has(chosen.operation) && literalGeneration === chosen.formAt) hydrate(result.snapshot);
           else if (literalGeneration === chosen.formAt) dirty = result.snapshot.memory.draft.dirty;
         }
         revokeFiles('The reviewed command finished. Earlier file comparison authority expired; choose the original file again for a new comparison.');
         renderState(result.snapshot); if (result.kind === 'refused') error(result.message);
+        if (result.kind === 'noop') status('That action was already recorded. No saved change was made; current writing remains here.');
       }
     } catch (e) { if (!disposed) error(fixedError(e)); }
     finally { if (current(chosen.token)) busy = false; refresh(); }

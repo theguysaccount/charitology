@@ -246,10 +246,13 @@ function controller(platform, testing) {
       else { const sha = await fingerprint(raw); if (!disposed && serial === statusSerial) { observed = raw; savedSha256 = sha; persistence = conflict ? 'conflict' : baselineKind; message = conflict ? MESSAGES.conflict : pending ? MESSAGES.unconfirmed : MESSAGES[persistence]; } }
       return snapshot();
     },
-    async rawSavedRecovery() {
-      await openingPromise; if (typeof observed !== 'string') return null;
-      if (!escapedStringFits(observed, LIMITS.checksumFile - RECOVERY_OVERHEAD)) fail('byte-limit');
-      const bytes = encoder.encode(RECOVERY_PREFIX + JSON.stringify({ savedString: observed }, null, 2) + '\n');
+    async rawSavedRecovery(which = 'protected') {
+      if (which !== 'protected' && which !== 'observed') fail('recovery-target');
+      await openingPromise;
+      const raw = which === 'protected' ? baseline : observed;
+      if (typeof raw !== 'string') return null;
+      if (!escapedStringFits(raw, LIMITS.checksumFile - RECOVERY_OVERHEAD)) fail('byte-limit');
+      const bytes = encoder.encode(RECOVERY_PREFIX + JSON.stringify({ savedString: raw }, null, 2) + '\n');
       if (bytes.byteLength > LIMITS.checksumFile) fail('byte-limit'); return bytes;
     },
     undo() { return undoRecord?.handle ?? null; },

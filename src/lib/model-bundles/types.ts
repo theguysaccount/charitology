@@ -164,7 +164,7 @@ export interface ModelBundleSession {
   retry(): Promise<CommitResult>;
   reload(options: { discardLocal: true }): Promise<StoreSnapshot>;
   rereadStatus(): Promise<StoreSnapshot>;
-  rawSavedRecovery(): Promise<Uint8Array | null>;
+  rawSavedRecovery(which?: 'protected' | 'observed'): Promise<Uint8Array | null>;
   undo(): UndoHandle | null;
   dispose(): void;
 }

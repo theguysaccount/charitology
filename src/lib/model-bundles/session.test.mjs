@@ -127,6 +127,35 @@ test('actual no-lock/no-SHA sessions never write and report read-only capabiliti
     assert.equal(shared.logs.filter(x => x.method !== 'getItem').length, 0);
   }
 });
+test('protected opening bytes and latest observed bytes have independent exact recovery until deliberate reload', async t => {
+  const original = 'private opening \ud800\u0000 text', shared = disk(original), a = owner(t, shared);
+  const unpack = bytes => { const text = new TextDecoder().decode(bytes); return JSON.parse(text.slice(text.indexOf('{'))).savedString; };
+  await a.openingPromise;
+  const foreign = canonicalJson(await fixtureState());
+  shared.raw = foreign; await a.hooks.noticeForeignStorage();
+  assert.equal(a.session.snapshot().persistence, 'conflict');
+  assert.equal(unpack(await a.session.rawSavedRecovery()), original);
+  assert.equal(unpack(await a.session.rawSavedRecovery('protected')), original);
+  assert.equal(unpack(await a.session.rawSavedRecovery('observed')), foreign);
+  shared.hooks.set('a:getItem', () => { throw Error('denied'); }); await a.session.rereadStatus();
+  assert.equal(unpack(await a.session.rawSavedRecovery()), original);
+  assert.equal(unpack(await a.session.rawSavedRecovery('observed')), foreign);
+  shared.hooks.delete('a:getItem'); shared.raw = null; await a.hooks.noticeForeignStorage();
+  assert.equal(await a.session.rawSavedRecovery('observed'), null);
+  assert.equal(unpack(await a.session.rawSavedRecovery()), original);
+  await assert.rejects(a.session.rawSavedRecovery('other'), { code: 'recovery-target' });
+  shared.raw = foreign; await a.session.reload({ discardLocal: true });
+  assert.equal(unpack(await a.session.rawSavedRecovery()), foreign);
+  assert.equal(shared.logs.filter(x => x.method !== 'getItem').length, 0);
+});
+test('an oversized latest observation cannot replace or block bounded protected recovery', async t => {
+  const original = 'held private text', shared = disk(original), a = owner(t, shared); await a.openingPromise;
+  shared.raw = 'a'.repeat(LIMITS.checksumFile); await a.hooks.noticeForeignStorage();
+  const text = new TextDecoder().decode(await a.session.rawSavedRecovery());
+  assert.equal(JSON.parse(text.slice(text.indexOf('{'))).savedString, original);
+  await assert.rejects(a.session.rawSavedRecovery('observed'), { code: 'byte-limit' });
+  assert.equal(shared.logs.filter(x => x.method !== 'getItem').length, 0);
+});
 test('actual exact escaped recovery cap is admitted and one extra byte refuses before building the output', async t => {
   const shared = disk(''), a = owner(t, shared); await a.openingPromise;
   const emptyBytes = await a.session.rawSavedRecovery(), count = LIMITS.checksumFile - emptyBytes.byteLength;

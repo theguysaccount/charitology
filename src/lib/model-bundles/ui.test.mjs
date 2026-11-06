@@ -183,6 +183,45 @@ test('mounted model bundle desk uses actual local authority and guarded arithmet
         await d.action('amend').click(); await d.confirm(); assert.equal(d.controller.session.snapshot().memory.draft.mode, 'amend'); assert.equal(readEditorForm(d.desk).raw.name, state.versions[0].content.raw.name);
       } finally { await d.close(); }
     });
+    await t.test('an already-copied selected file is a true no-op for unrelated unfinished writing', async () => {
+      const d = await start().ready();
+      try {
+        const bytes = await fixtureSelected();
+        await d.choose(bytes); await d.action('recalculate').click();
+        await d.action('copy-reproduced').click(); await d.confirm();
+        const before = d.values.get(LOCAL_KEY), count = d.operations.filter(op => op[0] !== 'get').length;
+        await d.set('#mb-text-title', 'Different unfinished title');
+        await d.set('#mb-raw-name', 'literal private unfinished name');
+        await d.set('#mb-json-sources', '{');
+        const form = readEditorForm(d.desk);
+        await d.choose(bytes); await d.action('recalculate').click();
+        await d.action('copy-reproduced').click(); await d.confirm();
+        assert.equal(d.values.get(LOCAL_KEY), before);
+        assert.equal(d.operations.filter(op => op[0] !== 'get').length, count);
+        assert.deepEqual(readEditorForm(d.desk), form);
+        assert.match(d.$('#mb-status').textContent, /already recorded.*current writing remains/i);
+        await d.action('save-draft').click(); await d.confirm();
+        assert.deepEqual(d.controller.session.snapshot().memory.draft.form, form);
+        assert.equal(d.controller.session.snapshot().memory.imports.length, 1);
+      } finally { await d.close(); }
+    });
+    await t.test('protected and last-observed recovery remain separately reviewed without replacing unsaved form', async () => {
+      const original = 'opening private \ud800 text', d = await start(original).ready();
+      try {
+        await d.set('#mb-text-title', 'Unsubmitted current writing');
+        const foreign = canonicalJson(await fixtureState()); d.values.set(LOCAL_KEY, foreign);
+        await d.window.fire('storage', { key: LOCAL_KEY });
+        await d.action('raw-saved').click(); await d.confirm();
+        let text = await d.downloads.at(-1).text();
+        assert.equal(JSON.parse(text.slice(text.indexOf('{'))).savedString, original);
+        await d.action('raw-observed').click();
+        assert.match(d.$('#mb-review-notice').textContent, /Last successfully observed.*may differ/);
+        await d.confirm(); text = await d.downloads.at(-1).text();
+        assert.equal(JSON.parse(text.slice(text.indexOf('{'))).savedString, foreign);
+        assert.equal(d.get('#mb-text-title'), 'Unsubmitted current writing');
+        assert.equal(d.operations.filter(op => op[0] !== 'get').length, 0);
+      } finally { await d.close(); }
+    });
     await t.test('mismatch/refusal allows only explicitly acknowledged draft copy; unknown/malformed files remain inert', async () => {
       for (const kind of ['mismatched', 'refused']) {
         const d = await start().ready();
