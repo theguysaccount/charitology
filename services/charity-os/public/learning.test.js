@@ -49,12 +49,46 @@ function fakeApi(ctx = contextFixture()) {
 }
 function harness(t, config = {}) {
   const dom = learningTestDOM(), service = fakeApi(config.context);
+  config.configureDOM?.(dom);
   let authorized = true, dirty = false;
   const view = createLearningWorkspace({ org: "org", role: "owner", api: service.api, isCurrent: () => authorized, onDirty: (value) => { dirty = value; }, makeCommandKey: () => CMD, ...config.options });
   dom.mount(view); t.after(() => { view.dispose(); dom.restore(); });
   const get = (name) => { const result = view.querySelector(`[data-learning="${name}"]`); assert.ok(result, name); return result; };
   const button = (text) => { const result = view.querySelectorAll("button").find((row) => row.textContent === text); assert.ok(result, text); return result; };
   return { ...dom, ...service, view, get, button, revoke() { authorized = false; }, get dirty() { return dirty; }, async field(name, value) { const control = get(name); control.value = value; await control.emit("input"); }, async load() { await get("load").click(); get("binding").value = "binding"; await get("load-context").click(); } };
+}
+// Exercise the production iframe branch. Only the browser-owned document,
+// stylesheet events and native print dialog are modeled; printOutput is unused.
+function nativePrintHarness(t, options = {}) {
+  const ready = [], waiters = [];
+  const h = harness(t, { options, configureDOM({ document, Element }) {
+    const create = document.createElement;
+    document.createElement = (tag) => {
+      const frame = create(tag);
+      if (tag !== "iframe") return frame;
+      const body = new Element("body"), head = new Element("head"), win = new Element("window");
+      body.connect(true); head.connect(true);
+      const target = { body, head, createElement: create, querySelectorAll: (selector) => [...head.querySelectorAll(selector), ...body.querySelectorAll(selector)] };
+      const surface = { frame, target, win, prints: 0, link: null };
+      frame.contentDocument = target; frame.contentWindow = win;
+      win.print = () => { surface.prints++; };
+      const append = head.append.bind(head);
+      head.append = (...nodes) => {
+        append(...nodes);
+        const link = nodes.find((node) => node.tagName === "LINK" && node.getAttribute("rel") === "stylesheet");
+        if (link) {
+          surface.link = link;
+          if (waiters.length) waiters.shift()(surface); else ready.push(surface);
+        }
+      };
+      return frame;
+    };
+  } });
+  const report = fakeReport({ decision: pin("decision", "evaluation") }, { title: "Fictional private print report", startDate: "2026-10-01", endDate: "2026-10-07", summary: "Fictional", missingness: "Unknown" });
+  h.get("report-choice").value = report.id;
+  let reads = 0;
+  h.api.learningReport = async () => { reads++; return { report }; };
+  return { ...h, report, get reads() { return reads; }, nextSurface: () => ready.length ? Promise.resolve(ready.shift()) : new Promise((resolve) => waiters.push(resolve)) };
 }
 
 test("client canonical hashing matches actual server namespace with Unicode, null and ordered pins", async () => {
@@ -263,6 +297,108 @@ test("private report consistency refuses tamper/foreign family and output reauth
   await h.get("print-report").click(); assert.equal(reads, 2); assert.equal(printed.length, 1);
   h.api.learningReport = async () => { throw Object.assign(new Error("Access revoked"), { status: 403 }); };
   await h.get("print-report").click(); assert.equal(printed.length, 1); assert.doesNotMatch(h.view.textContent, /Fictional private report/);
+});
+
+test("native print waits for its external stylesheet, then renders the verified report and clears it after print", async (t) => {
+  const h = nativePrintHarness(t), pending = h.get("print-report").click(), surface = await h.nextSurface();
+  assert.equal(h.reads, 1);
+  assert.equal(surface.prints, 0);
+  assert.equal(surface.target.body.textContent, "", "No private copy is rendered while CSS is pending.");
+  assert.equal(surface.link.getAttribute("href"), new URL("./learning-print.css", import.meta.url).href);
+  assert.equal(surface.target.head.querySelectorAll("style").length, 0);
+  await surface.link.emit("load"); await pending;
+  assert.equal(surface.prints, 1);
+  assert.match(surface.target.body.textContent, /Fictional private print report/);
+  assert.ok(surface.target.body.textContent.includes(h.report.checksum));
+  assert.ok(surface.target.querySelectorAll("details").every((detail) => detail.open));
+  assert.equal(surface.link.handlers.get("load").length, 0);
+  assert.equal(surface.link.handlers.get("error").length, 0);
+  await surface.win.emit("afterprint");
+  assert.equal(surface.frame.isConnected, false);
+  assert.equal(surface.target.body.textContent, "");
+  assert.equal(surface.target.title, "");
+  assert.equal(surface.win.handlers.get("afterprint").length, 0);
+  assert.equal(h.document.body.querySelector("iframe"), null);
+});
+
+test("native print CSS failure removes the private surface and permits an explicit retry", async (t) => {
+  const h = nativePrintHarness(t), pending = h.get("print-report").click(), failed = await h.nextSurface();
+  await failed.link.emit("error"); await pending;
+  assert.equal(failed.prints, 0); assert.equal(failed.frame.isConnected, false); assert.equal(failed.target.body.textContent, "");
+  assert.match(h.get("status").textContent, /print layout could not be loaded/);
+  const retry = h.get("print-report").click(), next = await h.nextSurface();
+  await failed.link.emit("load");
+  assert.equal(next.frame.isConnected, true);
+  await next.link.emit("load"); await retry;
+  assert.equal(h.reads, 2); assert.equal(next.prints, 1);
+});
+
+test("native print CSS wait is bounded and does not print after its timeout", async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const h = nativePrintHarness(t), pending = h.get("print-report").click(), surface = await h.nextSurface();
+  t.mock.timers.tick(30000); await pending;
+  await surface.link.emit("load");
+  assert.equal(surface.prints, 0); assert.equal(surface.frame.isConnected, false); assert.equal(surface.target.body.textContent, "");
+  assert.match(h.get("status").textContent, /print layout took too long to load/);
+});
+
+test("native print pending CSS cannot survive a changed selection, scope, generation or frame", async (t) => {
+  const cases = [
+    ["report choice event", async (h) => { h.get("report-choice").value = "different"; await h.get("report-choice").emit("change"); }],
+    ["report choice guard without an event", (h) => { h.get("report-choice").value = "different"; }],
+    ["host current-scope guard", (h) => h.revoke()],
+    ["generation invalidation", (h) => h.view.invalidate()],
+    ["pagehide", (h) => h.window.emit("pagehide")],
+    ["dispose", (h) => h.view.dispose()],
+    ["detached frame", (h, surface) => surface.frame.remove()],
+    ["different frame document", (h, surface) => { surface.frame.contentDocument = { body: new h.Element("body") }; }],
+    ["different frame window", (h, surface) => { surface.frame.contentWindow = new h.Element("window"); }],
+  ];
+  for (const [name, interrupt] of cases) await t.test(name, async (t) => {
+    const h = nativePrintHarness(t), pending = h.get("print-report").click(), surface = await h.nextSurface();
+    await interrupt(h, surface);
+    await surface.link.emit("load"); await pending;
+    assert.equal(surface.prints, 0);
+    assert.equal(surface.frame.isConnected, false);
+    assert.equal(surface.target.body.textContent, "");
+    assert.equal(h.document.body.querySelector("iframe"), null);
+    assert.equal(surface.link.handlers.get("load").length, 0);
+    assert.equal(surface.link.handlers.get("error").length, 0);
+  });
+});
+
+test("native print rechecks the host organization, role and session after delayed CSS", async (t) => {
+  for (const field of ["org", "role", "session"]) await t.test(field, async (t) => {
+    const scope = { org: "org", role: "owner", session: "original-session" };
+    const h = nativePrintHarness(t, { isCurrent: () => scope.org === "org" && scope.role === "owner" && scope.session === "original-session" });
+    const pending = h.get("print-report").click(), surface = await h.nextSurface();
+    scope[field] = "changed";
+    await surface.link.emit("load"); await pending;
+    assert.equal(surface.prints, 0); assert.equal(surface.frame.isConnected, false); assert.equal(surface.target.body.textContent, "");
+  });
+});
+
+test("native print dialog failure removes its rendered private copy", async (t) => {
+  const h = nativePrintHarness(t), pending = h.get("print-report").click(), surface = await h.nextSurface();
+  surface.win.print = () => { throw new Error("Fictional native print failure"); };
+  await surface.link.emit("load"); await pending;
+  assert.equal(surface.frame.isConnected, false); assert.equal(surface.target.body.textContent, ""); assert.equal(surface.target.title, "");
+  assert.equal(surface.win.handlers.get("afterprint").length, 0);
+  assert.match(h.get("status").textContent, /Fictional native print failure/);
+});
+
+test("a late old afterprint callback cannot remove a newer waiting print frame", async (t) => {
+  const h = nativePrintHarness(t), first = h.get("print-report").click(), old = await h.nextSurface();
+  await old.link.emit("load"); await first;
+  const lateAfterprint = old.win.handlers.get("afterprint")[0];
+  const retry = h.get("print-report").click(), next = await h.nextSurface();
+  assert.equal(old.frame.isConnected, false); assert.equal(old.target.body.textContent, "");
+  lateAfterprint();
+  assert.equal(next.frame.isConnected, true);
+  await next.link.emit("load"); await retry;
+  assert.equal(next.prints, 1);
+  await next.win.emit("afterprint");
+  assert.equal(next.target.body.textContent, ""); assert.equal(next.frame.isConnected, false);
 });
 
 test("pagehide/BFCache clears private source material without an automatic GET", async (t) => {

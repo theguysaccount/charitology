@@ -62,7 +62,7 @@ export function createLearningWorkspace({
   let context = null, contextStale = false, series = null, inspection = null, mappingMode = "new", mappingSource = null;
   let programResolution = null, uploadBytes = null, nativeChoices = [], nativeModule = null;
   let preview = null, previewSerial = 0, manifestRecord = null, prepared = null, finalSelection = null;
-  let recovered = null, listCursors = {}, verifiedReport = null, printFrame = null, printInProgress = false;
+  let recovered = null, listCursors = {}, verifiedReport = null, printJob = null;
   const requests = new Set(), urls = new Set(), intent = learningCommitIntent(makeCommandKey);
   const status = node("p", { role: "status", "aria-live": "polite", class: "learning-status", "data-learning": "status" });
   const privateBody = node("div", { class: "learning-body" });
@@ -93,10 +93,45 @@ export function createLearningWorkspace({
     programChoice.disabled = !!intent.pending;
     bindingChoice.disabled = !!intent.pending;
   }
-  function cleanupPrint() {
-    printFrame?.remove(); printFrame = null; printInProgress = false;
+  function cleanupPrint(job = printJob) {
+    if (job) {
+      job.controller.abort();
+      if (job.afterPrint) job.win.removeEventListener("afterprint", job.afterPrint);
+      if (job.target) job.target.title = "";
+      job.target?.body?.replaceChildren();
+      job.frame.remove();
+    }
+    // A late event from an older frame must not remove the current print job.
+    if (job && job !== printJob) return;
+    printJob = null;
     for (const url of urls) URL.revokeObjectURL(url);
     urls.clear();
+  }
+  async function loadPrintStyle(job) {
+    const link = job.target.createElement("link");
+    link.setAttribute("rel", "stylesheet");
+    link.setAttribute("href", new URL("./learning-print.css", import.meta.url).href);
+    const { signal } = job.controller;
+    requests.add(job.controller);
+    try {
+      await new Promise((resolve, reject) => {
+        const finish = (error) => {
+          clearTimeout(timer);
+          link.removeEventListener("load", loaded);
+          link.removeEventListener("error", failed);
+          signal.removeEventListener("abort", cancelled);
+          if (error) reject(error); else resolve();
+        };
+        const loaded = () => finish();
+        const failed = () => finish(new Error("The print layout could not be loaded. Try Print again."));
+        const cancelled = () => finish(Object.assign(new Error("The private print preparation was cancelled."), { name: "AbortError" }));
+        const timer = setTimeout(() => finish(new Error("The print layout took too long to load. Try Print again.")), 30000);
+        link.addEventListener("load", loaded);
+        link.addEventListener("error", failed);
+        signal.addEventListener("abort", cancelled, { once: true });
+        job.target.head.append(link);
+      });
+    } finally { requests.delete(job.controller); }
   }
   function invalidate({ clear = false } = {}) {
     generation++;
@@ -250,7 +285,7 @@ export function createLearningWorkspace({
     if (!/^[A-Za-z0-9_-]{1,100}$/.test(initialReportId)) throw new Error("Choose an exact saved learning report ID.");
     reportChoice.append(node("option", { value: initialReportId }, `Known report ${initialReportId}`)); reportChoice.value = initialReportId;
   }
-  reportChoice.addEventListener("change", () => { verifiedReport = null; reportHost.replaceChildren(); });
+  reportChoice.addEventListener("change", () => { verifiedReport = null; reportHost.replaceChildren(); cleanupPrint(); });
   const programLabel = node("label", {}, "Existing program", programChoice);
   const bindingLabel = node("label", {}, "Live binding", bindingChoice);
   const listHost = node("div");
@@ -798,16 +833,25 @@ export function createLearningWorkspace({
       if (printOutput) printOutput(report);
       else {
         cleanupPrint();
-        printFrame = node("iframe", { title: "Private learning report print", class: "learning-print-frame" }); document.body.append(printFrame);
-        const target = printFrame.contentDocument;
-        if (!target?.body) throw new Error("The private print surface could not be opened.");
-        target.title = report.title;
-        target.body.append(learningReportView(report));
-        const style = target.createElement("style"); style.textContent = "body{font:12pt/1.5 system-ui;color:#111;margin:18mm}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:9pt/1.4 monospace}details{display:block}summary{font-weight:700}dt{font-weight:700}dd{margin:0 0 8pt}h2,h3{break-after:avoid}a{color:inherit}"; target.head.append(style);
-        for (const details of target.querySelectorAll("details")) details.open = true;
-        const win = printFrame.contentWindow; win.addEventListener("afterprint", cleanupPrint, { once: true });
-        assertCurrent(token); printInProgress = true;
-        try { win.print(); } finally { printInProgress = false; }
+        const frame = node("iframe", { title: "Private learning report print", class: "learning-print-frame" }); document.body.append(frame);
+        const target = frame.contentDocument, win = frame.contentWindow;
+        const job = { frame, target, win, controller: new AbortController(), printing: false }; printJob = job;
+        try {
+          if (!target?.body || !target.head || !win) throw new Error("The private print surface could not be opened.");
+          // about:blank inherits the OS CSP. Its fixed styles must be external,
+          // and no private report copy is rendered until the stylesheet loads.
+          await loadPrintStyle(job);
+          // The host's current check includes its session, organization and role.
+          assertCurrent(token);
+          if (id !== reportChoice.value || printJob !== job || !frame.isConnected || frame.contentDocument !== target || frame.contentWindow !== win) throw Object.assign(new Error("The private print selection or surface changed."), { name: "AbortError" });
+          target.title = report.title;
+          target.body.append(learningReportView(report));
+          for (const details of target.querySelectorAll("details")) details.open = true;
+          job.afterPrint = () => cleanupPrint(job);
+          win.addEventListener("afterprint", job.afterPrint, { once: true });
+          job.printing = true;
+          try { win.print(); } finally { job.printing = false; }
+        } catch (error) { cleanupPrint(job); throw error; }
       }
       say("Private print requested from a freshly authorized, verified report.");
     }, { disabled: !canExport, "data-learning": "print-report" }), reportHost);
@@ -846,8 +890,8 @@ export function createLearningWorkspace({
   const onPageShow = (event) => { if (event.persisted && current()) { invalidate({ clear: true }); say("This private view was restored from browser history. Reopen Learning and review to reauthorize it."); } };
   // The browser's own print dialog can blur its opener. Keep the document until
   // afterprint; later focus/blur, navigation and disposal clean any fallback.
-  const onBlur = () => { if (printFrame && !printInProgress) cleanupPrint(); };
-  const onFocus = () => { if (printFrame && !printInProgress) cleanupPrint(); };
+  const onBlur = () => { if (printJob && !printJob.printing) cleanupPrint(); };
+  const onFocus = () => { if (printJob && !printJob.printing) cleanupPrint(); };
   globalThis.window?.addEventListener("pagehide", onPageHide);
   globalThis.window?.addEventListener("pageshow", onPageShow);
   globalThis.window?.addEventListener("blur", onBlur);
