@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Crumbs from '../../components/Crumbs.astro';
 import { url } from '../../lib/site';
 const sections = [
+  ['Start with one job', 'Choose a practical task, inspect a first-week checklist and download the plan you reviewed. No account is needed.', '/for-charities/start/'],
   ['Teach and learn', 'Bring a systems-and-evidence lesson to a class, adapt a seminar or start a student-led discussion group.', '/learn/'],
   ['Networks, founders and peers', 'Find founder programs, leadership communities and organizations that connect the sector. Read the fit, access and official sources.', '/for-charities/networks/'],
   ['Help shape Charitology', 'Share one practical problem, review a resource or explore a voluntary, bounded Charity OS trial.', '/for-charities/collaborate/'],
@@ -18,8 +19,8 @@ const sections = [
 ];
 ---
 <Base title="For charities" description="A workspace, practical tools and sourced directories for people running charities.">
-  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'For charities'}]} /><span class="eyebrow">For the people doing the work</span><h1>More room for the mission.</h1><p class="lede">Keep track of the work, find useful resources and build a clearer path from activity to learning. Start with a local browser tool or use the shared OS to coordinate your team.</p></div></header>
+  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'For charities'}]} /><span class="eyebrow">For the people doing the work</span><h1>More room for the mission.</h1><p class="lede">Keep track of the work, find useful resources and build a clearer path from activity to learning. Start with a local browser tool or use the shared OS to coordinate your team.</p><div class="charity-actions"><a class="btn" href={url("/for-charities/start/")}>Start with one job</a><a class="btn btn-ghost" href={url("/for-charities/collaborate/")}>Discuss a practical problem</a></div></div></header>
   <section class="wrap section-tight"><div class="grid">{sections.map(([title,text,path])=><a class="card" href={path.startsWith('https:') ? path : url(path)}><h2>{title}</h2><p>{text}</p></a>)}</div></section>
   <section class="wrap section-tight prose"><h2>Start with the system around your work</h2><p>What signals move money toward your mission? How does feedback reach the people making decisions? Where does your work act on the chain from relief to source? Use <a href={url('/method/')}>the Method</a> to put those questions beside the daily work.</p><p>These tools support planning and record keeping. Your organization remains responsible for its own accounting, legal obligations, security and decisions. The directories link to third parties; they do not imply endorsement or guaranteed eligibility.</p><p><a href={url('/roadmap/')}>See the full roadmap</a> or <a href={url('/contribute/')}>help improve a tool</a>.</p></section>
 </Base>
-<style>h2{font-size:1.4rem}</style>
+<style>h2{font-size:1.4rem}.charity-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem}</style>
