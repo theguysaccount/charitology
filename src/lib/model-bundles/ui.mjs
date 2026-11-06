@@ -196,9 +196,11 @@ function mount(root, supplied = null) {
     try {
       const prepared = await session.preview(command);
       if (!current(token)) return;
+      const repeatedCopy = command.kind === 'copy-reproduced' && prepared.review.candidateStateHash === prepared.review.beforeStateHash;
       showReview({ kind: 'command', prepared, operation: command.kind, token, formAt },
         { review: prepared.review, currentLiteralFormBeforeReplacement: NAVIGATION.has(command.kind) ? readEditorForm(root) : null },
-        prepared.review.notice + (NAVIGATION.has(command.kind) ? ' This operation replaces the editor draft. Review the complete current writing and complete candidate below.' : ' All candidate fields, history, source descriptions and outgoing byte counts are shown below.'));
+        prepared.review.notice + (repeatedCopy ? ' This exact copy is already recorded. Confirming makes no saved change and keeps current writing.'
+          : NAVIGATION.has(command.kind) ? ' This operation replaces the editor draft. Review the complete current writing and complete candidate below.' : ' All candidate fields, history, source descriptions and outgoing byte counts are shown below.'));
     } catch (e) { if (current(token)) error(fixedError(e)); }
     finally { if (current(token)) { busy = false; refresh(); } }
   }

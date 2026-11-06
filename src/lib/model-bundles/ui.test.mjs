@@ -195,7 +195,10 @@ test('mounted model bundle desk uses actual local authority and guarded arithmet
         await d.set('#mb-json-sources', '{');
         const form = readEditorForm(d.desk);
         await d.choose(bytes); await d.action('recalculate').click();
-        await d.action('copy-reproduced').click(); await d.confirm();
+        await d.action('copy-reproduced').click();
+        assert.match(d.$('#mb-review-notice').textContent, /already recorded.*keeps current writing/);
+        assert.doesNotMatch(d.$('#mb-review-notice').textContent, /replaces the editor draft/);
+        await d.confirm();
         assert.equal(d.values.get(LOCAL_KEY), before);
         assert.equal(d.operations.filter(op => op[0] !== 'get').length, count);
         assert.deepEqual(readEditorForm(d.desk), form);
