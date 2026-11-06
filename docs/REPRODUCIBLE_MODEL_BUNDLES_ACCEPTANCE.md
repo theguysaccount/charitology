@@ -85,3 +85,30 @@ The first public CI head `21dc84ded0327335d71374c03f768487949d973c` is **not rel
 The first new-branch push also refused a zero event base at the committed-history gate, as designed. Its separate PR run supplied the actual nonzero main base and reached the registry failure above. Neither failure is a successful release check.
 
 Actual mobile layouts, browser BFCache return, a second browser and broad installed-browser compatibility are not established by the journey above. Mounted lifecycle tests and responsive source checks are separate evidence. No public source-model admission, independent human review, shared OS import, provider operation or mail send is supplied. Deployment and exact-head CI are separate release gates and must be recorded when they occur.
+
+
+## November 5, 2026: current-main integration and native acceptance
+
+The prior exact `3185c26bf64eb2d63843361196cb8aebba35b107` candidate now has successful push 40633187029 and PR 40633194303 runs: Linux qualification/static checks, strict Mac reference checks, shared OS and newsletter jobs all passed. The earlier pending statements above retain their historical scope.
+
+Current main `948bf67bbf7326ff3edf42be651eea729dcc9fa5` was merged in isolated integration `81b2511d5f6f57f978164b36d6351a5adefc8511`. The resolution preserves the newer education, charity start, network/pilot and public research-MCP work, all ordinary checks and `check:charity-start`. This clone received its own locked dependency install; the shared dependency directory was preserved. Astro remains pinned to 5.18.2. No source/registry/golden bytes or native library key changed.
+
+Independent bounded AI review found two release blockers. Runtime `75e515113c359af4748224890cdc2bc178e939dd` fixes both:
+
+- Foreign observations no longer replace the original protected saved-string recovery. Separate reviewed protected and last-observed downloads preserve exact code units, independent bounds and distinct provenance. Deliberate reload or confirmed replacement establishes a new protected baseline.
+- An already-recorded copy no longer hydrates saved fields over unrelated unfinished writing or resets its draft context. The command remains a true no-op and reports that result.
+
+The actual session and mounted-UI regression suite passed 39 cases, zero skips. A separate AI reread found both fixes clear; that reviewer did not run tests and supplies no independent human source review. The complete normal build/check on 75e5151 passed 579 pages, 51,177 internal links/assets with none broken, 172 model cases and all existing suites. Its strict Mac reference check reproduced all 19 cases exactly. A later review-text correction at `bd728e9867dba0266b778f5f60d9553ba9fd49ad` explains the no-op before confirmation; its new build and all 172 model checks passed. The final wording distinguishes a draft containing edits from a claim that those edits are absent from storage. Final exact-head CI remains required before release.
+
+Actual in-app browser evidence on the integrated runtime includes:
+
+1. Explicit illustrative-example review, fixed-worker calculation and immutable freeze. All values and context are fictional; no measured intervention or charity rating is supplied.
+2. A native selected JSON Save of 44,929 bytes, SHA-256 `f12fb97edcce4fb6d277678affef307efa3a5797139bed2243be37ce3ba2eaad`, exactly equal to its complete reviewed output. That actual saved file passed the real chooser, browser reproduction and command-line verifier with matching complete-array fingerprints.
+3. A native complete backup Save of 71,841 bytes, SHA-256 `205537cdca60b054badfb7285e3dd511ec715f4f11ecccf6b9e7e10b9e79b457`. Independent product parsing retained two models, two versions, one import receipt and the exact unfinished source JSON. Actual Clear → Undo recovered them. A second Clear → actual saved-file chooser → reviewed Restore recovered the same graph and draft, with no current reproduced-copy or draw authority.
+4. Replaying the already-copied file retained unrelated title, name and unfinished JSON, with no duplicate version. A deliberate save then retained that draft. The later bd728e9 browser check also verified the corrected pre-confirmation notice and unchanged writing after confirmation.
+5. Two actual same-origin tabs exercised a foreign save. The first tab retained its unsaved title and refused further saved changes. Separate native protected 57,331-byte and observed 57,335-byte recovery files exactly equal their reviewed output; both pass product state validation. The protected string exactly equals the pre-conflict canonical saved state. Immutable versions match across both copies. A separate native unfinished-form recovery retained the third unsaved title. Deliberate reload then read the newer saved copy.
+6. Four actual narrow layouts cover 320×780 and 390×780 in light and dark themes, with no horizontal document overflow. Keyboard Tab/Enter reaches the final observed-recovery action and opens its correct review. Theme was returned to match-system and the viewport override reset.
+
+Actual navigation away and Back returned the latest saved draft. It did not establish a persistent-cache return retaining unsaved writing; that exact browser-cache classification remains unverified. Real browser quota exhaustion/Retry, broad installed-browser compatibility and independent accessibility review are also not claimed. Mounted lifecycle/Retry coverage is separate. The native artifacts are private fictional evidence, not public source-model admission or research findings. The owned test library was cleared after retaining a final valid native backup. User data, old calculator storage, the unfinished shared Learning bridge and existing Learning service were preserved.
+
+[PR #32](https://github.com/theguysaccount/charitology/pull/32) retains the final exact-head and Pages release gates. Public byte verification and actual live-worker checks must pass before claiming publication. The feature introduces no OS schema, provider, mailing, membership or payment operation.

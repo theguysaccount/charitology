@@ -144,7 +144,7 @@ function mount(root, supplied = null) {
     disable('proposal', busy || !selected);
     $('#mb-confirm').disabled = !review || !$('#mb-review-ack').checked || busy;
     $('#mb-dismiss').disabled = !review || busy;
-    $('#mb-draft-status').textContent = `${draftBase.mode} draft${dirty ? ' · unsaved literal edits' : ''}. ${draftBase.expectedHead ? 'Expected head: ' + draftBase.expectedHead.id + ' / ' + draftBase.expectedHead.hash + '.' : 'No frozen target yet.'} ${staleHead ? 'This draft names a historical head. Freeze is blocked. Review Amend current head to deliberately replace this draft, or recover the writing first.' : ''} ${draftBase.origin ? 'Copy provenance is retained; it is not a contemporary verification badge.' : ''}`;
+    $('#mb-draft-status').textContent = `${draftBase.mode} draft${dirty ? ' · contains edits' : ''}. ${draftBase.expectedHead ? 'Expected head: ' + draftBase.expectedHead.id + ' / ' + draftBase.expectedHead.hash + '.' : 'No frozen target yet.'} ${staleHead ? 'This draft names a historical head. Freeze is blocked. Review Amend current head to deliberately replace this draft, or recover the writing first.' : ''} ${draftBase.origin ? 'Copy provenance is retained; it is not a contemporary verification badge.' : ''}`;
   }
   function renderState(state = snapshot()) {
     status(state.message + (state.pending === 'retry' ? ' Retry covers only the original retained candidate; later writing stays in the editor.' : ''));
