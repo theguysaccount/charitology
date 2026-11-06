@@ -64,3 +64,18 @@ Fictional boundary files selected through the actual native chooser proved admis
 Two unedited 390 × 844 JPEG screenshots were retained. The task tab was closed, the viewport override reset and the owned static server exited successfully. Four task-created downloads were removed only after matching retained copies. No preexisting tab, process or user file was removed.
 
 Native picker Cancel remains unverified because the browser chooser API required at least one file; that pending chooser was resolved with a valid file and explicit Apply. The controlled mounted cancel tests remain separate evidence. Native Print/PDF, other themes/viewports, authenticated hosted OS transport, independent review, exact-head CI and publication are not established by this local browser result. No charity participant, adoption, permission, independent human review or causal outcome is established.
+
+## Release-history follow-up — 2026-11-06
+
+The first guide runtime commit is `bf0e43e240db6cd4782d8d0d88fb69cd89b549d4` on `website-pilot-case-guide`, proposed in [PR #41](https://github.com/theguysaccount/charitology/pull/41). Its [first branch-push run, 42214482964](https://github.com/theguysaccount/charitology/actions/runs/42214482964), failed at “Verify exact committed observation history”: the initial branch push did not supply the actual nonzero committed comparison base required by that gate. The build and subsequent site checks were skipped. The gate remains unchanged; the failure is preserved rather than waived or rerun.
+
+The [pull-request run, 42214666614](https://github.com/theguysaccount/charitology/actions/runs/42214666614), tested that same exact runtime commit with the PR comparison and passed, including observation history, the build and the complete normal check. GitHub job metadata was read for both completed runs; each contained these four jobs:
+
+| Job | First branch push | Pull-request run |
+| --- | --- | --- |
+| Site `check` | Failed at observation history, before build | Success |
+| Shared OS unit, browser-model and isolated Postgres checks | Success | Success |
+| Newsletter unit and isolated Postgres safety checks | Success | Success |
+| Strict nineteen-case macOS arm64 model reference checks | Success | Success |
+
+This documentation follow-up records the actual failed and successful runs and provides a real previous branch head for the next push. It changes no runtime, history gate, comparison policy or test assertion. Its own exact-head CI, merge and public publication remain separate subsequent checks; no deployment or hosted OS request is established by these workflow results.
