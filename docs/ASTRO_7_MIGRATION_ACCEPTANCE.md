@@ -38,6 +38,12 @@ The alternate checks resolved all 51,177 links/assets and verified all three act
 
 The tested root artifact and canonical extension outputs were preserved before alternate builds and restored exactly afterward. The restored root `dist/` is available for native review. Output equivalence above compares two Astro 7 artifacts; it does not assert that all framework-generated files equal the older Astro 5 build.
 
+### Integration with the main-branch test correction
+
+The candidate subsequently integrated exact main `c702b73927f246c3835757dc0ff115156ce16d7c`, which contains the three-path PR #39 publication record and file-descriptor identity test correction. Both histories and the current run guidance were preserved without conflicts. Runtime sources, dependency manifests, the lock and Astro configuration did not change.
+
+The integrated tree separately passed `check:model-reference` with **19 vectors**, `check:model-bundles` with **173 cases**, the 579-page build, all 51,177 links/assets and social/media checks. Its complete 3,670-file root artifact is byte-identical to the held Astro 7 artifact above. The earlier full root check's 172-case count remains evidence of its earlier version; it is not relabeled as a new 173-case full run. The unchanged dependency/input bytes retain the separately recorded audit and Learning generator proofs. Fresh exact-head CI remains a release gate.
+
 ## Frozen boundaries and pending Learning compatibility
 
 The original brief, roadmap mappings, content/data, public source snapshots, all service files and runtime model files remain unchanged. A broad 653-file baseline inventory has 651 unchanged files and exactly two test-only compiler-import changes. Engine, registry, golden and codec bytes were preserved separately; no v1 replacement was generated to obtain a pass.
