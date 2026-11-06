@@ -6,7 +6,7 @@ import { resolve, dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { build } from 'esbuild';
-import { transform } from '@astrojs/compiler';
+import { transform } from '@astrojs/compiler-rs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { parse } from 'parse5';
 import postcss from 'postcss';

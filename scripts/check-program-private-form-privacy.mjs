@@ -5,7 +5,7 @@ import { readFile, writeFile, mkdtemp, rm, readdir } from "node:fs/promises";
 import { resolve, join, dirname } from "node:path";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
-import { transform } from "@astrojs/compiler";
+import { transform } from "@astrojs/compiler-rs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import ts from "typescript";
 import yaml from "js-yaml";

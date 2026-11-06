@@ -7,7 +7,7 @@ import { installPartnerReader } from "../test-fixtures/remaining-record-partners
 import { webcrypto } from "node:crypto";
 import ts from "typescript";
 import { build } from "esbuild";
-import { transform } from "@astrojs/compiler";
+import { transform } from "@astrojs/compiler-rs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import {
   installToolDom,

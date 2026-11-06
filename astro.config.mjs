@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig, passthroughImageService } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
 
 // SITE_URL and BASE_PATH are set by the deploy workflow from GitHub Pages
 // (https://<owner>.github.io + /charitology, or the custom domain + /).
@@ -38,10 +39,19 @@ export default defineConfig({
   site,
   base,
   trailingSlash: 'always',
+  compressHTML: true,
   image: { service: passthroughImageService() },
   devToolbar: { enabled: false },
+  vite: {
+    worker: {
+      format: 'es',
+      rolldownOptions: { output: { codeSplitting: false } },
+    },
+  },
   markdown: {
-    rehypePlugins: [rehypeLinks],
-    smartypants: true,
+    processor: unified({
+      rehypePlugins: [rehypeLinks],
+      smartypants: true,
+    }),
   },
 });

@@ -3,6 +3,7 @@ import {readFile} from "node:fs/promises";
 import {directoryCatalog,headDirectoryEntries,directoryEntrySha256,getDirectorySelection} from "../services/charity-os/lib/directory-catalog.mjs";
 import {directoryFragment,directorySelectionFromFragment} from "../services/charity-os/public/directory-resources.js";
 const capture=directoryCatalog.captures.at(-1);
+const base=(process.env.BASE_PATH??'/').replace(/\/$/,'');
 let count=0;
 for(const kind of ["tools","benefits"]){
   const html=await readFile(new URL(`../dist/for-charities/${kind}/index.html`,import.meta.url),"utf8");
@@ -19,7 +20,8 @@ for(const kind of ["tools","benefits"]){
     assert.ok(fragments.includes(fragment),`missing exact fragment ${kind}/${e.listing.id}`);
     assert.deepEqual(directorySelectionFromFragment(fragment),selection);
     const sourcePath=`/data/directory-resources/captures/${capture.captureId}/entries/${kind}/${e.listing.id}.json`;
-    assert.ok(html.includes(`href="${sourcePath}"`),`missing frozen source ${e.listing.id}`);
+    assert.ok(html.includes(`href="${base}${sourcePath}"`),`missing frozen source ${e.listing.id}`);
+    assert.ok(html.includes(`href="${base}/data/directory-resources/captures/${capture.captureId}/capture.json"`),`missing capture record ${e.listing.id}`);
     const served=JSON.parse(await readFile(new URL(`../dist${sourcePath}`,import.meta.url),"utf8"));
     assert.deepEqual(served,e);
     assert.deepEqual(getDirectorySelection(selection).entry,served);

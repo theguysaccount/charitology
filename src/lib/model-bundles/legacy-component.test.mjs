@@ -7,7 +7,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { Worker as ThreadWorker } from 'node:worker_threads';
 import { build } from 'esbuild';
-import { transform } from '@astrojs/compiler';
+import { transform } from '@astrojs/compiler-rs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { installToolDom } from '../../../test-fixtures/donor-recovery/tool-dom.mjs';
 const root = fileURLToPath(new URL('../../..', import.meta.url));
