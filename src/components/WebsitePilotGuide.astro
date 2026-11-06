@@ -1,0 +1,65 @@
+---
+import {websitePilotFields,websitePilotGroups} from '../lib/client/website-pilot-model';
+import {url} from '../lib/site';
+---
+<section id="case-guide" class="website-pilot-guide" data-pilot-guide aria-labelledby="pilot-guide-title">
+  <p class="eyebrow">One visitor task · your local file</p>
+  <h2 id="pilot-guide-title">Keep the change and the learning together.</h2>
+  <p>Write one case, inspect both working briefs and download a compatible Nonprofit Advisory backup to resume later. Nothing is saved between visits or sent to a server. Use roles, public information and fictional examples; keep private staff, donor and participant details out.</p>
+  <p class="note">This is an untested practice guide. A file, checkbox or local status does not establish permission, a completed pilot, adoption or improved charitable outcomes. Website help can stand on its own.</p>
+  <fieldset data-pilot-controls disabled>
+    <legend>Website task case</legend>
+    <div class="pilot-guide-groups">
+      {websitePilotGroups.map((group,index)=><details open={index===0}>
+        <summary>{group.title}</summary><p>{group.intro}</p>
+        <div class="pilot-guide-fields">{websitePilotFields.filter(f=>f.group===group.id).map(f=><label for={'pilot-'+f.id}>
+          <span>{f.label}</span>
+          {f.native.kind==='select'?<select id={'pilot-'+f.id} data-pilot-field={f.id}>{f.native.options?.map(option=><option value={option}>{option}</option>)}</select>
+          :f.native.kind==='textarea'?<textarea id={'pilot-'+f.id} data-pilot-field={f.id} maxlength={f.maxLength} rows="4" autocomplete="off"></textarea>
+          :<input id={'pilot-'+f.id} data-pilot-field={f.id} type="text" maxlength={f.maxLength} inputmode={f.native.kind==='date'?'numeric':undefined} placeholder={f.native.kind==='date'?'YYYY-MM-DD':undefined} autocomplete="off" />}
+          {f.hint&&<small>{f.hint}</small>}
+        </label>)}</div>
+      </details>)}
+    </div>
+    <button type="button" class="btn" data-pilot-review>Review this case and both briefs</button>
+    <section class="pilot-guide-file" aria-labelledby="pilot-file-title">
+      <h3 id="pilot-file-title">Resume an existing case file.</h3>
+      <p>Choose this guide’s Nonprofit Advisory v1 JSON file, up to 8,000,000 bytes. Previewing changes nothing. Extra records in a compatible file remain in its complete backup. General Nonprofit Advisory files without this named case belong in the <a href={url('/programs/nonprofit-advisory/')}>full local desk</a>.</p>
+      <label for="pilot-restore-file">Choose native case JSON<input id="pilot-restore-file" data-pilot-file type="file" accept="application/json,.json" /></label>
+      <section data-pilot-restore hidden>
+        <h4>Review replacement of this page’s case.</h4><p data-pilot-restore-info></p>
+        <label class="pilot-guide-check"><input type="checkbox" data-pilot-replace-ack disabled /><span>I choose to replace the current case and unfinished fields in this page. I have kept any copies I need.</span></label>
+        <button type="button" class="btn" data-pilot-apply disabled>Replace this page’s case with the previewed file</button>
+      </section>
+    </section>
+    <details class="pilot-guide-recovery"><summary>Keep unfinished writing or the last valid file.</summary>
+      <p>The writing copy retains current fields as JSON-quoted plain text, including invalid dates. It is not a restore file. The last valid native backup retains all records but excludes later unreviewed or invalid fields. Downloads do not clear the warning about leaving this page.</p>
+      <div class="pilot-guide-actions"><button type="button" class="btn btn-ghost" data-pilot-raw>Download unfinished writing</button><button type="button" class="btn btn-ghost" data-pilot-last-valid>Download last valid native backup</button></div>
+    </details>
+    <section class="pilot-guide-optional" aria-labelledby="pilot-optional-title">
+      <h3 id="pilot-optional-title">A shared workspace is a separate choice.</h3>
+      <p>The published Charity OS home opens separately and requires sign-in and organization choice. This experimental handoff sends no file or fields and creates no account, record or invitation. Use the local Nonprofit Advisory desk for the current file workflow. Shared case-file inspection is experimental and is not offered by this guide.</p>
+      <label class="pilot-guide-check"><input type="checkbox" data-pilot-os-choice /><span>I choose to reveal the existing OS home link. This does not enroll me or authorize an OS trial.</span></label>
+      <a data-pilot-os-link hidden target="_blank" rel="noopener noreferrer">Open the existing Charity OS home ↗</a>
+    </section>
+  </fieldset>
+  <noscript><p>The guide needs JavaScript. Its unnamed controls stay disabled and submit nothing. The two original complete briefs below remain available.</p></noscript>
+  <p data-pilot-status role="status" tabindex="-1">Enable JavaScript to prepare a local case.</p>
+  <section data-pilot-preview hidden aria-labelledby="pilot-preview-title">
+    <h3 id="pilot-preview-title">Inspect this exact case version.</h3>
+    <p data-pilot-sha class="pilot-guide-hash"></p>
+    <p>The native file is the complete Nonprofit Advisory workspace, including any extra restored records. The two briefs contain only this guide’s case fields. All decisions remain self-recorded; no message, publication or OS write follows a download.</p>
+    <details><summary>Website preview and change-review brief</summary><pre data-pilot-website-text tabindex="0" aria-label="Exact completed website brief"></pre></details>
+    <details><summary>Separate optional OS pilot brief</summary><pre data-pilot-os-text tabindex="0" aria-label="Exact completed optional OS brief"></pre></details>
+    <label class="pilot-guide-check"><input type="checkbox" data-pilot-reviewed disabled /><span>I inspected these exact briefs, the complete-file scope and the limits. This is my own inspection, not independent review or permission.</span></label>
+    <div class="pilot-guide-actions"><button type="button" class="btn" data-pilot-native disabled>Download complete native JSON</button><button type="button" class="btn btn-ghost" data-pilot-website disabled>Download website brief</button><button type="button" class="btn btn-ghost" data-pilot-os-brief disabled>Download optional OS brief</button></div>
+  </section>
+</section>
+<script>
+  import {mountWebsitePilotGuide} from '../lib/client/website-pilot';
+  const root=document.querySelector<HTMLElement>('[data-pilot-guide]');
+  if(root)mountWebsitePilotGuide(root);
+</script>
+<style>
+  .website-pilot-guide{scroll-margin-top:5rem;border-block:1px solid var(--rule);padding-block:2rem;margin-block:3rem;min-width:0}.website-pilot-guide fieldset{min-width:0;max-width:100%;box-sizing:border-box}.website-pilot-guide [hidden]{display:none!important}.pilot-guide-groups>details,.pilot-guide-file,.pilot-guide-optional,.pilot-guide-recovery{border-top:1px solid var(--rule);padding-block:1rem;margin-block:1rem}.website-pilot-guide summary{cursor:pointer;font-weight:650;padding:.5rem 0}.pilot-guide-fields{display:grid;gap:1rem}.pilot-guide-fields label,.pilot-guide-file>label{display:flex;flex-direction:column;gap:.4rem;font-weight:600;min-width:0}.pilot-guide-fields input,.pilot-guide-fields select,.pilot-guide-fields textarea,.pilot-guide-file input[type=file]{box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:2.8rem}.pilot-guide-fields textarea{resize:vertical}.pilot-guide-fields small{font-weight:400;color:var(--ink-2);line-height:1.5}.pilot-guide-check{display:flex;gap:.65rem;align-items:flex-start;margin-block:1rem;line-height:1.6}.pilot-guide-check input{width:1.25rem;height:1.25rem;flex:0 0 auto;margin-top:.2rem}.pilot-guide-actions{display:flex;flex-wrap:wrap;gap:.75rem}.pilot-guide-actions>*{max-width:100%;white-space:normal}.pilot-guide-hash{overflow-wrap:anywhere;font-size:.88rem}.website-pilot-guide pre{max-height:28rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:1rem;border:1px solid var(--rule);background:var(--surface);font-size:.88rem}.website-pilot-guide a{overflow-wrap:anywhere}[data-pilot-status]{margin-block:1rem}[data-pilot-status]:focus{outline:2px solid var(--accent);outline-offset:.3rem}[data-pilot-restore]{padding:1rem;border-left:3px solid var(--accent)}[data-pilot-preview]{border-top:1px solid var(--rule);padding-top:1rem}@media print{[data-pilot-controls],noscript,[data-pilot-reviewed],.pilot-guide-actions{display:none!important}.website-pilot-guide pre{max-height:none;overflow:visible}}
+</style>
