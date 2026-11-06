@@ -1,5 +1,29 @@
 # Changelog
 
+## November 5, 2026: website improvements and optional OS pilots
+
+- Added a task-based website-improvement program, two complete editable scope/review briefs and a proposed two-week fictional-data OS trial. Website help and OS participation remain separate choices.
+- Added three official-source community entry routes with explicit participation-rule and current-access limits. Linked the program from the charity hub, collaboration page and networks directory.
+- Kept every outcome unknown until observed. No participant, institutional partnership, recruitment permission or charitable benefit is inferred. [Implementation and validation](docs/WEBSITE_PILOT_PROGRAM.md) records source scope and actual downloads; private examples and correspondence remain outside Git.
+
+## November 5, 2026: practical starting points and outreach preparation
+
+- Added six complete task-based checklists with a page-only reviewed Markdown planner, optional role/review date, self-reported step marks and stale-review invalidation. Existing tools and manual OS links are connected around the job to be done. No account, storage, network or mail action is introduced by the planner.
+- Added homepage audience routes, charity-hub starting actions and menu/footer discovery. Fixed the confirmed expanded-menu overflow on narrow/short screens with internal scrolling and verified keyboard access to the last link. Removed unsupported homepage outcome/novelty claims.
+- Prepared three private, source-checked individual resource offers responding to published volunteer invitations. After a separate explicit owner choice, all three were sent through personal Gmail with project Reply-To and exact saved-Sent verification. Resend’s opt-in restriction is preserved; provider acceptance remains distinct from delivery or reply. Recipient information stays outside Git. [Acceptance](docs/CHARITY_START_ACCEPTANCE.md) preserves scope and verification.
+
+## October 28, 2026 UTC: teach and learn
+
+- Added five teaching/adoption pages and seven editable Markdown downloads with a complete fictional lesson, worked answers, university syllabus, rubric and club/school starter materials. All remain untested editorial drafts.
+- Added official-source examples of university, school and student-group routes, distinct from approval, credit or institutional partnerships. A source-required public correction form excludes student records.
+- Prepared a proposed adoption plan plus eight private unsent drafts across six primary institution groups and two held alternatives. No outbound contact, application, registration, learner study or service change occurred. Existing course criteria, storage and all 66 original items remain preserved. [Source audit](docs/EDUCATION_SOURCE_AUDIT.md) and [acceptance](docs/EDUCATION_ACCEPTANCE.md) preserve scope and verification.
+
+## October 28, 2026 UTC: charity networks and discovery outreach
+
+- Added an 18-organization searchable directory and three six-entry annotated guides for charity founders, leadership/professional peers and sector support. Every listing keeps official sources, actual reading dates, access conditions, limits and draft status. Entries are alphabetical within each guide; no scores, endorsements or partnership claims are supplied.
+- Added a public invitation to help shape practical resources and Charity OS, a source-required public network suggestion form, and manual OS Resources/Projects links. Search fields have no form or names and do not store or transmit queries. All listings remain readable without JavaScript.
+- Prepared a listening-first outreach plan and eight private personalized drafts with an unsent tracking sheet. No messages, applications, subscriptions, memberships, real-data pilots or service changes were made. The original 66-item brief remains unchanged. [Source audit](docs/CHARITY_NETWORKS_SOURCE_AUDIT.md) and [local acceptance](docs/CHARITY_NETWORKS_ACCEPTANCE.md) state the checks and limits.
+
 ## October 27, 2026: remaining local-record recovery
 
 - Added guarded recovery across the remaining twenty original research, partner, manuscript, nomination, Depth and country-note keys. Native v1 formats, IDs, exact strings, unknown/zero distinctions and calculations remain compatible. Literal unfinished forms and protected/observed saved copies have separate exports; failed intent, reviewed replacement and exact-key removal/Undo stay explicit.

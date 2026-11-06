@@ -282,3 +282,7 @@ Participation unknown/expired attempted leases reconcile the same key through se
 Serve this directory as its own service using [vercel.json](vercel.json), or the included local Node server for development. Use HTTPS for production, the constrained runtime database role, independent cron and relay secrets, and the configured exact origin. A successful `/api/health` response reports configuration presence, not proof of sender readiness, database isolation or inbox delivery. Run the checks and a controlled owned-recipient delivery exercise before treating a deployment as operational.
 
 AI assistance was used for implementation, review and documentation. No legal, accounting, safeguarding or security certification is claimed.
+
+## Public research MCP
+
+The isolated `/mcp` function serves only the existing published research JSON at charitology.org. It imports no account, database or mail modules, forwards no incoming authentication, and supports three bounded read-only research tools. See `public/mcp.html`. Private OS records and all write workflows are outside this endpoint.

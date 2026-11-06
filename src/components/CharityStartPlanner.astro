@@ -1,0 +1,30 @@
+---
+import {charityStartJobs,CHARITY_START_LIMITS} from '../data/charity-start.mjs';
+---
+<section class="tool charity-start-planner" id="planner" aria-labelledby="charity-start-planner-title" data-charity-start>
+  <p class="eyebrow">One job · page only</p><h2 id="charity-start-planner-title">Make a plan you can inspect.</h2>
+  <p>Choose one job, mark steps you have completed and review the exact text before downloading it. Use an owner role, not a person’s details. Nothing is saved between visits or sent to Charity OS.</p>
+  <fieldset data-start-controls disabled>
+    <legend>Your starting point</legend>
+    <div class="start-fields">
+      <label>Choose one job<select data-start-job><option value="">Choose a job…</option>{charityStartJobs.map(job=><option value={job.id}>{job.title}</option>)}</select></label>
+      <label>Owner role · optional<input data-start-owner maxlength={CHARITY_START_LIMITS.ownerRole} autocomplete="off" placeholder="For example, grants lead" aria-describedby="start-role-note" /></label>
+      <label>Next internal review date · optional<input data-start-date type="date" min="0001-01-01" max="9999-12-31" aria-describedby="start-date-note" /></label>
+    </div>
+    <p class="note" id="start-role-note">Use roles and nonpersonal examples. Keep names, email addresses and private donor, staff or participant records out of the plan.</p>
+    <p class="note" id="start-date-note">Blank means unknown. This date is your own review point, not a grant deadline, automatic reminder or evidence-based schedule.</p>
+    {charityStartJobs.map(job=><fieldset data-start-steps={job.id} hidden disabled><legend>{job.title} · your own step marks</legend><p class="note">Check only steps you have completed. These marks are self-reported, not independently verified.</p>{job.steps.map((step,index)=><label class="start-check"><input type="checkbox" data-start-step={index} /><span>{step}</span></label>)}</fieldset>)}
+    <button class="btn" type="button" data-start-review>Review plan</button>
+  </fieldset>
+  <noscript><p>The planner needs JavaScript. Its unnamed controls stay disabled and send nothing. All six complete checklists below remain readable.</p></noscript>
+  <p data-start-status role="status" tabindex="-1">Enable JavaScript to prepare a plan on this page.</p>
+  <section data-start-preview hidden aria-labelledby="start-preview-title"><h3 id="start-preview-title">Review the exact plan.</h3><p>Check the selected job, step marks, role, date and limits. Editing any field requires a fresh review.</p><pre data-start-text tabindex="0" aria-label="Exact plan text"></pre><label class="start-check"><input data-start-ack type="checkbox" disabled /><span>I inspected this plan, its marks and its limits.</span></label><button class="btn" type="button" data-start-download disabled>Download reviewed Markdown</button></section>
+</section>
+<script>
+  import {mountCharityStartPlanner} from '../lib/client/charity-start';
+  const root=document.querySelector<HTMLElement>('[data-charity-start]');
+  if(root)mountCharityStartPlanner(root);
+</script>
+<style>
+  .charity-start-planner{scroll-margin-top:5rem}.charity-start-planner fieldset{min-width:0}.start-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:1rem;margin:1rem 0}.start-fields label{display:flex;flex-direction:column;gap:.4rem;font-weight:600}.start-fields input,.start-fields select{width:100%;min-height:2.8rem;box-sizing:border-box}.start-check{display:flex;gap:.65rem;align-items:flex-start;margin:.9rem 0;line-height:1.6}.start-check input{flex:0 0 auto;width:1.25rem;height:1.25rem;margin-top:.2rem}.charity-start-planner [hidden]{display:none!important}[data-start-text]{max-height:28rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.88rem;padding:1rem;border:1px solid var(--rule);background:var(--surface)}[data-start-status]{margin:1rem 0}[data-start-status]:focus{outline:2px solid var(--accent);outline-offset:.3rem}[data-start-controls]>.btn{margin-top:1rem}[data-start-preview]{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--rule)}@media print{[data-start-controls],[data-start-ack],[data-start-download],noscript{display:none!important}[data-start-text]{max-height:none;overflow:visible}}
+</style>

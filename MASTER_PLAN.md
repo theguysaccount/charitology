@@ -8,6 +8,8 @@ All nine formerly partner-only programs now have distinct local workflows and ex
 
 ## Available now and institutional work
 
+The [Teach and learn hub](https://charitology.org/learn/) adds an inspectable fictional lesson, editable downloads, a sample university seminar and club/school starter materials. [Education adoption planning](docs/EDUCATION_ADOPTION_PLAN.md) distinguishes educator review, student-led recognition, faculty-owned course approval and adult-led school enrichment. Outreach drafts are private and unsent; materials do not establish accreditation, adoption or learning effects. Existing course criteria and learner storage are preserved.
+
 The 31 previously seeded or designed items now have usable browser implementations or substantial published editions. See [the implementation and validation record](docs/IMPLEMENTATION_NOTES.md).
 
 The original 66 items now have **66 live software or publication functions**; nine institutional programs still need operating partners. Live describes the exact scope below. It does not certify sources, conduct field research, grant accreditation or establish a fund.
@@ -88,6 +90,9 @@ A full course, source-linked country data profiles and a nomination lab are avai
 - [Charity OS](https://charitology.org/tools/charity-os/): local projects, budgets, grant pipeline, tasks, evidence and backups.
 - [Tools for charities](https://charitology.org/for-charities/tools/): 15 sourced external tools.
 - [Benefits for charities](https://charitology.org/for-charities/benefits/): 16 sourced offers with eligibility and application links.
+- [Fundraising knowledge and practice](https://charitology.org/for-charities/fundraising/): ten practical guides, a page-only full-cost planner and follow-up schedule exports.
+- [Charity networks](https://charitology.org/for-charities/networks/): 18 official-source draft listings in three annotated founder, leadership and sector guides; selected coverage, no rankings or partnership claims.
+- [Help shape Charitology](https://charitology.org/for-charities/collaborate/): a public invitation to voluntary discovery conversations and bounded fictional OS examples. [The outreach plan](docs/CHARITY_NETWORKS_OUTREACH_PLAN.md) prepares a first batch without authorizing or sending messages.
 
 ## Work that software does not establish
 
