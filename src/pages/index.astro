@@ -16,7 +16,7 @@ const field = await Promise.all(
   (
     [
       ['programs', 'Programs', 'Research to find out what works, funding to act on it, training to grow the field.'],
-      ['tools', 'Tools', 'Free instruments that put the method in anyone’s hands. Everything runs in your browser.'],
+      ['tools', 'Tools', 'Practical instruments for giving, evidence and coordination. Each page explains what it does and where your work is stored.'],
       ['record', 'The Record', 'What the field knows, and what it doesn’t yet, with every claim sourced and labeled.'],
     ] as const
   ).map(async ([key, title, text]) => {
@@ -53,6 +53,18 @@ const giving = figures.usGiving;
       </div>
     </div>
   </section>
+
+  <nav class="starting-points" aria-label="Choose a starting point">
+    <div class="wrap">
+      <p class="eyebrow">Start with the question you bring</p>
+      <div class="starting-grid">
+        <a href={url('/for-charities/start/')}><span>01 · Run a charity</span><strong>Make the next task clearer.</strong><small>Choose one job and review a practical first-week plan.</small></a>
+        <a href={url('/tools/values-compass/')}><span>02 · Plan your giving</span><strong>Find your questions.</strong><small>Explore your values, uncertainty and giving choices.</small></a>
+        <a href={url('/diagnosis/')}><span>03 · Study the system</span><strong>Inspect the diagnosis.</strong><small>Follow the evidence, hypotheses and open problems.</small></a>
+        <a href={url('/learn/')}><span>04 · Teach or gather</span><strong>Bring a lesson to a group.</strong><small>Use editable class, university and club materials.</small></a>
+      </div>
+    </div>
+  </nav>
 
   <section class="section discovery">
     <div class="wrap discovery-grid">
@@ -161,10 +173,9 @@ const giving = figures.usGiving;
     <div class="wrap">
       <div class="section-head">
         <span class="eyebrow">The Open Problems</span>
-        <h2>{totalProblems} questions nobody has answered</h2>
+        <h2>{totalProblems} open questions about doing good</h2>
         <p>
-          In 1900 David Hilbert’s list of 23 unsolved problems steered a century of mathematics. These are charitology’s.
-          Solve one and you change where billions of dollars go.
+          The list is an invitation to research: make a question precise, inspect what is already known and explain what evidence would change a decision. Each problem has a scope and a proposed way to make progress.
         </p>
       </div>
       <ol class="prob-grid">
@@ -255,6 +266,17 @@ const giving = figures.usGiving;
 </Base>
 
 <style>
+  .starting-points{padding-block:1.6rem 2rem;border-bottom:1px solid var(--rule);background:var(--surface)}
+  .starting-points .eyebrow{margin-bottom:1rem}
+  .starting-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.5rem}
+  .starting-grid a{display:flex;flex-direction:column;gap:.55rem;min-width:0;min-height:44px;padding-block:.5rem;color:var(--ink);text-decoration:none}
+  .starting-grid a>span{font-size:.8rem;color:var(--ink-2)}
+  .starting-grid strong{font-family:var(--font-display);font-size:1.3rem;line-height:1.25}
+  .starting-grid small{font-size:.95rem;line-height:1.5;color:var(--ink-2)}
+  .starting-grid a:hover strong{text-decoration:underline;text-underline-offset:.2em}
+  @media(max-width:950px){.starting-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:560px){.starting-grid{grid-template-columns:1fr;gap:.6rem}.starting-grid a{border-top:1px solid var(--rule);padding-block:1rem}}
+
   .hero {
     padding-block: clamp(3rem, 9vw, 7rem) clamp(2.5rem, 6vw, 4.5rem);
     border-bottom: 1px solid var(--rule);

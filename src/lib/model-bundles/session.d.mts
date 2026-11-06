@@ -1,0 +1,14 @@
+import type { ModelBundleSession, StoreSnapshot, OwnedJob, Id, Instant } from './types.js';
+import type { PureSessionBridge } from './pure.mjs';
+import type { ModelWorkerPlatform } from './worker-client.mjs';
+export type ModelFileBridge = Pick<PureSessionBridge, 'api' | 'payload' | 'admitFile' | 'hashSourceFile' | 'inspectSourceChecksum' | 'revokeSourceChecksum' | 'revokeSelections' | 'cancelCalculations'>;
+export type ExactKeyStorage = { getItem(key: string): string | null | Promise<string | null>;
+  setItem(key: string, value: string): void | Promise<void>; removeItem(key: string): void | Promise<void> };
+export type ModelLocks = { request<T>(name: string, action: () => T | Promise<T>): Promise<T> };
+export type ModelBundleController = Readonly<{ session: ModelBundleSession; openingPromise: Promise<StoreSnapshot>; bridge: ModelFileBridge;
+  hooks: Readonly<{ ownedJob(): OwnedJob; noteFormChanged(): void; suspend(): void; resume(): Promise<StoreSnapshot>;
+    noticeForeignStorage(): Promise<StoreSnapshot>; dispose(): void }> }>;
+export function createModelBundleController(): ModelBundleController;
+export function createModelBundleControllerForTesting(platform: { storage: ExactKeyStorage | null; locks: ModelLocks | null;
+  newId(kind: 'workspace' | 'model' | 'version'): Id; now(): Instant; workerPlatform: ModelWorkerPlatform | null;
+  disableSecureHash: boolean }): ModelBundleController;

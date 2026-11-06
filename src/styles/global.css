@@ -445,6 +445,10 @@ hr {
   right: 0;
   top: calc(100% + 10px);
   width: min(86vw, 320px);
+  max-height: calc(100vh - var(--header-h) - 1.5rem);
+  max-height: calc(100dvh - var(--header-h) - 1.5rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--surface);
   border: 1px solid var(--rule);
   border-radius: var(--radius);

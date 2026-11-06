@@ -1,0 +1,21 @@
+---
+import Base from './Base.astro';
+import Crumbs from '../components/Crumbs.astro';
+import ReviewNote from '../components/ReviewNote.astro';
+import EducationSources from '../components/EducationSources.astro';
+import { url } from '../lib/site';
+import '../styles/education.css';
+interface Props { title:string; description:string; eyebrow?:string; filePath:string; active?:string; sourceIds?:string[]; }
+const {title,description,eyebrow='Teach and learn',filePath,active='home',sourceIds=[]}=Astro.props;
+const pages=[['home','Start here','/learn/'],['teach','50-minute lesson','/learn/teach/'],['universities','Universities','/learn/universities/'],['clubs','Clubs and groups','/learn/clubs/'],['schools','Schools','/learn/schools/']];
+---
+<Base title={title} description={description}>
+  <header class="page-head education-head"><div class="wrap"><Crumbs items={active==='home'?[{label:'Teach and learn'}]:[{label:'Teach and learn',href:'/learn/'},{label:pages.find(p=>p[0]===active)?.[1]??title}]} /><p class="eyebrow">{eyebrow} · teaching draft 0.1</p><h1>{title}</h1><p class="lede">{description}</p><div class="education-actions"><slot name="actions" /></div></div></header>
+  <div class="wrap education-body">
+    <nav class="education-nav" aria-label="Teaching resources">{pages.map(([id,label,path])=><a href={url(path)} aria-current={active===id?'page':undefined}>{label}</a>)}</nav>
+    <div class="education-content"><slot /></div>
+    {sourceIds.length>0&&<EducationSources ids={sourceIds} />}
+    <aside class="education-invitation"><div><p class="eyebrow">Help shape the materials</p><h2>Bring a teaching question.</h2><p>Teachers, faculty and university student organizers can suggest an adaptation or discuss a small pilot. School conversations should go through adult educators. Start with a general description, without student records or personal case details.</p></div><div><a class="btn" href="mailto:hello@charitology.org?subject=Charitology%20teaching%20conversation">Discuss a teaching pilot</a><p><a href="https://github.com/theguysaccount/charitology/issues/new?template=teaching-feedback.yml">Suggest a public correction or adaptation →</a></p></div></aside>
+    <ReviewNote filePath={filePath} title={title} />
+  </div>
+</Base>

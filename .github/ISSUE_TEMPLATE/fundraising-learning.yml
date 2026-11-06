@@ -1,0 +1,59 @@
+name: Fundraising learning note
+description: Share a fundraising approach, its results and what another team can learn.
+title: "Fundraising learning: "
+labels: [idea]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help others understand your context and your limits. A disappointing result is useful too.
+        This is a public issue. Include only aggregate information and material you have permission to publish. Leave donor names, email addresses, private records and unpublished personal stories out. A submission is a proposal for review, not a Charitology finding or endorsement.
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and question
+      description: Mission, country or region, campaign dates, audience, team capacity and the question you wanted to answer. Explain why this method fit the mission.
+      placeholder: What were you trying to learn, and in what setting?
+    validations:
+      required: true
+  - type: dropdown
+    id: design
+    attributes:
+      label: What kind of comparison was used?
+      options:
+        - No comparison; descriptive experience
+        - Before and after
+        - Nonrandom comparison groups
+        - Randomized comparison
+        - Review of existing research
+        - Other or uncertain
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Method and follow-up
+      description: What changed? Who was included? How did you assign people or campaigns, attribute donations, handle repeat gifts and decide when to stop? Describe acknowledgments, updates, communication choices and follow-up ownership.
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Results and full costs
+      description: Include only figures you may publish. Separate received funds from pledges, refunds from expenses, cash costs from staff and volunteer time, and new from returning donors. Name the currency, observation period and denominator of each rate. Mark missing values unknown; do not substitute zero.
+    validations:
+      required: true
+  - type: textarea
+    id: limitations
+    attributes:
+      label: Limitations and alternative explanations
+      description: What could make the result misleading? Consider sample size, selection, season, attribution, missing records, other activity and who was absent from the feedback.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources, permission and next step
+      description: Link a public source or aggregate artifact if available. State what may be reused and what remains unavailable. What would you repeat, change, stop or test next? Explain what you are asking contributors to review.
+    validations:
+      required: true

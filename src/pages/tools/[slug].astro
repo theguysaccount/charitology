@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Entry from '../../layouts/Entry.astro';
 import Badges from '../../components/Badges.astro';
 import CatalogAside from '../../components/CatalogAside.astro';
+import ModelBundles from '../../components/tools/model-bundles.astro';
 
 // Each live tool is a component at src/components/tools/<entry id>.astro.
 // Adding a tool means adding that file and a matching src/content/tools/<id>.md.
@@ -28,7 +29,7 @@ const Tool = tools[`../../components/tools/${entry.id}.astro`]?.default;
   sources={entry.data.sources}
 >
   <Badges slot="badges" status={entry.data.status} />
-  {Tool && <Tool slot="top" />}
+  {Tool && (entry.id === 'cost-effectiveness-model-kit' ? <Fragment slot="top"><Tool /><ModelBundles /></Fragment> : <Tool slot="top" />)}
   <Content />
   <CatalogAside slot="aside" entry={entry} />
 </Entry>

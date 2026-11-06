@@ -1,0 +1,44 @@
+name: Charity network suggestion or correction
+description: Help people find a useful founder program, leadership community or charity support network.
+title: "Charity network: "
+labels: [idea]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is a public issue. Use official organization-level sources. Do not include member lists, private contact details, unpublished conversations or beneficiary records.
+        A suggestion is a proposal for editorial review. It does not establish a recommendation, rating, partnership or permission to contact members.
+  - type: input
+    id: organization
+    attributes:
+      label: Organization or program name
+    validations:
+      required: true
+  - type: input
+    id: official
+    attributes:
+      label: Official website
+      description: Link the organization’s own public site.
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Who it serves and what it offers
+      description: Explain geography, stage, role, legal model and type of support. Distinguish an open community from a selective program or a referral directory.
+    validations:
+      required: true
+  - type: textarea
+    id: access
+    attributes:
+      label: Access, engagement route and limits
+      description: Link current official membership, application, contact or directory pages. Note fees, selection and access limits only where supported. Leave unknown details unknown.
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed addition or correction and sources
+      description: State exactly what should change, with official source URLs and the date you read them. Disclose an affiliation if relevant. A correction does not require you to contact anyone.
+    validations:
+      required: true

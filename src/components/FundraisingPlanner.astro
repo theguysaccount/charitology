@@ -1,0 +1,70 @@
+<section class="tool fundraising-planner" id="fundraising-planner" aria-labelledby="fundraising-planner-title">
+  <div class="tool-head"><h2 id="fundraising-planner-title">Plan costs and follow-up</h2><span class="note">Page only · choose what to download</span></div>
+  <p>Put the full cost beside the money received, then assign a role to four follow-up tasks. These are planning estimates. They do not measure impact or establish causation.</p>
+  <form novalidate>
+    <fieldset data-planner-controls disabled>
+      <legend>Campaign and one currency</legend>
+      <div class="fp-grid">
+        <label>Campaign title<input data-field="campaignTitle" maxlength="160" autocomplete="off" /></label>
+        <label>Campaign date<input data-field="campaignDate" type="date" min="1900-01-01" max="9999-12-31" /></label>
+        <label>Assigned owner role<input data-field="ownerRole" maxlength="120" placeholder="For example, fundraising lead" autocomplete="off" aria-describedby="fp-privacy" /></label>
+        <label>Currency<select data-field="currency"><option value="USD">USD · US dollars</option><option value="GBP">GBP · pounds sterling</option><option value="EUR">EUR · euros</option></select></label>
+      </div>
+      <p class="note" id="fp-privacy">Use a role, not a person’s contact details. Keep donor names, email addresses and other personal details out of this plan. Changing currency changes labels; it does not convert amounts.</p>
+      <h3>Budget assumptions</h3>
+      <p class="note">Leave an unknown number blank. Enter 0 only when you mean zero. Use numbers without commas or currency symbols, with up to two decimal places.</p>
+      <div class="fp-grid">
+        <label>Gross received<input data-field="grossReceived" inputmode="decimal" maxlength="32" autocomplete="off" /></label>
+        <label>Refunds<input data-field="refunds" inputmode="decimal" maxlength="32" autocomplete="off" /></label>
+        <label>Cash costs<input data-field="cashCosts" inputmode="decimal" maxlength="32" autocomplete="off" /></label>
+        <label>Staff hours<input data-field="staffHours" inputmode="decimal" maxlength="32" autocomplete="off" /></label>
+        <label>Value per staff hour<input data-field="staffHourValue" inputmode="decimal" maxlength="32" autocomplete="off" /></label>
+        <label>Volunteer hours<input data-field="volunteerHours" inputmode="decimal" maxlength="32" autocomplete="off" /></label>
+        <label>Value per volunteer hour<input data-field="volunteerHourValue" inputmode="decimal" maxlength="32" autocomplete="off" /></label>
+      </div>
+      <p class="note">Only add time value that is not already included in cash costs. Hours and hourly values must both be known to calculate their product. Amounts are limited to one trillion in the chosen currency, and hours to one million.</p>
+      <h3>Donor counts</h3>
+      <div class="fp-grid">
+        <label>New donors<input data-field="newDonors" inputmode="numeric" maxlength="32" autocomplete="off" /></label>
+        <label>Prior-year donors<input data-field="priorYearDonors" inputmode="numeric" maxlength="32" autocomplete="off" /></label>
+        <label>Prior-year donors returning<input data-field="returningDonors" inputmode="numeric" maxlength="32" autocomplete="off" /></label>
+      </div>
+      <p class="note">Use the same donor definition and observation period. Returning prior-year donors cannot exceed that prior-year group. Counts are whole numbers, up to one billion. A zero denominator has no defined ratio.</p>
+      <p class="note">Cost per new donor divides whole-campaign cost by new donors. It is not incremental acquisition cost and may include work for retained donors.</p>
+      <h3>Editable follow-up schedule</h3>
+      <p class="note">These offsets are illustrative, not evidence about the best contact timing. Count calendar days from your campaign date. Review consent, preferences and actual commitments before acting.</p>
+      <div class="fp-grid">
+        <label>Acknowledgment · days after campaign<input data-offset="acknowledgment" value="0" inputmode="numeric" maxlength="4" /></label>
+        <label>Welcome · days after campaign<input data-offset="welcome" value="3" inputmode="numeric" maxlength="4" /></label>
+        <label>Progress review · days after campaign<input data-offset="progress" value="30" inputmode="numeric" maxlength="4" /></label>
+        <label>Campaign review · days after campaign<input data-offset="review" value="90" inputmode="numeric" maxlength="4" /></label>
+      </div>
+      <p class="note">Each offset must be a whole number from 0 through 3650. No email, calendar import or Charity OS record is created.</p>
+      <button class="btn" type="submit">Generate plan for review</button>
+    </fieldset>
+  </form>
+  <noscript><p>This private planner needs JavaScript. Its unnamed fields remain disabled, and the form sends nothing.</p></noscript>
+  <div class="fp-budget" aria-labelledby="fp-budget-title"><h3 id="fp-budget-title">Budget calculations</h3><div data-planner-budget><p>Unknown inputs stay unknown.</p></div></div>
+  <p data-planner-status role="status" tabindex="-1">Enable JavaScript to prepare a plan on this page.</p>
+  <div data-planner-review hidden>
+    <h3>Review the exact plan</h3><p>Check the inputs, calculations, owner role and all four dates. Calendar files contain tentative all-day events with no invitees or automatic updates. Generating another plan creates new calendar identifiers. Reimports may create duplicates.</p>
+    <label>Printable plan text<textarea data-planner-preview readonly rows="18" spellcheck="false"></textarea></label>
+    <details><summary>Review the exact calendar text and identifiers</summary><p class="note">This is the calendar file, including its task identifiers, device timestamp and exclusive next-day end dates. The file uses CRLF line endings; lines beginning with a space continue the preceding line. <a href="https://www.rfc-editor.org/rfc/rfc5545">Calendar format reference</a>.</p><pre data-planner-calendar-preview tabindex="0" aria-label="Exact reviewed calendar text"></pre></details>
+    <pre class="fp-print-text" data-planner-print-text></pre>
+    <label class="fp-check"><input type="checkbox" data-planner-reviewed disabled />I reviewed this plan and its dates.</label>
+    <div class="fp-actions"><button type="button" class="btn" data-planner-markdown disabled>Download reviewed Markdown</button><button type="button" class="btn btn-ghost" data-planner-calendar disabled>Download reviewed calendar</button><button type="button" class="btn btn-ghost" data-planner-print disabled>Print reviewed plan</button></div>
+  </div>
+  <p class="note">For shared work, open <a href="https://os.charitology.org/#module/fundraising">Giving and fundraising in Charity OS</a>. You decide what to enter there; this planner does not transfer its fields.</p>
+</section>
+<script>
+  import { mountFundraisingPlanner } from '../lib/fundraising/planner.mjs';
+  const root = document.querySelector<HTMLElement>('#fundraising-planner');
+  if (root) mountFundraisingPlanner(root);
+</script>
+<style>
+  .fp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:1rem;margin:1rem 0}.fundraising-planner label{display:flex;flex-direction:column;gap:.35rem;font-weight:600}.fundraising-planner input,.fundraising-planner select,.fundraising-planner textarea{width:100%;box-sizing:border-box}.fp-budget{margin:1.5rem 0;padding:1rem;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--radius-sm)}.fp-budget :global(dl){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:.5rem 1rem}.fp-budget :global(dd){margin:0;overflow-wrap:anywhere}.fp-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}.fundraising-planner .fp-check{flex-direction:row;align-items:flex-start;gap:.6rem;margin:1rem 0}.fp-check input{width:auto;margin-top:.3rem}.fundraising-planner textarea{font-family:var(--font-mono,monospace);font-size:.9rem;white-space:pre-wrap}.fundraising-planner [hidden]{display:none!important}
+  @media(max-width:40rem){.fp-budget :global(dl){grid-template-columns:1fr}.fp-budget :global(dd){margin-bottom:.7rem}}
+  .fp-print-text{display:none;white-space:pre-wrap;overflow-wrap:anywhere}
+  [data-planner-calendar-preview]{max-height:24rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.85rem}
+  @media print{.fundraising-planner form,.fp-actions,.fp-check,.fundraising-planner textarea,.fundraising-planner details,.fundraising-planner>p:last-child{display:none!important}.fp-print-text{display:block}.fundraising-planner{box-shadow:none}}
+</style>
