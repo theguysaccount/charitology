@@ -1,4 +1,6 @@
 ---
+import { url } from '../lib/site';
+
 interface Listing {
   id: string;
   name: string;
@@ -57,7 +59,7 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
           <p class="directory-checked">Source checked {entry.checked === null ? 'Unknown' : checked(entry.checked)} · {entry.review === 'reviewed' ? 'Editorially reviewed' : 'Editorial review pending'}</p>
           <a class="directory-copy" href={`https://os.charitology.org/#directory/${kind}/${entry.id}/${captureId}/${entryHashes[entry.id]}`}>Review in Charity OS</a>
           <p class="directory-checked">Inspect this frozen listing, choose an organization, then preview a Resource copy. Eligibility and organization review stay unknown until your team records them.</p>
-          <details class="directory-sources"><summary>Frozen directory source</summary><p>Captured {capturedAt}. This preserves the listing; it does not establish current availability.</p><p><a href={`/data/directory-resources/captures/${captureId}/entries/${kind}/${entry.id}.json`}>Exact source entry</a> · <a href={`/data/directory-resources/captures/${captureId}/capture.json`}>Capture record</a></p><p style="overflow-wrap:anywhere">Entry SHA-256: {entryHashes[entry.id]}</p></details>
+          <details class="directory-sources"><summary>Frozen directory source</summary><p>Captured {capturedAt}. This preserves the listing; it does not establish current availability.</p><p><a href={url(`/data/directory-resources/captures/${captureId}/entries/${kind}/${entry.id}.json`)}>Exact source entry</a> · <a href={url(`/data/directory-resources/captures/${captureId}/capture.json`)}>Capture record</a></p><p style="overflow-wrap:anywhere">Entry SHA-256: {entryHashes[entry.id]}</p></details>
         </div>
       </article>
     ))}

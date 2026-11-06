@@ -1,6 +1,5 @@
 import { constants } from 'node:fs';
 import { open, lstat } from 'node:fs/promises';
-import { finished } from 'node:stream/promises';
 import { createHash } from 'node:crypto';
 import { Worker } from 'node:worker_threads';
 import { performance } from 'node:perf_hooks';
@@ -54,13 +53,37 @@ function metadata(stat) {
 }
 const same = (a, b) => ['dev', 'ino', 'size', 'mtimeNs', 'ctimeNs'].every(key => a[key] === b[key]);
 
+/** Internal cleanup shared by the actual reader and its real-file regression.
+ * finished() can resolve at readable end before a FileHandle-backed stream's native
+ * close completes. A repeated FileHandle.close() can then resolve while fd is -1.
+ * Observe the stream's actual close before reporting that the held file is closed. */
+export async function closeHeldModelRead(handle, stream) {
+  let onError, onClose;
+  try {
+    if (stream && !stream.closed) {
+      await new Promise(resolve => {
+        // Preserve the reader's primary failure; still wait through cleanup errors.
+        onError = () => {};
+        onClose = resolve;
+        stream.on('error', onError);
+        stream.once('close', onClose);
+        stream.destroy();
+      });
+    }
+  } finally {
+    if (onError) stream.off('error', onError);
+    if (onClose) stream.off('close', onClose);
+    if (handle) await handle.close();
+  }
+}
+
 /** Real held regular-file I/O. Observer/chunk/deadline controls are trusted test scheduling only;
  * the CLI supplies none and no file/argument can choose a filesystem, validator or engine. */
 export async function readHeldModelFile(file, { signal, deadlineMs = CLI_LIMITS.deadline, chunkBytes = CLI_LIMITS.chunk, observer } = {}) {
   const duration = deadline(deadlineMs);
   if (!Number.isSafeInteger(chunkBytes) || chunkBytes < 1 || chunkBytes > CLI_LIMITS.chunk) refused('unavailable', 'unavailable');
   if (![constants.O_NOFOLLOW, constants.O_NONBLOCK].every(value => Number.isInteger(value) && value > 0)) refused('unavailable', 'platform');
-  const started = performance.now(), controller = new AbortController(); let handle, stream, expired = false;
+  const started = performance.now(), controller = new AbortController(); let handle, stream, expired = false, readFailed = false;
   const abort = () => controller.abort();
   const timer = setTimeout(() => { expired = true; controller.abort(); stream?.destroy(); }, duration);
   signal?.addEventListener('abort', abort, { once: true });
@@ -79,7 +102,7 @@ export async function readHeldModelFile(file, { signal, deadlineMs = CLI_LIMITS.
     if (initial.size < 0n || initial.size > BigInt(CLI_LIMITS.bytes)) refused('invalid', 'size');
     observer?.opened?.(handle.fd); check();
     // Inclusive end is the cap+1 sentinel. No growing file can allocate/read beyond it.
-    stream = handle.createReadStream({ autoClose: false, highWaterMark: chunkBytes, start: 0, end: CLI_LIMITS.bytes, signal: controller.signal });
+    stream = handle.createReadStream({ autoClose: false, emitClose: true, highWaterMark: chunkBytes, start: 0, end: CLI_LIMITS.bytes, signal: controller.signal });
     const chunks = []; let total = 0;
     for await (const chunk of stream) {
       check(); total += chunk.byteLength; observer?.chunk?.(chunk.byteLength, total); check();
@@ -93,15 +116,20 @@ export async function readHeldModelFile(file, { signal, deadlineMs = CLI_LIMITS.
     if (!namedStat.isFile() || !same(initial, metadata(namedStat))) refused('unavailable', 'changed');
     return Buffer.concat(chunks, total);
   } catch (error) {
+    readFailed = true;
     if (error instanceof ModelBundleFileError) throw error;
     if (expired || performance.now() - started >= duration) refused('unavailable', 'readDeadline');
     if (controller.signal.aborted || signal?.aborted) refused('unavailable', 'cancelled');
     refused('unavailable', 'unavailable');
   } finally {
     clearTimeout(timer); signal?.removeEventListener('abort', abort);
-    stream?.destroy();
-    if (stream) await finished(stream, { cleanup: true }).catch(() => {});
-    if (handle) { await handle.close(); observer?.closed?.(); }
+    try {
+      await closeHeldModelRead(handle, stream);
+      if (handle) observer?.closed?.();
+    } catch (error) {
+      // Cleanup must not replace a size/change/deadline/cancellation read failure.
+      if (!readFailed) throw error;
+    }
   }
 }
 

@@ -57,6 +57,15 @@ test('closure checks reject a still-open original and accept genuine descriptor 
   }
 });
 
+test('actual ended and aborted streams finish native close before shared cleanup returns', async () => {
+  const fixture = fileURLToPath(new URL('./fixtures/model-file-close.mjs', import.meta.url));
+  const result = await run(process.execPath, [fixture], {
+    env: { ...process.env, UV_THREADPOOL_SIZE: '1' }, timeout: 10000, maxBuffer: CLI_LIMITS.output,
+  });
+  assert.equal(result.stderr, '');
+  assert.deepEqual(JSON.parse(result.stdout), { endedReplacementClosed: true, abortedStreamClosed: true, repeatedCleanupPassed: true });
+});
+
 test('exact arguments reject alternate inputs and never grant a caller-raised deadline or read chunk', async () => {
   assert.deepEqual(parseArguments(['chosen.json', '--json']), { file: 'chosen.json', json: true });
   for (const args of [[], ['-'], ['--json'], ['--json', 'chosen.json'], ['chosen.json', '--json', '--json'], ['chosen.json', '--wat'], ['a', 'b'], ['https://example.invalid/private'], ['file:///private/file'], ['stdin:'], ['a\0b']]) assert.throws(() => parseArguments(args), error => error instanceof ModelBundleFileError && error.status === 'invalid');

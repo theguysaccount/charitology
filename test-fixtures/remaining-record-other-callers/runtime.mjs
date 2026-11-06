@@ -4,7 +4,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { resolve, dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
-import { transform } from "@astrojs/compiler";
+import { transform } from "@astrojs/compiler-rs";
 import { installToolDom, ToolElement } from "../donor-recovery/tool-dom.mjs";
 import { spin } from "../remaining-record-controls/ui-dom.mjs";
 import { setTimeout as pause } from "node:timers/promises";

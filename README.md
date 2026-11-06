@@ -25,7 +25,7 @@ Every page follows [the Charitology Standard](STYLE.md): a source for every fact
 
 ## Run it
 
-Node 22 or newer.
+Node 22.23.4 or newer; `.nvmrc` selects Node 24. This migration candidate pins Astro 7.4.7. Its [acceptance record](docs/ASTRO_7_MIGRATION_ACCEPTANCE.md) separates completed static checks and one native read-only model reproduction from remaining browser and release gates. The candidate has not been merged or deployed.
 
 ```sh
 npm ci
@@ -45,7 +45,7 @@ The [research ledger](docs/RESEARCH_LEDGER_ACCEPTANCE.md) connects the 23 Open P
 
 ## How it’s built
 
-- [Astro](https://astro.build) 5 with content collections. Every collection is validated by a schema in [`src/content.config.ts`](src/content.config.ts), so a malformed entry fails the build.
+- [Astro](https://astro.build) 7.4.7 with content collections. Every collection is validated by a schema in [`src/content.config.ts`](src/content.config.ts), so a malformed entry fails the build.
 - Content is Markdown with YAML front matter in `src/content/`. Shared data (causes, moral frameworks, the depth scale, the checklist, headline figures with sources) is JSON in `src/data/`.
 - Tools are plain TypeScript in `src/components/tools/`, with a small shared kit in `src/lib/client/`. Browser-local tools keep their records on the device; the shared OS uses its own authenticated API and private database.
 - Search is [Pagefind](https://pagefind.app), built at deploy time.

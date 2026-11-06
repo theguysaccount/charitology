@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { Worker } from 'node:worker_threads';
 import { build } from 'esbuild';
-import { transform } from '@astrojs/compiler';
+import { transform } from '@astrojs/compiler-rs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { installToolDom } from '../../../test-fixtures/donor-recovery/tool-dom.mjs';
 import { mountModelBundlesForTesting, readEditorForm, illustrativeEditorForm } from './ui.mjs';

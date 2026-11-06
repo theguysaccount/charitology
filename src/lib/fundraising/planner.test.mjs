@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { build } from 'esbuild';
-import { transform } from '@astrojs/compiler';
+import { transform } from '@astrojs/compiler-rs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { installToolDom } from '../../../test-fixtures/donor-recovery/tool-dom.mjs';
 import { calculateFundraisingBudget, prepareFundraisingPlan, addFundraisingDays, foldFundraisingCalendarLine,

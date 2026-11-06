@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { build } from "esbuild";
 import ts from "typescript";
 import postcss from "postcss";
-import { transform } from "@astrojs/compiler";
+import { transform } from "@astrojs/compiler-rs";
 import { readFile, mkdtemp, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
