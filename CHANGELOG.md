@@ -1,5 +1,11 @@
 # Changelog
 
+## November 5, 2026: website improvements and optional OS pilots
+
+- Added a task-based website-improvement program, two complete editable scope/review briefs and a proposed two-week fictional-data OS trial. Website help and OS participation remain separate choices.
+- Added three official-source community entry routes with explicit participation-rule and current-access limits. Linked the program from the charity hub, collaboration page and networks directory.
+- Kept every outcome unknown until observed. No participant, institutional partnership, recruitment permission or charitable benefit is inferred. [Implementation and validation](docs/WEBSITE_PILOT_PROGRAM.md) records source scope and actual downloads; private examples and correspondence remain outside Git.
+
 ## November 5, 2026: practical starting points and outreach preparation
 
 - Added six complete task-based checklists with a page-only reviewed Markdown planner, optional role/review date, self-reported step marks and stale-review invalidation. Existing tools and manual OS links are connected around the job to be done. No account, storage, network or mail action is introduced by the planner.
