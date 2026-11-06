@@ -45,3 +45,7 @@ A separate bounded AI-assisted code/content review found no blocking route, impo
 Runtime source: `5b9333ecbb9757f7f881d42c8dfbcc90039b0400`. [PR #38](https://github.com/theguysaccount/charitology/pull/38) retains exact-head static, OS and newsletter checks. The full normal check must pass before merge and the Pages workflow must pass before claiming live publication. The first new-branch push had no nonzero comparison base and correctly stopped at the existing observation-history gate; the genuine acceptance-documentation commit provides an explicit prior push head without weakening any gate.
 
 This record concerns the static public program and actual local download/layout checks. Independently operated services, private concepts, organizer responses and real-world pilots retain their separate scope.
+
+## Local guided case follow-up — pending review and publication
+
+The [website pilot case guide](WEBSITE_PILOT_GUIDE.md) adds one visitor-task case with both completed working briefs and an ordinary Nonprofit Advisory v1 native file. Its selected briefs keep unknown facts explicit and publication, recurring updates, OS participation and public case-study decisions separate. Website-only work makes no storage, backend or OS request; any OS home link requires a fresh separate choice and transfers no file. This local implementation does not establish a completed pilot, a charity relationship or a published Learning handoff. The original static program evidence above remains unchanged.

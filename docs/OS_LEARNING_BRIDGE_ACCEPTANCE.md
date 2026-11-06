@@ -225,3 +225,43 @@ All 27 context-free runtime counts are zero. Verified TLS and **two separate REP
 The completed production apply and old 32-table before-exporters are retired: **do not rerun them against the now-34-table production schema**. Their original files, snapshots and failures remain historical evidence. Future functional checks must account for the installed Learning tables and retain their own exact source and scope.
 
 Native Print/PDF and real afterprint behavior, completed late-callback/BFCache behavior, changed native source text and the separately listed broader lifecycle/accessibility cases remain unverified. Authenticated hosted large-source/streamed-response acceptance and canonical interface release also remain gates. The earlier mocked print-format, local browser and unsigned staging results keep their original scope. This migration and read-only postcheck introduced no canonical promotion, hosted login, mail, payment, outreach, provider or job operation. No real participant, measured impact, independent human review, complete Charity OS or completion of the original 66-item brief is asserted.
+
+## Version 8 follow-up: authenticated hosted fictional workflow and cleanup
+
+This November 6 follow-up records actual HTTPS acceptance through the reviewed, protected, unaliased Learning stage. Versions 1–7 remain unchanged, including the gates that were open at their recorded times. The service runtime remains `8f4bd3d130cb6dbbd0d2bb9201b1f846dbaefe9c`, with the same 108-file vector `6eb3b50515177e39bbd8e9938fa0a64bf1639883befca46a6275ad42387773c1`; integrating public-site documentation does not relabel it. No canonical promotion occurred.
+
+The retained 34,811-byte aggregate receipt has SHA-256 `5057f77d235eb7b5a2074c55d593600cf1c8e3c6e968dc78c664ce9a106edab0`. It records **79 actual HTTPS requests: 14 canonical authentication/session requests and 65 protected-stage requests**, with no HTTP errors or refusals. Existing platform protection access was used without creating a new access grant. Normal application authentication delivered two sign-in messages and one invitation only to two owner-controlled inboxes. The two distinct software account IDs were operated by **one human**. This exercises account-separated software authorization, not independent human review, a real charity pilot or a scientific result.
+
+### Complete source transfer, explicit mapping and ordinary approvals
+
+A complete fictional Nonprofit Advisory native file of **5,006,149 bytes**, SHA-256 `24c7f9fd8a1b777cd35be44f647b7c0b8685bd3bdde3bd1b8c7273e843aaa820`, passed four actual HTTPS upload chunks and source inspection. This is an authenticated hosted transfer fixture, not a native Save claim at that size or proof of every hosted size ceiling. The retained selected capture is **75,365 bytes**, SHA-256 `bb0989a2e727261b300e3bd66c9435fd603ef3158612c61adee6b41d20239c44`: all nine context values and the complete chosen learning row match the original. None of the 110 unselected diagnostic rows was retained in that selected source.
+
+Explicit mapping began with fresh drafts. Ordinary application operations then reached these exact factual states:
+
+| Record role | Accepted state and revision |
+| --- | --- |
+| Program | Approved, revision 5 |
+| Mapped indicator definition | Approved, revision 5 |
+| Protocol | Registered, revision 6 |
+| Decision | Decided, revision 8 |
+| Reporting manifest | Approved at revision 6; Learning freeze reached revision 7 |
+
+One deliberate replay of the exact mapping command returned `already-committed` with the same JSON value. This is value equality, not a claim that response object-key order stayed byte-identical. The actual Learning history contains three events: `mapped`, `decided` and `report-frozen`. Its newest-first response order and the actual null terminal context cursor were checked against the retained responses.
+
+### Frozen report body and separate pure validation
+
+The completed terminal context response body is **109,915 bytes**. The saved report export body is **100,000 bytes**, SHA-256 `ab4ea6ba6e832616046c4b624983b5f404a4f123d977285cd8183c3462811cc6`; its 100,021-byte JSON response envelope has SHA-256 `daa57c0ba93e2ae8841b821cee9cbd911285407b7dd511c4a14abaaffe84dbb6`. These are complete saved application response bodies, not whole HTTP-wire measurements or browser-native download evidence. The `Content-Disposition` header was not captured.
+
+A separate offline execution of the actual pure report validator passed. Its receipt has SHA-256 `43a1c228784b63e8ed207419923ab70686b19f44cf7e3555363b8d64cd631f07`. It recomputed the full checksum `c918ee48aab175ee7b4122d10e131a559a4efdbd6b1c15215e1cdd25e991033d`, validated the contained closure, proved envelope-report equality and checked the retained native selection exactly. The frozen closure contains five approved evidence proofs, one source, one selected definition and the two pre-freeze events. The later `report-frozen` event belongs to live history and is not retroactively inserted into its own proof.
+
+The report explicitly has **zero selected observations**, assessment `unassessable`, feedback `not-collected` and decision evidence strength `unknown`, with a stated no-evidence reason. No observation evidence bodies were supplied. This is a meaningful empty-evidence software path; it does not turn missing observations into measured zero, favorable feedback, impact or research qualification.
+
+Three local checking assumptions initially failed: transport JSON key order was treated as value identity, the report's selected observations were checked at the wrong nesting path, and history was assumed oldest-first. Each was corrected against the **same retained responses**, with no additional HTTP retry for those corrections. Two failed offline fixture-validation attempts—an added fixture label exceeding a 5,000-character field limit and an object-key order assumption—also remain retained. These are checker corrections, not product failures concealed by extra requests or weakened admission.
+
+### Scoped cleanup and current release boundary
+
+Only the second account's membership in the fictional workspace was removed. A fresh owner read after that revocation returned the identical frozen report export. Both owned accounts then used normal canonical signout, returned HTTP 200 and separately returned explicit `user:null`. The HTTPS worker and supervisor exited 0 with an empty error log and cleared their RAM references; this is not a physical string-zeroization claim. The fictional organization, its records and history are intentionally retained. No SQL seed, pruning or physical upload/preview-row count is asserted by this run.
+
+A separate current deployment metadata read observed canonical `os.charitology.org` as READY at main `c4c6566e21a9a58bfb4bee654f4faa254ea546fe`, deployment `dpl_7H8jZZcKh9bC5xKyQpdPWVvV6say`. That is the automatic guide/main deployment with **pre-Learning service bytes**, not promotion of the reviewed Learning stage. The earlier `4188b725a0e92c27651aab89680e0e745f1abcbe` canonical observation in Versions 6–7 remains its prior checkpoint. Version 7's 60 preserved old rows describe its migration-time proof, not the current production row total after legitimate application activity.
+
+This closes the stated authenticated hosted source-transfer/report-body acceptance for this fictional workflow. Native Print/PDF, real afterprint, completed late-callback/BFCache behavior, changed native source text, broader lifecycle/accessibility coverage and canonical Learning browser release remain separate gates. It does not establish all hosted transport ceilings or every Charity OS workflow. No new provider configuration, payment, newsletter campaign, cold outreach, real charity participation, independent human review or completion of the original 66-item brief is claimed.
