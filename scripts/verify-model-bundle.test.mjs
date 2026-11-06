@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, writeFile, readFile, rm, stat, readdir } from 'node:fs/promises';
-import { appendFileSync, fstatSync, renameSync, writeFileSync, utimesSync, statSync, symlinkSync } from 'node:fs';
+import { appendFileSync, fstatSync, openSync, closeSync, renameSync, writeFileSync, utimesSync, statSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -19,7 +19,43 @@ async function invoke(args) {
   try { const result = await run(process.execPath, [cli, ...args], { timeout: 10000, maxBuffer: CLI_LIMITS.output * 2 }); return { ...result, code: 0 }; }
   catch (error) { if (!Number.isInteger(error.code)) throw error; return { code: error.code, stdout: error.stdout, stderr: error.stderr }; }
 }
-function closed(fd) { assert.throws(() => fstatSync(fd), error => error.code === 'EBADF'); }
+function heldFile(fd) {
+  const { dev, ino } = fstatSync(fd, { bigint: true });
+  return Object.freeze({ fd, dev, ino });
+}
+function closed(held) {
+  assert.ok(held, 'Observe the actual held file before checking its closure.');
+  let current;
+  try { current = heldFile(held.fd); }
+  catch (error) { assert.equal(error.code, 'EBADF'); return; }
+  // The number may be reused after awaited close. dev/ino identify the original
+  // file even when these tests deliberately change its size, times or name.
+  assert.notDeepEqual({ dev: current.dev, ino: current.ino }, { dev: held.dev, ino: held.ino },
+    'The descriptor must no longer identify the original held file.');
+}
+
+test('closure checks reject a still-open original and accept genuine descriptor reuse for another file', async t => {
+  const dir = await temporary(t), original = path.join(dir, 'original.json'), other = path.join(dir, 'other.json');
+  await writeFile(original, 'original'); await writeFile(other, 'other');
+  let originalFd = openSync(original, 'r'), reusedFd;
+  try {
+    const held = heldFile(originalFd);
+    appendFileSync(original, '-changed-metadata');
+    assert.throws(() => closed(held), { code: 'ERR_ASSERTION' }, 'Changing metadata does not excuse an open original.');
+    // No await occurs between closing our descriptor and the next real open.
+    // The lowest available descriptor is genuinely reused, not mocked.
+    closeSync(originalFd); originalFd = undefined;
+    reusedFd = openSync(other, 'r');
+    assert.equal(reusedFd, held.fd);
+    const replacement = heldFile(reusedFd);
+    assert.notDeepEqual({ dev: replacement.dev, ino: replacement.ino }, { dev: held.dev, ino: held.ino });
+    closed(held);
+    assert.throws(() => closed(replacement), { code: 'ERR_ASSERTION' }, 'The replacement remains open and must fail its own closure check.');
+  } finally {
+    if (originalFd !== undefined) closeSync(originalFd);
+    if (reusedFd !== undefined) closeSync(reusedFd);
+  }
+});
 
 test('exact arguments reject alternate inputs and never grant a caller-raised deadline or read chunk', async () => {
   assert.deepEqual(parseArguments(['chosen.json', '--json']), { file: 'chosen.json', json: true });
@@ -30,9 +66,9 @@ test('exact arguments reject alternate inputs and never grant a caller-raised de
 
 test('actual held temporary files enforce exact cap, cap+1, short chunks and finally close without source writes', async t => {
   const dir = await temporary(t), file = path.join(dir, 'exact-private-cap.json'), bytes = Buffer.alloc(CLI_LIMITS.bytes, 120);
-  await writeFile(file, bytes); const before = await stat(file, { bigint: true }); let fd, closes = 0, maximum = 0, total = 0;
-  const result = await readHeldModelFile(file, { observer: { opened: value => { fd = value; }, chunk: (size, read) => { maximum = Math.max(maximum, size); total = read; }, closed: () => { closes++; } } });
-  assert.equal(result.byteLength, CLI_LIMITS.bytes); assert.equal(total, CLI_LIMITS.bytes); assert.ok(maximum <= CLI_LIMITS.chunk); assert.equal(closes, 1); closed(fd);
+  await writeFile(file, bytes); const before = await stat(file, { bigint: true }); let held, closes = 0, maximum = 0, total = 0;
+  const result = await readHeldModelFile(file, { observer: { opened: value => { held = heldFile(value); }, chunk: (size, read) => { maximum = Math.max(maximum, size); total = read; }, closed: () => { closes++; } } });
+  assert.equal(result.byteLength, CLI_LIMITS.bytes); assert.equal(total, CLI_LIMITS.bytes); assert.ok(maximum <= CLI_LIMITS.chunk); assert.equal(closes, 1); closed(held);
   const after = await stat(file, { bigint: true }); for (const key of ['size', 'mtimeNs', 'ctimeNs', 'dev', 'ino']) assert.equal(after[key], before[key]);
   assert.equal(sha(result), sha(bytes));
   const short = path.join(dir, 'short.json'); await writeFile(short, Buffer.from('abcdefghij')); const chunks = [];
@@ -44,11 +80,11 @@ test('actual held temporary files enforce exact cap, cap+1, short chunks and fin
 });
 
 test('growth, replacement, final symlink and submillisecond metadata changes refuse the held file identity', async t => {
-  const dir = await temporary(t), grow = path.join(dir, 'growing.json'); await writeFile(grow, 'small'); let growthTotal = 0, growthFd;
-  await assert.rejects(readHeldModelFile(grow, { observer: { opened: value => { growthFd = value; appendFileSync(grow, Buffer.alloc(CLI_LIMITS.bytes + 100, 120)); }, chunk: (_size, total) => { growthTotal = total; } } }), error => error.reason === 'size');
-  assert.equal(growthTotal, CLI_LIMITS.bytes + 1); closed(growthFd);
-  const replace = path.join(dir, 'replaced.json'); await writeFile(replace, 'same-length'); let replacedFd;
-  await assert.rejects(readHeldModelFile(replace, { observer: { opened: value => { replacedFd = value; renameSync(replace, replace + '.held'); writeFileSync(replace, 'same-length'); } } }), error => error.reason === 'changed'); closed(replacedFd);
+  const dir = await temporary(t), grow = path.join(dir, 'growing.json'); await writeFile(grow, 'small'); let growthTotal = 0, growthHeld;
+  await assert.rejects(readHeldModelFile(grow, { observer: { opened: value => { growthHeld = heldFile(value); appendFileSync(grow, Buffer.alloc(CLI_LIMITS.bytes + 100, 120)); }, chunk: (_size, total) => { growthTotal = total; } } }), error => error.reason === 'size');
+  assert.equal(growthTotal, CLI_LIMITS.bytes + 1); closed(growthHeld);
+  const replace = path.join(dir, 'replaced.json'); await writeFile(replace, 'same-length'); let replacedHeld;
+  await assert.rejects(readHeldModelFile(replace, { observer: { opened: value => { replacedHeld = heldFile(value); renameSync(replace, replace + '.held'); writeFileSync(replace, 'same-length'); } } }), error => error.reason === 'changed'); closed(replacedHeld);
   const linked = path.join(dir, 'later-link.json'); await writeFile(linked, 'original');
   await assert.rejects(readHeldModelFile(linked, { observer: { beforeRecheck: () => { renameSync(linked, linked + '.held'); symlinkSync(linked + '.held', linked); } } }), error => error.reason === 'changed');
   const changed = path.join(dir, 'metadata.json'); await writeFile(changed, 'unchanged-content'); utimesSync(changed, 1700000000, 1700000000.000123);
@@ -65,11 +101,11 @@ test('actual directory, final symlink and FIFO refuse promptly without following
 });
 
 test('real regular-file deadline and cancellation destroy the read and close its exact held descriptor', async t => {
-  const dir = await temporary(t), file = path.join(dir, 'deadline.json'); await writeFile(file, Buffer.alloc(CLI_LIMITS.bytes, 120)); let fd, closes = 0;
-  await assert.rejects(readHeldModelFile(file, { deadlineMs: 500, chunkBytes: 1, observer: { opened: value => { fd = value; }, closed: () => { closes++; } } }), error => error.reason === 'readDeadline');
-  assert.equal(closes, 1); closed(fd);
-  const controller = new AbortController(); let cancelledFd;
-  await assert.rejects(readHeldModelFile(file, { signal: controller.signal, observer: { opened: value => { cancelledFd = value; controller.abort(); } } }), error => error.reason === 'cancelled'); closed(cancelledFd);
+  const dir = await temporary(t), file = path.join(dir, 'deadline.json'); await writeFile(file, Buffer.alloc(CLI_LIMITS.bytes, 120)); let held, closes = 0;
+  await assert.rejects(readHeldModelFile(file, { deadlineMs: 500, chunkBytes: 1, observer: { opened: value => { held = heldFile(value); }, closed: () => { closes++; } } }), error => error.reason === 'readDeadline');
+  assert.equal(closes, 1); closed(held);
+  const controller = new AbortController(); let cancelledHeld;
+  await assert.rejects(readHeldModelFile(file, { signal: controller.signal, observer: { opened: value => { cancelledHeld = heldFile(value); controller.abort(); } } }), error => error.reason === 'cancelled'); closed(cancelledHeld);
 });
 
 test('fixed actual worker compares installed engine results, full-array hashes, refused numerics and unknown descriptors', async () => {
