@@ -1,0 +1,32 @@
+name: Model reference checks
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  model-reference:
+    name: Strict nineteen-case reference on macOS arm64
+    # Standard macos-26 is arm64; the exact runtime qualifier also checks the architecture.
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.22.1"
+          architecture: arm64
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Reproduce all immutable reference cases exactly
+        run: node scripts/generate-model-engine-registry.mjs --check
+      - name: Verify the exact measured macOS runtime identity and complete results
+        run: node scripts/check-model-runtime.mjs
+      - name: Run actual model, legacy comparison, worker and CLI regressions
+        run: node --test --test-concurrency=1 src/lib/model-bundles/*.test.mjs scripts/model-runtime-qualification.test.mjs scripts/verify-model-bundle.test.mjs

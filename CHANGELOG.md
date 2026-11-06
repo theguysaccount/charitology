@@ -1,5 +1,11 @@
 # Changelog
 
+## November 5, 2026: reproducible model bundles
+
+- Added private authored model versions, explicit selected-file reproduction, complete backup/restore and a command-line verifier beside the original calculator and CSV. Fixed foreign-save recovery and already-recorded-copy loss of unfinished writing.
+- Kept the numerical interpretation and reference artifacts fixed; platform differences remain explicit and cannot grant reproduced-copy or draw authority. All examples are fictional and the public source-model registry remains empty.
+- [Acceptance](docs/REPRODUCIBLE_MODEL_BUNDLES_ACCEPTANCE.md) records actual selected-file Save/chooser/browser/CLI, full native backup/restore, separate raw recoveries and narrow layouts. This adds no provider, shared-OS schema or mail operation.
+
 ## November 5, 2026: website improvements and optional OS pilots
 
 - Added a task-based website-improvement program, two complete editable scope/review briefs and a proposed two-week fictional-data OS trial. Website help and OS participation remain separate choices.

@@ -47,6 +47,12 @@ jobs:
       contents: read
     uses: ./.github/workflows/newsletter-check.yml
 
+  model-reference:
+    name: Strict model reference checks
+    permissions:
+      contents: read
+    uses: ./.github/workflows/model-reference-check.yml
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -55,11 +61,15 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: .nvmrc
+          node-version: "24.22.1"
           cache: npm
       - id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - run: npm ci
+      - name: Verify immutable model bytes without claiming runtime conformance
+        run: node scripts/generate-model-engine-registry.mjs --check-integrity
+      - name: Qualify the exact measured Linux model runtime
+        run: node scripts/check-model-runtime.mjs
       - name: Verify exact committed publication history
         run: npm run check:publication-history
       - name: Verify exact committed observation history
@@ -82,7 +92,7 @@ jobs:
           path: dist
 
   deploy:
-    needs: [build, newsletter, charity-os]
+    needs: [build, newsletter, charity-os, model-reference]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

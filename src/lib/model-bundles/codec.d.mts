@@ -1,0 +1,27 @@
+export type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
+export type CodecOptions = { maxDepth?: number; maxNodes?: number; maxBytes?: number };
+export type HashKind = 'engine' | 'golden' | 'input' | 'run' | 'content' | 'version' | 'selected' | 'backup' | 'state' | 'draws' | 'proposal' | 'review';
+export const LIMITS: Readonly<{ selected: number; backup: number; engine: number; golden: number; form: number;
+  leaf: number; depth: number; nodes: number; models: number; versions: number; sources: number; receipts: number;
+  checksumFile: number; draws: number; proposal: number }>;
+export class ModelBundleError extends Error { code: string; path: string; constructor(code: string, path?: string, message?: string) }
+export function fail(code: string, path?: string): never;
+export function wellFormed(value: string): boolean;
+export function cloneJson<T>(value: T, options?: CodecOptions): T;
+export function canonicalJson(value: unknown, options?: CodecOptions): string;
+export const canonical: typeof canonicalJson;
+export function canonicalBytes(value: unknown, options?: CodecOptions): Uint8Array;
+export function parseJsonBytes(bytes: Uint8Array, options?: CodecOptions): JsonValue;
+export function sha256Bytes(bytes: Uint8Array): Promise<string>;
+export function snapshotBytes(value: Uint8Array, maxBytes?: number): Uint8Array;
+export function hashValue(kind: HashKind, value: unknown): Promise<string>;
+export function savedStringHash(value: string | null): Promise<string | null>;
+export function prettyBytes(value: unknown, maxBytes?: number): Uint8Array;
+export function object(value: unknown, keys: readonly string[], path?: string): Record<string, unknown>;
+export function array(value: unknown, max: number, path?: string, exact?: boolean): unknown[];
+export function text(value: unknown, max: number, path?: string, nonblank?: boolean): string;
+export function oneOf<T>(value: unknown, values: readonly T[], path?: string): T;
+export function integer(value: unknown, low: number, high: number, path?: string): number;
+export function hash(value: unknown, path?: string): string;
+export function id(value: unknown, path?: string): string;
+export function equal(a: unknown, b: unknown): boolean;

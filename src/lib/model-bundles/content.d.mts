@@ -1,0 +1,23 @@
+import type { Row, Part, RunField, Instant, Day, PartialDate, Head, EnginePin, Raw, NumericalIssue, RecordedRun,
+  RunFingerprint, CopyObservation, Origin, PointBasis, Content, EditorForm, Input, Id, SourceDescription } from './types.js';
+export const ROWS: readonly Row[];
+export const PARTS: readonly Part[];
+export const RUN_FIELDS: readonly RunField[];
+export const LIMITATIONS: readonly string[];
+export function validateInstant(value: unknown, path?: string): Instant;
+export function validateDay(value: unknown, path?: string): Day;
+export function validatePartialDate(value: unknown, path?: string): PartialDate;
+export function validateHead(value: unknown, path?: string): Head;
+export function validateEnginePin(value: unknown, path?: string): EnginePin;
+export function validateRaw(value: unknown, options?: { draft?: boolean }): Raw;
+export function validateNumericalIssue(value: unknown): NumericalIssue;
+export function validateRecordedRun(value: unknown, input?: Input | null): RecordedRun;
+export function validateFingerprint(value: unknown): RunFingerprint;
+export function validateCopyObservation(value: unknown): CopyObservation;
+export function validateOrigin(value: unknown): Origin;
+export function validateSourceDescription(value: unknown): SourceDescription;
+export function validatePointBasis(value: unknown, sourceIds: ReadonlySet<Id>, used: Set<Id>): PointBasis;
+export function validateContent(value: unknown): Promise<Content>;
+export function runFingerprint(value: RecordedRun): Promise<RunFingerprint>;
+export function compileEditorContent(form: EditorForm, calculation: { enginePin: EnginePin; input: Input; run: RecordedRun }): Promise<Content>;
+export function editorFormFromContent(content: Content, amendmentReason?: string): Promise<EditorForm>;
