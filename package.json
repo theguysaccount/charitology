@@ -7,7 +7,7 @@
   "license": "MIT",
   "homepage": "https://charitology.org",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.23.4"
   },
   "scripts": {
     "dev": "astro dev",
@@ -50,7 +50,7 @@
     "disasters:prepare": "node scripts/disasters-prepare.mjs",
     "disasters:capture": "node scripts/disasters-capture.mjs",
     "check:fundraising": "node --test --test-concurrency=1 src/lib/fundraising/planner.test.mjs && node scripts/check-fundraising-build.mjs",
-    "check:charity-start": "node --test scripts/check-charity-start.mjs && tsc --noEmit --strict --target es2022 --module esnext --moduleResolution bundler --lib es2022,dom,dom.iterable src/lib/client/charity-start.ts",
+    "check:charity-start": "node --test scripts/check-charity-start.mjs && tsc --noEmit --strict --target es2022 --module esnext --moduleResolution bundler --types node --lib es2022,dom,dom.iterable src/lib/client/charity-start.ts",
     "check:model-bundles": "node scripts/generate-model-engine-registry.mjs --check-integrity && npm run check:model-runtime && node --test --test-concurrency=1 src/lib/model-bundles/*.test.mjs scripts/verify-model-bundle.test.mjs scripts/model-runtime-qualification.test.mjs && node scripts/check-model-bundles-build.mjs",
     "model:verify": "node scripts/verify-model-bundle.mjs",
     "check:model-reference": "node scripts/generate-model-engine-registry.mjs --check",
@@ -60,12 +60,16 @@
     "@fontsource-variable/fraunces": "5.3.0",
     "@fontsource-variable/source-serif-4": "5.3.0",
     "@noble/hashes": "2.4.0",
-    "astro": "5.18.2",
+    "@astrojs/markdown-remark": "7.3.6",
+    "astro": "7.4.7",
     "js-yaml": "4.3.2",
     "parse5": "7.3.0"
   },
   "devDependencies": {
+    "@astrojs/compiler-rs": "0.5.2",
     "@types/node": "24.19.2",
-    "pagefind": "1.5.2"
+    "esbuild": "0.28.2",
+    "pagefind": "1.5.2",
+    "typescript": "5.9.3"
   }
 }

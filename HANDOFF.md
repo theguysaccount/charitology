@@ -138,7 +138,7 @@ npm run build
 npm run check
 ```
 
-- Astro **5.18.2** remains pinned. Do not force an upgrade without testing the migration. Node 22 or newer; `.nvmrc` selects 24.
+- This migration candidate pins Astro **7.4.7** and requires Node **22.23.4** or newer; `.nvmrc` selects 24. The [migration acceptance](docs/ASTRO_7_MIGRATION_ACCEPTANCE.md) records root and subpath checks, one native read-only reproduction, unchanged frozen artifacts and remaining browser/release gates. It has not been merged or deployed. Earlier 5.18.2 receipts remain historical evidence of their stated versions.
 - The schema in `src/content.config.ts` validates content. Build creates extension ZIPs, Astro pages and Pagefind.
 - Checks cover content cross-references, every internal link, actual favicon/social files and metadata, extension packages/privacy, original roadmap data, reference export/source retention, country/podcast assets and research/learning/publication models.
 - Workflows use verified Node 24 action releases, pinned by commit SHA.
@@ -161,7 +161,7 @@ npm run check
 2. **Store submission/approval.** Packages, copy, privacy text, promo images and a labeled popup-source screenshot are ready. See [the store kit](docs/extension-store-listing.md). Opening the Chrome publisher console through the available browser automation was denied. No upload, developer agreement, payment or store approval occurred. Use the owner's publisher access; record actual URLs only after acceptance.
 3. **Operating programs.** Funds, paid fellowships/bounties/prizes, field audits, credentials, chapters, conferences and locally coauthored profiles need the people, funding and governance in their charters. The original 66-item roadmap keeps those milestones visible. Do not relabel a plan as a live institution.
 4. **Independent operation versus software.** The new course is self-study, the certificate is nonaccredited, country statistics are not locally authored narratives, and the nomination lab cannot grant a rating. The public red-team and human source-review gates remain in force.
-5. **Dependency migration.** The pinned dependency tree still reports npm audit findings, including a critical Astro advisory. This static deployment uses passthrough images, but no security clearance or advisory fix is claimed. A tested major upgrade is separate work; see release notes.
+5. **Dependency migration.** The isolated Astro 7.4.7 candidate reports zero npm audit findings and passes the bounded static checks in [its acceptance record](docs/ASTRO_7_MIGRATION_ACCEPTANCE.md). Native-browser review, exact CI and release verification remain pending. The canonical-origin full suite passes; the alternate-origin full command still encounters a canonical-only extension assertion, while twelve alternate build/source-package checks pass. No production upgrade or security clearance is claimed.
 
 ## Notes for the next contributor
 

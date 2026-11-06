@@ -5,7 +5,7 @@ import { readFile, writeFile, mkdtemp, rm } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
-import { transform } from "@astrojs/compiler";
+import { transform } from "@astrojs/compiler-rs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import {
   installToolDom,

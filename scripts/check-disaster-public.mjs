@@ -8,7 +8,7 @@ import { pathToFileURL } from "node:url";
 import childProcess from "node:child_process";
 import { syncBuiltinESMExports } from "node:module";
 import { build } from "esbuild";
-import { transform } from "@astrojs/compiler";
+import { transform } from "@astrojs/compiler-rs";
 import ts from "typescript";
 import { disasterFixture } from "./lib/disaster-model-fixtures.mjs";
 const root = process.cwd(),

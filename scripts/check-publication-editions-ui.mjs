@@ -156,7 +156,7 @@ await check(
     const serialized = runInNewContext(expression, { fixedCatalog: sentinel });
     assert.equal(serialized.includes("<"), false);
     assert.deepEqual(JSON.parse(serialized), sentinel);
-    const { transform } = await import("@astrojs/compiler");
+    const { transform } = await import("@astrojs/compiler-rs");
     await transform(text, { filename: "PublicationProposal.astro" });
   },
 );
