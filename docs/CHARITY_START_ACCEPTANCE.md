@@ -14,7 +14,15 @@ There is no form, named field, storage, network request, contact import, account
 
 ## Validation
 
-The six focused data/admission/export groups passed in the implementing agent’s actual run. Final strict client compile, normal build/check, native browser/download, exact-head CI and publication evidence will be recorded in the release PR and private verification receipts before reporting publication. Those checks do not establish learning, efficiency, fundraising results, charity quality or real adoption.
+Runtime commit `fc0bb307e3e8c2e457c670a21ef70d1f43cdc64f` passed the full local normal build/check: **578 HTML pages and 51,116 internal links/assets, none broken**. The integrated six focused data/admission/export groups and strict compilation of the actual client completed with zero diagnostics. Data SHA-256: `15f058a3cf80849bd947d2c2f1b6413000734a5b155776854175ac80d0b65196`; client SHA-256: `79a34940935cc7e5b9dcf8af2020c2ab109be7e6917e4e8a2c529bc1d73fcb28`.
+
+Actual in-app-browser interactions covered blank-job refusal, all six job choices, one visible step group, per-job mark retention, optional unknown fields, role/date entry, explicit acknowledgment, edit invalidation and a fresh review. The homepage, charity hub, collaboration page and starting guide/preview stayed within a 320-pixel document in the existing dark theme. Bounded warning/error logs were empty. Light theme, native print, screen-reader operation, browser failure injection and native BFCache were not exercised in this pass.
+
+One actual click-triggered Markdown download was saved and independently reopened. Its 2,886 bytes equal the exact inspected preview and the production serializer’s output for the same fictional role/date/step marks. SHA-256: `0c6d42312730613171f99ff46d09e0fb72af8e2726fb8964c36a37ce21554e0d`. The task-created Downloads copy was removed after proof; its private evidence copy remains outside Git. This does not establish native saved-file behavior for every browser or all six choices.
+
+The owned local IAB tab closed, viewport override was reset and port4388 static preview server stopped. Preexisting tabs/processes and the unfinished shared checkout were preserved. An older Chrome Save preview’s closure remains unverified; no unrelated browser process was killed.
+
+The release record is [PR #37](https://github.com/theguysaccount/charitology/pull/37). Merge requires the final head’s exact push/PR public, OS and newsletter checks, followed by successful Pages deployment and selected canonical byte verification. The first new-branch push may correctly refuse its missing nonzero history base; no history gate is disabled. Subsequent commits use an actual parent. Final CI/merge/Pages/public identities are retained in the PR and private receipts. Local validation alone is not publication evidence. These checks do not establish learning, efficiency, fundraising results, charity quality or real adoption.
 
 ## Outreach scope
 
