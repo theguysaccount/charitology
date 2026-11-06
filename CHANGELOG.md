@@ -1,5 +1,11 @@
 # Changelog
 
+## November 5, 2026: practical starting points and outreach preparation
+
+- Added six complete task-based checklists with a page-only reviewed Markdown planner, optional role/review date, self-reported step marks and stale-review invalidation. Existing tools and manual OS links are connected around the job to be done. No account, storage, network or mail action is introduced by the planner.
+- Added homepage audience routes, charity-hub starting actions and menu/footer discovery. Removed unsupported homepage outcome/novelty claims.
+- Prepared three private, source-checked individual resource offers responding to published volunteer invitations. After a separate explicit owner choice, all three were sent through personal Gmail with project Reply-To and exact saved-Sent verification. Resend’s opt-in restriction is preserved; provider acceptance remains distinct from delivery or reply. Recipient information stays outside Git. [Acceptance](docs/CHARITY_START_ACCEPTANCE.md) preserves scope and verification.
+
 ## October 28, 2026 UTC: teach and learn
 
 - Added five teaching/adoption pages and seven editable Markdown downloads with a complete fictional lesson, worked answers, university syllabus, rubric and club/school starter materials. All remain untested editorial drafts.
