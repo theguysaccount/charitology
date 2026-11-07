@@ -461,3 +461,18 @@ test("expanded inactive history is bounded before restore instead of partially a
   );
   refused(() => restoredParticipation(b));
 });
+
+test("old sub-version cannot strip a retained interval-aware whole-consent terms snapshot", () => {
+  const b = fixture();
+  b.participation.version = 2;
+  b.participation.participations = b.participation.participations.slice(0, 1);
+  const p = b.participation.participations[0];
+  p.state = "requested";
+  p.frozen = null;
+  delete p.requestedInterval;
+  delete p.consent.allocationHash;
+  p.consent.terms = structuredClone(b.participation.targets[0].terms);
+  delete b.participation.targets[0].terms.intervalPolicy;
+  b.participation.targets[0].termsHash = hash(b.participation.targets[0].terms);
+  refused(() => restoredParticipation(b));
+});

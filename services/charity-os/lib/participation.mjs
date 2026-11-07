@@ -1,3 +1,4 @@
+import { retainParticipationAuditOutcome } from "./participation-receipt.mjs";
 import {
   validateRequestedInterval,
   requestedInterval,
@@ -12,6 +13,7 @@ import {
 } from "./participation-delivery.mjs";
 import {
   audit,
+  noteParticipationReceiptReplay,
   allRecords,
   rowRecord,
   saveRecord,
@@ -897,6 +899,7 @@ async function adopt({ c, org, user, member, source, t, records, input }) {
   exact(input, ["targetRevision", "expectedLegacyHash", "idempotencyKey"]);
   const intent = participationIntent(input, user, "adopt");
   if (participationReplay(t?.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
     const confirmed = (await entries(c, org, source.id)).filter(
       (p) => p.state === "confirmed",
     );
@@ -1010,10 +1013,12 @@ async function associate({ c, org, user, member, source, t, records, input }) {
   if (old) {
     if (old.target_id !== source.id) unavailable();
     candidateFor(records, old, member, { approval: false });
-    if (participationReplay(old.last_command, intent))
+    if (participationReplay(old.last_command, intent)) {
+      noteParticipationReceiptReplay(c, org);
       return okay({
         participation: staffObject(old, t, source, records, member),
       });
+    }
     fail(
       409,
       "participation_duplicate",
@@ -1056,6 +1061,19 @@ async function associate({ c, org, user, member, source, t, records, input }) {
         "This request is not associated with the selected booking and contact.",
       );
   }
+  if (
+    (
+      await c.query(
+        "SELECT id FROM os_participations WHERE org_id=$1 AND target_id=$2 AND ((contact_id=$3 AND state<>'cancelled') OR ($4::text IS NOT NULL AND intake_id=$4)) LIMIT 1",
+        [org, source.id, candidate.data.contactId, input.intakeId || null],
+      )
+    ).rows.length
+  )
+    fail(
+      409,
+      "participation_duplicate",
+      "This contact or original request already has participation history for this occurrence. Reload its saved entry.",
+    );
   const row = (
     await c.query(
       "INSERT INTO os_participations(org_id,id,target_id,module_id,booking_record_id,contact_id,intake_id,state,revision,source,created_by,last_command) VALUES($1,$2,$3,$4,$5,$6,$7,'requested',1,$8,$9,$10) RETURNING *",
@@ -1099,7 +1117,10 @@ async function recordConsent({
   intake = null,
 }) {
   const intent = participationIntent(input, user, "consent");
-  if (participationReplay(p.last_command, intent)) return p;
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
+    return p;
+  }
   revision(input, p.revision);
   revision(input, t?.revision, "targetRevision");
   const terms = approvedTarget(source, t);
@@ -1201,9 +1222,9 @@ async function recordConsent({
     actorHash: hash(user),
     recipientHash: own ? hash(actor.email) : null,
     withdrawalAcknowledged: input.withdrawalAcknowledged === true,
+    ...(terms.intervalPolicy ? { terms } : {}),
     ...(requested
       ? {
-          terms,
           allocationHash: participationAllocationHash(
             source.id,
             source.revision,
@@ -1248,7 +1269,10 @@ async function preferences({
   t,
 }) {
   const intent = participationIntent(input, user, "preferences");
-  if (participationReplay(p.last_command, intent)) return p;
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
+    return p;
+  }
   revision(input, p.revision);
   revision(input, intake.revision, "intakeRevision");
   if (typeof input.emailUpdates !== "boolean")
@@ -1274,14 +1298,14 @@ async function preferences({
   const consent = p.consent
     ? { ...p.consent, emailUpdates: input.emailUpdates }
     : null;
-  const next = await update(c, org, p, { consent }, intent);
+  let next = await update(c, org, p, { consent }, intent);
   if (!input.emailUpdates)
     await c.query(
       "UPDATE os_participation_outbox SET state='cancelled' WHERE org_id=$1 AND participation_id=$2 AND state='paused'",
       [org, p.id],
     );
   if (input.emailUpdates) await participationQuota(c, org);
-  await audit(
+  const auditRetained = await audit(
     c,
     org,
     user,
@@ -1295,6 +1319,7 @@ async function preferences({
       emailUpdates: input.emailUpdates,
     },
   );
+  next = await retainParticipationAuditOutcome(c, org, next, auditRetained);
   return next;
 }
 
@@ -1310,11 +1335,17 @@ async function cancel({
   intake = null,
 }) {
   const intent = participationIntent(input, user, "cancel");
-  if (participationReplay(p.last_command, intent))
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
     return {
       p,
       notificationQueued: p.last_command.notificationQueued === true,
+      auditRetained:
+        typeof p.last_command.auditRetained === "boolean"
+          ? p.last_command.auditRetained
+          : null,
     };
+  }
   revision(input, p.revision);
   if (own) revision(input, intake.revision, "intakeRevision");
   if (p.state === "cancelled")
@@ -1323,6 +1354,7 @@ async function cancel({
       "participation_state",
       "This participation was already cancelled. Reload its saved status.",
     );
+  let auditRetained = true;
   const record = records.find((r) => r.id === p.booking_record_id);
   if (record) {
     const next = {
@@ -1334,10 +1366,17 @@ async function cancel({
     };
     await saveRecord(c, next, { participationCommand: true });
     records.splice(records.indexOf(record), 1, next);
-    await audit(c, org, user, "participation.cancelled", record, {
-      participationId: p.id,
-      targetId: p.target_id,
-    });
+    auditRetained = await audit(
+      c,
+      org,
+      user,
+      "participation.cancelled",
+      record,
+      {
+        participationId: p.id,
+        targetId: p.target_id,
+      },
+    );
   }
   const changes = {
     state: "cancelled",
@@ -1349,16 +1388,25 @@ async function cancel({
     { ...p, ...changes, revision: p.revision + 1 },
     { safe: true, settings },
   );
-  const next = await update(c, org, p, changes, {
+  let next = await update(c, org, p, changes, {
     ...intent,
     notificationQueued,
   });
-  await audit(c, org, user, "participation.cancelled", null, {
-    participationId: p.id,
-    targetId: p.target_id,
-    notificationQueued,
-  });
-  return { p: next, notificationQueued };
+  const finalAuditRetained = await audit(
+    c,
+    org,
+    user,
+    "participation.cancelled",
+    null,
+    {
+      participationId: p.id,
+      targetId: p.target_id,
+      notificationQueued,
+    },
+  );
+  auditRetained = auditRetained && finalAuditRetained;
+  next = await retainParticipationAuditOutcome(c, org, next, auditRetained);
+  return { p: next, notificationQueued, auditRetained };
 }
 
 async function staffCommand({
@@ -1410,6 +1458,7 @@ async function staffCommand({
     return okay({
       participation: staffObject(result.p, t, source, records, member),
       notificationQueued: result.notificationQueued,
+      auditRetained: result.auditRetained,
     });
   }
   if (action === "consent") {
@@ -1430,8 +1479,10 @@ async function staffCommand({
     });
   }
   const intent = participationIntent(input, user, action);
-  if (participationReplay(p.last_command, intent))
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
     return okay({ participation: staffObject(p, t, source, records, member) });
+  }
   revision(input, p.revision);
   revision(input, t?.revision, "targetRevision");
   const terms = approvedTarget(source, t),
@@ -1847,7 +1898,10 @@ export async function participantParticipationRoutes({
             source,
             t,
           });
-          return okay({ participation: await safeOwn(next, t, source) });
+          return okay({
+            participation: await safeOwn(next, t, source),
+            auditRetained: next.last_command?.auditRetained ?? null,
+          });
         }
         const result = await cancel({
           settings,
@@ -1863,6 +1917,7 @@ export async function participantParticipationRoutes({
         return okay({
           participation: await safeOwn(result.p, t, source),
           notificationQueued: result.notificationQueued,
+          auditRetained: result.auditRetained,
         });
       }
       if (action) unavailable();

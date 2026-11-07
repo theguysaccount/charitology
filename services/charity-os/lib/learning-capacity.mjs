@@ -88,7 +88,7 @@ const columns = Object.freeze(Object.fromEntries(Object.entries({
   os_publications: 'org_id id record_id source_revision kind target_id target_module target_revision schema created_by created_at withdrawn_at',
   os_intake: 'org_id id publication_id answers consent_at status revision idempotency_hash payload_hash receipt_hash ip_hash reviewed_by reviewed_at converted_ids created_at updated_at erased_at cancelled_at',
   os_participation_targets: 'org_id target_id module_id revision mode source_revision terms terms_hash recovery_block created_by created_at updated_at last_command',
-  os_participations: 'org_id id target_id module_id booking_record_id contact_id intake_id state revision source consent frozen waitlist_sequence confirmed_at cancelled_at created_by created_at updated_at recovered recovered_state last_command delivery_consent',
+  os_participations: 'org_id id target_id module_id booking_record_id contact_id intake_id state revision source consent frozen waitlist_sequence confirmed_at cancelled_at created_by created_at updated_at recovered recovered_state last_command delivery_consent requested_interval',
   os_participation_outbox: 'org_id id participation_id event_revision purpose channel state payload created_at participation_revision intent_kind consent_revision consent_copy user_id link_id link_revision recipient_hash policy_epoch template_version relay_key payload_hash first_attempt_at attempts lease_owner lease_until next_at last_checked_at safe_code provider_event_at budget_bytes recovered_state',
   os_participation_delivery_policies: 'org_id revision enabled epoch activated_at template_version last_command updated_at',
   os_task_recurrence_series: 'org_id id root_record_id method anchor state revision tip_record_id tip_sequence created_by created_at ended_at end_code recovered_state budget_bytes last_end_command',
@@ -178,7 +178,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     terms_hash: value.termsHash, recovery_block: true, created_by: actorId, created_at: value.createdAt, updated_at: C.timestamp });
   for (const value of participation.participations) add('os_participations', { org_id: orgId, id: value.id, target_id: value.targetId,
     module_id: value.moduleId, booking_record_id: value.bookingRecordId, contact_id: value.contactId, intake_id: value.intakeId,
-    state: value.state, revision: 1, source: 'recovered', frozen: value.frozen, cancelled_at: value.cancelledAt,
+    state: value.state, revision: 1, source: 'recovered', requested_interval: value.requestedInterval, frozen: value.frozen, cancelled_at: value.cancelledAt,
     created_by: actorId, created_at: value.createdAt, updated_at: C.timestamp, recovered: true, recovered_state: value.recoveredState });
   for (const value of participation.outbox) add('os_participation_outbox', { org_id: orgId, id: value.id, participation_id: value.participationId,
     event_revision: value.eventRevision, purpose: 'participation', channel: 'email', state: 'cancelled', payload: value.payload,

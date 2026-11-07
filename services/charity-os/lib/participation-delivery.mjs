@@ -1,5 +1,7 @@
+import { retainParticipationAuditOutcome } from "./participation-receipt.mjs";
 import {
   audit,
+  noteParticipationReceiptReplay,
   allRecords,
   logicalBackupBytes,
   rowRecord,
@@ -12,7 +14,7 @@ import {
   verifiedParticipant,
 } from "./participants.mjs";
 import { body, checkCsrf, fail, hash, id, json, stable } from "./security.mjs";
-import { participationTimestampParameter } from './participation-timestamp.mjs';
+import { participationTimestampParameter } from "./participation-timestamp.mjs";
 
 export const DELIVERY_CONSENT_VERSION = "participation-email-v1";
 export const DELIVERY_TEMPLATE_VERSION = "participation-notice-v1";
@@ -277,13 +279,18 @@ async function eligibility(
     return { reason: "state_ineligible" };
   if (
     snapshot &&
-    (p.state !== "confirmed" || !plain(p.frozen) || p.frozen.allocationKnown === false || !plain(p.frozen.terms))
+    (p.state !== "confirmed" ||
+      !plain(p.frozen) ||
+      p.frozen.allocationKnown === false ||
+      !plain(p.frozen.terms))
   )
     return { reason: "confirmation_required" };
   if (p.state !== "cancelled") {
     if (!approved(source)) return { reason: "current_approval_required" };
     const end =
-      p.state === "confirmed" ? (p.frozen?.interval || p.frozen?.terms)?.endAt : source.data?.endAt;
+      p.state === "confirmed"
+        ? (p.frozen?.interval || p.frozen?.terms)?.endAt
+        : source.data?.endAt;
     if (
       !end ||
       !Number.isFinite(Date.parse(end)) ||
@@ -709,12 +716,16 @@ export async function deliveryRoutes({
     });
   }
   requireAdmin(member);
-  const pol = await policy(c, org, true);
+  const pol = await policy(c, org);
   if (action === "disable") {
     exact(input, ["policyRevision", "idempotencyKey"]);
     const command = intent(input, user, "delivery.disable");
-    if (replay(pol.last_command, command)) return okay(pol.last_command.result);
+    if (replay(pol.last_command, command)) {
+      noteParticipationReceiptReplay(c, org);
+      return okay(pol.last_command.result);
+    }
     expected(input, pol.revision, "policyRevision");
+    await policy(c, org, true);
     const cancelled = await suppressParticipationDelivery(c, {
         org,
         reason: "policy_disabled",
@@ -731,14 +742,31 @@ export async function deliveryRoutes({
       "UPDATE os_participation_delivery_policies SET enabled=false,revision=revision+1,last_command=$2,updated_at=now() WHERE org_id=$1",
       [org, JSON.stringify({ ...command, result })],
     );
-    await audit(c, org, user, "participation.delivery.disabled", null, {
-      cancelled,
-    });
+    const auditRetained = await audit(
+      c,
+      org,
+      user,
+      "participation.delivery.disabled",
+      null,
+      { cancelled },
+    );
+    result.auditRetained = auditRetained;
+    const retained = await c.query(
+      "UPDATE os_participation_delivery_policies SET last_command=$2 WHERE org_id=$1 AND last_command->>'intentHash'=$3 RETURNING revision",
+      [org, JSON.stringify({ ...command, result }), command.intentHash],
+    );
+    if (!retained.rows.length)
+      fail(
+        409,
+        "participation_delivery_intent",
+        "This saved delivery command changed. Reload its current result.",
+      );
     return okay(result);
   }
   if (action === "preview") {
     exact(input, ["policyRevision", "participationIds"]);
     expected(input, pol.revision, "policyRevision");
+    await policy(c, org, true);
     if (
       !Array.isArray(input.participationIds) ||
       input.participationIds.length < 1 ||
@@ -833,7 +861,10 @@ export async function deliveryRoutes({
   }
   exact(input, ["previewId", "reviewHash", "policyRevision", "idempotencyKey"]);
   const command = intent(input, user, "delivery.activate");
-  if (replay(pol.last_command, command)) return okay(pol.last_command.result);
+  if (replay(pol.last_command, command)) {
+    noteParticipationReceiptReplay(c, org);
+    return okay(pol.last_command.result);
+  }
   expected(input, pol.revision, "policyRevision");
   if (!opaque(input.previewId) || !digest(input.reviewHash))
     fail(
@@ -942,10 +973,12 @@ export async function ownDeliveryRoutes({
   if (!match) return null;
   const actor = verifiedParticipant(session);
   participantQuery(url);
-  if (!(
-    (request.method === "GET" && match[4] === "delivery") ||
-    (request.method === "POST" && match[4] === "delivery-preference")
-  ))
+  if (
+    !(
+      (request.method === "GET" && match[4] === "delivery") ||
+      (request.method === "POST" && match[4] === "delivery-preference")
+    )
+  )
     fail(
       405,
       "participation_delivery_method",
@@ -1004,7 +1037,9 @@ export async function ownDeliveryRoutes({
       let current = p;
       if (request.method === "POST") {
         const command = intent(input, actor.id, "delivery.preference");
-        if (!replay(p.last_command, command)) {
+        if (replay(p.last_command, command)) {
+          noteParticipationReceiptReplay(c, org);
+        } else {
           expected(input, p.revision);
           expected(input, intake.revision, "intakeRevision");
           if (
@@ -1061,7 +1096,7 @@ export async function ownDeliveryRoutes({
               participationId: pid,
               reason: "preference_off",
             });
-          await audit(
+          const auditRetained = await audit(
             c,
             org,
             actor.id,
@@ -1071,10 +1106,17 @@ export async function ownDeliveryRoutes({
             null,
             { participationId: pid, enabled: input.enabled },
           );
+          current = await retainParticipationAuditOutcome(
+            c,
+            org,
+            current,
+            auditRetained,
+          );
         }
       }
       return okay({
         participationId: current.id,
+        auditRetained: current.last_command?.auditRetained ?? null,
         revision: current.revision,
         intakeRevision: intake.revision,
         delivery: await ownDeliverySummary(c, {

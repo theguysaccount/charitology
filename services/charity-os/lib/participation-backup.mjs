@@ -211,12 +211,27 @@ export async function exportParticipation(c, org) {
     recoveryBlock: t.recovery_block,
     createdAt: iso(t.created_at),
   }));
-  const participations = (
+  const rows = (
     await c.query(
       "SELECT * FROM os_participations WHERE org_id=$1 ORDER BY created_at,id",
       [org],
     )
-  ).rows.map((p) => ({
+  ).rows;
+  const version =
+    targets.some((t) => Object.hasOwn(t.terms || {}, "intervalPolicy")) ||
+    rows.some(
+      (p) =>
+        p.requested_interval != null ||
+        ["interval", "allocationHash", "allocationKnown"].some((k) =>
+          Object.hasOwn(p.frozen || {}, k),
+        ) ||
+        Object.hasOwn(p.consent || {}, "allocationHash") ||
+        Object.hasOwn(p.consent?.terms || {}, "intervalPolicy") ||
+        Object.hasOwn(p.frozen?.terms || {}, "intervalPolicy"),
+    )
+      ? 3
+      : 2;
+  const participations = rows.map((p) => ({
     id: p.id,
     targetId: p.target_id,
     moduleId: p.module_id,
@@ -227,11 +242,16 @@ export async function exportParticipation(c, org) {
     revision: p.revision,
     source: p.source,
     consent: historicalConsent(p.consent),
-    requestedInterval: p.requested_interval || null,
-    frozen: requestHistory(
-      p,
-      targets.find((t) => t.targetId === p.target_id),
-    ),
+    ...(version === 3
+      ? { requestedInterval: p.requested_interval || null }
+      : {}),
+    frozen:
+      version === 3
+        ? requestHistory(
+            p,
+            targets.find((t) => t.targetId === p.target_id),
+          )
+        : p.frozen,
     waitlistSequence:
       p.waitlist_sequence == null ? null : Number(p.waitlist_sequence),
     confirmedAt: iso(p.confirmed_at),
@@ -266,7 +286,7 @@ export async function exportParticipation(c, org) {
     providerEventAt: iso(o.provider_event_at),
     recoveredState: o.recovered_state || null,
   }));
-  return { version: 3, targets, participations, outbox };
+  return { version, targets, participations, outbox };
 }
 
 export function restoredParticipation(backup) {
@@ -381,6 +401,7 @@ export function restoredParticipation(backup) {
         Object.hasOwn(p.frozen || {}, "allocationHash") ||
         Object.hasOwn(p.frozen || {}, "allocationKnown") ||
         Object.hasOwn(p.consent || {}, "allocationHash") ||
+        Object.hasOwn(p.consent?.terms || {}, "intervalPolicy") ||
         Object.hasOwn(p.frozen?.terms || {}, "intervalPolicy"))
     )
       bad();

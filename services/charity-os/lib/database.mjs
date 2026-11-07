@@ -9,13 +9,28 @@ import { guardLearningWrite } from "./learning-guards.mjs";
 // cannot supply a deferral flag or a replacement capacity validator.
 const transactionAudits = new WeakMap();
 const safetyActions = new Set([
-  "task-recurrence.ended", "membership.revoked", "membership.changed",
-  "invitation.revoked", "integration.disabled", "intake.cancelled",
-  "intake.publication.withdrawn", "intake.erased", "participant.unlinked",
-  "participation.cancelled", "participation.preferences",
-  "participation.delivery.disabled", "participation.delivery.preference_off",
+  "task-recurrence.ended",
+  "membership.revoked",
+  "membership.changed",
+  "invitation.revoked",
+  "integration.disabled",
+  "intake.cancelled",
+  "intake.publication.withdrawn",
+  "intake.erased",
+  "participant.unlinked",
+  "participation.cancelled",
+  "participation.preferences",
+  "participation.delivery.disabled",
+  "participation.delivery.preference_off",
 ]);
 const projectionExemptActions = new Set([...safetyActions, "backup.exported"]);
+// Internal only. Each caller reaches this immediately before an exact accepted
+// intent/payload early return, after fresh authorization and read-only queries.
+// It detects no arbitrary SQL; any recorded audit/action takes precedence.
+export function noteParticipationReceiptReplay(c, org) {
+  const transaction = transactionAudits.get(c);
+  if (transaction?.orgId === org) transaction.receiptReplay = true;
+}
 export function database(url, { schema } = {}) {
   if (schema && !/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("Invalid schema.");
@@ -30,7 +45,11 @@ export function database(url, { schema } = {}) {
     pool,
     async tx(userId, orgId, fn, { lock = false, readOnly = false } = {}) {
       const c = await pool.connect();
-      const state = { orgId, locked: Boolean(lock && orgId), actions: new Set() };
+      const state = {
+        orgId,
+        locked: Boolean(lock && orgId),
+        actions: new Set(),
+      };
       transactionAudits.set(c, state);
       try {
         await c.query("BEGIN");
@@ -50,12 +69,44 @@ export function database(url, { schema } = {}) {
         // A complete source graph exists here, after all ordinary records,
         // immutable history and mandatory audits. Intermediate audit checks
         // intentionally retain raw SQL accounting below.
-        if (!readOnly && orgId && (state.locked || state.actions.size) &&
-            (!state.actions.size || [...state.actions].some(action => !projectionExemptActions.has(action)))) {
-          const learning = (await c.query("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present", [orgId])).rows[0].present;
-          if (learning) {
-            const { checkWorkspaceExportCapacity } = await import("./workspace-backup.mjs");
-            await checkWorkspaceExportCapacity(c, orgId);
+        if (!readOnly && orgId && (state.locked || state.actions.size)) {
+          const present = (
+            await c.query(
+              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation",
+              [orgId],
+            )
+          ).rows[0];
+          const ordinary =
+            (!state.actions.size && !state.receiptReplay) ||
+            [...state.actions].some(
+              (action) => !projectionExemptActions.has(action),
+            );
+          let participation;
+          if (present.participation) {
+            const { checkParticipationExportCapacity } = await import(
+              "./participation-capacity.mjs"
+            );
+            participation = await checkParticipationExportCapacity(c, orgId, {
+              reserve: ordinary,
+            });
+            if (!ordinary) {
+              const { checkActualParticipationSafetyPacket } = await import(
+                "./participation-capacity.mjs"
+              );
+              await checkActualParticipationSafetyPacket(c, orgId);
+            }
+          }
+          if ((present.present || present.participation) && ordinary) {
+            const { checkWorkspaceExportCapacity } = await import(
+              "./workspace-backup.mjs"
+            );
+            const whole = await checkWorkspaceExportCapacity(c, orgId);
+            if (participation) {
+              const { checkCombinedParticipationCapacity } = await import(
+                "./participation-capacity.mjs"
+              );
+              checkCombinedParticipationCapacity(whole, participation);
+            }
           }
         }
         await c.query("COMMIT");
@@ -93,7 +144,9 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
     // Track intent even when an optional or emergency-reserve audit is skipped.
     transaction.actions.add(action);
     if (!transaction.locked) {
-      await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
+      await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
+        org,
+      ]);
       transaction.locked = true;
     }
   }
@@ -131,6 +184,22 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
         "quota",
         "This workspace reached its60 MiB record, history and file export budget. Export your records before continuing in a new workspace.",
       );
+  }
+  if (safetyActions.has(action) || action === "backup.exported") {
+    const { canRetainParticipationSafetyAudit } = await import(
+      "./participation-capacity.mjs"
+    );
+    if (
+      !(await canRetainParticipationSafetyAudit(c, org, {
+        org_id: org,
+        actor_id: user,
+        action,
+        record_id: record?.id || null,
+        module_id: record?.moduleId || null,
+        detail,
+      }))
+    )
+      return false;
   }
   await c.query(
     "INSERT INTO os_events(org_id,actor_id,action,record_id,module_id,detail) VALUES($1,$2,$3,$4,$5,$6)",
