@@ -30,6 +30,18 @@ The shared service also supports public operational requests. Approved, version-
 
 The Participation console adds explicit confirmation and waitlists for one place per event session or volunteer shift. A reviewed interest request reserves no capacity. Staff must enable the occurrence, associate the typed candidate and obtain specific consent before confirming a place. Promotion is manual. Confirmed capacity stays reserved through later review edits, and cancellation releases it once. Your linked request can show your own participation and let you cancel it; withdrawing the original request alone does not cancel a confirmed place. Operational email requires a separate fresh choice from the verified participant. An administrator reviews current confirmations before activating delivery; old preferences and paused history are never mailed automatically. The fixed notice links to the signed-in portal without putting occurrence details or receipts in email. Delivery runs in a bounded daily dispatch, so it is not an urgent or exact-time alert. Turning updates off, erasing answers or unlinking access stops unsent updates; a message already attempted may still arrive. Broader workflows and operational acceptance remain in the [implementation plan](/for-charities/os-plan/).
 
+## Bring a plan into shared learning
+
+Start a Theory of Change in the [Impact Measurement Toolkit](/tools/impact-measurement-toolkit/), or prepare a learning row in [Nonprofit Advisory](/programs/nonprofit-advisory/). In the [shared OS](https://os.charitology.org), deliberately choose the saved file, inspect the selected material and review the proposed Learning drafts. This copies a version for review; it does not keep the browser tool and team workspace synchronized.
+
+Connect the plan to observations with their units, sources and limits. Write a review of what the team learned, including uncertainty, missing evidence and what to change next. Another authorized reviewer must approve eligible revisions through the ordinary review process. A frozen report keeps the chosen source versions and authored interpretation together. Access follows organization, program and role permissions. Importing a plan, recording attendance or approving a draft does not establish that an activity caused an outcome.
+
+## Record a whole-occurrence attendance count
+
+For an eligible ended event or volunteer shift, staff can load the current occurrence and enter the observed attendance total for the whole occurrence. Confirmed places provide context; they are neither the default count nor a cap. Keep registrations and walk-ins unknown unless the corresponding facts are known. This draft leaves volunteer minutes unknown. Attendance does not by itself establish hours worked or a service outcome.
+
+Review the exact proposed record, acknowledge its whole-occurrence scope and create an unapproved draft. Open that ordinary record for corrections and separate review. This is staff reporting, not participant check-in or a partial-shift booking workflow.
+
 ## Draft the next recurring task
 
 In the shared OS, open a saved weekly, monthly or quarterly task and preview its next occurrence. Review the exact local time, time zone, UTC instant and copied fields before generating one planned, unapproved draft. Monthly dates retain the original anchor, so a January 31 schedule returns to March 31 after February. Repeated local times need an explicit instant choice; nonexistent local times refuse generation.
