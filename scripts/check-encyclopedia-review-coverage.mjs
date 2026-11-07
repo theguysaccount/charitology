@@ -11,6 +11,7 @@ import { prepareEncyclopediaCoverage, ENCYCLOPEDIA_INITIAL_PATHS, researchArchiv
 import { validateResearchLedger, projectResearchLedger, researchLedgerExport, canonicalResearchJson, researchObjectHash, researchSubjectHash } from "../src/lib/research-ledger-model.mjs";
 import { rebuildPreparation, applyPreparedCoverage, assertPriorFiles, captureGitEnvironment, readEncyclopediaGit, assertSourceCaptureMetadata } from "./capture-encyclopedia-review-coverage.mjs";
 import { initialSeedInput } from "../test-fixtures/research-ledger/initial-seed.mjs";
+import { readActualPublicationFixtureSources } from "../test-fixtures/publication-editions/factory.mjs";
 import { fixture, obj, source, version, event, repin, actor, fullAuth, review, ref, evidence } from "../test-fixtures/research-ledger/factory.mjs";
 
 let groups = 0;
@@ -110,6 +111,15 @@ check("initial edition JSON, CSV, projection and exact pinned qualification stay
   const after = projectResearchLedger(validate(assembled(prepared)), { editionId: prior.manifest.currentEditionId });
   assert.deepEqual(after, before);
   for (const format of ["json", "csv"]) assert.equal(researchLedgerExport(after, { format, eventIds: null }).text, researchLedgerExport(before, { format, eventIds: null }).text);
+});
+check("historical publication fixtures retain the exact initial181-file R4 basis after current coverage advances", () => {
+  const prefix = "src/data/research-ledger/", expected = new Map(researchLedgerFiles(prior).map((file) => [file.path, file.text]));
+  const actual = readActualPublicationFixtureSources().filter((file) => file.path.startsWith(prefix));
+  assert.equal(actual.length, 181);
+  for (const file of actual) assert.equal(file.rawUtf8, expected.get(file.path.slice(prefix.length)));
+  const currentManifest = readLedgerInput().manifest;
+  if (currentManifest.adapterVersion === "research-content-v2")
+    assert.notEqual(actual.find((file) => file.path === prefix + "manifest.json").rawUtf8, JSON.stringify(currentManifest, null, 2) + "\n");
 });
 check("preparation is deterministic across input order and refuses incomplete/duplicate/stale coverage", () => {
   assert.deepEqual(prepare({ sourceFiles: [...sourceFiles].reverse() }), prepared);

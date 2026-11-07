@@ -1,4 +1,5 @@
 // Excluded test inputs. Fixture clocks/commit labels do not attest a publication.
+import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
@@ -6,6 +7,8 @@ import {
   publicationCapturePaths,
   capturePublicationEditions,
 } from "../../src/lib/publication-editions-capture.mjs";
+import { readLedgerInput, seedFiles } from "../../scripts/capture-research-ledger.mjs";
+import { initialSeedInput } from "../research-ledger/initial-seed.mjs";
 export const FIXTURE_CAPTURE_AT = "2026-10-27T12:00:00.000Z";
 export const FIXTURE_COMMIT = "a".repeat(40);
 export const repositoryRoot = fileURLToPath(new URL("../../", import.meta.url));
@@ -130,10 +133,18 @@ export function initialPublicationRequests() {
 export function readActualPublicationFixtureSources(
   requests = initialPublicationRequests(),
 ) {
-  return publicationCapturePaths(requests).map((path) => ({
-    path,
-    rawUtf8: readFileSync(join(repositoryRoot, path), "utf8"),
-  }));
+  const paths = publicationCapturePaths(requests), r4Prefix = "src/data/research-ledger/";
+  // These initial-publication methods pin the initial R4 edition, not a later
+  // mutable current manifest. Its exact historical manifest is test-only;
+  // all180 immutable objects still come from the actual retained public data.
+  const initialR4 = paths.some((path) => path.startsWith(r4Prefix))
+    ? seedFiles(initialSeedInput(readLedgerInput())) : null;
+  return paths.map((path) => {
+    if (!path.startsWith(r4Prefix)) return { path, rawUtf8: readFileSync(join(repositoryRoot, path), "utf8") };
+    const rawUtf8 = initialR4.get(path.slice(r4Prefix.length));
+    assert.equal(typeof rawUtf8, "string", "Historical R4 fixture source is missing from its exact pinned closure");
+    return { path, rawUtf8 };
+  });
 }
 export function makeActualPublicationFixture() {
   const requests = initialPublicationRequests();
