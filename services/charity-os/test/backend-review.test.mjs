@@ -1008,6 +1008,9 @@ test("Access revocation remains possible with minimal audit reserve and after th
           query: async (sql, args) => {
             if (sql.startsWith("SELECT sum(size) AS size FROM ("))
               return { rows: [{ size: usage }] };
+            // This historical quota fixture has no participation feature state.
+            if (["os_participation_targets", "os_participations", "os_participation_outbox"].some(table => sql.startsWith("SELECT * FROM " + table + " WHERE org_id=$1")))
+              return { rows: [] };
             if (sql.startsWith("INSERT INTO os_events")) {
               events.push({ action: args[2], detail: JSON.parse(args[5]) });
               return { rows: [] };

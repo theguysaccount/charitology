@@ -4,7 +4,7 @@ import { requireAdmin, visibleRecord } from "./access.mjs";
 import { allRecords, rowRecord, saveRecord, audit } from "./database.mjs";
 import { getModule, validateRecord } from "./modules.mjs";
 import { body, checkOrigin, fail, hash, id, json } from "./security.mjs";
-import { isManagedParticipationTarget } from "./participation-guards.mjs";
+import { isManagedParticipationTarget, participationValidationContext } from "./participation-guards.mjs";
 
 export const INTAKE_LIMITS = Object.freeze({
   requestBytes: 16384,
@@ -862,12 +862,14 @@ export async function intakeRoutes({
       // Their allocation gateway owns the final capacity/overlap check.
       if (!(await isManagedParticipationTarget(c, org, target.id)))
         validateRecord(moduleId, draft.data, {
+          participation: moduleId === "volunteers" ? await participationValidationContext(c, org) : undefined,
           orgId: org,
           recordId: draft.id,
           status: moduleId === "events" ? "scheduled" : "assigned",
           records,
         });
       draft.data = validateRecord(moduleId, draft.data, {
+        participation: moduleId === "volunteers" ? await participationValidationContext(c, org) : undefined,
         orgId: org,
         recordId: draft.id,
         status: "draft",

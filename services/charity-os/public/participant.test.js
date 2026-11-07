@@ -92,6 +92,10 @@ const participation = (patch = {}) => ({
     organizerUrl: "https://example.invalid/contact",
   },
   frozenTerms: null,
+  requestedInterval: null,
+  frozenInterval: null,
+  allocationHash: null,
+  intervalChoiceLocked: false,
   consent: null,
   canConsent: true,
   consentUnavailableReason: null,
@@ -446,6 +450,23 @@ async function harness({
       const [, pid, action] = path.slice(participationBase.length).split("/");
       const old = model.participations.find((row) => row.id === pid);
       if (!old) throw new Error("Unknown synthetic participation");
+      const overridden = await model.bookingResponse?.({
+        pid,
+        action,
+        old,
+        body,
+        model,
+      });
+      if (overridden)
+        return response(overridden.payload, overridden.status ?? 200);
+      if (action === "consent" && model.consentFailure) {
+        if (model.consentFailure === "network")
+          throw new Error("Synthetic interrupted consent write");
+        return response(
+          { message: "Synthetic current source changed", code: "revision" },
+          model.consentFailure,
+        );
+      }
       if (action === "delivery-preference" && model.deliveryFailure) {
         if (model.deliveryFailure === "network")
           throw new Error("Synthetic interrupted preference write");
@@ -478,6 +499,7 @@ async function harness({
           revision: next.revision,
           intakeRevision: model.detail.revision,
           delivery: next.delivery,
+          ...(model.auditRetained === false ? { auditRetained: false } : {}),
         });
       }
       if (action === "cancel") {
@@ -485,6 +507,7 @@ async function harness({
         next.canCancel = false;
         next.canConsent = false;
       } else if (action === "consent") {
+        next.intervalChoiceLocked = true;
         next.consent = {
           revision: 1,
           at: "2026-01-02T00:00:00.000Z",
@@ -493,10 +516,18 @@ async function harness({
           sourceRevision: body.sourceRevision,
           termsHash: body.termsHash,
         };
+        if (Object.hasOwn(body, "requestedInterval")) {
+          next.requestedInterval = body.requestedInterval;
+          next.intervalChoiceLocked = true;
+          next.allocationHash = body.requestedInterval ? "a".repeat(64) : null;
+          if (body.requestedInterval)
+            next.consent.allocationHash = next.allocationHash;
+        }
         next.notifications = {
           ...old.notifications,
           requested: body.emailUpdates,
         };
+        if (model.badIntervalResponse) next.requestedInterval = null;
       } else if (action === "preferences") {
         next.notifications = {
           ...old.notifications,
@@ -506,7 +537,10 @@ async function harness({
       model.participations = model.participations.map((row) =>
         row.id === pid ? next : row,
       );
-      return response({ participation: next });
+      return response({
+        participation: next,
+        ...(model.auditRetained === false ? { auditRetained: false } : {}),
+      });
     }
     if (path.endsWith("/link")) {
       model.linked = true;
@@ -1219,4 +1253,360 @@ test("saving participation does not silently discard a different unsaved email c
     h.calls.some((call) => call.path.endsWith("/delivery-preference")),
     false,
   );
+});
+
+function intervalParticipation(patch = {}) {
+  const row = participation();
+  row.terms.intervalPolicy = { version: 1, mode: "within-shift" };
+  return { ...row, ...patch };
+}
+async function enterOwnInterval(h) {
+  const prefix = "participation-own-interval-participation";
+  const choice = h.get(`${prefix}-choice`);
+  choice.value = "interval";
+  await choice.emit("change");
+  const start = "2099-01-01T23:30:00+00:00",
+    end = "2099-01-02T01:30:00+00:00";
+  for (const [part, value] of [
+    ["start", start],
+    ["end", end],
+  ]) {
+    const c = h.get(`${prefix}-${part}`);
+    c.value = value;
+    await c.emit("input");
+  }
+  return {
+    choice,
+    start,
+    end,
+    ack: h.get("participation-own-consent-participation"),
+    form: h
+      .get("participant-participations")
+      .querySelector(".participant-participation-consent"),
+  };
+}
+
+test("own interval choice is explicit, revokes the prior checkbox and echoes exact range without a reservation or hours", async () => {
+  const h = await harness({ participations: [intervalParticipation()] });
+  await h.open();
+  const f = await enterOwnInterval(h);
+  assert.equal(f.ack.checked, false);
+  f.ack.checked = true;
+  await h.get("participation-own-interval-participation-end").emit("input");
+  assert.equal(f.ack.checked, false);
+  await f.form.emit("submit");
+  await h.flush();
+  assert.equal(
+    h.calls.some((c) => c.path.endsWith("/consent")),
+    false,
+  );
+  f.ack.checked = true;
+  await f.form.emit("submit");
+  await h.flush();
+  const call = h.calls.find((c) => c.path.endsWith("/consent"));
+  assert.deepEqual(call.body.requestedInterval, {
+    version: 1,
+    startAt: f.start,
+    endAt: f.end,
+    timeZone: "UTC",
+  });
+  assert.equal(Object.hasOwn(call.body, "minutes"), false);
+  assert.equal(Object.hasOwn(call.body, "attendance"), false);
+  assert.match(h.get("participant-status").textContent, /No place is reserved/);
+  assert.equal(
+    h.get("participation-own-interval-participation-choice").disabled,
+    true,
+  );
+  assert.equal(
+    h.get("participation-own-interval-participation-start").readOnly,
+    true,
+  );
+  assert.equal(h.get("participation-own-consent-participation").checked, false);
+});
+
+test("own interval stale/unknown responses preserve literal fields and an explicit retry reuses exactly one intent", async () => {
+  const h = await harness({ participations: [intervalParticipation()] });
+  await h.open();
+  const f = await enterOwnInterval(h);
+  f.ack.checked = true;
+  h.model.consentFailure = 409;
+  await f.form.emit("submit");
+  await h.flush();
+  assert.equal(
+    h
+      .get("participant-participations")
+      .querySelector(".participant-participation-consent"),
+    f.form,
+  );
+  assert.equal(
+    h.get("participation-own-interval-participation-start").value,
+    f.start,
+  );
+  assert.equal(
+    h.get("participation-own-interval-participation-end").value,
+    f.end,
+  );
+  const first = h.calls.find((c) => c.path.endsWith("/consent"));
+  h.model.consentFailure = "network";
+  await f.form.emit("submit");
+  await h.flush();
+  h.model.consentFailure = null;
+  await f.form.emit("submit");
+  await h.flush();
+  const calls = h.calls.filter((c) => c.path.endsWith("/consent"));
+  assert.equal(calls.length, 3);
+  assert.deepEqual(calls[1].body, first.body);
+  assert.deepEqual(calls[2].body, first.body);
+  assert.equal(h.model.participations[0].state, "requested");
+});
+
+test("own malformed interval success keeps writing unresolved instead of downgrading to a whole shift", async () => {
+  const h = await harness({ participations: [intervalParticipation()] });
+  await h.open();
+  const f = await enterOwnInterval(h);
+  f.ack.checked = true;
+  h.model.badIntervalResponse = true;
+  await f.form.emit("submit");
+  await h.flush();
+  assert.equal(
+    h
+      .get("participant-participations")
+      .querySelector(".participant-participation-consent"),
+    f.form,
+  );
+  assert.equal(
+    h.get("participation-own-interval-participation-start").value,
+    f.start,
+  );
+  assert.match(
+    h.get("participant-participations").textContent,
+    /saved interval could not be verified/,
+  );
+  assert.equal(
+    h.get("participation-own-interval-participation-choice").disabled,
+    false,
+  );
+});
+
+test("a restored whole choice stays immutable and a confirmed interval uses its frozen range with no new consent", async () => {
+  const h = await harness({
+    participations: [intervalParticipation({ intervalChoiceLocked: true })],
+  });
+  await h.open();
+  const choice = h.get("participation-own-interval-participation-choice");
+  assert.equal(choice.disabled, true);
+  assert.equal(choice.value, "whole");
+  const saved = {
+    version: 1,
+    startAt: "2099-01-01T23:30:01.123Z",
+    endAt: "2099-01-02T00:30:02.456Z",
+    timeZone: "UTC",
+  };
+  const row = intervalParticipation({
+    state: "confirmed",
+    canConsent: false,
+    requestedInterval: saved,
+    frozenInterval: saved,
+    allocationHash: "a".repeat(64),
+    intervalChoiceLocked: true,
+  });
+  row.frozenTerms = { ...row.terms, title: "Original approved shift" };
+  row.terms = { ...row.terms, title: "Later changed occurrence" };
+  const confirmed = await harness({ participations: [row] });
+  await confirmed.open();
+  const host = confirmed.get("participant-participations");
+  assert.match(host.textContent, /Recorded interval commitment/);
+  assert.ok(host.textContent.includes(saved.startAt));
+  assert.ok(host.textContent.includes(saved.endAt));
+  assert.match(host.textContent, /Original approved shift/);
+  assert.doesNotMatch(host.textContent, /Later changed occurrence/);
+  assert.equal(host.querySelector("form"), null);
+  assert.match(host.textContent, /not recorded attendance or worked minutes/);
+});
+
+test("invalid own interval text stays literal and does not make a consent request", async () => {
+  const h = await harness({ participations: [intervalParticipation()] });
+  await h.open();
+  const f = await enterOwnInterval(h),
+    literal = " 2099-01-01T23:30:00Z <unfinished> 😀 ";
+  const start = h.get("participation-own-interval-participation-start");
+  start.value = literal;
+  await start.emit("input");
+  f.ack.checked = true;
+  await f.form.emit("submit");
+  await h.flush();
+  assert.equal(start.value, literal);
+  assert.equal(
+    h.calls.some((c) => c.path.endsWith("/consent")),
+    false,
+  );
+  assert.match(
+    h.get("participant-participations").textContent,
+    /Your writing is kept/,
+  );
+});
+
+test("malformed interval metadata cannot render as a whole-request consent", async () => {
+  const h = await harness({
+    participations: [
+      intervalParticipation({
+        requestedInterval: false,
+        allocationHash: "a".repeat(64),
+      }),
+    ],
+  });
+  await h.open();
+  assert.equal(h.get("participation-own-consent-participation"), null);
+  assert.equal(h.get("participation-own-interval-participation-choice"), null);
+  assert.match(
+    h.get("participant-participations").textContent,
+    /interval response could not be verified/,
+  );
+  assert.equal(
+    h.calls.some((c) => c.path.endsWith("/consent")),
+    false,
+  );
+});
+
+for (const action of ["cancel", "preferences", "delivery-preference"])
+  test(`saved ${action} keeps its success and warns truthfully when the journal was not retained`, async () => {
+    const row = participation();
+    if (action === "preferences") row.notifications.requested = true;
+    if (action === "delivery-preference") {
+      row.delivery = delivery();
+      row.canConsent = false;
+    }
+    const h = await harness({ participations: [row] });
+    await h.open();
+    h.model.auditRetained = false;
+    if (action === "cancel") {
+      await h.click("Cancel participation");
+      await h.click("Confirm participation cancellation");
+    } else if (action === "preferences")
+      await h.click("Clear earlier preference-only choice");
+    else {
+      h.get("participation-delivery-choice-participation").checked = false;
+      await h
+        .get("participant-participations")
+        .querySelector(".participant-delivery-form")
+        .emit("submit");
+      await h.flush();
+    }
+    assert.match(
+      h.get("participant-status").textContent,
+      /change is saved, but some journal entries could not be retained/,
+    );
+    assert.equal(h.model.participations[0].revision, 2);
+    if (action === "cancel")
+      assert.equal(h.model.participations[0].state, "cancelled");
+  });
+
+test("own malformed success then rate refusal retains the literal form and exact original command", async () => {
+  const h = await harness({ participations: [intervalParticipation()] });
+  await h.open();
+  const f = await enterOwnInterval(h);
+  f.ack.checked = true;
+  h.model.badIntervalResponse = true;
+  await f.form.emit("submit");
+  await h.flush();
+  assert.equal(
+    h
+      .get("participant-participations")
+      .querySelector(".participant-participation-consent"),
+    f.form,
+  );
+  h.model.badIntervalResponse = false;
+  h.model.consentFailure = 429;
+  await f.form.emit("submit");
+  await h.flush();
+  assert.equal(
+    h.get("participation-own-interval-participation-start").value,
+    f.start,
+  );
+  h.model.consentFailure = null;
+  await f.form.emit("submit");
+  await h.flush();
+  const calls = h.calls.filter((c) => c.path.endsWith("/consent"));
+  assert.equal(calls.length, 3);
+  assert.deepEqual(calls[1].body, calls[0].body);
+  assert.deepEqual(calls[2].body, calls[0].body);
+  assert.match(
+    h.get("participant-status").textContent,
+    /Specific participation request recorded/,
+  );
+});
+
+test("own id-only cancel success then rate refusal keeps the original command until its complete saved result", async () => {
+  const h = await harness({ participations: [participation()] });
+  let n = 0,
+    saved;
+  h.model.bookingResponse = ({ pid, action, old, model }) => {
+    if (action !== "cancel") return;
+    saved ??= {
+      ...old,
+      revision: old.revision + 1,
+      state: "cancelled",
+      canCancel: false,
+      canConsent: false,
+    };
+    if (++n === 1) {
+      model.participations = [saved];
+      return { payload: { participation: { id: pid } } };
+    }
+    if (n === 2)
+      return {
+        status: 429,
+        payload: { message: "Synthetic rate refusal", code: "rate" },
+      };
+    return { payload: { participation: saved, auditRetained: false } };
+  };
+  await h.open();
+  await h.click("Cancel participation");
+  for (let i = 0; i < 2; i++) {
+    await h.click("Confirm participation cancellation");
+    assert(h.get("participant-confirmation"));
+    assert.match(h.get("participant-participations").textContent, /Revision 1/);
+  }
+  await h.click("Confirm participation cancellation");
+  const calls = h.calls.filter((c) => c.path.endsWith("/cancel"));
+  assert.equal(calls.length, 3);
+  assert.deepEqual(calls[1].body, calls[0].body);
+  assert.deepEqual(calls[2].body, calls[0].body);
+  assert.equal(h.model.participations[0].revision, 2);
+  assert.match(
+    h.get("participant-status").textContent,
+    /Participation cancelled/,
+  );
+  assert.match(
+    h.get("participant-status").textContent,
+    /some journal entries could not be retained/,
+  );
+});
+
+test("a legitimate unchanged own email opt-out result keeps its same revision", async () => {
+  const row = participation({ delivery: delivery(), canConsent: false });
+  const h = await harness({ participations: [row] });
+  h.model.bookingResponse = ({ pid, action, old, model }) =>
+    action === "delivery-preference"
+      ? {
+          payload: {
+            participationId: pid,
+            revision: old.revision,
+            intakeRevision: model.detail.revision,
+            delivery: old.delivery,
+          },
+        }
+      : undefined;
+  await h.open();
+  h.get("participation-delivery-choice-participation").checked = false;
+  await h
+    .get("participant-participations")
+    .querySelector(".participant-delivery-form")
+    .emit("submit");
+  await h.flush();
+  assert.match(
+    h.get("participant-status").textContent,
+    /Operational email updates disabled/,
+  );
+  assert.equal(h.model.participations[0].revision, 1);
 });

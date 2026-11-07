@@ -163,7 +163,7 @@ test(
             });
           return response.json();
         },
-        { lock: true },
+        { lock: input !== undefined, readOnly: input === undefined },
       );
     async function seed(
       name,
@@ -197,7 +197,7 @@ test(
               "booking-" + name,
               "events",
               "registration",
-              { sessionId: "target", contactId: "contact-" + name },
+              { eventId: "target", contactId: "contact-" + name },
             ],
           ])
             await c.query(
@@ -254,8 +254,18 @@ test(
               intake,
               state,
               JSON.stringify({
+                // Complete fictional source-bound consent; delivery consent is separate.
+                revision: 1,
+                sourceRevision: 4,
+                termsHash: hash(terms),
+                at: new Date().toISOString(),
+                waitlistAllowed: false,
                 emailUpdates: true,
+                method: "fictional-test-assertion",
+                evidenceRef: "fictional-delivery-reference",
+                actorHash: hash(user),
                 recipientHash: hash(email),
+                withdrawalAcknowledged: false,
               }),
               JSON.stringify({
                 terms,

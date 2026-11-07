@@ -139,8 +139,15 @@ function guardDb({
       if (sql.includes("pg_advisory")) return { rows: [] };
       if (sql.startsWith("SELECT data,status"))
         return { rows: old ? [old] : [] };
+      if (sql.startsWith("SELECT target_id FROM os_participation_targets"))
+        return { rows: targets };
       if (sql.startsWith("SELECT * FROM os_participation_targets"))
         return { rows: targets };
+      if (
+        sql.startsWith("SELECT * FROM os_participations") &&
+        sql.includes("module_id='volunteers'")
+      )
+        return { rows: commitments };
       if (sql.startsWith("SELECT * FROM os_participations"))
         return { rows: history };
       if (sql.includes("count(*)"))
@@ -241,7 +248,13 @@ test("managed parent edits/cancellation and capacity reductions cannot silently 
       old: { data: s.data, status: s.status },
       targets: [{ target_id: s.id }],
       history: [
-        { target_id: s.id, booking_record_id: "book", state: "confirmed" },
+        {
+          target_id: s.id,
+          booking_record_id: "book",
+          module_id: s.moduleId,
+          state: "confirmed",
+          frozen: { terms: participationTerms(s) },
+        },
       ],
     });
   await guardParticipationWrite(c, {
