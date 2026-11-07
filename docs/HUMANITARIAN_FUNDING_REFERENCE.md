@@ -47,3 +47,9 @@ Reviewed source commit A is `54adee3413f81e6e62ba00986787cc243b89d131`. The offl
 | Registry | 604 | `0442fae03ac51d14c62ad268997d6f7b321c629f9400851ce77ad978478975f3` |
 
 The edition’s internal canonical checksum is `7b088627887cd7bac2d99be2ef68e03c2b783274108caca05bcc4e2f2fa52ae6`; it is distinct from its formatted file hash. The public API route is `/api/v1/humanitarian-funding.json`; the licensed evidence envelope is `/data/humanitarian-funding/source-ad5cb07e4f70a528e51b66b865f798ff2ef95e5a8b0d77ad3b8a303b58bb364d.json`. At this capture, the complete build/check, real browser, CI and public publication were not yet performed; their later receipts must be assessed separately.
+
+## Local build follow-up
+
+The first `npm test` built 579 HTML pages and checked 51,188 internal links/assets with none broken. It then stopped at a publication-archive check’s historical expectation of 38 APIs; the new captured dataset makes 39. The retained failure is not a passing full invocation. A narrow check correction retains every legacy wrapper assertion and adds a funding-only comparison of its four fields, exact capture instant, source-specific license and complete admitted data.
+
+The corrected affected build check passed seven groups. The unchanged normal check chain from observations through humanitarian funding then completed with exit 0, including 174 existing model cases and the new 13 model, eight SSR/mounted/build-helper and five built-output groups, with zero strict client type errors. All three generated capture artifacts and twenty selected built page/API/source/asset files still matched their held hashes. This is combined local coverage of the passing prefix, corrected check and passing tail; it is not a single `npm test` exit 0. Full CI at the release head and public publication remain separate evidence.
