@@ -70,3 +70,9 @@ Use actual existing typed/booking/own-portal code, not a parallel model. Meaning
 - Actual mounted staff/own controls retain raw writing on stale/invalid/unknown results; explicit range/consent/Retry and current focus work. Finite keyboard/390px light/dark browser proof remains separate from real hosted auth/business acceptance.
 
 Completion is this one-interval volunteer flow and its bounded evidence. It does not establish charity adoption, measured attendance, complete accessibility conformance, participant check-in or completion of all OS-PART-01 capabilities.
+
+## Recorded recovery clarification
+
+Before the recovery-envelope implementation, the contract adds this version 3 case: an unconfirmed recovered request can retain a closed nonallocating history object in `frozen`, exactly `{version: 1, allocationKnown: false, sourceHistory: {state, terms, sourceRevision, termsHash, consent}}`. `state` is the actual archived requested/waitlisted state; an already cancelled unconfirmed source can retain its known cancelled state without inventing its prior state. Existing explicit original requested/waitlisted history remains unchanged if later cancelled. `terms` and the bounded historical consent are exact archived facts; `consent` can be null when unknown. The separately admitted `requested_interval` remains the requested range.
+
+This object has no top-level allocation interval/hash, approval, live consent, participant account link or delivery authority. Every confirmed/former-confirmed allocation reader must reject `allocationKnown:false`, never fall back to whole-shift occupancy. Its original state/terms/consent survive repeated export→restore. A later live confirmation still needs fresh specific consent and all normal approvals/current pins. Count the complete envelope within retained participation/whole-backup limits and refuse overflow atomically. Genuine version 1/2 recovery behavior remains unchanged.
