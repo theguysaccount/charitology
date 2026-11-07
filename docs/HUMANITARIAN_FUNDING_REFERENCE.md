@@ -1,0 +1,71 @@
+# Humanitarian funding reference
+
+This bounded Gap Map addition compares reported humanitarian funding with published plan requirements. It preserves the existing U.S. giving figures and private depth census. It does not measure all charitable giving, independently assessed need, impact, cause funding or giving by depth. It supplies no country or worldwide funding total because source rows can overlap. All interpretation remains draft; AI assistance is disclosed in the release PR.
+
+## Source and rights
+
+The source is OCHA FTS’s [Global - Requirements and Funding Data](https://data.humdata.org/dataset/global-requirements-and-funding-data), distributed through HDX. The captured bulk CSV is 279,894 bytes, SHA-256 `ad5cb07e4f70a528e51b66b865f798ff2ef95e5a8b0d77ad3b8a303b58bb364d`. Its successful response carried HTTP Date `Sat, 07 Nov 2026 14:29:08 GMT`. The publisher’s separate resource-modified string is `2026-11-06T11:16:07.816493`; no timezone is invented for that field.
+
+The [contextual HAPI guide](https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/coordination_and_context/) explains USD units and appeal requirements. Its processed endpoint has a narrower scope than the downloaded bulk file. [OCHA’s FTS guidance](https://knowledge.base.unocha.org/wiki/spaces/imtoolbox/pages/2359263233) describes donor/recipient reporting and curation. These primary sources and the [CC BY 3.0 IGO legal terms](https://creativecommons.org/licenses/by/3.0/igo/legalcode) were read on November 7, 2026.
+
+Source data retain CC BY 3.0 IGO, the original title and canonical URLs. Attribution, license and a modification notice accompany the page, complete API, retained original-CSV evidence envelope and every selected export, including an empty selection. The complete original CSV is wrapped in that separately licensed JSON envelope. The publisher’s full metadata response remains private; only the closed source metadata fields are published. The interpretation implies no publisher endorsement.
+
+## Data contract
+
+The complete source has 3,875 data records. The fixed 2025 selection contains 195 rows across 109 country codes: 86 identified plan-country rows, three blank funding fields, three explicit funding zeros and 84 rows with positive requirements and known funding. A blank plan ID means no ID was supplied; it is not an inferred country total. Repeated plan IDs under different countries remain separate records. All twelve decoded source strings, order, raw record numbers, physical lines, UTF-8 byte spans and raw-record hashes are retained.
+
+Missing values remain distinct from zero. Signed funding adjustments, source-rounded percentages and overfunding remain intact. Derived coverage uses reduced exact integer fractions; displayed percentages round to two decimals, with exact halves away from zero. Zero requirements do not produce a ratio. No amount is converted to a floating-point number for calculation.
+
+JSON is the canonical representation of the original field strings. CSV adds a marked provenance row and fixed metadata columns. For plan-name, plan-code and type-name text only, it prefixes an apostrophe when the original begins with an apostrophe or its first non-whitespace character is `=`, `+`, `@` or `-`. Removing that one prefix under the recorded rule recovers the original text. Signed numeric funding is unchanged. This transformed CSV is not described as byte-exact raw source text.
+
+## Reproducible capture
+
+Commit reviewed interpreter code A before making data B. The capture pins `scripts/capture-humanitarian-funding.mjs`, `src/lib/humanitarian-funding/model.mjs` and `src/lib/humanitarian-funding/source.mjs` to that exact ancestor commit and current bytes. Both Git children explicitly prohibit lazy fetching and interactive prompts. A missing local object or uncommitted interpreter change refuses capture.
+
+The explicit capture command accepts only reviewed local CSV, metadata and sanitized capture-receipt files plus a source commit:
+
+```sh
+node scripts/capture-humanitarian-funding.mjs --plan --metadata METADATA_FILE --receipt RECEIPT_FILE --csv CSV_FILE --source-commit CODE_A
+```
+
+`--write` creates only missing immutable artifacts after checking every target; differing existing bytes refuse. `--check` regenerates in memory and requires exact existing bytes. No network request occurs. Source and metadata input hashes are fixed before interpretation. The public build loader re-admits the original source, checks current interpreter bytes and recursively freezes the admitted edition before caching it. There is no environment-controlled replacement dataset or live refresh.
+
+## Verification and limits
+
+The source-only candidate passed 13 focused model/capture/export groups, eight actual Astro SSR/mounted-controller/build-helper groups and strict client TypeScript compilation. Cases include quoted multiline Unicode, BOM/CRLF/LF byte spans, malformed/unselected records, duplicate country-plan-year keys, missing and signed amounts, half rounding, zero denominators, resealed omission/tampering, empty licensed exports, reversible formula-like text, Git child refusal settings and cached immutability. Mounted actions exercise the production controller, Blob contents, conjunctive filtering, no storage/network calls, refusal paths and owned URL cleanup. A separately implemented Python Fraction comparison matched every one of the 84 comparable source rows’ exact fractions and displayed percentages.
+
+These are engineering checks, not independent human source review or evidence of humanitarian need. Source-only code A reports unavailable data honestly. Data B, complete build/check, actual browser layout/keyboard/downloads, CI and publication must retain their own actual receipts before they are claimed. Native file-save behavior and independent accessibility review are not established by the mounted harness. This slice does not complete the broader cause/geography/period funding-and-need ambition in the original mega list.
+
+## First immutable capture
+
+Reviewed source commit A is `54adee3413f81e6e62ba00986787cc243b89d131`. The offline plan, explicit write and subsequent `--check` all returned success with the same source identity, 3,875 source records and the 195-row summary above. No network requests occurred during these operations. A separate file read matched all three generated artifacts to the pre-write plan’s exact bytes and hashes:
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Licensed original-CSV evidence envelope | 290,751 | `4fd8832bdcd0c513db59336801358bbcc21d762987611e99fef8707279a74e3c` |
+| Selected 2025 edition | 167,641 | `075109421dc6db3bfdaeeb422dd6252276cdc52b83d3d5b6c3be642af9ae247c` |
+| Registry | 604 | `0442fae03ac51d14c62ad268997d6f7b321c629f9400851ce77ad978478975f3` |
+
+The edition’s internal canonical checksum is `7b088627887cd7bac2d99be2ef68e03c2b783274108caca05bcc4e2f2fa52ae6`; it is distinct from its formatted file hash. The public API route is `/api/v1/humanitarian-funding.json`; the licensed evidence envelope is `/data/humanitarian-funding/source-ad5cb07e4f70a528e51b66b865f798ff2ef95e5a8b0d77ad3b8a303b58bb364d.json`. At this capture, the complete build/check, real browser, CI and public publication were not yet performed; their later receipts must be assessed separately.
+
+## Local build follow-up
+
+The first `npm test` built 579 HTML pages and checked 51,188 internal links/assets with none broken. It then stopped at a publication-archive check’s historical expectation of 38 APIs; the new captured dataset makes 39. The retained failure is not a passing full invocation. A narrow check correction retains every legacy wrapper assertion and adds a funding-only comparison of its four fields, exact capture instant, source-specific license and complete admitted data.
+
+The corrected affected build check passed seven groups. The unchanged normal check chain from observations through humanitarian funding then completed with exit 0, including 174 existing model cases and the new 13 model, eight SSR/mounted/build-helper and five built-output groups, with zero strict client type errors. All three generated capture artifacts and twenty selected built page/API/source/asset files still matched their held hashes. This is combined local coverage of the passing prefix, corrected check and passing tail; it is not a single `npm test` exit 0. Full CI at the release head and public publication remain separate evidence.
+
+## Actual browser and layout follow-up
+
+The actual locally built page combines a country filter, a source-type selection made with the keyboard and a text search. Selecting Afghanistan's country code, humanitarian-needs-and-response type and name search exposes one source row; its expanded inspection shows original strings, record 7, byte span `[429, 594)` and the reduced ratio `510725188/1208405773`. Clear restores all 195 source rows in order. No account or storage operation is part of this reference controller.
+
+Six actual browser-native downloads were reopened and compared byte for byte with the pinned interpreter: complete JSON/CSV, one-row filtered JSON/CSV and empty filtered JSON/CSV. All 486,018 bytes match. Empty CSV still has a header and one marked provenance record; JSON retains the canonical raw strings. Owned Downloads copies were removed only after matching the retained proof copies and regenerated bytes. The native-download receipt has SHA-256 `00bb87c1cdf6b9a696b5b37a292fe2c124d275b8cefa9b2621d4168b676cb854`.
+
+At a 390 × 844 viewport, the page width remains 390 pixels. The table scrolls inside its 330-pixel region. The initial unrestricted 195-row table was over 25,000 pixels tall, so the final layout limits its scroll region to 70% of viewport height; this keeps the original U.S. figures and census reachable. The print style removes that height limit, but actual printing of this funding page was not exercised. In the final 1280 × 720 check, all 195 rows remain present inside a 502-pixel-high region. Keyboard Right/Down moves the region 40 pixels on each axis without horizontal page scrolling. The final narrow check shows three source rows for a global Afghanistan name search, with no horizontal page overflow. A first harness assertion expected one row after Clear had also removed the country/type filters; the source contains three matching rows. Independent selection confirms all three, with no product correction to its filtering. The bounded warning/error log is empty. The temporary viewport was reset, owned tab closed and both local static servers stopped normally.
+
+The layout follow-up changes only two CSS declarations. Interpreter/data/native-download bytes stay fixed; the rebuilt candidate again passes the 13 model, eight SSR/mounted and five built-output groups with strict typing. This is local software evidence, not independent human review or public publication.
+
+## Initial exact-head CI
+
+At `6e823a49739165cbcb4824c44e78785559f78f3f`, all four jobs in [PR 42387992965](https://github.com/theguysaccount/charitology/actions/runs/42387992965) passed on attempt 1, including the complete normal build/check. [Push 42387949497](https://github.com/theguysaccount/charitology/actions/runs/42387949497) passed three jobs and refused at the observation-history gate because a new branch's push event supplied a zero `before` value. The actual nonzero base was not inferred or skipped; no workflow was rerun or weakened. The initial pair is seven successful jobs and one failure, not eight successes. Its retained aggregate receipt has SHA-256 `6cdb410e4fc424b098cd9872efbc2d580bc118a21ba4d8dd9f7eec7674598a37`.
+
+The final layout/acceptance follow-up needs its own exact-head CI and publication proof. This record does not claim those later operations have occurred.

@@ -7,6 +7,8 @@ import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse, parseFragment } from "parse5";
 import ts from "typescript";
+import { loadHumanitarianFunding } from "../src/lib/humanitarian-funding/public.mjs";
+import { FUNDING_LICENSE_SUMMARY } from "../src/lib/humanitarian-funding/source.mjs";
 import {
   readPublicationRegistryDirectory,
   publicationRegistryFiles,
@@ -193,7 +195,7 @@ check(
   },
 );
 check(
-  "API discovery has exactly the actual 38 source-declared datasets with complete bounded wrappers",
+  "API discovery has exactly the actual 39 source-declared datasets with complete bounded wrappers",
   () => {
     const ast = ts.createSourceFile(
       "api.ts",
@@ -221,9 +223,12 @@ check(
       };
       return { name: field("name"), description: field("description") };
     });
-    assert.equal(expected.length, 38);
-    assert.equal(new Set(expected.map((e) => e.name)).size, 38);
-    const visible = existsSync(join(root,"src/data/disaster-incidents")) ? expected : expected.filter(e=>!["disaster-incidents","disaster-incident-coverage"].includes(e.name));
+    assert.equal(expected.length, 39);
+    assert.equal(new Set(expected.map((e) => e.name)).size, 39);
+    const funding = loadHumanitarianFunding();
+    const visible = expected.filter(e =>
+      (existsSync(join(root,"src/data/disaster-incidents")) || !["disaster-incidents","disaster-incident-coverage"].includes(e.name)) &&
+      (funding !== null || e.name !== "humanitarian-funding"));
     const index = json("/api/v1/index.json");
     sameKeys(index, ["name", "version", "license", "docs", "endpoints"]);
     assert.equal(index.version, 1);
@@ -238,6 +243,15 @@ check(
     );
     for (const e of visible) {
       const body = json(`/api/v1/${e.name}.json`);
+      if (e.name === "humanitarian-funding") {
+        assert.ok(funding);
+        sameKeys(body, ["name", "license", "generated", "data"]);
+        assert.equal(body.name, e.name);
+        assert.equal(body.generated, funding.source.asOf);
+        assert.equal(body.license, FUNDING_LICENSE_SUMMARY);
+        assert.deepEqual(body.data, funding);
+        continue;
+      }
       if (["disaster-incidents", "disaster-incident-coverage"].includes(e.name)) {
         sameKeys(body, ["name", "license", "generated", "data"]);
         assert.equal(body.name, e.name);
