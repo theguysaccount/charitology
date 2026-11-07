@@ -35,3 +35,15 @@ node scripts/capture-humanitarian-funding.mjs --plan --metadata METADATA_FILE --
 The source-only candidate passed 13 focused model/capture/export groups, eight actual Astro SSR/mounted-controller/build-helper groups and strict client TypeScript compilation. Cases include quoted multiline Unicode, BOM/CRLF/LF byte spans, malformed/unselected records, duplicate country-plan-year keys, missing and signed amounts, half rounding, zero denominators, resealed omission/tampering, empty licensed exports, reversible formula-like text, Git child refusal settings and cached immutability. Mounted actions exercise the production controller, Blob contents, conjunctive filtering, no storage/network calls, refusal paths and owned URL cleanup. A separately implemented Python Fraction comparison matched every one of the 84 comparable source rows’ exact fractions and displayed percentages.
 
 These are engineering checks, not independent human source review or evidence of humanitarian need. Source-only code A reports unavailable data honestly. Data B, complete build/check, actual browser layout/keyboard/downloads, CI and publication must retain their own actual receipts before they are claimed. Native file-save behavior and independent accessibility review are not established by the mounted harness. This slice does not complete the broader cause/geography/period funding-and-need ambition in the original mega list.
+
+## First immutable capture
+
+Reviewed source commit A is `54adee3413f81e6e62ba00986787cc243b89d131`. The offline plan, explicit write and subsequent `--check` all returned success with the same source identity, 3,875 source records and the 195-row summary above. No network requests occurred during these operations. A separate file read matched all three generated artifacts to the pre-write plan’s exact bytes and hashes:
+
+| Artifact | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Licensed original-CSV evidence envelope | 290,751 | `4fd8832bdcd0c513db59336801358bbcc21d762987611e99fef8707279a74e3c` |
+| Selected 2025 edition | 167,641 | `075109421dc6db3bfdaeeb422dd6252276cdc52b83d3d5b6c3be642af9ae247c` |
+| Registry | 604 | `0442fae03ac51d14c62ad268997d6f7b321c629f9400851ce77ad978478975f3` |
+
+The edition’s internal canonical checksum is `7b088627887cd7bac2d99be2ef68e03c2b783274108caca05bcc4e2f2fa52ae6`; it is distinct from its formatted file hash. The public API route is `/api/v1/humanitarian-funding.json`; the licensed evidence envelope is `/data/humanitarian-funding/source-ad5cb07e4f70a528e51b66b865f798ff2ef95e5a8b0d77ad3b8a303b58bb364d.json`. At this capture, the complete build/check, real browser, CI and public publication were not yet performed; their later receipts must be assessed separately.
