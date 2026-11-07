@@ -1,5 +1,11 @@
 # Changelog
 
+## November 7, 2026: gift estimate release and encyclopedia coverage candidate
+
+- Published the bounded Gift estimate desk through PR #45 and main `e2c4e0f`. All eight exact-head CI jobs, five Pages jobs and 56 selected public responses pass, with an independent body/header rehash. Actual public original-file requalification, fixed-worker calculation and search discovery pass. [Acceptance](docs/GIFT_ESTIMATE_ACCEPTANCE.md) retains both earlier Pages timeouts, corrected verifier refusals and the explicit limits of literal runtime coverage.
+- Added a separate exact-source profile for all 26 encyclopedia entries, with unknown authorship, undated baselines and no invented actors or reviews. Genuine source A `d9aeb7a` precedes data B `bd0ef1f`; all 180 earlier immutable ledger files stay exact. The new source coverage is 66 pages, separate from the original 66-item mega list.
+- The coverage candidate builds 608 pages with 61,921 links/assets and none broken. Full B found a historical test fixture reading the new mutable manifest; a forward two-file test correction restores its exact initial R4 input and passes the affected publication checks. Final integrated checks, actual browser acceptance, CI and publication remain pending. [Contract](docs/ENCYCLOPEDIA_REVIEW_COVERAGE_PLAN.md). Human review and the rest of the OS remain separate work.
+
 ## November 7, 2026: one conditional gift estimate candidate
 
 - Added a page-only Gift estimate desk and static Dashboard discovery. One deliberately selected native gift can be linked to an exact reproduced source-model version and fresh artifact checksum, with explicit money/date, budget, applicability, fixed-credit and exclusion assumptions. Unlinked gifts and unmapped portions remain unknown; lifetime aggregation stays open.
