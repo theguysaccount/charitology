@@ -48,20 +48,23 @@ const { id, title } = Astro.props;
       status.textContent =
         "Stored notes could not be read or storage is blocked. Existing data is left untouched. Download new notes before leaving.";
     }
-    function save() {
+    function save(nextNotes = notes.value) {
       try {
-        if (!writable) throw Error();
-        draft.write(JSON.stringify({ read: read.checked, notes: notes.value }));
+        if (!writable)
+          throw Error("Saving is unavailable. Existing browser data is left untouched.");
+        draft.write(JSON.stringify({ read: read.checked, notes: nextNotes }));
         status.textContent = "Saved in this browser.";
+        return true;
       } catch (error) {
         status.textContent =
           error instanceof Error
             ? error.message + " Download your notes before leaving."
             : "Saving unavailable. Download your notes before leaving.";
+        return false;
       }
     }
-    read.addEventListener("change", save);
-    notes.addEventListener("input", save);
+    read.addEventListener("change", () => save());
+    notes.addEventListener("input", () => save());
     root
       .querySelector("[data-export]")!
       .addEventListener("click", () =>
@@ -80,8 +83,11 @@ const { id, title } = Astro.props;
           button.textContent = "Confirm clear notes";
           return;
         }
-        notes.value = "";
-        save();
+        if (save("")) notes.value = "";
+        else
+          status.textContent =
+            "Notes were not cleared. Your current notes are kept. " +
+            status.textContent;
         armed = false;
         button.textContent = "Clear this chapter’s notes";
       });
