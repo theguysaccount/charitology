@@ -95,7 +95,8 @@
   white-space:pre-wrap;
   overflow-wrap:anywhere;
   padding:1rem;
-  background:#f4f7f3;
+  background:var(--bg2,#f4f7f3);
+  color:var(--ink,#1a1915);
   border-radius:.5rem;
   max-width:100%;
   box-sizing:border-box
@@ -151,7 +152,7 @@
   min-height:1.5em
 }
 .learning-workspace :focus-visible {
-  outline:3px solid #346f49;
+  outline:3px solid var(--focus,#346f49);
   outline-offset:3px
 }
 .learning-print-frame {
