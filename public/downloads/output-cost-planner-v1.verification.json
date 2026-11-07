@@ -1,0 +1,422 @@
+{
+  "format": "charitology-output-cost-verification",
+  "version": 1,
+  "method": "planned-cash-cost-per-defined-output-v1",
+  "artifact": {
+    "file": "output-cost-planner-v1.xlsx",
+    "bytes": 7675,
+    "sha256": "29ef1b668f6a14bdc76ad8fa57ad305cf21a5ac8a7a28d40712675b51979fbd7"
+  },
+  "formulaSpecification": {
+    "file": "output-cost-planner-v1.formulas.json",
+    "sha256": "f343b4e15013326a95f675bc5cfec2537fda2beab08d202954407c8d4b6f3dc9"
+  },
+  "engine": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5",
+  "scope": "Fresh native headless LibreOffice recalculation at this corrected artifact hash, after removal of all formula caches in each private input copy. Not a native Excel or GUI acceptance check.",
+  "originalArtifactUnchanged": true,
+  "retainedFullReceiptSha256": "76c5049c58778edabf07af4339690c987de5300a5cfcb912596ddb55067e168a",
+  "previousUnpublishedArtifact": {
+    "artifact": {
+      "file": "output-cost-planner-v1.xlsx",
+      "bytes": 7675,
+      "sha256": "c193aff03fcfcea1194cfab20859aa613df94fb345ec435bacc2366ea2a28034"
+    },
+    "formulaSpecification": {
+      "file": "output-cost-planner-v1.formulas.json",
+      "sha256": "ff3c44124ad10e9b1e09fdfaee6343bd086361c1555f881d4083d56e56775e50"
+    },
+    "verificationSha256": "cadfa8e14ea2fccfc56800745ae5b98ad220fe189db1002bb1610fb273667827",
+    "nativeCases": 20,
+    "retainedFullReceiptSha256": "5bf511a2ccb08e2e83de25c540052205876120b5cb60913596ba4005a2e20165",
+    "scope": "Original20 native cases remain bound to the prior c193 artifact, not relabeled as corrected-artifact evidence."
+  },
+  "labelOnlyComparison": {
+    "oldArtifactSha256": "c193aff03fcfcea1194cfab20859aa613df94fb345ec435bacc2366ea2a28034",
+    "newArtifactSha256": "29ef1b668f6a14bdc76ad8fa57ad305cf21a5ac8a7a28d40712675b51979fbd7",
+    "newBytes": 7675,
+    "changedDefaultCells": [
+      "B31"
+    ],
+    "oldLabel": "Completed workshops",
+    "newLabel": "Defined output count",
+    "all14FormulaCellXmlByteEqual": true,
+    "allOtherCellXmlByteEqual": true,
+    "allOtherDefaultsEqual": true,
+    "authoringBuilderByteEqual": true,
+    "newMarkerRun": false,
+    "old20NativeEvidenceRetainedAtOldHash": true
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {},
+      "observed": {
+        "E5": 100.0,
+        "E6": 57.1428571428571,
+        "E7": 200.0,
+        "D27": 1000.0,
+        "E21": "Complete"
+      },
+      "inputSha256": "974fbfc03bb71a2515e6cbb0d4e7ae130710c06d2968979dfc01d40220276a06",
+      "outputSha256": "1f79b7270db3e7e420b66168bc7a31dad4478570a2fcf8c49fb324372345e982",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "changed-cost",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D24": 700
+      },
+      "observed": {
+        "E5": 110.0,
+        "D27": 1100.0,
+        "E7": 200.0
+      },
+      "inputSha256": "70e044f57c2ea3620c6345ad0627dd8d7c0f113fa72e7fd3a0c1f4d15d758a0f",
+      "outputSha256": "ed851362bad9e475e1dbf5ffc604254d1bc9ec6fe25a88ba47bbd0d9d60ef3bb",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "changed-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D24": 700,
+        "D31": 11
+      },
+      "observed": {
+        "E5": 100.0,
+        "D27": 1100.0
+      },
+      "inputSha256": "4153169115fa4a84182075f90ae0a989c76e3f6c99356794e9827fcbcecd2580",
+      "outputSha256": "fbed47f9f9d22e67c2a62065b40412277be76dff2a43c00e477b4551f266158d",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "changed-output-unit",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C11": "delivered package"
+      },
+      "observed": {
+        "E5": 100.0,
+        "H5": "USD per delivered package",
+        "B31": "Defined output count"
+      },
+      "inputSha256": "6589c72506b77d38d48d721c161cd8352a314c8e87eefea3bb48f0fda35b6041",
+      "outputSha256": "19d405495c3620760fc1917fdf455b16ec51ebc70b28af53e5555e26493e44c8",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "unknown-point-cost",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D24": null
+      },
+      "observed": {
+        "E5": "n.a.",
+        "D27": "n.a.",
+        "E6": 57.1428571428571,
+        "E7": 200.0,
+        "F24": "Incomplete"
+      },
+      "inputSha256": "8e25fdef42d6dfe6ca505608e4075c326ec153d94c404486a8eb7c26529da896",
+      "outputSha256": "e9d4fbeb0e408dbea74935dd4ecd3ab733ccbe1bafd0fcd3b6620e23045382a6",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "unknown-lower-cost",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C24": null
+      },
+      "observed": {
+        "E5": 100.0,
+        "E6": "n.a.",
+        "E7": 200.0,
+        "F24": "Incomplete"
+      },
+      "inputSha256": "38b27a08322dccb2144c0aac05ee2a4f2195b6aa11181307d2ea49cf3199c5d0",
+      "outputSha256": "fe0b1986e6b86a776c545e26f2e1931e464823f7443ae10bc6e2baa4ec5f1be2",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "unknown-point-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D31": null
+      },
+      "observed": {
+        "E5": "n.a.",
+        "E6": 57.1428571428571,
+        "E7": 200.0,
+        "F31": "Incomplete"
+      },
+      "inputSha256": "76b910c40010ea9a006a8fb752621d637183f29ec0c2240aef2195de130f4631",
+      "outputSha256": "5dc767757ec629075844b2455bd595ed85e276071d5b2886b58754336f6ed902",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "zero-cost-positive-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C24": 0,
+        "D24": 0,
+        "E24": 0,
+        "C25": 0,
+        "D25": 0,
+        "E25": 0,
+        "C26": 0,
+        "D26": 0,
+        "E26": 0
+      },
+      "observed": {
+        "E5": 0.0,
+        "E6": 0.0,
+        "E7": 0.0
+      },
+      "inputSha256": "cf7426ac0d3694a8fb6d46e209181d99f48f2c718bbb08e65ed974148af73a9d",
+      "outputSha256": "cb488beade014df8b34ceb2448b66f9d6540c222874ea16492f113651be2dfdb",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "zero-point-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C31": 0,
+        "D31": 0
+      },
+      "observed": {
+        "E5": "n.a.",
+        "E7": "Unbounded",
+        "H5": "No outputs in the point estimate."
+      },
+      "inputSha256": "5ac680973a55954bd21a00706a451d0bc7b10599f32ed320836ee28011ae46ec",
+      "outputSha256": "efb2eb07f742516afed795a31a994b9468aa1f75386577056faf616e39cdd472",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "zero-lower-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C31": 0
+      },
+      "observed": {
+        "E5": 100.0,
+        "E7": "Unbounded"
+      },
+      "inputSha256": "24b517747121c953ff86322eaa97c98ad5d2b46907136eb92875bcb2d3281371",
+      "outputSha256": "9c44ac3bccd221020a029cd71c84347ba4c991faf5313711586f700cbd52979a",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "zero-cost-zero-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C24": 0,
+        "D24": 0,
+        "E24": 0,
+        "C25": 0,
+        "D25": 0,
+        "E25": 0,
+        "C26": 0,
+        "D26": 0,
+        "E26": 0,
+        "C31": 0,
+        "D31": 0
+      },
+      "observed": {
+        "E5": "n.a.",
+        "E6": 0.0,
+        "E7": "n.a.",
+        "H7": "0 cost / 0 outputs is undefined."
+      },
+      "inputSha256": "e97ccc3aa0b4cf87217eb12339f76b10991db98aeb0de5fdb75adf51b84f0c29",
+      "outputSha256": "a93f7bf6fdc2a311383102735827479d313cab92e8281dcc1778845ec08c357f",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "reversed-cost-bounds",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C24": 800
+      },
+      "observed": {
+        "E5": 100.0,
+        "E6": "n.a.",
+        "E7": "n.a.",
+        "F24": "Invalid"
+      },
+      "inputSha256": "0c5fafb91515fa977addfe8dd68e11923bd53079b5ad48e28419bf35820c5296",
+      "outputSha256": "d950fcd18f6e9ccc7a54e22e6a8a59ab90bdbfec8e23e47b67a53153812b1c1e",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "text-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D31": "unknown"
+      },
+      "observed": {
+        "E5": "n.a.",
+        "F31": "Invalid",
+        "E6": "n.a.",
+        "E7": "n.a."
+      },
+      "inputSha256": "c98ada418ef044b9cf16aead2d8a4918e61e8a4aea7d104d8685affb83baecbf",
+      "outputSha256": "db370f8cf9653e6e12cdc59deb9b12c3a35e06df7234e3523779e454517bbf3d",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "negative-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D31": -1
+      },
+      "observed": {
+        "E5": "n.a.",
+        "F31": "Invalid"
+      },
+      "inputSha256": "53306ef3c3d8c41df2eb3bf6b2b7e0d8d567ddbe981587930911f7ca5898dff0",
+      "outputSha256": "e2a9a4aae2d64995d41140f42ecbf5ffac6aff3faa8f11fcfbb0dcc4ac3799ad",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "fractional-output",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D31": 1.5
+      },
+      "observed": {
+        "E5": "n.a.",
+        "F31": "Invalid"
+      },
+      "inputSha256": "0210d8e28865ca6833672ea25e0875a46ab3eeda93939cb024be124cf9485921",
+      "outputSha256": "950e38610de25cba6b4e8571a77c922273f3ab38e0cc8504be90dd60f45ed9ee",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "text-cost",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D24": "unknown"
+      },
+      "observed": {
+        "E5": "n.a.",
+        "F24": "Invalid"
+      },
+      "inputSha256": "d5394edfeb5be8a7cb1c966dee3cdf5ca1599c74677b7ede9ec72e9201bd13b0",
+      "outputSha256": "1fb8fbb35f20f1dc1fe8f45e0d7552e161f8ceb196197173c968dd128cdac547",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "negative-cost",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "D24": -1
+      },
+      "observed": {
+        "E5": "n.a.",
+        "F24": "Invalid"
+      },
+      "inputSha256": "f5d51679033ff226a708faa6b97ffccdcb9ff860a0efe7f2a3703c7f97a97a4c",
+      "outputSha256": "4cdbb1f97973a8a1aa6ad87888fc6e55e849b121923fa5ad8fead74e2e12b4f7",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "missing-definition",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C11": null
+      },
+      "observed": {
+        "E5": "n.a.",
+        "E21": "Missing definition"
+      },
+      "inputSha256": "1b34a773de1e93bd062ef887588dab504e598133c801ba342e4a94c7a9ef769b",
+      "outputSha256": "5704e028c0072f89425ba9e026b1400f7c19b82da249031b56096f1d1f7de56c",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "reversed-period",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {
+        "C14": 1
+      },
+      "observed": {
+        "E5": "n.a.",
+        "E21": "Check dates / basis"
+      },
+      "inputSha256": "eef19b5a70697f27f3d3f881f7265fb11a1bf1ba6d935b0f4646af681ff52145",
+      "outputSha256": "c7ade31db2cf181f8b15d48616e79a89e5f9817c63eba9669d368e50c53e6438",
+      "exitCode": 0,
+      "ownedProfileRemoved": true
+    },
+    {
+      "name": "literal-writer",
+      "passed": true,
+      "cacheValuesRemoved": 14,
+      "changedInputs": {},
+      "observed": {
+        "E5": 100.0
+      },
+      "inputSha256": "4ef0c5be62a9a9130279159999ca927daed99f2070bbde679e82f19f969f0963",
+      "outputSha256": "43d6d1de2704065469222159dd28d4a0433c03bc9bd27919a2169f69fc83bf1b",
+      "exitCode": 0,
+      "ownedProfileRemoved": true,
+      "literalTextObservation": {
+        "outputSha256": "43d6d1de2704065469222159dd28d4a0433c03bc9bd27919a2169f69fc83bf1b",
+        "formulaCells": 14,
+        "cells": {
+          "C10": {
+            "text": "=HYPERLINK(\"https://example.invalid\",\"literal source\")",
+            "formula": null,
+            "cellType": "s"
+          },
+          "H24": {
+            "text": "'+1+1",
+            "formula": null,
+            "cellType": "s"
+          }
+        }
+      }
+    }
+  ]
+}
