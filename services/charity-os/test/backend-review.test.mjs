@@ -86,6 +86,14 @@ function fixture(
         sql.startsWith("DELETE FROM os_previews")
       )
         return { rows: [] };
+      if (sql.startsWith("SELECT h.*,octet_length(payload::text) AS learning_payload_bytes") ||
+          sql.startsWith("SELECT r.*,octet_length(payload::text) AS learning_payload_bytes"))
+        return { rows: [] }; // This fixture contains no live or recovered learning inventory.
+      if (sql.startsWith("SELECT data,status FROM os_records WHERE org_id=$1 AND id=$2")) {
+        const current = contextRecords.find(record => record.id === args[1]);
+        return { rows: current ? [{ data: current.data, status: current.status }] : [] };
+      }
+      if (sql.startsWith("SELECT payload,origin_mode FROM os_learning_history")) return { rows: [] };
       if (sql.startsWith("SELECT count(*) FILTER"))
         return {
           rows: [
@@ -112,6 +120,8 @@ function fixture(
         return { rows: [] };
       if (
         sql === "SELECT count(*) FROM os_task_recurrence_series WHERE org_id=$1" ||
+        sql === "SELECT count(*) FROM os_integrations WHERE org_id=$1" ||
+        sql === "SELECT count(*) AS count FROM os_participation_delivery_policies WHERE org_id=$1" ||
         sql === "SELECT count(*) AS count FROM os_resource_directory_history WHERE org_id=$1"
       )
         return { rows: [{ count: 0 }] };
@@ -446,16 +456,16 @@ test("Financial content edits return an approved or active record to review and 
 test("Report listings do not reveal metadata for records outside current module permissions or program scope", async () => {
   const record = envelope("projects");
   record.data.programId = "program-a";
-  const report = (id, moduleId, programId) => ({
-    id,
-    title: "Synthetic report " + id,
-    checksum: hash(id),
-    payload: {
-      modules: [
-        { id: moduleId, records: [{ id, moduleId, data: { programId } }] },
-      ],
-    },
-  });
+  const report = (id, moduleId, programId) => {
+    const source = envelope(moduleId, { id });
+    source.data = { ...source.data, programId };
+    const payload = { id, title: "Synthetic report " + id, createdBy: user, createdAt: stamp.toISOString(),
+      modules: [{ id: moduleId, title: moduleId, records: [{ id: source.id, orgId: org, moduleId, data: source.data,
+        status: source.status, ownerId: source.ownerId, revision: source.revision, createdAt: source.createdAt, updatedAt: source.updatedAt, files: [] }] }],
+      sourceRevisions: [{ id: source.id, revision: source.revision }], missingness: "Synthetic recorded inputs with unknown evidence." };
+    payload.checksum = hash(payload);
+    return { id, title: payload.title, checksum: payload.checksum, payload };
+  };
   const reports = [
     report("allowed", "projects", "program-a"),
     report("private-program", "projects", "program-b"),

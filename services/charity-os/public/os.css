@@ -1305,11 +1305,13 @@ pre {
     width: min(290px, 86vw);
     z-index: 50;
     box-shadow: 15px 0 35px #0002;
+    visibility: hidden;
     transform: translateX(-110%);
     transition: transform 0.2s;
     max-height: calc(100vh - 70px);
   }
   .sidebar.open {
+    visibility: visible;
     transform: translateX(0);
   }
   .nav-toggle {

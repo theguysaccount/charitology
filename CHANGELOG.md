@@ -1,5 +1,17 @@
 # Changelog
 
+## November 7, 2026: Learning report readability and release preparation
+
+- Corrected source-code text and keyboard-focus colors to use the OS theme variables. Actual 390-pixel light/dark reading, focus and scrolling passed after visual review caught the original dark-text failure.
+- Verified bounded full-shell navigation, unfinished-writing preservation, visible errors and fictional organization switching. [Learning acceptance](docs/OS_LEARNING_BRIDGE_ACCEPTANCE.md) retains the failure, correction and scope; broader timing/accessibility coverage remains explicit.
+- Integrated the published funding reference and spreadsheet without repeating completed migrations, hosted uploads or accepted mail. The spreadsheet's actual public artifact and 34 selected responses match; final combined OS release verification remains separate.
+
+## November 7, 2026: staff attendance candidate, unreleased
+
+- Added explicit staff-reported whole-occurrence event/volunteer attendance drafts with exact review and durable accepted-command Retry. Bookings supply context, not attendance or hours; unknown facts remain null.
+- Kept ordinary manual corrections, inactive restore and helper-only occurrence reservation compatible. Added no schema migration, provider or mail operation.
+- [Acceptance](docs/OS_ATTENDANCE_ACCEPTANCE.md) preserves the initial 683-test run, corrected 684-test run, 199 actual isolated PostgreSQL tests and retained seed/initial-Reload findings. Actual local in-app-browser controls and real HTTP/PG verified an identical explicit Retry after deliberate committed-response loss, with one ordinary draft; auth and approvals were synthetic. Broader accessibility, exact-head CI and deployment remain pending. [The current backlog](docs/CURRENT_IMPLEMENTATION_BACKLOG.md) preserves all 66 original items and separates the remaining software, human and release work.
+
 ## November 7, 2026: source-bound humanitarian plan funding
 
 - Added a fixed 2025 OCHA FTS/HDX reference beside the existing Gap Map figures and local census, with qualified Cause Atlas/Census links. All 195 country–plan–year rows preserve original strings, missing values, explicit zero, row provenance and exact derived coverage. No overlapping rows are summed into invented country/world totals or mapped to cause, depth or independent need.

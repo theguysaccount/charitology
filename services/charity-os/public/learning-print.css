@@ -1,0 +1,16 @@
+/* Fixed private-report styles, loaded under the OS style-src 'self' policy. */
+body {
+  font: 12pt/1.5 system-ui;
+  color: #111;
+  margin: 18mm;
+}
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 9pt/1.4 monospace;
+}
+details { display: block; }
+summary, dt { font-weight: 700; }
+dd { margin: 0 0 8pt; }
+h2, h3 { break-after: avoid; }
+a { color: inherit; }

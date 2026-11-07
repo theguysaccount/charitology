@@ -84,3 +84,30 @@ npm run check
 For the subpath build, set both `SITE_URL=https://theguysaccount.github.io` and `BASE_PATH=/charitology/` on the build command. Builds regenerate origin-specific extension downloads; rebuild with the default environment before reviewing canonical packages. The full alternate-command limitation above remains explicit.
 
 A separate AI read-only review supplies no human or institutional approval. Exact CI, integration with pending Learning work, staged/live preservation and release verification remain gates. The bounded native check's browser/server resources were cleaned up. No database, provider configuration, mail, payment or deployment action was introduced by this experiment.
+
+## November 6, 2026 UTC: merged release and selected public verification complete
+
+[PR #40](https://github.com/theguysaccount/charitology/pull/40) finished at tested head `4f3d66c14dc9c14f9b4e25b31763dbc80f18e6d3`. Its [push run 42175385119](https://github.com/theguysaccount/charitology/actions/runs/42175385119) and [PR run 42175390181](https://github.com/theguysaccount/charitology/actions/runs/42175390181) passed all four jobs each. Both runs passed the full site build/checks, all **174 model cases** on Linux and macOS, strict **19-case** Mac reference reproduction, shared OS checks and newsletter safety checks. All committed-history gates passed. The PR squash-merged as main `4188b725a0e92c27651aab89680e0e745f1abcbe`, with the same complete Git tree as that tested head.
+
+[Pages run 42176822417](https://github.com/theguysaccount/charitology/actions/runs/42176822417) passed all five jobs at that main commit: build, strict model references, shared OS, newsletter and deployment. Its [github-pages artifact 13483981422](https://github.com/theguysaccount/charitology/actions/runs/42176822417/artifacts/13483981422) is **80,268,240 bytes**; the artifact API reported SHA-256 `05c8beeb5ec2ad1c483d01a62c1746eb260c84630f6811b2f7bd0d46ef5a938e`. The direct Pages deployment-status API returned `succeed`. This artifact digest is reported service metadata, distinct from the response-body comparisons below.
+
+Actual public retrieval covered **60 selected responses totaling 2,663,463 decoded bytes**. Each response matched the expected HTTP 200 status, content type, final URL, byte length and SHA-256. The selected set includes ten core pages, their linked assets, the emitted fixed module worker, favicon files, OG image and OG video. A separate Python pass reopened every retained public body and independently confirmed all sixty lengths and hashes against the prepared manifest and network receipt. These results cover the selected response set; they do not establish behavior or byte equality for every page on the site.
+
+On the actual public [Model Kit](https://charitology.org/tools/cost-effectiveness-model-kit/#model-bundles), keyboard Enter on the real file input opened the native chooser. The original **44,929-byte** selected file, SHA-256 `f12fb97edcce4fb6d277678affef307efa3a5797139bed2243be37ce3ba2eaad`, was chosen. An explicit **Recalculate selected model here** action sent it through the public fixed worker, which returned `kind: matched` and `differences: []`; declared and recalculated input, run, costs-array and outcomes-array hashes were identical. Bounded application warnings/errors were empty. No Save, Copy or Restore was requested. Temporary native-file authority was canceled through the UI and the owned public tab was closed.
+
+This public journey is separate from the earlier local 390-pixel layout observation and the older Model Kit native Save/Restore journeys. Those checks retain their original versions and scope; they were not repeated as public migration recovery tests. Native Save, complete public workspace recovery, other browser/layout combinations and complete integrated Learning behavior remain unverified for this migration. The earlier Learning generator check remains a carried reference, not a new public or integrated Learning run.
+
+The retained private operator proof pins are:
+
+| Private proof | SHA-256 |
+|---|---|
+| Selected public manifest | `457743573133bca902302c94bd983c72f908fa52cd2e2a7705ae339b8052c335` |
+| Actual network-response receipt | `6aec5170c41b31bdca6a59a21dbf51f2b0db71dfa8980c13fc8cbb5a9786f198` |
+| Independent retained-body Python rehash | `e2168e64690b9bb314a1518f6d45ccd2501ff686eac36a9824a24308519ccf7e` |
+| Actual public native-worker proof | `5e89267b4547f172de2cee13e6a5dfb7fd49fb152feb019bcab4d2ac63bf66b8` |
+| Public native-worker screenshot | `3acd13071ed0b2d4e5cf3975d6a20015ca26878819bcc0fb1f48eb0e13eec31a` |
+| Publication-closure receipt | `48881e2e163b9dcf1f3ca463d30b05f598f0e9953abd51fd49d1065080b005b8` |
+
+This later record closes the CI and selected public verification requirements for the release above. Earlier candidate/pending statements describe their earlier checkpoints. The first new-branch zero-base refusal, c9 PR macOS failure, older unknown PR #39 cause, failed complete alternate-origin check and previous Model Kit deployment failures remain preserved; none becomes a passing result through this closure.
+
+Frozen v1 engine/registry/golden/codec bytes and the empty public source-model registry remain unchanged. Numerical reproduction supplies no measured impact, source-model admission or independent scientific or human review. This is a static-site migration with the separately recorded CLI cleanup correction; it establishes neither a production Learning/whole-OS release nor any new provider, schema, mail or payment operation.
