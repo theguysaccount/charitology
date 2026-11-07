@@ -1,0 +1,82 @@
+<section class="gift-estimate" data-gift-estimate aria-labelledby="ge-title">
+  <h2 id="ge-title">One gift. One explicit model.</h2>
+  <p>This desk starts empty. It does not read your saved gift log or Model Kit workspace. Your chosen data stays on this page; the fixed calculation worker loads from Charitology. No payment, message or source publication is made.</p>
+  <p id="ge-status" role="status" aria-live="polite" tabindex="-1">Private controls stay disabled until the local desk is ready.</p>
+  <form id="ge-form">
+    <fieldset id="ge-controls" disabled>
+      <legend>Prepare one conditional estimate</legend>
+      <section aria-labelledby="ge-sources-title">
+        <h3 id="ge-sources-title">1. Choose the original files</h3>
+        <label for="ge-gift-file">Giving Dashboard native JSON export · at most 5,000,000 bytes and 2,000 rows</label>
+        <input id="ge-gift-file" type="file" accept=".json,application/json" aria-describedby="ge-gift-hint" />
+        <p id="ge-gift-hint">The export may cover a filtered year. This format does not declare complete lifetime coverage. Self-logged gifts are not payment or tax evidence.</p>
+        <label for="ge-gift-select">Deliberately select one recorded gift</label>
+        <select id="ge-gift-select" disabled><option value="">Choose a native gift file first</option></select>
+        <details><summary>Inspect the gift file and selected row</summary><pre id="ge-gift-facts" tabindex="0">No gift file chosen.</pre></details>
+        <label for="ge-model-file">Model Kit selected-bundle JSON · at most 2 MiB</label>
+        <input id="ge-model-file" type="file" accept=".json,application/json" />
+        <p>Choose the selected-version export, not a full backup or a spreadsheet. Its exact recorded run must match a fresh calculation here. An imported “matched” flag supplies no authority.</p>
+        <button id="ge-reproduce" type="button" class="btn btn-ghost" disabled>Reproduce chosen model here</button>
+        <details><summary>Inspect the complete selected model and reproduction</summary><pre id="ge-model-facts" tabindex="0">No selected model chosen.</pre></details>
+        <label for="ge-source-file">Original source artifact referenced by this model · at most 8 MiB</label>
+        <input id="ge-source-file" type="file" disabled />
+        <p>Only its fresh checksum, size and source ID enter the estimate. The source body is excluded. Matching bytes establish neither factual accuracy nor scientific review, applicability or rights.</p>
+        <details><summary>Inspect the fresh source checksum</summary><pre id="ge-source-facts" tabindex="0">No fresh source checksum.</pre></details>
+      </section>
+      <section aria-labelledby="ge-assumptions-title">
+        <h3 id="ge-assumptions-title">2. Author the funding assumptions</h3>
+        <div class="ge-fields">
+          <div><label for="ge-mappedAmount">Mapped gift portion in USD</label><input id="ge-mappedAmount" type="text" inputmode="decimal" autocomplete="off" required maxlength="16" pattern="(?:0|[1-9][0-9]*)(?:\.[0-9]{1,2})?" aria-describedby="ge-budget-hint" /></div>
+          <div><label for="ge-donorCreditPercent">Fixed donor-credit percentage · 0–100</label><input id="ge-donorCreditPercent" type="text" inputmode="decimal" autocomplete="off" required maxlength="6" pattern="(?:0|[1-9][0-9]*)(?:\.[0-9]{1,2})?" aria-describedby="ge-credit-hint" /></div>
+        </div>
+        <p id="ge-budget-hint">The positive mapped portion must fit the logged gift and the source’s positive lower budget, interpreted from its exact plain-decimal cents. It cannot exceed any supported budget draw. This supplies no evidence of marginal funding or room for more funding.</p>
+        <p id="ge-credit-hint">Blank means unknown; 100% is never assumed. Explicit 0% gives a conditional zero only after every source gate passes. This authored allocation is not a measured probability or proof that the donor caused an outcome. The unmapped portion stays unestimated.</p>
+        <label for="ge-giftMoneyBasis">Interpretation of the logged gift amount</label>
+        <select id="ge-giftMoneyBasis" required><option value="">Unknown — not declared</option><option value="nominal-USD-gift-year">I interpret it as nominal USD in its logged gift year</option></select>
+        <p>The native gift format has no explicit currency, money basis or price-year fields. This method requires a model with nominal USD in the same year and an exact cost period containing the gift date. It supplies no exchange-rate or inflation adjustment.</p>
+        <label for="ge-moneyRationale">Basis for that money interpretation</label><textarea id="ge-moneyRationale" required maxlength="8000" rows="3" autocomplete="off"></textarea>
+        <label for="ge-applicability">Why this exact gift purpose, program and population fit this source version</label><textarea id="ge-applicability" required maxlength="8000" rows="4" autocomplete="off"></textarea>
+        <label for="ge-linearFundingRationale">Why proportional funding is an acceptable assumption for this portion</label><textarea id="ge-linearFundingRationale" required maxlength="8000" rows="4" autocomplete="off"></textarea>
+        <label for="ge-donorCreditRationale">Source or assumption behind the fixed donor-credit fraction</label><textarea id="ge-donorCreditRationale" required maxlength="8000" rows="4" autocomplete="off"></textarea>
+        <label for="ge-exclusions">Exclusions, uncertainty and reasons this conditional estimate may not apply</label><textarea id="ge-exclusions" required maxlength="8000" rows="4" autocomplete="off"></textarea>
+        <label class="ge-check" for="ge-acknowledgeLimits"><input id="ge-acknowledgeLimits" type="checkbox" required /> I acknowledge the source model’s counterfactual, independence, duration, discount and harms limits, and the added proportional-funding and fixed-credit assumptions. Applicability, additionality, delivery, fees and omitted harms remain uncertain.</label>
+        <div class="ge-actions"><button id="ge-review" type="submit" class="btn" disabled>Review a new conditional case</button><button id="ge-requalify" type="button" class="btn btn-ghost" disabled>Requalify the inspected saved case</button></div>
+      </section>
+      <section aria-labelledby="ge-review-title">
+        <h3 id="ge-review-title">3. Review, then save the exact copy</h3>
+        <pre id="ge-result" class="ge-result" tabindex="0">Unknown — no current reviewed conditional estimate.</pre>
+        <p>Each matched source cost-per-outcome draw is transformed using the mapped portion and fixed donor credit, then the results are sorted again. This is not division by a source median. Separate source arrays are never paired. The model already includes its own counterfactual and duration adjustments; they are not applied twice.</p>
+        <button id="ge-prepare" type="button" class="btn btn-ghost" disabled>Acknowledge this case and prepare JSON for final review</button>
+        <details open><summary>Complete outgoing text · includes private source and model writing</summary><pre id="ge-outgoing" tabindex="0"></pre></details>
+        <label class="ge-check" for="ge-ack"><input id="ge-ack" type="checkbox" disabled /> I reviewed this exact outgoing JSON, including its private text, source bindings and limits.</label>
+        <button id="ge-download" type="button" class="btn" disabled>Download reviewed estimate JSON</button>
+        <p>Only the selected gift row is included, with the original file’s checksum. The exact selected model is included. Other gift rows and the source artifact body are excluded. A checksum is not an evidence grade or a charity rating.</p>
+      </section>
+      <section aria-labelledby="ge-saved-title">
+        <h3 id="ge-saved-title">Reopen a saved estimate</h3>
+        <label for="ge-packet-file">Choose the actual saved estimate JSON · at most 4 MiB</label><input id="ge-packet-file" type="file" accept=".json,application/json" />
+        <details><summary>Historical inspection · current estimate stays Unknown</summary><pre id="ge-packet-facts" tabindex="0">No saved estimate inspected.</pre></details>
+        <label class="ge-check" for="ge-replace-packet"><input id="ge-replace-packet" type="checkbox" /> Replace the writing and selected model shown here with this packet’s literal writing and exact nested model. No current qualification is restored.</label>
+        <button id="ge-use-packet" type="button" class="btn btn-ghost" disabled>Use packet model and writing</button>
+        <p>Then deliberately choose the original gift export and source artifact, reproduce the exact model, acknowledge the limits and select <em>Requalify the inspected saved case</em>. A changed file, row, mapping, model or numerical fingerprint cannot pass as the same case. <em>Review a new conditional case</em> prepares a separate case without claiming that the saved result was requalified.</p>
+      </section>
+      <section aria-labelledby="ge-writing-title">
+        <h3 id="ge-writing-title">Keep unfinished writing</h3>
+        <p>Nothing here is saved automatically. Leaving, reloading or browser-history restoration clears private choices. Download literal unfinished fields before leaving. This recovery contains no chosen files or current qualification.</p>
+        <button id="ge-save-writing" type="button" class="btn btn-ghost">Download unfinished writing</button>
+        <label for="ge-writing-file">Inspect an unfinished-writing JSON copy · at most 4 MiB</label><input id="ge-writing-file" type="file" accept=".json,application/json" />
+        <details><summary>Inspect literal unfinished fields before replacement</summary><pre id="ge-writing-facts" tabindex="0">No unfinished writing inspected.</pre></details>
+        <label class="ge-check" for="ge-replace-writing"><input id="ge-replace-writing" type="checkbox" /> Replace the writing shown here with these inspected fields. Choose and qualify original sources separately.</label>
+        <button id="ge-apply-writing" type="button" class="btn btn-ghost" disabled>Apply inspected unfinished writing</button>
+      </section>
+    </fieldset>
+  </form>
+  <noscript><p>The method remains readable, but local file inspection and calculation need JavaScript. Private controls remain disabled.</p></noscript>
+</section>
+<script>
+  import {mountGiftEstimateDesk} from '../lib/gift-estimate/ui';
+  document.querySelectorAll<HTMLElement>('[data-gift-estimate]').forEach(root => mountGiftEstimateDesk(root));
+</script>
+<style>
+  .gift-estimate{margin:2rem 0;padding:clamp(1rem,3vw,2rem);border:1px solid var(--rule);border-radius:var(--radius);background:var(--surface);min-width:0}.gift-estimate fieldset{border:0;margin:0;padding:0;min-width:0}.gift-estimate legend{font:600 .9rem var(--font-sans);margin-bottom:1rem}.gift-estimate section{border-top:1px solid var(--rule);padding-top:1.5rem;margin-top:1.5rem}.gift-estimate h3{font-size:1.5rem}.gift-estimate label{display:block;margin:.9rem 0 .35rem;font-weight:600}.gift-estimate input:not([type=checkbox]),.gift-estimate select,.gift-estimate textarea{width:100%;max-width:100%;box-sizing:border-box}.gift-estimate textarea{font:inherit;resize:vertical}.gift-estimate input[type=file]{white-space:normal;overflow-wrap:anywhere}.ge-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.ge-check{display:flex!important;align-items:flex-start;gap:.65rem;font-weight:400!important}.ge-check input{flex:none;margin-top:.3rem}.gift-estimate pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-height:24rem;overflow:auto;padding:1rem;border:1px solid var(--rule);background:var(--bg-2);font:400 .8rem/1.6 var(--font-mono);max-width:100%;box-sizing:border-box}.gift-estimate .ge-result{font:500 1rem/1.7 var(--font-sans);max-height:30rem}.ge-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin:1.2rem 0}.gift-estimate button{margin:.5rem 0;white-space:normal;text-align:left}.gift-estimate details{margin:1rem 0}.gift-estimate summary{cursor:pointer}.gift-estimate p{overflow-wrap:anywhere}#ge-status{padding:.9rem;border-left:3px solid var(--accent);scroll-margin-top:6rem}#ge-status[data-error=true]{border-color:var(--danger,var(--accent))}#ge-status:focus{outline:2px solid var(--accent);outline-offset:3px}@media(max-width:600px){.ge-fields{grid-template-columns:1fr}.gift-estimate{padding:1rem}.gift-estimate button{width:100%}}
+</style>

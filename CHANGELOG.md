@@ -1,5 +1,10 @@
 # Changelog
 
+## November 7, 2026: one conditional gift estimate candidate
+
+- Added a page-only Gift estimate desk and static Dashboard discovery. One deliberately selected native gift can be linked to an exact reproduced source-model version and fresh artifact checksum, with explicit money/date, budget, applicability, fixed-credit and exclusion assumptions. Unlinked gifts and unmapped portions remain unknown; lifetime aggregation stays open.
+- Added complete outgoing JSON review, exact download acknowledgment, historical-only packet inspection, deliberate original-file requalification and separate literal unfinished-writing recovery. Existing keys, donor/Model Kit native formats, frozen arithmetic and empty public source-model registry remain unchanged. No rating, payment, provider, account or shared-OS action is introduced.
+- Passed 26 focused groups/strict typing and the complete 581-page local build/check. Actual fictional in-app-browser Save/chooser/requalification, two real fixed-worker matches, wrong-source refusal, literal-writing recovery and bounded 390-pixel light/dark reading pass. [Acceptance](docs/GIFT_ESTIMATE_ACCEPTANCE.md) records exact source/file identities, retained failures and remaining CI/publication, Mac dialog and broader accessibility/lifecycle limits. This is conditional software evidence, not measured impact or independent human method review.
 ## November 7, 2026: Learning report readability and release preparation
 
 - Corrected source-code text and keyboard-focus colors to use the OS theme variables. Actual 390-pixel light/dark reading, focus and scrolling passed after visual review caught the original dark-text failure.

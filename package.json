@@ -13,7 +13,7 @@
     "dev": "astro dev",
     "build": "node scripts/zip-extension.mjs && astro build && pagefind --site dist --silent",
     "preview": "astro preview",
-    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions && npm run check:observations && npm run check:program-record-recovery && npm run check:remaining-record-recovery && npm run check:directory-resources && npm run check:disasters && npm run check:model-bundles && npm run check:fundraising && npm run check:charity-start && npm run check:website-pilot && npm run check:humanitarian-funding && npm run check:output-cost-planner",
+    "check": "node scripts/check-content.mjs && node scripts/check-links.mjs && npm run check:social && npm run check:extension && npm run check:roadmap && npm run check:completion && npm run check:references && npm run check:types && npm run check:study-register && npm run check:artifact-results && npm run check:research-ledger && npm run check:program-graph && npm run check:learning-portfolio && npm run check:domain-redirect && npm run check:donor-recovery && npm run check:publication-editions && npm run check:observations && npm run check:program-record-recovery && npm run check:remaining-record-recovery && npm run check:directory-resources && npm run check:disasters && npm run check:model-bundles && npm run check:fundraising && npm run check:charity-start && npm run check:website-pilot && npm run check:humanitarian-funding && npm run check:output-cost-planner && npm run check:gift-estimate",
     "test": "npm run build && npm run check",
     "extension:zip": "node scripts/zip-extension.mjs",
     "images": "node scripts/make-images.mjs",
@@ -57,7 +57,8 @@
     "check:model-runtime": "node scripts/check-model-runtime.mjs",
     "check:website-pilot": "node scripts/check-website-pilot.mjs",
     "check:humanitarian-funding": "node --test --test-concurrency=1 src/lib/humanitarian-funding/model.test.mjs && node scripts/check-humanitarian-funding.mjs && tsc --noEmit --strict --target es2022 --module esnext --moduleResolution bundler --types node --lib es2022,dom,dom.iterable src/lib/client/humanitarian-funding.ts && node scripts/check-humanitarian-funding-build.mjs",
-    "check:output-cost-planner": "python3 scripts/check-output-cost-planner.py"
+    "check:output-cost-planner": "python3 scripts/check-output-cost-planner.py",
+    "check:gift-estimate": "node --test --test-concurrency=1 src/lib/gift-estimate/*.test.mjs && tsc --noEmit --strict --target es2022 --module esnext --moduleResolution bundler --resolveJsonModule --allowSyntheticDefaultImports --types node --lib es2022,dom,dom.iterable src/lib/gift-estimate/model.ts src/lib/gift-estimate/writing.ts src/lib/gift-estimate/ui.ts"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "5.3.0",
