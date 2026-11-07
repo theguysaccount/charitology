@@ -4,6 +4,7 @@ import Entry from '../../layouts/Entry.astro';
 import Badges from '../../components/Badges.astro';
 import CatalogAside from '../../components/CatalogAside.astro';
 import ModelBundles from '../../components/tools/model-bundles.astro';
+import { url } from '../../lib/site';
 
 // Each live tool is a component at src/components/tools/<entry id>.astro.
 // Adding a tool means adding that file and a matching src/content/tools/<id>.md.
@@ -28,7 +29,7 @@ const Tool = tools[`../../components/tools/${entry.id}.astro`]?.default;
   review={entry.data.review}
   sources={entry.data.sources}
 >
-  <Badges slot="badges" status={entry.data.status} />
+  <Fragment slot="badges"><Badges status={entry.data.status} />{entry.id === 'cost-effectiveness-model-kit' && <a class="btn btn-ghost btn-small" href={url('/tools/cost-effectiveness-model-kit/spreadsheet/')}>Output-cost spreadsheet</a>}</Fragment>
   {Tool && (entry.id === 'cost-effectiveness-model-kit' ? <Fragment slot="top"><Tool /><ModelBundles /></Fragment> : <Tool slot="top" />)}
   <Content />
   <CatalogAside slot="aside" entry={entry} />

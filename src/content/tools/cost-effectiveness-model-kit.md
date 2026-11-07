@@ -29,6 +29,12 @@ The kit then runs the model 5,000 times. Each run, or draw, picks every input at
 
 You can save models in your browser, load them again, download the inputs and results as a CSV file, or start from a clearly fictional example.
 
+## Plan output costs in a spreadsheet
+
+[Download the formula-bearing cost-per-output planner](/tools/cost-effectiveness-model-kit/spreadsheet/). One editable worksheet combines a defined output, inclusive planning period, nominal USD cash costs, source notes and explicit bounds. Its included example is fictional. The formulas and native LibreOffice recalculation cases are public.
+
+This separate planning method counts outputs, not measured benefits. It does not import bundles or reproduce the frozen simulation below. Unknown inputs stay distinct from zero, and conditional bounds are not probability intervals.
+
 ## Record and reproduce a model
 
 The reproducible model workspace keeps the calculation with its purpose, population, period, USD cost basis, sources and assumptions. Start with an explicitly chosen illustrative example, copy the calculator's current inputs or write your own. A copied input is still an authored assumption; it does not establish a published source.

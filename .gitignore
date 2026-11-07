@@ -5,7 +5,10 @@ dist/
 *.log
 extension.zip
 .claude/
-public/downloads/
+public/downloads/*
+!public/downloads/output-cost-planner-v1.xlsx
+!public/downloads/output-cost-planner-v1.formulas.json
+!public/downloads/output-cost-planner-v1.verification.json
 
 .projects/cache
 .projects/vault
