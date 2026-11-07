@@ -1,5 +1,11 @@
 # Changelog
 
+## November 7, 2026: one conditional gift estimate candidate
+
+- Added a page-only Gift estimate desk and static Dashboard discovery. One deliberately selected native gift can be linked to an exact reproduced source-model version and fresh artifact checksum, with explicit money/date, budget, applicability, fixed-credit and exclusion assumptions. Unlinked gifts and unmapped portions remain unknown; lifetime aggregation stays open.
+- Added complete outgoing JSON review, exact download acknowledgment, historical-only packet inspection, deliberate original-file requalification and separate literal unfinished-writing recovery. Existing keys, donor/Model Kit native formats, frozen arithmetic and empty public source-model registry remain unchanged. No rating, payment, provider, account or shared-OS action is introduced.
+- Passed 26 focused groups/strict typing and the complete 581-page local build/check. Actual fictional in-app-browser Save/chooser/requalification, two real fixed-worker matches, wrong-source refusal, literal-writing recovery and bounded 390-pixel light/dark reading pass. [Acceptance](docs/GIFT_ESTIMATE_ACCEPTANCE.md) records exact source/file identities, retained failures and remaining CI/publication, Mac dialog and broader accessibility/lifecycle limits. This is conditional software evidence, not measured impact or independent human method review.
+
 ## November 7, 2026: source-bound humanitarian plan funding
 
 - Added a fixed 2025 OCHA FTS/HDX reference beside the existing Gap Map figures and local census, with qualified Cause Atlas/Census links. All 195 country–plan–year rows preserve original strings, missing values, explicit zero, row provenance and exact derived coverage. No overlapping rows are summed into invented country/world totals or mapped to cause, depth or independent need.
