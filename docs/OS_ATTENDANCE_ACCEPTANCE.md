@@ -1,0 +1,49 @@
+# Staff-reported attendance drafts: local acceptance
+
+November 7, 2026 · AI-assisted implementation and review · unreleased candidate based on `853caa98935c419eebfb90eb82a94f720300fdee` plus the local attendance changes. Local engineering and bounded actual in-app-browser acceptance are recorded below. Exact-head CI, deployment and production acceptance remain pending.
+
+## Working scope
+
+An authorized staff member can review an ended managed event session or volunteer shift and explicitly report attendance for the **whole occurrence**. At least one current confirmed booking supplies context. Confirmed places never supply, default or cap the reported attendance; the count can be zero or greater than confirmations. This is a staff assertion, not participant check-in or evidence of an outcome.
+
+The exact review produces one ordinary attendance record at draft/revision 1, with no approval or snapshot. Event registration and walk-in counts remain `null` unless separately known or authored. Known parent counts are preserved; submitting `null` cannot erase them to bypass consistency checks. Volunteer participants retain the explicit whole count, while minutes remain `null`. No actual attendance times, hours, contact ownership, service outcomes, booking changes or messages are inferred.
+
+The implementation is in [the attendance helper](../services/charity-os/lib/attendance-from-bookings.mjs), [central participation guards](../services/charity-os/lib/participation-guards.mjs) and the existing [handler](../services/charity-os/lib/handler.mjs). The [staff controller](../services/charity-os/public/participation.js) retains literal form values when a review becomes stale or a response is unresolved.
+
+## Review, Retry and compatibility
+
+Context, preview and create use dedicated staff routes under `/api/orgs/:orgId/participation-targets/:targetId/attendance`. They require a live verified session, current module-write permission, program scope and complete visibility of the occurrence, program and confirmed booking context. Partial or hidden context cannot produce a count. The reviewed candidate and source revisions are bound to a ten-minute, purpose-specific signed preview. Requests are bounded at 8,192 bytes and counts at explicit integers from zero through 1,000,000,000.
+
+Create, its signed live audit receipt and workspace-capacity checks share the existing organization transaction/lock. An unresolved result retains the exact preview token and command key for deliberate Retry. An accepted exact Retry may reconcile after preview expiry or source changes, but still requires current access and the same authorized session/membership incarnation. It returns the actual later record, including ordinary corrections, cancellation or trash, rather than resetting its revision or approval.
+
+Only a committed helper receipt reserves its occurrence against a new generic attendance identity. Helper-first blocks later new generic rows; generic-first makes the helper refuse. Existing manual/manual creation rules and legacy corrections stay compatible. Multiple legacy aggregates require ordinary review. A helper-owned record keeps its kind, parent, program and null contact identity; its counts and ordinary workflow remain editable.
+
+Complete backup/restore preserves typed counts and unknowns, with the existing ordinary approval resets. Restored attendance prevents another helper aggregate, but archived original audit events never become live command receipts. No new table or schema migration is introduced.
+
+## Executed local checks
+
+- The initial complete OS unit/controller run passed **683/683**, with no skips. The focused backend set passed **50/50**, including 18 attendance groups; the focused set was repeated after the fixture correction below. After the browser finding below, the complete run passed **684/684** and the focused participation controller passed **27/27**.
+- **199/199 actual isolated PostgreSQL tests** passed, with no skips, in a new owned loopback PostgreSQL 17.11 fixture. The focused attendance run passed **7/7** counted tests: six scenarios plus their parent test. These cover read-only context, zero/null semantics, exact Retry retaining a later revision, helper/generic concurrency, unchanged manual compatibility, mandatory-audit rollback and inactive restore. Synthetic verified auth rows are explicit test assistance; they do not prove real sign-in, independent human review or attendance.
+- Syntax and diff checks passed. The browser controller's mounted tests are part of local engineering evidence, not actual browser acceptance.
+
+The first PostgreSQL attempt failed during fixture setup: an active booking referenced an already-completed parent. That failure is retained separately, with log SHA-256 `631690342662867e62623c5d4cf49e92d3a326ce51c40260bb21ed1df5da22cf`. The corrected seed uses an ended-by-time open occurrence, preserving the production validator and current approval. Retry and restore scenarios now create their own source/preview/record instead of depending on an earlier scenario's success. The corrected focused run's log SHA-256 is `3a91c875b8c713ebe2de7e9a6471f4d0ce4abcc61007bef7112ef6685f096f0e`.
+
+The recorded profiles run the native-admission generator with `--check`, then all `test/*.test.mjs` and `public/*.test.js` with Node test concurrency 2; the isolated DB profile runs `test-db/*.test.mjs` with concurrency 1. Feature cases are in [backend tests](../services/charity-os/test/attendance.test.mjs), [actual PostgreSQL tests](../services/charity-os/test-db/attendance.test.mjs) and [mounted controller tests](../services/charity-os/public/participation.test.js). The full unit log hashes to `81e9d41ee859be8f59d3be4c6ad977c432caf8d5829f52445055731d6f4ad23b`; the full actual-DB log hashes to `c2dd895fbce626b377b42207a564339e6af3bbb52428926a89a814f0e7657c34`. These are local run records, not a later exact-head CI claim.
+
+## Actual local browser and response-loss Retry
+
+The first actual browser fixture completed an 11-request workflow but found **Reload current context disabled before any input**: the control was created while the outer workspace was busy and was not resynchronized when work finished. That finding and its original source remain retained. The narrow correction resynchronizes only the live attendance editor after the busy flag clears. Its mounted regression fails the prior source. The corrected UI SHA-256 is `c6d8ea2120570ba9e8cf7f0d992ac8ef456c32b0c184ce7d9735de675b1e08f7`; the subsequent 684-test log is 68,698 bytes, SHA-256 `5fdba5f0f152c34ca1e8e29676575cdad7fdcc773be208d14beb8d1aa3c192f5`.
+
+The version-2 fixture used the actual participation client, HTTP handler and constrained isolated PostgreSQL. Staff authentication and source approvals were explicitly synthetic. Actual in-app-browser controls verified initial Reload enabled before editing, a real context GET retaining blank inputs, a visible focused scope-validation error with literal title/count retained, then a reported whole count of **7 with 2 confirmed bookings** and unknown registration/walk-in counts.
+
+The fixture deliberately dropped the first successful Create response **after the real handler committed**. The UI kept an unresolved command; explicit Retry sent the identical 1,294-byte JSON request body and returned the existing draft. The ordinary record GET showed revision 1, no approval/snapshot and one history event. Database inspection found exactly one attendance row, one receipt, two unchanged confirmed bookings and zero outbox/jobs. Twelve actual handler requests returned status 200; one successful reply was intentionally not delivered to the client. No provider or email action occurred.
+
+The aggregate browser proof is 4,417 bytes, SHA-256 `338f723ac865f5e58ae38a77dd5407c638ec0339103484a66691307885b3c3f2`. Independent offline review rehashed its 17 referenced evidence files and all manifest source/static pins, and reconciled the browser's displayed ordinary JSON with the DB facts. HTTP receipts retain body lengths and hashes computed by the fixture; raw request/response bodies were not separately retained, so this is not an independent raw-body rehash claim. No whole-wire, hosted transport, real sign-in or participant/human-review acceptance is inferred.
+
+Dispose removed the private workspace and ordinary-record DOM. The owned tab closed, server exited 0 with zero sockets, the owned schema was removed and root recorded the owned local cluster stopped with its PID file absent. The offline review checked retained cleanup evidence without reconnecting or querying processes.
+
+## Remaining gates
+
+Full keyboard, narrow-screen, screen-reader and broader browser acceptance, exact-head CI and release remain pending. The bounded local browser/HTTP Retry above does not establish them. This candidate supplies no deployment, production DB, provider or mail operation. Learning's native Print, BFCache and other acceptance gates retain their separate status in [Learning acceptance](OS_LEARNING_BRIDGE_ACCEPTANCE.md).
+
+This does **not** complete `OS-PART-01`: participant-requested intervals, partial-shift occupancy/overlap and participant check-in remain open. Group bookings, recurring participation, substitutions, screening, shared-resource capacity and broader volunteer/member journeys also remain separate in [the current backlog](CURRENT_IMPLEMENTATION_BACKLOG.md). The [original 66-item brief](ORIGINAL_BRIEF.md), historical acceptance and booked-place/consent/delivery semantics remain intact. No charity pilot, independent human reviewer, actual attendance or charitable result is established by fictional tests.

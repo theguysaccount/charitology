@@ -131,6 +131,9 @@ async function staffHarness({
   delivery = false,
   admin = true,
   deliveryGate = null,
+  attendance = false,
+  attendanceModule = "events",
+  attendanceRequest = null,
 } = {}) {
   class Element {
     constructor(tag) {
@@ -211,7 +214,7 @@ async function staffHarness({
         );
       this.connect(false);
     }
-    focus() {}
+    focus() { globalThis.document.activeElement = this; }
     scrollIntoView() {}
     reportValidity() {
       return true;
@@ -253,12 +256,17 @@ async function staffHarness({
         enabled: false,
         templateVersion: "participation-notice-v1",
       },
+      attendanceSourceRevision: 7,
+      knownRegisteredCount: null,
+      knownWalkInCount: null,
+      attendanceExisting: null,
+      attendanceCanPrepare: true,
     },
     calls = [],
     changes = [];
   const target = () => ({
     targetId: "target",
-    moduleId: "events",
+    moduleId: attendance ? attendanceModule : "events",
     title: terms.title,
     revision: model.managed ? 3 : 0,
     mode: model.managed ? "managed" : "unmanaged",
@@ -291,8 +299,43 @@ async function staffHarness({
     canCancel: true,
   });
   const base = "/api/orgs/org/participation-targets";
+  const attendanceSource = () => ({
+    method: "whole-occurrence-staff-reported-v1", scope: "whole-occurrence",
+    targetId: "target", moduleId: attendanceModule, sourceRevision: model.attendanceSourceRevision,
+    sourceStatus: "completed", managedRevision: 3, termsHash: "h".repeat(64), programId: "program",
+    title: "Fictional ended occurrence", startAt: "2026-01-01T12:00:00Z", endAt: "2026-01-01T14:00:00Z", timeZone: "UTC",
+    confirmedPlaces: 2, knownRegisteredCount: model.knownRegisteredCount,
+    knownWalkInCount: model.knownWalkInCount, ledgerSha256: "b".repeat(64), restoreEpochSha256: "c".repeat(64),
+  });
+  const attendanceContext = () => ({
+    ok: true,
+    target: { id: "target", orgId: "org", moduleId: attendanceModule, programId: "program", title: "Fictional ended occurrence", status: "completed", revision: model.attendanceSourceRevision, startAt: "2026-01-01T12:00:00Z", endAt: "2026-01-01T14:00:00Z", timeZone: "UTC" },
+    canPrepare: model.attendanceCanPrepare && !model.attendanceExisting,
+    contextSha256: model.attendanceCanPrepare && !model.attendanceExisting ? "a".repeat(64) : null,
+    sourceContext: model.attendanceCanPrepare && !model.attendanceExisting ? attendanceSource() : null,
+    reason: model.attendanceExisting ? "Attendance is already recorded." : model.attendanceCanPrepare ? null : "Current occurrence is unavailable.",
+    existing: model.attendanceExisting,
+  });
+  const attendanceCandidate = body => ({
+    id: "attendance-draft", orgId: "org", moduleId: attendanceModule,
+    status: "draft", revision: 1, ownerId: "staff-author", lastEditedBy: "staff-author", approval: null, snapshot: null, source: null,
+    data: { title: body.title.trim(), kind: "attendance", programId: "program", contactId: null, startAt: null, endAt: null, timeZone: null,
+      ...(attendanceModule === "events" ? { eventId: "target", attendanceCount: body.reportedAttendance, registeredCount: body.registeredCount, walkInCount: body.walkInCount } : { shiftId: "target", participants: body.reportedAttendance, minutes: null }) },
+  });
   const request = async (path, options = {}) => {
     calls.push({ path, ...options });
+    if (attendance && path.startsWith(`${base}/target/attendance`)) {
+      if (attendanceRequest) {
+        const handled = await attendanceRequest({ path, options, model, context: attendanceContext, candidate: attendanceCandidate });
+        if (handled !== undefined) return handled;
+      }
+      if (path === `${base}/target/attendance`) return attendanceContext();
+      if (path === `${base}/target/attendance/preview`) {
+        model.lastAttendanceCandidate = attendanceCandidate(options.body);
+        return { ok: true, previewToken: "exact-attendance-preview", expiresAt: "2099-01-01T00:00:00Z", preview: { method: "whole-occurrence-staff-reported-v1", scope: "whole-occurrence", sourceContext: attendanceSource(), candidate: model.lastAttendanceCandidate } };
+      }
+      if (path === `${base}/target/attendance/create`) return { ok: true, kind: "created", record: model.lastAttendanceCandidate, disposition: "active" };
+    }
     const deliveryBase = "/api/orgs/org/participation-delivery";
     if (
       delivery &&
@@ -454,6 +497,7 @@ async function staffHarness({
       model,
       calls,
       changes,
+      revoke() { active = false; },
       flush,
       click,
       cleanup() {
@@ -468,6 +512,248 @@ async function staffHarness({
     throw error;
   }
 }
+
+async function enterAttendance(h, { count = "0", title = "  Fictional whole attendance 😀  ", registered = "", walkIn = "" } = {}) {
+  await h.click("Load occurrence for attendance");
+  for (const [id, value] of [["attendance-title", title], ["attendance-reported", count], ["attendance-registered", registered], ["attendance-walk-in", walkIn]]) {
+    const control = h.root.querySelector(`#${id}`);
+    if (control && !control.readOnly) { control.value = value; await control.emit("input"); }
+  }
+  const scope = h.root.querySelector("#attendance-whole-check"); scope.checked = true; await scope.emit("change");
+  const form = h.root.querySelector("form"); await form.emit("submit"); await h.flush();
+  return form;
+}
+
+test("attendance context reload is usable immediately after opening, before any field edits", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    await h.click("Load occurrence for attendance");
+    const reload = h.root.querySelectorAll("button").find(el => el.textContent === "Reload current attendance context");
+    assert.ok(reload);
+    assert.equal(reload.disabled, false, "New controls must be resynchronized after the opening work finishes");
+    assert.equal(h.root.querySelector("#attendance-reported").value, "");
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance")).length, 1);
+    h.model.attendanceSourceRevision++;
+    h.model.knownRegisteredCount = 5;
+    await h.click("Reload current attendance context");
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance")).length, 2, "The immediately enabled control performs the real context read");
+    assert.match(h.root.textContent, /Registrations already recorded in the occurrence: 5/);
+    assert.match(h.root.textContent, /Current occurrence context loaded\. Your literal entries are kept/);
+    assert.equal(h.root.querySelector("#attendance-reported").value, "");
+    assert.equal(reload.disabled, false);
+    assert.equal(h.calls.some(call => call.path.endsWith("/attendance/preview") || call.path.endsWith("/attendance/create")), false);
+  } finally { h.cleanup(); }
+});
+
+test("whole-occurrence attendance explicitly reviews zero/null values and creates only one unapproved ordinary draft", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    await enterAttendance(h);
+    const preview = h.calls.find(call => call.path.endsWith("/attendance/preview"));
+    assert.deepEqual(preview.body, { contextSha256: "a".repeat(64), title: "  Fictional whole attendance 😀  ", reportedAttendance: 0, registeredCount: null, walkInCount: null, wholeOccurrence: true });
+    assert.match(h.root.textContent, /Whole-occurrence attendance: 0/);
+    assert.match(h.root.textContent, /Registrations: Unknown \/ not recorded\. Walk-ins: Unknown/);
+    assert.equal(h.calls.some(call => call.path.endsWith("/attendance/create")), false);
+    const create = h.root.querySelectorAll("button").find(el => el.textContent === "Create unapproved attendance draft");
+    assert.equal(create.disabled, true);
+    const ack = h.root.querySelector("#attendance-review-check"); ack.checked = true; await ack.emit("change");
+    await Promise.all([create.emit("click"), create.emit("click")]); await h.flush();
+    const calls = h.calls.filter(call => call.path.endsWith("/attendance/create"));
+    assert.equal(calls.length, 1); assert.equal(calls[0].body.previewToken, "exact-attendance-preview"); assert.ok(calls[0].body.idempotencyKey);
+    const link = h.root.querySelectorAll("a").find(el => el.attributes.href === "#module/events/attendance-draft"); assert.ok(link);
+    assert.match(h.root.textContent, /Unapproved attendance draft created/); assert.equal(h.changes.length, 1);
+    assert.equal(h.calls.some(call => /\/approve|\/transition|\/confirm|\/activate/.test(call.path)), false);
+  } finally { h.cleanup(); }
+});
+
+test("whole attendance may exceed confirmations, while explicit event zero counts remain distinct from unknown", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    const form = await enterAttendance(h, { count: "7" });
+    assert.equal(h.calls.find(call => call.path.endsWith("/attendance/preview")).body.reportedAttendance, 7);
+    const registered = h.root.querySelector("#attendance-registered"), walkIn = h.root.querySelector("#attendance-walk-in"), count = h.root.querySelector("#attendance-reported");
+    count.value = "0"; await count.emit("input"); registered.value = "0"; await registered.emit("input"); walkIn.value = "0"; await walkIn.emit("input");
+    assert.equal(h.root.querySelector("#attendance-review-check"), null, "Editing removes the previous acknowledged proposal");
+    const scope = h.root.querySelector("#attendance-whole-check"); scope.checked = true; await scope.emit("change"); await form.emit("submit"); await h.flush();
+    const body = h.calls.filter(call => call.path.endsWith("/attendance/preview")).at(-1).body;
+    assert.equal(body.registeredCount, 0); assert.equal(body.walkInCount, 0); assert.match(h.root.textContent, /Registrations: 0\. Walk-ins: 0/);
+  } finally { h.cleanup(); }
+});
+
+test("volunteer attendance preserves unknown minutes and has no event-count or scheduled-hours inputs", async () => {
+  const h = await staffHarness({ managed: true, attendance: true, attendanceModule: "volunteers" });
+  try {
+    await enterAttendance(h, { count: "3" });
+    const body = h.calls.find(call => call.path.endsWith("/attendance/preview")).body;
+    assert.equal(body.reportedAttendance, 3); assert.equal(body.registeredCount, null); assert.equal(body.walkInCount, null);
+    assert.equal(h.root.querySelector("#attendance-registered"), null);
+    assert.match(h.root.textContent, /Recorded minutes: Unknown \/ not recorded/);
+    assert.equal(h.model.lastAttendanceCandidate.data.minutes, null);
+    assert.equal(h.model.lastAttendanceCandidate.data.startAt, null);
+    assert.equal(h.model.lastAttendanceCandidate.data.endAt, null);
+  } finally { h.cleanup(); }
+});
+
+test("known occurrence zero counts are visible read-only facts, while count inputs retain native labels and constraints", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    h.model.knownRegisteredCount = 0; h.model.knownWalkInCount = 0;
+    await enterAttendance(h);
+    const registered = h.root.querySelector("#attendance-registered"), walkIn = h.root.querySelector("#attendance-walk-in");
+    assert.equal(registered.value, "0"); assert.equal(walkIn.value, "0");
+    assert.equal(registered.readOnly, true); assert.equal(walkIn.readOnly, true);
+    const body = h.calls.find(call => call.path.endsWith("/attendance/preview")).body;
+    assert.equal(body.registeredCount, 0); assert.equal(body.walkInCount, 0);
+    assert.ok(h.root.querySelectorAll("label").some(el => el.attributes.for === "attendance-reported"));
+    assert.equal(h.root.querySelector("#attendance-reported").required, true);
+    assert.match(h.root.textContent, /Registrations already recorded in the occurrence: 0/);
+  } finally { h.cleanup(); }
+});
+
+test("blank/fractional/out-of-range attendance and missing whole-scope acknowledgment never request review", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    await h.click("Load occurrence for attendance");
+    const form = h.root.querySelector("form"), count = h.root.querySelector("#attendance-reported"), scope = h.root.querySelector("#attendance-whole-check");
+    for (const value of ["", " ", "-1", "1.5", "1000000001", "not a number"]) {
+      count.value = value; await count.emit("input"); scope.checked = true; await scope.emit("change"); await form.emit("submit"); await h.flush();
+      assert.equal(h.calls.some(call => call.path.endsWith("/attendance/preview")), false);
+      assert.equal(globalThis.document.activeElement.attributes.role, "status");
+    }
+    count.value = "0"; await count.emit("input"); await form.emit("submit"); await h.flush();
+    assert.match(h.root.textContent, /Confirm that this is an observed count for the whole occurrence/);
+    assert.equal(h.calls.some(call => call.path.endsWith("/attendance/preview")), false);
+    assert.equal(h.root.querySelector("#attendance-title").attributes.maxlength, "180");
+    assert.equal(count.attributes.min, "0"); assert.equal(count.attributes.step, "1");
+  } finally { h.cleanup(); }
+});
+
+test("a stale create preserves literal form, requires fresh context and keeps changed known source counts explicit", async () => {
+  let refused = false;
+  const h = await staffHarness({ managed: true, attendance: true, attendanceRequest: ({ path }) => {
+    if (path.endsWith("/create") && !refused) { refused = true; throw Object.assign(new Error("Source changed"), { status: 409, code: "attendance_stale" }); }
+  } });
+  try {
+    await enterAttendance(h, { count: "4", registered: "8" });
+    const ack = h.root.querySelector("#attendance-review-check"); ack.checked = true; await ack.emit("change"); await h.click("Create unapproved attendance draft");
+    assert.equal(h.root.querySelector("#attendance-title").value, "  Fictional whole attendance 😀  ");
+    assert.equal(h.root.querySelector("#attendance-reported").value, "4");
+    assert.equal(h.root.querySelector("#attendance-registered").value, "8");
+    assert.equal(h.root.querySelector("#attendance-review-check"), null);
+    assert.equal(h.root.querySelectorAll("button").find(el => el.textContent === "Review exact attendance draft").disabled, true);
+    h.model.attendanceSourceRevision = 8; h.model.knownRegisteredCount = 9;
+    await h.click("Reload current attendance context");
+    assert.equal(h.root.querySelector("#attendance-registered").value, "8", "Refreshing source does not silently replace literal input");
+    assert.match(h.root.textContent, /Registrations already recorded in the occurrence: 9/);
+    await h.click("Use recorded registrations value");
+    assert.equal(h.root.querySelector("#attendance-registered").value, "9"); assert.equal(h.root.querySelector("#attendance-registered").readOnly, true);
+    assert.equal(h.root.querySelector("#attendance-whole-check").checked, false);
+  } finally { h.cleanup(); }
+});
+
+test("unknown create then rate refusal retains one exact command and blocks replacement proposals until explicit Retry resolves it", async () => {
+  let attempts = 0;
+  const h = await staffHarness({ managed: true, attendance: true, attendanceRequest: ({ path, model }) => {
+    if (!path.endsWith("/create")) return;
+    if (++attempts === 1) throw Object.assign(new Error("Interrupted"), { status: 0, code: "connection_interrupted" });
+    if (attempts === 2) throw Object.assign(new Error("Wait"), { status: 429, code: "rate" });
+    return { ok: true, kind: "already-created", disposition: "active", record: { ...model.lastAttendanceCandidate, revision: 3, status: "review" } };
+  } });
+  try {
+    await enterAttendance(h, { count: "1" });
+    const ack = h.root.querySelector("#attendance-review-check"); ack.checked = true; await ack.emit("change"); await h.click("Create unapproved attendance draft");
+    assert.equal(h.root.querySelector("#attendance-reported").disabled, true);
+    assert.equal(h.root.querySelectorAll("button").find(el => el.textContent === "Create unapproved attendance draft").disabled, true);
+    await h.click("Refresh occurrence");
+    assert.match(h.root.textContent, /Resolve the earlier attendance create/);
+    await h.click("Retry exact attendance create"); await h.click("Retry exact attendance create");
+    const calls = h.calls.filter(call => call.path.endsWith("/attendance/create")); assert.equal(calls.length, 3);
+    assert.deepEqual(calls[0].body, calls[1].body); assert.deepEqual(calls[1].body, calls[2].body);
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance/preview")).length, 1);
+    assert.match(h.root.textContent, /review · revision 3/); assert.match(h.root.textContent, /No second draft or approval/); assert.equal(h.changes.length, 1);
+  } finally { h.cleanup(); }
+});
+
+test("an unreadable successful create remains unresolved until an explicit current-record read reconciles it", async () => {
+  const h = await staffHarness({ managed: true, attendance: true, attendanceRequest: ({ path }) => {
+    if (path.endsWith("/create")) return { ok: true, record: null };
+  } });
+  try {
+    await enterAttendance(h, { count: "2" });
+    const ack = h.root.querySelector("#attendance-review-check"); ack.checked = true; await ack.emit("change"); await h.click("Create unapproved attendance draft");
+    assert.match(h.root.textContent, /response is unresolved/);
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance/create")).length, 1);
+    h.model.attendanceExisting = { disposition: "active", record: h.model.lastAttendanceCandidate };
+    await h.click("Reload current attendance context");
+    assert.match(h.root.textContent, /A saved attendance record is present\. No create was repeated/);
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance/create")).length, 1);
+    assert.equal(h.root.querySelector("#attendance-reported").value, "2");
+    assert.equal(h.changes.length, 1);
+  } finally { h.cleanup(); }
+});
+
+test("a mismatched subset preview is refused without losing the whole-occurrence authored draft", async () => {
+  const h = await staffHarness({ managed: true, attendance: true, attendanceRequest: ({ path, options, context, candidate }) => {
+    if (path.endsWith("/preview")) return { ok: true, previewToken: "wrong-scope", expiresAt: "2099-01-01T00:00:00Z", preview: { method: "whole-occurrence-staff-reported-v1", scope: "confirmed-only", sourceContext: context().sourceContext, candidate: candidate(options.body) } };
+  } });
+  try {
+    await enterAttendance(h, { count: "3" });
+    assert.match(h.root.textContent, /preview could not be verified/);
+    assert.equal(h.root.querySelector("#attendance-review-check"), null);
+    assert.equal(h.root.querySelector("#attendance-title").value, "  Fictional whole attendance 😀  ");
+    assert.equal(h.root.querySelector("#attendance-reported").value, "3");
+    assert.equal(h.calls.some(call => call.path.endsWith("/attendance/create")), false);
+  } finally { h.cleanup(); }
+});
+
+test("an accepted-key payload conflict requires reconciliation rather than a replacement command", async () => {
+  const h = await staffHarness({ managed: true, attendance: true, attendanceRequest: ({ path }) => {
+    if (path.endsWith("/create")) throw Object.assign(new Error("Different accepted request"), { status: 409, code: "attendance_command" });
+  } });
+  try {
+    await enterAttendance(h);
+    const ack = h.root.querySelector("#attendance-review-check"); ack.checked = true; await ack.emit("change"); await h.click("Create unapproved attendance draft");
+    assert.match(h.root.textContent, /different accepted request/);
+    assert.equal(h.root.querySelectorAll("button").find(el => el.textContent === "Retry exact attendance create").disabled, true);
+    assert.equal(h.root.querySelector("#attendance-reported").disabled, true);
+    await h.click("Reload current attendance context");
+    assert.match(h.root.textContent, /does not prove the earlier create failed/);
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance/create")).length, 1);
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance/preview")).length, 1);
+  } finally { h.cleanup(); }
+});
+
+test("ineligible/existing contexts do not expose a second create, and trashed records use ordinary recovery", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    h.model.attendanceCanPrepare = false;
+    await h.click("Load occurrence for attendance");
+    assert.match(h.root.textContent, /Current occurrence is unavailable/);
+    assert.equal(h.root.querySelectorAll("button").find(el => el.textContent === "Review exact attendance draft").disabled, true);
+    h.model.attendanceExisting = { disposition: "trash", record: { id: "old-attendance", orgId: "org", moduleId: "events", status: "cancelled", revision: 4 } };
+    await h.click("Reload current attendance context");
+    assert.match(h.root.textContent, /An attendance record is in Trash/);
+    assert.ok(h.root.querySelectorAll("a").find(el => el.attributes.href === "#module/events"));
+    assert.equal(h.calls.some(call => call.path.endsWith("/attendance/create")), false);
+  } finally { h.cleanup(); }
+});
+
+test("completed preview delivery after current scope is lost cannot restore a review or authorize create", async () => {
+  let release, entered;
+  const started = new Promise(resolve => { entered = resolve; }), gate = new Promise(resolve => { release = resolve; });
+  const h = await staffHarness({ managed: true, attendance: true, attendanceRequest: async ({ path }) => {
+    if (path.endsWith("/preview")) { entered(); await gate; }
+  } });
+  try {
+    await h.click("Load occurrence for attendance");
+    const count = h.root.querySelector("#attendance-reported"); count.value = "6"; await count.emit("input");
+    const scope = h.root.querySelector("#attendance-whole-check"); scope.checked = true; await scope.emit("change");
+    const pending = h.root.querySelector("form").emit("submit"); await started;
+    h.revoke(); release(); await pending; await h.flush();
+    assert.equal(h.root.querySelector("#attendance-review-check"), null);
+    assert.equal(count.value, "6"); assert.equal(h.calls.some(call => call.path.endsWith("/attendance/create")), false);
+  } finally { release(); h.cleanup(); }
+});
 
 test("staff adoption requires explicit review and sends source revision plus the exact frozen preview", async () => {
   const h = await staffHarness();

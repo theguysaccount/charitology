@@ -24,6 +24,14 @@ Accounting and payroll records hold external references, aggregate reconciliatio
 
 The public AI Charitologist remains a source-retrieval tool. This service does not introduce an autonomous recommendation model or claim independently verified impact.
 
+## Staff-reported attendance candidate
+
+The local candidate adds a staff review → exact preview → ordinary unapproved attendance draft for an ended managed event or volunteer shift. The staff member reports the whole occurrence; confirmed bookings are context and never supply or cap the count. Event registrations/walk-ins remain unknown unless separately known or authored. Volunteer minutes and actual attendance times remain unknown. This is not participant check-in, partial-shift scheduling or outcome evidence.
+
+An unresolved create keeps one exact command for deliberate Retry. An accepted Retry returns the later ordinary record, including corrections or trash, without resetting its workflow. Only a live helper receipt reserves its occurrence against a new generic attendance identity; existing manual/manual behavior remains compatible. Backup/restore preserves counts without reviving original receipts or approval. No new table, provider or email path is added.
+
+[Attendance acceptance](../../docs/OS_ATTENDANCE_ACCEPTANCE.md) records the initial 683-test run, corrected 684-test run, 199 actual isolated PostgreSQL tests and the retained seed/browser-control findings. The actual local in-app-browser/HTTP fixture verified an explicit identical Retry after a committed response was deliberately lost, leaving one ordinary draft. Authentication/approvals were synthetic; this does not prove hosted sign-in, real attendance or full accessibility. Exact-head CI and deployment remain pending. [The current implementation backlog](../../docs/CURRENT_IMPLEMENTATION_BACKLOG.md) separates this slice from remaining participation and original-program work.
+
 ## Learning and review
 
 The current implementation connects an explicitly chosen native theory-of-change export or Nonprofit Advisory backup to an existing program. It creates ordinary indicator and protocol drafts, then connects approved observations to an authored review decision and a fixed private report. The [contract](../../docs/OS_LEARNING_BRIDGE_PLAN.md) defines the exact source and approval boundaries. The [acceptance record](../../docs/OS_LEARNING_BRIDGE_ACCEPTANCE.md) records which versions have passed tests; production release and actual browser acceptance remain pending in this checkpoint.
@@ -236,6 +244,8 @@ All organization paths below start with `/api/orgs/:orgId`. Current membership a
 | `GET /intake/submissions`, `GET /intake/submissions/:id` | Administrator-only private queue, filters, cursor pages and detail. |
 | `POST /intake/submissions/:id/review` | Expected-revision review, dismissal, draft conversion or answer erasure. |
 | `GET /participation-targets`, `GET /participation-targets/:id` | Scoped-writer occurrence list and adoption preview. |
+| `GET /participation-targets/:id/attendance` | Current full staff attendance context or ordinary existing-record disposition; confirmations are context only. Local candidate, release pending. |
+| `POST /participation-targets/:id/attendance/preview`, `/create` | Exact whole-occurrence unapproved-draft review and deliberate create/accepted-command Retry. Local candidate, release pending. |
 | `POST /participation-targets/:id/adopt` | Administrator acceptance of exact hashed legacy occupancy. |
 | `GET, POST /participation-targets/:id/participations` | Scoped-writer roster pages or deliberate typed-candidate association. |
 | `POST /participation-targets/:id/participations/:participationId/:action` | Expected-revision `consent`, `waitlist`, `confirm`, `promote` or `cancel`. |

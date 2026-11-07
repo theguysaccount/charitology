@@ -1,5 +1,11 @@
 # Changelog
 
+## November 7, 2026: staff attendance candidate, unreleased
+
+- Added explicit staff-reported whole-occurrence event/volunteer attendance drafts with exact review and durable accepted-command Retry. Bookings supply context, not attendance or hours; unknown facts remain null.
+- Kept ordinary manual corrections, inactive restore and helper-only occurrence reservation compatible. Added no schema migration, provider or mail operation.
+- [Acceptance](docs/OS_ATTENDANCE_ACCEPTANCE.md) preserves the initial 683-test run, corrected 684-test run, 199 actual isolated PostgreSQL tests and retained seed/initial-Reload findings. Actual local in-app-browser controls and real HTTP/PG verified an identical explicit Retry after deliberate committed-response loss, with one ordinary draft; auth and approvals were synthetic. Broader accessibility, exact-head CI and deployment remain pending. [The current backlog](docs/CURRENT_IMPLEMENTATION_BACKLOG.md) preserves all 66 original items and separates the remaining software, human and release work.
+
 ## November 5, 2026: reproducible model bundles
 
 - Added private authored model versions, explicit selected-file reproduction, complete backup/restore and a command-line verifier beside the original calculator and CSV. Fixed foreign-save recovery and already-recorded-copy loss of unfinished writing.

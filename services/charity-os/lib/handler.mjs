@@ -74,6 +74,10 @@ import {
 } from "./participation.mjs";
 import { guardParticipationWrite } from "./participation-guards.mjs";
 import {
+  attendanceRoutes,
+  readAttendanceBody,
+} from "./attendance-from-bookings.mjs";
+import {
   deliveryRoutes,
   ownDeliveryRoutes,
   runParticipationDelivery,
@@ -343,7 +347,11 @@ export function createHandler({
       if (learningResponse) return learningResponse;
       const input = ["GET", "HEAD"].includes(method)
         ? {}
-        : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/task-recurrence(?:\/|$)/.test(
+        : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/participation-targets\/[A-Za-z0-9_-]+\/attendance(?:\/|$)/.test(
+              path,
+            )
+          ? await readAttendanceBody(request)
+          : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/task-recurrence(?:\/|$)/.test(
               path,
             )
           ? await readTaskRecurrenceBody(request)
@@ -358,6 +366,16 @@ export function createHandler({
                 ? 16384
                 : 8 * 1024 * 1024,
             );
+      if (
+        /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/participation-targets\/[A-Za-z0-9_-]+\/attendance(?:\/|$)/.test(path)
+      ) {
+        const read = ["GET", "HEAD"].includes(method);
+        await db.limit(
+          `attendance-${read ? "read" : "write"}:${hash(session.user.id)}`,
+          read ? 120 : 60,
+          3600,
+        );
+      }
       if (
         /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/task-recurrence(?:\/|$)/.test(path)
       ) {
@@ -551,6 +569,18 @@ export function createHandler({
             settings,
           });
           if (deliveryResponse) return deliveryResponse;
+          const attendanceResponse = await attendanceRoutes({
+            c,
+            org,
+            user,
+            session,
+            tail,
+            method,
+            input,
+            url,
+            settings,
+          });
+          if (attendanceResponse) return attendanceResponse;
           const participationResponse = await participationRoutes({
             c,
             org,
