@@ -170,6 +170,9 @@ CREATE TABLE IF NOT EXISTS os_participations (
   FOREIGN KEY(org_id,contact_id) REFERENCES os_records(org_id,id),
   FOREIGN KEY(org_id,intake_id) REFERENCES os_intake(org_id,id)
 );
+-- NULL retains the original full-occurrence contract; no historical JSON is rewritten.
+ALTER TABLE os_participations ADD COLUMN IF NOT EXISTS requested_interval jsonb
+  CHECK (requested_interval IS NULL OR (jsonb_typeof(requested_interval)='object' AND octet_length(requested_interval::text)<=1024));
 CREATE UNIQUE INDEX IF NOT EXISTS os_participation_active_contact ON os_participations(org_id,target_id,contact_id) WHERE state<>'cancelled';
 CREATE UNIQUE INDEX IF NOT EXISTS os_participation_intake ON os_participations(org_id,target_id,intake_id) WHERE intake_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS os_participation_target_state ON os_participations(org_id,target_id,state,waitlist_sequence,id);

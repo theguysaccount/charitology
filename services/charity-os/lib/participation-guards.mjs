@@ -1,3 +1,10 @@
+import {
+  createParticipationAllocationContext,
+  managedAllocationProfile,
+  frozenParticipationInterval,
+  intervalsOverlap,
+} from "./participation-intervals.mjs";
+export { intervalsOverlap } from "./participation-intervals.mjs";
 import { fail, stable } from "./security.mjs";
 
 export const participationModule = (m) => ["events", "volunteers"].includes(m);
@@ -10,13 +17,23 @@ export const legacyActive = (m, state) =>
     ? ["scheduled", "open", "completed"]
     : ["open", "assigned", "completed"]
   ).includes(state);
-export const intervalsOverlap = (a, b) =>
-  Number.isFinite(Date.parse(a?.startAt)) &&
-  Number.isFinite(Date.parse(a?.endAt)) &&
-  Number.isFinite(Date.parse(b?.startAt)) &&
-  Number.isFinite(Date.parse(b?.endAt)) &&
-  Date.parse(a.startAt) < Date.parse(b.endAt) &&
-  Date.parse(b.startAt) < Date.parse(a.endAt);
+// Always obtained inside a mutating tenant transaction, after the shared organization lock.
+export async function participationValidationContext(c, org) {
+  await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
+  const targets = (
+    await c.query(
+      "SELECT target_id FROM os_participation_targets WHERE org_id=$1 LIMIT 501",
+      [org],
+    )
+  ).rows;
+  const rows = (
+    await c.query(
+      "SELECT * FROM os_participations WHERE org_id=$1 LIMIT 2001",
+      [org],
+    )
+  ).rows;
+  return createParticipationAllocationContext(targets, rows);
+}
 export async function isManagedParticipationTarget(c, org, targetId) {
   return !!(
     await c.query(
@@ -133,6 +150,7 @@ export async function guardParticipationWrite(
       "startAt",
       "endAt",
       "timeZone",
+      "allowPartialIntervals",
     ]) ||
       record.status === "cancelled")
   )
@@ -142,14 +160,11 @@ export async function guardParticipationWrite(
       "Resolve all noncancelled participations before cancelling or changing this occurrence's identity, program or schedule.",
     );
   if (parent) {
-    const occupied = Number(
-      (
-        await c.query(
-          "SELECT count(*) AS count FROM os_participations WHERE org_id=$1 AND target_id=$2 AND state='confirmed'",
-          [org, record.id],
-        )
-      ).rows[0].count,
-    );
+    const occupied =
+      managedAllocationProfile(
+        await participationValidationContext(c, org),
+        record.id,
+      )?.peakOccupied || 0;
     if (
       occupied &&
       (!Number.isSafeInteger(data.capacity) || data.capacity < occupied)
@@ -174,7 +189,7 @@ export async function guardParticipationWrite(
   if (m !== "volunteers" || operation === "delete") return;
   const commitments = (
     await c.query(
-      "SELECT booking_record_id,contact_id,target_id,frozen FROM os_participations WHERE org_id=$1 AND module_id='volunteers' AND state='confirmed'",
+      "SELECT * FROM os_participations WHERE org_id=$1 AND module_id='volunteers' AND state='confirmed'",
       [org],
     )
   ).rows;
@@ -194,14 +209,16 @@ export async function guardParticipationWrite(
         "SELECT id,data FROM os_records WHERE org_id=$1 AND module_id='volunteers' AND deleted_at IS NULL AND data->>'kind'='assignment' AND data->>'shiftId'=$2 AND status=ANY($3::text[])",
         [org, record.id, ["open", "assigned", "completed"]],
       )
-    ).rows.map((r) => ({ contactId: r.data.contactId, terms: data, id: r.id }));
+    ).rows
+      .filter((r) => !commitments.some((p) => p.booking_record_id === r.id))
+      .map((r) => ({ contactId: r.data.contactId, terms: data, id: r.id }));
   for (const candidate of candidates)
     if (
       commitments.some(
         (p) =>
           p.booking_record_id !== (candidate.id || record.id) &&
           p.contact_id === candidate.contactId &&
-          intervalsOverlap(p.frozen?.terms || p.frozen, candidate.terms),
+          intervalsOverlap(frozenParticipationInterval(p), candidate.terms),
       )
     )
       fail(

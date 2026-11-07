@@ -264,6 +264,8 @@ async function eligibility(
     requireGates = true,
   },
 ) {
+  if (p.state === "confirmed" && p.frozen?.allocationKnown === false)
+    return { reason: "confirmation_required" };
   if (p.recovered || ["legacy", "recovered"].includes(p.source))
     return { reason: "recovered_or_legacy" };
   const { target, source } = await targetState(c, org, p);
@@ -275,13 +277,13 @@ async function eligibility(
     return { reason: "state_ineligible" };
   if (
     snapshot &&
-    (p.state !== "confirmed" || !plain(p.frozen) || !plain(p.frozen.terms))
+    (p.state !== "confirmed" || !plain(p.frozen) || p.frozen.allocationKnown === false || !plain(p.frozen.terms))
   )
     return { reason: "confirmation_required" };
   if (p.state !== "cancelled") {
     if (!approved(source)) return { reason: "current_approval_required" };
     const end =
-      p.state === "confirmed" ? p.frozen?.terms?.endAt : source.data?.endAt;
+      p.state === "confirmed" ? (p.frozen?.interval || p.frozen?.terms)?.endAt : source.data?.endAt;
     if (
       !end ||
       !Number.isFinite(Date.parse(end)) ||
