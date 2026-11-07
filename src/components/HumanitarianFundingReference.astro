@@ -1,0 +1,92 @@
+---
+import { url } from "../lib/site";
+import { loadHumanitarianFunding } from "../lib/humanitarian-funding/public.mjs";
+import { FUNDING_HEADERS, fundingUsd, validateFundingProjection, type FundingEdition } from "../lib/humanitarian-funding/model.mjs";
+interface Props { edition?: FundingEdition | null }
+const edition = Object.hasOwn(Astro.props, "edition") ? Astro.props.edition : loadHumanitarianFunding();
+if (edition) validateFundingProjection(edition);
+const countries = edition ? [...new Set(edition.rows.map(r => r.raw.countryCode))].sort() : [];
+const types = edition ? [...new Map(edition.rows.map(r => [r.raw.typeId || "no-type", r.raw.typeName || "No type supplied"])).entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0) : [];
+const serialized = edition ? JSON.stringify(edition).replace(/[<>&\u2028\u2029]/g, c => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0")) : "";
+const labels: Record<string, string> = { countryCode: "Country code", id: "Plan ID", name: "Plan name", code: "Plan code", typeId: "Type ID", typeName: "Type name", startDate: "Source start date", endDate: "Source end date", year: "Reference year", requirements: "Requirements (USD)", funding: "Reported funding (USD)", percentFunded: "Source percent funded" };
+---
+<section id="humanitarian-plan-funding" class="funding-reference" data-funding-reference aria-labelledby="funding-title">
+  <header><p class="eyebrow">One source-bound reference · draft interpretation</p>
+    <h2 id="funding-title">Humanitarian funding and plan requirements, 2025</h2>
+    <p>Following reported money makes part of the funding system visible. This reference compares reported humanitarian funding with published plan requirements. Requirements are planning requests, not an independent measure of need.</p>
+  </header>
+  {edition ? <>
+    <p><a href={edition.source.datasetUrl}>{edition.source.title}</a> comes from OCHA FTS via HDX. Donors and recipient organizations report funding to FTS, which curates the reports. This is a fixed bulk-CSV snapshot, received at the source HTTP Date <strong>{edition.source.httpDate}</strong>. The publisher’s resource-modified value is <code>{edition.source.resourceModified}</code>; it is a separate source field.</p>
+    <p class="note">The contextual <a href="https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/coordination_and_context/">HDX HAPI funding guide</a> describes USD units and appeal requirements; HAPI’s processed endpoint has a narrower scope than this bulk file. <a href="https://knowledge.base.unocha.org/wiki/spaces/imtoolbox/pages/2359263233">OCHA explains reporting and curation</a>.</p>
+    <div class="funding-scope">
+      <p><strong>{edition.summary.rows} source rows</strong> across {edition.summary.countryCodes} country codes; {edition.summary.identifiedPlanCountryRows} identify a plan. A row means one country × plan identifier × reference year. The same plan identifier can occur under different countries with different amounts.</p>
+      <p>{edition.summary.missingFundingRows} funding fields are blank and {edition.summary.explicitZeroFundingRows} explicitly report zero. {edition.summary.comparableRows} rows have positive requirements and reported funding, allowing a ratio. Plans and other rows can overlap. <strong>No country or worldwide funding total is calculated here.</strong></p>
+      <p>No plan identifier means “No plan ID supplied,” not an inferred country total. No cause or depth is assigned. The U.S. figures and your local census below remain separate from this reference.</p>
+    </div>
+    <fieldset data-funding-controls disabled class="funding-controls"><legend>Find source rows</legend>
+      <label>Search the source fields<input data-funding-search type="search" maxlength="240" placeholder="Country code, plan name or code" /></label>
+      <label>Country code<select data-funding-country><option value="">All country codes</option>{countries.map(c => <option value={c}>{c}</option>)}</select></label>
+      <label>Source type<select data-funding-type><option value="">All source types</option>{types.map(([id, name]) => <option value={id}>{name}</option>)}</select></label>
+      <button data-funding-clear type="button" class="btn btn-ghost btn-small">Clear filters</button>
+    </fieldset>
+    <p data-funding-status role="status" aria-live="polite">All {edition.rows.length} captured rows are readable below. Filters and exports are loading.</p>
+    <div class="funding-downloads">
+      <button data-funding-export="complete-json" type="button" class="btn btn-small" disabled>All 2025 rows: JSON</button>
+      <button data-funding-export="complete-csv" type="button" class="btn btn-small" disabled>All 2025 rows: CSV</button>
+      <button data-funding-export="selected-json" type="button" class="btn btn-small btn-ghost" disabled>Filtered rows: JSON</button>
+      <button data-funding-export="selected-csv" type="button" class="btn btn-small btn-ghost" disabled>Filtered rows: CSV</button>
+    </div>
+    <p class="note">Every export carries source attribution, license, modification notice and row provenance. JSON preserves all twelve original strings. CSV contains one marked provenance record followed by data records; its documented apostrophe rule protects formula-like text and is reversible. Transformed CSV text is not described as byte-exact raw data.</p>
+    <p><a href={url("/api/v1/humanitarian-funding.json")}>Read the complete JSON dataset</a> · <a href={url(edition.source.evidenceUrl)}>Read the licensed original-CSV evidence envelope</a></p>
+    <noscript><p>The complete source table and JSON links work without JavaScript. JavaScript enables filters and selected-file downloads.</p></noscript>
+    <p data-funding-empty hidden>No source rows match these filters. Clear them to read the complete captured reference.</p>
+    <div class="funding-table-wrap" role="region" aria-label="Humanitarian funding source table" tabindex="0"><table>
+      <caption>2025 rows in the captured OCHA FTS bulk CSV. Amounts are USD as reported. Blank, zero and overfunding remain distinct.</caption>
+      <thead><tr><th scope="col">Country / source plan</th><th scope="col">Plan requirements</th><th scope="col">Reported funding</th><th scope="col">Source percent</th><th scope="col">Derived coverage</th><th scope="col">Exact source and raw fields</th></tr></thead>
+      <tbody>{edition.rows.map(r => <tr data-funding-row={r.key}>
+        <th scope="row"><strong>{r.raw.countryCode}</strong><span class="funding-raw">{r.raw.name}</span><small>{r.raw.id ? `Plan ${r.raw.id} · ${r.raw.code || "No plan code supplied"}` : "No plan ID supplied"}</small><small>{r.raw.typeName || "No type supplied"}</small></th>
+        <td>{fundingUsd(r.raw.requirements)}</td><td>{fundingUsd(r.raw.funding)}</td>
+        <td>{r.raw.percentFunded === "" ? "Not reported" : <>{r.raw.percentFunded}% <small>Source-rounded value</small></>}</td>
+        <td>{r.coverage.status === "comparable" ? <><strong>{r.coverage.displayPercent}%</strong><small>Derived; rounded to two decimals</small></> : <><strong>Not comparable</strong><small>{r.coverage.status === "zero-requirements" ? "Requirements are zero" : r.coverage.status === "both-missing" ? "Both amounts are missing" : r.coverage.status === "requirements-missing" ? "Requirements are missing" : "Funding is missing"}</small></>}</td>
+        <td><details><summary>Inspect source row {r.locator.recordNumber}</summary>
+          <p>Original CSV record {r.locator.recordNumber}, including the header as record 1; physical line {r.locator.firstLine}{r.locator.lastLine !== r.locator.firstLine && `–${r.locator.lastLine}`}. UTF-8 byte span [{r.locator.byteStart}, {r.locator.byteEnd}) includes its original record ending.</p>
+          <p>Raw record SHA-256: <code>{r.locator.rawSha256}</code></p>
+          {r.coverage.status === "comparable" && <p>Exact reported-funding / requirements ratio: <code>{r.coverage.numerator}/{r.coverage.denominator}</code>. The displayed percentage uses exact arithmetic, rounded to the nearest hundredth, with exact halves away from zero. It is separate from the source percent.</p>}
+          <dl>{FUNDING_HEADERS.map(h => <div><dt>{labels[h]} <code>({h})</code></dt><dd class="funding-raw">{r.raw[h] === "" ? <em>Empty source string</em> : r.raw[h]}</dd></div>)}</dl>
+        </details></td>
+      </tr>)}</tbody>
+    </table></div>
+    <details class="funding-provenance"><summary>Source, license and interpretation</summary>
+      <p>{edition.source.attribution} <a href={edition.source.license.url}>{edition.source.license.title}</a>.</p><p>{edition.modification}</p>
+      <p>Original source: <a href={edition.source.resourceUrl}>{edition.source.resourceFilename}</a>. Captured {edition.source.csvBytes.toLocaleString("en-US")} original bytes; SHA-256 <code>{edition.source.csvSha256}</code>. The separately licensed evidence envelope retains the complete original CSV. Only its 2025 rows are interpreted in this reference.</p>
+      <p>Edition SHA-256: <code>{edition.sha256}</code>. Source interpreter commit: <code>{edition.sourceCode.commit}</code>.</p>
+      <ul>{edition.limitations.map(text => <li>{text}</li>)}</ul>
+    </details>
+    <script type="application/json" data-funding-json set:html={serialized} />
+  </> : <p class="note">A captured humanitarian funding reference is not available in this edition. The existing U.S. giving figures and local census below remain available.</p>}
+</section>
+<script>
+  import { wireHumanitarianFunding } from "../lib/client/humanitarian-funding";
+  for (const root of document.querySelectorAll<HTMLElement>("[data-funding-reference]")) if (root.querySelector("[data-funding-json]")) wireHumanitarianFunding(root);
+</script>
+<style>
+  .funding-reference { margin-block:2rem; padding:clamp(.75rem,2vw,1.5rem); border:1px solid var(--rule); border-radius:var(--radius); min-width:0; }
+  .funding-reference header p,.funding-reference .note { max-width:80ch; }
+  .funding-scope { border-left:3px solid var(--rule); padding-left:1rem; }
+  .funding-controls { display:flex; gap:.8rem; flex-wrap:wrap; align-items:end; border:1px solid var(--rule); padding:1rem; }
+  .funding-controls label { display:flex; flex:1 1 12rem; flex-direction:column; gap:.3rem; min-width:0; }
+  .funding-controls input,.funding-controls select { width:100%; min-width:0; max-width:100%; background:var(--surface); color:var(--ink); border:1px solid var(--rule); padding:.5rem; }
+  .funding-downloads { display:flex; flex-wrap:wrap; gap:.5rem; margin-block:1rem; }
+  .funding-table-wrap { overflow:auto; max-width:100%; min-width:0; border:1px solid var(--rule); }
+  table { border-collapse:collapse; width:100%; min-width:62rem; font-size:.85rem; }
+  caption { text-align:left; padding:.7rem; }
+  th,td { text-align:left; vertical-align:top; padding:.7rem; border-bottom:1px solid var(--rule); }
+  thead th { background:var(--surface); } tbody th { width:24%; font-weight:400; }
+  td { min-width:8rem; } td:last-child { min-width:17rem; max-width:25rem; }
+  small,.funding-raw { display:block; } small { margin-top:.3rem; }
+  .funding-raw { white-space:pre-wrap; overflow-wrap:anywhere; }
+  code { overflow-wrap:anywhere; white-space:normal; } dd { margin-left:0; margin-bottom:.6rem; }
+  tr[hidden] { display:none; } summary { cursor:pointer; } .funding-provenance { margin-top:1rem; }
+  .funding-reference :focus-visible { outline:3px solid currentColor; outline-offset:3px; }
+  @media print { .funding-controls,.funding-downloads { display:none; } .funding-table-wrap { overflow:visible; } table { min-width:0; font-size:8pt; } td,th { min-width:0; max-width:none; padding:.2rem; } }
+</style>
