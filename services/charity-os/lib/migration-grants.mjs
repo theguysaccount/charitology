@@ -7,7 +7,7 @@ export function applicationGrantsSql(role, schema = "public") {
   const table = (name) => target + "." + q(name);
   return `GRANT USAGE ON SCHEMA ${target} TO ${grantee};
 GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA ${target} TO ${grantee};
-REVOKE UPDATE,DELETE ON ${["os_events", "os_reports", "os_task_recurrence_occurrences", "os_resource_directory_history"].map(table).join(",")} FROM ${grantee};
+REVOKE UPDATE,DELETE ON ${["os_events", "os_reports", "os_task_recurrence_occurrences", "os_resource_directory_history", "os_learning_history"].map(table).join(",")} FROM ${grantee};
 REVOKE DELETE ON ${table("os_task_recurrence_series")} FROM ${grantee};
 GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA ${target} TO ${grantee};
 ALTER DEFAULT PRIVILEGES IN SCHEMA ${target} GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO ${grantee};

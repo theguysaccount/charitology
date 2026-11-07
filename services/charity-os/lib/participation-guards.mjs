@@ -46,6 +46,44 @@ export async function guardParticipationWrite(
       [org, record.id],
     )
   ).rows[0];
+  if (data.kind === "attendance" || old?.data?.kind === "attendance") {
+    // A live server audit reserves the helper's original occurrence identity.
+    // Full imports archive original events; they never install these receipts.
+    const receipts = (
+      await c.query(
+        "SELECT record_id FROM os_events WHERE org_id=$1 AND action='attendance.draft-created' AND record_id=$2 LIMIT 1",
+        [org, record.id],
+      )
+    ).rows;
+    if (
+      receipts.length &&
+      changed(old?.data, data, ["kind", parentKey(m), "programId", "contactId"])
+    )
+      fail(
+        409,
+        "attendance_guard",
+        "Keep this attendance record's occurrence identity. Correct its counts through the ordinary revision workflow.",
+      );
+    const targetId = data.kind === "attendance" ? data[parentKey(m)] : null;
+    if (targetId) {
+      const reserved = (
+        await c.query(
+          "SELECT record_id FROM os_events WHERE org_id=$1 AND action='attendance.draft-created' AND detail#>>'{attendanceReceipt,targetId}'=$2 AND record_id<>$3 LIMIT 1",
+          [org, targetId, record.id],
+        )
+      ).rows;
+      // Only helper-owned occurrences gain this reservation. Existing manual
+      // creation rules and already-linked legacy records remain unchanged.
+      const alreadyLinked =
+        old?.data?.kind === "attendance" && old.data[parentKey(m)] === targetId;
+      if (!alreadyLinked && reserved.length)
+        fail(
+          409,
+          "attendance_exists",
+          "A helper-created attendance record reserves this occurrence, including cancelled or trashed records.",
+        );
+    }
+  }
   const targets = (
     await c.query(
       "SELECT * FROM os_participation_targets WHERE org_id=$1 AND (target_id=$2 OR target_id=$3)",

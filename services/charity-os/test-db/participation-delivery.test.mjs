@@ -91,7 +91,7 @@ test(
         return {
           state: "delivered",
           safeCode: "provider_delivered",
-          providerEventAt: "2026-10-26T12:30:00.000Z",
+          providerEventAt: "+100000-12-31T23:59:59.999Z",
         };
       },
     };
@@ -567,7 +567,7 @@ test(
         },
       );
       await t.test(
-        "one concurrent lease sends once; provider acceptance and later delivery use status-only reconciliation",
+        "one concurrent lease sends once; extended-year provider delivery persists through status-only reconciliation",
         async () => {
           const results = await Promise.all([run(), run()]);
           assert.equal(
@@ -627,7 +627,7 @@ test(
           assert.equal(preservedDelivery.safe_code, "provider_delivered");
           assert.equal(
             preservedDelivery.provider_event_at.toISOString(),
-            "2026-10-26T12:30:00.000Z",
+            "+100000-12-31T23:59:59.999Z",
           );
           await db.tx(staff, org, (c) =>
             c.query(

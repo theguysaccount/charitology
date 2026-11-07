@@ -5,6 +5,17 @@
 - Added a page-only Gift estimate desk and static Dashboard discovery. One deliberately selected native gift can be linked to an exact reproduced source-model version and fresh artifact checksum, with explicit money/date, budget, applicability, fixed-credit and exclusion assumptions. Unlinked gifts and unmapped portions remain unknown; lifetime aggregation stays open.
 - Added complete outgoing JSON review, exact download acknowledgment, historical-only packet inspection, deliberate original-file requalification and separate literal unfinished-writing recovery. Existing keys, donor/Model Kit native formats, frozen arithmetic and empty public source-model registry remain unchanged. No rating, payment, provider, account or shared-OS action is introduced.
 - Passed 26 focused groups/strict typing and the complete 581-page local build/check. Actual fictional in-app-browser Save/chooser/requalification, two real fixed-worker matches, wrong-source refusal, literal-writing recovery and bounded 390-pixel light/dark reading pass. [Acceptance](docs/GIFT_ESTIMATE_ACCEPTANCE.md) records exact source/file identities, retained failures and remaining CI/publication, Mac dialog and broader accessibility/lifecycle limits. This is conditional software evidence, not measured impact or independent human method review.
+## November 7, 2026: Learning report readability and release preparation
+
+- Corrected source-code text and keyboard-focus colors to use the OS theme variables. Actual 390-pixel light/dark reading, focus and scrolling passed after visual review caught the original dark-text failure.
+- Verified bounded full-shell navigation, unfinished-writing preservation, visible errors and fictional organization switching. [Learning acceptance](docs/OS_LEARNING_BRIDGE_ACCEPTANCE.md) retains the failure, correction and scope; broader timing/accessibility coverage remains explicit.
+- Integrated the published funding reference and spreadsheet without repeating completed migrations, hosted uploads or accepted mail. The spreadsheet's actual public artifact and 34 selected responses match; final combined OS release verification remains separate.
+
+## November 7, 2026: staff attendance candidate, unreleased
+
+- Added explicit staff-reported whole-occurrence event/volunteer attendance drafts with exact review and durable accepted-command Retry. Bookings supply context, not attendance or hours; unknown facts remain null.
+- Kept ordinary manual corrections, inactive restore and helper-only occurrence reservation compatible. Added no schema migration, provider or mail operation.
+- [Acceptance](docs/OS_ATTENDANCE_ACCEPTANCE.md) preserves the initial 683-test run, corrected 684-test run, 199 actual isolated PostgreSQL tests and retained seed/initial-Reload findings. Actual local in-app-browser controls and real HTTP/PG verified an identical explicit Retry after deliberate committed-response loss, with one ordinary draft; auth and approvals were synthetic. Broader accessibility, exact-head CI and deployment remain pending. [The current backlog](docs/CURRENT_IMPLEMENTATION_BACKLOG.md) preserves all 66 original items and separates the remaining software, human and release work.
 
 ## November 7, 2026: source-bound humanitarian plan funding
 

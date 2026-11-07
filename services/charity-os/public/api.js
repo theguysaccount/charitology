@@ -15,6 +15,9 @@ const part = (value) => encodeURIComponent(String(value));
 const orgPath = (org) => `/api/orgs/${part(org)}`;
 const recordsPath = (org, module) =>
   `${orgPath(org)}/modules/${part(module)}/records`;
+// File-object lifetime only. A lost first response keeps the same transient slot;
+// no source bytes, upload identity or session state is written to browser storage.
+const learningNativeUploads=new WeakMap();
 export async function request(path, { method = "GET", body, signal } = {}) {
   const headers = { Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
@@ -86,30 +89,106 @@ export async function requestFile(path) {
   }
   return response.blob();
 }
+// The original complete native bytes are sent only after an explicit file and
+// selection choice. Do not set Content-Type: fetch supplies the multipart bound.
+export async function inspectLearningSource(org, metadata, bytes, { signal } = {}) {
+  if(bytes.byteLength>3000000){
+    if(bytes.byteLength>8000000)throw new ApiError('The native file exceeds 8,000,000 bytes.',413,'learning_size');
+    const native=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes),total=Math.ceil(native.byteLength/1500000);
+    let pending=learningNativeUploads.get(bytes);
+    if(!pending||pending.org!==org||pending.csrf!==csrfToken){
+      pending={org,csrf:csrfToken,uploadId:crypto.randomUUID().replaceAll('-',''),nextIndex:0};
+      learningNativeUploads.set(bytes,pending);
+    }
+    const digest=await crypto.subtle.digest('SHA-256',native);
+    const sha256=Array.from(new Uint8Array(digest),value=>value.toString(16).padStart(2,'0')).join('');
+    const uploadId=pending.uploadId;
+    for(let index=pending.nextIndex;index<total;index++){
+      if(signal?.aborted)throw new DOMException('Source inspection was cancelled.','AbortError');
+      const chunk=native.subarray(index*1500000,(index+1)*1500000),pieces=[];
+      for(let i=0;i<chunk.length;i+=8192)pieces.push(String.fromCharCode(...chunk.subarray(i,i+8192)));
+      let result;
+      try{result=await request(`${orgPath(org)}/learning/source/upload`,{method:'POST',signal,
+        body:{uploadId,index,total,chunk:btoa(pieces.join(''))}});}
+      catch(error){if(error.status===409)learningNativeUploads.delete(bytes);throw error;}
+      if(typeof result.uploadId!=='string'||!/^[a-f0-9]{32}$/.test(result.uploadId)||(uploadId&&result.uploadId!==uploadId))
+        throw new ApiError('The native upload response was incomplete. Choose the original file again.',502,'invalid_response');
+      pending.nextIndex=index+1;
+    }
+    if(signal?.aborted)throw new DOMException('Source inspection was cancelled.','AbortError');
+    let inspected;
+    try{inspected=await request(`${orgPath(org)}/learning/source/inspect`,{method:'POST',signal,
+      body:{metadata,upload:{uploadId,byteLength:native.byteLength,sha256}}});}
+    catch(error){if(error.code==='learning_upload')learningNativeUploads.delete(bytes);throw error;}
+    learningNativeUploads.delete(bytes);return inspected;
+  }
+  const body = new FormData();
+  body.append("metadata", JSON.stringify(metadata));
+  body.append("native", new Blob([bytes], { type: "application/json" }), "source.json");
+  let response;
+  try {
+    response = await fetch(`${orgPath(org)}/learning/source/inspect`, {
+      method: "POST", credentials: "same-origin", cache: "no-store",
+      headers: { Accept: "application/json", ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}) },
+      body, signal: signal || AbortSignal.timeout(30000),
+    });
+  } catch (error) {
+    if (error.name === "AbortError") throw error;
+    throw new ApiError("Source inspection was interrupted. The original file and form are kept; inspect again explicitly.", 0, "connection_interrupted");
+  }
+  let data;
+  try { data = await response.json(); }
+  catch { throw new ApiError("The source inspection response was unreadable. The original file was kept.", response.status, "invalid_response"); }
+  if (!response.ok || data.ok === false) throw new ApiError(data.message || "The native source could not be inspected.", response.status, data.code || "request_failed", data.issues || []);
+  return data;
+}
+const learningPath = (org, suffix) => `${orgPath(org)}/learning/${suffix}`;
+const learningPage = (org, suffix, cursor, options) => request(`${learningPath(org, suffix)}${cursor ? `?cursor=${part(cursor)}` : ""}`, options);
+const learningPost = (org, suffix, body, options) => request(learningPath(org, suffix), { ...options, method: "POST", body });
 export const api = {
-  session: () => request("/api/session"),
+  inspectLearningSource,
+  learningBindings: (org, cursor, options) => learningPage(org, "bindings", cursor, options),
+  learningBinding: (org, id, cursor, options) => learningPage(org, `bindings/${part(id)}`, cursor, options),
+  learningContext: (org, id, cursor, options) => learningPage(org, `bindings/${part(id)}/context`, cursor, options),
+  learningApproval: (org, id, options) => request(learningPath(org, `records/${part(id)}/approval`), options),
+  previewLearningMapping: (org, body, options) => learningPost(org, "mapping/preview", body, options),
+  previewLearningMeasurement: (org, body, options) => learningPost(org, "measurements/preview", body, options),
+  previewLearningCorrectionApply: (org, body, options) => learningPost(org, "corrections/apply/preview", body, options),
+  previewLearningCorrectionAbandon: (org, body, options) => learningPost(org, "corrections/abandon/preview", body, options),
+  previewLearningDecision: (org, body, options) => learningPost(org, "decisions/preview", body, options),
+  prepareLearningReport: (org, body, options) => learningPost(org, "reports/prepare", body, options),
+  previewLearningReport: (org, body, options) => learningPost(org, "reports/preview", body, options),
+  commitLearning: (org, body, options) => learningPost(org, "commit", body, options),
+  learningReports: (org, cursor, options) => learningPage(org, "reports", cursor, options),
+  learningReport: (org, id, options) => request(learningPath(org, `reports/${part(id)}`), options),
+  exportLearningReport: (org, id, options) => request(learningPath(org, `reports/${part(id)}/export`), options),
+  learningRecovered: (org, cursor, options) => learningPage(org, "recovered", cursor, options),
+  learningRecoveredHead: (org, headHash, options) => request(learningPath(org, `recovered/${part(headHash)}`), options),
+  session: (options) => request("/api/session", options),
   modules: () => request("/api/modules"),
   signIn: (email) =>
     request("/api/auth/request-link", { method: "POST", body: { email } }),
   logout: () => request("/api/auth/logout", { method: "POST", body: {} }),
   acceptInvitation: (token) =>
     request("/api/invitations/accept", { method: "POST", body: { token } }),
-  orgs: () => request("/api/orgs"),
+  orgs: (options) => request("/api/orgs", options),
   createOrg: (data) => request("/api/orgs", { method: "POST", body: data }),
   org: (org) => request(orgPath(org)),
   dashboard: (org) => request(`${orgPath(org)}/dashboard`),
   updateOrg: (org, data) =>
     request(orgPath(org), { method: "PATCH", body: data }),
-  records: (org, module, cursor) =>
+  records: (org, module, cursor, options) =>
     request(
       `${recordsPath(org, module)}${cursor ? `?cursor=${part(cursor)}` : ""}`,
+      options,
     ),
-  record: (org, module, id) =>
-    request(`${recordsPath(org, module)}/${part(id)}`),
-  createRecord: (org, module, data) =>
-    request(recordsPath(org, module), { method: "POST", body: data }),
-  updateRecord: (org, module, id, data) =>
+  record: (org, module, id, options) =>
+    request(`${recordsPath(org, module)}/${part(id)}`, options),
+  createRecord: (org, module, data, options) =>
+    request(recordsPath(org, module), { ...options, method: "POST", body: data }),
+  updateRecord: (org, module, id, data, options) =>
     request(`${recordsPath(org, module)}/${part(id)}`, {
+      ...options,
       method: "PATCH",
       body: data,
     }),
@@ -152,8 +231,9 @@ export const api = {
   importArchives: (org) => request(`${orgPath(org)}/backups/imports`),
   importArchive: (org, id) =>
     request(`${orgPath(org)}/backups/imports/${part(id)}`),
-  deleteRecord: (org, module, id, revision) =>
+  deleteRecord: (org, module, id, revision, options) =>
     request(`${recordsPath(org, module)}/${part(id)}`, {
+      ...options,
       method: "DELETE",
       body: { revision },
     }),
@@ -206,7 +286,7 @@ export const api = {
   reports: (org) => request(`${orgPath(org)}/reports`),
   freezeReport: (org, data) =>
     request(`${orgPath(org)}/reports`, { method: "POST", body: data }),
-  report: (org, id) => request(`${orgPath(org)}/reports/${part(id)}`),
+  report: (org, id, options) => request(`${orgPath(org)}/reports/${part(id)}`, options),
   exportOrg: (org) => request(`${orgPath(org)}/export`),
   exportModule: (org, module) =>
     request(`${orgPath(org)}/modules/${part(module)}/export`),

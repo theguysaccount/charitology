@@ -5,6 +5,7 @@ import { restoredParticipation } from "./participation-backup.mjs";
 import { restoredDelivery } from "./participation-delivery-backup.mjs";
 import { restoredTaskRecurrence } from "./task-recurrence-backup.mjs";
 import { restoredDirectoryResources } from "./directory-resource-backup.mjs";
+import { restoredLearningBridge } from "./learning-backup.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -49,6 +50,7 @@ export function validateBackup(input, orgId, userId) {
     trash: input.trash || [],
   });
   restoredDirectoryResources(input.directoryResources, { records: input.records, trash: input.trash || [] });
+  restoredLearningBridge(input.learningBridge, { records: input.records, trash: input.trash || [], legacyReports: input.reports || [] });
   const seen = new Set();
   const records = input.records.map((r) => {
     if (

@@ -120,6 +120,30 @@ function fixture({
         sql === "SELECT * FROM os_resource_directory_history WHERE org_id=$1 ORDER BY row_kind,capture_id,binding_id,sequence,id"
       )
         return { rows: [] };
+      if (sql.startsWith("SELECT (SELECT count(*) FROM os_learning_history WHERE org_id=$1)"))
+        return { rows: [{ count: 0 }] }; // No feature history, reports or feature previews in this fixture.
+      if (sql.startsWith("SELECT count(*) AS count,COALESCE(sum(GREATEST(octet_length(to_jsonb(t)::text),budget_bytes)),0) AS bytes FROM os_learning_history"))
+        return { rows: [{ count: 0, bytes: 0 }] };
+      if (sql.startsWith("SELECT * FROM os_learning_history WHERE org_id=$1 AND row_kind<>'recovered-report'"))
+        return { rows: [] };
+      if (sql.startsWith("SELECT h.*,octet_length(payload::text) AS learning_payload_bytes") ||
+          sql.startsWith("SELECT r.*,octet_length(payload::text) AS learning_payload_bytes"))
+        return { rows: [] };
+      if (sql.startsWith("SELECT data,status FROM os_records WHERE org_id=$1 AND id=$2")) {
+        const current = state.records.get(args[1]);
+        return { rows: current ? [{ data: current.data, status: current.status }] : [] };
+      }
+      if (sql.startsWith("SELECT payload,origin_mode FROM os_learning_history")) return { rows: [] };
+      if (sql === "SELECT count(*) AS count FROM os_participation_delivery_policies WHERE org_id=$1") return { rows: [{ count: 0 }] };
+      if (sql.startsWith("SELECT * FROM os_records WHERE org_id=$1 AND deleted_at IS NOT NULL"))
+        return { rows: [...state.records.values()].filter(record => record.deleted_at) };
+      if (sql.startsWith("SELECT * FROM os_comments WHERE org_id=$1") || sql.startsWith("SELECT * FROM os_reports WHERE org_id=$1") ||
+          sql.startsWith("SELECT id,record_id AS") || sql.startsWith("SELECT id,provider,name,config") ||
+          sql.startsWith("SELECT id,record_id,source_revision") || sql.startsWith("SELECT id,publication_id,answers") ||
+          /FROM os_participation(?:_targets|_outbox|_delivery_policies|_delivery_previews|s)\b/.test(sql))
+        return { rows: [] };
+      if (sql.startsWith("SELECT * FROM os_events WHERE org_id=$1 ORDER BY id"))
+        return { rows: state.events };
       if (
         sql === "SELECT count(*) FROM os_task_recurrence_series WHERE org_id=$1" ||
         sql === "SELECT count(*) AS count FROM os_resource_directory_history WHERE org_id=$1"
