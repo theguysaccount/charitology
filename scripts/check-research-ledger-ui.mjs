@@ -16,7 +16,6 @@ import {
 } from "../src/lib/research-ledger-model.mjs";
 import {
   fixture,
-  options,
   scientificFixture,
   journalFixture,
   challengeFixture,
@@ -27,6 +26,8 @@ import {
   ref,
 } from "../test-fixtures/research-ledger/factory.mjs";
 import { captureResearchEntry } from "../src/lib/research-ledger-capture.mjs";
+import { researchArchiveOptions, prepareEncyclopediaCoverage, ENCYCLOPEDIA_INITIAL_PATHS } from "../src/lib/research-ledger-extension.mjs";
+import { initialSeedInput } from "../test-fixtures/research-ledger/initial-seed.mjs";
 
 let groups = 0;
 async function check(label, callback) {
@@ -81,7 +82,7 @@ try {
   );
   const container = await AstroContainer.create();
   const projection = (input) =>
-    projectResearchLedger(validateResearchLedger(input, options(input)), {
+    projectResearchLedger(validateResearchLedger(input, researchArchiveOptions(input)), {
       editionId: input.manifest.currentEditionId,
     });
   const render = (
@@ -168,7 +169,8 @@ try {
     async () => {
       const input = await readStaticResearchLedger(),
         p = projection(input);
-      assert.equal(p.counters.records, 43);
+      const expectedRecords = input.manifest.adapterVersion === "research-content-v2" ? 69 : 43;
+      assert.equal(p.counters.records, expectedRecords);
       assert.equal(p.counters.reviews, 0);
       assert.equal(p.counters.qualifiedSourceReviews, 0);
       assert.equal(p.counters.peerReviewedManuscripts, 0);
@@ -210,8 +212,8 @@ try {
         (node.childNodes ?? []).forEach(inspect);
       };
       inspect(overview);
-      assert.equal(rows.length, 43);
-      assert.equal(batches.length, 3);
+      assert.equal(rows.length, expectedRecords);
+      assert.equal(batches.length, Math.ceil(expectedRecords / 20));
       assert.equal(
         batches.filter((node) => node.attrs.some((a) => a.name === "open"))
           .length,
@@ -611,6 +613,35 @@ try {
       assert.match(css.toString(), /overflow-wrap: anywhere/);
       assert.match(css.toString(), /white-space: pre-wrap/);
       assert.match(css.toString(), /@media \(max-width: 560px\)/);
+    },
+  );
++
+  await check(
+    "the actual component renders all26 added encyclopedia records with exact sources and honest draft qualification",
+    async () => {
+      const prior = initialSeedInput(await readStaticResearchLedger());
+      const sourceFiles = await Promise.all(ENCYCLOPEDIA_INITIAL_PATHS.map(async (path) => ({ path, rawText: await readFile(path, "utf8") })));
+      // Excluded fixture metadata; this preparation is never written to public data.
+      const prepared = prepareEncyclopediaCoverage(prior, {
+        sourceCommit: "f".repeat(40), captureAt: "2026-11-08T00:00:00.000Z",
+        captureId: "capture:fictional-ui-encyclopedia", editionId: "edition:fictional-ui-encyclopedia", sourceFiles,
+      });
+      const input = structuredClone(prior);
+      input.manifest = JSON.parse(prepared.replacementManifest.text);
+      for (const file of prepared.addedFiles) input[file.path.split("/")[0]].push(JSON.parse(file.text));
+      const p = projection(input), overview = await render(p);
+      assert.equal(p.views.filter((view) => view.kind === "concept").length, 26);
+      assert.equal((overview.match(/data-ledger-kind="concept"/g) || []).length, 26);
+      assert.match(overview, /Encyclopedia entry/);
+      assert.match(overview, /66 source entries are covered/);
+      for (const view of p.views.filter((view) => view.kind === "concept")) {
+        const detail = await render(p, view.id);
+        assert(detail.includes(`id="record-${view.id}"`));
+        assert.match(detail, /Source review: draft/);
+        assert.match(detail, /No current qualifying whole-entry source\/framing review is recorded/);
+        const version = p.graph.versions.find((value) => value.recordId === view.id);
+        assert(detail.includes(encodeURIComponent(version.sources[0].sourceId)));
+      }
     },
   );
   console.log(

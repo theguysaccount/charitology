@@ -1,5 +1,17 @@
 # Research ledger interfaces
 
+## Additive encyclopedia profile
+
+The initial interfaces below retain their original meaning and historical objects. The separate [encyclopedia coverage contract](ENCYCLOPEDIA_REVIEW_COVERAGE_PLAN.md) adds `concept` records mapped to whole-entry `encyclopedia` subjects. Their versions name `research-encyclopedia-v1`; old versions retain `research-content-v1`. The new manifest inventory label `research-content-v2` adds the complete encyclopedia family. Manifest `schemaVersion` and existing source, edition, review and event shapes remain unchanged.
+
+The new subject frontmatter is exactly `title,summary,aliases,conditions,related,sources`, with the bounded defaults, source normalization and exact body described in that contract. `captureEncyclopediaEntry` implements only this family; `captureResearchSource` dispatches by a closed source-key/profile mapping. The original `captureResearchEntry` and both initial claim selectors keep their existing projections. Current Astro coverage selects the family inventory explicitly from the supported manifest revision and refuses omitted/extra entries.
+
+`prepareEncyclopediaCoverage` is a pure, deterministic preparation of one complete additional edition. `scripts/capture-encyclopedia-review-coverage.mjs` is an explicit local-Git command; it is never run by a build. Preparation requires `--source-ref`, `--capture-at`, `--capture-id`, `--edition-id`, `--expected-manifest-sha` and a fresh `--prepare-dir` inside `.projects/cache`. It retains `preparation.json` plus its separate inventory without changing checked-in data. Application requires the prepared directory and exact reviewed file SHA through `--apply-dir` and `--expected-preparation-sha`; it repeats derivation, committed-source and immutable-file checks before new exclusive writes and the final manifest replacement. Preparation identity supplies no review, participant or publication authority.
+
+Whole-entry challenge/response links and explicit new-version events apply to concepts. The existing claim-only `artifact.changes` and corrected/scope-narrowed `resultingClaims` grammar remains unchanged. No real review, scientific disposition, challenge or response is seeded by registering this family.
+
+## Initial R4 contract
+
 Frozen R4 software contract after coordinator review. This accompanies [the plan](RESEARCH_LEDGER_PLAN.md); no runtime exists yet. Only the new source-controlled ledger is covered. R2/R3 local data, public write services, real review assignment and named-charity rating authority are outside this contract.
 
 ## Pure model and input boundary

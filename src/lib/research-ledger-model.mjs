@@ -26,8 +26,10 @@ import {
   bytes,
 } from "./research-ledger-canonical.mjs";
 import {
-  captureResearchEntry,
   captureResearchClaim,
+  captureResearchSource,
+  researchAdapterForSourceKey,
+  ENCYCLOPEDIA_ADAPTER,
 } from "./research-ledger-capture.mjs";
 export {
   LEDGER_LIMITS,
@@ -43,6 +45,7 @@ const STATES = ["open", "partial", "solved", "under-review"],
     "manuscript",
     "case",
     "method",
+    "concept",
     "claim",
     "artifact",
     "challenge",
@@ -122,7 +125,7 @@ function commit(v) {
 function sourcePath(path) {
   text(path, 200, "source path");
   if (
-    !/^src\/content\/(problems|journal|cases)\/[a-z0-9][a-z0-9-]{0,99}\.md$/.test(
+    !/^src\/content\/(problems|journal|cases|encyclopedia)\/[a-z0-9][a-z0-9-]{0,99}\.md$/.test(
       path,
     ) &&
     path !== "src/content/record/methodology.md"
@@ -155,7 +158,7 @@ function subjectShape(s) {
   switch (s.type) {
     case "entry":
       exact(s, ["type", "collection", "frontmatter", "body"]);
-      choice(s.collection, ["problems", "journal", "cases", "record"]);
+      choice(s.collection, ["problems", "journal", "cases", "record", "encyclopedia"]);
       if (!plain(s.frontmatter))
         fail("source", "Entry frontmatter must be a mapping.");
       text(s.body, 32768, "body", false, true);
@@ -431,7 +434,7 @@ function validateGraph(g) {
     gitLocations.set(location, s.sha256);
     ctx.captured.set(
       s.id,
-      captureResearchEntry({ sourceKey: key, rawText: s.text }),
+      captureResearchSource({ sourceKey: key, rawText: s.text }),
     );
   }
   const last = new Map();
@@ -455,7 +458,7 @@ function validateGraph(g) {
     id(v.recordId);
     integer(v.version, 1, 3000);
     if (v.previousId !== null) id(v.previousId);
-    if (v.adapterVersion !== "research-content-v1")
+    if (v.adapterVersion !== (v.subject?.type === "entry" && v.subject.collection === "encyclopedia" ? ENCYCLOPEDIA_ADAPTER : "research-content-v1"))
       fail("source", "Unsupported subject adapter version.");
     const r = ctx.records.get(v.recordId),
       prev = last.get(v.recordId);
@@ -473,6 +476,7 @@ function validateGraph(g) {
       manuscript: "journal",
       case: "cases",
       method: "record",
+      concept: "encyclopedia",
     };
     if (expected[r.kind]) {
       if (
@@ -1277,7 +1281,7 @@ function currentBindings(bindings, ctx) {
       v.recordId !== b.recordId ||
       v.subject.type !== "entry" ||
       !eq(
-        captureResearchEntry({ sourceKey: b.sourceKey, rawText: source.text })
+        captureResearchSource({ sourceKey: b.sourceKey, rawText: source.text })
           .subject,
         v.subject,
       )
@@ -1460,7 +1464,7 @@ export function validateResearchLedger(input, options) {
     "currentSources",
     "aliases",
   ]);
-  if (m.schemaVersion !== 1 || m.adapterVersion !== "research-content-v1")
+  if (m.schemaVersion !== 1 || !["research-content-v1", "research-content-v2"].includes(m.adapterVersion))
     fail("shape", "Unsupported ledger schema/capture adapter.");
   id(m.currentEditionId);
   exact(m.capture, ["id", "at", "commit"]);
@@ -1468,6 +1472,12 @@ export function validateResearchLedger(input, options) {
   instant(m.capture.at);
   commit(m.capture.commit);
   coverage(m.coverage, true);
+  if (m.adapterVersion === "research-content-v1" && (
+    m.coverage.includedSourceKeys.some((key) => researchAdapterForSourceKey(key) !== "research-content-v1") ||
+    g.records.some((record) => record?.kind === "concept") ||
+    g.versions.some((version) => version?.adapterVersion === ENCYCLOPEDIA_ADAPTER || version?.subject?.collection === "encyclopedia") ||
+    g.sources.some((source) => typeof source.path === "string" && source.path.startsWith("src/content/encyclopedia/"))
+  )) fail("source", "The original manifest cannot carry the encyclopedia profile, including hidden history.");
   const full = validateGraph(g);
   currentBindings(m.currentSources, full);
   list(m.aliases, 1000, "aliases");
@@ -1536,7 +1546,7 @@ export function validateResearchLedger(input, options) {
         "source",
         "Current collection inventory differs from manifest coverage.",
       );
-    const captured = captureResearchEntry({
+    const captured = captureResearchSource({
       sourceKey: c.sourceKey,
       rawText: c.rawText,
     });
