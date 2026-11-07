@@ -152,7 +152,7 @@ try {
     const before = declarations(baseline),
       after = declarations(source);
     assert.equal(before.size, 36);
-    assert.equal(after.size, 38);
+    assert.equal(after.size, 39);
     for (const [n, v] of before) assert.equal(after.get(n), v, n);
   });
   await check(
@@ -280,8 +280,9 @@ try {
   await check(
     "actual new API wrappers have exactly4 fields and retain captured instants/data arrays",
     async () => {
-      const current = await bundle("src/lib/api.ts");
       process.chdir(realRoot);
+      // All optional loaders see this same synthetic root, which has no funding capture.
+      const current = await bundle("src/lib/api.ts");
       guardOffline();
       try {
         const endpoints = await current.availableEndpoints();

@@ -16,6 +16,7 @@ import nonprofitTools from "../data/nonprofit-tools.json";
 import nonprofitBenefits from "../data/nonprofit-benefits.json";
 import osProviders from "../data/os-providers.json";
 import osUserNeeds from "../data/os-user-needs.json";
+import { FUNDING_LICENSE_SUMMARY } from "./humanitarian-funding/source.mjs";
 
 async function researchLedger() {
   const { loadResearchLedger } = await import("./research-ledger");
@@ -85,6 +86,16 @@ function flattenRefs(value: unknown, preserveInstants = false): unknown {
 }
 
 export const ENDPOINTS: Endpoint[] = [
+  {
+    name: "humanitarian-funding",
+    description: "Fixed 2025 OCHA FTS country-plan-year source rows, reported USD funding, plan requirements, missingness and exact-rational coverage. Not global charitable giving, independently measured need or a ranking.",
+    build: async () => (await import("./humanitarian-funding/public.mjs")).requireHumanitarianFunding(),
+    capturedAt: async () => (await import("./humanitarian-funding/public.mjs")).requireHumanitarianFunding().source.asOf,
+    available: async () => (await import("./humanitarian-funding/public.mjs")).loadHumanitarianFunding() !== null,
+    envelope: "fixed-capture-v1",
+    preserveShape: true,
+    license: FUNDING_LICENSE_SUMMARY,
+  },
   {
     name: "disaster-incidents",
     description: "Complete fixed Disaster Desk edition: attributed reports, exact source versions, status scopes and explicit limitations. Not live or a worldwide needs census.",

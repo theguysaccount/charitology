@@ -1,0 +1,6141 @@
+{
+  "format": "charitology-humanitarian-funding-edition",
+  "version": 1,
+  "referenceYear": "2025",
+  "review": "draft",
+  "units": "USD as reported by OCHA FTS; no currency or price adjustment",
+  "source": {
+    "publisher": "OCHA Financial Tracking Service (FTS), distributed by HDX",
+    "title": "Global - Requirements and Funding Data",
+    "datasetId": "b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9",
+    "datasetUrl": "https://data.humdata.org/dataset/global-requirements-and-funding-data",
+    "resourceId": "b3232da8-f1e4-41ab-9642-b22dae10a1d7",
+    "resourceUrl": "https://data.humdata.org/dataset/b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9/resource/b3232da8-f1e4-41ab-9642-b22dae10a1d7/download/fts_requirements_funding_global.csv",
+    "resourceFilename": "fts_requirements_funding_global.csv",
+    "resourceModified": "2026-11-06T11:16:07.816493",
+    "metadataModified": "2026-11-06T11:16:15.543202",
+    "publisherDateRange": "[1999-01-01T00:00:00 TO 2026-11-06T23:59:59]",
+    "publisherHashLiteral": "b3f937166c197905ed0dc0167848df3c",
+    "publisherHashAlgorithm": "Not specified in the resource metadata; not used as SHA-256",
+    "metadataSha256": "5836d55cd9bd38c146898b608c34c722cd25be7e6051e00ed580b1e395cea03d",
+    "csvBytes": 279894,
+    "csvSha256": "ad5cb07e4f70a528e51b66b865f798ff2ef95e5a8b0d77ad3b8a303b58bb364d",
+    "httpDate": "Sat, 07 Nov 2026 14:29:08 GMT",
+    "asOf": "2026-11-07T14:29:08.000Z",
+    "evidenceUrl": "/data/humanitarian-funding/source-ad5cb07e4f70a528e51b66b865f798ff2ef95e5a8b0d77ad3b8a303b58bb364d.json",
+    "attribution": "OCHA Financial Tracking Service (FTS), Global - Requirements and Funding Data, via HDX. Source data licensed under CC BY 3.0 IGO.",
+    "license": {
+      "id": "CC-BY-3.0-IGO",
+      "title": "Creative Commons Attribution 3.0 IGO",
+      "url": "https://creativecommons.org/licenses/by/3.0/igo/legalcode"
+    },
+    "documentation": [
+      "https://hdx-hapi.readthedocs.io/en/latest/data_usage_guides/coordination_and_context/",
+      "https://knowledge.base.unocha.org/wiki/spaces/imtoolbox/pages/2359263233"
+    ],
+    "interpretation": "This is the HDX bulk CSV. The contextual HAPI guide describes a narrower processed endpoint and is not the downloaded data endpoint."
+  },
+  "sourceCode": {
+    "format": "charitology-funding-source-code",
+    "version": 1,
+    "commit": "54adee3413f81e6e62ba00986787cc243b89d131",
+    "files": [
+      {
+        "path": "scripts/capture-humanitarian-funding.mjs",
+        "bytes": 6290,
+        "sha256": "84ba15e38fc30a0e0be0c73bb47797ac1b5576caa3305bb69b4c30100b795a25"
+      },
+      {
+        "path": "src/lib/humanitarian-funding/model.mjs",
+        "bytes": 19401,
+        "sha256": "9bd0701343104ac7df5655f1ef9dbb04510a9bf4e37a9a0cd88c20f89c7c02d7"
+      },
+      {
+        "path": "src/lib/humanitarian-funding/source.mjs",
+        "bytes": 8363,
+        "sha256": "75e31774ff0efd28bb162e9fc2c811e6e4ddbc4f1c92c00bbbc33a7130913beb"
+      }
+    ]
+  },
+  "headers": [
+    "countryCode",
+    "id",
+    "name",
+    "code",
+    "typeId",
+    "typeName",
+    "startDate",
+    "endDate",
+    "year",
+    "requirements",
+    "funding",
+    "percentFunded"
+  ],
+  "sourceRecordCount": 3875,
+  "summary": {
+    "rows": 195,
+    "countryCodes": 109,
+    "identifiedPlanCountryRows": 86,
+    "missingFundingRows": 3,
+    "explicitZeroFundingRows": 3,
+    "comparableRows": 84
+  },
+  "modification": "Charitology selected the 2025 records, preserved their source strings and added filters, provenance and derived exact-rational coverage. This draft interpretation is not endorsed by OCHA or its partners.",
+  "limitations": [
+    "Reported humanitarian funding and published plan requirements, not all charitable giving or independently measured need.",
+    "Rows are country × source plan identifier × reference year; identifiers can repeat across countries with different amounts.",
+    "Plans and other source rows can overlap. No country, plan or worldwide funding total is calculated here.",
+    "A blank is not zero. Rows without a plan identifier are not relabeled as country totals.",
+    "The source-rounded percent is distinct from the exact ratio derived from the reported USD amounts.",
+    "Funding can exceed requirements or include signed adjustments. Coverage is not effectiveness, unmet need or a charity rating.",
+    "A fixed source snapshot can change upstream later. Its HTTP Date and publisher modification strings are retained separately."
+  ],
+  "rows": [
+    {
+      "key": "AFG:1263:2025",
+      "raw": {
+        "countryCode": "AFG",
+        "id": "1263",
+        "name": "Afghanistan Humanitarian Needs and Response Plan 2025",
+        "code": "HAFG25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "2416811546",
+        "funding": "1021450376",
+        "percentFunded": "42"
+      },
+      "locator": {
+        "recordNumber": 7,
+        "firstLine": 7,
+        "lastLine": 7,
+        "byteStart": 429,
+        "byteEnd": 594,
+        "rawSha256": "7199c59f3a6269b8bf16e5a1e6c7f4fbbb3f648e7db5e1ce9f5869f240f4949f"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "510725188",
+        "denominator": "1208405773",
+        "displayPercent": "42.26"
+      }
+    },
+    {
+      "key": "AFG:no-plan:2025",
+      "raw": {
+        "countryCode": "AFG",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "136967210",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 8,
+        "firstLine": 8,
+        "lastLine": 8,
+        "byteStart": 594,
+        "byteEnd": 636,
+        "rawSha256": "021636a6c2a0afd7d5802a3d8b28284d4914e448abcd3558f92f3f13f4d8bfcd"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "AGO:1213:2025",
+      "raw": {
+        "countryCode": "AGO",
+        "id": "1213",
+        "name": "Democratic Republic of the Congo Regional Refugee Response Plan 2025",
+        "code": "RDRC_RRP25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "20227157",
+        "funding": "560874",
+        "percentFunded": "3"
+      },
+      "locator": {
+        "recordNumber": 62,
+        "firstLine": 62,
+        "lastLine": 62,
+        "byteStart": 5210,
+        "byteEnd": 5372,
+        "rawSha256": "177f9ee06312776314ee0318a464a608a4024fee5342ba7ceb0f112b1da7e032"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "560874",
+        "denominator": "20227157",
+        "displayPercent": "2.77"
+      }
+    },
+    {
+      "key": "AGO:no-plan:2025",
+      "raw": {
+        "countryCode": "AGO",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "10168049",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 63,
+        "firstLine": 63,
+        "lastLine": 63,
+        "byteStart": 5372,
+        "byteEnd": 5413,
+        "rawSha256": "29c529eb08e7a0990ee6c4332d530b64c8d672e1f5fc19aba6ebbbda2ee236ff"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "ARG:1219:2025",
+      "raw": {
+        "countryCode": "ARG",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "23236023",
+        "funding": "2715128",
+        "percentFunded": "12"
+      },
+      "locator": {
+        "recordNumber": 107,
+        "firstLine": 107,
+        "lastLine": 107,
+        "byteStart": 8403,
+        "byteEnd": 8559,
+        "rawSha256": "3e590872ef886781589d9f45ef1c462385fcfbe8578e49e36b1a7c12446e3f8b"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "2715128",
+        "denominator": "23236023",
+        "displayPercent": "11.68"
+      }
+    },
+    {
+      "key": "ARG:no-plan:2025",
+      "raw": {
+        "countryCode": "ARG",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "903540",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 108,
+        "firstLine": 108,
+        "lastLine": 108,
+        "byteStart": 8559,
+        "byteEnd": 8598,
+        "rawSha256": "10e17832d80298d5213e4148cd0a752706ce47ae7328b1efefb657ad4490758c"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "BGD:1284:2025",
+      "raw": {
+        "countryCode": "BGD",
+        "id": "1284",
+        "name": "Bangladesh Cyclone Remal and Monsoon Floods Response Plan 2025",
+        "code": "OBGD25",
+        "typeId": "6",
+        "typeName": "Other",
+        "startDate": "2025-01-01",
+        "endDate": "2025-03-31",
+        "year": "2025",
+        "requirements": "35614832",
+        "funding": "16203381",
+        "percentFunded": "46"
+      },
+      "locator": {
+        "recordNumber": 143,
+        "firstLine": 143,
+        "lastLine": 143,
+        "byteStart": 10858,
+        "byteEnd": 10994,
+        "rawSha256": "5efc38ae0a9f6a547240b3e33a5e171f3490e1bd30bad050d7e22f1e8f780718"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "16203381",
+        "denominator": "35614832",
+        "displayPercent": "45.50"
+      }
+    },
+    {
+      "key": "BGD:1212:2025",
+      "raw": {
+        "countryCode": "BGD",
+        "id": "1212",
+        "name": "Rohingya Humanitarian Crisis Joint Response Plan 2025",
+        "code": "RBGD25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "934521017",
+        "funding": "494595902",
+        "percentFunded": "53"
+      },
+      "locator": {
+        "recordNumber": 144,
+        "firstLine": 144,
+        "lastLine": 144,
+        "byteStart": 10994,
+        "byteEnd": 11142,
+        "rawSha256": "cf43c6593a8a934ccbdc429f8a44315bf5ce904f3e690664a0e4dd47d3731e25"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "494595902",
+        "denominator": "934521017",
+        "displayPercent": "52.93"
+      }
+    },
+    {
+      "key": "BGD:no-plan:2025",
+      "raw": {
+        "countryCode": "BGD",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "26331026",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 145,
+        "firstLine": 145,
+        "lastLine": 145,
+        "byteStart": 11142,
+        "byteEnd": 11183,
+        "rawSha256": "99b2cb482e4147fc7f5e18926cf07aa2749b564fd46da3658d07e5fb8f2bf974"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "BEN:no-plan:2025",
+      "raw": {
+        "countryCode": "BEN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "9117361",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 184,
+        "firstLine": 184,
+        "lastLine": 184,
+        "byteStart": 13832,
+        "byteEnd": 13872,
+        "rawSha256": "70984cbbfce343e4da17be747acedbcd6b2c3eec2fdbae6a050a6c212e3adb5f"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "BOL:1219:2025",
+      "raw": {
+        "countryCode": "BOL",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "12187019",
+        "funding": "3500190",
+        "percentFunded": "29"
+      },
+      "locator": {
+        "recordNumber": 218,
+        "firstLine": 218,
+        "lastLine": 218,
+        "byteStart": 15840,
+        "byteEnd": 15996,
+        "rawSha256": "dcf92d679d69310ca20caf7357df73fce799b993430ddeb14d3b44d05e444725"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "3500190",
+        "denominator": "12187019",
+        "displayPercent": "28.72"
+      }
+    },
+    {
+      "key": "BOL:no-plan:2025",
+      "raw": {
+        "countryCode": "BOL",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1702182",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 219,
+        "firstLine": 219,
+        "lastLine": 219,
+        "byteStart": 15996,
+        "byteEnd": 16036,
+        "rawSha256": "bb2d27931dc1894e3a72d2a97a5ff97d383f248ff1e38a3453839080d034ce13"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "BRA:1219:2025",
+      "raw": {
+        "countryCode": "BRA",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "113420823",
+        "funding": "15158657",
+        "percentFunded": "13"
+      },
+      "locator": {
+        "recordNumber": 256,
+        "firstLine": 256,
+        "lastLine": 256,
+        "byteStart": 18446,
+        "byteEnd": 18604,
+        "rawSha256": "496216480bf9a55152f6838e88d2c6b0aad9466f2aa69e44a90139b9f7a4c87c"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "15158657",
+        "denominator": "113420823",
+        "displayPercent": "13.36"
+      }
+    },
+    {
+      "key": "BRA:no-plan:2025",
+      "raw": {
+        "countryCode": "BRA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "5351360",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 257,
+        "firstLine": 257,
+        "lastLine": 257,
+        "byteStart": 18604,
+        "byteEnd": 18644,
+        "rawSha256": "6584cc59e2e0a20fa6b2844591b50485d958d2b43bea8e48ea94c5a47c4c03be"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "BGR:1218:2025",
+      "raw": {
+        "countryCode": "BGR",
+        "id": "1218",
+        "name": "Ukraine Situation Regional Refugee Response Plan 2025",
+        "code": "RUKRN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "29882002",
+        "funding": "955000",
+        "percentFunded": "3"
+      },
+      "locator": {
+        "recordNumber": 279,
+        "firstLine": 279,
+        "lastLine": 279,
+        "byteStart": 20184,
+        "byteEnd": 20328,
+        "rawSha256": "5450765c7b837604684a55d5f1320c5129f4dba4bea8b7ca7f791bf62b1d0d85"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "477500",
+        "denominator": "14941001",
+        "displayPercent": "3.20"
+      }
+    },
+    {
+      "key": "BGR:no-plan:2025",
+      "raw": {
+        "countryCode": "BGR",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "48767",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 280,
+        "firstLine": 280,
+        "lastLine": 280,
+        "byteStart": 20328,
+        "byteEnd": 20366,
+        "rawSha256": "a6f502aef5c2106e8be5381eed3d56e9ca52e1bb170d99fffa82e627550e1945"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "BFA:1259:2025",
+      "raw": {
+        "countryCode": "BFA",
+        "id": "1259",
+        "name": "Burkina Faso Besoins Humanitaires et Plan de Réponse 2025",
+        "code": "HBFA25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "792565236",
+        "funding": "267844213",
+        "percentFunded": "34"
+      },
+      "locator": {
+        "recordNumber": 299,
+        "firstLine": 299,
+        "lastLine": 299,
+        "byteStart": 21417,
+        "byteEnd": 21585,
+        "rawSha256": "5330debd5c6fc067da599faf9b313c2670657709a5f66df355b97cfe097c30fd"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "267844213",
+        "denominator": "792565236",
+        "displayPercent": "33.79"
+      }
+    },
+    {
+      "key": "BFA:no-plan:2025",
+      "raw": {
+        "countryCode": "BFA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "61810532",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 300,
+        "firstLine": 300,
+        "lastLine": 300,
+        "byteStart": 21585,
+        "byteEnd": 21626,
+        "rawSha256": "ab6a083ed0a88dfaa498abaa8a49b14513095684928beff4cc1693f183ff122c"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "BDI:1213:2025",
+      "raw": {
+        "countryCode": "BDI",
+        "id": "1213",
+        "name": "Democratic Republic of the Congo Regional Refugee Response Plan 2025",
+        "code": "RDRC_RRP25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "132607381",
+        "funding": "44686485",
+        "percentFunded": "34"
+      },
+      "locator": {
+        "recordNumber": 349,
+        "firstLine": 349,
+        "lastLine": 349,
+        "byteStart": 25547,
+        "byteEnd": 25713,
+        "rawSha256": "50911e4004231f446d809c6e21292e9165b2a4ec991c2ffea07635fe8db2be20"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "44686485",
+        "denominator": "132607381",
+        "displayPercent": "33.70"
+      }
+    },
+    {
+      "key": "BDI:no-plan:2025",
+      "raw": {
+        "countryCode": "BDI",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "8025260",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 350,
+        "firstLine": 350,
+        "lastLine": 350,
+        "byteStart": 25713,
+        "byteEnd": 25753,
+        "rawSha256": "1724cd402a3ec9b3a04cb8cbdb3f4b9ae1abb9149c58dc220235ecaf87a0336b"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "CMR:1266:2025",
+      "raw": {
+        "countryCode": "CMR",
+        "id": "1266",
+        "name": "Cameroon Humanitarian Response Plan 2025",
+        "code": "HCMR25",
+        "typeId": "4",
+        "typeName": "Humanitarian response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "359298328",
+        "funding": "93642386",
+        "percentFunded": "26"
+      },
+      "locator": {
+        "recordNumber": 400,
+        "firstLine": 400,
+        "lastLine": 400,
+        "byteStart": 29631,
+        "byteEnd": 29767,
+        "rawSha256": "7fd5e20d5ffc1b3ca28ac6165c4801e5e598c00c16622aaffa90124ce349e23e"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "46821193",
+        "denominator": "179649164",
+        "displayPercent": "26.06"
+      }
+    },
+    {
+      "key": "CMR:no-plan:2025",
+      "raw": {
+        "countryCode": "CMR",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "27045700",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 401,
+        "firstLine": 401,
+        "lastLine": 401,
+        "byteStart": 29767,
+        "byteEnd": 29808,
+        "rawSha256": "8316116384d8a1c27c2581dbb207bbafb8b282b0275602b3ac3663dcbe8548a7"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "CPV:no-plan:2025",
+      "raw": {
+        "countryCode": "CPV",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1614357",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 429,
+        "firstLine": 429,
+        "lastLine": 429,
+        "byteStart": 31974,
+        "byteEnd": 32014,
+        "rawSha256": "fbc65cfd858fd477c6ed7ab7061e88b4edccde77c73487448e826ace299598bc"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "CAF:1256:2025",
+      "raw": {
+        "countryCode": "CAF",
+        "id": "1256",
+        "name": "République Centrafricaine Besoins Humanitaires et Plan de Réponse 2025",
+        "code": "HCAF25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "326056578",
+        "funding": "135004704",
+        "percentFunded": "41"
+      },
+      "locator": {
+        "recordNumber": 455,
+        "firstLine": 455,
+        "lastLine": 455,
+        "byteStart": 33234,
+        "byteEnd": 33416,
+        "rawSha256": "5c641016907148a6f6820c81773a494454d0d96583decba3bc3d6b9224476475"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "22500784",
+        "denominator": "54342763",
+        "displayPercent": "41.41"
+      }
+    },
+    {
+      "key": "CAF:no-plan:2025",
+      "raw": {
+        "countryCode": "CAF",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "21119702",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 456,
+        "firstLine": 456,
+        "lastLine": 456,
+        "byteStart": 33416,
+        "byteEnd": 33457,
+        "rawSha256": "51250877044dd7a14bb2eee4727d28ac85206a8c5feaf209cf44d6029afa034b"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TCD:1260:2025",
+      "raw": {
+        "countryCode": "TCD",
+        "id": "1260",
+        "name": "Tchad Besoins Humanitaires et Plan de Réponse 2025",
+        "code": "HTCD25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "1454258243",
+        "funding": "458046667",
+        "percentFunded": "32"
+      },
+      "locator": {
+        "recordNumber": 508,
+        "firstLine": 508,
+        "lastLine": 508,
+        "byteStart": 37995,
+        "byteEnd": 38157,
+        "rawSha256": "6162eb079cdde9df4e202c53085dbbc1308e4be8e97f2a0b71571f9a14bf5be7"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "458046667",
+        "denominator": "1454258243",
+        "displayPercent": "31.50"
+      }
+    },
+    {
+      "key": "TCD:no-plan:2025",
+      "raw": {
+        "countryCode": "TCD",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "121588013",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 509,
+        "firstLine": 509,
+        "lastLine": 509,
+        "byteStart": 38157,
+        "byteEnd": 38199,
+        "rawSha256": "35adfec3104718c8f71309de070c2456cbb471c24296a23753189ed9ecd6e82c"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "CHL:1219:2025",
+      "raw": {
+        "countryCode": "CHL",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "80306084",
+        "funding": "2928664",
+        "percentFunded": "4"
+      },
+      "locator": {
+        "recordNumber": 559,
+        "firstLine": 559,
+        "lastLine": 559,
+        "byteStart": 42058,
+        "byteEnd": 42213,
+        "rawSha256": "f947de18508257399be3dd71262570dd6068ec59d0a70028464d7c8c96bc2c9b"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "732166",
+        "denominator": "20076521",
+        "displayPercent": "3.65"
+      }
+    },
+    {
+      "key": "CHL:no-plan:2025",
+      "raw": {
+        "countryCode": "CHL",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "147349",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 560,
+        "firstLine": 560,
+        "lastLine": 560,
+        "byteStart": 42213,
+        "byteEnd": 42252,
+        "rawSha256": "b9c88d3c50eadad82c93e5f21d9ad62d418df008e4a37d5971921ce67e26dca3"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "COL:1219:2025",
+      "raw": {
+        "countryCode": "COL",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "467231247",
+        "funding": "47190527",
+        "percentFunded": "10"
+      },
+      "locator": {
+        "recordNumber": 587,
+        "firstLine": 587,
+        "lastLine": 587,
+        "byteStart": 44226,
+        "byteEnd": 44384,
+        "rawSha256": "02753fe54f79cadad1fe71537ccf936237dde05cea992e8e818e411090ed3dba"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "47190527",
+        "denominator": "467231247",
+        "displayPercent": "10.10"
+      }
+    },
+    {
+      "key": "COL:1208:2025",
+      "raw": {
+        "countryCode": "COL",
+        "id": "1208",
+        "name": "Colombia Necesidades Humanitarias y Plan de Respuesta 2025",
+        "code": "HCOL25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "342308343",
+        "funding": "99881417",
+        "percentFunded": "29"
+      },
+      "locator": {
+        "recordNumber": 588,
+        "firstLine": 588,
+        "lastLine": 588,
+        "byteStart": 44384,
+        "byteEnd": 44551,
+        "rawSha256": "53e5de377ff5d6d162a04425da3a774d09bdf3ad69d7b1e5507576c47e35c7c1"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "99881417",
+        "denominator": "342308343",
+        "displayPercent": "29.18"
+      }
+    },
+    {
+      "key": "COL:no-plan:2025",
+      "raw": {
+        "countryCode": "COL",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "83244199",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 589,
+        "firstLine": 589,
+        "lastLine": 589,
+        "byteStart": 44551,
+        "byteEnd": 44592,
+        "rawSha256": "fd1e060496e3dd48ace3613fc816e548d29972b36be0002c3d7db64ec39046fd"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "COG:1213:2025",
+      "raw": {
+        "countryCode": "COG",
+        "id": "1213",
+        "name": "Democratic Republic of the Congo Regional Refugee Response Plan 2025",
+        "code": "RDRC_RRP25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "22496182",
+        "funding": "31046905",
+        "percentFunded": "138"
+      },
+      "locator": {
+        "recordNumber": 630,
+        "firstLine": 630,
+        "lastLine": 630,
+        "byteStart": 47612,
+        "byteEnd": 47778,
+        "rawSha256": "d049797c67a6d392bc62502720f4f95d280202946a686f6ab4c5432777679fd6"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "31046905",
+        "denominator": "22496182",
+        "displayPercent": "138.01"
+      }
+    },
+    {
+      "key": "COG:no-plan:2025",
+      "raw": {
+        "countryCode": "COG",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1570538",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 631,
+        "firstLine": 631,
+        "lastLine": 631,
+        "byteStart": 47778,
+        "byteEnd": 47818,
+        "rawSha256": "38a50f518fb53985a5f6b87560516252bfbb683145a13e4300d31f8434e3eec4"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "CRI:1219:2025",
+      "raw": {
+        "countryCode": "CRI",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "18903343",
+        "funding": "695934",
+        "percentFunded": "4"
+      },
+      "locator": {
+        "recordNumber": 677,
+        "firstLine": 677,
+        "lastLine": 677,
+        "byteStart": 51195,
+        "byteEnd": 51349,
+        "rawSha256": "b24b404890fbc8b9727412234532e772492ec48a279d00398a7b27b24311943e"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "695934",
+        "denominator": "18903343",
+        "displayPercent": "3.68"
+      }
+    },
+    {
+      "key": "CRI:no-plan:2025",
+      "raw": {
+        "countryCode": "CRI",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "321882",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 678,
+        "firstLine": 678,
+        "lastLine": 678,
+        "byteStart": 51349,
+        "byteEnd": 51388,
+        "rawSha256": "60fa07ceb7c0d0e527787c6bb6b70ef8de314340cfd96aec4225d6abee0e2cee"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "CUB:1602:2025",
+      "raw": {
+        "countryCode": "CUB",
+        "id": "1602",
+        "name": "Cuba Plan of Action 2025 – Response to Hurricane Melissa",
+        "code": "OCUB25",
+        "typeId": "6",
+        "typeName": "Other",
+        "startDate": "2025-10-29",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "12373568",
+        "funding": "12273655",
+        "percentFunded": "99"
+      },
+      "locator": {
+        "recordNumber": 713,
+        "firstLine": 713,
+        "lastLine": 713,
+        "byteStart": 53636,
+        "byteEnd": 53768,
+        "rawSha256": "4e487e4e08c79e99238b20b932a1ca1c841f43ee6f9280be753fc5474335ee3f"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "12273655",
+        "denominator": "12373568",
+        "displayPercent": "99.19"
+      }
+    },
+    {
+      "key": "CUB:no-plan:2025",
+      "raw": {
+        "countryCode": "CUB",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "4490819",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 714,
+        "firstLine": 714,
+        "lastLine": 714,
+        "byteStart": 53768,
+        "byteEnd": 53808,
+        "rawSha256": "be4d773aa8bd0cb3bfd825e53b4a060fd38e721479b5f6931a9e7326269115a8"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "CZE:1218:2025",
+      "raw": {
+        "countryCode": "CZE",
+        "id": "1218",
+        "name": "Ukraine Situation Regional Refugee Response Plan 2025",
+        "code": "RUKRN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "41124168",
+        "funding": "1949544",
+        "percentFunded": "5"
+      },
+      "locator": {
+        "recordNumber": 743,
+        "firstLine": 743,
+        "lastLine": 743,
+        "byteStart": 55238,
+        "byteEnd": 55383,
+        "rawSha256": "af89c27853a7e27232bdc8791c29e11baf03f47fd7c13cf458bde5c591e1b458"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "27077",
+        "denominator": "571169",
+        "displayPercent": "4.74"
+      }
+    },
+    {
+      "key": "CZE:no-plan:2025",
+      "raw": {
+        "countryCode": "CZE",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "0",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 744,
+        "firstLine": 744,
+        "lastLine": 744,
+        "byteStart": 55383,
+        "byteEnd": 55417,
+        "rawSha256": "ef24bc08268f27edf7a73b153d602ebc28e78782ed08138a3c8e163f2979f6c3"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "CIV:no-plan:2025",
+      "raw": {
+        "countryCode": "CIV",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "26921463",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 754,
+        "firstLine": 754,
+        "lastLine": 754,
+        "byteStart": 55982,
+        "byteEnd": 56023,
+        "rawSha256": "dfcb01d7362cffe405b1832874a3d24bf07b6437551d5a7d89d98cb97efbdb2a"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "COD:1261:2025",
+      "raw": {
+        "countryCode": "COD",
+        "id": "1261",
+        "name": "République Démocratique du Congo Besoins Humanitaires et Plan de Réponse 2025",
+        "code": "HCOD25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "2538016151",
+        "funding": "682242484",
+        "percentFunded": "27"
+      },
+      "locator": {
+        "recordNumber": 797,
+        "firstLine": 797,
+        "lastLine": 797,
+        "byteStart": 58890,
+        "byteEnd": 59081,
+        "rawSha256": "d257bed3a0231f870727aabb80d352a1c213d58ce5d7a144d947f7be11e418ac"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "62022044",
+        "denominator": "230728741",
+        "displayPercent": "26.88"
+      }
+    },
+    {
+      "key": "COD:no-plan:2025",
+      "raw": {
+        "countryCode": "COD",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "114520062",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 798,
+        "firstLine": 798,
+        "lastLine": 798,
+        "byteStart": 59081,
+        "byteEnd": 59123,
+        "rawSha256": "ec21c5ae42a4e4a81388bfbcf7bb5f71f94dd30ccdd0b6d2f89a0da26088de10"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "DJI:1214:2025",
+      "raw": {
+        "countryCode": "DJI",
+        "id": "1214",
+        "name": "Regional Migrant Response Plan for Horn of Africa to Yemen and Southern Africa 2025",
+        "code": "RRHOAY25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "11691000",
+        "funding": "9514282",
+        "percentFunded": "81"
+      },
+      "locator": {
+        "recordNumber": 854,
+        "firstLine": 854,
+        "lastLine": 854,
+        "byteStart": 64363,
+        "byteEnd": 64540,
+        "rawSha256": "de883695d8484e72831756f2889b9fdce3ff961f8490c48166941e74ea530762"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "4757141",
+        "denominator": "5845500",
+        "displayPercent": "81.38"
+      }
+    },
+    {
+      "key": "DJI:no-plan:2025",
+      "raw": {
+        "countryCode": "DJI",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "13927582",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 855,
+        "firstLine": 855,
+        "lastLine": 855,
+        "byteStart": 64540,
+        "byteEnd": 64581,
+        "rawSha256": "efcd3fc685590deb48b7babcd8427ec8400d395bf6d21b1022e01405013fde29"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "DOM:1219:2025",
+      "raw": {
+        "countryCode": "DOM",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "10727500",
+        "funding": "1481109",
+        "percentFunded": "14"
+      },
+      "locator": {
+        "recordNumber": 903,
+        "firstLine": 903,
+        "lastLine": 903,
+        "byteStart": 68278,
+        "byteEnd": 68434,
+        "rawSha256": "a11094fe2e0c0835a0227126eb619c42753cc85af6d7156537d281d1440c3e63"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "211587",
+        "denominator": "1532500",
+        "displayPercent": "13.81"
+      }
+    },
+    {
+      "key": "DOM:no-plan:2025",
+      "raw": {
+        "countryCode": "DOM",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "4238449",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 904,
+        "firstLine": 904,
+        "lastLine": 904,
+        "byteStart": 68434,
+        "byteEnd": 68474,
+        "rawSha256": "b36b36c64b942a9a469a1f358cfb8728fcf7d02b63791bdbe49e121c3e04ec7a"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "ECU:1219:2025",
+      "raw": {
+        "countryCode": "ECU",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "229690772",
+        "funding": "17139950",
+        "percentFunded": "7"
+      },
+      "locator": {
+        "recordNumber": 938,
+        "firstLine": 938,
+        "lastLine": 938,
+        "byteStart": 70672,
+        "byteEnd": 70829,
+        "rawSha256": "da65582a45d9080eda6ec29a644b9eeff861652704a74adb8c4167ac6f59eb3d"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "8569975",
+        "denominator": "114845386",
+        "displayPercent": "7.46"
+      }
+    },
+    {
+      "key": "ECU:no-plan:2025",
+      "raw": {
+        "countryCode": "ECU",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "16941835",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 939,
+        "firstLine": 939,
+        "lastLine": 939,
+        "byteStart": 70829,
+        "byteEnd": 70870,
+        "rawSha256": "3ea18748b4fe2d8c75c20f32237a22a672fb344923b3e3664b92e970af2048e6"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "EGY:1216:2025",
+      "raw": {
+        "countryCode": "EGY",
+        "id": "1216",
+        "name": "Sudan Emergency: Regional Refugee Response Plan 2025",
+        "code": "RRSDN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "237689497",
+        "funding": "21850292",
+        "percentFunded": "9"
+      },
+      "locator": {
+        "recordNumber": 968,
+        "firstLine": 968,
+        "lastLine": 968,
+        "byteStart": 72962,
+        "byteEnd": 73108,
+        "rawSha256": "3beaa6543b4f6fd1e254da60c8c28eda1f108492d8ca143b196d7723d16c63cf"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "21850292",
+        "denominator": "237689497",
+        "displayPercent": "9.19"
+      }
+    },
+    {
+      "key": "EGY:1217:2025",
+      "raw": {
+        "countryCode": "EGY",
+        "id": "1217",
+        "name": "Syrian Arab Republic Regional Refugee and Resilience Plan (3RP) 2025",
+        "code": "RSYR25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "51583541",
+        "funding": "37830853",
+        "percentFunded": "73"
+      },
+      "locator": {
+        "recordNumber": 969,
+        "firstLine": 969,
+        "lastLine": 969,
+        "byteStart": 73108,
+        "byteEnd": 73269,
+        "rawSha256": "de8ec6ef9d47e13a5688c867dc9b6082887c8325e384babe9bfc66ca73400578"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "37830853",
+        "denominator": "51583541",
+        "displayPercent": "73.34"
+      }
+    },
+    {
+      "key": "EGY:no-plan:2025",
+      "raw": {
+        "countryCode": "EGY",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "74009482",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 970,
+        "firstLine": 970,
+        "lastLine": 970,
+        "byteStart": 73269,
+        "byteEnd": 73310,
+        "rawSha256": "7f6ba76551c0526472ab48cfde68bbc23ff0126effb84b80afef30072b63a258"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SLV:1268:2025",
+      "raw": {
+        "countryCode": "SLV",
+        "id": "1268",
+        "name": "El Salvador Necesidades Humanitarias y Plan de Respuesta 2025",
+        "code": "HSLV25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "66923449",
+        "funding": "19074396",
+        "percentFunded": "29"
+      },
+      "locator": {
+        "recordNumber": 1011,
+        "firstLine": 1011,
+        "lastLine": 1011,
+        "byteStart": 76664,
+        "byteEnd": 76833,
+        "rawSha256": "6083363c7ad0f021abe1e4ab0bf061f2f45ad12a4ee0325f1d7a105638ba75ab"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "19074396",
+        "denominator": "66923449",
+        "displayPercent": "28.50"
+      }
+    },
+    {
+      "key": "SLV:no-plan:2025",
+      "raw": {
+        "countryCode": "SLV",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "2517371",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1012,
+        "firstLine": 1012,
+        "lastLine": 1012,
+        "byteStart": 76833,
+        "byteEnd": 76873,
+        "rawSha256": "5fcd4b31115e15ccbb155609acbe25d69ad36749fd7d1ec58e891c5a29ecc436"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "ERI:no-plan:2025",
+      "raw": {
+        "countryCode": "ERI",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "4361365",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1045,
+        "firstLine": 1045,
+        "lastLine": 1045,
+        "byteStart": 78830,
+        "byteEnd": 78870,
+        "rawSha256": "ef8e7e3e59a447a1e64e6860d010039254d373f27ce0309cf1774002058d6599"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "EST:1218:2025",
+      "raw": {
+        "countryCode": "EST",
+        "id": "1218",
+        "name": "Ukraine Situation Regional Refugee Response Plan 2025",
+        "code": "RUKRN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "6430957",
+        "funding": "",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1077,
+        "firstLine": 1077,
+        "lastLine": 1077,
+        "byteStart": 80568,
+        "byteEnd": 80704,
+        "rawSha256": "23a1a41e985bca97d802fb00f9cc1bcd322985beeb548418ab0984d8a2dcc7f6"
+      },
+      "coverage": {
+        "status": "funding-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "EST:no-plan:2025",
+      "raw": {
+        "countryCode": "EST",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "228624",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1078,
+        "firstLine": 1078,
+        "lastLine": 1078,
+        "byteStart": 80704,
+        "byteEnd": 80743,
+        "rawSha256": "56018713eb8a42ca78faac92ba79b0084ebe3b2bf1b9b784089ee9be1ecf2c82"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SWZ:no-plan:2025",
+      "raw": {
+        "countryCode": "SWZ",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "2633284",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1086,
+        "firstLine": 1086,
+        "lastLine": 1086,
+        "byteStart": 81221,
+        "byteEnd": 81261,
+        "rawSha256": "9d933e4eb21ebb90769216253b69cafe7dcd40b754f56e5e9bef8d9cc86e770f"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "ETH:1214:2025",
+      "raw": {
+        "countryCode": "ETH",
+        "id": "1214",
+        "name": "Regional Migrant Response Plan for Horn of Africa to Yemen and Southern Africa 2025",
+        "code": "RRHOAY25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "19002155",
+        "funding": "3419933",
+        "percentFunded": "18"
+      },
+      "locator": {
+        "recordNumber": 1117,
+        "firstLine": 1117,
+        "lastLine": 1117,
+        "byteStart": 83016,
+        "byteEnd": 83193,
+        "rawSha256": "40009402eb0b8b95fafae1282e132ae222ac0b50a41b777fb4cf169806086104"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "3419933",
+        "denominator": "19002155",
+        "displayPercent": "18.00"
+      }
+    },
+    {
+      "key": "ETH:1215:2025",
+      "raw": {
+        "countryCode": "ETH",
+        "id": "1215",
+        "name": "South Sudan Regional Refugee Response Plan 2025",
+        "code": "RETHKENUGA25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "216456474",
+        "funding": "35724949",
+        "percentFunded": "17"
+      },
+      "locator": {
+        "recordNumber": 1118,
+        "firstLine": 1118,
+        "lastLine": 1118,
+        "byteStart": 83193,
+        "byteEnd": 83340,
+        "rawSha256": "fae94ed58aae8acfe8d749ca1e45404ee8a353f3719d91ab7dbb215edbf45d7a"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "2748073",
+        "denominator": "16650498",
+        "displayPercent": "16.50"
+      }
+    },
+    {
+      "key": "ETH:1216:2025",
+      "raw": {
+        "countryCode": "ETH",
+        "id": "1216",
+        "name": "Sudan Emergency: Regional Refugee Response Plan 2025",
+        "code": "RRSDN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "160290745",
+        "funding": "60929878",
+        "percentFunded": "38"
+      },
+      "locator": {
+        "recordNumber": 1119,
+        "firstLine": 1119,
+        "lastLine": 1119,
+        "byteStart": 83340,
+        "byteEnd": 83487,
+        "rawSha256": "e8bbe9d5e40abeef13439c074fc1d66d43ecd7390fc1213e80ddb454821218e9"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "60929878",
+        "denominator": "160290745",
+        "displayPercent": "38.01"
+      }
+    },
+    {
+      "key": "ETH:no-plan:2025",
+      "raw": {
+        "countryCode": "ETH",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "610502158",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1120,
+        "firstLine": 1120,
+        "lastLine": 1120,
+        "byteStart": 83487,
+        "byteEnd": 83529,
+        "rawSha256": "6c941cb96b76c46de9d7800abc7a4e7cffbd732df31a97f713213ef17f2ac5c7"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "FJI:no-plan:2025",
+      "raw": {
+        "countryCode": "FJI",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "2228289",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1175,
+        "firstLine": 1175,
+        "lastLine": 1175,
+        "byteStart": 88529,
+        "byteEnd": 88569,
+        "rawSha256": "e67cfed7a6612cdf52abe320108df129b25dae6e4aa5a676a550bb358edb198e"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GMB:no-plan:2025",
+      "raw": {
+        "countryCode": "GMB",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "10004914",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1193,
+        "firstLine": 1193,
+        "lastLine": 1193,
+        "byteStart": 89337,
+        "byteEnd": 89378,
+        "rawSha256": "f8f539e669f1b89abdc20ee861c978ef6338703e6656df121ea0d92f2dd5e461"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GEO:no-plan:2025",
+      "raw": {
+        "countryCode": "GEO",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "2411215",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1223,
+        "firstLine": 1223,
+        "lastLine": 1223,
+        "byteStart": 90894,
+        "byteEnd": 90934,
+        "rawSha256": "a30ea15ade700579a1c930c378473a81fcc0db613a9e89dbd800c6bb2127324e"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GHA:no-plan:2025",
+      "raw": {
+        "countryCode": "GHA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "13394562",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1251,
+        "firstLine": 1251,
+        "lastLine": 1251,
+        "byteStart": 92102,
+        "byteEnd": 92143,
+        "rawSha256": "9acf8944c27504113a9c0d03a0efa16ae48a15c44f7548404fa06c64da51e0fb"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GRC:no-plan:2025",
+      "raw": {
+        "countryCode": "GRC",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "2024039",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1281,
+        "firstLine": 1281,
+        "lastLine": 1281,
+        "byteStart": 93769,
+        "byteEnd": 93809,
+        "rawSha256": "322153c0c69c25d9d907f236a45694c81489106a2ac300cc3ac5637d29308ef3"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GRD:no-plan:2025",
+      "raw": {
+        "countryCode": "GRD",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "87072",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1295,
+        "firstLine": 1295,
+        "lastLine": 1295,
+        "byteStart": 94459,
+        "byteEnd": 94497,
+        "rawSha256": "0a7c3a892739e78af3bd59a0fc1b4402971f20331b2285e3f45cc2a8cbb81273"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GTM:1269:2025",
+      "raw": {
+        "countryCode": "GTM",
+        "id": "1269",
+        "name": "Guatemala Necesidades Humanitarias y Plan de Respuesta 2025",
+        "code": "HGTM25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "100563396",
+        "funding": "25204337",
+        "percentFunded": "25"
+      },
+      "locator": {
+        "recordNumber": 1308,
+        "firstLine": 1308,
+        "lastLine": 1308,
+        "byteStart": 95106,
+        "byteEnd": 95274,
+        "rawSha256": "9cc107d3304c270d6fdcae4cb8ea23fd52895acb7b3373b6dd71b13b637c693e"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "25204337",
+        "denominator": "100563396",
+        "displayPercent": "25.06"
+      }
+    },
+    {
+      "key": "GTM:no-plan:2025",
+      "raw": {
+        "countryCode": "GTM",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "17933336",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1309,
+        "firstLine": 1309,
+        "lastLine": 1309,
+        "byteStart": 95274,
+        "byteEnd": 95315,
+        "rawSha256": "441af446b7043b200bc0917fe17b993c1b7da9011e432f5aa6a2ac94f36d8969"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GIN:no-plan:2025",
+      "raw": {
+        "countryCode": "GIN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "3341849",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1345,
+        "firstLine": 1345,
+        "lastLine": 1345,
+        "byteStart": 97568,
+        "byteEnd": 97608,
+        "rawSha256": "065b4f132a9196da7154f8cb860781ab25a723bc9cacbc68e42095425e297f85"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GNB:no-plan:2025",
+      "raw": {
+        "countryCode": "GNB",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1006847",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1381,
+        "firstLine": 1381,
+        "lastLine": 1381,
+        "byteStart": 99878,
+        "byteEnd": 99918,
+        "rawSha256": "f364d38832b6231cb66e79e7f6fdf22a93221b98a502606268afb10806404f20"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "GUY:1219:2025",
+      "raw": {
+        "countryCode": "GUY",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "9886876",
+        "funding": "110279",
+        "percentFunded": "1"
+      },
+      "locator": {
+        "recordNumber": 1415,
+        "firstLine": 1415,
+        "lastLine": 1415,
+        "byteStart": 101899,
+        "byteEnd": 102052,
+        "rawSha256": "eb478ca095b013e786862e6758e457d03a58c4510ad9d52c193fa3376a58b2d5"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "110279",
+        "denominator": "9886876",
+        "displayPercent": "1.12"
+      }
+    },
+    {
+      "key": "GUY:no-plan:2025",
+      "raw": {
+        "countryCode": "GUY",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "319448",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1416,
+        "firstLine": 1416,
+        "lastLine": 1416,
+        "byteStart": 102052,
+        "byteEnd": 102091,
+        "rawSha256": "726a76aa9158ad4f5b5ae99968274598970162a782dc51bdeaf9d389ce37ca57"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "HTI:1257:2025",
+      "raw": {
+        "countryCode": "HTI",
+        "id": "1257",
+        "name": "Haiti Besoins Humanitaires et Plan de Réponse 2025",
+        "code": "HHTI25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "908159989",
+        "funding": "239449400",
+        "percentFunded": "26"
+      },
+      "locator": {
+        "recordNumber": 1439,
+        "firstLine": 1439,
+        "lastLine": 1439,
+        "byteStart": 103818,
+        "byteEnd": 103979,
+        "rawSha256": "e7a344765e11fdc9369bb6d9e348ae7c86febfa578fa02bd86a680c09b1800a2"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "239449400",
+        "denominator": "908159989",
+        "displayPercent": "26.37"
+      }
+    },
+    {
+      "key": "HTI:no-plan:2025",
+      "raw": {
+        "countryCode": "HTI",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "59377261",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1440,
+        "firstLine": 1440,
+        "lastLine": 1440,
+        "byteStart": 103979,
+        "byteEnd": 104020,
+        "rawSha256": "be8a040f7830ef5ebc5c04922cb7b7b1ff2c11c2bcb3a6f211a387f7fb8bab88"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "HND:1270:2025",
+      "raw": {
+        "countryCode": "HND",
+        "id": "1270",
+        "name": "Honduras Necesidades Humanitarias y Plan de Respuesta 2025",
+        "code": "HHND25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "138491372",
+        "funding": "14606390",
+        "percentFunded": "11"
+      },
+      "locator": {
+        "recordNumber": 1491,
+        "firstLine": 1491,
+        "lastLine": 1491,
+        "byteStart": 107992,
+        "byteEnd": 108159,
+        "rawSha256": "02a85d5415be15bd469687474bc41fdf1227c3adf829e97ac0cd70079770bc45"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "7303195",
+        "denominator": "69245686",
+        "displayPercent": "10.55"
+      }
+    },
+    {
+      "key": "HND:no-plan:2025",
+      "raw": {
+        "countryCode": "HND",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "13907764",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1492,
+        "firstLine": 1492,
+        "lastLine": 1492,
+        "byteStart": 108159,
+        "byteEnd": 108200,
+        "rawSha256": "6e7e23dc7b03cf34fe0f08a916d7174f67d719f633363f9bfe556b3eedf41495"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "IDN:no-plan:2025",
+      "raw": {
+        "countryCode": "IDN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "15950716",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1527,
+        "firstLine": 1527,
+        "lastLine": 1527,
+        "byteStart": 110347,
+        "byteEnd": 110388,
+        "rawSha256": "b5a4914cac59a62966ae881ad5fbe8d343a6a06b21f49f14aaca813cd2523af8"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "IRN:1211:2025",
+      "raw": {
+        "countryCode": "IRN",
+        "id": "1211",
+        "name": "Afghanistan Situation Regional Refugee Response Plan 2025",
+        "code": "RIRNPAK25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "263236972",
+        "funding": "20435472",
+        "percentFunded": "8"
+      },
+      "locator": {
+        "recordNumber": 1568,
+        "firstLine": 1568,
+        "lastLine": 1568,
+        "byteStart": 112984,
+        "byteEnd": 113137,
+        "rawSha256": "78d415cef85bcdbbd2799e61294e30948e41fcf8f62967cecc8022cb7ce86057"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "5108868",
+        "denominator": "65809243",
+        "displayPercent": "7.76"
+      }
+    },
+    {
+      "key": "IRN:no-plan:2025",
+      "raw": {
+        "countryCode": "IRN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "26833102",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1569,
+        "firstLine": 1569,
+        "lastLine": 1569,
+        "byteStart": 113137,
+        "byteEnd": 113178,
+        "rawSha256": "72a638df53e2a240b92e7dba4d914891efeab1d1d361892728cb45aa55bd5560"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "IRQ:no-plan:2025",
+      "raw": {
+        "countryCode": "IRQ",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "94375175",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1604,
+        "firstLine": 1604,
+        "lastLine": 1604,
+        "byteStart": 115122,
+        "byteEnd": 115163,
+        "rawSha256": "1cfd4bf13bedc3d0a5ee49b0359b741215f7a894f50800ed378a8d1360bfa598"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "JOR:1217:2025",
+      "raw": {
+        "countryCode": "JOR",
+        "id": "1217",
+        "name": "Syrian Arab Republic Regional Refugee and Resilience Plan (3RP) 2025",
+        "code": "RSYR25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "911250694",
+        "funding": "169042225",
+        "percentFunded": "19"
+      },
+      "locator": {
+        "recordNumber": 1662,
+        "firstLine": 1662,
+        "lastLine": 1662,
+        "byteStart": 120476,
+        "byteEnd": 120639,
+        "rawSha256": "57c1a2e638be964f65ba3d3db67378a5e0631cd3b909db4fbc89395e003b365d"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "169042225",
+        "denominator": "911250694",
+        "displayPercent": "18.55"
+      }
+    },
+    {
+      "key": "JOR:no-plan:2025",
+      "raw": {
+        "countryCode": "JOR",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "71509308",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1663,
+        "firstLine": 1663,
+        "lastLine": 1663,
+        "byteStart": 120639,
+        "byteEnd": 120680,
+        "rawSha256": "e592f7a6a0ee10d70f2cbdd39779ba549d218560028b583b8042ea0a244e7d18"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "KEN:1214:2025",
+      "raw": {
+        "countryCode": "KEN",
+        "id": "1214",
+        "name": "Regional Migrant Response Plan for Horn of Africa to Yemen and Southern Africa 2025",
+        "code": "RRHOAY25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "14054077",
+        "funding": "1105498",
+        "percentFunded": "8"
+      },
+      "locator": {
+        "recordNumber": 1707,
+        "firstLine": 1707,
+        "lastLine": 1707,
+        "byteStart": 124173,
+        "byteEnd": 124349,
+        "rawSha256": "d190bc72a12b638cf5e0a2a0ca034f05cd72aa78bf2da86aa5f99de63d7d8b2f"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "1105498",
+        "denominator": "14054077",
+        "displayPercent": "7.87"
+      }
+    },
+    {
+      "key": "KEN:1215:2025",
+      "raw": {
+        "countryCode": "KEN",
+        "id": "1215",
+        "name": "South Sudan Regional Refugee Response Plan 2025",
+        "code": "RETHKENUGA25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "166906796",
+        "funding": "82791417",
+        "percentFunded": "50"
+      },
+      "locator": {
+        "recordNumber": 1708,
+        "firstLine": 1708,
+        "lastLine": 1708,
+        "byteStart": 124349,
+        "byteEnd": 124496,
+        "rawSha256": "42ccf10cc9719d94a5714958dae860d5facaef2edec9291f7db5f28abcd14eed"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "82791417",
+        "denominator": "166906796",
+        "displayPercent": "49.60"
+      }
+    },
+    {
+      "key": "KEN:no-plan:2025",
+      "raw": {
+        "countryCode": "KEN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "102560005",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1709,
+        "firstLine": 1709,
+        "lastLine": 1709,
+        "byteStart": 124496,
+        "byteEnd": 124538,
+        "rawSha256": "106f8021b9f2b32702f38ae63c0fbad7648b2d6cd396141544121d0c9e9d3a87"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "PRK:no-plan:2025",
+      "raw": {
+        "countryCode": "PRK",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "2383644",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1762,
+        "firstLine": 1762,
+        "lastLine": 1762,
+        "byteStart": 128885,
+        "byteEnd": 128925,
+        "rawSha256": "0b3be6bd329c9d24f859e501e7e5ee45acd9ebd3ba1d97cfee2e559f8bbf400b"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "KGZ:no-plan:2025",
+      "raw": {
+        "countryCode": "KGZ",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "15021117",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1806,
+        "firstLine": 1806,
+        "lastLine": 1806,
+        "byteStart": 131814,
+        "byteEnd": 131855,
+        "rawSha256": "916ccdde9ba438ec8fc3635b5eb8b266bb1f0e3c44f1c83edb411810e7a38233"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "LAO:no-plan:2025",
+      "raw": {
+        "countryCode": "LAO",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "9215497",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1835,
+        "firstLine": 1835,
+        "lastLine": 1835,
+        "byteStart": 133152,
+        "byteEnd": 133192,
+        "rawSha256": "779e9b251a15c92e505139ae9148b680d5e1cf3ee75b2971edf6699cc3f4fc48"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "LBN:1286:2025",
+      "raw": {
+        "countryCode": "LBN",
+        "id": "1286",
+        "name": "Lebanon Flash Appeal 2025",
+        "code": "FLBN25",
+        "typeId": "5",
+        "typeName": "Flash appeal",
+        "startDate": "2025-01-01",
+        "endDate": "2025-03-31",
+        "year": "2025",
+        "requirements": "371357000",
+        "funding": "298431311",
+        "percentFunded": "80"
+      },
+      "locator": {
+        "recordNumber": 1869,
+        "firstLine": 1869,
+        "lastLine": 1869,
+        "byteStart": 134895,
+        "byteEnd": 135003,
+        "rawSha256": "a663552f03ce31c6c21ac38e0cf353c452ae620420a0a4a4058a6cbd3246780b"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "298431311",
+        "denominator": "371357000",
+        "displayPercent": "80.36"
+      }
+    },
+    {
+      "key": "LBN:1217:2025",
+      "raw": {
+        "countryCode": "LBN",
+        "id": "1217",
+        "name": "Syrian Arab Republic Regional Refugee and Resilience Plan (3RP) 2025",
+        "code": "RSYR25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "2992299991",
+        "funding": "317986013",
+        "percentFunded": "11"
+      },
+      "locator": {
+        "recordNumber": 1870,
+        "firstLine": 1870,
+        "lastLine": 1870,
+        "byteStart": 135003,
+        "byteEnd": 135167,
+        "rawSha256": "65c9a4a99a09c913fde42488b2d4443e2e2abbc907e3669c79e73b5e6c898879"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "317986013",
+        "denominator": "2992299991",
+        "displayPercent": "10.63"
+      }
+    },
+    {
+      "key": "LBN:no-plan:2025",
+      "raw": {
+        "countryCode": "LBN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "113282851",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1871,
+        "firstLine": 1871,
+        "lastLine": 1871,
+        "byteStart": 135167,
+        "byteEnd": 135209,
+        "rawSha256": "81dc4ffd9e2ca72833b43041548301a45262a5776cc919c021b5ba392d21ab35"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "LSO:no-plan:2025",
+      "raw": {
+        "countryCode": "LSO",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "4259963",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1920,
+        "firstLine": 1920,
+        "lastLine": 1920,
+        "byteStart": 139260,
+        "byteEnd": 139300,
+        "rawSha256": "8454aad67089357488af8e9905cec8e342b9c4632fcd0d72fd12686cddf556a9"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "LBR:no-plan:2025",
+      "raw": {
+        "countryCode": "LBR",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1065132",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1949,
+        "firstLine": 1949,
+        "lastLine": 1949,
+        "byteStart": 140911,
+        "byteEnd": 140951,
+        "rawSha256": "5414b63f1f385441fd656e64afa46968468f16c337caf5bd57c0b5c72e07c445"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "LBY:1216:2025",
+      "raw": {
+        "countryCode": "LBY",
+        "id": "1216",
+        "name": "Sudan Emergency: Regional Refugee Response Plan 2025",
+        "code": "RRSDN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "106632000",
+        "funding": "15153705",
+        "percentFunded": "14"
+      },
+      "locator": {
+        "recordNumber": 1993,
+        "firstLine": 1993,
+        "lastLine": 1993,
+        "byteStart": 143970,
+        "byteEnd": 144117,
+        "rawSha256": "0b682147470e8c0dde443cd184abaec3508df17c7f65560a7b0103d1514a64d9"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "336749",
+        "denominator": "2369600",
+        "displayPercent": "14.21"
+      }
+    },
+    {
+      "key": "LBY:no-plan:2025",
+      "raw": {
+        "countryCode": "LBY",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "19115473",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 1994,
+        "firstLine": 1994,
+        "lastLine": 1994,
+        "byteStart": 144117,
+        "byteEnd": 144158,
+        "rawSha256": "97fc6bda160ccd060b3815d2be53bb50c84de504143542d30b884f8fb7a584c5"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "LTU:1218:2025",
+      "raw": {
+        "countryCode": "LTU",
+        "id": "1218",
+        "name": "Ukraine Situation Regional Refugee Response Plan 2025",
+        "code": "RUKRN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "10867561",
+        "funding": "600000",
+        "percentFunded": "6"
+      },
+      "locator": {
+        "recordNumber": 2025,
+        "firstLine": 2025,
+        "lastLine": 2025,
+        "byteStart": 146556,
+        "byteEnd": 146700,
+        "rawSha256": "744b9d5e04535681c0585a7c2540b600797734067fa46f886506e4d03ccdccde"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "600000",
+        "denominator": "10867561",
+        "displayPercent": "5.52"
+      }
+    },
+    {
+      "key": "LTU:no-plan:2025",
+      "raw": {
+        "countryCode": "LTU",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "0",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2026,
+        "firstLine": 2026,
+        "lastLine": 2026,
+        "byteStart": 146700,
+        "byteEnd": 146734,
+        "rawSha256": "1e2a78f9737eaa9e316d145ffa7d2582cf2ec4daa85c17717f67408c57373425"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MDG:no-plan:2025",
+      "raw": {
+        "countryCode": "MDG",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "47654394",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2036,
+        "firstLine": 2036,
+        "lastLine": 2036,
+        "byteStart": 147392,
+        "byteEnd": 147433,
+        "rawSha256": "20c38d953989530202004ba72c6f5bb7d1e6880bcd8e2c890c7bdf6f17b21401"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MWI:1281:2025",
+      "raw": {
+        "countryCode": "MWI",
+        "id": "1281",
+        "name": "Malawi Drought Response Flash Appeal 2025",
+        "code": "FMWI25",
+        "typeId": "5",
+        "typeName": "Flash appeal",
+        "startDate": "2025-01-01",
+        "endDate": "2025-06-01",
+        "year": "2025",
+        "requirements": "57478430",
+        "funding": "23304509",
+        "percentFunded": "41"
+      },
+      "locator": {
+        "recordNumber": 2074,
+        "firstLine": 2074,
+        "lastLine": 2074,
+        "byteStart": 149878,
+        "byteEnd": 150000,
+        "rawSha256": "d78a8cd4f007d0f542c2c4e5858867515fd6893fb26286cedd7e64ced2b1552d"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "23304509",
+        "denominator": "57478430",
+        "displayPercent": "40.54"
+      }
+    },
+    {
+      "key": "MWI:no-plan:2025",
+      "raw": {
+        "countryCode": "MWI",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "42713339",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2075,
+        "firstLine": 2075,
+        "lastLine": 2075,
+        "byteStart": 150000,
+        "byteEnd": 150041,
+        "rawSha256": "decc53ef483241bb41d0f90e23e0658189611b283f5bc4b40365bb4f0d6fe689"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MLI:1222:2025",
+      "raw": {
+        "countryCode": "MLI",
+        "id": "1222",
+        "name": "Mali Besoins Humanitaires et Plan de Réponse 2025",
+        "code": "HMLI25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "771314315",
+        "funding": "186100068",
+        "percentFunded": "24"
+      },
+      "locator": {
+        "recordNumber": 2110,
+        "firstLine": 2110,
+        "lastLine": 2110,
+        "byteStart": 152074,
+        "byteEnd": 152234,
+        "rawSha256": "1980cee21d11c7654c7259113e34ff93e64f06137960f1e85de7dd21c83d44d8"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "186100068",
+        "denominator": "771314315",
+        "displayPercent": "24.13"
+      }
+    },
+    {
+      "key": "MLI:no-plan:2025",
+      "raw": {
+        "countryCode": "MLI",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "47379097",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2111,
+        "firstLine": 2111,
+        "lastLine": 2111,
+        "byteStart": 152234,
+        "byteEnd": 152275,
+        "rawSha256": "838441cf9e716ae202c6c620c605a54ab5c98f2d5c705161fe36766e7e089b07"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MRT:no-plan:2025",
+      "raw": {
+        "countryCode": "MRT",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "35182451",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2157,
+        "firstLine": 2157,
+        "lastLine": 2157,
+        "byteStart": 155798,
+        "byteEnd": 155839,
+        "rawSha256": "aea1a207f54ece8a0434f7611175861f46029da501e8f8cececc247b5490989d"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MEX:1219:2025",
+      "raw": {
+        "countryCode": "MEX",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "23304526",
+        "funding": "7021432",
+        "percentFunded": "30"
+      },
+      "locator": {
+        "recordNumber": 2198,
+        "firstLine": 2198,
+        "lastLine": 2198,
+        "byteStart": 158695,
+        "byteEnd": 158851,
+        "rawSha256": "242e52b6b24d030ef92b0470cc15edd3a3914946e4ea75c4c5c70e146511143a"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "3510716",
+        "denominator": "11652263",
+        "displayPercent": "30.13"
+      }
+    },
+    {
+      "key": "MEX:no-plan:2025",
+      "raw": {
+        "countryCode": "MEX",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "12961133",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2199,
+        "firstLine": 2199,
+        "lastLine": 2199,
+        "byteStart": 158851,
+        "byteEnd": 158892,
+        "rawSha256": "50fa63e9c36d5fd41834e13ee83abc5af3671f54be57de596758c9fd8acfbbdc"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MDA:1218:2025",
+      "raw": {
+        "countryCode": "MDA",
+        "id": "1218",
+        "name": "Ukraine Situation Regional Refugee Response Plan 2025",
+        "code": "RUKRN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "205507394",
+        "funding": "58492078",
+        "percentFunded": "28"
+      },
+      "locator": {
+        "recordNumber": 2221,
+        "firstLine": 2221,
+        "lastLine": 2221,
+        "byteStart": 160420,
+        "byteEnd": 160568,
+        "rawSha256": "995d2fd74c23788208fc5858aac68a4009d83fdd8064ed384ce23aeaee285f22"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "29246039",
+        "denominator": "102753697",
+        "displayPercent": "28.46"
+      }
+    },
+    {
+      "key": "MDA:no-plan:2025",
+      "raw": {
+        "countryCode": "MDA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "8683771",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2222,
+        "firstLine": 2222,
+        "lastLine": 2222,
+        "byteStart": 160568,
+        "byteEnd": 160608,
+        "rawSha256": "3738b228a62f66d3aca283dcf993bc26fcd9527f5a822b736e6f50d665c6e0c6"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MNG:no-plan:2025",
+      "raw": {
+        "countryCode": "MNG",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1984728",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2240,
+        "firstLine": 2240,
+        "lastLine": 2240,
+        "byteStart": 161591,
+        "byteEnd": 161631,
+        "rawSha256": "185550eb3d696d3327305ba685164c5cab13b44964d6c1c8654d5938da1f66c6"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MOZ:1285:2025",
+      "raw": {
+        "countryCode": "MOZ",
+        "id": "1285",
+        "name": "Mozambique Drought Flash Appeal 2025",
+        "code": "FMOZ25",
+        "typeId": "5",
+        "typeName": "Flash appeal",
+        "startDate": "2025-01-01",
+        "endDate": "2025-07-31",
+        "year": "2025",
+        "requirements": "133082917",
+        "funding": "10834599",
+        "percentFunded": "8"
+      },
+      "locator": {
+        "recordNumber": 2273,
+        "firstLine": 2273,
+        "lastLine": 2273,
+        "byteStart": 163280,
+        "byteEnd": 163397,
+        "rawSha256": "940ba6b73c9cf8511069ec406841de637a92d86d9d761601a9a585cf4ec6f993"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "10834599",
+        "denominator": "133082917",
+        "displayPercent": "8.14"
+      }
+    },
+    {
+      "key": "MOZ:1364:2025",
+      "raw": {
+        "countryCode": "MOZ",
+        "id": "1364",
+        "name": "Mozambique Tropical Cyclones Flash Appeal 2025",
+        "code": "FMOZ25a",
+        "typeId": "5",
+        "typeName": "Flash appeal",
+        "startDate": "2025-01-01",
+        "endDate": "2025-06-30",
+        "year": "2025",
+        "requirements": "197543124",
+        "funding": "27029961",
+        "percentFunded": "14"
+      },
+      "locator": {
+        "recordNumber": 2274,
+        "firstLine": 2274,
+        "lastLine": 2274,
+        "byteStart": 163397,
+        "byteEnd": 163526,
+        "rawSha256": "8f212f7c394c6593307ab249b4047c44af2acd0c8386b4966fc3f6f971f1acbb"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "3003329",
+        "denominator": "21949236",
+        "displayPercent": "13.68"
+      }
+    },
+    {
+      "key": "MOZ:1267:2025",
+      "raw": {
+        "countryCode": "MOZ",
+        "id": "1267",
+        "name": "Mozambique Humanitarian Needs and Response Plan 2025",
+        "code": "HMOZ25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "352096942",
+        "funding": "117592278",
+        "percentFunded": "33"
+      },
+      "locator": {
+        "recordNumber": 2275,
+        "firstLine": 2275,
+        "lastLine": 2275,
+        "byteStart": 163526,
+        "byteEnd": 163688,
+        "rawSha256": "704b178a081ea1da1de38bfbd4c1df969c8656f9f7b779232e9d2c1bae248c56"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "58796139",
+        "denominator": "176048471",
+        "displayPercent": "33.40"
+      }
+    },
+    {
+      "key": "MOZ:no-plan:2025",
+      "raw": {
+        "countryCode": "MOZ",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "58548233",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2276,
+        "firstLine": 2276,
+        "lastLine": 2276,
+        "byteStart": 163688,
+        "byteEnd": 163729,
+        "rawSha256": "d070ac232c6d5c9c294aea6946f2dab114f49eb04f7d94c660f689f4c4d673f9"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "MMR:1275:2025",
+      "raw": {
+        "countryCode": "MMR",
+        "id": "1275",
+        "name": "Myanmar Original Humanitarian Needs and Response Plan 2025",
+        "code": "HMMR25b",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "1137811569",
+        "funding": "198421560",
+        "percentFunded": "17"
+      },
+      "locator": {
+        "recordNumber": 2319,
+        "firstLine": 2319,
+        "lastLine": 2319,
+        "byteStart": 167031,
+        "byteEnd": 167201,
+        "rawSha256": "52de7d94128282dd0262edd6f0e065fc7b0738646966c07b333d29ddd78fe2cd"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "66140520",
+        "denominator": "379270523",
+        "displayPercent": "17.44"
+      }
+    },
+    {
+      "key": "MMR:1399:2025",
+      "raw": {
+        "countryCode": "MMR",
+        "id": "1399",
+        "name": "Myanmar Earthquake HNRP Flash Addendum 2025",
+        "code": "HMMR25a",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-04-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "275150034",
+        "funding": "197720099",
+        "percentFunded": "72"
+      },
+      "locator": {
+        "recordNumber": 2320,
+        "firstLine": 2320,
+        "lastLine": 2320,
+        "byteStart": 167201,
+        "byteEnd": 167355,
+        "rawSha256": "6b8662b3af2a129173c4022dc5411e11a07a0ce6ca04a949943d0d4c55a4dadb"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "197720099",
+        "denominator": "275150034",
+        "displayPercent": "71.86"
+      }
+    },
+    {
+      "key": "MMR:no-plan:2025",
+      "raw": {
+        "countryCode": "MMR",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "249254528",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2321,
+        "firstLine": 2321,
+        "lastLine": 2321,
+        "byteStart": 167355,
+        "byteEnd": 167397,
+        "rawSha256": "75f1a1647b1903a9412414f7ca33309191502ad13a79051cb3644dbabac21e04"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "NAM:no-plan:2025",
+      "raw": {
+        "countryCode": "NAM",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "5308153",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2362,
+        "firstLine": 2362,
+        "lastLine": 2362,
+        "byteStart": 170451,
+        "byteEnd": 170491,
+        "rawSha256": "ea7bfdd687da46f4e0cfbf8eabd584e0a091c0ecd8718172164c33b7a27e32cf"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "NPL:no-plan:2025",
+      "raw": {
+        "countryCode": "NPL",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "17137680",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2392,
+        "firstLine": 2392,
+        "lastLine": 2392,
+        "byteStart": 171894,
+        "byteEnd": 171935,
+        "rawSha256": "93f6f463fe858b83182fcb0d2c01ed87972fd8ecbf09617965950871c6f3e550"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "NIC:no-plan:2025",
+      "raw": {
+        "countryCode": "NIC",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1073592",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2430,
+        "firstLine": 2430,
+        "lastLine": 2430,
+        "byteStart": 174149,
+        "byteEnd": 174189,
+        "rawSha256": "909211598dcc5c8f9f61ca0cb3ed4ac8d695bcf011dc960468337e5d41623c63"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "NER:1264:2025",
+      "raw": {
+        "countryCode": "NER",
+        "id": "1264",
+        "name": "Niger Besoins Humanitaires et Plan de Réponse 2025",
+        "code": "HNER25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "603027582",
+        "funding": "165885178",
+        "percentFunded": "28"
+      },
+      "locator": {
+        "recordNumber": 2463,
+        "firstLine": 2463,
+        "lastLine": 2463,
+        "byteStart": 175752,
+        "byteEnd": 175913,
+        "rawSha256": "7272a5ce689ee45c382da5a35dc77edf382a5eab7106c388c5b92cb7aa6a4c8b"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "82942589",
+        "denominator": "301513791",
+        "displayPercent": "27.51"
+      }
+    },
+    {
+      "key": "NER:no-plan:2025",
+      "raw": {
+        "countryCode": "NER",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "86284371",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2464,
+        "firstLine": 2464,
+        "lastLine": 2464,
+        "byteStart": 175913,
+        "byteEnd": 175954,
+        "rawSha256": "9e778b282592a00f76d39ebfd6f7a4a60a4ca53f4c86a31b0fc2ecb5ade42bfb"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "NGA:1274:2025",
+      "raw": {
+        "countryCode": "NGA",
+        "id": "1274",
+        "name": "Nigeria Humanitarian Needs and Response Plan 2025",
+        "code": "HNGA25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "910246471",
+        "funding": "287337974",
+        "percentFunded": "32"
+      },
+      "locator": {
+        "recordNumber": 2515,
+        "firstLine": 2515,
+        "lastLine": 2515,
+        "byteStart": 180171,
+        "byteEnd": 180330,
+        "rawSha256": "e3af95068260e27efa11a7d9e52fa81ac1339476745289075354157b25373047"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "287337974",
+        "denominator": "910246471",
+        "displayPercent": "31.57"
+      }
+    },
+    {
+      "key": "NGA:no-plan:2025",
+      "raw": {
+        "countryCode": "NGA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "36987334",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2516,
+        "firstLine": 2516,
+        "lastLine": 2516,
+        "byteStart": 180330,
+        "byteEnd": 180371,
+        "rawSha256": "e9c1ce67fb0b06884b148a08f240913cdb2c91952fb8f6488de0f0834583e6f4"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "PSE:1273:2025",
+      "raw": {
+        "countryCode": "PSE",
+        "id": "1273",
+        "name": "Escalation of Hostilities in the OPT Flash Appeal 2025",
+        "code": "FPSE25",
+        "typeId": "5",
+        "typeName": "Flash appeal",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "4073058682",
+        "funding": "2739830521",
+        "percentFunded": "67"
+      },
+      "locator": {
+        "recordNumber": 2559,
+        "firstLine": 2559,
+        "lastLine": 2559,
+        "byteStart": 183392,
+        "byteEnd": 183531,
+        "rawSha256": "ec85c5d41a5d476360688f7f09976aff76f5c8c91e3171c9bf3276c0cee1feb0"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "2739830521",
+        "denominator": "4073058682",
+        "displayPercent": "67.27"
+      }
+    },
+    {
+      "key": "PSE:no-plan:2025",
+      "raw": {
+        "countryCode": "PSE",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1683575949",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2560,
+        "firstLine": 2560,
+        "lastLine": 2560,
+        "byteStart": 183531,
+        "byteEnd": 183574,
+        "rawSha256": "fb6ba342b8a1f65dc43dabc82a2af160a9b750de6a91c9d16104641211078087"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "PAK:1431:2025",
+      "raw": {
+        "countryCode": "PAK",
+        "id": "1431",
+        "name": "Pakistan Floods Support Plan 2025",
+        "code": "OPAK25",
+        "typeId": "6",
+        "typeName": "Other",
+        "startDate": "2025-10-20",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "85687180",
+        "funding": "62362707",
+        "percentFunded": "73"
+      },
+      "locator": {
+        "recordNumber": 2614,
+        "firstLine": 2614,
+        "lastLine": 2614,
+        "byteStart": 188332,
+        "byteEnd": 188439,
+        "rawSha256": "5a671f5e56be1a878a358343aa79baa88d156f699ad4e116bcb2fcb66d2f9c8d"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "62362707",
+        "denominator": "85687180",
+        "displayPercent": "72.78"
+      }
+    },
+    {
+      "key": "PAK:1211:2025",
+      "raw": {
+        "countryCode": "PAK",
+        "id": "1211",
+        "name": "Afghanistan Situation Regional Refugee Response Plan 2025",
+        "code": "RIRNPAK25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "358773292",
+        "funding": "92783150",
+        "percentFunded": "26"
+      },
+      "locator": {
+        "recordNumber": 2615,
+        "firstLine": 2615,
+        "lastLine": 2615,
+        "byteStart": 188439,
+        "byteEnd": 188593,
+        "rawSha256": "4950508134c8dc21057d93c6950c1072e30d20c1562219f231a381cad07c32cd"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "46391575",
+        "denominator": "179386646",
+        "displayPercent": "25.86"
+      }
+    },
+    {
+      "key": "PAK:no-plan:2025",
+      "raw": {
+        "countryCode": "PAK",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "40183309",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2616,
+        "firstLine": 2616,
+        "lastLine": 2616,
+        "byteStart": 188593,
+        "byteEnd": 188634,
+        "rawSha256": "56349acdf52fd6c3ebe8792253d409039b9b8345968283eb46fbdde0e2f55d07"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "PAN:1219:2025",
+      "raw": {
+        "countryCode": "PAN",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "18812451",
+        "funding": "5556929",
+        "percentFunded": "30"
+      },
+      "locator": {
+        "recordNumber": 2662,
+        "firstLine": 2662,
+        "lastLine": 2662,
+        "byteStart": 192110,
+        "byteEnd": 192266,
+        "rawSha256": "46600287056cdf9e6e2f186eaca514660d0ef1ba34997cf01074484103919b27"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "793847",
+        "denominator": "2687493",
+        "displayPercent": "29.54"
+      }
+    },
+    {
+      "key": "PAN:no-plan:2025",
+      "raw": {
+        "countryCode": "PAN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "3586765",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2663,
+        "firstLine": 2663,
+        "lastLine": 2663,
+        "byteStart": 192266,
+        "byteEnd": 192306,
+        "rawSha256": "e3a24a7dd0e0d69b44baa068c34dd9104d8f050fd4a0bf384966e09d81d2d5de"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "PRY:1219:2025",
+      "raw": {
+        "countryCode": "PRY",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "4536485",
+        "funding": "137236",
+        "percentFunded": "3"
+      },
+      "locator": {
+        "recordNumber": 2685,
+        "firstLine": 2685,
+        "lastLine": 2685,
+        "byteStart": 193932,
+        "byteEnd": 194085,
+        "rawSha256": "c49c41f7d80c9c17ce7a98377c716a3017b021c71329086a10fda7cea6c44a7b"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "137236",
+        "denominator": "4536485",
+        "displayPercent": "3.03"
+      }
+    },
+    {
+      "key": "PRY:no-plan:2025",
+      "raw": {
+        "countryCode": "PRY",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1080299",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2686,
+        "firstLine": 2686,
+        "lastLine": 2686,
+        "byteStart": 194085,
+        "byteEnd": 194125,
+        "rawSha256": "95206174a9abd65e1456e12036a0cd8e5a303720bf79bf2711b3b7cd80c346f6"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "PER:1219:2025",
+      "raw": {
+        "countryCode": "PER",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "284811689",
+        "funding": "24732504",
+        "percentFunded": "9"
+      },
+      "locator": {
+        "recordNumber": 2710,
+        "firstLine": 2710,
+        "lastLine": 2710,
+        "byteStart": 195826,
+        "byteEnd": 195983,
+        "rawSha256": "2b7911a0e51032562c48c46612c0c7ef1b515d4d108417f2c5597ab74ceda4f5"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "24732504",
+        "denominator": "284811689",
+        "displayPercent": "8.68"
+      }
+    },
+    {
+      "key": "PER:no-plan:2025",
+      "raw": {
+        "countryCode": "PER",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "7168575",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2711,
+        "firstLine": 2711,
+        "lastLine": 2711,
+        "byteStart": 195983,
+        "byteEnd": 196023,
+        "rawSha256": "37c11e167c52c36d36e236f063ad6d91bee029dd45fe60dca93a834fce0e238e"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "PHL:1325:2025",
+      "raw": {
+        "countryCode": "PHL",
+        "id": "1325",
+        "name": "Philippines Tropical Cyclones and Floods Humanitarian Needs and Priorities 2025",
+        "code": "OPHL25",
+        "typeId": "6",
+        "typeName": "Other",
+        "startDate": "2025-01-01",
+        "endDate": "2025-04-30",
+        "year": "2025",
+        "requirements": "16880751",
+        "funding": "24586009",
+        "percentFunded": "146"
+      },
+      "locator": {
+        "recordNumber": 2747,
+        "firstLine": 2747,
+        "lastLine": 2747,
+        "byteStart": 198291,
+        "byteEnd": 198445,
+        "rawSha256": "b0d1807628297755c77d4948c78968c827ca51b335767c5f14b0ff824e7172a4"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "24586009",
+        "denominator": "16880751",
+        "displayPercent": "145.65"
+      }
+    },
+    {
+      "key": "PHL:no-plan:2025",
+      "raw": {
+        "countryCode": "PHL",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "37305782",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2748,
+        "firstLine": 2748,
+        "lastLine": 2748,
+        "byteStart": 198445,
+        "byteEnd": 198486,
+        "rawSha256": "a15ca6661181d4d6e43e9e7d00b5e01a1f6625e0f7e2c533291a47c4b5305794"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "POL:1218:2025",
+      "raw": {
+        "countryCode": "POL",
+        "id": "1218",
+        "name": "Ukraine Situation Regional Refugee Response Plan 2025",
+        "code": "RUKRN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "206518173",
+        "funding": "20528957",
+        "percentFunded": "10"
+      },
+      "locator": {
+        "recordNumber": 2788,
+        "firstLine": 2788,
+        "lastLine": 2788,
+        "byteStart": 201271,
+        "byteEnd": 201419,
+        "rawSha256": "3fcedfb094c6398b1f63afb6e5e546d0c7c7c652f524402e6cc31cdc08c3d60c"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "20528957",
+        "denominator": "206518173",
+        "displayPercent": "9.94"
+      }
+    },
+    {
+      "key": "POL:no-plan:2025",
+      "raw": {
+        "countryCode": "POL",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "614091",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2789,
+        "firstLine": 2789,
+        "lastLine": 2789,
+        "byteStart": 201419,
+        "byteEnd": 201458,
+        "rawSha256": "eda6920476490e7d275e154f539416f47537ced65f73d651859bcc6ab1084bc5"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "ROU:1218:2025",
+      "raw": {
+        "countryCode": "ROU",
+        "id": "1218",
+        "name": "Ukraine Situation Regional Refugee Response Plan 2025",
+        "code": "RUKRN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "82793005",
+        "funding": "6782182",
+        "percentFunded": "8"
+      },
+      "locator": {
+        "recordNumber": 2800,
+        "firstLine": 2800,
+        "lastLine": 2800,
+        "byteStart": 202167,
+        "byteEnd": 202312,
+        "rawSha256": "5dc4de72144f7b3500ba03fce0c6f7ecbd66fd3ec5479d93e6e32625bd144db1"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "6782182",
+        "denominator": "82793005",
+        "displayPercent": "8.19"
+      }
+    },
+    {
+      "key": "ROU:no-plan:2025",
+      "raw": {
+        "countryCode": "ROU",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "2287280",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2801,
+        "firstLine": 2801,
+        "lastLine": 2801,
+        "byteStart": 202312,
+        "byteEnd": 202352,
+        "rawSha256": "3bd453a74532dcfec65021b9e64c2110a10c3fb4bda7153f99dd7bfedfe746ee"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "RUS:no-plan:2025",
+      "raw": {
+        "countryCode": "RUS",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "55318",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2814,
+        "firstLine": 2814,
+        "lastLine": 2814,
+        "byteStart": 203139,
+        "byteEnd": 203177,
+        "rawSha256": "6852a3de3e2b52df25f4e1d6d693027c4cd9f67db664da087a520635a77e40e5"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "RWA:1213:2025",
+      "raw": {
+        "countryCode": "RWA",
+        "id": "1213",
+        "name": "Democratic Republic of the Congo Regional Refugee Response Plan 2025",
+        "code": "RDRC_RRP25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "82800885",
+        "funding": "17082639",
+        "percentFunded": "21"
+      },
+      "locator": {
+        "recordNumber": 2850,
+        "firstLine": 2850,
+        "lastLine": 2850,
+        "byteStart": 205370,
+        "byteEnd": 205535,
+        "rawSha256": "5be818813bf2a1dc97785745b68fe96feb71202380de933ea1ed73c6e2ad6f20"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "5694213",
+        "denominator": "27600295",
+        "displayPercent": "20.63"
+      }
+    },
+    {
+      "key": "RWA:no-plan:2025",
+      "raw": {
+        "countryCode": "RWA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "14707430",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2851,
+        "firstLine": 2851,
+        "lastLine": 2851,
+        "byteStart": 205535,
+        "byteEnd": 205576,
+        "rawSha256": "a76a4e86133e5d1ea7669880ec89ed6150e0a674d0be200655bb6fff8dd1787e"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "VCT:no-plan:2025",
+      "raw": {
+        "countryCode": "VCT",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "4931101",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2891,
+        "firstLine": 2891,
+        "lastLine": 2891,
+        "byteStart": 208143,
+        "byteEnd": 208183,
+        "rawSha256": "9f76ca4b95ff7113cd132b9cb494503c795bfb742bc16b643cab0571e82b20d6"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SEN:no-plan:2025",
+      "raw": {
+        "countryCode": "SEN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "6921358",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2905,
+        "firstLine": 2905,
+        "lastLine": 2905,
+        "byteStart": 208802,
+        "byteEnd": 208842,
+        "rawSha256": "4089a20497b31734a68a03fb7bd1c6edddc2dccf9453659594a69301594c1733"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SRB:no-plan:2025",
+      "raw": {
+        "countryCode": "SRB",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "169563",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2943,
+        "firstLine": 2943,
+        "lastLine": 2943,
+        "byteStart": 211289,
+        "byteEnd": 211328,
+        "rawSha256": "0fd8fc5f5e55118d68bc5eab00f9a299ae8fb2029caa678da07f9c2d4716ef8e"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SLE:no-plan:2025",
+      "raw": {
+        "countryCode": "SLE",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "9264919",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2962,
+        "firstLine": 2962,
+        "lastLine": 2962,
+        "byteStart": 212171,
+        "byteEnd": 212211,
+        "rawSha256": "25a88a7a2941517da2be7f6285428f0afe1442dee447e12410d87f48a924098a"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SVK:1218:2025",
+      "raw": {
+        "countryCode": "SVK",
+        "id": "1218",
+        "name": "Ukraine Situation Regional Refugee Response Plan 2025",
+        "code": "RUKRN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "42484542",
+        "funding": "",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 2999,
+        "firstLine": 2999,
+        "lastLine": 2999,
+        "byteStart": 214656,
+        "byteEnd": 214793,
+        "rawSha256": "818f7de0a84a87f4e83a5441e826fd0339e553c87736ab575f9887390b0ea03f"
+      },
+      "coverage": {
+        "status": "funding-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SVK:no-plan:2025",
+      "raw": {
+        "countryCode": "SVK",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3000,
+        "firstLine": 3000,
+        "lastLine": 3000,
+        "byteStart": 214793,
+        "byteEnd": 214826,
+        "rawSha256": "b5f9c53dc306a125485e87d063a62e83ce3d1dbaa9ebfe7a37a9fa3e9fe498a2"
+      },
+      "coverage": {
+        "status": "both-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SLB:no-plan:2025",
+      "raw": {
+        "countryCode": "SLB",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "992682",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3017,
+        "firstLine": 3017,
+        "lastLine": 3017,
+        "byteStart": 215883,
+        "byteEnd": 215922,
+        "rawSha256": "0e754f56fc1614022def60ff0a0c904fe5de718ca4bda3c2f1cbf3dfd848fd5b"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SOM:1214:2025",
+      "raw": {
+        "countryCode": "SOM",
+        "id": "1214",
+        "name": "Regional Migrant Response Plan for Horn of Africa to Yemen and Southern Africa 2025",
+        "code": "RRHOAY25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "8554300",
+        "funding": "1367292",
+        "percentFunded": "16"
+      },
+      "locator": {
+        "recordNumber": 3044,
+        "firstLine": 3044,
+        "lastLine": 3044,
+        "byteStart": 217162,
+        "byteEnd": 217338,
+        "rawSha256": "714e5a41ee03d5990006d087db7c47a1b8a1c088299a0088ce0ce512c05a1516"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "341823",
+        "denominator": "2138575",
+        "displayPercent": "15.98"
+      }
+    },
+    {
+      "key": "SOM:1221:2025",
+      "raw": {
+        "countryCode": "SOM",
+        "id": "1221",
+        "name": "Somalia Humanitarian Needs and Response Plan 2025",
+        "code": "HSOM25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "1421988955",
+        "funding": "417172612",
+        "percentFunded": "29"
+      },
+      "locator": {
+        "recordNumber": 3045,
+        "firstLine": 3045,
+        "lastLine": 3045,
+        "byteStart": 217338,
+        "byteEnd": 217498,
+        "rawSha256": "465f742b429f3454b03b316157080e4332697543d697b7988d051e3e6c42ab1f"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "417172612",
+        "denominator": "1421988955",
+        "displayPercent": "29.34"
+      }
+    },
+    {
+      "key": "SOM:no-plan:2025",
+      "raw": {
+        "countryCode": "SOM",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "122046093",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3046,
+        "firstLine": 3046,
+        "lastLine": 3046,
+        "byteStart": 217498,
+        "byteEnd": 217540,
+        "rawSha256": "17d8f2477d69c973b473979ee38f7b2512525d6aca0285e6b3fd7bf4d52ba65d"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SSD:1223:2025",
+      "raw": {
+        "countryCode": "SSD",
+        "id": "1223",
+        "name": "South Sudan Humanitarian Needs and Response Plan 2025",
+        "code": "HSSD25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "1694778653",
+        "funding": "787264388",
+        "percentFunded": "46"
+      },
+      "locator": {
+        "recordNumber": 3109,
+        "firstLine": 3109,
+        "lastLine": 3109,
+        "byteStart": 222871,
+        "byteEnd": 223035,
+        "rawSha256": "39292d6e80fca938da0b748bf58dcdbf2bd19b466923c15f452f17fdd8acd91e"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "787264388",
+        "denominator": "1694778653",
+        "displayPercent": "46.45"
+      }
+    },
+    {
+      "key": "SSD:no-plan:2025",
+      "raw": {
+        "countryCode": "SSD",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "129520538",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3110,
+        "firstLine": 3110,
+        "lastLine": 3110,
+        "byteStart": 223035,
+        "byteEnd": 223077,
+        "rawSha256": "863ce2e0cf85a0a193701f1b4b025ada3ef81a660234edbcf695ba55981f75d5"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "LKA:no-plan:2025",
+      "raw": {
+        "countryCode": "LKA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "27353917",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3143,
+        "firstLine": 3143,
+        "lastLine": 3143,
+        "byteStart": 225869,
+        "byteEnd": 225910,
+        "rawSha256": "21a514ff236ba39fa0bf3a9537e96a8c5f264de544d5b402ddc7837fd828ee7f"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SDN:1220:2025",
+      "raw": {
+        "countryCode": "SDN",
+        "id": "1220",
+        "name": "Sudan Humanitarian Needs and Response Plan 2025",
+        "code": "HSDN25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "4162518656",
+        "funding": "1664659151",
+        "percentFunded": "40"
+      },
+      "locator": {
+        "recordNumber": 3184,
+        "firstLine": 3184,
+        "lastLine": 3184,
+        "byteStart": 228625,
+        "byteEnd": 228784,
+        "rawSha256": "c7f255e8284175caf2dd8a6f26b3a8b4632c88da861acc31978342c99e7a3b96"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "1664659151",
+        "denominator": "4162518656",
+        "displayPercent": "39.99"
+      }
+    },
+    {
+      "key": "SDN:no-plan:2025",
+      "raw": {
+        "countryCode": "SDN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "118243496",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3185,
+        "firstLine": 3185,
+        "lastLine": 3185,
+        "byteStart": 228784,
+        "byteEnd": 228826,
+        "rawSha256": "c55663bbb34edde96c4b11e0e6c606d3dc0b63bcb2130f8122de2cb92fb6e8f8"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "SYR:1276:2025",
+      "raw": {
+        "countryCode": "SYR",
+        "id": "1276",
+        "name": "Syrian Arab Republic Humanitarian Response Priorities – January-December 2025",
+        "code": "FSYR25",
+        "typeId": "5",
+        "typeName": "Flash appeal",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "3186585280",
+        "funding": "1371560490",
+        "percentFunded": "43"
+      },
+      "locator": {
+        "recordNumber": 3243,
+        "firstLine": 3243,
+        "lastLine": 3243,
+        "byteStart": 233699,
+        "byteEnd": 233863,
+        "rawSha256": "a9edac5a03d9efefb3615976ad08228f6f4b5c79a8cb7816895b89419358937d"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "137156049",
+        "denominator": "318658528",
+        "displayPercent": "43.04"
+      }
+    },
+    {
+      "key": "SYR:no-plan:2025",
+      "raw": {
+        "countryCode": "SYR",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1354406416",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3244,
+        "firstLine": 3244,
+        "lastLine": 3244,
+        "byteStart": 233863,
+        "byteEnd": 233906,
+        "rawSha256": "b2f3ea235a749af012bd75e3a087163fff30977a0f94f0babd78d4b3d48a5a36"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TJK:no-plan:2025",
+      "raw": {
+        "countryCode": "TJK",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "80247009",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3290,
+        "firstLine": 3290,
+        "lastLine": 3290,
+        "byteStart": 237629,
+        "byteEnd": 237670,
+        "rawSha256": "f92184f20e490dc4b3d9ab6a3762b987693dbd9491bde1bffe1f64579fbcf0f3"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TZA:1213:2025",
+      "raw": {
+        "countryCode": "TZA",
+        "id": "1213",
+        "name": "Democratic Republic of the Congo Regional Refugee Response Plan 2025",
+        "code": "RDRC_RRP25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "100408210",
+        "funding": "10948191",
+        "percentFunded": "11"
+      },
+      "locator": {
+        "recordNumber": 3332,
+        "firstLine": 3332,
+        "lastLine": 3332,
+        "byteStart": 240346,
+        "byteEnd": 240512,
+        "rawSha256": "63797b95e203fbbf42a21901c0317c3055509759084691535fa3a71b338632a1"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "10948191",
+        "denominator": "100408210",
+        "displayPercent": "10.90"
+      }
+    },
+    {
+      "key": "TZA:1214:2025",
+      "raw": {
+        "countryCode": "TZA",
+        "id": "1214",
+        "name": "Regional Migrant Response Plan for Horn of Africa to Yemen and Southern Africa 2025",
+        "code": "RRHOAY25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "1534550",
+        "funding": "869425",
+        "percentFunded": "57"
+      },
+      "locator": {
+        "recordNumber": 3333,
+        "firstLine": 3333,
+        "lastLine": 3333,
+        "byteStart": 240512,
+        "byteEnd": 240687,
+        "rawSha256": "a9d6fe88917f717930c7aea1c0583595e44bf035a9fda91264e83f48654fb551"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "34777",
+        "denominator": "61382",
+        "displayPercent": "56.66"
+      }
+    },
+    {
+      "key": "TZA:no-plan:2025",
+      "raw": {
+        "countryCode": "TZA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "13273030",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3334,
+        "firstLine": 3334,
+        "lastLine": 3334,
+        "byteStart": 240687,
+        "byteEnd": 240728,
+        "rawSha256": "48cac10cdce8a3a29f24ed8fa413f49e3fa305b135eaabdeb08f4bd62736f2c5"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TLS:no-plan:2025",
+      "raw": {
+        "countryCode": "TLS",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "11236380",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3377,
+        "firstLine": 3377,
+        "lastLine": 3377,
+        "byteStart": 243863,
+        "byteEnd": 243904,
+        "rawSha256": "9fb1a8a74c9425eec9174656d00adf56ca61b68eef28efd28a17d6a47826bfda"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TGO:no-plan:2025",
+      "raw": {
+        "countryCode": "TGO",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "8717485",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3410,
+        "firstLine": 3410,
+        "lastLine": 3410,
+        "byteStart": 245507,
+        "byteEnd": 245547,
+        "rawSha256": "9eb378c9764add20189e087fe2b6b6207f532a4cfd49ec4720c120752cd93f19"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TTO:1219:2025",
+      "raw": {
+        "countryCode": "TTO",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "19461087",
+        "funding": "822092",
+        "percentFunded": "4"
+      },
+      "locator": {
+        "recordNumber": 3442,
+        "firstLine": 3442,
+        "lastLine": 3442,
+        "byteStart": 247476,
+        "byteEnd": 247630,
+        "rawSha256": "905c6cb3168ec4cf2314bfdff90ead114e7053727cda0fad7709e4b3fcd9a3e6"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "822092",
+        "denominator": "19461087",
+        "displayPercent": "4.22"
+      }
+    },
+    {
+      "key": "TTO:no-plan:2025",
+      "raw": {
+        "countryCode": "TTO",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "269768",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3443,
+        "firstLine": 3443,
+        "lastLine": 3443,
+        "byteStart": 247630,
+        "byteEnd": 247669,
+        "rawSha256": "92c6c0dd509b343e89b512f27b1f7a6c81fb7002fdbcdea5fcd9f2864a70c0f0"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TUN:no-plan:2025",
+      "raw": {
+        "countryCode": "TUN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "12896575",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3460,
+        "firstLine": 3460,
+        "lastLine": 3460,
+        "byteStart": 248988,
+        "byteEnd": 249029,
+        "rawSha256": "4db4a61a77b1750aa3eaf5e359b353d68ac282b82557c93b125620c5ef870110"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TKM:no-plan:2025",
+      "raw": {
+        "countryCode": "TKM",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "272652",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3484,
+        "firstLine": 3484,
+        "lastLine": 3484,
+        "byteStart": 250068,
+        "byteEnd": 250107,
+        "rawSha256": "ca9556bf009f4adfc0fdc629bdc4d3e2a7ea64e9b95b6be2a34b2bb08ff3e457"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "TUR:1217:2025",
+      "raw": {
+        "countryCode": "TUR",
+        "id": "1217",
+        "name": "Syrian Arab Republic Regional Refugee and Resilience Plan (3RP) 2025",
+        "code": "RSYR25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "740852304",
+        "funding": "42381623",
+        "percentFunded": "6"
+      },
+      "locator": {
+        "recordNumber": 3498,
+        "firstLine": 3498,
+        "lastLine": 3498,
+        "byteStart": 250933,
+        "byteEnd": 251094,
+        "rawSha256": "38ff0e5efefa354a15b71f7797af1716f740765d8190979d0026705dae9fe7c5"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "42381623",
+        "denominator": "740852304",
+        "displayPercent": "5.72"
+      }
+    },
+    {
+      "key": "TUR:no-plan:2025",
+      "raw": {
+        "countryCode": "TUR",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "51129900",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3499,
+        "firstLine": 3499,
+        "lastLine": 3499,
+        "byteStart": 251094,
+        "byteEnd": 251135,
+        "rawSha256": "9ba1e069d4b8f159ab9de9fb320e66443bb3ba3360e222606044ac7397ba2d29"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "UGA:1213:2025",
+      "raw": {
+        "countryCode": "UGA",
+        "id": "1213",
+        "name": "Democratic Republic of the Congo Regional Refugee Response Plan 2025",
+        "code": "RDRC_RRP25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "389717749",
+        "funding": "115723139",
+        "percentFunded": "30"
+      },
+      "locator": {
+        "recordNumber": 3543,
+        "firstLine": 3543,
+        "lastLine": 3543,
+        "byteStart": 254610,
+        "byteEnd": 254777,
+        "rawSha256": "1d506b34decceef6f5d53e87bc292ca6ce2120b356ccc511ecbd1280778468db"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "115723139",
+        "denominator": "389717749",
+        "displayPercent": "29.69"
+      }
+    },
+    {
+      "key": "UGA:1215:2025",
+      "raw": {
+        "countryCode": "UGA",
+        "id": "1215",
+        "name": "South Sudan Regional Refugee Response Plan 2025",
+        "code": "RETHKENUGA25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "330231425",
+        "funding": "5859449",
+        "percentFunded": "2"
+      },
+      "locator": {
+        "recordNumber": 3544,
+        "firstLine": 3544,
+        "lastLine": 3544,
+        "byteStart": 254777,
+        "byteEnd": 254922,
+        "rawSha256": "f89755930323dd2d52fa1800a0bd8eeb9ab3c3209598d5c633ff041a1c686b9d"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "5859449",
+        "denominator": "330231425",
+        "displayPercent": "1.77"
+      }
+    },
+    {
+      "key": "UGA:1216:2025",
+      "raw": {
+        "countryCode": "UGA",
+        "id": "1216",
+        "name": "Sudan Emergency: Regional Refugee Response Plan 2025",
+        "code": "RRSDN25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "107148480",
+        "funding": "16238614",
+        "percentFunded": "15"
+      },
+      "locator": {
+        "recordNumber": 3545,
+        "firstLine": 3545,
+        "lastLine": 3545,
+        "byteStart": 254922,
+        "byteEnd": 255069,
+        "rawSha256": "0a83bd952b972298266c56bd2632cb26f7be557e7eea10f21e5f48d82dc6df97"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "8119307",
+        "denominator": "53574240",
+        "displayPercent": "15.16"
+      }
+    },
+    {
+      "key": "UGA:no-plan:2025",
+      "raw": {
+        "countryCode": "UGA",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "20796410",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3546,
+        "firstLine": 3546,
+        "lastLine": 3546,
+        "byteStart": 255069,
+        "byteEnd": 255110,
+        "rawSha256": "c540c1e53c3ac18520131a329f26ea46d3e3e74cf06a14df3fa6bcc2c843ebbb"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "UKR:1271:2025",
+      "raw": {
+        "countryCode": "UKR",
+        "id": "1271",
+        "name": "Ukraine Humanitarian Needs and Response Plan 2025",
+        "code": "HUKR25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "2633534010",
+        "funding": "1663604578",
+        "percentFunded": "63"
+      },
+      "locator": {
+        "recordNumber": 3605,
+        "firstLine": 3605,
+        "lastLine": 3605,
+        "byteStart": 260167,
+        "byteEnd": 260328,
+        "rawSha256": "814f2dd1a0a3930d38685a178a45b330ba6b454d4e0e44a01e0cb79f196406b3"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "831802289",
+        "denominator": "1316767005",
+        "displayPercent": "63.17"
+      }
+    },
+    {
+      "key": "UKR:no-plan:2025",
+      "raw": {
+        "countryCode": "UKR",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "199993338",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3606,
+        "firstLine": 3606,
+        "lastLine": 3606,
+        "byteStart": 260328,
+        "byteEnd": 260370,
+        "rawSha256": "02c1ad6ea4c855f10852d6d611f10797876d4606517a95e0a504e8569c1751a5"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "URY:1219:2025",
+      "raw": {
+        "countryCode": "URY",
+        "id": "1219",
+        "name": "Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2025",
+        "code": "RREG25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "9861588",
+        "funding": "153600",
+        "percentFunded": "2"
+      },
+      "locator": {
+        "recordNumber": 3636,
+        "firstLine": 3636,
+        "lastLine": 3636,
+        "byteStart": 262749,
+        "byteEnd": 262902,
+        "rawSha256": "59e1820ee8a94b820320144bb17a25747fa43923bcc38942072d194a23b79d85"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "12800",
+        "denominator": "821799",
+        "displayPercent": "1.56"
+      }
+    },
+    {
+      "key": "URY:no-plan:2025",
+      "raw": {
+        "countryCode": "URY",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "0",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3637,
+        "firstLine": 3637,
+        "lastLine": 3637,
+        "byteStart": 262902,
+        "byteEnd": 262936,
+        "rawSha256": "f3335b84febf5c6d91f8593e3c99754b8e6ec90f007644c020a76361c26889fe"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "UZB:no-plan:2025",
+      "raw": {
+        "countryCode": "UZB",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1257952",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3654,
+        "firstLine": 3654,
+        "lastLine": 3654,
+        "byteStart": 264229,
+        "byteEnd": 264269,
+        "rawSha256": "eca5a1467b76ca2efc3ec81451951b37f3b63e79af4ad4463b1d334f01155d17"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "VUT:no-plan:2025",
+      "raw": {
+        "countryCode": "VUT",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "690623",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3672,
+        "firstLine": 3672,
+        "lastLine": 3672,
+        "byteStart": 265154,
+        "byteEnd": 265193,
+        "rawSha256": "6bab6e5cc01eb323730b2fb06e28943636db7d0a9474267f43ee8a4847bb9c83"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "VEN:1277:2025",
+      "raw": {
+        "countryCode": "VEN",
+        "id": "1277",
+        "name": "Venezuela Plan de Respuesta Humanitaria 2025",
+        "code": "HVEN25",
+        "typeId": "4",
+        "typeName": "Humanitarian response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "606497714",
+        "funding": "124261921",
+        "percentFunded": "20"
+      },
+      "locator": {
+        "recordNumber": 3692,
+        "firstLine": 3692,
+        "lastLine": 3692,
+        "byteStart": 266168,
+        "byteEnd": 266309,
+        "rawSha256": "025964fd19c4591c48b7c96d39052cd11a84de97a0c2faaa32bbdcae58a66ef9"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "124261921",
+        "denominator": "606497714",
+        "displayPercent": "20.49"
+      }
+    },
+    {
+      "key": "VEN:no-plan:2025",
+      "raw": {
+        "countryCode": "VEN",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "20783575",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3693,
+        "firstLine": 3693,
+        "lastLine": 3693,
+        "byteStart": 266309,
+        "byteEnd": 266350,
+        "rawSha256": "0990a81c1350c7972627ebd82d768fb45c0d98986e2874ccd66b717406ae458b"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "VNM:1283:2025",
+      "raw": {
+        "countryCode": "VNM",
+        "id": "1283",
+        "name": "Viet Nam 24-25 Joint Response Plan for Typhoon Yagi and Floods 2025",
+        "code": "OVNM25b",
+        "typeId": "6",
+        "typeName": "Other",
+        "startDate": "2025-01-01",
+        "endDate": "2025-06-30",
+        "year": "2025",
+        "requirements": "37218750",
+        "funding": "4356713",
+        "percentFunded": "12"
+      },
+      "locator": {
+        "recordNumber": 3720,
+        "firstLine": 3720,
+        "lastLine": 3720,
+        "byteStart": 268206,
+        "byteEnd": 268348,
+        "rawSha256": "3529b80e1a95691eb8c219482c367bb5b02956dbdbe380cb66588ed4ac843c61"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "4356713",
+        "denominator": "37218750",
+        "displayPercent": "11.71"
+      }
+    },
+    {
+      "key": "VNM:1465:2025",
+      "raw": {
+        "countryCode": "VNM",
+        "id": "1465",
+        "name": "Viet Nam 25-26 Joint Response Plan Multiple Typhoons and Floods 2025",
+        "code": "OVNM25a",
+        "typeId": "6",
+        "typeName": "Other",
+        "startDate": "2025-10-28",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "35036655",
+        "funding": "9567475",
+        "percentFunded": "27"
+      },
+      "locator": {
+        "recordNumber": 3721,
+        "firstLine": 3721,
+        "lastLine": 3721,
+        "byteStart": 268348,
+        "byteEnd": 268491,
+        "rawSha256": "be057494e9256ba88f44da618b6b98b60f5fc361d736f2138a5e651a2b14ab3c"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "1913495",
+        "denominator": "7007331",
+        "displayPercent": "27.31"
+      }
+    },
+    {
+      "key": "VNM:no-plan:2025",
+      "raw": {
+        "countryCode": "VNM",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "1413931",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3722,
+        "firstLine": 3722,
+        "lastLine": 3722,
+        "byteStart": 268491,
+        "byteEnd": 268531,
+        "rawSha256": "9dbcd8b7f628b6a8ec0934ae1b587f4398e1e462d371ed62c3fa9d6ed6a0d8fe"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "YEM:1262:2025",
+      "raw": {
+        "countryCode": "YEM",
+        "id": "1262",
+        "name": "Yemen Humanitarian Needs and Response Plan 2025",
+        "code": "HYEM25",
+        "typeId": "2070",
+        "typeName": "Humanitarian needs and response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "2478772922",
+        "funding": "702930050",
+        "percentFunded": "28"
+      },
+      "locator": {
+        "recordNumber": 3745,
+        "firstLine": 3745,
+        "lastLine": 3745,
+        "byteStart": 269637,
+        "byteEnd": 269795,
+        "rawSha256": "a4af8c7b836ddb7b308d3025cb442b890ee5ed848db3d3bd23e6eadd28a4371a"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "351465025",
+        "denominator": "1239386461",
+        "displayPercent": "28.36"
+      }
+    },
+    {
+      "key": "YEM:no-plan:2025",
+      "raw": {
+        "countryCode": "YEM",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "920878600",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3746,
+        "firstLine": 3746,
+        "lastLine": 3746,
+        "byteStart": 269795,
+        "byteEnd": 269837,
+        "rawSha256": "c7b0418560efdf263162cf6e7c0cea2cb6870665a03cb73b819f480a2c5cc3ef"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "ZMB:1278:2025",
+      "raw": {
+        "countryCode": "ZMB",
+        "id": "1278",
+        "name": "Zambia Drought Flash Appeal 2025",
+        "code": "FZMB25",
+        "typeId": "5",
+        "typeName": "Flash appeal",
+        "startDate": "2025-01-01",
+        "endDate": "2025-06-30",
+        "year": "2025",
+        "requirements": "90919034",
+        "funding": "18954997",
+        "percentFunded": "21"
+      },
+      "locator": {
+        "recordNumber": 3793,
+        "firstLine": 3793,
+        "lastLine": 3793,
+        "byteStart": 273782,
+        "byteEnd": 273895,
+        "rawSha256": "d0516dd261f96d854ee6fd2bcf705fdb20fa3a1ac27e2f11e32604821df36a55"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "18954997",
+        "denominator": "90919034",
+        "displayPercent": "20.85"
+      }
+    },
+    {
+      "key": "ZMB:1213:2025",
+      "raw": {
+        "countryCode": "ZMB",
+        "id": "1213",
+        "name": "Democratic Republic of the Congo Regional Refugee Response Plan 2025",
+        "code": "RDRC_RRP25",
+        "typeId": "111",
+        "typeName": "Regional response plan",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "year": "2025",
+        "requirements": "33067621",
+        "funding": "8546447",
+        "percentFunded": "26"
+      },
+      "locator": {
+        "recordNumber": 3794,
+        "firstLine": 3794,
+        "lastLine": 3794,
+        "byteStart": 273895,
+        "byteEnd": 274059,
+        "rawSha256": "7ee957d705102f42316283b757953aa762a35210f9ecaecc113f8c505dad4b73"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "8546447",
+        "denominator": "33067621",
+        "displayPercent": "25.85"
+      }
+    },
+    {
+      "key": "ZMB:no-plan:2025",
+      "raw": {
+        "countryCode": "ZMB",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "15777317",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3795,
+        "firstLine": 3795,
+        "lastLine": 3795,
+        "byteStart": 274059,
+        "byteEnd": 274100,
+        "rawSha256": "28be18312f0edc2f87912b26430b97d650585cbaabb15da98e3e3370fbe98cf1"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    },
+    {
+      "key": "ZWE:1280:2025",
+      "raw": {
+        "countryCode": "ZWE",
+        "id": "1280",
+        "name": "Zimbabwe Drought Flash Appeal 2025",
+        "code": "FZWE25",
+        "typeId": "5",
+        "typeName": "Flash appeal",
+        "startDate": "2025-01-01",
+        "endDate": "2025-06-01",
+        "year": "2025",
+        "requirements": "143095554",
+        "funding": "21628942",
+        "percentFunded": "15"
+      },
+      "locator": {
+        "recordNumber": 3834,
+        "firstLine": 3834,
+        "lastLine": 3834,
+        "byteStart": 276754,
+        "byteEnd": 276870,
+        "rawSha256": "a9bf82f2bb299b5d4cf4e69bdbbad61b4620bd06afdb40be8344bea61666aa40"
+      },
+      "coverage": {
+        "status": "comparable",
+        "numerator": "10814471",
+        "denominator": "71547777",
+        "displayPercent": "15.12"
+      }
+    },
+    {
+      "key": "ZWE:no-plan:2025",
+      "raw": {
+        "countryCode": "ZWE",
+        "id": "",
+        "name": "Not specified",
+        "code": "",
+        "typeId": "",
+        "typeName": "",
+        "startDate": "",
+        "endDate": "",
+        "year": "2025",
+        "requirements": "",
+        "funding": "7304700",
+        "percentFunded": ""
+      },
+      "locator": {
+        "recordNumber": 3835,
+        "firstLine": 3835,
+        "lastLine": 3835,
+        "byteStart": 276870,
+        "byteEnd": 276910,
+        "rawSha256": "684fdef55e68caf901001d84b4651a2622dc6cadf0f8d8971fa6ab294df8cbdb"
+      },
+      "coverage": {
+        "status": "requirements-missing",
+        "numerator": null,
+        "denominator": null,
+        "displayPercent": null
+      }
+    }
+  ],
+  "sha256": "7b088627887cd7bac2d99be2ef68e03c2b783274108caca05bcc4e2f2fa52ae6"
+}
