@@ -207,6 +207,10 @@ async function staffHarness({
     querySelector(selector) {
       return this.querySelectorAll(selector)[0] || null;
     }
+    contains(element) {
+      return this === element || this.children.some(child =>
+        child instanceof Element && child.contains(element));
+    }
     remove() {
       if (this.parentElement)
         this.parentElement.children = this.parentElement.children.filter(
@@ -523,6 +527,76 @@ async function enterAttendance(h, { count = "0", title = "  Fictional whole atte
   const form = h.root.querySelector("form"); await form.emit("submit"); await h.flush();
   return form;
 }
+
+test("closing attendance returns focus to its connected current occurrence control", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    const origin = await h.click("Load occurrence for attendance");
+    const close = h.root.querySelectorAll("button").find(el => el.textContent === "Close attendance form");
+    close.focus(); await h.click("Close attendance form");
+    assert.equal(h.root.querySelector("#attendance-title"), null);
+    assert.ok(globalThis.document.activeElement === origin);
+    assert.equal(origin.isConnected, true);
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance")).length, 1);
+
+    await h.click("Load occurrence for attendance");
+    const replacementTitle = h.root.querySelector("#attendance-title"); replacementTitle.focus();
+    await close.emit("click");
+    assert.ok(globalThis.document.activeElement === replacementTitle, "A removed old Close control cannot steal focus or close a newer form");
+    assert.equal(replacementTitle.isConnected, true);
+  } finally { h.cleanup(); }
+});
+
+test("Keep editing returns to literal attendance writing while stale prompts have no focus authority", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    const origin = await h.click("Load occurrence for attendance");
+    const title = h.root.querySelector("#attendance-title"), count = h.root.querySelector("#attendance-reported");
+    title.value = "  Unfinished fictional attendance 😀  "; await title.emit("input");
+    count.value = "7"; await count.emit("input");
+    await h.click("Close attendance form");
+    const keep = h.root.querySelectorAll("button").find(el => el.textContent === "Keep editing");
+    keep.focus(); await keep.emit("click");
+    assert.ok(globalThis.document.activeElement === title);
+    assert.equal(title.value, "  Unfinished fictional attendance 😀  "); assert.equal(count.value, "7");
+    assert.equal(keep.isConnected, false);
+
+    await h.click("Close attendance form"); await h.click("Discard and continue");
+    assert.ok(globalThis.document.activeElement === origin, "Explicit confirmed Close returns to the same live occurrence");
+    await h.click("Load occurrence for attendance");
+    const replacementTitle = h.root.querySelector("#attendance-title"); replacementTitle.focus();
+    await keep.emit("click");
+    assert.ok(globalThis.document.activeElement === replacementTitle);
+
+    replacementTitle.value = "Newer retained literal"; await replacementTitle.emit("input");
+    await h.click("Close attendance form");
+    const revokedKeep = h.root.querySelectorAll("button").find(el => el.textContent === "Keep editing");
+    const outside = document.createElement("button"); outside.focus(); h.revoke();
+    await revokedKeep.emit("click");
+    assert.ok(globalThis.document.activeElement === outside, "A lost current scope cannot reclaim focus");
+    assert.equal(replacementTitle.value, "Newer retained literal");
+  } finally { h.cleanup(); }
+});
+
+test("closing attendance refuses a removed originating control or detached workspace as focus targets", async () => {
+  const h = await staffHarness({ managed: true, attendance: true });
+  try {
+    const origin = await h.click("Load occurrence for attendance");
+    const outside = document.createElement("button"); outside.focus();
+    origin.remove(); await h.click("Close attendance form");
+    assert.ok(globalThis.document.activeElement === outside);
+    assert.equal(h.root.querySelector("#attendance-title"), null);
+  } finally { h.cleanup(); }
+
+  const detached = await staffHarness({ managed: true, attendance: true });
+  try {
+    await detached.click("Load occurrence for attendance");
+    const close = detached.root.querySelectorAll("button").find(el => el.textContent === "Close attendance form");
+    const outside = document.createElement("button"); outside.focus(); detached.root.connect(false);
+    await close.emit("click");
+    assert.ok(globalThis.document.activeElement === outside);
+  } finally { detached.cleanup(); }
+});
 
 test("attendance context reload is usable immediately after opening, before any field edits", async () => {
   const h = await staffHarness({ managed: true, attendance: true });

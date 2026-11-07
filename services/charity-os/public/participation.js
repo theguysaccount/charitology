@@ -841,6 +841,7 @@ export async function createStaffParticipationWorkspace({
       void fn();
       return;
     }
+    const editor = attendanceEditor;
     const prompt = node(
       "section",
       {
@@ -855,7 +856,15 @@ export async function createStaffParticipationWorkspace({
         "The saved records are unchanged. Continue without these unsaved entries?",
       ),
     );
-    const keep = button("Keep editing", () => prompt.remove());
+    const currentPrompt = () => prompt.isConnected &&
+      (!editor || attendanceLive(editor));
+    const keep = button("Keep editing", () => {
+      if (!currentPrompt()) return;
+      prompt.remove();
+      if (editor && editor.form.isConnected && !editor.title.disabled &&
+          root.contains(editor.title))
+        editor.title.focus();
+    });
     prompt.append(
       node(
         "div",
@@ -863,6 +872,7 @@ export async function createStaffParticipationWorkspace({
         button(
           "Discard and continue",
           () => {
+            if (!currentPrompt()) return;
             closeForm();
             prompt.remove();
             void fn();
@@ -1028,19 +1038,19 @@ export async function createStaffParticipationWorkspace({
           "subtle",
         ),
       );
-    if (target.mode === "managed" && !target.recoveryBlock)
+    if (target.mode === "managed" && !target.recoveryBlock) {
+      const attendanceOpen = button("Load occurrence for attendance", () =>
+        confirmDiscard(() => work(() => showAttendance(attendanceOpen))),
+      );
       actions.append(
         button(
           "Associate a candidate",
           () => confirmDiscard(() => work(() => showCandidate())),
           "primary",
         ),
-        button(
-          "Load occurrence for attendance",
-          () => confirmDiscard(() => work(() => showAttendance())),
-          "subtle",
-        ),
+        attendanceOpen,
       );
+    }
     targetHost.append(actions);
   }
   const attendanceMethod = "whole-occurrence-staff-reported-v1";
@@ -1118,7 +1128,7 @@ export async function createStaffParticipationWorkspace({
     }, editor.status);
     if (attendanceLive(editor)) editor.sync();
   }
-  async function showAttendance() {
+  async function showAttendance(origin) {
     const targetId = state.target.targetId, version = state.version;
     let context;
     try { context = checkedAttendanceContext(await request(`${path(targetId)}/attendance`), targetId); }
@@ -1140,7 +1150,7 @@ export async function createStaffParticipationWorkspace({
     const scope = node("input", { id: "attendance-whole-check", type: "checkbox" });
     const contextHost = node("div", {}), knownHost = node("div", {}), reviewHost = node("div", {});
     const editor = {
-      targetId, version, form, status, requests: new Set(), closed: false,
+      targetId, version, form, title, status, requests: new Set(), closed: false,
       context, contextStale: false, serial: 0, preview: null, pending: null,
       reconcileOnly: false, completed: false, sync: () => {},
     };
@@ -1148,7 +1158,16 @@ export async function createStaffParticipationWorkspace({
     const review = node("button", { type: "submit", class: "button primary" }, "Review exact attendance draft");
     const reload = button("Reload current attendance context", () => attendanceWork(editor, refresh));
     const retry = button("Retry exact attendance create", () => attendanceWork(editor, create), "primary", { hidden: true });
-    const close = button("Close attendance form", () => confirmDiscard(closeForm));
+    const close = button("Close attendance form", () => {
+      if (!close.isConnected || !attendanceLive(editor)) return;
+      confirmDiscard(() => {
+        if (attendanceEditor === editor && attendanceLive(editor)) closeForm();
+        if (!attendanceEditor && editor.closed && live(version) &&
+            state.target?.targetId === targetId && root.isConnected &&
+            origin?.isConnected && root.contains(origin) && !origin.disabled)
+          origin.focus();
+      });
+    });
     const numeric = (control, label, nullable = false) => {
       if (!control.value.trim()) {
         if (nullable) return null;
