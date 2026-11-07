@@ -111,7 +111,7 @@ export async function directoryResourceRoutes({request,url,db,settings,session})
  return db.tx(user,org,async c=>{
   // The initial authenticated request can wait behind an organization writer.
   // Recheck the real Better Auth session after that lock, without another pool.
-  if(!(await c.query('SELECT 1 FROM "session" WHERE id=$1 AND "userId"=$2 AND "expiresAt">clock_timestamp() FOR SHARE', [session.session.id,user])).rowCount)
+  if(!(await c.query('SELECT 1 FROM "session" WHERE id=$1 AND "userId"=$2 AND "expiresAt">clock_timestamp()'+(method==="GET"?'':' FOR SHARE'), [session.session.id,user])).rowCount)
    fail(401,"session","Sign in again before reviewing this directory source.");
   const member=await directoryMembership(c,org,user);requirePermission("resources",member,"read");
   if(method==="GET"&&/^records\/[A-Za-z0-9_-]{1,100}\/export$/.test(tail)){
@@ -146,6 +146,6 @@ export async function directoryResourceRoutes({request,url,db,settings,session})
    return okay({kind:event.packet.event==="copied"?"copied":event.packet.event==="adopted"?"adopted":"rechecked",disposition:{kind:"active-record",record:candidate},historyHeadSha256:event.packetSha256,auditRecorded:true});
   }
   fail(404,"directory_route","This directory action is unavailable.");
- },{lock:true});
+ },{lock:true,readOnly:method==="GET"});
 }
 

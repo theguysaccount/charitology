@@ -58,6 +58,14 @@ import { integrationRoutes } from "./integrations.mjs";
 import { directoryResourceRoutes } from "./directory-resources.mjs";
 import { exportDirectoryResources, restoredDirectoryResources, restoreDirectoryResources } from "./directory-resource-backup.mjs";
 import { readBackupBody } from "./backup-json.mjs";
+import { LearningError } from "./learning-json.mjs";
+import { learningRoutes } from "./learning-routes.mjs";
+import { readLearningReport } from "./learning-reports.mjs";
+import { isLearningReportFamily, restoredLearningBridge, restoreLearningBridge } from "./learning-backup.mjs";
+import { guardLearningWrite, learningWriteCapability } from "./learning-guards.mjs";
+import { checkLearningActiveRecords } from "./learning-history.mjs";
+import { assembleWorkspaceBackup } from "./workspace-backup.mjs";
+import { checkLearningRestoreCapacity } from "./learning-capacity.mjs";
 import { publicIntakeRoutes, intakeRoutes } from "./intake.mjs";
 import { participantRoutes } from "./participants.mjs";
 import {
@@ -331,6 +339,8 @@ export function createHandler({
         return okay({ modules: MODULES, roles: ROLES, currencies: CURRENCIES });
       const directoryResponse = await directoryResourceRoutes({ request, url, db, settings, session });
       if (directoryResponse) return directoryResponse;
+      const learningResponse = await learningRoutes({ request, url, db, settings, session });
+      if (learningResponse) return learningResponse;
       const input = ["GET", "HEAD"].includes(method)
         ? {}
         : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/task-recurrence(?:\/|$)/.test(
@@ -630,56 +640,9 @@ export function createHandler({
           }
           if (tail === "export" && method === "GET") {
             requireAdmin(member);
-            const comments = (
-              await c.query("SELECT * FROM os_comments WHERE org_id=$1", [org])
-            ).rows;
-            const events = (
-              await c.query(
-                "SELECT * FROM os_events WHERE org_id=$1 ORDER BY id",
-                [org],
-              )
-            ).rows;
-            const reports = (
-              await c.query("SELECT * FROM os_reports WHERE org_id=$1", [org])
-            ).rows;
-            const files = (
-              await c.query(
-                "SELECT id,record_id AS \"recordId\",name,mime,checksum,size,encode(bytes,'base64') AS content FROM os_files WHERE org_id=$1 AND record_id IN (SELECT id FROM os_records WHERE org_id=$1 AND deleted_at IS NULL)",
-                [org],
-              )
-            ).rows;
-            const trash = (
-              await c.query(
-                "SELECT * FROM os_records WHERE org_id=$1 AND deleted_at IS NOT NULL",
-                [org],
-              )
-            ).rows.map(rowRecord);
-            const trashFiles = (
-              await c.query(
-                "SELECT id,record_id AS \"recordId\",name,mime,checksum,size,encode(bytes,'base64') AS content FROM os_files WHERE org_id=$1 AND record_id IN (SELECT id FROM os_records WHERE org_id=$1 AND deleted_at IS NOT NULL)",
-                [org],
-              )
-            ).rows;
-            const integrations = (
-              await c.query(
-                "SELECT id,provider,name,config FROM os_integrations WHERE org_id=$1",
-                [org],
-              )
-            ).rows;
-            const backup = makeBackup(organization, records, {
-              comments,
-              events,
-              reports,
-              files,
-              trash,
-              trashFiles,
-              integrations,
-              intake: await exportIntake(c, org),
-              participation: await exportParticipation(c, org),
-              delivery: await exportDelivery(c, org),
-              taskRecurrence: await exportTaskRecurrence(c, org),
-              directoryResources: await exportDirectoryResources(c, org, { records, trash }),
-            });
+            const backup = await assembleWorkspaceBackup(c, org, { organization, records });
+            if (Buffer.byteLength(JSON.stringify(backup)) > 64 * 1024 * 1024)
+              fail(422, "backup_size", "The complete workspace backup exceeds 64 MiB.");
             await audit(c, org, user, "backup.exported", null, {
               count: records.length,
               checksum: backup.checksum,
@@ -708,6 +671,7 @@ export function createHandler({
               { records: backup.records, trash: backup.trash || [] },
             );
             const directoryResources = restoredDirectoryResources(backup.directoryResources, { records: backup.records, trash: backup.trash || [] });
+            const learningBridge = restoredLearningBridge(backup.learningBridge, { records: backup.records, trash: backup.trash || [], legacyReports: backup.reports || [] });
             const issues = [];
             const existingRecurrence = Number(
               (
@@ -718,6 +682,8 @@ export function createHandler({
               ).rows[0].count,
             );
             const existingDirectory = Number((await c.query("SELECT count(*) AS count FROM os_resource_directory_history WHERE org_id=$1", [org])).rows[0].count);
+            const existingDelivery = Number((await c.query("SELECT count(*) AS count FROM os_participation_delivery_policies WHERE org_id=$1", [org])).rows[0].count);
+            const existingConnections = Number((await c.query("SELECT count(*) FROM os_integrations WHERE org_id=$1", [org])).rows[0].count);
             const existingIntake = Number(
               (
                 await c.query(
@@ -736,13 +702,15 @@ export function createHandler({
                 ).rows[0].count,
               ) ||
               existingIntake ||
-              existingRecurrence || existingDirectory
+              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org)
             )
               issues.push({
                 field: "organization",
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
+            if (!issues.length && learningBridge)
+              await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
             await storePreview(c, {
@@ -771,12 +739,16 @@ export function createHandler({
                   taskRecurrence.occurrences.length,
                 directoryResourceBindingsRecovered: directoryResources?.bindings.length || 0,
                 directoryResourceEventsRetained: directoryResources?.bindings.reduce((n, b) => n + b.events.length, 0) || 0,
+                learningSourcesRecovered: learningBridge?.sources.length || 0,
+                learningEventsRetained: learningBridge?.events.length || 0,
+                learningReportsRecovered: learningBridge?.reports.length || 0,
                 ...(migration ? { migration: migration.summary } : {}),
               },
               issues,
               warnings: [
                 ...(migration?.warnings || []),
                 ...participation.warnings,
+                ...(learningBridge ? [{ field: "learningBridge", message: "Learning evidence and reports restore as private historical material with no approvals, sessions or command authority. Explicit adoption creates a new binding and fresh draft definitions and protocol; original observations never become live automatically." }] : []),
                 ...(directoryResources?.bindings.length ? [{ field: "directoryResources", message: "Directory review history restores inactive. Earlier assessments are historical; inspect current retained sources and explicitly adopt a restored Resource before recording a new review. Source trash remains in the private source archive." }] : []),
                 ...(taskRecurrence.series.length
                   ? [
@@ -839,6 +811,11 @@ export function createHandler({
               { records: p.payload.records, trash: p.payload.trash || [] },
             );
             const directoryResources = restoredDirectoryResources(p.payload.directoryResources, { records: p.payload.records, trash: p.payload.trash || [] });
+            const learningBridge = restoredLearningBridge(p.payload.learningBridge, { records: p.payload.records, trash: p.payload.trash || [], legacyReports: p.payload.reports || [] });
+            if (Number((await c.query("SELECT count(*) AS count FROM os_participation_delivery_policies WHERE org_id=$1", [org])).rows[0].count))
+              fail(409, "restore_conflict", "Restore requires an organization without an existing participation delivery policy.");
+            if (await learningStateCount(c, org))
+              fail(409, "restore_conflict", "Restore requires an organization without learning history, reports or previews.");
             if (Number((await c.query("SELECT count(*) AS count FROM os_resource_directory_history WHERE org_id=$1", [org])).rows[0].count))
               fail(409, "restore_conflict", "Restore requires an organization without directory review history.");
             if (
@@ -886,6 +863,8 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
+            if (learningBridge)
+              await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
               await c.query(
@@ -905,8 +884,9 @@ export function createHandler({
                 "The backup exceeds this workspace’s1,000 file limit.",
               );
             let restoredFileBytes = 0;
+            const learningCapability = learningWriteCapability("restore", imported);
             for (const record of imported) {
-              await saveRecord(c, record);
+              await saveRecord(c, record, { learningCapability });
               await audit(c, org, user, "record.restored", record, {
                 record,
                 sourceChecksum: p.checksum,
@@ -936,7 +916,7 @@ export function createHandler({
                   file.recordId,
                   clean(file.name, 180),
                   clean(file.mime, 100),
-                  file.checksum,
+                  verified.checksum,
                   bytes.length,
                   bytes,
                   user,
@@ -948,6 +928,8 @@ export function createHandler({
             await restoreDelivery(c, org, user, delivery);
             await restoreTaskRecurrence(c, org, user, taskRecurrence);
             await restoreDirectoryResources(c, org, p.payload.directoryResources, { records: p.payload.records, trash: p.payload.trash || [] });
+            await restoreLearningBridge(c, org, p.payload.learningBridge, { records: p.payload.records, trash: p.payload.trash || [], legacyReports: p.payload.reports || [] });
+            await checkLearningActiveRecords(c, org);
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
               checksum: p.checksum,
@@ -955,6 +937,9 @@ export function createHandler({
               sourceHistoryCount: p.payload.events?.length || 0,
               sourceCommentCount: p.payload.comments?.length || 0,
               sourceReportCount: p.payload.reports?.length || 0,
+              learningSourcesRecovered: learningBridge?.sources.length || 0,
+              learningEventsRetained: learningBridge?.events.length || 0,
+              learningReportsRecovered: learningBridge?.reports.length || 0,
               intakePublicationsClosed: intake.publications.length,
               intakeRequests: intake.submissions.length,
               participationTargetsRecovered: participation.targets.length,
@@ -1004,7 +989,7 @@ export function createHandler({
               reports: rows
                 .filter(
                   (r) =>
-                    !isGrantReport(r.payload) &&
+                    !isLearningReportFamily(r.payload) && !isGrantReport(r.payload) && knownLegacyReport(r.payload) &&
                     (administrators(member.role) ||
                       [
                         "program_lead",
@@ -1021,6 +1006,8 @@ export function createHandler({
             });
           }
           if (tail === "reports" && method === "POST") {
+            if (isLearningReportFamily(input) || (typeof input.assemblyMethod === "string" && input.assemblyMethod.startsWith("learning-")))
+              fail(422, "learning_report", "Use the Learning manifest preparation and report preview for this method.");
             const moduleIds = Array.isArray(input.moduleIds)
               ? input.moduleIds
               : [];
@@ -1088,6 +1075,8 @@ export function createHandler({
               )
             ).rows[0];
             if (!r) fail(404, "report", "Report not found.");
+            if (isLearningReportFamily(r.payload))
+              return okay({ report: await readLearningReport(c, { org, id: reportMatch[1], member }) });
             if (isGrantReport(r.payload)) {
               const report = grantReportForReader(r.payload, member);
               if (!report)
@@ -1098,6 +1087,7 @@ export function createHandler({
                 );
               return okay({ report });
             }
+            if (!knownLegacyReport(r.payload)) fail(404, "report", "This report format is unavailable.");
             for (const m of r.payload.modules) {
               requirePermission(m.id, member, "read");
               if (m.records.some((r) => !inScope(r, member)))
@@ -1166,6 +1156,8 @@ export function createHandler({
             const r = rowRecord(deleted);
             if (!inScope(r, member)) fail(403, "scope", "Outside your scope.");
             stale(input, r);
+            if (r.moduleId === "reporting" && r.data.assemblyMethod === "learning-review-v1" && ["frozen", "issued"].includes(r.status))
+              fail(409, "learning_frozen", "This learning manifest is frozen. Create a new manifest and report edition.");
             const module = getModule(r.moduleId);
             r.status =
               module.workflow.states.find((s) => s.id === "review")?.id ||
@@ -1179,6 +1171,7 @@ export function createHandler({
             checkReferences(module, r.data, records, member);
             await guardParticipationWrite(c, r, { operation: "restore" });
             await guardTaskRecurrenceWrite(c, r, { operation: "restore" });
+            await guardLearningWrite(c, r, { operation: "restore" });
             await c.query(
               "UPDATE os_records SET deleted_at=NULL WHERE org_id=$1 AND id=$2",
               [org, r.id],
@@ -1187,7 +1180,8 @@ export function createHandler({
             r.approval = null;
             r.snapshot = null;
             r.lastEditedBy = user;
-            await saveRecord(c, r);
+            await saveRecord(c, r, { operation: "restore" });
+            await checkLearningActiveRecords(c, org);
             await audit(c, org, user, "record.restored", r, { record: r });
             return okay({ restored: true, record: r });
           }
@@ -1367,6 +1361,7 @@ export function createHandler({
           if (method === "DELETE") {
             await guardParticipationWrite(c, record, { operation: "delete" });
             await guardTaskRecurrenceWrite(c, record, { operation: "delete" });
+            await guardLearningWrite(c, record, { operation: "delete" });
             const linked = records.some(
               (r) =>
                 r.id !== record.id &&
@@ -1505,7 +1500,10 @@ export function createHandler({
           }
           fail(405, "method", "This action is unavailable.");
         },
-        { lock: !["GET", "HEAD"].includes(method) },
+        {
+          lock: !["GET", "HEAD"].includes(method) || tail === "export",
+          readOnly: ["GET", "HEAD"].includes(method) && tail !== "export",
+        },
       );
       if (method === "POST" && tail === "invitations")
         await runOrgJobs({ db, org, send, settings });
@@ -1534,7 +1532,7 @@ export function createHandler({
           },
           422,
         );
-      if (error instanceof HttpError)
+      if (error instanceof HttpError || error instanceof LearningError)
         return json(
           {
             ok: false,
@@ -1569,6 +1567,19 @@ export function createHandler({
     }
   };
 }
+async function learningStateCount(c, org) {
+  return Number((await c.query("SELECT (SELECT count(*) FROM os_learning_history WHERE org_id=$1)+(SELECT count(*) FROM os_learning_previews WHERE org_id=$1)+(SELECT count(*) FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS count", [org])).rows[0].count);
+}
+function knownLegacyReport(payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload) || isLearningReportFamily(payload) || isGrantReport(payload) ||
+    typeof payload.id !== "string" || typeof payload.checksum !== "string" || !Array.isArray(payload.modules) || !payload.modules.length)
+    return false;
+  const { checksum, ...body } = payload;
+  if (hash(body) !== checksum) return false;
+  return payload.modules.every(module => module && typeof module === "object" && MODULES.some(item => item.id === module.id) &&
+    Array.isArray(module.records) && module.records.every(record => record && typeof record === "object" &&
+      record.moduleId === module.id && typeof record.id === "string" && record.data && typeof record.data === "object" && !Array.isArray(record.data)));
+}
 async function checkOwner(c, org, user) {
   if (
     !(
@@ -1584,6 +1595,7 @@ async function checkOwner(c, org, user) {
     fail(422, "owner", "Choose an active organization member as owner.");
 }
 async function fileRoute({ c, org, user, record, input, method }) {
+  await guardLearningWrite(c, record, { operation: "file" });
   if (record.moduleId !== "documents" || method !== "POST")
     fail(405, "files", "Files attach to document records.");
   const verified = validateFile(input),

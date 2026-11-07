@@ -1,0 +1,204 @@
+.learning-workspace {
+  max-width:78rem;
+  margin-inline:auto;
+  display:grid;
+  gap:1.25rem
+}
+.learning-body,.learning-write-area {
+  display:grid;
+  gap:1.25rem;
+  min-width:0
+}
+.learning-write-area {
+  border:0;
+  padding:0;
+  margin:0
+}
+.learning-write-area>legend {
+  font-size:1.1rem;
+  font-weight:700;
+  padding-block:.5rem
+}
+.learning-card {
+  border:1px solid var(--line,#d5ddd7);
+  border-radius:1rem;
+  padding:clamp(1rem,2.5vw,1.75rem);
+  background:var(--surface,#fff);
+  min-width:0;
+  display:grid;
+  gap:1rem
+}
+.learning-card h2,.learning-card h3 {
+  margin:0
+}
+.learning-card form {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1rem;
+  min-width:0
+}
+.learning-card form>p,.learning-card form>fieldset,.learning-card form>div:not(.learning-field),.learning-card form>h3,.learning-card form>button {
+  grid-column:1/-1
+}
+.learning-card button {
+  justify-self:start;
+  max-width:100%;
+  white-space:normal;
+  text-align:left
+}
+.learning-field {
+  min-width:0;
+  display:grid;
+  align-content:start;
+  gap:.4rem
+}
+.learning-field label,.learning-basis legend,.learning-indicator legend {
+  font-weight:650
+}
+.learning-field input,.learning-field select,.learning-field textarea,.learning-card>label select {
+  box-sizing:border-box;
+  min-width:0;
+  width:100%;
+  font:inherit
+}
+.learning-field textarea {
+  min-height:7rem;
+  resize:vertical
+}
+.learning-field small {
+  color:var(--muted,#485b50);
+  line-height:1.5
+}
+.learning-basis,.learning-indicator {
+  border:1px solid var(--line,#d5ddd7);
+  border-radius:.6rem;
+  display:grid;
+  gap:1rem;
+  padding:1rem;
+  min-width:0
+}
+.learning-indicators {
+  display:grid;
+  gap:1rem
+}
+.learning-verbatim {
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  border-left:3px solid var(--line,#d5ddd7);
+  padding-left:1rem
+}
+.learning-json {
+  font-size:.8rem;
+  line-height:1.55;
+  max-height:34rem;
+  overflow:auto;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  padding:1rem;
+  background:#f4f7f3;
+  border-radius:.5rem;
+  max-width:100%;
+  box-sizing:border-box
+}
+.learning-card details {
+  min-width:0
+}
+.learning-card summary {
+  cursor:pointer;
+  font-weight:650;
+  padding-block:.5rem
+}
+.learning-facts {
+  margin:0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));
+  gap:1rem
+}
+.learning-facts dt {
+  font-weight:650
+}
+.learning-facts dd {
+  margin:.3rem 0 0;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere
+}
+.learning-check {
+  display:flex;
+  align-items:flex-start;
+  gap:.7rem;
+  font-weight:400;
+  overflow-wrap:anywhere;
+  line-height:1.55
+}
+.learning-check input {
+  flex:0 0 auto;
+  width:1.15rem;
+  height:1.15rem;
+  margin-top:.2rem
+}
+.learning-check-list,.learning-attempt {
+  display:grid;
+  gap:1rem
+}
+.learning-attempt {
+  border-top:1px solid var(--line,#d5ddd7);
+  padding-top:1rem
+}
+.learning-status {
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  margin:0;
+  min-height:1.5em
+}
+.learning-workspace :focus-visible {
+  outline:3px solid #346f49;
+  outline-offset:3px
+}
+.learning-print-frame {
+  position:fixed;
+  width:1px;
+  height:1px;
+  left:-10000px;
+  top:0;
+  border:0
+}
+.learning-workspace .notice {
+  white-space:normal;
+  overflow-wrap:anywhere
+}
+.learning-report-view {
+  display:grid;
+  gap:1rem;
+  min-width:0
+}
+.learning-workspace a {
+  overflow-wrap:anywhere
+}
+.learning-workspace fieldset:disabled {
+  opacity:.75
+}
+@media(max-width:42rem) {
+  .learning-card form {
+    grid-template-columns:minmax(0,1fr)
+  }
+  .learning-card {
+    border-radius:.65rem
+  }
+  .learning-workspace .button {
+    width:100%;
+    box-sizing:border-box
+  }
+  .learning-card>label {
+    display:grid;
+    gap:.5rem
+  }
+  .learning-facts {
+    grid-template-columns:minmax(0,1fr)
+  }
+  .learning-json {
+    max-height:25rem
+  }
+  .learning-basis,.learning-indicator {
+    padding:.75rem
+  }
+}

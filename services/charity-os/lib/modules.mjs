@@ -940,14 +940,14 @@ export const MODULES = [
       refs("outcomeIds", "Indicator sources", "outcomes"),
       refs("financeIds", "Financial planning sources", "finance"),
       refs("receiptIds", "Externally referenced grant receipts", "fundraising"),
-      select("assemblyMethod", "Report assembly method", ["grant-report-v1"], {
-        help: "Use the Grant report workspace to prepare source versions, save their digest and obtain independent approval before freezing.",
+      select("assemblyMethod", "Report assembly method", ["grant-report-v1", "learning-review-v1"], {
+        help: "Use Grant reports or Learning to prepare exact source versions, save their digest and obtain independent approval before freezing.",
       }),
-      text("sourceDigest", "Prepared grant-report source digest", {
+      text("sourceDigest", "Prepared report source digest", {
         maxLength: 64,
-        help: "The Grant report workspace calculates this binding. A source change requires a new digest and fresh manifest approval.",
+        help: "The selected report workspace calculates this binding. A source change requires a new digest and fresh manifest approval.",
       }),
-      text("supersedesReportId", "Previous frozen grant-report ID", {
+      text("supersedesReportId", "Previous frozen report ID", {
         format: "opaque",
         maxLength: 100,
       }),
@@ -2170,6 +2170,25 @@ export function validateRecord(moduleId, input, context = {}) {
   if (moduleId === "reporting" && ["frozen", "issued"].includes(state)) {
     for (const k of ["startDate", "endDate", "summary", "missingness"])
       requireValue(k);
+  }
+  if (moduleId === "reporting" && data.assemblyMethod === "learning-review-v1") {
+    if (data.kind !== "template" || data.visibility !== "private")
+      add("assemblyMethod", "Learning report manifests use a private template.");
+    for (const k of ["programId", "startDate", "endDate", "summary", "missingness"])
+      requireValue(k);
+    if (data.agreementId !== null)
+      add("agreementId", "Learning reports have no grant agreement.");
+    for (const k of ["financeIds", "receiptIds"])
+      if (!Array.isArray(data[k]) || data[k].length !== 0)
+        add(k, "Learning reports contain no financial or receipt selection.");
+    if (!Array.isArray(data.outcomeIds))
+      add("outcomeIds", "Explicitly select observations, including an empty selection.");
+    if (data.sourceDigest !== null && !/^[a-f0-9]{64}$/.test(data.sourceDigest))
+      add("sourceDigest", "Use the exact digest prepared by the Learning workspace.");
+    if (data.supersedesReportId ? !data.revisionReason : data.revisionReason !== null)
+      add("revisionReason", "A new edition requires its prior report and a reason together.");
+    if (state === "issued")
+      add("status", "Learning reports remain private frozen editions.");
   }
   if (moduleId === "governance" && ["approved", "recorded"].includes(state)) {
     requireValue("decisionText");

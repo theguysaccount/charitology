@@ -8,6 +8,8 @@ import {
 import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
 import { createGrantReportWorkspace } from "./grant-reports.js";
+import { createLearningWorkspace } from "./learning.js";
+import { LEARNING_ROLES, learningRecordFragment, learningRecordMatches, resolveLearningRecordRoute, checkedLearningReport } from "./learning-model.js";
 import {
   createDirectoryResourceWorkspace,
   createDirectoryCatalogPicker,
@@ -62,6 +64,10 @@ const state = {
   importPreview: null,
   invitation: null,
   grantReportWorkspace: null,
+  learningWorkspace: null,
+  learningRecordAbort: null,
+  reportReadAbort: null,
+  reportReadSequence: 0,
   taskRecurrencePanel: null,
   directoryResourceWorkspace: null,
 };
@@ -309,6 +315,15 @@ function safeRoute() {
 }
 function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
+  state.learningRecordAbort?.abort();
+  state.learningRecordAbort = null;
+  state.reportReadAbort?.abort();
+  state.reportReadAbort = null;
+  if (state.learningWorkspace) {
+    state.learningWorkspace.dispose();
+    state.pageDirty = false;
+  }
+  state.learningWorkspace = null;
   state.directoryResourceWorkspace?.dispose();
   state.directoryResourceWorkspace = null;
   state.taskRecurrencePanel = null;
@@ -511,6 +526,13 @@ function renderOrgControl() {
   renderNav();
 }
 function renderNav() {
+  let learningLink = document.querySelector('[data-nav="learning"]');
+  if (!learningLink) {
+    learningLink = link("Learning and review", "#learning", { "data-nav": "learning" });
+    document.querySelector(".secondary-nav").prepend(learningLink);
+  }
+  learningLink.hidden = !LEARNING_ROLES.has(role()) ||
+    !["programs", "outcomes", "evaluation", "reporting"].every((id) => can(moduleById(id), "read", role()));
   let intakeLink = document.querySelector('[data-nav="intake"]');
   if (!intakeLink) {
     intakeLink = link("Public forms and requests", "#intake", {
@@ -640,22 +662,75 @@ async function loadMembersIfOrg() {
 async function route() {
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
+  state.learningWorkspace?.invalidate();
+  state.learningRecordAbort?.abort();
+  state.learningRecordAbort = null;
+  state.reportReadAbort?.abort();
+  state.reportReadAbort = null;
   const current = ++state.epoch;
   state.route = safeRoute();
+  const pinnedLearningRecord = state.route.startsWith("learning-record") || location.hash.startsWith("#learning-record");
   renderNav();
   $("#sidebar").classList.remove("open");
   $("#nav-toggle").setAttribute("aria-expanded", "false");
   announce("");
   if (state.route === "privacy") return showPrivacy();
-  if (!state.org) return renderCreateOrganization();
+  if (!state.org && !pinnedLearningRecord) return renderCreateOrganization();
   setContent(loading());
   try {
-    if (state.route.startsWith("directory/")) {
+    if (pinnedLearningRecord) {
+      const fragment = location.hash, oldSession = state.session;
+      const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 30000);
+      state.learningRecordAbort = controller;
+      let resolved;
+      try {
+        resolved = await resolveLearningRecordRoute({
+          fragment, api, signal: controller.signal,
+          isCurrent: () => current === state.epoch && fragment === location.hash && oldSession === state.session,
+          canRead: (moduleId, currentRole) => can(moduleById(moduleId), "read", currentRole),
+        });
+      } finally {
+        clearTimeout(timer);
+        if (state.learningRecordAbort === controller) state.learningRecordAbort = null;
+      }
+      if (current !== state.epoch || fragment !== location.hash || oldSession !== state.session) return;
+      state.session = resolved.session;
+      setCsrfToken(resolved.session.csrfToken);
+      state.orgs = resolved.orgs;
+      state.org = resolved.target.orgId;
+      state.members = [];
+      state.details = null;
+      invalidateModules();
+      rememberOrg(state.org);
+      renderAccount(); renderOrgControl();
+      await renderDetail(resolved.target.moduleId, resolved.target.recordId, current);
+    } else if (state.route.startsWith("directory/")) {
       await renderDirectoryCopy(current);
     } else if (state.route.startsWith("module/")) {
       const [, module, id] = state.route.split("/");
       if (id) await renderDetail(module, id, current);
       else await renderModule(module, current);
+    } else if (state.route === "learning" || state.route.startsWith("learning/")) {
+      const org = state.org, session = state.session, currentRole = role();
+      const initialReportId = state.route === "learning" ? "" : /^#learning\/([A-Za-z0-9_-]{1,100})$/.exec(location.hash)?.[1];
+      if (initialReportId === undefined) throw new ApiError("Use the exact saved learning report link without extra or encoded fields.", 422);
+      const required = ["programs", "outcomes", "evaluation", "reporting"];
+      if (!LEARNING_ROLES.has(currentRole) || !required.every((id) => can(moduleById(id), "read", currentRole)))
+        throw new ApiError("Learning and review requires current authorized staff source-module access.", 403);
+      const view = createLearningWorkspace({
+        org, role: currentRole, api, initialReportId,
+        canWrite: ["outcomes", "evaluation"].every((id) => can(moduleById(id), "write", currentRole)),
+        canExport: currentRole !== "contributor" && required.every((id) => can(moduleById(id), "export", currentRole)),
+        isCurrent: () => current === state.epoch && org === state.org && session === state.session && currentRole === role(),
+        onDirty: (value) => { if (current === state.epoch) state.pageDirty = value; },
+        onChanged: () => { if (current === state.epoch) { invalidateModules(org, required); renderNav(); } },
+        onOpenRecord: (moduleId, recordId) => {
+          if (current !== state.epoch || org !== state.org || session !== state.session) return;
+          window.open(learningRecordFragment(org, moduleId, recordId), "_blank", "noopener,noreferrer");
+        },
+      });
+      if (current === state.epoch) { setContent(view); state.learningWorkspace = view; }
+      else view.dispose();
     } else if (state.route === "reports") await renderReports(current);
     else if (state.route === "data") renderData();
     else if (state.route === "intake") await renderIntake(current);
@@ -1997,7 +2072,7 @@ async function renderDetail(moduleId, id, epoch) {
   const ownsDetail = () =>
     epoch === state.epoch && orgId === state.org &&
     state.session === detailSession && !!detailSession?.user &&
-    safeRoute() === detailRoute;
+    (safeRoute() === detailRoute || learningRecordMatches(location.hash, orgId, moduleId, id));
   if (!ownsDetail()) return;
   const module = moduleById(moduleId);
   if (!module || !can(module, "read", role()))
@@ -3425,10 +3500,28 @@ async function renderReports(epoch) {
   state.grantReportWorkspace = grantWorkspace;
 }
 async function showReport(id) {
-  const org = state.org;
-  const result = await api.report(org, id);
-  if (org !== state.org) return;
+  const org = state.org, session = state.session, epoch = state.epoch, routeName = state.route;
+  const readSequence = ++state.reportReadSequence;
+  const ownsReport = () => org === state.org && session === state.session && epoch === state.epoch && routeName === state.route && readSequence === state.reportReadSequence && !!session?.user;
+  state.reportReadAbort?.abort();
+  const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 30000);
+  state.reportReadAbort = controller;
+  let result;
+  try { result = await api.report(org, id, { signal: controller.signal }); }
+  catch (error) { if (!ownsReport()) return; throw error; }
+  finally { clearTimeout(timer); if (state.reportReadAbort === controller) state.reportReadAbort = null; }
+  if (!ownsReport()) return;
   const report = result.report;
+  if (report?.kind === "learning-review" || (typeof report?.methodVersion === "string" && report.methodVersion.startsWith("learning-"))) {
+    let checked;
+    try { checked = await checkedLearningReport(report); }
+    catch (error) { if (!ownsReport()) return; throw error; }
+    if (!ownsReport()) return;
+    if (checked.id !== id || checked.orgId !== org || !/^[A-Za-z0-9_-]{1,100}$/.test(id)) throw new ApiError("The exact private learning report identity could not be verified.", 422);
+    location.hash = `#learning/${id}`;
+    return;
+  }
+  if (!report || !Array.isArray(report.modules)) throw new ApiError("This report format is unavailable. Use its supported private report workspace.", 422);
   const content = node(
     "div",
     { class: "full-width" },
@@ -5340,6 +5433,8 @@ $("#editor-dialog").addEventListener("cancel", (event) => {
 $("#org-switch").addEventListener("change", async (event) => {
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
+  state.learningWorkspace?.invalidate();
+  state.learningRecordAbort?.abort();
   const next = event.target.value;
   if (next === state.org) return;
   if (!(await discardEditor()) || !(await discardPage())) {
@@ -5359,6 +5454,8 @@ $("#org-switch").addEventListener("change", async (event) => {
 $("#new-org").addEventListener("click", async () => {
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
+  state.learningWorkspace?.invalidate();
+  state.learningRecordAbort?.abort();
   if (!(await discardEditor()) || !(await discardPage())) return;
   renderCreateOrganization();
   $("#sidebar").classList.remove("open");

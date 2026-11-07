@@ -6,7 +6,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs public/*.test.js",
+    "test": "node scripts/build-learning-native.mjs --check && node --test --test-concurrency=2 test/*.test.mjs public/*.test.js",
     "test:db": "node --env-file=.env.local --test test-db/*.test.mjs",
     "migrate": "node --env-file=.env.local scripts/migrate.mjs",
     "dev": "node --env-file=.env.local scripts/dev.mjs"

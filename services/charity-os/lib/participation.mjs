@@ -263,10 +263,10 @@ function permit(source, member, action = "write") {
   if (!visibleRecord(source, member))
     fail(403, "scope", "This occurrence is outside your current scope.");
 }
-async function managed(c, org, targetId) {
+async function managed(c, org, targetId, { forUpdate = true } = {}) {
   return (
     await c.query(
-      "SELECT * FROM os_participation_targets WHERE org_id=$1 AND target_id=$2 FOR UPDATE",
+      `SELECT * FROM os_participation_targets WHERE org_id=$1 AND target_id=$2${forUpdate ? " FOR UPDATE" : ""}`,
       [org, targetId],
     )
   ).rows[0];
@@ -1453,7 +1453,7 @@ export async function participationRoutes({
   const { source, records } = await sources(c, org, match[1]);
   // The fulfillment console is for scoped writers, never snapshot-only readers.
   permit(source, member, "write");
-  const t = await managed(c, org, source.id);
+  const t = await managed(c, org, source.id, { forUpdate: !["GET", "HEAD"].includes(method) });
   if (!match[2] && method === "GET") {
     const preview = await adoptionPreview(c, org, source, t, records),
       current = currentTerms(source);
@@ -1600,14 +1600,14 @@ export async function participantParticipationRoutes({
     async (c) => {
       const intake = (
         await c.query(
-          "SELECT i.id,i.revision,i.status,i.cancelled_at,i.publication_id,i.answers,i.erased_at FROM os_participant_links l JOIN os_intake i ON i.org_id=l.org_id AND i.id=l.intake_id AND i.publication_id=l.publication_id WHERE l.user_id=$1 AND l.org_id=$2 AND l.intake_id=$3 AND l.revoked_at IS NULL FOR UPDATE OF i,l",
+          `SELECT i.id,i.revision,i.status,i.cancelled_at,i.publication_id,i.answers,i.erased_at FROM os_participant_links l JOIN os_intake i ON i.org_id=l.org_id AND i.id=l.intake_id AND i.publication_id=l.publication_id WHERE l.user_id=$1 AND l.org_id=$2 AND l.intake_id=$3 AND l.revoked_at IS NULL${request.method === "GET" ? "" : " FOR UPDATE OF i,l"}`,
           [actor.id, org, intakeId],
         )
       ).rows[0];
       if (!intake) unavailable();
       const rows = (
         await c.query(
-          "SELECT * FROM os_participations WHERE org_id=$1 AND intake_id=$2 ORDER BY created_at,id FOR UPDATE",
+          `SELECT * FROM os_participations WHERE org_id=$1 AND intake_id=$2 ORDER BY created_at,id${request.method === "GET" ? "" : " FOR UPDATE"}`,
           [org, intakeId],
         )
       ).rows;
@@ -1626,7 +1626,7 @@ export async function participantParticipationRoutes({
         const { source, records } = await sources(c, org, p.target_id, {
             historical: true,
           }),
-          t = await managed(c, org, p.target_id);
+          t = await managed(c, org, p.target_id, { forUpdate: request.method !== "GET" });
         if (!action) {
           objects.push(await safeOwn(p, t, source));
           continue;
@@ -1699,6 +1699,6 @@ export async function participantParticipationRoutes({
       if (action) unavailable();
       return okay({ participations: objects });
     },
-    { lock: true },
+    { lock: true, readOnly: request.method === "GET" },
   );
 }
