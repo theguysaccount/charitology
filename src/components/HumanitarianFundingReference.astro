@@ -77,7 +77,7 @@ const labels: Record<string, string> = { countryCode: "Country code", id: "Plan 
   .funding-controls label { display:flex; flex:1 1 12rem; flex-direction:column; gap:.3rem; min-width:0; }
   .funding-controls input,.funding-controls select { width:100%; min-width:0; max-width:100%; background:var(--surface); color:var(--ink); border:1px solid var(--rule); padding:.5rem; }
   .funding-downloads { display:flex; flex-wrap:wrap; gap:.5rem; margin-block:1rem; }
-  .funding-table-wrap { overflow:auto; max-width:100%; min-width:0; border:1px solid var(--rule); }
+  .funding-table-wrap { overflow:auto; max-height:70vh; max-width:100%; min-width:0; border:1px solid var(--rule); }
   table { border-collapse:collapse; width:100%; min-width:62rem; font-size:.85rem; }
   caption { text-align:left; padding:.7rem; }
   th,td { text-align:left; vertical-align:top; padding:.7rem; border-bottom:1px solid var(--rule); }
@@ -88,5 +88,5 @@ const labels: Record<string, string> = { countryCode: "Country code", id: "Plan 
   code { overflow-wrap:anywhere; white-space:normal; } dd { margin-left:0; margin-bottom:.6rem; }
   tr[hidden] { display:none; } summary { cursor:pointer; } .funding-provenance { margin-top:1rem; }
   .funding-reference :focus-visible { outline:3px solid currentColor; outline-offset:3px; }
-  @media print { .funding-controls,.funding-downloads { display:none; } .funding-table-wrap { overflow:visible; } table { min-width:0; font-size:8pt; } td,th { min-width:0; max-width:none; padding:.2rem; } }
+  @media print { .funding-controls,.funding-downloads { display:none; } .funding-table-wrap { overflow:visible; max-height:none; } table { min-width:0; font-size:8pt; } td,th { min-width:0; max-width:none; padding:.2rem; } }
 </style>

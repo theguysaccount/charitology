@@ -5,6 +5,7 @@
 - Added a fixed 2025 OCHA FTS/HDX reference beside the existing Gap Map figures and local census, with qualified Cause Atlas/Census links. All 195 country–plan–year rows preserve original strings, missing values, explicit zero, row provenance and exact derived coverage. No overlapping rows are summed into invented country/world totals or mapped to cause, depth or independent need.
 - Added page-only search/type/country filters, complete/selected JSON and reversible CSV, a complete public API and a separately licensed original-CSV evidence envelope. Every export, including an empty selection, carries source attribution, CC BY 3.0 IGO and the modification notice.
 - Bound immutable data to reviewed code A and verified offline plan/write/check against exact input and output hashes. [Source contract and scoped acceptance](docs/HUMANITARIAN_FUNDING_REFERENCE.md) retains engineering evidence and the separate build/browser/publication gates. No OS, provider, account or mail operation is added.
+- Verified six actual native downloads, keyboard filters and bounded desktop/mobile table scrolling. Retained the initial API-cardinality failure and new-branch history refusal with their exact scopes; final CI/publication remain separately recorded.
 
 ## November 5, 2026: reproducible model bundles
 
