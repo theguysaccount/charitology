@@ -64,7 +64,7 @@ export function createLearningWorkspace({
   let preview = null, previewSerial = 0, manifestRecord = null, prepared = null, finalSelection = null;
   let recovered = null, listCursors = {}, verifiedReport = null, printJob = null;
   const requests = new Set(), urls = new Set(), intent = learningCommitIntent(makeCommandKey);
-  const status = node("p", { role: "status", "aria-live": "polite", class: "learning-status", "data-learning": "status" });
+  const status = node("p", { role: "status", "aria-live": "polite", tabindex: "-1", class: "learning-status", "data-learning": "status" });
   const privateBody = node("div", { class: "learning-body" });
   const root = node("section", { class: "learning-workspace" },
     node("h1", { tabindex: "-1" }, "Learning and review"),
@@ -83,6 +83,7 @@ export function createLearningWorkspace({
     if (!current()) return;
     status.textContent = message;
     status.classList.toggle("error", error);
+    if (error && status.isConnected) status.focus?.();
   }
   function changed() {
     dirty = true; serial++; onDirty(true);
