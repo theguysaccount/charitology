@@ -1,5 +1,11 @@
 # Changelog
 
+## November 7, 2026: Learning report readability and release preparation
+
+- Corrected source-code text and keyboard-focus colors to use the OS theme variables. Actual 390-pixel light/dark reading, focus and scrolling passed after visual review caught the original dark-text failure.
+- Verified bounded full-shell navigation, unfinished-writing preservation, visible errors and fictional organization switching. [Learning acceptance](docs/OS_LEARNING_BRIDGE_ACCEPTANCE.md) retains the failure, correction and scope; broader timing/accessibility coverage remains explicit.
+- Integrated the published funding reference and spreadsheet without repeating completed migrations, hosted uploads or accepted mail. The spreadsheet's actual public artifact and 34 selected responses match; final combined OS release verification remains separate.
+
 ## November 7, 2026: staff attendance candidate, unreleased
 
 - Added explicit staff-reported whole-occurrence event/volunteer attendance drafts with exact review and durable accepted-command Retry. Bookings supply context, not attendance or hours; unknown facts remain null.
