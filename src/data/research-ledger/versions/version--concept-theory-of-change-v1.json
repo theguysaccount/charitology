@@ -1,0 +1,77 @@
+{
+  "id": "version:concept-theory-of-change-v1",
+  "recordId": "concept:theory-of-change",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-encyclopedia-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "encyclopedia",
+    "frontmatter": {
+      "title": "Theory of change",
+      "summary": "A written account of how and why a program’s activities are expected to lead to its long-term goal, step by step, with the assumptions that link each step to the next.",
+      "aliases": [
+        "ToC",
+        "causal pathway",
+        "change model"
+      ],
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "measurement-gap"
+        },
+        {
+          "collection": "conditions",
+          "id": "symptom-trap"
+        }
+      ],
+      "related": [
+        "/record/encyclopedia/outputs-and-outcomes/",
+        "/record/encyclopedia/source-depth/",
+        "/tools/impact-measurement-toolkit/",
+        "/tools/grant-evaluator/",
+        "/record/lexicon/#theory-of-change"
+      ],
+      "sources": [
+        {
+          "title": "What is Theory of Change?",
+          "url": "https://www.theoryofchange.org/what-is-theory-of-change/",
+          "publisher": "Center for Theory of Change",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "TOC Origins",
+          "url": "https://www.theoryofchange.org/what-is-theory-of-change/toc-background/toc-origins/",
+          "publisher": "Center for Theory of Change",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "Logic Model Development Guide",
+          "url": "https://www.naccho.org/uploads/downloadable-resources/Programs/Public-Health-Infrastructure/KelloggLogicModelGuide_161122_162808.pdf",
+          "publisher": "W.K. Kellogg Foundation",
+          "year": 2004,
+          "note": null
+        }
+      ]
+    },
+    "body": "\nA **theory of change** explains how a program expects to get from what it does to what it is trying to achieve. The Center for Theory of Change describes it as an account of how and why a desired change is expected to happen in a particular context. It fills in the “missing middle” between activities and long-term goals. The usual method works backward: start from the goal, then name the outcomes that must be in place for it to happen and how each one causes the next.\n\n## Where it came from\n\nCarol Weiss popularized the term in 1995. She sat on the evaluation steering committee of the Aspen Institute’s Roundtable on Community Change, and her essay on theory-based evaluation appeared in the Roundtable’s book *New Approaches to Evaluating Comprehensive Community Initiatives*. Weiss argued that complex community programs were hard to evaluate because the assumptions behind them were poorly spelled out. People were unclear about how change would unfold, so they paid little attention to the early and middle steps a long-term goal depends on.\n\n## Theory of change and logic models\n\nA logic model lays out the chain of resources, activities, outputs, outcomes and impact (see [outputs and outcomes](/record/encyclopedia/outputs-and-outcomes/)). The Kellogg Foundation’s guide notes that outcome-focused models are built with a theory of change in mind, though it is usually not spelled out, and it describes a “theory approach” model that puts the planners’ assumptions up front. A theory of change makes the *why* explicit: each arrow in the chain is a claim that can be checked.\n\n## How to read one\n\nA good theory of change lets a giver ask sharp questions:\n\n- **Which link is weakest?** A chain is only as strong as its least supported step.\n- **What evidence backs each link?** Some steps have trial evidence. Others are hopes.\n- **Where does the goal sit on the [depth scale](/record/encyclopedia/source-depth/)?** Ask how many uncertain links connect the activity to the goal; depth alone does not determine that number.\n- **What would show it is wrong?** A theory that no result could contradict is not doing any work.\n\n## Why it matters for source work\n\nSome structure and source goals involve long chains and many assumptions. A campaign to change a norm may need a dozen links to hold, over many years, with credit shared among many actors. A written theory of change does not make that work easier to measure, but it shows which links to watch. Measuring them is [Open Problem 3](/open-problems/measuring-the-source/). See also the [Grant Evaluator](/tools/grant-evaluator/) and the [Impact Measurement Toolkit](/tools/impact-measurement-toolkit/).\n"
+  },
+  "subjectHash": "14aa5468179e06206904daa00b7af1d632f6ebf216bd0899212cd62567bb0fba",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:encyclopedia-theory-of-change-v1",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "0725624124c946492e47efd996b766b51d8dd429d9b6f322521400992db80218"
+}

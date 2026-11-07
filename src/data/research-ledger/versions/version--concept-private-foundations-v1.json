@@ -1,0 +1,113 @@
+{
+  "id": "version:concept-private-foundations-v1",
+  "recordId": "concept:private-foundations",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-encyclopedia-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "encyclopedia",
+    "frontmatter": {
+      "title": "Private foundations",
+      "summary": "In U.S. law, charities that do not qualify as public charities, usually because they lack broad public support. They must generally spend an amount tied to 5 percent of their investment assets on charitable purposes each year.",
+      "aliases": [
+        "foundations",
+        "grantmaking foundations",
+        "the 5 percent rule",
+        "minimum distribution requirement"
+      ],
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "parked-money"
+        },
+        {
+          "collection": "conditions",
+          "id": "short-horizon"
+        }
+      ],
+      "related": [
+        "/diagnosis/parked-money/",
+        "/open-problems/the-payout-question/",
+        "/record/encyclopedia/donor-advised-funds/",
+        "/record/lexicon/#private-foundation",
+        "/record/lexicon/#payout-rate"
+      ],
+      "sources": [
+        {
+          "title": "Private foundations",
+          "url": "https://www.irs.gov/charities-non-profits/charitable-organizations/private-foundations",
+          "publisher": "Internal Revenue Service",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "Minimum investment return",
+          "url": "https://www.irs.gov/charities-non-profits/private-foundations/minimum-investment-return",
+          "publisher": "Internal Revenue Service",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "Taxes on failure to distribute income, private foundations",
+          "url": "https://www.irs.gov/charities-non-profits/private-foundations/taxes-on-failure-to-distribute-income-private-foundations",
+          "publisher": "Internal Revenue Service",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "Program-related investments",
+          "url": "https://www.irs.gov/charities-non-profits/private-foundations/program-related-investments",
+          "publisher": "Internal Revenue Service",
+          "year": null,
+          "note": null
+        },
+        {
+          "title": "Key takeaways from Giving USA’s 2026 report on philanthropy",
+          "url": "https://foundationsource.com/blog/key-takeaways-from-giving-usas-2026-report-on-philanthropy/",
+          "publisher": "Foundation Source",
+          "year": 2026,
+          "note": null
+        },
+        {
+          "title": "The 5 Percent Foundation Payout Requirement May Be a Floor, but the Ceiling Is Awfully Low",
+          "url": "https://inequality.org/article/foundation-payout/",
+          "publisher": "Helen Flannery, Inequality.org (Institute for Policy Studies)",
+          "year": 2023,
+          "note": null
+        },
+        {
+          "title": "Gates to give away $200 billon and shutter foundation in 2045",
+          "url": "https://www.alliancemagazine.org/blog/gates-to-give-away-200-billon-and-shutter-foundation-in-2045/",
+          "publisher": "Alliance magazine",
+          "year": 2025,
+          "note": null
+        },
+        {
+          "title": "Phil Trammell on how becoming a ‘patient philanthropist’ might allow you to do far more good",
+          "url": "https://80000hours.org/podcast/episodes/phil-trammell-patient-philanthropy/",
+          "publisher": "80,000 Hours Podcast",
+          "year": 2020,
+          "note": null
+        }
+      ]
+    },
+    "body": "\nUnder U.S. tax law, every 501(c)(3) organization is a **private foundation** unless it falls into an excluded category, such as hospitals, universities and organizations with broad public support. Giving USA estimates that foundations gave about $117 billion in 2025, roughly a fifth of all U.S. giving.\n\n## The 5 percent rule\n\nPrivate non-operating foundations generally must make qualifying distributions each year; operating foundations have different rules. The amount is tied to what the IRS calls a foundation’s *minimum investment return*: 5 percent of the value of its assets that are not used for charitable purposes, less debt incurred to buy them. A foundation that falls short owes a 30 percent excise tax on the undistributed amount under Section 4942 of the tax code, and a 100 percent tax if it does not make up the shortfall within 90 days of being notified.\n\nFoundations can also invest for their mission. A **program-related investment**, in the IRS’s terms, is one whose primary purpose is charitable, where earning income is not a significant purpose and which is not used for lobbying or political campaigns. The IRS’s examples include low-interest loans to needy students and high-risk investments in nonprofit low-income housing.\n\n## Floor or ceiling?\n\nThe rule sets a minimum. Whether it works in practice as a maximum is debated. An analysis of IRS data by Helen Flannery of the Institute for Policy Studies found that the median payout rate of private non-operating foundations ranged from 5.2 to 5.6 percent between 2015 and 2021. For foundations with more than a billion dollars, it was usually 5.0 or 5.1 percent.\n\n## Forever or now?\n\nA foundation whose investments earn more than it pays out can, in principle, last forever. Some choose not to. In May 2025 Bill Gates announced that the Gates Foundation would spend about $200 billion over 20 years and close permanently on December 31, 2045, much sooner than its charter had planned.\n\nThere are serious arguments on the other side. The economist Philip Trammell argues that a truly patient funder can invest, let returns compound and give far more later, when people may also know more about how to do good. He also lists the risks: a fund can be lost to war or financial collapse, or drift from its founder’s goals.\n\nWhich approach does more good is not known. It depends on how fast good opportunities are being used up, how fast invested money grows and how much the future should count. That is [Open Problem 12, the Payout Question](/open-problems/the-payout-question/). See also [Parked Money](/diagnosis/parked-money/) and [discounting](/record/encyclopedia/discounting/).\n"
+  },
+  "subjectHash": "d03c0cd83ce61442200dbe91c6e085f4cc14827966fe047fe13c7774536c85ef",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:encyclopedia-private-foundations-v1",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "bda0b43e87fa0de84494f66c02215a252aaca798eace5cee8de06c5cb4a28abe"
+}

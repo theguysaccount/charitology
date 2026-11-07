@@ -3,7 +3,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
 import { readLedgerInput } from "./research-ledger-data.mjs";
-import { captureResearchEntry } from "./research-ledger-capture.mjs";
+import { captureResearchSource } from "./research-ledger-capture.mjs";
 import {
   validateResearchLedger,
   projectResearchLedger,
@@ -80,7 +80,8 @@ async function load() {
         key.startsWith("problems/") ||
         key.startsWith("journal/") ||
         key.startsWith("cases/") ||
-        key === "record/methodology",
+        key === "record/methodology" ||
+        (input.manifest.adapterVersion === "research-content-v2" && key.startsWith("encyclopedia/")),
     )
     .sort();
   assert.deepEqual(
@@ -95,7 +96,7 @@ async function load() {
       resolve(`src/content/${sourceKey}.md`),
       "utf8",
     );
-    const captured = captureResearchEntry({ sourceKey, rawText });
+    const captured = captureResearchSource({ sourceKey, rawText });
     assert.deepEqual(
       Object.fromEntries(
         Object.keys(captured.subject.frontmatter).map((key) => [

@@ -52,7 +52,10 @@ import {
 } from "../src/lib/research-ledger-capture.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const input = readLedgerInput();
+import { initialSeedInput } from "../test-fixtures/research-ledger/initial-seed.mjs";
+const currentInput = readLedgerInput();
+validateResearchLedger(currentInput, seedOptions(currentInput, { currentFiles: true }));
+const input = initialSeedInput(currentInput);
 const graph = validateResearchLedger(
   input,
   seedOptions(input, { currentFiles: true }),
@@ -71,7 +74,7 @@ const sha = (value) => createHash("sha256").update(value).digest("hex");
 if (process.argv.includes("--offline-summary")) {
   // The parent launches this with an empty tool PATH and different UTC clocks.
   Date.now = () => Number(process.env.LEDGER_TEST_CLOCK);
-  const again = seedReport(readLedgerInput());
+  const again = seedReport(initialSeedInput(readLedgerInput()));
   console.log(JSON.stringify(again));
 } else {
   let groups = 0;
@@ -573,10 +576,11 @@ if (process.argv.includes("--offline-summary")) {
         actual = walk(DATA_ROOT)
           .map((path) => path.slice(DATA_ROOT.length + 1))
           .sort();
-      assert.deepEqual(actual, [...expected.keys()].sort());
+      assert.ok([...expected.keys()].every((path) => actual.includes(path)));
       assert.equal(expected.size, 181);
       for (const [path, bytes] of expected)
-        assert.equal(readFileSync(join(DATA_ROOT, path), "utf8"), bytes);
+        if (path !== "manifest.json") assert.equal(readFileSync(join(DATA_ROOT, path), "utf8"), bytes);
+      assert.equal(readFileSync(join(DATA_ROOT, "manifest.json"), "utf8"), JSON.stringify(currentInput.manifest, null, 2) + "\n");
       const dir = mkdtempSync(join(tmpdir(), "charitology-ledger-write-"));
       try {
         assert.equal(writeInitialSeed(input, dir), 181);
