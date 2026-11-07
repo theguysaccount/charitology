@@ -1,0 +1,58 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+const verification = JSON.parse(readFileSync(resolve('public/downloads/output-cost-planner-v1.verification.json'), 'utf8')) as {
+  artifact: { bytes: number; sha256: string }; engine: string; cases: unknown[];
+};
+const base = '/downloads/output-cost-planner-v1';
+const engineLabel = verification.engine.split(' ').slice(0, 2).join(' ');
+---
+
+<Entry
+  title="Plan cost per defined output"
+  eyebrow="Model Kit · Spreadsheet"
+  summary="An editable spreadsheet for one output, one planning period and an explicit cash-cost scope. Its formulas and assumptions are open to inspection."
+  crumbs={[{ label: 'Tools', href: '/tools/' }, { label: 'Model Kit', href: '/tools/cost-effectiveness-model-kit/' }, { label: 'Spreadsheet' }]}
+  filePath="src/pages/tools/cost-effectiveness-model-kit/spreadsheet.astro"
+  review="draft"
+>
+  <p class="callout"><strong>Illustrative assumptions.</strong> The included workshop, costs, counts and dates are fictional. The workbook describes no real charity or measured benefit.</p>
+  <p><a class="btn" href={url(`${base}.xlsx`)} download>Download spreadsheet (.xlsx)</a></p>
+  <p>One worksheet, {verification.artifact.bytes.toLocaleString('en-US')} bytes, version 1. It uses ordinary formulas, with editable input cells and no macros or external workbook connections.</p>
+
+  <h2>Define what the count means</h2>
+  <p>A budget and an activity count are two signals in the charity system. Writing their scope and assumptions makes them easier to inspect and revise from feedback. An output describes work completed; an outcome asks what changed for people or communities.</p>
+  <ol>
+    <li>Name one output and its counting rule. Keep the same inclusive period for every cost and count.</li>
+    <li>Replace the blue, amber-filled inputs. Use nominal planned cash costs in USD, including your allocated shared costs. Record the price year, inclusions, exclusions and each source or assumption.</li>
+    <li>Enter nonnegative cash amounts and whole output counts, with a point estimate and any bounds you can justify. Keep lower ≤ point ≤ upper. Leave unknown values blank. Enter 0 only for an explicit zero.</li>
+    <li>Inspect the formulas and result notes. Keep private source writing out of copies you share.</li>
+  </ol>
+  <p>The three cost rows cover staff, direct nonstaff and allocated shared cash costs. Explain your allocation and omissions. This is a cash-cost plan; unpriced volunteer time and donated resources are separate exclusions. It is not an accounting ledger.</p>
+
+  <h2>Follow the arithmetic</h2>
+  <table>
+    <thead><tr><th scope="col">Result</th><th scope="col">Calculation</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Point estimate</th><td>Sum of point cash costs ÷ point output count</td></tr>
+      <tr><th scope="row">Conditional lower bound</th><td>Sum of lower cash-cost bounds ÷ upper output bound</td></tr>
+      <tr><th scope="row">Conditional upper bound</th><td>Sum of upper cash-cost bounds ÷ lower output bound</td></tr>
+    </tbody>
+  </table>
+  <p>The fictional example gives USD 100 per completed workshop, with conditional bounds of about USD 57.14–200. These bounds depend on the inputs covering the relevant costs and counts. They are not probabilities, percentiles or confidence intervals, and they do not establish whether a combination is plausible.</p>
+  <p>A missing bound leaves that result unknown while a valid point estimate remains available. Zero cost with positive outputs gives 0.00. Zero outputs makes the point ratio unavailable. Positive possible cost with a zero lower output bound has no finite upper ratio; 0 cost divided by 0 outputs stays undefined.</p>
+
+  <h2>Inspect the source and checks</h2>
+  <p><a href={url(`${base}.formulas.json`)}>Read the exact cell, input and formula specification</a>. The workbook formulas are visible and unlocked. Text supplied through the authoring path stays literal; the template cannot prevent deliberate formula edits in your own spreadsheet app.</p>
+  <p>The authored template and formulas are MIT-licensed. Future user-supplied data keep their own rights.</p>
+  <p><a href={url(`${base}.verification.json`)}>Read the {verification.cases.length} native recalculation cases</a>. Each disposable input had its formula caches removed before actual headless {engineLabel} recalculated it. The cases cover changed costs/counts, unknown values, zeros, invalid inputs and literal formula-leading text. Native Excel, Google Sheets and spreadsheet-app UI behavior have not been checked.</p>
+  <p>This deterministic output planner is separate from the <a href={url('/tools/cost-effectiveness-model-kit/')}>Model Kit’s expected-outcome simulation and reproducible bundles</a>. It does not import those files or change their frozen interpretation. A calculated ratio supplies no causal evidence, charity rating or judgment about the good being done.</p>
+  <p>For shared program, grant and task coordination, <a href="https://os.charitology.org">explore Charity OS</a>.</p>
+  <p class="hash"><strong>Download SHA-256:</strong> <code>{verification.artifact.sha256}</code></p>
+</Entry>
+
+<style>
+  .hash code { overflow-wrap: anywhere; word-break: break-all; }
+</style>
