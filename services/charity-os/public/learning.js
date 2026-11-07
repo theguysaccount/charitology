@@ -367,10 +367,30 @@ export function createLearningWorkspace({
       generation++; for (const request of requests) request.abort(); requests.clear(); busy = false; root.setAttribute("aria-busy", "false");
     }
   }
-  adapter.control.addEventListener("change", () => { cancelSourceRequest(); uploadBytes = null; nativeChoices = []; inspection = null; file.control.value = ""; options(sourceChoice.control, [], "Choose a native file…"); sourceHost.replaceChildren(); });
+  let nativeChoiceSerial = 0;
+  function resetNativeChoice() {
+    nativeChoiceSerial++; cancelSourceRequest();
+    uploadBytes = null; inspection = null; nativeChoices = [];
+    options(sourceChoice.control, [], "Choose a native file…"); sourceHost.replaceChildren();
+  }
+  file.control.addEventListener("click", () => {
+    if (!current() || intent.pending) return;
+    resetNativeChoice(); changed();
+    // A native picker may not emit change when the same pathname is selected
+    // again. Reset before opening, retaining the new File for identity checks.
+    file.control.value = "";
+    say("Choose a native file. Cancelling keeps your authored fields.");
+  });
+  file.control.addEventListener("cancel", () => {
+    if (!current() || intent.pending) return;
+    resetNativeChoice(); changed();
+    say("File choice cancelled. Your authored fields are kept; choose a file again before inspecting it.");
+  });
+  adapter.control.addEventListener("change", () => { resetNativeChoice(); file.control.value = ""; });
   file.control.addEventListener("change", () => {
-    uploadBytes = null; inspection = null; nativeChoices = []; sourceHost.replaceChildren();
-    cancelSourceRequest();
+    if (!current() || intent.pending) return;
+    resetNativeChoice();
+    const choiceSerial = nativeChoiceSerial;
     return perform(async (token) => {
     const selectedFile = file.control.files?.[0], selectedAdapter = adapter.read();
     if (!selectedFile) return;
@@ -379,7 +399,7 @@ export function createLearningWorkspace({
     const bytes = new Uint8Array(await step(selectedFile.arrayBuffer(), token));
     nativeModule ||= await step(nativeLoader(), token);
     const choices = await step(nativeModule.listLearningNativeSelections(bytes, { adapter: selectedAdapter }), token);
-    if (file.control.files?.[0] !== selectedFile || adapter.read() !== selectedAdapter) throw new Error("The file choice changed. Choose it again explicitly.");
+    if (choiceSerial !== nativeChoiceSerial || file.control.files?.[0] !== selectedFile || adapter.read() !== selectedAdapter) throw new Error("The file choice changed. Choose it again explicitly.");
     if (!Array.isArray(choices) || choices.length > 250) throw new Error("The complete native chooser response is invalid.");
     uploadBytes = bytes; nativeChoices = choices;
     options(sourceChoice.control, choices.map((choice, index) => [String(index), `${choice.title} · ${choice.selection.recordId || "whole draft"}`]), "Choose the exact retained source…");

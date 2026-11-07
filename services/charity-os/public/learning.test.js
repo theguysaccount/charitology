@@ -57,6 +57,24 @@ function harness(t, config = {}) {
   const button = (text) => { const result = view.querySelectorAll("button").find((row) => row.textContent === text); assert.ok(result, text); return result; };
   return { ...dom, ...service, view, get, button, revoke() { authorized = false; }, get dirty() { return dirty; }, async field(name, value) { const control = get(name); control.value = value; await control.emit("input"); }, async load() { await get("load").click(); get("binding").value = "binding"; await get("load-context").click(); } };
 }
+// Model the browser's file-selection boundary, including same-path cancel.
+// Only the native chooser installs files; script may clear value but cannot
+// manufacture a selection. The actual production click/change handlers run.
+function nativePicker(control) {
+  let selectedPath = "", files = [];
+  Object.defineProperty(control, "value", { configurable: true, get: () => selectedPath, set(value) { assert.equal(value, ""); selectedPath = ""; files = []; } });
+  Object.defineProperty(control, "files", { configurable: true, get: () => files });
+  return {
+    open: () => control.click(),
+    cancel: () => control.emit("cancel"),
+    async choose(file) {
+      await control.click();
+      if (selectedPath === file.name) return control.emit("cancel");
+      selectedPath = file.name; files = [file];
+      return control.emit("change");
+    },
+  };
+}
 // Exercise the production iframe branch. Only the browser-owned document,
 // stylesheet events and native print dialog are modeled; printOutput is unused.
 function nativePrintHarness(t, options = {}) {
@@ -136,6 +154,67 @@ test("actual compiled native chooser inspects complete bytes and server upload p
   assert.match(h.get("source-inspection").textContent, /whole-toc-export/);
   assert.doesNotMatch(JSON.stringify(h.calls.map((row) => row.args)), /a-private-file-name/);
   assert.equal(imports, 0);
+});
+
+test("native picker retries the same pathname after a failed read without losing authored fields", async (t) => {
+  const h = harness(t), picker = nativePicker(h.get("native-file"));
+  await h.field("measurement-title", "  Keep this unfinished writing  ");
+  const bytes = new TextEncoder().encode(JSON.stringify(native())); let reads = 0;
+  const file = { name: "same-native.json", size: bytes.length, async arrayBuffer() { if (++reads === 1) throw new Error("Fictional read failure"); return bytes.buffer; } };
+  await picker.choose(file);
+  assert.equal(reads, 1); assert.match(h.get("status").textContent, /Fictional read failure/);
+  await picker.choose(file);
+  assert.equal(reads, 2); assert.match(h.get("status").textContent, /passed the complete actual native codec locally/);
+  assert.match(h.get("source-choice").textContent, /Fictional source/);
+  assert.equal(h.get("measurement-title").value, "  Keep this unfinished writing  ");
+  assert.equal(h.calls.length, 0); assert.equal(h.get("native-file").files[0], file);
+});
+
+test("opening and cancelling a picker revokes a held native read and keeps its late completion inert", async (t) => {
+  const h = harness(t), picker = nativePicker(h.get("native-file"));
+  await h.field("protocol-question", "Literal unfinished question");
+  const bytes = new TextEncoder().encode(JSON.stringify(native())); let release, entered;
+  const started = new Promise(resolve => { entered = resolve; }), gate = new Promise(resolve => { release = resolve; });
+  const file = { name: "held-native.json", size: bytes.length, async arrayBuffer() { entered(); await gate; return bytes.buffer; } };
+  const pending = picker.choose(file); await started;
+  await picker.open(); await picker.cancel();
+  assert.equal(h.get("native-file").value, ""); assert.equal(h.get("source-choice").children.length, 1);
+  release(); await pending;
+  assert.match(h.get("status").textContent, /File choice cancelled/);
+  assert.equal(h.get("source-choice").children.length, 1); assert.equal(h.get("source-inspection").textContent, "");
+  assert.equal(h.get("protocol-question").value, "Literal unfinished question");
+  await h.get("source-form").emit("submit");
+  assert.match(h.get("status").textContent, /Choose a complete native file/); assert.equal(h.calls.length, 0);
+});
+
+test("a newer native choice survives an older file read completing after it", async (t) => {
+  const h = harness(t), picker = nativePicker(h.get("native-file")); await h.load();
+  const a = native(), b = native(); a.draft.name = "Fictional old choice"; b.draft.name = "Fictional new choice";
+  const oldBytes = new TextEncoder().encode(JSON.stringify(a)), newBytes = new TextEncoder().encode(JSON.stringify(b));
+  let release, entered; const started = new Promise(resolve => { entered = resolve; }), gate = new Promise(resolve => { release = resolve; });
+  const oldFile = { name: "old-native.json", size: oldBytes.length, async arrayBuffer() { entered(); await gate; return oldBytes.buffer; } };
+  const newFile = { name: "new-native.json", size: newBytes.length, async arrayBuffer() { return newBytes.buffer; } };
+  const pending = picker.choose(oldFile); await started; await picker.choose(newFile);
+  release(); await pending;
+  assert.match(h.get("source-choice").textContent, /Fictional new choice/); assert.doesNotMatch(h.get("source-choice").textContent, /Fictional old choice/);
+  const local = actualNative.inspectLearningNativeValue(newBytes, { adapter: "theory-of-change-native-v1", selection: { kind: "whole-draft" } });
+  let uploaded = 0;
+  h.api.inspectLearningSource = async (org, metadata, bytes) => { uploaded++; assert.deepEqual(bytes, newBytes); return { inspectionId: "inspection", source: { ...source(), ...local } }; };
+  h.get("source-choice").value = "0"; await h.get("source-choice").emit("change"); await h.get("source-form").emit("submit");
+  assert.equal(uploaded, 1); assert.equal(h.get("native-file").files[0], newFile);
+});
+
+test("picker opening revokes an acknowledged preview without resetting its authored fields", async (t) => {
+  const h = harness(t), picker = nativePicker(h.get("native-file")); await h.load();
+  await h.field("measurement-definition", "definition"); await h.field("measurement-title", "Literal unfinished measurement");
+  await h.field("measurement-value", "0"); await h.field("measurement-start", "2026-10-01"); await h.field("measurement-end", "2026-10-07"); await h.field("measurement-limits", "  Literal limits  ");
+  await h.get("measurement-form").emit("submit"); h.get("preview-ack").checked = true; await h.get("preview-ack").emit("change");
+  assert.equal(h.get("commit").disabled, false);
+  await picker.open();
+  assert.equal(h.view.querySelector('[data-learning="commit"]'), null);
+  assert.equal(h.get("measurement-title").value, "Literal unfinished measurement"); assert.equal(h.get("measurement-value").value, "0");
+  assert.equal(h.get("measurement-limits").value, "  Literal limits  ");
+  assert.equal(h.calls.filter(row => row.name === "commitLearning").length, 0);
 });
 
 test("mounted measurement keeps explicit zero, actual dates, locator unknown and literal input after preview", async (t) => {
