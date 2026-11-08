@@ -1,5 +1,10 @@
 # Changelog
 
+## November 7, 2026: encyclopedia release and partial-interval local acceptance
+
+- Published exact-source encyclopedia history through PR #46/main `e8fd319`: eight CI jobs, five Pages jobs and 89 selected public artifact-matching responses, with independent body/header rehash. Actual public filters/history/390px focus and native current CSV Save pass. Draft/Unknown labels, zero human reviews, both immutable editions and the original brief remain explicit. [Acceptance](docs/ENCYCLOPEDIA_REVIEW_COVERAGE_ACCEPTANCE.md#finite-public-release-and-actual-browser-follow-up).
+- Implemented one consent-bound volunteer interval with concurrent capacity, exact Retry, inactive recovery and shared legacy accounting. Sealed backend/client checks pass 741 tests and 16 real PostgreSQL cases; actual fictional browser/HTTP verifies adjacency, overlap refusal and once-only cancellation after response loss. A forward connected-error focus correction passes 743 tests and actual 390px keyboard acceptance. [Local acceptance](docs/PARTICIPATION_INTERVALS_ACCEPTANCE.md) separates pending service CI/stage/migration/release, participant check-in and real pilots.
+
 ## November 7, 2026: gift estimate release and encyclopedia coverage candidate
 
 - Published the bounded Gift estimate desk through PR #45 and main `e2c4e0f`. All eight exact-head CI jobs, five Pages jobs and 56 selected public responses pass, with an independent body/header rehash. Actual public original-file requalification, fixed-worker calculation and search discovery pass. [Acceptance](docs/GIFT_ESTIMATE_ACCEPTANCE.md) retains both earlier Pages timeouts, corrected verifier refusals and the explicit limits of literal runtime coverage.
