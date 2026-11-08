@@ -1,6 +1,7 @@
 /** The same thirteen actual SQL assertions; version authority comes from the adapter. */
 import test from "node:test";
 import assert from "node:assert/strict";
+import { setTimeout as checkInTestYield } from "node:timers/promises";
 import { assembleWorkspaceBackup, checkWorkspaceExportCapacity } from "../../lib/workspace-backup.mjs";
 import { measureLearningRestoreCapacity } from "../../lib/learning-capacity.mjs";
 import { exportParticipation } from "../../lib/participation-backup.mjs";
@@ -14,7 +15,7 @@ import { makeBackup } from "../../lib/backup.mjs";
 
 export function registerParticipantCheckInCases({ withCheckInFixture, cleanupCount, cleanupsAfter }) {
 const names = [];
-const pgCase = (name, run) => { names.push(name); return test(name, { timeout: 300000, concurrency: false }, async t => { const before = cleanupCount(); try { await withCheckInFixture(run); } finally { const receipts = cleanupsAfter(before); for (const cleanup of receipts) t.diagnostic(JSON.stringify({kind:"owned-schema-cleanup",...cleanup})); if (!receipts.length) t.diagnostic("No current-case cleanup receipt; no resource-cleanup success inferred."); } }); };
+const pgCase = (name, run) => { names.push(name); return test(name, { timeout: 300000, concurrency: false }, async t => { const before = cleanupCount(); try { await withCheckInFixture(f => run(f, t)); } finally { const receipts = cleanupsAfter(before); for (const cleanup of receipts) t.diagnostic(JSON.stringify({kind:"owned-schema-cleanup",...cleanup})); if (!receipts.length) t.diagnostic("No current-case cleanup receipt; no resource-cleanup success inferred."); } }); };
 const ownRoot = (f, s) => `/api/participant/orgs/${f.org}/requests/${s.candidate.intakeId}`;
 const staffPath = (f, s) => `/api/orgs/${f.org}/participation-targets/${s.target.id}/participations/${s.pid}/check-in`;
 const sqlState = state => error => error?.code === state;
@@ -155,29 +156,125 @@ pgCase("checkin PG09: actual SQL/native and inactive composite measures compose 
   const recovered = await f.tx(c => checkCheckInCapacity(c, dest), { org: dest }); assert.equal(recovered.pendingWithdrawals, 0); assert.equal(recovered.retainedGrowth, 0);
 });
 
-pgCase("checkin PG10: concurrent exact duplicate report/withdraw produce one durable result each", async f => {
-  const s = await f.seed(), body = await f.reportBody(s);
-  const created = await Promise.all([f.api(s.path + "/report", { body }), f.api(s.path + "/report", { body })]);
-  assert.deepEqual(created[0].result, created[1].result); assert.deepEqual(created.map(v => v.replayed).sort(), [false, true]); assert.equal(await rawCount(f), 1);
-  const withdrawal = f.withdrawBody((await f.current(s)).report);
-  const done = await Promise.all([f.api(s.path + "/withdraw", { body: withdrawal }), f.api(s.path + "/withdraw", { body: withdrawal })]);
-  assert.deepEqual(done[0].result, done[1].result); assert.equal((await f.current(s)).checkInRevision, 2);
-  assert.equal(Number((await f.tx(c => c.query("SELECT count(*) n FROM os_events WHERE org_id=$1 AND action='participant-checkin.withdrawn'", [f.org]))).rows[0].n), 1);
-  const second = await f.seed({ name: "revoked" }), secondBody = await f.reportBody(second), lock = await f.db.pool.connect();
-  let committed = false, pending;
+// BEGIN CHECKIN_PG10_COORDINATION_HELPER
+// Test coordination only. This does not replace a product or PostgreSQL clock.
+const checkInQueuedRequestSql = `SELECT EXISTS(
+  SELECT 1 FROM pg_locks held
+  JOIN pg_locks queued
+    ON queued.locktype=held.locktype
+   AND queued.database IS NOT DISTINCT FROM held.database
+   AND queued.classid IS NOT DISTINCT FROM held.classid
+   AND queued.objid IS NOT DISTINCT FROM held.objid
+   AND queued.objsubid IS NOT DISTINCT FROM held.objsubid
+  WHERE held.pid=pg_backend_pid() AND held.locktype='advisory'
+    AND held.granted AND held.mode='ExclusiveLock'
+    AND NOT queued.granted AND queued.mode='ExclusiveLock'
+    AND queued.pid=ANY($1::int[])
+    AND held.pid=ANY(pg_blocking_pids(queued.pid))
+) AS waiting`;
+function checkInPendingUnsettled(state) {
+  if (state.settled && !state.outcome.ok) throw state.outcome.error;
+  assert.equal(state.settled, false, "CHECKIN_PG10_PENDING_SETTLED_BEFORE_QUEUE");
+}
+async function waitForExactCheckInQueue(lock, pendingState, acquired) {
+  const deadline = performance.now() + 10_000;
+  for (;;) {
+    checkInPendingUnsettled(pendingState);
+    assert.equal(acquired.invalid, false, "CHECKIN_PG10_INVALID_BACKEND_PID");
+    assert(acquired.pids.size <= 5, "CHECKIN_PG10_BACKEND_PID_BOUND");
+    assert(performance.now() < deadline, "CHECKIN_PG10_QUEUE_DEADLINE");
+    // Each fixed observation query is awaited to settlement. The deadline is
+    // an eligibility budget; it never abandons an in-flight query or bounds
+    // subsequent driver/rollback/pending-request cleanup.
+    const result = await lock.query(checkInQueuedRequestSql, [[...acquired.pids]]);
+    assert(performance.now() < deadline, "CHECKIN_PG10_QUEUE_DEADLINE");
+    checkInPendingUnsettled(pendingState);
+    assert.equal(acquired.invalid, false, "CHECKIN_PG10_INVALID_BACKEND_PID");
+    assert.equal(result.rows.length, 1, "CHECKIN_PG10_QUEUE_QUERY_SHAPE");
+    assert.equal(typeof result.rows[0].waiting, "boolean", "CHECKIN_PG10_QUEUE_QUERY_SHAPE");
+    if (result.rows[0].waiting) return;
+    await checkInTestYield(10);
+    assert(performance.now() < deadline, "CHECKIN_PG10_QUEUE_DEADLINE");
+  }
+}
+// END CHECKIN_PG10_COORDINATION_HELPER
+
+pgCase("checkin PG10: concurrent exact duplicate report/withdraw produce one durable result each", async (f, t) => {
+  let phase = "report.seed", primaryError = null, primaryPhase = null;
+  const remember = (error, failedPhase) => {
+    if (primaryError === null) { primaryError = error; primaryPhase = failedPhase; }
+    else t.diagnostic(JSON.stringify({ kind: "checkin-pg10-secondary-phase", phase: failedPhase }));
+  };
   try {
-    await lock.query("BEGIN");
-    await lock.query("SELECT set_config('app.org_id',$1,true),set_config('app.user_id',$2,true)", [f.org, f.ownSession.user.id]);
-    await lock.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [f.org]);
-    pending = f.api(second.path + "/report", { body: secondBody, expect: 404 });
-    let waiting = false;
-    // Bounded lock observation, not a sleep or clock-authority override.
-    for (let i = 0; i < 100 && !waiting; i++) waiting = (await lock.query("SELECT EXISTS(SELECT 1 FROM pg_locks WHERE locktype='advisory' AND NOT granted AND pid<>pg_backend_pid() AND database=(SELECT oid FROM pg_database WHERE datname=current_database())) AS waiting")).rows[0].waiting;
-    assert.equal(waiting, true);
-    await lock.query("UPDATE os_participant_links SET revoked_at=clock_timestamp(),revision=revision+1 WHERE user_id=$1 AND org_id=$2 AND intake_id=$3", [f.ownSession.user.id, f.org, second.candidate.intakeId]);
-    await lock.query("COMMIT"); committed = true; await pending;
-  } finally { if (!committed) { try { await lock.query("ROLLBACK"); } catch {} } lock.release(); if (pending) await pending; }
-  assert.equal(await rawCount(f), 1);
+    const s = await f.seed(), body = await f.reportBody(s);
+    phase = "report.concurrent";
+    const created = await Promise.all([f.api(s.path + "/report", { body }), f.api(s.path + "/report", { body })]);
+    phase = "report.same-result"; assert.deepEqual(created[0].result, created[1].result);
+    phase = "report.single-replay"; assert.deepEqual(created.map(v => v.replayed).sort(), [false, true]);
+    phase = "report.single-row"; assert.equal(await rawCount(f), 1);
+    phase = "withdraw.prepare"; const withdrawal = f.withdrawBody((await f.current(s)).report);
+    phase = "withdraw.concurrent";
+    const done = await Promise.all([f.api(s.path + "/withdraw", { body: withdrawal }), f.api(s.path + "/withdraw", { body: withdrawal })]);
+    phase = "withdraw.same-result"; assert.deepEqual(done[0].result, done[1].result);
+    phase = "withdraw.revision-two"; assert.equal((await f.current(s)).checkInRevision, 2);
+    phase = "withdraw.single-audit";
+    assert.equal(Number((await f.tx(c => c.query("SELECT count(*) n FROM os_events WHERE org_id=$1 AND action='participant-checkin.withdrawn'", [f.org]))).rows[0].n), 1);
+    phase = "revocation.seed"; const second = await f.seed({ name: "revoked" }), secondBody = await f.reportBody(second);
+    let lock, committed = false, listenerAttached = false, pendingOutcome;
+    const pendingState = { settled: false, outcome: null }, acquired = { pids: new Set(), invalid: false };
+    // The holder is already checked out before this listener is attached. All
+    // prior requests are settled, so only the one pending request may acquire
+    // owned runtime clients during this observation window. Never throw from
+    // an EventEmitter callback or log backend/request/driver values.
+    const observeAcquire = client => {
+      const pid = client.processID;
+      if (!Number.isInteger(pid) || pid <= 0 || pid > 2147483647 || (!acquired.pids.has(pid) && acquired.pids.size >= 5)) acquired.invalid = true;
+      else acquired.pids.add(pid);
+    };
+    try {
+      phase = "revocation.holder-acquire"; lock = await f.db.pool.connect();
+      phase = "revocation.holder-begin"; await lock.query("BEGIN");
+      phase = "revocation.holder-context";
+      await lock.query("SELECT set_config('app.org_id',$1,true),set_config('app.user_id',$2,true)", [f.org, f.ownSession.user.id]);
+      phase = "revocation.holder-lock"; await lock.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [f.org]);
+      f.db.pool.on("acquire", observeAcquire); listenerAttached = true;
+      phase = "revocation.request-start";
+      pendingOutcome = f.api(second.path + "/report", { body: secondBody, expect: 404 }).then(
+        value => { pendingState.settled = true; return pendingState.outcome = { ok: true, value }; },
+        error => { pendingState.settled = true; return pendingState.outcome = { ok: false, error }; },
+      );
+      phase = "revocation.wait-exact"; await waitForExactCheckInQueue(lock, pendingState, acquired);
+      phase = "revocation.update";
+      await lock.query("UPDATE os_participant_links SET revoked_at=clock_timestamp(),revision=revision+1 WHERE user_id=$1 AND org_id=$2 AND intake_id=$3", [f.ownSession.user.id, f.org, second.candidate.intakeId]);
+      phase = "revocation.commit"; await lock.query("COMMIT"); committed = true;
+    } catch (error) { remember(error, phase); }
+    finally {
+      if (listenerAttached) {
+        try { f.db.pool.off("acquire", observeAcquire); }
+        catch (error) { remember(error, "cleanup.listener"); }
+      }
+      if (lock) {
+        let discard = false;
+        if (!committed) {
+          try { await lock.query("ROLLBACK"); }
+          catch (error) { discard = true; remember(error, "cleanup.rollback"); }
+        }
+        try { lock.release(discard); }
+        catch (error) { remember(error, "cleanup.holder-release"); }
+      }
+      if (pendingOutcome) {
+        try {
+          const outcome = await pendingOutcome;
+          if (!outcome.ok) remember(outcome.error, committed ? "revocation.response" : "cleanup.pending-settle");
+        } catch (error) { remember(error, "cleanup.pending-settle"); }
+      }
+    }
+    if (primaryError !== null) throw primaryError;
+    phase = "revocation.final-count"; assert.equal(await rawCount(f), 1);
+  } catch (error) {
+    t.diagnostic(JSON.stringify({ kind: "checkin-pg10-failed-phase", phase: primaryPhase ?? phase }));
+    throw error;
+  }
 });
 
 pgCase("checkin PG11: genuine current SQL windows and separately labeled fixed-clock operator witness", async f => {
