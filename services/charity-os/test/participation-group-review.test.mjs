@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { planGroupReview, prepareGroupReview } from "../lib/participation-group-review.mjs";
 import { readParticipationDomainClock } from "../lib/participation.mjs";
-import { groupHash, projectGroupHistory, validateGroupHistory } from "../lib/participation-group-model.mjs";
+import { GROUP_LIMITS, groupHash, projectGroupHistory, validateGroupHistory } from "../lib/participation-group-model.mjs";
 import { verifyGroupPreview } from "../lib/participation-group-preview.mjs";
 
 // Detached authorized-context fixtures, not real SQL/session/allocation proof.
@@ -40,6 +40,27 @@ async function fixture(count = 3, capacity = 2, admitted = false) {
 }
 const admission = (selection = { mode: "all", items: [] }, reasons = []) => ({ version: 1, groupRevision: 1, selection, reasons });
 const review = (f, input = admission(), operation = "admit") => prepareGroupReview({ c: f.c, org: "org", context: f.context, operation, input, secret });
+
+function cancellationDecision(participationId, groupRevision) {
+  return { operation: "cancel", acceptedAtExact: at, result: {
+    groupId: "group", groupRevision, state: "admitted", selected: [{ participationId,
+      resultRevision: 4, state: "cancelled", notificationQueued: false, auditRetained: true }],
+    reasonSha256: SHA, auditRetained: true,
+  } };
+}
+async function cancellationBoundary(cancelledCount) {
+  const f = await fixture(GROUP_LIMITS.members, GROUP_LIMITS.members, true);
+  const history = structuredClone(f.context.group.history);
+  for (let i = 0; i < cancelledCount; i++) {
+    history.decisions.push(cancellationDecision(f.ids[i], i + 3));
+    f.context.roster[i].state = "cancelled";
+  }
+  f.context.group.history = validateGroupHistory(history);
+  f.context.group.revision = history.decisions.length;
+  f.context.group.lastCommandHash = String(history.decisions.length).padStart(64, "0");
+  f.context.inventory = null;
+  return f;
+}
 
 test("three selected at capacity two yields no token and admits nobody", async () => {
   const f = await fixture(), value = await review(f);
@@ -142,4 +163,31 @@ test("NEW commit planning needs no signing key and never renews a review window"
   assert.equal(result.publicReview.ready, true); assert.equal(result.publicReview.previewToken, null);
   assert.equal(result.publicReview.expiresAtExact, null); assert.equal(Object.hasOwn(result.bindings, "issuedAtExact"), false);
   assert.equal(Object.hasOwn(result.bindings, "expiresAtExact"), false); assert.deepEqual(f.queries, []);
+});
+
+test("revision eleven can review the last distinct cancellation and form legal receipt twelve", async () => {
+  const f = await cancellationBoundary(9), last = f.ids.at(-1);
+  assert.equal(f.context.group.revision, GROUP_LIMITS.receipts - 1);
+  const input = { version: 1, groupRevision: 11, selected: [last], reason: "Last admitted person requested cancellation" };
+  const value = await review(f, input, "cancel");
+  assert.equal(value.publicReview.ready, true); assert.equal(value.payload.groupRevision, 11);
+  assert.deepEqual(value.steps, [{ participationId: last, action: "cancel", reason: input.reason }]);
+  assert.equal(f.queries.length, 1); assert(f.queries[0].sql.startsWith("WITH moment AS MATERIALIZED"));
+  assert.equal(f.context.roster.find(p => p.id === last).state, "confirmed");
+  const next = validateGroupHistory({ ...f.context.group.history, decisions: [
+    ...f.context.group.history.decisions, cancellationDecision(last, GROUP_LIMITS.receipts),
+  ] });
+  assert.equal(next.decisions.length, GROUP_LIMITS.receipts);
+  assert.equal(new Set(next.decisions.slice(2).flatMap(d => d.result.selected.map(p => p.participationId))).size, GROUP_LIMITS.members);
+});
+
+test("exhausted revision twelve is stale for fresh preview and commit planning before any clock", async () => {
+  const f = await cancellationBoundary(10), before = JSON.stringify(f.context);
+  assert.equal(f.context.group.history.decisions.length, GROUP_LIMITS.receipts);
+  assert(f.context.roster.every(p => p.state === "cancelled"));
+  const input = { version: 1, groupRevision: GROUP_LIMITS.receipts, selected: [f.ids[0]], reason: "A fresh command after exhaustion" };
+  const stale = e => e.status === 409 && e.code === "participation_group_stale";
+  await assert.rejects(review(f, input, "cancel"), stale);
+  assert.throws(() => planGroupReview({ org: "org", context: f.context, operation: "cancel", input }), stale);
+  assert.deepEqual(f.queries, []); assert.equal(JSON.stringify(f.context), before);
 });

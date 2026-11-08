@@ -123,6 +123,11 @@ export async function participationGroupWriteRoutes({ c, org, session, tail, met
     return reply(groupCommandDTO({ receipt, context: current, replayed: false }));
   }
 
+  // Original wire grammar has already passed before retained-intent lookup.
+  // A new command against a decided group is a conflict, not malformed input.
+  if (operation === 'admit'
+    ? group.state !== 'draft' || group.revision !== 1
+    : group.state !== 'admitted') stale();
   const body = validateGroupCommit(input, { operation,
     rosterIds: operation === 'admit' ? group.rosterIds : admittedIds(context) });
   const reviewInput = operation === 'admit'

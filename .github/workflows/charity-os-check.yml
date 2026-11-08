@@ -66,6 +66,8 @@ jobs:
           GRANT CONNECT ON DATABASE charitology_os_ci TO os_test_app;
           CREATE ROLE os_checkin_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-checkin-owner-only-password';
           GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_checkin_ci_owner;
+          CREATE ROLE os_group_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-group-owner-only-password';
+          GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_group_ci_owner;
           SQL
       - name: Exercise real Postgres, Better Auth and tenant workflows
         # The fixture migrates a random temporary schema with the owner, grants
@@ -77,3 +79,7 @@ jobs:
         env:
           CHECKIN_TEST_PROFILE: github-pg17-v1
         run: node --test --test-concurrency=1 test-db/participant-check-in.ci17.mjs
+      - name: Exercise atomic group bookings using the closed PG17 CI profile
+        env:
+          GROUP_TEST_PROFILE: github-group-pg17-v1
+        run: node --test --test-concurrency=1 test-db/participation-groups.ci17.mjs

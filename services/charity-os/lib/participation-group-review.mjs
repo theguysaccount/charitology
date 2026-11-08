@@ -1,7 +1,7 @@
 /** Internal review over a freshly authorized group context. A token holds no
  * place; commits must reload the context and repeat the actual child commands. */
 import { fail } from "./security.mjs";
-import { groupHash, validateGroupPreviewAdmission, validateGroupPreviewCancellation } from "./participation-group-model.mjs";
+import { GROUP_LIMITS, groupHash, validateGroupPreviewAdmission, validateGroupPreviewCancellation } from "./participation-group-model.mjs";
 import { planGroupAllocation } from "./participation-group-allocation.mjs";
 import { effectiveRequestedInterval } from "./participation-intervals.mjs";
 import { readParticipationDomainClock, requireParticipationPromotionReason } from "./participation.mjs";
@@ -23,6 +23,10 @@ export function planGroupReview({ org, context, operation, input }) {
   const group = context.group;
   if (!group || context.originMode !== "live" || !["admit", "cancel"].includes(operation) ||
       group.orgId !== org || context.source?.id !== group.liveTargetId) stale();
+  // A complete twelve-receipt history has exhausted every admitted member.
+  // Classify this current lifecycle conflict before the preview's input bound.
+  if (operation === "cancel" &&
+      (group.state !== "admitted" || group.revision >= GROUP_LIMITS.receipts)) stale();
   const admittedIds = group.history.decisions.find(x => x.operation === "admit")?.result.selected.map(x => x.participationId) ?? [];
   const body = operation === "admit"
     ? validateGroupPreviewAdmission(input, group.rosterIds)

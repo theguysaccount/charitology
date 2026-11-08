@@ -116,6 +116,24 @@ test('same retained key with changed valid body, action or fully visible group r
   await assert.rejects(f.invoke('admit',{input}),statusCode(409,'participation_group_intent'));noNewDomainWork(f);
  }
 });
+test('a fresh admission intent on an admitted or closed group is a state conflict without writes',async()=>{
+ for(const latest of ['admit','close']){
+  const f=await replayFixture({latest}),input=clone(f.bodies.admit);
+  input.idempotencyKey='fresh_admission_command_002';
+  const before=domainSnapshot(f);
+  await assert.rejects(f.invoke('admit',{input}),statusCode(409,'participation_group_stale'));
+  assert.equal(domainSnapshot(f),before);
+  assert(!f.calls.some(({sql})=>/^(?:INSERT|UPDATE|DELETE)\b/.test(sql)));
+ }
+});
+test('a fresh cancellation intent on an undecided group is a state conflict without writes',async()=>{
+ const f=await replayFixture({latest:'create'}),input=clone(f.bodies.cancel);
+ input.idempotencyKey='fresh_cancellation_command_002';
+ const before=domainSnapshot(f);
+ await assert.rejects(f.invoke('cancel',{input}),statusCode(409,'participation_group_stale'));
+ assert.equal(domainSnapshot(f),before);
+ assert(!f.calls.some(({sql})=>/^(?:INSERT|UPDATE|DELETE)\b/.test(sql)));
+});
 for(const [label,change,status,expected]of[
  ['revoked SQL session',f=>{f.missingSession=true;},401,'session'],
  ['missing membership',f=>f.missingMember(true),403,'membership'],
