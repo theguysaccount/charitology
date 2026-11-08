@@ -17,6 +17,10 @@ import { sourcePin } from "../lib/incubator-native.mjs";
 import { modulePermissions } from "../lib/modules.mjs";
 import { withIntervalFixture } from "./fixtures/participation-intervals.mjs";
 import { buildLearningFixture } from "../test/learning-fixtures.mjs";
+import { createHandler } from "../lib/handler.mjs";
+import { canRetainIncubatorExportAudit } from "../lib/workspace-backup.mjs";
+import { canRetainParticipationSafetyAudit } from "../lib/participation-capacity.mjs";
+import { logicalBackupBytes } from "../lib/database.mjs";
 
 const options = {
   skip: configured
@@ -47,16 +51,413 @@ const preview = async (f, record, options = {}) => {
   );
 };
 
-test('Incubator PG: a fresh reviewed preview renews only its owned near-expiry inspection, while its own expiry still refuses',options,()=>withIncubatorFixture(async f=>{
-  const program=await f.program(),inspection=await f.inspect(program);
-  await f.tx(c=>c.query("UPDATE os_previews SET expires_at=clock_timestamp()+interval '1 minute' WHERE org_id=$1 AND id=$2",[f.org,inspection.inspectionId]));
-  const reviewed=await f.post('incubator-bridge/copy/preview',{mode:'copy',inspectionId:inspection.inspectionId,mapping});
-  const proof=await f.tx(async c=>(await c.query("SELECT i.expires_at=p.expires_at AS equal,extract(epoch FROM (p.expires_at-clock_timestamp())) AS seconds FROM os_previews i JOIN os_previews p ON p.org_id=i.org_id WHERE i.org_id=$1 AND i.id=$2 AND p.id=$3",[f.org,inspection.inspectionId,reviewed.previewId])).rows[0]);
-  assert.equal(proof.equal,true);assert(Number(proof.seconds)>590&&Number(proof.seconds)<=600);
-  await f.tx(c=>c.query("UPDATE os_previews SET expires_at=clock_timestamp()-interval '1 second' WHERE org_id=$1 AND id=$2",[f.org,reviewed.previewId]));
-  assert.equal((await f.post('incubator-bridge/commit',f.intent(reviewed),{expect:409})).code,'incubator_preview');
-  assert.equal((await counts(f)).history,'0');
-}));
+test(
+  "Incubator PG: recovered-source and current-destination scopes are independently required for adoption",
+  options,
+  () =>
+    withIncubatorFixture(async (f) => {
+      const old = await f.program();
+      await f.copy(old);
+      const backup = await f.call("export");
+      const restore = await f.post(
+        "import/preview",
+        { backup },
+        { organization: f.destination },
+      );
+      await f.post(
+        "import/commit",
+        { previewId: restore.previewId },
+        { organization: f.destination },
+      );
+      const recovered = (
+        await f.call("incubator-bridge/recovered", {
+          organization: f.destination,
+        })
+      ).bindings[0];
+      const destination = await f.program({ organization: f.destination }),
+        user = "fictional-admin";
+      const setScope = (ids) =>
+        f.tx(
+          (c) =>
+            c.query(
+              "UPDATE os_members SET program_ids=$3::jsonb,revision=revision+1 WHERE org_id=$1 AND user_id=$2",
+              [f.destination, user, JSON.stringify(ids)],
+            ),
+          { organization: f.destination },
+        );
+      const state = () =>
+        f.tx(
+          async (c) =>
+            (
+              await c.query(
+                "SELECT (SELECT count(*) FROM os_records WHERE org_id=$1) AS records,(SELECT count(*) FROM os_events WHERE org_id=$1) AS audits,(SELECT count(*) FROM os_incubator_history WHERE org_id=$1) AS history,(SELECT count(*) FROM os_previews WHERE org_id=$1 AND committed_at IS NULL) AS pending",
+                [f.destination],
+              )
+            ).rows[0],
+          { organization: f.destination },
+        );
+      const input = {
+        recoveredHead: recovered.head,
+        source: recovered.source,
+        program: f.programPin(destination),
+        mapping,
+      };
+      await setScope([destination.id]);
+      const before = await state();
+      assert.deepEqual(
+        (
+          await f.call("incubator-bridge/recovered", {
+            organization: f.destination,
+            user,
+          })
+        ).bindings,
+        [],
+      );
+      await f.call(`incubator-bridge/recovered/${recovered.head.sha256}`, {
+        organization: f.destination,
+        user,
+        expect: 404,
+      });
+      await f.post("incubator-bridge/adopt/preview", input, {
+        organization: f.destination,
+        user,
+        expect: 404,
+      });
+      assert.deepEqual(await state(), before);
+      await setScope([old.id, destination.id]);
+      const allowed = await f.post("incubator-bridge/adopt/preview", input, {
+        organization: f.destination,
+        user,
+      });
+      assert.equal(allowed.plan.source.sha256, input.source.sha256);
+      await setScope([destination.id]);
+      const beforeCommit = await state();
+      await f.post("incubator-bridge/commit", f.intent(allowed), {
+        organization: f.destination,
+        user,
+        expect: 409,
+      });
+      assert.deepEqual(await state(), beforeCommit);
+      await setScope([old.id, destination.id]);
+      const reviewed = await f.post("incubator-bridge/adopt/preview", input, {
+        organization: f.destination,
+        user,
+      });
+      assert.equal(
+        (
+          await f.post("incubator-bridge/commit", f.intent(reviewed), {
+            organization: f.destination,
+            user,
+          })
+        ).kind,
+        "created",
+      );
+    }),
+);
+
+test(
+  "Incubator PG: an ordinary target moved out of current scope exposes no current revision on history or accepted Retry",
+  options,
+  () =>
+    withIncubatorFixture(async (f) => {
+      const a = await f.program(),
+        b = await f.program(),
+        user = "fictional-admin";
+      await f.tx((c) =>
+        c.query(
+          "UPDATE os_members SET program_ids=$3::jsonb,revision=revision+1 WHERE org_id=$1 AND user_id=$2",
+          [f.org, user, JSON.stringify([a.id])],
+        ),
+      );
+      const copied = await f.copy(a, { user }),
+        milestone = copied.result.result.created[1].id;
+      const parent = (
+        await f.post("modules/projects/records", {
+          data: {
+            title: "Ordinary destination project",
+            kind: "project",
+            programId: b.id,
+          },
+        })
+      ).record;
+      const original = (await f.call(`modules/projects/records/${milestone}`))
+        .record;
+      await f.call(`modules/projects/records/${milestone}`, {
+        method: "PATCH",
+        body: {
+          revision: original.revision,
+          data: { ...original.data, programId: b.id, projectId: parent.id },
+        },
+      });
+      await f.call(`modules/projects/records/${milestone}`, {
+        user,
+        expect: 404,
+      });
+      const before = await counts(f),
+        detail = await f.call(
+          `incubator-bridge/bindings/${copied.result.result.head.bindingId}`,
+          { user },
+        );
+      const hidden = detail.binding.currentDisposition.find(
+        (value) => value.id === milestone,
+      );
+      assert.deepEqual(hidden, {
+        id: milestone,
+        moduleId: "projects",
+        disposition: "unavailable",
+      });
+      const list = (await f.call("incubator-bridge/bindings", { user }))
+        .bindings[0];
+      assert.deepEqual(
+        list.currentDisposition.find((value) => value.id === milestone),
+        hidden,
+      );
+      const retried = await f.post("incubator-bridge/commit", copied.input, {
+        user,
+      });
+      assert.equal(retried.kind, "already-committed");
+      assert.deepEqual(retried.result, copied.result.result);
+      assert.deepEqual(
+        retried.currentDisposition.find((value) => value.id === milestone),
+        hidden,
+      );
+      assert.deepEqual(await counts(f), before);
+      const global = await f.call(
+        `incubator-bridge/bindings/${copied.result.result.head.bindingId}`,
+      );
+      assert.equal(
+        global.binding.currentDisposition.find(
+          (value) => value.id === milestone,
+        ).revision,
+        2,
+      );
+      await f.call(`modules/projects/records/${milestone}`, {
+        method: "DELETE",
+        body: { revision: 2 },
+      });
+      const trash = await f.call(
+        `incubator-bridge/bindings/${copied.result.result.head.bindingId}`,
+        { user },
+      );
+      assert.deepEqual(
+        trash.binding.currentDisposition.find(
+          (value) => value.id === milestone,
+        ),
+        hidden,
+      );
+    }),
+);
+
+test(
+  "Incubator PG: optional export journal preserves a near-wire-cap exit under a closed SQL exporter witness, with real audit/headroom controls",
+  options,
+  async (t) =>
+    withIncubatorFixture(async (f) => {
+      const program = await f.program();
+      await f.inspect(program);
+      await f.tx((c) =>
+        c.query(
+          "INSERT INTO os_comments(org_id,id,record_id,actor_id,body) VALUES($1,'fictional-export-comment',$2,$3,'Short actual fictional comment')",
+          [f.org, program.id, f.author],
+        ),
+      );
+      let padding = "",
+        client = null,
+        originalQuery = null;
+      // Only one closed SELECT is projected. The same actual pg client and real
+      // database.tx retain lock/classification/rollback/final-capacity behavior.
+      // This is deliberately NOT a naturally authored/stored 64 MiB comment or a
+      // claim that a natural <60 MiB Incubator-only database reaches this wire cap.
+      const projected = {
+        ...f.db,
+        async tx(user, org, fn, opts) {
+          try {
+            return await f.db.tx(
+              user,
+              org,
+              async (c) => {
+                assert.equal(client, null);
+                client = c;
+                originalQuery = c.query;
+                c.query = function (...args) {
+                  if (args[0] === "SELECT * FROM os_comments WHERE org_id=$1") {
+                    assert.equal(args[1][0], f.org);
+                    return Reflect.apply(originalQuery, c, args).then(
+                      (result) => ({
+                        ...result,
+                        rows: result.rows.map((row) => ({
+                          ...row,
+                          body: padding,
+                        })),
+                      }),
+                    );
+                  }
+                  return Reflect.apply(originalQuery, c, args);
+                };
+                return fn(c);
+              },
+              opts,
+            );
+          } finally {
+            if (client) {
+              client.query = originalQuery;
+              client = null;
+              originalQuery = null;
+            }
+          }
+        },
+      };
+      const settings = {
+        origin: "https://os.example.invalid",
+        secret: "fictional-export-witness-secret-over-thirty-two-characters",
+        production: false,
+        encryptionKey: "fictional-unused-key",
+      };
+      const handler = createHandler({
+        settings,
+        db: projected,
+        auth: { api: { getSession: async () => f.sessions.get(f.author) } },
+        send: async () => {
+          throw Error("No mail/provider is allowed.");
+        },
+      });
+      const request = () =>
+        handler(new Request(settings.origin + `/api/orgs/${f.org}/export`));
+      const auditCount = () =>
+        f.tx(async (c) =>
+          Number(
+            (
+              await c.query(
+                "SELECT count(*) AS count FROM os_events WHERE org_id=$1 AND action='backup.exported'",
+                [f.org],
+              )
+            ).rows[0].count,
+          ),
+        );
+      const observations = [];
+      for (const mode of ["pending", "durable"]) {
+        if (mode === "durable") await f.copy(program);
+        const beforeHeadroom = await auditCount();
+        padding = "";
+        let response = await request();
+        assert.equal(response.status, 200);
+        await response.arrayBuffer();
+        const before = await auditCount();
+        assert.equal(
+          before,
+          beforeHeadroom + 1,
+          "A sufficient-headroom export retains its actual optional PG audit.",
+        );
+        const base = await projected.tx(
+            f.author,
+            f.org,
+            (c) => assembleWorkspaceBackup(c, f.org),
+            { readOnly: true },
+          ),
+          cap = 64 * 1024 * 1024;
+        const naturalUsage = await f.tx((c) => logicalBackupBytes(c, f.org));
+        assert(naturalUsage < 60 * 1024 * 1024);
+        padding = "x".repeat(cap - 1 - Buffer.byteLength(JSON.stringify(base)));
+        const event = {
+          org_id: f.org,
+          actor_id: f.author,
+          action: "backup.exported",
+          record_id: null,
+          module_id: null,
+          detail: { count: base.records.length, checksum: base.checksum },
+        };
+        const decisions = await projected.tx(
+          f.author,
+          f.org,
+          async (c) => ({
+            oldParticipationOnlyGate: await canRetainParticipationSafetyAudit(
+              c,
+              f.org,
+              event,
+            ),
+            incubatorGate: await canRetainIncubatorExportAudit(c, f.org, event),
+            wireBytes: Buffer.byteLength(
+              JSON.stringify(await assembleWorkspaceBackup(c, f.org)),
+            ),
+          }),
+          { readOnly: true },
+        );
+        assert.equal(decisions.oldParticipationOnlyGate, true);
+        assert.equal(decisions.incubatorGate, false);
+        assert.equal(decisions.wireBytes, cap - 1);
+        response = await request();
+        assert.equal(response.status, 200);
+        const output = await response.arrayBuffer();
+        assert.equal(output.byteLength, cap - 1);
+        assert.equal(await auditCount(), before);
+        observations.push({
+          mode,
+          naturalDatabaseLogicalBytes: naturalUsage,
+          closedExporterWitness: true,
+          naturallyAuthoredNearCapClaim: false,
+          wireBytes: output.byteLength,
+          optionalJournalOmitted: true,
+          oldGateWouldPermit: true,
+        });
+        padding = "";
+      }
+      t.diagnostic(
+        JSON.stringify({
+          fictionalOnly: true,
+          witness:
+            "actual handler/pg client and final hard checks; only comment export body projected",
+          observations,
+        }),
+      );
+    }),
+);
+
+test(
+  "Incubator PG: a fresh reviewed preview renews only its owned near-expiry inspection, while its own expiry still refuses",
+  options,
+  () =>
+    withIncubatorFixture(async (f) => {
+      const program = await f.program(),
+        inspection = await f.inspect(program);
+      await f.tx((c) =>
+        c.query(
+          "UPDATE os_previews SET expires_at=clock_timestamp()+interval '1 minute' WHERE org_id=$1 AND id=$2",
+          [f.org, inspection.inspectionId],
+        ),
+      );
+      const reviewed = await f.post("incubator-bridge/copy/preview", {
+        mode: "copy",
+        inspectionId: inspection.inspectionId,
+        mapping,
+      });
+      const proof = await f.tx(
+        async (c) =>
+          (
+            await c.query(
+              "SELECT i.expires_at=p.expires_at AS equal,extract(epoch FROM (p.expires_at-clock_timestamp())) AS seconds FROM os_previews i JOIN os_previews p ON p.org_id=i.org_id WHERE i.org_id=$1 AND i.id=$2 AND p.id=$3",
+              [f.org, inspection.inspectionId, reviewed.previewId],
+            )
+          ).rows[0],
+      );
+      assert.equal(proof.equal, true);
+      assert(Number(proof.seconds) > 590 && Number(proof.seconds) <= 600);
+      await f.tx((c) =>
+        c.query(
+          "UPDATE os_previews SET expires_at=clock_timestamp()-interval '1 second' WHERE org_id=$1 AND id=$2",
+          [f.org, reviewed.previewId],
+        ),
+      );
+      assert.equal(
+        (
+          await f.post("incubator-bridge/commit", f.intent(reviewed), {
+            expect: 409,
+          })
+        ).code,
+        "incubator_preview",
+      );
+      assert.equal((await counts(f)).history, "0");
+    }),
+);
 
 test(
   "Incubator PG: actual whole native inspection, two ordinary drafts, privacy and rollback after complete graph writes",
@@ -75,6 +476,16 @@ test(
       });
       const inspected = await f.inspect(program, { native });
       assert.equal((await counts(f)).history, "0");
+      const pendingCapacity = await f.tx((c) =>
+        checkWorkspaceExportCapacity(c, f.org),
+      );
+      assert(pendingCapacity.operational);
+      assert.equal(
+        pendingCapacity.restore.categories.os_incubator_history.count,
+        0,
+        "An actual pending inspection triggers shared inactive projection without inventing durable history or an unwritten target pair.",
+      );
+      assert.equal(pendingCapacity.restore.categories.os_records.count, 1);
       assert.equal(
         await f.tx(
           async (c) =>

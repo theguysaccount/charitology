@@ -1,4 +1,5 @@
 import { fail } from "./security.mjs";
+import { inScope } from "./access.mjs";
 import { logicalBackupBytes } from "./database.mjs";
 import {
   INCUBATOR_LIMITS as L,
@@ -368,21 +369,28 @@ export async function currentIncubatorDisposition(c, org, event, member) {
         [org, candidate.id],
       )
     ).rows[0];
-    const disposition =
-      !row || row.module_id !== "projects"
-        ? "unavailable"
-        : row.deleted_at
-          ? "trash"
-          : row.revision === 1 &&
-              H("candidate-data", row.data) ===
-                H("candidate-data", candidate.data)
-            ? "original"
-            : "modified";
+    const visible = Boolean(
+      row &&
+        row.module_id === "projects" &&
+        inScope(
+          { id: candidate.id, moduleId: row.module_id, data: row.data },
+          member,
+        ),
+    );
+    const disposition = !visible
+      ? "unavailable"
+      : row.deleted_at
+        ? "trash"
+        : row.revision === 1 &&
+            H("candidate-data", row.data) ===
+              H("candidate-data", candidate.data)
+          ? "original"
+          : "modified";
     values.push({
       id: candidate.id,
       moduleId: "projects",
       disposition,
-      ...(row?.module_id === "projects" ? { revision: row.revision } : {}),
+      ...(visible ? { revision: row.revision } : {}),
     });
   }
   return values;

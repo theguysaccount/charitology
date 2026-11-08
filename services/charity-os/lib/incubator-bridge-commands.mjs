@@ -366,8 +366,21 @@ async function storePlan(c, { org, member, session, plan }) {
     // A fresh explicit review gets its stated ten minutes. Renew only its
     // exact still-current owned inspection, using the new SQL expiry itself;
     // neither host-clock precision nor another preview's expiry is authority.
-    const renewed=await c.query("UPDATE os_previews i SET expires_at=p.expires_at FROM os_previews p WHERE i.org_id=$1 AND p.org_id=i.org_id AND i.id=$2 AND p.id=$3 AND i.actor_id=$4 AND i.kind=$5 AND p.kind=$6 AND i.committed_at IS NULL AND p.committed_at IS NULL AND i.expires_at>clock_timestamp() AND i.payload->>'sessionSha256'=$7 AND i.payload->>'membershipSha256'=$8 AND i.payload#>>'{source,sha256}'=$9 RETURNING i.id",[org,plan.inspectionId,previewId,member.userId,INCUBATOR_INSPECTION,INCUBATOR_PREVIEW,plan.sessionSha256,member.membershipSha256,plan.source.sha256]);
-    if (renewed.rowCount!==1) incubatorStale();
+    const renewed = await c.query(
+      "UPDATE os_previews i SET expires_at=p.expires_at FROM os_previews p WHERE i.org_id=$1 AND p.org_id=i.org_id AND i.id=$2 AND p.id=$3 AND i.actor_id=$4 AND i.kind=$5 AND p.kind=$6 AND i.committed_at IS NULL AND p.committed_at IS NULL AND i.expires_at>clock_timestamp() AND i.payload->>'sessionSha256'=$7 AND i.payload->>'membershipSha256'=$8 AND i.payload#>>'{source,sha256}'=$9 RETURNING i.id",
+      [
+        org,
+        plan.inspectionId,
+        previewId,
+        member.userId,
+        INCUBATOR_INSPECTION,
+        INCUBATOR_PREVIEW,
+        plan.sessionSha256,
+        member.membershipSha256,
+        plan.source.sha256,
+      ],
+    );
+    if (renewed.rowCount !== 1) incubatorStale();
   }
   await combinedCapacity(c, org);
   return { ...stored, plan: publicPlan(plan) };
@@ -450,6 +463,7 @@ export async function previewIncubatorAdoption(
   const binding = incubatorBinding(inventory, org, input.recoveredHead, {
     recovered: true,
   });
+  requireIncubatorScope(member, binding.programId);
   if (!same(binding.source, input.source)) incubatorStale();
   const source = incubatorSource(inventory, input.source),
     programRecord = await currentIncubatorProgram(
@@ -563,6 +577,7 @@ export async function commitIncubatorCopy(c, { org, member, session, input }) {
     const recovered = incubatorBinding(inventory, org, plan.recoveredHead, {
       recovered: true,
     });
+    requireIncubatorScope(member, recovered.programId);
     if (!same(recovered.source, sourcePin(plan.source))) incubatorStale();
   } else {
     const inspection = await checkedInspection(c, {

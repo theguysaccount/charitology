@@ -195,6 +195,22 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
         "This workspace reached its60 MiB record, history and file export budget. Export your records before continuing in a new workspace.",
       );
   }
+  if (action === "backup.exported") {
+    const { canRetainIncubatorExportAudit } = await import(
+      "./workspace-backup.mjs"
+    );
+    if (
+      !(await canRetainIncubatorExportAudit(c, org, {
+        org_id: org,
+        actor_id: user,
+        action,
+        record_id: record?.id || null,
+        module_id: record?.moduleId || null,
+        detail,
+      }))
+    )
+      return false;
+  }
   if (safetyActions.has(action) || action === "backup.exported") {
     const { canRetainParticipationSafetyAudit } = await import(
       "./participation-capacity.mjs"
