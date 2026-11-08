@@ -10,6 +10,7 @@ import {fail} from './security.mjs';
 import {checkLearningRestoreCapacity,measureLearningOperationalCapacity} from './learning-capacity.mjs';
 import {exportIncubatorBridge} from './incubator-bridge-backup.mjs';
 import {exportParticipantCheckins} from './participant-check-in-backup.mjs';
+import {exportParticipationGroups} from './participation-group-recovery.mjs';
 
 const workspaceFeatures=async(c,org)=>(await c.query("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins",[org])).rows[0];
 
@@ -28,13 +29,15 @@ export async function assembleWorkspaceBackup(c,org,{organization,records}={}){
   const learningBridge=await exportLearningBridge(c,org,{records,trash,legacyReports:reports,sourceOrgId:org});
   const incubatorBridge=await exportIncubatorBridge(c,org,{records,trash});
   const participantCheckins=await exportParticipantCheckins(c,org);
+  const participationGroups=await exportParticipationGroups(c,org);
   return makeBackup(organization,records,{comments,events,reports,files,trash,trashFiles,integrations,
     intake:await exportIntake(c,org),participation:await exportParticipation(c,org),
     delivery:await exportDelivery(c,org),taskRecurrence:await exportTaskRecurrence(c,org),
     directoryResources:await exportDirectoryResources(c,org,{records,trash}),
     ...(learningBridge===undefined?{}:{learningBridge}),
     ...(incubatorBridge===undefined?{}:{incubatorBridge}),
-    ...(participantCheckins===undefined?{}:{participantCheckins})});
+    ...(participantCheckins===undefined?{}:{participantCheckins}),
+    ...(participationGroups===undefined?{}:{participationGroups})});
 }
 export async function checkWorkspaceExportCapacity(c,org){
   const usage=await logicalBackupBytes(c,org);

@@ -14,6 +14,7 @@ import { validateBackup, makeBackup } from "../lib/backup.mjs";
 import { createHandler } from "../lib/handler.mjs";
 import { csrf } from "../lib/security.mjs";
 import { saveRecord } from "../lib/database.mjs";
+import { emptyParticipationGroupsQuery } from "./fixtures/empty-participation-groups.mjs";
 
 const clone = structuredClone,
   err = (code) => (e) => e.code === code;
@@ -163,6 +164,8 @@ function fixture(module = "events") {
   const c = {
     async query(sql, p = []) {
       state.queries.push(sql);
+      const emptyGroups = emptyParticipationGroupsQuery(sql, p);
+      if (emptyGroups !== undefined) return emptyGroups;
       // This attendance fixture retains no participant self-report sidecar.
       if (sql === "SELECT t.* FROM os_participation_checkins t WHERE org_id=$1 ORDER BY id") return result([]);
       if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return result([{ count: 0 }]);

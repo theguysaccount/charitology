@@ -2,10 +2,15 @@
 // Synthetic example.invalid data only; no database/provider/network mutations.
 import test from "node:test";
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { createHandler } from "../lib/handler.mjs";
 import { makeBackup, validateBackup } from "../lib/backup.mjs";
-import { csrf, hash } from "../lib/security.mjs";
+import { csrf, hash, stable } from "../lib/security.mjs";
 import { makeIncubatorBackup } from "../lib/incubator-bridge-model.mjs";
+import { GROUP_METHOD } from "../lib/participation-group-model.mjs";
+import { makeParticipationGroupsBackup, PARTICIPATION_GROUP_BACKUP_DOMAIN, PARTICIPATION_GROUP_BACKUP_FORMAT } from "../lib/participation-group-backup.mjs";
+import { exportParticipationGroups, restoreParticipationGroups } from "../lib/participation-group-recovery.mjs";
+import { measureLearningRestoreCapacity } from "../lib/learning-capacity.mjs";
 import { restoreMeasurementFixture } from "./restore-capacity-fixture.mjs";
 const settings = {
   origin: "https://os.example.invalid",
@@ -103,6 +108,8 @@ function fixture({
   const state = {
     records: new Map(),
     previews: new Map(),
+    groups: new Map(),
+    groupReceipts: new Map(),
     events: [],
     queryCount: 0,
     transactions: 0,
@@ -115,6 +122,39 @@ function fixture({
       // This legacy migration fixture has no participant self-report history.
       if (sql === "SELECT t.* FROM os_participation_checkins t WHERE org_id=$1 ORDER BY id") return { rows: [] };
       if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return { rows: [{ count: 0 }] };
+      // Explicit group sidecars, empty in every legacy case. These statements
+      // model only the actual store's closed count/read/recovered-insert surface.
+      if (sql === "SELECT count(*)::int AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0)::text AS bytes FROM os_participation_groups t WHERE org_id=$1")
+        return { rows: [{ count: state.groups.size, bytes: String([...state.groups.values()].reduce((n, row) => n + Buffer.byteLength(JSON.stringify(row)), 0)) }] };
+      if (sql === "SELECT count(*)::int AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0)::text AS bytes FROM os_participation_group_receipts t WHERE org_id=$1")
+        return { rows: [{ count: state.groupReceipts.size, bytes: String([...state.groupReceipts.values()].reduce((n, row) => n + Buffer.byteLength(JSON.stringify(row)), 0)) }] };
+      if (sql === "SELECT group_id,count(*)::int AS count FROM os_participation_group_receipts WHERE org_id=$1 GROUP BY group_id ORDER BY group_id LIMIT 101") {
+        const counts = new Map();
+        for (const row of state.groupReceipts.values()) counts.set(row.group_id, (counts.get(row.group_id) || 0) + 1);
+        return { rows: [...counts].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([group_id, count]) => ({ group_id, count })) };
+      }
+      const groupColumns = "org_id,id,origin_mode,module_id,live_target_id,roster_ids,coordinator_intake_id,state,revision,last_command_hash,history,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_at_exact,to_char(updated_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS updated_at_exact";
+      const projectedGroup = row => {
+        const { created_at, updated_at, ...rest } = row;
+        return { ...rest, created_at_exact: created_at, updated_at_exact: updated_at };
+      };
+      if (sql === "SELECT " + groupColumns + " FROM os_participation_groups WHERE org_id=$1 AND id=$2")
+        return { rows: state.groups.has(args[1]) ? [projectedGroup(state.groups.get(args[1]))] : [] };
+      if (sql === "SELECT " + groupColumns + " FROM os_participation_groups WHERE org_id=$1 ORDER BY id LIMIT 101")
+        return { rows: [...state.groups.values()].sort((a,b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0).map(projectedGroup) };
+      if (sql === "SELECT org_id,command_hash,group_id,receipt FROM os_participation_group_receipts WHERE org_id=$1 AND group_id=$2 ORDER BY command_hash LIMIT 13")
+        return { rows: [...state.groupReceipts.values()].filter(row => row.group_id === args[1]) };
+      if (sql === "SELECT org_id,command_hash,group_id,receipt FROM os_participation_group_receipts WHERE org_id=$1 ORDER BY group_id,command_hash LIMIT 1201")
+        return { rows: [...state.groupReceipts.values()] };
+      if (sql === "SELECT to_char(clock_timestamp() AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS stored_at_exact")
+        return { rows: [{ stored_at_exact: "2026-11-08T12:00:00.123456Z" }] };
+      if (sql === "INSERT INTO os_participation_groups(org_id,id,origin_mode,module_id,live_target_id,roster_ids,coordinator_intake_id,state,revision,last_command_hash,history,created_at,updated_at) VALUES($1,$2,'recovered',$3,NULL,'[]'::jsonb,NULL,'archived',1,NULL,$4::jsonb,$5::timestamptz,$5::timestamptz)") {
+        assert.equal(args[0], org); assert(!state.groups.has(args[1]));
+        state.groups.set(args[1], { org_id: args[0], id: args[1], origin_mode: "recovered", module_id: args[2], live_target_id: null,
+          roster_ids: [], coordinator_intake_id: null, state: "archived", revision: 1, last_command_hash: null,
+          history: JSON.parse(args[3]), created_at: args[4], updated_at: args[4] });
+        return { rows: [], rowCount: 1 };
+      }
       const measurement = measurements?.query(sql,args);
       if (measurement !== undefined) return measurement;
       if (withRestoreMeasurements && /^SELECT t\.\*,octet_length\(to_jsonb\(t\)::text\) AS capacity_bytes FROM os_(?:events|reports) t/.test(sql)) return {rows:[]};
@@ -347,6 +387,8 @@ function fixture({
         records: state.records,
         previews: state.previews,
         events: state.events,
+        groups: state.groups,
+        groupReceipts: state.groupReceipts,
       });
       try {
         return await fn(c);
@@ -398,6 +440,8 @@ function fixture({
   }
   return {
     state,
+    c,
+    measurements,
     call,
     setRole: (value) => {
       activeRole = value;
@@ -450,6 +494,106 @@ test("an explicitly present empty Incubator backup keeps zero counters in actual
   const audit=f.state.events.find(event=>event.action==="backup.restored");
   assert.equal(audit.detail.incubatorSourcesRecovered,0);
   assert.equal(audit.detail.incubatorEventsRetained,0);
+});
+function groupEnvelope(groups) {
+  const body = { format: PARTICIPATION_GROUP_BACKUP_FORMAT, version: 1, method: GROUP_METHOD, groups };
+  return { ...body, checksum: createHash("sha256").update(PARTICIPATION_GROUP_BACKUP_DOMAIN).update(stable(body)).digest("hex") };
+}
+function historicalGroup() {
+  const id = "original_group", rosterIds = ["original_one", "original_two"], target = { targetId: "missing_original_target", moduleId: "events" };
+  const first = "2026-11-07T10:00:00.123456Z", second = "2026-11-07T10:01:00.123456Z";
+  return { version: 1, id, originOrgId: "original_org", moduleId: "events", targetId: target.targetId,
+    rosterIds, coordinatorIntakeId: "missing_original_coordinator", createdAtExact: first,
+    decisions: [
+      { operation: "create", acceptedAtExact: first, result: { groupId: id, groupRevision: 1, state: "draft", target,
+        rosterIds: [...rosterIds], coordinatorIntakeId: "missing_original_coordinator" } },
+      { operation: "admit", acceptedAtExact: second, result: { groupId: id, groupRevision: 2, state: "admitted", selectionMode: "all",
+        selected: rosterIds.map(participationId => ({ participationId, action: "confirm", resultRevision: 3, state: "confirmed",
+          frozenSha256: "a".repeat(64), allocationHash: null, notificationQueued: false, auditRetained: null })),
+        unselectedIds: [], reasonHashes: [], auditRetained: false } },
+    ] };
+}
+test("group-free legacy restore projections keep the old audit detail without group counters", async () => {
+  const f = fixture({ withRestoreMeasurements: true }), backup = makeBackup(target, []);
+  await measureLearningRestoreCapacity(f.c, backup, { orgId: org, actorId: user });
+  const detail = f.measurements.observed.get("os_events").find(event => event.action === "backup.restored").detail;
+  assert.deepEqual(Object.keys(detail).sort(), ["count", "checksum", "sourceArchiveId", "sourceHistoryCount", "sourceCommentCount", "sourceReportCount",
+    "learningSourcesRecovered", "learningEventsRetained", "learningReportsRecovered", "intakePublicationsClosed", "intakeRequests",
+    "participationTargetsRecovered", "participationsRecovered", "taskRecurrenceSeriesRecovered", "taskRecurrenceOccurrencesRetained"].sort());
+  assert.equal(f.state.groups.size, 0); assert.equal(f.state.groupReceipts.size, 0);
+});
+test("explicit empty group history retains zero counters in actual preview, restore audit and capacity projection", async () => {
+  const f = fixture({ withRestoreMeasurements: true }), packet = groupEnvelope([]), backup = makeBackup(target, [], { participationGroups: packet });
+  const before = structuredClone(backup), preview = await f.call("import/preview", { input: { backup } });
+  assert.equal(preview.response.status, 200); assert.equal(preview.value.summary.participationGroupsRecovered, 0);
+  assert.equal(preview.value.warnings.filter(w => w.field === "participationGroups").length, 1);
+  assert.equal(f.measurements.observed.get("os_events").find(event => event.action === "backup.restored").detail.participationGroupsRecovered, 0);
+  assert.deepEqual(f.state.previews.get(preview.value.previewId).payload.participationGroups, packet);
+  const committed = await f.call("import/commit", { input: { previewId: preview.value.previewId } });
+  assert.equal(committed.response.status, 200);
+  assert.equal(f.state.events.find(event => event.action === "backup.restored").detail.participationGroupsRecovered, 0);
+  assert.equal(f.state.groups.size, 0); assert.equal(f.state.groupReceipts.size, 0); assert.deepEqual(backup, before);
+});
+test("invalid group backup namespaces return a closed422 before any preview or restore persistence", async () => {
+  for (const participationGroups of [null, [], { ...groupEnvelope([]), checksum: "0".repeat(64) },
+    groupEnvelope([{ ...historicalGroup(), rosterIds: ["only_one"] }]), { ...groupEnvelope([]), actor: "must-not-be-authority" }]) {
+    const f = fixture(), backup = makeBackup(target, [], { participationGroups });
+    const preview = await f.call("import/preview", { input: { backup } });
+    assert.equal(preview.response.status, 422); assert.match(preview.value.code, /^participation_group/);
+    assert.equal(f.state.previews.size, 0); assert.equal(f.state.records.size, 0); assert.equal(f.state.events.length, 0);
+    assert.equal(f.state.groups.size, 0); assert.equal(f.state.groupReceipts.size, 0);
+  }
+});
+test("an existing group-only destination blocks even a group-free legacy restore without changing history", async () => {
+  const f = fixture(), history = historicalGroup(), stamp = "2026-11-08T12:00:00.123456Z";
+  const saved = { org_id: org, id: history.id, origin_mode: "recovered", module_id: history.moduleId, live_target_id: null, roster_ids: [],
+    coordinator_intake_id: null, state: "archived", revision: 1, last_command_hash: null, history, created_at: stamp, updated_at: stamp };
+  f.state.groups.set(history.id, structuredClone(saved));
+  const preview = await f.call("import/preview", { input: { backup: makeBackup(target, []) } });
+  assert.equal(preview.response.status, 200); assert.equal(preview.value.summary.rejected, 1);
+  assert.deepEqual(preview.value.issues.map(issue => issue.field), ["organization"]);
+  const committed = await f.call("import/commit", { input: { previewId: preview.value.previewId } });
+  assert.equal(committed.response.status, 409); assert.equal(committed.value.code, "restore_conflict");
+  assert.deepEqual(f.state.groups.get(history.id), saved); assert.equal(f.state.groupReceipts.size, 0);
+  assert.equal(f.state.records.size, 0); assert.equal(f.state.events.length, 0);
+  assert.equal(f.state.previews.get(preview.value.previewId).committed_at, null);
+});
+test("a destination with a retained live group receipt refuses restore and preserves both families", async () => {
+  const f = fixture(), history = historicalGroup(), decision = history.decisions[0], sha = "b".repeat(64);
+  const receipt = { version: 1, groupId: history.id, operation: "create", commandHash: sha, requestHash: sha,
+    authority: { actorSha256: sha, sessionSha256: sha, membershipSha256: sha,
+      memberCreatedAtExact: decision.acceptedAtExact, restoreEpochSha256: sha }, reviewSha256: null,
+    acceptedAtExact: decision.acceptedAtExact, result: decision.result };
+  f.state.groups.set(history.id, { org_id: org, id: history.id, origin_mode: "live", module_id: history.moduleId,
+    live_target_id: history.targetId, roster_ids: [...history.rosterIds], coordinator_intake_id: history.coordinatorIntakeId,
+    state: "draft", revision: 1, last_command_hash: sha, history: null, created_at: decision.acceptedAtExact, updated_at: decision.acceptedAtExact });
+  f.state.groupReceipts.set(sha, { org_id: org, command_hash: sha, group_id: history.id, receipt });
+  const before = structuredClone({ groups: f.state.groups, receipts: f.state.groupReceipts });
+  const preview = await f.call("import/preview", { input: { backup: makeBackup(target, []) } });
+  assert.equal(preview.response.status, 200); assert.equal(preview.value.summary.rejected, 1);
+  const committed = await f.call("import/commit", { input: { previewId: preview.value.previewId } });
+  assert.equal(committed.response.status, 409); assert.equal(committed.value.code, "restore_conflict");
+  assert.deepEqual(f.state.groups, before.groups); assert.deepEqual(f.state.groupReceipts, before.receipts);
+  assert.equal(f.state.records.size, 0); assert.equal(f.state.events.length, 0);
+  assert.equal(f.state.previews.get(preview.value.previewId).committed_at, null);
+});
+test("actual restore adapter retains orphan decisions as an inactive header without live links or receipts", async () => {
+  const f = fixture({ withRestoreMeasurements: true }), history = historicalGroup(), packet = makeParticipationGroupsBackup([history]),
+    backup = makeBackup(target, [], { participationGroups: packet });
+  const before = structuredClone(packet), preview = await f.call("import/preview", { input: { backup } });
+  assert.equal(preview.response.status, 200); assert.equal(preview.value.summary.participationGroupsRecovered, 1);
+  const projected = f.measurements.observed.get("os_participation_groups");
+  assert.equal(projected.length, 1); assert.equal(projected[0].origin_mode, "recovered"); assert.deepEqual(projected[0].history, history);
+  const committed = await f.call("import/commit", { input: { previewId: preview.value.previewId } });
+  assert.equal(committed.response.status, 200); assert.equal(f.state.groups.size, 1); assert.equal(f.state.groupReceipts.size, 0);
+  const row = f.state.groups.get(history.id);
+  assert.equal(row.origin_mode, "recovered"); assert.equal(row.state, "archived"); assert.equal(row.revision, 1);
+  for (const key of ["live_target_id", "coordinator_intake_id", "last_command_hash"]) assert.equal(row[key], null);
+  assert.deepEqual(row.roster_ids, []); assert.deepEqual(row.history, history); assert.equal(row.created_at, "2026-11-08T12:00:00.123456Z");
+  assert.equal(f.state.events.find(event => event.action === "backup.restored").detail.participationGroupsRecovered, 1);
+  assert.deepEqual(await exportParticipationGroups(f.c, org), packet);
+  await assert.rejects(restoreParticipationGroups(f.c, org, packet), error => error.code === "restore_conflict");
+  assert.equal(f.state.groups.size, 1); assert.equal(f.state.groupReceipts.size, 0); assert.deepEqual(packet, before);
 });
 test("real legacy-preview route requires a live session, exact Origin, CSRF and organization administrator", async () => {
   for (const headers of [

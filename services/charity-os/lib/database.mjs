@@ -330,6 +330,8 @@ export async function logicalBackupBytes(c, org) {
     "os_participation_targets",
     "os_participations",
     "os_participation_checkins",
+    "os_participation_groups",
+    "os_participation_group_receipts",
     "os_participation_outbox",
     "os_participation_delivery_policies",
     "os_participation_delivery_previews",

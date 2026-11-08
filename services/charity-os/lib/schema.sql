@@ -516,3 +516,188 @@ BEGIN
 END $$;
 DROP TRIGGER IF EXISTS terminal_checkin ON os_participation_checkins;
 CREATE TRIGGER terminal_checkin BEFORE UPDATE OR DELETE ON os_participation_checkins FOR EACH ROW EXECUTE FUNCTION os_checkin_terminal_withdrawal();
+
+-- Staff group containers retain immutable decision receipts. Inactive recovery
+-- clears live links; the application separately admits complete safe-exit budgets.
+CREATE TABLE IF NOT EXISTS os_participation_groups (
+ org_id text NOT NULL REFERENCES os_orgs(id), id text NOT NULL CHECK(id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ origin_mode text NOT NULL CHECK(origin_mode IN ('live','recovered')),
+ module_id text NOT NULL CHECK(module_id IN ('events','volunteers')),
+ live_target_id text, roster_ids jsonb NOT NULL, coordinator_intake_id text,
+ state text NOT NULL, revision integer NOT NULL CHECK(revision BETWEEN 1 AND 12),
+ last_command_hash text, history jsonb,
+ created_at timestamptz NOT NULL, updated_at timestamptz NOT NULL,
+ PRIMARY KEY(org_id,id), FOREIGN KEY(org_id,live_target_id) REFERENCES os_participation_targets(org_id,target_id),
+ CHECK(updated_at>=created_at),
+ CHECK(coordinator_intake_id IS NULL OR coordinator_intake_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ CHECK(((origin_mode='live' AND state IN ('draft','admitted','closed') AND live_target_id IS NOT NULL
+  AND live_target_id ~ '^[A-Za-z0-9_-]{1,100}$' AND jsonb_typeof(roster_ids)='array'
+  AND jsonb_array_length(roster_ids) BETWEEN 2 AND 10 AND history IS NULL
+  AND last_command_hash ~ '^[a-f0-9]{64}$') OR
+ (origin_mode='recovered' AND state='archived' AND revision=1 AND live_target_id IS NULL
+  AND roster_ids='[]'::jsonb AND coordinator_intake_id IS NULL AND last_command_hash IS NULL
+  AND jsonb_typeof(history)='object' AND history->'version'='1'::jsonb
+  AND history->>'id'=id AND history->>'moduleId'=module_id AND octet_length(history::text)<=65536)) IS TRUE)
+);
+CREATE TABLE IF NOT EXISTS os_participation_group_receipts (
+ org_id text NOT NULL, command_hash text NOT NULL CHECK(command_hash ~ '^[a-f0-9]{64}$'),
+ group_id text NOT NULL, receipt jsonb NOT NULL,
+ PRIMARY KEY(org_id,command_hash), UNIQUE(org_id,group_id,command_hash),
+ FOREIGN KEY(org_id,group_id) REFERENCES os_participation_groups(org_id,id),
+ CHECK((jsonb_typeof(receipt)='object' AND octet_length(receipt::text)<=16384
+  AND receipt ?& ARRAY['version','groupId','operation','commandHash','requestHash','authority','reviewSha256','acceptedAtExact','result']
+  AND receipt-ARRAY['version','groupId','operation','commandHash','requestHash','authority','reviewSha256','acceptedAtExact','result']='{}'::jsonb
+  AND receipt->'version'='1'::jsonb AND receipt->>'groupId'=group_id AND receipt->>'commandHash'=command_hash
+  AND receipt->>'requestHash' ~ '^[a-f0-9]{64}$' AND receipt->>'operation' IN ('create','admit','cancel','close')
+  AND jsonb_typeof(receipt->'authority')='object'
+  AND receipt->'authority' ?& ARRAY['actorSha256','sessionSha256','membershipSha256','memberCreatedAtExact','restoreEpochSha256']
+  AND (receipt->'authority')-ARRAY['actorSha256','sessionSha256','membershipSha256','memberCreatedAtExact','restoreEpochSha256']='{}'::jsonb
+  AND receipt#>>'{authority,actorSha256}' ~ '^[a-f0-9]{64}$'
+  AND receipt#>>'{authority,sessionSha256}' ~ '^[a-f0-9]{64}$'
+  AND receipt#>>'{authority,membershipSha256}' ~ '^[a-f0-9]{64}$'
+  AND receipt#>>'{authority,restoreEpochSha256}' ~ '^[a-f0-9]{64}$'
+  AND receipt#>>'{authority,memberCreatedAtExact}' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}Z$'
+  AND receipt->>'acceptedAtExact' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}Z$'
+  AND jsonb_typeof(receipt->'result')='object' AND receipt#>>'{result,groupId}'=group_id
+  AND jsonb_typeof(receipt#>'{result,groupRevision}')='number'
+  AND receipt#>>'{result,groupRevision}' ~ '^(?:[1-9]|1[0-2])$'
+  AND ((receipt->>'operation' IN ('create','close') AND receipt->'reviewSha256'='null'::jsonb)
+   OR (receipt->>'operation' IN ('admit','cancel') AND receipt->>'reviewSha256' ~ '^[a-f0-9]{64}$'))) IS TRUE)
+);
+DO $group_last_receipt$
+BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='os_participation_groups'::regclass AND conname='os_group_last_receipt') THEN
+ ALTER TABLE os_participation_groups ADD CONSTRAINT os_group_last_receipt
+ FOREIGN KEY(org_id,id,last_command_hash) REFERENCES os_participation_group_receipts(org_id,group_id,command_hash)
+ DEFERRABLE INITIALLY DEFERRED;
+ END IF;
+END $group_last_receipt$;
+ALTER TABLE os_participation_groups ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participation_groups FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participation_groups;
+CREATE POLICY tenant ON os_participation_groups
+ USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+ALTER TABLE os_participation_group_receipts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participation_group_receipts FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participation_group_receipts;
+CREATE POLICY tenant ON os_participation_group_receipts
+ USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+
+CREATE OR REPLACE FUNCTION os_participation_group_guard() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE sorted_roster jsonb; distinct_roster integer;
+BEGIN
+ IF TG_OP='DELETE' THEN RAISE EXCEPTION 'group history is retained' USING ERRCODE='23514'; END IF;
+ IF TG_OP='INSERT' AND NEW.origin_mode='live' THEN
+  IF NEW.state<>'draft' OR NEW.revision<>1 OR NEW.created_at<>NEW.updated_at
+   OR EXISTS(SELECT 1 FROM jsonb_array_elements(NEW.roster_ids) AS item(value) WHERE (jsonb_typeof(item.value)='string' AND item.value#>>'{}' ~ '^[A-Za-z0-9_-]{1,100}$') IS NOT TRUE)
+  THEN RAISE EXCEPTION 'invalid initial group' USING ERRCODE='23514'; END IF;
+  SELECT jsonb_agg(member.value ORDER BY member.value COLLATE "C"),count(DISTINCT member.value)::int INTO sorted_roster,distinct_roster
+   FROM jsonb_array_elements_text(NEW.roster_ids) AS member(value);
+  IF sorted_roster IS DISTINCT FROM NEW.roster_ids OR distinct_roster<>jsonb_array_length(NEW.roster_ids)
+  THEN RAISE EXCEPTION 'invalid group roster' USING ERRCODE='23514'; END IF;
+ ELSIF TG_OP='UPDATE' THEN
+  IF OLD.origin_mode<>'live' OR OLD.state='closed' OR NEW.revision<>OLD.revision+1 OR NEW.revision>12
+   OR NEW.last_command_hash IS NOT DISTINCT FROM OLD.last_command_hash OR NEW.updated_at<OLD.updated_at
+   OR (to_jsonb(NEW)-ARRAY['state','revision','last_command_hash','updated_at']) IS DISTINCT FROM (to_jsonb(OLD)-ARRAY['state','revision','last_command_hash','updated_at'])
+   OR NOT ((OLD.state='draft' AND NEW.state IN ('admitted','closed')) OR (OLD.state='admitted' AND NEW.state='admitted'))
+  THEN RAISE EXCEPTION 'invalid group transition' USING ERRCODE='23514'; END IF;
+ END IF;
+ RETURN NEW;
+END $$;
+DROP TRIGGER IF EXISTS group_guard ON os_participation_groups;
+CREATE TRIGGER group_guard BEFORE INSERT OR UPDATE OR DELETE ON os_participation_groups
+ FOR EACH ROW EXECUTE FUNCTION os_participation_group_guard();
+DROP TRIGGER IF EXISTS immutable_group_receipt ON os_participation_group_receipts;
+CREATE TRIGGER immutable_group_receipt BEFORE UPDATE OR DELETE ON os_participation_group_receipts
+ FOR EACH ROW EXECUTE FUNCTION os_immutable();
+
+-- Deferred so create-container then create-receipt is legal inside ONE outer tx.
+-- Also catches unused extra receipts: every receipt must belong to the complete
+-- monotonic chain represented by the current container revision/head.
+CREATE OR REPLACE FUNCTION os_participation_group_integrity() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE g os_participation_groups; group_identity text; x record; r jsonb; n integer:=0; previous_at timestamptz;
+ admitted text[]:=NULL; cancelled text[]:=ARRAY[]::text[]; chosen text[]; person_id text; last_hash text;
+BEGIN
+ IF TG_TABLE_NAME='os_participation_groups' THEN group_identity:=NEW.id; ELSE group_identity:=NEW.group_id; END IF;
+ SELECT * INTO STRICT g FROM os_participation_groups WHERE org_id=NEW.org_id AND id=group_identity;
+ IF g.origin_mode='recovered' THEN
+  IF EXISTS(SELECT 1 FROM os_participation_group_receipts WHERE org_id=g.org_id AND group_id=g.id)
+  THEN RAISE EXCEPTION 'archive has no receipt capability' USING ERRCODE='23514'; END IF;
+  RETURN NULL;
+ END IF;
+ FOR x IN SELECT command_hash,receipt FROM os_participation_group_receipts WHERE org_id=g.org_id AND group_id=g.id ORDER BY (receipt#>>'{result,groupRevision}')::int LOOP
+  n:=n+1; r:=x.receipt; last_hash:=x.command_hash;
+  IF jsonb_typeof(r) IS DISTINCT FROM 'object' OR jsonb_typeof(r->'result') IS DISTINCT FROM 'object'
+   OR jsonb_typeof(r#>'{result,state}') IS DISTINCT FROM 'string'
+  THEN RAISE EXCEPTION 'group chain requires an explicit result and state' USING ERRCODE='23514'; END IF;
+  IF n>12 OR (r#>>'{result,groupRevision}')::int<>n OR r#>>'{result,groupId}'<>g.id
+   OR to_char((r->>'acceptedAtExact')::timestamptz AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') IS DISTINCT FROM r->>'acceptedAtExact'
+   OR to_char((r#>>'{authority,memberCreatedAtExact}')::timestamptz AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') IS DISTINCT FROM r#>>'{authority,memberCreatedAtExact}'
+   OR (r->>'acceptedAtExact')::timestamptz<(r#>>'{authority,memberCreatedAtExact}')::timestamptz
+   OR (previous_at IS NOT NULL AND (r->>'acceptedAtExact')::timestamptz<previous_at)
+  THEN RAISE EXCEPTION 'invalid group receipt sequence' USING ERRCODE='23514'; END IF;
+  previous_at:=(r->>'acceptedAtExact')::timestamptz;
+  IF n=1 THEN
+   IF r->>'operation' IS DISTINCT FROM 'create' OR r#>>'{result,state}' IS DISTINCT FROM 'draft'
+    OR r#>>'{result,target,targetId}' IS DISTINCT FROM g.live_target_id
+    OR r#>>'{result,target,moduleId}' IS DISTINCT FROM g.module_id
+    OR r#>'{result,rosterIds}' IS DISTINCT FROM g.roster_ids
+    OR r#>'{result,coordinatorIntakeId}' IS DISTINCT FROM COALESCE(to_jsonb(g.coordinator_intake_id),'null'::jsonb)
+    OR previous_at<>g.created_at
+   THEN RAISE EXCEPTION 'invalid group creation receipt' USING ERRCODE='23514'; END IF;
+  ELSIF n=2 THEN
+   IF r->>'operation'='close' THEN
+    IF r#>>'{result,state}' IS DISTINCT FROM 'closed' OR g.state<>'closed' OR g.revision<>2
+    THEN RAISE EXCEPTION 'invalid group closure' USING ERRCODE='23514'; END IF;
+   ELSIF r->>'operation'='admit' THEN
+    IF jsonb_typeof(r#>'{result,selected}') IS DISTINCT FROM 'array'
+     OR jsonb_typeof(r#>'{result,unselectedIds}') IS DISTINCT FROM 'array'
+    THEN RAISE EXCEPTION 'group admission requires explicit selected and unselected arrays' USING ERRCODE='23514'; END IF;
+    IF (r#>>'{result,state}'='admitted' AND jsonb_array_length(r#>'{result,selected}') BETWEEN 1 AND 10
+     AND ((r#>>'{result,selectionMode}'='all' AND jsonb_array_length(r#>'{result,unselectedIds}')=0)
+      OR (r#>>'{result,selectionMode}'='subset' AND jsonb_array_length(r#>'{result,unselectedIds}') BETWEEN 1 AND 9))) IS NOT TRUE
+    THEN RAISE EXCEPTION 'invalid group admission' USING ERRCODE='23514'; END IF;
+    IF EXISTS(SELECT 1 FROM jsonb_array_elements(r#>'{result,selected}') AS item(value)
+     WHERE (jsonb_typeof(item.value)='object' AND jsonb_typeof(item.value->'participationId')='string'
+      AND item.value->>'participationId' ~ '^[A-Za-z0-9_-]{1,100}$' AND item.value->>'state'='confirmed') IS NOT TRUE)
+     OR EXISTS(SELECT 1 FROM jsonb_array_elements(r#>'{result,unselectedIds}') AS item(value)
+      WHERE (jsonb_typeof(item.value)='string' AND item.value#>>'{}' ~ '^[A-Za-z0-9_-]{1,100}$') IS NOT TRUE)
+    THEN RAISE EXCEPTION 'group admission requires typed roster entries' USING ERRCODE='23514'; END IF;
+    SELECT array_agg(item.value->>'participationId' ORDER BY (item.value->>'participationId') COLLATE "C") INTO admitted
+     FROM jsonb_array_elements(r#>'{result,selected}') AS item(value);
+    IF cardinality(admitted)<>(SELECT count(DISTINCT member.participation_id) FROM unnest(admitted) AS member(participation_id))
+     OR EXISTS(SELECT 1 FROM unnest(admitted) AS member(participation_id) WHERE member.participation_id IS NULL OR NOT (g.roster_ids ? member.participation_id))
+     OR (SELECT jsonb_agg(all_members.participation_id ORDER BY all_members.participation_id COLLATE "C")
+      FROM (SELECT unnest(admitted) AS participation_id UNION ALL SELECT jsonb_array_elements_text(r#>'{result,unselectedIds}')) AS all_members) IS DISTINCT FROM g.roster_ids
+    THEN RAISE EXCEPTION 'invalid admitted roster' USING ERRCODE='23514'; END IF;
+   ELSE RAISE EXCEPTION 'group has only one decision' USING ERRCODE='23514'; END IF;
+  ELSE
+   IF jsonb_typeof(r#>'{result,selected}') IS DISTINCT FROM 'array'
+   THEN RAISE EXCEPTION 'group cancellation requires an explicit selected array' USING ERRCODE='23514'; END IF;
+   IF (admitted IS NOT NULL AND r->>'operation'='cancel' AND r#>>'{result,state}'='admitted'
+    AND jsonb_array_length(r#>'{result,selected}') BETWEEN 1 AND 10) IS NOT TRUE
+   THEN RAISE EXCEPTION 'invalid group cancellation' USING ERRCODE='23514'; END IF;
+   IF EXISTS(SELECT 1 FROM jsonb_array_elements(r#>'{result,selected}') AS item(value)
+    WHERE (jsonb_typeof(item.value)='object' AND jsonb_typeof(item.value->'participationId')='string'
+     AND item.value->>'participationId' ~ '^[A-Za-z0-9_-]{1,100}$' AND item.value->>'state'='cancelled') IS NOT TRUE)
+   THEN RAISE EXCEPTION 'group cancellation requires typed roster entries' USING ERRCODE='23514'; END IF;
+   chosen:=ARRAY[]::text[];
+   FOR person_id IN SELECT item.value->>'participationId' FROM jsonb_array_elements(r#>'{result,selected}') AS item(value) LOOP
+    IF person_id IS NULL OR NOT person_id=ANY(admitted) OR person_id=ANY(cancelled) OR person_id=ANY(chosen)
+    THEN RAISE EXCEPTION 'group cancellation must change a distinct admitted child' USING ERRCODE='23514'; END IF;
+    chosen:=array_append(chosen,person_id);
+   END LOOP;
+   cancelled:=cancelled||chosen;
+  END IF;
+ END LOOP;
+ IF n<>g.revision OR last_hash IS DISTINCT FROM g.last_command_hash OR previous_at IS DISTINCT FROM g.updated_at
+  OR NOT EXISTS(SELECT 1 FROM os_participation_group_receipts WHERE org_id=g.org_id AND command_hash=g.last_command_hash AND receipt#>>'{result,state}'=g.state)
+ THEN RAISE EXCEPTION 'dangling group head' USING ERRCODE='23514'; END IF;
+ RETURN NULL;
+END $$;
+DROP TRIGGER IF EXISTS complete_group_chain ON os_participation_groups;
+CREATE CONSTRAINT TRIGGER complete_group_chain AFTER INSERT OR UPDATE ON os_participation_groups
+ DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION os_participation_group_integrity();
+DROP TRIGGER IF EXISTS receipt_in_group_chain ON os_participation_group_receipts;
+CREATE CONSTRAINT TRIGGER receipt_in_group_chain AFTER INSERT ON os_participation_group_receipts
+ DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION os_participation_group_integrity();
