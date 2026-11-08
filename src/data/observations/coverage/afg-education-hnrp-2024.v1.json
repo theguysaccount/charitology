@@ -1,0 +1,134 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "coverage",
+  "id": "afg-education-hnrp-2024",
+  "selection": {
+    "kind": "explicit-plan-cluster",
+    "rule": "one-selected-source-plan-cluster",
+    "source": {
+      "kind": "source",
+      "id": "fts-afg-education-2024-cluster",
+      "version": 1,
+      "hash": "e211d008b60d65a5ebe3097d3b68b59bd363babc3026b026ef6d2e1f7a23a008"
+    },
+    "scope": {
+      "kind": "scope",
+      "id": "afg-education-hnrp-2024",
+      "version": 1,
+      "hash": "c1da248bb3801a1e41c71b1819c6a59539e2f8a330f72134b92f202559583607"
+    },
+    "measures": [
+      {
+        "kind": "measure",
+        "id": "afg-education-2024-requirements",
+        "version": 1,
+        "hash": "ed980008b3302ca4c90d4e15bffdf3c6371a15935e0792bf75fd08bf131bea17"
+      },
+      {
+        "kind": "measure",
+        "id": "afg-education-2024-funding",
+        "version": 1,
+        "hash": "04b52e1d253066942096f282e211c060726ce74dfa2321eedb9da9f2b8f484bf"
+      }
+    ],
+    "tuple": {
+      "countryCode": "AFG",
+      "planId": "1185",
+      "clusterCode": "7415",
+      "year": 2024
+    },
+    "unknownRemainder": "Only this Afghanistan 2024 Education plan cluster is selected; other causes, countries, plans, shared/unspecified funding and years are outside this coverage."
+  },
+  "cells": [
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "afg-education-2024-requirements",
+        "version": 1,
+        "hash": "ff28a7bc5c6d09b62339bdd72bb09e01eb160914fdfdcb918a831b8db9af5a0b"
+      }
+    },
+    {
+      "state": "present",
+      "observation": {
+        "kind": "observation",
+        "id": "afg-education-2024-funding",
+        "version": 1,
+        "hash": "1360c4afb5f3d3fe405680e48e3be15f1217d29b779cea579f4c463e05d8919b"
+      }
+    }
+  ],
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "fts-afg-education-2024-cluster",
+        "version": 1,
+        "hash": "e211d008b60d65a5ebe3097d3b68b59bd363babc3026b026ef6d2e1f7a23a008"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "csv",
+        "recordNumber": 29,
+        "firstLine": 29,
+        "lastLine": 29,
+        "byteStart": 3952,
+        "byteEnd": 4087,
+        "rawSha256": "8bd4d88b7fc68066ed69ef40e77a49eb7b5ed2d8bc206d88063ed66230b2ef10",
+        "column": "cluster",
+        "matches": [
+          {
+            "column": "countryCode",
+            "expected": "AFG"
+          },
+          {
+            "column": "id",
+            "expected": "1185"
+          },
+          {
+            "column": "code",
+            "expected": "HAFG24"
+          },
+          {
+            "column": "year",
+            "expected": "2024"
+          },
+          {
+            "column": "clusterCode",
+            "expected": "7415"
+          },
+          {
+            "column": "cluster",
+            "expected": "Education"
+          },
+          {
+            "column": "startDate",
+            "expected": "2024-01-01"
+          },
+          {
+            "column": "endDate",
+            "expected": "2024-12-31"
+          }
+        ]
+      }
+    }
+  ],
+  "exclusions": [
+    "Only this Afghanistan 2024 Education plan cluster is selected; other causes, countries, plans, shared/unspecified funding and years are outside this coverage."
+  ],
+  "limitations": [
+    "One humanitarian Education plan cluster, not all education funding or independently measured need.",
+    "Reported funding is not asserted to be cash paid, final spending or money reaching people.",
+    "Price/FX basis, reporting completeness and transaction-status decomposition are unknown.",
+    "Source-rounded percent and exact-rational derived coverage are different values.",
+    "No other plan, country, cluster, financial framework or year is pooled; shared/unspecified funding is not allocated.",
+    "Cause mapping is draft; no independent reviewer, rating, outcome or funding-by-depth allocation is supplied.",
+    "This pure projection has no client retrieval clock, source-origin proof or admitted Observation edition."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "efe5866a6a3072521d4820f3ea65469833feef61d7406baa29b4a5c76be51068"
+}

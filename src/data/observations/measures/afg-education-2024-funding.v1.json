@@ -1,0 +1,87 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "measure",
+  "id": "afg-education-2024-funding",
+  "label": "Reported Education plan funding (USD)",
+  "measureKind": "reported-funding",
+  "family": "humanitarian-plan-funding",
+  "producerCode": "funding",
+  "definition": "OCHA FTS reported funding attributed to the Education cluster of Afghanistan HNRP2024, not asserted to be cash paid, final spending or money reaching people.",
+  "unit": {
+    "kind": "currency",
+    "label": "USD",
+    "currency": "USD",
+    "denominator": null
+  },
+  "method": "Exact original funding column of the same selected OCHA FTS plan-cluster CSV row; financial-stage decomposition, reporting completeness and USD price/FX basis remain unknown.",
+  "legacyCountry": null,
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "fts-afg-education-2024-cluster",
+        "version": 1,
+        "hash": "e211d008b60d65a5ebe3097d3b68b59bd363babc3026b026ef6d2e1f7a23a008"
+      },
+      "role": "definition",
+      "locator": {
+        "kind": "csv",
+        "recordNumber": 29,
+        "firstLine": 29,
+        "lastLine": 29,
+        "byteStart": 3952,
+        "byteEnd": 4087,
+        "rawSha256": "8bd4d88b7fc68066ed69ef40e77a49eb7b5ed2d8bc206d88063ed66230b2ef10",
+        "column": "funding",
+        "matches": [
+          {
+            "column": "countryCode",
+            "expected": "AFG"
+          },
+          {
+            "column": "id",
+            "expected": "1185"
+          },
+          {
+            "column": "code",
+            "expected": "HAFG24"
+          },
+          {
+            "column": "year",
+            "expected": "2024"
+          },
+          {
+            "column": "clusterCode",
+            "expected": "7415"
+          },
+          {
+            "column": "cluster",
+            "expected": "Education"
+          },
+          {
+            "column": "startDate",
+            "expected": "2024-01-01"
+          },
+          {
+            "column": "endDate",
+            "expected": "2024-12-31"
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "One humanitarian Education plan cluster, not all education funding or independently measured need.",
+    "Reported funding is not asserted to be cash paid, final spending or money reaching people.",
+    "Price/FX basis, reporting completeness and transaction-status decomposition are unknown.",
+    "Source-rounded percent and exact-rational derived coverage are different values.",
+    "No other plan, country, cluster, financial framework or year is pooled; shared/unspecified funding is not allocated.",
+    "Cause mapping is draft; no independent reviewer, rating, outcome or funding-by-depth allocation is supplied.",
+    "This pure projection has no client retrieval clock, source-origin proof or admitted Observation edition."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "04b52e1d253066942096f282e211c060726ce74dfa2321eedb9da9f2b8f484bf"
+}
