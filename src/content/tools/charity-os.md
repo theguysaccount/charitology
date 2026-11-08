@@ -30,6 +30,20 @@ The shared service also supports public operational requests. Approved, version-
 
 The Participation console adds explicit confirmation and waitlists for individual places at event sessions or volunteer shifts. A reviewed interest request reserves no capacity. Staff must enable the occurrence, associate the typed candidate and obtain specific consent before confirming a place. Promotion is manual. Confirmed capacity stays reserved through later review edits, and cancellation releases it once. Your linked request can show your own participation and let you cancel it; withdrawing the original request alone does not cancel a confirmed place. Operational email requires a separate fresh choice from the verified participant. An administrator reviews current confirmations before activating delivery; old preferences and paused history are never mailed automatically. The fixed notice links to the signed-in portal without putting occurrence details or receipts in email. Delivery runs in a bounded daily dispatch, so it is not an urgent or exact-time alert. Turning updates off, erasing answers or unlinking access stops unsent updates; a message already attempted may still arrive. Broader workflows and operational acceptance remain in the [implementation plan](/for-charities/os-plan/).
 
+## Review two contact records
+
+Use the [contact-review workspace](https://os.charitology.org/app#contact-reconciliation). It is for an organization owner or administrator with unrestricted Contacts access. It does not decide that matching names or emails belong to one person.
+
+Choose two person-reference records deliberately. Read the Left and Right values and IDs; **Unknown** means no value is recorded. You can keep both records and explain whether they describe different people, a household, separate roles or an unresolved comparison. That decision creates no household access or account relationship.
+
+For an eligible merge, both records must be unapproved local drafts. Choose the ID to keep, the title to use and the source of each display label and email. Choosing Unknown clears that selected field. Organization, role, contact preference, purpose and review date must already agree. Source-owned records or private and historical links can prevent a merge; this first version does not move their references.
+
+Review the proposed result and acknowledge it before Commit. The surviving ID stays; the other record goes to trash with its history retained. No consent, participant link, account permission or external identity is transferred. If the result is interrupted, use deliberate **Retry** for that exact command. Do not start another decision merely because its response is missing.
+
+An undo needs its own review and the original saved command. Later edits or new dependencies can block it. Historical reports restored from a backup do not restore a live command or permission to undo. Keep the original backup; restored history is not an instruction to repeat a merge.
+
+Some existing workspaces are outside this first version, including those with unsupported legacy, Learning or grant report packets. Keep their history and use ordinary Contacts editing while that coverage remains unavailable. Do not delete history to make a merge eligible. [Read the contract](https://github.com/theguysaccount/charitology/blob/main/docs/CONTACT_RECONCILIATION_PLAN.md) and [the software checks and limits](https://github.com/theguysaccount/charitology/blob/main/docs/CONTACT_RECONCILIATION_ACCEPTANCE.md).
+
 ## Coordinate a group booking
 
 Staff can group 2–10 existing requests for the same event session or volunteer shift. Each person’s consent and approval checks remain separate, and each admitted person holds their own place. Review all members or deliberately select a smaller subset. Capacity and overlap are checked together; if any selected person cannot be admitted, that selection reserves no places. Cancellations name the confirmed members whose places should be released.
