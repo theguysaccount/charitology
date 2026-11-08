@@ -1,3 +1,4 @@
+import { createStaffCheckInPane } from "./participant-check-in.js";
 const part = (value) => encodeURIComponent(String(value));
 const states = {
   requested: "Awaiting a staff decision",
@@ -431,6 +432,8 @@ export async function createStaffParticipationWorkspace({
     filter: "",
   };
   let attendanceEditor = null;
+  const checkInReaders = new Map();
+  const clearCheckInReaders = () => {for (const reader of checkInReaders.values()) reader.dispose();checkInReaders.clear();};
   const root = node("div", { class: "participation-workspace" }),
     notice = output("Loading permitted occurrences…"),
     picker = node(
@@ -2321,6 +2324,7 @@ export async function createStaffParticipationWorkspace({
     renderQueue();
   }
   function renderQueue() {
+    clearCheckInReaders();
     const filter = node(
       "select",
       { id: "participation-state-filter" },
@@ -2398,6 +2402,12 @@ export async function createStaffParticipationWorkspace({
         intervalSchedule(row, state.detail?.terms || state.target?.terms),
       );
       const actions = node("div", { class: "actions" });
+      actions.append(button("Read arrival self-report", () => {
+        if (!isCurrent() || !card.isConnected) return;
+        checkInReaders.get(row.id)?.dispose();
+        const version = state.version, reader = createStaffCheckInPane({orgId,targetId:state.target.targetId,participationId:row.id,request,isCurrent:()=>live(version) && card.isConnected});
+        checkInReaders.set(row.id,reader);card.append(reader.element);void reader.load();
+      }, "small subtle"));
       if (row.bookingRecordId)
         actions.append(
           node(
@@ -2838,6 +2848,7 @@ export async function createStaffParticipationWorkspace({
       return work(() => loadTarget(id));
     });
   });
+  root.dispose = clearCheckInReaders;
   const result = await request(base);
   if (!isCurrent()) return root;
   state.targets = targetChoices(result.targets);
