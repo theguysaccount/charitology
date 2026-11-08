@@ -316,9 +316,9 @@ function safeRoute() {
   }
 }
 function setContent(...content) {
+  state.taskRecurrencePanel?.dispose();
   if (state.incubatorWorkspace) { state.incubatorWorkspace.dispose(); state.pageDirty = false; }
   state.incubatorWorkspace = null;
-  state.taskRecurrencePanel?.dispose();
   state.learningRecordAbort?.abort();
   state.learningRecordAbort = null;
   state.reportReadAbort?.abort();
