@@ -486,13 +486,15 @@ async function appendIntent(
     )
   ).rows[0];
   const reserve = live ? DELIVERY_LIMITS.reserve : 2048;
+  const { groupStateCount } = await import("./participation-group-store.mjs");
+  const groupPresent = (await groupStateCount(c, org)) > 0;
   if (
     Number(usage.count) >= DELIVERY_LIMITS.outbox ||
     Number(usage.bytes) + reserve > DELIVERY_LIMITS.outboxBytes ||
     (await logicalBackupBytes(c, org)) + reserve + 1000 >
       DELIVERY_LIMITS.workspaceBytes
   ) {
-    if (safe) return { queued: false, alreadyRecorded: false };
+    if (safe || groupPresent) return { queued: false, alreadyRecorded: false };
     fail(
       422,
       "participation_delivery_quota",
@@ -515,28 +517,38 @@ async function appendIntent(
     );
   const payload = { state: p.state, participationId: p.id, revision: seq },
     consent = p.delivery_consent;
+  // These are precisely the 21 INSERT values below, before SQL defaults. A
+  // GROUP workspace measures optional journals against its remaining exits;
+  // a skipped notice is reported false and never spends another exit's space.
+  const notice = {
+    org_id: org, id: id(), participation_id: p.id, event_revision: seq,
+    participation_revision: p.revision, purpose: "participation", channel: "email",
+    state: live ? "pending" : "paused", payload, intent_kind: live ? kind : "legacy",
+    consent_revision: live ? consent.revision : 0,
+    consent_copy: live ? DELIVERY_CONSENT_VERSION : null,
+    user_id: live ? eligible.recipient.userId : null,
+    link_id: live ? eligible.recipient.linkId : null,
+    link_revision: live ? eligible.recipient.linkRevision : null,
+    recipient_hash: live ? consent.recipientHash : null,
+    policy_epoch: live ? pol.epoch : null,
+    template_version: live ? DELIVERY_TEMPLATE_VERSION : null,
+    relay_key: live ? "participation-" + id() : null,
+    payload_hash: live ? eligible.payloadHash : null,
+    budget_bytes: live ? DELIVERY_LIMITS.reserve : 0,
+  };
+  if (groupPresent) {
+    const { canRetainGroupParticipationNotice } = await import("./participation-group-safety-capacity.mjs");
+    if (!(await canRetainGroupParticipationNotice(c, org, notice))) return { queued: false, alreadyRecorded: false };
+  }
   await c.query(
     "INSERT INTO os_participation_outbox(org_id,id,participation_id,event_revision,participation_revision,purpose,channel,state,payload,intent_kind,consent_revision,consent_copy,user_id,link_id,link_revision,recipient_hash,policy_epoch,template_version,relay_key,payload_hash,budget_bytes) VALUES($1,$2,$3,$4,$5,'participation','email',$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)",
     [
-      org,
-      id(),
-      p.id,
-      seq,
-      p.revision,
-      live ? "pending" : "paused",
-      JSON.stringify(payload),
-      live ? kind : "legacy",
-      live ? consent.revision : 0,
-      live ? DELIVERY_CONSENT_VERSION : null,
-      live ? eligible.recipient.userId : null,
-      live ? eligible.recipient.linkId : null,
-      live ? eligible.recipient.linkRevision : null,
-      live ? consent.recipientHash : null,
-      live ? pol.epoch : null,
-      live ? DELIVERY_TEMPLATE_VERSION : null,
-      live ? "participation-" + id() : null,
-      live ? eligible.payloadHash : null,
-      live ? DELIVERY_LIMITS.reserve : 0,
+      notice.org_id, notice.id, notice.participation_id, notice.event_revision,
+      notice.participation_revision, notice.state, JSON.stringify(notice.payload),
+      notice.intent_kind, notice.consent_revision, notice.consent_copy,
+      notice.user_id, notice.link_id, notice.link_revision, notice.recipient_hash,
+      notice.policy_epoch, notice.template_version, notice.relay_key,
+      notice.payload_hash, notice.budget_bytes,
     ],
   );
   if (live)

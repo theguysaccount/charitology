@@ -1,5 +1,6 @@
 // These historical fixtures contain neither group containers nor receipts.
-// Match only the five complete inventory reads; every other query falls through.
+// Match only the five complete inventory reads and one presence read;
+// every other query falls through.
 const quotaReads = new Set([
   "SELECT count(*)::int AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0)::text AS bytes FROM os_participation_groups t WHERE org_id=$1",
   "SELECT count(*)::int AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0)::text AS bytes FROM os_participation_group_receipts t WHERE org_id=$1",
@@ -11,10 +12,12 @@ const inventoryReads = new Set([
 ]);
 
 export function emptyParticipationGroupsQuery(sql, args) {
-  if (!quotaReads.has(sql) && !inventoryReads.has(sql)) return undefined;
+  const presence = sql === "SELECT count(*)::int AS count FROM os_participation_groups WHERE org_id=$1";
+  if (!presence && !quotaReads.has(sql) && !inventoryReads.has(sql)) return undefined;
   if (!Array.isArray(args) || args.length !== 1 ||
       typeof args[0] !== "string" || !/^[A-Za-z0-9_-]{1,100}$/.test(args[0]))
     throw new Error("Invalid empty group fixture query arguments.");
+  if (presence) return { rows: [{ count: 0 }], rowCount: 1 };
   return quotaReads.has(sql)
     ? { rows: [{ count: 0, bytes: "0" }], rowCount: 1 }
     : { rows: [], rowCount: 0 };

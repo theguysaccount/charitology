@@ -2157,3 +2157,24 @@ textarea[aria-invalid="true"] {
 .participant-checkin button { min-height: 44px; white-space: normal; }
 .participant-checkin .actions { flex-wrap: wrap; }
 .participant-checkin [role="status"]:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+/* Staff group pane: external stylesheet rules preserve the existing self-only CSP. */
+.participation-groups-pane {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.participation-groups-pane fieldset {
+  min-width: 0;
+  max-width: 100%;
+}
+.participation-groups-pane select,
+.participation-groups-pane input:not([type="checkbox"]) {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.participation-groups-pane .button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

@@ -1,4 +1,5 @@
 import { createStaffCheckInPane } from "./participant-check-in.js";
+import { createStaffParticipationGroupPane } from "./participation-groups.js";
 const part = (value) => encodeURIComponent(String(value));
 const states = {
   requested: "Awaiting a staff decision",
@@ -419,6 +420,9 @@ export async function createStaffParticipationWorkspace({
   initialCandidateId = "",
   initialIntakeId = "",
 }) {
+  let workspaceDisposed = false;
+  const outerIsCurrent = isCurrent;
+  isCurrent = () => !workspaceDisposed && outerIsCurrent();
   const base = `/api/orgs/${part(orgId)}/participation-targets`;
   const state = {
     targets: [],
@@ -432,6 +436,8 @@ export async function createStaffParticipationWorkspace({
     filter: "",
   };
   let attendanceEditor = null;
+  let groupPane = null, groupTargetId = null, groupDirty = false, groupSuspended = false;
+  const groupQueueRequests = new Set();
   const checkInReaders = new Map();
   const clearCheckInReaders = () => {for (const reader of checkInReaders.values()) reader.dispose();checkInReaders.clear();};
   const root = node("div", { class: "participation-workspace" }),
@@ -447,6 +453,7 @@ export async function createStaffParticipationWorkspace({
     ),
     targetHost = node("section", { class: "panel section-gap" }),
     queueHost = node("section", { class: "panel section-gap" }),
+    groupHost = node("section", { class: "panel section-gap", hidden: true }),
     formHost = node("section", { class: "panel section-gap", hidden: true });
   const path = (id = state.target?.targetId) => `${base}/${part(id)}`;
   function renderPicker(selected = picker.value) {
@@ -466,9 +473,80 @@ export async function createStaffParticipationWorkspace({
     );
     picker.value = selected;
   }
+  function reportDirty() {
+    if (isCurrent()) onDirty(Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges()));
+  }
   function dirty(value) {
     state.dirty = value;
-    onDirty(value);
+    reportDirty();
+  }
+  function pendingGroup() { return groupPane?.hasPendingCommand() === true; }
+  function reconcilePendingGroup() {
+    if (!isCurrent()) return;
+    writeStatus(notice, "The earlier group command may already be saved. Refresh group tools and retry that exact retained command before another conflicting action.", true);
+    if (root.isConnected && notice.isConnected) { notice.setAttribute("tabindex", "-1"); notice.focus(); }
+  }
+  function abortGroupQueueReads() {
+    for (const entry of groupQueueRequests) { clearTimeout(entry.timer); entry.controller.abort(); }
+    groupQueueRequests.clear();
+  }
+  function pauseGroups() { abortGroupQueueReads(); groupPane?.pause(); }
+  function disposeGroups() {
+    const old = groupPane;
+    groupPane = null; groupTargetId = null; groupDirty = false;
+    old?.dispose();
+    groupHost.replaceChildren(); groupHost.hidden = true;
+    reportDirty();
+  }
+  function displayGroupTitle(value) {
+    if (typeof value !== "string" || value.length > 180)
+      throw new Error("The current group display title is unavailable. Refresh the occurrence.");
+    return value.replace(/[\t\r\n]/g, " ");
+  }
+  function currentGroupTarget() {
+    const target = state.target;
+    if (!target || !Number.isSafeInteger(target.revision) || target.revision < 1 ||
+        !Number.isSafeInteger(state.detail?.currentSourceRevision) || state.detail.currentSourceRevision < 1)
+      throw new Error("Group tools require a current managed occurrence and source revision.");
+    return { targetId: target.targetId, moduleId: target.moduleId, targetRevision: target.revision,
+      sourceRevision: state.detail.currentSourceRevision, title: displayGroupTitle(target.title) };
+  }
+  function currentGroupCandidates() {
+    return state.rows.filter(row => row.targetId === state.target.targetId && row.moduleId === state.target.moduleId &&
+      !row.recovered && ["staff", "intake"].includes(row.source) && ["requested", "waitlisted"].includes(row.state))
+      .map(row => ({ participationId: row.id, revision: row.revision, state: row.state, label: "Participant " + row.id }));
+  }
+  async function syncGroups(version) {
+    const pane = groupPane;
+    if (!pane || !live(version) || groupSuspended || globalThis.document?.hidden || groupTargetId !== state.target?.targetId) return;
+    pane.setCandidates(currentGroupCandidates(), currentGroupTarget());
+    if (!live(version) || pane !== groupPane) return;
+    await pane.resume();
+  }
+  async function openGroupTools() {
+    const targetId = state.target?.targetId;
+    if (!targetId) return;
+    const wanted = Math.max(20, state.rows.length);
+    await loadTarget(targetId, wanted);
+    if (!isCurrent() || groupSuspended || globalThis.document?.hidden || state.target?.targetId !== targetId) return;
+    if (groupPane) return; // Same-target refresh already resumed the owned pane.
+    const target = currentGroupTarget();
+    let pane;
+    pane = createStaffParticipationGroupPane({ orgId, target, candidates: currentGroupCandidates(), admin, request,
+      isCurrent: () => isCurrent() && groupPane === pane && groupTargetId === targetId && state.target?.targetId === targetId,
+      onDirty: value => { if (groupPane === pane) { groupDirty = value; reportDirty(); } },
+      onChanged: () => {
+        if (!isCurrent() || groupPane !== pane) return;
+        onChanged();
+        void work(() => loadTarget(targetId, Math.max(20, state.rows.length)));
+      },
+    });
+    groupPane = pane; groupTargetId = targetId; groupDirty = false;
+    groupHost.hidden = false;
+    groupHost.replaceChildren(node("h2", {}, "Staff group tools"),
+      button("Refresh group tools", () => confirmDiscard(() => work(() => loadTarget(targetId, Math.max(20, state.rows.length))), { preserveGroup: true })),
+      pane.element);
+    await pane.load();
   }
   const live = (version = state.version) =>
     isCurrent() && version === state.version;
@@ -494,12 +572,13 @@ export async function createStaffParticipationWorkspace({
       field(
         "Occurrence",
         picker,
-        "One person, one place: the whole occurrence or one interval within an approved shift that allows it. Group bookings and automatic promotion are not supported.",
+        "One person, one place: the whole occurrence or one interval within an approved shift that allows it. Group admission requires each person’s own approval and consent; promotion remains deliberate.",
       ),
       notice,
     ),
     targetHost,
     queueHost,
+    groupHost,
     formHost,
   );
   const deliveryBase = `/api/orgs/${part(orgId)}/participation-delivery`;
@@ -1091,7 +1170,8 @@ export async function createStaffParticipationWorkspace({
     formHost.querySelector("h2")?.focus();
     formHost.scrollIntoView({ block: "nearest" });
   }
-  function confirmDiscard(fn) {
+  function confirmDiscard(fn, { preserveGroup = false } = {}) {
+    if (pendingGroup() && !preserveGroup) { reconcilePendingGroup(); return; }
     if (attendanceEditor?.pending) {
       attendanceMessage(
         attendanceEditor,
@@ -1100,10 +1180,13 @@ export async function createStaffParticipationWorkspace({
       );
       return;
     }
-    if (!state.dirty) {
+    const groupChoices = !preserveGroup && groupPane?.hasUnsavedChanges();
+    const proceed = () => {
+      if (pendingGroup() && !preserveGroup) { reconcilePendingGroup(); return; }
+      if (!preserveGroup) disposeGroups();
       void fn();
-      return;
-    }
+    };
+    if (!state.dirty && !groupChoices) { proceed(); return; }
     const editor = attendanceEditor;
     const prompt = node(
       "section",
@@ -1116,7 +1199,7 @@ export async function createStaffParticipationWorkspace({
       node(
         "p",
         {},
-        "The saved records are unchanged. Continue without these unsaved entries?",
+        "Saved decisions remain saved. Continue without these unsaved form and group choices?",
       ),
     );
     const currentPrompt = () =>
@@ -1140,15 +1223,17 @@ export async function createStaffParticipationWorkspace({
           "Discard and continue",
           () => {
             if (!currentPrompt()) return;
-            closeForm();
+            if (pendingGroup() && !preserveGroup) { reconcilePendingGroup(); return; }
+            if (closeForm() === false) return;
             prompt.remove();
-            void fn();
+            proceed();
           },
           "danger",
         ),
         keep,
       ),
     );
+    formHost.hidden = false;
     formHost.append(prompt);
     prompt.focus();
   }
@@ -1211,7 +1296,13 @@ export async function createStaffParticipationWorkspace({
       refreshFailed,
     );
   }
-  async function loadTarget(id = picker.value) {
+  async function loadTarget(id = picker.value, groupPrefixCount = 0) {
+    if (!globalThis.document?.hidden) groupSuspended = false;
+    if (groupPane && id !== groupTargetId) {
+      if (pendingGroup()) { reconcilePendingGroup(); return; }
+      disposeGroups();
+    }
+    pauseGroups();
     if (closeForm() === false) return;
     if (!id) {
       state.target = null;
@@ -1242,7 +1333,7 @@ export async function createStaffParticipationWorkspace({
       state.rows = [];
       state.cursor = null;
       renderQueue();
-    } else await loadQueue(false, version);
+    } else await loadQueue(false, version, groupPrefixCount);
     if (live(version))
       writeStatus(
         notice,
@@ -1334,7 +1425,7 @@ export async function createStaffParticipationWorkspace({
     actions.append(
       button(
         "Refresh occurrence",
-        () => confirmDiscard(() => work(() => loadTarget())),
+        () => confirmDiscard(() => work(() => loadTarget()), { preserveGroup: true }),
         "subtle",
       ),
     );
@@ -1361,6 +1452,8 @@ export async function createStaffParticipationWorkspace({
         attendanceOpen,
       );
     }
+    if (target.mode === "managed" && Number.isSafeInteger(target.revision) && target.revision > 0)
+      actions.append(button("Open staff group tools", () => confirmDiscard(() => work(openGroupTools), { preserveGroup: true })));
     targetHost.append(actions);
   }
   const attendanceMethod = "whole-occurrence-staff-reported-v1";
@@ -2299,29 +2392,52 @@ export async function createStaffParticipationWorkspace({
     });
     startForm("Prepare a nonallocating candidate", form);
   }
-  async function loadQueue(append = false, version = state.version) {
-    const result = await request(
+  async function loadQueue(append = false, version = state.version, groupPrefixCount = 0) {
+    const refreshPrefix = Boolean(groupPane || groupPrefixCount);
+    if (groupPane) pauseGroups();
+    let result;
+    if (refreshPrefix) {
+      const desired = Math.min(2000, Math.max(20, groupPrefixCount || state.rows.length + (append ? 20 : 0)));
+      const entry = { controller: new AbortController(), timer: null };
+      entry.timer = setTimeout(() => entry.controller.abort(), 30000);
+      groupQueueRequests.add(entry);
+      try {
+        const rows = [], seen = new Set(), cursors = new Set(); let cursor = null;
+        for (let page = 0; page < 100; page++) {
+          const value = await request(`${path()}/participations${cursor ? `?cursor=${part(cursor)}` : ""}`, { signal: entry.controller.signal });
+          if (!live(version) || entry.controller.signal.aborted) return;
+          if (!Array.isArray(value.participations) || value.participations.length > 20)
+            throw new Error("The complete current candidate pages could not be verified.");
+          for (const row of value.participations) {
+            checkedIntervalMetadata(row);
+            if (typeof row.id !== "string" || !/^[A-Za-z0-9_-]{1,100}$/.test(row.id) || seen.has(row.id) ||
+                row.targetId !== state.target.targetId || row.moduleId !== state.target.moduleId)
+              throw new Error("The current candidate page changed. Refresh before group decisions.");
+            seen.add(row.id); rows.push(row);
+          }
+          const next = value.nextCursor ?? null;
+          if (next !== null && (typeof next !== "string" || !/^[A-Za-z0-9_-]{1,100}$/.test(next) ||
+              value.participations.length !== 20 || next !== value.participations.at(-1).id || cursors.has(next)))
+            throw new Error("The current candidate page cursor could not be verified.");
+          if (next !== null) cursors.add(next);
+          if (rows.length > 2000 || rows.length === 2000 && next !== null)
+            throw new Error("Group tools require no more than 2,000 complete loaded candidates.");
+          if (!next || rows.length >= desired) { result = { participations: rows, nextCursor: next }; break; }
+          cursor = next;
+        }
+        if (!result) throw new Error("The current candidate prefix could not be completed.");
+      } finally { clearTimeout(entry.timer); groupQueueRequests.delete(entry); }
+    } else result = await request(
       `${path()}/participations${append && state.cursor ? `?cursor=${part(state.cursor)}` : ""}`,
     );
     if (!live(version)) return;
-    if (
-      !Array.isArray(result.participations) ||
-      result.participations.length > 20
-    )
-      throw new Error(
-        "The participation page could not be verified. Refresh before deciding.",
-      );
+    if (!Array.isArray(result.participations) || result.participations.length > (refreshPrefix ? 2000 : 20))
+      throw new Error("The participation page could not be verified. Refresh before deciding.");
     result.participations.forEach(checkedIntervalMetadata);
-    state.rows = [
-      ...new Map(
-        [...(append ? state.rows : []), ...result.participations].map((row) => [
-          row.id,
-          row,
-        ]),
-      ).values(),
-    ];
+    state.rows = [...new Map([...(append && !refreshPrefix ? state.rows : []), ...result.participations].map(row => [row.id, row])).values()];
     state.cursor = result.nextCursor || null;
     renderQueue();
+    if (groupPane) await syncGroups(version);
   }
   function renderQueue() {
     clearCheckInReaders();
@@ -2848,7 +2964,25 @@ export async function createStaffParticipationWorkspace({
       return work(() => loadTarget(id));
     });
   });
-  root.dispose = clearCheckInReaders;
+  function suspendGroups() { groupSuspended = true; pauseGroups(); }
+  function groupVisibility() { if (globalThis.document?.hidden) suspendGroups(); }
+  globalThis.window?.addEventListener?.("pagehide", suspendGroups);
+  globalThis.document?.addEventListener?.("visibilitychange", groupVisibility);
+  root.hasPendingGroupCommand = pendingGroup;
+  root.hasUnsavedChanges = () => Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges());
+  root.reconcilePendingGroup = reconcilePendingGroup;
+  root.dispose = () => {
+    if (workspaceDisposed) return;
+    workspaceDisposed = true; state.version++;
+    globalThis.window?.removeEventListener?.("pagehide", suspendGroups);
+    globalThis.document?.removeEventListener?.("visibilitychange", groupVisibility);
+    abortGroupQueueReads(); disposeGroups(); clearCheckInReaders();
+    if (attendanceEditor) {
+      attendanceEditor.closed = true;
+      for (const controller of attendanceEditor.requests) controller.abort();
+      attendanceEditor = null;
+    }
+  };
   const result = await request(base);
   if (!isCurrent()) return root;
   state.targets = targetChoices(result.targets);

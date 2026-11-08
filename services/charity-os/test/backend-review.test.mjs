@@ -1013,6 +1013,8 @@ test("Access revocation remains possible with minimal audit reserve and after th
       const events = [],
         c = {
           query: async (sql, args) => {
+            const emptyGroups = emptyParticipationGroupsQuery(sql, args);
+            if (emptyGroups !== undefined) return emptyGroups;
             if (sql.startsWith("SELECT sum(size) AS size FROM ("))
               return { rows: [{ size: usage }] };
             // No check-in history participates in this legacy audit-reserve case.

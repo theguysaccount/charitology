@@ -82,6 +82,9 @@ function fixture({ moduleId = "events", state = "requested", usage = 0,
     async query(sql, values = []) {
       db.calls.push({ sql, values: structuredClone(values) });
       if (throwAt && sql.startsWith(throwAt)) throw new Error("Fictional SQL failure");
+      // The historical single-person fixture has no group containers.
+      if (sql === "SELECT count(*)::int AS count FROM os_participation_groups WHERE org_id=$1")
+        return { rows: [{ count: 0 }], rowCount: 1 };
       if (sql.startsWith("WITH moment AS MATERIALIZED"))
         return { rows: [clockRow(at, expires, within)] };
       if (sql === "SELECT * FROM os_records WHERE org_id=$1 AND deleted_at IS NULL ORDER BY created_at,id")

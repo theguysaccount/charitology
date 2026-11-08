@@ -12,7 +12,7 @@ import {exportIncubatorBridge} from './incubator-bridge-backup.mjs';
 import {exportParticipantCheckins} from './participant-check-in-backup.mjs';
 import {exportParticipationGroups} from './participation-group-recovery.mjs';
 
-const workspaceFeatures=async(c,org)=>(await c.query("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins",[org])).rows[0];
+const workspaceFeatures=async(c,org)=>(await c.query("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups",[org])).rows[0];
 
 /** The HTTP export and transaction capacity check use this same exact inventory. */
 export async function assembleWorkspaceBackup(c,org,{organization,records}={}){
@@ -45,7 +45,7 @@ export async function checkWorkspaceExportCapacity(c,org){
   const backup=await assembleWorkspaceBackup(c,org),bytes=Buffer.byteLength(JSON.stringify(backup));
   if(bytes>64*1024*1024)fail(422,'learning_backup_size','The complete workspace backup would exceed 64 MiB. This change was rolled back.');
   const features=await workspaceFeatures(c,org);
-  const needsProjection=features.present||features.incubator||features.checkins||backup.participantCheckins!==undefined||backup.incubatorBridge!==undefined||backup.participation?.version===3;
+  const needsProjection=features.present||features.incubator||features.checkins||features.groups||backup.participationGroups!==undefined||backup.participantCheckins!==undefined||backup.incubatorBridge!==undefined||backup.participation?.version===3;
   const operational=needsProjection?await measureLearningOperationalCapacity(c,org,backup.participation):null;
   const requiredUsage=usage+(operational?.sourceLogicalGrowthBytes||0),requiredBackupBytes=bytes+(operational?.sourceWireGrowthBytes||0);
   if(requiredUsage>60*1024*1024||requiredBackupBytes>64*1024*1024)

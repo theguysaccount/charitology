@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { planGroupReview, prepareGroupReview } from "../lib/participation-group-review.mjs";
 import { readParticipationDomainClock } from "../lib/participation.mjs";
-import { groupHash, projectGroupHistory } from "../lib/participation-group-model.mjs";
+import { groupHash, projectGroupHistory, validateGroupHistory } from "../lib/participation-group-model.mjs";
 import { verifyGroupPreview } from "../lib/participation-group-preview.mjs";
 
 // Detached authorized-context fixtures, not real SQL/session/allocation proof.
@@ -113,6 +113,18 @@ test("a changed reviewed graph or explicit reason changes the bound review", asy
   assert.notEqual(first.pinsSha256, second.pinsSha256); assert.notEqual(first.reviewSha256, second.reviewSha256);
   const third = await review(f, admission(undefined, [{ participationId: "p01", reason: "A deliberate recorded reason" }]));
   assert.notEqual(second.selectionSha256, third.selectionSha256); assert.notEqual(second.reviewSha256, third.reviewSha256);
+});
+
+test("cancellation exclusions use the original admitted set after a proper subset admission", async () => {
+  const f = await fixture(3, 3, true), history = structuredClone(f.context.group.history);
+  const prior = history.decisions[1].result;
+  prior.selectionMode = "subset"; prior.selected = prior.selected.slice(0, 2); prior.unselectedIds = ["p03"];
+  f.context.group.history = validateGroupHistory(history); f.context.roster[2].state = "requested";
+  f.context.inventory = null;
+  const value = await review(f, { version: 1, groupRevision: 2, selected: ["p01"], reason: "One admitted person asked to cancel" }, "cancel");
+  assert.equal(value.publicReview.ready, true); assert.deepEqual(value.publicReview.selectedIds, ["p01"]);
+  assert.deepEqual(value.publicReview.unselectedIds, ["p02"]);
+  assert.equal(f.context.roster[2].state, "requested");
 });
 test("stale, incomplete or terminal contexts refuse instead of signing a partial view", async () => {
   for (const change of [f => { f.context.group.revision = 2; }, f => { f.context.group.state = "closed"; },

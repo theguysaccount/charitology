@@ -32,7 +32,8 @@ export function planGroupReview({ org, context, operation, input }) {
     : group.state !== "admitted")) stale();
   const selection = operation === "admit" ? body.selection : { mode: "subset", items: body.selected };
   const selectedIds = selection.mode === "all" ? [...group.rosterIds].sort() : selection.items;
-  const unselectedIds = group.rosterIds.filter(id => !selectedIds.includes(id));
+  const universe = operation === "admit" ? group.rosterIds : admittedIds;
+  const unselectedIds = universe.filter(id => !selectedIds.includes(id));
   const reasons = operation === "admit" ? body.reasons : selectedIds.map(participationId => ({ participationId, reason: body.reason }));
   const blockers = [], steps = [], seen = new Set();
   const block = (participationId, code) => {

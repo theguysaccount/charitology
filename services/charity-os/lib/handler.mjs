@@ -65,6 +65,10 @@ import { exportDirectoryResources, restoredDirectoryResources, restoreDirectoryR
 import { readBackupBody } from "./backup-json.mjs";
 import { restoredParticipationGroups, restoreParticipationGroups, participationGroupHistoryCount } from "./participation-group-recovery.mjs";
 import { ParticipationGroupError } from "./participation-group-model.mjs";
+import { ParticipationGroupAllocationError } from "./participation-group-allocation.mjs";
+import { isParticipationGroupPath, isParticipationGroupPreview, readParticipationGroupBody } from "./participation-group-http.mjs";
+import { participationGroupReadRoutes } from "./participation-group-read-routes.mjs";
+import { participationGroupWriteRoutes } from "./participation-group-write-routes.mjs";
 import { LearningError } from "./learning-json.mjs";
 import { learningRoutes } from "./learning-routes.mjs";
 import { incubatorBridgeRoutes } from "./incubator-bridge.mjs";
@@ -357,9 +361,17 @@ export function createHandler({
       if (learningResponse) return learningResponse;
       const incubatorResponse = await incubatorBridgeRoutes({ request, url, db, session });
       if (incubatorResponse) return incubatorResponse;
+      if (isParticipationGroupPath(path)) {
+        if (method === "HEAD") fail(405, "group_method", "Use GET to read a group view.");
+        if (method === "GET" && (request.body !== null || request.headers.has("transfer-encoding") ||
+            (request.headers.has("content-length") && request.headers.get("content-length") !== "0")))
+          fail(400, "group_body", "Read group views without a request body.");
+      }
       const input = ["GET", "HEAD"].includes(method)
         ? {}
-        : isParticipantCheckInPath(path)
+        : isParticipationGroupPath(path)
+          ? await readParticipationGroupBody(request)
+          : isParticipantCheckInPath(path)
           ? await readCheckInBody(request)
           : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/participation-targets\/[A-Za-z0-9_-]+\/attendance(?:\/|$)/.test(
               path,
@@ -599,6 +611,10 @@ export function createHandler({
           if (attendanceResponse) return attendanceResponse;
           const checkInResponse = await staffCheckInRoutes({ c, org, member, tail, method, url });
           if (checkInResponse) return checkInResponse;
+          const groupWriteResponse = await participationGroupWriteRoutes({ c, org, session, tail, method, input, url, settings });
+          if (groupWriteResponse) return groupWriteResponse;
+          const groupReadResponse = await participationGroupReadRoutes({ c, org, session, tail, method, input, url, settings });
+          if (groupReadResponse) return groupReadResponse;
           const participationResponse = await participationRoutes({
             c,
             org,
@@ -1575,7 +1591,7 @@ export function createHandler({
         },
         {
           lock: !["GET", "HEAD"].includes(method) || tail === "export",
-          readOnly: ["GET", "HEAD"].includes(method) && tail !== "export",
+          readOnly: (["GET", "HEAD"].includes(method) && tail !== "export") || isParticipationGroupPreview(path, method),
         },
       );
       if (method === "POST" && tail === "invitations")
@@ -1605,7 +1621,7 @@ export function createHandler({
           },
           422,
         );
-      if (error instanceof ParticipationGroupError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
+      if (error instanceof ParticipationGroupError || error instanceof ParticipationGroupAllocationError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
         return json(
           {
             ok: false,
