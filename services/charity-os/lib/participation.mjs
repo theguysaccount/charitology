@@ -1,9 +1,20 @@
+import { participationChargeJsonSQL } from "./participation-storage.mjs";
+import { retainParticipationAuditOutcome } from "./participation-receipt.mjs";
+import {
+  validateRequestedInterval,
+  requestedInterval,
+  effectiveRequestedInterval,
+  frozenParticipationInterval,
+  peakOccupancy,
+  sameInterval,
+} from "./participation-intervals.mjs";
 import {
   queueParticipationTransition,
   ownDeliverySummary,
 } from "./participation-delivery.mjs";
 import {
   audit,
+  noteParticipationReceiptReplay,
   allRecords,
   rowRecord,
   saveRecord,
@@ -118,7 +129,13 @@ export function participationTerms(record) {
         "participantInstructions",
         "organizerEmail",
         "organizerUrl",
-      ].map((k) => [k, d[k]]),
+        "allowPartialIntervals",
+      ]
+        .filter(
+          (k) =>
+            k !== "allowPartialIntervals" || record.moduleId === "volunteers",
+        )
+        .map((k) => [k, d[k]]),
     ),
     { recordId: record.id, orgId: record.orgId, status: "draft", records: [] },
   );
@@ -175,7 +192,23 @@ export function participationTerms(record) {
       "participation_terms",
       "Publish an organizer contact route before managing participation.",
     );
+  if (record.moduleId === "volunteers" && d.allowPartialIntervals === true)
+    terms.intervalPolicy = { version: 1, mode: "within-shift" };
   return terms;
+}
+export function participationAllocationHash(
+  targetId,
+  sourceRevision,
+  termsHash,
+  requestedInterval,
+) {
+  return hash({
+    version: 1,
+    targetId,
+    sourceRevision,
+    termsHash,
+    requestedInterval,
+  });
 }
 export function participationIntent(input, actor, action) {
   if (
@@ -224,7 +257,7 @@ export async function participationQuota(c, org) {
   ]) {
     const r = (
       await c.query(
-        `SELECT count(*) AS count,COALESCE(sum(${table === "os_participation_outbox" ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS bytes FROM ${table} t WHERE org_id=$1`,
+        `SELECT count(*) AS count,COALESCE(sum(${table === "os_participation_outbox" ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : table === "os_participations" ? `octet_length(${participationChargeJsonSQL("t")}::text)` : "octet_length(to_jsonb(t)::text)"}),0) AS bytes FROM ${table} t WHERE org_id=$1`,
         [org],
       )
     ).rows[0];
@@ -279,7 +312,13 @@ async function entries(c, org, targetId) {
     )
   ).rows;
 }
-const targetObject = (t, source, occupied) => ({
+const targetObject = (
+  t,
+  source,
+  occupied,
+  peak = occupied,
+  confirmedCount = occupied,
+) => ({
   targetId: source.id,
   moduleId: source.moduleId,
   title: source.data.title,
@@ -291,6 +330,8 @@ const targetObject = (t, source, occupied) => ({
   recoveryBlock: t?.recovery_block === true,
   capacity: source.data.capacity ?? null,
   occupied,
+  confirmedCount,
+  peakOccupied: peak,
   terms: t?.terms || null,
   termsHash: t?.terms_hash || null,
 });
@@ -366,6 +407,9 @@ const consentSummary = (p) =>
         at: p.consent.at,
         waitlistAllowed: p.consent.waitlistAllowed === true,
         emailUpdates: p.consent.emailUpdates === true,
+        ...(p.consent.allocationHash
+          ? { allocationHash: p.consent.allocationHash }
+          : {}),
       }
     : null;
 export function ownObject(p, t, source, intake) {
@@ -394,6 +438,14 @@ export function ownObject(p, t, source, intake) {
     termsHash: current.termsHash,
     terms: current.terms,
     frozenTerms: p.frozen?.terms || null,
+    requestedInterval: p.requested_interval || null,
+    intervalChoiceLocked: !!(
+      p.consent ||
+      p.requested_interval != null ||
+      p.source === "recovered"
+    ),
+    allocationHash: p.consent?.allocationHash || null,
+    frozenInterval: p.frozen?.interval || null,
     consent: consentSummary(p),
     canConsent: valid && !!current.terms,
     consentUnavailableReason:
@@ -453,21 +505,7 @@ const entryReadable = (p, records, member) => {
   );
 };
 async function waitlistSuggestion(c, org, source, records, member) {
-  const terms = participationTerms(source),
-    all = (
-      await c.query(
-        "SELECT * FROM os_participations WHERE org_id=$1 AND state='confirmed'",
-        [org],
-      )
-    ).rows,
-    managedIds = new Set(
-      (
-        await c.query(
-          "SELECT target_id FROM os_participation_targets WHERE org_id=$1",
-          [org],
-        )
-      ).rows.map((t) => t.target_id),
-    );
+  const terms = participationTerms(source);
   for (const p of (await entries(c, org, source.id)).filter(
     (p) => p.state === "waitlisted" && !p.recovered,
   )) {
@@ -490,34 +528,31 @@ async function waitlistSuggestion(c, org, source, records, member) {
           Date.parse(p.consent.at) <= Date.parse(p.intake_cancelled_at)))
     )
       continue;
-    if (
-      all.some(
-        (x) => x.target_id === p.target_id && x.contact_id === p.contact_id,
+    try {
+      if (
+        p.requested_interval != null &&
+        p.consent.allocationHash !==
+          participationAllocationHash(
+            source.id,
+            source.revision,
+            hash(terms),
+            requestedInterval(p, terms),
+          )
       )
-    )
-      continue;
-    if (
-      source.moduleId === "volunteers" &&
-      (all.some(
-        (x) =>
-          x.module_id === "volunteers" &&
-          x.contact_id === p.contact_id &&
-          intervalsOverlap(x.frozen?.terms, terms),
-      ) ||
-        records.some(
-          (r) =>
-            r.moduleId === "volunteers" &&
-            r.data.kind === "assignment" &&
-            r.data.contactId === p.contact_id &&
-            legacyActive("volunteers", r.status) &&
-            !managedIds.has(r.data.shiftId) &&
-            intervalsOverlap(
-              records.find((s) => s.id === r.data.shiftId)?.data,
-              terms,
-            ),
-        ))
-    )
-      continue;
+        continue;
+      await allocationCheck(c, org, p, source, records, terms);
+    } catch (error) {
+      if (
+        [
+          "participation_capacity",
+          "participation_overlap",
+          "participation_duplicate",
+          "participation_interval",
+        ].includes(error.code)
+      )
+        continue;
+      throw error;
+    }
     return p.id;
   }
   return null;
@@ -531,7 +566,7 @@ async function update(c, org, p, changes, intent) {
   };
   const saved = (
     await c.query(
-      "UPDATE os_participations SET state=$3,revision=$4,consent=$5,frozen=$6,waitlist_sequence=$7,confirmed_at=$8,cancelled_at=$9,last_command=$10,updated_at=now(),recovered=$11,recovered_state=$12 WHERE org_id=$1 AND id=$2 RETURNING *",
+      "UPDATE os_participations SET state=$3,revision=$4,consent=$5,frozen=$6,waitlist_sequence=$7,confirmed_at=$8,cancelled_at=$9,last_command=$10,updated_at=now(),recovered=$11,recovered_state=$12,requested_interval=$13 WHERE org_id=$1 AND id=$2 RETURNING *",
       [
         org,
         row.id,
@@ -545,6 +580,7 @@ async function update(c, org, p, changes, intent) {
         JSON.stringify(row.last_command),
         row.recovered === true,
         row.recovered_state || null,
+        row.requested_interval ? JSON.stringify(row.requested_interval) : null,
       ],
     )
   ).rows[0];
@@ -564,6 +600,30 @@ async function consentCheck(c, org, p, source, terms) {
       409,
       "participation_consent",
       "Renew specific participation consent for this exact approved occurrence revision.",
+    );
+  if (
+    p.requested_interval != null &&
+    p.consent.allocationHash !==
+      participationAllocationHash(
+        source.id,
+        source.revision,
+        hash(terms),
+        requestedInterval(p, terms),
+      )
+  )
+    fail(
+      409,
+      "participation_consent",
+      "Renew consent for this exact requested interval.",
+    );
+  if (
+    p.requested_interval != null &&
+    (!p.consent.terms || hash(p.consent.terms) !== hash(terms))
+  )
+    fail(
+      409,
+      "participation_consent",
+      "Renew consent with the exact approved public terms.",
     );
   if (p.intake_id) {
     const intake = (
@@ -607,9 +667,14 @@ async function allocationCheck(c, org, p, source, records, terms) {
       [org],
     )
   ).rows;
+  const range = effectiveRequestedInterval(p, terms);
   if (
-    all.filter((x) => x.target_id === p.target_id && x.id !== p.id).length >=
-    source.data.capacity
+    peakOccupancy([
+      ...all
+        .filter((x) => x.target_id === p.target_id && x.id !== p.id)
+        .map(frozenParticipationInterval),
+      range,
+    ]) > source.data.capacity
   )
     fail(
       409,
@@ -636,7 +701,7 @@ async function allocationCheck(c, org, p, source, records, terms) {
           x.id !== p.id &&
           x.module_id === "volunteers" &&
           x.contact_id === p.contact_id &&
-          intervalsOverlap(x.frozen?.terms, terms),
+          intervalsOverlap(frozenParticipationInterval(x), range),
       )
     )
       fail(
@@ -661,7 +726,7 @@ async function allocationCheck(c, org, p, source, records, terms) {
         !managedIds.has(r.data.shiftId),
     )) {
       const shift = records.find((x) => x.id === r.data.shiftId);
-      if (shift && intervalsOverlap(shift.data, terms))
+      if (shift && intervalsOverlap(shift.data, range))
         fail(
           409,
           "participation_overlap",
@@ -720,11 +785,33 @@ async function adoptionPreview(c, org, source, t, records) {
   }
   if (!sourceApproved(source))
     issues.push("The current occurrence needs independent approval.");
+  let peak = 0;
+  const occupantIntervals = new Map();
+  if (terms) {
+    try {
+      for (const o of occupants) {
+        const p = ledger.find((p) => p.id === o.entryId);
+        const range = p ? frozenParticipationInterval(p) : terms;
+        if (p?.requested_interval != null)
+          validateRequestedInterval(
+            p.requested_interval,
+            terms,
+            source.moduleId,
+          );
+        occupantIntervals.set(o.bookingRecordId, range);
+      }
+      peak = peakOccupancy([...occupantIntervals.values()]);
+    } catch {
+      issues.push("Recorded allocation intervals need reconciliation.");
+    }
+  }
   if (
     !Number.isSafeInteger(source.data.capacity) ||
-    source.data.capacity < occupants.length
+    source.data.capacity < peak
   )
-    issues.push("Known capacity cannot be lower than existing occupancy.");
+    issues.push(
+      "Known capacity cannot be lower than existing concurrent occupancy.",
+    );
   const contacts = new Set();
   for (const o of occupants) {
     if (!records.some((r) => r.id === o.contactId && r.moduleId === "contacts"))
@@ -750,12 +837,22 @@ async function adoptionPreview(c, org, source, t, records) {
         [org, source.id],
       )
     ).rows;
+    const managedIds = new Set(
+      (
+        await c.query(
+          "SELECT target_id FROM os_participation_targets WHERE org_id=$1",
+          [org],
+        )
+      ).rows.map((t) => t.target_id),
+    );
     for (const o of occupants) {
+      const range = occupantIntervals.get(o.bookingRecordId);
+      if (!range) continue;
       if (
         all.some(
           (x) =>
             x.contact_id === o.contactId &&
-            intervalsOverlap(x.frozen?.terms, terms),
+            intervalsOverlap(frozenParticipationInterval(x), range),
         )
       )
         issues.push("An occupant overlaps another managed assignment.");
@@ -764,11 +861,12 @@ async function adoptionPreview(c, org, source, t, records) {
           r.moduleId === "volunteers" &&
           r.data.kind === "assignment" &&
           r.data.shiftId !== source.id &&
+          !managedIds.has(r.data.shiftId) &&
           r.data.contactId === o.contactId &&
           legacyActive("volunteers", r.status),
       )) {
         const shift = records.find((x) => x.id === r.data.shiftId);
-        if (shift && intervalsOverlap(shift.data, terms))
+        if (shift && intervalsOverlap(shift.data, range))
           issues.push("An occupant overlaps another recorded assignment.");
       }
     }
@@ -784,9 +882,11 @@ async function adoptionPreview(c, org, source, t, records) {
         p.state,
         p.recovered,
         p.recovered_state,
+        p.requested_interval || null,
       ]),
     }),
     occupants,
+    peakOccupied: peak,
     issues: [...new Set(issues)],
     ledger,
     legacy,
@@ -799,17 +899,21 @@ async function adopt({ c, org, user, member, source, t, records, input }) {
   requireAdmin(member);
   exact(input, ["targetRevision", "expectedLegacyHash", "idempotencyKey"]);
   const intent = participationIntent(input, user, "adopt");
-  if (participationReplay(t?.last_command, intent))
+  if (participationReplay(t?.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
+    const confirmed = (await entries(c, org, source.id)).filter(
+      (p) => p.state === "confirmed",
+    );
     return okay({
       target: targetObject(
         t,
         source,
-        (await entries(c, org, source.id)).filter(
-          (p) => p.state === "confirmed",
-        ).length,
+        confirmed.length,
+        peakOccupancy(confirmed.map(frozenParticipationInterval)),
       ),
       adopted: t.last_command.adopted || 0,
     });
+  }
   revision(input, source.revision, "targetRevision");
   const preview = await adoptionPreview(c, org, source, t, records);
   if (input.expectedLegacyHash !== preview.legacyHash)
@@ -877,7 +981,12 @@ async function adopt({ c, org, user, member, source, t, records, input }) {
     sourceRevision: source.revision,
   });
   return okay({
-    target: targetObject(next, source, preview.occupants.length),
+    target: targetObject(
+      next,
+      source,
+      preview.occupants.length,
+      preview.peakOccupied,
+    ),
     adopted: preview.legacy.length + preview.recovered.length,
   });
 }
@@ -905,10 +1014,12 @@ async function associate({ c, org, user, member, source, t, records, input }) {
   if (old) {
     if (old.target_id !== source.id) unavailable();
     candidateFor(records, old, member, { approval: false });
-    if (participationReplay(old.last_command, intent))
+    if (participationReplay(old.last_command, intent)) {
+      noteParticipationReceiptReplay(c, org);
       return okay({
         participation: staffObject(old, t, source, records, member),
       });
+    }
     fail(
       409,
       "participation_duplicate",
@@ -951,6 +1062,19 @@ async function associate({ c, org, user, member, source, t, records, input }) {
         "This request is not associated with the selected booking and contact.",
       );
   }
+  if (
+    (
+      await c.query(
+        "SELECT id FROM os_participations WHERE org_id=$1 AND target_id=$2 AND ((contact_id=$3 AND state<>'cancelled') OR ($4::text IS NOT NULL AND intake_id=$4)) LIMIT 1",
+        [org, source.id, candidate.data.contactId, input.intakeId || null],
+      )
+    ).rows.length
+  )
+    fail(
+      409,
+      "participation_duplicate",
+      "This contact or original request already has participation history for this occurrence. Reload its saved entry.",
+    );
   const row = (
     await c.query(
       "INSERT INTO os_participations(org_id,id,target_id,module_id,booking_record_id,contact_id,intake_id,state,revision,source,created_by,last_command) VALUES($1,$2,$3,$4,$5,$6,$7,'requested',1,$8,$9,$10) RETURNING *",
@@ -994,7 +1118,10 @@ async function recordConsent({
   intake = null,
 }) {
   const intent = participationIntent(input, user, "consent");
-  if (participationReplay(p.last_command, intent)) return p;
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
+    return p;
+  }
   revision(input, p.revision);
   revision(input, t?.revision, "targetRevision");
   const terms = approvedTarget(source, t);
@@ -1015,6 +1142,20 @@ async function recordConsent({
       409,
       "participation_state",
       "This participation cannot accept new consent.",
+    );
+  const requested = validateRequestedInterval(
+    Object.hasOwn(input, "requestedInterval") ? input.requestedInterval : null,
+    terms,
+    p.module_id,
+  );
+  if (
+    (p.consent || p.requested_interval != null || p.source === "recovered") &&
+    !sameInterval(p.requested_interval ?? null, requested)
+  )
+    fail(
+      409,
+      "participation_interval",
+      "Cancel and create a new request to change the consented interval.",
     );
   let at = new Date().toISOString(),
     method = "participant-portal",
@@ -1082,8 +1223,25 @@ async function recordConsent({
     actorHash: hash(user),
     recipientHash: own ? hash(actor.email) : null,
     withdrawalAcknowledged: input.withdrawalAcknowledged === true,
+    ...(terms.intervalPolicy ? { terms } : {}),
+    ...(requested
+      ? {
+          allocationHash: participationAllocationHash(
+            source.id,
+            source.revision,
+            hash(terms),
+            requested,
+          ),
+        }
+      : {}),
   };
-  const next = await update(c, org, p, { consent }, intent);
+  const next = await update(
+    c,
+    org,
+    p,
+    { consent, requested_interval: requested },
+    intent,
+  );
   next.intake_status = requestState?.status;
   next.intake_cancelled_at = requestState?.cancelled_at;
   if (!consent.emailUpdates)
@@ -1112,7 +1270,10 @@ async function preferences({
   t,
 }) {
   const intent = participationIntent(input, user, "preferences");
-  if (participationReplay(p.last_command, intent)) return p;
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
+    return p;
+  }
   revision(input, p.revision);
   revision(input, intake.revision, "intakeRevision");
   if (typeof input.emailUpdates !== "boolean")
@@ -1138,14 +1299,14 @@ async function preferences({
   const consent = p.consent
     ? { ...p.consent, emailUpdates: input.emailUpdates }
     : null;
-  const next = await update(c, org, p, { consent }, intent);
+  let next = await update(c, org, p, { consent }, intent);
   if (!input.emailUpdates)
     await c.query(
       "UPDATE os_participation_outbox SET state='cancelled' WHERE org_id=$1 AND participation_id=$2 AND state='paused'",
       [org, p.id],
     );
   if (input.emailUpdates) await participationQuota(c, org);
-  await audit(
+  const auditRetained = await audit(
     c,
     org,
     user,
@@ -1159,6 +1320,7 @@ async function preferences({
       emailUpdates: input.emailUpdates,
     },
   );
+  next = await retainParticipationAuditOutcome(c, org, next, auditRetained);
   return next;
 }
 
@@ -1174,11 +1336,17 @@ async function cancel({
   intake = null,
 }) {
   const intent = participationIntent(input, user, "cancel");
-  if (participationReplay(p.last_command, intent))
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
     return {
       p,
       notificationQueued: p.last_command.notificationQueued === true,
+      auditRetained:
+        typeof p.last_command.auditRetained === "boolean"
+          ? p.last_command.auditRetained
+          : null,
     };
+  }
   revision(input, p.revision);
   if (own) revision(input, intake.revision, "intakeRevision");
   if (p.state === "cancelled")
@@ -1187,6 +1355,7 @@ async function cancel({
       "participation_state",
       "This participation was already cancelled. Reload its saved status.",
     );
+  let auditRetained = true;
   const record = records.find((r) => r.id === p.booking_record_id);
   if (record) {
     const next = {
@@ -1198,10 +1367,17 @@ async function cancel({
     };
     await saveRecord(c, next, { participationCommand: true });
     records.splice(records.indexOf(record), 1, next);
-    await audit(c, org, user, "participation.cancelled", record, {
-      participationId: p.id,
-      targetId: p.target_id,
-    });
+    auditRetained = await audit(
+      c,
+      org,
+      user,
+      "participation.cancelled",
+      record,
+      {
+        participationId: p.id,
+        targetId: p.target_id,
+      },
+    );
   }
   const changes = {
     state: "cancelled",
@@ -1213,16 +1389,25 @@ async function cancel({
     { ...p, ...changes, revision: p.revision + 1 },
     { safe: true, settings },
   );
-  const next = await update(c, org, p, changes, {
+  let next = await update(c, org, p, changes, {
     ...intent,
     notificationQueued,
   });
-  await audit(c, org, user, "participation.cancelled", null, {
-    participationId: p.id,
-    targetId: p.target_id,
-    notificationQueued,
-  });
-  return { p: next, notificationQueued };
+  const finalAuditRetained = await audit(
+    c,
+    org,
+    user,
+    "participation.cancelled",
+    null,
+    {
+      participationId: p.id,
+      targetId: p.target_id,
+      notificationQueued,
+    },
+  );
+  auditRetained = auditRetained && finalAuditRetained;
+  next = await retainParticipationAuditOutcome(c, org, next, auditRetained);
+  return { p: next, notificationQueued, auditRetained };
 }
 
 async function staffCommand({
@@ -1247,6 +1432,7 @@ async function staffCommand({
           "targetRevision",
           "sourceRevision",
           "termsHash",
+          "requestedInterval",
           "consent",
           "waitlistAllowed",
           "emailUpdates",
@@ -1261,6 +1447,7 @@ async function staffCommand({
           "targetRevision",
           "candidateRevision",
           "consentRevision",
+          "allocationHash",
           "reason",
           "idempotencyKey",
         ],
@@ -1272,6 +1459,7 @@ async function staffCommand({
     return okay({
       participation: staffObject(result.p, t, source, records, member),
       notificationQueued: result.notificationQueued,
+      auditRetained: result.auditRetained,
     });
   }
   if (action === "consent") {
@@ -1292,8 +1480,10 @@ async function staffCommand({
     });
   }
   const intent = participationIntent(input, user, action);
-  if (participationReplay(p.last_command, intent))
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
     return okay({ participation: staffObject(p, t, source, records, member) });
+  }
   revision(input, p.revision);
   revision(input, t?.revision, "targetRevision");
   const terms = approvedTarget(source, t),
@@ -1301,6 +1491,15 @@ async function staffCommand({
   revision(input, candidate.revision, "candidateRevision");
   revision(input, p.consent?.revision || 0, "consentRevision");
   await consentCheck(c, org, p, source, terms);
+  if (
+    p.requested_interval != null &&
+    input.allocationHash !== p.consent.allocationHash
+  )
+    fail(
+      409,
+      "participation_interval",
+      "Review this exact requested interval before allocating a place.",
+    );
   if (p.recovered || p.state === "cancelled")
     fail(
       409,
@@ -1377,6 +1576,12 @@ async function staffCommand({
         candidateRevision: candidate.revision,
         candidateApproval: candidate.approval,
         programId: source.data.programId || null,
+        ...(p.requested_interval
+          ? {
+              interval: requestedInterval(p, terms),
+              allocationHash: p.consent.allocationHash,
+            }
+          : {}),
       },
     };
   }
@@ -1428,7 +1633,7 @@ export async function participationRoutes({
       ).rows,
       counts = (
         await c.query(
-          "SELECT target_id,count(*) AS count FROM os_participations WHERE org_id=$1 AND state='confirmed' GROUP BY target_id",
+          "SELECT * FROM os_participations WHERE org_id=$1 AND state='confirmed'",
           [org],
         )
       ).rows;
@@ -1445,7 +1650,12 @@ export async function participationRoutes({
           targetObject(
             targets.find((t) => t.target_id === r.id),
             r,
-            Number(counts.find((x) => x.target_id === r.id)?.count || 0),
+            counts.filter((x) => x.target_id === r.id).length,
+            peakOccupancy(
+              counts
+                .filter((x) => x.target_id === r.id)
+                .map(frozenParticipationInterval),
+            ),
           ),
         ),
     });
@@ -1453,12 +1663,20 @@ export async function participationRoutes({
   const { source, records } = await sources(c, org, match[1]);
   // The fulfillment console is for scoped writers, never snapshot-only readers.
   permit(source, member, "write");
-  const t = await managed(c, org, source.id, { forUpdate: !["GET", "HEAD"].includes(method) });
+  const t = await managed(c, org, source.id, {
+    forUpdate: !["GET", "HEAD"].includes(method),
+  });
   if (!match[2] && method === "GET") {
     const preview = await adoptionPreview(c, org, source, t, records),
       current = currentTerms(source);
     return okay({
-      target: targetObject(t, source, preview.occupants.length),
+      target: targetObject(
+        t,
+        source,
+        preview.occupants.length,
+        preview.peakOccupied,
+        preview.ledger.filter((p) => p.state === "confirmed").length,
+      ),
       preview: {
         legacyHash: preview.legacyHash,
         occupants: preview.occupants
@@ -1626,7 +1844,9 @@ export async function participantParticipationRoutes({
         const { source, records } = await sources(c, org, p.target_id, {
             historical: true,
           }),
-          t = await managed(c, org, p.target_id, { forUpdate: request.method !== "GET" });
+          t = await managed(c, org, p.target_id, {
+            forUpdate: request.method !== "GET",
+          });
         if (!action) {
           objects.push(await safeOwn(p, t, source));
           continue;
@@ -1641,6 +1861,7 @@ export async function participantParticipationRoutes({
                 "targetRevision",
                 "sourceRevision",
                 "termsHash",
+                "requestedInterval",
                 "consent",
                 "waitlistAllowed",
                 "emailUpdates",
@@ -1678,7 +1899,10 @@ export async function participantParticipationRoutes({
             source,
             t,
           });
-          return okay({ participation: await safeOwn(next, t, source) });
+          return okay({
+            participation: await safeOwn(next, t, source),
+            auditRetained: next.last_command?.auditRetained ?? null,
+          });
         }
         const result = await cancel({
           settings,
@@ -1694,6 +1918,7 @@ export async function participantParticipationRoutes({
         return okay({
           participation: await safeOwn(result.p, t, source),
           notificationQueued: result.notificationQueued,
+          auditRetained: result.auditRetained,
         });
       }
       if (action) unavailable();

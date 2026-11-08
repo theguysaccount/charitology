@@ -34,10 +34,10 @@ export async function checkWorkspaceExportCapacity(c,org){
   const backup=await assembleWorkspaceBackup(c,org),bytes=Buffer.byteLength(JSON.stringify(backup));
   if(bytes>64*1024*1024)fail(422,'learning_backup_size','The complete workspace backup would exceed 64 MiB. This change was rolled back.');
   const learningPresent=(await c.query("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present",[org])).rows[0].present;
-  const operational=learningPresent?await measureLearningOperationalCapacity(c,org,backup.participation):null;
+  const operational=learningPresent||backup.participation?.version===3?await measureLearningOperationalCapacity(c,org,backup.participation):null;
   const requiredUsage=usage+(operational?.sourceLogicalGrowthBytes||0),requiredBackupBytes=bytes+(operational?.sourceWireGrowthBytes||0);
   if(requiredUsage>60*1024*1024||requiredBackupBytes>64*1024*1024)
     fail(422,'learning_operational_capacity','The complete workspace cannot retain its bounded delivery status growth within the existing 60 MiB storage and 64 MiB backup limits.');
-  const restore=learningPresent?await checkLearningRestoreCapacity(c,backup):null;
+  const restore=learningPresent||backup.participation?.version===3?await checkLearningRestoreCapacity(c,backup):null;
   return {usage,backupBytes:bytes,requiredUsage,requiredBackupBytes,operational,restore};
 }

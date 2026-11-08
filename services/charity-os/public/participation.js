@@ -15,11 +15,18 @@ export function commandIntent(makeKey = () => crypto.randomUUID()) {
         throw new Error(
           "The earlier response may have been interrupted. Refresh the saved participation before submitting a different change.",
         );
-      if (!pending) pending = { path, canonical, key: makeKey() };
+      if (pending) pending.uncertain = true;
+      else pending = { path, canonical, key: makeKey(), uncertain: false };
       return { ...payload, idempotencyKey: pending.key };
     },
     rejected(status) {
-      if ([400, 401, 403, 404, 413, 422, 429].includes(status)) pending = null;
+      if (!pending) return;
+      if (
+        !pending.uncertain &&
+        [400, 401, 403, 404, 413, 422, 429].includes(status)
+      )
+        pending = null;
+      else pending.uncertain = true;
     },
     clear() {
       pending = null;
@@ -71,6 +78,239 @@ export function consentInstant(value) {
   )
     throw new Error("Use a real ISO consent instant with an explicit offset.");
   return new Date(value).toISOString();
+}
+function checkedIntervalMetadata(row) {
+  if (!row || typeof row !== "object" || Array.isArray(row))
+    throw new Error(
+      "The participation interval response could not be verified. Reload before deciding.",
+    );
+  const valid = (value) =>
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value).length === 4 &&
+    value.version === 1 &&
+    ["startAt", "endAt", "timeZone"].every(
+      (key) => typeof value[key] === "string",
+    ) &&
+    value.startAt.length <= 80 &&
+    value.endAt.length <= 80 &&
+    value.timeZone.length <= 100 &&
+    Number.isFinite(Date.parse(value.startAt)) &&
+    Number.isFinite(Date.parse(value.endAt)) &&
+    Date.parse(value.startAt) < Date.parse(value.endAt);
+  for (const key of ["requestedInterval", "frozenInterval"])
+    if (row[key] !== undefined && row[key] !== null && !valid(row[key]))
+      throw new Error(
+        "The participation interval response could not be verified. Reload the saved participation before deciding.",
+      );
+  if (
+    (row.allocationHash !== undefined &&
+      row.allocationHash !== null &&
+      !/^[a-f0-9]{64}$/.test(row.allocationHash)) ||
+    (row.intervalChoiceLocked !== undefined &&
+      typeof row.intervalChoiceLocked !== "boolean") ||
+    (row.frozenInterval &&
+      (!row.requestedInterval ||
+        ["version", "startAt", "endAt", "timeZone"].some(
+          (key) => row.frozenInterval[key] !== row.requestedInterval[key],
+        )))
+  )
+    throw new Error(
+      "The participation interval pins could not be verified. Reload before deciding.",
+    );
+  return row;
+}
+export function intervalOffered(terms) {
+  return (
+    terms?.kind === "shift" &&
+    terms.intervalPolicy?.version === 1 &&
+    terms.intervalPolicy.mode === "within-shift" &&
+    Object.keys(terms.intervalPolicy).length === 2
+  );
+}
+export function requestedIntervalValue(
+  choice,
+  startAt,
+  endAt,
+  timeZone,
+  terms,
+) {
+  if (choice === "whole") return null;
+  if (choice !== "interval" || !intervalOffered(terms))
+    throw new Error(
+      "This approved occurrence does not offer requested intervals.",
+    );
+  // Preserve the literal offset strings. The server rechecks named-zone and
+  // source/consent authority; this browser check never reserves a place.
+  const explicit =
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
+  if (
+    ![startAt, endAt].every(
+      (value) =>
+        typeof value === "string" &&
+        explicit.test(value) &&
+        Number.isFinite(Date.parse(value)),
+    ) ||
+    timeZone !== terms.timeZone ||
+    Date.parse(startAt) >= Date.parse(endAt) ||
+    Date.parse(startAt) < Date.parse(terms.startAt) ||
+    Date.parse(endAt) > Date.parse(terms.endAt)
+  )
+    throw new Error(
+      "Enter a start and end within the approved shift, with explicit UTC offsets and its displayed time zone. Your writing is kept.",
+    );
+  return { version: 1, startAt, endAt, timeZone };
+}
+function intervalSchedule(row, currentTerms) {
+  const saved =
+    ["confirmed", "cancelled"].includes(row.state) && row.frozenTerms
+      ? row.frozenTerms
+      : currentTerms;
+  const range = ["confirmed", "cancelled"].includes(row.state)
+    ? row.frozenInterval || row.requestedInterval
+    : row.requestedInterval;
+  return range
+    ? node(
+        "div",
+        {},
+        node(
+          "p",
+          { class: "notice fine" },
+          row.state === "confirmed"
+            ? "Recorded interval commitment — not recorded attendance or worked minutes."
+            : row.state === "cancelled"
+              ? "Cancelled interval history — no current place reserved."
+              : "Requested interval — no place reserved until explicit confirmation.",
+        ),
+        labelledSchedule({
+          ...saved,
+          ...range,
+          title: "Requested / recorded interval",
+        }),
+        node(
+          "dl",
+          { class: "participant-answers" },
+          node(
+            "div",
+            {},
+            node("dt", {}, "Exact start with offset"),
+            node("dd", {}, range.startAt),
+          ),
+          node(
+            "div",
+            {},
+            node("dt", {}, "Exact end with offset"),
+            node("dd", {}, range.endAt),
+          ),
+        ),
+        node(
+          "details",
+          {},
+          node(
+            "summary",
+            {},
+            ["confirmed", "cancelled"].includes(row.state) && row.frozenTerms
+              ? "Original approved occurrence"
+              : "Current approved occurrence",
+          ),
+          labelledSchedule(saved),
+        ),
+      )
+    : labelledSchedule(saved);
+}
+function intervalControls(row, terms, prefix, consent) {
+  const offered = intervalOffered(terms),
+    saved = row.requestedInterval || null;
+  const locked =
+    row.intervalChoiceLocked === true ||
+    !!row.consent ||
+    !!saved ||
+    row.recovered === true ||
+    row.source === "recovered";
+  if (!offered && !saved) return { element: null, value: () => null };
+  const choice = node(
+    "select",
+    { id: `${prefix}-choice`, disabled: locked },
+    node("option", { value: "whole", selected: !saved }, "Whole shift"),
+    node(
+      "option",
+      { value: "interval", selected: !!saved },
+      "One requested interval",
+    ),
+  );
+  // Synthetic DOMs and actual browsers both use this explicit selected value.
+  choice.value = saved ? "interval" : "whole";
+  const start = node("input", {
+    id: `${prefix}-start`,
+    maxlength: 80,
+    autocomplete: "off",
+    readOnly: locked,
+    value: saved?.startAt || "",
+    placeholder: terms?.startAt || "",
+  });
+  const end = node("input", {
+    id: `${prefix}-end`,
+    maxlength: 80,
+    autocomplete: "off",
+    readOnly: locked,
+    value: saved?.endAt || "",
+    placeholder: terms?.endAt || "",
+  });
+  const zone = node("input", {
+    id: `${prefix}-zone`,
+    value: terms?.timeZone || saved?.timeZone || "",
+    readOnly: true,
+  });
+  const fields = node(
+    "div",
+    {},
+    field("Requested start — include UTC offset", start),
+    field("Requested end — include UTC offset", end),
+    field("Approved time zone", zone),
+  );
+  const sync = () => {
+    fields.hidden = choice.value !== "interval";
+    start.required = end.required = !fields.hidden;
+  };
+  const revoke = () => {
+    consent.checked = false;
+    sync();
+  };
+  choice.addEventListener("change", revoke);
+  for (const control of [start, end]) control.addEventListener("input", revoke);
+  sync();
+  return {
+    element: node(
+      "div",
+      { class: "participation-requested-interval" },
+      field("Participation schedule", choice),
+      fields,
+      node(
+        "p",
+        { class: "fine" },
+        locked
+          ? "This choice was already recorded. Reaffirm the same interval; a different range requires cancellation and a new request."
+          : "Choose one interval within the approved shift. A request or waitlist reserves no place; confirmation checks concurrent capacity again. Attendance and actual worked minutes stay separate.",
+      ),
+    ),
+    value: () =>
+      locked
+        ? requestedIntervalValue(
+            saved ? "interval" : "whole",
+            saved?.startAt,
+            saved?.endAt,
+            terms?.timeZone,
+            terms,
+          )
+        : requestedIntervalValue(
+            choice.value,
+            start.value,
+            end.value,
+            zone.value,
+            terms,
+          ),
+  };
 }
 export function deliverySelection(ids) {
   if (
@@ -251,7 +491,7 @@ export async function createStaffParticipationWorkspace({
       field(
         "Occurrence",
         picker,
-        "One person, one place, the full occurrence. Partial shifts, group bookings and automatic promotion are not supported.",
+        "One person, one place: the whole occurrence or one interval within an approved shift that allows it. Group bookings and automatic promotion are not supported.",
       ),
       notice,
     ),
@@ -600,15 +840,35 @@ export async function createStaffParticipationWorkspace({
                     throw error;
                   }
                   if (!isCurrent()) return;
-                  if (!result.policy || result.policy.enabled !== false)
+                  if (
+                    !result.policy ||
+                    result.policy.enabled !== false ||
+                    !Number.isSafeInteger(result.policy.revision) ||
+                    result.policy.revision <= policy.revision ||
+                    result.policy.templateVersion !== "participation-notice-v1"
+                  )
                     throw new Error(
                       "The disabled policy response could not be verified. Refresh saved policy.",
                     );
-                  await loadDelivery();
-                  await loadDeliveryOutbox();
-                  writeStatus(
+                  disableIntent.clear();
+                  deliveryIntent.clear();
+                  deliveryState.policy = { ...result.policy };
+                  deliveryState.selected.clear();
+                  deliveryState.preview = null;
+                  previewHost.replaceChildren();
+                  renderDeliveryControls();
+                  const saved =
+                    "Organization delivery disabled. Eligible unsent updates are cancelled; places are unchanged." +
+                    (result.auditRetained === false
+                      ? " The change is saved, but some journal entries could not be retained within the backup limit."
+                      : "");
+                  await showSavedOutcome(
+                    saved,
+                    async () => {
+                      await loadDelivery();
+                      await loadDeliveryOutbox();
+                    },
                     deliveryNotice,
-                    "Organization delivery disabled. Eligible unsent updates are cancelled; places are unchanged.",
                   );
                 }, status);
               });
@@ -856,13 +1116,17 @@ export async function createStaffParticipationWorkspace({
         "The saved records are unchanged. Continue without these unsaved entries?",
       ),
     );
-    const currentPrompt = () => prompt.isConnected &&
-      (!editor || attendanceLive(editor));
+    const currentPrompt = () =>
+      prompt.isConnected && (!editor || attendanceLive(editor));
     const keep = button("Keep editing", () => {
       if (!currentPrompt()) return;
       prompt.remove();
-      if (editor && editor.form.isConnected && !editor.title.disabled &&
-          root.contains(editor.title))
+      if (
+        editor &&
+        editor.form.isConnected &&
+        !editor.title.disabled &&
+        root.contains(editor.title)
+      )
         editor.title.focus();
     });
     prompt.append(
@@ -905,8 +1169,39 @@ export async function createStaffParticipationWorkspace({
       state.busy = false;
       for (const { control, disabled } of controls)
         if (control.isConnected) control.disabled = disabled;
-      if (attendanceEditor && attendanceLive(attendanceEditor)) attendanceEditor.sync();
+      if (attendanceEditor && attendanceLive(attendanceEditor))
+        attendanceEditor.sync();
     }
+  }
+  async function showSavedOutcome(
+    text,
+    refresh,
+    target = notice,
+    changed = false,
+  ) {
+    let refreshFailed = false;
+    if (changed) {
+      try {
+        await onChanged();
+      } catch {
+        refreshFailed = true;
+      }
+    }
+    if (!isCurrent()) return;
+    try {
+      await refresh();
+    } catch {
+      refreshFailed = true;
+    }
+    if (!isCurrent()) return;
+    writeStatus(
+      target,
+      text +
+        (refreshFailed
+          ? " The current saved view could not be refreshed. Refresh it before another decision; the recorded change remains saved."
+          : ""),
+      refreshFailed,
+    );
   }
   async function loadTarget(id = picker.value) {
     if (closeForm() === false) return;
@@ -950,22 +1245,24 @@ export async function createStaffParticipationWorkspace({
     const detail = state.detail,
       target = state.target,
       terms = detail.terms || target.terms;
+    const supplied = (key, fallback) =>
+      Object.hasOwn(detail, key)
+        ? detail[key]
+        : Object.hasOwn(target, key)
+          ? target[key]
+          : fallback;
+    const count = supplied("confirmedCount", detail.occupied),
+      peak = supplied("peakOccupied", detail.occupied);
     const metrics = [
       [
-        "Capacity",
+        "Capacity at one time",
         Number.isSafeInteger(detail.capacity) ? detail.capacity : "Unknown",
       ],
       [
-        "Occupied places",
-        Number.isSafeInteger(detail.occupied) ? detail.occupied : "Unknown",
+        "Confirmed commitments",
+        Number.isSafeInteger(count) ? count : "Unknown",
       ],
-      [
-        "Available now",
-        Number.isSafeInteger(detail.capacity) &&
-        Number.isSafeInteger(detail.occupied)
-          ? Math.max(0, detail.capacity - detail.occupied)
-          : "Unknown",
-      ],
+      ["Peak concurrent places", Number.isSafeInteger(peak) ? peak : "Unknown"],
     ];
     targetHost.replaceChildren(
       node(
@@ -1001,6 +1298,11 @@ export async function createStaffParticipationWorkspace({
             { class: "notice" },
             "Current independently approved public participation details are not available. Review the source record before continuing.",
           ),
+      node(
+        "p",
+        { class: "fine" },
+        "Concurrent capacity is checked for the chosen interval at confirmation. These totals are not a hold or a promise that a requested interval fits.",
+      ),
       node(
         "p",
         { class: "fine" },
@@ -1059,8 +1361,12 @@ export async function createStaffParticipationWorkspace({
   const attendanceCount = (value) =>
     Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000_000;
   function attendanceLive(editor) {
-    return attendanceEditor === editor && !editor.closed &&
-      live(editor.version) && state.target?.targetId === editor.targetId;
+    return (
+      attendanceEditor === editor &&
+      !editor.closed &&
+      live(editor.version) &&
+      state.target?.targetId === editor.targetId
+    );
   }
   function attendanceMessage(editor, text, error = false) {
     if (!attendanceLive(editor)) return;
@@ -1068,129 +1374,284 @@ export async function createStaffParticipationWorkspace({
     if (error && editor.status.isConnected) editor.status.focus?.();
   }
   function attendanceRecord(record, moduleId, expectedId = null) {
-    return !!record && record.orgId === orgId &&
-      record.moduleId === moduleId && attendanceId(record.id) &&
+    return (
+      !!record &&
+      record.orgId === orgId &&
+      record.moduleId === moduleId &&
+      attendanceId(record.id) &&
       (!expectedId || record.id === expectedId) &&
-      Number.isSafeInteger(record.revision) && record.revision > 0 &&
-      typeof record.status === "string";
+      Number.isSafeInteger(record.revision) &&
+      record.revision > 0 &&
+      typeof record.status === "string"
+    );
   }
   function checkedAttendanceContext(result, targetId) {
-    const target = result?.target, source = result?.sourceContext;
-    if (!target || target.id !== targetId || target.orgId !== orgId ||
-        !["events", "volunteers"].includes(target.moduleId) ||
-        typeof result.canPrepare !== "boolean" ||
-        (result.reason !== null && typeof result.reason !== "string"))
-      throw new Error("The occurrence attendance response could not be verified. Reload its current context.");
-    if (result.canPrepare && (!source ||
+    const target = result?.target,
+      source = result?.sourceContext;
+    if (
+      !target ||
+      target.id !== targetId ||
+      target.orgId !== orgId ||
+      !["events", "volunteers"].includes(target.moduleId) ||
+      typeof result.canPrepare !== "boolean" ||
+      (result.reason !== null && typeof result.reason !== "string")
+    )
+      throw new Error(
+        "The occurrence attendance response could not be verified. Reload its current context.",
+      );
+    if (
+      result.canPrepare &&
+      (!source ||
         !/^[a-f0-9]{64}$/.test(result.contextSha256 || "") ||
-        source.method !== attendanceMethod || source.scope !== "whole-occurrence" ||
-        source.targetId !== targetId || source.moduleId !== target.moduleId ||
+        source.method !== attendanceMethod ||
+        source.scope !== "whole-occurrence" ||
+        source.targetId !== targetId ||
+        source.moduleId !== target.moduleId ||
         !attendanceCount(source.confirmedPlaces) ||
-        ![source.knownRegisteredCount, source.knownWalkInCount].every(value => value === null || attendanceCount(value))))
-      throw new Error("The whole-occurrence attendance context could not be verified. Reload before reviewing a draft.");
-    if (!result.canPrepare && (source !== null || result.contextSha256 !== null))
-      throw new Error("The unavailable attendance context could not be verified.");
-    if (result.existing && (!attendanceRecord(result.existing.record, target.moduleId) ||
-        !["active", "trash"].includes(result.existing.disposition)))
-      throw new Error("The existing attendance record response could not be verified.");
+        ![source.knownRegisteredCount, source.knownWalkInCount].every(
+          (value) => value === null || attendanceCount(value),
+        ))
+    )
+      throw new Error(
+        "The whole-occurrence attendance context could not be verified. Reload before reviewing a draft.",
+      );
+    if (
+      !result.canPrepare &&
+      (source !== null || result.contextSha256 !== null)
+    )
+      throw new Error(
+        "The unavailable attendance context could not be verified.",
+      );
+    if (
+      result.existing &&
+      (!attendanceRecord(result.existing.record, target.moduleId) ||
+        !["active", "trash"].includes(result.existing.disposition))
+    )
+      throw new Error(
+        "The existing attendance record response could not be verified.",
+      );
     return result;
   }
   function sameAttendanceSource(a, b) {
     if (!a || !b) return false;
     const keys = Object.keys(a).sort();
-    return keys.join() === Object.keys(b).sort().join() &&
-      keys.every(key => a[key] === b[key]);
+    return (
+      keys.join() === Object.keys(b).sort().join() &&
+      keys.every((key) => a[key] === b[key])
+    );
   }
   function attendanceLink(editor, record, disposition) {
-    const link = node("a", {
-      href: disposition === "trash"
-        ? `#module/${part(record.moduleId)}`
-        : `#module/${part(record.moduleId)}/${part(record.id)}`,
-      class: "button subtle",
-      onclick: (event) => { if (!attendanceLive(editor)) event.preventDefault(); },
-    }, disposition === "trash" ? "Open module to review ordinary recovery" : "Open attendance record for ordinary review");
-    return node("div", {},
-      node("p", { class: "notice" }, disposition === "trash"
-        ? "An attendance record is in Trash. No replacement was created. Use ordinary recovery controls if your role permits."
-        : `Attendance record: ${record.status} · revision ${record.revision}. No approval or workflow transition was performed here.`), link);
+    const link = node(
+      "a",
+      {
+        href:
+          disposition === "trash"
+            ? `#module/${part(record.moduleId)}`
+            : `#module/${part(record.moduleId)}/${part(record.id)}`,
+        class: "button subtle",
+        onclick: (event) => {
+          if (!attendanceLive(editor)) event.preventDefault();
+        },
+      },
+      disposition === "trash"
+        ? "Open module to review ordinary recovery"
+        : "Open attendance record for ordinary review",
+    );
+    return node(
+      "div",
+      {},
+      node(
+        "p",
+        { class: "notice" },
+        disposition === "trash"
+          ? "An attendance record is in Trash. No replacement was created. Use ordinary recovery controls if your role permits."
+          : `Attendance record: ${record.status} · revision ${record.revision}. No approval or workflow transition was performed here.`,
+      ),
+      link,
+    );
   }
   async function attendanceRequest(editor, endpoint, options = {}) {
-    const controller = new AbortController(); editor.requests.add(controller);
+    const controller = new AbortController();
+    editor.requests.add(controller);
     const timer = setTimeout(() => controller.abort(), 30000);
-    try { return await request(endpoint, { ...options, signal: controller.signal }); }
-    finally { clearTimeout(timer); editor.requests.delete(controller); }
+    try {
+      return await request(endpoint, { ...options, signal: controller.signal });
+    } finally {
+      clearTimeout(timer);
+      editor.requests.delete(controller);
+    }
   }
   async function attendanceWork(editor, fn) {
     if (!attendanceLive(editor)) return;
     await work(async () => {
-      try { await fn(); }
-      catch (error) { attendanceMessage(editor, error.message || "The attendance action could not be completed. Your writing is kept.", true); }
+      try {
+        await fn();
+      } catch (error) {
+        attendanceMessage(
+          editor,
+          error.message ||
+            "The attendance action could not be completed. Your writing is kept.",
+          true,
+        );
+      }
     }, editor.status);
     if (attendanceLive(editor)) editor.sync();
   }
   async function showAttendance(origin) {
-    const targetId = state.target.targetId, version = state.version;
+    const targetId = state.target.targetId,
+      version = state.version;
     let context;
-    try { context = checkedAttendanceContext(await request(`${path(targetId)}/attendance`), targetId); }
-    catch (error) {
+    try {
+      context = checkedAttendanceContext(
+        await request(`${path(targetId)}/attendance`),
+        targetId,
+      );
+    } catch (error) {
       if (live(version)) {
         notice.setAttribute("tabindex", "-1");
-        writeStatus(notice, error.message || "Current attendance context could not be loaded.", true);
+        writeStatus(
+          notice,
+          error.message || "Current attendance context could not be loaded.",
+          true,
+        );
         if (notice.isConnected) notice.focus?.();
       }
       return;
     }
     if (!live(version) || state.target?.targetId !== targetId) return;
-    const form = node("form", {}), status = output();
-    status.setAttribute("tabindex", "-1"); status.setAttribute("aria-live", "polite");
-    const title = node("input", { id: "attendance-title", maxlength: 180, required: true, value: "Whole-occurrence attendance" });
-    const reported = node("input", { id: "attendance-reported", type: "number", min: 0, max: 1_000_000_000, step: 1, required: true });
-    const registered = node("input", { id: "attendance-registered", type: "number", min: 0, max: 1_000_000_000, step: 1 });
-    const walkIn = node("input", { id: "attendance-walk-in", type: "number", min: 0, max: 1_000_000_000, step: 1 });
-    const scope = node("input", { id: "attendance-whole-check", type: "checkbox" });
-    const contextHost = node("div", {}), knownHost = node("div", {}), reviewHost = node("div", {});
+    const form = node("form", {}),
+      status = output();
+    status.setAttribute("tabindex", "-1");
+    status.setAttribute("aria-live", "polite");
+    const title = node("input", {
+      id: "attendance-title",
+      maxlength: 180,
+      required: true,
+      value: "Whole-occurrence attendance",
+    });
+    const reported = node("input", {
+      id: "attendance-reported",
+      type: "number",
+      min: 0,
+      max: 1_000_000_000,
+      step: 1,
+      required: true,
+    });
+    const registered = node("input", {
+      id: "attendance-registered",
+      type: "number",
+      min: 0,
+      max: 1_000_000_000,
+      step: 1,
+    });
+    const walkIn = node("input", {
+      id: "attendance-walk-in",
+      type: "number",
+      min: 0,
+      max: 1_000_000_000,
+      step: 1,
+    });
+    const scope = node("input", {
+      id: "attendance-whole-check",
+      type: "checkbox",
+    });
+    const contextHost = node("div", {}),
+      knownHost = node("div", {}),
+      reviewHost = node("div", {});
     const editor = {
-      targetId, version, form, title, status, requests: new Set(), closed: false,
-      context, contextStale: false, serial: 0, preview: null, pending: null,
-      reconcileOnly: false, completed: false, sync: () => {},
+      targetId,
+      version,
+      form,
+      title,
+      status,
+      requests: new Set(),
+      closed: false,
+      context,
+      contextStale: false,
+      serial: 0,
+      preview: null,
+      pending: null,
+      reconcileOnly: false,
+      completed: false,
+      sync: () => {},
     };
     const endpoint = `${path(targetId)}/attendance`;
-    const review = node("button", { type: "submit", class: "button primary" }, "Review exact attendance draft");
-    const reload = button("Reload current attendance context", () => attendanceWork(editor, refresh));
-    const retry = button("Retry exact attendance create", () => attendanceWork(editor, create), "primary", { hidden: true });
+    const review = node(
+      "button",
+      { type: "submit", class: "button primary" },
+      "Review exact attendance draft",
+    );
+    const reload = button("Reload current attendance context", () =>
+      attendanceWork(editor, refresh),
+    );
+    const retry = button(
+      "Retry exact attendance create",
+      () => attendanceWork(editor, create),
+      "primary",
+      { hidden: true },
+    );
     const close = button("Close attendance form", () => {
       if (!close.isConnected || !attendanceLive(editor)) return;
       confirmDiscard(() => {
         if (attendanceEditor === editor && attendanceLive(editor)) closeForm();
-        if (!attendanceEditor && editor.closed && live(version) &&
-            state.target?.targetId === targetId && root.isConnected &&
-            origin?.isConnected && root.contains(origin) && !origin.disabled)
+        if (
+          !attendanceEditor &&
+          editor.closed &&
+          live(version) &&
+          state.target?.targetId === targetId &&
+          root.isConnected &&
+          origin?.isConnected &&
+          root.contains(origin) &&
+          !origin.disabled
+        )
           origin.focus();
       });
     });
     const numeric = (control, label, nullable = false) => {
       if (!control.value.trim()) {
         if (nullable) return null;
-        throw new Error(`${label}: enter an observed whole number, including 0 when zero was observed.`);
+        throw new Error(
+          `${label}: enter an observed whole number, including 0 when zero was observed.`,
+        );
       }
       const value = Number(control.value);
-      if (!attendanceCount(value)) throw new Error(`${label}: use a whole number from 0 through 1,000,000,000.`);
+      if (!attendanceCount(value))
+        throw new Error(
+          `${label}: use a whole number from 0 through 1,000,000,000.`,
+        );
       return value;
     };
     function changed() {
       if (editor.pending || editor.completed) return;
-      editor.serial++; editor.preview = null; reviewHost.replaceChildren();
-      scope.checked = false; dirty(true); editor.sync();
+      editor.serial++;
+      editor.preview = null;
+      reviewHost.replaceChildren();
+      scope.checked = false;
+      dirty(true);
+      editor.sync();
     }
     function renderContext(initial = false) {
-      const current = editor.context, source = current.sourceContext;
+      const current = editor.context,
+        source = current.sourceContext;
       contextHost.replaceChildren(
-        node("p", { class: "notice" }, current.canPrepare
-          ? `Confirmed places: ${source.confirmedPlaces}. This is booking context only, not attendance or total registrations.`
-          : current.reason || "Attendance cannot be prepared from this occurrence."),
+        node(
+          "p",
+          { class: "notice" },
+          current.canPrepare
+            ? `Confirmed places: ${source.confirmedPlaces}. This is booking context only, not attendance or total registrations.`
+            : current.reason ||
+                "Attendance cannot be prepared from this occurrence.",
+        ),
         labelledSchedule(source || current.target),
       );
-      if (current.existing) contextHost.append(attendanceLink(editor, current.existing.record, current.existing.disposition));
+      if (current.existing)
+        contextHost.append(
+          attendanceLink(
+            editor,
+            current.existing.record,
+            current.existing.disposition,
+          ),
+        );
       knownHost.replaceChildren();
       if (current.target.moduleId === "events" && source) {
         for (const [label, control, value] of [
@@ -1199,154 +1660,377 @@ export async function createStaffParticipationWorkspace({
         ]) {
           if (initial && value !== null) control.value = String(value);
           control.readOnly = value !== null && control.value === String(value);
-          knownHost.append(node("p", { class: "fine" }, value === null
-            ? `${label}: not recorded in the occurrence. Leave empty for unknown; enter 0 only when zero is known.`
-            : `${label} already recorded in the occurrence: ${value}. This known value must be kept.`));
-          if (value !== null && control.value !== String(value)) knownHost.append(button(`Use recorded ${label.toLowerCase()} value`, () => {
-            if (editor.pending) return;
-            control.value = String(value); changed(); renderContext();
-          }));
+          knownHost.append(
+            node(
+              "p",
+              { class: "fine" },
+              value === null
+                ? `${label}: not recorded in the occurrence. Leave empty for unknown; enter 0 only when zero is known.`
+                : `${label} already recorded in the occurrence: ${value}. This known value must be kept.`,
+            ),
+          );
+          if (value !== null && control.value !== String(value))
+            knownHost.append(
+              button(`Use recorded ${label.toLowerCase()} value`, () => {
+                if (editor.pending) return;
+                control.value = String(value);
+                changed();
+                renderContext();
+              }),
+            );
         }
       }
     }
     editor.sync = () => {
       const frozen = !!editor.pending || editor.completed;
-      for (const control of [title, reported, registered, walkIn, scope]) control.disabled = frozen;
-      review.disabled = frozen || editor.contextStale || !editor.context.canPrepare;
-      retry.hidden = !editor.pending; retry.disabled = !editor.pending || editor.reconcileOnly;
-      reload.disabled = state.busy; close.disabled = !!editor.pending;
-      if (editor.createButton?.isConnected) editor.createButton.disabled = frozen || !editor.reviewAck.checked;
+      for (const control of [title, reported, registered, walkIn, scope])
+        control.disabled = frozen;
+      review.disabled =
+        frozen || editor.contextStale || !editor.context.canPrepare;
+      retry.hidden = !editor.pending;
+      retry.disabled = !editor.pending || editor.reconcileOnly;
+      reload.disabled = state.busy;
+      close.disabled = !!editor.pending;
+      if (editor.createButton?.isConnected)
+        editor.createButton.disabled = frozen || !editor.reviewAck.checked;
       if (editor.reviewAck?.isConnected) editor.reviewAck.disabled = frozen;
     };
     async function refresh() {
-      const current = checkedAttendanceContext(await attendanceRequest(editor, endpoint), targetId);
+      const current = checkedAttendanceContext(
+        await attendanceRequest(editor, endpoint),
+        targetId,
+      );
       if (!attendanceLive(editor)) return;
-      editor.context = current; editor.contextStale = false; editor.preview = null;
-      editor.serial++; scope.checked = false; reviewHost.replaceChildren(); renderContext();
+      editor.context = current;
+      editor.contextStale = false;
+      editor.preview = null;
+      editor.serial++;
+      scope.checked = false;
+      reviewHost.replaceChildren();
+      renderContext();
       if (editor.pending && current.existing) {
-        editor.pending = null; editor.reconcileOnly = false; editor.completed = true;
-        dirty(false); onChanged();
-        attendanceMessage(editor, "A saved attendance record is present. No create was repeated. Review its current ordinary state.");
-      } else attendanceMessage(editor, editor.pending
-        ? "No saved attendance was returned. This does not prove the earlier create failed. Keep its exact Retry; do not start another create."
-        : "Current occurrence context loaded. Your literal entries are kept; check the whole-occurrence scope again before review.");
+        editor.pending = null;
+        editor.reconcileOnly = false;
+        editor.completed = true;
+        dirty(false);
+        onChanged();
+        attendanceMessage(
+          editor,
+          "A saved attendance record is present. No create was repeated. Review its current ordinary state.",
+        );
+      } else
+        attendanceMessage(
+          editor,
+          editor.pending
+            ? "No saved attendance was returned. This does not prove the earlier create failed. Keep its exact Retry; do not start another create."
+            : "Current occurrence context loaded. Your literal entries are kept; check the whole-occurrence scope again before review.",
+        );
     }
     function checkedPreview(result, proposal) {
-      const p = result?.preview, candidate = p?.candidate, data = candidate?.data;
-      if (typeof result?.previewToken !== "string" || !result.previewToken ||
-          !Number.isFinite(Date.parse(result.expiresAt)) || !p ||
-          p.method !== attendanceMethod || p.scope !== "whole-occurrence" ||
-          !sameAttendanceSource(p.sourceContext, editor.context.sourceContext) ||
-          !attendanceRecord(candidate, editor.context.target.moduleId) ||
-          candidate.status !== "draft" || candidate.revision !== 1 ||
-          candidate.approval !== null || candidate.snapshot !== null || candidate.source !== null ||
-          !data || data.kind !== "attendance" || data.title !== proposal.title.trim() ||
-          data.programId !== editor.context.target.programId || data.contactId !== null ||
-          data.startAt !== null || data.endAt !== null ||
-          data[ candidate.moduleId === "events" ? "eventId" : "shiftId" ] !== targetId ||
-          (candidate.moduleId === "events"
-            ? data.attendanceCount !== proposal.reportedAttendance || data.registeredCount !== proposal.registeredCount || data.walkInCount !== proposal.walkInCount
-            : data.participants !== proposal.reportedAttendance || data.minutes !== null))
-        throw new Error("The exact unapproved attendance preview could not be verified. Your form is kept; no create is available.");
+      const p = result?.preview,
+        candidate = p?.candidate,
+        data = candidate?.data;
+      if (
+        typeof result?.previewToken !== "string" ||
+        !result.previewToken ||
+        !Number.isFinite(Date.parse(result.expiresAt)) ||
+        !p ||
+        p.method !== attendanceMethod ||
+        p.scope !== "whole-occurrence" ||
+        !sameAttendanceSource(p.sourceContext, editor.context.sourceContext) ||
+        !attendanceRecord(candidate, editor.context.target.moduleId) ||
+        candidate.status !== "draft" ||
+        candidate.revision !== 1 ||
+        candidate.approval !== null ||
+        candidate.snapshot !== null ||
+        candidate.source !== null ||
+        !data ||
+        data.kind !== "attendance" ||
+        data.title !== proposal.title.trim() ||
+        data.programId !== editor.context.target.programId ||
+        data.contactId !== null ||
+        data.startAt !== null ||
+        data.endAt !== null ||
+        data[candidate.moduleId === "events" ? "eventId" : "shiftId"] !==
+          targetId ||
+        (candidate.moduleId === "events"
+          ? data.attendanceCount !== proposal.reportedAttendance ||
+            data.registeredCount !== proposal.registeredCount ||
+            data.walkInCount !== proposal.walkInCount
+          : data.participants !== proposal.reportedAttendance ||
+            data.minutes !== null)
+      )
+        throw new Error(
+          "The exact unapproved attendance preview could not be verified. Your form is kept; no create is available.",
+        );
       return result;
     }
     function renderPreview() {
-      const prepared = editor.preview, candidate = prepared.preview.candidate, data = candidate.data;
-      const ack = node("input", { id: "attendance-review-check", type: "checkbox" });
-      const createButton = button("Create unapproved attendance draft", () => attendanceWork(editor, create), "primary", { disabled: true });
-      ack.addEventListener("change", () => { createButton.disabled = !ack.checked || !!editor.pending; });
-      const valueLabel = value => value === null ? "Unknown / not recorded" : String(value);
-      reviewHost.replaceChildren(node("section", { class: "notice participation-confirmation" },
-        node("h3", {}, "Review exact unapproved attendance draft"),
-        node("p", {}, `Whole-occurrence attendance: ${candidate.moduleId === "events" ? data.attendanceCount : data.participants}. Confirmed places (${prepared.preview.sourceContext.confirmedPlaces}) are context only.`),
-        node("p", {}, candidate.moduleId === "events"
-          ? `Registrations: ${valueLabel(data.registeredCount)}. Walk-ins: ${valueLabel(data.walkInCount)}.`
-          : "Recorded minutes: Unknown / not recorded. Scheduled duration is not volunteer hours."),
-        node("p", {}, `Result: draft, revision 1, no approval or snapshot. Review expires ${prepared.expiresAt}. No booking, hours, service outcome or email is created.`),
-        node("details", {}, node("summary", {}, "Exact ordinary draft and source context"),
-          node("pre", {}, JSON.stringify(prepared.preview, null, 2))),
-        node("label", { class: "intake-consent", for: ack.id }, ack,
-          node("span", {}, "I reviewed this exact unapproved draft. Booking confirmation is not attendance; hours and service outcomes are not inferred.")),
-        createButton,
-      ));
-      editor.createButton = createButton; editor.reviewAck = ack;
+      const prepared = editor.preview,
+        candidate = prepared.preview.candidate,
+        data = candidate.data;
+      const ack = node("input", {
+        id: "attendance-review-check",
+        type: "checkbox",
+      });
+      const createButton = button(
+        "Create unapproved attendance draft",
+        () => attendanceWork(editor, create),
+        "primary",
+        { disabled: true },
+      );
+      ack.addEventListener("change", () => {
+        createButton.disabled = !ack.checked || !!editor.pending;
+      });
+      const valueLabel = (value) =>
+        value === null ? "Unknown / not recorded" : String(value);
+      reviewHost.replaceChildren(
+        node(
+          "section",
+          { class: "notice participation-confirmation" },
+          node("h3", {}, "Review exact unapproved attendance draft"),
+          node(
+            "p",
+            {},
+            `Whole-occurrence attendance: ${candidate.moduleId === "events" ? data.attendanceCount : data.participants}. Confirmed places (${prepared.preview.sourceContext.confirmedPlaces}) are context only.`,
+          ),
+          node(
+            "p",
+            {},
+            candidate.moduleId === "events"
+              ? `Registrations: ${valueLabel(data.registeredCount)}. Walk-ins: ${valueLabel(data.walkInCount)}.`
+              : "Recorded minutes: Unknown / not recorded. Scheduled duration is not volunteer hours.",
+          ),
+          node(
+            "p",
+            {},
+            `Result: draft, revision 1, no approval or snapshot. Review expires ${prepared.expiresAt}. No booking, hours, service outcome or email is created.`,
+          ),
+          node(
+            "details",
+            {},
+            node("summary", {}, "Exact ordinary draft and source context"),
+            node("pre", {}, JSON.stringify(prepared.preview, null, 2)),
+          ),
+          node(
+            "label",
+            { class: "intake-consent", for: ack.id },
+            ack,
+            node(
+              "span",
+              {},
+              "I reviewed this exact unapproved draft. Booking confirmation is not attendance; hours and service outcomes are not inferred.",
+            ),
+          ),
+          createButton,
+        ),
+      );
+      editor.createButton = createButton;
+      editor.reviewAck = ack;
     }
     async function create() {
       if (!editor.pending) {
-        if (!editor.preview || !editor.reviewAck?.checked) throw new Error("Review and acknowledge this exact attendance draft before creating it.");
+        if (!editor.preview || !editor.reviewAck?.checked)
+          throw new Error(
+            "Review and acknowledge this exact attendance draft before creating it.",
+          );
         editor.pending = Object.freeze({
           previewToken: editor.preview.previewToken,
           idempotencyKey: crypto.randomUUID(),
         });
         editor.expectedId = editor.preview.preview.candidate.id;
       }
-      if (editor.reconcileOnly) throw new Error("This command needs saved-record reconciliation. Do not replace its key.");
+      if (editor.reconcileOnly)
+        throw new Error(
+          "This command needs saved-record reconciliation. Do not replace its key.",
+        );
       editor.sync();
       try {
-        const result = await attendanceRequest(editor, `${endpoint}/create`, { method: "POST", body: editor.pending });
+        const result = await attendanceRequest(editor, `${endpoint}/create`, {
+          method: "POST",
+          body: editor.pending,
+        });
         if (!attendanceLive(editor)) return;
-        if (!["created", "already-created"].includes(result?.kind) ||
-            !["active", "trash"].includes(result.disposition) ||
-            !attendanceRecord(result.record, editor.context.target.moduleId, editor.expectedId) ||
-            (result.kind === "created" && (result.record.status !== "draft" || result.record.revision !== 1 || result.record.approval !== null || result.record.snapshot !== null)))
-          throw Object.assign(new Error("The create response could not be verified. It may have completed; keep the exact Retry."), { code: "invalid_response" });
-        editor.pending = null; editor.completed = true; editor.preview = null;
-        reviewHost.replaceChildren(attendanceLink(editor, result.record, result.disposition));
-        dirty(false); onChanged();
-        attendanceMessage(editor, result.kind === "created" ? "Unapproved attendance draft created. Open its ordinary workflow for review." : "The existing attendance record was returned. No second draft or approval was created.");
+        if (
+          !["created", "already-created"].includes(result?.kind) ||
+          !["active", "trash"].includes(result.disposition) ||
+          !attendanceRecord(
+            result.record,
+            editor.context.target.moduleId,
+            editor.expectedId,
+          ) ||
+          (result.kind === "created" &&
+            (result.record.status !== "draft" ||
+              result.record.revision !== 1 ||
+              result.record.approval !== null ||
+              result.record.snapshot !== null))
+        )
+          throw Object.assign(
+            new Error(
+              "The create response could not be verified. It may have completed; keep the exact Retry.",
+            ),
+            { code: "invalid_response" },
+          );
+        editor.pending = null;
+        editor.completed = true;
+        editor.preview = null;
+        reviewHost.replaceChildren(
+          attendanceLink(editor, result.record, result.disposition),
+        );
+        dirty(false);
+        onChanged();
+        attendanceMessage(
+          editor,
+          result.kind === "created"
+            ? "Unapproved attendance draft created. Open its ordinary workflow for review."
+            : "The existing attendance record was returned. No second draft or approval was created.",
+        );
       } catch (error) {
         if (!attendanceLive(editor)) return;
-        if (["attendance_stale", "attendance_exists", "attendance_preview"].includes(error.code)) {
-          editor.pending = null; editor.preview = null; reviewHost.replaceChildren();
-          editor.contextStale = error.code !== "attendance_preview"; scope.checked = false;
-        } else if (error.code === "attendance_command") editor.reconcileOnly = true;
+        if (
+          [
+            "attendance_stale",
+            "attendance_exists",
+            "attendance_preview",
+          ].includes(error.code)
+        ) {
+          editor.pending = null;
+          editor.preview = null;
+          reviewHost.replaceChildren();
+          editor.contextStale = error.code !== "attendance_preview";
+          scope.checked = false;
+        } else if (error.code === "attendance_command")
+          editor.reconcileOnly = true;
         if (editor.pending) {
-          attendanceMessage(editor, editor.reconcileOnly
-            ? "This command key belongs to a different accepted request. Refresh saved attendance to reconcile it; do not create a replacement command."
-            : "The attendance response is unresolved; it may have completed. Use Retry exact attendance create or reload saved attendance. Your form is kept.", true);
-        } else attendanceMessage(editor, `${error.message} Your literal entries are kept. Reload current context if it changed, then review again.`, true);
+          attendanceMessage(
+            editor,
+            editor.reconcileOnly
+              ? "This command key belongs to a different accepted request. Refresh saved attendance to reconcile it; do not create a replacement command."
+              : "The attendance response is unresolved; it may have completed. Use Retry exact attendance create or reload saved attendance. Your form is kept.",
+            true,
+          );
+        } else
+          attendanceMessage(
+            editor,
+            `${error.message} Your literal entries are kept. Reload current context if it changed, then review again.`,
+            true,
+          );
       }
     }
-    for (const control of [title, reported, registered, walkIn]) control.addEventListener("input", changed);
+    for (const control of [title, reported, registered, walkIn])
+      control.addEventListener("input", changed);
     scope.addEventListener("change", () => {
       if (editor.pending) return;
-      editor.serial++; editor.preview = null; reviewHost.replaceChildren(); dirty(true);
+      editor.serial++;
+      editor.preview = null;
+      reviewHost.replaceChildren();
+      dirty(true);
     });
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      if (state.busy || editor.pending || editor.completed || !form.reportValidity()) return;
+      if (
+        state.busy ||
+        editor.pending ||
+        editor.completed ||
+        !form.reportValidity()
+      )
+        return;
       return attendanceWork(editor, async () => {
-        if (editor.contextStale || !editor.context.canPrepare) throw new Error("Load the current eligible occurrence before reviewing attendance.");
-        if (!scope.checked) throw new Error("Confirm that this is an observed count for the whole occurrence, including people outside the confirmation ledger.");
+        if (editor.contextStale || !editor.context.canPrepare)
+          throw new Error(
+            "Load the current eligible occurrence before reviewing attendance.",
+          );
+        if (!scope.checked)
+          throw new Error(
+            "Confirm that this is an observed count for the whole occurrence, including people outside the confirmation ledger.",
+          );
         const proposal = {
-          contextSha256: editor.context.contextSha256,
-          title: title.value,
-          reportedAttendance: numeric(reported, "Reported whole-occurrence attendance"),
-          registeredCount: editor.context.target.moduleId === "events" ? numeric(registered, "Registrations", true) : null,
-          walkInCount: editor.context.target.moduleId === "events" ? numeric(walkIn, "Walk-ins", true) : null,
-          wholeOccurrence: true,
-        }, serial = editor.serial;
-        editor.preview = null; reviewHost.replaceChildren();
-        const result = await attendanceRequest(editor, `${endpoint}/preview`, { method: "POST", body: proposal });
+            contextSha256: editor.context.contextSha256,
+            title: title.value,
+            reportedAttendance: numeric(
+              reported,
+              "Reported whole-occurrence attendance",
+            ),
+            registeredCount:
+              editor.context.target.moduleId === "events"
+                ? numeric(registered, "Registrations", true)
+                : null,
+            walkInCount:
+              editor.context.target.moduleId === "events"
+                ? numeric(walkIn, "Walk-ins", true)
+                : null,
+            wholeOccurrence: true,
+          },
+          serial = editor.serial;
+        editor.preview = null;
+        reviewHost.replaceChildren();
+        const result = await attendanceRequest(editor, `${endpoint}/preview`, {
+          method: "POST",
+          body: proposal,
+        });
         if (!attendanceLive(editor) || serial !== editor.serial) return;
-        editor.preview = checkedPreview(result, proposal); renderPreview();
-        attendanceMessage(editor, "Exact unapproved draft prepared. Review every value and acknowledge it before creating anything.");
+        editor.preview = checkedPreview(result, proposal);
+        renderPreview();
+        attendanceMessage(
+          editor,
+          "Exact unapproved draft prepared. Review every value and acknowledge it before creating anything.",
+        );
       });
     });
-    form.append(contextHost,
-      node("p", { class: "notice" }, "Confirmation does not record attendance. Report the whole occurrence, including people outside this booking ledger. If you know only a subset, do not submit a complete total."),
+    form.append(
+      contextHost,
+      node(
+        "p",
+        { class: "notice" },
+        "Confirmation does not record attendance. Report the whole occurrence, including people outside this booking ledger. If you know only a subset, do not submit a complete total.",
+      ),
       field("Attendance draft title", title),
-      field("Reported whole-occurrence attendance count", reported, "Blank is unknown. Enter 0 only when zero was observed. This is not capped to confirmed places."),
-      ...(context.target.moduleId === "events" ? [
-        field("Total registrations (optional; empty means unknown)", registered),
-        field("Walk-in count (optional; empty means unknown)", walkIn), knownHost,
-      ] : [node("p", { class: "fine" }, "Recorded minutes stay unknown. Attendance does not record volunteer hours or a service outcome.")]),
-      node("label", { class: "intake-consent", for: scope.id }, scope,
-        node("span", {}, "I checked this whole-occurrence count, not only confirmed bookings. This creates an unapproved attendance draft, not hours, a booking change or an outcome.")),
-      node("div", { class: "actions" }, review, reload, retry, close), status, reviewHost);
+      field(
+        "Reported whole-occurrence attendance count",
+        reported,
+        "Blank is unknown. Enter 0 only when zero was observed. This is not capped to confirmed places.",
+      ),
+      ...(context.target.moduleId === "events"
+        ? [
+            field(
+              "Total registrations (optional; empty means unknown)",
+              registered,
+            ),
+            field("Walk-in count (optional; empty means unknown)", walkIn),
+            knownHost,
+          ]
+        : [
+            node(
+              "p",
+              { class: "fine" },
+              "Recorded minutes stay unknown. Attendance does not record volunteer hours or a service outcome.",
+            ),
+          ]),
+      node(
+        "label",
+        { class: "intake-consent", for: scope.id },
+        scope,
+        node(
+          "span",
+          {},
+          "I checked this whole-occurrence count, not only confirmed bookings. This creates an unapproved attendance draft, not hours, a booking change or an outcome.",
+        ),
+      ),
+      node("div", { class: "actions" }, review, reload, retry, close),
+      status,
+      reviewHost,
+    );
     startForm("Staff-reported whole-occurrence attendance", form);
-    attendanceEditor = editor; renderContext(true); editor.sync();
-    attendanceMessage(editor, context.canPrepare ? "Current occurrence loaded. Attendance and optional counts are not inferred from confirmations." : context.reason || "This occurrence is unavailable for a new attendance draft.");
+    attendanceEditor = editor;
+    renderContext(true);
+    editor.sync();
+    attendanceMessage(
+      editor,
+      context.canPrepare
+        ? "Current occurrence loaded. Attendance and optional counts are not inferred from confirmations."
+        : context.reason ||
+            "This occurrence is unavailable for a new attendance draft.",
+    );
   }
   async function showAdoption() {
     await loadTarget();
@@ -1463,13 +2147,23 @@ export async function createStaffParticipationWorkspace({
           throw error;
         }
         if (!isCurrent()) return;
+        if (
+          result?.target?.targetId !== detail.target.targetId ||
+          result.target.mode !== "managed" ||
+          !Number.isSafeInteger(result.adopted) ||
+          result.adopted < 0 ||
+          result.adopted > 2000
+        )
+          throw new Error(
+            "The saved reconciliation could not be verified. Keep this exact command for Retry, or refresh the saved occurrence.",
+          );
         intent.clear();
         closeForm();
-        onChanged();
-        await loadTarget();
-        writeStatus(
+        await showSavedOutcome(
+          `Adoption / reconciliation recorded. ${result.adopted} legacy entries were adopted; no consent was invented.`,
+          () => loadTarget(),
           notice,
-          `Adoption / reconciliation recorded. ${Number.isSafeInteger(result.adopted) ? result.adopted : "The reported"} legacy entries were adopted; no consent was invented.`,
+          true,
         );
       }, status);
     });
@@ -1513,7 +2207,7 @@ export async function createStaffParticipationWorkspace({
       node(
         "p",
         {},
-        "Association creates an unallocated Requested entry. It does not approve the candidate, reserve capacity or grant an account access. A full occurrence can still keep a nonallocating candidate.",
+        "Association creates an unallocated Requested entry. It does not approve the candidate, reserve capacity or grant an account access. An occurrence at capacity can still keep a nonallocating candidate.",
       ),
       field(
         "Saved registration or assignment",
@@ -1565,19 +2259,33 @@ export async function createStaffParticipationWorkspace({
           status,
           "Associating the saved candidate without allocating a place…",
         );
+        let result;
         try {
-          await request(endpoint, { method: "POST", body });
+          result = await request(endpoint, { method: "POST", body });
         } catch (error) {
           intent.rejected(error.status);
           throw error;
         }
         if (!isCurrent()) return;
+        const saved = result?.participation;
+        checkedIntervalMetadata(saved);
+        if (
+          typeof saved.id !== "string" ||
+          !/^[A-Za-z0-9_-]{1,100}$/.test(saved.id) ||
+          saved.targetId !== target.targetId ||
+          saved.bookingRecordId !== record.id ||
+          saved.state !== "requested" ||
+          !Number.isSafeInteger(saved.revision) ||
+          saved.revision < 1
+        )
+          throw new Error(
+            "The saved association could not be verified. Keep this exact command for Retry, or refresh the saved occurrence.",
+          );
         intent.clear();
         closeForm();
-        await loadTarget();
-        writeStatus(
-          notice,
+        await showSavedOutcome(
           "Candidate associated. No place was reserved and no message was sent.",
+          () => loadTarget(),
         );
       }, status);
     });
@@ -1595,6 +2303,7 @@ export async function createStaffParticipationWorkspace({
       throw new Error(
         "The participation page could not be verified. Refresh before deciding.",
       );
+    result.participations.forEach(checkedIntervalMetadata);
     state.rows = [
       ...new Map(
         [...(append ? state.rows : []), ...result.participations].map((row) => [
@@ -1679,6 +2388,9 @@ export async function createStaffParticipationWorkspace({
           { class: "fine" },
           "Email consent and delivery outcomes are separate from this participation state. Review the scoped delivery section below.",
         ),
+      );
+      card.append(
+        intervalSchedule(row, state.detail?.terms || state.target?.terms),
       );
       const actions = node("div", { class: "actions" });
       if (row.bookingRecordId)
@@ -1791,9 +2503,11 @@ export async function createStaffParticipationWorkspace({
             ? "This cancels the participation and releases one place only if it was confirmed. It does not erase the original request or select a waiting replacement."
             : action === "waitlist"
               ? "A waitlist uses no capacity and promises no place. Current approvals, specific participation intent and separate waitlist consent are checked again."
-              : "This explicitly reserves one whole-occurrence place after a final current-approval, consent, capacity, duplicate and volunteer-overlap check. Approval alone did not reserve it.",
+              : row.requestedInterval
+                ? "This explicitly reserves one place only for the displayed requested interval after a final current-approval, consent, concurrent-capacity, duplicate and volunteer-overlap check. It does not record attendance or worked minutes."
+                : "This explicitly reserves one whole-occurrence place after a final current-approval, consent, capacity, duplicate and volunteer-overlap check. Approval alone did not reserve it.",
         ),
-        labelledSchedule(detail.terms || target.terms),
+        intervalSchedule(row, detail.terms || target.terms),
         node(
           "p",
           { class: "fine" },
@@ -1841,37 +2555,67 @@ export async function createStaffParticipationWorkspace({
         void work(async () => {
           if (!confirm.checked)
             throw new Error("Confirm the intended action before continuing.");
+          if (
+            row.requestedInterval != null &&
+            action !== "cancel" &&
+            !/^[a-f0-9]{64}$/.test(row.allocationHash || "")
+          )
+            throw new Error(
+              "The current requested interval pin is unavailable. Refresh the saved participation before deciding.",
+            );
           const endpoint = `${path()}/participations/${part(row.id)}/${action}`,
             body = intent.prepare(endpoint, {
               revision: row.revision,
               targetRevision: target.revision,
               candidateRevision: row.candidateRevision,
               consentRevision: row.consent?.revision || 0,
+              ...(typeof row.allocationHash === "string"
+                ? { allocationHash: row.allocationHash }
+                : {}),
               reason: reason.value.trim(),
             });
           writeStatus(
             status,
             "Rechecking current authority, revisions and allocation…",
           );
+          let result;
           try {
-            await request(endpoint, { method: "POST", body });
+            result = await request(endpoint, { method: "POST", body });
           } catch (error) {
             intent.rejected(error.status);
             throw error;
           }
           if (!isCurrent()) return;
+          const savedRow = result?.participation;
+          checkedIntervalMetadata(savedRow);
+          if (
+            savedRow.id !== row.id ||
+            savedRow.targetId !== row.targetId ||
+            savedRow.moduleId !== row.moduleId ||
+            !Number.isSafeInteger(savedRow.revision) ||
+            savedRow.revision <= row.revision ||
+            savedRow.state !==
+              (action === "cancel"
+                ? "cancelled"
+                : action === "waitlist"
+                  ? "waitlisted"
+                  : "confirmed")
+          )
+            throw new Error(
+              "The saved result could not be verified. Keep this exact command for Retry, or refresh the saved participation.",
+            );
           intent.clear();
           closeForm();
-          onChanged();
-          await loadTarget();
-          writeStatus(
-            notice,
-            action === "cancel"
+          const saved =
+            (action === "cancel"
               ? "Cancellation recorded. No automatic waitlist promotion occurred. Any eligible delivery update is handled separately."
               : action === "waitlist"
                 ? "Waitlist recorded. No place reserved. Any eligible delivery update is handled separately."
-                : "Confirmation recorded. Attendance and operational email delivery remain separate.",
-          );
+                : "Confirmation recorded. Attendance and operational email delivery remain separate.") +
+            (result.auditRetained === false
+              ? " The change is saved, but some journal entries could not be retained within the backup limit."
+              : "");
+          await showSavedOutcome(saved, () => loadTarget(), notice, true);
         }, status);
       });
       startForm(labels[action][0], form);
@@ -1916,6 +2660,12 @@ export async function createStaffParticipationWorkspace({
         type: "checkbox",
         required: true,
       });
+      const interval = intervalControls(
+        row,
+        detail.terms,
+        "participation-offline-interval",
+        consent,
+      );
       const form = node(
         "form",
         {},
@@ -1925,6 +2675,7 @@ export async function createStaffParticipationWorkspace({
           "Record a person's specific agreement to these exact participation details from an offline channel. This is a staff-recorded assertion, not verified mailbox identity or automated verification. No account or email is created.",
         ),
         labelledSchedule(detail.terms),
+        interval.element,
         field(
           "How consent was received",
           method,
@@ -2004,6 +2755,9 @@ export async function createStaffParticipationWorkspace({
               targetRevision: target.revision,
               sourceRevision: detail.currentSourceRevision,
               termsHash: detail.termsHash,
+              ...(interval.element
+                ? { requestedInterval: interval.value() }
+                : {}),
               consent: true,
               waitlistAllowed: waitlist.checked,
               emailUpdates: false,
@@ -2018,19 +2772,53 @@ export async function createStaffParticipationWorkspace({
             status,
             "Recording the specific offline consent provenance…",
           );
+          let result;
           try {
-            await request(endpoint, { method: "POST", body });
+            result = await request(endpoint, { method: "POST", body });
           } catch (error) {
             intent.rejected(error.status);
             throw error;
           }
           if (!isCurrent()) return;
+          const savedRow = result?.participation;
+          checkedIntervalMetadata(savedRow);
+          if (
+            savedRow.id !== row.id ||
+            !Number.isSafeInteger(savedRow.revision) ||
+            savedRow.revision <= row.revision ||
+            savedRow.intervalChoiceLocked !== true ||
+            !savedRow.consent ||
+            !Number.isSafeInteger(savedRow.consent.revision) ||
+            savedRow.consent.revision < 1 ||
+            savedRow.consent.sourceRevision !== body.sourceRevision ||
+            savedRow.consent.termsHash !== body.termsHash ||
+            !/^[a-f0-9]{64}$/.test(savedRow.consent.termsHash || "") ||
+            savedRow.consent.waitlistAllowed !== body.waitlistAllowed ||
+            savedRow.consent.at !== body.consentedAt ||
+            savedRow.consent.method !== body.method ||
+            (savedRow.consent.evidenceRef ?? "") !== body.evidenceRef ||
+            (body.requestedInterval
+              ? !/^[a-f0-9]{64}$/.test(savedRow.allocationHash || "") ||
+                savedRow.consent.allocationHash !== savedRow.allocationHash
+              : savedRow.allocationHash != null ||
+                savedRow.consent.allocationHash != null) ||
+            (body.requestedInterval == null
+              ? savedRow.requestedInterval != null
+              : !savedRow.requestedInterval ||
+                ["version", "startAt", "endAt", "timeZone"].some(
+                  (key) =>
+                    savedRow.requestedInterval[key] !==
+                    body.requestedInterval[key],
+                ))
+          )
+            throw new Error(
+              "The saved consent could not be verified. Keep this exact command for Retry, or refresh the saved participation.",
+            );
           intent.clear();
           closeForm();
-          await loadTarget();
-          writeStatus(
-            notice,
+          await showSavedOutcome(
             "Offline consent recorded as a staff assertion. No place was reserved and no message was sent.",
+            () => loadTarget(),
           );
         }, status);
       });

@@ -1,3 +1,15 @@
+import {
+  validDate,
+  validZone,
+  validInstant,
+  agreesWithZone,
+} from "./schedule.mjs";
+export { validDate } from "./schedule.mjs";
+import {
+  managedAllocationProfile,
+  hasParticipationAllocationContext,
+  validationInterval,
+} from "./participation-intervals.mjs";
 /** Pure, JSON-described domain contracts. Authentication, tenant lookup and persistence belong to the API. */
 export const ROLES = Object.freeze([
   "owner",
@@ -577,6 +589,10 @@ export const MODULES = [
       instant("endAt", "Ends"),
       zone(),
       integer("capacity", "Shift places"),
+      bool(
+        "allowPartialIntervals",
+        "Allow requested intervals within this shift",
+      ),
       integer("participants", "Attendance count"),
       integer("minutes", "Recorded minutes"),
       ref("safeguardingId", "Required training status", "safeguarding"),
@@ -940,9 +956,14 @@ export const MODULES = [
       refs("outcomeIds", "Indicator sources", "outcomes"),
       refs("financeIds", "Financial planning sources", "finance"),
       refs("receiptIds", "Externally referenced grant receipts", "fundraising"),
-      select("assemblyMethod", "Report assembly method", ["grant-report-v1", "learning-review-v1"], {
-        help: "Use Grant reports or Learning to prepare exact source versions, save their digest and obtain independent approval before freezing.",
-      }),
+      select(
+        "assemblyMethod",
+        "Report assembly method",
+        ["grant-report-v1", "learning-review-v1"],
+        {
+          help: "Use Grant reports or Learning to prepare exact source versions, save their digest and obtain independent approval before freezing.",
+        },
+      ),
       text("sourceDigest", "Prepared report source digest", {
         maxLength: 64,
         help: "The selected report workspace calculates this binding. A source change requires a new digest and fresh manifest approval.",
@@ -1290,65 +1311,6 @@ const plain = (value) =>
   [Object.prototype, null].includes(Object.getPrototypeOf(value));
 const opaque = (value) =>
   typeof value === "string" && /^[A-Za-z0-9_-]{1,100}$/.test(value);
-export function validDate(value) {
-  if (
-    typeof value !== "string" ||
-    !/^(19|20|21|22)\d{2}-\d{2}-\d{2}$/.test(value)
-  )
-    return false;
-  const d = new Date(`${value}T00:00:00.000Z`);
-  return (
-    Number.isFinite(+d) &&
-    d.toISOString().slice(0, 10) === value &&
-    +value.slice(0, 4) <= 2200
-  );
-}
-function validZone(value) {
-  try {
-    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(new Date(0));
-    return typeof value === "string" && value.length <= 100;
-  } catch {
-    return false;
-  }
-}
-function validInstant(value) {
-  if (typeof value !== "string") return false;
-  const match = value.match(
-    /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(Z|[+-](\d{2}):(\d{2}))$/,
-  );
-  return (
-    !!match &&
-    validDate(match[1]) &&
-    +match[2] < 24 &&
-    +match[3] < 60 &&
-    +match[4] < 60 &&
-    (!match[6] ||
-      (+match[6] <= 14 &&
-        +match[7] < 60 &&
-        (+match[6] < 14 || +match[7] === 0))) &&
-    Number.isFinite(Date.parse(value))
-  );
-}
-function agreesWithZone(value, timeZone) {
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hourCycle: "h23",
-    })
-      .formatToParts(new Date(value))
-      .map((x) => [x.type, x.value]),
-  );
-  return (
-    `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}:${parts.second}` ===
-    value.slice(0, 19)
-  );
-}
 const isKnownMoney = (value) => plain(value) && value.minor !== null;
 const sameCurrency = (a, b) =>
   a.currency === b.currency && a.precision === b.precision;
@@ -1883,6 +1845,15 @@ export function validateRecord(moduleId, input, context = {}) {
       parentKind = isVol ? "shift" : "session";
     const parentRow = linked(parentKey),
       parent = rowData(parentRow);
+    const managed = managedAllocationProfile(
+      context.participation,
+      data[parentKey] || context.recordId,
+    );
+    if (data.allowPartialIntervals === true && data.kind !== "shift")
+      add(
+        "allowPartialIntervals",
+        "Only volunteer shifts can offer requested intervals.",
+      );
     if (data[parentKey] && parent.kind !== parentKind)
       add(parentKey, `Link to a ${parentKind}.`);
     if (data.kind === parentKind && final) {
@@ -1928,9 +1899,19 @@ export function validateRecord(moduleId, input, context = {}) {
       );
       if (
         Number.isSafeInteger(parent.capacity) &&
-        inSession.length + 1 > parent.capacity
+        (managed ? managed.peakOccupied : inSession.length + 1) >
+          parent.capacity
       )
         add(parentKey, "The linked shift/session has no capacity remaining.");
+      if (
+        isVol &&
+        parent.allowPartialIntervals === true &&
+        !hasParticipationAllocationContext(context.participation)
+      )
+        add(
+          parentKey,
+          "Managed interval validation needs the current allocation context.",
+        );
       if (inSession.some((r) => rowData(r).contactId === data.contactId))
         add(
           "contactId",
@@ -1944,8 +1925,28 @@ export function validateRecord(moduleId, input, context = {}) {
           if (
             otherShift.startAt &&
             otherShift.endAt &&
-            Date.parse(parent.startAt) < Date.parse(otherShift.endAt) &&
-            Date.parse(otherShift.startAt) < Date.parse(parent.endAt)
+            Date.parse(
+              validationInterval(
+                context.participation,
+                context.recordId,
+                parent,
+              ).startAt,
+            ) <
+              Date.parse(
+                validationInterval(context.participation, other.id, otherShift)
+                  .endAt,
+              ) &&
+            Date.parse(
+              validationInterval(context.participation, other.id, otherShift)
+                .startAt,
+            ) <
+              Date.parse(
+                validationInterval(
+                  context.participation,
+                  context.recordId,
+                  parent,
+                ).endAt,
+              )
           )
             add(
               "shiftId",
@@ -1965,7 +1966,17 @@ export function validateRecord(moduleId, input, context = {}) {
           rowData(r)[parentKey] === context.recordId &&
           activeStates.includes(r.status),
       ).length;
-      if (existingCount > data.capacity)
+      if (
+        isVol &&
+        data.allowPartialIntervals === true &&
+        existingCount &&
+        !hasParticipationAllocationContext(context.participation)
+      )
+        add(
+          "capacity",
+          "Managed interval validation needs the current allocation context.",
+        );
+      if ((managed ? managed.peakOccupied : existingCount) > data.capacity)
         add(
           "capacity",
           "Capacity cannot be reduced below existing active assignments/registrations.",
@@ -1997,8 +2008,20 @@ export function validateRecord(moduleId, input, context = {}) {
           if (
             otherShift.startAt &&
             otherShift.endAt &&
-            Date.parse(data.startAt) < Date.parse(otherShift.endAt) &&
-            Date.parse(otherShift.startAt) < Date.parse(data.endAt)
+            Date.parse(
+              validationInterval(context.participation, own.id, data).startAt,
+            ) <
+              Date.parse(
+                validationInterval(context.participation, other.id, otherShift)
+                  .endAt,
+              ) &&
+            Date.parse(
+              validationInterval(context.participation, other.id, otherShift)
+                .startAt,
+            ) <
+              Date.parse(
+                validationInterval(context.participation, own.id, data).endAt,
+              )
           )
             add(
               "startAt",
@@ -2171,10 +2194,22 @@ export function validateRecord(moduleId, input, context = {}) {
     for (const k of ["startDate", "endDate", "summary", "missingness"])
       requireValue(k);
   }
-  if (moduleId === "reporting" && data.assemblyMethod === "learning-review-v1") {
+  if (
+    moduleId === "reporting" &&
+    data.assemblyMethod === "learning-review-v1"
+  ) {
     if (data.kind !== "template" || data.visibility !== "private")
-      add("assemblyMethod", "Learning report manifests use a private template.");
-    for (const k of ["programId", "startDate", "endDate", "summary", "missingness"])
+      add(
+        "assemblyMethod",
+        "Learning report manifests use a private template.",
+      );
+    for (const k of [
+      "programId",
+      "startDate",
+      "endDate",
+      "summary",
+      "missingness",
+    ])
       requireValue(k);
     if (data.agreementId !== null)
       add("agreementId", "Learning reports have no grant agreement.");
@@ -2182,11 +2217,24 @@ export function validateRecord(moduleId, input, context = {}) {
       if (!Array.isArray(data[k]) || data[k].length !== 0)
         add(k, "Learning reports contain no financial or receipt selection.");
     if (!Array.isArray(data.outcomeIds))
-      add("outcomeIds", "Explicitly select observations, including an empty selection.");
+      add(
+        "outcomeIds",
+        "Explicitly select observations, including an empty selection.",
+      );
     if (data.sourceDigest !== null && !/^[a-f0-9]{64}$/.test(data.sourceDigest))
-      add("sourceDigest", "Use the exact digest prepared by the Learning workspace.");
-    if (data.supersedesReportId ? !data.revisionReason : data.revisionReason !== null)
-      add("revisionReason", "A new edition requires its prior report and a reason together.");
+      add(
+        "sourceDigest",
+        "Use the exact digest prepared by the Learning workspace.",
+      );
+    if (
+      data.supersedesReportId
+        ? !data.revisionReason
+        : data.revisionReason !== null
+    )
+      add(
+        "revisionReason",
+        "A new edition requires its prior report and a reason together.",
+      );
     if (state === "issued")
       add("status", "Learning reports remain private frozen editions.");
   }

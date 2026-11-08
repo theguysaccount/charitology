@@ -1,3 +1,4 @@
+import { ParticipationIntervalError } from "./participation-intervals.mjs";
 import {
   MODULES,
   ROLES,
@@ -72,7 +73,7 @@ import {
   participationRoutes,
   participantParticipationRoutes,
 } from "./participation.mjs";
-import { guardParticipationWrite } from "./participation-guards.mjs";
+import { guardParticipationWrite, participationValidationContext } from "./participation-guards.mjs";
 import {
   attendanceRoutes,
   readAttendanceBody,
@@ -1193,6 +1194,7 @@ export function createHandler({
               module.workflow.states.find((s) => s.id === "review")?.id ||
               module.workflow.initial;
             r.data = validateRecord(r.moduleId, r.data, {
+              participation: r.moduleId === "volunteers" ? await participationValidationContext(c, org) : undefined,
               orgId: org,
               recordId: r.id,
               records,
@@ -1271,6 +1273,7 @@ export function createHandler({
                 );
               await checkOwner(c, org, record.ownerId);
               record.data = validateRecord(moduleId, record.data, {
+              participation: moduleId === "volunteers" ? await participationValidationContext(c, org) : undefined,
                 orgId: org,
                 recordId: record.id,
                 status: record.status,
@@ -1473,6 +1476,7 @@ export function createHandler({
               snapshotApproved: validApproval,
             });
             record.data = validateRecord(moduleId, record.data, {
+              participation: moduleId === "volunteers" ? await participationValidationContext(c, org) : undefined,
               orgId: org,
               recordId: record.id,
               status: to,
@@ -1515,6 +1519,7 @@ export function createHandler({
             };
             await checkOwner(c, org, next.ownerId);
             next.data = validateRecord(moduleId, next.data, {
+              participation: moduleId === "volunteers" ? await participationValidationContext(c, org) : undefined,
               orgId: org,
               recordId: record.id,
               status: next.status,
@@ -1562,7 +1567,7 @@ export function createHandler({
           },
           422,
         );
-      if (error instanceof HttpError || error instanceof LearningError)
+      if (error instanceof HttpError || error instanceof LearningError || error instanceof ParticipationIntervalError)
         return json(
           {
             ok: false,
