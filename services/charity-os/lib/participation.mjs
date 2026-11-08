@@ -1,3 +1,4 @@
+import { participationChargeJsonSQL } from "./participation-storage.mjs";
 import { retainParticipationAuditOutcome } from "./participation-receipt.mjs";
 import {
   validateRequestedInterval,
@@ -256,7 +257,7 @@ export async function participationQuota(c, org) {
   ]) {
     const r = (
       await c.query(
-        `SELECT count(*) AS count,COALESCE(sum(${table === "os_participation_outbox" ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : "octet_length(to_jsonb(t)::text)"}),0) AS bytes FROM ${table} t WHERE org_id=$1`,
+        `SELECT count(*) AS count,COALESCE(sum(${table === "os_participation_outbox" ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : table === "os_participations" ? `octet_length(${participationChargeJsonSQL("t")}::text)` : "octet_length(to_jsonb(t)::text)"}),0) AS bytes FROM ${table} t WHERE org_id=$1`,
         [org],
       )
     ).rows[0];

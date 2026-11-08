@@ -1,3 +1,4 @@
+import { participationVersion } from "./participation-storage.mjs";
 import {
   validateRequestedInterval,
   frozenParticipationInterval,
@@ -217,20 +218,7 @@ export async function exportParticipation(c, org) {
       [org],
     )
   ).rows;
-  const version =
-    targets.some((t) => Object.hasOwn(t.terms || {}, "intervalPolicy")) ||
-    rows.some(
-      (p) =>
-        p.requested_interval != null ||
-        ["interval", "allocationHash", "allocationKnown"].some((k) =>
-          Object.hasOwn(p.frozen || {}, k),
-        ) ||
-        Object.hasOwn(p.consent || {}, "allocationHash") ||
-        Object.hasOwn(p.consent?.terms || {}, "intervalPolicy") ||
-        Object.hasOwn(p.frozen?.terms || {}, "intervalPolicy"),
-    )
-      ? 3
-      : 2;
+  const version = participationVersion(targets, rows);
   const participations = rows.map((p) => ({
     id: p.id,
     targetId: p.target_id,

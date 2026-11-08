@@ -210,3 +210,22 @@ test("an optional export journal cannot consume the last byte of a v3 exit packe
     whole - 1,
   );
 });
+
+test("safety and receipt Replay still enforce actual retained SQL participation bytes without a new reserve", async () => {
+  const f = projectionFixture({ count: 1, intervalAware: true });
+  const c = {
+    query: (sql, args) =>
+      sql.startsWith("SELECT COALESCE(sum(") &&
+      sql.includes(" AS raw_bytes FROM os_participations t")
+        ? Promise.resolve({
+            rows: [
+              { bytes: 8 * 1024 * 1024 + 1, raw_bytes: 8 * 1024 * 1024 + 1 },
+            ],
+          })
+        : f.c.query(sql, args),
+  };
+  await assert.rejects(
+    checkParticipationExportCapacity(c, "org", { reserve: false }),
+    (e) => e.code === "participation_backup_size",
+  );
+});

@@ -852,6 +852,245 @@ function participationTerms(row) {
     ? row.frozenTerms
     : row.terms || row.frozenTerms;
 }
+function checkedIntervalMetadata(row) {
+  if (!row || typeof row !== "object" || Array.isArray(row))
+    throw new Error(
+      "The participation interval response could not be verified. Reload before deciding.",
+    );
+  const valid = (value) =>
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value).length === 4 &&
+    value.version === 1 &&
+    ["startAt", "endAt", "timeZone"].every(
+      (key) => typeof value[key] === "string",
+    ) &&
+    value.startAt.length <= 80 &&
+    value.endAt.length <= 80 &&
+    value.timeZone.length <= 100 &&
+    Number.isFinite(Date.parse(value.startAt)) &&
+    Number.isFinite(Date.parse(value.endAt)) &&
+    Date.parse(value.startAt) < Date.parse(value.endAt);
+  for (const key of ["requestedInterval", "frozenInterval"])
+    if (row[key] !== undefined && row[key] !== null && !valid(row[key]))
+      throw new Error(
+        "The participation interval response could not be verified. Reload the saved participation before deciding.",
+      );
+  if (
+    (row.allocationHash !== undefined &&
+      row.allocationHash !== null &&
+      !/^[a-f0-9]{64}$/.test(row.allocationHash)) ||
+    (row.intervalChoiceLocked !== undefined &&
+      typeof row.intervalChoiceLocked !== "boolean") ||
+    (row.frozenInterval &&
+      (!row.requestedInterval ||
+        ["version", "startAt", "endAt", "timeZone"].some(
+          (key) => row.frozenInterval[key] !== row.requestedInterval[key],
+        )))
+  )
+    throw new Error(
+      "The participation interval pins could not be verified. Reload before deciding.",
+    );
+  return row;
+}
+function intervalOffered(terms) {
+  return (
+    terms?.kind === "shift" &&
+    terms.intervalPolicy?.version === 1 &&
+    terms.intervalPolicy.mode === "within-shift" &&
+    Object.keys(terms.intervalPolicy).length === 2
+  );
+}
+function ownIntervalValue(choice, startAt, endAt, timeZone, terms) {
+  if (choice === "whole") return null;
+  if (choice !== "interval" || !intervalOffered(terms))
+    throw new Error("This approved shift does not offer requested intervals.");
+  const explicit =
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
+  if (
+    ![startAt, endAt].every(
+      (value) =>
+        typeof value === "string" &&
+        explicit.test(value) &&
+        Number.isFinite(Date.parse(value)),
+    ) ||
+    timeZone !== terms.timeZone ||
+    Date.parse(startAt) >= Date.parse(endAt) ||
+    Date.parse(startAt) < Date.parse(terms.startAt) ||
+    Date.parse(endAt) > Date.parse(terms.endAt)
+  )
+    throw new Error(
+      "Enter a start and end within the approved shift, with explicit UTC offsets and its displayed time zone. Your writing is kept.",
+    );
+  return { version: 1, startAt, endAt, timeZone };
+}
+function ownIntervalControls(row, consent) {
+  const terms = row.terms,
+    saved = row.requestedInterval || null;
+  const locked =
+    row.intervalChoiceLocked === true ||
+    !!row.consent ||
+    !!saved ||
+    row.recovered === true;
+  if (!intervalOffered(terms) && !saved)
+    return { element: null, value: () => null };
+  const prefix = `participation-own-interval-${row.id}`;
+  const choice = node(
+    "select",
+    { id: `${prefix}-choice`, disabled: locked },
+    node("option", { value: "whole", selected: !saved }, "Whole shift"),
+    node(
+      "option",
+      { value: "interval", selected: !!saved },
+      "One requested interval",
+    ),
+  );
+  choice.value = saved ? "interval" : "whole";
+  const start = node("input", {
+    id: `${prefix}-start`,
+    maxlength: 80,
+    autocomplete: "off",
+    readOnly: locked,
+    value: saved?.startAt || "",
+    placeholder: terms?.startAt || "",
+  });
+  const end = node("input", {
+    id: `${prefix}-end`,
+    maxlength: 80,
+    autocomplete: "off",
+    readOnly: locked,
+    value: saved?.endAt || "",
+    placeholder: terms?.endAt || "",
+  });
+  const zone = node("input", {
+    id: `${prefix}-zone`,
+    readOnly: true,
+    value: terms?.timeZone || saved?.timeZone || "",
+  });
+  const labelled = (label, control) =>
+    node(
+      "div",
+      { class: "field" },
+      node("label", { for: control.id }, label),
+      control,
+    );
+  const fields = node(
+    "div",
+    {},
+    labelled("Requested start — include UTC offset", start),
+    labelled("Requested end — include UTC offset", end),
+    labelled("Approved time zone", zone),
+  );
+  const sync = () => {
+    fields.hidden = choice.value !== "interval";
+    start.required = end.required = !fields.hidden;
+  };
+  const changed = () => {
+    consent.checked = false;
+    sync();
+    state.participationDraftKeys.add(`${row.id}:consent`);
+    state.participationDirty = state.dirty = true;
+  };
+  choice.addEventListener("change", changed);
+  for (const control of [start, end])
+    control.addEventListener("input", changed);
+  sync();
+  return {
+    element: node(
+      "div",
+      { class: "participation-requested-interval" },
+      labelled("Participation schedule", choice),
+      fields,
+      node(
+        "p",
+        { class: "fine" },
+        locked
+          ? "This choice was already recorded. Reaffirm the same interval; a different range requires cancellation and a new request."
+          : "Choose one interval within the approved shift. A request or waitlist reserves no place. The organization checks concurrent capacity at confirmation; attendance and actual worked minutes remain separate.",
+      ),
+    ),
+    value: () =>
+      locked
+        ? ownIntervalValue(
+            saved ? "interval" : "whole",
+            saved?.startAt,
+            saved?.endAt,
+            terms?.timeZone,
+            terms,
+          )
+        : ownIntervalValue(
+            choice.value,
+            start.value,
+            end.value,
+            zone.value,
+            terms,
+          ),
+  };
+}
+function ownParticipationSchedule(row, terms) {
+  const range = ["confirmed", "cancelled"].includes(row.state)
+    ? row.frozenInterval || row.requestedInterval
+    : row.requestedInterval;
+  return range
+    ? node(
+        "div",
+        {},
+        node(
+          "p",
+          { class: "notice fine" },
+          row.state === "confirmed"
+            ? "Recorded interval commitment — not recorded attendance or worked minutes."
+            : row.state === "cancelled"
+              ? "Cancelled interval history — no current place reserved."
+              : "Requested interval — no place reserved until explicit confirmation.",
+        ),
+        ownSchedule({
+          ...terms,
+          ...range,
+          title: "Requested / recorded interval",
+        }),
+        node(
+          "dl",
+          { class: "participant-answers" },
+          node(
+            "div",
+            {},
+            node("dt", {}, "Exact start with offset"),
+            node("dd", {}, range.startAt),
+          ),
+          node(
+            "div",
+            {},
+            node("dt", {}, "Exact end with offset"),
+            node("dd", {}, range.endAt),
+          ),
+        ),
+        node(
+          "details",
+          {},
+          node(
+            "summary",
+            {},
+            ["confirmed", "cancelled"].includes(row.state) && row.frozenTerms
+              ? "Original approved occurrence"
+              : "Current approved occurrence",
+          ),
+          ownSchedule(terms),
+        ),
+      )
+    : ownSchedule(terms);
+}
+function intervalIdentity(row) {
+  const range = (value) =>
+    value ? [value.version, value.startAt, value.endAt, value.timeZone] : null;
+  return JSON.stringify([
+    range(row.requestedInterval),
+    range(row.frozenInterval),
+    row.allocationHash ?? null,
+    row.intervalChoiceLocked ?? null,
+  ]);
+}
 function organizerRoutes(terms) {
   const links = [];
   if (
@@ -944,8 +1183,13 @@ function bookingBody(row, action, payload) {
     throw new Error(
       "The earlier response may have been interrupted. Reload the saved request and participation before submitting different choices.",
     );
-  if (!old)
-    state.bookingIntents.set(key, { canonical, key: crypto.randomUUID() });
+  if (old) old.uncertain = true;
+  else
+    state.bookingIntents.set(key, {
+      canonical,
+      key: crypto.randomUUID(),
+      uncertain: false,
+    });
   return { ...payload, idempotencyKey: state.bookingIntents.get(key).key };
 }
 async function loadOwnParticipations(item, { preserveDraft = false } = {}) {
@@ -987,6 +1231,7 @@ async function loadOwnParticipations(item, { preserveDraft = false } = {}) {
     throw new Error(
       "The own-participation response could not be verified. Reload the saved request.",
     );
+  result.participations.forEach(checkedIntervalMetadata);
   const unchanged =
     state.participations.length === result.participations.length &&
     state.participations.every((old) =>
@@ -998,6 +1243,7 @@ async function loadOwnParticipations(item, { preserveDraft = false } = {}) {
           row.sourceRevision === old.sourceRevision &&
           row.termsHash === old.termsHash &&
           row.canConsent === old.canConsent &&
+          intervalIdentity(row) === intervalIdentity(old) &&
           deliveryAuthority(row) === deliveryAuthority(old),
       ),
     );
@@ -1062,7 +1308,7 @@ function renderOwnParticipations(item) {
           ),
           node("span", { class: "tag" }, `Revision ${row.revision}`),
         ),
-        ownSchedule(terms),
+        ownParticipationSchedule(row, terms),
       );
     if (row.recovered)
       card.append(
@@ -1112,15 +1358,19 @@ function renderOwnParticipations(item) {
           type: "checkbox",
           required: true,
         });
+      const interval = ownIntervalControls(row, consent);
       const form = node(
         "form",
         { class: "participant-participation-consent" },
         node("h4", {}, "Current approved details for this agreement"),
         ownSchedule(row.terms),
+        interval.element,
         node(
           "p",
           {},
-          "Review these exact whole-occurrence details, then make a specific participation agreement. This agreement does not create or change a reserved place.",
+          interval.element
+            ? "Review the original shift and your exact displayed schedule choice, then make a specific participation agreement. This agreement does not reserve a place."
+            : "Review these exact whole-occurrence details, then make a specific participation agreement. This agreement does not create or change a reserved place.",
         ),
         node(
           "label",
@@ -1129,7 +1379,9 @@ function renderOwnParticipations(item) {
           node(
             "span",
             {},
-            "I ask to take part in this full occurrence under the displayed schedule, purpose and instructions.",
+            interval.element
+              ? "I ask to take part under this exact displayed schedule choice, purpose and instructions."
+              : "I ask to take part in this full occurrence under the displayed schedule, purpose and instructions.",
           ),
         ),
         node(
@@ -1186,6 +1438,9 @@ function renderOwnParticipations(item) {
             targetRevision: row.targetRevision,
             sourceRevision: row.sourceRevision,
             termsHash: row.termsHash,
+            ...(interval.element
+              ? { requestedInterval: interval.value() }
+              : {}),
             consent: true,
             waitlistAllowed: waitlist.checked,
             emailUpdates: row.notifications?.requested === true,
@@ -1377,6 +1632,124 @@ function renderDeliveryPreference(item, row) {
 function outputNode() {
   return node("p", { class: "form-status", role: "status" });
 }
+function sameSavedInterval(a, b) {
+  return a == null || b == null
+    ? a == null && b == null
+    : ["version", "startAt", "endAt", "timeZone"].every(
+        (key) => a[key] === b[key],
+      );
+}
+function checkedOwnParticipationOutcome(saved, row, action, payload) {
+  checkedIntervalMetadata(saved);
+  const fail = () => {
+    throw new Error(
+      "The saved participation result could not be verified. Your exact command is kept for Retry or an authoritative refresh.",
+    );
+  };
+  if (
+    saved.id !== row.id ||
+    !Number.isSafeInteger(saved.revision) ||
+    saved.revision < row.revision ||
+    !["requested", "waitlisted", "confirmed", "cancelled"].includes(
+      saved.state,
+    ) ||
+    saved.state !== (action === "cancel" ? "cancelled" : row.state) ||
+    (action === "cancel" &&
+      row.state !== "cancelled" &&
+      saved.revision <= row.revision) ||
+    !Number.isSafeInteger(saved.targetRevision) ||
+    saved.targetRevision < 0 ||
+    !(
+      saved.sourceRevision === null ||
+      (Number.isSafeInteger(saved.sourceRevision) && saved.sourceRevision > 0)
+    ) ||
+    !(
+      saved.termsHash === null || /^[a-f0-9]{64}$/.test(saved.termsHash || "")
+    ) ||
+    typeof saved.intervalChoiceLocked !== "boolean" ||
+    typeof saved.canConsent !== "boolean" ||
+    typeof saved.canCancel !== "boolean" ||
+    typeof saved.notifications?.requested !== "boolean"
+  )
+    fail();
+  const chosen =
+    action === "consent"
+      ? (payload.requestedInterval ?? null)
+      : (row.requestedInterval ?? null);
+  if (
+    !sameSavedInterval(saved.requestedInterval, chosen) ||
+    (action !== "consent" &&
+      !sameSavedInterval(saved.frozenInterval, row.frozenInterval))
+  )
+    throw new Error(
+      "The saved interval could not be verified. Your exact command and writing are kept for Retry or an authoritative refresh.",
+    );
+  if (action === "consent") {
+    const consent = saved.consent;
+    if (
+      !consent ||
+      !Number.isSafeInteger(consent.revision) ||
+      consent.revision < 1 ||
+      !Number.isFinite(Date.parse(consent.at)) ||
+      consent.sourceRevision !== payload.sourceRevision ||
+      consent.termsHash !== payload.termsHash ||
+      consent.waitlistAllowed !== payload.waitlistAllowed ||
+      saved.notifications.requested !== payload.emailUpdates ||
+      saved.intervalChoiceLocked !== true ||
+      (chosen
+        ? !/^[a-f0-9]{64}$/.test(saved.allocationHash || "") ||
+          consent.allocationHash !== saved.allocationHash
+        : saved.allocationHash != null || consent.allocationHash != null)
+    )
+      fail();
+  } else {
+    if (
+      (row.consent == null && saved.consent != null) ||
+      saved.allocationHash !== row.allocationHash
+    )
+      fail();
+    if (row.frozenTerms) {
+      const fields = [
+        "title",
+        "kind",
+        "startAt",
+        "endAt",
+        "timeZone",
+        "participationPurpose",
+        "participantInstructions",
+        "organizerEmail",
+        "organizerUrl",
+      ];
+      if (
+        !saved.frozenTerms ||
+        fields.some(
+          (key) =>
+            (saved.frozenTerms[key] ?? null) !== (row.frozenTerms[key] ?? null),
+        ) ||
+        ["version", "mode"].some(
+          (key) =>
+            (saved.frozenTerms.intervalPolicy?.[key] ?? null) !==
+            (row.frozenTerms.intervalPolicy?.[key] ?? null),
+        )
+      )
+        fail();
+    }
+    if (
+      row.consent &&
+      (!saved.consent ||
+        ["revision", "sourceRevision", "termsHash"].some(
+          (key) => saved.consent[key] !== row.consent[key],
+        ))
+    )
+      fail();
+    if (
+      action === "preferences" &&
+      saved.notifications.requested !== payload.emailUpdates
+    )
+      fail();
+  }
+  return saved;
+}
 async function saveOwnParticipation(item, row, action, payload, status) {
   const user = state.user.id,
     access = state.accessVersion,
@@ -1398,10 +1771,17 @@ async function saveOwnParticipation(item, row, action, payload, status) {
       { method: "POST", body },
     );
   } catch (error) {
-    if ([400, 401, 403, 404, 413, 422, 429].includes(error.status))
+    const pending = state.bookingIntents.get(`${row.id}:${action}`),
+      wasUncertain = pending?.uncertain === true;
+    if (
+      !wasUncertain &&
+      [400, 401, 403, 404, 413, 422, 429].includes(error.status)
+    )
       state.bookingIntents.delete(`${row.id}:${action}`);
+    else if (pending) pending.uncertain = true;
     if (
       action === "delivery-preference" &&
+      !wasUncertain &&
       error.status === 409 &&
       alive(user, access) &&
       sameRequest(state.current, item)
@@ -1414,13 +1794,16 @@ async function saveOwnParticipation(item, row, action, payload, status) {
     throw error;
   }
   if (!alive(user, access) || !sameRequest(state.current, item)) return;
+  const pending = state.bookingIntents.get(`${row.id}:${action}`);
+  if (pending) pending.uncertain = true;
   if (action === "delivery-preference") {
     if (
       result.participationId !== row.id ||
       !Number.isSafeInteger(result.revision) ||
       result.revision < row.revision ||
       result.intakeRevision !== item.revision ||
-      !currentDelivery({ delivery: result.delivery })
+      !currentDelivery({ delivery: result.delivery }) ||
+      result.delivery.enabled !== payload.enabled
     )
       throw new Error(
         "The email preference response could not be verified. Reload the saved request before repeating a change.",
@@ -1435,6 +1818,23 @@ async function saveOwnParticipation(item, row, action, payload, status) {
     throw new Error(
       "The participation response is incomplete. Reload the saved request before repeating a change.",
     );
+  checkedOwnParticipationOutcome(result.participation, row, action, payload);
+  if (action === "consent" && payload.requestedInterval != null) {
+    const saved = result.participation;
+    if (
+      !saved.requestedInterval ||
+      ["version", "startAt", "endAt", "timeZone"].some(
+        (key) =>
+          saved.requestedInterval[key] !== payload.requestedInterval[key],
+      ) ||
+      !/^[a-f0-9]{64}$/.test(saved.allocationHash || "") ||
+      saved.consent?.allocationHash !== saved.allocationHash ||
+      saved.intervalChoiceLocked !== true
+    )
+      throw new Error(
+        "The saved interval could not be verified. Your writing is kept; reload the saved request before changing it.",
+      );
+  }
   const discardedOtherChoices = [...state.participationDraftKeys].some(
     (key) => key !== `${row.id}:${action}`,
   );
@@ -1461,6 +1861,9 @@ async function saveOwnParticipation(item, row, action, payload, status) {
             ? "Specific participation agreement recorded. The existing confirmation is unchanged; operational email is a separate choice."
             : "Specific participation request recorded. No place is reserved until the organization explicitly confirms it. Operational email is a separate choice.",
   );
+  if (result.auditRetained === false)
+    $("#participant-status").textContent +=
+      " The change is saved, but some journal entries could not be retained within the backup limit.";
   if (discardedOtherChoices)
     $("#participant-status").textContent +=
       " Other unsaved participation choices were discarded because the saved revision changed. Review those choices again before saving.";

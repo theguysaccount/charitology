@@ -38,7 +38,7 @@ const err = (code) => (e) => e.code === code;
 let serial = 0;
 const key = () => "fictional-intent-" + (++serial).toString().padStart(12, "0");
 
-export async function withIntervalFixture(run) {
+export async function withIntervalFixture(run, { orgId, staffId } = {}) {
   for (const value of [process.env.DATABASE_URL, process.env.OS_DATABASE_URL]) {
     const url = new URL(value);
     assert(
@@ -123,8 +123,10 @@ export async function withIntervalFixture(run) {
       { readOnly: true },
     );
   };
-  const org = "fictional-booking-org",
-    staff = "fictional-staff";
+  const org = orgId || "fictional-booking-org",
+    staff = staffId || "fictional-staff";
+  assert(/^[A-Za-z0-9_-]{1,100}$/.test(org));
+  assert(/^[A-Za-z0-9_-]{1,100}$/.test(staff));
   try {
     await localGuard();
     await owner.pool.query(`CREATE SCHEMA ${quote(schema)}`);

@@ -1,3 +1,10 @@
+import { readFile } from "node:fs/promises";
+import { logicalBackupBytes as oldLogicalBackupBytes } from "./fixtures/legacy-participation-accounting.mjs";
+import {
+  participationVersion,
+  PARTICIPATION_LEGACY_SQL,
+  participationChargeJsonSQL,
+} from "../lib/participation-storage.mjs";
 import { buildLearningFixture } from "../test/learning-fixtures.mjs";
 import { restoreLearningBridge } from "../lib/learning-backup.mjs";
 import { restoredIntake, restoreIntake } from "../lib/intake-backup.mjs";
@@ -438,7 +445,8 @@ test(
 );
 
 async function restoreIntoFreshOrg(f, backup) {
-  const org = f.org + "-recovered",
+  const org =
+      f.org.length > 80 ? "recovered-" + f.org.slice(10) : f.org + "-recovered",
     normalized = restoredParticipation(backup);
   await f.db.tx(
     f.staff,
@@ -810,43 +818,41 @@ test(
   "interval PG: near-cap legacy whole history keeps v2 export, cancellation, opt-out and inactive restore",
   options,
   (t) =>
-    withIntervalFixture(async (f) => {
-      const target = await f.makeTarget(
-        "legacy-cap",
-        "volunteers",
-        1,
-        undefined,
-        undefined,
-        false,
-      );
-      await edit(
-        f,
-        target.id,
-        {
-          title: "界".repeat(180),
-          participationPurpose: "界".repeat(600),
-          participantInstructions: "界".repeat(600),
-          organizerUrl: "https://example.invalid/" + "a".repeat(470),
-        },
-        { approved: true },
-      );
-      await f.adopt(target);
-      const candidate = await f.makeCandidate(
-        "legacy-cap-booking",
-        target,
-        undefined,
-        { withIntake: true },
-      );
-      let p = await f.offlineConsent(
-        target,
-        await f.associate(target, candidate),
-        { requestedInterval: null },
-      );
-      p = (await f.command(target, p, "confirm")).participation;
-      const before = await f.db.tx(
-        f.staff,
-        f.org,
-        async (c) => {
+    withIntervalFixture(
+      async (f) => {
+        const target = await f.makeTarget(
+          "legacy-cap",
+          "volunteers",
+          1,
+          undefined,
+          undefined,
+          false,
+        );
+        await edit(
+          f,
+          target.id,
+          {
+            title: "界".repeat(180),
+            participationPurpose: "界".repeat(600),
+            participantInstructions: "界".repeat(600),
+            organizerUrl: "https://example.invalid/" + "a".repeat(470),
+          },
+          { approved: true },
+        );
+        await f.adopt(target);
+        const candidate = await f.makeCandidate(
+          "legacy-cap-booking",
+          target,
+          undefined,
+          { withIntake: true },
+        );
+        let p = await f.offlineConsent(
+          target,
+          await f.associate(target, candidate),
+          { requestedInterval: null },
+        );
+        p = (await f.command(target, p, "confirm")).participation;
+        const before = await f.migration.tx(f.staff, f.org, async (c) => {
           const partial = await assembleWorkspaceBackup(c, f.org);
           assert.equal(partial.participation.version, 2);
           const normalized = restoredParticipation(partial).participations[0];
@@ -857,6 +863,11 @@ test(
               state: "cancelled",
             },
           };
+          // The only changed schema field is removed for the real old-schema
+          // baseline; all original data and typed history remain intact.
+          await c.query(
+            "ALTER TABLE os_participations DROP COLUMN requested_interval",
+          );
           await c.query(
             "UPDATE os_participations SET last_command=NULL WHERE org_id=$1 AND id=$2",
             [f.org, p.id],
@@ -901,7 +912,7 @@ test(
           );
           const count = Math.min(
             1900,
-            Math.floor((8 * 1024 * 1024 - 65536 - existing) / measured),
+            Math.floor((8 * 1024 * 1024 - 1000 - existing) / measured),
           );
           assert(count > 1000);
           await c.query(
@@ -912,7 +923,6 @@ test(
             "INSERT INTO os_participations SELECT (jsonb_populate_record(NULL::os_participations,$1::jsonb||jsonb_build_object('id','history-'||lpad(i::text,28,'0'),'booking_record_id','booking-'||lpad(i::text,28,'0')))).* FROM generate_series(1,$2::int) i",
             [JSON.stringify(sample), count],
           );
-          await participationQuota(c, f.org);
           const used = Number(
             (
               await c.query(
@@ -922,8 +932,52 @@ test(
             ).rows[0].bytes,
           );
           assert(
-            used > 8 * 1024 * 1024 - 80000 && used < 8 * 1024 * 1024 - 60000,
+            used > 8 * 1024 * 1024 - 8000 && used <= 8 * 1024 * 1024 - 1000,
           );
+          const oldGlobalBase = await oldLogicalBackupBytes(c, f.org);
+          await c.query(
+            "INSERT INTO os_events(org_id,actor_id,action,detail) VALUES($1,$2,'fixture.historical',jsonb_build_object('preserved',repeat('x',$3::int)))",
+            [f.org, f.staff, 60 * 1024 * 1024 - oldGlobalBase - 1000],
+          );
+          const oldGlobal = await oldLogicalBackupBytes(c, f.org);
+          assert(
+            oldGlobal > 60 * 1024 * 1024 - 2000 && oldGlobal < 60 * 1024 * 1024,
+          );
+          const oldNative = await exportParticipation(c, f.org),
+            oldNativeHash = hash(JSON.stringify(oldNative));
+          assert.equal(oldNative.version, 2);
+          restoredParticipation({
+            records: await allRecords(c, f.org),
+            intake: partial.intake,
+            participation: oldNative,
+          });
+          const schema = await readFile(
+            new URL("../lib/schema.sql", import.meta.url),
+            "utf8",
+          );
+          const additive =
+            /ALTER TABLE os_participations ADD COLUMN IF NOT EXISTS requested_interval jsonb[\s\S]*?;/.exec(
+              schema,
+            )?.[0];
+          assert(additive && additive.includes("<=1024"));
+          await c.query(additive);
+          const accounting = await checkParticipationExportCapacity(c, f.org, {
+            reserve: false,
+          });
+          assert.equal(accounting.version, 2);
+          assert.equal(accounting.chargedRetainedBytes, used);
+          assert.equal(accounting.rawRetainedBytes - used, 28 * (count + 1));
+          assert(accounting.rawRetainedBytes > 8 * 1024 * 1024);
+          const rawGlobalAfter = await oldLogicalBackupBytes(c, f.org),
+            chargedGlobalAfter = await logicalBackupBytes(c, f.org);
+          assert.equal(chargedGlobalAfter, oldGlobal);
+          assert.equal(rawGlobalAfter - oldGlobal, 28 * (count + 1));
+          assert(rawGlobalAfter > 60 * 1024 * 1024);
+          assert.equal(
+            hash(JSON.stringify(await exportParticipation(c, f.org))),
+            oldNativeHash,
+          );
+          await participationQuota(c, f.org);
           const bookingBytes = Number(
             (
               await c.query(
@@ -934,6 +988,10 @@ test(
           );
           return {
             used,
+            rawAfterMigration: accounting.rawRetainedBytes,
+            oldGlobal,
+            rawGlobalAfter,
+            chargedGlobalAfter,
             count: count + 1,
             physical: original,
             bookingBytes,
@@ -941,100 +999,204 @@ test(
               JSON.stringify(partial.participation.participations[0]),
             ),
           };
-        },
-        { lock: true },
-      );
-      const current = p;
-      const cancelled = await f.command(target, current, "cancel", {
-        reason: "Fictional explicit cancellation",
-      });
-      assert.equal(cancelled.participation.state, "cancelled");
-      const after = await f.db.tx(
-        f.staff,
-        f.org,
-        async (c) => {
-          await participationQuota(c, f.org);
-          const used = Number(
-            (
-              await c.query(
-                "SELECT sum(octet_length(to_jsonb(t)::text))::int AS bytes FROM os_participations t WHERE org_id=$1",
-                [f.org],
-              )
-            ).rows[0].bytes,
-          );
-          const booking = Number(
-            (
-              await c.query(
-                "SELECT octet_length(to_jsonb(r)::text)::int AS bytes FROM os_records r WHERE org_id=$1 AND id=$2",
-                [f.org, candidate.record.id],
-              )
-            ).rows[0].bytes,
-          );
-          assert(used - before.used <= PARTICIPATION_SAFETY_RESERVE.retained);
-          assert(
-            booking - before.bookingBytes <=
-              PARTICIPATION_SAFETY_RESERVE.bookingRetained,
-          );
-          return assembleWorkspaceBackup(c, f.org);
-        },
-        { readOnly: true },
-      );
-      assert.equal(after.participation.version, 2);
-      assert(
-        Buffer.byteLength(
-          JSON.stringify(
-            after.participation.participations.find((x) => x.id === p.id),
-          ),
-        ) -
-          before.originalNativeBytes <=
-          PARTICIPATION_SAFETY_RESERVE.native,
-      );
-      assert.equal(after.participation.participations.length, before.count);
-      const own = (
-        await f.ownCall(candidate.intakeId, null, null)
-      ).participations.find((x) => x.id === p.id);
-      const off = await f.ownCall(candidate.intakeId, p.id, "preferences", {
-        revision: own.revision,
-        intakeRevision: 1,
-        emailUpdates: false,
-        idempotencyKey: f.key(),
-      });
-      assert.equal(off.participation.notifications.requested, false);
-      const updated = await f.db.tx(
-        f.staff,
-        f.org,
-        (c) => assembleWorkspaceBackup(c, f.org),
-        { readOnly: true },
-      );
-      const restored = await restoreIntoFreshOrg(f, updated);
-      const round = await f.db.tx(
-        f.staff,
-        restored.org,
-        async (c) => {
-          await participationQuota(c, restored.org);
-          return exportParticipation(c, restored.org);
-        },
-        { readOnly: true },
-      );
-      assert.equal(round.version, 2);
-      assert.equal(round.participations.length, before.count);
-      assert(
-        round.participations.every((x) => x.recovered && x.consent === null),
-      );
-      t.diagnostic(
-        JSON.stringify({
-          fixtureOnly: true,
-          legacyRows: before.count,
-          legacyRetainedBytes: before.used,
-          legacyNativeBytes: Buffer.byteLength(
-            JSON.stringify(updated.participation),
-          ),
-          restoredRows: round.participations.length,
-        }),
-      );
-    }),
-);
+        });
+        const current = p;
+        const cancelled = await f.command(target, current, "cancel", {
+          reason: "Fictional explicit cancellation",
+        });
+        assert.equal(cancelled.participation.state, "cancelled");
+        const after = await f.db.tx(
+          f.staff,
+          f.org,
+          async (c) => {
+            await participationQuota(c, f.org);
+            const used = Number(
+              (
+                await c.query(
+                  `SELECT sum(octet_length(${participationChargeJsonSQL("t")}::text))::int AS bytes FROM os_participations t WHERE org_id=$1`,
+                  [f.org],
+                )
+              ).rows[0].bytes,
+            );
+            const booking = Number(
+              (
+                await c.query(
+                  "SELECT octet_length(to_jsonb(r)::text)::int AS bytes FROM os_records r WHERE org_id=$1 AND id=$2",
+                  [f.org, candidate.record.id],
+                )
+              ).rows[0].bytes,
+            );
+            assert(used - before.used <= PARTICIPATION_SAFETY_RESERVE.retained);
+            assert(
+              booking - before.bookingBytes <=
+                PARTICIPATION_SAFETY_RESERVE.bookingRetained,
+            );
+            return assembleWorkspaceBackup(c, f.org);
+          },
+          { readOnly: true },
+        );
+        assert.equal(after.participation.version, 2);
+        assert(
+          Buffer.byteLength(
+            JSON.stringify(
+              after.participation.participations.find((x) => x.id === p.id),
+            ),
+          ) -
+            before.originalNativeBytes <=
+            PARTICIPATION_SAFETY_RESERVE.native,
+        );
+        assert.equal(after.participation.participations.length, before.count);
+        const own = (
+          await f.ownCall(candidate.intakeId, null, null)
+        ).participations.find((x) => x.id === p.id);
+        const off = await f.ownCall(candidate.intakeId, p.id, "preferences", {
+          revision: own.revision,
+          intakeRevision: 1,
+          emailUpdates: false,
+          idempotencyKey: f.key(),
+        });
+        assert.equal(off.participation.notifications.requested, false);
+        const updated = await f.db.tx(
+          f.staff,
+          f.org,
+          (c) => assembleWorkspaceBackup(c, f.org),
+          { readOnly: true },
+        );
+        const restored = await restoreIntoFreshOrg(f, updated);
+        const round = await f.db.tx(
+          f.staff,
+          restored.org,
+          async (c) => {
+            await participationQuota(c, restored.org);
+            return exportParticipation(c, restored.org);
+          },
+          { readOnly: true },
+        );
+        assert.equal(round.version, 2);
+        assert.equal(round.participations.length, before.count);
+        assert(
+          round.participations.every((x) => x.recovered && x.consent === null),
+        );
+        t.diagnostic(
+          JSON.stringify({
+            fixtureOnly: true,
+            legacyRows: before.count,
+            legacyChargedBytes: before.used,
+            rawAfterNullableMigration: before.rawAfterMigration,
+            oldGlobal: before.oldGlobal,
+            rawGlobalAfter: before.rawGlobalAfter,
+            chargedGlobalAfter: before.chargedGlobalAfter,
+            legacyNativeBytes: Buffer.byteLength(
+              JSON.stringify(updated.participation),
+            ),
+            restoredRows: round.participations.length,
+          }),
+        );
 
+        await t.test(
+          "separate v3 full-row overflow cannot use legacy compatibility, including reserve:false",
+          async () => {
+            // After old safety commands consumed emergency headroom, a new
+            // ordinary opt-in must refuse atomically with the old v2 exit intact.
+            await assert.rejects(
+              edit(
+                f,
+                target.id,
+                { allowPartialIntervals: true },
+                { approved: true },
+              ),
+              code("quota"),
+            );
+            assert.equal(
+              (
+                await f.db.tx(
+                  f.staff,
+                  f.org,
+                  (c) => exportParticipation(c, f.org),
+                  { readOnly: true },
+                )
+              ).version,
+              2,
+            );
+            // Force only this clearly out-of-band, individually valid v3 shape in
+            // the disposable fixture to witness the hard full-row check directly.
+            await f.migration.tx(f.staff, f.org, async (c) => {
+              const records = await allRecords(c, f.org),
+                oldSource = records.find((r) => r.id === target.id),
+                source = {
+                  ...oldSource,
+                  revision: oldSource.revision + 1,
+                  data: { ...oldSource.data, allowPartialIntervals: true },
+                };
+              source.data = validateRecord(source.moduleId, source.data, {
+                orgId: f.org,
+                recordId: source.id,
+                status: source.status,
+                records,
+                participation: await participationValidationContext(c, f.org),
+              });
+              const terms = participationTerms(source);
+              await c.query(
+                "UPDATE os_records SET data=$3,revision=$4 WHERE org_id=$1 AND id=$2",
+                [
+                  f.org,
+                  source.id,
+                  JSON.stringify(source.data),
+                  source.revision,
+                ],
+              );
+              await c.query(
+                "UPDATE os_participation_targets SET terms=$3,terms_hash=$4,source_revision=$5 WHERE org_id=$1 AND target_id=$2",
+                [
+                  f.org,
+                  target.id,
+                  JSON.stringify(terms),
+                  hash(terms),
+                  source.revision,
+                ],
+              );
+            });
+            await f.db.tx(
+              f.staff,
+              f.org,
+              async (c) => {
+                const packet = await exportParticipation(c, f.org),
+                  raw = Number(
+                    (
+                      await c.query(
+                        "SELECT sum(octet_length(to_jsonb(p)::text))::int AS bytes FROM os_participations p WHERE org_id=$1",
+                        [f.org],
+                      )
+                    ).rows[0].bytes,
+                  );
+                assert.equal(packet.version, 3);
+                assert(raw > 8 * 1024 * 1024);
+                assert(
+                  Buffer.byteLength(JSON.stringify(packet.participations)) <
+                    8 * 1024 * 1024,
+                );
+                await assert.rejects(
+                  checkParticipationExportCapacity(c, f.org, {
+                    reserve: false,
+                  }),
+                  code("participation_backup_size"),
+                );
+                t.diagnostic(
+                  JSON.stringify({
+                    fixtureOnly: true,
+                    deliberateV3RawOverflow: raw,
+                    refusedWithoutReserve: true,
+                  }),
+                );
+              },
+              { readOnly: true },
+            );
+          },
+        );
+      },
+      { orgId: "o".repeat(100), staffId: "u".repeat(100) },
+    ),
+);
 test(
   "interval PG: repeated v3 safety actions preserve future cancellation and a durable skipped-journal Retry",
   options,
@@ -1474,5 +1636,104 @@ test(
         },
         { readOnly: true },
       );
+    }),
+);
+
+test(
+  "interval PG: one marker specification has exact SQL parity and scopes the legacy NULL-only charge",
+  options,
+  () =>
+    withIntervalFixture(async (f) => {
+      const target = await f.makeTarget(
+        "classifier",
+        "volunteers",
+        1,
+        undefined,
+        undefined,
+        false,
+      );
+      await f.adopt(target);
+      const candidate = await f.makeCandidate("classifier-booking", target),
+        p = await f.associate(target, candidate);
+      const cases = [
+        {},
+        { targetTerms: { intervalPolicy: null } },
+        { requested: {} },
+        ...["interval", "allocationHash", "allocationKnown"].map((key) => ({
+          frozen: { [key]: null },
+        })),
+        { consent: { allocationHash: null } },
+        { consent: { terms: { intervalPolicy: null } } },
+        { frozen: { terms: { intervalPolicy: null } } },
+      ];
+      await f.migration.tx(f.staff, f.org, async (c) => {
+        await c.query("SAVEPOINT json_null_refusal");
+        await assert.rejects(
+          c.query(
+            "UPDATE os_participations SET requested_interval='null'::jsonb WHERE org_id=$1 AND id=$2",
+            [f.org, p.id],
+          ),
+          (e) => e.code === "23514",
+        );
+        await c.query("ROLLBACK TO json_null_refusal");
+        const original = (
+          await c.query(
+            "SELECT terms FROM os_participation_targets WHERE org_id=$1 AND target_id=$2",
+            [f.org, target.id],
+          )
+        ).rows[0].terms;
+        for (let i = 0; i < cases.length; i++) {
+          const item = cases[i];
+          await c.query("SAVEPOINT marker_case");
+          await c.query(
+            "UPDATE os_participation_targets SET terms=$3 WHERE org_id=$1 AND target_id=$2",
+            [
+              f.org,
+              target.id,
+              JSON.stringify({ ...original, ...item.targetTerms }),
+            ],
+          );
+          await c.query(
+            "UPDATE os_participations SET requested_interval=$3,consent=$4,frozen=$5 WHERE org_id=$1 AND id=$2",
+            [
+              f.org,
+              p.id,
+              item.requested ? JSON.stringify(item.requested) : null,
+              item.consent ? JSON.stringify(item.consent) : null,
+              item.frozen ? JSON.stringify(item.frozen) : null,
+            ],
+          );
+          const targets = (
+              await c.query(
+                "SELECT terms FROM os_participation_targets WHERE org_id=$1",
+                [f.org],
+              )
+            ).rows,
+            rows = (
+              await c.query("SELECT * FROM os_participations WHERE org_id=$1", [
+                f.org,
+              ])
+            ).rows;
+          const sql = (
+            await c.query(`SELECT ${PARTICIPATION_LEGACY_SQL} AS legacy`, [
+              f.org,
+            ])
+          ).rows[0].legacy;
+          assert.equal(sql, i === 0);
+          assert.equal(participationVersion(targets, rows), sql ? 2 : 3);
+          assert.equal(
+            (await exportParticipation(c, f.org)).version,
+            sql ? 2 : 3,
+          );
+          const bytes = (
+            await c.query(
+              `SELECT octet_length(to_jsonb(p)::text)::int AS raw,octet_length(${participationChargeJsonSQL("p")}::text)::int AS charged FROM os_participations p WHERE org_id=$1 AND id=$2`,
+              [f.org, p.id],
+            )
+          ).rows[0];
+          assert.equal(bytes.raw - bytes.charged, sql ? 28 : 0);
+          await c.query("ROLLBACK TO marker_case");
+        }
+      });
     }),
 );

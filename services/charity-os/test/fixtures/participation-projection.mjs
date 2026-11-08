@@ -113,7 +113,7 @@ export function projectionFixture({
         return { rows: [] };
       if (sql.startsWith("SELECT * FROM os_records")) return { rows: records };
       if (sql.includes("sum(octet_length(to_jsonb(t)::text))"))
-        return { rows: [{ bytes: used }] };
+        return { rows: [{ bytes: used, raw_bytes: used }] };
       throw Error("Unexpected closed fixture query");
     },
   };

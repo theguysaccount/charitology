@@ -1,3 +1,4 @@
+import { participationChargeJsonSQL, legacyRecoveredParticipation } from "./participation-storage.mjs";
 /** Read-only projection of the actual full-restore representation, never restore authority. */
 import { makeBackup, validateBackup, restoredIntegrations } from './backup.mjs';
 import { restoredIntake, exportIntake } from './intake-backup.mjs';
@@ -73,7 +74,7 @@ export async function measureLearningOperationalCapacity(c, org, participation) 
   const changed = `(${base})||jsonb_build_object('delivery_consent',jsonb_build_object('version',$4::text,'enabled',false,'revision',$3::integer,'at',$5::text))`;
   const people = (await c.query(`SELECT octet_length(to_jsonb(t)::text) AS actual,GREATEST(octet_length((${base})::text),octet_length((${changed})::text)) AS projected FROM os_participations t WHERE org_id=$1 AND id=ANY($6::text[])`, [org, C.timestamp, O.attempts, DELIVERY_CONSENT_VERSION, O.serviceTime, growth.affectedParticipationIds])).rows;
   const sourceParticipationGrowthBytes = people.reduce((sum, value) => sum + Math.max(0, Number(value.projected) - Number(value.actual)), 0);
-  const sourceParticipationBytes = Number((await c.query('SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS bytes FROM os_participations t WHERE org_id=$1', [org])).rows[0].bytes) + sourceParticipationGrowthBytes;
+  const sourceParticipationBytes = Number((await c.query(`SELECT COALESCE(sum(octet_length(${participationChargeJsonSQL("t")}::text)),0) AS bytes FROM os_participations t WHERE org_id=$1`, [org])).rows[0].bytes) + sourceParticipationGrowthBytes;
   if (sourceOutboxBytes > PARTICIPATION_LIMITS.outboxBytes || sourceParticipationBytes > PARTICIPATION_LIMITS.participationBytes ||
       growth.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || growth.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes) operationalFailure();
   return frozen({ active: true, affectedParticipations: growth.affectedParticipationIds.length, sourceLogicalGrowthBytes: sourceParticipationGrowthBytes + sourceOutboxGrowthBytes,
@@ -108,16 +109,16 @@ async function schemaCheck(c) {
   for (const [table, expected] of Object.entries(columns))
     if (JSON.stringify([...(actual.get(table) ?? [])].sort()) !== JSON.stringify([...expected].sort())) badSchema();
 }
-async function measure(c, table, rows) {
+async function measure(c, table, rows, legacyParticipation = false) {
   if (!rows.length) return [];
   // Composite JSON timestamp transport only: payload/data/proof objects retain their exact original strings.
   const sqlRows = rows.map(value => Object.fromEntries(Object.entries(value).map(([key, field]) => [key,
     typeof field === 'string' && key.endsWith('_at') ? participationTimestampParameter(field) : field])));
-  const result = await c.query(`SELECT item.ordinality::integer AS position,octet_length(to_jsonb(r)::text) AS bytes${table === 'os_records' ? ',octet_length(r.data::text) AS data_bytes' : ''} FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS item(value,ordinality) CROSS JOIN LATERAL jsonb_populate_record(NULL::${table},item.value) AS r ORDER BY item.ordinality`, [JSON.stringify(sqlRows)]);
+  const result = await c.query(`SELECT item.ordinality::integer AS position,octet_length(${table === 'os_participations' && legacyParticipation ? "(to_jsonb(r)-'requested_interval')" : 'to_jsonb(r)'}::text) AS bytes${table === 'os_participations' ? ',octet_length(to_jsonb(r)::text) AS raw_bytes' : ''}${table === 'os_records' ? ',octet_length(r.data::text) AS data_bytes' : ''} FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS item(value,ordinality) CROSS JOIN LATERAL jsonb_populate_record(NULL::${table},item.value) AS r ORDER BY item.ordinality`, [JSON.stringify(sqlRows)]);
   if (result.rows.length !== rows.length) badSchema();
   return result.rows.map((value, index) => {
     if (Number(value.position) !== index + 1 || !Number.isSafeInteger(Number(value.bytes)) || Number(value.bytes) < 0) badSchema();
-    return { bytes: Number(value.bytes), dataBytes: Number(value.data_bytes) || 0 };
+    return { bytes: Number(value.bytes), rawBytes: Number(value.raw_bytes ?? value.bytes), dataBytes: Number(value.data_bytes) || 0 };
   });
 }
 function wireRow(value) {
@@ -233,10 +234,10 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const sizes = {}, categories = {};
   let logicalBytes = baseline.bytes, structuredRecordBytes = 0;
   for (const [table, values] of Object.entries(tables)) {
-    sizes[table] = await measure(c, table, values);
+    sizes[table] = await measure(c, table, values, table === 'os_participations' && legacyRecoveredParticipation(backup, participation));
     const charges = sizes[table].map((value, index) => Math.max(value.bytes, Number(values[index].budget_bytes) || 0));
     for (const [index, value] of values.entries()) if (['os_learning_history', 'os_resource_directory_history'].includes(table) && sizes[table][index].bytes > value.budget_bytes) over();
-    categories[table] = { count: values.length, bytes: charges.reduce((sum, value) => sum + value, 0) };
+    categories[table] = { count: values.length, bytes: charges.reduce((sum, value) => sum + value, 0), rawBytes: sizes[table].reduce((sum,value,index)=>sum+Math.max(value.rawBytes,Number(values[index].budget_bytes)||0),0) };
     logicalBytes += categories[table].bytes;
     if (table === 'os_records') structuredRecordBytes = sizes[table].reduce((sum, value) => sum + value.dataBytes, 0);
   }

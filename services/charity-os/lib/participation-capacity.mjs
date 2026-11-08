@@ -1,3 +1,4 @@
+import { participationChargeJsonSQL } from "./participation-storage.mjs";
 /** Exact native/recovery budgeting, called only inside the owning tenant transaction. */
 import {
   exportParticipation,
@@ -160,20 +161,27 @@ export async function checkParticipationExportCapacity(
     )
       refuse();
   }
-  if (retainedReserve) {
-    const used = Number(
-      (
-        await c.query(
-          "SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS bytes FROM os_participations t WHERE org_id=$1",
-          [org],
-        )
-      ).rows[0].bytes,
-    );
-    if (used + retainedReserve > PARTICIPATION_LIMITS.participationBytes)
-      refuse();
-  }
+  const accounting = (
+    await c.query(
+      `SELECT COALESCE(sum(octet_length(${participationChargeJsonSQL("t")}::text)),0) AS bytes,COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS raw_bytes FROM os_participations t WHERE org_id=$1`,
+      [org],
+    )
+  ).rows[0];
+  const chargedRetainedBytes = Number(accounting.bytes),
+    rawRetainedBytes = Number(accounting.raw_bytes);
+  if (
+    !Number.isSafeInteger(chargedRetainedBytes) ||
+    !Number.isSafeInteger(rawRetainedBytes) ||
+    chargedRetainedBytes < 0 ||
+    rawRetainedBytes < chargedRetainedBytes ||
+    chargedRetainedBytes + retainedReserve >
+      PARTICIPATION_LIMITS.participationBytes
+  )
+    refuse();
   return {
     version: exported.version,
+    rawRetainedBytes,
+    chargedRetainedBytes,
     retainedReserve,
     nativeReserve,
     exportBytes: bytes(exported),
