@@ -1,5 +1,10 @@
 # Changelog
 
+## November 7, 2026: first hosted check-in SQL result
+
+- Passed all 13 check-in SQL cases on PostgreSQL 17.11 in the actual PR merge checkout for `79c917f`, with thirteen owned schemas cleaned and namespace preservation verified. The full tree matches the branch; fictional fixture sessions and historical approvals remain explicit.
+- Preserved the initial new-branch push's missing-nonzero-history-base refusal. This documentation follow-up leaves all history guards intact; complete final-source push/PR CI, stage and production release remain pending. [Acceptance](docs/PARTICIPANT_CHECK_IN_BACKEND_ACCEPTANCE.md#november-7-follow-up-first-hosted-pg17-result-and-branch-creation-refusal) records the exact runs and source identities.
+
 ## November 7, 2026: check-in CI17 adapter locally integrated
 
 - Integrated the reviewed seven-path closed CI17 fixture at `d75385c188c1a004c189978392791872fec512cb`, tree `d4a479aeb41a4c79196e96ff85149f364bd2933c`, on the browser-tested `e4ee635` source. Its explicit thirteen-case entry uses a separate constrained disposable owner and keeps legacy fixture defaults intact. Actual PG17 and remote CI have not run.
