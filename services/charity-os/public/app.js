@@ -4,12 +4,14 @@ import {
   ApiError,
   setCsrfToken,
   request as apiRequest,
+  fieldResponsesAPI,
 } from "./api.js";
 import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
 import { createGrantReportWorkspace } from "./grant-reports.js";
 import { createLearningWorkspace } from "./learning.js";
 import { createIncubatorBridgeWorkspace } from "./incubator-bridge.js";
+import { createFieldResponsesWorkspace, canUseFieldResponses } from "./field-responses.js";
 import { LEARNING_ROLES, learningRecordFragment, learningRecordMatches, resolveLearningRecordRoute, checkedLearningReport } from "./learning-model.js";
 import {
   createDirectoryResourceWorkspace,
@@ -67,6 +69,7 @@ const state = {
   grantReportWorkspace: null,
   learningWorkspace: null,
   incubatorWorkspace: null,
+  fieldResponsesWorkspace: null,
   participationWorkspace: null,
   learningRecordAbort: null,
   reportReadAbort: null,
@@ -320,6 +323,8 @@ function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
   state.participationWorkspace?.dispose();
   state.participationWorkspace = null;
+  if (state.fieldResponsesWorkspace) { state.fieldResponsesWorkspace.dispose(); state.pageDirty = false; }
+  state.fieldResponsesWorkspace = null;
   if (state.incubatorWorkspace) { state.incubatorWorkspace.dispose(); state.pageDirty = false; }
   state.incubatorWorkspace = null;
   state.learningRecordAbort?.abort();
@@ -389,6 +394,12 @@ async function discardEditor() {
   return true;
 }
 async function discardPage({ signingOut = false } = {}) {
+  if (state.fieldResponsesWorkspace?.hasPendingCommand()) {
+    if (!signingOut) { toast("Resolve the retained aggregate import command before leaving this workspace."); return false; }
+    if (!(await confirmAction("Sign out with an unresolved aggregate import?", "The command may already be saved. Signing out discards this page’s exact in-memory Retry. Nothing is resent automatically; reconcile authorized import history after signing in again.", "Sign out and discard Retry"))) return false;
+    state.pageDirty = false;
+    return true;
+  }
   if (state.participationWorkspace?.hasPendingGroupCommand?.()) {
     if (!signingOut) {
       state.participationWorkspace.reconcilePendingGroup?.();
@@ -403,7 +414,8 @@ async function discardPage({ signingOut = false } = {}) {
     !state.pageDirty &&
     !state.taskRecurrencePanel?.isDirty() &&
     !state.directoryResourceWorkspace?.isDirty() &&
-    !state.incubatorWorkspace?.isDirty()
+    !state.incubatorWorkspace?.isDirty() &&
+    !state.fieldResponsesWorkspace?.isDirty()
   ) return true;
   if (
     !(await confirmAction(
@@ -413,10 +425,12 @@ async function discardPage({ signingOut = false } = {}) {
     ))
   )
     return false;
+  if (state.fieldResponsesWorkspace?.hasPendingCommand()) { toast("Resolve the retained aggregate import command before leaving this workspace."); return false; }
   state.pageDirty = false;
   return true;
 }
 function configureEditor(eyebrow, title, saveLabel, fields, onSave) {
+  state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
@@ -549,6 +563,9 @@ function canUseIncubator() {
     can(moduleById("programs"),"read",role()) && can(moduleById("projects"),"read",role()) && can(moduleById("projects"),"write",role());
 }
 function renderNav() {
+  let fieldLink = document.querySelector('[data-nav="field-responses"]');
+  if (!fieldLink) { fieldLink = link("Aggregate field responses", "#field-responses", { "data-nav": "field-responses" }); document.querySelector(".secondary-nav").prepend(fieldLink); }
+  fieldLink.hidden = !canUseFieldResponses(role(),moduleById("outcomes"));
   let incubatorLink = document.querySelector('[data-nav="incubator"]');
   if (!incubatorLink) {
     incubatorLink = link("Incubator plans", "#incubator", { "data-nav": "incubator" });
@@ -689,6 +706,7 @@ async function loadMembersIfOrg() {
   if (state.org) await loadMembers();
 }
 async function route() {
+  state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
@@ -740,6 +758,15 @@ async function route() {
       const [, module, id] = state.route.split("/");
       if (id) await renderDetail(module, id, current);
       else await renderModule(module, current);
+    } else if (state.route === "field-responses") {
+      const org = state.org, session = state.session, currentRole = role(), outcomesModule = moduleById("outcomes");
+      if (!canUseFieldResponses(currentRole,outcomesModule)) throw new ApiError("Unapproved aggregate imports require current staff Outcomes read access.",403);
+      const view = createFieldResponsesWorkspace({org,actorId:session.user.id,role:currentRole,outcomesModule,canWrite:can(outcomesModule,"write",currentRole),api:fieldResponsesAPI(org),
+        isCurrent:()=>current===state.epoch&&org===state.org&&session===state.session&&currentRole===role(),
+        onDirty:value=>{if(current===state.epoch)state.pageDirty=value;},
+        onChanged:()=>{if(current===state.epoch){invalidateModules(org,["outcomes"]);renderNav();}},
+        confirmDiscard:()=>confirmAction("Use a different aggregate file?","The prior file and selected rows are discarded only if you confirm. No import is sent by choosing a file.","Use new file")});
+      if(current===state.epoch){setContent(view);state.fieldResponsesWorkspace=view;}else view.dispose();
     } else if (state.route === "incubator") {
       if (!canUseIncubator()) throw new ApiError("Incubator plans require current staff Programs read and Projects read/write access.", 403);
       const org = state.org, session = state.session, currentRole = role();
@@ -5471,6 +5498,7 @@ $("#editor-dialog").addEventListener("cancel", (event) => {
   discardEditor();
 });
 $("#org-switch").addEventListener("change", async (event) => {
+  state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
@@ -5493,6 +5521,7 @@ $("#org-switch").addEventListener("change", async (event) => {
   await route();
 });
 $("#new-org").addEventListener("click", async () => {
+  state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
@@ -5521,6 +5550,7 @@ $("#content").addEventListener("change", (event) => {
   if (event.target.closest("form")) state.pageDirty = true;
 });
 window.addEventListener("hashchange", async () => {
+  state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
@@ -5534,7 +5564,7 @@ window.addEventListener("hashchange", async () => {
 window.addEventListener("beforeunload", (event) => {
   if (
     state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty() ||
-    state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty()
+    state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty() || state.fieldResponsesWorkspace?.isDirty()
   ) {
     event.preventDefault();
     event.returnValue = "";

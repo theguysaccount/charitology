@@ -64,6 +64,9 @@ import { directoryResourceRoutes } from "./directory-resources.mjs";
 import { exportDirectoryResources, restoredDirectoryResources, restoreDirectoryResources } from "./directory-resource-backup.mjs";
 import { readBackupBody } from "./backup-json.mjs";
 import { restoredParticipationGroups, restoreParticipationGroups, participationGroupHistoryCount } from "./participation-group-recovery.mjs";
+import { FieldResponseError } from "./field-response-model.mjs";
+import { fieldResponseRoutes } from "./field-response-routes.mjs";
+import { inspectFieldResponseRecovery, restoreFieldResponseReports, fieldResponseRestoreSummary } from "./field-response-recovery.mjs";
 import { ParticipationGroupError } from "./participation-group-model.mjs";
 import { ParticipationGroupAllocationError } from "./participation-group-allocation.mjs";
 import { isParticipationGroupPath, isParticipationGroupPreview, readParticipationGroupBody } from "./participation-group-http.mjs";
@@ -361,6 +364,8 @@ export function createHandler({
       if (learningResponse) return learningResponse;
       const incubatorResponse = await incubatorBridgeRoutes({ request, url, db, session });
       if (incubatorResponse) return incubatorResponse;
+      const fieldResponse = await fieldResponseRoutes({ request, url, db, session });
+      if (fieldResponse) return fieldResponse;
       if (isParticipationGroupPath(path)) {
         if (method === "HEAD") fail(405, "group_method", "Use GET to read a group view.");
         if (method === "GET" && (request.body !== null || request.headers.has("transfer-encoding") ||
@@ -739,6 +744,7 @@ export function createHandler({
             const incubatorBridge = restoredIncubatorBridge(backup.incubatorBridge, { records: backup.records, trash: backup.trash || [] });
             const participantCheckins = restoredParticipantCheckins(backup.participantCheckins);
             const participationGroups = restoredParticipationGroups(backup.participationGroups);
+            const fieldResponses = inspectFieldResponseRecovery(backup);
             const issues = [];
             const existingRecurrence = Number(
               (
@@ -769,14 +775,14 @@ export function createHandler({
                 ).rows[0].count,
               ) ||
               existingIntake ||
-              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org) || await incubatorStateCount(c, org) || await checkInStateCount(c, org) || await participationGroupHistoryCount(c, org)
+              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org) || await incubatorStateCount(c, org) || await checkInStateCount(c, org) || await participationGroupHistoryCount(c, org) || await fieldResponseStateCount(c, org)
             )
               issues.push({
                 field: "organization",
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
-            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || backup.participation?.version === 3))
+            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || backup.participation?.version === 3))
               await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
@@ -811,6 +817,7 @@ export function createHandler({
                 learningReportsRecovered: learningBridge?.reports.length || 0,
                 ...(participantCheckins === null ? {} : { participantCheckinsRecovered: participantCheckins.length }),
                 ...(participationGroups === null ? {} : { participationGroupsRecovered: participationGroups.groups.length }),
+                ...fieldResponseRestoreSummary(fieldResponses),
               ...(incubatorBridge ? { incubatorSourcesRecovered: incubatorBridge.sources.length, incubatorEventsRetained: incubatorBridge.events.length } : {}),
                 ...(migration ? { migration: migration.summary } : {}),
               },
@@ -818,6 +825,7 @@ export function createHandler({
               warnings: [
                 ...(migration?.warnings || []),
                 ...(participantCheckins === null ? [] : [{ field: "participantCheckins", message: "Arrival assertions restore as unverified inactive history, without accounts, receipts, live consent or attendance authority." }]),
+                ...(fieldResponses.present ? [{ field: "reports", message: "Aggregate import manifests restore as historical data. They do not restore accepted commands, approval, credentials or current definition authority." }] : []),
                 ...(participationGroups === null ? [] : [{ field: "participationGroups", message: "Group decisions restore as inactive history. They restore no live places, consent, coordinator authority or command keys." }]),
                 ...participation.warnings,
                 ...(incubatorBridge ? [{ field: "incubatorBridge", message: "Incubator selections and copy history restore as inactive historical material. No session, command, approval or live binding authority is restored. Explicit adoption creates two fresh editable planned records." }] : []),
@@ -888,6 +896,8 @@ export function createHandler({
             const incubatorBridge = restoredIncubatorBridge(p.payload.incubatorBridge, { records: p.payload.records, trash: p.payload.trash || [] });
             const participantCheckins = restoredParticipantCheckins(p.payload.participantCheckins);
             const participationGroups = restoredParticipationGroups(p.payload.participationGroups);
+            const fieldResponses = inspectFieldResponseRecovery(p.payload);
+            if (await fieldResponseStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without aggregate import history.");
             if (await participationGroupHistoryCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without group history or command receipts.");
             if (await checkInStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without self-report history.");
             if (await incubatorStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without Incubator history or pending source reviews.");
@@ -942,7 +952,7 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
-            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || p.payload.participation?.version === 3)
+            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || p.payload.participation?.version === 3)
               await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -1011,6 +1021,10 @@ export function createHandler({
             await restoreIncubatorBridge(c, org, p.payload.incubatorBridge, { records: p.payload.records, trash: p.payload.trash || [] });
             await restoreParticipantCheckins(c, org, p.payload.participantCheckins);
             await restoreParticipationGroups(c, org, p.payload.participationGroups);
+            if (fieldResponses.present) {
+              const createdAtExact = (await c.query(`SELECT to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at`)).rows[0].created_at;
+              await restoreFieldResponseReports(c, p.payload, { orgId: org, actorId: user, createdAtExact });
+            }
             await checkLearningActiveRecords(c, org);
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
@@ -1024,6 +1038,7 @@ export function createHandler({
               learningReportsRecovered: learningBridge?.reports.length || 0,
               ...(participantCheckins === null ? {} : { participantCheckinsRecovered: participantCheckins.length }),
               ...(participationGroups === null ? {} : { participationGroupsRecovered: participationGroups.groups.length }),
+              ...fieldResponseRestoreSummary(fieldResponses),
               ...(incubatorBridge ? { incubatorSourcesRecovered: incubatorBridge.sources.length, incubatorEventsRetained: incubatorBridge.events.length } : {}),
               intakePublicationsClosed: intake.publications.length,
               intakeRequests: intake.submissions.length,
@@ -1621,7 +1636,7 @@ export function createHandler({
           },
           422,
         );
-      if (error instanceof ParticipationGroupError || error instanceof ParticipationGroupAllocationError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
+      if (error instanceof FieldResponseError || error instanceof ParticipationGroupError || error instanceof ParticipationGroupAllocationError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
         return json(
           {
             ok: false,
@@ -1658,6 +1673,9 @@ export function createHandler({
 }
 async function learningStateCount(c, org) {
   return Number((await c.query("SELECT (SELECT count(*) FROM os_learning_history WHERE org_id=$1)+(SELECT count(*) FROM os_learning_previews WHERE org_id=$1)+(SELECT count(*) FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS count", [org])).rows[0].count);
+}
+async function fieldResponseStateCount(c, org) {
+  return Number((await c.query("SELECT count(*) AS count FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import'", [org])).rows[0].count);
 }
 function knownLegacyReport(payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload) || isLearningReportFamily(payload) || isGrantReport(payload) ||

@@ -42,6 +42,14 @@ Start a Theory of Change in the [Impact Measurement Toolkit](/tools/impact-measu
 
 Connect the plan to observations with their units, sources and limits. Write a review of what the team learned, including uncertainty, missing evidence and what to change next. Another authorized reviewer must approve eligible revisions through the ordinary review process. A frozen report keeps the chosen source versions and authored interpretation together. Access follows organization, program and role permissions. Importing a plan, recording attendance or approving a draft does not establish that an activity caused an outcome.
 
+## Import aggregate visits as observation drafts
+
+In the [shared OS](https://os.charitology.org), choose **Aggregate field responses**. Download the empty JSON template and prepare a file in its declared visits format. Choose a current program, its matching visits indicator and a CSV source identity configured by an administrator. Read the whole-file transmission notice before inspection, then deliberately select the rows to retain.
+
+Unknown counts and denominators stay unknown; supplied zeroes remain zeroes. Selected exclusions keep their reasons without creating observations. Review every proposed draft and its selected source manifest before committing. A source hash identifies the retained values; collection quality and causal interpretation still need review.
+
+The import creates ordinary unapproved observations with unknown evidence. Later edits stay separate from the original manifest. Interrupted saves retain one exact command for deliberate Retry. Complete workspace backups preserve historical manifests and restore observations as unapproved drafts. Connections return unconfigured; accepted commands and credentials stay outside the restored workspace. [Read the format and boundaries](https://github.com/theguysaccount/charitology/blob/main/docs/FIELD_OBSERVATIONS_PLAN.md).
+
 ## Record a whole-occurrence attendance count
 
 For an eligible ended event or volunteer shift, staff can load the current occurrence and enter the observed attendance total for the whole occurrence. Confirmed places provide context; they are neither the default count nor a cap. Keep registrations and walk-ins unknown unless the corresponding facts are known. This draft leaves volunteer minutes unknown. Attendance does not by itself establish hours worked or a service outcome.

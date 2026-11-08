@@ -1,0 +1,197 @@
+{
+  "format": "charitology-field-legacy-restore-projection-fixture",
+  "version": 1,
+  "provenance": {
+    "baseCommit": "1bc96c6ca2796b546bc68c5dab66f696a8a74c46",
+    "sourceFiles": {
+      "learningCapacity": {
+        "file": "lib/learning-capacity.mjs",
+        "bytes": 37266,
+        "sha256": "c0f188c1ffef894fd014a8df636cc1b0847dc9260b9b19fc33e2df07055c9859"
+      },
+      "backup": {
+        "file": "lib/backup.mjs",
+        "bytes": 6590,
+        "sha256": "56c186b68b0bf887fd6af2b6d794787f601ba0cb05ecee49dd1de248f6ac36ad"
+      },
+      "measurementFixture": {
+        "file": "test/restore-capacity-fixture.mjs",
+        "bytes": 4404,
+        "sha256": "c85bbfe5fbbca9bf7fbf84eb0fc342e5892b23470c4f1339fba7af9e3e9bbb76"
+      }
+    },
+    "capture": "One invocation of exact pre-change measureLearningRestoreCapacity with the unchanged closed restoreMeasurementFixture. No PostgreSQL/physical SQL byte claim.",
+    "fixedInputCreatedAt": "2026-11-08T00:00:00.000Z",
+    "fullNativePacketRecalculated": false
+  },
+  "input": {
+    "format": "charitology-os",
+    "version": 1,
+    "schemaVersion": 1,
+    "organization": {
+      "name": "Fictional",
+      "currency": "USD",
+      "timeZone": "UTC"
+    },
+    "createdAt": "2026-11-08T00:00:00.000Z",
+    "records": [],
+    "reports": [
+      {
+        "id": "legacy",
+        "payload": {
+          "ordinary": "archive"
+        }
+      }
+    ],
+    "checksum": "42fe246ed72c520ad20de12b16bdde5f63404fb837fbd704c43120c30da03a60"
+  },
+  "result": {
+    "logicalBytes": 1229,
+    "requiredLogicalBytes": 2229,
+    "backupBytes": 3518,
+    "auditCheckReserveBytes": 1000,
+    "structuredRecordBytes": 0,
+    "categories": {
+      "os_participation_groups": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participation_group_receipts": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_records": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_events": {
+        "count": 2,
+        "bytes": 1229,
+        "rawBytes": 1229
+      },
+      "os_integrations": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_publications": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_intake": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participation_targets": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participations": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participation_outbox": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participation_delivery_policies": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_task_recurrence_series": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_task_recurrence_occurrences": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_resource_directory_history": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_learning_history": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_incubator_history": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_files": {
+        "count": 0,
+        "bytes": 0
+      },
+      "targetBaseline": {
+        "count": 0,
+        "bytes": 0
+      }
+    },
+    "operational": {
+      "active": false,
+      "affectedParticipations": 0,
+      "sourceWireGrowthBytes": 0,
+      "sourceOutboxWireBytes": 2,
+      "sourceParticipationWireBytes": 2,
+      "destinationOutboxGrowthBytes": 0,
+      "destinationWireMetadataExtraBytes": 0
+    }
+  },
+  "observedEntries": [
+    [
+      "os_events",
+      [
+        {
+          "org_id": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",
+          "id": "9223372036854775806",
+          "actor_id": "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu",
+          "action": "organization.created",
+          "record_id": null,
+          "module_id": null,
+          "detail": {},
+          "created_at": "2200-12-31T23:59:59.999999Z"
+        },
+        {
+          "org_id": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",
+          "id": "9223372036854775807",
+          "actor_id": "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu",
+          "action": "backup.restored",
+          "record_id": null,
+          "module_id": null,
+          "detail": {
+            "count": 0,
+            "checksum": "42fe246ed72c520ad20de12b16bdde5f63404fb837fbd704c43120c30da03a60",
+            "sourceArchiveId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "sourceHistoryCount": 4294967295,
+            "sourceCommentCount": 0,
+            "sourceReportCount": 1,
+            "learningSourcesRecovered": 0,
+            "learningEventsRetained": 0,
+            "learningReportsRecovered": 0,
+            "intakePublicationsClosed": 0,
+            "intakeRequests": 0,
+            "participationTargetsRecovered": 0,
+            "participationsRecovered": 0,
+            "taskRecurrenceSeriesRecovered": 0,
+            "taskRecurrenceOccurrencesRetained": 0
+          },
+          "created_at": "2200-12-31T23:59:59.999999Z"
+        }
+      ]
+    ]
+  ]
+}
