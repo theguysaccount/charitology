@@ -178,6 +178,8 @@ test("an optional export journal cannot consume the last byte of a v3 exit packe
         sql.includes("deleted_at IS NOT NULL")
       )
         return { rows: [] };
+      if (sql.startsWith("SELECT count(*) AS count FROM os_participation_checkins")) return { rows: [{ count: 0 }] };
+      if (sql.startsWith("SELECT t.* FROM os_participation_checkins")) return { rows: [] };
       const table = /\bFROM (os_[a-z_]+)\b/.exec(sql)?.[1];
       if (sql.startsWith("SELECT") && emptyTables.has(table))
         return { rows: [] };

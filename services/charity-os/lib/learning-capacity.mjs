@@ -18,6 +18,9 @@ import { participationQuota, PARTICIPATION_LIMITS } from './participation.mjs';
 import { DELIVERY_CONSENT_VERSION } from './participation-delivery.mjs';
 import { participationTimestampParameter } from './participation-timestamp.mjs';
 import { restoredIncubatorBridge, measureIncubatorBackup, exportIncubatorBridge } from './incubator-bridge-backup.mjs';
+import { restoredParticipantCheckins, exportParticipantCheckins } from './participant-check-in-backup.mjs';
+import { checkInStorageRow } from './participant-check-in-store.mjs';
+import { CHECK_IN_LIMITS } from './participant-check-in-model.mjs';
 
 export const LEARNING_RESTORE_CAPACITY = Object.freeze({ logicalBytes: 60 * 1024 * 1024, backupBytes: 64 * 1024 * 1024,
   auditCheckReserveBytes: 1000, worstOrgId: 'o'.repeat(100), worstActorId: 'u'.repeat(100),
@@ -84,6 +87,7 @@ export async function measureLearningOperationalCapacity(c, org, participation) 
     nonlegacyRows, maxNonlegacyRowBytes });
 }
 const columns = Object.freeze(Object.fromEntries(Object.entries({
+  os_participation_checkins: 'org_id id origin_mode revision live_participation_id history report_receipt withdrawn_at withdrawal_receipt created_at updated_at',
   os_records: 'org_id id module_id data status owner_id last_editor_id revision approval snapshot source deleted_at created_at updated_at',
   os_events: 'org_id id actor_id action record_id module_id detail created_at',
   os_integrations: 'org_id id provider name config encrypted_token revision status last_checked_at last_error created_at',
@@ -140,6 +144,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const intake = restoredIntake(backup), participation = restoredParticipation(backup), delivery = restoredDelivery(backup),
     recurrence = restoredTaskRecurrence(backup.taskRecurrence, context), directory = restoredDirectoryResources(backup.directoryResources, context),
     learning = restoredLearningBridge(backup.learningBridge, context), incubator = restoredIncubatorBridge(backup.incubatorBridge, context), integrations = restoredIntegrations(backup);
+  const checkins = restoredParticipantCheckins(backup.participantCheckins);
   const operational = operationalGrowth(backup.participation), operationalBounds = new Map(operational.outboxBounds.map(value => [value.id, value]));
   if (operational.active && (operational.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || operational.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes)) operationalFailure();
   await schemaCheck(c);
@@ -230,11 +235,13 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     origin_mode: 'recovered', origin_org_id: value.originOrgId, binding_id: value.bindingId, sequence: value.sequence,
     source_version: value.sourceVersion, program_id: value.programId, payload: value.payload, receipt: value.receipt,
     budget_bytes: value.budgetBytes, created_at: C.timestamp });
+  for (const value of checkins ?? []) add('os_participation_checkins', checkInStorageRow(value, orgId, wireTime));
   audit('backup.restored', null, { count: records.length, checksum: backup.checksum, sourceArchiveId: C.archiveId,
     // Projection only: the largest possible JS array length fixes count width across optional export audits and re-restores.
     sourceHistoryCount: 4294967295, sourceCommentCount: backup.comments?.length || 0, sourceReportCount: backup.reports?.length || 0,
     learningSourcesRecovered: learning?.sources.length || 0, learningEventsRetained: learning?.events.length || 0,
     learningReportsRecovered: learning?.reports.length || 0, intakePublicationsClosed: intake.publications.length, intakeRequests: intake.submissions.length,
+    ...(checkins === null ? {} : { participantCheckinsRecovered: checkins.length }),
     ...(incubator ? { incubatorSourcesRecovered: incubator.sources.length, incubatorEventsRetained: incubator.events.length } : {}),
     participationTargetsRecovered: participation.targets.length, participationsRecovered: participation.participations.length,
     taskRecurrenceSeriesRecovered: recurrence.series.length, taskRecurrenceOccurrencesRetained: recurrence.occurrences.length });
@@ -279,6 +286,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   if (tables.os_intake.reduce((sum, value, index) => sum + (['pending', 'reviewed'].includes(value.status) ? sizes.os_intake[index].bytes : 0), 0) > 8 * 1024 * 1024) over();
   if (categories.os_task_recurrence_series.bytes + categories.os_task_recurrence_occurrences.bytes > 4 * 1024 * 1024) over();
   if (categories.os_resource_directory_history.bytes > DIRECTORY_LIMITS.featureBytes) over();
+  if (categories.os_participation_checkins.count > CHECK_IN_LIMITS.records || categories.os_participation_checkins.bytes > CHECK_IN_LIMITS.familyBytes || sizes.os_participation_checkins.some(v => v.bytes > CHECK_IN_LIMITS.rowBytes)) over();
   if (categories.os_incubator_history.count>1000 || categories.os_incubator_history.bytes>16777216) over();
   const projectedRecords = tables.os_records.map(value => rowRecord(wireRow(value)));
   const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: baseline.reports, files, trash: [], trashFiles: [],
@@ -290,6 +298,8 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   if (projectedLearning !== undefined) extras.learningBridge = projectedLearning;
   const projectedIncubator = await exportIncubatorBridge(projectedClient,orgId,{records:projectedRecords});
   if (projectedIncubator !== undefined) extras.incubatorBridge = projectedIncubator;
+  const projectedCheckins = await exportParticipantCheckins(projectedClient, orgId);
+  if (projectedCheckins !== undefined) extras.participantCheckins = projectedCheckins;
   let destinationWireMetadataExtraBytes = 0;
   if (operational.active) {
     const originalWireBytes = compactBytes(extras.participation.outbox);
@@ -301,6 +311,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   // Real organization API bounds: name180 and time-zone100 UTF-16 units. Escaped controls maximize their wire size.
   const projected = makeBackup({ name: '\u0001'.repeat(180), currency: 'XXX', time_zone: '\u0001'.repeat(100) }, projectedRecords, extras);
   const backupBytes = Buffer.byteLength(JSON.stringify(projected));
+  if (checkins === null) delete categories.os_participation_checkins;
   return frozen({ logicalBytes, requiredLogicalBytes: logicalBytes + C.auditCheckReserveBytes, backupBytes,
     auditCheckReserveBytes: C.auditCheckReserveBytes, structuredRecordBytes, categories,
     operational: { active: operational.active, affectedParticipations: operational.affectedParticipationIds.length,

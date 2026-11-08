@@ -112,6 +112,9 @@ function fixture({
   const c = {
     query: async (sql, args = []) => {
       state.queryCount++;
+      // This legacy migration fixture has no participant self-report history.
+      if (sql === "SELECT t.* FROM os_participation_checkins t WHERE org_id=$1 ORDER BY id") return { rows: [] };
+      if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return { rows: [{ count: 0 }] };
       const measurement = measurements?.query(sql,args);
       if (measurement !== undefined) return measurement;
       if (withRestoreMeasurements && /^SELECT t\.\*,octet_length\(to_jsonb\(t\)::text\) AS capacity_bytes FROM os_(?:events|reports) t/.test(sql)) return {rows:[]};

@@ -467,3 +467,52 @@ DROP POLICY IF EXISTS tenant ON os_incubator_history;
 CREATE POLICY tenant ON os_incubator_history USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
 DROP TRIGGER IF EXISTS immutable_incubator_history ON os_incubator_history;
 CREATE TRIGGER immutable_incubator_history BEFORE UPDATE OR DELETE ON os_incubator_history FOR EACH ROW EXECUTE FUNCTION os_immutable();
+
+-- Own arrival assertions are unverified history, separate from attendance.
+CREATE TABLE IF NOT EXISTS os_participation_checkins (
+ org_id text NOT NULL REFERENCES os_orgs(id), id text NOT NULL CHECK(id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ origin_mode text NOT NULL CHECK(origin_mode IN ('live','recovered')), revision integer NOT NULL CHECK(revision IN (1,2)),
+ live_participation_id text, history jsonb NOT NULL CHECK(jsonb_typeof(history)='object' AND octet_length(history::text)<=2048),
+ report_receipt jsonb CHECK(report_receipt IS NULL OR (jsonb_typeof(report_receipt)='object' AND octet_length(report_receipt::text)<=1024)),
+ withdrawn_at timestamptz,
+ withdrawal_receipt jsonb CHECK(withdrawal_receipt IS NULL OR (jsonb_typeof(withdrawal_receipt)='object' AND octet_length(withdrawal_receipt::text)<=1024)),
+ created_at timestamptz NOT NULL, updated_at timestamptz NOT NULL,
+ PRIMARY KEY(org_id,id), UNIQUE(org_id,live_participation_id),
+ FOREIGN KEY(org_id,live_participation_id) REFERENCES os_participations(org_id,id),
+ CHECK((history->>'id'=id AND history->>'participationId' ~ '^[A-Za-z0-9_-]{1,100}$' AND history->>'originOrgId' ~ '^[A-Za-z0-9_-]{1,100}$') IS TRUE),
+ CHECK(((origin_mode='recovered' AND revision=1 AND live_participation_id IS NULL AND report_receipt IS NULL AND withdrawn_at IS NULL AND withdrawal_receipt IS NULL)
+ OR (origin_mode='live' AND live_participation_id=history->>'participationId' AND history->>'originOrgId'=org_id AND history->'withdrawnAt'='null'::jsonb AND report_receipt IS NOT NULL
+ AND ((revision=1 AND withdrawn_at IS NULL AND withdrawal_receipt IS NULL) OR (revision=2 AND withdrawn_at IS NOT NULL AND withdrawal_receipt IS NOT NULL)))) IS TRUE)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS os_checkin_original_parent ON os_participation_checkins(org_id,(history->>'originOrgId'),(history->>'participationId'));
+CREATE INDEX IF NOT EXISTS os_checkin_historical_parent ON os_participation_checkins(org_id,(history->>'participationId'));
+ALTER TABLE os_participation_checkins ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_participation_checkins FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_participation_checkins;
+CREATE POLICY tenant ON os_participation_checkins USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+CREATE OR REPLACE FUNCTION os_checkin_terminal_withdrawal() RETURNS trigger LANGUAGE plpgsql SECURITY INVOKER AS $$
+BEGIN
+ IF TG_OP='DELETE' THEN RAISE EXCEPTION 'Retained self-report history'; END IF;
+ IF OLD.origin_mode<>'live' OR OLD.revision<>1 OR OLD.withdrawn_at IS NOT NULL
+ OR NEW.revision<>2 OR NEW.withdrawn_at IS NULL OR NEW.withdrawal_receipt IS NULL
+ OR (to_jsonb(NEW)-ARRAY['revision','withdrawn_at','withdrawal_receipt','updated_at']) IS DISTINCT FROM (to_jsonb(OLD)-ARRAY['revision','withdrawn_at','withdrawal_receipt','updated_at'])
+ OR NEW.updated_at IS DISTINCT FROM NEW.withdrawn_at OR NEW.withdrawn_at<OLD.created_at
+ OR NOT ((NEW.withdrawal_receipt-ARRAY['intentHash','payloadHash','actorHash','action','result']='{}'::jsonb
+ AND NEW.withdrawal_receipt->>'intentHash' ~ '^[a-f0-9]{64}$'
+ AND NEW.withdrawal_receipt->>'payloadHash' ~ '^[a-f0-9]{64}$'
+ AND NEW.withdrawal_receipt->>'action'='withdraw'
+ AND NEW.withdrawal_receipt->>'actorHash'=OLD.history#>>'{affirmation,actorHash}'
+ AND jsonb_typeof(NEW.withdrawal_receipt->'result')='object'
+ AND (NEW.withdrawal_receipt->'result')-ARRAY['action','id','revision','claimSha256','at','auditRetained']='{}'::jsonb
+ AND NEW.withdrawal_receipt#>>'{result,action}'='withdrawn'
+ AND NEW.withdrawal_receipt#>>'{result,id}'=OLD.id
+ AND NEW.withdrawal_receipt#>>'{result,revision}'='2'
+ AND NEW.withdrawal_receipt#>'{result,revision}'='2'::jsonb
+ AND jsonb_typeof(NEW.withdrawal_receipt#>'{result,auditRetained}')='boolean'
+ AND NEW.withdrawal_receipt#>>'{result,at}'=to_char(NEW.withdrawn_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
+ AND NEW.withdrawal_receipt#>>'{result,claimSha256}'=OLD.history->>'claimSha256') IS TRUE)
+ THEN RAISE EXCEPTION 'Only one terminal self-report withdrawal is allowed'; END IF;
+ RETURN NEW;
+END $$;
+DROP TRIGGER IF EXISTS terminal_checkin ON os_participation_checkins;
+CREATE TRIGGER terminal_checkin BEFORE UPDATE OR DELETE ON os_participation_checkins FOR EACH ROW EXECUTE FUNCTION os_checkin_terminal_withdrawal();

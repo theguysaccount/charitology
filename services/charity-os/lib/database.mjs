@@ -23,6 +23,7 @@ const safetyActions = new Set([
   "participation.preferences",
   "participation.delivery.disabled",
   "participation.delivery.preference_off",
+  "participant-checkin.withdrawn",
 ]);
 const projectionExemptActions = new Set([...safetyActions, "backup.exported"]);
 // Internal only. Each caller reaches this immediately before an exact accepted
@@ -73,7 +74,7 @@ export function database(url, { schema } = {}) {
         if (!readOnly && orgId && (state.locked || state.actions.size)) {
           const present = (
             await c.query(
-              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator",
+              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins",
               [orgId],
             )
           ).rows[0];
@@ -89,6 +90,7 @@ export function database(url, { schema } = {}) {
             );
             participation = await checkParticipationExportCapacity(c, orgId, {
               reserve: ordinary,
+              legacySafety: present.checkins,
             });
             if (!ordinary) {
               const { checkActualParticipationSafetyPacket } = await import(
@@ -98,13 +100,18 @@ export function database(url, { schema } = {}) {
             }
           }
           if (
-            (present.present || present.participation || present.incubator) &&
+            (present.present || present.participation || present.incubator || present.checkins) &&
             ordinary
           ) {
             const { checkWorkspaceExportCapacity } = await import(
               "./workspace-backup.mjs"
             );
             const whole = await checkWorkspaceExportCapacity(c, orgId);
+            if (present.checkins) {
+              const { checkCheckInCapacity, checkCombinedCheckInCapacity } = await import("./participant-check-in-capacity.mjs");
+              const checkins = await checkCheckInCapacity(c, orgId);
+              checkCombinedCheckInCapacity(whole, checkins, participation);
+            }
             if (participation) {
               const { checkCombinedParticipationCapacity } = await import(
                 "./participation-capacity.mjs"
@@ -112,7 +119,11 @@ export function database(url, { schema } = {}) {
               checkCombinedParticipationCapacity(whole, participation);
             }
           }
-          if (present.incubator && !ordinary) {
+          if (present.checkins && !ordinary) {
+            const { checkCheckInSafetyCapacity } = await import("./participant-check-in-capacity.mjs");
+            await checkCheckInSafetyCapacity(c, orgId);
+          }
+          if ((present.incubator || present.checkins) && !ordinary) {
             const { checkActualWorkspaceBackupCapacity } = await import(
               "./workspace-backup.mjs"
             );
@@ -212,6 +223,8 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
       return false;
   }
   if (safetyActions.has(action) || action === "backup.exported") {
+    const { canRetainCheckInSafetyAudit } = await import("./participant-check-in-capacity.mjs");
+    if (!(await canRetainCheckInSafetyAudit(c, org, { org_id: org, actor_id: user, action, record_id: record?.id || null, module_id: record?.moduleId || null, detail }))) return false;
     const { canRetainParticipationSafetyAudit } = await import(
       "./participation-capacity.mjs"
     );
@@ -316,6 +329,7 @@ export async function logicalBackupBytes(c, org) {
     "os_participant_org_usage",
     "os_participation_targets",
     "os_participations",
+    "os_participation_checkins",
     "os_participation_outbox",
     "os_participation_delivery_policies",
     "os_participation_delivery_previews",

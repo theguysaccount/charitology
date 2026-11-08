@@ -1,3 +1,4 @@
+import { createOwnCheckInPane } from "./participant-check-in.js";
 const $ = (selector) => document.querySelector(selector);
 const receiptPattern =
   /^([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{43})$/;
@@ -78,6 +79,7 @@ const state = {
   participations: [],
   participationVersion: 0,
   bookingIntents: new Map(),
+  checkInPanes: new Map(),
 };
 
 export function parseReceipt(value, origin) {
@@ -205,7 +207,7 @@ function alive(user, version) {
   return state.user?.id === user && state.accessVersion === version;
 }
 
-async function request(path, { method = "GET", body } = {}) {
+async function request(path, { method = "GET", body, signal } = {}) {
   const headers = { Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (method !== "GET" && state.csrf) headers["X-CSRF-Token"] = state.csrf;
@@ -217,7 +219,7 @@ async function request(path, { method = "GET", body } = {}) {
       credentials: "same-origin",
       cache: "no-store",
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-      signal: AbortSignal.timeout(30000),
+      signal: signal || AbortSignal.timeout(30000),
     });
   } catch {
     throw new Error(
@@ -245,7 +247,26 @@ async function request(path, { method = "GET", body } = {}) {
   }
   return result;
 }
+function checkInDirty() {
+  state.dirty = state.requestDirty || state.participationDirty || [...state.checkInPanes.values()].some(v => v.pane.hasUnsavedChanges());
+}
+function clearCheckInPanes() {
+  const panes = [...state.checkInPanes.values()];state.checkInPanes.clear();
+  for (const v of panes) v.pane.dispose();
+}
+function ownCheckInPane(item, row) {
+  const user = state.user?.id, access = state.accessVersion, key = JSON.stringify([user,item.orgId,item.id,row.id]);
+  let entry = state.checkInPanes.get(key);
+  if (!entry) {
+    const pane = createOwnCheckInPane({orgId:item.orgId,intakeId:item.id,participationId:row.id,request,
+      isCurrent:()=>state.user?.id===user && state.accessVersion===access && sameRequest(state.current,item) && !state.privateSuspended,
+      onDirty:checkInDirty,runMutation:mutation,onAccessLost:error=>{if(error.status===404){clearPrivate();message($("#participant-status"),"Own self-report access is unavailable. Refresh your session before continuing.",true);}else denyIfAccessLost(error);}});
+    entry = {pane};state.checkInPanes.set(key,entry);
+  }
+  return entry.pane;
+}
 function clearPrivate() {
+  clearCheckInPanes();
   state.accessVersion++;
   state.detailVersion++;
   state.participationVersion++;
@@ -633,6 +654,7 @@ function questionInput(question, value) {
   };
 }
 function renderDetail(item) {
+  if (!sameRequest(state.current,item)) clearCheckInPanes();
   state.current = item;
   state.dirty = false;
   state.requestDirty = false;
@@ -1318,6 +1340,8 @@ function renderOwnParticipations(item) {
           "This is inactive recovered provenance. It does not establish a new confirmed place. Contact the organizer to reconcile it.",
         ),
       );
+    const checkIn = ownCheckInPane(item,row);
+    card.append(node("button", {type:"button",class:"button subtle",onclick:()=>void checkIn.load()}, "Arrival self-report"),checkIn.element);
     card.append(renderDeliveryPreference(item, row));
     if (row.notifications?.requested)
       card.append(
@@ -1512,6 +1536,7 @@ function renderOwnParticipations(item) {
     card.append(actions, status);
     host.append(card);
   }
+  checkInDirty();
 }
 function renderDeliveryPreference(item, row) {
   const box = node(
@@ -1973,6 +1998,7 @@ async function changeRequest(item, action, output) {
   });
   if (!alive(user, version)) return;
   if (action === "unlink") {
+    clearCheckInPanes();
     if (result.unlinked !== true)
       throw new Error(
         "Access removal could not be confirmed. Refresh your saved requests.",
@@ -2077,6 +2103,7 @@ async function refreshSession(force = false) {
             : "Sign in and deliberately link a saved receipt to open your own request.",
       );
   } catch (error) {
+    clearCheckInPanes();
     suspendPrivate();
     denyIfAccessLost(error);
     message(
@@ -2096,6 +2123,7 @@ async function refreshSession(force = false) {
   }
 }
 function suspendPrivate() {
+  for (const v of state.checkInPanes.values()) v.pane.pause();
   state.privateSuspended = true;
   $("#participant-private").hidden = true;
 }
@@ -2261,6 +2289,7 @@ function install() {
     if (document.visibilityState !== "hidden" && !state.autoRefreshStopped)
       void refreshSession();
   });
+  window.addEventListener("pagehide", clearCheckInPanes);
   window.addEventListener("pageshow", (event) => {
     if (event.persisted) {
       suspendPrivate();

@@ -67,6 +67,7 @@ const state = {
   grantReportWorkspace: null,
   learningWorkspace: null,
   incubatorWorkspace: null,
+  participationWorkspace: null,
   learningRecordAbort: null,
   reportReadAbort: null,
   reportReadSequence: 0,
@@ -317,6 +318,8 @@ function safeRoute() {
 }
 function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
+  state.participationWorkspace?.dispose();
+  state.participationWorkspace = null;
   if (state.incubatorWorkspace) { state.incubatorWorkspace.dispose(); state.pageDirty = false; }
   state.incubatorWorkspace = null;
   state.learningRecordAbort?.abort();
@@ -775,7 +778,7 @@ async function route() {
           "Participation decisions require an authorized event or volunteer writer.",
           403,
         );
-      const orgId = state.org,
+      const orgId = state.org, participationSession = state.session, participationRole = role(),
         [
           ,
           initialTargetId = "",
@@ -787,7 +790,7 @@ async function route() {
         admin: admin(),
         request: apiRequest,
         loadRecords: (id) => allRecords(orgId, id),
-        isCurrent: () => current === state.epoch && orgId === state.org,
+        isCurrent: () => current === state.epoch && orgId === state.org && participationSession === state.session && participationRole === role(),
         onChanged: () => {
           invalidateModules(orgId, ["events", "volunteers"]);
           renderNav();
@@ -799,7 +802,7 @@ async function route() {
         initialCandidateId,
         initialIntakeId,
       });
-      if (current === state.epoch) setContent(view);
+      if (current === state.epoch) {setContent(view);state.participationWorkspace = view;} else view.dispose?.();
     } else if (state.route === "members") await renderMembers(current);
     else if (state.route === "integrations") await renderIntegrations(current);
     else if (state.route === "settings") await renderSettings(current);

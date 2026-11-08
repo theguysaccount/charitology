@@ -17,6 +17,7 @@ const source = await readFile(
   new URL("./participant.js", import.meta.url),
   "utf8",
 );
+const checkInSource = await readFile(new URL("./participant-check-in.js", import.meta.url),"utf8");
 const origin = "https://os.example.invalid";
 const token = "a".repeat(43);
 const code = `org.pub.${token}`;
@@ -446,6 +447,11 @@ async function harness({
       if (model.participationGate) await model.participationGate;
       return response({ participations: snapshot });
     }
+    if (path.startsWith(`${participationBase}/participation/check-in`)) {
+      if (!model.checkInResponse) throw new Error("Unexpected unchosen synthetic check-in request");
+      const value = await model.checkInResponse({path,body,options});
+      return response(value.payload || value,value.status || 200);
+    }
     if (path.startsWith(`${participationBase}/`)) {
       const [, pid, action] = path.slice(participationBase.length).split("/");
       const old = model.participations.find((row) => row.id === pid);
@@ -600,17 +606,18 @@ async function harness({
     },
     window: {
       addEventListener(type, fn) {
-        windowEvents.set(type, fn);
+        const old = windowEvents.get(type);windowEvents.set(type, event=>{old?.(event);fn(event);});
       },
     },
     fetch,
     AbortSignal,
+    AbortController,
     TextEncoder,
     URL,
     crypto: webcrypto,
     console,
   });
-  vm.runInContext(source.replace(/^export /gm, ""), context);
+  vm.runInContext(checkInSource.replace(/^export /gm, "")+"\n"+source.replace('import { createOwnCheckInPane } from "./participant-check-in.js";\n', "").replace(/^export /gm, ""), context);
   const flush = async () => {
     for (let n = 0; n < 12; n++)
       await new Promise((resolve) => setImmediate(resolve));
@@ -1609,4 +1616,46 @@ test("a legitimate unchanged own email opt-out result keeps its same revision", 
     /Operational email updates disabled/,
   );
   assert.equal(h.model.participations[0].revision, 1);
+});
+
+
+test("arrival pane is manually opened, separate from booking keys, and pagehide clears its private DOM", async () => {
+  const h = await harness({participations:[participation({state:"confirmed",canConsent:false})]});
+  await h.open();assert.equal(h.calls.filter(c=>c.path.includes("/check-in")).length,0);
+  h.model.checkInResponse=()=>({ok:true,participationId:"participation",revision:1,intakeRevision:1,checkInRevision:0,context:null,window:null,serverNow:"2026-11-07T10:30:00.000Z",canReport:false,canWithdraw:false,unavailableReason:"parent-unavailable",report:null});
+  await h.click("Arrival self-report");assert.equal(h.calls.filter(c=>c.path.includes("/check-in")).length,1);
+  assert.match(h.root.textContent,/Arrival self-report/);
+  h.windowEvents.get("pagehide")({persisted:true});
+  const values=vm.runInContext("state.checkInPanes.size",h.context);assert.equal(values,0);
+  assert.doesNotMatch(h.root.textContent,/New reporting is unavailable/);
+});
+
+test("own check-in unknown receipt survives ordinary participation reload with byte-identical explicit Retry", async () => {
+  const h=await harness({participations:[participation({state:"confirmed",canConsent:false})]});await h.open();
+  const digest="a".repeat(64),range={startAt:"2026-11-07T10:00:00Z",endAt:"2026-11-07T11:00:00Z",timeZone:"UTC"};
+  const dto={ok:true,participationId:"participation",revision:1,intakeRevision:1,checkInRevision:0,context:{title:"Fictional arrival",kind:"shift",occurrence:range,effectiveRange:range,participationPurpose:"Original purpose",participantInstructions:"Original instruction",organizerEmail:"organizer@example.invalid",organizerUrl:null,sourceRevision:7,termsHash:digest,commitmentSha256:digest},window:{opensAt:"2026-11-07T10:00:00.000Z",closesAt:"2026-11-08T11:00:00.000Z"},serverNow:"2026-11-07T10:30:00.000Z",canReport:true,canWithdraw:false,unavailableReason:null,report:null};
+  h.model.checkInResponse=({path,body})=>{
+    if(path.endsWith("/resolve-arrival"))return {ok:true,participationId:"participation",revision:1,intakeRevision:1,commitmentSha256:digest,civil:body.civil,timeZone:"UTC",kind:"unique",reason:null,candidates:[{choice:"unique",claimedArrivalAt:"2026-11-07T10:10:00Z"}],claimedArrivalAt:"2026-11-07T10:10:00Z"};
+    if(path.endsWith("/report"))throw Error("Synthetic response lost");return dto;
+  };
+  await h.click("Arrival self-report");
+  for(const [label,value]of [["Local arrival date","2026-11-07"],["Local arrival time","10:10"]]){const input=h.root.querySelectorAll("input").find(n=>n.attributes["aria-label"]===label);input.value=value;await input.emit("input");}
+  await h.click("Resolve entered local time");const checkbox=h.root.querySelectorAll("input").find(n=>n.attributes.type==="checkbox"&&n.parentElement.textContent.includes("reporting my own arrival"));checkbox.checked=true;await checkbox.emit("change");await h.click("Record unverified arrival");
+  const first=h.calls.find(c=>c.path.endsWith("/check-in/report"));assert.ok(first);
+  assert(h.root.querySelectorAll("input").filter(n=>n.attributes["aria-label"]?.startsWith("Local arrival")).every(n=>n.disabled));
+  assert(h.root.querySelectorAll("button").find(n=>n.textContent==="Record unverified arrival").disabled);
+  assert.equal(h.root.querySelectorAll("button").find(n=>n.textContent==="Retry exact command").disabled,false);
+  await vm.runInContext("loadOwnParticipations(state.current,{preserveDraft:true})",h.context);await h.flush();
+  assert.equal(vm.runInContext("state.checkInPanes.size",h.context),1);
+  await h.click("Retry exact command");const writes=h.calls.filter(c=>c.path.endsWith("/check-in/report"));assert.equal(writes.length,2);assert.deepEqual(writes[0].body,writes[1].body);
+  h.windowEvents.get("pagehide")({persisted:true});assert.equal(vm.runInContext("state.checkInPanes.size",h.context),0);
+});
+
+
+test("portal outer mutation restoration leaves an uncertain withdrawal disabled under its ordinary label", async()=>{
+ const h=await harness({participations:[participation({state:"confirmed",canConsent:false})]});await h.open();const digest="a".repeat(64),stamp="2026-11-07T10:30:00.000Z",currentDisposition={originMode:"live",state:"reported",originalState:"reported",revision:1,staffReview:"not-recorded",attendance:null,workedMinutes:null};
+ h.model.checkInResponse=({path})=>{if(path.endsWith("/withdraw"))throw Error("Synthetic lost withdrawal response");return {ok:true,participationId:"participation",revision:1,intakeRevision:1,checkInRevision:1,context:null,window:null,serverNow:stamp,canReport:false,canWithdraw:true,unavailableReason:"parent-unavailable",report:{id:"claim",claimedArrivalAt:"2026-11-07T10:10:00Z",submittedAt:stamp,withdrawnAt:null,claimSha256:digest,currentDisposition}};};
+ await h.click("Arrival self-report");const ack=h.root.querySelectorAll("input").find(n=>n.attributes.type==="checkbox"&&n.parentElement.textContent.includes("withdraw only this unverified"));ack.checked=true;await ack.emit("change");await h.click("Withdraw this assertion");
+ const normal=h.root.querySelectorAll("button").find(n=>n.textContent==="Withdraw this assertion"),retry=h.root.querySelectorAll("button").find(n=>n.textContent==="Retry exact command");assert(normal.disabled);assert(ack.disabled);assert.equal(retry.disabled,false);assert.equal(h.calls.filter(c=>c.path.endsWith("/check-in/withdraw")).length,1);
+ h.windowEvents.get("pagehide")({persisted:true});
 });

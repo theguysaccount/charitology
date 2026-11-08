@@ -547,6 +547,10 @@ async function staffHarness({
       };
     }
 
+    if (path === `${base}/target/participations/entry/check-in`) {
+      if (model.checkInFailure) throw Object.assign(new Error("Synthetic scoped refusal"),{status:404});
+      return {ok:true,participationId:"entry",report:null};
+    }
     if (path === base) return { ok: true, targets: [target()] };
     if (path === `${base}/target`)
       return {
@@ -648,6 +652,7 @@ async function staffHarness({
       flush,
       click,
       cleanup() {
+        root.dispose?.();
         active = false;
         globalThis.document = priorDocument;
         globalThis.Node = priorNode;
@@ -2267,4 +2272,16 @@ test("staff malformed consent without saved pins then rate refusal keeps the exa
   } finally {
     h.cleanup();
   }
+});
+
+
+test("staff arrival read is deliberate, read-only and disposed when its ledger scope changes", async () => {
+  const h=await staffHarness({managed:true});
+  try {
+    assert.equal(h.calls.filter(c=>c.path.endsWith("/check-in")).length,0);
+    await h.click("Read arrival self-report");
+    assert.equal(h.calls.filter(c=>c.path.endsWith("/check-in")).length,1);
+    assert.match(h.root.textContent,/No live self-report/);
+    h.root.dispose();assert.doesNotMatch(h.root.textContent,/No live self-report/);
+  } finally {h.cleanup();}
 });

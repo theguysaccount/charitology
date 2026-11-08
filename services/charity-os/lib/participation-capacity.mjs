@@ -124,7 +124,7 @@ const refuse = () =>
 export async function checkParticipationExportCapacity(
   c,
   org,
-  { reserve = true } = {},
+  { reserve = true, legacySafety = false } = {},
 ) {
   const exported = await exportParticipation(c, org);
   for (const [key, limit] of [
@@ -144,8 +144,10 @@ export async function checkParticipationExportCapacity(
     intake: { submissions },
     participation: exported,
   });
-  const active =
-    exported.version === 3 && reserve ? exported.participations.length : 0;
+  // Only the new self-report family requests the legacy activation allowance;
+  // absent-family v2 accounting and serialization remain unchanged.
+  const safety = exported.version === 3 || legacySafety === true;
+  const active = safety && reserve ? exported.participations.length : 0;
   const retainedReserve = active * PARTICIPATION_SAFETY_RESERVE.retained,
     nativeReserve = active * PARTICIPATION_SAFETY_RESERVE.native;
   for (const [key, limit] of [
@@ -187,14 +189,14 @@ export async function checkParticipationExportCapacity(
     exportBytes: bytes(exported),
     normalizedBytes: bytes(normalized),
     safetyRetained:
-      exported.version === 3
+      safety
         ? exported.participations.length *
             (PARTICIPATION_SAFETY_RESERVE.retained +
               PARTICIPATION_SAFETY_RESERVE.bookingRetained) +
           PARTICIPATION_SAFETY_RESERVE.policyRetained
         : 0,
     safetyNative:
-      exported.version === 3
+      safety
         ? exported.participations.length *
             (PARTICIPATION_SAFETY_RESERVE.native +
               PARTICIPATION_SAFETY_RESERVE.bookingNative) +
@@ -204,14 +206,14 @@ export async function checkParticipationExportCapacity(
       active *
         (PARTICIPATION_SAFETY_RESERVE.retained +
           PARTICIPATION_SAFETY_RESERVE.bookingRetained) +
-      (exported.version === 3 && reserve
+      (safety && reserve
         ? PARTICIPATION_SAFETY_RESERVE.policyRetained
         : 0),
     wholeNativeReserve:
       active *
         (PARTICIPATION_SAFETY_RESERVE.native +
           PARTICIPATION_SAFETY_RESERVE.bookingNative) +
-      (exported.version === 3 && reserve
+      (safety && reserve
         ? PARTICIPATION_SAFETY_RESERVE.policyNative
         : 0),
   };

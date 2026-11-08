@@ -81,6 +81,9 @@ function fixture(
     query: async (sql, args = []) => {
       const extra = await extraQuery?.(sql, args);
       if (extra !== undefined) return extra;
+      // This historical fixture retains no participant self-report sidecar.
+      if (sql === "SELECT t.* FROM os_participation_checkins t WHERE org_id=$1 ORDER BY id") return { rows: [] };
+      if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return { rows: [{ count: 0 }] };
       if (
         sql.startsWith("SELECT pg_advisory_xact_lock") ||
         sql.startsWith("DELETE FROM os_previews")
@@ -1009,6 +1012,8 @@ test("Access revocation remains possible with minimal audit reserve and after th
           query: async (sql, args) => {
             if (sql.startsWith("SELECT sum(size) AS size FROM ("))
               return { rows: [{ size: usage }] };
+            // No check-in history participates in this legacy audit-reserve case.
+            if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return { rows: [{ count: 0 }] };
             // This historical quota fixture has no participation feature state.
             if (["os_participation_targets", "os_participations", "os_participation_outbox"].some(table => sql.startsWith("SELECT * FROM " + table + " WHERE org_id=$1")))
               return { rows: [] };
