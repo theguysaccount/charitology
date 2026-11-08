@@ -1,5 +1,10 @@
 # Changelog
 
+## November 7, 2026: Incubator legacy-counter forward candidate
+
+- Forward `8fa2e8e` changes only three backend conditional spreads so a missing Incubator block adds no fields to the released legacy restore preview, committed audit or projected restore audit. Present-empty history still reports zero; nonempty history retains its counts. The original 13-test negative profile failed four cases; the final focused profile passes 14/14, and the complete local unit/client suite passes 800/800 with both native freshness checks unchanged.
+- An actual PG18.6 local golden validates only the exact eleven-statement new-table catalog, with ROLLBACK, fresh owned-schema absence and client closure. [Acceptance](docs/INCUBATOR_SHARED_BRIDGE_ACCEPTANCE.md#november-7-follow-up-exact-legacy-restore-counters-and-pg18-catalog-golden) retains the original 793/23 browser-source and PG17 checkpoints separately. The updated exact-`8fa2e8e` actual PG18.6 feature profile now passes 13/13, zero skips; restored summary/audit nonzero assertions pass through the private four-literal-guard fixture adapter with product guards unchanged. An initial launcher environment refusal occurred before config/database/test execution; a bounded Darwin encoding allowance corrected that preparation issue without clock/TTL changes. Fresh read-only schema absence and exact PG18 stop/PID-file absence are retained; all owned task resources are closed. Production legacy byte equality is not yet proven; fresh final source inventory/CI, compatible stage and Incubator production migration/canonical release remain pending. Predecessor `b716f69`'s passing eight-job CI is not a check of this forward.
+
 ## November 7, 2026: partial volunteer intervals released
 
 - Published one contiguous volunteer interval through [PR #47](https://github.com/theguysaccount/charitology/pull/47)/main `5212c50`, retaining the exact tested `9eb7619` tree and all eight successful CI jobs. The compatible stage preceded the single-column production change; committed readback preserved prior rows, permissions and workspace budget measures.
