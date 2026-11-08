@@ -1,5 +1,22 @@
 # Changelog
 
+## November 7, 2026: check-in CI17 adapter locally integrated
+
+- Integrated the reviewed seven-path closed CI17 fixture at `d75385c188c1a004c189978392791872fec512cb`, tree `d4a479aeb41a4c79196e96ff85149f364bd2933c`, on the browser-tested `e4ee635` source. Its explicit thirteen-case entry uses a separate constrained disposable owner and keeps legacy fixture defaults intact. Actual PG17 and remote CI have not run.
+- Passed the complete local service unit/client suite **902/902**, zero failures/skips/cancellations across 75 files, with both native freshness checks passing. The earlier 894 result, actual local PG18 profile/golden and bounded browser journey retain their original evidence; no browser or database run was repeated to supply this unit result. [Current acceptance](docs/PARTICIPANT_CHECK_IN_BACKEND_ACCEPTANCE.md#november-7-follow-up-ci17-adapter-and-902-local-checks) keeps final CI/stage, production additive/readback and canonical release pending.
+
+## November 7, 2026: finite local check-in browser journey
+
+- Verified the actual own/staff check-in UI at `e4ee635` through local HTTP/createHandler and constrained PG18.6, using explicit fictional actors and historical approval/consent. Blank arrival fields, keyboard focus/error handling, deliberate affirmation, terminal withdrawal, read-only staff viewing and 390px light/dark fixture palettes pass.
+- Created one claim, deliberately lost its successful committed response, returned one fixture-controlled pre-handler 429 and reconciled through explicit exact Retry with the same 304-byte JSON body/key and unchanged business rows. Ordinary Back through a fresh document plus a held real GET kept old history hidden until current read; anonymous selection cleared private report DOM. [Acceptance](docs/PARTICIPANT_CHECK_IN_BACKEND_ACCEPTANCE.md#november-7-follow-up-actual-local-utc-browser-journey) retains the separate 894-unit, thirteen-case PG18, rollback golden and all earlier negative histories.
+- Closed/reset the owned tab/viewport, settled the HTTP child and sockets, confirmed schema absence and stopped the exact new PG18 cluster/PID file. BFCache, native fold, real login, full staff shell, actual CI PostgreSQL17 compatibility, final CI/stage and production/canonical release remain open. No new provider/mail, attendance, minutes, pilot or original-item completion claim is added.
+
+## November 7, 2026: participant check-in local UI and PG18 checkpoint
+
+- Integrated the unreleased own-report/terminal-withdrawal controls and read-only staff view at `e4ee635`, retaining backend `4508b35`/checkpoint `c445590`. The complete local service unit/client suite passes 894/894 and both native freshness checks pass unchanged. Blank civil-time fields, explicit fold choice, separate affirmation, exact uncertain-command Retry and private-view cleanup have mounted synthetic DOM/transport evidence.
+- Passed thirteen actual isolated PG18.6 cases through the actual handler with fictional sessions/approvals, plus a separate ten-statement rollback catalog golden and independent offline audit. Eleven columns, nineteen constraints, four indexes, tenant RLS and four-column UPDATE grants are recorded; no production preservation or real authentication is inferred. The initial 12/13 PG run and expected-order-only correction, UI negatives and integrated 893/1 result remain retained in [the acceptance follow-up](docs/PARTICIPANT_CHECK_IN_BACKEND_ACCEPTANCE.md#november-7-follow-up-integrated-local-ui-pg18-profile-and-catalog-golden).
+- Confirmed feature/golden schema absence and stopped the exact owned PG18 cluster with its PID file absent. Actual browser/accessibility, real login, CI PostgreSQL17 compatibility, final CI/stage, additive production action/readback and canonical release remain open. No provider, mail, production change, attendance or worked-minutes claim is added. The twenty-two software IDs, eight conditional operating scopes and original 66 items remain unchanged.
+
 ## November 7, 2026: Incubator planning bridge released; check-in backend candidate
 
 - Published the finite bridge through [PR #48](https://github.com/theguysaccount/charitology/pull/48)/main `66c1e46`, with the complete tested `a244c06` tree `dedf435`. The service retains 800/800 local unit/client and 13/13 actual PG18.6 feature checks; all eight final exact-source CI jobs pass. The protected stage passes 56 selected unsigned responses before the additive production action.
