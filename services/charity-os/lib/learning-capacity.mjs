@@ -234,7 +234,8 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     // Projection only: the largest possible JS array length fixes count width across optional export audits and re-restores.
     sourceHistoryCount: 4294967295, sourceCommentCount: backup.comments?.length || 0, sourceReportCount: backup.reports?.length || 0,
     learningSourcesRecovered: learning?.sources.length || 0, learningEventsRetained: learning?.events.length || 0,
-    learningReportsRecovered: learning?.reports.length || 0, intakePublicationsClosed: intake.publications.length, intakeRequests: intake.submissions.length, incubatorSourcesRecovered: incubator?.sources.length || 0, incubatorEventsRetained: incubator?.events.length || 0,
+    learningReportsRecovered: learning?.reports.length || 0, intakePublicationsClosed: intake.publications.length, intakeRequests: intake.submissions.length,
+    ...(incubator ? { incubatorSourcesRecovered: incubator.sources.length, incubatorEventsRetained: incubator.events.length } : {}),
     participationTargetsRecovered: participation.targets.length, participationsRecovered: participation.participations.length,
     taskRecurrenceSeriesRecovered: recurrence.series.length, taskRecurrenceOccurrencesRetained: recurrence.occurrences.length });
   tables.os_events.forEach((value, index, all) => { value.id = (BigInt(C.auditId) - BigInt(all.length - 1 - index)).toString(); });

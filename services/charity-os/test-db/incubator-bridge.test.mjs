@@ -713,12 +713,19 @@ test(
           { organization: f.destination },
         );
       assert.equal(restore.summary.rejected, 0);
+      assert.equal(restore.summary.incubatorSourcesRecovered, backup.incubatorBridge.sources.length);
+      assert.equal(restore.summary.incubatorEventsRetained, backup.incubatorBridge.events.length);
+      assert(restore.summary.incubatorSourcesRecovered > 0);
+      assert(restore.summary.incubatorEventsRetained > 0);
       await f.post(
         "import/commit",
         { previewId: restore.previewId, confirmation: "RESTORE" },
         { organization: f.destination },
       );
       const exported = await f.call("export", { organization: f.destination });
+      const restoredAudit = exported.events.find(event => event.action === "backup.restored");
+      assert.equal(restoredAudit.detail.incubatorSourcesRecovered, backup.incubatorBridge.sources.length);
+      assert.equal(restoredAudit.detail.incubatorEventsRetained, backup.incubatorBridge.events.length);
       assert(
         exported.incubatorBridge.events.every(
           (e) => e.originMode === "recovered",

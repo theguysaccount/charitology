@@ -5,6 +5,8 @@ import assert from "node:assert/strict";
 import { createHandler } from "../lib/handler.mjs";
 import { makeBackup, validateBackup } from "../lib/backup.mjs";
 import { csrf, hash } from "../lib/security.mjs";
+import { makeIncubatorBackup } from "../lib/incubator-bridge-model.mjs";
+import { restoreMeasurementFixture } from "./restore-capacity-fixture.mjs";
 const settings = {
   origin: "https://os.example.invalid",
   secret: "synthetic-migration-handler-secret-over-thirty-two-characters",
@@ -94,6 +96,7 @@ function fixture({
   membership = true,
   occupied = 0,
   intakeOccupied = 0,
+  withRestoreMeasurements = false,
 } = {}) {
   let activeRole = role,
     authenticated = loggedIn;
@@ -105,9 +108,14 @@ function fixture({
     transactions: 0,
     occupied,
   };
+  const measurements = withRestoreMeasurements ? restoreMeasurementFixture() : null;
   const c = {
     query: async (sql, args = []) => {
       state.queryCount++;
+      const measurement = measurements?.query(sql,args);
+      if (measurement !== undefined) return measurement;
+      if (withRestoreMeasurements && /^SELECT t\.\*,octet_length\(to_jsonb\(t\)::text\) AS capacity_bytes FROM os_(?:events|reports) t/.test(sql)) return {rows:[]};
+      if (withRestoreMeasurements && sql === "SELECT count(*) AS count FROM os_incubator_history WHERE org_id=$1") return {rows:[{count:0}]};
       if (
         sql ===
           "SELECT s.* FROM os_task_recurrence_series s WHERE s.org_id=$1 AND (s.root_record_id=$2 OR EXISTS(SELECT 1 FROM os_task_recurrence_occurrences o WHERE o.org_id=s.org_id AND o.series_id=s.id AND (o.source_record_id=$2 OR o.generated_record_id=$2)))" ||
@@ -396,6 +404,50 @@ function fixture({
     },
   };
 }
+test("old backups keep their complete preview shape without Incubator counters", async () => {
+  const f = fixture(), backup = makeBackup(target, []);
+  const preview = await f.call("import/preview", { input: { backup } });
+  assert.equal(preview.response.status, 200);
+  assert.deepEqual(preview.value.summary, {
+    accepted: 0, rejected: 0, skipped: 0, approvalsReset: 0,
+    intakePublicationsClosed: 0, intakeRequests: 0,
+    participationTargetsRecovered: 0, participationsRecovered: 0,
+    participationDeliveryDisabled: false,
+    taskRecurrenceSeriesRecovered: 0, taskRecurrenceOccurrencesRetained: 0,
+    directoryResourceBindingsRecovered: 0, directoryResourceEventsRetained: 0,
+    learningSourcesRecovered: 0, learningEventsRetained: 0, learningReportsRecovered: 0,
+  });
+ });
+test("old backups keep their complete committed restore audit shape without Incubator counters", async () => {
+  const f = fixture(), backup = makeBackup(target, []);
+  const preview = await f.call("import/preview", { input: { backup } });
+  assert.equal(preview.response.status, 200);
+  const committed = await f.call("import/commit", { input: { previewId: preview.value.previewId } });
+  assert.equal(committed.response.status, 200);
+  const audits = f.state.events.filter(event => event.action === "backup.restored");
+  assert.equal(audits.length, 1);
+  assert.deepEqual(audits[0].detail, {
+    count: 0, checksum: backup.checksum, sourceArchiveId: preview.value.previewId,
+    sourceHistoryCount: 0, sourceCommentCount: 0, sourceReportCount: 0,
+    learningSourcesRecovered: 0, learningEventsRetained: 0, learningReportsRecovered: 0,
+    intakePublicationsClosed: 0, intakeRequests: 0,
+    participationTargetsRecovered: 0, participationsRecovered: 0,
+    taskRecurrenceSeriesRecovered: 0, taskRecurrenceOccurrencesRetained: 0,
+  });
+});
+test("an explicitly present empty Incubator backup keeps zero counters in actual preview and committed audit", async () => {
+  const f=fixture({withRestoreMeasurements:true});
+  const backup=makeBackup(target,[],{incubatorBridge:makeIncubatorBackup({sources:[],events:[]})});
+  const preview=await f.call("import/preview",{input:{backup}});
+  assert.equal(preview.response.status,200);
+  assert.equal(preview.value.summary.incubatorSourcesRecovered,0);
+  assert.equal(preview.value.summary.incubatorEventsRetained,0);
+  const committed=await f.call("import/commit",{input:{previewId:preview.value.previewId}});
+  assert.equal(committed.response.status,200);
+  const audit=f.state.events.find(event=>event.action==="backup.restored");
+  assert.equal(audit.detail.incubatorSourcesRecovered,0);
+  assert.equal(audit.detail.incubatorEventsRetained,0);
+});
 test("real legacy-preview route requires a live session, exact Origin, CSRF and organization administrator", async () => {
   for (const headers of [
     { origin: "https://other.example.invalid" },
