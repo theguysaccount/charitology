@@ -314,6 +314,7 @@ function fixture(module = "events") {
         )
       )
         return result([]);
+      if (sql === "SELECT t.*,octet_length(to_jsonb(t)::text) AS incubator_row_bytes FROM os_incubator_history t WHERE org_id=$1 ORDER BY origin_org_id,binding_id,sequence NULLS FIRST,id LIMIT 1001") return result([]); // This fixture has no Incubator history.
       throw Error("Unhandled fictional SQL: " + sql);
     },
   };

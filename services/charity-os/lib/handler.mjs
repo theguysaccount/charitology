@@ -61,6 +61,9 @@ import { exportDirectoryResources, restoredDirectoryResources, restoreDirectoryR
 import { readBackupBody } from "./backup-json.mjs";
 import { LearningError } from "./learning-json.mjs";
 import { learningRoutes } from "./learning-routes.mjs";
+import { incubatorBridgeRoutes } from "./incubator-bridge.mjs";
+import { restoredIncubatorBridge, restoreIncubatorBridge } from "./incubator-bridge-backup.mjs";
+import { IncubatorError } from "./incubator-bridge-json.mjs";
 import { readLearningReport } from "./learning-reports.mjs";
 import { isLearningReportFamily, restoredLearningBridge, restoreLearningBridge } from "./learning-backup.mjs";
 import { guardLearningWrite, learningWriteCapability } from "./learning-guards.mjs";
@@ -346,6 +349,8 @@ export function createHandler({
       if (directoryResponse) return directoryResponse;
       const learningResponse = await learningRoutes({ request, url, db, settings, session });
       if (learningResponse) return learningResponse;
+      const incubatorResponse = await incubatorBridgeRoutes({ request, url, db, session });
+      if (incubatorResponse) return incubatorResponse;
       const input = ["GET", "HEAD"].includes(method)
         ? {}
         : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/participation-targets\/[A-Za-z0-9_-]+\/attendance(?:\/|$)/.test(
@@ -703,6 +708,7 @@ export function createHandler({
             );
             const directoryResources = restoredDirectoryResources(backup.directoryResources, { records: backup.records, trash: backup.trash || [] });
             const learningBridge = restoredLearningBridge(backup.learningBridge, { records: backup.records, trash: backup.trash || [], legacyReports: backup.reports || [] });
+            const incubatorBridge = restoredIncubatorBridge(backup.incubatorBridge, { records: backup.records, trash: backup.trash || [] });
             const issues = [];
             const existingRecurrence = Number(
               (
@@ -733,14 +739,14 @@ export function createHandler({
                 ).rows[0].count,
               ) ||
               existingIntake ||
-              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org)
+              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org) || await incubatorStateCount(c, org)
             )
               issues.push({
                 field: "organization",
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
-            if (!issues.length && learningBridge)
+            if (!issues.length && (learningBridge || incubatorBridge || backup.participation?.version === 3))
               await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
@@ -773,12 +779,15 @@ export function createHandler({
                 learningSourcesRecovered: learningBridge?.sources.length || 0,
                 learningEventsRetained: learningBridge?.events.length || 0,
                 learningReportsRecovered: learningBridge?.reports.length || 0,
+                incubatorSourcesRecovered: incubatorBridge?.sources.length || 0,
+                incubatorEventsRetained: incubatorBridge?.events.length || 0,
                 ...(migration ? { migration: migration.summary } : {}),
               },
               issues,
               warnings: [
                 ...(migration?.warnings || []),
                 ...participation.warnings,
+                ...(incubatorBridge ? [{ field: "incubatorBridge", message: "Incubator selections and copy history restore as inactive historical material. No session, command, approval or live binding authority is restored. Explicit adoption creates two fresh editable planned records." }] : []),
                 ...(learningBridge ? [{ field: "learningBridge", message: "Learning evidence and reports restore as private historical material with no approvals, sessions or command authority. Explicit adoption creates a new binding and fresh draft definitions and protocol; original observations never become live automatically." }] : []),
                 ...(directoryResources?.bindings.length ? [{ field: "directoryResources", message: "Directory review history restores inactive. Earlier assessments are historical; inspect current retained sources and explicitly adopt a restored Resource before recording a new review. Source trash remains in the private source archive." }] : []),
                 ...(taskRecurrence.series.length
@@ -843,6 +852,8 @@ export function createHandler({
             );
             const directoryResources = restoredDirectoryResources(p.payload.directoryResources, { records: p.payload.records, trash: p.payload.trash || [] });
             const learningBridge = restoredLearningBridge(p.payload.learningBridge, { records: p.payload.records, trash: p.payload.trash || [], legacyReports: p.payload.reports || [] });
+            const incubatorBridge = restoredIncubatorBridge(p.payload.incubatorBridge, { records: p.payload.records, trash: p.payload.trash || [] });
+            if (await incubatorStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without Incubator history or pending source reviews.");
             if (Number((await c.query("SELECT count(*) AS count FROM os_participation_delivery_policies WHERE org_id=$1", [org])).rows[0].count))
               fail(409, "restore_conflict", "Restore requires an organization without an existing participation delivery policy.");
             if (await learningStateCount(c, org))
@@ -894,7 +905,7 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
-            if (learningBridge)
+            if (learningBridge || incubatorBridge || p.payload.participation?.version === 3)
               await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -960,6 +971,7 @@ export function createHandler({
             await restoreTaskRecurrence(c, org, user, taskRecurrence);
             await restoreDirectoryResources(c, org, p.payload.directoryResources, { records: p.payload.records, trash: p.payload.trash || [] });
             await restoreLearningBridge(c, org, p.payload.learningBridge, { records: p.payload.records, trash: p.payload.trash || [], legacyReports: p.payload.reports || [] });
+            await restoreIncubatorBridge(c, org, p.payload.incubatorBridge, { records: p.payload.records, trash: p.payload.trash || [] });
             await checkLearningActiveRecords(c, org);
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
@@ -971,6 +983,8 @@ export function createHandler({
               learningSourcesRecovered: learningBridge?.sources.length || 0,
               learningEventsRetained: learningBridge?.events.length || 0,
               learningReportsRecovered: learningBridge?.reports.length || 0,
+              incubatorSourcesRecovered: incubatorBridge?.sources.length || 0,
+              incubatorEventsRetained: incubatorBridge?.events.length || 0,
               intakePublicationsClosed: intake.publications.length,
               intakeRequests: intake.submissions.length,
               participationTargetsRecovered: participation.targets.length,
@@ -1567,7 +1581,7 @@ export function createHandler({
           },
           422,
         );
-      if (error instanceof HttpError || error instanceof LearningError || error instanceof ParticipationIntervalError)
+      if (error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
         return json(
           {
             ok: false,
@@ -1695,4 +1709,15 @@ function checkReferences(module, data, records, member) {
         );
     }
   }
+}
+
+async function incubatorStateCount(c, org) {
+  return Number(
+    (
+      await c.query(
+        "SELECT (SELECT count(*) FROM os_incubator_history WHERE org_id=$1)+(SELECT count(*) FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS count",
+        [org],
+      )
+    ).rows[0].count,
+  );
 }

@@ -135,6 +135,7 @@ test("an optional export journal cannot consume the last byte of a v3 exit packe
     "os_task_recurrence_series",
     "os_task_recurrence_occurrences",
     "os_learning_history",
+    "os_incubator_history",
     "os_resource_directory_history",
   ]);
   const c = {

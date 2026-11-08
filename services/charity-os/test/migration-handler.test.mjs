@@ -120,6 +120,7 @@ function fixture({
         sql === "SELECT * FROM os_resource_directory_history WHERE org_id=$1 ORDER BY row_kind,capture_id,binding_id,sequence,id"
       )
         return { rows: [] };
+      if (sql.startsWith("SELECT (SELECT count(*) FROM os_incubator_history WHERE org_id=$1)")) return { rows: [{ count: 0 }] };
       if (sql.startsWith("SELECT (SELECT count(*) FROM os_learning_history WHERE org_id=$1)"))
         return { rows: [{ count: 0 }] }; // No feature history, reports or feature previews in this fixture.
       if (sql.startsWith("SELECT count(*) AS count,COALESCE(sum(GREATEST(octet_length(to_jsonb(t)::text),budget_bytes)),0) AS bytes FROM os_learning_history"))
@@ -322,6 +323,7 @@ function fixture({
         });
         return { rows: [], rowCount: 1 };
       }
+      if (sql === "SELECT t.*,octet_length(to_jsonb(t)::text) AS incubator_row_bytes FROM os_incubator_history t WHERE org_id=$1 ORDER BY origin_org_id,binding_id,sequence NULLS FIRST,id LIMIT 1001") return { rows: [] }; // This fixture has no Incubator history.
       throw new Error("Unexpected migration fixture query: " + sql);
     },
   };
