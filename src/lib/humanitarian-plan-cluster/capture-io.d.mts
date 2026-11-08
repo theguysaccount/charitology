@@ -1,0 +1,7 @@
+import type {PlanClusterMethod,SourceFilePin,EditionPin,PlanClusterPreparedInput,PlanClusterAppendRequest,PlanClusterAppendPreview} from './capture.mjs';
+export interface PlanClusterSourceProof { readonly sourceCommit:string;readonly method:PlanClusterMethod;readonly sourceFiles:readonly SourceFilePin[];readonly previousRegistryHash:string;readonly expectedPrevious:EditionPin }
+export declare function verifyPlanClusterAcquisitionSource(input:{repo:string;sourceCommit:string}):Promise<PlanClusterSourceProof>;
+export declare function readPlanClusterRetainedRoot(absoluteRoot:string):PlanClusterPreparedInput;
+export declare function preparePlanClusterAppendRequest(input:{repo:string;retainedRoot:string;sourceCommit:string;previousCommit:string;editionId:string;outputFile:string}):Promise<{readonly requestFile:string;readonly requestHash:string;readonly capturedAt:string;readonly assemblyElapsedNanoseconds:number;readonly clockEvidence:'actual-local-clock-declared-not-cryptographic'}>;
+export declare function previewPlanClusterAppend(input:{repo:string;retainedRoot:string;request:PlanClusterAppendRequest}):Promise<PlanClusterAppendPreview>;
+export declare function writeReviewedPlanClusterAppend(preview:PlanClusterAppendPreview,reviewedHash:string):Promise<{readonly proposalHash:string;readonly registryHash:string;readonly files:number;readonly committed:true;readonly cleanup:{readonly complete:true}}>;

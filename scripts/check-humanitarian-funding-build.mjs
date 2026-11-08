@@ -29,7 +29,8 @@ if (!edition) {
     assert.deepEqual(Object.keys(api).sort(), ["data", "generated", "license", "name"]);
     assert.equal(api.name, "humanitarian-funding"); assert.equal(api.generated, edition.source.asOf);
     assert.equal(api.license, FUNDING_LICENSE_SUMMARY); assert.deepEqual(api.data, edition);
-    assert.equal(names.filter(n => n === "humanitarian-funding").length, 1); assert.equal(names.length, 39);
+    assert.equal(names.filter(n => n === "humanitarian-funding").length, 1);
+    assert.equal(names.length, 39 + Number(names.includes("humanitarian-plan-cluster")));
   });
   check("Public licensed source envelope independently reconstructs every selected row and byte locator", () => {
     const raw = bytes(edition.source.evidenceUrl), original = readFileSync(resolve("public", "." + edition.source.evidenceUrl));

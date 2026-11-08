@@ -1,0 +1,68 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "hdx-afg-education-2024-license",
+  "url": "https://data.humdata.org/api/3/action/package_show?id=b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9",
+  "publisher": "OCHA via HDX",
+  "title": "Selected HDX licensing and resource metadata",
+  "retrievedAt": "2026-11-08T22:58:35.118Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "22d14076944929e6658354590d70b6abf74fae5ae0061eb28aa1174158058a6e",
+  "rawBytes": 166979,
+  "payload": {
+    "kind": "external-document",
+    "mediaType": "application/json",
+    "publicExcerpt": {
+      "path": "evidence/b0df1c557835e28188097a2f273ff106743522d1f273ce5160263f6a935d2c20.txt",
+      "sha256": "b0df1c557835e28188097a2f273ff106743522d1f273ce5160263f6a935d2c20",
+      "bytes": 1291,
+      "mediaType": "text/plain"
+    }
+  },
+  "producerMetadata": [
+    {
+      "field": "completePrivateJsonSha256",
+      "literal": "22d14076944929e6658354590d70b6abf74fae5ae0061eb28aa1174158058a6e"
+    },
+    {
+      "field": "resourceJsonPointer",
+      "literal": "/result/resources/2"
+    },
+    {
+      "field": "clientRequestStartedAt",
+      "literal": "2026-11-08T22:58:34.940Z"
+    },
+    {
+      "field": "responseHttpDate",
+      "literal": "Sun, 08 Nov 2026 19:58:37 GMT"
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "linked-document-only",
+      "note": "The complete HDX JSON wrapper is private. Only the exact bounded selected licensing/resource excerpt is retained; this does not relicense the wrapper."
+    },
+    "attribution": "HDX/OCHA licensing metadata; exact selected fields quoted with JSON paths.",
+    "originalProducerCredit": "OCHA Financial Tracking Service (FTS), via HDX",
+    "limitations": [
+      "Changes: selected exact JSON field values are quoted with their original JSON paths; the complete private JSON response is not redistributed here. This excerpt records licensing evidence, not a license for the entire metadata wrapper."
+    ]
+  },
+  "limitations": [
+    "One humanitarian Education plan cluster, not all education funding or independently measured need.",
+    "Reported funding is not asserted to be cash paid, final spending or money reaching people.",
+    "Price/FX basis, reporting completeness and transaction-status decomposition are unknown.",
+    "Source-rounded percent and exact-rational derived coverage are different values.",
+    "No other plan, country, cluster, financial framework or year is pooled; shared/unspecified funding is not allocated.",
+    "Cause mapping is draft; no independent reviewer, rating, outcome or funding-by-depth allocation is supplied.",
+    "This pure projection has no client retrieval clock, source-origin proof or admitted Observation edition."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "02612714ef23940b6a8ef8f84b9ed273bb24faff610c0ede483106f769a4c65d"
+}

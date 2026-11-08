@@ -16,6 +16,8 @@ import {
   OBSERVATION_ROOT,
   OBSERVATION_BASELINE_PATHS,
   observationMethodPins,
+  observationBaselinePaths,
+  observationMethodPinsFor,
 } from "./observation-baseline.mjs";
 import { validateObservationFiles } from "./observation-model.mjs";
 import { canonicalObservationJson } from "./observation-canonical.mjs";
@@ -325,16 +327,17 @@ export function readObservationGitFiles(repo, exactCommit) {
   );
 }
 
-export function readObservationBaseline(repo, exactCommit) {
+export function readObservationBaseline(repo, exactCommit, methodId = "observation-capture-v1") {
+  const methodPaths = observationBaselinePaths(methodId);
   if (
-    !Array.isArray(OBSERVATION_BASELINE_PATHS) ||
-    !OBSERVATION_BASELINE_PATHS.length ||
-    OBSERVATION_BASELINE_PATHS.length > 100 ||
-    new Set(OBSERVATION_BASELINE_PATHS).size !==
-      OBSERVATION_BASELINE_PATHS.length
+    !Array.isArray(methodPaths) ||
+    !methodPaths.length ||
+    methodPaths.length > 100 ||
+    new Set(methodPaths).size !==
+      methodPaths.length
   )
     fail("invalid fixed interpretation inventory");
-  const paths = [...OBSERVATION_BASELINE_PATHS].sort();
+  const paths = [...methodPaths].sort();
   const files = readTree(repo, exactCommit, paths, {
     maxFiles: 100,
     maxBytes: 5 * 1024 * 1024,
@@ -364,10 +367,13 @@ export function checkObservationAppendOnly({ repo, exactBase, exactHead }) {
   const currentFiles = readObservationGitFiles(repo, exactHead);
   if (!Object.keys(currentFiles).length)
     fail("the head has no observation registry");
-  const actualInterpretation = readObservationBaseline(repo, exactHead);
+  const current = validateObservationFiles(currentFiles);
+  const currentEdition = JSON.parse(text(currentFiles[`editions/${current.registry.current.id}.json`]));
+  const currentMethod = currentEdition.method.id;
+  const actualInterpretation = readObservationBaseline(repo, exactHead, currentMethod);
   verifyWorkingInputs(repo, actualInterpretation, currentFiles);
   // A historical proof must not be used to bless different working-tree inputs.
-  const relevant = [root, ...OBSERVATION_BASELINE_PATHS];
+  const relevant = [root, ...observationBaselinePaths(currentMethod)];
   if (
     text(
       git(repo, [
@@ -381,7 +387,6 @@ export function checkObservationAppendOnly({ repo, exactBase, exactHead }) {
     ).length
   )
     fail("the checked interpretation or dataset has uncommitted changes");
-  const current = validateObservationFiles(currentFiles);
   const previous = Object.keys(previousFiles).length
     ? validateObservationFiles(previousFiles)
     : null;
@@ -421,13 +426,15 @@ export function checkObservationAppendOnly({ repo, exactBase, exactHead }) {
     if (edition.sourceCommit === exactHead)
       fail("dataset B cannot be its own source A");
     ancestor(repo, edition.sourceCommit, exactHead);
-    let baseline = baselines.get(edition.sourceCommit);
+    const baselineKey = `${edition.method.id}\0${edition.sourceCommit}`;
+    let baseline = baselines.get(baselineKey);
     if (!baseline) {
-      baseline = readObservationBaseline(repo, edition.sourceCommit);
-      baselines.set(edition.sourceCommit, baseline);
+      baseline = readObservationBaseline(repo, edition.sourceCommit, edition.method.id);
+      baselines.set(baselineKey, baseline);
     }
-    const method = observationMethodPins(baseline);
+    const method = observationMethodPinsFor(edition.method.id, baseline);
     if (
+      method.id !== edition.method.id ||
       method.definitionSha256 !== edition.method.definitionSha256 ||
       method.adapterSha256 !== edition.method.adapterSha256
     )
@@ -479,10 +486,7 @@ export function checkObservationAppendOnly({ repo, exactBase, exactHead }) {
     } else if (!same(next.current, next.editions.at(-1)))
       fail("an append must explicitly select its final new edition");
   }
-  const currentEdition = JSON.parse(
-    text(currentFiles[`editions/${current.registry.current.id}.json`]),
-  );
-  const pinnedInterpretation = baselines.get(currentEdition.sourceCommit);
+  const pinnedInterpretation = baselines.get(`${currentMethod}\0${currentEdition.sourceCommit}`);
   if (
     !same(
       actualInterpretation.files.map(({ path, sha256, bytes }) => ({

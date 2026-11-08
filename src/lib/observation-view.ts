@@ -56,6 +56,7 @@ export function observationCoverageAnchor(
 export function observationLocatorText(ref: ObservationSourceRef): string {
   const l = ref.locator;
   if (l.kind === "json") return `JSON pointer ${l.pointer || "/"}`;
+  if (l.kind === "csv") return `CSV record ${l.recordNumber} · lines ${l.firstLine}–${l.lastLine} · column ${l.column} · original bytes ${l.byteStart}–${l.byteEnd}`;
   if (l.kind === "text")
     return `${l.section.join(" → ")}${l.excerpt ? ` · “${l.excerpt}”` : ""}`;
   return [
@@ -120,9 +121,15 @@ export function countryObservationFacts(
   );
   if (!entity)
     throw new Error("Country is outside the selected observation edition.");
+  const selected = new Set(projection.coverage
+    .filter(c => c.selection.kind === "country-latest-window")
+    .flatMap(c => c.cells.flatMap(cell => cell.state === "present"
+      ? [`${cell.observation.id}/${cell.observation.version}/${cell.observation.hash}`] : [])));
   return Object.fromEntries(
     projection.observations
-      .filter((o) => o.entity.id === entity.id)
+      .filter((o) => o.entity.id === entity.id &&
+        selected.has(`${o.id}/${o.version}/${o.hash}`) &&
+        observationPinned(projection.scopes, o.scope).scopeKind === "national-statistics")
       .map((o) => {
         const fact = observationFact(projection, o);
         if (!fact.measure.legacyCountry)
@@ -143,9 +150,10 @@ export function countryMissingFacts(
   if (!entity)
     throw new Error("Country is outside the selected observation edition.");
   return Object.fromEntries(
-    projection.coverage.flatMap((coverage) =>
+    projection.coverage.filter(c => c.selection.kind === "country-latest-window").flatMap((coverage) =>
       coverage.cells.flatMap((cell, index) => {
-        if (cell.state !== "missing" || cell.entity.id !== entity.id) return [];
+        if (cell.state !== "missing" || cell.entity.id !== entity.id ||
+          observationPinned(projection.scopes, cell.scope).scopeKind !== "national-statistics") return [];
         const measure = observationPinned(projection.measures, cell.measure);
         if (!measure.legacyCountry)
           throw new Error(

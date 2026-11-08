@@ -2,18 +2,29 @@
   "format": "charitology-observation-registry",
   "version": 1,
   "current": {
-    "id": "observations-2026-10-27",
-    "hash": "88067164fcf50b280f1c762af035597e3df04a3df3c68ad599a1caeb8f9b1a19",
-    "sequence": 1
+    "id": "observations-2026-11-08-education-plan",
+    "hash": "4d30064c6faadee5a258c489a92be8847c7d2b92e5a01d8d9eccc7c8bcb6119a",
+    "sequence": 2
   },
   "editions": [
     {
       "id": "observations-2026-10-27",
       "hash": "88067164fcf50b280f1c762af035597e3df04a3df3c68ad599a1caeb8f9b1a19",
       "sequence": 1
+    },
+    {
+      "id": "observations-2026-11-08-education-plan",
+      "hash": "4d30064c6faadee5a258c489a92be8847c7d2b92e5a01d8d9eccc7c8bcb6119a",
+      "sequence": 2
     }
   ],
   "records": [
+    {
+      "kind": "coverage",
+      "id": "afg-education-hnrp-2024",
+      "version": 1,
+      "hash": "efe5866a6a3072521d4820f3ea65469833feef61d7406baa29b4a5c76be51068"
+    },
     {
       "kind": "coverage",
       "id": "country-basic-water-access",
@@ -1390,6 +1401,18 @@
     },
     {
       "kind": "measure",
+      "id": "afg-education-2024-funding",
+      "version": 1,
+      "hash": "04b52e1d253066942096f282e211c060726ce74dfa2321eedb9da9f2b8f484bf"
+    },
+    {
+      "kind": "measure",
+      "id": "afg-education-2024-requirements",
+      "version": 1,
+      "hash": "ed980008b3302ca4c90d4e15bffdf3c6371a15935e0792bf75fd08bf131bea17"
+    },
+    {
+      "kind": "measure",
       "id": "country-basic-water-access",
       "version": 1,
       "hash": "127582ca26cecee4f43ec0f90fb90a42b8c1014ecdf319e231c11dfdd165980d"
@@ -1447,6 +1470,18 @@
       "id": "financial-wikimedia-expenses",
       "version": 1,
       "hash": "55954b0180804ccc5319c7da1e5becab814fac4f94fc375d2afc9dde883fa50f"
+    },
+    {
+      "kind": "observation",
+      "id": "afg-education-2024-funding",
+      "version": 1,
+      "hash": "1360c4afb5f3d3fe405680e48e3be15f1217d29b779cea579f4c463e05d8919b"
+    },
+    {
+      "kind": "observation",
+      "id": "afg-education-2024-requirements",
+      "version": 1,
+      "hash": "ff28a7bc5c6d09b62339bdd72bb09e01eb160914fdfdcb918a831b8db9af5a0b"
     },
     {
       "kind": "observation",
@@ -7798,6 +7833,12 @@
     },
     {
       "kind": "scope",
+      "id": "afg-education-hnrp-2024",
+      "version": 1,
+      "hash": "c1da248bb3801a1e41c71b1819c6a59539e2f8a330f72134b92f202559583607"
+    },
+    {
+      "kind": "scope",
       "id": "givewell-consolidated",
       "version": 1,
       "hash": "3012ffd115863c3976414a9a28a42b3bcef78c6eb31a7a4e704b5c263fe1befd"
@@ -9112,6 +9153,12 @@
     },
     {
       "kind": "source",
+      "id": "fts-afg-education-2024-cluster",
+      "version": 1,
+      "hash": "e211d008b60d65a5ebe3097d3b68b59bd363babc3026b026ef6d2e1f7a23a008"
+    },
+    {
+      "kind": "source",
       "id": "gw-audit",
       "version": 1,
       "hash": "4a7e2cdf4ff1835fddad889faed1e112d95066c7c7f56b3601f8a3e453f539d3"
@@ -9121,6 +9168,12 @@
       "id": "gw-identity",
       "version": 1,
       "hash": "3b79842838d9bdc05a0ba1d8a4350605c06fe99ab9277fac7029a158a09b0468"
+    },
+    {
+      "kind": "source",
+      "id": "hdx-afg-education-2024-license",
+      "version": 1,
+      "hash": "02612714ef23940b6a8ef8f84b9ed273bb24faff610c0ede483106f769a4c65d"
     },
     {
       "kind": "source",
@@ -9257,6 +9310,11 @@
   ],
   "files": [
     {
+      "path": "coverage/afg-education-hnrp-2024.v1.json",
+      "sha256": "d1cb411bf4cf63b18f992c410db0e8da079144178b41a4fc6417f6926076526e",
+      "bytes": 4264
+    },
+    {
       "path": "coverage/country-basic-water-access.v1.json",
       "sha256": "db02aeeba7aeb125056dc9d13dfe24a1b9df27c309555e02b1c82ef1a3e43198",
       "bytes": 149031
@@ -9290,6 +9348,11 @@
       "path": "editions/observations-2026-10-27.json",
       "sha256": "e1123cc888bfa0efb5d42a59491f35b60004ddfda42457a8a3ecb018639e192c",
       "bytes": 277698
+    },
+    {
+      "path": "editions/observations-2026-11-08-education-plan.json",
+      "sha256": "49c5b2dc5d1dd57c666f5ddb05119bc7effb91872bbd7096ffd56a5d0e36ff14",
+      "bytes": 279505
     },
     {
       "path": "entities/country-abw.v1.json",
@@ -10442,9 +10505,24 @@
       "bytes": 38
     },
     {
+      "path": "evidence/b0df1c557835e28188097a2f273ff106743522d1f273ce5160263f6a935d2c20.txt",
+      "sha256": "b0df1c557835e28188097a2f273ff106743522d1f273ce5160263f6a935d2c20",
+      "bytes": 1291
+    },
+    {
       "path": "evidence/bf3f8fb488f73095f73d78ae4773fe95f9f2c1deb53da4b2a487847ae6fbe62d.json",
       "sha256": "bf3f8fb488f73095f73d78ae4773fe95f9f2c1deb53da4b2a487847ae6fbe62d",
       "bytes": 8171
+    },
+    {
+      "path": "measures/afg-education-2024-funding.v1.json",
+      "sha256": "f29e184c641087c2be4e839bef39bc7d782d7d3647234384f3b558f390e41a20",
+      "bytes": 3012
+    },
+    {
+      "path": "measures/afg-education-2024-requirements.v1.json",
+      "sha256": "d352533b7643b6a9eb01653b864e7a7b820abb8992677f5753e96c766ed3105a",
+      "bytes": 2996
     },
     {
       "path": "measures/country-basic-water-access.v1.json",
@@ -10495,6 +10573,16 @@
       "path": "measures/financial-wikimedia-expenses.v1.json",
       "sha256": "95f3b858118dbb74121c85fb1f4d26465594597bad581a4a8d5590c569d1aae6",
       "bytes": 1381
+    },
+    {
+      "path": "observations/afg-education-2024-funding.v1.json",
+      "sha256": "b03d06e396f8f7a3fa26f6d1122d158c7962ba67f34eb611c1ab4147ec00ca1f",
+      "bytes": 4791
+    },
+    {
+      "path": "observations/afg-education-2024-requirements.v1.json",
+      "sha256": "8b66e123e81edade54ce4f1d0a1640a68e58dbf1001c5c17a300115e2d7540fc",
+      "bytes": 4810
     },
     {
       "path": "observations/fact-abw-electricity-access.v1.json",
@@ -15817,6 +15905,11 @@
       "bytes": 1102
     },
     {
+      "path": "raw/7d4332b7c9412fb57550309bb603cde0bf6265282d56a8b6337983744b0ef0f0.txt",
+      "sha256": "7d4332b7c9412fb57550309bb603cde0bf6265282d56a8b6337983744b0ef0f0",
+      "bytes": 1031653
+    },
+    {
       "path": "raw/9aa4b4c6cf9c7d6d5d42011daa8e9ba75dc1da20eddd450c444cdd1a884249b3.json",
       "sha256": "9aa4b4c6cf9c7d6d5d42011daa8e9ba75dc1da20eddd450c444cdd1a884249b3",
       "bytes": 438744
@@ -15840,6 +15933,11 @@
       "path": "raw/ffbb10fcc39df73ead35d44bb3233b18d6f268332a5e358ecfb1211fcb4819ec.json",
       "sha256": "ffbb10fcc39df73ead35d44bb3233b18d6f268332a5e358ecfb1211fcb4819ec",
       "bytes": 346384
+    },
+    {
+      "path": "scopes/afg-education-hnrp-2024.v1.json",
+      "sha256": "0a521d6ac75add69f85bbc1ba25a4e82a83f9790f95114ce241ee14f5b27bf58",
+      "bytes": 4004
     },
     {
       "path": "scopes/givewell-consolidated.v1.json",
@@ -16937,6 +17035,11 @@
       "bytes": 1691
     },
     {
+      "path": "sources/fts-afg-education-2024-cluster.v1.json",
+      "sha256": "542d612bea2ffb4fcd986fda50edae7c8a495ede01f2241b3bf16e6211195cc2",
+      "bytes": 5217
+    },
+    {
       "path": "sources/gw-audit.v1.json",
       "sha256": "a3ea3c83e5634af961cb0fa067a901a5a8149c7540000c7e83f7e4bd603067cd",
       "bytes": 1701
@@ -16945,6 +17048,11 @@
       "path": "sources/gw-identity.v1.json",
       "sha256": "d463eb6f3fa7867c5d154e1e579a5c9d9ff5865118f0370af158c5c32233601d",
       "bytes": 1304
+    },
+    {
+      "path": "sources/hdx-afg-education-2024-license.v1.json",
+      "sha256": "6dba2983f0647a4f1010254871c89257df2d9d9be38d3a5512da3356cbb8fdf5",
+      "bytes": 2979
     },
     {
       "path": "sources/rights-basic-water-license.v1.json",
@@ -17057,5 +17165,5 @@
       "bytes": 1523
     }
   ],
-  "hash": "e71b832f4a6b403c7d5c087df301949681dd7b7424fce4a78301448c896ecb4b"
+  "hash": "ac86efd2cfced3b931940866812721ae3f62fb55ff4d87dac2aeaa2aec0f88ac"
 }

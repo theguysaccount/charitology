@@ -6,6 +6,7 @@ import { DEPTH } from "../../lib/labels";
 import { url } from "../../lib/site";
 import figures from "../../data/figures.json";
 import HumanitarianFundingReference from "../HumanitarianFundingReference.astro";
+import HumanitarianPlanClusterObservation from '../HumanitarianPlanClusterObservation.astro';
 
 const bySource = figures.bySource.rows.map((r) => ({
   label: r.name,
@@ -32,6 +33,7 @@ const allSources = [
 
 <div class="gap">
   <HumanitarianFundingReference />
+  <HumanitarianPlanClusterObservation />
   <p><a href={url("/observations/")}>Inspect the observation and coverage register</a>. Its national statistics and selected historical financial panels are separate from these U.S. giving estimates. They do not supply a global funding/need gap or a giving-by-depth distribution. Recipient categories and giving sources are not combined into an invented residual.</p>
   <section class="gap-panel">
     <h2>Who gives</h2>

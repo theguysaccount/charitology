@@ -1,0 +1,129 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "scope",
+  "id": "afg-education-hnrp-2024",
+  "entity": {
+    "kind": "entity",
+    "id": "country-afg",
+    "version": 1,
+    "hash": "3f5210af20948f6d00dcf0155149a848ef3f9f0c5b9f78899c434f09ccf16070"
+  },
+  "scopeKind": "humanitarian-plan-cluster",
+  "label": "Afghanistan HNRP2024 — Education plan cluster",
+  "includedEntities": [
+    {
+      "kind": "entity",
+      "id": "country-afg",
+      "version": 1,
+      "hash": "3f5210af20948f6d00dcf0155149a848ef3f9f0c5b9f78899c434f09ccf16070"
+    }
+  ],
+  "consolidation": "not-applicable",
+  "geography": {
+    "kind": "country-economy",
+    "entity": {
+      "kind": "entity",
+      "id": "country-afg",
+      "version": 1,
+      "hash": "3f5210af20948f6d00dcf0155149a848ef3f9f0c5b9f78899c434f09ccf16070"
+    }
+  },
+  "planCluster": {
+    "source": {
+      "kind": "source",
+      "id": "fts-afg-education-2024-cluster",
+      "version": 1,
+      "hash": "e211d008b60d65a5ebe3097d3b68b59bd363babc3026b026ef6d2e1f7a23a008"
+    },
+    "countryCode": "AFG",
+    "planId": "1185",
+    "planCode": "HAFG24",
+    "planName": "Afghanistan Humanitarian Needs and Response Plan 2024",
+    "clusterCode": "7415",
+    "clusterName": "Education",
+    "referenceYear": 2024,
+    "period": {
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    },
+    "causeBinding": {
+      "method": "plan-cluster-cause-map-v1",
+      "causeId": "education",
+      "sourceClusterName": "Education",
+      "basis": "explicit-selected-source-cluster",
+      "review": "draft"
+    }
+  },
+  "exclusions": [
+    "Only this Afghanistan 2024 Education plan cluster is selected; other causes, countries, plans, shared/unspecified funding and years are outside this coverage."
+  ],
+  "sourceRefs": [
+    {
+      "source": {
+        "kind": "source",
+        "id": "fts-afg-education-2024-cluster",
+        "version": 1,
+        "hash": "e211d008b60d65a5ebe3097d3b68b59bd363babc3026b026ef6d2e1f7a23a008"
+      },
+      "role": "scope",
+      "locator": {
+        "kind": "csv",
+        "recordNumber": 29,
+        "firstLine": 29,
+        "lastLine": 29,
+        "byteStart": 3952,
+        "byteEnd": 4087,
+        "rawSha256": "8bd4d88b7fc68066ed69ef40e77a49eb7b5ed2d8bc206d88063ed66230b2ef10",
+        "column": "cluster",
+        "matches": [
+          {
+            "column": "countryCode",
+            "expected": "AFG"
+          },
+          {
+            "column": "id",
+            "expected": "1185"
+          },
+          {
+            "column": "code",
+            "expected": "HAFG24"
+          },
+          {
+            "column": "year",
+            "expected": "2024"
+          },
+          {
+            "column": "clusterCode",
+            "expected": "7415"
+          },
+          {
+            "column": "cluster",
+            "expected": "Education"
+          },
+          {
+            "column": "startDate",
+            "expected": "2024-01-01"
+          },
+          {
+            "column": "endDate",
+            "expected": "2024-12-31"
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "One humanitarian Education plan cluster, not all education funding or independently measured need.",
+    "Reported funding is not asserted to be cash paid, final spending or money reaching people.",
+    "Price/FX basis, reporting completeness and transaction-status decomposition are unknown.",
+    "Source-rounded percent and exact-rational derived coverage are different values.",
+    "No other plan, country, cluster, financial framework or year is pooled; shared/unspecified funding is not allocated.",
+    "Cause mapping is draft; no independent reviewer, rating, outcome or funding-by-depth allocation is supplied.",
+    "This pure projection has no client retrieval clock, source-origin proof or admitted Observation edition."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "c1da248bb3801a1e41c71b1819c6a59539e2f8a330f72134b92f202559583607"
+}

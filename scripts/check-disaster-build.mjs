@@ -6,6 +6,9 @@ import { resolve, join, sep } from "node:path";
 import { parse } from "parse5";
 import { loadDisasters, disasterEditionHref, disasterSelectedHref, disasterIncidentHref, disasterSourceHref } from "../src/lib/disaster-incidents/public.mjs";
 import { loadHumanitarianFunding } from "../src/lib/humanitarian-funding/public.mjs";
+import { readObservationWorkingFiles } from "../src/lib/observation-capture-io.mjs";
+import { validateObservationFiles } from "../src/lib/observation-model.mjs";
+import { planClusterObservationProjection } from "../src/lib/humanitarian-plan-cluster/public.mjs";
 const root = resolve("."), dist = join(root, "dist"), base = (process.env.BASE_PATH || "/").replace(/\/$/, ""), site = process.env.SITE_URL || "https://charitology.org";
 const file = p => { assert.ok(p.startsWith("/") && !p.includes("..")); const f = resolve(dist, "." + p + (p.endsWith("/") ? "index.html" : "")); assert.ok(f.startsWith(dist + sep)); return f; };
 const bytes = p => readFileSync(file(p)), raw = p => bytes(p).toString("utf8"), json = p => JSON.parse(raw(p));
@@ -22,6 +25,8 @@ function html(p) { const d = parse(raw(p)); const canonical = all(d, n => n.tagN
 assert.ok(existsSync(dist), "Build dist before checking Disaster Desk.");
 check("Shared page metadata and the homepage brand video remain available", () => { const home = html("/"); assert.equal(all(home, n => n.tagName === "meta" && attr(n, "property") === "og:video" && attr(n, "content") === new URL(base + "/social/charitology-intro.mp4", site).href).length, 1); assert.ok(bytes("/social/charitology-intro.mp4").length > 0); });
 const data = loadDisasters();
+const observations = validateObservationFiles(readObservationWorkingFiles(root));
+const education = planClusterObservationProjection(observations, observations.registry.current.id);
 if (!data) {
     check("Uncaptured source A has explicit no-data HTML and no fabricated API datasets", () => { includes(html("/disasters/"), "No source edition has been captured yet"); const names = json("/api/v1/index.json").endpoints.map(e => e.name); assert.ok(!names.includes("disaster-incidents") && !names.includes("disaster-incident-coverage")); for (const name of ["disaster-incidents", "disaster-incident-coverage"])
         assert.equal(existsSync(file(`/api/v1/${name}.json`)), false); if (existsSync(file("/disasters/history.json")))
@@ -36,7 +41,7 @@ else {
         assert.deepEqual(v.data, expected);
         assert.match(v.license, /External originals remain with their publishers/);
         assert.match(v.license, /no independently verified current needs/);
-    } const names = json("/api/v1/index.json").endpoints.map(e => e.name); assert.equal(names.length, 38 + (loadHumanitarianFunding() ? 1 : 0)); for (const n of ["disaster-incidents", "disaster-incident-coverage"])
+    } const names = json("/api/v1/index.json").endpoints.map(e => e.name); assert.equal(names.length, 38 + Number(loadHumanitarianFunding() !== null) + Number(education !== null)); assert.equal(names.filter(n => n === "humanitarian-plan-cluster").length, Number(education !== null)); for (const n of ["disaster-incidents", "disaster-incident-coverage"])
         assert.equal(names.filter(x => x === n).length, 1); });
     check("Complete public history JSON matches exact admitted bytes and excludes private originals", () => { assert.deepEqual(bytes("/disasters/history.json"), Buffer.from(data.history)); const h = json("/disasters/history.json"); assert.equal(h.format, "charitology-disaster-history"); assert.deepEqual(h.registry, data.registry); assert.ok(h.files.every(f => !f.file.path.startsWith("exports/") && !f.file.path.startsWith("originals/"))); assert.deepEqual(h.files.map(f => f.file.path), h.files.map(f => f.file.path).sort()); });
     for (const e of data.editions) {

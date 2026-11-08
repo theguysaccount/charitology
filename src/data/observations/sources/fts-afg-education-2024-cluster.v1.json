@@ -1,0 +1,104 @@
+{
+  "format": "charitology-observation-record",
+  "schemaVersion": 1,
+  "kind": "source",
+  "id": "fts-afg-education-2024-cluster",
+  "url": "https://data.humdata.org/dataset/b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9/resource/80975d5b-508b-47b2-a10c-b967104d3179/download/fts_requirements_funding_cluster_global.csv",
+  "publisher": "OCHA Financial Tracking Service (FTS), via HDX",
+  "title": "Afghanistan HNRP2024 Education requirements and reported funding",
+  "retrievedAt": "2026-11-08T22:58:34.797Z",
+  "sourceUpdatedDay": null,
+  "reportDay": null,
+  "publishedAt": null,
+  "rawSha256": "7d4332b7c9412fb57550309bb603cde0bf6265282d56a8b6337983744b0ef0f0",
+  "rawBytes": 1031653,
+  "payload": {
+    "kind": "public-csv",
+    "raw": {
+      "path": "raw/7d4332b7c9412fb57550309bb603cde0bf6265282d56a8b6337983744b0ef0f0.txt",
+      "sha256": "7d4332b7c9412fb57550309bb603cde0bf6265282d56a8b6337983744b0ef0f0",
+      "bytes": 1031653,
+      "mediaType": "text/plain"
+    },
+    "adapter": "ocha-fts-plan-cluster-v1"
+  },
+  "producerMetadata": [
+    {
+      "field": "datasetId",
+      "literal": "b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9"
+    },
+    {
+      "field": "resourceId",
+      "literal": "80975d5b-508b-47b2-a10c-b967104d3179"
+    },
+    {
+      "field": "resourceModifiedLiteral",
+      "literal": "2026-11-06T11:16:07.816954"
+    },
+    {
+      "field": "metadataModifiedLiteral",
+      "literal": "2026-11-06T11:16:15.543202"
+    },
+    {
+      "field": "publisherHashLiteral",
+      "literal": "e79c623d3cf104e17b69296c26a0eb60"
+    },
+    {
+      "field": "clientRequestStartedAt",
+      "literal": "2026-11-08T22:58:34.585Z"
+    },
+    {
+      "field": "responseHttpDate",
+      "literal": "Sun, 08 Nov 2026 19:58:37 GMT"
+    },
+    {
+      "field": "selectedSourcePercentFunded",
+      "literal": "57"
+    }
+  ],
+  "rights": {
+    "returnedLicense": null,
+    "publicReuse": {
+      "kind": "explicit-license",
+      "label": "Creative Commons Attribution 3.0 IGO",
+      "termsUrl": "https://creativecommons.org/licenses/by/3.0/igo/legalcode",
+      "evidence": [
+        {
+          "source": {
+            "kind": "source",
+            "id": "hdx-afg-education-2024-license",
+            "version": 1,
+            "hash": "02612714ef23940b6a8ef8f84b9ed273bb24faff610c0ede483106f769a4c65d"
+          },
+          "role": "rights",
+          "locator": {
+            "kind": "text",
+            "section": [
+              "Selected HDX licensing metadata",
+              "80975d5b-508b-47b2-a10c-b967104d3179"
+            ],
+            "excerpt": "Selected exact HDX licensing/resource metadata\nSource URL: https://data.humdata.org/api/3/action/package_show?id=b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9\nPrivate complete JSON SHA256: 22d14076944929e6658354590d70b6abf74fae5ae0061eb28aa1174158058a6e\n/result/id: \"b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9\"\n/result/license_id: \"cc-by-igo\"\n/result/license_title: \"Creative Commons Attribution for Intergovernmental Organisations (CC BY-IGO)\"\n/result/license_url: \"http://creativecommons.org/licenses/by/3.0/igo/legalcode\"\n/result/metadata_modified: \"2026-11-06T11:16:15.543202\"\n/result/resources/2/id: \"80975d5b-508b-47b2-a10c-b967104d3179\"\n/result/resources/2/name: \"fts_requirements_funding_cluster_global.csv\"\n/result/resources/2/url: \"https://data.humdata.org/dataset/b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9/resource/80975d5b-508b-47b2-a10c-b967104d3179/download/fts_requirements_funding_cluster_global.csv\"\n/result/resources/2/size: 1031653\n/result/resources/2/last_modified: \"2026-11-06T11:16:07.816954\"\n/result/resources/2/hash: \"e79c623d3cf104e17b69296c26a0eb60\"\nChanges: selected exact JSON field values are quoted with their original JSON paths; the complete private JSON response is not redistributed here. This excerpt records licensing evidence, not a license for the entire metadata wrapper."
+          }
+        }
+      ]
+    },
+    "attribution": "OCHA Financial Tracking Service (FTS), Global - Requirements and Funding Data, via HDX. Source data licensed under CC BY 3.0 IGO.",
+    "originalProducerCredit": "OCHA Financial Tracking Service (FTS)",
+    "limitations": [
+      "Charitology selected one row and added typed locators/definitions and exact-decimal interpretation; no OCHA endorsement is implied."
+    ]
+  },
+  "limitations": [
+    "One humanitarian Education plan cluster, not all education funding or independently measured need.",
+    "Reported funding is not asserted to be cash paid, final spending or money reaching people.",
+    "Price/FX basis, reporting completeness and transaction-status decomposition are unknown.",
+    "Source-rounded percent and exact-rational derived coverage are different values.",
+    "No other plan, country, cluster, financial framework or year is pooled; shared/unspecified funding is not allocated.",
+    "Cause mapping is draft; no independent reviewer, rating, outcome or funding-by-depth allocation is supplied.",
+    "This pure projection has no client retrieval clock, source-origin proof or admitted Observation edition."
+  ],
+  "review": "draft",
+  "version": 1,
+  "previous": null,
+  "hash": "e211d008b60d65a5ebe3097d3b68b59bd363babc3026b026ef6d2e1f7a23a008"
+}

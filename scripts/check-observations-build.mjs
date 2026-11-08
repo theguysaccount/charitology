@@ -2,6 +2,7 @@
 // No live freshness, browser download, rights ruling or human review is implied.
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -154,6 +155,13 @@ check(
   "three current APIs preserve complete model data, pinned capture and scoped third-party rights",
   () => {
     const p = current;
+    // Match the complete retained country view rather than borrowing a later
+    // unrelated edition's assembly day. The original capture remains selected
+    // when an Education-only append leaves all country values unchanged.
+    const countryCapture = input.registry.editions
+      .map((edition) => observationProjection(input, edition.id))
+      .find((edition) => isDeepStrictEqual(legacyCountriesProjection(edition), countries));
+    assert.ok(countryCapture, "the country view has an admitted selecting edition");
     const expected = {
       observations: plain(p),
       countries: plain(countries),
@@ -192,7 +200,10 @@ check(
         ["name", "description", "license", "generated", "data"].sort(),
       );
       assert.equal(endpoint.name, name);
-      assert.equal(endpoint.generated, p.capturedAt.slice(0, 10));
+      assert.equal(
+        endpoint.generated,
+        (name === "countries" ? countryCapture.capturedAt : p.capturedAt).slice(0, 10),
+      );
       assert.deepEqual(endpoint.data, expected[name]);
       assert.match(
         endpoint.license,
@@ -483,8 +494,13 @@ check(
           blob.sha256,
         );
       }
-      if (s.payload.kind === "external-document")
-        includes(doc, "audit opinion does not independently audit Charitology");
+      if (s.payload.kind === "external-document") {
+        if (s.payload.mediaType === "application/json") {
+          includes(doc, "Selected licensing metadata excerpt");
+          includes(doc, "complete original JSON wrapper remains private");
+          includes(doc, "checksum alone does not prove an external retrieval or its clock");
+        } else includes(doc, "audit opinion does not independently audit Charitology");
+      }
       if (s.rights.publicReuse.kind === "publisher-default-inference")
         includes(doc, "independent human rights review pending");
       sourceCount++;

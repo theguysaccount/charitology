@@ -11,6 +11,7 @@ import { build } from "esbuild";
 import { transform } from "@astrojs/compiler-rs";
 import ts from "typescript";
 import { disasterFixture } from "./lib/disaster-model-fixtures.mjs";
+import { fictionalObservationFiles } from "../test-fixtures/observations/education-factory.mjs";
 const root = process.cwd(),
   temporary = await mkdtemp(join(resolve("node_modules"), ".disaster-public-"));
 let count = 0,
@@ -61,6 +62,14 @@ async function bundle(entry, source) {
 async function fixtureRoot(name, fixture) {
   const p = join(temporary, name);
   await mkdir(p, { recursive: true });
+  // The actual Education availability callback reads the mandatory observation
+  // registry. Seed only the existing fictional predecessor, with no Education
+  // selection; no actual capture, private metadata or production fallback.
+  for (const [file, bytes] of Object.entries(fictionalObservationFiles())) {
+    const target = join(p, "src/data/observations", file);
+    await mkdir(dirname(target), { recursive: true });
+    await writeFile(target, bytes, { flag: "wx" });
+  }
   if (fixture)
     for (const [file, bytes] of fixture.files) {
       const target = join(p, "src/data/disaster-incidents", file);
@@ -86,17 +95,25 @@ function declarations(source) {
   visit(ast);
   assert.ok(ts.isArrayLiteralExpression(list));
   const printer = ts.createPrinter({ removeComments: true });
-  return new Map(
-    list.elements.map((n) => {
-      const p = n.properties.find(
-        (p) => ts.isPropertyAssignment(p) && p.name.getText(ast) === "name",
-      );
-      return [
-        p.initializer.text,
-        printer.printNode(ts.EmitHint.Unspecified, n, ast),
-      ];
-    }),
-  );
+  const entries = list.elements.map((n) => {
+    assert.ok(ts.isObjectLiteralExpression(n));
+    const fields = new Map(n.properties.map((p) => {
+      assert.ok(ts.isPropertyAssignment(p));
+      assert.ok(ts.isIdentifier(p.name) || ts.isStringLiteral(p.name));
+      const key = p.name.text;
+      return [key, printer.printNode(ts.EmitHint.Unspecified, p.initializer, ast)];
+    }));
+    assert.equal(fields.size, n.properties.length, "endpoint fields are unique");
+    const name = n.properties.find((p) => p.name.text === "name");
+    assert.ok(name && ts.isStringLiteral(name.initializer));
+    return [name.initializer.text, {
+      text: printer.printNode(ts.EmitHint.Unspecified, n, ast),
+      fields,
+    }];
+  });
+  const endpoints = new Map(entries);
+  assert.equal(endpoints.size, entries.length, "endpoint names are unique");
+  return endpoints;
 }
 const source = await readFile("src/lib/api.ts", "utf8");
 const baseline = childProcess.execFileSync(
@@ -148,15 +165,39 @@ function restore() {
   globalThis.fetch = originalFetch;
 }
 try {
-  await check("all36 old source-declared endpoint objects remain exact", () => {
-    const before = declarations(baseline),
-      after = declarations(source);
+  await check("all36 old endpoint fields stay exact except two closed source-specific properties", () => {
+    const before = declarations(baseline), after = declarations(source);
     assert.equal(before.size, 36);
-    assert.equal(after.size, 39);
-    for (const [n, v] of before) assert.equal(after.get(n), v, n);
+    assert.equal(after.size, 40);
+    const exceptions = new Map([
+      ["countries", ["capturedAt",
+        "async () => (await observations()).projection.capturedAt",
+        "countrySelectionCapturedAt"]],
+      ["observation-coverage", ["description",
+        JSON.stringify("Explicit country-window and consolidated-group coverage, including producer-null and uncollected states, linked to exact observations and source rights in the same edition."),
+        JSON.stringify("Explicit country-window, consolidated-group and selected humanitarian plan-cluster coverage, including source-null, source-empty and uncollected states, linked to exact observations and source rights in the same edition.")]],
+    ]);
+    let usedExceptions = 0;
+    for (const [name, old] of before) {
+      const current = after.get(name);
+      assert.ok(current, name);
+      const exception = exceptions.get(name);
+      if (!exception) {
+        assert.equal(current.text, old.text, name);
+        continue;
+      }
+      usedExceptions++;
+      const [changedField, beforeValue, afterValue] = exception;
+      assert.deepEqual([...current.fields.keys()].sort(), [...old.fields.keys()].sort());
+      assert.equal(old.fields.get(changedField), beforeValue, name + "." + changedField + " before");
+      assert.equal(current.fields.get(changedField), afterValue, name + "." + changedField + " after");
+      for (const [field, value] of old.fields)
+        if (field !== changedField) assert.equal(current.fields.get(field), value, name + "." + field);
+    }
+    assert.equal(usedExceptions, 2);
   });
   await check(
-    "old36 actual wrapper behavior remains exact with fixed content/date inputs",
+    "old36 actual wrapper behavior stays exact except the closed coverage description",
     async () => {
       const Fixed = class extends NativeDate {
         constructor(...args) {
@@ -180,11 +221,13 @@ try {
               endpoint.capturedAt = current.capturedAt = async () =>
                 "2025-04-05T06:07:08.901Z";
             else (delete endpoint.capturedAt, delete current.capturedAt);
-            assert.deepEqual(
-              await api.buildEndpoint(endpoint.name),
-              await oldAPI.buildEndpoint(endpoint.name),
-              endpoint.name,
-            );
+            const actual = await api.buildEndpoint(endpoint.name);
+            const previous = await oldAPI.buildEndpoint(endpoint.name);
+            if (endpoint.name === "observation-coverage") {
+              assert.equal(previous.description, "Explicit country-window and consolidated-group coverage, including producer-null and uncollected states, linked to exact observations and source rights in the same edition.");
+              assert.equal(actual.description, "Explicit country-window, consolidated-group and selected humanitarian plan-cluster coverage, including source-null, source-empty and uncollected states, linked to exact observations and source rights in the same edition.");
+              assert.deepEqual(actual, { ...previous, description: actual.description }, endpoint.name);
+            } else assert.deepEqual(actual, previous, endpoint.name);
           }
         }
       } finally {
@@ -193,7 +236,7 @@ try {
     },
   );
   await check(
-    "no-data A omits new endpoints and returns empty404 history without Git/network/clock",
+    "no-Disaster/no-Education synthetic root omits optional endpoints and returns empty404 history offline",
     async () => {
       process.chdir(emptyRoot);
       const current = await bundle("src/lib/api.ts"),
@@ -202,12 +245,24 @@ try {
         index = await bundle("src/pages/api/v1/index.json.ts");
       guardOffline();
       try {
-        assert.equal((await current.availableEndpoints()).length, 36);
-        assert.equal((await names.getStaticPaths()).length, 36);
+        const available = await current.availableEndpoints();
+        assert.equal(available.length, 36);
+        assert.ok(!available.some((e) => e.name === "humanitarian-plan-cluster"));
+        const education = current.ENDPOINTS.find((e) => e.name === "humanitarian-plan-cluster");
+        assert.ok(education);
+        assert.equal(await education.available(), false);
+        const paths = await names.getStaticPaths();
+        assert.equal(paths.length, 36);
+        assert.ok(!paths.some((p) => p.params.name === "humanitarian-plan-cluster"));
         const body = await (
           await index.GET({ site: new URL("https://example.org/") })
         ).json();
         assert.equal(body.endpoints.length, 36);
+        assert.ok(!body.endpoints.some((e) => e.name === "humanitarian-plan-cluster"));
+        await assert.rejects(
+          () => current.buildEndpoint("humanitarian-plan-cluster"),
+          /no committed/,
+        );
         const r = history.GET();
         assert.equal(r.status, 404);
         assert.equal(await r.text(), "");
@@ -281,12 +336,16 @@ try {
     "actual new API wrappers have exactly4 fields and retain captured instants/data arrays",
     async () => {
       process.chdir(realRoot);
-      // All optional loaders see this same synthetic root, which has no funding capture.
+      // All optional loaders see this same synthetic root: its observations
+      // are a fictional predecessor, with no funding or Education capture.
       const current = await bundle("src/lib/api.ts");
       guardOffline();
       try {
         const endpoints = await current.availableEndpoints();
         assert.equal(endpoints.length, 38);
+        assert.ok(!endpoints.some((e) => e.name === "humanitarian-plan-cluster"));
+        assert.equal(await current.ENDPOINTS.find((e) => e.name === "humanitarian-plan-cluster").available(), false);
+        await assert.rejects(() => current.buildEndpoint("humanitarian-plan-cluster"), /no committed/);
         for (const name of [
           "disaster-incidents",
           "disaster-incident-coverage",
