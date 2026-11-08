@@ -108,23 +108,33 @@ export function makeContactReconciliationReport(input) {
     operation: r.input.decision.operation, review: r, reverses: null, changes: mergeChanges(r, v.recordedAtExact) };
   return sealed(body);
 }
-export function planContactReconciliationReversal(input) {
-  const v = own(input); exact(v, ["original", "current", "reportId", "recordedAtExact"]);
-  const original = checkedReport(v.original, false); need(original.operation === "merge", "contact_report_reverse");
-  exact(v.current, ["pair", "organizations", "references"]); id(v.reportId); stamp(v.recordedAtExact);
-  need(Array.isArray(v.current.pair) && v.current.pair.length === 2);
-  for (const row of v.current.pair) { need(row && typeof row === "object" && !Array.isArray(row)); id(row.id); }
-  const byId = new Map(v.current.pair.map(row => [row.id, row])); need(byId.size === 2);
+function checkedInverse(originalValue, current) {
+  const original = checkedReport(originalValue, false); need(original.operation === "merge", "contact_report_reverse");
+  exact(current, ["pair", "organizations", "references"]);
+  need(Array.isArray(current.pair) && current.pair.length === 2);
+  for (const row of current.pair) { need(row && typeof row === "object" && !Array.isArray(row)); id(row.id); }
+  const byId = new Map(current.pair.map(row => [row.id, row])); need(byId.size === 2);
   for (const change of original.changes) need(equal(byId.get(change.after.id), change.after), "contact_report_stale", 409);
   // Reuse the old planner only to admit/canonicalize projected inventory. The
   // pair here is historical validation data, never a synthetic SQL/current row.
   let inventory;
-  try { inventory = planContactReconciliation({ ...original.review.input, organizations: v.current.organizations, references: v.current.references }); }
+  try { inventory = planContactReconciliation({ ...original.review.input, organizations: current.organizations, references: current.references }); }
   catch { throw new ContactReconciliationReportError("contact_report_context"); }
   need(equal(inventory.organizations, original.review.plan.organizations) && equal(inventory.references, original.review.plan.references), "contact_report_stale", 409);
+  return { original, changes: inverseChanges(original) };
+}
+/** Data-only inverse review. No new report ID, clock, session or authority is minted. */
+export function planContactReconciliationInverseReview(input) {
+  const v = own(input); exact(v, ["original", "current"]);
+  const { original, changes } = checkedInverse(v.original, v.current);
+  return freeze({ operation: "reverse", originalReportId: original.reportId, originalChecksum: original.sha256, changes });
+}
+export function planContactReconciliationReversal(input) {
+  const v = own(input); exact(v, ["original", "current", "reportId", "recordedAtExact"]);
+  const { original, changes } = checkedInverse(v.original, v.current); id(v.reportId); stamp(v.recordedAtExact);
   return sealed({ format: CONTACT_REPORT_FORMAT, version: 1, method: CONTACT_REPORT_METHOD,
     originOrgId: original.originOrgId, reportId: v.reportId, recordedAtExact: v.recordedAtExact,
-    operation: "reverse", review: null, reverses: original, changes: inverseChanges(original) });
+    operation: "reverse", review: null, reverses: original, changes });
 }
 
 function plain(v) { return !!v && typeof v === "object" && !isProxy(v) && !Array.isArray(v) && [Object.prototype, null].includes(Object.getPrototypeOf(v)); }

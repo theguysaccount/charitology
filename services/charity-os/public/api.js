@@ -464,3 +464,17 @@ export function fieldResponsesAPI(org) {
     historyDetail: (id,options) => request(`${base}/history/${part(id)}`,options),
   });
 }
+
+export function contactReconciliationAPI(org) {
+  const base = `${orgPath(org)}/contact-reconciliation`;
+  const post = (suffix, body, options) => request(`${base}/${suffix}`, { ...options, method: 'POST', body });
+  return Object.freeze({
+    contacts: (cursor, options) => api.records(org, 'contacts', cursor, options),
+    inspect: (body, options) => post('inspect', body, options),
+    preview: (body, options) => post('preview', body, options),
+    reversePreview: (body, options) => post('reverse-preview', body, options),
+    commit: (body, options) => post('commit', body, options),
+    history: ({ after, limit }, options) => request(`${base}/history?limit=${part(limit)}${after ? `&after=${part(after)}` : ''}`, options),
+    historyDetail: (id, options) => request(`${base}/history/${part(id)}`, options),
+  });
+}

@@ -35,6 +35,14 @@ export function noteParticipationReceiptReplay(c, org) {
   const transaction = transactionAudits.get(c);
   if (transaction?.orgId === org) transaction.receiptReplay = true;
 }
+// CRM-only call-site contract: fresh authorization and exact accepted receipt,
+// immediately before its early return, with no prior domain writes. This is
+// not a SQL write detector. Tracked actions before/after always stay ordinary.
+export function noteContactReconciliationReceiptReplay(c, org) {
+  const transaction = transactionAudits.get(c);
+  if (transaction?.orgId === org && transaction.actions.size === 0)
+    transaction.receiptReplay = true;
+}
 export function database(url, { schema } = {}) {
   if (schema && !/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("Invalid schema.");
@@ -76,7 +84,7 @@ export function database(url, { schema } = {}) {
         if (!readOnly && orgId && (state.locked || state.actions.size)) {
           const present = (
             await c.query(
-              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field",
+              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm",
               [orgId],
             )
           ).rows[0];
@@ -115,7 +123,7 @@ export function database(url, { schema } = {}) {
             }
           }
           if (!present.groups && (
-            (present.present || present.participation || present.incubator || present.checkins || present.field) &&
+            (present.present || present.participation || present.incubator || present.checkins || present.field || present.crm) &&
             ordinary
           )) {
             const { checkWorkspaceExportCapacity } = await import(
@@ -138,7 +146,7 @@ export function database(url, { schema } = {}) {
             const { checkCheckInSafetyCapacity } = await import("./participant-check-in-capacity.mjs");
             await checkCheckInSafetyCapacity(c, orgId);
           }
-          if ((present.incubator || present.checkins || present.field) && !ordinary && !present.groups) {
+          if ((present.incubator || present.checkins || present.field || present.crm) && !ordinary && !present.groups) {
             const { checkActualWorkspaceBackupCapacity } = await import(
               "./workspace-backup.mjs"
             );

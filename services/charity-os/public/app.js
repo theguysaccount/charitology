@@ -5,6 +5,7 @@ import {
   setCsrfToken,
   request as apiRequest,
   fieldResponsesAPI,
+  contactReconciliationAPI,
 } from "./api.js";
 import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
@@ -12,6 +13,7 @@ import { createGrantReportWorkspace } from "./grant-reports.js";
 import { createLearningWorkspace } from "./learning.js";
 import { createIncubatorBridgeWorkspace } from "./incubator-bridge.js";
 import { createFieldResponsesWorkspace, canUseFieldResponses } from "./field-responses.js";
+import { createContactReconciliationWorkspace, canUseContactReconciliation } from "./contact-reconciliation.js";
 import { LEARNING_ROLES, learningRecordFragment, learningRecordMatches, resolveLearningRecordRoute, checkedLearningReport } from "./learning-model.js";
 import {
   createDirectoryResourceWorkspace,
@@ -70,6 +72,7 @@ const state = {
   learningWorkspace: null,
   incubatorWorkspace: null,
   fieldResponsesWorkspace: null,
+  contactReconciliationWorkspace: null,
   participationWorkspace: null,
   learningRecordAbort: null,
   reportReadAbort: null,
@@ -321,6 +324,8 @@ function safeRoute() {
 }
 function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
+  if (state.contactReconciliationWorkspace) { state.contactReconciliationWorkspace.dispose(); state.pageDirty = false; }
+  state.contactReconciliationWorkspace = null;
   state.participationWorkspace?.dispose();
   state.participationWorkspace = null;
   if (state.fieldResponsesWorkspace) { state.fieldResponsesWorkspace.dispose(); state.pageDirty = false; }
@@ -394,6 +399,12 @@ async function discardEditor() {
   return true;
 }
 async function discardPage({ signingOut = false } = {}) {
+  if (state.contactReconciliationWorkspace?.hasPendingCommand()) {
+    if (!signingOut) { toast("Resolve the retained contact decision before leaving this workspace."); return false; }
+    if (!(await confirmAction("Sign out with an unresolved contact decision?", "The decision may already be saved. Signing out discards this page’s in-memory exact Retry. Nothing is resent automatically. Read the saved decision history after signing in again.", "Sign out and discard Retry"))) return false;
+    state.pageDirty = false;
+    return true;
+  }
   if (state.fieldResponsesWorkspace?.hasPendingCommand()) {
     if (!signingOut) { toast("Resolve the retained aggregate import command before leaving this workspace."); return false; }
     if (!(await confirmAction("Sign out with an unresolved aggregate import?", "The command may already be saved. Signing out discards this page’s exact in-memory Retry. Nothing is resent automatically; reconcile authorized import history after signing in again.", "Sign out and discard Retry"))) return false;
@@ -415,7 +426,8 @@ async function discardPage({ signingOut = false } = {}) {
     !state.taskRecurrencePanel?.isDirty() &&
     !state.directoryResourceWorkspace?.isDirty() &&
     !state.incubatorWorkspace?.isDirty() &&
-    !state.fieldResponsesWorkspace?.isDirty()
+    !state.fieldResponsesWorkspace?.isDirty() &&
+    !state.contactReconciliationWorkspace?.isDirty()
   ) return true;
   if (
     !(await confirmAction(
@@ -426,6 +438,7 @@ async function discardPage({ signingOut = false } = {}) {
   )
     return false;
   if (state.fieldResponsesWorkspace?.hasPendingCommand()) { toast("Resolve the retained aggregate import command before leaving this workspace."); return false; }
+  if (state.contactReconciliationWorkspace?.hasPendingCommand()) { toast("Resolve the retained contact decision before leaving this workspace."); return false; }
   state.pageDirty = false;
   return true;
 }
@@ -433,6 +446,7 @@ function configureEditor(eyebrow, title, saveLabel, fields, onSave) {
   state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
+  state.contactReconciliationWorkspace?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.dirty = false;
   $("#editor-eyebrow").textContent = eyebrow;
@@ -563,6 +577,9 @@ function canUseIncubator() {
     can(moduleById("programs"),"read",role()) && can(moduleById("projects"),"read",role()) && can(moduleById("projects"),"write",role());
 }
 function renderNav() {
+  let contactLink = document.querySelector('[data-nav="contact-reconciliation"]');
+  if (!contactLink) { contactLink = link("Contact reconciliation", "#contact-reconciliation", { "data-nav": "contact-reconciliation" }); document.querySelector(".secondary-nav").prepend(contactLink); }
+  contactLink.hidden = !canUseContactReconciliation(role(), moduleById("contacts"));
   let fieldLink = document.querySelector('[data-nav="field-responses"]');
   if (!fieldLink) { fieldLink = link("Aggregate field responses", "#field-responses", { "data-nav": "field-responses" }); document.querySelector(".secondary-nav").prepend(fieldLink); }
   fieldLink.hidden = !canUseFieldResponses(role(),moduleById("outcomes"));
@@ -709,6 +726,7 @@ async function route() {
   state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
+  state.contactReconciliationWorkspace?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
   state.learningRecordAbort?.abort();
@@ -758,6 +776,15 @@ async function route() {
       const [, module, id] = state.route.split("/");
       if (id) await renderDetail(module, id, current);
       else await renderModule(module, current);
+    } else if (state.route === "contact-reconciliation") {
+      const org = state.org, session = state.session, currentRole = role(), contactsModule = moduleById("contacts");
+      if (!canUseContactReconciliation(currentRole, contactsModule)) throw new ApiError("Contact reconciliation requires current unscoped owner or administrator Contacts read/write access.", 403);
+      const view = createContactReconciliationWorkspace({ org, actorId: session.user.id, role: currentRole, contactsModule, api: contactReconciliationAPI(org),
+        isCurrent: () => current === state.epoch && org === state.org && session === state.session && currentRole === role(),
+        onDirty: value => { if (current === state.epoch) state.pageDirty = value; },
+        onChanged: () => { if (current === state.epoch) { invalidateModules(org, ["contacts"]); renderNav(); } },
+      });
+      if (current === state.epoch) { setContent(view); state.contactReconciliationWorkspace = view; } else view.dispose();
     } else if (state.route === "field-responses") {
       const org = state.org, session = state.session, currentRole = role(), outcomesModule = moduleById("outcomes");
       if (!canUseFieldResponses(currentRole,outcomesModule)) throw new ApiError("Unapproved aggregate imports require current staff Outcomes read access.",403);
@@ -5501,6 +5528,7 @@ $("#org-switch").addEventListener("change", async (event) => {
   state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
+  state.contactReconciliationWorkspace?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
   state.learningRecordAbort?.abort();
@@ -5524,6 +5552,7 @@ $("#new-org").addEventListener("click", async () => {
   state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
+  state.contactReconciliationWorkspace?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
   state.learningRecordAbort?.abort();
@@ -5553,6 +5582,7 @@ window.addEventListener("hashchange", async () => {
   state.fieldResponsesWorkspace?.invalidate();
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
+  state.contactReconciliationWorkspace?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   if ((state.editor && !(await discardEditor())) || !(await discardPage())) {
     history.replaceState(null, "", `#${state.route}`);
@@ -5564,7 +5594,7 @@ window.addEventListener("hashchange", async () => {
 window.addEventListener("beforeunload", (event) => {
   if (
     state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty() ||
-    state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty() || state.fieldResponsesWorkspace?.isDirty()
+    state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty() || state.fieldResponsesWorkspace?.isDirty() || state.contactReconciliationWorkspace?.isDirty()
   ) {
     event.preventDefault();
     event.returnValue = "";

@@ -66,6 +66,12 @@ import { readBackupBody } from "./backup-json.mjs";
 import { restoredParticipationGroups, restoreParticipationGroups, participationGroupHistoryCount } from "./participation-group-recovery.mjs";
 import { FieldResponseError } from "./field-response-model.mjs";
 import { fieldResponseRoutes } from "./field-response-routes.mjs";
+import { contactReconciliationRoutes } from "./contact-reconciliation-routes.mjs";
+import { ContactReconciliationError } from "./contact-reconciliation-model.mjs";
+import { ContactContextError, currentContactReconciliationMember } from "./contact-reconciliation-context.mjs";
+import { ContactReconciliationReportError } from "./contact-reconciliation-report.mjs";
+import { ContactReconciliationPreviewError } from "./contact-reconciliation-preview.mjs";
+import { restoredContactReconciliationReports, restoreContactReconciliationReports, contactReconciliationRestoreSummary } from "./contact-reconciliation-recovery.mjs";
 import { inspectFieldResponseRecovery, restoreFieldResponseReports, fieldResponseRestoreSummary } from "./field-response-recovery.mjs";
 import { ParticipationGroupError } from "./participation-group-model.mjs";
 import { ParticipationGroupAllocationError } from "./participation-group-allocation.mjs";
@@ -366,6 +372,8 @@ export function createHandler({
       if (incubatorResponse) return incubatorResponse;
       const fieldResponse = await fieldResponseRoutes({ request, url, db, session });
       if (fieldResponse) return fieldResponse;
+      const contactResponse = await contactReconciliationRoutes({ request, url, db, session });
+      if (contactResponse) return contactResponse;
       if (isParticipationGroupPath(path)) {
         if (method === "HEAD") fail(405, "group_method", "Use GET to read a group view.");
         if (method === "GET" && (request.body !== null || request.headers.has("transfer-encoding") ||
@@ -745,6 +753,8 @@ export function createHandler({
             const participantCheckins = restoredParticipantCheckins(backup.participantCheckins);
             const participationGroups = restoredParticipationGroups(backup.participationGroups);
             const fieldResponses = inspectFieldResponseRecovery(backup);
+            const contactReconciliation = restoredContactReconciliationReports(backup);
+            if (contactReconciliation.present) await currentContactReconciliationMember(c, { org, session }, { readOnly: false });
             const issues = [];
             const existingRecurrence = Number(
               (
@@ -775,14 +785,14 @@ export function createHandler({
                 ).rows[0].count,
               ) ||
               existingIntake ||
-              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org) || await incubatorStateCount(c, org) || await checkInStateCount(c, org) || await participationGroupHistoryCount(c, org) || await fieldResponseStateCount(c, org)
+              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org) || await incubatorStateCount(c, org) || await checkInStateCount(c, org) || await participationGroupHistoryCount(c, org) || await fieldResponseStateCount(c, org) || await contactReconciliationStateCount(c, org)
             )
               issues.push({
                 field: "organization",
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
-            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || backup.participation?.version === 3))
+            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || backup.participation?.version === 3))
               await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
@@ -818,6 +828,7 @@ export function createHandler({
                 ...(participantCheckins === null ? {} : { participantCheckinsRecovered: participantCheckins.length }),
                 ...(participationGroups === null ? {} : { participationGroupsRecovered: participationGroups.groups.length }),
                 ...fieldResponseRestoreSummary(fieldResponses),
+              ...contactReconciliationRestoreSummary(contactReconciliation),
               ...(incubatorBridge ? { incubatorSourcesRecovered: incubatorBridge.sources.length, incubatorEventsRetained: incubatorBridge.events.length } : {}),
                 ...(migration ? { migration: migration.summary } : {}),
               },
@@ -826,6 +837,7 @@ export function createHandler({
                 ...(migration?.warnings || []),
                 ...(participantCheckins === null ? [] : [{ field: "participantCheckins", message: "Arrival assertions restore as unverified inactive history, without accounts, receipts, live consent or attendance authority." }]),
                 ...(fieldResponses.present ? [{ field: "reports", message: "Aggregate import manifests restore as historical data. They do not restore accepted commands, approval, credentials or current definition authority." }] : []),
+                ...(contactReconciliation.present ? [{ field: "reports", message: "Contact decisions restore as immutable historical data. Earlier commands, account relationships, consent and undo authority are not restored. Source trash remains in the retained source archive." }] : []),
                 ...(participationGroups === null ? [] : [{ field: "participationGroups", message: "Group decisions restore as inactive history. They restore no live places, consent, coordinator authority or command keys." }]),
                 ...participation.warnings,
                 ...(incubatorBridge ? [{ field: "incubatorBridge", message: "Incubator selections and copy history restore as inactive historical material. No session, command, approval or live binding authority is restored. Explicit adoption creates two fresh editable planned records." }] : []),
@@ -897,6 +909,10 @@ export function createHandler({
             const participantCheckins = restoredParticipantCheckins(p.payload.participantCheckins);
             const participationGroups = restoredParticipationGroups(p.payload.participationGroups);
             const fieldResponses = inspectFieldResponseRecovery(p.payload);
+            const contactReconciliation = restoredContactReconciliationReports(p.payload);
+            const contactRecoveryMember = contactReconciliation.present
+              ? (await currentContactReconciliationMember(c, { org, session }, { readOnly: false })).member : null;
+            if (await contactReconciliationStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without contact reconciliation history.");
             if (await fieldResponseStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without aggregate import history.");
             if (await participationGroupHistoryCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without group history or command receipts.");
             if (await checkInStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without self-report history.");
@@ -952,7 +968,7 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
-            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || p.payload.participation?.version === 3)
+            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || p.payload.participation?.version === 3)
               await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -1021,9 +1037,10 @@ export function createHandler({
             await restoreIncubatorBridge(c, org, p.payload.incubatorBridge, { records: p.payload.records, trash: p.payload.trash || [] });
             await restoreParticipantCheckins(c, org, p.payload.participantCheckins);
             await restoreParticipationGroups(c, org, p.payload.participationGroups);
-            if (fieldResponses.present) {
+            if (fieldResponses.present || contactReconciliation.present) {
               const createdAtExact = (await c.query(`SELECT to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at`)).rows[0].created_at;
-              await restoreFieldResponseReports(c, p.payload, { orgId: org, actorId: user, createdAtExact });
+              if (fieldResponses.present) await restoreFieldResponseReports(c, p.payload, { orgId: org, actorId: user, createdAtExact });
+              if (contactReconciliation.present) await restoreContactReconciliationReports(c, p.payload, { orgId: org, member: contactRecoveryMember, createdAtExact });
             }
             await checkLearningActiveRecords(c, org);
             await audit(c, org, user, "backup.restored", null, {
@@ -1039,6 +1056,7 @@ export function createHandler({
               ...(participantCheckins === null ? {} : { participantCheckinsRecovered: participantCheckins.length }),
               ...(participationGroups === null ? {} : { participationGroupsRecovered: participationGroups.groups.length }),
               ...fieldResponseRestoreSummary(fieldResponses),
+              ...contactReconciliationRestoreSummary(contactReconciliation),
               ...(incubatorBridge ? { incubatorSourcesRecovered: incubatorBridge.sources.length, incubatorEventsRetained: incubatorBridge.events.length } : {}),
               intakePublicationsClosed: intake.publications.length,
               intakeRequests: intake.submissions.length,
@@ -1636,7 +1654,7 @@ export function createHandler({
           },
           422,
         );
-      if (error instanceof FieldResponseError || error instanceof ParticipationGroupError || error instanceof ParticipationGroupAllocationError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
+      if (error instanceof ContactReconciliationError || error instanceof ContactContextError || error instanceof ContactReconciliationReportError || error instanceof ContactReconciliationPreviewError || error instanceof FieldResponseError || error instanceof ParticipationGroupError || error instanceof ParticipationGroupAllocationError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
         return json(
           {
             ok: false,
@@ -1673,6 +1691,9 @@ export function createHandler({
 }
 async function learningStateCount(c, org) {
   return Number((await c.query("SELECT (SELECT count(*) FROM os_learning_history WHERE org_id=$1)+(SELECT count(*) FROM os_learning_previews WHERE org_id=$1)+(SELECT count(*) FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS count", [org])).rows[0].count);
+}
+async function contactReconciliationStateCount(c, org) {
+  return Number((await c.query("SELECT count(*) AS count FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation'", [org])).rows[0].count);
 }
 async function fieldResponseStateCount(c, org) {
   return Number((await c.query("SELECT count(*) AS count FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import'", [org])).rows[0].count);

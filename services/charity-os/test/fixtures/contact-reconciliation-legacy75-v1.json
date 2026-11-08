@@ -1,0 +1,326 @@
+{
+  "format": "committed75-crm-absence-golden",
+  "version": 1,
+  "sourceCommit": "75dd76ad27d06b64aa957faf9e83554f53b6ca76",
+  "absentValidated": [],
+  "mixedInput": {
+    "format": "charitology-os",
+    "version": 1,
+    "schemaVersion": 1,
+    "organization": {
+      "name": "Fictional source",
+      "currency": "USD",
+      "timeZone": "UTC"
+    },
+    "createdAt": "2026-11-08T18:43:13.456Z",
+    "records": [],
+    "reports": [
+      {
+        "org_id": "fictional_origin",
+        "id": "field_report",
+        "created_by": "fictional_actor",
+        "title": "Aggregate visits import: fd3a3e9bb506",
+        "checksum": "e51853f05cc0416d204dd591c8b440a56c7b671c9f20635e3cacdd6f5b99e7d3",
+        "payload": {
+          "created": [
+            {
+              "dataSha256": "dbe80c64f03f31d5aa76c2eba00e8761751740f2b399663232a5c133a6955702",
+              "moduleId": "outcomes",
+              "recordId": "observation",
+              "responseId": "row",
+              "revision": 1,
+              "status": "draft"
+            }
+          ],
+          "file": {
+            "bytes": 292,
+            "formId": "aggregate-service-visits-v1",
+            "format": "charitology-aggregate-service-visits",
+            "schemaSha256": "edaf00407156d99ba2e3be882a911d426f249ebe10b4a8a3242fad855e5a496c",
+            "schemaVersion": 1,
+            "sha256": "fd3a3e9bb506153da994e95b7ace7667b18ce269654ca6da7e1b084218f39b9d",
+            "sourceRows": 1,
+            "version": 1
+          },
+          "format": "charitology-field-response-import",
+          "integrationId": "csv",
+          "mapping": {
+            "adapterVersion": "aggregate-service-visits-v1",
+            "externalIdentity": "formId:responseId",
+            "fields": {
+              "denominator": "data.denominator",
+              "endDate": "data.endDate",
+              "excluded": "manifest.excluded",
+              "exclusionReason": "manifest.exclusionReason",
+              "geography": "data.geography",
+              "responseId": "source.externalId",
+              "startDate": "data.startDate",
+              "visitCount": "data.value"
+            },
+            "form": {
+              "formId": "aggregate-service-visits-v1",
+              "format": "charitology-aggregate-service-visits",
+              "schemaSha256": "edaf00407156d99ba2e3be882a911d426f249ebe10b4a8a3242fad855e5a496c",
+              "schemaVersion": 1,
+              "version": 1
+            },
+            "format": "charitology-field-response-mapping",
+            "indicator": {
+              "dataSha256": "f0bade503277f99c965dd39766934596457c6f0f5d27b963dbd5b39e6fd4fc43",
+              "recordId": "indicator",
+              "revision": 1
+            },
+            "orgId": "fictional_origin",
+            "program": {
+              "dataSha256": "944e7c258d419d10f51754d44213d444bed546ed0184fb1829048aecec4a9bce",
+              "recordId": "program",
+              "revision": 1
+            },
+            "sha256": "0e960342dcd956cb66cb0787a6949805d48b1405b807752e4523d89ffa5bec09",
+            "sourceUnit": "visits",
+            "version": 1
+          },
+          "method": "aggregate-service-visits-v1",
+          "originOrgId": "fictional_origin",
+          "rows": [
+            {
+              "canonicalSha256": "2f975762749de1ad236c7b7097f18c1de2dc65ad7cbbe1b49650e5b9f660a3e5",
+              "disposition": "created",
+              "index": 0,
+              "row": {
+                "denominator": null,
+                "endDate": "2026-01-31",
+                "excluded": false,
+                "exclusionReason": null,
+                "geography": null,
+                "responseId": "row",
+                "startDate": "2026-01-01",
+                "visitCount": 0
+              }
+            }
+          ],
+          "sha256": "e51853f05cc0416d204dd591c8b440a56c7b671c9f20635e3cacdd6f5b99e7d3",
+          "summary": {
+            "createdRows": 1,
+            "excludedRows": 0,
+            "selectedRows": 1,
+            "sourceRows": 1,
+            "unknownDenominatorRows": 1,
+            "unknownValueRows": 0,
+            "unselectedRows": 0
+          },
+          "version": 1
+        },
+        "created_at": "2026-11-08T12:34:56.123456Z"
+      }
+    ],
+    "learningBridge": {
+      "format": "charitology-learning-backup",
+      "version": 1,
+      "method": "learning-review-v1",
+      "sources": [],
+      "approvedEvidence": [],
+      "events": [],
+      "reports": []
+    },
+    "participationGroups": {
+      "format": "charitology-participation-groups",
+      "version": 1,
+      "method": "participation-group-v1",
+      "groups": [
+        {
+          "version": 1,
+          "id": "orphan_group",
+          "originOrgId": "fictional_origin",
+          "moduleId": "volunteers",
+          "targetId": "historical_target",
+          "rosterIds": [
+            "historical_a",
+            "historical_b"
+          ],
+          "coordinatorIntakeId": null,
+          "createdAtExact": "2026-11-08T12:34:56.123456Z",
+          "decisions": [
+            {
+              "operation": "create",
+              "acceptedAtExact": "2026-11-08T12:34:56.123456Z",
+              "result": {
+                "groupId": "orphan_group",
+                "groupRevision": 1,
+                "state": "draft",
+                "target": {
+                  "targetId": "historical_target",
+                  "moduleId": "volunteers"
+                },
+                "rosterIds": [
+                  "historical_a",
+                  "historical_b"
+                ],
+                "coordinatorIntakeId": null
+              }
+            }
+          ]
+        }
+      ],
+      "checksum": "1eca884f694da78eaab48944594f9f4275f2f3981fa5eb792ebc75a57a195bab"
+    },
+    "checksum": "3fb62606d28c538b76d72fa56ae032f286242fd29ede2b8a5a3931c96947c8b1"
+  },
+  "mixedResult": {
+    "logicalBytes": 4837,
+    "requiredLogicalBytes": 5837,
+    "backupBytes": 6922,
+    "auditCheckReserveBytes": 1000,
+    "structuredRecordBytes": 0,
+    "categories": {
+      "os_participation_groups": {
+        "count": 1,
+        "bytes": 936,
+        "rawBytes": 936
+      },
+      "os_participation_group_receipts": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_records": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_events": {
+        "count": 2,
+        "bytes": 1296,
+        "rawBytes": 1296
+      },
+      "os_integrations": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_publications": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_intake": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participation_targets": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participations": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participation_outbox": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_participation_delivery_policies": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_task_recurrence_series": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_task_recurrence_occurrences": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_resource_directory_history": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_learning_history": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_incubator_history": {
+        "count": 0,
+        "bytes": 0,
+        "rawBytes": 0
+      },
+      "os_reports": {
+        "count": 1,
+        "bytes": 2605,
+        "rawBytes": 2605
+      },
+      "os_files": {
+        "count": 0,
+        "bytes": 0
+      },
+      "targetBaseline": {
+        "count": 0,
+        "bytes": 0
+      }
+    },
+    "operational": {
+      "active": false,
+      "affectedParticipations": 0,
+      "sourceWireGrowthBytes": 0,
+      "sourceOutboxWireBytes": 2,
+      "sourceParticipationWireBytes": 2,
+      "destinationOutboxGrowthBytes": 0,
+      "destinationWireMetadataExtraBytes": 0
+    }
+  },
+  "operationalInput": {
+    "version": 2,
+    "participations": [
+      {
+        "id": "p",
+        "revision": 1
+      }
+    ],
+    "outbox": [
+      {
+        "id": "n",
+        "participationId": "p",
+        "intentKind": "snapshot",
+        "state": "paused",
+        "attempts": 0,
+        "attemptedAt": null,
+        "lastCheckedAt": null,
+        "providerEventAt": null
+      }
+    ]
+  },
+  "operationalResult": {
+    "active": true,
+    "affectedParticipationIds": [
+      "p"
+    ],
+    "outboxBounds": [
+      {
+        "id": "n",
+        "state": "suppressed",
+        "safeCode": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "attempts": 2147483647,
+        "attemptedAt": "2200-12-31T23:59:59.999Z",
+        "lastCheckedAt": "2200-12-31T23:59:59.999Z",
+        "providerEventAt": "+100000-12-31T23:59:59.999Z"
+      }
+    ],
+    "sourceOutboxWireBytes": 347,
+    "sourceParticipationWireBytes": 34,
+    "sourceOutboxWireGrowthBytes": 196,
+    "sourceParticipationWireGrowthBytes": 9,
+    "sourceWireGrowthBytes": 205
+  },
+  "fixedClock": "2026-11-08T12:00:00.000Z",
+  "assembledJSON": "{\"format\":\"charitology-os\",\"version\":1,\"schemaVersion\":1,\"organization\":{\"name\":\"Fictional source\",\"currency\":\"USD\",\"timeZone\":\"UTC\"},\"createdAt\":\"2026-11-08T12:00:00.000Z\",\"records\":[],\"comments\":[],\"events\":[],\"reports\":[{\"id\":\"legacy\",\"payload\":{\"old\":true}}],\"files\":[],\"trash\":[],\"trashFiles\":[],\"integrations\":[],\"intake\":{\"version\":1,\"publications\":[],\"submissions\":[]},\"participation\":{\"version\":2,\"targets\":[],\"participations\":[],\"outbox\":[]},\"delivery\":{\"version\":1,\"policy\":null},\"taskRecurrence\":{\"format\":\"charitology-os-task-recurrence\",\"version\":1,\"series\":[],\"occurrences\":[]},\"checksum\":\"91e523ac1dcff9aa568efbb59d96b472c98aebbee20d9dee678802a31317c7e6\"}",
+  "assembledHash": "28cbe754da760be1ba795f2a7f05f2e3f490109f9881fe56eda0bcf5ce2b9321"
+}
