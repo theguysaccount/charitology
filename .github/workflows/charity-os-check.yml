@@ -64,6 +64,8 @@ jobs:
           CREATE ROLE os_test_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS PASSWORD 'ci-app-only-password';
           REVOKE CREATE ON SCHEMA public FROM PUBLIC;
           GRANT CONNECT ON DATABASE charitology_os_ci TO os_test_app;
+          CREATE ROLE os_checkin_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-checkin-owner-only-password';
+          GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_checkin_ci_owner;
           SQL
       - name: Exercise real Postgres, Better Auth and tenant workflows
         # The fixture migrates a random temporary schema with the owner, grants
@@ -71,3 +73,7 @@ jobs:
         # uses synthetic recipients and a mocked mailer, and drops its schema.
         # Do not use npm run test:db: that local command loads private .env.local.
         run: node --test --test-concurrency=1 test-db/*.test.mjs
+      - name: Exercise participant check-in using the closed PG17 CI profile
+        env:
+          CHECKIN_TEST_PROFILE: github-pg17-v1
+        run: node --test --test-concurrency=1 test-db/participant-check-in.ci17.mjs

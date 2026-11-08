@@ -1,3 +1,5 @@
+import { requireCheckInCi17Profile } from "./participant-check-in-ci17-profile.mjs";
+import { applicationGrantsSql } from "../../lib/migration-grants.mjs";
 import { intakeSchema } from "../../lib/intake.mjs";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
@@ -38,8 +40,11 @@ const err = (code) => (e) => e.code === code;
 let serial = 0;
 const key = () => "fictional-intent-" + (++serial).toString().padStart(12, "0");
 
-export async function withIntervalFixture(run, { orgId, staffId } = {}) {
-  for (const value of [process.env.DATABASE_URL, process.env.OS_DATABASE_URL]) {
+export async function withIntervalFixture(run, { orgId, staffId, checkInCi17 } = {}) {
+  const ciProfile = checkInCi17 === undefined ? null : requireCheckInCi17Profile(checkInCi17);
+  const fixtureOwnerUrl = ciProfile ? ciProfile.ownerUrl : process.env.DATABASE_URL, fixtureRuntimeUrl = ciProfile ? ciProfile.runtimeUrl : process.env.OS_DATABASE_URL;
+  for (const value of [fixtureOwnerUrl, fixtureRuntimeUrl]) {
+    if (ciProfile) { ciProfile.checkUrl(value); continue; }
     const url = new URL(value);
     assert(
       process.env.CI === "true" || url.hostname === "127.0.0.1",
@@ -67,13 +72,14 @@ export async function withIntervalFixture(run, { orgId, staffId } = {}) {
       );
     }
   }
-  const schema = "os_interval_" + randomBytes(8).toString("hex"),
-    owner = database(process.env.DATABASE_URL);
+  const schema = (ciProfile ? ciProfile.schemaPrefix : "os_interval_") + randomBytes(8).toString("hex"),
+    owner = database(fixtureOwnerUrl);
   let migration,
     db,
     created = false,
-    driverFailure = false;
+    driverFailure = false, primaryError = null;
   const watchPool = (pool) => {
+    if (ciProfile) { ciProfile.watch(pool); return; }
     const seen = new WeakSet();
     const client = (value) => {
       if (!seen.has(value)) {
@@ -91,6 +97,7 @@ export async function withIntervalFixture(run, { orgId, staffId } = {}) {
   };
   watchPool(owner.pool);
   const localGuard = async () => {
+    if (ciProfile) { await ciProfile.assertTarget(); await ciProfile.assertRole(owner.pool, "owner"); return; }
     if (process.env.CI === "true") return;
     assert(
       process.env.OS_INTERVAL_EXPECTED_SYSTEM_ID &&
@@ -129,9 +136,10 @@ export async function withIntervalFixture(run, { orgId, staffId } = {}) {
   assert(/^[A-Za-z0-9_-]{1,100}$/.test(staff));
   try {
     await localGuard();
+    if (ciProfile) await ciProfile.beforeSchema(schema, owner.pool);
     await owner.pool.query(`CREATE SCHEMA ${quote(schema)}`);
     created = true;
-    migration = database(direct(process.env.DATABASE_URL), { schema });
+    migration = database(direct(fixtureOwnerUrl), { schema });
     watchPool(migration.pool);
     await migration.migrate();
     // Synthetic auth projection only; actual Better Auth sessions are covered
@@ -144,17 +152,19 @@ export async function withIntervalFixture(run, { orgId, staffId } = {}) {
       [ownSession.user.id, ownSession.user.email],
     );
     const appRole = decodeURIComponent(
-      new URL(process.env.OS_DATABASE_URL).username,
+      new URL(fixtureRuntimeUrl).username,
     );
     assert.notEqual(
       appRole,
-      decodeURIComponent(new URL(process.env.DATABASE_URL).username),
+      decodeURIComponent(new URL(fixtureOwnerUrl).username),
     );
-    await owner.pool.query(
+    if (ciProfile) await owner.pool.query(applicationGrantsSql(appRole, schema));
+    else await owner.pool.query(
       `GRANT USAGE ON SCHEMA ${quote(schema)} TO ${quote(appRole)}; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA ${quote(schema)} TO ${quote(appRole)}; GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA ${quote(schema)} TO ${quote(appRole)}`,
     );
-    db = database(direct(process.env.OS_DATABASE_URL), { schema });
+    db = database(direct(fixtureRuntimeUrl), { schema });
     watchPool(db.pool);
+    if (ciProfile) await ciProfile.assertRole(db.pool, "runtime");
     await db.tx(
       null,
       null,
@@ -166,12 +176,12 @@ export async function withIntervalFixture(run, { orgId, staffId } = {}) {
         ).rows[0];
         assert.equal(
           row.database,
-          new URL(process.env.OS_DATABASE_URL).pathname.slice(1),
+          new URL(fixtureRuntimeUrl).pathname.slice(1),
         );
         assert.equal(row.role, appRole);
         assert.equal(row.rolsuper, false);
         assert.equal(row.rolbypassrls, false);
-        if (process.env.CI !== "true") {
+        if (!ciProfile && process.env.CI !== "true") {
           assert.equal(row.host, "127.0.0.1");
           assert.equal(row.port, Number(process.env.OS_INTERVAL_EXPECTED_PORT));
           for (const k of [
@@ -571,7 +581,11 @@ export async function withIntervalFixture(run, { orgId, staffId } = {}) {
       key,
     });
     assert.equal(driverFailure, false, "The owned fixture connection failed.");
+  } catch (error) {
+    primaryError = error; throw error;
   } finally {
+    if (ciProfile) await ciProfile.cleanup({ db, migration, owner, schema, created, primaryError });
+    else {
     if (db) await db.close();
     if (migration) await migration.close();
     try {
@@ -583,6 +597,7 @@ export async function withIntervalFixture(run, { orgId, staffId } = {}) {
       }
     } finally {
       await owner.close();
+    }
     }
   }
 }
