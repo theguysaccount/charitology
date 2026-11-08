@@ -17,6 +17,7 @@ import { END_GROWTH_RESERVE_BYTES } from './task-recurrence.mjs';
 import { participationQuota, PARTICIPATION_LIMITS } from './participation.mjs';
 import { DELIVERY_CONSENT_VERSION } from './participation-delivery.mjs';
 import { participationTimestampParameter } from './participation-timestamp.mjs';
+import { restoredIncubatorBridge, measureIncubatorBackup, exportIncubatorBridge } from './incubator-bridge-backup.mjs';
 
 export const LEARNING_RESTORE_CAPACITY = Object.freeze({ logicalBytes: 60 * 1024 * 1024, backupBytes: 64 * 1024 * 1024,
   auditCheckReserveBytes: 1000, worstOrgId: 'o'.repeat(100), worstActorId: 'u'.repeat(100),
@@ -96,6 +97,7 @@ const columns = Object.freeze(Object.fromEntries(Object.entries({
   os_task_recurrence_occurrences: 'org_id series_id sequence source_record_id generated_record_id accepted_command_hash packet',
   os_resource_directory_history: 'org_id id row_kind capture_id binding_id sequence resource_id catalog_kind listing_id origin_mode command_hash request_hash actor_binding_hash payload budget_bytes created_at',
   os_learning_history: 'org_id id row_kind origin_mode origin_org_id binding_id sequence source_version program_id payload receipt budget_bytes created_at',
+  os_incubator_history: 'org_id id row_kind origin_mode origin_org_id binding_id sequence source_version program_id payload receipt budget_bytes created_at',
 }).map(([table, value]) => [table, Object.freeze(value.split(' '))])));
 const badSchema = () => fail(422, 'learning_capacity_schema', 'The restore capacity projection must be updated for this database schema before accepting learning changes.');
 const over = () => fail(422, 'learning_restore_capacity', 'This complete workspace cannot fit a restored copy, including ordinary restore history, within the existing 60 MiB storage and 64 MiB backup limits.');
@@ -137,7 +139,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const records = validateBackup(backup, orgId, actorId), context = { records: backup.records, trash: backup.trash || [], legacyReports: backup.reports || [] };
   const intake = restoredIntake(backup), participation = restoredParticipation(backup), delivery = restoredDelivery(backup),
     recurrence = restoredTaskRecurrence(backup.taskRecurrence, context), directory = restoredDirectoryResources(backup.directoryResources, context),
-    learning = restoredLearningBridge(backup.learningBridge, context), integrations = restoredIntegrations(backup);
+    learning = restoredLearningBridge(backup.learningBridge, context), incubator = restoredIncubatorBridge(backup.incubatorBridge, context), integrations = restoredIntegrations(backup);
   const operational = operationalGrowth(backup.participation), operationalBounds = new Map(operational.outboxBounds.map(value => [value.id, value]));
   if (operational.active && (operational.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || operational.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes)) operationalFailure();
   await schemaCheck(c);
@@ -223,11 +225,17 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   for (const value of learned?.rows ?? []) add('os_learning_history', { org_id: orgId, id: value.id, row_kind: value.rowKind,
     origin_mode: 'recovered', origin_org_id: value.originOrgId, binding_id: value.bindingId, sequence: value.sequence,
     source_version: value.sourceVersion, program_id: value.programId, payload: value.payload, budget_bytes: value.budgetBytes, created_at: C.timestamp });
+  const copied = incubator ? await measureIncubatorBackup(c, incubator, context) : null;
+  for (const value of copied?.rows ?? []) add('os_incubator_history', { org_id: orgId, id: value.id, row_kind: value.rowKind,
+    origin_mode: 'recovered', origin_org_id: value.originOrgId, binding_id: value.bindingId, sequence: value.sequence,
+    source_version: value.sourceVersion, program_id: value.programId, payload: value.payload, receipt: value.receipt,
+    budget_bytes: value.budgetBytes, created_at: C.timestamp });
   audit('backup.restored', null, { count: records.length, checksum: backup.checksum, sourceArchiveId: C.archiveId,
     // Projection only: the largest possible JS array length fixes count width across optional export audits and re-restores.
     sourceHistoryCount: 4294967295, sourceCommentCount: backup.comments?.length || 0, sourceReportCount: backup.reports?.length || 0,
     learningSourcesRecovered: learning?.sources.length || 0, learningEventsRetained: learning?.events.length || 0,
     learningReportsRecovered: learning?.reports.length || 0, intakePublicationsClosed: intake.publications.length, intakeRequests: intake.submissions.length,
+    ...(incubator ? { incubatorSourcesRecovered: incubator.sources.length, incubatorEventsRetained: incubator.events.length } : {}),
     participationTargetsRecovered: participation.targets.length, participationsRecovered: participation.participations.length,
     taskRecurrenceSeriesRecovered: recurrence.series.length, taskRecurrenceOccurrencesRetained: recurrence.occurrences.length });
   tables.os_events.forEach((value, index, all) => { value.id = (BigInt(C.auditId) - BigInt(all.length - 1 - index)).toString(); });
@@ -236,7 +244,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   for (const [table, values] of Object.entries(tables)) {
     sizes[table] = await measure(c, table, values, table === 'os_participations' && legacyRecoveredParticipation(backup, participation));
     const charges = sizes[table].map((value, index) => Math.max(value.bytes, Number(values[index].budget_bytes) || 0));
-    for (const [index, value] of values.entries()) if (['os_learning_history', 'os_resource_directory_history'].includes(table) && sizes[table][index].bytes > value.budget_bytes) over();
+    for (const [index, value] of values.entries()) if (['os_learning_history', 'os_resource_directory_history', 'os_incubator_history'].includes(table) && sizes[table][index].bytes > value.budget_bytes) over();
     categories[table] = { count: values.length, bytes: charges.reduce((sum, value) => sum + value, 0), rawBytes: sizes[table].reduce((sum,value,index)=>sum+Math.max(value.rawBytes,Number(values[index].budget_bytes)||0),0) };
     logicalBytes += categories[table].bytes;
     if (table === 'os_records') structuredRecordBytes = sizes[table].reduce((sum, value) => sum + value.dataBytes, 0);
@@ -261,6 +269,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     if (!table || !Object.hasOwn(tables, table)) badSchema();
     if (table === 'os_learning_history') return { rows: tables[table].map((value, index) => ({ ...wireRow(value),
       learning_payload_bytes: learned.rows[index].payloadBytes, learning_receipt_bytes: 0, learning_row_bytes: sizes[table][index].bytes })) };
+    if (table === 'os_incubator_history') return { rows: tables[table].map((value,index)=>({...wireRow(value),incubator_row_bytes:sizes[table][index].bytes})) };
     return { rows: tables[table].map(wireRow) };
   } };
   await participationQuota({ query: async sql => {
@@ -270,6 +279,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   if (tables.os_intake.reduce((sum, value, index) => sum + (['pending', 'reviewed'].includes(value.status) ? sizes.os_intake[index].bytes : 0), 0) > 8 * 1024 * 1024) over();
   if (categories.os_task_recurrence_series.bytes + categories.os_task_recurrence_occurrences.bytes > 4 * 1024 * 1024) over();
   if (categories.os_resource_directory_history.bytes > DIRECTORY_LIMITS.featureBytes) over();
+  if (categories.os_incubator_history.count>1000 || categories.os_incubator_history.bytes>16777216) over();
   const projectedRecords = tables.os_records.map(value => rowRecord(wireRow(value)));
   const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: baseline.reports, files, trash: [], trashFiles: [],
     integrations: tables.os_integrations.map(value => ({ id: value.id, provider: value.provider, name: value.name, config: value.config })),
@@ -278,6 +288,8 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     directoryResources: await exportDirectoryResources(projectedClient, orgId, { records: projectedRecords }) };
   const projectedLearning = await exportLearningBridge(projectedClient, orgId, { records: projectedRecords, legacyReports: [], sourceOrgId: orgId });
   if (projectedLearning !== undefined) extras.learningBridge = projectedLearning;
+  const projectedIncubator = await exportIncubatorBridge(projectedClient,orgId,{records:projectedRecords});
+  if (projectedIncubator !== undefined) extras.incubatorBridge = projectedIncubator;
   let destinationWireMetadataExtraBytes = 0;
   if (operational.active) {
     const originalWireBytes = compactBytes(extras.participation.outbox);

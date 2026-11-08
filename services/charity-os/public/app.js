@@ -9,6 +9,7 @@ import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
 import { createGrantReportWorkspace } from "./grant-reports.js";
 import { createLearningWorkspace } from "./learning.js";
+import { createIncubatorBridgeWorkspace } from "./incubator-bridge.js";
 import { LEARNING_ROLES, learningRecordFragment, learningRecordMatches, resolveLearningRecordRoute, checkedLearningReport } from "./learning-model.js";
 import {
   createDirectoryResourceWorkspace,
@@ -65,6 +66,7 @@ const state = {
   invitation: null,
   grantReportWorkspace: null,
   learningWorkspace: null,
+  incubatorWorkspace: null,
   learningRecordAbort: null,
   reportReadAbort: null,
   reportReadSequence: 0,
@@ -315,6 +317,8 @@ function safeRoute() {
 }
 function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
+  if (state.incubatorWorkspace) { state.incubatorWorkspace.dispose(); state.pageDirty = false; }
+  state.incubatorWorkspace = null;
   state.learningRecordAbort?.abort();
   state.learningRecordAbort = null;
   state.reportReadAbort?.abort();
@@ -385,7 +389,8 @@ async function discardPage() {
   if (
     !state.pageDirty &&
     !state.taskRecurrencePanel?.isDirty() &&
-    !state.directoryResourceWorkspace?.isDirty()
+    !state.directoryResourceWorkspace?.isDirty() &&
+    !state.incubatorWorkspace?.isDirty()
   ) return true;
   if (
     !(await confirmAction(
@@ -399,6 +404,7 @@ async function discardPage() {
   return true;
 }
 function configureEditor(eyebrow, title, saveLabel, fields, onSave) {
+  state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.dirty = false;
@@ -525,7 +531,17 @@ function renderOrgControl() {
     : "Create your first organization";
   renderNav();
 }
+function canUseIncubator() {
+  return ["owner","admin","program_lead","grants_lead","finance_reviewer","contributor"].includes(role()) &&
+    can(moduleById("programs"),"read",role()) && can(moduleById("projects"),"read",role()) && can(moduleById("projects"),"write",role());
+}
 function renderNav() {
+  let incubatorLink = document.querySelector('[data-nav="incubator"]');
+  if (!incubatorLink) {
+    incubatorLink = link("Incubator plans", "#incubator", { "data-nav": "incubator" });
+    document.querySelector(".secondary-nav").prepend(incubatorLink);
+  }
+  incubatorLink.hidden = !canUseIncubator();
   let learningLink = document.querySelector('[data-nav="learning"]');
   if (!learningLink) {
     learningLink = link("Learning and review", "#learning", { "data-nav": "learning" });
@@ -660,6 +676,7 @@ async function loadMembersIfOrg() {
   if (state.org) await loadMembers();
 }
 async function route() {
+  state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
@@ -710,6 +727,16 @@ async function route() {
       const [, module, id] = state.route.split("/");
       if (id) await renderDetail(module, id, current);
       else await renderModule(module, current);
+    } else if (state.route === "incubator") {
+      if (!canUseIncubator()) throw new ApiError("Incubator plans require current staff Programs read and Projects read/write access.", 403);
+      const org = state.org, session = state.session, currentRole = role();
+      const view = createIncubatorBridgeWorkspace({ org, actorId: session.user.id, api, administrator: admin(),
+        isCurrent: () => current === state.epoch && org === state.org && session === state.session && currentRole === role(),
+        onDirty: value => { if (current === state.epoch) state.pageDirty = value; },
+        onChanged: () => { if (current === state.epoch) { invalidateModules(org,["projects"]); renderNav(); } },
+        confirmDiscard: () => confirmAction("Discard authored Incubator mapping for a different file?", "The new file has different bytes. Your existing titles, completion conditions and relationship writing will be cleared only if you confirm. Copy anything you need first.", "Discard mapping"),
+      });
+      if (current === state.epoch) { setContent(view); state.incubatorWorkspace = view; } else view.dispose();
     } else if (state.route === "learning" || state.route.startsWith("learning/")) {
       const org = state.org, session = state.session, currentRole = role();
       const initialReportId = state.route === "learning" ? "" : /^#learning\/([A-Za-z0-9_-]{1,100})$/.exec(location.hash)?.[1];
@@ -5431,6 +5458,7 @@ $("#editor-dialog").addEventListener("cancel", (event) => {
   discardEditor();
 });
 $("#org-switch").addEventListener("change", async (event) => {
+  state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
@@ -5452,6 +5480,7 @@ $("#org-switch").addEventListener("change", async (event) => {
   await route();
 });
 $("#new-org").addEventListener("click", async () => {
+  state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
@@ -5479,6 +5508,7 @@ $("#content").addEventListener("change", (event) => {
   if (event.target.closest("form")) state.pageDirty = true;
 });
 window.addEventListener("hashchange", async () => {
+  state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   if ((state.editor && !(await discardEditor())) || !(await discardPage())) {
@@ -5491,7 +5521,7 @@ window.addEventListener("hashchange", async () => {
 window.addEventListener("beforeunload", (event) => {
   if (
     state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty() ||
-    state.directoryResourceWorkspace?.isDirty()
+    state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty()
   ) {
     event.preventDefault();
     event.returnValue = "";

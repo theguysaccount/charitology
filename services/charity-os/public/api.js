@@ -18,6 +18,7 @@ const recordsPath = (org, module) =>
 // File-object lifetime only. A lost first response keeps the same transient slot;
 // no source bytes, upload identity or session state is written to browser storage.
 const learningNativeUploads=new WeakMap();
+const incubatorNativeUploads=new WeakMap();
 export async function request(path, { method = "GET", body, signal } = {}) {
   const headers = { Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
@@ -145,7 +146,46 @@ export async function inspectLearningSource(org, metadata, bytes, { signal } = {
 const learningPath = (org, suffix) => `${orgPath(org)}/learning/${suffix}`;
 const learningPage = (org, suffix, cursor, options) => request(`${learningPath(org, suffix)}${cursor ? `?cursor=${part(cursor)}` : ""}`, options);
 const learningPost = (org, suffix, body, options) => request(learningPath(org, suffix), { ...options, method: "POST", body });
+const incubatorPath = (org, suffix) => `${orgPath(org)}/incubator-bridge/${suffix}`;
+const incubatorPage = (org, suffix, cursor, options) => request(`${incubatorPath(org,suffix)}${cursor ? `?cursor=${part(cursor)}` : ''}`,options);
+const incubatorPost = (org,suffix,body,options) => request(incubatorPath(org,suffix),{...options,method:'POST',body});
+// Every native file uses the same bounded upload protocol. Only original bytes,
+// explicit IDs and target pins travel; no browser filename or source path does.
+export async function inspectIncubatorSource(org,metadata,bytes,{signal}={}) {
+  const native=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);
+  if (!native.length || native.length>8000000) throw new ApiError('Choose a native file from 1 to 8,000,000 bytes.',413,'incubator_size');
+  const check=()=>{if(signal?.aborted)throw new DOMException('Source inspection was cancelled.','AbortError');};
+  check();
+  const digest=await crypto.subtle.digest('SHA-256',native);check();
+  const sha256=Array.from(new Uint8Array(digest),value=>value.toString(16).padStart(2,'0')).join(''),total=Math.ceil(native.length/1500000);
+  let pending=incubatorNativeUploads.get(bytes);
+  if (!pending || pending.org!==org || pending.csrf!==csrfToken) {
+    pending={org,csrf:csrfToken,uploadId:crypto.randomUUID().replaceAll('-',''),nextIndex:0};incubatorNativeUploads.set(bytes,pending);
+  }
+  for(let index=pending.nextIndex;index<total;index++) {
+    check();const chunk=native.subarray(index*1500000,(index+1)*1500000),pieces=[];
+    for(let i=0;i<chunk.length;i+=8192)pieces.push(String.fromCharCode(...chunk.subarray(i,i+8192)));
+    let result;
+    try { result=await incubatorPost(org,'uploads',{uploadId:pending.uploadId,index,total,chunk:btoa(pieces.join(''))},{signal}); }
+    catch(error){if(error.status===409)incubatorNativeUploads.delete(bytes);throw error;}
+    check();
+    if(result.uploadId!==pending.uploadId || result.received!==index)throw new ApiError('The native chunk response was incomplete. Inspect again explicitly.',502,'invalid_response');
+    pending.nextIndex=index+1;
+  }
+  check();let result;
+  try { result=await incubatorPost(org,'source/inspect',{metadata,upload:{uploadId:pending.uploadId,byteLength:native.length,sha256}},{signal}); }
+  catch(error){if(error.code==='incubator_upload')incubatorNativeUploads.delete(bytes);throw error;}
+  check();incubatorNativeUploads.delete(bytes);return result;
+}
 export const api = {
+  inspectIncubatorSource,
+  incubatorBindings:(org,cursor,options)=>incubatorPage(org,'bindings',cursor,options),
+  incubatorBinding:(org,id,options)=>request(incubatorPath(org,`bindings/${part(id)}`),options),
+  incubatorRecovered:(org,cursor,options)=>incubatorPage(org,'recovered',cursor,options),
+  incubatorRecoveredHead:(org,head,options)=>request(incubatorPath(org,`recovered/${part(head)}`),options),
+  previewIncubatorCopy:(org,body,options)=>incubatorPost(org,'copy/preview',body,options),
+  previewIncubatorAdoption:(org,body,options)=>incubatorPost(org,'adopt/preview',body,options),
+  commitIncubatorCopy:(org,body,options)=>incubatorPost(org,'commit',body,options),
   inspectLearningSource,
   learningBindings: (org, cursor, options) => learningPage(org, "bindings", cursor, options),
   learningBinding: (org, id, cursor, options) => learningPage(org, `bindings/${part(id)}`, cursor, options),

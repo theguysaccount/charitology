@@ -423,3 +423,47 @@ ALTER TABLE os_learning_previews FORCE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS tenant ON os_learning_previews;
 CREATE POLICY tenant ON os_learning_previews USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
 CREATE UNIQUE INDEX IF NOT EXISTS os_learning_report_edition ON os_reports(org_id,(payload#>>'{selection,selection,manifestRecordId}'),(payload#>>'{selection,manifest,revision}'),(payload#>>'{selection,sourceDigest}')) WHERE payload->>'kind'='learning-review' AND payload->>'methodVersion'='learning-review-v1';
+
+-- Incubator is a separate interpretation namespace. Restored receipts are
+-- historical evidence only; only a live event can reserve a command key.
+CREATE TABLE IF NOT EXISTS os_incubator_history (
+ org_id text NOT NULL REFERENCES os_orgs(id),
+ id text NOT NULL CHECK(id ~ '^[a-f0-9]{64}$'),
+ row_kind text NOT NULL CHECK(row_kind IN ('source','event')),
+ origin_mode text NOT NULL CHECK(origin_mode IN ('live','recovered')),
+ origin_org_id text NOT NULL CHECK(origin_org_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ binding_id text NOT NULL CHECK(binding_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ sequence integer,source_version integer,
+ program_id text CHECK(program_id IS NULL OR program_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ payload jsonb NOT NULL CHECK(jsonb_typeof(payload)='object' AND octet_length(payload::text)<=1056768),
+ receipt jsonb CHECK(receipt IS NULL OR (jsonb_typeof(receipt)='object' AND octet_length(receipt::text)<=8192)),
+ budget_bytes integer NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(org_id,id),
+ CHECK(budget_bytes=octet_length(payload::text)+COALESCE(octet_length(receipt::text),0)+4096),
+ CHECK(((row_kind='source' AND source_version BETWEEN 1 AND 8 AND sequence IS NULL AND program_id IS NULL AND receipt IS NULL
+   AND payload->>'format'='charitology-incubator-source' AND payload->'version'='1'::jsonb
+   AND payload->>'sha256'=id AND payload->>'originOrgId'=origin_org_id
+   AND payload->>'bindingId'=binding_id AND (payload->>'sourceVersion')::integer=source_version)
+ OR (row_kind='event' AND source_version IS NULL AND sequence BETWEEN 1 AND 8 AND program_id IS NOT NULL
+   AND octet_length(payload::text)<=131072
+   AND payload->>'format'='charitology-incubator-event' AND payload->'version'='1'::jsonb
+   AND payload->>'sha256'=id AND payload->>'originOrgId'=origin_org_id
+   AND payload->>'bindingId'=binding_id AND payload#>>'{program,recordId}'=program_id
+   AND (payload->>'sequence')::integer=sequence)) IS TRUE),
+ CHECK((row_kind<>'event' OR origin_mode='recovered' OR (receipt IS NOT NULL
+   AND receipt->>'format'='charitology-incubator-receipt' AND receipt->>'version'='1'
+   AND receipt->>'commandHash' ~ '^[a-f0-9]{64}$' AND receipt->>'requestHash' ~ '^[a-f0-9]{64}$'
+   AND receipt->>'actorBindingHash' ~ '^[a-f0-9]{64}$'
+   AND receipt#>>'{result,head,sha256}'=id)) IS TRUE)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS os_incubator_source_version ON os_incubator_history(org_id,origin_org_id,binding_id,source_version) WHERE row_kind='source';
+CREATE UNIQUE INDEX IF NOT EXISTS os_incubator_event_sequence ON os_incubator_history(org_id,origin_org_id,binding_id,sequence) WHERE row_kind='event';
+CREATE UNIQUE INDEX IF NOT EXISTS os_incubator_command ON os_incubator_history(org_id,(receipt->>'commandHash')) WHERE row_kind='event' AND origin_mode='live';
+CREATE INDEX IF NOT EXISTS os_incubator_program_history ON os_incubator_history(org_id,program_id,binding_id,sequence);
+ALTER TABLE os_incubator_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_incubator_history FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_incubator_history;
+CREATE POLICY tenant ON os_incubator_history USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+DROP TRIGGER IF EXISTS immutable_incubator_history ON os_incubator_history;
+CREATE TRIGGER immutable_incubator_history BEFORE UPDATE OR DELETE ON os_incubator_history FOR EACH ROW EXECUTE FUNCTION os_immutable();

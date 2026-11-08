@@ -47,6 +47,16 @@
   --danger: #ffabb0;
   --shadow: 0 8px 36px -20px #000;
 }
+.incubator-workspace, .incubator-body, .incubator-card { min-width: 0; }
+.incubator-body { display: grid; gap: 1.5rem; }
+.incubator-card { padding: clamp(1rem, 3vw, 1.75rem); border: 1px solid var(--rule); background: var(--surface); border-radius: .5rem; }
+.incubator-card h2 { margin-top: 0; }
+.incubator-card > button { margin: .3rem .5rem .3rem 0; }
+.incubator-card details { margin: 1rem 0; }
+.incubator-card summary { cursor: pointer; font-family: var(--sans); }
+.incubator-json { max-height: 30rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; border: 1px solid var(--rule); background: var(--bg2); color: var(--ink); font: .85rem/1.5 ui-monospace, monospace; }
+.incubator-workspace :is(pre,summary,[role="status"]):focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+@media print { .incubator-json { max-height: none; overflow: visible; } }
 * {
   box-sizing: border-box;
 }

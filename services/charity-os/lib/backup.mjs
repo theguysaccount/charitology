@@ -6,6 +6,7 @@ import { restoredDelivery } from "./participation-delivery-backup.mjs";
 import { restoredTaskRecurrence } from "./task-recurrence-backup.mjs";
 import { restoredDirectoryResources } from "./directory-resource-backup.mjs";
 import { restoredLearningBridge } from "./learning-backup.mjs";
+import { restoredIncubatorBridge } from "./incubator-bridge-backup.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -34,6 +35,12 @@ export function validateBackup(input, orgId, userId) {
     fail(422, "backup", "Use a version1 Charity OS backup.");
   if (input.records.length > 2000)
     fail(422, "backup", "A backup may contain at most2,000 records.");
+  // This feature has a closed independent grammar; a native selected packet
+  // cannot acquire full-restore authority through checksum interpretation.
+  restoredIncubatorBridge(input.incubatorBridge, {
+    records: input.records,
+    trash: input.trash || [],
+  });
   const { checksum, ...payload } = input;
   if (!checksum || hash(payload) !== checksum)
     fail(
@@ -49,8 +56,15 @@ export function validateBackup(input, orgId, userId) {
     records: input.records,
     trash: input.trash || [],
   });
-  restoredDirectoryResources(input.directoryResources, { records: input.records, trash: input.trash || [] });
-  restoredLearningBridge(input.learningBridge, { records: input.records, trash: input.trash || [], legacyReports: input.reports || [] });
+  restoredDirectoryResources(input.directoryResources, {
+    records: input.records,
+    trash: input.trash || [],
+  });
+  restoredLearningBridge(input.learningBridge, {
+    records: input.records,
+    trash: input.trash || [],
+    legacyReports: input.reports || [],
+  });
   const seen = new Set();
   const records = input.records.map((r) => {
     if (

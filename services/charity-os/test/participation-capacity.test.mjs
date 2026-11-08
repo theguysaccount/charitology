@@ -135,10 +135,18 @@ test("an optional export journal cannot consume the last byte of a v3 exit packe
     "os_task_recurrence_series",
     "os_task_recurrence_occurrences",
     "os_learning_history",
+    "os_incubator_history",
     "os_resource_directory_history",
   ]);
   const c = {
     query: async (sql, values) => {
+      if (
+        sql.startsWith(
+          "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1)",
+        ) &&
+        sql.includes(" AS incubator")
+      )
+        return { rows: [{ present: false, incubator: false }] }; // This closed v3 witness has no Incubator history or pending purpose rows.
       if (sql.startsWith("SELECT sum(size) AS size FROM"))
         return { rows: [{ size: 1000 }] };
       if (sql.startsWith("SELECT * FROM os_orgs"))

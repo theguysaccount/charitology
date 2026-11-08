@@ -73,7 +73,7 @@ export function database(url, { schema } = {}) {
         if (!readOnly && orgId && (state.locked || state.actions.size)) {
           const present = (
             await c.query(
-              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation",
+              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator",
               [orgId],
             )
           ).rows[0];
@@ -97,7 +97,10 @@ export function database(url, { schema } = {}) {
               await checkActualParticipationSafetyPacket(c, orgId);
             }
           }
-          if ((present.present || present.participation) && ordinary) {
+          if (
+            (present.present || present.participation || present.incubator) &&
+            ordinary
+          ) {
             const { checkWorkspaceExportCapacity } = await import(
               "./workspace-backup.mjs"
             );
@@ -108,6 +111,12 @@ export function database(url, { schema } = {}) {
               );
               checkCombinedParticipationCapacity(whole, participation);
             }
+          }
+          if (present.incubator && !ordinary) {
+            const { checkActualWorkspaceBackupCapacity } = await import(
+              "./workspace-backup.mjs"
+            );
+            await checkActualWorkspaceBackupCapacity(c, orgId);
           }
         }
         await c.query("COMMIT");
@@ -185,6 +194,22 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
         "quota",
         "This workspace reached its60 MiB record, history and file export budget. Export your records before continuing in a new workspace.",
       );
+  }
+  if (action === "backup.exported") {
+    const { canRetainIncubatorExportAudit } = await import(
+      "./workspace-backup.mjs"
+    );
+    if (
+      !(await canRetainIncubatorExportAudit(c, org, {
+        org_id: org,
+        actor_id: user,
+        action,
+        record_id: record?.id || null,
+        module_id: record?.moduleId || null,
+        detail,
+      }))
+    )
+      return false;
   }
   if (safetyActions.has(action) || action === "backup.exported") {
     const { canRetainParticipationSafetyAudit } = await import(
@@ -299,16 +324,18 @@ export async function logicalBackupBytes(c, org) {
     "os_task_recurrence_occurrences",
     "os_resource_directory_history",
     "os_learning_history",
+    "os_incubator_history",
     "os_learning_previews",
   ];
   const sql =
     tables
       .map(
         (table) =>
-          `SELECT COALESCE(sum(${table === "os_reports" ? "CASE WHEN payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%' THEN GREATEST(octet_length(to_jsonb(t)::text),octet_length(payload::text)+4096) ELSE octet_length(to_jsonb(t)::text) END" : ["os_participation_outbox", "os_task_recurrence_series", "os_resource_directory_history", "os_learning_history"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : table === "os_participations" ? `octet_length(${participationChargeJsonSQL("t")}::text)` : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
+          `SELECT COALESCE(sum(${table === "os_reports" ? "CASE WHEN payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%' THEN GREATEST(octet_length(to_jsonb(t)::text),octet_length(payload::text)+4096) ELSE octet_length(to_jsonb(t)::text) END" : ["os_participation_outbox", "os_task_recurrence_series", "os_resource_directory_history", "os_learning_history", "os_incubator_history"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : table === "os_participations" ? `octet_length(${participationChargeJsonSQL("t")}::text)` : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
       )
       .join(" UNION ALL ") +
-    " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1";
+    " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1" +
+    " UNION ALL SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS size FROM os_previews t WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')";
   return Number(
     (await c.query(`SELECT sum(size) AS size FROM (${sql}) usage`, [org]))
       .rows[0]?.size || 0,
