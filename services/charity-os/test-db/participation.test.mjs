@@ -1,3 +1,4 @@
+import { assembleWorkspaceBackup } from "../lib/workspace-backup.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
@@ -119,7 +120,7 @@ test(
               });
             return { status: r.status, ...(await r.json()) };
           },
-          { lock: true },
+          { lock: input !== undefined, readOnly: input === undefined },
         );
       const makeTarget = async (
         id,
@@ -1273,11 +1274,20 @@ test(
               "INSERT INTO os_participation_outbox(org_id,id,participation_id,event_revision,payload) SELECT $1,'quota-'||g,$2::text,10000+g,jsonb_build_object('participationId',$2::text,'revision',10000+g,'state','confirmed') FROM generate_series(1,8000-(SELECT count(*)::int FROM os_participation_outbox WHERE org_id=$1)) g",
               [org, p.id],
             );
+            // Fill the logical audit reserve independently of the native packet budget.
+            const padding = 61 * 1024 * 1024 + 16 * 1024 -
+              await logicalBackupBytes(c, org);
+            assert.ok(Number.isSafeInteger(padding) && padding > 0);
             await c.query(
-              "INSERT INTO os_events(org_id,actor_id,action,detail) VALUES($1,$2,'fictional.quota.padding',jsonb_build_object('padding',repeat('x',62*1024*1024)))",
-              [org, staff],
+              "INSERT INTO os_events(org_id,actor_id,action,detail) VALUES($1,$2,'fictional.quota.padding',jsonb_build_object('padding',repeat('x',$3::int)))",
+              [org, staff, padding],
             );
             assert.ok((await logicalBackupBytes(c, org)) > 61 * 1024 * 1024);
+            const nativeBytes = Buffer.byteLength(
+              JSON.stringify(await assembleWorkspaceBackup(c, org)),
+            );
+            assert.ok(nativeBytes <= 64 * 1024 * 1024,
+              `Fictional exit packet must remain within 64 MiB: ${nativeBytes}`);
           });
           const result = await command({ id: "volunteer-shift" }, p, "cancel", {
             reason: "Fictional safe cancellation at quota",
