@@ -9,6 +9,9 @@ import { parse, parseFragment } from "parse5";
 import ts from "typescript";
 import { loadHumanitarianFunding } from "../src/lib/humanitarian-funding/public.mjs";
 import { FUNDING_LICENSE_SUMMARY } from "../src/lib/humanitarian-funding/source.mjs";
+import { readObservationWorkingFiles } from "../src/lib/observation-capture-io.mjs";
+import { validateObservationFiles } from "../src/lib/observation-model.mjs";
+import { planClusterObservationProjection } from "../src/lib/humanitarian-plan-cluster/public.mjs";
 import {
   readPublicationRegistryDirectory,
   publicationRegistryFiles,
@@ -195,7 +198,7 @@ check(
   },
 );
 check(
-  "API discovery has exactly the actual 39 source-declared datasets with complete bounded wrappers",
+  "API discovery has exactly the actual 40 source-declared datasets with complete bounded wrappers",
   () => {
     const ast = ts.createSourceFile(
       "api.ts",
@@ -223,12 +226,15 @@ check(
       };
       return { name: field("name"), description: field("description") };
     });
-    assert.equal(expected.length, 39);
-    assert.equal(new Set(expected.map((e) => e.name)).size, 39);
+    assert.equal(expected.length, 40);
+    assert.equal(new Set(expected.map((e) => e.name)).size, 40);
     const funding = loadHumanitarianFunding();
+    const observations = validateObservationFiles(readObservationWorkingFiles(root));
+    const planCluster = planClusterObservationProjection(observations, observations.registry.current.id);
     const visible = expected.filter(e =>
       (existsSync(join(root,"src/data/disaster-incidents")) || !["disaster-incidents","disaster-incident-coverage"].includes(e.name)) &&
-      (funding !== null || e.name !== "humanitarian-funding"));
+      (funding !== null || e.name !== "humanitarian-funding") &&
+      (planCluster !== null || e.name !== "humanitarian-plan-cluster"));
     const index = json("/api/v1/index.json");
     sameKeys(index, ["name", "version", "license", "docs", "endpoints"]);
     assert.equal(index.version, 1);
@@ -243,6 +249,16 @@ check(
     );
     for (const e of visible) {
       const body = json(`/api/v1/${e.name}.json`);
+      if (e.name === "humanitarian-plan-cluster") {
+        assert.ok(planCluster);
+        sameKeys(body, ["name", "license", "generated", "data"]);
+        assert.equal(body.name, e.name);
+        assert.equal(body.generated, planCluster.capturedAt);
+        assert.match(body.license, /OCHA FTS CSV data: CC BY 3\.0 IGO/);
+        assert.match(body.license, /complete HDX licensing-metadata wrapper is private/);
+        assert.deepEqual(body.data, planCluster);
+        continue;
+      }
       if (e.name === "humanitarian-funding") {
         assert.ok(funding);
         sameKeys(body, ["name", "license", "generated", "data"]);
