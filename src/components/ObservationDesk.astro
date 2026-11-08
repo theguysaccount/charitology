@@ -15,9 +15,9 @@ const rows = p.coverage.flatMap(coverage => coverage.cells.map((cell, index) => 
       token: observation.reported.token, observation, coverage, index };
   }
   return { entity: observationPinned(p.entities, cell.entity), measure: observationPinned(p.measures, cell.measure),
-    state: "missing", value: "Unknown", period: coverage.selection.kind === "country-latest-window" ? "2020–2025 selection window" : "No period supplied",
+    state: "missing", value: "Unknown", period: coverage.selection.kind === "country-latest-window" ? "2020–2025 selection window" : coverage.selection.kind === 'explicit-plan-cluster' ? 'January 1–December 31, 2024 · selected plan cluster' : "No period supplied",
     unit: observationUnitText(observationPinned(p.measures, cell.measure).unit), source: cell.sourceRefs.length ? observationPinned(p.sources, cell.sourceRefs[0].source) : null,
-    note: "Producer returned null throughout the selected window; this is a coverage finding, not a zero observation.", token: null, observation: null, coverage, index };
+    note: cell.reason === 'producer-empty-source-field' ? 'The selected source row has a blank amount field. This is missing reported data, not a zero amount or zero need.' : "Producer returned null throughout the selected window; this is a coverage finding, not a zero observation.", token: null, observation: null, coverage, index };
 }));
 ---
 <section class="observations ob-desk" data-observation-desk>

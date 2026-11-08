@@ -42,6 +42,33 @@ async function observations() {
   const { loadObservations } = await import("./observations");
   return loadObservations();
 }
+async function planCluster() {
+  const loaded = await observations();
+  const { planClusterObservationProjection } = await import('./humanitarian-plan-cluster/public.mjs');
+  return planClusterObservationProjection(loaded.input, loaded.input.registry.current.id);
+}
+async function requirePlanCluster() {
+  const selected = await planCluster();
+  if (selected === null) throw new Error('No captured plan-cluster selection is available.');
+  return selected;
+}
+// A later append did not retrieve World Bank data again. Retain the assembly
+// timestamp of the first admitted edition with these exact country selections.
+async function countrySelectionCapturedAt() {
+  const { input, projection } = await observations();
+  const { observationProjection } = await import('./observation-model.mjs');
+  const identity = (p: typeof projection) => JSON.stringify({
+    definition: p.countryProjection,
+    pins: p.coverage.filter(c => c.selection.kind === 'country-latest-window')
+      .map(c => [c.id, c.version, c.hash]),
+  });
+  const selected = identity(projection);
+  for (const edition of input.registry.editions) {
+    const p = observationProjection(input, edition.id);
+    if (identity(p) === selected) return p.capturedAt;
+  }
+  throw new Error('No admitted country-selection capture is available.');
+}
 
 async function disasters() {
   const { requireDisasters } = await import("./disaster-incidents/public.mjs");
@@ -87,6 +114,15 @@ function flattenRefs(value: unknown, preserveInstants = false): unknown {
 
 export const ENDPOINTS: Endpoint[] = [
   {
+    name: 'humanitarian-plan-cluster',
+    description: 'One fixed Education cluster in Afghanistan’s 2024 humanitarian plan: exact reported USD requirements/funding, source strings, blank/zero distinctions and provenance. Not independently measured need, final spending or a charity rating.',
+    build: requirePlanCluster,
+    capturedAt: async () => (await requirePlanCluster()).capturedAt,
+    available: async () => (await planCluster()) !== null,
+    envelope: 'fixed-capture-v1', preserveShape: true,
+    license: 'Charitology schema and editorial notes: CC BY 4.0. OCHA FTS CSV data: CC BY 3.0 IGO with the recorded attribution and changes notice. The complete HDX licensing-metadata wrapper is private; only the selected bounded evidence excerpt is public. Consult source-specific rights records. No OCHA endorsement is implied.',
+  },
+  {
     name: "humanitarian-funding",
     description: "Fixed 2025 OCHA FTS country-plan-year source rows, reported USD funding, plan requirements, missingness and exact-rational coverage. Not global charitable giving, independently measured need or a ranking.",
     build: async () => (await import("./humanitarian-funding/public.mjs")).requireHumanitarianFunding(),
@@ -128,7 +164,7 @@ export const ENDPOINTS: Endpoint[] = [
   {
     name: "observation-coverage",
     description:
-      "Explicit country-window and consolidated-group coverage, including producer-null and uncollected states, linked to exact observations and source rights in the same edition.",
+      "Explicit country-window, consolidated-group and selected humanitarian plan-cluster coverage, including source-null, source-empty and uncollected states, linked to exact observations and source rights in the same edition.",
     build: async () => {
       const p = (await observations()).projection;
       return {
@@ -333,7 +369,7 @@ export const ENDPOINTS: Endpoint[] = [
     description:
       "Dated World Bank country/economy indicators, definitions, source metadata and explicit missing data.",
     build: async () => (await observations()).countries,
-    capturedAt: async () => (await observations()).projection.capturedAt,
+    capturedAt: countrySelectionCapturedAt,
     preserveShape: true,
     license: OBSERVATION_LICENSE_SUMMARY,
   },

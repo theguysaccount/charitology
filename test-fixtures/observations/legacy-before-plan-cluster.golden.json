@@ -1,0 +1,37 @@
+{
+  "format": "unchanged-old-observation-portable-golden",
+  "version": 1,
+  "scope": "Copied unchanged old modules and disclosed synthetic graph only; no real source A or Git proof",
+  "hashes": {
+    "files": "80e753f7ef1ac2cfcbf1e380db94c825cd98d9ce8e6feaeef7a2fac58383365f",
+    "projection": "c5effa32ab425cf75fb22e7c3cbe87a9f1c714a9e5b5067133a64539ac1d1c3f",
+    "countries": "13efdf3ed2cec5104ba602ff36cf9a6d7f65e700bace17e4dcb3b2e12d8314c5",
+    "json": "64cec1de81a2dee98333743476fd9fba459b84adb15df68d7eaaee4eade41937",
+    "csv": "841bf3fabe36c7c2538da78a6d1d665e0c9fe5fe41fc0e7a0a24f0c8c16b7956",
+    "history": "c5bfa588a9d68f830b302509ac5c6ea50ee289a4e52b5bb9e3335c43c2845103",
+    "countryFacts": "0a1fcb4264ae16915d08c1caa5fb845ad9b8bacac680be023209f30366a18118",
+    "countryMissing": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "oldBaselinePaths": [
+    "scripts/capture-observations.mjs",
+    "scripts/check-observations-history.mjs",
+    "scripts/prepare-observations.mjs",
+    "src/data/countries.json",
+    "src/data/observation-definitions.json",
+    "src/data/observation-source-inputs.json",
+    "src/lib/observation-baseline.mjs",
+    "src/lib/observation-canonical.mjs",
+    "src/lib/observation-capture-io.mjs",
+    "src/lib/observation-capture.mjs",
+    "src/lib/observation-git.mjs",
+    "src/lib/observation-model.mjs",
+    "src/lib/observation-sources.mjs",
+    "src/lib/observation-types.ts"
+  ],
+  "oldMethod": {
+    "id": "observation-capture-v1",
+    "definitionSha256": "0586e205d3e0b3740ff1fa00ad8a00219d64ad5ea9ff0818f5a426865794c101",
+    "adapterSha256": "6f64c498033f53d6d89eb8d5c60990e42201d41b7647dc3034bae89cce2dd1f1"
+  },
+  "oldBaselineUtf8": "import {\n  canonicalObservationJson,\n  observationRawHash,\n  observationFail,\n} from \"./observation-canonical.mjs\";\n\nexport const OBSERVATION_ROOT = \"src/data/observations\";\nexport const OBSERVATION_BASELINE_PATHS = Object.freeze([\n  \"scripts/capture-observations.mjs\",\n  \"scripts/check-observations-history.mjs\",\n  \"scripts/prepare-observations.mjs\",\n  \"src/data/countries.json\",\n  \"src/data/observation-definitions.json\",\n  \"src/data/observation-source-inputs.json\",\n  \"src/lib/observation-baseline.mjs\",\n  \"src/lib/observation-canonical.mjs\",\n  \"src/lib/observation-capture-io.mjs\",\n  \"src/lib/observation-capture.mjs\",\n  \"src/lib/observation-git.mjs\",\n  \"src/lib/observation-model.mjs\",\n  \"src/lib/observation-sources.mjs\",\n  \"src/lib/observation-types.ts\",\n]);\n\nexport function observationMethodPins(baseline) {\n  if (\n    !baseline ||\n    !/^[0-9a-f]{40}$/.test(baseline.commit) ||\n    /^0+$/.test(baseline.commit)\n  ) {\n    observationFail(\n      \"invalid_baseline\",\n      \"An exact committed source baseline is required\",\n    );\n  }\n  if (\n    !Array.isArray(baseline.files) ||\n    baseline.files.length !== OBSERVATION_BASELINE_PATHS.length\n  ) {\n    observationFail(\n      \"invalid_baseline\",\n      \"The complete declared source baseline is required\",\n    );\n  }\n  const pins = [];\n  let total = 0;\n  for (let i = 0; i < OBSERVATION_BASELINE_PATHS.length; i++) {\n    const file = baseline.files[i];\n    if (\n      !file ||\n      file.path !== OBSERVATION_BASELINE_PATHS[i] ||\n      !(file.bytes instanceof Uint8Array)\n    ) {\n      observationFail(\n        \"invalid_baseline\",\n        \"Source baseline files must be in exact declared order\",\n      );\n    }\n    const sha256 = observationRawHash(file.bytes);\n    if (sha256 !== file.sha256)\n      observationFail(\n        \"invalid_baseline\",\n        \"Source baseline byte hash disagrees\",\n        file.path,\n      );\n    total += file.bytes.byteLength;\n    if (total > 5 * 1024 * 1024)\n      observationFail(\"input_limit\", \"Source baseline exceeds 5 MiB\");\n    pins.push({ path: file.path, sha256, bytes: file.bytes.byteLength });\n  }\n  return Object.freeze({\n    id: \"observation-capture-v1\",\n    definitionSha256: pins.find(\n      (p) => p.path === \"src/data/observation-definitions.json\",\n    ).sha256,\n    adapterSha256: observationRawHash(canonicalObservationJson(pins)),\n  });\n}\n"
+}

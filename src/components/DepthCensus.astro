@@ -1,10 +1,15 @@
+---
+import { url } from '../lib/site';
+---
 <section id="depth-census">
   <h2>Your depth census</h2><p>
     Classify a documented set of activities. This is a local research sample,
     not an estimate of global charity. Amounts use one currency per file.
     Classifications are your hypotheses; evidence quality and impact are
     separate questions.
-  </p><form id="census-form">
+  </p>
+  <p class="note">The <a href={url('/record/gap-map/#education-plan-funding')}>Education plan reference</a> keeps plan requirements and reported funding separate from this local sample. It supplies no depth allocation or global total.</p>
+  <form id="census-form">
     <fieldset data-private-form-controls disabled>
     <div class="census-controls">
       <label>Activity<input name="activity" maxlength="200" required /></label

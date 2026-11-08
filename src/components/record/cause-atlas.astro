@@ -52,6 +52,7 @@ const problemLabel = (id: string) =>
           <h3>{c.name}</h3>
           <>
             <p>{c.summary}</p>
+            {c.id === 'education' && <p><a href={url('/record/gap-map/#education-plan-funding')}>Inspect one Education plan’s requirements and reported funding</a>. This Afghanistan 2024 reference has a draft cause mapping and supplies no worldwide Education funding or need estimate.</p>}
             <p class="note">
               {
                 interventions.filter((i) => i.data.causes.includes(c.id as any))

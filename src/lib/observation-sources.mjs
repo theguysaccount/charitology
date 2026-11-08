@@ -243,7 +243,7 @@ export function validateObservationSourceRoles(input) {
         i.mediaType === "text/plain" &&
         r.payload?.kind === "public-text-evidence") ||
       (i.publicDisposition === "private-original" &&
-        ["application/pdf", "text/html"].includes(i.mediaType) &&
+        ["application/pdf", "text/html", "application/json"].includes(i.mediaType) &&
         r.payload?.kind === "external-document" &&
         r.payload.mediaType === i.mediaType);
     if (!valid)
@@ -1199,3 +1199,6 @@ export function prepareWorldBankObservations(input) {
   }
   return observationFreeze(worldBank(input, context, sources));
 }
+
+// Internal pure record-version/blob builder; new adapters retain their own admission.
+export { sourceContext as createObservationSourceContext };

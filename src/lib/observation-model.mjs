@@ -14,6 +14,12 @@ import {
   observationJsonTokens,
 } from "./observation-canonical.mjs";
 import { types as utilTypes } from "node:util";
+// Node-only admission. Actual browser leaves do not import this build model.
+import { parsePlanClusterCsv, PLAN_CLUSTER_SELECTION as PC, PLAN_CLUSTER_CAUSE_BINDING as PC_CAUSE,
+  PLAN_CLUSTER_DEFINITION, PLAN_CLUSTER_HEADERS } from "./humanitarian-plan-cluster/model.mjs";
+import { fundingDecimal } from "./humanitarian-funding/model.mjs";
+import { PLAN_CLUSTER_PERIOD_LABEL, PLAN_CLUSTER_UNKNOWN_REMAINDER,
+  PLAN_CLUSTER_IDENTITY_COLUMNS, PLAN_CLUSTER_MEASURES, PLAN_CLUSTER_METADATA_URL } from "./humanitarian-plan-cluster/interpretation.mjs";
 export {
   OBSERVATION_LIMITS,
   ObservationError,
@@ -278,6 +284,13 @@ const locator = variant({
     pointer: pointerValue,
     matches: arr(obj({ pointer: pointerValue, expected }), 8),
   }),
+  csv: obj({
+    kind: lit("csv"), recordNumber: integer(2, 10001), firstLine: integer(2, L.rawSourceBytes),
+    lastLine: integer(2, L.rawSourceBytes), byteStart: integer(1, L.rawSourceBytes),
+    byteEnd: integer(2, L.rawSourceBytes), rawSha256: HASH,
+    column: choice(PLAN_CLUSTER_HEADERS),
+    matches: arr(obj({ column: choice(PLAN_CLUSTER_HEADERS), expected: S(2000, true) }), 12),
+  }),
   pdf: obj({
     kind: lit("pdf"),
     pdfPage: integer(1, 100000),
@@ -342,10 +355,11 @@ const payload = variant({
       "world-bank-values-v1",
     ]),
   }),
+  "public-csv": obj({ kind: lit("public-csv"), raw: BLOB, adapter: lit("ocha-fts-plan-cluster-v1") }),
   "public-text-evidence": obj({ kind: lit("public-text-evidence"), raw: BLOB }),
   "external-document": obj({
     kind: lit("external-document"),
-    mediaType: choice(["application/pdf", "text/html"]),
+    mediaType: choice(["application/pdf", "text/html", "application/json"]),
     publicExcerpt: nullable(BLOB),
   }),
 });
@@ -402,6 +416,8 @@ const families = [
   "liabilities",
   "net-assets",
   "expenses",
+  "humanitarian-plan-requirements",
+  "humanitarian-plan-funding",
 ];
 const legacyMeasure = obj({
   id: S(100),
@@ -461,11 +477,17 @@ const cell = (v, p) => {
       scope: PIN("scope"),
       measure: PIN("measure"),
       state: lit("missing"),
-      reason: lit("producer-null-throughout-window"),
+      reason: choice(["producer-null-throughout-window", "producer-empty-source-field"]),
       sourceRefs: refs,
     })(v, p);
 };
 const selection = variant({
+  "explicit-plan-cluster": obj({
+    kind: lit("explicit-plan-cluster"), rule: lit("one-selected-source-plan-cluster"),
+    source: PIN("source"), scope: PIN("scope"), measures: arr(PIN("measure"), 2, 2),
+    tuple: obj({ countryCode: lit("AFG"), planId: lit("1185"), clusterCode: lit("7415"), year: lit(2024) }),
+    unknownRemainder: lit(PLAN_CLUSTER_UNKNOWN_REMAINDER),
+  }),
   "country-latest-window": obj({
     kind: lit("country-latest-window"),
     startYear: lit(2020),
@@ -520,11 +542,11 @@ const schemas = {
     ),
     ...tail,
   }),
-  scope: obj({
+  scope: (v, p) => { const shape = {
     ...base,
     kind: lit("scope"),
     entity: PIN("entity"),
-    scopeKind: choice(["national-statistics", "consolidated-reporting-group"]),
+    scopeKind: choice(["national-statistics", "consolidated-reporting-group", "humanitarian-plan-cluster"]),
     label: S(240),
     includedEntities: arr(PIN("entity"), 8, 1),
     consolidation: choice([
@@ -535,7 +557,15 @@ const schemas = {
     geography,
     exclusions: notes,
     ...tail,
-  }),
+  };
+    if (v?.scopeKind === "humanitarian-plan-cluster") shape.planCluster = obj({
+      source: PIN("source"), countryCode: lit("AFG"), planId: lit("1185"), planCode: lit("HAFG24"),
+      planName: lit(PC.planName), clusterCode: lit("7415"), clusterName: lit("Education"), referenceYear: lit(2024),
+      period: obj({ start: lit(PC.start), end: lit(PC.end) }),
+      causeBinding: obj({ method: lit(PC_CAUSE.method), causeId: lit("education"), sourceClusterName: lit("Education"), basis: lit(PC_CAUSE.basis), review: lit("draft") }),
+    });
+    obj(shape)(v, p);
+  },
   measure: obj({
     ...base,
     kind: lit("measure"),
@@ -546,6 +576,8 @@ const schemas = {
       "population-count",
       "period-duration",
       "rate",
+      "planning-budget",
+      "reported-funding",
     ]),
     family: choice(families),
     producerCode: nullable(S(100)),
@@ -587,7 +619,7 @@ const schemas = {
     period,
     reported: obj({
       token: S(128),
-      parser: choice(["json-number-v1", "printed-integer-v1"]),
+      parser: choice(["json-number-v1", "printed-integer-v1", "csv-decimal-v1"]),
       scale: decimalSchema,
       valueRef: ref,
     }),
@@ -629,7 +661,7 @@ const editionSchema = obj({
   capturedAt: instant,
   sourceCommit: regex(/^[a-f0-9]{40}$/, 40),
   method: obj({
-    id: lit("observation-capture-v1"),
+    id: choice(["observation-capture-v1", "observation-plan-cluster-append-v1"]),
     definitionSha256: HASH,
     adapterSha256: HASH,
   }),
@@ -739,6 +771,15 @@ function jsonPointer(tree, pointer) {
 function checkReference(ctx, r) {
   const s = resolvePin(ctx, r.source),
     loc = r.locator;
+  if (loc.kind === "csv") {
+    const parsed = ctx.csvSources.get(key(s)), item = parsed?.selected;
+    requireThat(s.payload.kind === "public-csv" && item, "CSV locator requires the strict selected CSV source");
+    const { column, matches, kind: _, ...span } = loc;
+    requireThat(same(span, item.locator), "CSV original byte/record/line/hash locator mismatch");
+    unique(matches.map(m => m.column), "CSV locator match column");
+    for (const m of matches) requireThat(item.raw[m.column] === m.expected, "CSV selected-row literal mismatch");
+    return { source: s, value: item.raw[column], token: item.raw[column] };
+  }
   if (loc.kind === "json") {
     const parsed = ctx.rawTrees.get(key(s));
     requireThat(parsed, "JSON locator without public JSON source");
@@ -819,6 +860,12 @@ export function observationFileTexts(input) {
 // Full admission and projections are defined below; no filesystem or source fetching belongs here.
 function amountToken(reported) {
   if (reported.parser === "json-number-v1") return reported.token;
+  if (reported.parser === "csv-decimal-v1") {
+    let d;
+    try { d = fundingDecimal(reported.token); } catch { fail("invalid_data", "Invalid exact CSV decimal token"); }
+    requireThat(d !== null, "A blank CSV token is missing coverage, never a numeric observation");
+    return observationDecimalText(normalized(d.coefficient, -d.scale));
+  }
   requireThat(
     /^-?(?:0|[1-9][0-9]*|[1-9][0-9]{0,2}(?:,[0-9]{3})+)$/.test(reported.token),
     "Malformed printed integer",
@@ -906,6 +953,15 @@ function validateSemantics(ctx) {
             same(r.geography.entity, r.entity),
           "National scope identity disagreement",
         );
+      else if (r.scopeKind === "humanitarian-plan-cluster") {
+        const source = resolvePin(ctx, r.planCluster.source), parsed = ctx.csvSources.get(key(source));
+        requireThat(e.entityKind === "country-economy" && e.id === "country-afg" &&
+          e.identifiers.some(i => i.kind === "iso3" && i.value === "AFG") &&
+          r.consolidation === "not-applicable" && same(r.includedEntities, [r.entity]) &&
+          r.geography.kind === "country-economy" && same(r.geography.entity, r.entity) && parsed,
+          "Plan-cluster source/country/scope identity mismatch");
+        requireThat(r.exclusions.includes(PLAN_CLUSTER_UNKNOWN_REMAINDER), "Plan-cluster coverage limitation missing");
+      }
       else
         requireThat(
           e.entityKind === "reporting-group" &&
@@ -929,6 +985,8 @@ function validateSemantics(ctx) {
         liabilities: ["stock", "currency"],
         "net-assets": ["stock", "currency"],
         expenses: ["flow", "currency"],
+        "humanitarian-plan-requirements": ["planning-budget", "currency"],
+        "humanitarian-plan-funding": ["reported-funding", "currency"],
       };
       requireThat(
         rules[r.family][0] === r.measureKind &&
@@ -950,6 +1008,13 @@ function validateSemantics(ctx) {
             r.legacyCountry.definition === r.definition,
           "Country definition/legacy mismatch",
         );
+      } else if (r.family.startsWith("humanitarian-plan-")) {
+        requireThat(r.legacyCountry === null && r.producerCode ===
+          (r.family === "humanitarian-plan-requirements" ? "requirements" : "funding"),
+          "Plan-cluster measure cannot acquire national/expense identity");
+        const definition = PLAN_CLUSTER_MEASURES[r.producerCode];
+        requireThat(r.label === definition.label && r.definition === definition.definition && r.method === definition.method,
+          "Plan-cluster measure must retain the reviewed fixed definition");
       } else
         requireThat(
           r.legacyCountry === null && r.producerCode === null,
@@ -1055,6 +1120,23 @@ function validateSemantics(ctx) {
             r.rights.publicReuse.kind !== "linked-document-only",
           "Public JSON lacks explicit rights basis",
         );
+      if (r.payload.kind === "public-csv")
+        requireThat(r.url === PLAN_CLUSTER_DEFINITION.source.resourceUrl && r.payload.raw.mediaType === "text/plain" &&
+          r.rights.returnedLicense === null && r.rights.publicReuse.kind === "explicit-license" &&
+          r.rights.publicReuse.termsUrl === PLAN_CLUSTER_DEFINITION.rights.termsUrl &&
+          r.rights.attribution === PLAN_CLUSTER_DEFINITION.rights.attribution, "CSV source identity/rights/media mismatch");
+      if (r.payload.kind === "public-csv") {
+        const ev = r.rights.publicReuse.evidence;
+        requireThat(ev.length === 1 && ev[0].locator.kind === "text", "CSV licensing evidence must be one bounded metadata excerpt");
+        const metadata = resolvePin(ctx, ev[0].source);
+        requireThat(metadata.payload.kind === "external-document" && metadata.payload.mediaType === "application/json" &&
+          metadata.url === PLAN_CLUSTER_METADATA_URL && metadata.payload.publicExcerpt?.mediaType === "text/plain" &&
+          metadata.rights.publicReuse.kind === "linked-document-only" &&
+          ev[0].locator.section.includes(PLAN_CLUSTER_DEFINITION.source.resourceId) &&
+          ev[0].locator.excerpt.includes('/result/license_id: "cc-by-igo"') &&
+          ev[0].locator.excerpt.includes(PLAN_CLUSTER_DEFINITION.source.resourceId),
+          "CSV rights evidence requires the separate selected HDX JSON excerpt, not full-wrapper reuse");
+      }
       if (r.payload.kind === "public-text-evidence")
         requireThat(
           r.payload.raw.mediaType === "text/plain",
@@ -1092,7 +1174,17 @@ function validateSemantics(ctx) {
       );
       if (r.period.kind === "closed-interval")
         requireThat(r.period.start <= r.period.end, "Reversed explicit period");
-      if (measure.measureKind === "stock")
+      if (measure.family.startsWith("humanitarian-plan-")) {
+        const column = measure.producerCode, loc = r.reported.valueRef.locator;
+        requireThat(scope.scopeKind === "humanitarian-plan-cluster" &&
+          same(scope.planCluster.source, r.reported.valueRef.source) &&
+          same(r.period, { kind: "closed-interval", start: PC.start, end: PC.end, sourceLabel: PLAN_CLUSTER_PERIOD_LABEL }) &&
+          r.reported.parser === "csv-decimal-v1" && loc.kind === "csv" && loc.column === column &&
+          same(loc.matches.map(m => m.column), PLAN_CLUSTER_IDENTITY_COLUMNS) &&
+          same(r.reported.scale, { coefficient: "1", exponent: 0 }) && r.precision.kind === "unknown" && r.uncertainty === null &&
+          r.producerStatus === null && r.producerUnit === null && r.producerDecimal === null && r.annotations.length === 0,
+          "Plan-cluster value/period/parser/precision identity mismatch");
+      } else if (measure.measureKind === "stock")
         requireThat(
           r.period.kind === "stock-day",
           "Stock requires a stock date",
@@ -1122,7 +1214,10 @@ function validateSemantics(ctx) {
             replay.token === r.reported.token,
           "Numeric source lexeme mismatch",
         );
-      else {
+      else if (r.reported.parser === "csv-decimal-v1") {
+        requireThat(measure.family.startsWith("humanitarian-plan-") && replay.token === r.reported.token,
+          "CSV reported source token mismatch");
+      } else {
         requireThat(
           r.reported.valueRef.locator.kind === "pdf" &&
             replay.source.payload.kind === "external-document" &&
@@ -1211,6 +1306,29 @@ function validateSemantics(ctx) {
 function validateCoverage(ctx, r) {
   const s = r.selection,
     identities = [];
+  if (s.kind === "explicit-plan-cluster") {
+    const source = resolvePin(ctx, s.source), scope = resolvePin(ctx, s.scope), parsed = ctx.csvSources.get(key(source));
+    requireThat(parsed && scope.scopeKind === "humanitarian-plan-cluster" && same(scope.planCluster.source, s.source), "Plan-cluster selection source/scope mismatch");
+    requireThat(s.measures.length === 2 && r.cells.length === 2, "Plan-cluster requires exactly two selected cells");
+    for (let i = 0; i < 2; i++) {
+      const measure = resolvePin(ctx, s.measures[i]), column = i === 0 ? "requirements" : "funding", cell = r.cells[i];
+      requireThat(measure.family === `humanitarian-plan-${column === "requirements" ? "requirements" : "funding"}` && measure.producerCode === column, "Plan-cluster measure order mismatch");
+      if (parsed.selected.raw[column] === "") {
+        requireThat(cell.state === "missing" && cell.reason === "producer-empty-source-field" && same(cell.entity, scope.entity) &&
+          same(cell.scope, s.scope) && same(cell.measure, s.measures[i]) && cell.sourceRefs.length === 1,
+          "Blank CSV column requires one exact missing coverage cell");
+        const ref = cell.sourceRefs[0], result = checkReference(ctx, ref);
+        requireThat(ref.role === "value" && same(ref.source, s.source) && ref.locator.kind === "csv" && ref.locator.column === column &&
+          same(ref.locator.matches.map(m => m.column), PLAN_CLUSTER_IDENTITY_COLUMNS) && result.value === "", "Missing CSV source proof mismatch");
+      } else {
+        requireThat(cell.state === "present", "Present CSV token cannot become missing or zero");
+        const observation = resolvePin(ctx, cell.observation);
+        requireThat(same(observation.entity, scope.entity) && same(observation.scope, s.scope) && same(observation.measure, s.measures[i]) &&
+          same(observation.reported.valueRef.source, s.source), "Plan-cluster present cell identity mismatch");
+      }
+    }
+    return;
+  }
   if (s.kind === "explicit-financial-panel") {
     const expected = [];
     unique(
@@ -1431,6 +1549,7 @@ function validateCoverage(ctx, r) {
         "Producer mortality bounds omitted or invented",
       );
     } else {
+      requireThat(cell.reason === "producer-null-throughout-window", "Country missing reason cannot use another adapter");
       requireThat(
         valid.length === 0 && cell.sourceRefs.length === 6,
         "Missing coverage must prove six null source values",
@@ -1562,6 +1681,7 @@ export function validateObservationFiles(input) {
     records: new Map(),
     editions: new Map(),
     rawTrees: new Map(),
+    csvSources: new Map(),
     packets: new Map(),
   };
   for (const name of names) {
@@ -1669,6 +1789,12 @@ export function validateObservationFiles(input) {
           ? source.payload.publicExcerpt
           : source.payload.raw;
       if (blob) usedBlobs.add(blob.path);
+      if (source.payload.kind === "public-csv") {
+        let parsed;
+        try { parsed = parsePlanClusterCsv(new TextEncoder().encode(files[source.payload.raw.path])); }
+        catch { fail("invalid_data", "Strict plan-cluster CSV source refused"); }
+        ctx.csvSources.set(key(source), parsed);
+      }
       if (source.payload.kind === "public-json") {
         const data = observationJsonTokens(
           files[source.payload.raw.path],
@@ -1720,6 +1846,58 @@ export function validateObservationFiles(input) {
         ).size === 1,
       "Edition requires five common-metadata country series",
     );
+    const planRecords = selected.filter(r => r.scopeKind === "humanitarian-plan-cluster" ||
+      r.payload?.kind === "public-csv" || r.family?.startsWith("humanitarian-plan-") ||
+      r.reported?.parser === "csv-decimal-v1" || r.selection?.kind === "explicit-plan-cluster");
+    if (e.method.id === "observation-capture-v1")
+      requireThat(planRecords.length === 0, "Plan-cluster facts require their separately pinned append method");
+    else {
+      const coverages = selected.filter(r => r.kind === "coverage" && r.selection.kind === "explicit-plan-cluster"),
+        csvSources = selected.filter(r => r.kind === "source" && r.payload.kind === "public-csv"),
+        scopes = selected.filter(r => r.kind === "scope" && r.scopeKind === "humanitarian-plan-cluster"),
+        measures = selected.filter(r => r.kind === "measure" && r.family.startsWith("humanitarian-plan-")),
+        observations = selected.filter(r => r.kind === "observation" && r.reported.parser === "csv-decimal-v1");
+      requireThat(coverages.length === 1 && csvSources.length === 1 && scopes.length === 1 && measures.length === 2,
+        "Append method requires exactly one selected plan-cluster source/scope/two measures/coverage");
+      const panel = coverages[0].selection, source = csvSources[0], metadata = resolvePin(ctx, source.rights.publicReuse.evidence[0].source);
+      requireThat(same(panel.source, pin(source)) && same(panel.scope, pin(scopes[0])) &&
+        same([...panel.measures].sort(pinCompare), measures.map(pin).sort(pinCompare)) &&
+        same(coverages[0].cells.filter(c => c.state === "present").map(c => c.observation).sort(pinCompare), observations.map(pin).sort(pinCompare)),
+        "Append method contains unbound or extra plan-cluster records");
+      // This method admits one first append, not a general refresh or a
+      // replacement of an earlier selected factual closure.
+      requireThat(e.supersedes !== null, "Plan-cluster append requires a predecessor edition");
+      requireThat(!registry.editions.some(p => p.sequence < e.sequence &&
+        ctx.editions.get(p.id).method.id === "observation-plan-cluster-append-v1"),
+        "Plan-cluster first append already exists in retained history");
+      const predecessor = ctx.editions.get(e.supersedes.id);
+      const priorRecords = predecessor.records.map(p => resolvePin(ctx, p));
+      requireThat(!priorRecords.some(r => r.scopeKind === "humanitarian-plan-cluster" ||
+        r.payload?.kind === "public-csv" || r.family?.startsWith("humanitarian-plan-") ||
+        r.reported?.parser === "csv-decimal-v1" || r.selection?.kind === "explicit-plan-cluster"),
+        "Plan-cluster recapture requires a separately reviewed method");
+      requireThat(same(e.countryProjection, predecessor.countryProjection) &&
+        same(e.legacyComparison, predecessor.legacyComparison),
+        "First append must preserve prior country projection and legacy comparison");
+      const priorPins = new Map(predecessor.records.map(p => [key(p), p]));
+      requireThat(priorPins.has(key(scopes[0].entity)) && same(priorPins.get(key(scopes[0].entity)), scopes[0].entity),
+        "First append must retain its exact prior country entity");
+      const expectedPins = new Map(priorPins);
+      for (const r of [coverages[0], source, scopes[0], ...measures, ...observations, metadata])
+        expectedPins.set(key(r), pin(r));
+      requireThat(same(e.records, [...expectedPins.values()].sort(pinCompare)),
+        "First append must preserve every prior selected pin and add only its fixed plan closure");
+      const started = record => {
+        const fields = record.producerMetadata.filter(v => v.field === "clientRequestStartedAt");
+        requireThat(fields.length === 1, "New source requires its explicit declared client start");
+        instant(fields[0].literal, "clientRequestStartedAt");
+        requireThat(fields[0].literal <= record.retrievedAt && record.retrievedAt <= e.capturedAt,
+          "Assembly cannot predate declared source completion or reorder its start");
+        return fields[0].literal;
+      };
+      started(source);
+      requireThat(source.retrievedAt <= started(metadata), "Licensing metadata-after must follow CSV completion");
+    }
     const closure = closurePaths(ctx, e);
     requireThat(
       closure.reduce((n, p) => n + Buffer.byteLength(files[p]), 0) <=

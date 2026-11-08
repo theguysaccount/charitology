@@ -75,6 +75,7 @@ export type ObservationJsonExpected =
   | { kind: "string"; value: string }
   | { kind: "number-token"; value: string }
   | { kind: "null" };
+export type ObservationCsvColumn = "countryCode"|"id"|"name"|"code"|"startDate"|"endDate"|"year"|"clusterCode"|"cluster"|"requirements"|"funding"|"percentFunded";
 export type ObservationLocator =
   | {
       kind: "json";
@@ -89,7 +90,10 @@ export type ObservationLocator =
       row: string[];
       column: string[];
     }
-  | { kind: "text"; section: string[]; excerpt: string };
+  | { kind: "text"; section: string[]; excerpt: string }
+  | {kind:"csv";recordNumber:number;firstLine:number;lastLine:number;byteStart:number;byteEnd:number;rawSha256:ObservationHash;
+      column:ObservationCsvColumn;
+      matches:{column:ObservationCsvColumn;expected:string}[]};
 export interface ObservationSourceRef {
   source: ObservationPin<"source">;
   role:
@@ -165,10 +169,11 @@ export interface ObservationSourceRecord extends ObservationRecordBase<"source">
           | "world-bank-indicator-v1"
           | "world-bank-values-v1";
       }
+    | { kind: "public-csv"; raw: ObservationBlobPin; adapter:"ocha-fts-plan-cluster-v1" }
     | { kind: "public-text-evidence"; raw: ObservationBlobPin }
     | {
         kind: "external-document";
-        mediaType: "application/pdf" | "text/html";
+        mediaType: "application/pdf" | "text/html" | "application/json";
         publicExcerpt: ObservationBlobPin | null;
       };
   producerMetadata: { field: string; literal: string }[]; //<=20; e.g. sourceid,lastupdated,unit,decimal
@@ -201,9 +206,8 @@ export interface ObservationEntityRecord extends ObservationRecordBase<"entity">
   limitations: string[];
   review: "draft";
 }
-export interface ObservationScopeRecord extends ObservationRecordBase<"scope"> {
+interface ObservationScopeBase extends ObservationRecordBase<"scope"> {
   entity: ObservationPin<"entity">;
-  scopeKind: "national-statistics" | "consolidated-reporting-group";
   label: string;
   includedEntities: ObservationPin<"entity">[];
   consolidation:
@@ -218,6 +222,12 @@ export interface ObservationScopeRecord extends ObservationRecordBase<"scope"> {
   limitations: string[];
   review: "draft";
 }
+export type ObservationScopeRecord = ObservationScopeBase & (
+  | {scopeKind:"national-statistics"|"consolidated-reporting-group";planCluster?:never}
+  | {scopeKind:"humanitarian-plan-cluster";planCluster:{source:ObservationPin<"source">;countryCode:"AFG";planId:"1185";planCode:"HAFG24";
+      planName:"Afghanistan Humanitarian Needs and Response Plan 2024";clusterCode:"7415";clusterName:"Education";referenceYear:2024;
+      period:{start:"2024-01-01";end:"2024-12-31"};causeBinding:{method:"plan-cluster-cause-map-v1";causeId:"education";sourceClusterName:"Education";basis:"explicit-selected-source-cluster";review:"draft"}}}
+);
 export type ObservationUnit =
   | { kind: "count"; label: "people"; denominator: null }
   | { kind: "duration"; label: "years"; denominator: null }
@@ -234,7 +244,7 @@ export type ObservationUnit =
 export interface ObservationMeasureRecord extends ObservationRecordBase<"measure"> {
   label: string;
   measureKind:
-    "stock" | "flow" | "population-count" | "period-duration" | "rate";
+    "stock" | "flow" | "population-count" | "period-duration" | "rate" | "planning-budget" | "reported-funding";
   family:
     | "population"
     | "life-expectancy"
@@ -244,7 +254,9 @@ export interface ObservationMeasureRecord extends ObservationRecordBase<"measure
     | "assets"
     | "liabilities"
     | "net-assets"
-    | "expenses";
+    | "expenses"
+    | "humanitarian-plan-requirements"
+    | "humanitarian-plan-funding";
   producerCode: string | null;
   definition: string;
   unit: ObservationUnit;
@@ -285,7 +297,7 @@ export interface ObservationRecord extends ObservationRecordBase<"observation"> 
   period: ObservationPeriod;
   reported: {
     token: string;
-    parser: "json-number-v1" | "printed-integer-v1";
+    parser: "json-number-v1" | "printed-integer-v1" | "csv-decimal-v1";
     scale: ObservationDecimal;
     valueRef: ObservationSourceRef;
   };
@@ -326,11 +338,13 @@ export type ObservationCoverageCell =
       scope: ObservationPin<"scope">;
       measure: ObservationPin<"measure">;
       state: "missing";
-      reason: "producer-null-throughout-window";
+      reason: "producer-null-throughout-window" | "producer-empty-source-field";
       sourceRefs: ObservationSourceRef[];
     };
 export interface ObservationCoverageRecord extends ObservationRecordBase<"coverage"> {
   selection:
+    | {kind:"explicit-plan-cluster";rule:"one-selected-source-plan-cluster";source:ObservationPin<"source">;scope:ObservationPin<"scope">;
+        measures:[ObservationPin<"measure">,ObservationPin<"measure">];tuple:{countryCode:"AFG";planId:"1185";clusterCode:"7415";year:2024};unknownRemainder:string}
     | {
         kind: "country-latest-window";
         startYear: 2020;
@@ -427,7 +441,7 @@ export interface ObservationEdition {
   capturedAt: ObservationInstant;
   sourceCommit: string; //exact40-hex committed source baseline A, not future data commit B
   method: {
-    id: "observation-capture-v1";
+    id: "observation-capture-v1" | "observation-plan-cluster-append-v1";
     definitionSha256: ObservationHash;
     adapterSha256: ObservationHash;
   };
