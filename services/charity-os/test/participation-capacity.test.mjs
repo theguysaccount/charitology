@@ -12,6 +12,7 @@ import {
 import { rowRecord } from "../lib/database.mjs";
 import { hash } from "../lib/security.mjs";
 import { projectionFixture } from "./fixtures/participation-projection.mjs";
+import { emptyParticipationGroupsQuery } from "./fixtures/empty-participation-groups.mjs";
 const cap = 8 * 1024 * 1024;
 test("genuine wholly legacy state keeps its v2 exit without synthesizing repeated terms", async () => {
   const f = projectionFixture();
@@ -140,6 +141,8 @@ test("an optional export journal cannot consume the last byte of a v3 exit packe
   ]);
   const c = {
     query: async (sql, values) => {
+      const emptyGroups = emptyParticipationGroupsQuery(sql, values);
+      if (emptyGroups !== undefined) return emptyGroups;
       if (
         sql.startsWith(
           "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1)",

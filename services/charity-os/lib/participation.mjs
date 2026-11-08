@@ -1,3 +1,4 @@
+import { types as nodeTypes } from "node:util";
 import { participationChargeJsonSQL } from "./participation-storage.mjs";
 import { retainParticipationAuditOutcome } from "./participation-receipt.mjs";
 import {
@@ -106,6 +107,108 @@ const open = (r) =>
 const sourceApproved = (r) =>
   independent(r) &&
   ["approved", "scheduled", "open", "assigned", "completed"].includes(r.status);
+
+// Internal misuse protection, not session, transaction-freshness or allocation
+// authority. A caller must capture a fresh SQL clock for each new group command
+// in its already-authorized/locked transaction and never cache it across calls.
+const sqlDomainClocks = new WeakMap();
+const LEGACY_DOMAIN_CLOCK = Object.freeze({});
+const TEN_MINUTES_MICROS = 600000000n;
+function exactClockMicros(value) {
+  if (
+    typeof value !== "string" ||
+    !/^(?!0000)\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$/.test(value)
+  )
+    return null;
+  const millisecondsText = value.slice(0, 23) + "Z";
+  const milliseconds = Date.parse(millisecondsText);
+  if (
+    !Number.isSafeInteger(milliseconds) ||
+    new Date(milliseconds).toISOString() !== millisecondsText
+  )
+    return null;
+  return BigInt(milliseconds) * 1000n + BigInt(value.slice(23, 26));
+}
+function clockWindow(window) {
+  if (window === undefined) return [null, null];
+  if (
+    !window ||
+    typeof window !== "object" ||
+    nodeTypes.isProxy(window) ||
+    Object.getPrototypeOf(window) !== Object.prototype ||
+    Object.getOwnPropertySymbols(window).length
+  )
+    fail(422, "participation_clock", "Use an exact SQL preview window.");
+  const descriptors = Object.getOwnPropertyDescriptors(window);
+  const keys = Object.keys(descriptors);
+  if (
+    keys.length !== 2 ||
+    !["issuedAtExact", "expiresAtExact"].every(
+      (key) =>
+        descriptors[key]?.enumerable === true &&
+        Object.hasOwn(descriptors[key], "value"),
+    )
+  )
+    fail(422, "participation_clock", "Use an exact SQL preview window.");
+  const issued = descriptors.issuedAtExact.value;
+  const expires = descriptors.expiresAtExact.value;
+  const issuedMicros = exactClockMicros(issued);
+  const expiresMicros = exactClockMicros(expires);
+  if (
+    issuedMicros === null ||
+    expiresMicros === null ||
+    expiresMicros - issuedMicros !== TEN_MINUTES_MICROS
+  )
+    fail(422, "participation_clock", "Use an exact ten-minute preview window.");
+  return [issued, expires];
+}
+export async function readParticipationDomainClock(c, window) {
+  const parameters = clockWindow(window);
+  const row = (
+    await c.query(
+      `WITH moment AS MATERIALIZED (SELECT clock_timestamp() AS n)
+SELECT to_char(n AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS at_exact,
+       to_char((n + interval '10 minutes') AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS expires_at_exact,
+       ((extract(epoch FROM n) * 1000000)::bigint)::text AS epoch_microseconds,
+       CASE WHEN $1::timestamptz IS NULL AND $2::timestamptz IS NULL THEN true
+            ELSE $1::timestamptz <= n AND n < $2::timestamptz
+                 AND $2::timestamptz - $1::timestamptz = interval '10 minutes'
+       END AS within_window
+FROM moment`,
+      parameters,
+    )
+  ).rows[0];
+  const atMicros = exactClockMicros(row?.at_exact);
+  const expiresMicros = exactClockMicros(row?.expires_at_exact);
+  if (
+    atMicros === null ||
+    expiresMicros === null ||
+    expiresMicros - atMicros !== TEN_MINUTES_MICROS ||
+    typeof row?.epoch_microseconds !== "string" ||
+    !/^(?:0|[1-9]\d*|-[1-9]\d*)$/.test(row.epoch_microseconds) ||
+    BigInt(row.epoch_microseconds) !== atMicros ||
+    typeof row?.within_window !== "boolean"
+  )
+    fail(500, "participation_clock", "The SQL participation clock is unavailable.");
+  if (!row.within_window)
+    fail(409, "participation_clock", "This preview expired or is not current.");
+  const clock = Object.freeze({
+    atExact: row.at_exact,
+    expiresAtExact: row.expires_at_exact,
+  });
+  sqlDomainClocks.set(clock, { c, atMicros });
+  return clock;
+}
+function domainClock(c, clock) {
+  if (clock === LEGACY_DOMAIN_CLOCK) return null;
+  const profile = sqlDomainClocks.get(clock);
+  if (!profile || profile.c !== c)
+    fail(422, "participation_clock", "Capture a SQL clock in this transaction.");
+  return profile;
+}
+function domainTimestamp(c, clock) {
+  return domainClock(c, clock) ? clock.atExact : new Date().toISOString();
+}
 
 export function participationTerms(record) {
   if (
@@ -345,7 +448,7 @@ function currentTerms(source) {
     return { terms: null, termsHash: null };
   }
 }
-function approvedTarget(source, t) {
+function approvedTarget(source, t, c, serverClock = LEGACY_DOMAIN_CLOCK) {
   if (!t || t.mode !== "managed" || t.recovery_block)
     fail(
       409,
@@ -358,7 +461,13 @@ function approvedTarget(source, t) {
       "participation_approval",
       "The current occurrence needs independent approval and an open schedule.",
     );
-  if (Date.parse(source.data.startAt) <= Date.now())
+  const clock = domainClock(c, serverClock);
+  const start = Date.parse(source.data.startAt);
+  if (
+    clock
+      ? Number.isSafeInteger(start) && BigInt(start) * 1000n <= clock.atMicros
+      : start <= Date.now()
+  )
     fail(
       409,
       "participation_started",
@@ -504,58 +613,89 @@ const entryReadable = (p, records, member) => {
     !!visibleRecord(contact, member)
   );
 };
+// Hint policy deliberately remains weaker than NEW command eligibility.
+function waitlistHintEligible(p, source, records, member, terms) {
+  try {
+    candidateFor(records, p, member);
+  } catch {
+    return false;
+  }
+  if (
+    !p.consent ||
+    p.consent.sourceRevision !== source.revision ||
+    p.consent.termsHash !== hash(terms) ||
+    !p.consent.waitlistAllowed
+  )
+    return false;
+  if (
+    p.intake_status === "cancelled" &&
+    ((!p.intake_cancelled_at && !p.consent.withdrawalAcknowledged) ||
+      (p.intake_cancelled_at &&
+        Date.parse(p.consent.at) <= Date.parse(p.intake_cancelled_at)))
+  )
+    return false;
+  return true;
+}
+function waitlistHintIntervalMatches(p, source, terms) {
+  return (
+    p.requested_interval == null ||
+    p.consent.allocationHash ===
+      participationAllocationHash(
+        source.id,
+        source.revision,
+        hash(terms),
+        requestedInterval(p, terms),
+      )
+  );
+}
+const hintAllocationRefusal = error =>
+  ["participation_capacity", "participation_overlap", "participation_duplicate", "participation_interval"].includes(error.code);
 async function waitlistSuggestion(c, org, source, records, member) {
   const terms = participationTerms(source);
   for (const p of (await entries(c, org, source.id)).filter(
     (p) => p.state === "waitlisted" && !p.recovered,
   )) {
+    if (!waitlistHintEligible(p, source, records, member, terms)) continue;
     try {
-      candidateFor(records, p, member);
-    } catch {
-      continue;
-    }
-    if (
-      !p.consent ||
-      p.consent.sourceRevision !== source.revision ||
-      p.consent.termsHash !== hash(terms) ||
-      !p.consent.waitlistAllowed
-    )
-      continue;
-    if (
-      p.intake_status === "cancelled" &&
-      ((!p.intake_cancelled_at && !p.consent.withdrawalAcknowledged) ||
-        (p.intake_cancelled_at &&
-          Date.parse(p.consent.at) <= Date.parse(p.intake_cancelled_at)))
-    )
-      continue;
-    try {
-      if (
-        p.requested_interval != null &&
-        p.consent.allocationHash !==
-          participationAllocationHash(
-            source.id,
-            source.revision,
-            hash(terms),
-            requestedInterval(p, terms),
-          )
-      )
-        continue;
+      if (!waitlistHintIntervalMatches(p, source, terms)) continue;
       await allocationCheck(c, org, p, source, records, terms);
     } catch (error) {
-      if (
-        [
-          "participation_capacity",
-          "participation_overlap",
-          "participation_duplicate",
-          "participation_interval",
-        ].includes(error.code)
-      )
-        continue;
+      if (hintAllocationRefusal(error)) continue;
       throw error;
     }
     return p.id;
   }
   return null;
+}
+/** Complete private SQL-ordered queue and range inventory; never a staff DTO.
+ * Caller owns the detached rows and their current scope/approval/range pins.
+ * No sorting, SQL, command execution, consent renewal or authority is supplied.
+ */
+export function suggestParticipationFromInventory({
+  source, records, member, orderedWaitlist, removedWaitlistIds, confirmed, unmanaged,
+}) {
+  const terms = participationTerms(source), removed = new Set(removedWaitlistIds);
+  if (orderedWaitlist.length > PARTICIPATION_LIMITS.participations || confirmed.length + unmanaged.length > PARTICIPATION_LIMITS.participations)
+    fail(409, "participation_interval", "The complete allocation inventory exceeds its retained limit.");
+  for (const p of orderedWaitlist) {
+    if (removed.has(p.id) || p.state !== "waitlisted" || p.recovered || !waitlistHintEligible(p, source, records, member, terms)) continue;
+    try {
+      if (!waitlistHintIntervalMatches(p, source, terms)) continue;
+      assertParticipationAllocationCandidate({
+        candidate: { participationId: p.id, bookingRecordId: p.booking_record_id, contactId: p.contact_id,
+          targetId: p.target_id, moduleId: p.module_id, range: effectiveRequestedInterval(p, terms) },
+        capacity: source.data.capacity, confirmed, unmanaged,
+      });
+    } catch (error) {
+      if (hintAllocationRefusal(error)) continue;
+      throw error;
+    }
+    return p.id;
+  }
+  return null;
+}
+export function requireParticipationPromotionReason({ participationId, suggestedId, reason }) {
+  if (suggestedId !== participationId) text(reason, 300, true);
 }
 async function update(c, org, p, changes, intent) {
   const row = {
@@ -654,27 +794,24 @@ async function consentCheck(c, org, p, source, terms) {
       );
   }
 }
-async function allocationCheck(c, org, p, source, records, terms) {
-  if (!Number.isSafeInteger(source.data.capacity) || source.data.capacity < 1)
+function knownAllocationCapacity(capacity) {
+  if (!Number.isSafeInteger(capacity) || capacity < 1)
     fail(
       409,
       "participation_capacity",
       "This occurrence has no known available capacity.",
     );
-  const all = (
-    await c.query(
-      "SELECT * FROM os_participations WHERE org_id=$1 AND state='confirmed'",
-      [org],
-    )
-  ).rows;
-  const range = effectiveRequestedInterval(p, terms);
+}
+// rangeOf is private and pure. The legacy adapter calls ONLY the frozen-range
+// validator, lazily at the old filters so unrelated old rows stay untouched.
+function confirmedAllocationCheck(candidate, capacity, confirmed, rangeOf) {
   if (
     peakOccupancy([
-      ...all
-        .filter((x) => x.target_id === p.target_id && x.id !== p.id)
-        .map(frozenParticipationInterval),
-      range,
-    ]) > source.data.capacity
+      ...confirmed
+        .filter((x) => x.targetId === candidate.targetId && x.participationId !== candidate.participationId)
+        .map(rangeOf),
+      candidate.range,
+    ]) > capacity
   )
     fail(
       409,
@@ -682,11 +819,11 @@ async function allocationCheck(c, org, p, source, records, terms) {
       "This occurrence is full. Choose the waitlist explicitly if consent permits.",
     );
   if (
-    all.some(
+    confirmed.some(
       (x) =>
-        x.id !== p.id &&
-        x.target_id === p.target_id &&
-        x.contact_id === p.contact_id,
+        x.participationId !== candidate.participationId &&
+        x.targetId === candidate.targetId &&
+        x.contactId === candidate.contactId,
     )
   )
     fail(
@@ -694,14 +831,14 @@ async function allocationCheck(c, org, p, source, records, terms) {
       "participation_duplicate",
       "This contact already has a confirmed place.",
     );
-  if (p.module_id === "volunteers") {
+  if (candidate.moduleId === "volunteers") {
     if (
-      all.some(
+      confirmed.some(
         (x) =>
-          x.id !== p.id &&
-          x.module_id === "volunteers" &&
-          x.contact_id === p.contact_id &&
-          intervalsOverlap(frozenParticipationInterval(x), range),
+          x.participationId !== candidate.participationId &&
+          x.moduleId === "volunteers" &&
+          x.contactId === candidate.contactId &&
+          intervalsOverlap(rangeOf(x), candidate.range),
       )
     )
       fail(
@@ -709,6 +846,41 @@ async function allocationCheck(c, org, p, source, records, terms) {
         "participation_overlap",
         "This volunteer already has an overlapping confirmed assignment.",
       );
+  }
+}
+function unmanagedAllocationCheck(candidate, unmanaged, rangeOf) {
+  if (candidate.moduleId !== "volunteers") return;
+  for (const row of unmanaged) {
+    if (row.contactId === candidate.contactId && intervalsOverlap(rangeOf(row), candidate.range))
+      fail(409, "participation_overlap", "This volunteer has an overlapping unmanaged assignment.");
+  }
+}
+/** Private range-only inventory, not consent/approval/booking authority. The
+ * combined group planner still owns all-selected and duplicate-booking checks.
+ */
+export function assertParticipationAllocationCandidate({ candidate, capacity, confirmed, unmanaged }) {
+  knownAllocationCapacity(capacity);
+  if (confirmed.length + unmanaged.length > PARTICIPATION_LIMITS.participations)
+    fail(409, "participation_interval", "The complete allocation inventory exceeds its retained limit.");
+  // A missing applicable range cannot silently become a nonoverlap in NEW data.
+  const rangeOf = row => { peakOccupancy([row.range]); return row.range; };
+  confirmedAllocationCheck(candidate, capacity, confirmed, rangeOf);
+  unmanagedAllocationCheck(candidate, unmanaged, rangeOf);
+}
+async function allocationCheck(c, org, p, source, records, terms) {
+  knownAllocationCapacity(source.data.capacity);
+  const all = (
+    await c.query(
+      "SELECT * FROM os_participations WHERE org_id=$1 AND state='confirmed'",
+      [org],
+    )
+  ).rows;
+  const candidate = { participationId: p.id, contactId: p.contact_id, targetId: p.target_id,
+    moduleId: p.module_id, range: effectiveRequestedInterval(p, terms) };
+  confirmedAllocationCheck(candidate, source.data.capacity,
+    all.map(row => ({ participationId: row.id, contactId: row.contact_id, targetId: row.target_id, moduleId: row.module_id, row })),
+    x => frozenParticipationInterval(x.row));
+  if (p.module_id === "volunteers") {
     const managedIds = new Set(
       (
         await c.query(
@@ -726,12 +898,8 @@ async function allocationCheck(c, org, p, source, records, terms) {
         !managedIds.has(r.data.shiftId),
     )) {
       const shift = records.find((x) => x.id === r.data.shiftId);
-      if (shift && intervalsOverlap(shift.data, range))
-        fail(
-          409,
-          "participation_overlap",
-          "This volunteer has an overlapping unmanaged assignment.",
-        );
+      if (shift)
+        unmanagedAllocationCheck(candidate, [{ contactId: r.data.contactId, range: shift.data }], x => x.range);
     }
   }
 }
@@ -1334,12 +1502,14 @@ async function cancel({
   input,
   own = false,
   intake = null,
+  serverClock = LEGACY_DOMAIN_CLOCK,
 }) {
   const intent = participationIntent(input, user, "cancel");
   if (participationReplay(p.last_command, intent)) {
     noteParticipationReceiptReplay(c, org);
     return {
       p,
+      replayed: true,
       notificationQueued: p.last_command.notificationQueued === true,
       auditRetained:
         typeof p.last_command.auditRetained === "boolean"
@@ -1381,7 +1551,7 @@ async function cancel({
   }
   const changes = {
     state: "cancelled",
-    cancelled_at: new Date().toISOString(),
+    cancelled_at: domainTimestamp(c, serverClock),
   };
   const notificationQueued = await outbox(
     c,
@@ -1407,22 +1577,10 @@ async function cancel({
   );
   auditRetained = auditRetained && finalAuditRetained;
   next = await retainParticipationAuditOutcome(c, org, next, auditRetained);
-  return { p: next, notificationQueued, auditRetained };
+  return { p: next, replayed: false, notificationQueued, auditRetained };
 }
 
-async function staffCommand({
-  settings,
-  c,
-  org,
-  user,
-  member,
-  source,
-  t,
-  records,
-  input,
-  p,
-  action,
-}) {
+function staffCommandInput(input, action) {
   if (input.reason != null) text(input.reason, 300);
   exact(
     input,
@@ -1452,41 +1610,11 @@ async function staffCommand({
           "idempotencyKey",
         ],
   );
-  candidateFor(records, p, member, { approval: false });
-  if (action === "cancel") {
-    text(input.reason, 300, true);
-    const result = await cancel({ c, org, user, p, records, input, settings });
-    return okay({
-      participation: staffObject(result.p, t, source, records, member),
-      notificationQueued: result.notificationQueued,
-      auditRetained: result.auditRetained,
-    });
-  }
-  if (action === "consent") {
-    const r = candidateFor(records, p, member);
-    const next = await recordConsent({
-      c,
-      org,
-      user,
-      source,
-      t,
-      p,
-      input,
-      actor: {},
-      own: false,
-    });
-    return okay({
-      participation: staffObject(next, t, source, records, member),
-    });
-  }
-  const intent = participationIntent(input, user, action);
-  if (participationReplay(p.last_command, intent)) {
-    noteParticipationReceiptReplay(c, org);
-    return okay({ participation: staffObject(p, t, source, records, member) });
-  }
+}
+async function schedulingEligibility({ c, org, member, source, t, records, input, p, action, serverClock }) {
   revision(input, p.revision);
   revision(input, t?.revision, "targetRevision");
-  const terms = approvedTarget(source, t),
+  const terms = approvedTarget(source, t, c, serverClock),
     candidate = candidateFor(records, p, member);
   revision(input, candidate.revision, "candidateRevision");
   revision(input, p.consent?.revision || 0, "consentRevision");
@@ -1506,7 +1634,6 @@ async function staffCommand({
       "participation_state",
       "This historical participation cannot allocate a new place.",
     );
-  let changes;
   if (action === "waitlist") {
     if (p.state !== "requested" || !p.consent.waitlistAllowed)
       fail(
@@ -1514,6 +1641,45 @@ async function staffCommand({
         "participation_waitlist",
         "Waitlisting requires a requested candidate and separate current waitlist consent.",
       );
+  } else if (
+    (action === "confirm" && p.state !== "requested") ||
+    (action === "promote" && p.state !== "waitlisted")
+  )
+    fail(409, "participation_state", "Choose the explicit command for this participation state.");
+  return { terms, candidate };
+}
+/** NEW read-only eligibility, not readiness/allocation or current authority.
+ * Caller owns fresh roster authorization/pins and the same outer transaction.
+ * The only possible SQL here is the existing specific-intake SELECT.
+ */
+export async function readParticipationAdmissionEligibility({ c, org, member, source, t, records, input, p, action, serverClock }) {
+  permit(source, member, "write");
+  if (
+    source.orgId !== org || p.org_id !== org || p.target_id !== source.id || p.module_id !== source.moduleId ||
+    (t && (t.org_id !== org || t.target_id !== source.id || t.module_id !== source.moduleId))
+  ) unavailable();
+  candidateFor(records, p, member, { approval: false });
+  if (!["confirm", "promote"].includes(action))
+    fail(422, "participation_action", "Use a confirmation or promotion preview.");
+  domainClock(c, serverClock);
+  staffCommandInput(input, action);
+  const { terms } = await schedulingEligibility({ c, org, member, source, t, records, input, p, action, serverClock });
+  if (terms.intervalPolicy) Object.freeze(terms.intervalPolicy);
+  return Object.freeze({ participationId: p.id, action, terms: Object.freeze(terms), termsHash: hash(terms) });
+}
+async function staffSchedulingCommand({
+  settings, c, org, user, member, source, t, records, input, p, action, serverClock,
+}) {
+  const intent = participationIntent(input, user, action);
+  if (participationReplay(p.last_command, intent)) {
+    noteParticipationReceiptReplay(c, org);
+    // These older receipts deliberately contain no journal/audit outcome.
+    return { p, replayed: true, notificationQueued: null, auditRetained: null };
+  }
+  const { terms, candidate } = await schedulingEligibility({ c, org, member, source, t, records, input, p, action, serverClock });
+  let changes;
+  let recordAuditRetained = true;
+  if (action === "waitlist") {
     const seq = Number(
       (
         await c.query(
@@ -1524,15 +1690,6 @@ async function staffCommand({
     );
     changes = { state: "waitlisted", waitlist_sequence: seq };
   } else {
-    if (
-      (action === "confirm" && p.state !== "requested") ||
-      (action === "promote" && p.state !== "waitlisted")
-    )
-      fail(
-        409,
-        "participation_state",
-        "Choose the explicit command for this participation state.",
-      );
     if (action === "promote") {
       const suggested = await waitlistSuggestion(
         c,
@@ -1541,7 +1698,7 @@ async function staffCommand({
         records,
         member,
       );
-      if (suggested !== p.id) text(input.reason, 300, true);
+      requireParticipationPromotionReason({ participationId: p.id, suggestedId: suggested, reason: input.reason });
     } else if (input.reason != null) text(input.reason, 300);
     await allocationCheck(c, org, p, source, records, terms);
     const nextRecord = {
@@ -1561,14 +1718,14 @@ async function staffCommand({
     });
     await saveRecord(c, nextRecord, { participationCommand: true });
     records.splice(records.indexOf(candidate), 1, nextRecord);
-    await audit(c, org, user, "record.transitioned", nextRecord, {
+    recordAuditRetained = await audit(c, org, user, "record.transitioned", nextRecord, {
       viaParticipation: p.id,
       from: candidate.status,
       to: nextRecord.status,
     });
     changes = {
       state: "confirmed",
-      confirmed_at: new Date().toISOString(),
+      confirmed_at: domainTimestamp(c, serverClock),
       frozen: {
         terms,
         sourceRevision: source.revision,
@@ -1586,14 +1743,110 @@ async function staffCommand({
     };
   }
   const next = await update(c, org, p, changes, intent);
-  await outbox(c, org, next, { settings });
+  const notificationQueued = await outbox(c, org, next, { settings });
   await participationQuota(c, org);
-  await audit(c, org, user, `participation.${next.state}`, null, {
+  const finalAuditRetained = await audit(c, org, user, `participation.${next.state}`, null, {
     participationId: p.id,
     targetId: source.id,
     reason: input.reason || null,
   });
-  return okay({ participation: staffObject(next, t, source, records, member) });
+  return {
+    p: next,
+    replayed: false,
+    notificationQueued,
+    auditRetained: recordAuditRetained && finalAuditRetained,
+  };
+}
+
+/**
+ * Same-client domain seam. Caller owns fresh session/membership/program/record
+ * pins, all row locks and the ONE outer transaction. A clock is not authority.
+ * @returns {Promise<{p: object, replayed: boolean, notificationQueued: boolean|null, auditRetained: boolean|null}>}
+ */
+export async function applyParticipationDomainCommand({
+  settings,
+  c,
+  org,
+  user,
+  member,
+  source,
+  t,
+  records,
+  input,
+  p,
+  action,
+  serverClock,
+}) {
+  if (!["confirm", "promote", "cancel"].includes(action))
+    fail(422, "participation_action", "Use a confirmation, promotion or cancellation.");
+  domainClock(c, serverClock);
+  permit(source, member, "write");
+  if (
+    source.orgId !== org ||
+    p.org_id !== org ||
+    p.target_id !== source.id ||
+    p.module_id !== source.moduleId ||
+    (t &&
+      (t.org_id !== org ||
+        t.target_id !== source.id ||
+        t.module_id !== source.moduleId))
+  )
+    unavailable();
+  staffCommandInput(input, action);
+  candidateFor(records, p, member, { approval: false });
+  if (action === "cancel") {
+    text(input.reason, 300, true);
+    return cancel({ c, org, user, p, records, input, settings, serverClock });
+  }
+  return staffSchedulingCommand({
+    settings, c, org, user, member, source, t, records, input, p, action,
+    serverClock,
+  });
+}
+
+async function staffCommand(args) {
+  const { c, org, user, member, source, t, records, input, p, action } = args;
+  if (["confirm", "promote", "cancel"].includes(action)) {
+    const result = await applyParticipationDomainCommand({
+      ...args,
+      serverClock: LEGACY_DOMAIN_CLOCK,
+    });
+    return okay({
+      participation: staffObject(result.p, t, source, records, member),
+      ...(action === "cancel"
+        ? {
+            notificationQueued: result.notificationQueued,
+            auditRetained: result.auditRetained,
+          }
+        : {}),
+    });
+  }
+  staffCommandInput(input, action);
+  candidateFor(records, p, member, { approval: false });
+  if (action === "consent") {
+    const r = candidateFor(records, p, member);
+    const next = await recordConsent({
+      c,
+      org,
+      user,
+      source,
+      t,
+      p,
+      input,
+      actor: {},
+      own: false,
+    });
+    return okay({
+      participation: staffObject(next, t, source, records, member),
+    });
+  }
+  const result = await staffSchedulingCommand({
+    ...args,
+    serverClock: LEGACY_DOMAIN_CLOCK,
+  });
+  return okay({
+    participation: staffObject(result.p, t, source, records, member),
+  });
 }
 
 export async function participationRoutes({

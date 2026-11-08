@@ -19,6 +19,7 @@ import {
 } from "../lib/backup.mjs";
 import { validateFile } from "../lib/files.mjs";
 import { audit as appendAudit, saveRecord } from "../lib/database.mjs";
+import { emptyParticipationGroupsQuery } from "./fixtures/empty-participation-groups.mjs";
 
 const org = "test-org";
 const user = "test-reader";
@@ -81,6 +82,8 @@ function fixture(
     query: async (sql, args = []) => {
       const extra = await extraQuery?.(sql, args);
       if (extra !== undefined) return extra;
+      const emptyGroups = emptyParticipationGroupsQuery(sql, args);
+      if (emptyGroups !== undefined) return emptyGroups;
       // This historical fixture retains no participant self-report sidecar.
       if (sql === "SELECT t.* FROM os_participation_checkins t WHERE org_id=$1 ORDER BY id") return { rows: [] };
       if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return { rows: [{ count: 0 }] };
@@ -1010,6 +1013,8 @@ test("Access revocation remains possible with minimal audit reserve and after th
       const events = [],
         c = {
           query: async (sql, args) => {
+            const emptyGroups = emptyParticipationGroupsQuery(sql, args);
+            if (emptyGroups !== undefined) return emptyGroups;
             if (sql.startsWith("SELECT sum(size) AS size FROM ("))
               return { rows: [{ size: usage }] };
             // No check-in history participates in this legacy audit-reserve case.

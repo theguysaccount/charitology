@@ -63,6 +63,12 @@ import { integrationRoutes } from "./integrations.mjs";
 import { directoryResourceRoutes } from "./directory-resources.mjs";
 import { exportDirectoryResources, restoredDirectoryResources, restoreDirectoryResources } from "./directory-resource-backup.mjs";
 import { readBackupBody } from "./backup-json.mjs";
+import { restoredParticipationGroups, restoreParticipationGroups, participationGroupHistoryCount } from "./participation-group-recovery.mjs";
+import { ParticipationGroupError } from "./participation-group-model.mjs";
+import { ParticipationGroupAllocationError } from "./participation-group-allocation.mjs";
+import { isParticipationGroupPath, isParticipationGroupPreview, readParticipationGroupBody } from "./participation-group-http.mjs";
+import { participationGroupReadRoutes } from "./participation-group-read-routes.mjs";
+import { participationGroupWriteRoutes } from "./participation-group-write-routes.mjs";
 import { LearningError } from "./learning-json.mjs";
 import { learningRoutes } from "./learning-routes.mjs";
 import { incubatorBridgeRoutes } from "./incubator-bridge.mjs";
@@ -355,9 +361,17 @@ export function createHandler({
       if (learningResponse) return learningResponse;
       const incubatorResponse = await incubatorBridgeRoutes({ request, url, db, session });
       if (incubatorResponse) return incubatorResponse;
+      if (isParticipationGroupPath(path)) {
+        if (method === "HEAD") fail(405, "group_method", "Use GET to read a group view.");
+        if (method === "GET" && (request.body !== null || request.headers.has("transfer-encoding") ||
+            (request.headers.has("content-length") && request.headers.get("content-length") !== "0")))
+          fail(400, "group_body", "Read group views without a request body.");
+      }
       const input = ["GET", "HEAD"].includes(method)
         ? {}
-        : isParticipantCheckInPath(path)
+        : isParticipationGroupPath(path)
+          ? await readParticipationGroupBody(request)
+          : isParticipantCheckInPath(path)
           ? await readCheckInBody(request)
           : /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/participation-targets\/[A-Za-z0-9_-]+\/attendance(?:\/|$)/.test(
               path,
@@ -597,6 +611,10 @@ export function createHandler({
           if (attendanceResponse) return attendanceResponse;
           const checkInResponse = await staffCheckInRoutes({ c, org, member, tail, method, url });
           if (checkInResponse) return checkInResponse;
+          const groupWriteResponse = await participationGroupWriteRoutes({ c, org, session, tail, method, input, url, settings });
+          if (groupWriteResponse) return groupWriteResponse;
+          const groupReadResponse = await participationGroupReadRoutes({ c, org, session, tail, method, input, url, settings });
+          if (groupReadResponse) return groupReadResponse;
           const participationResponse = await participationRoutes({
             c,
             org,
@@ -720,6 +738,7 @@ export function createHandler({
             const learningBridge = restoredLearningBridge(backup.learningBridge, { records: backup.records, trash: backup.trash || [], legacyReports: backup.reports || [] });
             const incubatorBridge = restoredIncubatorBridge(backup.incubatorBridge, { records: backup.records, trash: backup.trash || [] });
             const participantCheckins = restoredParticipantCheckins(backup.participantCheckins);
+            const participationGroups = restoredParticipationGroups(backup.participationGroups);
             const issues = [];
             const existingRecurrence = Number(
               (
@@ -750,14 +769,14 @@ export function createHandler({
                 ).rows[0].count,
               ) ||
               existingIntake ||
-              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org) || await incubatorStateCount(c, org) || await checkInStateCount(c, org)
+              existingRecurrence || existingDirectory || existingDelivery || existingConnections || await learningStateCount(c, org) || await incubatorStateCount(c, org) || await checkInStateCount(c, org) || await participationGroupHistoryCount(c, org)
             )
               issues.push({
                 field: "organization",
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
-            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || backup.participation?.version === 3))
+            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || backup.participation?.version === 3))
               await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
@@ -791,6 +810,7 @@ export function createHandler({
                 learningEventsRetained: learningBridge?.events.length || 0,
                 learningReportsRecovered: learningBridge?.reports.length || 0,
                 ...(participantCheckins === null ? {} : { participantCheckinsRecovered: participantCheckins.length }),
+                ...(participationGroups === null ? {} : { participationGroupsRecovered: participationGroups.groups.length }),
               ...(incubatorBridge ? { incubatorSourcesRecovered: incubatorBridge.sources.length, incubatorEventsRetained: incubatorBridge.events.length } : {}),
                 ...(migration ? { migration: migration.summary } : {}),
               },
@@ -798,6 +818,7 @@ export function createHandler({
               warnings: [
                 ...(migration?.warnings || []),
                 ...(participantCheckins === null ? [] : [{ field: "participantCheckins", message: "Arrival assertions restore as unverified inactive history, without accounts, receipts, live consent or attendance authority." }]),
+                ...(participationGroups === null ? [] : [{ field: "participationGroups", message: "Group decisions restore as inactive history. They restore no live places, consent, coordinator authority or command keys." }]),
                 ...participation.warnings,
                 ...(incubatorBridge ? [{ field: "incubatorBridge", message: "Incubator selections and copy history restore as inactive historical material. No session, command, approval or live binding authority is restored. Explicit adoption creates two fresh editable planned records." }] : []),
                 ...(learningBridge ? [{ field: "learningBridge", message: "Learning evidence and reports restore as private historical material with no approvals, sessions or command authority. Explicit adoption creates a new binding and fresh draft definitions and protocol; original observations never become live automatically." }] : []),
@@ -866,6 +887,8 @@ export function createHandler({
             const learningBridge = restoredLearningBridge(p.payload.learningBridge, { records: p.payload.records, trash: p.payload.trash || [], legacyReports: p.payload.reports || [] });
             const incubatorBridge = restoredIncubatorBridge(p.payload.incubatorBridge, { records: p.payload.records, trash: p.payload.trash || [] });
             const participantCheckins = restoredParticipantCheckins(p.payload.participantCheckins);
+            const participationGroups = restoredParticipationGroups(p.payload.participationGroups);
+            if (await participationGroupHistoryCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without group history or command receipts.");
             if (await checkInStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without self-report history.");
             if (await incubatorStateCount(c, org)) fail(409, "restore_conflict", "Restore requires an organization without Incubator history or pending source reviews.");
             if (Number((await c.query("SELECT count(*) AS count FROM os_participation_delivery_policies WHERE org_id=$1", [org])).rows[0].count))
@@ -919,7 +942,7 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
-            if (learningBridge || incubatorBridge || participantCheckins !== null || p.payload.participation?.version === 3)
+            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || p.payload.participation?.version === 3)
               await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -987,6 +1010,7 @@ export function createHandler({
             await restoreLearningBridge(c, org, p.payload.learningBridge, { records: p.payload.records, trash: p.payload.trash || [], legacyReports: p.payload.reports || [] });
             await restoreIncubatorBridge(c, org, p.payload.incubatorBridge, { records: p.payload.records, trash: p.payload.trash || [] });
             await restoreParticipantCheckins(c, org, p.payload.participantCheckins);
+            await restoreParticipationGroups(c, org, p.payload.participationGroups);
             await checkLearningActiveRecords(c, org);
             await audit(c, org, user, "backup.restored", null, {
               count: imported.length,
@@ -999,6 +1023,7 @@ export function createHandler({
               learningEventsRetained: learningBridge?.events.length || 0,
               learningReportsRecovered: learningBridge?.reports.length || 0,
               ...(participantCheckins === null ? {} : { participantCheckinsRecovered: participantCheckins.length }),
+              ...(participationGroups === null ? {} : { participationGroupsRecovered: participationGroups.groups.length }),
               ...(incubatorBridge ? { incubatorSourcesRecovered: incubatorBridge.sources.length, incubatorEventsRetained: incubatorBridge.events.length } : {}),
               intakePublicationsClosed: intake.publications.length,
               intakeRequests: intake.submissions.length,
@@ -1566,7 +1591,7 @@ export function createHandler({
         },
         {
           lock: !["GET", "HEAD"].includes(method) || tail === "export",
-          readOnly: ["GET", "HEAD"].includes(method) && tail !== "export",
+          readOnly: (["GET", "HEAD"].includes(method) && tail !== "export") || isParticipationGroupPreview(path, method),
         },
       );
       if (method === "POST" && tail === "invitations")
@@ -1596,7 +1621,7 @@ export function createHandler({
           },
           422,
         );
-      if (error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
+      if (error instanceof ParticipationGroupError || error instanceof ParticipationGroupAllocationError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
         return json(
           {
             ok: false,

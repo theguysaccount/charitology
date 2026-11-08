@@ -388,7 +388,17 @@ async function discardEditor() {
   $("#editor-dialog").close();
   return true;
 }
-async function discardPage() {
+async function discardPage({ signingOut = false } = {}) {
+  if (state.participationWorkspace?.hasPendingGroupCommand?.()) {
+    if (!signingOut) {
+      state.participationWorkspace.reconcilePendingGroup?.();
+      toast("Resolve the retained group command before leaving this workspace.");
+      return false;
+    }
+    if (!(await confirmAction("Sign out with an unresolved group command?", "The earlier command may already be saved. Signing out discards this pane’s in-memory exact Retry; no command will be resent automatically. Review saved group history after signing in again.", "Sign out and discard Retry"))) return false;
+    state.pageDirty = false;
+    return true;
+  }
   if (
     !state.pageDirty &&
     !state.taskRecurrencePanel?.isDirty() &&
@@ -502,7 +512,7 @@ function renderAccount() {
         async (event) => {
           state.taskRecurrencePanel?.invalidate();
           state.directoryResourceWorkspace?.invalidate();
-          if (!(await discardEditor()) || !(await discardPage())) return;
+          if (!(await discardEditor()) || !(await discardPage({ signingOut: true }))) return;
           await action(async () => {
             await api.logout();
             invalidateModules();

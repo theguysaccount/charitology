@@ -8,6 +8,7 @@ import { restoredDirectoryResources } from "./directory-resource-backup.mjs";
 import { restoredLearningBridge } from "./learning-backup.mjs";
 import { restoredIncubatorBridge } from "./incubator-bridge-backup.mjs";
 import { restoredParticipantCheckins } from "./participant-check-in-backup.mjs";
+import { restoredParticipationGroups } from "./participation-group-recovery.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -44,6 +45,7 @@ export function validateBackup(input, orgId, userId) {
   });
   const { checksum, ...payload } = input;
   restoredParticipantCheckins(input.participantCheckins);
+  restoredParticipationGroups(input.participationGroups);
   if (!checksum || hash(payload) !== checksum)
     fail(
       422,
