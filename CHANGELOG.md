@@ -1,5 +1,11 @@
 # Changelog
 
+## November 8, 2026: finite check-in production release and public-byte verification
+
+- Passed all eight exact-`cf51589` push/PR CI jobs, including both thirteen-case actual PostgreSQL 17.11 profiles. The first `79c917f` branch-creation history refusal remains retained; the successful final push uses its actual nonzero `79c917f` base and the PR compares with released main `66c1e46`. No history gate was waived or rerun to erase the failure.
+- Verified the compatible protected stage with 59 selected unsigned responses and 27 unique assets, including both check-in refusals. Committed only the ten new-table statements and four new-table ACL statements once. Fresh readback and a separate offline audit preserve all 35 prior tables, 130 captured rows, protected catalog/role/defaults and four complete workspace budget vectors; exact new catalog and four-column UPDATE permissions match the reviewed golden.
+- Promoted that stage once, passed two unsigned public smoke GETs and normally merged [PR #49](https://github.com/theguysaccount/charitology/pull/49) as `6e7e793` with the complete tested `cf51589` tree. The fresh main Git deployment is READY. All 59 selected unsigned canonical responses now pass, including 27 unique exact assets and 1,318,108 body bytes, with two offline body/header checks. All five Pages jobs and 48 selected public-site responses also pass, with 2,241,105 decoded body bytes exact to the actual main `6e7e793` artifact and an offline rehash. The exact generic-preload/lazy-search computed references remain excluded; selected favicon/OG/homepage-video file references do not prove social display or playback. [Acceptance](docs/PARTICIPANT_CHECK_IN_BACKEND_ACCEPTANCE.md#finite-production-release) preserves source-specific 870/894/902, local PG18/browser and negative histories. Hosted authenticated check-in, real participants, full staff shell, BFCache/native fold, attendance/work/minutes and complete OS-PART-01 remain unclaimed.
+
 ## November 7, 2026: first hosted check-in SQL result
 
 - Passed all 13 check-in SQL cases on PostgreSQL 17.11 in the actual PR merge checkout for `79c917f`, with thirteen owned schemas cleaned and namespace preservation verified. The full tree matches the branch; fictional fixture sessions and historical approvals remain explicit.
