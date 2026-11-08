@@ -16,6 +16,9 @@ export function applicationGrantsSql(role, schema = "public") {
 GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA ${target} TO ${grantee};
 REVOKE UPDATE,DELETE ON ${["os_events", "os_reports", "os_task_recurrence_occurrences", "os_resource_directory_history", "os_learning_history", "os_incubator_history"].map(table).join(",")} FROM ${grantee};
 REVOKE DELETE ON ${table("os_task_recurrence_series")} FROM ${grantee};
+REVOKE UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER ON ${table("os_participation_checkins")} FROM ${grantee};
+GRANT UPDATE(revision,withdrawn_at,withdrawal_receipt,updated_at) ON ${table("os_participation_checkins")} TO ${grantee};
+REVOKE ALL ON ${table("os_participation_checkins")} FROM PUBLIC;
 GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA ${target} TO ${grantee};
 ALTER DEFAULT PRIVILEGES IN SCHEMA ${target} GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO ${grantee};
 ALTER DEFAULT PRIVILEGES IN SCHEMA ${target} GRANT USAGE,SELECT ON SEQUENCES TO ${grantee};`;

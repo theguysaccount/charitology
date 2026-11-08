@@ -7,6 +7,7 @@ import { restoredTaskRecurrence } from "./task-recurrence-backup.mjs";
 import { restoredDirectoryResources } from "./directory-resource-backup.mjs";
 import { restoredLearningBridge } from "./learning-backup.mjs";
 import { restoredIncubatorBridge } from "./incubator-bridge-backup.mjs";
+import { restoredParticipantCheckins } from "./participant-check-in-backup.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -42,6 +43,7 @@ export function validateBackup(input, orgId, userId) {
     trash: input.trash || [],
   });
   const { checksum, ...payload } = input;
+  restoredParticipantCheckins(input.participantCheckins);
   if (!checksum || hash(payload) !== checksum)
     fail(
       422,

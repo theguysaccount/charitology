@@ -163,6 +163,9 @@ function fixture(module = "events") {
   const c = {
     async query(sql, p = []) {
       state.queries.push(sql);
+      // This attendance fixture retains no participant self-report sidecar.
+      if (sql === "SELECT t.* FROM os_participation_checkins t WHERE org_id=$1 ORDER BY id") return result([]);
+      if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return result([{ count: 0 }]);
       if (sql.includes("pg_advisory_xact_lock")) return result([]);
       if (sql.startsWith('SELECT 1 FROM "session"'))
         return result(state.live ? [{}] : []);

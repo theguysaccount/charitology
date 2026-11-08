@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 // Closed database catalog fixture, independently declared rather than read from
 // the module under test. Any future schema change needs an explicit test update.
 const catalog = {
+  os_participation_checkins: 'org_id id origin_mode revision live_participation_id history report_receipt withdrawn_at withdrawal_receipt created_at updated_at',
   os_records: 'org_id id module_id data status owner_id last_editor_id revision approval snapshot source deleted_at created_at updated_at',
   os_events: 'org_id id actor_id action record_id module_id detail created_at',
   os_integrations: 'org_id id provider name config encrypted_token revision status last_checked_at last_error created_at',
