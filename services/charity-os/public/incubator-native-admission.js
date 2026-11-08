@@ -7704,11 +7704,17 @@ var transport = (fn) => {
   }
 };
 var INCUBATOR_LIMITS = Object.freeze({ nativeBytes: 8e6, selectedBytes: 1048576, sourceBytes: 1056768, previewBytes: 2097152, requestBytes: 131072, eventBytes: 131072, receiptBytes: 8192, history: 1e3, historyBytes: 16777216, bindings: 40, liveBindings: 20, nativeVersions: 8, eventsPerBinding: 8, jsonDepth: 32, jsonNodes: 2e5 });
+var incubatorCanonical = (v, options) => transport(() => learningCanonical(v, options));
 var incubatorOwned = (v, options) => transport(() => learningOwned(v, options));
 var incubatorFreeze = learningFreeze;
 var incubatorBytes = (v, max) => transport(() => learningBytes(v, max));
 var incubatorRepresentable = learningRepresentable;
 var parseIncubatorJSON = (v, max = INCUBATOR_LIMITS.requestBytes, options) => transport(() => parseLearningTransport(v, max, options));
+var domains = /* @__PURE__ */ new Set(["registry", "source", "event", "candidate-data", "program-data", "review", "command", "request", "actor-binding", "membership", "session", "restore-epoch", "source-upload", "inspection", "cursor"]);
+function incubatorHash(domain, value) {
+  if (!domains.has(domain)) incubatorFail("incubator_hash", "Unknown Incubator hash namespace.");
+  return bytesToHex(sha256(new TextEncoder().encode("charitology-incubator-v1:" + domain + "\n" + incubatorCanonical(value))));
+}
 var incubatorRawHash = (bytes) => bytesToHex(sha256(bytes));
 function incubatorObject(v, keys, field = "") {
   if (!v || typeof v !== "object" || Array.isArray(v) || ![Object.prototype, null].includes(Object.getPrototypeOf(v)) || Object.keys(v).length !== keys.length || Object.keys(v).some((k) => !keys.includes(k))) incubatorFail("incubator_shape", "Use every documented field and no additional fields.", field);
@@ -7776,6 +7782,7 @@ function inspectIncubatorNativeValue(bytes, input) {
   return incubatorOwned({ adapter, selection: choice2, selected, originalBytes: owned.length, originalSha256 }, { bytes: INCUBATOR_LIMITS.sourceBytes });
 }
 export {
+  incubatorHash,
   inspectIncubatorNativeValue,
   listIncubatorNativeSelections,
   validateIncubatorSelectedNative

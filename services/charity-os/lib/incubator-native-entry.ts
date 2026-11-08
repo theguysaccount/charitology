@@ -1,6 +1,8 @@
 /** Exactly one existing native producer. Complete admission precedes any selection. */
 import { parseRemainingRecordBackup, remainingRecordBackup } from '../../../src/lib/client/remaining-record-recovery-formats';
 import { incubatorBytes, incubatorFail, incubatorFreeze, incubatorOwned, incubatorObject, incubatorId, incubatorRawHash, incubatorRepresentable, parseIncubatorJSON, INCUBATOR_LIMITS } from './incubator-bridge-json.mjs';
+// Browser ProgramPin construction uses this exact canonicalizer/hash implementation.
+export { incubatorHash } from './incubator-bridge-json.mjs';
 const KEY = 'charitology.partner-workspace-v1.charity-incubator' as const;
 const ADAPTER = 'incubator-project-milestone-native-v1';
 function complete(bytes: Uint8Array, adapter: string): any {

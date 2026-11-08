@@ -6,9 +6,18 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { listIncubatorNativeSelections, inspectIncubatorNative, makeIncubatorSourceCapture, validateIncubatorSourceCapture, INCUBATOR_ADAPTER, INCUBATOR_NATIVE_REGISTRY, INCUBATOR_NATIVE_REGISTRY_SHA256 } from '../lib/incubator-native.mjs';
 import { incubatorHash, parseIncubatorJSON, incubatorOwned } from '../lib/incubator-bridge-json.mjs';
+import { incubatorHash as browserIncubatorHash } from '../lib/incubator-native-admission.mjs';
 import { nativeFixture, nativeRow, selection, sourceFixture, clone, encode, AT } from './incubator-fixtures.mjs';
 const choice = { adapter: INCUBATOR_ADAPTER, selection };
 const error = code => e => e.code === code;
+test('checked browser facade uses the same program-data hash, canonical rules and domain refusal', () => {
+  const values = [{ title: 'Exact program', kind: 'program', evidence: null }, { z: ['中', 0, null, false], a: { b: '\nLiteral\ttext' } }];
+  for (const value of values) assert.equal(browserIncubatorHash('program-data', value), incubatorHash('program-data', value));
+  assert.equal(browserIncubatorHash('program-data', { b: 2, a: 1 }), browserIncubatorHash('program-data', { a: 1, b: 2 }));
+  assert.notEqual(browserIncubatorHash('program-data', values[0]), browserIncubatorHash('candidate-data', values[0]));
+  assert.throws(() => browserIncubatorHash('unsupported-domain', values[0]));
+  assert.throws(() => browserIncubatorHash('program-data', { unsupported: '\0' }));
+});
 test('actual existing native exporter and strict codec agree with the one-producer admission', async () => {
   const repo = fileURLToPath(new URL('../../../', import.meta.url));
   const built = await build({ stdin: { contents: 'export { remainingRecordBackup, parseRemainingRecordBackup } from "./src/lib/client/remaining-record-recovery-formats.ts";', resolveDir: repo }, bundle: true, format: 'esm', platform: 'neutral', write: false, logLevel: 'silent' });

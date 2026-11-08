@@ -7,7 +7,7 @@ export const INCUBATOR_METHOD = 'incubator-project-milestone-v1';
 export const INCUBATOR_NATIVE_REGISTRY = freeze({ format: 'charitology-incubator-native-registry', version: 1, adapter: INCUBATOR_ADAPTER, method: INCUBATOR_METHOD, key: 'charitology.partner-workspace-v1.charity-incubator', composedAdapter: 'partner-charity-incubator-v1', definitionSha256: 'eded5ab6727d9def42321ff1551fa22329f2281863ffdb60bb95a6efde697656', selection: 'one-project-and-one-milestone', retainedStringPolicy: 'postgres-jsonb-selected-scalars-v1', admission });
 // This literal was obtained from the real checked bundle/complete source manifest.
 // Version1 cannot silently track future producer edits.
-export const INCUBATOR_NATIVE_REGISTRY_SHA256 = '68a7e3e20574e4edab07e88da869e12a33aa43c3c69418509cb3ef56203f0f6a';
+export const INCUBATOR_NATIVE_REGISTRY_SHA256 = '9f7b99ebf552b116e33d8dda78bb463bb4dfd09da9da5cec2fa888fc690ff4bc';
 if (H('registry', INCUBATOR_NATIVE_REGISTRY) !== INCUBATOR_NATIVE_REGISTRY_SHA256) throw Error('Incubator v1 native interpretation changed; introduce an explicit new version before admitting data.');
 function call(fn) { try { return fn(); } catch (e) { if (e instanceof IncubatorError) throw e; if (e?.name === 'IncubatorError' && /^incubator_[a-z_]+$/.test(e.code)) throw new IncubatorError(e.code, e.message, e.issues?.[0]?.field ?? '', e.status); fail('incubator_native', 'Choose the complete supported native Incubator export.'); } }
 const inspections = new WeakSet();
