@@ -56,4 +56,12 @@ The appended draft edition is `observations-2026-11-08-education-plan`, sequence
 
 The fixed CSV row is record 29, byte range 3,952–4,087 (end exclusive), SHA-256 `8bd4d88b7fc68066ed69ef40e77a49eb7b5ed2d8bc206d88063ed66230b2ef10`. It reports requirements of USD 140,022,000, funding of USD 79,460,644 and the original percentage `57`. The separately computed exact ratio is `19865161/35005500`, displayed as 56.75%; requirements minus funding is USD 60,561,356. These are historical plan values, not current national education need or an assessment of a named charity.
 
-The selected JSON export is 40,922 bytes, SHA-256 `4635c810ccb555fb7a1273d46a810c51f3c01bf52f8bc164de93da266a1dea33`; the selected CSV is 2,180 bytes, SHA-256 `8231589d47936f0bc7a4df4db407fc3319422f053804789b21d064919f4e4eb4`. Complete new-source build, committed append-only history, actual browser downloads, CI and publication remain pending. New records remain draft; no independent human method or rights review is claimed.
+The selected JSON export is 40,922 bytes, SHA-256 `4635c810ccb555fb7a1273d46a810c51f3c01bf52f8bc164de93da266a1dea33`; the selected CSV is 2,180 bytes, SHA-256 `8231589d47936f0bc7a4df4db407fc3319422f053804789b21d064919f4e4eb4`. New records remain draft; no independent human method or rights review is claimed.
+
+## Committed data and first build
+
+Data B is `5a6587e3bad3ef865ade6184858aaac17220ec47`, immediately after source A. The actual committed append-only check from main `a720637` to B passes, including all 1,560 previous immutable non-registry files and both editions' genuine source baselines. No CI environment or commit identity was substituted for that local check.
+
+The normal build on B passes all 611 pages. Both selected download bodies match their reviewed hashes and byte counts above. The 209,552-byte country API and 180,335-byte humanitarian financial-reference API remain byte-identical to the earlier local build: hashes `25eab195fb4bb595696bdda5e74a1f5206a365f34244936d5d8c4130ad42ee0e` and `300edddf002844fb810a6c924f82115a42bcd1c86f40e95b859c492138c39884`. The new plan-cluster API is a separate 43,641-byte response.
+
+The first full repository check stopped in an existing private-form test helper. It injected the same `../../lib/site` import into three differently located components; the new Depth Census reference link exposed that component's shallower path. The helper now compiles each isolated fragment with its actual frontmatter `url` import. All 47 actual-SSR/compiled-script private-form groups pass after the test-only correction. The first failure is retained; no business logic, source vector or captured input changed. A complete repository check, actual browser downloads, CI and publication remain pending.

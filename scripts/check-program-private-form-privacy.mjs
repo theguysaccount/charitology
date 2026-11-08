@@ -473,8 +473,29 @@ try {
       source.indexOf("</section>", sectionStart) + "</section>".length;
     const fragment = source.slice(sectionStart, end);
     // Public page catalogs/ledger are deliberately not loaded by this private-form test.
+    // Keep this component's actual url import: DepthCensus is one directory
+    // shallower than the two record components. An unused hardcoded import
+    // previously hid that difference until its public reference link used url.
+    const frontmatter = ts.createSourceFile(
+      entry.path + ".frontmatter.ts",
+      source.startsWith("---") ? source.split("---")[1] : "",
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    const siteImports = frontmatter.statements.filter(
+      (statement) =>
+        ts.isImportDeclaration(statement) &&
+        ts.isStringLiteral(statement.moduleSpecifier) &&
+        statement.moduleSpecifier.text.endsWith("/lib/site") &&
+        statement.importClause?.namedBindings &&
+        ts.isNamedImports(statement.importClause.namedBindings) &&
+        statement.importClause.namedBindings.elements.some(
+          (binding) => binding.name.text === "url",
+        ),
+    );
+    assert.equal(siteImports.length, 1, "actual component url import is unique");
     const component = await compileComponent(
-      '---\nimport { url } from "../../lib/site";\n---\n' + fragment,
+      "---\n" + siteImports[0].getText(frontmatter) + "\n---\n" + fragment,
       entry.path,
     );
     mounts.push({
