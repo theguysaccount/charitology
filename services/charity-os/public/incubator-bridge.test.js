@@ -52,8 +52,25 @@ function service() {
   }
   return {api,calls,program,recordPin,sources,previews};
 }
+// Feature-local correction only: a real single SELECT accepts a value only when
+// that option is actually present. The shared frozen DOM fixture stays unchanged.
+function incubatorTestDOM() {
+  const dom=learningTestDOM(), create=dom.document.createElement;
+  dom.document.createElement=tag=>{
+    const element=create(tag);
+    if (element.tagName==='SELECT') {
+      let explicitlyUnselected=false;
+      Object.defineProperty(element,'value',{configurable:true,
+        get(){const options=element.querySelectorAll('option'),selected=options.find(row=>row.selected);return selected?.value??(explicitlyUnselected?'':options[0]?.value??'');},
+        set(value){let found=false;for(const option of element.querySelectorAll('option')){option.selected=!found&&option.value===String(value);if(option.selected)found=true;}explicitlyUnselected=!found;},
+      });
+    }
+    return element;
+  };
+  return dom;
+}
 function harness(t,options={}) {
-  const dom=learningTestDOM(), s=service(); let authorized=true, dirty=false, keyCount=0;
+  const dom=incubatorTestDOM(), s=service(); let authorized=true, dirty=false, keyCount=0;
   const view=createIncubatorBridgeWorkspace({org:'org-a',actorId:'actor-a',api:s.api,administrator:true,isCurrent:()=>authorized,onDirty:value=>{dirty=value;},makeCommandKey:()=>{keyCount++;return COMMAND;},...options});dom.mount(view);
   t.after(()=>{view.dispose();dom.restore();});
   const get=name=>{const value=view.querySelector(`[data-incubator="${name}"]`);assert.ok(value,name);return value;};
@@ -84,6 +101,33 @@ function historicalFixture(h,recovered=false) {
   h.api[recovered?'incubatorRecoveredHead':'incubatorBinding']=async()=>structuredClone(detail);
   return {source,event,summary,detail};
 }
+
+test('native option nodes make default new, refresh/adopt, loaded programs and saved row choices usable',async t=>{
+  const h=harness(t),mode=h.get('mode');
+  assert.equal(mode.value,'new','the visible deliberate action starts at New copied pair');
+  assert.deepEqual(mode.querySelectorAll('option').map(row=>row.value),['','new','refresh','adopt']);
+  assert.match(mode.textContent,/New copied pair/);assert.doesNotMatch(mode.textContent,/\[object/);
+  for(const value of ['refresh','adopt','new']){mode.value=value;assert.equal(mode.value,value);}
+  mode.value='unavailable-action';assert.equal(mode.value,'','an absent option cannot become a selected value');mode.value='new';
+  await h.get('load').click();const program=h.get('program');
+  assert.equal(program.value,'','a loaded program is still a deliberate choice');
+  assert.equal(program.querySelectorAll('option').find(row=>row.value===h.program.id)?.textContent,`${h.program.data.title} — ${h.program.id}, revision ${h.program.revision}`);
+  program.value=h.program.id;assert.equal(program.value,h.program.id);program.value='missing-program';assert.equal(program.value,'');
+  await h.picker.choose(new File([encode(nativeFixture())],'fictional.json'));
+  for(const [name,value] of [['project','native-project'],['milestone','native-milestone']]){
+    const select=h.get(name);assert.ok(select.querySelectorAll('option').some(row=>row.value===value));assert.doesNotMatch(select.textContent,/\[object/);
+    select.value=value;assert.equal(select.value,value);select.value='missing-native-row';assert.equal(select.value,'');
+  }
+});
+for(const historical of [false,true]) test(`${historical?'inactive recovered':'live'} history presents actual ordinary project and milestone links, not stringified nodes`,async t=>{
+  const h=harness(t),old=historicalFixture(h,historical);await h.get('load').click();
+  await h.set(historical?'recovered':'binding',historical?old.summary.head.sha256:old.summary.bindingId,'change');
+  await h.get(historical?'read-recovered':'read-history').click();
+  const links=h.get('history').querySelectorAll('a');
+  assert.deepEqual(links.map(row=>row.getAttribute('href')),old.event.candidates.map(row=>`#module/projects/${row.id}`),'each ordinary editor link is a usable anchor node');
+  assert.match(links[0].textContent,/ordinary project/);assert.match(links[1].textContent,/ordinary milestone/);
+  assert.doesNotMatch(h.get('history').textContent,/\[object/);
+});
 
 test('real native admission, exact ProgramPin and normalized two-record preview are distinct from literal authorship',async t=>{
   const h=harness(t);assert.equal(h.calls.length,0,'constructor has no network/storage work');

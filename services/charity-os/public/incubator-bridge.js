@@ -27,7 +27,7 @@ let number = 0;
 const json = (title, value) => node('details', {}, node('summary', {}, title), node('pre', { tabindex:'0', class:'incubator-json' }, JSON.stringify(value, null, 2)));
 const panel = (title, ...children) => node('section', { class:'incubator-card' }, node('h2', {}, title), ...children);
 function choices(control, rows, placeholder, keep = control.value) {
-  control.replaceChildren(node('option', { value:'' }, placeholder), rows.map(([value, text]) => node('option', { value, selected:value === keep }, text)));
+  control.replaceChildren(node('option', { value:'' }, placeholder), ...rows.map(([value, text]) => node('option', { value, selected:value === keep }, text)));
   control.value = rows.some(([value]) => value === keep) ? keep : '';
 }
 function checkedSource(source) {
@@ -223,7 +223,7 @@ export function createIncubatorBridgeWorkspace({ org, actorId, api, administrato
       choices(bindingChoice,summaries.map(row=>[row.bindingId,`${row.bindingId} / ${row.programId} / event ${row.head.sequence}`]),'Choose a live history',key);
     }
     historyHost.replaceChildren(node('p',{class:'notice neutral'},historical?'Inactive historical material. Original accounts, commands and approvals are not current authority.':'Original created fields are historical. Ordinary records may now be edited, in trash or unavailable.'),json('Exact selected source',result.source),json('Native captures and complete event history',result),
-      result.events.flatMap(entry => (entry.event?.candidates ?? []).filter(row=>id(row.id)).map(row => node('p',{},node('a',{href:`#module/projects/${row.id}`},`Open ordinary ${row.data?.kind || 'planning'} record ${row.id}`)))));
+      ...result.events.flatMap(entry => (entry.event?.candidates ?? []).filter(row=>id(row.id)).map(row => node('p',{},node('a',{href:`#module/projects/${row.id}`},`Open ordinary ${row.data?.kind || 'planning'} record ${row.id}`)))));
     say(historical?'Historical source read. Select adoption, a current program and fresh authored mapping. The original full native file is not present.':'Current history read. Refresh-copy requires the same two saved IDs and makes two additional planned records.');
   }
   const read = button('Read selected live history',token=>readHistory(false,token),'read-history');
