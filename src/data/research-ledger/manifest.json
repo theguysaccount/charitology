@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "adapterVersion": "research-content-v1",
-  "currentEditionId": "edition:2026-10-27-initial",
+  "adapterVersion": "research-content-v2",
+  "currentEditionId": "edition:2026-11-07-encyclopedia",
   "capture": {
-    "id": "capture:2026-10-27-initial",
-    "at": "2026-10-27T08:31:31.000Z",
-    "commit": "8df2d0ddbc6d91b9841c6bbb94dbde1fc7c00137"
+    "id": "capture:2026-11-07-encyclopedia",
+    "at": "2026-11-07T23:20:18.679Z",
+    "commit": "d9aeb7a81c74b3c33bb5489e701d58fcc9f28bc5"
   },
   "coverage": {
     "includedSourceKeys": [
@@ -22,6 +22,32 @@
       "cases/rosenwald-schools",
       "cases/scared-straight",
       "cases/smallpox-eradication",
+      "encyclopedia/beneficiary-feedback",
+      "encyclopedia/charity-as-a-system",
+      "encyclopedia/cost-effectiveness-analysis",
+      "encyclopedia/counterfactual-impact",
+      "encyclopedia/discounting",
+      "encyclopedia/donor-advised-funds",
+      "encyclopedia/effective-altruism",
+      "encyclopedia/expected-value",
+      "encyclopedia/identifiable-victim-effect",
+      "encyclopedia/impact-investing",
+      "encyclopedia/moral-uncertainty",
+      "encyclopedia/mutual-aid",
+      "encyclopedia/neglectedness",
+      "encyclopedia/outputs-and-outcomes",
+      "encyclopedia/overhead-ratio",
+      "encyclopedia/participatory-grantmaking",
+      "encyclopedia/private-foundations",
+      "encyclopedia/psychic-numbing",
+      "encyclopedia/randomized-controlled-trials",
+      "encyclopedia/restricted-and-unrestricted-funding",
+      "encyclopedia/scale-neglectedness-tractability",
+      "encyclopedia/source-depth",
+      "encyclopedia/symptoms-and-sources",
+      "encyclopedia/systemic-change",
+      "encyclopedia/theory-of-change",
+      "encyclopedia/warm-glow-giving",
       "journal/depth-without-a-ladder",
       "journal/ten-dollars",
       "journal/the-feedback-contract",
@@ -59,7 +85,8 @@
       "This initial capture establishes current draft coverage, not a known January baseline or an earlier status history.",
       "The one PR-backed artifact is an editorial correction to two claim subjects; it is not a scientific result, independent review or problem resolution.",
       "Source-derived case descriptions and manuscript bylines do not establish performed Charitology fieldwork or documented complete human authorship.",
-      "Public GitHub observations describe only the named objects at their recorded inspection time. An empty returned review list is not proof about reviews elsewhere."
+      "Public GitHub observations describe only the named objects at their recorded inspection time. An empty returned review list is not proof about reviews elsewhere.",
+      "The encyclopedia extension records exact draft wording at its separate capture. It supplies no independent source review, documented complete human authorship or earlier history."
     ]
   },
   "currentSources": [
@@ -205,6 +232,292 @@
         "subjectHash": "826756971a4d7fccc34860688b8b7178512fd675477661b8f3a2cd84a5d1af63"
       },
       "href": "/record/case-studies/smallpox-eradication/"
+    },
+    {
+      "sourceKey": "encyclopedia/beneficiary-feedback",
+      "recordId": "concept:beneficiary-feedback",
+      "sourceId": "source:encyclopedia-beneficiary-feedback-v1",
+      "currentVersion": {
+        "recordId": "concept:beneficiary-feedback",
+        "version": 1,
+        "subjectHash": "d3e8f3618c96c7eac9951727d06df62ad85c1a32006c896d73378dbc43994b39"
+      },
+      "href": "/record/encyclopedia/beneficiary-feedback/"
+    },
+    {
+      "sourceKey": "encyclopedia/charity-as-a-system",
+      "recordId": "concept:charity-as-a-system",
+      "sourceId": "source:encyclopedia-charity-as-a-system-v1",
+      "currentVersion": {
+        "recordId": "concept:charity-as-a-system",
+        "version": 1,
+        "subjectHash": "8c6941ba589935b86c2a933c276772ca6b2e35e61166c4d076b17c07a14d5fbe"
+      },
+      "href": "/record/encyclopedia/charity-as-a-system/"
+    },
+    {
+      "sourceKey": "encyclopedia/cost-effectiveness-analysis",
+      "recordId": "concept:cost-effectiveness-analysis",
+      "sourceId": "source:encyclopedia-cost-effectiveness-analysis-v1",
+      "currentVersion": {
+        "recordId": "concept:cost-effectiveness-analysis",
+        "version": 1,
+        "subjectHash": "7885e5e4e443db83ea713b8cafee7704eab60f2fbff17ed10820e4ff9b698d02"
+      },
+      "href": "/record/encyclopedia/cost-effectiveness-analysis/"
+    },
+    {
+      "sourceKey": "encyclopedia/counterfactual-impact",
+      "recordId": "concept:counterfactual-impact",
+      "sourceId": "source:encyclopedia-counterfactual-impact-v1",
+      "currentVersion": {
+        "recordId": "concept:counterfactual-impact",
+        "version": 1,
+        "subjectHash": "8c2e85325f2d4b5512fc2aa93c8f0a83158c6cd3785ccf7a21a8811f22a7a742"
+      },
+      "href": "/record/encyclopedia/counterfactual-impact/"
+    },
+    {
+      "sourceKey": "encyclopedia/discounting",
+      "recordId": "concept:discounting",
+      "sourceId": "source:encyclopedia-discounting-v1",
+      "currentVersion": {
+        "recordId": "concept:discounting",
+        "version": 1,
+        "subjectHash": "247b3f29965cd7fad1dbb7d45b4c6f46e5f17bfc0dec211b2b8d0efe902eec80"
+      },
+      "href": "/record/encyclopedia/discounting/"
+    },
+    {
+      "sourceKey": "encyclopedia/donor-advised-funds",
+      "recordId": "concept:donor-advised-funds",
+      "sourceId": "source:encyclopedia-donor-advised-funds-v1",
+      "currentVersion": {
+        "recordId": "concept:donor-advised-funds",
+        "version": 1,
+        "subjectHash": "626f08b7d44f6c5572a82cc685da9075448b536a76c1a067115b88126c665ff1"
+      },
+      "href": "/record/encyclopedia/donor-advised-funds/"
+    },
+    {
+      "sourceKey": "encyclopedia/effective-altruism",
+      "recordId": "concept:effective-altruism",
+      "sourceId": "source:encyclopedia-effective-altruism-v1",
+      "currentVersion": {
+        "recordId": "concept:effective-altruism",
+        "version": 1,
+        "subjectHash": "35bd31bebc5eafd79096668878c60a7f54603f8b95ca781ada6ee48389064b94"
+      },
+      "href": "/record/encyclopedia/effective-altruism/"
+    },
+    {
+      "sourceKey": "encyclopedia/expected-value",
+      "recordId": "concept:expected-value",
+      "sourceId": "source:encyclopedia-expected-value-v1",
+      "currentVersion": {
+        "recordId": "concept:expected-value",
+        "version": 1,
+        "subjectHash": "8c90db33e17a07081a6e102d7db68096d8640830a327c0f3e517fe9cc8d72373"
+      },
+      "href": "/record/encyclopedia/expected-value/"
+    },
+    {
+      "sourceKey": "encyclopedia/identifiable-victim-effect",
+      "recordId": "concept:identifiable-victim-effect",
+      "sourceId": "source:encyclopedia-identifiable-victim-effect-v1",
+      "currentVersion": {
+        "recordId": "concept:identifiable-victim-effect",
+        "version": 1,
+        "subjectHash": "754d3f2c519651c914fa5c63e38dbe0ac00b741259e0a311c9b0751fea6562c3"
+      },
+      "href": "/record/encyclopedia/identifiable-victim-effect/"
+    },
+    {
+      "sourceKey": "encyclopedia/impact-investing",
+      "recordId": "concept:impact-investing",
+      "sourceId": "source:encyclopedia-impact-investing-v1",
+      "currentVersion": {
+        "recordId": "concept:impact-investing",
+        "version": 1,
+        "subjectHash": "542a73aff962ccd01835bdecea33b2ab92afc410e5d0e9ca40fe87ec14ea8fa1"
+      },
+      "href": "/record/encyclopedia/impact-investing/"
+    },
+    {
+      "sourceKey": "encyclopedia/moral-uncertainty",
+      "recordId": "concept:moral-uncertainty",
+      "sourceId": "source:encyclopedia-moral-uncertainty-v1",
+      "currentVersion": {
+        "recordId": "concept:moral-uncertainty",
+        "version": 1,
+        "subjectHash": "7888f0ef8045e5dc1e61444a47b6b75516df5ae0e8d8e0742065d781a5d517f2"
+      },
+      "href": "/record/encyclopedia/moral-uncertainty/"
+    },
+    {
+      "sourceKey": "encyclopedia/mutual-aid",
+      "recordId": "concept:mutual-aid",
+      "sourceId": "source:encyclopedia-mutual-aid-v1",
+      "currentVersion": {
+        "recordId": "concept:mutual-aid",
+        "version": 1,
+        "subjectHash": "9958abef43604bf7032d01e5cf82e601e5e2c49b57fedb73c642707e598fea9c"
+      },
+      "href": "/record/encyclopedia/mutual-aid/"
+    },
+    {
+      "sourceKey": "encyclopedia/neglectedness",
+      "recordId": "concept:neglectedness",
+      "sourceId": "source:encyclopedia-neglectedness-v1",
+      "currentVersion": {
+        "recordId": "concept:neglectedness",
+        "version": 1,
+        "subjectHash": "2135697ed1a306caceaddbfc3485cc0f9b5c59cfa86f5544ffa994e7f936281e"
+      },
+      "href": "/record/encyclopedia/neglectedness/"
+    },
+    {
+      "sourceKey": "encyclopedia/outputs-and-outcomes",
+      "recordId": "concept:outputs-and-outcomes",
+      "sourceId": "source:encyclopedia-outputs-and-outcomes-v1",
+      "currentVersion": {
+        "recordId": "concept:outputs-and-outcomes",
+        "version": 1,
+        "subjectHash": "3d16fcd04370ffc1948a4bb83f77568075aad09c1c1df66047b3069d4563e581"
+      },
+      "href": "/record/encyclopedia/outputs-and-outcomes/"
+    },
+    {
+      "sourceKey": "encyclopedia/overhead-ratio",
+      "recordId": "concept:overhead-ratio",
+      "sourceId": "source:encyclopedia-overhead-ratio-v1",
+      "currentVersion": {
+        "recordId": "concept:overhead-ratio",
+        "version": 1,
+        "subjectHash": "f0753458bc7b3a0b30fe5d6957d639d5c878a37dddcd30bbd81d69ee3f563c10"
+      },
+      "href": "/record/encyclopedia/overhead-ratio/"
+    },
+    {
+      "sourceKey": "encyclopedia/participatory-grantmaking",
+      "recordId": "concept:participatory-grantmaking",
+      "sourceId": "source:encyclopedia-participatory-grantmaking-v1",
+      "currentVersion": {
+        "recordId": "concept:participatory-grantmaking",
+        "version": 1,
+        "subjectHash": "022a9765c34f0f28c50f65579f45fcb61c7f7d663adc90504f1b2391d5ff5a0d"
+      },
+      "href": "/record/encyclopedia/participatory-grantmaking/"
+    },
+    {
+      "sourceKey": "encyclopedia/private-foundations",
+      "recordId": "concept:private-foundations",
+      "sourceId": "source:encyclopedia-private-foundations-v1",
+      "currentVersion": {
+        "recordId": "concept:private-foundations",
+        "version": 1,
+        "subjectHash": "d03c0cd83ce61442200dbe91c6e085f4cc14827966fe047fe13c7774536c85ef"
+      },
+      "href": "/record/encyclopedia/private-foundations/"
+    },
+    {
+      "sourceKey": "encyclopedia/psychic-numbing",
+      "recordId": "concept:psychic-numbing",
+      "sourceId": "source:encyclopedia-psychic-numbing-v1",
+      "currentVersion": {
+        "recordId": "concept:psychic-numbing",
+        "version": 1,
+        "subjectHash": "2d5393dba77d8491177ec240fae9868218417e20925d846b15c9ec52f3af2462"
+      },
+      "href": "/record/encyclopedia/psychic-numbing/"
+    },
+    {
+      "sourceKey": "encyclopedia/randomized-controlled-trials",
+      "recordId": "concept:randomized-controlled-trials",
+      "sourceId": "source:encyclopedia-randomized-controlled-trials-v1",
+      "currentVersion": {
+        "recordId": "concept:randomized-controlled-trials",
+        "version": 1,
+        "subjectHash": "d6fdc38227c624e96c38e676691488ab366ba65b4ebd5ac2705fa1dc846fdf0f"
+      },
+      "href": "/record/encyclopedia/randomized-controlled-trials/"
+    },
+    {
+      "sourceKey": "encyclopedia/restricted-and-unrestricted-funding",
+      "recordId": "concept:restricted-and-unrestricted-funding",
+      "sourceId": "source:encyclopedia-restricted-and-unrestricted-funding-v1",
+      "currentVersion": {
+        "recordId": "concept:restricted-and-unrestricted-funding",
+        "version": 1,
+        "subjectHash": "b21d1616364ebc49787e9320734dfa7502dadf41ef5f494f8540e10c71beaaa3"
+      },
+      "href": "/record/encyclopedia/restricted-and-unrestricted-funding/"
+    },
+    {
+      "sourceKey": "encyclopedia/scale-neglectedness-tractability",
+      "recordId": "concept:scale-neglectedness-tractability",
+      "sourceId": "source:encyclopedia-scale-neglectedness-tractability-v1",
+      "currentVersion": {
+        "recordId": "concept:scale-neglectedness-tractability",
+        "version": 1,
+        "subjectHash": "1207f518054314422f9a4b8af8d8d426bca8b69efe97bb262d0c1f25a53dc928"
+      },
+      "href": "/record/encyclopedia/scale-neglectedness-tractability/"
+    },
+    {
+      "sourceKey": "encyclopedia/source-depth",
+      "recordId": "concept:source-depth",
+      "sourceId": "source:encyclopedia-source-depth-v1",
+      "currentVersion": {
+        "recordId": "concept:source-depth",
+        "version": 1,
+        "subjectHash": "5ba4e9376e58ad4ee4ced5479b0609d8a9dcc331db826a2dfac70f16c25e114e"
+      },
+      "href": "/record/encyclopedia/source-depth/"
+    },
+    {
+      "sourceKey": "encyclopedia/symptoms-and-sources",
+      "recordId": "concept:symptoms-and-sources",
+      "sourceId": "source:encyclopedia-symptoms-and-sources-v1",
+      "currentVersion": {
+        "recordId": "concept:symptoms-and-sources",
+        "version": 1,
+        "subjectHash": "76c629ab8bb7eb283e720b7f64dc8a646ea7631a2a9bfbabd5ce5518cadcedbb"
+      },
+      "href": "/record/encyclopedia/symptoms-and-sources/"
+    },
+    {
+      "sourceKey": "encyclopedia/systemic-change",
+      "recordId": "concept:systemic-change",
+      "sourceId": "source:encyclopedia-systemic-change-v1",
+      "currentVersion": {
+        "recordId": "concept:systemic-change",
+        "version": 1,
+        "subjectHash": "bb3fb2ad47a978d745098b069846134f55e170b262e36bac0bfff53ff05ab14c"
+      },
+      "href": "/record/encyclopedia/systemic-change/"
+    },
+    {
+      "sourceKey": "encyclopedia/theory-of-change",
+      "recordId": "concept:theory-of-change",
+      "sourceId": "source:encyclopedia-theory-of-change-v1",
+      "currentVersion": {
+        "recordId": "concept:theory-of-change",
+        "version": 1,
+        "subjectHash": "14aa5468179e06206904daa00b7af1d632f6ebf216bd0899212cd62567bb0fba"
+      },
+      "href": "/record/encyclopedia/theory-of-change/"
+    },
+    {
+      "sourceKey": "encyclopedia/warm-glow-giving",
+      "recordId": "concept:warm-glow-giving",
+      "sourceId": "source:encyclopedia-warm-glow-giving-v1",
+      "currentVersion": {
+        "recordId": "concept:warm-glow-giving",
+        "version": 1,
+        "subjectHash": "c4b17f7c1c4f5eab2d5111fe19cc1ef14c1b915218d7f232b665ece5a08c07c7"
+      },
+      "href": "/record/encyclopedia/warm-glow-giving/"
     },
     {
       "sourceKey": "journal/depth-without-a-ladder",

@@ -1,0 +1,56 @@
+{
+  "id": "version:concept-symptoms-and-sources-v1",
+  "recordId": "concept:symptoms-and-sources",
+  "version": 1,
+  "previousId": null,
+  "adapterVersion": "research-encyclopedia-v1",
+  "subject": {
+    "type": "entry",
+    "collection": "encyclopedia",
+    "frontmatter": {
+      "title": "Symptoms and sources",
+      "summary": "The core distinction of charitology. A symptom is a problem as it shows up in people’s lives. A source is what keeps producing it upstream.",
+      "aliases": [
+        "root causes",
+        "upstream causes"
+      ],
+      "conditions": [
+        {
+          "collection": "conditions",
+          "id": "symptom-trap"
+        }
+      ],
+      "related": [
+        "/method/",
+        "/record/encyclopedia/source-depth/",
+        "/record/cause-atlas/"
+      ],
+      "sources": [
+        {
+          "title": "Humanity’s Checklist: six things to fix so we can fix everything else",
+          "url": "https://humanityschecklist.org/",
+          "publisher": "Humanity’s Checklist",
+          "year": 2026,
+          "note": null
+        }
+      ]
+    },
+    "body": "\nA **symptom** is a problem as it shows up in someone’s life: hunger tonight, an untreated fever, a flooded home. A **source** is something upstream that keeps producing problems, often many at once.\n\n## Why the distinction matters\n\nSymptoms are urgent, visible and real, and helping with them is good. Some needs recur because the conditions producing them persist. A food bank feeds people tonight, and tomorrow there is a line again. Charitology asks every gift where it acts on the chain from symptom to source, and asks the system as a whole whether its mix is right. That is the [Symptom Trap](/diagnosis/symptom-trap/).\n\n## The six sources\n\nHumanity’s Checklist argues that the world’s problems grow from a few shared sources inside humanity’s collective life:\n\n- **Story**: the story we tell ourselves about what is possible\n- **Coordination**: whether the people who could solve a problem together ever meet\n- **Vision**: whether we can picture the future we want to build\n- **Attention**: what our feeds and media reward\n- **Status**: what a culture admires\n- **Gatekeepers**: who gets to build and be seen\n\nFixing a source, the checklist argues, stops it feeding the problems below it and starts it feeding the cure. Charitology adopts these six as the top of its [depth scale](/record/encyclopedia/source-depth/) and treats the claim that fixing them would help everything downstream as a hypothesis to test.\n\n## Between symptom and source\n\nMost work sits in between. Charitology’s depth scale has five levels: relief, repair, prevention, structure and source. Bed nets are prevention: they stop malaria for the people who sleep under them. A ban on lead paint is structure: it changes the rules that produced the harm. The scale describes where the work acts. It does not say which level is better. A healthy system funds all five on purpose.\n"
+  },
+  "subjectHash": "76c629ab8bb7eb283e720b7f64dc8a646ea7631a2a9bfbabd5ce5518cadcedbb",
+  "authorship": {
+    "state": "unknown",
+    "complete": false,
+    "actorIds": [],
+    "refs": []
+  },
+  "sources": [
+    {
+      "sourceId": "source:encyclopedia-symptoms-and-sources-v1",
+      "selector": {
+        "kind": "entry"
+      }
+    }
+  ],
+  "hash": "47b6cbf43a3b0e2d73e2d86c51d202b9fbed21c1ae3981aa8b2d6e212e618dd8"
+}

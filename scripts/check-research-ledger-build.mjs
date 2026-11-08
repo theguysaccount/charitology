@@ -104,7 +104,7 @@ check(
     assert.equal(factualHash, researchSubjectHash(payload));
     assert.equal(api.data.edition.capturedAt, input.manifest.capture.at);
     assert.deepEqual(api.data.graph.records, input.records);
-    assert.equal(api.data.graph.records.length, 43);
+    assert.equal(api.data.graph.records.length, input.manifest.adapterVersion === "research-content-v2" ? 69 : 43);
     const index = jsonAt("/api/v1/index.json");
     for (const name of ["research-ledger", "research-progress"]) {
       const endpoint = index.endpoints.find((entry) => entry.name === name);
@@ -147,7 +147,7 @@ check(
 check(
   "Every real detail route and exact version anchor is present with model qualification",
   () => {
-    assert.equal(current.views.length, 43);
+    assert.equal(current.views.length, input.manifest.adapterVersion === "research-content-v2" ? 69 : 43);
     for (const view of current.views) {
       const doc = htmlAt(ledgerHref(view.id));
       const record = find(
@@ -156,6 +156,10 @@ check(
       );
       assert.ok(record, `Missing selected record content: ${view.id}`);
       assert.match(text(record), /Source review: draft/);
+      if (view.kind === "concept") {
+        assert.match(text(record), /Encyclopedia entry/);
+        assert.match(text(record), /No current qualifying whole-entry source\/framing review is recorded/);
+      }
       assert.ok(
         links(doc).includes(
           href(editionPath(current.edition.id) + "ledger.json"),
@@ -253,9 +257,9 @@ check(
 );
 
 check(
-  "All 44 pinned source routes retain exact UTF-8 bytes, byte lengths and SHA-256 closure",
+  "All pinned source routes retain exact UTF-8 bytes, byte lengths and SHA-256 closure",
   () => {
-    assert.equal(input.sources.length, 44);
+    assert.equal(input.sources.length, input.manifest.adapterVersion === "research-content-v2" ? 70 : 44);
     const sourceIds = new Set(current.graph.sources.map((source) => source.id));
     for (const source of input.sources) {
       const actual = bytesAt(sourcePath(source.id));
@@ -328,7 +332,7 @@ check(
 check(
   "Every covered content page links its exact record and retains an honest draft review notice",
   () => {
-    assert.equal(input.manifest.currentSources.length, 40);
+    assert.equal(input.manifest.currentSources.length, input.manifest.adapterVersion === "research-content-v2" ? 66 : 40);
     for (const binding of input.manifest.currentSources) {
       const doc = htmlAt(binding.href);
       const notice = find(

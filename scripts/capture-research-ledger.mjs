@@ -25,6 +25,7 @@ import {
   captureResearchEntry,
   captureResearchClaim,
   captureResearchSelector,
+  captureResearchSource,
 } from "../src/lib/research-ledger-capture.mjs";
 import {
   DATA_ROOT,
@@ -173,7 +174,7 @@ export function seedOptions(input, { currentFiles = false } = {}) {
         sourceKey: binding.sourceKey,
         href: binding.href,
         rawText,
-        ...captureResearchEntry({ sourceKey: binding.sourceKey, rawText }),
+        ...captureResearchSource({ sourceKey: binding.sourceKey, rawText }),
       };
     }),
     // The full Astro adapter separately scans all uncovered collection entries.

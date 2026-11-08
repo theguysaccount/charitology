@@ -228,6 +228,60 @@ export function captureResearchEntry(input) {
     declaredProblemState,
   });
 }
+
+// A separate additive profile: the original four collection projections above
+// and the two claim selectors below retain their frozen v1 meaning.
+export const ENCYCLOPEDIA_ADAPTER = "research-encyclopedia-v1";
+export function researchAdapterForSourceKey(value) {
+  if (typeof value === "string" && /^encyclopedia\/[a-z0-9][a-z0-9-]{0,99}$/.test(value))
+    return ENCYCLOPEDIA_ADAPTER;
+  sourceKey(value);
+  return "research-content-v1";
+}
+export function captureEncyclopediaEntry(input) {
+  exact(input, ["sourceKey", "rawText"], "encyclopedia capture");
+  if (researchAdapterForSourceKey(input.sourceKey) !== ENCYCLOPEDIA_ADAPTER)
+    fail("source", "The encyclopedia profile cannot reinterpret another family.");
+  const { fm, body } = parse(input.rawText);
+  const keys = ["title", "summary", "aliases", "conditions", "related", "sources"];
+  if (Object.keys(fm).some((key) => ![...keys, "review"].includes(key)))
+    fail("source", "Unknown substantive encyclopedia frontmatter field.");
+  text(fm.title, 500, "title");
+  text(fm.summary, 4000, "summary");
+  const aliases = fm.aliases ?? [], conditions = fm.conditions ?? [], related = fm.related ?? [];
+  for (const [key, values] of [["aliases", aliases], ["conditions", conditions], ["related", related]]) {
+    // Only an absent optional array defaults. Explicit null does not match Astro.
+    if (Object.hasOwn(fm, key) && fm[key] === null) fail("source", "Optional arrays cannot be null.");
+    list(values, 20, key);
+  }
+  aliases.forEach((value) => text(value, 500, "alias"));
+  conditions.forEach((value) => {
+    text(value, 100, "condition");
+    if (!/^[a-z0-9-]+$/.test(value)) fail("source", "Invalid condition reference.");
+  });
+  related.forEach((value) => {
+    text(value, 1200, "related route");
+    if (!/^\/(?!\/)[A-Za-z0-9_/#.-]*$/.test(value) || value.includes("..") || value.split("#").length > 2)
+      fail("source", "Use a bounded root-relative route and optional fragment.");
+  });
+  if (Array.isArray(fm.sources)) for (const source of fm.sources)
+    if (plain(source) && ["publisher", "year", "note"].some((key) => Object.hasOwn(source, key) && source[key] === null))
+      fail("source", "Optional raw source properties cannot be null under the encyclopedia schema.");
+  return frozen({
+    subject: { type: "entry", collection: "encyclopedia", frontmatter: {
+      title: fm.title, summary: fm.summary, aliases,
+      conditions: conditions.map((value) => ({ collection: "conditions", id: value })),
+      related, sources: sources(Object.hasOwn(fm, "sources") ? fm.sources : []),
+    }, body },
+    declaredReview: choice(Object.hasOwn(fm, "review") ? fm.review : "draft", ["draft", "reviewed"], "review"),
+    declaredProblemState: null,
+  });
+}
+export function captureResearchSource(input) {
+  return researchAdapterForSourceKey(input?.sourceKey) === ENCYCLOPEDIA_ADAPTER
+    ? captureEncyclopediaEntry(input)
+    : captureResearchEntry(input);
+}
 export function captureResearchSelector(input) {
   exact(input, ["adapter", "rawText"], "selector");
   const { fm, body } = parse(input.rawText);
