@@ -1159,12 +1159,17 @@ export async function createStaffParticipationWorkspace({
     try {
       await fn();
     } catch (error) {
-      if (isCurrent())
+      if (isCurrent()) {
         writeStatus(
           status.isConnected ? status : notice,
           error.message || "This change could not be completed.",
           true,
         );
+        if (root.isConnected && status.isConnected && root.contains(status)) {
+          status.setAttribute("tabindex", "-1");
+          status.focus();
+        }
+      }
     } finally {
       state.busy = false;
       for (const { control, disabled } of controls)

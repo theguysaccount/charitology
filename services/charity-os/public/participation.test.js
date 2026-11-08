@@ -2048,6 +2048,66 @@ test("known saved cancellation and missing-journal warning survive a failed foll
   }
 });
 
+test("decision errors focus the connected message and preserve literal writing", async () => {
+  const h = await staffHarness({
+    managed: true,
+    bookingRequest: ({ path }) => {
+      if (path.endsWith("/confirm"))
+        throw Object.assign(new Error("Fictional capacity refusal"), { status: 409 });
+    },
+  });
+  try {
+    await h.click("Confirm one place");
+    const form = h.root.querySelector("form");
+    const reason = form.querySelector("textarea");
+    reason.value = "  Literal overlap — 保留\nsecond line  ";
+    form.querySelector("input").checked = true;
+    reason.focus();
+    await form.emit("submit");
+    await h.flush();
+    const message = form.querySelectorAll("p").find((entry) => entry.attributes.role === "status");
+    assert.match(message.textContent, /Fictional capacity refusal/);
+    assert.equal(globalThis.document.activeElement, message);
+    assert.equal(message.attributes.tabindex, "-1");
+    assert.equal(reason.value, "  Literal overlap — 保留\nsecond line  ");
+    assert.equal(reason.disabled, false);
+  } finally {
+    h.cleanup();
+  }
+});
+
+test("late decision errors cannot reclaim focus from a removed form or lost workspace", async () => {
+  for (const scope of ["removed-form", "detached-workspace", "revoked-scope"]) {
+    let reject;
+    const h = await staffHarness({
+      managed: true,
+      bookingRequest: ({ path }) => {
+        if (path.endsWith("/confirm"))
+          return new Promise((_resolve, no) => { reject = no; });
+      },
+    });
+    try {
+      await h.click("Confirm one place");
+      const form = h.root.querySelector("form");
+      form.querySelector("input").checked = true;
+      await form.emit("submit");
+      await h.flush();
+      assert.equal(typeof reject, "function");
+      if (scope === "removed-form") form.remove();
+      else if (scope === "detached-workspace") h.root.connect(false);
+      else h.revoke();
+      const outside = globalThis.document.createElement("button");
+      outside.connect(true);
+      outside.focus();
+      reject(new Error("Late fictional refusal"));
+      await h.flush();
+      assert.equal(globalThis.document.activeElement, outside, scope);
+    } finally {
+      h.cleanup();
+    }
+  }
+});
+
 test("a malformed cancellation result then rate refusal keeps the form and original exact Retry", async () => {
   let n = 0,
     saved;
