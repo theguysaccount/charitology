@@ -101,14 +101,14 @@ export async function currentContactReconciliationMember(c, input, options) {
   return learningOwned(await authenticate(c, org, session, settings.readOnly), { bytes: 4096 });
 }
 async function catalog(c) {
-  const found = rows(await c.query("/*crm:catalog*/ SELECT t.relname AS table_name,array_agg(a.attname ORDER BY a.attnum) AS columns FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid AND a.attnum>0 AND NOT a.attisdropped WHERE n.nspname=current_schema() AND t.relkind IN ('r','p') AND t.relname LIKE 'os\\_%' ESCAPE '\\' GROUP BY t.relname ORDER BY t.relname COLLATE \"C\"", []));
+  const found = rows(await c.query("/*crm:catalog*/ SELECT t.relname AS table_name,array_agg(a.attname::text ORDER BY a.attnum) AS columns FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid AND a.attnum>0 AND NOT a.attisdropped WHERE n.nspname=current_schema() AND t.relkind IN ('r','p') AND t.relname LIKE 'os\\_%' ESCAPE '\\' GROUP BY t.relname ORDER BY t.relname COLLATE \"C\"", []));
   need(found.length === Object.keys(CONTACT_CONTEXT_CATALOG).length);
   const names = new Set();
   for (const value of found) {
     const r = exact(value, ["table_name", "columns"]); need(!names.has(r.table_name) && Object.hasOwn(CONTACT_CONTEXT_CATALOG, r.table_name));
     need(Array.isArray(r.columns) && same([...r.columns].sort(), [...CONTACT_CONTEXT_CATALOG[r.table_name]].sort())); names.add(r.table_name);
   }
-  const fks = rows(await c.query("/*crm:link-fks*/ SELECT c.confrelid::regclass::text AS parent,array(SELECT a.attname FROM unnest(c.conkey) WITH ORDINALITY k(attnum,n) JOIN pg_attribute a ON a.attrelid=c.conrelid AND a.attnum=k.attnum ORDER BY k.n) AS child_columns,array(SELECT a.attname FROM unnest(c.confkey) WITH ORDINALITY k(attnum,n) JOIN pg_attribute a ON a.attrelid=c.confrelid AND a.attnum=k.attnum ORDER BY k.n) AS parent_columns,c.convalidated AS validated,c.confdeltype::text AS delete_type,c.confupdtype::text AS update_type FROM pg_constraint c WHERE c.conrelid='os_participant_links'::regclass AND c.contype='f' ORDER BY c.confrelid::regclass::text", []));
+  const fks = rows(await c.query("/*crm:link-fks*/ SELECT c.confrelid::regclass::text AS parent,array(SELECT a.attname::text FROM unnest(c.conkey) WITH ORDINALITY k(attnum,n) JOIN pg_attribute a ON a.attrelid=c.conrelid AND a.attnum=k.attnum ORDER BY k.n) AS child_columns,array(SELECT a.attname::text FROM unnest(c.confkey) WITH ORDINALITY k(attnum,n) JOIN pg_attribute a ON a.attrelid=c.confrelid AND a.attnum=k.attnum ORDER BY k.n) AS parent_columns,c.convalidated AS validated,c.confdeltype::text AS delete_type,c.confupdtype::text AS update_type FROM pg_constraint c WHERE c.conrelid='os_participant_links'::regclass AND c.contype='f' ORDER BY c.confrelid::regclass::text", []));
   need(fks.length === 3);
   for (const [parent, child, target] of [["os_orgs", ["org_id"], ["id"]], ["os_intake", ["org_id", "intake_id"], ["org_id", "id"]], ["os_publications", ["org_id", "publication_id"], ["org_id", "id"]]]) {
     need(fks.filter(f => f.parent === parent && same(f.child_columns, child) && same(f.parent_columns, target) && f.validated === true && f.delete_type === "a" && f.update_type === "a").length === 1);
