@@ -56,3 +56,44 @@ The backend results above remain separate from UI testing; UI tests do not suppl
 No provider, email, payment, account-grant or production migration operation was performed by these frontend checks. No real charity adoption or independent approval is inferred from fictional fixtures. This slice implements one additional deliberate native-to-shared planning adapter; it does not close every remaining bridge, operating program or original mega-list requirement.
 
 AI assistance authored the frontend and this draft. Root review, real-browser observations and later release evidence remain separately identified.
+
+## November 7 follow-up: guarded backend and actual local browser
+
+This follow-up records later candidate evidence. The preceding 536/9, expiry-only 8/10, integrated 790 and 95-focused checkpoints keep their original scope. Incubator remains an unreleased candidate; the results below do not establish a real charity pilot or complete the original 66-item brief.
+
+### Four reviewed backend corrections
+
+Commit `5d0aaf93b3b51f01686f9dbf975d6fea8fa77d60` closes four findings from root and AI-assisted independent source review:
+
+- An initial pending source inspection independently triggers existing operational and inactive-restore projection, before any durable Incubator history exists. It measures the actual pending payload without reserving unwritten mapping fields or a future pair.
+- An optional `backup.exported` journal is omitted when the actual complete packet plus its bounded audit row cannot fit. Existing version 3 participation safety and no-Incubator legacy behavior remain unchanged; no cap or ordinary reserve is relaxed.
+- Adoption preview and commit require scope for the historical recovered-source program as well as the current destination program. Knowing denied-source pins cannot disclose that source through a POST.
+- Current disposition uses the ordinary current-record scope, including trash. After a copied target moves to another program, an out-of-scope reader receives `unavailable` without its current revision. The immutable original receipt and permitted exact Retry remain intact.
+
+The affected server profile passed **62/62** checks and actual guarded PostgreSQL passed **13/13**, with no skips. These include hidden-source adoption refusal with no writes, allowed/global controls, moved/trash-target reads and accepted Retry, and Learning plus interval plus Incubator inactive restore/re-export. The bounded source reviewer reported the reviewed findings closed; that review executed no tests, database or browser work and supplies no independent human approval. The retained forward receipt has SHA-256 `3a4c0e6fb17a57fcf5deb077d50aac3da304939afe58eff4171111fc3a7bbee2`.
+
+The near-wire export regression is a **closed SQL exporter witness** around the actual handler, same constrained PostgreSQL client/transaction and final hard checks. Only the fixed comment-export query projects a padded fictional body. Pending and durable Incubator cases each return a complete **67,108,863-byte** packet while omitting the optional journal; sufficient-headroom controls retain the actual audit. The unchanged participation-only gate would permit the pressure case. No naturally authored near-64-MiB workspace or stored oversized comment is claimed.
+
+### Corrected real-DOM behavior and final local checks
+
+Browser attempt 1 on `15084492845526061fc0b691530078ee836f17e7` stopped after mounting: the action select contained stringified option objects because an array reached native `replaceChildren` without spreading. No source upload, preview, copy or ordinary edit occurred. Disposal, listener shutdown and helper cleanup completed. Its retained failure receipt has SHA-256 `44003cd5e2d632e803834869ba1f91024e5f9137781d4e91937743366cd98547`.
+
+Forward `9a0065d55896e1d95d583f7b09287744bdf33ef1` changes two spreads: actual option nodes and actual ordinary-record anchors in history. Feature-local tests now model native select admission and array-to-text behavior. The original option negative control and the intermediate choices-only live/recovered-history negative control both remain retained; their receipt hashes are `c5798fac0507be0b28e406852afc8bbb1a08d9ef1b97e7bb2143bdf0098bfd61` and `651a5866e8d5f9d7a69b09249b61b55f377b963c236b9982927881415d31e173`. The earlier 790-test harness did not catch the browser defect.
+
+The corrected source passed **793/793** complete local service checks, including **23 feature groups**, and both native freshness checks: Learning remains 254,934 bytes/14 inputs and Incubator 209,641 bytes/10 inputs. The forward-check receipt has SHA-256 `42075bd39058984fb06b249aebb71d0f6ab12eafbf67bc75057bd89d707ebc66`. These are local automated results; final candidate CI remains separate.
+
+### Actual browser, HTTP and PostgreSQL attempt 2
+
+The corrected source completed the finite actual in-app-browser journey using the actual controller/API transport, actual handler and constrained PostgreSQL. Sign-in was an explicit synthetic session projection with fictional migrated session/member rows. Only the primary fictional organization was exposed; the unchanged initializer's unused empty destination and inert role/session seeds were disclosed. Incidental browser cookies were discarded unread. No real account sign-in or human approval is established.
+
+The log contains **36 local HTTP entries**: 34 responses were 200, one incidental favicon request received an out-of-scope 404, and one response was deliberately lost after a real handler 200/commit. There were 21 actual-handler invocations; static assets and fixture/session checkpoints account for the remaining requests. Fixture failure stayed false and its pre-request error list stayed empty. HTTP proof SHA-256: `bb0e45cc8bd8ff1470c21af68c942a6b2a5ecb6f24d0a452eaff2c53069e8bbc`.
+
+Actual file selection, outgoing review and first copy created two planned records. A separately labeled fixture control then exercised the real ordinary GET/PATCH API and preserved that edited original project through refresh. Same-source inspection offered no additional pair. Declining the changed file kept literal writing and invalidated the local preview; a later same-path selection with explicit discard cleared writing before a newly authored refresh. The final history displayed four actual ordinary-record anchors. Server conflict refusal retains its separate PostgreSQL evidence; this browser log contains no server stale-refusal response.
+
+The refresh transaction committed before its response was dropped. Explicit Retry sent the identical **182-byte request body**, with SHA-256 `1be7f17f031f497272d3c01d919f72632b876b4e5ba6a7e5d7f993700e9262df` and matching command-key digest, and returned `already-committed` with the exact original result. All observed business rows after the drop, after Retry and in the final snapshot were identical. Retry proof SHA-256: `bbee781184aa08930d173f29a5dedd1eef3241297d23a00535c783b0c7509e21`.
+
+Final state was five ordinary records: one draft program and two planned project/milestone pairs. The older edited project remained revision 2; the other three copied records remained revision 1. Approvals and snapshots stayed null. Two native sources and two copy events remained; uploads, jobs, job tenants and participation outbox were zero. Fixture provider/mail counters stayed zero. Final database proof SHA-256: `e4931cb57a12eccc562d979b86591925958d5ee84562a96d715e42486599fbe3`.
+
+Visible facts recorded a **1,280-pixel** viewport with no page overflow, plus visible keyboard link focus in the retained screenshot. Disposal left zero private controls and empty private text, facts and ordinary-edit input. All owned attempt tabs, listeners and launchers closed; the attempt 2 launcher exited 0 and listener requests/sockets reached zero. The helper reported completed schema/pool cleanup, then root independently confirmed through a fresh read-only catalog check that both attempt schemas were absent. The exact owned PostgreSQL cluster was subsequently stopped and its PID file was absent. Launcher proof SHA-256: `79d567cf315a75579fa3adf9ab19247ccc603c2ae07dd53d61edb4c807f7076a`; fresh schema-absence proof: `310457a8cd83da78e79822e8cd5962671618c83e2fd084f4f3d148d3d78c3143`; stopped-cluster proof: `91e80fa83ab6c0ed9392901d10e5a2c4d1940923353d2bd586f96335789d196d`.
+
+This closes the stated local chooser/copy/ordinary-API-edit/refresh/unknown-result Retry journey. Actual 390-pixel light/dark reading, the full application record editor, browser recovery/adoption and hosted authentication were not exercised here. Final integrated repository checks, exact-head CI, compatible stage, additive schema readback and canonical publication remain pending. This Incubator journey added no provider, mail, payment, production migration or real operating-charity outcome.

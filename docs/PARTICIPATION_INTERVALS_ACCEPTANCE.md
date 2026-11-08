@@ -1,6 +1,6 @@
-# Partial volunteer intervals: local acceptance
+# Partial volunteer intervals: acceptance
 
-November 7, 2026 · AI-assisted implementation and technical checks under the [recorded contract](PARTICIPATION_INTERVALS_PLAN.md). This candidate is not yet released to the shared OS. The original 66-item brief, whole-occurrence booking behavior and separate check-in work remain intact.
+November 7, 2026 · AI-assisted implementation and technical checks under the [recorded contract](PARTICIPATION_INTERVALS_PLAN.md). The finite production release is recorded below; earlier checkpoints retain their original source and scope. The original 66-item brief, whole-occurrence booking behavior and separate check-in work remain intact.
 
 ## Implemented behavior
 
@@ -54,3 +54,17 @@ Visible private controls clear on disposal. Owned tabs and listeners closed, vie
 The candidate still needs final integrated CI, a protected compatible stage, the reviewed single-column production change/readback and current canonical verification. Because the hosting integration can deploy `main` automatically, prepare and verify the compatible stage and additive migration before merging this feature to production `main`; do not rerun historical full-schema migrations or disable deployment controls by inference. Actual target and deployment facts must be checked at release time. No production action is established by this acceptance.
 
 Broader authenticated hosted journeys, other browsers, screen-reader/accessibility conformance, real charity pilots, participant check-in and the rest of the OS retain separate gates. AI-assisted checks establish none of the human review, actual attendance or operating claims.
+
+## Finite production release
+
+[PR #47](https://github.com/theguysaccount/charitology/pull/47) merged normally as `5212c50dccc8be4ba76544b649a7aeb871bf80a8`. Its complete tree `a856ccf95f79813951edd684449093c2a07af8fe` equals final tested head `9eb7619afd1add287645e3b76c0329a3b2b242e5`; both source parents and earlier immutable ancestry remain retained. GitHub generated the observed merge author/committer metadata; it was not relabeled as local implementation authorship.
+
+All four jobs passed in each exact-head, attempt-one CI run: [push 42419825461](https://github.com/theguysaccount/charitology/actions/runs/42419825461) and [PR 42419830113](https://github.com/theguysaccount/charitology/actions/runs/42419830113). Every committed-history gate succeeded rather than being skipped. The eight-job receipt has SHA-256 `3aff97a555df411595e945d68da519fa15773be4f16f05b7d1b9490c2aa833df`. Earlier failed CI and local fixture corrections remain described above.
+
+A protected production-environment stage, created without aliases from the exact source, passed all 50 selected unsigned GETs and an independent offline rehash before database mutation. Its response proof has SHA-256 `c1cc9db4ebaa721210a80850029a08d397d43459aee4de68d725008f8a1dea76`; the independent stage rehash has SHA-256 `dd4fe326f9b379f4804b630f29ee68e31d2ad4f01d4f15c877cf019bab140657`.
+
+The root-reviewed production action executed the exact single nullable `requested_interval` JSONB column and object/1,024-byte CHECK once. It made no grant, default, backfill, role, function, business-row or historical migration change. The consistent before/after comparison preserved all **34 prior normalized table snapshots and 130 rows**, protected metadata and all four workspace logical/native budget measures. COMMIT was acknowledged; a separate fresh READ ONLY transaction classified the result `exact-added-and-original-state-exact`. The apply receipt SHA-256 is `708cd6ef56f45eae4e50d83665135c742693ace1756646c2303f3137d81ece28`; the independent committed readback is `057cf6280db59c8fadd3f85910243a145b294aee23ca394d946ae740af12d2a4`. Do not rerun this additive statement.
+
+The verified stage was promoted before the normal main merge. Hosting then produced the actual READY main Git deployment `dpl_7JbN2qn7e7yQCtCbyJLVQzxWKZbm`, whose fresh provider identity names main `5212c50` and whose canonical alias is `https://os.charitology.org`. Final unsigned checks passed all **50 responses**, **24 exact assets** and **1,038,295 total body bytes**. A separate Python implementation rehashed every saved body and sanitized header and verified recorded status, URL, security headers, JSON fields and asset hashes. The actual canonical proof SHA-256 is `346f194967ca0ea7bb50834577c8ebb61536bc7a586df9723f113180796698da`; the independent rehash is `edfab5f62372dda4e70c130c0d428aba6ef5d2b876f471331b7cebd1a722c397`. A fresh alias read after these checks still selected that deployment.
+
+This is finite OS publication and unsigned transport evidence. It does not repeat authenticated production interval mutations, native-file recovery, provider/mail or jobs, and does not establish participant check-in, real attendance or charity-pilot outcomes. The public website's Pages artifact is a separate release surface. All owned browser/test listeners and launchers were closed; after the subsequent Incubator checks the exact owned local PostgreSQL cluster was stopped and its PID file was absent. Earlier retained-cluster wording above describes that earlier checkpoint only.

@@ -1,5 +1,16 @@
 # Changelog
 
+## November 7, 2026: partial volunteer intervals released
+
+- Published one contiguous volunteer interval through [PR #47](https://github.com/theguysaccount/charitology/pull/47)/main `5212c50`, retaining the exact tested `9eb7619` tree and all eight successful CI jobs. The compatible stage preceded the single-column production change; committed readback preserved prior rows, permissions and workspace budget measures.
+- Verified all 50 selected canonical unsigned responses and 24 exact assets, with a separate offline body/header rehash. [Acceptance](docs/PARTICIPATION_INTERVALS_ACCEPTANCE.md#finite-production-release) retains the earlier fixture failures, local browser/HTTP/PG and inactive-recovery scopes. Check-in, authenticated hosted interval journeys and real charity pilots remain separate.
+
+## November 7, 2026: Incubator planning bridge candidate
+
+- Implemented deliberate complete native Incubator v1 admission, selected-only source history and two ordinary editable planned project/milestone drafts. Explicit refresh and inactive adoption preserve historical provenance without importing accounts, approvals or command authority. Existing native keys and the frozen Learning interpretation remain unchanged.
+- Closed four reviewed backend scope/capacity findings with 62 affected checks and 13 actual isolated PostgreSQL cases. Corrected native select/history array rendering; final local service checks pass 793 groups, including 23 feature groups, plus both native freshness checks. Earlier failed browser and DOM negative controls remain retained. The near-wire exit regression is an explicitly closed SQL exporter witness, not a naturally authored near-64-MiB workspace.
+- Completed actual fictional 1,280px IAB/HTTP/PG copy, ordinary API edit, source refresh and one committed-response loss followed by identical exact Retry. [Acceptance](docs/INCUBATOR_SHARED_BRIDGE_ACCEPTANCE.md#november-7-follow-up-guarded-backend-and-actual-local-browser) records root-confirmed absence of both attempt schemas, the owned PostgreSQL cluster stopped/PID file absent, all owned attempt tabs/listeners/launchers closed, and the separate unverified browser-adoption, narrow-layout/full-app, hosted-auth and real-pilot scope. Final Incubator CI, stage, additive schema publication and canonical release remain pending; this journey added no provider, mail, payment or production migration action.
+
 ## November 7, 2026: encyclopedia release and partial-interval local acceptance
 
 - Published exact-source encyclopedia history through PR #46/main `e8fd319`: eight CI jobs, five Pages jobs and 89 selected public artifact-matching responses, with independent body/header rehash. Actual public filters/history/390px focus and native current CSV Save pass. Draft/Unknown labels, zero human reviews, both immutable editions and the original brief remain explicit. [Acceptance](docs/ENCYCLOPEDIA_REVIEW_COVERAGE_ACCEPTANCE.md#finite-public-release-and-actual-browser-follow-up).
