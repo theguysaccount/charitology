@@ -101,6 +101,7 @@ function fixture({
   membership = true,
   occupied = 0,
   intakeOccupied = 0,
+  fieldOccupied = 0,
   withRestoreMeasurements = false,
 } = {}) {
   let activeRole = role,
@@ -114,11 +115,16 @@ function fixture({
     queryCount: 0,
     transactions: 0,
     occupied,
+    fieldOccupied,
   };
   const measurements = withRestoreMeasurements ? restoreMeasurementFixture() : null;
   const c = {
     query: async (sql, args = []) => {
       state.queryCount++;
+      if (sql === "SELECT count(*) AS count FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import'") {
+        assert.deepEqual(args, [org]);
+        return { rows: [{ count: state.fieldOccupied }] };
+      }
       // This legacy migration fixture has no participant self-report history.
       if (sql === "SELECT t.* FROM os_participation_checkins t WHERE org_id=$1 ORDER BY id") return { rows: [] };
       if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return { rows: [{ count: 0 }] };
@@ -881,4 +887,31 @@ test("native shared backups retain the established preview/commit contract and r
   assert.equal(saved.revision, 1);
   assert.equal(saved.owner_id, user);
   assert.equal(saved.approval, null);
+});
+
+test("existing aggregate history blocks a FIELD-free legacy restore at preview and commit", async () => {
+  const blocked = fixture({ fieldOccupied: 1 });
+  const first = await blocked.call("import/preview", { input: { backup: legacy() } });
+  assert.equal(first.response.status, 200);
+  assert.equal(first.value.summary.rejected, 1);
+  assert.equal(blocked.state.records.size, 0);
+
+  const changed = fixture();
+  const preview = await changed.call("import/preview", { input: { backup: legacy() } });
+  assert.equal(preview.response.status, 200);
+  changed.state.fieldOccupied = 1;
+  const commit = await changed.call("import/commit", { input: { previewId: preview.value.previewId } });
+  assert.equal(commit.response.status, 409);
+  assert.equal(commit.value.code, "restore_conflict");
+  assert.equal(changed.state.records.size, 0);
+  assert.equal(changed.state.previews.get(preview.value.previewId).committed_at, null);
+});
+
+test("malformed reserved aggregate reports fail through the authenticated restore handler", async () => {
+  const f = fixture();
+  const backup = makeBackup(target, [], { reports: [{ payload: { format: "charitology-field-response-import", version: 2 } }] });
+  const result = await f.call("import/preview", { input: { backup } });
+  assert.equal(result.response.status, 422);
+  assert.equal(f.state.previews.size, 0);
+  assert.equal(f.state.records.size, 0);
 });

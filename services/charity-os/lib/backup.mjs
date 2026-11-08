@@ -9,6 +9,7 @@ import { restoredLearningBridge } from "./learning-backup.mjs";
 import { restoredIncubatorBridge } from "./incubator-bridge-backup.mjs";
 import { restoredParticipantCheckins } from "./participant-check-in-backup.mjs";
 import { restoredParticipationGroups } from "./participation-group-recovery.mjs";
+import { inspectFieldResponseRecovery } from './field-response-recovery.mjs';
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -43,6 +44,7 @@ export function validateBackup(input, orgId, userId) {
     records: input.records,
     trash: input.trash || [],
   });
+  inspectFieldResponseRecovery(input);
   const { checksum, ...payload } = input;
   restoredParticipantCheckins(input.participantCheckins);
   restoredParticipationGroups(input.participationGroups);

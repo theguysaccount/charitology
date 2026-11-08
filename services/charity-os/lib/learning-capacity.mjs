@@ -24,6 +24,7 @@ import { CHECK_IN_LIMITS } from './participant-check-in-model.mjs';
 import { restoredParticipationGroups } from './participation-group-recovery.mjs';
 import { makeParticipationGroupsBackup } from './participation-group-backup.mjs';
 import { GROUP_LIMITS } from './participation-group-model.mjs';
+import { planRestoredFieldResponseReports, fieldResponseRestoreSummary, isFieldResponseRecoveryFamily } from './field-response-recovery.mjs';
 
 export const LEARNING_RESTORE_CAPACITY = Object.freeze({ logicalBytes: 60 * 1024 * 1024, backupBytes: 64 * 1024 * 1024,
   auditCheckReserveBytes: 1000, worstOrgId: 'o'.repeat(100), worstActorId: 'u'.repeat(100),
@@ -121,14 +122,16 @@ const columns = Object.freeze(Object.fromEntries(Object.entries({
 }).map(([table, value]) => [table, Object.freeze(value.split(' '))])));
 const badSchema = () => fail(422, 'learning_capacity_schema', 'The restore capacity projection must be updated for this database schema before accepting learning changes.');
 const over = () => fail(422, 'learning_restore_capacity', 'This complete workspace cannot fit a restored copy, including ordinary restore history, within the existing 60 MiB storage and 64 MiB backup limits.');
-const row = (table, values) => Object.fromEntries(columns[table].map(key => [key, values[key] ?? null]));
+const fieldReportColumns = Object.freeze('org_id id created_by title checksum payload created_at'.split(' '));
+const row = (table, values) => Object.fromEntries((table==='os_reports'?fieldReportColumns:columns[table]).map(key => [key, values[key] ?? null]));
 const frozen = learningFreeze;
 
-async function schemaCheck(c) {
-  const result = await c.query("SELECT t.relname AS table_name,a.attname AS column_name FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid WHERE n.nspname=current_schema() AND t.relname=ANY($1::text[]) AND a.attnum>0 AND NOT a.attisdropped ORDER BY t.relname,a.attnum", [Object.keys(columns)]);
+async function schemaCheck(c, fieldPresent=false) {
+  const required=fieldPresent?{...columns,os_reports:fieldReportColumns}:columns;
+  const result = await c.query("SELECT t.relname AS table_name,a.attname AS column_name FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid WHERE n.nspname=current_schema() AND t.relname=ANY($1::text[]) AND a.attnum>0 AND NOT a.attisdropped ORDER BY t.relname,a.attnum", [Object.keys(required)]);
   const actual = new Map();
   for (const item of result.rows) { if (!actual.has(item.table_name)) actual.set(item.table_name, []); actual.get(item.table_name).push(item.column_name); }
-  for (const [table, expected] of Object.entries(columns))
+  for (const [table, expected] of Object.entries(required))
     if (JSON.stringify([...(actual.get(table) ?? [])].sort()) !== JSON.stringify([...expected].sort())) badSchema();
 }
 async function measure(c, table, rows, legacyParticipation = false) {
@@ -163,14 +166,17 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     learning = restoredLearningBridge(backup.learningBridge, context), incubator = restoredIncubatorBridge(backup.incubatorBridge, context), integrations = restoredIntegrations(backup);
   const checkins = restoredParticipantCheckins(backup.participantCheckins);
   const groups = restoredParticipationGroups(backup.participationGroups);
+  const field=planRestoredFieldResponseReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const operational = operationalGrowth(backup.participation), operationalBounds = new Map(operational.outboxBounds.map(value => [value.id, value]));
   if (operational.active && (operational.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || operational.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes)) operationalFailure();
-  await schemaCheck(c);
+  await schemaCheck(c,field.present);
   const baseline = { events: [], reports: [], bytes: 0 };
   if (baselineOrgId !== undefined) {
     for (const [key, table] of [['events', 'os_events'], ['reports', 'os_reports']]) {
       const result = await c.query(`SELECT t.*,octet_length(to_jsonb(t)::text) AS capacity_bytes FROM ${table} t WHERE org_id=$1 ORDER BY id`, [baselineOrgId]);
       for (const { capacity_bytes, ...original } of result.rows) {
+        if (table === 'os_reports' && isFieldResponseRecoveryFamily(original.payload)) fail(409,'restore_conflict','Restore requires a destination without aggregate import history.');
+        if (table === 'os_reports' && field.reports.some(report=>report.id===original.id)) fail(409,'restore_conflict','A destination report collides with recovered aggregate import history.');
         if (table === 'os_reports' && isLearningReportFamily(original.payload)) fail(409, 'restore_conflict', 'Restore requires a destination without learning reports.');
         if (table === 'os_reports' && learning?.reports.some(report => original.id === report.id || original.checksum === report.checksum || original.payload?.id === report.id || original.payload?.checksum === report.checksum))
           fail(409, 'restore_conflict', 'An original destination report collides with recovered learning report identity.');
@@ -181,6 +187,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
       fail(409, 'restore_conflict', 'Restore requires a destination without retained records, files or feature sidecars. Original audit history and legacy reports are preserved.');
   }
   const tables = Object.fromEntries(Object.keys(columns).map(table => [table, []]));
+  if (field.present) tables.os_reports=[];
   const add = (table, fields) => { const value = row(table, fields); tables[table].push(value); return value; };
   const audit = (action, record, detail) => add('os_events', { org_id: orgId, id: C.auditId, actor_id: actorId, action,
     record_id: record?.id, module_id: record?.moduleId, detail, created_at: C.timestamp });
@@ -259,7 +266,8 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     live_target_id: null, roster_ids: [], coordinator_intake_id: null, state: 'archived',
     revision: 1, last_command_hash: null, history, created_at: C.timestamp, updated_at: C.timestamp,
   });
-  audit('backup.restored', null, { count: records.length, checksum: backup.checksum, sourceArchiveId: C.archiveId,
+  for (const report of field.reports) add('os_reports',report);
+  audit('backup.restored', null, { ...fieldResponseRestoreSummary(field), count: records.length, checksum: backup.checksum, sourceArchiveId: C.archiveId,
     // Projection only: the largest possible JS array length fixes count width across optional export audits and re-restores.
     sourceHistoryCount: 4294967295, sourceCommentCount: backup.comments?.length || 0, sourceReportCount: backup.reports?.length || 0,
     learningSourcesRecovered: learning?.sources.length || 0, learningEventsRetained: learning?.events.length || 0,
@@ -296,7 +304,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   categories.targetBaseline = { count: baseline.events.length + baseline.reports.length, bytes: baseline.bytes };
   const projectedClient = { query: async sql => {
     const match = sql.match(/\bFROM (os_[a-z_]+)\b/), table = match?.[1];
-    if (table === 'os_reports') return { rows: [] }; // Learning reports recover only in history; old reports remain archived.
+    if (table === 'os_reports') return { rows: [] }; // This reader serves Learning's filtered query. FIELD rows are retained explicitly in extras.reports.
     if (!table || !Object.hasOwn(tables, table)) badSchema();
     if (table === 'os_learning_history') return { rows: tables[table].map((value, index) => ({ ...wireRow(value),
       learning_payload_bytes: learned.rows[index].payloadBytes, learning_receipt_bytes: 0, learning_row_bytes: sizes[table][index].bytes })) };
@@ -315,7 +323,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
       categories.os_participation_groups.bytes + categories.os_participation_group_receipts.bytes > GROUP_LIMITS.familyBytes) over();
   if (categories.os_incubator_history.count>1000 || categories.os_incubator_history.bytes>16777216) over();
   const projectedRecords = tables.os_records.map(value => rowRecord(wireRow(value)));
-  const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: baseline.reports, files, trash: [], trashFiles: [],
+  const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: field.present?[...baseline.reports,...tables.os_reports.map(wireRow)]:baseline.reports, files, trash: [], trashFiles: [],
     integrations: tables.os_integrations.map(value => ({ id: value.id, provider: value.provider, name: value.name, config: value.config })),
     intake: await exportIntake(projectedClient, orgId), participation: await exportParticipation(projectedClient, orgId),
     delivery: await exportDelivery(projectedClient, orgId), taskRecurrence: await exportTaskRecurrence(projectedClient, orgId),
