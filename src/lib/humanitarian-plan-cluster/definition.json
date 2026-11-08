@@ -1,0 +1,67 @@
+{
+  "format": "charitology-plan-cluster-definition",
+  "version": 1,
+  "method": "ocha-fts-plan-cluster-v1",
+  "selection": {
+    "countryCode": "AFG",
+    "planId": "1185",
+    "planCode": "HAFG24",
+    "planName": "Afghanistan Humanitarian Needs and Response Plan 2024",
+    "clusterCode": "7415",
+    "clusterName": "Education",
+    "referenceYear": 2024,
+    "start": "2024-01-01",
+    "end": "2024-12-31"
+  },
+  "causeBinding": {
+    "method": "plan-cluster-cause-map-v1",
+    "causeId": "education",
+    "sourceClusterName": "Education",
+    "basis": "explicit-selected-source-cluster",
+    "review": "draft"
+  },
+  "headers": [
+    "countryCode",
+    "id",
+    "name",
+    "code",
+    "startDate",
+    "endDate",
+    "year",
+    "clusterCode",
+    "cluster",
+    "requirements",
+    "funding",
+    "percentFunded"
+  ],
+  "source": {
+    "datasetId": "b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9",
+    "packageName": "global-requirements-and-funding-data",
+    "resourceId": "80975d5b-508b-47b2-a10c-b967104d3179",
+    "resourceName": "fts_requirements_funding_cluster_global.csv",
+    "resourceUrl": "https://data.humdata.org/dataset/b2bbb33c-2cfb-4809-8dd3-6bbdc080cbb9/resource/80975d5b-508b-47b2-a10c-b967104d3179/download/fts_requirements_funding_cluster_global.csv"
+  },
+  "rights": {
+    "metadataLicenseId": "cc-by-igo",
+    "title": "Creative Commons Attribution 3.0 IGO",
+    "termsUrl": "https://creativecommons.org/licenses/by/3.0/igo/legalcode",
+    "attribution": "OCHA Financial Tracking Service (FTS), Global - Requirements and Funding Data, via HDX. Source data licensed under CC BY 3.0 IGO."
+  },
+  "limits": {
+    "bytes": 1048576,
+    "records": 10000,
+    "field": 2000,
+    "objectBytes": 65536,
+    "nodes": 4000,
+    "depth": 24
+  },
+  "limitations": [
+    "One humanitarian Education plan cluster, not all education funding or independently measured need.",
+    "Reported funding is not asserted to be cash paid, final spending or money reaching people.",
+    "Price/FX basis, reporting completeness and transaction-status decomposition are unknown.",
+    "Source-rounded percent and exact-rational derived coverage are different values.",
+    "No other plan, country, cluster, financial framework or year is pooled; shared/unspecified funding is not allocated.",
+    "Cause mapping is draft; no independent reviewer, rating, outcome or funding-by-depth allocation is supplied.",
+    "This pure projection has no client retrieval clock, source-origin proof or admitted Observation edition."
+  ]
+}
