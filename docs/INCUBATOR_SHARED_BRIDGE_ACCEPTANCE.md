@@ -1,6 +1,6 @@
 # Incubator shared planning bridge acceptance
 
-Review: draft. This records a bounded local implementation and its automated checks. It does not establish production publication, a real charity pilot, independent human review or completion of the full mega list.
+Review: draft. The finite OS release is now recorded in [the production release section](#finite-os-production-release). Earlier unreleased or pending wording describes its dated source-specific checkpoints. The release does not establish a real charity pilot, independent human review or completion of the full mega list. The separate public-site Pages artifact and 48 selected responses now also pass, with independent offline rehash and explicit runtime exclusions.
 
 ## Source and behavior
 
@@ -119,3 +119,68 @@ The 239-byte profile cleanup proves owned fixture schemas absent and unrelated n
 These are local feature/catalog and cleanup results. **Production legacy export/capacity byte equality has not yet been proven.** The PG18 tests do not replace the separately reviewed consistent production before/apply/after comparison or establish a new production DDL, stage, permission grant, migration or canonical release.
 
 Predecessor `b716f69` passed all eight exact-head CI jobs, but that is not CI for this forward. A fresh final dry source vector and exact-head CI, a compatible protected stage, reviewed Incubator-only additive production action/readback and canonical publication remain pending. Existing production partial intervals are a separate completed release; no accepted mail, provider, migration or hosted workflow was repeated by this forward. Broader browser adoption, full-app editor, 390-pixel palettes/accessibility, participant check-in and real operating-pilot evidence retain their separate scopes.
+
+
+## Finite OS production release
+
+### Exact source, CI and staged service
+
+[PR #48](https://github.com/theguysaccount/charitology/pull/48) merged normally as main `66c1e4634f14d32b5704d2e2151bb256a19aa853`, with parents `5212c50dccc8be4ba76544b649a7aeb871bf80a8` and `a244c0616a0ee128f9d4afd8505c74fa35e03fcf`. The complete main tree is `dedf43529121e654b4841ab51ed1780fd8c465d4`, exactly equal to tested source `a244c06`. The GitHub-generated merge retains its actual public Git identity; no local source identity is substituted for it. The release adds one deliberately reviewed Incubator planning adapter, not completion of every OS module or original brief item.
+
+The final service bytes are unchanged from counter forward `8fa2e8e`, whose complete **800/800 local unit/client** and separate **13/13 actual PG18.6** feature results are recorded above. All eight final exact-source CI jobs pass across [push 42429449047](https://github.com/theguysaccount/charitology/actions/runs/42429449047) and [PR 42429453612](https://github.com/theguysaccount/charitology/actions/runs/42429453612). All four history-gate steps succeeded without a skip in each run, with actual event-derived bases. The final CI receipt has SHA-256 `4821ba55a505b4af872728f90832d237bd7c360dec3f0462047baf28bba377a9`. This does not relabel the initial fixture failures, earlier browser-source checks or PG17 results.
+
+The actual final dry source inventory contains **184 regular files, 198 CLI entries and 3,675,587 bytes**, bound to `a244c06`/tree `dedf435`; its 44,255-byte source receipt has SHA-256 `7dd2bdba7a9f2e62fa95c32d18a73d410e918d92344cde8d3d6df2a9172c69eb`. A compatible READY production stage, `dpl_7ziCE5E4PuTvV8NZffVKq2YJLBfh`, passed **56 selected unsigned GETs**, including 26 exact assets. Its 51,138-byte proof has SHA-256 `abe3e835a1a683491614145b73e297f75ea1ce870814b5743239224cf71ca0af`; a separate 18,320-byte offline body/header rehash has SHA-256 `3998f534ba0d8f7fad539dda678a911703804b8424cdd6184b6e4a83fb2511a5`. Existing deployment protection access did not create application authentication or a new grant. The stage checked finite static bytes and unsigned refusals, not a hosted authenticated Incubator journey.
+
+### Once-only additive production change and fresh readback
+
+The reviewed production action committed **once**: the exact eleven new-table statements for `os_incubator_history`, followed by three narrowly scoped ACL statements for that new table. The runtime role receives SELECT and INSERT only, without grant options; no role or broad historical migration is created or rerun. The table has 13 columns, 22 PG18 catalog constraints, five indexes, forced tenant row security and an immutable-history trigger. Its definitions match the actual local PG18.6 catalog golden. The already committed partial-interval column/constraint was retained; its DDL was not repeated.
+
+The actual production identity retains raw server version `18.6 (ac70818)` and numeric version `180006`, with verified client TLS, certificate/hostname and pinned owner/runtime identities. A consistent fresh read-only baseline preceded the action. The apply transaction's before/after captures and a separate new read-only after capture are exactly equal for all **34 old table snapshots, 130 old rows and four complete workspace budget vectors**, including logical, wire, operational and inactive-restore capacity. The old raw constraints, user triggers, existing internal triggers, ACLs, roles and protected permissions remain preserved. Only the exact two new validated parent-FK internal trigger entries are accounted for separately; the new table and its four internal referential-action descriptors match the actual golden. No broad catalog normalization is used.
+
+The fresh readback found the new table empty. Its ACLs are exactly the reviewed owner/runtime set, and a separate constrained-runtime read-only check with no organization context returns zero rows. This is a schema, preservation and context-free read observation; it is not a production business write or a successful hosted adoption. The durable intent and commit-attempt record precede the known successful COMMIT. The separate fresh readback is complete. **Never repeat these Incubator DDL/ACL statements or the earlier interval DDL to produce another receipt.** An uncertain future operation requires reconciliation, not an automatic replay.
+
+| Retained actual evidence | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Fresh production before capture | 1,019,933 | `c88b64fe952a7fe6a568a6168064c25884fb6ca01f4daa1748d6e930319db2b6` |
+| Single committed apply result | 2,064,132 | `3ed1af55138bf04d042aacfdc9009ebcab50019df22c6e97c724905aa4f626a1` |
+| Separate fresh read-only after result | 1,041,955 | `37b4200e51c35792cd700d62b11b38b362a0e195864601118052719fd2d35bea` |
+| Separate constrained-runtime read-only result | 124 | `d9ea9cb00f6d1e48d0528d06ef8f45dae156215c3880d631bccaa5ed17454417` |
+| Independent offline apply/readback artifact audit | 4,215 | `b94bf771fb6c80ff084a3c560a86ec0460d0fb8bb7cbf986f4a680b5f8e73e7d` |
+
+These receipts remain private because their complete catalog and workspace proofs are operational evidence. The hashes permit exact internal reconciliation without publishing private workspace content. The independent offline audit is a second software check, not independent human review.
+
+### Canonical OS responses and finite public-site publication
+
+After one stage promotion and five public smoke responses, the normal main merge produced the READY Git deployment `dpl_436yxZnKsLdsdRiV7hJN5SmL2gWw` serving [https://os.charitology.org](https://os.charitology.org). A fresh provider record binds it to actual main `66c1e46`, not merely to a matching page body. The main/tree-equality and provider identity records retain the actual merge and deployment metadata.
+
+All **56 selected public unsigned GET responses** pass, including **26 exact assets totaling 1,264,660 bytes** and **1,290,725 total response-body bytes**. A separate implementation rehashed all 56 saved bodies and sanitized header records offline and verified the recorded statuses, URLs, refusal JSON, security headers and no-redirect facts. The 49,184-byte canonical proof has SHA-256 `47e12b096c4da26d12b63dbc27e18ee62d85eb90beafdf29261f76b0cfc047a9`; the 18,401-byte independent rehash has SHA-256 `4a49671c0a5af8f129ad510e634ac456e54c297ef2babea9876f07f13f742eef`. The verifier sends no application authorization, cookies, writes or automatic retries. The fixed selection includes the old 50 checks plus four unsigned Incubator read-route refusals and the actual `/incubator-bridge.js` and `/incubator-native-admission.js` assets. Frozen Learning assets remain exact.
+
+This records finite canonical OS publication. The separate public-site evidence below comes from its actual Pages artifact and public responses, rather than being inferred from the OS verifier. Earlier completed Pages and public-site proofs keep their own exact sources.
+
+### Actual Pages artifact and selected public responses
+
+[Pages run 42432578292](https://github.com/theguysaccount/charitology/actions/runs/42432578292) passes all **five jobs** on actual main `66c1e46`. Its `github-pages` artifact is `13597978027`; the retained **81,894,213-byte ZIP** has SHA-256 `9ebb426341e16865b7f1a3b4fc68b93df7221abf0232dad51653a9b8d38b732e`, matching the actual artifact metadata digest. Bounded ZIP/tar member admission preceded regular-file-only extraction. The artifact contains 3,778 regular files, including 608 HTML files; those are inventory counts, not an all-site runtime or public-response coverage claim. Artifact JavaScript was parsed as syntax by the pinned Acorn method and was not evaluated.
+
+The reviewed finite manifest selects **48 responses totaling 2,241,105 decoded body bytes**: thirteen reviewed seeds plus thirty-five literal dependencies, within the unchanged 64-file maximum. All 48 actual unsigned HTTPS GET responses match their selected artifact bytes. A separate offline implementation rehashed the saved bodies/header records, selected original artifact bytes and retained ZIP. The public check sent no authorization, cookies, writes, redirects, automatic retries, OS requests, mail or provider requests.
+
+The three selected HTML routes are the homepage, Programs and [Charity Incubator](https://charitology.org/programs/charity-incubator/). They verify the new [shared OS link](https://os.charitology.org/app#incubator) exactly once on the Incubator page, its deliberate original-file/relationship/program/review wording, local desk preservation and Programs discovery. The selected programs/index API bodies verify the 26-program envelope and 39-endpoint discovery; the artifact inventory has 40 API JSON files. Component HTML/CTA is distinct from the API's source Markdown body. Selected favicon, OG image and homepage OG video references and exact asset bytes are verified. This does not establish social-platform rendering or video playback.
+
+Exactly two source-pinned computed references remain outside this literal selection: the generic Vite preload URL expansion and the lazy Pagefind import/search corpus. Their complete source bytes and exact recorded offsets/kinds are retained; a different or additional computed reference refuses. The earlier draft estimate of roughly 32–40 responses did not set the hard bound; the actual admitted count is 48. This proves neither equality for all 608 HTML pages nor complete dynamic-runtime/search-corpus closure. The 25,436-byte prepared manifest has SHA-256 `a388d60ce76940c8f8649304a9e57f50ea7864bc71349d9f66513e66bae8b12e`.
+
+The actual verification child exited **0** and durably saved its passing public receipt. A subsequent local result-handling `AttributeError` caused the outer launcher to exit **1** after that save; the launcher had reused its subprocess variable for a file handle. The original error/result evidence remains retained. Reconciliation checked the successful child and durable receipt, followed by the separate independent offline rehash below. **No HTTP or verifier run was repeated** to replace the outer failure with a cleaner result.
+
+| Retained public-site evidence | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Actual 48-response public receipt | 43,387 | `6a99c385ae34b9a354469477a450729d71621aa67e3294e833c235562081e803` |
+| Independent offline public rehash | 16,776 | `dbfd4160f56497e1edfc4b0d31720b55ae7e3c924c15eb76e2be62806eb46643` |
+| Outer launcher post-save error reconciliation | 1,302 | `ec414d80b68498448eaded96ca1fe90152996c0d1f50d76676971347a8932c21` |
+
+The reconciliation record initially said the independent offline rehash was still required; the later 16,776-byte passing rehash supplies that separate result without rewriting the earlier record. These are software/transport checks, not independent human review or a real charity outcome.
+
+### Scope retained and next check-in work
+
+The actual fictional 1,280px local chooser/copy/ordinary-API-edit/source-refresh and lost-committed-response exact-Retry journey remains credited to its original browser source. Browser adoption, 390px light/dark, full-app editing, authenticated hosted Incubator workflows, independent accessibility/security acceptance and real charity pilots remain separate. The near-wire test remains a closed single-SELECT exporter witness through actual PostgreSQL/client/handler/final checks, not a naturally authored near-64-MiB workspace. No source permissions, accounts, memberships, consent, approvals, mail or payment are created by this adapter or these unsigned release checks.
+
+Participant check-in is a separate **locally implemented, unreleased backend candidate**. Local backend `4508b35f172310519826f347594cfd4d77494dcc`, on context base `a82cd476e8d60f3934d8b0a63f9dd1923ca3998f`, implements the closed own-report/withdraw/Replay API, typed staff read, one-way store and inactive backup/capacity source and passes the complete local 870/870 unit/client suite, with zero failures, skips or cancellations. [Backend acceptance](PARTICIPANT_CHECK_IN_BACKEND_ACCEPTANCE.md) preserves its v1 negative and forward tests, initial full-suite fixture failure and exact closed fixture correction. These use fake SQL/declared measurement responses and do not establish actual PostgreSQL/RLS/physical bytes, real authentication, check-in UI/browser, final CI or release. Pure commit `834a3b7c5a3d3eebd5127cb1ccc4be4a7884f86a` retains its 28-test history, including the sparse-array negative and dense-array correction. The local PG18 controller remains inert. No production check-in schema or hosted workflow is claimed.
+
+AI assistance authored this implementation and documentation. The source reviews, automated/actual PostgreSQL checks, browser observations and release proofs above retain their distinct scopes; none supplies independent human method review, real institutional participation or a real charity outcome. All 66 original brief items, twenty-two stable software backlog IDs, eight conditional operating decisions and human/source/credential gates remain preserved. Owned task tabs, listeners, launchers and local clusters were closed as recorded above; preexisting user resources are outside that cleanup claim.
