@@ -450,3 +450,17 @@ export async function allRecords(org, module) {
     "list_limit",
   );
 }
+
+// FIELD callbacks bind to existing same-origin JSON/CSRF transport; no alternate sender.
+export function fieldResponsesAPI(org) {
+  const base = `${orgPath(org)}/field-responses`;
+  const post = (suffix,body,options) => request(`${base}/${suffix}`,{...options,method:"POST",body});
+  return Object.freeze({
+    context: options => request(`${base}/context`,options),
+    inspect: (body,options) => post("inspect",body,options),
+    preview: (body,options) => post("preview",body,options),
+    commit: (body,options) => post("commit",body,options),
+    history: ({after,limit},options) => request(`${base}/history?limit=${part(limit)}${after ? `&after=${part(after)}` : ""}`,options),
+    historyDetail: (id,options) => request(`${base}/history/${part(id)}`,options),
+  });
+}

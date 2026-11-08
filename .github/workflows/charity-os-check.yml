@@ -68,6 +68,8 @@ jobs:
           GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_checkin_ci_owner;
           CREATE ROLE os_group_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-group-owner-only-password';
           GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_group_ci_owner;
+          CREATE ROLE os_field_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-field-owner-only-password';
+          GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_field_ci_owner;
           SQL
       - name: Exercise real Postgres, Better Auth and tenant workflows
         # The fixture migrates a random temporary schema with the owner, grants
@@ -83,3 +85,7 @@ jobs:
         env:
           GROUP_TEST_PROFILE: github-group-pg17-v1
         run: node --test --test-concurrency=1 test-db/participation-groups.ci17.mjs
+      - name: Exercise aggregate FIELD imports using the closed PG17.11 CI profile
+        env:
+          FIELD_TEST_PROFILE: github-field-pg17-v1
+        run: node --test --test-concurrency=1 test-db/field-responses.ci17.mjs

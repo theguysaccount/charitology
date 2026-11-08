@@ -1,6 +1,6 @@
 # Aggregate field responses to observation drafts
 
-This is the candidate contract for OS-FIELD-01. It is not a release or a completed field study. The [model](../services/charity-os/lib/field-response-model.mjs) supports one versioned aggregate-visits JSON format. It does not read a live Kobo account, convert an arbitrary spreadsheet or infer a measurement definition.
+This is the implemented contract for the bounded OS-FIELD-01 candidate. [Acceptance](FIELD_OBSERVATIONS_ACCEPTANCE.md) records local tests and the remaining release gates. It is not a completed field study. The [model](../services/charity-os/lib/field-response-model.mjs) supports one versioned aggregate-visits JSON format. It does not read a live Kobo account, convert an arbitrary spreadsheet or infer a measurement definition.
 
 ## The staff workflow
 
