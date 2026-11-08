@@ -102,6 +102,7 @@ function fixture({
   occupied = 0,
   intakeOccupied = 0,
   fieldOccupied = 0,
+  crmOccupied = 0,
   withRestoreMeasurements = false,
 } = {}) {
   let activeRole = role,
@@ -116,11 +117,16 @@ function fixture({
     transactions: 0,
     occupied,
     fieldOccupied,
+    crmOccupied,
   };
   const measurements = withRestoreMeasurements ? restoreMeasurementFixture() : null;
   const c = {
     query: async (sql, args = []) => {
       state.queryCount++;
+      if (sql === "SELECT count(*) AS count FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation'") {
+        assert.deepEqual(args, [org]);
+        return { rows: [{ count: state.crmOccupied }] };
+      }
       if (sql === "SELECT count(*) AS count FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import'") {
         assert.deepEqual(args, [org]);
         return { rows: [{ count: state.fieldOccupied }] };
@@ -914,4 +920,36 @@ test("malformed reserved aggregate reports fail through the authenticated restor
   assert.equal(result.response.status, 422);
   assert.equal(f.state.previews.size, 0);
   assert.equal(f.state.records.size, 0);
+});
+
+
+test("existing CRM history blocks a CRM-free legacy restore at preview and commit without waiving unknown SQL", async () => {
+  const blocked = fixture({ crmOccupied: 1 });
+  await assert.rejects(blocked.c.query("SELECT count(*) AS count FROM os_reports WHERE org_id=$1 AND payload->>'format'='future.unknown'", [org]), /Unexpected migration fixture query/);
+  const source = legacy(), before = structuredClone(source);
+  const first = await blocked.call("import/preview", { input: { backup: source } });
+  assert.equal(first.response.status, 200);
+  assert.equal(first.value.summary.rejected, 1);
+  assert.deepEqual(first.value.issues.map(issue => issue.field), ["organization"]);
+  assert.equal(blocked.state.crmOccupied, 1);
+  const refused = await blocked.call("import/commit", { input: { previewId: first.value.previewId } });
+  assert.equal(refused.response.status, 409);
+  assert.equal(refused.value.code, "restore_conflict");
+  assert.equal(blocked.state.records.size, 0);
+  assert.equal(blocked.state.events.length, 0);
+  assert.equal(blocked.state.previews.get(first.value.previewId).committed_at, null);
+  assert.deepEqual(source, before);
+
+  const changed = fixture();
+  const preview = await changed.call("import/preview", { input: { backup: legacy() } });
+  assert.equal(preview.response.status, 200);
+  assert.equal(preview.value.summary.rejected, 0);
+  changed.state.crmOccupied = 1;
+  const committed = await changed.call("import/commit", { input: { previewId: preview.value.previewId } });
+  assert.equal(committed.response.status, 409);
+  assert.equal(committed.value.code, "restore_conflict");
+  assert.equal(changed.state.crmOccupied, 1);
+  assert.equal(changed.state.records.size, 0);
+  assert.equal(changed.state.events.length, 0);
+  assert.equal(changed.state.previews.get(preview.value.previewId).committed_at, null);
 });
