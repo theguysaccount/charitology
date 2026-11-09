@@ -8,13 +8,15 @@ function requireProfile(value){return requireReminderProfile(value);}
 
 const fixtures=new WeakMap();
 const refused=code=>Object.assign(Error(code),{code});
-function admitReminderTraceBudget(count,entryBytes,encodedBytes){
- const facts={traceEntries:count,traceLimit:32768,traceEntryBytes:entryBytes,traceEntryLimit:512,traceEncodedBytes:encodedBytes,traceBytesLimit:16*1024*1024};
+// The composed twenty-group profile retains every descriptor in one fixture.
+// These are evidence-memory bounds, independent of all product storage limits.
+export function admitReminderTraceBudget(count,entryBytes,encodedBytes){
+ const facts={traceEntries:count,traceLimit:131072,traceEntryBytes:entryBytes,traceEntryLimit:512,traceEncodedBytes:encodedBytes,traceBytesLimit:32*1024*1024};
  if(!Number.isSafeInteger(count)||count<0||!Number.isSafeInteger(entryBytes)||entryBytes<1||!Number.isSafeInteger(encodedBytes)||encodedBytes<2)throw Object.assign(refused("REMINDER_FIXTURE_TRACE_STATE"),{assertion:"fixture-trace-state",...facts});
- if(count>=32768)throw Object.assign(refused("REMINDER_FIXTURE_TRACE_LIMIT"),{assertion:"fixture-trace-limit",...facts});
+ if(count>=131072)throw Object.assign(refused("REMINDER_FIXTURE_TRACE_LIMIT"),{assertion:"fixture-trace-limit",...facts});
  if(entryBytes>512)throw Object.assign(refused("REMINDER_FIXTURE_TRACE_ENTRY_LIMIT"),{assertion:"fixture-trace-entry-limit",...facts});
  const next=encodedBytes+entryBytes+(count===0?0:1);
- if(next>16*1024*1024)throw Object.assign(refused("REMINDER_FIXTURE_TRACE_BYTES_LIMIT"),{assertion:"fixture-trace-bytes-limit",...facts,traceNextEncodedBytes:next});
+ if(next>32*1024*1024)throw Object.assign(refused("REMINDER_FIXTURE_TRACE_BYTES_LIMIT"),{assertion:"fixture-trace-bytes-limit",...facts,traceNextEncodedBytes:next});
  return next;
 }
 function createReminderTraceAppender(trace){

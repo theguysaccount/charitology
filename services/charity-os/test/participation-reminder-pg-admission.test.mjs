@@ -9,11 +9,30 @@ import {requireReminderLocal18Profile,createReminderLocal18Profile} from '../tes
 import {createReminderTestContext,requireReminderTestContext} from '../test-db/fixtures/participation-reminder-test-context.mjs';
 import {checkedReminderRuntimeBinding,checkedReminderRuntimeManifest,REMINDER_RUNTIME_MODULES,REMINDER_RUNTIME_DATA_FILES,REMINDER_RUNTIME_SOURCE_LIMITS} from '../test-db/fixtures/participation-reminder-binding.mjs';
 import {checkedReminderLocal18OutputRoot} from '../test-db/participation-reminder.local18.mjs';
+import {admitReminderTraceBudget} from '../test-db/fixtures/participation-reminder.mjs';
 const bootUrl='postgresql://os_test_owner:ci-owner-only-password@127.0.0.1:5432/charitology_os_ci';
 const runtimeUrl='postgresql://os_test_app:ci-app-only-password@127.0.0.1:5432/charitology_os_ci';
 const inputs=()=>({marker:'github-reminder-pg17-v1',githubActions:'true',githubSha:'a'.repeat(40),runId:'1',runAttempt:'1',repository:'fictional/repository',databaseUrl:bootUrl,runtimeUrl});
 const boot=()=>({database:'charitology_os_ci',role:'os_test_owner',address:'172.18.0.2',port:5432,version:'17.11 (fictional grammar row)',version_num:170011,rolsuper:true,rolcreatedb:true,rolcreaterole:true,rolinherit:true,rolreplication:true,rolbypassrls:true,rolcanlogin:true,memberships:0,statement_timeout_ms:30000,lock_timeout_ms:3000,idle_timeout_ms:30000,transaction_timeout_ms:120000,directory:'/fictional/owned/data',system:'1234567890123456789',started:'1900000000'});
 const role=kind=>{const {directory,system,started,...v}=boot();return{...v,role:kind==='owner'?'os_reminder_ci_owner':'os_test_app',rolsuper:false,rolcreatedb:false,rolcreaterole:false,rolinherit:false,rolreplication:false,rolbypassrls:kind==='owner'};};
+test('composed reminder evidence retains descriptors beyond the first failed 32768-query bound',()=>{
+ assert.equal(admitReminderTraceBudget(32768,256,8*1024*1024),8*1024*1024+257);
+ assert.equal(admitReminderTraceBudget(131071,1,131073),131075);
+ assert.throws(()=>admitReminderTraceBudget(131072,1,131075),e=>e.code==='REMINDER_FIXTURE_TRACE_LIMIT');
+});
+test('trace bytes include array brackets and commas and refuse the first byte over 32MiB',()=>{
+ const max=32*1024*1024;
+ assert.equal(admitReminderTraceBudget(0,512,2),514);
+ assert.equal(admitReminderTraceBudget(1,512,max-513),max);
+ assert.throws(()=>admitReminderTraceBudget(1,512,max-512),e=>e.code==='REMINDER_FIXTURE_TRACE_BYTES_LIMIT'&&e.traceNextEncodedBytes===max+1);
+});
+test('trace descriptors retain their independent 512-byte cap',()=>{
+ assert.equal(admitReminderTraceBudget(1,512,514),1027);
+ assert.throws(()=>admitReminderTraceBudget(1,513,514),e=>e.code==='REMINDER_FIXTURE_TRACE_ENTRY_LIMIT');
+});
+test('invalid trace accounting cannot authorize a descriptor',()=>{
+ for(const args of [[-1,1,2],[0.5,1,2],[0,0,2],[0,1.5,2],[0,1,1],[0,1,NaN],[0,1,Number.MAX_SAFE_INTEGER+1]])assert.throws(()=>admitReminderTraceBudget(...args),e=>e.code==='REMINDER_FIXTURE_TRACE_STATE');
+});
 test('closed reminder CI context is data only and rejects old-family/ordinary CI markers',()=>{
  assert(Object.isFrozen(checkedReminderCi17Inputs(inputs())));
  for(const change of [{marker:'github-recurrence-pg17-v1'},{marker:undefined},{githubActions:'false'},{githubSha:'bad'},{runAttempt:'0'},{CI:'true'}])assert.throws(()=>checkedReminderCi17Inputs({...inputs(),...change}));
