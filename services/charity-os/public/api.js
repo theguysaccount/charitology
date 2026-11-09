@@ -13,6 +13,32 @@ export function setCsrfToken(value) {
 }
 const part = (value) => encodeURIComponent(String(value));
 const orgPath = (org) => `/api/orgs/${part(org)}`;
+const feedbackDraftPath = (org, id) =>
+  `${orgPath(org)}/intake/submissions/${part(id)}/feedback-draft`;
+async function feedbackDraftRequest(org, id, raw) {
+  const write = raw !== undefined;
+  if (write && typeof raw !== "string") throw new TypeError("Use the exact feedback request.");
+  const headers = { Accept: "application/json" };
+  if (write) {
+    headers["Content-Type"] = "application/json";
+    if (csrfToken) headers["X-CSRF-Token"] = csrfToken;
+  }
+  const response = await fetch(feedbackDraftPath(org, id), {
+    method: write ? "POST" : "GET",
+    headers,
+    credentials: "same-origin",
+    cache: "no-store",
+    signal: AbortSignal.timeout(30000),
+    ...(write ? { body: raw } : {}),
+  });
+  let body = null;
+  try { body = await response.json(); } catch {}
+  return { status: response.status, body };
+}
+export const feedbackIntakeDraftAPI = Object.freeze({
+  read: (org, id) => feedbackDraftRequest(org, id),
+  send: (org, id, raw) => feedbackDraftRequest(org, id, raw),
+});
 const recordsPath = (org, module) =>
   `${orgPath(org)}/modules/${part(module)}/records`;
 // File-object lifetime only. A lost first response keeps the same transient slot;
@@ -367,6 +393,10 @@ export const api = {
   commitImport: (org, data) =>
     request(`${orgPath(org)}/import/commit`, { method: "POST", body: data }),
   intakePublications: (org) => request(`${orgPath(org)}/intake/publications`),
+  feedbackFormTemplate: (org, retentionUntil) =>
+    request(`${orgPath(org)}/intake/feedback/template?${new URLSearchParams({ retentionUntil })}`),
+  publishFeedbackForm: (org, body) =>
+    request(`${orgPath(org)}/intake/feedback/publications`, { method: "POST", body }),
   publishIntake: (org, body) =>
     request(`${orgPath(org)}/intake/publications`, { method: "POST", body }),
   withdrawIntake: (org, id) =>

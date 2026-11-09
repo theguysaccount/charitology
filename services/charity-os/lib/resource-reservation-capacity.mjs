@@ -1,5 +1,6 @@
 /** SQL and native size projections for one bounded terminal step per hold. */
 import { fail } from "./security.mjs";
+import { measureFeedbackIntakeRemaining } from "./feedback-intake-capacity.mjs";
 import { ownGroupValue } from "./participation-group-model.mjs";
 import {
   RESOURCE_RESERVATION_LIMITS as limits,
@@ -207,38 +208,45 @@ async function safety(c, org, features) {
   const { checkCheckInCapacity } = await import("./participant-check-in-capacity.mjs");
   const backup = await assembleWorkspaceBackup(c, org, { features });
   const resources = await measureResourceReservationRemaining(c, org, backup.resourceReservations);
-  need(resources);
+  const feedback = await measureFeedbackIntakeRemaining(c, org, backup.intake, { expected: features.feedback === true });
+  need(resources || feedback);
   const operating = await measureLearningOperationalCapacity(c, org, backup.participation);
   const participation = backup.participation.targets.length || features.checkins
     ? await checkParticipationExportCapacity(c, org, { reserve: false, legacySafety: features.checkins === true })
     : null;
   const checkins = features.checkins ? await checkCheckInCapacity(c, org) : null;
   const requiredUsage = total([await logicalBackupBytes(c, org), operating.sourceLogicalGrowthBytes,
-    participation?.safetyRetained ?? 0, checkins?.wholeRetainedReserve ?? 0, resources.retainedGrowthBytes]);
+    participation?.safetyRetained ?? 0, checkins?.wholeRetainedReserve ?? 0, resources?.retainedGrowthBytes ?? 0, feedback?.retainedGrowthBytes ?? 0]);
   const requiredBackupBytes = total([bytes(backup), operating.sourceWireGrowthBytes,
-    participation?.safetyNative ?? 0, checkins?.wholeNativeReserve ?? 0, resources.nativeGrowthBytes]);
+    participation?.safetyNative ?? 0, checkins?.wholeNativeReserve ?? 0, resources?.nativeGrowthBytes ?? 0, feedback?.nativeGrowthBytes ?? 0]);
   return { capacity: { requiredUsage, requiredBackupBytes }, limit: ordinaryLimit };
 }
 
-export async function checkResourceReservationSafetyCapacity(c, org, { extraAudit = null } = {}) {
+export async function checkWorkspaceExitCapacity(c, org, { extraAudit = null } = {}) {
   const { readWorkspaceFeatures } = await import("./workspace-backup.mjs");
   const features = await readWorkspaceFeatures(c, org);
-  if (features?.reservations !== true) return null;
+  if (features?.reservations !== true && features?.feedback !== true) return null;
   const { capacity, limit } = await safety(c, org, features);
   need(capacity);
   const audit = await measureAudit(c, org, extraAudit);
   const requiredUsage = total([capacity.requiredUsage, audit.retained]);
   const requiredBackupBytes = total([capacity.requiredBackupBytes, audit.native]);
+  if (features.feedback && (requiredUsage > limit || requiredBackupBytes > nativeLimit))
+    fail(422, "feedback_intake_capacity", "The workspace must retain enough room for its remaining feedback and other workspace exits.");
   need(requiredUsage <= limit && requiredBackupBytes <= nativeLimit);
   return Object.freeze({ requiredUsage, requiredBackupBytes });
 }
 
 /** Null delegates to the old family guards. False omits only the optional event. */
-export async function canRetainResourceReservationSafetyAudit(c, org, event) {
+export async function canRetainWorkspaceExitAudit(c, org, event) {
   try {
-    const capacity = await checkResourceReservationSafetyCapacity(c, org, { extraAudit: event });
+    const capacity = await checkWorkspaceExitCapacity(c, org, { extraAudit: event });
     return capacity === null ? null : true;
   } catch {
     return false;
   }
 }
+
+// Retain the existing resource hook names for composed callers.
+export const checkResourceReservationSafetyCapacity = checkWorkspaceExitCapacity;
+export const canRetainResourceReservationSafetyAudit = canRetainWorkspaceExitAudit;

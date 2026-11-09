@@ -1,6 +1,7 @@
 import { MODULE_MAP, SCHEMA_VERSION, validateRecord } from "./modules.mjs";
 import { hash, fail } from "./security.mjs";
 import { restoredIntake } from "./intake-backup.mjs";
+import { projectFeedbackNativeEvents } from "./feedback-intake-safety.mjs";
 import { restoredParticipation } from "./participation-backup.mjs";
 import { restoredDelivery } from "./participation-delivery-backup.mjs";
 import { restoredTaskRecurrence } from "./task-recurrence-backup.mjs";
@@ -28,6 +29,7 @@ export function makeBackup(org, records, extras = {}) {
     records,
     ...extras,
   };
+  if (Object.hasOwn(payload, "events")) payload.events = projectFeedbackNativeEvents(payload.events);
   return { ...payload, checksum: hash(payload) };
 }
 export function validateBackup(input, orgId, userId) {

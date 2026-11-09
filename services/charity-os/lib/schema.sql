@@ -83,6 +83,13 @@ CREATE TABLE IF NOT EXISTS os_publications (
   created_at timestamptz NOT NULL DEFAULT now(), withdrawn_at timestamptz,
   PRIMARY KEY(org_id,id)
 );
+-- Feedback adds one closed kind to the existing anonymous intake queue.
+ALTER TABLE os_publications DROP CONSTRAINT IF EXISTS os_publications_kind_check;
+ALTER TABLE os_publications ADD CONSTRAINT os_publications_kind_check
+ CHECK(kind IN ('contact','event-interest','volunteer-interest','feedback'));
+ALTER TABLE os_publications DROP CONSTRAINT IF EXISTS os_publications_feedback_no_target;
+ALTER TABLE os_publications ADD CONSTRAINT os_publications_feedback_no_target
+ CHECK(kind<>'feedback' OR (target_id IS NULL AND target_module IS NULL AND target_revision IS NULL));
 CREATE TABLE IF NOT EXISTS os_intake (
   org_id text NOT NULL REFERENCES os_orgs(id), id text NOT NULL,
   publication_id text NOT NULL, answers jsonb NOT NULL, consent_at timestamptz NOT NULL,
@@ -97,6 +104,8 @@ CREATE TABLE IF NOT EXISTS os_intake (
 CREATE INDEX IF NOT EXISTS os_publications_created ON os_publications(org_id,created_at DESC,id DESC);
 CREATE INDEX IF NOT EXISTS os_intake_created ON os_intake(org_id,created_at DESC,id DESC);
 CREATE INDEX IF NOT EXISTS os_intake_queue ON os_intake(org_id,publication_id,status);
+CREATE UNIQUE INDEX IF NOT EXISTS os_feedback_intake_conversion
+ ON os_events(org_id,(detail->>'intakeId')) WHERE action='intake.feedback-converted';
 ALTER TABLE os_intake ADD COLUMN IF NOT EXISTS erased_at timestamptz;
 ALTER TABLE os_publications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE os_publications FORCE ROW LEVEL SECURITY;

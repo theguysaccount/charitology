@@ -6,6 +6,8 @@ import { id, fail, stable, HttpError } from "./security.mjs";
 import { guardParticipationWrite } from "./participation-guards.mjs";
 import { guardTaskRecurrenceWrite } from "./task-recurrence.mjs";
 import { guardLearningWrite } from "./learning-guards.mjs";
+import { guardFeedbackPublicationWrite } from "./feedback-intake-safety.mjs";
+import { FEEDBACK_INTAKE_HISTORY_SQL } from "./feedback-intake-capacity.mjs";
 import { guardResourceReservationWrite, resourceReservationHistoryPresent } from "./resource-reservation-guards.mjs";
 import { resourceReservationHistoryExpression, resourceReservationSchemaReady } from "./resource-reservation-schema.mjs";
 // Only trusted server actions classify a transaction. HTTP inputs cannot
@@ -46,11 +48,14 @@ export function noteContactReconciliationReceiptReplay(c, org) {
   if (transaction?.orgId === org && transaction.actions.size === 0)
     transaction.receiptReplay = true;
 }
+// An exact accepted public feedback intent is a read-only receipt Retry.
+export const notePublicFeedbackReceiptReplay = noteContactReconciliationReceiptReplay;
+
 async function checkCompleteWorkspaceCapacity(c, orgId, ordinary, requireResourceHistory = false) {
   const resourceHistory = await resourceReservationHistoryExpression(c);
   const present = (
     await c.query(
-      `SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders, ${resourceHistory} AS "resourceReservations"`,
+      `SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders, ${resourceHistory} AS "resourceReservations", ${FEEDBACK_INTAKE_HISTORY_SQL} AS feedback`,
       [orgId],
     )
   ).rows[0];
@@ -60,9 +65,9 @@ async function checkCompleteWorkspaceCapacity(c, orgId, ordinary, requireResourc
     const { checkParticipationRecurrenceFamilyCapacity } = await import("./participation-recurrence-capacity.mjs");
     await checkParticipationRecurrenceFamilyCapacity(c, orgId);
   }
-  if (present.resourceReservations && !ordinary && !present.groups && !present.reminders) {
-    const { checkResourceReservationSafetyCapacity } = await import("./resource-reservation-capacity.mjs");
-    await checkResourceReservationSafetyCapacity(c, orgId);
+  if ((present.resourceReservations || present.feedback) && !ordinary && !present.groups && !present.reminders) {
+    const { checkWorkspaceExitCapacity } = await import("./resource-reservation-capacity.mjs");
+    await checkWorkspaceExitCapacity(c, orgId);
     return;
   }
   let participation;
@@ -99,7 +104,7 @@ async function checkCompleteWorkspaceCapacity(c, orgId, ordinary, requireResourc
     }
   }
   if (!present.groups && !present.reminders && (
-    (present.present || present.participation || present.incubator || present.checkins || present.field || present.crm || present.recurrence || present.resourceReservations) &&
+    (present.present || present.participation || present.incubator || present.checkins || present.field || present.crm || present.recurrence || present.resourceReservations || present.feedback) &&
     ordinary
   )) {
     const { checkWorkspaceExportCapacity } = await import(
@@ -178,6 +183,22 @@ export async function admitResourceReservationWorkspace(c, { orgId, operation, m
   return true;
 }
 
+// Staff publication and draft conversion each write a mandatory typed audit.
+// Measure after it, before committing or returning a decision to the browser.
+export async function admitFeedbackIntakeWorkspace(c, orgId) {
+  const state = transactionAudits.get(c);
+  if (!state?.locked || state.readOnly || state.orgId !== orgId || state.feedbackAdmission ||
+      state.actions.size !== 1 ||
+      !["intake.published", "intake.feedback-converted"].some(action => state.actions.has(action)))
+    fail(503, "feedback_workspace_admission", "The feedback changes could not be verified.");
+  const { feedbackIntakeSchemaReady } = await import("./feedback-intake-schema.mjs");
+  if (!(await feedbackIntakeSchemaReady(c)))
+    fail(503, "feedback_workspace_admission", "The feedback changes could not be verified.");
+  await checkCompleteWorkspaceCapacity(c, orgId, true);
+  state.feedbackAdmission = { mode: "ordinary", auditRevision: state.auditRevision };
+  return true;
+}
+
 export function database(url, { schema } = {}) {
   if (schema && !/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("Invalid schema.");
@@ -225,8 +246,8 @@ export function database(url, { schema } = {}) {
           const mode = ordinary ? "ordinary" : "release-safety";
           // The resource hook has already measured the complete final graph
           // on this client. A later audit or a different class rechecks it.
-          if (state.resourceAdmission?.mode !== mode ||
-              state.resourceAdmission.auditRevision !== state.auditRevision)
+          const measured = state.resourceAdmission ?? state.feedbackAdmission;
+          if (measured?.mode !== mode || measured.auditRevision !== state.auditRevision)
             await checkCompleteWorkspaceCapacity(c, orgId, ordinary);
         }
         await c.query("COMMIT");
@@ -307,14 +328,17 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
       );
   }
   const optional = action === "backup.exported" || safetyActions.has(action);
-  if (optional && await resourceReservationHistoryPresent(c, org)) {
-    const { canRetainResourceReservationSafetyAudit } = await import("./resource-reservation-capacity.mjs");
-    const resourceAudit = await canRetainResourceReservationSafetyAudit(c, org, {
+  let workspaceAudit = null;
+  if (optional && (await resourceReservationHistoryPresent(c, org) ||
+      (await c.query(`SELECT ${FEEDBACK_INTAKE_HISTORY_SQL} AS present`, [org])).rows[0]?.present === true)) {
+    const { canRetainWorkspaceExitAudit } = await import("./resource-reservation-capacity.mjs");
+    workspaceAudit = await canRetainWorkspaceExitAudit(c, org, {
       org_id: org, actor_id: user, action, record_id: record?.id || null,
       module_id: record?.moduleId || null, detail,
     });
-    if (resourceAudit !== true) return false;
-  } else {
+    if (workspaceAudit === false) return false;
+  }
+  if (workspaceAudit === null) {
     if (action === "backup.exported") {
       const { canRetainIncubatorExportAudit } = await import(
         "./workspace-backup.mjs"
@@ -403,6 +427,7 @@ export async function saveRecord(c, r, options = {}) {
   await guardParticipationWrite(c, r, options);
   await guardTaskRecurrenceWrite(c, r, options);
   await guardLearningWrite(c, r, options);
+  await guardFeedbackPublicationWrite(c, r);
   await guardResourceReservationWrite(c, r, { operation: options.operation });
   const size = Buffer.byteLength(JSON.stringify(r.data));
   const usage = (

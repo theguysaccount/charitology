@@ -37,6 +37,7 @@ import {
 } from "./security.mjs";
 import {
   audit,
+  admitFeedbackIntakeWorkspace,
   admitResourceReservationWorkspace,
   allRecords,
   rowRecord,
@@ -103,6 +104,11 @@ import { checkLearningActiveRecords } from "./learning-history.mjs";
 import { assembleWorkspaceBackup } from "./workspace-backup.mjs";
 import { checkLearningRestoreCapacity } from "./learning-capacity.mjs";
 import { publicIntakeRoutes, intakeRoutes } from "./intake.mjs";
+import { feedbackIntakeDraftRoutes } from "./feedback-intake-draft.mjs";
+import { feedbackIntakeStaffSetup } from "./feedback-intake-staff-setup.mjs";
+import { canManageFeedbackIntake, requireFeedbackIntakeStaff } from "./feedback-intake-access.mjs";
+import { FEEDBACK_INTAKE_HISTORY_SQL } from "./feedback-intake-capacity.mjs";
+import { feedbackBackupSQL, feedbackSafeAuditDetailSQL, linkedFeedbackDraftIds, scopedFeedbackAuditSQL, scopedFeedbackIntakeAuditSQL } from "./feedback-intake-privacy.mjs";
 import { participantRoutes } from "./participants.mjs";
 import {
   participationRoutes,
@@ -410,6 +416,11 @@ export function createHandler({
         });
       const contactResponse = await contactReconciliationRoutes({ request, url, db, session });
       if (contactResponse) return contactResponse;
+      const feedbackArgs = { request, url, db, session, settings, admitWorkspace: admitFeedbackIntakeWorkspace };
+      const feedbackDraft = await feedbackIntakeDraftRoutes(feedbackArgs);
+      if (feedbackDraft) return feedbackDraft;
+      const feedbackSetup = await feedbackIntakeStaffSetup(feedbackArgs);
+      if (feedbackSetup) return feedbackSetup;
       if (isParticipationGroupPath(path)) {
         if (method === "HEAD") fail(405, "group_method", "Use GET to read a group view.");
         if (method === "GET" && (request.body !== null || request.headers.has("transfer-encoding") ||
@@ -628,6 +639,7 @@ export function createHandler({
             org,
             user,
             member,
+            session,
             tail,
             method,
             input,
@@ -689,12 +701,19 @@ export function createHandler({
             settings,
           });
           if (grantReportResponse) return grantReportResponse;
+          const mayReadFeedback = canManageFeedbackIntake(member);
           if (tail === "export" && method === "GET") {
             await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
             requireAdmin(await membership(c, org, user));
+            if ((await c.query(`SELECT ${FEEDBACK_INTAKE_HISTORY_SQL} AS present`, [org])).rows[0]?.present)
+              await requireFeedbackIntakeStaff(c, org, session, { readOnly: false });
           }
-          const records = await allRecords(c, org),
-            visible = records
+          const records = await allRecords(c, org);
+          const linkedPrivate = !mayReadFeedback && (records.some(r => r.moduleId === "feedback") ||
+            /^(?:audit$|reports(?:$|\/)|modules\/feedback\/(?:trash$|records\/[^/]+\/restore$))/.test(tail))
+              ? await linkedFeedbackDraftIds(c, org) : new Set();
+          const visible =
+            records.filter(r => !linkedPrivate.has(r.id))
               .map((r) => visibleRecord(r, member))
               .filter(Boolean);
           if (tail === "dashboard" && method === "GET") {
@@ -743,11 +762,10 @@ export function createHandler({
             return okay({
               events: (
                 await c.query(
-                  'SELECT id,actor_id AS "actorId",action,record_id AS "recordId",module_id AS "moduleId",detail,created_at AS "createdAt" FROM os_events WHERE org_id=$1 ORDER BY id DESC LIMIT500'.replace(
-                    "LIMIT500",
-                    "LIMIT 500",
-                  ),
-                  [org],
+                  `SELECT id,actor_id AS "actorId",action,record_id AS "recordId",module_id AS "moduleId",
+                     ${feedbackSafeAuditDetailSQL},created_at AS "createdAt" FROM os_events WHERE org_id=$1
+                     ${mayReadFeedback ? "" : scopedFeedbackAuditSQL} ORDER BY id DESC LIMIT 500`,
+                  mayReadFeedback ? [org] : [org, [...linkedPrivate]],
                 )
               ).rows,
             });
@@ -778,6 +796,8 @@ export function createHandler({
             if (migration) backup = migration.backup;
             const imported = validateBackup(backup, org, user);
             const intake = restoredIntake(backup);
+            if (intake?.publications.some(p => p.kind === "feedback"))
+              await requireFeedbackIntakeStaff(c, org, session, { readOnly: false });
             const participation = restoredParticipation(backup);
             const delivery = restoredDelivery(backup);
             const taskRecurrence = restoredTaskRecurrence(
@@ -946,6 +966,8 @@ export function createHandler({
             const imported = validateBackup(p.payload, org, user);
             const connections = restoredIntegrations(p.payload);
             const intake = restoredIntake(p.payload);
+            if (intake?.publications.some(p => p.kind === "feedback"))
+              await requireFeedbackIntakeStaff(c, org, session, { readOnly: false });
             const participation = restoredParticipation(p.payload);
             const delivery = restoredDelivery(p.payload);
             const taskRecurrence = restoredTaskRecurrence(
@@ -1132,7 +1154,9 @@ export function createHandler({
             return okay({
               imports: (
                 await c.query(
-                  'SELECT id,checksum,created_at AS "createdAt",committed_at AS "committedAt" FROM os_previews WHERE org_id=$1 AND kind=\'backup\' AND committed_at IS NOT NULL ORDER BY created_at DESC',
+                  `SELECT id,checksum,created_at AS "createdAt",committed_at AS "committedAt" FROM os_previews
+                     WHERE org_id=$1 AND kind='backup' AND committed_at IS NOT NULL
+                     ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`} ORDER BY created_at DESC`,
                   [org],
                 )
               ).rows,
@@ -1145,11 +1169,15 @@ export function createHandler({
             requireAdmin(member);
             const archive = (
               await c.query(
-                "SELECT payload FROM os_previews WHERE org_id=$1 AND id=$2 AND kind='backup' AND committed_at IS NOT NULL",
+                `SELECT payload, ${feedbackBackupSQL} AS feedback FROM os_previews
+                   WHERE org_id=$1 AND id=$2 AND kind='backup' AND committed_at IS NOT NULL
+                   ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}`,
                 [org, archiveMatch[1]],
               )
             ).rows[0];
             if (!archive) fail(404, "backup", "Import archive not found.");
+            if (archive.feedback === true)
+              await requireFeedbackIntakeStaff(c, org, session, { readOnly: true });
             return downloadJson(
               archive.payload,
               "charitology-os-source-backup.json",
@@ -1176,7 +1204,7 @@ export function createHandler({
                     r.payload.modules.every(
                       (m) =>
                         getModule(m.id).roles.read.includes(member.role) &&
-                        m.records.every((record) => inScope(record, member)),
+                        m.records.every((record) => !linkedPrivate.has(record.id) && inScope(record, member)),
                     ),
                 )
                 .map(({ payload, ...r }) => r),
@@ -1267,7 +1295,7 @@ export function createHandler({
             if (!knownLegacyReport(r.payload)) fail(404, "report", "This report format is unavailable.");
             for (const m of r.payload.modules) {
               requirePermission(m.id, member, "read");
-              if (m.records.some((r) => !inScope(r, member)))
+              if (m.records.some((r) => linkedPrivate.has(r.id) || !inScope(r, member)))
                 fail(
                   403,
                   "scope",
@@ -1285,7 +1313,7 @@ export function createHandler({
               )
             ).rows[0];
             const record = file && records.find((r) => r.id === file.record_id);
-            const view = record && visibleRecord(record, member);
+            const view = record && !linkedPrivate.has(record.id) && visibleRecord(record, member);
             if (!view) fail(404, "file", "File not found.");
             if (
               ["board_reader", "external_reviewer"].includes(member.role) &&
@@ -1315,7 +1343,7 @@ export function createHandler({
                 )
               ).rows
                 .map(rowRecord)
-                .filter((r) => inScope(r, member)),
+                .filter((r) => !linkedPrivate.has(r.id) && inScope(r, member)),
             });
           }
           const restoreMatch = tail.match(
@@ -1329,7 +1357,7 @@ export function createHandler({
                 [org, restoreMatch[2], restoreMatch[1]],
               )
             ).rows[0];
-            if (!deleted) fail(404, "record", "Deleted record not found.");
+            if (!deleted || linkedPrivate.has(deleted.id)) fail(404, "record", "Deleted record not found.");
             const r = rowRecord(deleted);
             if (!inScope(r, member)) fail(403, "scope", "Outside your scope.");
             stale(input, r);
@@ -1441,7 +1469,7 @@ export function createHandler({
           const record = records.find(
             (r) => r.id === recordId && r.moduleId === moduleId,
           );
-          if (!record || !inScope(record, member))
+          if (!record || linkedPrivate.has(record.id) || !inScope(record, member))
             fail(404, "record", "Record not found.");
           if (action === "files" && method === "GET") {
             if (!visibleRecord(record, member))
@@ -1473,10 +1501,9 @@ export function createHandler({
               ? []
               : (
                   await c.query(
-                    'SELECT action,actor_id AS "actorId",detail,created_at AS "createdAt" FROM os_events WHERE org_id=$1 AND record_id=$2 ORDER BY id DESC LIMIT100'.replace(
-                      "LIMIT100",
-                      "LIMIT 100",
-                    ),
+                    `SELECT action,actor_id AS "actorId",${feedbackSafeAuditDetailSQL},created_at AS "createdAt"
+                       FROM os_events WHERE org_id=$1 AND record_id=$2
+                       ${mayReadFeedback ? "" : scopedFeedbackIntakeAuditSQL} ORDER BY id DESC LIMIT 100`,
                     [org, record.id],
                   )
                 ).rows;

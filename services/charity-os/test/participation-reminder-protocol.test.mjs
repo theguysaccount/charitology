@@ -24,6 +24,7 @@ mock.module(new URL('../lib/security.mjs', import.meta.url).href, { namedExports
 mock.module(new URL('../lib/database.mjs', import.meta.url).href, { namedExports: {
   database: missing, rowRecord: missing, allRecords: missing, saveRecord: missing, logicalBackupBytes: missing,
   storePreview: missing, commitPreview: missing, noteParticipationReceiptReplay: missing, noteContactReconciliationReceiptReplay: missing,
+  notePublicFeedbackReceiptReplay: missing,
   PREVIEW_LIMITS: { pendingCount: 4, committedCount: 32, pendingBytes: 134217728, committedBytes: 134217728 },
   audit: async (c, org, actor, action, record, detail) => {
     assert.equal(c, active.c); assert.equal(org, ORG); assert.equal(record, null); assert([OWN, ADMIN].includes(actor));

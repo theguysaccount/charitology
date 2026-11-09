@@ -100,6 +100,7 @@ export function makeWorkerFixture({attemptSql,count=1,sqlClock='2030-01-02T10:00
     if(sql.startsWith('SELECT state,safe_code,provider_event_at,last_checked_at FROM os_participation_outbox'))return {rows:[]};
     if(sql.startsWith('UPDATE os_participations SET delivery_consent=$3,revision=revision+1,last_command=$4')){Object.assign(f.person,{delivery_consent:JSON.parse(args[2]),last_command:JSON.parse(args[3]),revision:f.person.revision+1});return {rows:[clone(f.person)]};}
     if(sql.startsWith('SELECT sum(size) AS size FROM (SELECT COALESCE')&&sql.endsWith(') usage'))return {rows:[{size:String(f.auditUsage||0)}]};
+    if(sql==="SELECT EXISTS(SELECT 1 FROM os_publications WHERE org_id=$1 AND kind='feedback') AS present")return {rows:[{present:false}]};
     if(sql==='INSERT INTO os_events(org_id,actor_id,action,record_id,module_id,detail) VALUES($1,$2,$3,$4,$5,$6)')return {rows:[],rowCount:1};
     if(sql==="UPDATE os_participations SET last_command=$3 WHERE org_id=$1 AND id=$2 AND last_command->>'intentHash'=$4 RETURNING last_command"){
       assert.equal(f.person.last_command.intentHash,args[3]);f.person.last_command=JSON.parse(args[2]);return {rows:[{last_command:clone(f.person.last_command)}]};

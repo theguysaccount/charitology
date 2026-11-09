@@ -1633,6 +1633,26 @@ textarea[aria-invalid="true"] {
 .intake-publication .form-status:empty {
   display: none;
 }
+.feedback-draft-panel {
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.8rem;
+}
+.feedback-draft-panel :is(h2, h3, p) {
+  margin: 0;
+}
+.feedback-draft-panel .button {
+  justify-self: start;
+  white-space: normal;
+}
+.feedback-draft-panel .form-status:empty {
+  display: none;
+}
+.feedback-draft-confirm {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+}
 .intake-queue-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;

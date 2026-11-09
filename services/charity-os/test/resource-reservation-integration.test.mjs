@@ -144,7 +144,7 @@ test("the transaction measures Reserve and Release once through their existing o
     exports: { checkWorkspaceExportCapacity: async () => { capacities.push("ordinary"); } },
   });
   t.mock.module("../lib/resource-reservation-capacity.mjs", {
-    exports: { checkResourceReservationSafetyCapacity: async () => { capacities.push("release-safety"); } },
+    exports: { checkWorkspaceExitCapacity: async () => { capacities.push("release-safety"); } },
   });
   const client = {
     async query(sql) {

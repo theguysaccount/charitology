@@ -12,6 +12,7 @@ import {
 } from "./learning-capacity.mjs";
 
 import { measureResourceReservationRemaining } from "./resource-reservation-capacity.mjs";
+import { measureFeedbackIntakeRemaining } from "./feedback-intake-capacity.mjs";
 
 const MAX = 2147483647, DIGEST = "f".repeat(64), wireStamp = O.serviceTime;
 const wireBytes = value => Buffer.byteLength(JSON.stringify(value));
@@ -273,13 +274,16 @@ async function sourceSnapshot(c, org, candidate) {
   const remaining = await measureRemaining(c, org, { backup, operational }, append);
   const group = await measureGroupCapacity(c, org), checkins = await checkCheckInCapacity(c, org);
   const resources = await measureResourceReservationRemaining(c, org, backup.resourceReservations);
+  const feedback = await measureFeedbackIntakeRemaining(c, org, backup.intake);
   const requiredUsage = usage + remaining.operationalSourceLogicalGrowthBytes + remaining.retainedGrowthAboveOperational +
-    group.retainedGrowthBytes + checkins.wholeRetainedReserve + (resources?.retainedGrowthBytes ?? 0);
+    group.retainedGrowthBytes + checkins.wholeRetainedReserve +
+    (resources?.retainedGrowthBytes ?? 0) + (feedback?.retainedGrowthBytes ?? 0);
   const requiredBackupBytes = wireBytes(backup) + operational.sourceWireGrowthBytes + remaining.nativeGrowthAboveOperational +
-    group.nativeGrowthBytes + checkins.wholeNativeReserve + (resources?.nativeGrowthBytes ?? 0);
+    group.nativeGrowthBytes + checkins.wholeNativeReserve +
+    (resources?.nativeGrowthBytes ?? 0) + (feedback?.nativeGrowthBytes ?? 0);
   need(Number.isSafeInteger(requiredUsage) && Number.isSafeInteger(requiredBackupBytes));
   return { requiredUsage, requiredBackupBytes, usage, backupBytes: wireBytes(backup), remaining, group, checkins,
-    ...(resources ? { resourceReservations: resources } : {}) };
+    ...(resources ? { resourceReservations: resources } : {}), ...(feedback ? { feedbackIntake: feedback } : {}) };
 }
 // Existing trusted emergency policy only. Ordinary60MiB/restore admission is
 // the caller's separate path; no HTTP or request-supplied mode is accepted.

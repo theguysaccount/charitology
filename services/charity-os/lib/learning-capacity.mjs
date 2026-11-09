@@ -31,6 +31,7 @@ import { planRestoredContactReconciliationReports, contactReconciliationRestoreS
 
 import { restoredResourceReservations, resourceReservationRestoreSummary } from './resource-reservation-backup.mjs';
 import { measureResourceReservationRestore } from './resource-reservation-capacity.mjs';
+import { measureFeedbackIntakeRestore } from './feedback-intake-capacity.mjs';
 
 export const LEARNING_RESTORE_CAPACITY = Object.freeze({ logicalBytes: 60 * 1024 * 1024, backupBytes: 64 * 1024 * 1024,
   auditCheckReserveBytes: 1000, worstOrgId: 'o'.repeat(100), worstActorId: 'u'.repeat(100),
@@ -403,10 +404,15 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   }
   // Real organization API bounds: name180 and time-zone100 UTF-16 units. Escaped controls maximize their wire size.
   const projected = makeBackup({ name: '\u0001'.repeat(180), currency: 'XXX', time_zone: '\u0001'.repeat(100) }, projectedRecords, extras);
-  const backupBytes = Buffer.byteLength(JSON.stringify(projected));
+  const feedback = await measureFeedbackIntakeRestore(c, orgId, extras.intake, {
+    publications: tables.os_publications, submissions: tables.os_intake,
+  });
+  logicalBytes += feedback?.retainedGrowthBytes ?? 0;
+  const backupBytes = Buffer.byteLength(JSON.stringify(projected)) + (feedback?.nativeGrowthBytes ?? 0);
   if (checkins === null) delete categories.os_participation_checkins;
   return frozen({ logicalBytes, requiredLogicalBytes: logicalBytes + C.auditCheckReserveBytes, backupBytes,
     auditCheckReserveBytes: C.auditCheckReserveBytes, structuredRecordBytes, categories,
+    ...(feedback === null ? {} : { feedbackIntake: feedback }),
     ...(resourceRestore === null ? {} : { resourceReservations: {
       retainedBytes: resourceRestore.retainedBytes,
       projectedRetainedBytes: resourceRestore.projectedRetainedBytes,

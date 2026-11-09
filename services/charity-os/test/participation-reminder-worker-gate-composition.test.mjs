@@ -8,7 +8,7 @@ const unexpected = () => assert.fail('No database helper permitted in source-lea
 mock.module(new URL('../lib/database.mjs', import.meta.url).href, { namedExports: {
   rowRecord: unexpected, audit: unexpected, database: unexpected, allRecords: unexpected, saveRecord: unexpected,
   logicalBackupBytes: unexpected, storePreview: unexpected, commitPreview: unexpected,
-  noteParticipationReceiptReplay: unexpected, noteContactReconciliationReceiptReplay: unexpected,
+  noteParticipationReceiptReplay: unexpected, noteContactReconciliationReceiptReplay: unexpected, notePublicFeedbackReceiptReplay: unexpected,
   PREVIEW_LIMITS: { pendingCount: 4, committedCount: 32, pendingBytes: 134217728, committedBytes: 134217728 },
 } });
 const { participationDeliveryGate } = await import('../lib/participation-delivery.mjs');

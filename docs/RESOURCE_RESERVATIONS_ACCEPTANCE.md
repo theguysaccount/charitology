@@ -1,5 +1,13 @@
 # Room and equipment reservations
 
+## Production release
+
+[PR #62](https://github.com/theguysaccount/charitology/pull/62) merged as `6007e41` with the exact tested `4616664` tree. The final source passed 2,133 local OS checks and all eight [push](https://github.com/theguysaccount/charitology/actions/runs/42598224481) and [pull request](https://github.com/theguysaccount/charitology/actions/runs/42598229773) jobs.
+
+The compatible deployment served the canonical OS before the two reservation tables existed. Twelve selected protected and twelve canonical responses passed. A restricted read first confirmed the tables were absent. One database transaction added the empty tables and scoped grants. A fresh constrained connection confirmed readiness and no unscoped visible rows. The readback matched all 130 old rows in 38 tables and all four workspace budget checks. The fresh `main` deployment `dpl_FUuTJaz1JYzzgnHpcwy1KS75FRtS` then served the same 12 responses, including eight exact assets, health and three unsigned refusals.
+
+The product supports one approved room or equipment item for a full approved Events session. The private browser and database exercises used fictional data. No real reservation or staff pilot was created on the hosted service. Keep a reservation-compatible runtime for rollback after installation so contact reconciliation still recognizes the database layout.
+
 An organization owner or administrator with workspace-wide access to Assets and Events can review an internal hold for one approved room or item over one approved Events session. Both source approvals and the exact session interval are checked at review and again before recording.
 
 The first slice recognizes an Assets record with a known quantity of one. Back-to-back sessions can use the same item. Overlapping sessions cannot. The review shows the written offsets and zone, so daylight changes do not silently shift a saved hold.

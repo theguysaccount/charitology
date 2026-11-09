@@ -66,6 +66,7 @@ export function participantQuery(url, allowed = []) {
   return query;
 }
 const hasEmailQuestion = (publication) =>
+  publication?.kind !== "feedback" &&
   publication?.schema?.questions?.some(
     (question) => question.key === "email" && question.type === "text",
   );
@@ -182,7 +183,7 @@ async function loadOwn(c, user, org, intakeIds, { forUpdate = false } = {}) {
   ).rows[0]?.name;
   return rows.flatMap((row) => {
     const publication = publications.find((p) => p.id === row.publication_id);
-    if (!publication || !organizationName) return [];
+    if (!publication || publication.kind === "feedback" || !organizationName) return [];
     const accepting = publicationAccepting(
       publication,
       records.find((r) => r.id === publication.record_id),

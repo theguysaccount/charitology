@@ -1,6 +1,11 @@
+import { isProxy } from "node:util/types";
 import { fail } from "./security.mjs";
 import { intakeSchema, intakeAnswers, INTAKE_LIMITS } from "./intake.mjs";
 import { participationTimestampParameter } from "./participation-timestamp.mjs";
+import { feedbackSelection, requireFeedbackPublicationSchema } from "./feedback-intake-model.mjs";
+import {
+  exactFeedbackObject, feedbackDataField, feedbackPortableConversionEvent, isWithheldFeedbackDraft,
+} from "./feedback-intake-safety.mjs";
 
 const opaque = (v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,100}$/.test(v);
 const stamp = (v) =>
@@ -10,6 +15,77 @@ const stamp = (v) =>
   new Date(v).toISOString() === v;
 const positive = (v) => Number.isSafeInteger(v) && v > 0;
 const iso = (v) => v?.toISOString?.() || v;
+const feedbackPublicationKeys = ["id", "recordId", "sourceRevision", "kind", "targetId", "targetModule",
+  "targetRevision", "schema", "createdAt", "withdrawnAt"];
+const feedbackSubmissionKeys = ["id", "publicationId", "answers", "consentAt", "status", "convertedIds",
+  "createdAt", "erasedAt", "cancelledAt"];
+const badFeedback = () => fail(422, "feedback_intake_backup", "Use the fixed anonymous feedback history and its original private draft links.");
+
+function feedbackPublication(p) {
+  if (!exactFeedbackObject(p, feedbackPublicationKeys) || p.targetId !== null || p.targetModule !== null ||
+      p.targetRevision !== null || p.sourceRevision > 2147483647 ||
+      p.withdrawnAt !== null && !stamp(p.withdrawnAt)) badFeedback();
+  try { return requireFeedbackPublicationSchema(p.schema); }
+  catch { badFeedback(); }
+}
+function feedbackSubmission(s, links) {
+  if (!exactFeedbackObject(s, feedbackSubmissionKeys) || s.erasedAt !== null && !stamp(s.erasedAt) ||
+      (s.status === "cancelled" ? !stamp(s.cancelledAt) : s.cancelledAt !== null)) badFeedback();
+  const converted = s.convertedIds;
+  if (isProxy(converted) || !Array.isArray(converted) || Object.getPrototypeOf(converted) !== Array.prototype || converted.length > 1 ||
+      Reflect.ownKeys(converted).length !== converted.length + 1 ||
+      s.status === "converted" && converted.length !== 1 ||
+      !["converted", "cancelled"].includes(s.status) && converted.length !== 0) badFeedback();
+  const convertedIds = [];
+  if (converted.length) {
+    const item = Object.getOwnPropertyDescriptor(converted, "0");
+    const link = item?.enumerable && Object.hasOwn(item, "value") ? item.value : null;
+    if (!exactFeedbackObject(link, ["id", "moduleId"]) || !opaque(link.id) || link.moduleId !== "feedback" ||
+        links.has(link.id)) badFeedback();
+    links.set(link.id, "feedback");
+    convertedIds.push({ id: link.id, moduleId: "feedback" });
+  }
+  if (s.erasedAt !== null && !exactFeedbackObject(s.answers, [])) badFeedback();
+  let answers = {};
+  if (s.erasedAt === null) {
+    try { answers = feedbackSelection(s.answers); }
+    catch { badFeedback(); }
+  }
+  // Restored Feedback cannot re-enter the review-to-draft command path.
+  const status = ["pending", "reviewed"].includes(s.status) ? "dismissed" : s.status;
+  return { answers, status, convertedIds };
+}
+function checkFeedbackNativeLinks(backup, links, submissions, publications) {
+  if (links.size) {
+    const seen = new Set();
+    for (const list of [backup.records ?? [], backup.trash ?? []]) {
+      if (isProxy(list) || !Array.isArray(list)) badFeedback();
+      for (const row of list) {
+        const recordId = feedbackDataField(row, "id");
+        const moduleId = links.get(recordId);
+        if (!moduleId) continue;
+        if (seen.has(recordId) || feedbackDataField(row, "moduleId") !== moduleId ||
+            moduleId === "feedback" && !isWithheldFeedbackDraft(row)) badFeedback();
+        seen.add(recordId);
+      }
+    }
+    // A missing draft/source remains history. Restore does not recreate it.
+  }
+  if (!Array.isArray(backup.events)) {
+    if (links.size && backup.events !== undefined) badFeedback();
+    return;
+  }
+  const retained = new Map(submissions.map(row => [row.id, row])), seen = new Set();
+  for (const row of backup.events) {
+    const event = feedbackPortableConversionEvent(row);
+    if (!event) continue;
+    const { intakeId, publicationId, sourceRevision } = event.detail;
+    const submission = retained.get(intakeId), publication = publications.get(publicationId);
+    if (seen.has(intakeId) || publication?.kind !== "feedback" || publication.sourceRevision !== sourceRevision ||
+        submission?.publicationId !== publicationId || submission.convertedIds[0]?.id !== event.record_id) badFeedback();
+    seen.add(intakeId);
+  }
+}
 
 // Capabilities and recipient/IP hashes are deliberately absent from backups.
 export async function exportIntake(c, org) {
@@ -46,11 +122,22 @@ export async function exportIntake(c, org) {
     erasedAt: iso(r.erased_at),
     cancelledAt: iso(r.cancelled_at),
   }));
+  const feedback = new Set(), links = new Map();
+  for (const publication of publications) if (publication.kind === "feedback") {
+    feedbackPublication(publication);
+    feedback.add(publication.id);
+    links.set(publication.recordId, "forms");
+  }
+  if (feedback.size) for (const submission of submissions) if (feedback.has(submission.publicationId))
+    feedbackSubmission(submission, links);
   return { version: 1, publications, submissions };
 }
 
 export function restoredIntake(backup) {
-  if (backup.intake === undefined) return { publications: [], submissions: [] };
+  if (backup.intake === undefined) {
+    checkFeedbackNativeLinks(backup, new Map(), [], new Map());
+    return { publications: [], submissions: [] };
+  }
   const input = backup.intake;
   if (
     !input ||
@@ -62,7 +149,7 @@ export function restoredIntake(backup) {
   )
     fail(422, "intake_backup", "Invalid or oversized public intake backup.");
   const pubIds = new Set(),
-    ids = new Set();
+    ids = new Set(), feedbackLinks = new Map();
   const publications = input.publications.map((p) => {
     if (
       !p ||
@@ -78,14 +165,21 @@ export function restoredIntake(backup) {
         "Invalid or duplicate intake publication identity.",
       );
     pubIds.add(p.id);
+    const kind = feedbackDataField(p, "kind");
+    if (kind === "feedback") {
+      const schema = feedbackPublication(p);
+      feedbackLinks.set(p.recordId, "forms");
+      return { id: p.id, recordId: p.recordId, sourceRevision: p.sourceRevision, kind,
+        targetId: null, targetModule: null, targetRevision: null, schema, createdAt: p.createdAt };
+    }
     if (
       p.targetId != null &&
       (!opaque(p.targetId) ||
         !positive(p.targetRevision) ||
         p.targetModule !==
-          (p.kind === "event-interest"
+          (kind === "event-interest"
             ? "events"
-            : p.kind === "volunteer-interest"
+            : kind === "volunteer-interest"
               ? "volunteers"
               : null))
     )
@@ -93,7 +187,7 @@ export function restoredIntake(backup) {
     if (p.targetId == null && p.targetRevision != null)
       fail(422, "intake_backup", "An intake target revision needs a target.");
     const source = p.schema;
-    if (!source || source.kind !== p.kind)
+    if (!source || source.kind !== kind)
       fail(422, "intake_backup", "Invalid published form schema.");
     const schema = intakeSchema(
       {
@@ -104,14 +198,14 @@ export function restoredIntake(backup) {
           retentionUntil: source.retentionUntil,
         },
       },
-      p.kind,
+      kind,
       { allowExpired: true },
     );
     return {
       id: p.id,
       recordId: p.recordId,
       sourceRevision: p.sourceRevision,
-      kind: p.kind,
+      kind,
       targetId: p.targetId || null,
       targetModule: p.targetId ? p.targetModule : null,
       targetRevision: p.targetId ? p.targetRevision : null,
@@ -140,6 +234,11 @@ export function restoredIntake(backup) {
         "Invalid or duplicate intake submission identity.",
       );
     ids.add(s.id);
+    if (byId.get(s.publicationId).kind === "feedback") {
+      const { answers, status, convertedIds } = feedbackSubmission(s, feedbackLinks);
+      return { id: s.id, publicationId: s.publicationId, answers, consentAt: s.consentAt, status,
+        convertedIds, createdAt: s.createdAt, erasedAt: s.erasedAt, cancelledAt: s.cancelledAt };
+    }
     if (s.cancelledAt != null && !stamp(s.cancelledAt))
       fail(422, "intake_backup", "Invalid request withdrawal timestamp.");
     if (
@@ -201,6 +300,7 @@ export function restoredIntake(backup) {
       "intake_backup",
       "The restored intake queue exceeds 1,000 pending requests or its 8 MiB limit.",
     );
+  checkFeedbackNativeLinks(backup, feedbackLinks, submissions, byId);
   return { publications, submissions };
 }
 
