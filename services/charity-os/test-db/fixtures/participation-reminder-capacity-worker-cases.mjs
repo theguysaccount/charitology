@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createReminderAddonOperations} from './participation-reminder-addon-support.mjs';
 export const REMINDER_CAPACITY_WORKER_NAMES=Object.freeze([
  'RC01 actual raw interval and reminder credits remain separate',
- 'RC02 genuine near8MiB first activation rollback and legacy privacy exits',
+ 'RC02 genuine binding-family8MiB activation rollback and legacy privacy exits',
  'RC03 genuine near60MiB ordinary refusal and existing safety exit',
  'RC04 actual31-column due rows payload and prepaid envelope',
  'RC05 saturated OFF uses one remaining GROUP check-in union',
@@ -30,9 +30,14 @@ export async function runReminderCapacityWorkerCases(context,options){
   await H.artifact('capacity-credits-and-reserved-presence.json',{proofs,invalid,pendingOnly,pendingPreviewId:pendingPreview.value.previewId,outboxAndAccepted,acceptedOnly,rawNullCostDerivedBySql:true,malformedReceiptNotAuthority:true,ownerRetainedPurposeControls:true});return{fourAccountingStates:true,reservedSourcesNoCredit:true,oldNativeVersionAndChoiceAuthorityAbsent:true};
  });
  group(async()=>{
-  const f=await H.seedTenant('cap_near8'),frontier=await A.seedFamilyFrontier(f),before=await A.digest(f),offset=H.trace.length,refused=await H.choice(f,f.people[0],true,{status:422});assert.equal(refused.value.code,'participation_reminder_capacity');assert.deepEqual(await A.digest(f),before);H.noDml(offset);assert.equal((await A.oracle(f)).actual.present,false);
+  const f=await H.seedTenant('cap_near8'),frontier=await A.seedFamilyFrontier(f);
+  await H.artifact('capacity-near8-frontier-calibration.json',frontier);
+  const before=await A.digest(f),offset=H.trace.length;let refused;
+  try{refused=await H.choice(f,f.people[0],true,{status:422});}
+  catch(error){const last=H.calls.at(-1);if(last?.method==='POST'&&last.tail===H.ownPath(f,f.people[0])+'/reminder-preference'&&last.status===200)throw Object.assign(Error('REMINDER_NEAR8_ACTIVATION_ADMITTED'),{code:'REMINDER_NEAR8_ACTIVATION_ADMITTED',facts:{calibration:frontier.calibration,actualStatus:200,notABoundaryPass:true}});throw error;}
+  assert.equal(refused.value.code,'participation_reminder_capacity');assert.deepEqual(await A.digest(f),before);H.noDml(offset);assert.equal((await A.oracle(f)).actual.present,false);
   const exit=await A.legacyExit(f),after=await A.oracle(f);assert.equal(after.actual.present,false);assert.equal(after.actual.reminderNullCompatibilityCreditBytes,frontier.accounting.actual.reminderNullCompatibilityCreditBytes);const noOpBefore=await A.digest(f),noOpOffset=H.trace.length;await H.choice(f,f.people[0],false,{status:409});H.noClock(noOpOffset);H.noDml(noOpOffset);assert.deepEqual(await A.digest(f),noOpBefore);
-  await H.artifact('capacity-near8-activation-and-legacy-exit.json',{frontier,exit,after,refusalCode:refused.value.code,notCreditOnlyCauseClaim:true,fullDomainRollbackDigest:before,actualPhysicalMaximumNotClaimed:true});return{actualChargedFamilyFrontier:true,activationRefused:true,legacyNullPrivacyExit:true};
+  await H.artifact('capacity-near8-activation-and-legacy-exit.json',{frontier,exit,after,refusalCode:refused.value.code,notCreditOnlyCauseClaim:true,fullDomainRollbackDigest:before,actualPhysicalMaximumNotClaimed:true});return{actualBindingFamilyFrontier:true,activationRefused:true,legacyNullPrivacyExit:true};
  });
  group(async()=>{
   const calibration=await H.seedTenant('cap_calibration'),small=await A.measure(calibration),probe=await A.probeSequence(calibration);assert(probe.accepted);const overhead=probe.peakUsage-small.usage,onOverhead=probe.metrics[0].requiredUsage-small.usage;assert(overhead>=onOverhead&&onOverhead>512&&overhead<128*1024);

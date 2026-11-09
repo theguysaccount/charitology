@@ -41,14 +41,38 @@ export function createReminderAddonOperations(context){
   const originalBooking=(await owner.query('SELECT to_jsonb(t) AS row FROM os_records t WHERE org_id=$1 AND id=$2',[f.org,p.bookingId])).rows[0].row;
   const data=M.modules.validateRecord('events',{...originalBooking.data,title:'Fictional cancelled capacity booking',eventId:historical.id,contactId:p.contactId},{orgId:f.org,recordId:'cap_booking_0001',status:'cancelled',records:f.records});
   const booking={...originalBooking,id:'cap_booking_0001',status:'cancelled',revision:1,approval:null,snapshot:null,source:null,data};
-  const frozen={terms,sourceRevision:4,termsHash,candidateRevision:3,candidateApproval:{status:'approved',revision:3,actorId:'fictional-reviewer'},programId:'rm_program'};
+  // Normal approval has these exact fields; the real handler bounds reason
+  // at2000 characters. This is declared OWNER-seeded historical software
+  // fixture text, never a real reviewer or live approval assertion.
+  const approvalSentence='Fictional historical software fixture review: the cancelled booking retained the declared terms and independent-review field shape solely to exercise storage admission; no real person reviewed or approved it. ';
+  const approvalReason=approvalSentence.repeat(Math.ceil(600/approvalSentence.length)).slice(0,600);
+  const priorApproval={status:'approved',revision:3,actorId:'fictional-reviewer',reason:approvalReason,at:f.clock.history_exact.slice(0,23)+'Z'};
+  assert.equal(approvalReason.length,600);assert(approvalReason.length<=2000);
+  const frozen={terms,sourceRevision:4,termsHash,candidateRevision:3,candidateApproval:priorApproval,programId:'rm_program'};
   const consent={revision:2,sourceRevision:4,termsHash,at:f.clock.history_exact.slice(0,23)+'Z',waitlistAllowed:false,emailUpdates:false,method:'fictional historic staff affirmation',evidenceRef:'Fictional SQL-seeded software fixture; no real consent',actorHash:M.security.hash(f.actor),recipientHash:null,withdrawalAcknowledged:true};
   const prototype={...raw,id:'cap_person_0001',target_id:historical.id,booking_record_id:'cap_booking_0001',contact_id:p.contactId,intake_id:null,state:'cancelled',revision:3,source:'staff',consent,frozen,requested_interval:null,delivery_consent:null,reminder_consent:null,last_command:null,recovered:false,recovered_state:null,waitlist_sequence:null,cancelled_at:f.clock.history_exact};
-  const unit=await one(owner,Q.oneRowMeasure,[wire(prototype)]),room=8192,count=Math.min(1800,Math.floor((8*MiB-n(baseline.independent.neither)-room)/n(unit.charged)));assert(count>=1&&count+f.records.length<=2000&&count+1<=2000);
-  await owner.query(Q.insertBookings,[f.org,wire(booking),count]);await owner.query(Q.insertPeople,[f.org,wire(prototype),count]);
-  const observed=await oracle(f),shape=await one(owner,Q.counts,[f.org]);assert(shape.records<=2000&&shape.participations<=2000);assert(observed.actual.chargedBytes<8*MiB&&8*MiB-observed.actual.chargedBytes<=16384);assert(observed.actual.reminderNullCompatibilityCreditBytes>0);
-  try{const complete=await measure(f);assert(complete.backupBytes<64*MiB);return{count,room,unit,shape,accounting:observed,complete,fictionalHistoricalSqlSeed:true};}
-  catch(error){throw problem('REMINDER_NEAR8_FRONTIER_UNATTAINABLE',{count,shape,accounting:observed,refusal:typeof error.code==='string'?error.code:'unclassified'});}
+  const unit=await one(owner,Q.oneRowMeasure,[wire(prototype)]),room=8192,maximumSeedCount=Math.min(1800,Math.floor((8*MiB-n(baseline.independent.neither)-room)/n(unit.charged)));
+  assert(maximumSeedCount>=1&&maximumSeedCount+f.records.length<=2000&&maximumSeedCount+1<=2000);
+  const attempts=[],boundCodes=new Set(['participation_quota','participation_backup_size','learning_restore_capacity','learning_backup_size']);
+  async function replaceCount(count){
+   assert(Number.isSafeInteger(count)&&count>=0&&count<=maximumSeedCount);
+   await owner.query(Q.deleteFillPeople,[f.org]);await owner.query(Q.deleteFillBookings,[f.org]);
+   if(count){await owner.query(Q.insertBookings,[f.org,wire(booking),count]);await owner.query(Q.insertPeople,[f.org,wire(prototype),count]);}
+  }
+  let low=0,high=maximumSeedCount,steps=0;
+  // Source unit size chooses only the finite search ceiling. Every accepted
+  // candidate must pass the actual complete native AND inactive SQL path.
+  while(low<high){
+   assert(++steps<=11);const count=Math.floor((low+high+1)/2);await replaceCount(count);const accounting=await oracle(f);
+   try{const complete=await measure(f);attempts.push({count,accepted:true,sourceChargedBytes:accounting.actual.chargedBytes,inactiveParticipationBytes:n(complete.inactive.categories.os_participations.bytes),backupBytes:complete.backupBytes});low=count;}
+   catch(error){if(!boundCodes.has(error.code))throw error;attempts.push({count,accepted:false,sourceChargedBytes:accounting.actual.chargedBytes,refusal:error.code});high=count-1;}
+  }
+  if(low<1)throw problem('REMINDER_NEAR8_FRONTIER_UNATTAINABLE',{maximumSeedCount,attempts,reason:'No positive complete-admissible filler count was attained'});
+  await replaceCount(low);const observed=await oracle(f),shape=await one(owner,Q.counts,[f.org]);let complete;
+  try{complete=await measure(f);}catch(error){throw problem('REMINDER_NEAR8_FRONTIER_UNATTAINABLE',{count:low,shape,accounting:observed,attempts,refusal:typeof error.code==='string'?error.code:'unclassified'});}
+  const sourceHeadroomBytes=8*MiB-observed.actual.chargedBytes,inactiveHeadroomBytes=8*MiB-n(complete.inactive.categories.os_participations.bytes),bindingFamily=sourceHeadroomBytes<=inactiveHeadroomBytes?'source-charged-participations':'inactive-projected-participations';
+  assert(shape.records<=2000&&shape.participations<=2000);assert(sourceHeadroomBytes>0&&inactiveHeadroomBytes>=0&&Math.min(sourceHeadroomBytes,inactiveHeadroomBytes)<=16384);assert(observed.actual.reminderNullCompatibilityCreditBytes>0);assert(complete.backupBytes<64*MiB);
+  return{count:low,room,unit,shape,accounting:observed,complete,calibration:{maximumSeedCount,steps,attempts,sourceHeadroomBytes,inactiveHeadroomBytes,bindingFamily,searchCeilingFromSourceUnitOnly:true,allAcceptedCandidatesFullNativeAndInactive:true},approvalFixture:{reasonCharacters:approvalReason.length,actualReasonCap:2000,reasonSha256:M.security.hash(approvalReason),objectBytes:bytes(priorApproval),exactFields:Object.keys(priorApproval),provenance:'Normal five-field shape with bounded fictional historical reason and SQL-derived ISO time; no real approval/human review'},fictionalHistoricalSqlSeed:true};
  }
  const body='Fictional retained comment for a bounded SQL software fixture. ';const commentText=length=>(body.repeat(Math.ceil(length/body.length))).slice(0,length-1)+'F';
  async function fillComments(f,targetUsage){assert(Number.isSafeInteger(targetUsage)&&targetUsage>0&&targetUsage<61*MiB);await owner.query(Q.deleteComments,[f.org]);const base=await read(f,c=>M.database.logicalBackupBytes(c,f.org)),full=await one(owner,Q.commentRowMeasure,[f.org,f.source.id,f.actor,commentText(4000),f.clock.history_exact]),single=await one(owner,Q.commentRowMeasure,[f.org,f.source.id,f.actor,'F',f.clock.history_exact]),header=n(single.bytes)-1,available=targetUsage-base;assert(available>n(full.bytes));const count=Math.floor(available/n(full.bytes)),remainder=available-count*n(full.bytes);assert(count>=1&&count+1<=15000);await owner.query(Q.insertComments,[f.org,f.source.id,f.actor,commentText(4000),f.clock.history_exact,count]);let tail=0;if(remainder>header){tail=Math.min(4000,remainder-header);await owner.query(Q.insertOneComment,[f.org,'cap_comment_'+String(count+1).padStart(5,'0'),f.source.id,f.actor,commentText(tail),f.clock.history_exact]);}
