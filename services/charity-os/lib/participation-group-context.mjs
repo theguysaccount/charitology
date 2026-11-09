@@ -10,7 +10,7 @@ import { ownGroupValue, groupHash } from "./participation-group-model.mjs";
 import { currentGroupMember, groupRestoreEpoch, groupAuthority } from "./participation-group-access.mjs";
 import { getGroup } from "./participation-group-store.mjs";
 import { readParticipationGroupRowPin, createParticipationGroupInventoryPin } from "./participation-group-pins.mjs";
-import { participationChargeJsonSQL } from "./participation-storage.mjs";
+import { participationChargeJsonSQL, participationIntervalChargeJsonSQL } from "./participation-storage.mjs";
 import { targetKind, bookingKind, parentKey, legacyActive } from "./participation-guards.mjs";
 import { effectiveRequestedInterval, frozenParticipationInterval } from "./participation-intervals.mjs";
 import { participationTerms, readParticipationDomainClock, readParticipationAdmissionEligibility,
@@ -19,9 +19,12 @@ import { participationTerms, readParticipationDomainClock, readParticipationAdmi
 const OPS = ["read", "replay", "create", "admission-preview", "admit", "cancellation-preview", "cancel", "close"];
 const NEW_ADMISSION = new Set(["admission-preview", "admit"]);
 const RAW_MAX = 61 * 1024 * 1024;
-// Processing only: legacy v1/v2 participation accounting omits this one NULL
-// column. This exact JSONB field/separator width is not new storage permission.
-const PROCESSING_MAX = RAW_MAX + 2000 * Buffer.byteLength(', "requested_interval": null');
+// Processing only: independently absent interval/reminder families can omit
+// their SQL NULL keys from charged rows. Raw pins still retain both exact keys;
+// these field/separator widths grant no additional charged storage permission.
+const INTERVAL_NULL_BYTES = Buffer.byteLength(', "requested_interval": null');
+const REMINDER_NULL_BYTES = Buffer.byteLength(', "reminder_consent": null');
+const PROCESSING_MAX = RAW_MAX + 2000 * (INTERVAL_NULL_BYTES + REMINDER_NULL_BYTES);
 const TABLE_KEYS = Object.freeze({ os_records: "id", os_participation_targets: "target_id", os_participations: "id", os_intake: "id", os_publications: "id" });
 const unavailable = () => fail(404, "participation_group_unavailable", "This group context is unavailable.");
 const invalid = () => fail(422, "participation_group_context", "Use the exact internal group context selectors.");
@@ -80,18 +83,20 @@ export const GROUP_CONTEXT_SQL = Object.freeze({
   queue: "SELECT id FROM os_participations WHERE org_id=$1 AND target_id=$2 AND state='waitlisted' AND recovered=false ORDER BY waitlist_sequence NULLS LAST,created_at,id LIMIT 2001",
   targets: "SELECT target_id FROM os_participation_targets WHERE org_id=$1 ORDER BY target_id COLLATE \"C\" LIMIT 501",
   recordBudget: "SELECT count(*)::int AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0)::text AS bytes FROM os_records t WHERE org_id=$1 AND deleted_at IS NULL",
-  partBudget: `SELECT count(*)::int AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0)::text AS bytes,COALESCE(sum(octet_length(${participationChargeJsonSQL("t")}::text)),0)::text AS charged_bytes FROM os_participations t WHERE org_id=$1`,
+  partBudget: `SELECT count(*)::int AS count,COALESCE(sum(octet_length(to_jsonb(t)::text)),0)::text AS bytes,COALESCE(sum(octet_length(${participationIntervalChargeJsonSQL("t")}::text)),0)::text AS interval_charged_bytes,COALESCE(sum(octet_length(${participationChargeJsonSQL("t")}::text)),0)::text AS charged_bytes FROM os_participations t WHERE org_id=$1`,
 });
 async function budget(c, org, sql, max, familyBytes) {
   const found = smallRows(await c.query(sql, [org]), 1); need(found.length === 1, reconcile);
-  const r = found[0], size = Number(r.bytes), charge = Number(r.charged_bytes ?? r.bytes);
-  closed(r,sql===GROUP_CONTEXT_SQL.partBudget?["count","bytes","charged_bytes"]:["count","bytes"]);
+  const r = found[0], size = Number(r.bytes), charge = Number(r.charged_bytes ?? r.bytes), interval = Number(r.interval_charged_bytes ?? r.bytes);
+  closed(r,sql===GROUP_CONTEXT_SQL.partBudget?["count","bytes","interval_charged_bytes","charged_bytes"]:["count","bytes"]);
   need(Number.isSafeInteger(r.count) && r.count >= 0 && r.count <= max &&
     typeof r.bytes === "string" && /^(0|[1-9][0-9]*)$/.test(r.bytes) && Number.isSafeInteger(size) && size <= RAW_MAX &&
     (r.charged_bytes === undefined || (typeof r.charged_bytes === "string" && /^(0|[1-9][0-9]*)$/.test(r.charged_bytes))) &&
     Number.isSafeInteger(charge) && charge >= 0 && charge <= familyBytes, reconcile);
   if(sql===GROUP_CONTEXT_SQL.partBudget)
-    need(size>=charge&&size-charge<=r.count*Buffer.byteLength(', "requested_interval": null'),reconcile);
+    need(typeof r.interval_charged_bytes === "string" && /^(0|[1-9][0-9]*)$/.test(r.interval_charged_bytes) &&
+      Number.isSafeInteger(interval) && size >= interval && interval >= charge &&
+      size - interval <= r.count * INTERVAL_NULL_BYTES && interval - charge <= r.count * REMINDER_NULL_BYTES,reconcile);
 }
 async function processingBytes(c, org, table, ids, processing) {
   if (!ids.length) return;

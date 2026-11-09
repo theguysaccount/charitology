@@ -28,6 +28,12 @@ Source `d13433c1` passes all 2,050 OS unit/client checks in both GitHub profiles
 
 Both assertions predate the new independent reminder NULL credit. One near-cap fixture gains 34,320 charged bytes of real headroom, invalidating its expected refusal; another calls the combined 54-byte credit the old 28-byte interval credit. The fixture-only successor preserves the raw historical oracle and exact interval golden, separately proves the 26-byte reminder credit, calibrates actual charged boundaries and retains the original quota/refusal expectations. It also measures the target write inside a rolled-back savepoint and corrects a later raw-only overflow witness. No application quota, runtime guard or historical golden changes. Fresh actual PostgreSQL verification remains required.
 
+## Shared group-context integration
+
+Both `fb5b060b` GitHub profiles pass 2,050 unit/client checks, all 228 existing PostgreSQL tests and thirteen check-in cases. GROUP case BG01 passes, but BG02 fails admission preview and thirteen later GROUP cases are skipped. The reminder entry remains unexecuted. The failure is a runtime integration omission: the private group-context reader still bounds combined raw-to-charged credit by the old interval-only width.
+
+The successor measures raw, interval-charged and final charged bytes separately. It retains the independent 28-byte interval and 26-byte reminder bounds per row, exact result fields and existing charged family/global limits. Its processing allowance includes both physical NULL keys without increasing storage permission. Focused group/reminder checks pass 439/439, including four independent credit combinations, six malformed/over-limit shapes and the finite processing boundary. These are controlled SQL-result tests, not actual boundary attainment. Each source manifest changes only the group-context entry; the reminder binding and recurrence loader retain exact hash qualification. Fresh PostgreSQL GROUP and reminder results remain required.
+
 ## The participant chooses separately
 
 The person must have the current verified account and own-request link. General operational email consent and the new reminder choice are separate. Staff cannot opt in for someone else. Historical email preferences, check-in permission, a booking or a restored file cannot enable reminders.

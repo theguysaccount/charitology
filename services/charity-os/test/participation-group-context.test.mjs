@@ -169,6 +169,43 @@ test("selected processing-size guard refuses before raw JSON/chunks and is not a
   await assert.rejects(f.read('replay'),e=>e.code==='participation_group_reconcile');
   assert(!f.calls.some(c=>c.sql.startsWith('SELECT octet_length')||c.sql.startsWith('SELECT to_jsonb')));
 });
+test("admission independently bounds interval and reminder NULL-key credits without increasing charged storage",async()=>{
+  // Closed fake SQL accounting only. Each fixture has two participation rows;
+  // actual PostgreSQL schema/predicate behavior remains a separate CI witness.
+  for(const [intervalCredit,reminderCredit] of [[0,0],[56,0],[0,52],[56,52]]){
+    const f=fixture(),original=f.c.query;
+    f.c.query=async(sql,args)=>sql===SQL.partBudget
+      ?result([{count:2,bytes:"1000",interval_charged_bytes:String(1000-intervalCredit),charged_bytes:String(1000-intervalCredit-reminderCredit)}])
+      :original(sql,args);
+    assert((await f.read('admission-preview')).inventory);
+  }
+  for(const row of [
+    {count:2,bytes:"1000",interval_charged_bytes:"942",charged_bytes:"892"}, // interval exceeds 2*28; same combined108
+    {count:2,bytes:"1000",interval_charged_bytes:"946",charged_bytes:"892"}, // reminder exceeds 2*26; same combined108
+    {count:2,bytes:"1000",interval_charged_bytes:"1001",charged_bytes:"1000"},
+    {count:2,bytes:"1000",interval_charged_bytes:"944",charged_bytes:"945"},
+    {count:2,bytes:"1000",interval_charged_bytes:"944.0",charged_bytes:"892"},
+    {count:2,bytes:String(8*1024*1024+1),interval_charged_bytes:String(8*1024*1024+1),charged_bytes:String(8*1024*1024+1)},
+  ]){
+    const f=fixture(),original=f.c.query;
+    f.c.query=async(sql,args)=>sql===SQL.partBudget?result([row]):original(sql,args);
+    await assert.rejects(f.read('admission-preview'),e=>e.code==='participation_group_reconcile');
+  }
+});
+test("raw processing includes both physical NULL-key allowances while keeping its finite cap",async()=>{
+  const oldProcessingMax=61*1024*1024+2000*28,newProcessingMax=oldProcessingMax+2000*26;
+  for(const [firstBytes,allowed] of [[oldProcessingMax+1,true],[newProcessingMax+1,false]]){
+    const f=fixture(),original=f.c.query;let first=true;
+    f.c.query=async(sql,args)=>{
+      if(first&&sql.startsWith("SELECT count(*)::int AS count,COALESCE(sum(octet_length(convert_to")){
+        first=false;return result([{count:args[1].length,bytes:String(firstBytes)}]);
+      }
+      return original(sql,args);
+    };
+    if(allowed)assert.equal((await f.read('replay')).inventory,null);
+    else await assert.rejects(f.read('replay'),e=>e.code==='participation_group_reconcile');
+  }
+});
 test("raw pins are consumed before domain JSON/Date conversion and no row content enters returned hashes",async()=>{
   const f=fixture();await f.read();
   for(let n=0;n<f.calls.length;n++)if(f.calls[n].sql.startsWith('SELECT to_jsonb(t)::text')){

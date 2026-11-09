@@ -73,7 +73,7 @@ function fixture({ moduleId = "events" } = {}) {
     if(sql===SQL.parts||sql===SQL.roster)return result([...tables.os_participations.values()].filter(p=>sql===SQL.parts||args[1].includes(p.id)).sort((a,b)=>a.id<b.id?-1:1).map(part));
     if(sql===SQL.queue)return result(queue.map(id=>({id})));
     if(sql===SQL.targets)return result([...tables.os_participation_targets.keys()].sort().map(target_id=>({target_id})));
-    if(sql===SQL.recordBudget||sql===SQL.partBudget){const values=[...(sql===SQL.recordBudget?tables.os_records:tables.os_participations).values()];const bytes=String(Buffer.byteLength(JSON.stringify(values)));return result([{count:values.length,bytes,...(sql===SQL.partBudget?{charged_bytes:bytes}:{})}]);}
+    if(sql===SQL.recordBudget||sql===SQL.partBudget){const values=[...(sql===SQL.recordBudget?tables.os_records:tables.os_participations).values()];const bytes=String(Buffer.byteLength(JSON.stringify(values)));return result([{count:values.length,bytes,...(sql===SQL.partBudget?{interval_charged_bytes:bytes,charged_bytes:bytes}:{})}]);}
     let sizes=sql.match(/^SELECT count\(\*\)::int AS count,COALESCE\(sum\(octet_length\(convert_to\(to_jsonb\(t\)::text,'UTF8'\)\)\),0\)::text AS bytes FROM (os_[a-z_]+) t WHERE org_id=\$1 AND (?:id|target_id)=ANY\(\$2::text\[\]\)$/);
     if(sizes&&Object.hasOwn(tables,sizes[1])){const values=[...new Set(args[1])].filter(id=>tables[sizes[1]].has(id)).map(id=>tables[sizes[1]].get(id));return result([{count:values.length,bytes:String(values.reduce((n,row)=>n+Buffer.byteLength(JSON.stringify(row)),0))}]);}
     let m=sql.match(/^SELECT (id|target_id) FROM (os_[a-z_]+) WHERE org_id=\$1 AND \1=ANY\(\$2::text\[\]\) ORDER BY \1 COLLATE "C" FOR UPDATE$/);
