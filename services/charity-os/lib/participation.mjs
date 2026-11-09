@@ -12,6 +12,7 @@ import {
 import {
   queueParticipationTransition,
   ownDeliverySummary,
+  suppressParticipationDelivery,
 } from "./participation-delivery.mjs";
 import {
   audit,
@@ -113,6 +114,7 @@ const sourceApproved = (r) =>
 // in its already-authorized/locked transaction and never cache it across calls.
 const sqlDomainClocks = new WeakMap();
 const LEGACY_DOMAIN_CLOCK = Object.freeze({});
+const QUIET_SUBSTITUTION = Symbol("reviewed shift substitution");
 const TEN_MINUTES_MICROS = 600000000n;
 function exactClockMicros(value) {
   if (
@@ -651,7 +653,7 @@ function waitlistHintIntervalMatches(p, source, terms) {
 }
 const hintAllocationRefusal = error =>
   ["participation_capacity", "participation_overlap", "participation_duplicate", "participation_interval"].includes(error.code);
-async function waitlistSuggestion(c, org, source, records, member) {
+async function waitlistSuggestion(c, org, source, records, member, releasedId = null) {
   const terms = participationTerms(source);
   for (const p of (await entries(c, org, source.id)).filter(
     (p) => p.state === "waitlisted" && !p.recovered,
@@ -659,7 +661,7 @@ async function waitlistSuggestion(c, org, source, records, member) {
     if (!waitlistHintEligible(p, source, records, member, terms)) continue;
     try {
       if (!waitlistHintIntervalMatches(p, source, terms)) continue;
-      await allocationCheck(c, org, p, source, records, terms);
+      await allocationCheck(c, org, p, source, records, terms, releasedId);
     } catch (error) {
       if (hintAllocationRefusal(error)) continue;
       throw error;
@@ -698,16 +700,19 @@ export function suggestParticipationFromInventory({
 export function requireParticipationPromotionReason({ participationId, suggestedId, reason }) {
   if (suggestedId !== participationId) text(reason, 300, true);
 }
-async function update(c, org, p, changes, intent) {
+async function update(c, org, p, changes, intent, mode) {
   const row = {
     ...p,
     ...changes,
     revision: p.revision + 1,
     last_command: { ...intent, resultRevision: p.revision + 1 },
   };
+  const quiet = mode === QUIET_SUBSTITUTION;
   const saved = (
     await c.query(
-      "UPDATE os_participations SET state=$3,revision=$4,consent=$5,frozen=$6,waitlist_sequence=$7,confirmed_at=$8,cancelled_at=$9,last_command=$10,updated_at=now(),recovered=$11,recovered_state=$12,requested_interval=$13 WHERE org_id=$1 AND id=$2 RETURNING *",
+      "UPDATE os_participations SET state=$3,revision=$4,consent=$5,frozen=$6,waitlist_sequence=$7,confirmed_at=$8,cancelled_at=$9,last_command=$10,updated_at=now(),recovered=$11,recovered_state=$12,requested_interval=$13" +
+        (quiet && row.state === "cancelled" ? ",reminder_consent=NULL" : "") +
+        " WHERE org_id=$1 AND id=$2" + (quiet ? " AND revision=$14 AND state=$15" : "") + " RETURNING *",
       [
         org,
         row.id,
@@ -722,9 +727,11 @@ async function update(c, org, p, changes, intent) {
         row.recovered === true,
         row.recovered_state || null,
         row.requested_interval ? JSON.stringify(row.requested_interval) : null,
+        ...(quiet ? [p.revision, p.state] : []),
       ],
     )
   ).rows[0];
+  if (quiet && !saved) fail(409, "substitution_stale", "The reviewed place changed. Review the handoff again.");
   return {
     ...saved,
     intake_status: p.intake_status,
@@ -868,14 +875,16 @@ export function assertParticipationAllocationCandidate({ candidate, capacity, co
   confirmedAllocationCheck(candidate, capacity, confirmed, rangeOf);
   unmanagedAllocationCheck(candidate, unmanaged, rangeOf);
 }
-async function allocationCheck(c, org, p, source, records, terms) {
+async function allocationCheck(c, org, p, source, records, terms, releasedId = null) {
   knownAllocationCapacity(source.data.capacity);
   const all = (
     await c.query(
-      "SELECT * FROM os_participations WHERE org_id=$1 AND state='confirmed'",
-      [org],
+      "SELECT * FROM os_participations WHERE org_id=$1 AND state='confirmed'" + (releasedId === null ? "" : " AND id<>$2"),
+      releasedId === null ? [org] : [org, releasedId],
     )
   ).rows;
+  if (releasedId !== null && all.length > PARTICIPATION_LIMITS.participations)
+    fail(409, "participation_interval", "The complete allocation inventory exceeds its retained limit.");
   const candidate = { participationId: p.id, contactId: p.contact_id, targetId: p.target_id,
     moduleId: p.module_id, range: effectiveRequestedInterval(p, terms) };
   confirmedAllocationCheck(candidate, source.data.capacity,
@@ -899,6 +908,14 @@ async function allocationCheck(c, org, p, source, records, terms) {
         !managedIds.has(r.data.shiftId),
     )) {
       const shift = records.find((x) => x.id === r.data.shiftId);
+      if (releasedId !== null) {
+        try {
+          if (!shift || shift.moduleId !== "volunteers" || shift.data?.kind !== "shift") throw Error();
+          peakOccupancy([shift.data]);
+        } catch {
+          fail(409, "participation_interval", "An existing volunteer assignment has an incomplete schedule.");
+        }
+      }
       if (shift)
         unmanagedAllocationCheck(candidate, [{ contactId: r.data.contactId, range: shift.data }], x => x.range);
     }
@@ -1504,8 +1521,10 @@ async function cancel({
   own = false,
   intake = null,
   serverClock = LEGACY_DOMAIN_CLOCK,
+  mode,
 }) {
   const intent = participationIntent(input, user, "cancel");
+  const quiet = mode === QUIET_SUBSTITUTION;
   if (participationReplay(p.last_command, intent)) {
     noteParticipationReceiptReplay(c, org);
     return {
@@ -1538,7 +1557,7 @@ async function cancel({
     };
     await saveRecord(c, next, { participationCommand: true });
     records.splice(records.indexOf(record), 1, next);
-    auditRetained = await audit(
+    if (!quiet) auditRetained = await audit(
       c,
       org,
       user,
@@ -1554,7 +1573,7 @@ async function cancel({
     state: "cancelled",
     cancelled_at: domainTimestamp(c, serverClock),
   };
-  const notificationQueued = await outbox(
+  const notificationQueued = !quiet && await outbox(
     c,
     org,
     { ...p, ...changes, revision: p.revision + 1 },
@@ -1563,7 +1582,12 @@ async function cancel({
   let next = await update(c, org, p, changes, {
     ...intent,
     notificationQueued,
-  });
+  }, mode);
+  if (quiet) {
+    await suppressParticipationDelivery(c, { org, participationId: p.id, reason: "superseded" });
+    // The single mandatory pair audit is retained after both transitions.
+    return { p: next, replayed: false, notificationQueued: false, auditRetained: null };
+  }
   const finalAuditRetained = await audit(
     c,
     org,
@@ -1669,8 +1693,9 @@ export async function readParticipationAdmissionEligibility({ c, org, member, so
   return Object.freeze({ participationId: p.id, action, terms: Object.freeze(terms), termsHash: hash(terms) });
 }
 async function staffSchedulingCommand({
-  settings, c, org, user, member, source, t, records, input, p, action, serverClock,
+  settings, c, org, user, member, source, t, records, input, p, action, serverClock, mode,
 }) {
+  const quiet = mode === QUIET_SUBSTITUTION;
   const intent = participationIntent(input, user, action);
   if (participationReplay(p.last_command, intent)) {
     noteParticipationReceiptReplay(c, org);
@@ -1719,7 +1744,7 @@ async function staffSchedulingCommand({
     });
     await saveRecord(c, nextRecord, { participationCommand: true });
     records.splice(records.indexOf(candidate), 1, nextRecord);
-    recordAuditRetained = await audit(c, org, user, "record.transitioned", nextRecord, {
+    if (!quiet) recordAuditRetained = await audit(c, org, user, "record.transitioned", nextRecord, {
       viaParticipation: p.id,
       from: candidate.status,
       to: nextRecord.status,
@@ -1743,9 +1768,10 @@ async function staffSchedulingCommand({
       },
     };
   }
-  const next = await update(c, org, p, changes, intent);
-  const notificationQueued = await outbox(c, org, next, { settings });
+  const next = await update(c, org, p, changes, intent, mode);
+  const notificationQueued = !quiet && await outbox(c, org, next, { settings });
   await participationQuota(c, org);
+  if (quiet) return { p: next, replayed: false, notificationQueued: false, auditRetained: null };
   const finalAuditRetained = await audit(c, org, user, `participation.${next.state}`, null, {
     participationId: p.id,
     targetId: source.id,
@@ -1764,7 +1790,10 @@ async function staffSchedulingCommand({
  * pins, all row locks and the ONE outer transaction. A clock is not authority.
  * @returns {Promise<{p: object, replayed: boolean, notificationQueued: boolean|null, auditRetained: boolean|null}>}
  */
-export async function applyParticipationDomainCommand({
+export async function applyParticipationDomainCommand(args) {
+  return applyScopedParticipationCommand(args);
+}
+async function applyScopedParticipationCommand({
   settings,
   c,
   org,
@@ -1777,7 +1806,7 @@ export async function applyParticipationDomainCommand({
   p,
   action,
   serverClock,
-}) {
+}, mode) {
   if (!["confirm", "promote", "cancel"].includes(action))
     fail(422, "participation_action", "Use a confirmation, promotion or cancellation.");
   domainClock(c, serverClock);
@@ -1797,12 +1826,137 @@ export async function applyParticipationDomainCommand({
   candidateFor(records, p, member, { approval: false });
   if (action === "cancel") {
     text(input.reason, 300, true);
-    return cancel({ c, org, user, p, records, input, settings, serverClock });
+    return cancel({ c, org, user, p, records, input, settings, serverClock, mode });
   }
   return staffSchedulingCommand({
     settings, c, org, user, member, source, t, records, input, p, action,
-    serverClock,
+    serverClock, mode,
   });
+}
+
+/** The hypothetical release is an internal read, never an allocation or a
+ * caller-supplied list of places to ignore. Compare the same known contact
+ * references and managed/unmanaged ranges used by ordinary promotion. */
+export async function readVolunteerSubstitutionRoster(c, selector, context) {
+  const { orgId: org, userId: user } = selector;
+  const { member, source, t, records, outgoing, replacement, serverClock } = context;
+  const stale = () => fail(409, "substitution_stale", "The shift or its places changed. Review the handoff again.");
+  if (!domainClock(c, serverClock) || source.orgId !== org || source.moduleId !== "volunteers" ||
+      source.data.kind !== "shift" || source.status !== "open" || member.userId !== user ||
+      !Array.isArray(member.programIds) || member.programIds.length !== 0 ||
+      t?.org_id !== org || t.target_id !== source.id || t.module_id !== "volunteers" ||
+      [outgoing,replacement].some(p=>p.org_id!==org || p.target_id!==source.id || p.module_id!=="volunteers" ||
+        p.source!=="intake" || !p.intake_id || p.recovered || p.requested_interval!=null) ||
+      outgoing.state!=="confirmed" || replacement.state!=="waitlisted" ||
+      outgoing.id===replacement.id || outgoing.contact_id===replacement.contact_id)
+    stale();
+  permit(source,member,"write");
+  const terms = approvedTarget(source,t,c,serverClock);
+  const evidence=(await c.query(`SELECT
+    (SELECT count(*)::int FROM os_participations WHERE org_id=$1 AND target_id=$2 AND state='confirmed') AS confirmed,
+    EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1 AND origin_mode='live'
+      AND live_participation_id=$3 AND withdrawn_at IS NULL) AS arrived`,[org,source.id,outgoing.id])).rows[0];
+  if (!evidence || !Number.isSafeInteger(evidence.confirmed) || evidence.confirmed<1 ||
+      evidence.confirmed>source.data.capacity || typeof evidence.arrived!=="boolean") stale();
+  let replacementOverlap=false;
+  try { await allocationCheck(c,org,replacement,source,records,terms,outgoing.id); }
+  catch (error) {
+    if (!["participation_overlap","participation_duplicate"].includes(error.code)) throw error;
+    replacementOverlap=true;
+  }
+  return Object.freeze({
+    confirmed:evidence.confirmed,
+    nextEligibleId:await waitlistSuggestion(c,org,source,records,member,outgoing.id),
+    replacementOverlap,outgoingCheckedIn:evidence.arrived,sourceComplete:true,
+  });
+}
+
+/**
+ * Stage the two actual participation and assignment transitions without
+ * queuing notice mail. This is an internal write port, never a route. The
+ * substitution command owns current staff/own-choice validation, the single
+ * locked outer transaction, and its mandatory receipt and capacity checks.
+ */
+export async function stageVolunteerSubstitutionPlaces(c, selector, context, plan) {
+  const { orgId: org, userId: user, intentId } = selector;
+  const { member, source, t, records, outgoing, replacement, serverClock } = context;
+  const stale = () => fail(409, "substitution_stale", "The shift or its places changed. Review the handoff again.");
+  if (!domainClock(c, serverClock) ||
+      plan.orgId !== org || plan.intentId !== intentId || source.orgId !== org ||
+      source.id !== plan.shift.id || source.revision !== plan.shift.revision ||
+      source.moduleId !== "volunteers" || source.data.kind !== "shift" || source.status !== "open" ||
+      !Number.isFinite(Date.parse(source.data.startAt)) || !Number.isFinite(Date.parse(source.data.endAt)) ||
+      Date.parse(source.data.startAt) !== Date.parse(plan.shift.startsAt) ||
+      Date.parse(source.data.endAt) !== Date.parse(plan.shift.endsAt) ||
+      member.userId !== user || !Array.isArray(member.programIds) || member.programIds.length !== 0 ||
+      !t || t.org_id !== org || t.target_id !== source.id || t.module_id !== "volunteers")
+    stale();
+  permit(source, member, "write");
+  approvedTarget(source, t, c, serverClock);
+  const matches = (p, leg, from, to) => p.org_id === org && p.module_id === "volunteers" &&
+    p.target_id === source.id && p.id === leg.id && p.revision === leg.revision &&
+    p.revision + 1 === leg.nextRevision && p.state === from && leg.state === to &&
+    p.source === "intake" && p.intake_id && !p.recovered && p.requested_interval == null;
+  if (!matches(outgoing, plan.outgoing, "confirmed", "cancelled") ||
+      !matches(replacement, plan.replacement, "waitlisted", "confirmed") ||
+      outgoing.id === replacement.id || outgoing.intake_id === replacement.intake_id ||
+      outgoing.booking_record_id === replacement.booking_record_id || outgoing.contact_id === replacement.contact_id)
+    stale();
+  const oldAssignment = candidateFor(records, outgoing, member, { approval: false });
+  const newAssignment = candidateFor(records, replacement, member);
+  if (oldAssignment.status !== "assigned") stale();
+  const blocking = (await c.query(`SELECT
+    EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1 AND origin_mode='live'
+      AND live_target_id=$2 AND roster_ids ?| $3::text[]) AS grouped,
+    EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1 AND origin_mode='live'
+      AND live_participation_id=ANY($3::text[]) AND withdrawn_at IS NULL) AS arrived`,
+    [org, source.id, [outgoing.id, replacement.id]])).rows[0];
+  if (blocking?.grouped !== false || blocking?.arrived !== false) stale();
+  const childKey = p => hash(["reviewed-volunteer-substitution-v1", org, intentId, plan.reviewSha256, p.id]);
+  const common = { c, org, user, member, source, t, records, serverClock };
+  const former = await applyScopedParticipationCommand({
+    ...common, p: outgoing, action: "cancel",
+    input: { revision: outgoing.revision, reason: "Reviewed volunteer shift handoff.", idempotencyKey: childKey(outgoing) },
+  }, QUIET_SUBSTITUTION);
+  if (former.replayed || former.notificationQueued !== false || former.auditRetained !== null ||
+      former.p.state !== "cancelled" || former.p.revision !== plan.outgoing.nextRevision)
+    stale();
+  // The existing promote path evaluates the live queue and allocation after
+  // the released place is staged. With no reason supplied it cannot skip an
+  // earlier eligible volunteer. Its refusal rolls back the staged release.
+  const next = await applyScopedParticipationCommand({
+    ...common, p: replacement, action: "promote",
+    input: { revision: replacement.revision, targetRevision: t.revision, candidateRevision: newAssignment.revision,
+      consentRevision: replacement.consent?.revision ?? 0, idempotencyKey: childKey(replacement) },
+  }, QUIET_SUBSTITUTION);
+  if (next.replayed || next.notificationQueued !== false || next.auditRetained !== null ||
+      next.p.state !== "confirmed" || next.p.revision !== plan.replacement.nextRevision)
+    stale();
+  const saved = (await c.query(`SELECT p.org_id AS "orgId",p.target_id AS "shiftId",p.id AS "participationId",
+    p.revision,p.state,b.id AS "assignmentId",b.revision AS "assignmentRevision",b.status AS "assignmentState",
+    to_char((CASE WHEN p.state='cancelled' THEN p.cancelled_at ELSE p.confirmed_at END)
+      AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS "atExact"
+    FROM os_participations p JOIN os_records b ON b.org_id=p.org_id AND b.id=p.booking_record_id
+    WHERE p.org_id=$1 AND p.target_id=$2 AND p.id=ANY($3::text[]) AND b.deleted_at IS NULL`,
+    [org, source.id, [outgoing.id, replacement.id]])).rows;
+  const row = (p, assignment, leg, assignmentState) => {
+    const savedRow = saved.find(x => x.participationId === p.id);
+    if (!savedRow || savedRow.assignmentId !== assignment.id || savedRow.assignmentRevision !== assignment.revision + 1 ||
+        savedRow.assignmentState !== assignmentState || savedRow.revision !== leg.nextRevision ||
+        savedRow.state !== leg.state || savedRow.atExact !== serverClock.atExact)
+      stale();
+    return savedRow;
+  };
+  if (saved.length !== 2) stale();
+  const outcomes = Object.freeze({
+    outgoing: Object.freeze(row(outgoing, oldAssignment, plan.outgoing, "cancelled")),
+    replacement: Object.freeze(row(replacement, newAssignment, plan.replacement, "assigned")),
+  });
+  if (await audit(c, org, user, "participation.substituted", source, {
+    outgoingId: outgoing.id, replacementId: replacement.id,
+  }) !== true) stale();
+  await retainParticipationAuditOutcome(c, org, former.p, true);
+  return outcomes;
 }
 
 async function staffCommand(args) {

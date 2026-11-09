@@ -297,6 +297,12 @@ function role() {
 function admin() {
   return ["owner", "admin", "administrator"].includes(role());
 }
+function volunteerSubstitutionMember() {
+  const member = activeOrg(), module = moduleById("volunteers");
+  return state.session?.user && state.session.volunteerSubstitutions === true &&
+    Array.isArray(member?.programIds) && member.programIds.length === 0 &&
+    ["read", "write"].every(action => can(module, action, member.role)) ? member : null;
+}
 const resourceReservationAccessMessage =
   "Room and equipment reservations require current organization-wide owner or administrator access to Assets and Events.";
 function resourceReservationMember() {
@@ -493,6 +499,17 @@ async function discardPage({ signingOut = false } = {}) {
     state.pageDirty = false;
     return true;
   }
+  if (state.participationWorkspace?.hasPendingSubstitutionCommand?.()) {
+    if (!signingOut) {
+      state.participationWorkspace.reconcilePendingSubstitution?.();
+      return false;
+    }
+    return confirmAction(
+      "Sign out with a handoff awaiting confirmation?",
+      "The offer or decision may already be saved. Signing out clears the saved request from this tab. Check the shift after signing in again.",
+      "Sign out and clear this tab",
+    );
+  }
   if (state.participationWorkspace?.hasPendingGroupCommand?.()) {
     if (!signingOut) {
       state.participationWorkspace.reconcilePendingGroup?.();
@@ -633,9 +650,11 @@ function renderAccount() {
           if (!(await discardEditor()) || !(await discardPage({ signingOut: true }))) return;
           await action(async () => {
             const reservations = state.resourceReservationsWorkspace;
+            const participation = state.participationWorkspace;
             reservations?.pause();
+            participation?.pauseSubstitution?.();
             try { await api.logout(); }
-            catch (error) { reservations?.resume(); throw error; }
+            catch (error) { reservations?.resume(); participation?.resumeSubstitution?.(); throw error; }
             clearResourceReservationAccess();
             invalidateModules();
             state.session = null;
@@ -990,6 +1009,7 @@ async function route() {
           403,
         );
       const orgId = state.org, participationSession = state.session, participationRole = role(),
+        substitutionMember = volunteerSubstitutionMember(),
         [
           ,
           initialTargetId = "",
@@ -1002,6 +1022,8 @@ async function route() {
         request: apiRequest,
         loadRecords: (id) => allRecords(orgId, id),
         isCurrent: () => current === state.epoch && orgId === state.org && participationSession === state.session && participationRole === role(),
+        canUseSubstitutions: () => !!substitutionMember && participationSession === state.session &&
+          orgId === state.org && volunteerSubstitutionMember() === substitutionMember,
         onChanged: () => {
           invalidateModules(orgId, ["events", "volunteers"]);
           renderNav();
@@ -5860,6 +5882,7 @@ window.addEventListener("hashchange", async () => {
 window.addEventListener("beforeunload", (event) => {
   if (
     state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty() ||
+    state.participationWorkspace?.hasPendingSubstitutionCommand?.() ||
     state.resourceReservationsWorkspace?.hasUnsavedChanges() ||
     state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty() || state.fieldResponsesWorkspace?.isDirty() || state.contactReconciliationWorkspace?.isDirty() || state.participationRecurrenceWorkspace?.isDirty() || participationRecurrenceIntents.size > 0
   ) {

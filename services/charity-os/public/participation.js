@@ -2,6 +2,7 @@ import { createStaffCheckInPane } from "./participant-check-in.js";
 import { createStaffParticipationGroupPane } from "./participation-groups.js";
 import { createStaffReminderPane } from "./participation-reminders.js";
 import { participationRemindersEnabled as staffRemindersEnabled } from "./participation-reminder-feature.js";
+import { createVolunteerSubstitutionOfferPane, staffSubstitutionScope } from "./volunteer-substitution-offer.js";
 const part = (value) => encodeURIComponent(String(value));
 const states = {
   requested: "Awaiting a staff decision",
@@ -418,6 +419,7 @@ export async function createStaffParticipationWorkspace({
   isCurrent = () => true,
   onChanged = () => {},
   onDirty = () => {},
+  canUseSubstitutions = () => false,
   initialTargetId = "",
   initialCandidateId = "",
   initialIntakeId = "",
@@ -440,6 +442,7 @@ export async function createStaffParticipationWorkspace({
   let attendanceEditor = null;
   let groupPane = null, groupTargetId = null, groupDirty = false, groupSuspended = false;
   let reminderPane = null, reminderTargetId = null, reminderDirty = false;
+  let substitution = null, substitutionAccessEnded = false;
   let activePaneMutation = null;
   const groupQueueRequests = new Set();
   const checkInReaders = new Map();
@@ -459,6 +462,7 @@ export async function createStaffParticipationWorkspace({
     queueHost = node("section", { class: "panel section-gap" }),
     groupHost = node("section", { class: "panel section-gap", hidden: true }),
     reminderHost = node("section", { class: "panel section-gap", hidden: true }),
+    substitutionHost = node("div", { hidden: true }),
     formHost = node("section", { class: "panel section-gap", hidden: true });
   const path = (id = state.target?.targetId) => `${base}/${part(id)}`;
   function renderPicker(selected = picker.value) {
@@ -479,16 +483,18 @@ export async function createStaffParticipationWorkspace({
     picker.value = selected;
   }
   function reportDirty() {
-    if (isCurrent()) onDirty(Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges() || reminderDirty || reminderPane?.hasUnsavedChanges()));
+    if (isCurrent()) onDirty(root.hasUnsavedChanges());
   }
   function dirty(value) {
     state.dirty = value;
     reportDirty();
   }
   function pendingGroup() { return groupPane?.hasPendingCommand() === true || reminderPane?.hasPendingCommand() === true; }
+  function pendingSubstitution() { return substitution?.pane?.hasPendingCommand() === true; }
   function canPaneMutate(kind) {
     return !state.busy && !attendanceEditor?.pending && (!activePaneMutation || activePaneMutation===kind) &&
-      (kind==="group" || !groupPane?.hasPendingCommand()) && (kind==="reminder" || !reminderPane?.hasPendingCommand());
+      (kind==="group" || !groupPane?.hasPendingCommand()) && (kind==="reminder" || !reminderPane?.hasPendingCommand()) &&
+      (kind==="substitution" || !pendingSubstitution());
   }
   async function paneRequest(kind,path,options={}) {
     if(!options.method || options.method==="GET")return request(path,options);
@@ -500,6 +506,87 @@ export async function createStaffParticipationWorkspace({
     if (!isCurrent()) return;
     writeStatus(notice, reminderPane?.hasPendingCommand() ? "The earlier reminder schedule may already be saved. Refresh reminder tools and reconcile that retained command before another conflicting action." : "The earlier group command may already be saved. Refresh group tools and retry that exact retained command before another conflicting action.", true);
     if (root.isConnected && notice.isConnected) { notice.setAttribute("tabindex", "-1"); notice.focus(); }
+  }
+  function reconcilePendingSubstitution() {
+    if (!isCurrent()) return;
+    writeStatus(notice, "Check the saved handoff offer or use the exact confirmation Retry before leaving this shift.", true);
+    if (root.isConnected && notice.isConnected) { notice.setAttribute("tabindex", "-1"); notice.focus(); }
+  }
+  function substitutionScope(row) {
+    return !substitutionAccessEnded && canUseSubstitutions() === true
+      ? staffSubstitutionScope(state.target, state.detail, row) : null;
+  }
+  function closeSubstitution() {
+    const previous = substitution;
+    substitution = null;
+    previous?.pane?.dispose();
+    substitutionHost.hidden = true;
+    substitutionHost.replaceChildren();
+    reportDirty();
+  }
+  function pauseSubstitution() {
+    substitutionHost.hidden = true;
+    substitution?.pane.pause();
+  }
+  function syncSubstitution() {
+    if (!substitution || !isCurrent() || globalThis.document?.hidden) return;
+    const { pane, scope } = substitution;
+    if (canUseSubstitutions() !== true || state.target?.targetId !== scope.shiftId) {
+      closeSubstitution();
+      return;
+    }
+    const fresh = substitutionScope(state.rows.find(row => row.id === scope.outgoingId));
+    if ((!fresh || fresh.shiftRevision !== scope.shiftRevision || fresh.outgoingRevision !== scope.outgoingRevision) &&
+        !pendingSubstitution()) {
+      closeSubstitution();
+      return;
+    }
+    substitutionHost.hidden = false;
+    pane.resume();
+  }
+  async function openSubstitution(row) {
+    const scope = substitutionScope(row);
+    if (!scope || !isCurrent() || state.busy || activePaneMutation || globalThis.document?.hidden) return;
+    if (substitution?.scope.outgoingId === scope.outgoingId &&
+        substitution.scope.outgoingRevision === scope.outgoingRevision &&
+        substitution.scope.shiftRevision === scope.shiftRevision) {
+      syncSubstitution();
+      await substitution?.pane.load();
+      return;
+    }
+    if (pendingSubstitution()) { reconcilePendingSubstitution(); return; }
+    closeSubstitution();
+    const entry = { scope, pane: null };
+    substitution = entry;
+    const current = () => isCurrent() && substitution === entry && canUseSubstitutions() === true &&
+      state.target?.targetId === scope.shiftId;
+    entry.pane = createVolunteerSubstitutionOfferPane({ orgId, scope,
+      currentScope: () => substitutionScope(state.rows.find(row => row.id === scope.outgoingId)),
+      request: (url, options) => paneRequest("substitution", url, options),
+      isCurrent: current, canMutate: () => canPaneMutate("substitution"),
+      onDirty: reportDirty,
+      onAccessLost: () => {
+        if (!current()) return;
+        substitutionAccessEnded = true;
+        closeSubstitution();
+        renderQueue();
+        writeStatus(notice, "Shift handoff access has ended. Refresh your workspace session before continuing.", true);
+      },
+      onChanged: () => {
+        if (!current()) return;
+        onChanged();
+        writeStatus(notice, "Handoff saved. Refresh the occurrence to review the current ledger.");
+      },
+    });
+    substitutionHost.replaceChildren(entry.pane.element,
+      button("Close shift handoff", () => {
+        if (!current()) return;
+        if (pendingSubstitution()) { reconcilePendingSubstitution(); return; }
+        closeSubstitution();
+        queueHost.querySelector(`[data-handoff-participation="${scope.outgoingId}"]`)?.focus();
+      }, "subtle"));
+    substitutionHost.hidden = false;
+    await entry.pane.load();
   }
   function abortGroupQueueReads() {
     for (const entry of groupQueueRequests) { clearTimeout(entry.timer); entry.controller.abort(); }
@@ -616,6 +703,7 @@ export async function createStaffParticipationWorkspace({
     ),
     targetHost,
     queueHost,
+    substitutionHost,
     groupHost,
     reminderHost,
     formHost,
@@ -1343,7 +1431,12 @@ export async function createStaffParticipationWorkspace({
       disposeGroups();
     }
     pauseGroups();
+    if (substitution && id !== substitution.scope.shiftId) {
+      if (pendingSubstitution()) { reconcilePendingSubstitution(); return; }
+      closeSubstitution();
+    }
     if (closeForm() === false) return;
+    pauseSubstitution();
     if (!id) {
       state.target = null;
       state.detail = null;
@@ -1374,11 +1467,13 @@ export async function createStaffParticipationWorkspace({
       state.cursor = null;
       renderQueue();
     } else await loadQueue(false, version, groupPrefixCount);
-    if (live(version))
+    if (live(version)) {
+      syncSubstitution();
       writeStatus(
         notice,
         "Current saved state loaded. Availability is checked again when a decision is recorded.",
       );
+    }
   }
   function renderTarget() {
     const detail = state.detail,
@@ -2561,6 +2656,10 @@ export async function createStaffParticipationWorkspace({
         intervalSchedule(row, state.detail?.terms || state.target?.terms),
       );
       const actions = node("div", { class: "actions" });
+      if (substitutionScope(row))
+        actions.append(button("Review shift handoff options", () => {
+          if (card.isConnected) return openSubstitution(row);
+        }, "small subtle", { "data-handoff-participation": row.id }));
       actions.append(button("Read arrival self-report", () => {
         if (!isCurrent() || !card.isConnected) return;
         checkInReaders.get(row.id)?.dispose();
@@ -3002,24 +3101,31 @@ export async function createStaffParticipationWorkspace({
   picker.addEventListener("change", () => {
     const id = picker.value;
     picker.value = state.target?.targetId || "";
+    if (id !== state.target?.targetId && pendingSubstitution()) { reconcilePendingSubstitution(); return; }
     confirmDiscard(() => {
       picker.value = id;
       return work(() => loadTarget(id));
     });
   });
-  function suspendGroups() { groupSuspended = true; pauseGroups(); }
-  function groupVisibility() { if (globalThis.document?.hidden) suspendGroups(); }
-  globalThis.window?.addEventListener?.("pagehide", suspendGroups);
+  function suspendGroups() { groupSuspended = true; pauseGroups(); pauseSubstitution(); }
+  function suspendOnPageHide() { suspendGroups(); closeSubstitution(); }
+  function groupVisibility() { if (globalThis.document?.hidden) suspendGroups(); else syncSubstitution(); }
+  globalThis.window?.addEventListener?.("pagehide", suspendOnPageHide);
   globalThis.document?.addEventListener?.("visibilitychange", groupVisibility);
   root.hasPendingGroupCommand = pendingGroup;
-  root.hasUnsavedChanges = () => Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges() || reminderDirty || reminderPane?.hasUnsavedChanges());
+  root.hasPendingSubstitutionCommand = pendingSubstitution;
+  root.hasUnsavedChanges = () => Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges() ||
+    reminderDirty || reminderPane?.hasUnsavedChanges() || substitution?.pane?.hasUnsavedChanges());
   root.reconcilePendingGroup = reconcilePendingGroup;
+  root.reconcilePendingSubstitution = reconcilePendingSubstitution;
+  root.pauseSubstitution = pauseSubstitution;
+  root.resumeSubstitution = syncSubstitution;
   root.dispose = () => {
     if (workspaceDisposed) return;
     workspaceDisposed = true; state.version++;
-    globalThis.window?.removeEventListener?.("pagehide", suspendGroups);
+    globalThis.window?.removeEventListener?.("pagehide", suspendOnPageHide);
     globalThis.document?.removeEventListener?.("visibilitychange", groupVisibility);
-    abortGroupQueueReads(); disposeGroups(); clearCheckInReaders();
+    abortGroupQueueReads(); disposeGroups(); closeSubstitution(); clearCheckInReaders();
     if (attendanceEditor) {
       attendanceEditor.closed = true;
       for (const controller of attendanceEditor.requests) controller.abort();

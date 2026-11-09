@@ -33,6 +33,19 @@ export function resourceReservationGrantsSql(role, schema = "public") {
 GRANT SELECT,INSERT ON ${family} TO ${grantee};
 GRANT UPDATE(state,revision,terminal_command_hash,disposition) ON ${holds} TO ${grantee};`;
 }
+/** Restrict the expiring consent family without changing existing report grants. */
+export function volunteerSubstitutionGrantsSql(role, schema = "public") {
+  const { grantee, table } = identifiers(role, schema);
+  const choices = table("os_participation_substitution_choices");
+  const accepted = "org_id,intent_id,party,shift_id,shift_revision,participation_id,participation_revision,user_id,intake_id," +
+    "link_id,link_revision,person_identity_sha256,link_scope_sha256,accepted_at,expires_at";
+  const columns = accepted + ",withdrawn_at,own_authority_sha256";
+  return `REVOKE ALL ON ${choices} FROM ${grantee}, PUBLIC;
+REVOKE INSERT(${columns}),UPDATE(${columns}) ON ${choices} FROM ${grantee}, PUBLIC;
+GRANT SELECT,DELETE ON ${choices} TO ${grantee};
+GRANT INSERT(${accepted}) ON ${choices} TO ${grantee};
+GRANT UPDATE(withdrawn_at) ON ${choices} TO ${grantee};`;
+}
 export function applicationGrantsSql(role, schema = "public") {
   const { target, grantee, table } = identifiers(role, schema);
   return `GRANT USAGE ON SCHEMA ${target} TO ${grantee};
@@ -44,6 +57,7 @@ GRANT UPDATE(revision,withdrawn_at,withdrawal_receipt,updated_at) ON ${table("os
 REVOKE ALL ON ${table("os_participation_checkins")} FROM PUBLIC;
 ${participationGroupGrantsSql(role, schema)}
 ${resourceReservationGrantsSql(role, schema)}
+${volunteerSubstitutionGrantsSql(role, schema)}
 GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA ${target} TO ${grantee};
 ALTER DEFAULT PRIVILEGES IN SCHEMA ${target} GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO ${grantee};
 ALTER DEFAULT PRIVILEGES IN SCHEMA ${target} GRANT USAGE,SELECT ON SEQUENCES TO ${grantee};`;

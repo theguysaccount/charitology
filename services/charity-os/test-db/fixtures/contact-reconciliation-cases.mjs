@@ -1,6 +1,7 @@
 // Portable CRM business definitions. Import opens no driver, environment or resource.
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import handoffCatalog from './volunteer-substitution-catalog-v1.json' with {type:'json'};
 const sha=v=>createHash('sha256').update(v).digest('hex'),clone=v=>structuredClone(v);
 const ORIGIN='https://os.example.invalid',SECRET='fictional-crm-fixture-only-secret-'.repeat(3);
 const MAX=2*1024*1024,TOTAL=32*1024*1024;
@@ -102,11 +103,14 @@ export async function runCrmCases({db,owner,modules:M,sql,healthy,onCase,onArtif
   await artifact('catalog-driver-raw-before-assertions.json',{fields:catalogResult.fields.map(({name,dataTypeID})=>({name,dataTypeID})),rows:catalogResult.rows,arrayFlags:catalogResult.rows.map(row=>({tableName:row.table_name,isArray:Array.isArray(row.columns),jsType:typeof row.columns}))});
   const catalog=catalogResult.rows;
   equal('source-catalog-independent-vector',M.crmCatalog.CONTACT_CONTEXT_CATALOG,catalogVectors);
-  const legacy=catalog.length===Object.keys(catalogVectors).length;
-  if(!legacy)equal('resource-catalog-independent-vector',M.crmCatalog.CONTACT_RESOURCE_RESERVATION_CATALOG,resourceCatalogVectors);
-  const expected=legacy?catalogVectors:{...catalogVectors,...resourceCatalogVectors};
+  const resources=catalog.some(r=>r.table_name==='os_resource_reservations');
+  const handoffs=catalog.some(r=>r.table_name==='os_participation_substitution_choices');
+  if(resources)equal('resource-catalog-independent-vector',M.crmCatalog.CONTACT_RESOURCE_RESERVATION_CATALOG,resourceCatalogVectors);
+  if(handoffs)equal('handoff-catalog-independent-vector',M.crmCatalog.CONTACT_SUBSTITUTION_CHOICE_CATALOG,handoffCatalog.os_participation_substitution_choices);
+  const expected={...catalogVectors,...(resources?resourceCatalogVectors:{}),...(handoffs?handoffCatalog:{})};
   const columns=catalog.reduce((n,r)=>n+r.columns.length,0);
-  equal('catalog-tables',catalog.length,legacy?33:35);equal('catalog-columns',columns,legacy?355:373);
+  equal('catalog-tables',catalog.length,33+(resources?2:0)+(handoffs?1:0));
+  equal('catalog-columns',columns,355+(resources?18:0)+(handoffs?17:0));
   equal('catalog-exact-table-names',catalog.map(r=>r.table_name).sort(),Object.keys(expected).sort());
   for(const r of catalog)equal('catalog-vector-'+r.table_name,[...r.columns].sort(),[...expected[r.table_name]].sort());
   const context=await inspect(source);truth('actual-catalog-context',M.crmModel.planContactReconciliation({...context.plannerContext,decision:mergeDecision(source)}).proposal!==null);

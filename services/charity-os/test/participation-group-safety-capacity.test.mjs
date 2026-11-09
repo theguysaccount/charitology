@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 /** Controlled fake SQL byte returns, actual native exporter/policy fragments.
  * No PostgreSQL, current permission or complete-reserve proof. */
@@ -37,6 +38,7 @@ async function fixture({ active = false, bounded = false, interval = false, noPo
   if (interval) { t.terms.intervalPolicy = { version: 1, mode: "within-shift" }; raw.requested_interval = { version: 1, startAt: "2099-01-01T10:00:00Z", endAt: "2099-01-01T11:00:00Z", timeZone: "UTC" }; }
   const outbox = notice(active, bounded ? { state: "cancelled", safe_code: "authority_withdrawn" } : {});
   const sourceClient = { async query(sql) {
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     if (sql.includes("FROM os_participation_targets")) return { rows: [t] };
     if (sql.includes("FROM os_participations")) return { rows: [raw] };
     if (sql.includes("FROM os_participation_outbox")) return { rows: [outbox] };
@@ -54,6 +56,7 @@ async function fixture({ active = false, bounded = false, interval = false, noPo
     updated_at: O.serviceTime, consent: raw.consent ? { ...raw.consent, emailUpdates: false } : null };
   const calls = [];
   const c = { async query(sql, args) {
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     calls.push({ sql, args: clone(args) }); assert(sql.startsWith("SELECT") || sql.startsWith("WITH"));
     let rows, phase;
     if (sql === SQL.participations) {
@@ -166,7 +169,9 @@ test("notice rejects override columns, wrong links/hash/payload/revision without
 
 test("groups-absent optional append paths preserve old delegation without reading candidate input", async () => {
   let count = 0, touched = 0;
-  const c = { async query(sql) { assert.equal(sql, "SELECT count(*)::int AS count FROM os_participation_groups WHERE org_id=$1"); count++; return { rows: [{ count: 0 }] }; } };
+  const c = { async query(sql) {
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+     assert.equal(sql, "SELECT count(*)::int AS count FROM os_participation_groups WHERE org_id=$1"); count++; return { rows: [{ count: 0 }] }; } };
   const input = new Proxy({}, { ownKeys() { touched++; throw Error("must remain unread"); }, get() { touched++; throw Error("must remain unread"); } });
   assert.equal(await canRetainGroupParticipationNotice(c, ORG, input), true);
   assert.equal(await canRetainGroupSafetyAudit(c, ORG, input), true);
@@ -177,6 +182,7 @@ test("groups-absent optional append paths preserve old delegation without readin
 test("GROUP-present incomplete graph/driver failure omits optional appends with no insert or false pass", async () => {
   const failure = Error("Fictional private graph failure"), calls = [];
   const c = { async query(sql) {
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     calls.push(sql); assert(sql.startsWith("SELECT") || sql.startsWith("WITH"));
     if (sql === "SELECT count(*)::int AS count FROM os_participation_groups WHERE org_id=$1") return { rows: [{ count: 1 }] };
     throw failure;
@@ -204,6 +210,7 @@ async function fullGuardFixture() {
   let usage = 5000, noticeBytes = 800, sourceOutboxCount = 1;
   const emptyTables = new Set(["os_comments", "os_events", "os_reports", "os_files", "os_integrations", "os_learning_history", "os_incubator_history", "os_participation_checkins", "os_publications", "os_intake", "os_task_recurrence_series", "os_task_recurrence_occurrences", "os_resource_directory_history"]);
   const c = { async query(sql, args = []) {
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     calls.push({ sql, args: clone(args) });
     assert(/^(SELECT|WITH)\b/.test(sql.trimStart()), "Sizing must never execute fixture writes");
     if (sql === reservationSchemaSql.layout) return legacyReservationLayout;

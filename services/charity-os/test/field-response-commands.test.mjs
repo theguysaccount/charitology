@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 // Closed fake-SQL/controller tests, not actual PostgreSQL, RLS or capacity measurements.
@@ -16,7 +17,9 @@ function raw(id,moduleId,data){return {org_id:ORG,id,module_id:moduleId,data,sta
 class Fake{
  constructor(){const p=raw('program','programs',validateRecord('programs',{title:'Fictional program',kind:'program'}));const i=raw('indicator','outcomes',validateRecord('outcomes',{title:'Fictional visits',kind:'indicator',programId:p.id,unit:'visits'},{orgId:ORG,recordId:'indicator',records:[{...p,orgId:ORG,moduleId:'programs'}]}));this.records=[p,i];this.reports=[];this.previews=[];this.events=[];this.role='owner';this.scopes=[];this.memberRevision=1;this.epoch='0';this.session=true;this.connection={id:'connection',provider:'csv',name:'Fictional local file',config:{baseUrl:null,moduleId:'outcomes',fieldMap:{}},status:'unconfigured',revision:1,has_credentials:false};this.trace=[];this.writes=[];this.expired=false;this.limits=[];this.rateRefusal=false;this.failAudit=false;this.failLastSave=false;}
  result(rows){return {rows,rowCount:rows.length};}
- async query(sql,args=[]){this.trace.push(sql);const result=rows=>this.result(rows);
+ async query(sql,args=[]){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+   this.trace.push(sql);const result=rows=>this.result(rows);
   if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
   if(sql===reservationSql.projection)return result([]);
   if(sql.startsWith('SELECT s.id AS session_id'))return result(this.session?[{session_id:SESSION.session.id,user_id:ACTOR,current_user_id:ACTOR}]:[]);

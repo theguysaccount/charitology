@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -142,6 +143,7 @@ test("an optional export journal cannot consume the last byte of a v3 exit packe
   ]);
   const c = {
     query: async (sql, values) => {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
       const emptyGroups = emptyParticipationGroupsQuery(sql, values);
       if (emptyGroups !== undefined) return emptyGroups;

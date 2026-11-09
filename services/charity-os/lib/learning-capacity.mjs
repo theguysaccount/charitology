@@ -32,6 +32,8 @@ import { planRestoredContactReconciliationReports, contactReconciliationRestoreS
 import { restoredResourceReservations, resourceReservationRestoreSummary } from './resource-reservation-backup.mjs';
 import { measureResourceReservationRestore } from './resource-reservation-capacity.mjs';
 import { measureFeedbackIntakeRestore } from './feedback-intake-capacity.mjs';
+import { isVolunteerSubstitutionNativeReport, planRestoredVolunteerSubstitutionReports } from './volunteer-substitution-native.mjs';
+import { VOLUNTEER_SUBSTITUTION_STORAGE_LIMITS } from './volunteer-substitution-store.mjs';
 
 export const LEARNING_RESTORE_CAPACITY = Object.freeze({ logicalBytes: 60 * 1024 * 1024, backupBytes: 64 * 1024 * 1024,
   auditCheckReserveBytes: 1000, worstOrgId: 'o'.repeat(100), worstActorId: 'u'.repeat(100),
@@ -154,8 +156,8 @@ const fieldReportColumns = Object.freeze('org_id id created_by title checksum pa
 const row = (table, values) => Object.fromEntries((table==='os_reports'?fieldReportColumns:columns[table]).map(key => [key, values[key] ?? null]));
 const frozen = learningFreeze;
 
-async function schemaCheck(c, fieldPresent=false) {
-  const required=fieldPresent?{...columns,os_reports:fieldReportColumns}:columns;
+async function schemaCheck(c, reportsPresent=false) {
+  const required=reportsPresent?{...columns,os_reports:fieldReportColumns}:columns;
   const result = await c.query("SELECT t.relname AS table_name,a.attname AS column_name FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid WHERE n.nspname=current_schema() AND t.relname=ANY($1::text[]) AND a.attnum>0 AND NOT a.attisdropped ORDER BY t.relname,a.attnum", [Object.keys(required)]);
   const actual = new Map();
   for (const item of result.rows) { if (!actual.has(item.table_name)) actual.set(item.table_name, []); actual.get(item.table_name).push(item.column_name); }
@@ -202,10 +204,15 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const field=planRestoredFieldResponseReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const crm=planRestoredContactReconciliationReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const occurrence=planRestoredParticipationRecurrenceReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
+  const substitution=planRestoredVolunteerSubstitutionReports(backup,{
+    orgId,actorId,createdAtExact:'9999-12-31T23:59:59.999999Z',
+  });
+  const reportsPresent=field.present||crm.present||occurrence.present||substitution.present;
   const incomingReportIds=new Set(occurrence.reports.map(report=>report.id));
+  const substitutionReportIds=new Set(substitution.reports.map(report=>report.id));
   const operational = operationalGrowth(backup.participation), operationalBounds = new Map(operational.outboxBounds.map(value => [value.id, value]));
   if (operational.active && (operational.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || operational.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes)) operationalFailure();
-  await schemaCheck(c,field.present||crm.present||occurrence.present);
+  await schemaCheck(c,reportsPresent);
   const resourceRestore = await measureResourceReservationRestore(c, orgId, reservationRecovery);
   const baseline = { events: [], reports: [], bytes: 0 };
   if (baselineOrgId !== undefined) {
@@ -218,6 +225,8 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
         if (table === 'os_reports' && crm.reports.some(report=>report.id===original.id)) fail(409,'restore_conflict','A destination report collides with recovered contact reconciliation history.');
         if (table === 'os_reports' && isFieldResponseRecoveryFamily(original.payload)) fail(409,'restore_conflict','Restore requires a destination without aggregate import history.');
         if (table === 'os_reports' && field.reports.some(report=>report.id===original.id)) fail(409,'restore_conflict','A destination report collides with recovered aggregate import history.');
+        if (table === 'os_reports' && (isVolunteerSubstitutionNativeReport(original) || substitutionReportIds.has(original.id)))
+          fail(409,'restore_conflict','Restore requires a destination without volunteer substitution history or a colliding report.');
         if (table === 'os_reports' && isLearningReportFamily(original.payload)) fail(409, 'restore_conflict', 'Restore requires a destination without learning reports.');
         if (table === 'os_reports' && learning?.reports.some(report => original.id === report.id || original.checksum === report.checksum || original.payload?.id === report.id || original.payload?.checksum === report.checksum))
           fail(409, 'restore_conflict', 'An original destination report collides with recovered learning report identity.');
@@ -228,7 +237,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
       fail(409, 'restore_conflict', 'Restore requires a destination without retained records, files or feature sidecars. Original audit history and legacy reports are preserved.');
   }
   const tables = Object.fromEntries(Object.keys(columns).map(table => [table, []]));
-  if (field.present||crm.present||occurrence.present) tables.os_reports=[];
+  if (reportsPresent) tables.os_reports=[];
   const add = (table, fields) => { const value = row(table, fields); tables[table].push(value); return value; };
   const audit = (action, record, detail) => add('os_events', { org_id: orgId, id: C.auditId, actor_id: actorId, action,
     record_id: record?.id, module_id: record?.moduleId, detail, created_at: C.timestamp });
@@ -310,6 +319,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   for (const report of field.reports) add('os_reports',report);
   for (const report of crm.reports) add('os_reports',report);
   for (const report of occurrence.reports) add('os_reports',report);
+  for (const report of substitution.reports) add('os_reports',report);
   audit('backup.restored', null, { ...fieldResponseRestoreSummary(field), ...contactReconciliationRestoreSummary(crm), ...participationRecurrenceRestoreSummary(occurrence), count: records.length, checksum: backup.checksum, sourceArchiveId: C.archiveId,
     // Projection only: the largest possible JS array length fixes count width across optional export audits and re-restores.
     sourceHistoryCount: 4294967295, sourceCommentCount: backup.comments?.length || 0, sourceReportCount: backup.reports?.length || 0,
@@ -317,6 +327,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     learningReportsRecovered: learning?.reports.length || 0, intakePublicationsClosed: intake.publications.length, intakeRequests: intake.submissions.length,
     ...(checkins === null ? {} : { participantCheckinsRecovered: checkins.length }),
     ...(groups === null ? {} : { participationGroupsRecovered: groups.groups.length }),
+    ...(substitution.present ? { volunteerSubstitutionsRecovered: substitution.reports.length } : {}),
     ...resourceReservationRestoreSummary(reservationRecovery),
     ...(incubator ? { incubatorSourcesRecovered: incubator.sources.length, incubatorEventsRetained: incubator.events.length } : {}),
     participationTargetsRecovered: participation.targets.length, participationsRecovered: participation.participations.length,
@@ -344,6 +355,14 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     const familyBytes=tables.os_reports.reduce((total,value,index)=>total+(isParticipationRecurrenceRecoveryFamily(value.payload)?sizes.os_reports[index].bytes:0),0);
     if (occurrence.reports.length>PARTICIPATION_RECURRENCE_REPORT_LIMITS.reports||familyBytes>PARTICIPATION_RECURRENCE_REPORT_LIMITS.familyBytes) over();
   }
+  let substitutionCapacity;
+  if (substitution.present) {
+    const count=substitution.reports.length;
+    const bytes=tables.os_reports.reduce((total,value,index)=>total+
+      (substitutionReportIds.has(value.id)?sizes.os_reports[index].bytes:0),0);
+    if (count>VOLUNTEER_SUBSTITUTION_STORAGE_LIMITS.receipts || bytes>VOLUNTEER_SUBSTITUTION_STORAGE_LIMITS.receiptFamilyBytes) over();
+    substitutionCapacity={count,bytes,nativeBytes:compactBytes(substitution.namespace)};
+  }
   const files = [], inputFiles = backup.files || [];
   if (!Array.isArray(inputFiles) || inputFiles.length > 1000) over();
   let fileBytes = 0, fileCharge = 0;
@@ -360,7 +379,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   categories.targetBaseline = { count: baseline.events.length + baseline.reports.length, bytes: baseline.bytes };
   const projectedClient = { query: async sql => {
     const match = sql.match(/\bFROM (os_[a-z_]+)\b/), table = match?.[1];
-    if (table === 'os_reports') return { rows: [] }; // Learning-only reader; FIELD/CRM/recurrence rows are retained explicitly in extras.reports.
+    if (table === 'os_reports') return { rows: [] }; // Learning-only reader. Other reports use the explicit projections below.
     if (!table || !Object.hasOwn(tables, table)) badSchema();
     if (table === 'os_learning_history') return { rows: tables[table].map((value, index) => ({ ...wireRow(value),
       learning_payload_bytes: learned.rows[index].payloadBytes, learning_receipt_bytes: 0, learning_row_bytes: sizes[table][index].bytes })) };
@@ -379,7 +398,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
       categories.os_participation_groups.bytes + categories.os_participation_group_receipts.bytes > GROUP_LIMITS.familyBytes) over();
   if (categories.os_incubator_history.count>1000 || categories.os_incubator_history.bytes>16777216) over();
   const projectedRecords = tables.os_records.map(value => rowRecord(wireRow(value)));
-  const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: (field.present||crm.present||occurrence.present)?[...baseline.reports,...tables.os_reports.map(wireRow)]:baseline.reports, files, trash: [], trashFiles: [],
+  const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: reportsPresent?[...baseline.reports,...tables.os_reports.filter(value=>!isVolunteerSubstitutionNativeReport(value)).map(wireRow)]:baseline.reports, files, trash: [], trashFiles: [],
     integrations: tables.os_integrations.map(value => ({ id: value.id, provider: value.provider, name: value.name, config: value.config })),
     intake: await exportIntake(projectedClient, orgId), participation: await exportParticipation(projectedClient, orgId),
     delivery: await exportDelivery(projectedClient, orgId), taskRecurrence: await exportTaskRecurrence(projectedClient, orgId),
@@ -394,6 +413,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const projectedGroups = makeParticipationGroupsBackup(groups?.groups ?? []);
   if (projectedGroups !== undefined) extras.participationGroups = projectedGroups;
   if (resourceRestore?.namespace !== undefined) extras.resourceReservations = resourceRestore.namespace;
+  if (substitution.present) extras.volunteerSubstitutions = substitution.namespace;
   let destinationWireMetadataExtraBytes = 0;
   if (operational.active) {
     const originalWireBytes = compactBytes(extras.participation.outbox);
@@ -413,6 +433,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   return frozen({ logicalBytes, requiredLogicalBytes: logicalBytes + C.auditCheckReserveBytes, backupBytes,
     auditCheckReserveBytes: C.auditCheckReserveBytes, structuredRecordBytes, categories,
     ...(feedback === null ? {} : { feedbackIntake: feedback }),
+    ...(substitutionCapacity === undefined ? {} : { volunteerSubstitutions: substitutionCapacity }),
     ...(resourceRestore === null ? {} : { resourceReservations: {
       retainedBytes: resourceRestore.retainedBytes,
       projectedRetainedBytes: resourceRestore.projectedRetainedBytes,

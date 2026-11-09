@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 /** Controlled fake SELECT bytes, real codecs/composers/restore builder.
  * No PostgreSQL, authority, physical-byte or attainable-maximum proof. */
@@ -38,6 +39,7 @@ function fixture({groups=0,active=false,v3=false}={}){
  const restore=restoreMeasurementFixture(),calls=[];let usage=10000,auditBytes=700,receiptBytes=null,stale=false;
  const empty=new Set(['os_comments','os_events','os_reports','os_files','os_integrations','os_learning_history','os_incubator_history','os_participation_checkins','os_publications','os_intake','os_task_recurrence_series','os_task_recurrence_occurrences','os_resource_directory_history']);
  const c={async query(sql,args=[]){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
   calls.push({sql,args:copy(args)});assert(/^(SELECT|WITH)\b/.test(sql.trimStart()),'Measurement must remain SELECT-only');
   if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
   if(sql==="SELECT id,reminder_consent FROM os_participations WHERE org_id=$1 AND reminder_consent IS NOT NULL ORDER BY id LIMIT 2001")return{rows:[]};

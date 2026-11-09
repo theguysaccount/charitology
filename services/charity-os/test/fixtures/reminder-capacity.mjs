@@ -1,3 +1,4 @@
+import {legacyVolunteerSubstitutions} from './volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./resource-reservation-schema.mjs";
 /** Strict fake SELECT fixture. Controlled SQL byte values are NOT a PG oracle. */
 import assert from 'node:assert/strict';
@@ -22,6 +23,7 @@ export function fixture(options={}){
   return{id:p.id,row:clone(p),future_row:{...clone(p),state:'cancelled',revision:O.attempts,cancelled_at:O.serviceTime,updated_at:O.serviceTime,consent:{...p.consent,emailUpdates:false},last_command:{intentHash:SHA,payloadHash:SHA,action:'delivery.preference',actorHash:SHA,resultRevision:O.attempts,notificationQueued:false,auditRetained:false}},actual:String(actual),actual_raw:String(actualRaw),operational:String(actual+op),operational_raw:String(actualRaw+op),projected:String(overFamily&&full?8*1024*1024:actual+500),projected_raw:String(overFamily&&full?8*1024*1024+48:actualRaw+500)};
  });
  f.c.query=async(sql,args=[])=>{
+  const handoff=legacyVolunteerSubstitutions(sql);if(handoff)return handoff;
   calls.push({sql,args:clone(args)});
   assert(/^(SELECT|WITH)\b/.test(sql.trimStart()));
   if (sql === reservationSchemaSql.layout) return legacyReservationLayout;

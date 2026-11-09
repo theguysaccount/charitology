@@ -80,6 +80,9 @@ import { ContactContextError, currentContactReconciliationMember } from "./conta
 import { ContactReconciliationReportError } from "./contact-reconciliation-report.mjs";
 import { ContactReconciliationPreviewError } from "./contact-reconciliation-preview.mjs";
 import { restoredContactReconciliationReports, restoreContactReconciliationReports, contactReconciliationRestoreSummary } from "./contact-reconciliation-recovery.mjs";
+import { assertVolunteerSubstitutionRestoreDestination, restoreVolunteerSubstitutionReports } from "./volunteer-substitution-native.mjs";
+import { isVolunteerSubstitutionRuntime } from "./volunteer-substitution-runtime.mjs";
+import { guardVolunteerSubstitutionRecord } from "./volunteer-substitution-retention.mjs";
 import { inspectFieldResponseRecovery, restoreFieldResponseReports, fieldResponseRestoreSummary } from "./field-response-recovery.mjs";
 import { ParticipationGroupError } from "./participation-group-model.mjs";
 import { ParticipationGroupAllocationError } from "./participation-group-allocation.mjs";
@@ -163,6 +166,17 @@ import {
 } from "./task-recurrence-backup.mjs";
 const okay = (value) => json({ ok: true, ...value });
 
+function canReadHandoffHistory(member) {
+  const access = modulePermissions("volunteers", member.role);
+  return Array.isArray(member.programIds) && member.programIds.length === 0 && access.read && access.write;
+}
+function requireHandoffBackupAccess(backup, member) {
+  if (backup?.volunteerSubstitutions !== undefined && !canReadHandoffHistory(member))
+    fail(403, "substitution_history_scope", "Whole-workspace Volunteers access is required for this backup.");
+}
+const scopedHandoffAuditSQL = "AND action <> 'participation.substituted'";
+const scopedHandoffArchiveSQL = "AND NOT (payload ? 'volunteerSubstitutions')";
+
 async function resourceReservationFeatures(c, member) {
   if (!administrators(member.role) || !Array.isArray(member.programIds) || member.programIds.length)
     return {};
@@ -201,8 +215,11 @@ export function createHandler({
   db,
   auth,
   send,
+  volunteerSubstitutionRuntime = null,
   participationTransport = participationMailer(settings),
 }) {
+  if (volunteerSubstitutionRuntime !== null && !isVolunteerSubstitutionRuntime(volunteerSubstitutionRuntime))
+    throw new TypeError("Use the reviewed shift handoff runtime.");
   const handle = async function handle(request) {
     try {
       const url = new URL(request.url),
@@ -340,6 +357,8 @@ export function createHandler({
                   emailVerified: session.user.emailVerified === true,
                 },
                 csrfToken: csrf(session.session.id, settings.secret),
+                ...(volunteerSubstitutionRuntime && await volunteerSubstitutionRuntime.discover(session)
+                  ? { volunteerSubstitutions: true } : {}),
               }
             : { user: null },
         );
@@ -362,6 +381,7 @@ export function createHandler({
             programIds: r.program_ids,
           })),
         );
+        const canReviewHandoffs = volunteerSubstitutionRuntime && orgs.some(canReadHandoffHistory);
         return okay({
           user: {
             id: session.user.id,
@@ -370,6 +390,8 @@ export function createHandler({
           },
           orgs,
           csrfToken: csrf(session.session.id, settings.secret),
+          ...(canReviewHandoffs && await volunteerSubstitutionRuntime.discover(session)
+            ? { volunteerSubstitutions: true } : {}),
         });
       }
       if (!session) fail(401, "session", "Sign in to continue.");
@@ -409,6 +431,10 @@ export function createHandler({
       }
       const recurrenceResponse = await participationRecurrenceRoutes({request,url,db,session});
       if (recurrenceResponse) return recurrenceResponse;
+      if (volunteerSubstitutionRuntime) {
+        const response = await volunteerSubstitutionRuntime.route({request,url,db,settings,session});
+        if (response) return response;
+      }
       if (isResourceReservationPath(path))
         return resourceReservationRoutes({
           request, url, db, settings, session, auditReservation: audit,
@@ -702,6 +728,7 @@ export function createHandler({
           });
           if (grantReportResponse) return grantReportResponse;
           const mayReadFeedback = canManageFeedbackIntake(member);
+          const mayReadHandoffHistory = canReadHandoffHistory(member);
           if (tail === "export" && method === "GET") {
             await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
             requireAdmin(await membership(c, org, user));
@@ -764,7 +791,7 @@ export function createHandler({
                 await c.query(
                   `SELECT id,actor_id AS "actorId",action,record_id AS "recordId",module_id AS "moduleId",
                      ${feedbackSafeAuditDetailSQL},created_at AS "createdAt" FROM os_events WHERE org_id=$1
-                     ${mayReadFeedback ? "" : scopedFeedbackAuditSQL} ORDER BY id DESC LIMIT 500`,
+                     ${mayReadFeedback ? "" : scopedFeedbackAuditSQL}${mayReadHandoffHistory ? "" : " " + scopedHandoffAuditSQL} ORDER BY id DESC LIMIT 500`,
                   mayReadFeedback ? [org] : [org, [...linkedPrivate]],
                 )
               ).rows,
@@ -773,6 +800,7 @@ export function createHandler({
           if (tail === "export" && method === "GET") {
             requireAdmin(member);
             const backup = await assembleWorkspaceBackup(c, org, { organization, records });
+            requireHandoffBackupAccess(backup, member);
             if (Buffer.byteLength(JSON.stringify(backup)) > 64 * 1024 * 1024)
               fail(422, "backup_size", "The complete workspace backup exceeds 64 MiB.");
             await audit(c, org, user, "backup.exported", null, {
@@ -794,6 +822,7 @@ export function createHandler({
               ? previewLocalOsMigration(backup, { organization })
               : null;
             if (migration) backup = migration.backup;
+            requireHandoffBackupAccess(backup, member);
             const imported = validateBackup(backup, org, user);
             const intake = restoredIntake(backup);
             if (intake?.publications.some(p => p.kind === "feedback"))
@@ -816,6 +845,8 @@ export function createHandler({
             }
             const fieldResponses = inspectFieldResponseRecovery(backup);
             const participationRecurrence = await assertParticipationRecurrenceRestoreDestination(c, org, backup);
+            const volunteerSubstitutions = backup.volunteerSubstitutions === undefined ? null :
+              await assertVolunteerSubstitutionRestoreDestination(c, org, backup);
             const contactReconciliation = restoredContactReconciliationReports(backup);
             if (contactReconciliation.present) await currentContactReconciliationMember(c, { org, session }, { readOnly: false });
             const issues = [];
@@ -856,7 +887,7 @@ export function createHandler({
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
-            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || resourceReservations || backup.participation?.version === 3))
+            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present || resourceReservations || backup.participation?.version === 3))
               await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
@@ -904,6 +935,7 @@ export function createHandler({
                 ...(participantCheckins === null ? [] : [{ field: "participantCheckins", message: "Arrival assertions restore as unverified inactive history, without accounts, receipts, live consent or attendance authority." }]),
                 ...(fieldResponses.present ? [{ field: "reports", message: "Aggregate import manifests restore as historical data. They do not restore accepted commands, approval, credentials or current definition authority." }] : []),
                 ...(contactReconciliation.present ? [{ field: "reports", message: "Contact decisions restore as immutable historical data. Earlier commands, account relationships, consent and undo authority are not restored. Source trash remains in the retained source archive." }] : []),
+                ...(volunteerSubstitutions?.present ? [{ field: "volunteerSubstitutions", message: "Shift handoffs restore as inactive history. A new handoff needs both volunteers' current choices and a staff review." }] : []),
                 ...(participationRecurrence.present ? [{field:"reports",message:participationRecurrenceRestoreWarning(participationRecurrence)}] : []),
                 ...(participationGroups === null ? [] : [{ field: "participationGroups", message: "Group decisions restore as inactive history. They restore no live places, consent, coordinator authority or command keys." }]),
                 ...(resourceReservations ? [{ field: "resourceReservations", message: "Room and equipment holds restore as inactive history. Review unresolved claims before reserving the same asset." }] : []),
@@ -946,6 +978,7 @@ export function createHandler({
                 "preview",
                 "This preview expired or has already been imported.",
               );
+            requireHandoffBackupAccess(p.payload, member);
             if (
               Number(
                 (
@@ -986,6 +1019,8 @@ export function createHandler({
             }
             const fieldResponses = inspectFieldResponseRecovery(p.payload);
             const participationRecurrence = await assertParticipationRecurrenceRestoreDestination(c, org, p.payload);
+            const volunteerSubstitutions = p.payload.volunteerSubstitutions === undefined ? null :
+              await assertVolunteerSubstitutionRestoreDestination(c, org, p.payload);
             const contactReconciliation = restoredContactReconciliationReports(p.payload);
             const contactRecoveryMember = contactReconciliation.present
               ? (await currentContactReconciliationMember(c, { org, session }, { readOnly: false })).member : null;
@@ -1045,7 +1080,7 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
-            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || resourceReservations || p.payload.participation?.version === 3)
+            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present || resourceReservations || p.payload.participation?.version === 3)
               await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -1115,11 +1150,13 @@ export function createHandler({
             await restoreParticipantCheckins(c, org, p.payload.participantCheckins);
             await restoreParticipationGroups(c, org, p.payload.participationGroups);
             if (resourceReservations) await restoreResourceReservations(c, org, resourceReservations);
-            if (fieldResponses.present || contactReconciliation.present || participationRecurrence.present) {
+            if (fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present) {
               const createdAtExact = (await c.query(`SELECT to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at`)).rows[0].created_at;
               if (participationRecurrence.present) await restoreParticipationRecurrenceReports(c, p.payload, {orgId:org,member,createdAtExact});
               if (fieldResponses.present) await restoreFieldResponseReports(c, p.payload, { orgId: org, actorId: user, createdAtExact });
               if (contactReconciliation.present) await restoreContactReconciliationReports(c, p.payload, { orgId: org, member: contactRecoveryMember, createdAtExact });
+              if (volunteerSubstitutions?.present)
+                await restoreVolunteerSubstitutionReports(c, p.payload, { orgId:org, member, createdAtExact });
             }
             await checkLearningActiveRecords(c, org);
             await audit(c, org, user, "backup.restored", null, {
@@ -1129,6 +1166,7 @@ export function createHandler({
               sourceHistoryCount: p.payload.events?.length || 0,
               sourceCommentCount: p.payload.comments?.length || 0,
               sourceReportCount: p.payload.reports?.length || 0,
+              ...(volunteerSubstitutions?.present ? {volunteerSubstitutionsRecovered:volunteerSubstitutions.entries.length} : {}),
               learningSourcesRecovered: learningBridge?.sources.length || 0,
               learningEventsRetained: learningBridge?.events.length || 0,
               learningReportsRecovered: learningBridge?.reports.length || 0,
@@ -1156,7 +1194,7 @@ export function createHandler({
                 await c.query(
                   `SELECT id,checksum,created_at AS "createdAt",committed_at AS "committedAt" FROM os_previews
                      WHERE org_id=$1 AND kind='backup' AND committed_at IS NOT NULL
-                     ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`} ORDER BY created_at DESC`,
+                     ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}${mayReadHandoffHistory ? "" : " " + scopedHandoffArchiveSQL} ORDER BY created_at DESC`,
                   [org],
                 )
               ).rows,
@@ -1171,11 +1209,12 @@ export function createHandler({
               await c.query(
                 `SELECT payload, ${feedbackBackupSQL} AS feedback FROM os_previews
                    WHERE org_id=$1 AND id=$2 AND kind='backup' AND committed_at IS NOT NULL
-                   ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}`,
+                   ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}${mayReadHandoffHistory ? "" : " " + scopedHandoffArchiveSQL}`,
                 [org, archiveMatch[1]],
               )
             ).rows[0];
             if (!archive) fail(404, "backup", "Import archive not found.");
+            requireHandoffBackupAccess(archive.payload, member);
             if (archive.feedback === true)
               await requireFeedbackIntakeStaff(c, org, session, { readOnly: true });
             return downloadJson(
@@ -1503,7 +1542,7 @@ export function createHandler({
                   await c.query(
                     `SELECT action,actor_id AS "actorId",${feedbackSafeAuditDetailSQL},created_at AS "createdAt"
                        FROM os_events WHERE org_id=$1 AND record_id=$2
-                       ${mayReadFeedback ? "" : scopedFeedbackIntakeAuditSQL} ORDER BY id DESC LIMIT 100`,
+                       ${mayReadFeedback ? "" : scopedFeedbackIntakeAuditSQL}${mayReadHandoffHistory ? "" : " " + scopedHandoffAuditSQL} ORDER BY id DESC LIMIT 100`,
                     [org, record.id],
                   )
                 ).rows;
@@ -1570,6 +1609,7 @@ export function createHandler({
             await guardTaskRecurrenceWrite(c, record, { operation: "delete" });
             await guardLearningWrite(c, record, { operation: "delete" });
             await guardResourceReservationWrite(c, record, { operation: "delete" });
+            await guardVolunteerSubstitutionRecord(c, record, { operation: "delete" });
             const linked = records.some(
               (r) =>
                 r.id !== record.id &&

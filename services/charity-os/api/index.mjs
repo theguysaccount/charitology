@@ -3,6 +3,7 @@ import { database } from "../lib/database.mjs";
 import { authentication } from "../lib/auth.mjs";
 import { mailer } from "../lib/mail.mjs";
 import { createHandler } from "../lib/handler.mjs";
+import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
 let handler;
 function route(request) {
   if (!handler) {
@@ -10,7 +11,10 @@ function route(request) {
       db = database(settings.databaseUrl),
       send = mailer(settings),
       auth = authentication({ settings, db, send });
-    handler = createHandler({ settings, db, send, auth });
+    handler = createHandler({ settings, db, send, auth,
+      volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({
+        db,enabled:process.env.OS_VOLUNTEER_SUBSTITUTIONS_ENABLED==="1",
+      }) });
   }
   return handler(request);
 }

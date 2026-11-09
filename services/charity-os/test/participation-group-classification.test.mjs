@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 /** Actual database.tx/audit classification over a closed fake pg client.
  * The gates are reached, not replaced with request flags or success stubs.
@@ -10,6 +11,7 @@ import { database, audit, noteParticipationReceiptReplay } from '../lib/database
 async function fixture(run) {
   const calls = []; let usage = 0, sum = 0;
   const c = { release() { calls.push('RELEASE'); }, async query(sql) {
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     calls.push(sql);
     if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     if (sql.includes(' AS checkins')) return { rows: [{ present: false, participation: false, incubator: false, checkins: false, groups: true }] };

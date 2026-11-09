@@ -14,6 +14,7 @@ import { inspectFieldResponseRecovery } from './field-response-recovery.mjs';
 import { restoredContactReconciliationReports } from './contact-reconciliation-recovery.mjs';
 import { restoredParticipationRecurrenceReports } from "./participation-recurrence-recovery.mjs";
 import { restoredResourceReservations } from "./resource-reservation-backup.mjs";
+import { restoredVolunteerSubstitutionNative } from "./volunteer-substitution-native.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -61,6 +62,7 @@ export function validateBackup(input, orgId, userId) {
       "checksum",
       "The backup checksum does not match. Nothing was imported.",
     );
+  restoredVolunteerSubstitutionNative(input);
   const connections = restoredIntegrations(input);
   restoredIntake(input);
   restoredParticipation(input);

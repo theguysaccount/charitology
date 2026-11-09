@@ -7,7 +7,7 @@ import { hash, stable } from "./security.mjs";
 import { learningOwned } from "./learning-transport.mjs";
 import { validateGroupExactStamp } from "./participation-group-model.mjs";
 import {
-  CONTACT_CONTEXT_CATALOG, CONTACT_RESOURCE_RESERVATION_CATALOG, CONTACT_RESOURCE_RESERVATION_LAYOUT,
+  CONTACT_CONTEXT_CATALOG, CONTACT_RESOURCE_RESERVATION_CATALOG, CONTACT_RESOURCE_RESERVATION_LAYOUT, CONTACT_SUBSTITUTION_CHOICE_CATALOG,
 } from "./contact-context-catalog.mjs";
 import { RESOURCE_RESERVATION_METHOD } from "./resource-reservation-ledger.mjs";
 import { loadResourceReservationInventory } from "./resource-reservation-store.mjs";
@@ -21,6 +21,16 @@ import { validateFieldImportManifest } from "./field-response-model.mjs";
 import { CONTACT_PREVIEW_KIND, validateContactReconciliationPreviewRow } from "./contact-reconciliation-preview.mjs";
 import { validateStoredGrantInventory, GRANT_HISTORY_FIELD_PROFILE_SHA256 } from "./grant-report-history.mjs";
 import { validateContactLearningClosure, CONTACT_LEARNING_REFERENCE_PROFILE_SHA256 } from "./contact-known-history.mjs";
+import { isVolunteerSubstitutionNativeReport } from "./volunteer-substitution-native.mjs";
+import { VOLUNTEER_SUBSTITUTION_OFFER_KIND } from "./volunteer-substitution-offer.mjs";
+import { volunteerSubstitutionAccessReady } from "./volunteer-substitution-schema.mjs";
+import {
+  CONTACT_SUBSTITUTION_AUDIT, CONTACT_SUBSTITUTION_CHOICE_TABLE, CONTACT_SUBSTITUTION_CHOICE_PROJECTION,
+  CONTACT_SUBSTITUTION_METHOD, closeContactSubstitutions, collectContactSubstitutionSource, contactSubstitutionAudit,
+  contactSubstitutionChoice, contactSubstitutionGraph, contactSubstitutionOffer, contactSubstitutionReport,
+  archivedContactSubstitutionRestoreRecords, contactSubstitutionArchive, closeContactSubstitutionRestore,
+  isContactSubstitutionRestoreAudit,
+} from "./contact-reconciliation-substitution.mjs";
 
 export const CONTACT_CONTEXT_LIMITS = Object.freeze({ rows: 20000, bytes: 32 * 1024 * 1024, batch: 32, references: 128 });
 const ID = /^[A-Za-z0-9_-]{1,100}$/;
@@ -78,8 +88,14 @@ const EXCLUDED_COLUMNS = {
 };
 const PROJECTION = {
   os_jobs: "jsonb_build_object('org_id',t.org_id,'id',t.id,'kind',t.kind,'payload',CASE WHEN t.kind='reminder' THEN t.payload ELSE '{}'::jsonb END)",
+  [CONTACT_SUBSTITUTION_CHOICE_TABLE]: CONTACT_SUBSTITUTION_CHOICE_PROJECTION,
 };
-const keyFor = t => t === "os_task_recurrence_occurrences" ? "t.series_id||':'||t.sequence::text" : t === "os_participation_group_receipts" ? "t.command_hash" : t === "os_participation_delivery_policies" ? "t.org_id" : "t.id::text";
+const PAGE_KEYS = {
+  os_task_recurrence_occurrences: "t.series_id||':'||t.sequence::text",
+  os_participation_group_receipts: "t.command_hash", os_participation_delivery_policies: "t.org_id",
+  os_participation_targets: "t.target_id", [CONTACT_SUBSTITUTION_CHOICE_TABLE]: "t.intent_id||':'||t.party",
+};
+const keyFor = t => PAGE_KEYS[t] ?? "t.id::text";
 const projectFor = t => PROJECTION[t] ?? (EXCLUDED_COLUMNS[t]
   ? `jsonb_build_object(${CONTACT_CONTEXT_CATALOG[t].filter(k => !EXCLUDED_COLUMNS[t].includes(k)).map(k => `'${k}',t.${k}`).join(",")})`
   : "to_jsonb(t)");
@@ -247,12 +263,15 @@ const RESOURCE_LAYOUT_SQL = `/*crm:reservation-layout*/
   ORDER BY t.relname COLLATE "C" LIMIT 3`;
 async function catalog(c) {
   const found = rows(await c.query("/*crm:catalog*/ SELECT t.relname AS table_name,array_agg(a.attname::text ORDER BY a.attnum) AS columns FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid AND a.attnum>0 AND NOT a.attisdropped WHERE n.nspname=current_schema() AND t.relkind IN ('r','p') AND t.relname LIKE 'os\\_%' ESCAPE '\\' GROUP BY t.relname ORDER BY t.relname COLLATE \"C\"", []));
-  const hasResources = found.length === BASE_CATALOG_SIZE + RESOURCE_TABLES.length;
-  need(hasResources || found.length === BASE_CATALOG_SIZE);
-  const vector = hasResources ? { ...CONTACT_CONTEXT_CATALOG, ...CONTACT_RESOURCE_RESERVATION_CATALOG } : CONTACT_CONTEXT_CATALOG;
+  const entries = found.map(value => exact(value, ["table_name", "columns"]));
+  const hasSubstitutions = entries.some(r => r.table_name === CONTACT_SUBSTITUTION_CHOICE_TABLE);
+  const baseSize = found.length - Number(hasSubstitutions);
+  const hasResources = baseSize === BASE_CATALOG_SIZE + RESOURCE_TABLES.length;
+  need(hasResources || baseSize === BASE_CATALOG_SIZE);
+  const vector = { ...CONTACT_CONTEXT_CATALOG, ...(hasResources ? CONTACT_RESOURCE_RESERVATION_CATALOG : {}),
+    ...(hasSubstitutions ? { [CONTACT_SUBSTITUTION_CHOICE_TABLE]: CONTACT_SUBSTITUTION_CHOICE_CATALOG } : {}) };
   const names = new Set();
-  for (const value of found) {
-    const r = exact(value, ["table_name", "columns"]);
+  for (const r of entries) {
     need(!names.has(r.table_name) && Object.hasOwn(vector, r.table_name));
     need(Array.isArray(r.columns) && same([...r.columns].sort(), [...vector[r.table_name]].sort()));
     names.add(r.table_name);
@@ -265,12 +284,16 @@ async function catalog(c) {
       need(same(exact(resource[i], Object.keys(expected)), expected));
     }
   }
+  if (hasSubstitutions) {
+    try { if (!await volunteerSubstitutionAccessReady(c)) reconcile(); }
+    catch { reconcile(); }
+  }
   const fks = rows(await c.query("/*crm:link-fks*/ SELECT c.confrelid::regclass::text AS parent,array(SELECT a.attname::text FROM unnest(c.conkey) WITH ORDINALITY k(attnum,n) JOIN pg_attribute a ON a.attrelid=c.conrelid AND a.attnum=k.attnum ORDER BY k.n) AS child_columns,array(SELECT a.attname::text FROM unnest(c.confkey) WITH ORDINALITY k(attnum,n) JOIN pg_attribute a ON a.attrelid=c.confrelid AND a.attnum=k.attnum ORDER BY k.n) AS parent_columns,c.convalidated AS validated,c.confdeltype::text AS delete_type,c.confupdtype::text AS update_type FROM pg_constraint c WHERE c.conrelid='os_participant_links'::regclass AND c.contype='f' ORDER BY c.confrelid::regclass::text", []));
   need(fks.length === 3);
   for (const [parent, child, target] of [["os_orgs", ["org_id"], ["id"]], ["os_intake", ["org_id", "intake_id"], ["org_id", "id"]], ["os_publications", ["org_id", "publication_id"], ["org_id", "id"]]]) {
     need(fks.filter(f => f.parent === parent && same(f.child_columns, child) && same(f.parent_columns, target) && f.validated === true && f.delete_type === "a" && f.update_type === "a").length === 1);
   }
-  return hasResources;
+  return { hasResources, hasSubstitutions };
 }
 function referenceFields(data, moduleId, chosen) {
   need(data && typeof data === "object" && !Array.isArray(data));
@@ -578,6 +601,36 @@ function preserveOrdinaryContactAudit(row, record, chosen) {
   need(["externalSystem", "externalId", "externalUrl"].every(k => record.data[k] === null));
   return true;
 }
+function archivedSubstitutionReferences(archive, chosen, maps, budget, recordModules) {
+  const { originalRecords: originals, originalEvents, sourceOrgId } = archive.value;
+  const affected = new Set();
+  const add = value => { for (const contactId of value) affected.add(contactId); };
+  const readRecord = (record, contactCrud = false) => {
+    need(record.orgId === sourceOrgId && recordModules.get(record.id) === record.moduleId);
+    add(referenceFields(record.data, record.moduleId, chosen).map(ref => ref.contactId));
+    if (record.moduleId === "contacts" && chosen.has(record.id) && !contactCrud &&
+        (record.approval !== null || record.snapshot !== null || record.source != null)) affected.add(record.id);
+    if (record.snapshot !== null) add(scan(record.snapshot, maps, chosen, budget));
+  };
+  for (const raw of originals) readRecord(exact(raw, [
+    "id", "orgId", "moduleId", "data", "status", "ownerId", "lastEditedBy", "revision", "approval",
+    "snapshot", "source", "createdAt", "updatedAt",
+  ]));
+  for (const record of archivedContactSubstitutionRestoreRecords(archive.value)) readRecord(record);
+  for (const event of originalEvents) {
+    const row = exact(event, CONTACT_CONTEXT_CATALOG.os_events);
+    need(row.org_id === sourceOrgId && storedTime(row.created_at));
+    if (isContactSubstitutionRestoreAudit(row)) continue;
+    if (["organization.created", "organization.updated"].includes(row.action)) {
+      need(row.record_id === null && row.module_id === null); exact(row.detail, []); continue;
+    }
+    const record = ordinaryRecordAudit(row, sourceOrgId, originals);
+    need(record);
+    const kept = preserveOrdinaryContactAudit(row, record, chosen);
+    readRecord(record, kept);
+  }
+  return [...affected];
+}
 
 /** No decision/clock/ID/receipt is minted; all returned metadata is private. */
 export async function readContactReconciliationContext(c, input) {
@@ -591,7 +644,8 @@ async function readContext(c, input, inverse) {
   const { org, session, leftId, rightId } = exact(input, ["org", "session", "leftId", "rightId"]);
   id(org); id(leftId); id(rightId); need(leftId !== rightId);
   const { member, authority } = await authenticate(c, org, session);
-  const reservationInventory = await readReservationHistory(c, org, await catalog(c));
+  const { hasResources, hasSubstitutions } = await catalog(c);
+  const reservationInventory = await readReservationHistory(c, org, hasResources);
   const reservations = new Map((reservationInventory?.rows ?? []).map(row => [row.id, row]));
   const reservationSourceIds = new Set([...reservations.values()].flatMap(row => {
     const { asset, session } = reservationSourceProof(row);
@@ -600,6 +654,7 @@ async function readContext(c, input, inverse) {
   const reservationSources = new Map(), reservationAudits = new Set();
   const feedback = { publications: new Map(), entries: new Map(), formIds: new Set(), draftIds: new Set(), receipts: new Set() };
   const feedbackDraftRecords = new Map();
+  const substitution = contactSubstitutionGraph();
   const chosen = new Set([leftId, rightId]), maps = { record: new Map(), participation: new Map(), intake: new Map(), group: new Map(), publication: new Map() };
   for (const x of chosen) maps.record.set(x, new Set([x]));
   const pair = new Map(), contacts = new Map(), rowStamps = new Map(), references = new Map(), pins = [], census = [], snapshots = [], recordModules = new Map(), preservedAudits = [], reportDependencies = [], currentRecords = [], contactReports = new Map(), recurrenceReports = new Map();
@@ -612,7 +667,8 @@ async function readContext(c, input, inverse) {
     if (references.has(key)) return;
     need(references.size < CONTACT_CONTEXT_LIMITS.references, "contact_context_limit", 409); references.set(key, r);
   };
-  for (const table of TABLES) {
+  const tables = hasSubstitutions ? [...TABLES, CONTACT_SUBSTITUTION_CHOICE_TABLE] : TABLES;
+  for (const table of tables) {
     const feedbackIntake = table === "os_intake" && feedback.publications.size > 0;
     if (feedbackIntake && !(await feedbackIntakeSchemaReady(c))) reconcile();
     const projection = feedbackIntake ? projectFor(table) + " || " + FEEDBACK_INTAKE_METADATA : projectFor(table);
@@ -635,12 +691,18 @@ async function readContext(c, input, inverse) {
         let row; try { row = JSON.parse(entry.row_json); } catch { reconcile(); }
         need(row && row.org_id === org);
         let reportClass = null;
+        let substitutionRow = null;
         if (table === "os_reports") {
           try {
             validateGroupExactStamp(entry.created_exact);
-            reportClass = classifyReport(row.payload); need(reportClass);
-            if (reportClass.kind === 'recurrence') { const admitted=validateRecurringOccurrenceReportRow({...row,created_at:entry.created_exact}); recurrenceReports.set(admitted.id,admitted.payload); }
-            if (reportClass.kind === "contact") {
+            if (isVolunteerSubstitutionNativeReport(row)) {
+              exact(row, CONTACT_CONTEXT_CATALOG.os_reports);
+              const value = contactSubstitutionReport(row, entry.row_key, entry.created_exact);
+              need(hasSubstitutions || value.source === "recovered");
+              substitutionRow = { family: "reports", value };
+            } else { reportClass = classifyReport(row.payload); need(reportClass); }
+            if (reportClass?.kind === 'recurrence') { const admitted=validateRecurringOccurrenceReportRow({...row,created_at:entry.created_exact}); recurrenceReports.set(admitted.id,admitted.payload); }
+            if (reportClass?.kind === "contact") {
               const report = validateContactReconciliationReportRow({ ...row, created_at: entry.created_exact });
               contactReports.set(report.id, { checksum: report.checksum, operation: report.payload.operation });
             }
@@ -648,11 +710,45 @@ async function readContext(c, input, inverse) {
         }
         if (table === "os_previews") {
           if(row.kind===RECURRENCE_PACKET_KIND){try{validateRecurringOccurrencePreviewRow({...row,created_at:entry.preview_created_exact,expires_at:entry.preview_expires_exact,committed_at:entry.preview_committed_exact});}catch{reconcile();}}
+          else if ((row.kind === VOLUNTEER_SUBSTITUTION_OFFER_KIND && hasSubstitutions) ||
+              (row.kind === "backup" && row.payload?.volunteerSubstitutions !== undefined)) {
+            try {
+              exact(row, CONTACT_CONTEXT_CATALOG.os_previews);
+              const archive = row.kind === "backup";
+              const parse = archive ? contactSubstitutionArchive : contactSubstitutionOffer;
+              substitutionRow = { family: archive ? "archives" : "offers", value: parse(row, entry.row_key, {
+                created: entry.preview_created_exact, expires: entry.preview_expires_exact, committed: entry.preview_committed_exact,
+              }) };
+            } catch { reconcile(); }
+          }
           else { need(row.kind === CONTACT_PREVIEW_KIND, "contact_context_unsupported", 409);
           try { validateContactReconciliationPreviewRow(row); } catch { reconcile(); } }
         }
+        if (table === CONTACT_SUBSTITUTION_CHOICE_TABLE) {
+          try { substitutionRow = { family: "choices", value: contactSubstitutionChoice(row, entry.row_key) }; }
+          catch { reconcile(); }
+        }
+        if (table === "os_events" && row.action === CONTACT_SUBSTITUTION_AUDIT) {
+          try {
+            need(hasSubstitutions); exact(row, CONTACT_CONTEXT_CATALOG.os_events);
+            substitutionRow = { family: "audits", value: contactSubstitutionAudit(row) };
+          } catch { reconcile(); }
+        }
+        if (table === "os_events" && isContactSubstitutionRestoreAudit(row)) {
+          try { exact(row, CONTACT_CONTEXT_CATALOG.os_events); }
+          catch { reconcile(); }
+          substitutionRow = { family: "restoreAudits", value: row };
+        }
         const pin = H("row", { table, value: row, ...(table === "os_reports" ? { createdAtExact: entry.created_exact }
-          : table === "os_learning_history" ? { createdAtExact: entry.created_exact, payloadBytes: entry.payload_bytes, receiptBytes: entry.receipt_bytes } : table === "os_previews" && row.kind === RECURRENCE_PACKET_KIND ? { createdAtExact: entry.preview_created_exact, expiresAtExact: entry.preview_expires_exact, committedAtExact: entry.preview_committed_exact } : {}) }); pins.push([table, entry.row_key, pin]);
+          : table === "os_learning_history" ? { createdAtExact: entry.created_exact, payloadBytes: entry.payload_bytes, receiptBytes: entry.receipt_bytes } : table === "os_previews" && (row.kind === RECURRENCE_PACKET_KIND || substitutionRow) ? { createdAtExact: entry.preview_created_exact, expiresAtExact: entry.preview_expires_exact, committedAtExact: entry.preview_committed_exact } : {}) }); pins.push([table, entry.row_key, pin]);
+        if (substitutionRow) {
+          const { family, value } = substitutionRow;
+          substitution[family].push({ table, rowKey: entry.row_key, pin, value,
+            reportId: table === "os_reports" ? row.id : null, checksum: table === "os_reports" ? row.checksum : null });
+          after = entry.row_key; need(++seen <= expected);
+          continue;
+        }
+        if (hasSubstitutions || substitution.reports.length) collectContactSubstitutionSource(substitution, table, row);
         if (reportClass?.kind === "grant-history" || reportClass?.kind === "learning-history") {
           known[reportClass.kind === "grant-history" ? "grants" : "learning"].push({
             entry: { row, createdAtExact: entry.created_exact }, rowKey: entry.row_key, pin });
@@ -758,7 +854,8 @@ async function readContext(c, input, inverse) {
         after = entry.row_key; need(++seen <= expected);
       }
     }
-    need(seen === expected && seenBytes === bytes); census.push([table, expected, bytes]);
+    need(seen === expected && seenBytes === bytes);
+    if (table !== CONTACT_SUBSTITUTION_CHOICE_TABLE || expected > 0) census.push([table, expected, bytes]);
     if (table === "os_records") {
       requireReservationSources(reservations, reservationSources, chosen);
       for (const s of snapshots) for (const contactId of scan(s.value, maps, chosen, budget)) pushRef({ family: "immutable-history", id: H("snapshot-id", s.id), moduleId: null, field: null, contactId, revision: s.revision, sha256: s.pin, deleted: s.deleted });
@@ -768,6 +865,21 @@ async function readContext(c, input, inverse) {
     if (entry.local && entry.draftId && !feedback.receipts.has(intakeId)) reconcile();
   const feedbackMethodPin = feedback.publications.size ? H("feedback-context-method", "feedback-typed-links-v1") : null;
   const knownHistoryMethodPin = finalizeKnownHistory(known, org, recordModules, maps, chosen, pushRef, reportDependencies);
+  let substitutionReferences;
+  try {
+    substitutionReferences = closeContactSubstitutions(substitution, currentRecords);
+    const archive = closeContactSubstitutionRestore(substitution.archives, substitution.restoreAudits, substitution.reports);
+    if (archive) substitutionReferences.push({ ...archive,
+      contactIds: archivedSubstitutionReferences(archive, chosen, maps, budget, recordModules) });
+  } catch { reconcile(); }
+  for (const entry of substitutionReferences ?? []) {
+    const referenceId = H("reference-id", { table: entry.table, key: entry.rowKey });
+    const affected = entry.contactIds.filter(id => chosen.has(id)).sort();
+    for (const contactId of affected) pushRef({ family: "immutable-history", id: referenceId, moduleId: null,
+      field: null, contactId, revision: null, sha256: entry.pin, deleted: false });
+    if (entry.reportId && affected.length) reportDependencies.push({ referenceId, reportId: entry.reportId,
+      checksum: entry.checksum, classification: "frozen-report", contactIds: affected });
+  }
   need(pair.size === 2);
   const orderedPair = [pair.get(leftId), pair.get(rightId)], organizations = [];
   for (const row of orderedPair) if (row.data.organizationId !== null && !organizations.some(x => x.id === row.data.organizationId)) {
@@ -785,8 +897,10 @@ async function readContext(c, input, inverse) {
   const plannerContext = { orgId: org, pair: orderedPair, organizations, references: [...references.values()] };
   const sourceOwnership = orderedPair.map(r => ({ id: r.id, classification: r.source !== null ? "source-owned" : ["externalSystem", "externalId", "externalUrl"].some(k => r.data[k] !== null) ? "external-reference" : r.status !== "draft" || r.approval !== null || r.snapshot !== null ? "non-draft" : "local-draft" }));
   const resourceInventoryPin = reservations.size ? H("resource-reservation-inventory-v1", reservationInventory) : null;
-  const coverage = { method: "closed-catalog-tenant-pages-v1", enumeratedTables: resourceInventoryPin ? [...TABLES, ...RESOURCE_TABLES] : TABLES,
-    catalogTables: BASE_CATALOG_SIZE + (resourceInventoryPin ? RESOURCE_TABLES.length : 0),
+  const choicesPresent = substitution.choices.length > 0;
+  const additionalTables = [...(resourceInventoryPin ? RESOURCE_TABLES : []), ...(choicesPresent ? [CONTACT_SUBSTITUTION_CHOICE_TABLE] : [])];
+  const coverage = { method: "closed-catalog-tenant-pages-v1", enumeratedTables: additionalTables.length ? [...TABLES, ...additionalTables] : TABLES,
+    catalogTables: BASE_CATALOG_SIZE + additionalTables.length,
     ownParticipantLinks: "not-read-own-RLS;mandatory-intake-publication-transitive", unknownFamilyOrLinkage: "refuse", callerOrgLockRequired: true,
     preservedOrdinaryContactCrudAudits: { count: preservedAudits.length, sha256: H("preserved-crud-audits", preservedAudits) },
     unsupportedPacketFamilies: UNPARSED_PACKETS };
@@ -794,5 +908,6 @@ async function readContext(c, input, inverse) {
   return learningOwned({ ...context, authority, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)], sourceOwnership, coverage, reportDependencies,
     contextSha256: H("context", { org, authority, pins, census, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)],
       ...(knownHistoryMethodPin === null ? {} : { knownHistoryMethodPin }), ...(resourceInventoryPin === null ? {} : { resourceInventoryPin }),
-      ...(feedbackMethodPin === null ? {} : { feedbackMethodPin }) }) }, { bytes: 131072 });
+      ...(feedbackMethodPin === null ? {} : { feedbackMethodPin }),
+      ...(substitutionReferences === null ? {} : { substitutionMethodPin: H("substitution-context-method", CONTACT_SUBSTITUTION_METHOD) }) }) }, { bytes: 131072 });
 }

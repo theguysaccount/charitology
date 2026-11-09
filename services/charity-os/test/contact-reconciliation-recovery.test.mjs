@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 // Pure/closed fake-SQL proposal only; no PostgreSQL, auth, RLS or rollback proof.
 import test from 'node:test';
@@ -52,6 +53,7 @@ const packet=(reports=[],extra={})=>makeBackup(organization,[],{reports,...extra
 function measurement({baseline=[],usage=0,badSchema=false,reportBytes}={}){
  const f=restoreMeasurementFixture(),calls=[];
  return {calls,observed:f.observed,client:{async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
   if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
   calls.push({sql,args:clone(args)});
   if(sql.startsWith('SELECT t.relname AS table_name')){const rows=f.query(sql,args).rows;if(args[0].includes('os_reports'))rows.push(...'org_id id created_by title checksum payload created_at'.split(' ').filter(k=>!badSchema||k!=='checksum').map(column_name=>({table_name:'os_reports',column_name})));return{rows};}
@@ -66,6 +68,7 @@ function exporter(reports=[],features={}){
  const m=measurement(),calls=m.calls;
  const allowed=new Set(['os_comments','os_events','os_reports','os_files','os_records','os_integrations','os_publications','os_intake','os_participation_targets','os_participations','os_participation_outbox','os_participation_delivery_policies','os_task_recurrence_series','os_task_recurrence_occurrences','os_resource_directory_history','os_learning_history','os_incubator_history','os_participation_checkins','os_participation_groups','os_participation_group_receipts']);
  return{calls,client:{async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
   if(sql.startsWith('SELECT t.relname AS table_name')||sql.startsWith('SELECT item.ordinality::integer AS position'))return m.client.query(sql,args);
   if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
   calls.push({sql,args:clone(args)});const empty=emptyParticipationGroupsQuery(sql,args);if(empty!==undefined)return empty;
@@ -98,13 +101,17 @@ test('native SQL Date metadata normalizes only top row; literal SQL6 history sta
  let hooks=0;Object.defineProperty(source,'title',{enumerable:true,get(){hooks++;throw Error('hook');}});assert.throws(()=>native([source],ORG));assert.equal(hooks,0);
 });
 test('recovery forwards actual member only and delegates occupied guard even absent source',async()=>{
- const calls=[],c={async query(sql,args){calls.push({sql,args});assert.equal(sql,STORE.occupied);return{rows:[]};}};
+ const calls=[],c={async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+   calls.push({sql,args});assert.equal(sql,STORE.occupied);return{rows:[]};}};
  assert.deepEqual(await restore(c,packet(),{orgId:ORG,member,createdAtExact:null}),{present:false,count:0});assert.equal(calls.length,1);
  let sql=0;await assert.rejects(restore({query(){sql++;throw Error('not reached');}},packet(),{orgId:ORG,member:{...member,role:'contributor'},createdAtExact:null}),e=>e.status===403);assert.equal(sql,0);
  await assert.rejects(restore(c,packet(),{orgId:ORG,actorId:ACTOR,createdAtExact:null}));assert.equal(calls.length,1);
 });
 test('occupied reserved destination and unrelated ID collisions refuse before any INSERT',async()=>{
- for(const occupied of [true,false]){let inserts=0;const c={async query(sql,args){if(sql===STORE.occupied)return{rows:occupied?[{org_id:destination.orgId,id:'retained'}]:[]};if(sql===STORE.available)return{rows:[{org_id:destination.orgId,id:args[1]}]};inserts++;throw Error('must not insert');}};await assert.rejects(restore(c,packet(occupied?[]:[report()]),{orgId:destination.orgId,member,createdAtExact:occupied?null:destination.createdAtExact}),e=>e.status===409);assert.equal(inserts,0);}
+ for(const occupied of [true,false]){let inserts=0;const c={async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+   if(sql===STORE.occupied)return{rows:occupied?[{org_id:destination.orgId,id:'retained'}]:[]};if(sql===STORE.available)return{rows:[{org_id:destination.orgId,id:args[1]}]};inserts++;throw Error('must not insert');}};await assert.rejects(restore(c,packet(occupied?[]:[report()]),{orgId:destination.orgId,member,createdAtExact:occupied?null:destination.createdAtExact}),e=>e.status===409);assert.equal(inserts,0);}
 });
 test('seven-column SQL report projection uses worst destination metadata and conditional audit count',async()=>{
  const m=measurement(),b=packet([report()]),before=clone(b),value=await measure(m.client,b);const rows=m.observed.get('os_reports');assert.equal(value.categories.os_reports.count,1);assert.deepEqual(Object.keys(rows[0]),'org_id id created_by title checksum payload created_at'.split(' '));
@@ -142,9 +149,13 @@ test('declared fake composite pressure triggers unchanged 60 MiB refusal, no att
 });
 test('CRM-only optional export audit uses full packet/candidate row headroom and omits on failure',async()=>{
  const f=exporter([report()]),event={org_id:ORG,actor_id:ACTOR,action:'backup.exported',record_id:null,module_id:null,detail:{checksum:'a'.repeat(64)}};let measured=0;
- const c={async query(sql,args){if(sql.startsWith('SELECT sum(size) AS size FROM ('))return{rows:[{size:60*1024*1024-1000}]};if(sql.startsWith('SELECT octet_length(to_jsonb(candidate)::text) AS bytes')){measured++;return{rows:[{bytes:2001,fields:event}]};}return f.client.query(sql,args);}};
+ const c={async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+   if(sql.startsWith('SELECT sum(size) AS size FROM ('))return{rows:[{size:60*1024*1024-1000}]};if(sql.startsWith('SELECT octet_length(to_jsonb(candidate)::text) AS bytes')){measured++;return{rows:[{bytes:2001,fields:event}]};}return f.client.query(sql,args);}};
  assert.equal(await canRetainIncubatorExportAudit(c,ORG,event),false);assert.equal(measured,1);
- let positiveMeasured=0;const sufficient={async query(sql,args){if(sql.startsWith('SELECT octet_length(to_jsonb(candidate)::text) AS bytes')){positiveMeasured++;const v=JSON.parse(args[0]),{id,created_at,...fields}=v;return{rows:[{bytes:bytes(v),fields}]};}return f.client.query(sql,args);}};
+ let positiveMeasured=0;const sufficient={async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+   if(sql.startsWith('SELECT octet_length(to_jsonb(candidate)::text) AS bytes')){positiveMeasured++;const v=JSON.parse(args[0]),{id,created_at,...fields}=v;return{rows:[{bytes:bytes(v),fields}]};}return f.client.query(sql,args);}};
  assert.equal(await canRetainIncubatorExportAudit(sufficient,ORG,event),true);assert.equal(positiveMeasured,1);
  const broken={query(){throw Error('MEASURE_FAILED');}};assert.equal(await canRetainIncubatorExportAudit(broken,ORG,event),false);
 });
@@ -153,7 +164,9 @@ test('CRM-free actual assembler serialization remains byte-identical to committe
  globalThis.Date=Fixed;try{assert.equal(new Date().toISOString(),committed75.fixedClock);const rows=[{id:'legacy',payload:{old:true}}],current=await assembleWorkspaceBackup(exporter(rows).client,ORG,{organization,records:[]});assert.equal(JSON.stringify(current),committed75.assembledJSON);assert.equal(hash(current),committed75.assembledHash);}finally{globalThis.Date=RealDate;}
 });
 async function classified(mode){
- const f=exporter([report()],{crm:true}),calls=[],c={release(){calls.push('RELEASE');},async query(sql,args){calls.push(sql);
+ const f=exporter([report()],{crm:true}),calls=[],c={release(){calls.push('RELEASE');},async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+   calls.push(sql);
   if(sql.includes(' AS participation,')&&sql.includes(' AS crm'))return{rows:[{present:false,participation:false,incubator:false,checkins:false,groups:false,field:false,crm:true}]};
   if(sql==='SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1')return{rows:[{count:0}]};
   if(sql.startsWith('INSERT INTO os_events('))return{rows:[],rowCount:1};
@@ -182,7 +195,9 @@ test('CRM Replay is actual-hard-only; tracked actions/unowned or wrong-org marke
  }
 });
 test('trusted CRM Replay marker cannot skip actual current hard-cap refusal',async()=>{
- const f=exporter([report()],{crm:true}),calls=[],client={release(){calls.push('RELEASE');},async query(sql,args){calls.push(sql);
+ const f=exporter([report()],{crm:true}),calls=[],client={release(){calls.push('RELEASE');},async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+   calls.push(sql);
   if(sql.includes(' AS participation,')&&sql.includes(' AS crm'))return{rows:[{present:false,participation:false,incubator:false,checkins:false,groups:false,field:false,crm:true}]};
   if(sql.startsWith('SELECT sum(size) AS size FROM ('))return{rows:[{size:60*1024*1024+1}]};
   if(['BEGIN','COMMIT','ROLLBACK'].includes(sql)||sql.startsWith('SELECT set_config(')||sql.startsWith('SELECT pg_advisory_xact_lock'))return{rows:[]};

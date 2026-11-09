@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 // Actual pure modules and closed fake SELECT/INSERT seams; no PG/auth/rollback proof.
@@ -34,6 +35,7 @@ const destination={orgId:'destination',actorId:'restorer',createdAtExact:'2026-1
 function measurement({baseline=[],usage=0,badReportSchema=false}={}) {
   const f=restoreMeasurementFixture(),calls=[];
   return {calls,observed:f.observed,client:{async query(sql,args){
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     calls.push({sql,args:clone(args)});
     if(sql.startsWith('SELECT t.relname AS table_name')) {
@@ -56,6 +58,7 @@ function exporter(reports=[],features={}) {
   const m=measurement(),calls=m.calls;
   const allowed=new Set(['os_comments','os_events','os_reports','os_files','os_records','os_integrations','os_publications','os_intake','os_participation_targets','os_participations','os_participation_outbox','os_participation_delivery_policies','os_task_recurrence_series','os_task_recurrence_occurrences','os_resource_directory_history','os_learning_history','os_incubator_history','os_participation_checkins','os_participation_groups','os_participation_group_receipts']);
   return {calls,client:{async query(sql,args){
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     if(sql.startsWith('SELECT t.relname AS table_name')||sql.startsWith('SELECT item.ordinality::integer AS position'))return m.client.query(sql,args);
     if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     calls.push({sql,args:clone(args)});
@@ -107,7 +110,9 @@ test('ordinary DB Date metadata exports as native ms without touching payload ti
   let invoked=0;Object.defineProperty(native,'title',{enumerable:true,get(){invoked++;return original.title;}});assert.throws(()=>fieldResponseNativeReports([native],ORG));assert.equal(invoked,0);
 });
 test('same outer client appends exactly seven fields, no accepted command or new clock',async()=>{
-  const inserted=[],calls=[],c={async query(sql,args){calls.push(sql);
+  const inserted=[],calls=[],c={async query(sql,args){
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+    calls.push(sql);
     if(sql.startsWith('SELECT id FROM os_reports'))return {rows:[]};
     if(sql.startsWith('SELECT org_id,id FROM os_reports'))return {rows:[]};
     assert.match(sql,/^INSERT INTO os_reports\(org_id,id,created_by,title,checksum,payload,created_at\)/);inserted.push(args);return {rowCount:1};}};
@@ -116,6 +121,7 @@ test('same outer client appends exactly seven fields, no accepted command or new
 });
 test('destination FIELD history or any report ID collision refuses before all inserts',async()=>{
   for(const family of [true,false]){let inserts=0;const c={async query(sql){
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     if(sql.startsWith('SELECT id FROM os_reports'))return {rows:family?[{id:'old_field'}]:[]};
     if(sql.startsWith('SELECT org_id,id FROM os_reports'))return {rows:[{org_id:destination.orgId,id:'field_report'}]};
     inserts++;throw Error('must not insert');}};
@@ -157,7 +163,9 @@ test('FIELD-only workspace reaches complete inactive projection with actual repo
   assert(result.restore);assert.equal(result.restore.categories.os_reports.count,1);assert.equal(result.requiredUsage,result.usage);assert(f.calls.some(c=>c.sql.includes("payload->>'format'='charitology-field-response-import'")));
 });
 test('actual transaction classifier reaches complete gate for FIELD-only ordinary changes',async()=>{
-  const calls=[],c={release(){calls.push('RELEASE');},async query(sql){calls.push(sql);
+  const calls=[],c={release(){calls.push('RELEASE');},async query(sql){
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+    calls.push(sql);
     if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     if(sql.includes(' AS checkins'))return {rows:[{present:false,participation:false,incubator:false,checkins:false,groups:false,field:true}]};
     if(sql.startsWith('SELECT sum(size) AS size FROM ('))return {rows:[{size:0}]};
@@ -173,6 +181,7 @@ test('actual transaction classifier reaches complete gate for FIELD-only ordinar
 test('FIELD-only optional export journal measures declared remaining headroom instead of unconditional true',async()=>{
  const f=exporter([report()],{field:true,incubator:false}),event={org_id:ORG,actor_id:ACTOR,action:'backup.exported',record_id:null,module_id:null,detail:{checksum:'a'.repeat(64)}};let measured=0;
  const c={async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
   if(sql.startsWith('SELECT sum(size) AS size FROM ('))return {rows:[{size:60*1024*1024-1000}]};
   if(sql==='SELECT octet_length(to_jsonb(candidate)::text) AS bytes,to_jsonb(candidate)-\'id\'-\'created_at\' AS fields FROM jsonb_populate_record(NULL::os_events,$1::jsonb) AS candidate'){measured++;return {rows:[{bytes:2001,fields:event}]};}
   return f.client.query(sql,args);
@@ -180,7 +189,9 @@ test('FIELD-only optional export journal measures declared remaining headroom in
  assert.equal(await canRetainIncubatorExportAudit(c,ORG,event),false);assert.equal(measured,1);assert(f.calls.some(c=>c.sql.includes('AS field')));
 });
 test('FIELD-only nonordinary transaction reaches actual hard packet gate without new restore reserve',async()=>{
- const f=exporter([],{field:true}),calls=[],c={release(){calls.push('RELEASE');},async query(sql,args){calls.push(sql);
+ const f=exporter([],{field:true}),calls=[],c={release(){calls.push('RELEASE');},async query(sql,args){
+   const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
+   calls.push(sql);
   if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
   if(sql==='SELECT * FROM os_orgs WHERE id=$1')throw Error('FIELD_ACTUAL_EXIT_GATE');
   if(sql.includes(' AS participation,')&&sql.includes(' AS field'))return {rows:[{present:false,participation:false,incubator:false,checkins:false,groups:false,field:true}]};

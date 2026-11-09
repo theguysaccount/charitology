@@ -188,3 +188,42 @@ test("switching organizations aborts and scrubs an old read before a late result
     assert.equal(privateCalls(shell).length, 1);
   } finally { late.resolve(Response.json(workspace)); shell.restore(); }
 });
+
+test("actual staff app opens the handoff path only from a true verified session capability and unrestricted Volunteers role", async () => {
+  const rosterPath = "/api/orgs/" + orgA + "/participation-targets";
+  const optionsPath = "/api/orgs/" + orgA + "/volunteer-substitutions/shifts/shift_a/confirmed_a";
+  const terms = { title: "Fictional shift", kind: "shift", startAt: "2099-01-01T12:00:00Z",
+    endAt: "2099-01-01T13:00:00Z", timeZone: "UTC", participationPurpose: "Fictional organizers" };
+  const target = { targetId: "shift_a", moduleId: "volunteers", mode: "managed", revision: 2, terms };
+  const confirmed = { id: "confirmed_a", targetId: target.targetId, moduleId: target.moduleId, state: "confirmed",
+    source: "intake", revision: 3, recovered: false, intakeId: "intake_a", requestedInterval: null };
+  for (const [capability, programs, permitted] of [[undefined, [], false], ["true", [], false],
+    [true, ["restricted_program"], false], [true, [], true]]) {
+    const membership = org(orgA, "program_lead", programs);
+    const shell = installShell({ membership, route: "participation/shift_a", override: call => {
+      if (call.path === "/api/session") return good({ user: { id: "fictional_staff", email: "fictional@example.invalid" },
+        csrfToken, orgs: [membership], ...(capability === undefined ? {} : { volunteerSubstitutions: capability }) });
+      if (call.path === "/api/modules") return good({ modules: [{ id: "volunteers", title: "Volunteers",
+        description: "Fictional volunteers", roles: { read: ["program_lead"], write: ["program_lead"] } }] });
+      if (call.path === rosterPath) return good({ targets: [target] });
+      if (call.path === rosterPath + "/shift_a") return good({ target, terms, currentSourceRevision: 7, sourceApproved: true, occupied: 1 });
+      if (call.path === rosterPath + "/shift_a/participations") return good({ participations: [confirmed] });
+      if (call.path === optionsPath) return good({ options: { version: 1, shift: { id: target.targetId,
+        revision: 7, title: terms.title, startsAt: "2099-01-01T12:00:00.000000Z", endsAt: "2099-01-01T13:00:00.000000Z",
+        timeZone: "UTC" }, outgoing: { id: confirmed.id, revision: confirmed.revision, label: "Fictional confirmed" },
+        replacement: null, offer: null } });
+    } });
+    try {
+      await shell.start();
+      await until(() => shell.query("#content").textContent.includes("Participation ledger"));
+      const open = shell.button("Review shift handoff options");
+      assert.equal(!!open, permitted);
+      assert.equal(shell.calls.some(call => call.path.includes("/volunteer-substitutions/")), false);
+      if (permitted) {
+        await open.click();
+        assert.match(shell.query("#content").textContent, /no eligible replacement/);
+        assert.equal(shell.calls.filter(call => call.path === optionsPath).length, 1);
+      }
+    } finally { shell.restore(); }
+  }
+});
