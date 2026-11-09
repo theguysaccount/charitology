@@ -34,6 +34,12 @@ Both `fb5b060b` GitHub profiles pass 2,050 unit/client checks, all 228 existing 
 
 The successor measures raw, interval-charged and final charged bytes separately. It retains the independent 28-byte interval and 26-byte reminder bounds per row, exact result fields and existing charged family/global limits. Its processing allowance includes both physical NULL keys without increasing storage permission. Focused group/reminder checks pass 439/439, including four independent credit combinations, six malformed/over-limit shapes and the finite processing boundary. These are controlled SQL-result tests, not actual boundary attainment. Each source manifest changes only the group-context entry; the reminder binding and recurrence loader retain exact hash qualification. Fresh PostgreSQL GROUP and reminder results remain required.
 
+## Scheduling audit at the ordinary boundary
+
+The `5fb087ad` push profile passes 2,052 unit/client, 228 existing PostgreSQL, thirteen check-in, fifteen GROUP, fourteen FIELD, sixteen CRM and eighteen recurrence checks. The reminder profile passes RM01–RM10 and RC01–RC02, then RC03 receives `quota` while scheduling below its measured ordinary frontier. Seven later scenarios remain unexecuted. Fresh final state and owned cleanup pass, with zero provider calls. The separate PR profile was still running at the retained watch limit.
+
+The pending preview was still charged when the mandatory audit examined the newly inserted outbox rows; preflight had already modeled replacing that preview. The successor records the accepted receipt before the mandatory audit, within the same locked transaction. An audit or final-capacity failure still rolls back both receipt and outbox. The limits and fixture margin remain unchanged. All 441 focused group/reminder checks pass, including a modeled transient charge and mandatory-audit rollback. The next database run retains calibration and below-frontier facts before scheduling; its actual outcome remains pending.
+
 ## The participant chooses separately
 
 The person must have the current verified account and own-request link. General operational email consent and the new reminder choice are separate. Staff cannot opt in for someone else. Historical email preferences, check-in permission, a booking or a restored file cannot enable reminders.

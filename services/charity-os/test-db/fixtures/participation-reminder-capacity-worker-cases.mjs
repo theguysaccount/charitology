@@ -54,7 +54,13 @@ export async function runReminderCapacityWorkerCases(context,options){
  });
  group(async()=>{
   const calibration=await H.seedTenant('cap_calibration'),small=await A.measure(calibration),probe=await A.probeSequence(calibration);assert(probe.accepted);const overhead=probe.peakUsage-small.usage,onOverhead=probe.metrics[0].requiredUsage-small.usage;assert(overhead>=onOverhead&&onOverhead>512&&overhead<128*1024);
-  const below=await H.seedTenant('cap_60_below'),belowFill=await A.fillComments(below,60*MiB-overhead-2048),belowBefore=await A.measure(below);assert(belowBefore.backupBytes<64*MiB);const on=await H.choice(below),review=await H.preview(below),scheduled=await H.schedule(review);await H.verifyScheduled(review,scheduled);const belowAfter=await A.measure(below);assert(belowAfter.complete.requiredUsage<=60*MiB);await H.owner.query(Q.deleteComments,[below.org]);
+  await H.artifact('capacity-near60-calibration-before-below.json',{small,probe,overhead,onOverhead,actualSmallTenantProbe:true,transientAuditPeakNotMeasured:true});
+  phase='rc03-below-fill';const below=await H.seedTenant('cap_60_below'),belowFill=await A.fillComments(below,60*MiB-overhead-2048),belowBefore=await A.measure(below);assert(belowBefore.backupBytes<64*MiB);
+  await H.artifact('capacity-near60-below-before-commands.json',{fill:belowFill,before:belowBefore,overhead,onOverhead});
+  phase='rc03-below-choice';const on=await H.choice(below);
+  phase='rc03-below-preview';const review=await H.preview(below);
+  phase='rc03-below-schedule';const scheduled=await H.schedule(review);
+  phase='rc03-below-verify';await H.verifyScheduled(review,scheduled);const belowAfter=await A.measure(below);assert(belowAfter.complete.requiredUsage<=60*MiB);await H.owner.query(Q.deleteComments,[below.org]);
   const above=await H.seedTenant('cap_60_above'),aboveFill=await A.fillComments(above,60*MiB-Math.floor(onOverhead/2)),aboveBefore=await A.measure(above);assert(aboveBefore.usage<60*MiB&&aboveBefore.backupBytes<64*MiB);const prior=await A.digest(above),refusal=await H.choice(above,above.people[0],true,{status:422});assert.equal(refusal.value.code,'participation_reminder_capacity');assert.deepEqual(await A.digest(above),prior);const legacyExit=await A.legacyExit(above);assert.equal((await A.oracle(above)).actual.present,false);await H.owner.query(Q.deleteComments,[above.org]);
   // An already-active privacy exit may use existing61; it never asks for a
   // fresh ordinary60 or inactive future-copy reserve again.

@@ -158,8 +158,11 @@ export async function scheduleParticipationReminder(c, args) {
   need(rows(await c.query('SELECT id FROM os_participation_outbox WHERE org_id=$1 AND (id=ANY($2::text[]) OR relay_key=ANY($3::text[])) LIMIT 1',
     [args.org, proposed.rows.map(row => row.id), proposed.rows.map(row => row.relay_key)]), 1).length === 0, 'identity', 409);
   for (const row of proposed.rows) need((await c.query(REMINDER_STORE_SQL.insertOutbox, reminderOutboxParameters(row))).rowCount === 1, 'outbox_write');
-  need(await audit(c, auditEvent.org_id, auditEvent.actor_id, auditEvent.action, null, auditEvent.detail), 'audit');
+  // Replace the pending preview before audit measures the transaction's raw
+  // logical usage. Mandatory audit and final-capacity refusal still roll back
+  // this accepted receipt together with every newly inserted outbox row.
   await retainReminderAccepted(c, { row: found.row, receipt: proposed.receipt });
+  need(await audit(c, auditEvent.org_id, auditEvent.actor_id, auditEvent.action, null, auditEvent.detail), 'audit');
   await c.query('INSERT INTO os_job_tenants(org_id) VALUES($1) ON CONFLICT(org_id) DO NOTHING', [args.org]);
   await requireReminderMeasuredCapacity(c, args.org, { phase: 'schedule-final', previewId: original.previewId });
   return reminderAcceptedResponse(proposed.receipt, false);

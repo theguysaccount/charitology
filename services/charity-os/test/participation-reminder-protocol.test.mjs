@@ -28,7 +28,18 @@ mock.module(new URL('../lib/database.mjs', import.meta.url).href, { namedExports
   audit: async (c, org, actor, action, record, detail) => {
     assert.equal(c, active.c); assert.equal(org, ORG); assert.equal(record, null); assert([OWN, ADMIN].includes(actor));
     assert(['participation.reminder.preference_enabled', 'participation.reminder.preference_off', 'participation.reminder.scheduled'].includes(action));
-    active.events.push('audit:' + action); if (active.auditFalse) return false;
+    active.events.push('audit:' + action);
+    if (action === 'participation.reminder.scheduled' && active.transientAuditQuota) {
+      // Explicit fake charge fixture: actual commands/store execute, while this
+      // models only the generic audit's ordinary60 +1000 headroom rule.
+      const pending = active.state.previews.filter(row => row.committed_exact === null).length;
+      const outboxBudget = active.state.outbox.reduce((total, row) => total + row.budget_bytes, 0);
+      const limit = 60 * 1024 * 1024, usage = active.transientAuditQuota.base + outboxBudget + pending * 4096;
+      active.scheduleAuditWitness = { pending, accepted: active.state.previews.filter(row => row.payload.state === 'accepted').length,
+        outbox: active.state.outbox.length, usage, limit };
+      if (usage + 1000 > limit) security.fail(422, 'quota', 'Fictional transient pending-preview audit charge.');
+    }
+    if (active.auditFalse) return false;
     active.state.audits.push({ org, actor, action, detail: clone(detail) }); return true;
   },
 } });
@@ -227,6 +238,19 @@ test('schedule stores all actual rows and original receipt; later Replay has no 
   const replay = await f.db.tx(ADMIN, ORG, c => commands.acceptedParticipationReminder(c, scheduleArgs(p.previewId)), { readOnly: true, lock: true });
   assert.deepEqual(replay, { ...first, replayed: true }); assert.equal(f.minted, minted); assert.deepEqual(f.state, before);
   const row = await readReminderScheduleForOutbox(f.c, { org: ORG, outboxId: first.scheduled[0].outboxId }); assert.equal(row.payload.receipt.actorId, ADMIN);
+});
+for (const auditFalse of [false, true]) test('schedule replaces pending charge before mandatory audit; fake rollback=' + auditFalse, async () => {
+  const f = fixture(2), p = await preview(f), before = clone(f.state), limit = 60 * 1024 * 1024;
+  f.transientAuditQuota = { base: limit - 2 * 8192 - 1001 }; f.auditFalse = auditFalse;
+  if (auditFalse) {
+    await assert.rejects(schedule(f, p.previewId), e => e.code === 'participation_reminder_audit');
+    assert.deepEqual(f.state, before, 'Mandatory audit refusal rolls back the already-written receipt and outbox in this fake transaction');
+  } else {
+    const value = await schedule(f, p.previewId); assert.equal(value.scheduledCount, 2);
+    assert.equal(f.state.previews[0].payload.state, 'accepted'); assert.equal(f.state.audits.length, 1);
+  }
+  assert.deepEqual(f.scheduleAuditWitness, { pending: 0, accepted: 1, outbox: 2, usage: limit - 1001, limit });
+  assert.equal(f.transactions.at(-1).lock, true); assert(!f.transactions.at(-1).readOnly);
 });
 for (const failure of ['insertFailure', 'auditFalse', 'receiptRace']) test('fake atomic rollback preserves pending review on ' + failure, async () => {
   const f = fixture(2), p = await preview(f), before = clone(f.state); f[failure] = true;
