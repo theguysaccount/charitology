@@ -9,6 +9,7 @@ import { build } from "esbuild";
 import { transform } from "@astrojs/compiler-rs";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { pilotDom } from "../test-fixtures/website-pilot/ui-dom.mjs";
+import { installToolDom } from "../test-fixtures/donor-recovery/tool-dom.mjs";
 const temp = await mkdtemp(join(resolve("node_modules"), ".website-pilot-"));
 let groups = 0,
   dispose;
@@ -35,6 +36,34 @@ async function bundle(contents, name, resolveDir = process.cwd(), extra = {}) {
   const file = join(temp, name + ".mjs");
   await writeFile(file, b.outputFiles[0].text);
   return import(pathToFileURL(file));
+}
+async function renderComponent(sourcePath, name) {
+  const compiled = await transform(await readFile(sourcePath, "utf8"), {
+    filename: resolve(sourcePath),
+    internalURL: "astro/compiler-runtime",
+    resolvePath: async (s) => s,
+  });
+  assert.equal(compiled.diagnostics.filter((d) => d.severity === 1).length, 0);
+  const component = await bundle(compiled.code, name, dirname(resolve(sourcePath)), {
+    packages: "external",
+    plugins: [
+      {
+        name: "ignore-actual-SSR-css",
+        setup(b) {
+          b.onResolve({ filter: /(?:\?astro&type=style|\.css$)/ }, () => ({
+            path: "style",
+            namespace: "css",
+          }));
+          b.onLoad({ filter: /.*/, namespace: "css" }, () => ({
+            contents: "",
+            loader: "js",
+          }));
+        },
+      },
+    ],
+  });
+  const container = await AstroContainer.create();
+  return container.renderToString(component.default);
 }
 try {
   await check(
@@ -63,12 +92,14 @@ try {
     [
       "export * from './src/lib/client/website-pilot-model.ts';",
       "export * from './src/lib/client/website-pilot.ts';",
+      "export * from './src/lib/client/website-visitor-worksheet-model.ts';",
+      "export * from './src/lib/client/website-visitor-worksheet.ts';",
       "export {programWorkspaces,parseWorkspace,partnerBackup} from './src/lib/client/partner-programs.ts';",
       "export {parseRemainingRecordBackup,remainingRecordBackup} from './src/lib/client/remaining-record-recovery-formats.ts';",
     ].join("\n"),
     "actual",
   );
-  await check("actual guide modules strict-compile without shims", () => {
+  await check("actual guide and worksheet modules strict-compile without shims", () => {
     execFileSync(
       process.execPath,
       [
@@ -87,6 +118,8 @@ try {
         "es2022,dom,dom.iterable",
         "src/lib/client/website-pilot-model.ts",
         "src/lib/client/website-pilot.ts",
+        "src/lib/client/website-visitor-worksheet-model.ts",
+        "src/lib/client/website-visitor-worksheet.ts",
       ],
       { stdio: "pipe" },
     );
@@ -313,39 +346,7 @@ try {
       assert.match(text, /self-recorded/);
     }
   });
-  const sourcePath = "src/components/WebsitePilotGuide.astro",
-    source = await readFile(sourcePath, "utf8");
-  const compiled = await transform(source, {
-    filename: resolve(sourcePath),
-    internalURL: "astro/compiler-runtime",
-    resolvePath: async (s) => s,
-  });
-  assert.equal(compiled.diagnostics.filter((d) => d.severity === 1).length, 0);
-  const component = await bundle(
-    compiled.code,
-    "component",
-    dirname(resolve(sourcePath)),
-    {
-      packages: "external",
-      plugins: [
-        {
-          name: "ignore-actual-SSR-css",
-          setup(b) {
-            b.onResolve({ filter: /(?:\?astro&type=style|\.css$)/ }, () => ({
-              path: "style",
-              namespace: "css",
-            }));
-            b.onLoad({ filter: /.*/, namespace: "css" }, () => ({
-              contents: "",
-              loader: "js",
-            }));
-          },
-        },
-      ],
-    },
-  );
-  const container = await AstroContainer.create(),
-    html = await container.renderToString(component.default);
+  const html = await renderComponent("src/components/WebsitePilotGuide.astro", "component");
   await check(
     "actual SSR has disabled unnamed private controls and base-aware local handoff",
     () => {
@@ -632,8 +633,133 @@ try {
       d.noExternal();
     },
   );
+  dispose?.();
+  dispose = undefined;
+  const visitorDraft = {
+    task: "Find a volunteer orientation",
+    change: "Move the orientation link to the first heading",
+    setup: "Keyboard from the home page in both runs",
+    next: "Volunteer coordinator to check the proposed version",
+    "before-outcome": "blocked",
+    "before-steps": "0",
+    "before-seconds": "",
+    "after-outcome": "assisted",
+    "after-steps": "2",
+    "after-seconds": "48",
+  };
+  await check("visitor handoff retains negative outcomes, explicit zero and unknowns", () => {
+    const handoff = m.prepareWebsiteVisitorHandoff(visitorDraft);
+    assert.deepEqual(handoff.rows, [
+      { label: "Completion", before: "Could not complete", after: "Completed with help" },
+      { label: "Navigation steps", before: "0", after: "2" },
+      { label: "Elapsed seconds", before: "Unknown", after: "48" },
+    ]);
+    assert.match(handoff.markdown, /Practice draft/);
+    assert.match(handoff.markdown, /\| Elapsed seconds \| Unknown \| 48 \|/);
+    assert.match(handoff.markdown, /Volunteer coordinator to check the proposed version/);
+    const max = m.prepareWebsiteVisitorHandoff({ ...visitorDraft, task: "x".repeat(160), "after-seconds": "3600", "after-steps": "100" });
+    assert.deepEqual(max.rows.map((row) => row.after), ["Completed with help", "100", "3600"]);
+    for (const invalid of [
+      { task: " " }, { change: "" }, { task: "x".repeat(161) }, { setup: "\ud800" },
+      { "before-outcome": "approved" }, { "before-steps": "-1" }, { "after-steps": "101" },
+      { "after-seconds": "3601" }, { "after-seconds": "1e2" }, { "after-seconds": "1.5" },
+    ]) assert.throws(() => m.prepareWebsiteVisitorHandoff({ ...visitorDraft, ...invalid }), m.WorksheetInputError);
+    const literal = m.prepareWebsiteVisitorHandoff({
+      ...visitorDraft, next: "Keep the draft\r\n# False approval\u2028<script>alert(1)</script>\n[link](https://example.invalid)",
+    }).markdown;
+    assert.match(literal, /\n    # False approval\n    <script>alert\(1\)<\/script>\n    \[link\]/);
+    assert.doesNotMatch(literal, /^# False approval|^<script>|^\[link\]/m);
+  });
+  const worksheetHtml = await renderComponent("src/components/WebsiteVisitorWorksheet.astro", "visitor-component");
+  await check("actual visitor worksheet SSR has named labels, disabled unnamed fields and base-aware fallback", () => {
+    const d = installToolDom(worksheetHtml);
+    const root = d.$("[data-visitor-worksheet]");
+    assert.equal(d.$("[data-visitor-controls]").disabled, true);
+    assert.equal(d.$("[data-visitor-preview]").hidden, true);
+    assert.equal(root.querySelectorAll("form").length, 0);
+    assert.equal(root.querySelectorAll("[data-visitor-field]").length, 10);
+    for (const field of root.querySelectorAll("[data-visitor-field]")) {
+      assert.equal(field.name, "");
+      assert.ok(root.querySelector(`label[for="${field.id}"]`)?.textContent.trim());
+      const help = field.getAttribute("aria-describedby");
+      if (help) assert.ok(d.document.getElementById(help)?.textContent.trim());
+    }
+    assert.equal(root.querySelectorAll("th[scope=col]").length, 3);
+    assert.equal(root.querySelectorAll("th[scope=row]").length, 3);
+    assert.equal(d.$("[data-visitor-status]").getAttribute("role"), "status");
+    assert.equal(d.$("[data-visitor-text]").getAttribute("tabindex"), "0");
+    assert.match(worksheetHtml, /href="#case-guide"/);
+    assert.match(worksheetHtml, /href="\/charitology\/for-charities\/website-pilots\/materials\/website-preview-brief.md"/);
+  });
+  await check("mounted visitor handoff reviews exact bytes, refuses stale saves and clears on page exit", async () => {
+    const d = installToolDom(worksheetHtml);
+    d.document.defaultView = d.window;
+    const requests = [];
+    globalThis.fetch = (...args) => { requests.push(args); throw Error("Unexpected request"); };
+    globalThis.sessionStorage = d.storage;
+    const close = m.mountWebsiteVisitorWorksheet(d.$("[data-visitor-worksheet]"));
+    const field = (id) => d.$(`[data-visitor-field="${id}"]`);
+    const status = d.$("[data-visitor-status]");
+    const review = d.$("[data-visitor-review]");
+    const preview = d.$("[data-visitor-preview]");
+    const ack = d.$("[data-visitor-ack]");
+    const save = d.$("[data-visitor-save]");
+    const text = d.$("[data-visitor-text]");
+    const fill = () => { for (const [id, value] of Object.entries(visitorDraft)) field(id).value = value; };
+    const acknowledge = () => { ack.checked = true; return ack.fire("change"); };
+    try {
+      assert.equal(d.$("[data-visitor-controls]").disabled, false);
+      await review.click();
+      assert.equal(d.document.activeElement, status);
+      assert.match(status.textContent, /Enter one visitor task/);
+      fill();
+      field("after-seconds").value = "1e2";
+      await review.click();
+      assert.equal(preview.hidden, true);
+      assert.equal(field("after-seconds").value, "1e2");
+      assert.match(status.textContent, /0 to 3600/);
+      fill();
+      await review.click();
+      assert.equal(preview.hidden, false);
+      assert.equal(d.document.activeElement, status);
+      assert.equal(text.textContent, m.prepareWebsiteVisitorHandoff(visitorDraft).markdown);
+      assert.deepEqual(preview.querySelectorAll("[data-visitor-value]").map((cell) => cell.textContent),
+        ["Could not complete", "Completed with help", "0", "2", "Unknown", "48"]);
+      await save.fire("click");
+      assert.equal(d.downloads.length, 0);
+      await acknowledge();
+      assert.equal(save.disabled, false);
+      field("after-steps").value = "3";
+      await save.click();
+      assert.equal(d.downloads.length, 0);
+      assert.equal(preview.hidden, true);
+      assert.equal(ack.checked, false);
+      fill();
+      await review.click();
+      await acknowledge();
+      await save.click();
+      assert.equal(d.downloads.length, 1);
+      assert.equal(d.downloads[0].type, "text/markdown;charset=utf-8");
+      assert.equal(await d.downloads[0].text(), text.textContent);
+      field("setup").value = "Changed setup";
+      await field("setup").fire("input");
+      assert.equal(preview.hidden, true);
+      assert.equal(save.disabled, true);
+      assert.equal(text.textContent, "");
+      await d.window.fire("pagehide");
+      for (const id of Object.keys(visitorDraft)) assert.equal(field(id).value, "");
+      field("task").value = "Value restored by history fixture";
+      await d.window.fire("pageshow", { persisted: true });
+      assert.equal(field("task").value, "");
+      assert.deepEqual(d.operations, []);
+      assert.deepEqual(requests, []);
+    } finally {
+      close();
+    }
+    assert.equal(d.$("[data-visitor-controls]").disabled, true);
+  });
   console.log(
-    "Website pilot guide: " +
+    "Website pilot guide and visitor worksheet: " +
       groups +
       " actual groups passed; no native browser/Save or backend claims.",
   );
