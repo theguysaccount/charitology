@@ -1,23 +1,25 @@
 /** Private staff reservation routes. The handler and complete admission hooks are supplied separately. */
 import { readBackupBody } from "./backup-json.mjs";
-import { checkCsrf, fail, hash, id, json, HttpError } from "./security.mjs";
+import { checkCsrf, fail, hash, id, json, stable, HttpError } from "./security.mjs";
 import { compareGroupExactStamps, ParticipationGroupError } from "./participation-group-model.mjs";
 import { ResourceReservationError, reviewExclusiveResourceCapacity } from "./resource-reservation-model.mjs";
 import {
   RESOURCE_RESERVATION_LIMITS as limits,
-  planResourceReservationWrite, reconcileResourceReservationReceipt,
+  planResourceReservationWrite, reconcileResourceReservationReceipt, recordResourceRecoveryDisposition,
   resourceReservationCommandHashes, resourceReservationProofSha256,
 } from "./resource-reservation-ledger.mjs";
 import {
-  applyResourceReservationPlan, findResourceReservationReceipt, loadResourceReservationInventory,
+  applyResourceReservationPlan, findResourceReservationReceipt, findResourceReservationRecovery,
+  loadResourceReservationInventory, recordResourceReservationDisposition,
 } from "./resource-reservation-store.mjs";
 import {
   currentResourceReservationMember, readResourceReservationEffects, readResourceReservationSources,
   requireResourceReservationScope, resourceReservationClock, resourceReservationCommandAuthority,
-  resourceReservationFuture, resourceReservationRowProof, resourceReservationScope,
+  resourceReservationFuture, resourceReservationRecoveryAuthority, resourceReservationRowProof, resourceReservationScope,
 } from "./resource-reservation-context.mjs";
 import {
-  makeResourceReservationPreview, readResourceReservationPreview, reservationHash, resourceReservationCommitInput,
+  makeResourceReservationPreview, makeResourceRecoveryPreview, readResourceReservationPreview, readResourceRecoveryPreview,
+  reservationHash, resourceReservationCommitInput, RESOURCE_RECOVERY_OPERATION,
   resourceReservationId, resourceReservationReviewHash, resourceReservationReviewInput,
 } from "./resource-reservation-preview.mjs";
 
@@ -85,6 +87,8 @@ async function review(c, args) {
   const { input, secret } = args;
   const context = await resourceReservationScope(c, { ...args, readOnly: true });
   requireResourceReservationScope(context, input.scopeSha256);
+  if (input.operation === RESOURCE_RECOVERY_OPERATION)
+    return recoveryReview(c, context, input, secret);
   const { rows } = await loadResourceReservationInventory(c, context.org);
   const old = previousHold(rows, input.previous);
   const previous = old ? holdDto(old) : null;
@@ -124,6 +128,95 @@ function accepted(context, request, decision, current, replayed) {
     state: "accepted", idempotencyKey: request.idempotencyKey, replayed,
     decision: { operation, acceptedAtExact, previous, next, reason }, current,
   });
+}
+
+async function recoveryClaim(c, context, id) {
+  const row = await findResourceReservationRecovery(c, context.org, id);
+  if (!row) return null;
+  const authority = await resourceReservationRecoveryAuthority(c, context, row.history.proof);
+  return { row, authority, proofSha256: resourceReservationProofSha256(row.history.proof) };
+}
+
+const recoveryIntentHash = (context, claim, reason) => reservationHash("recovery-disposition-review", {
+  orgId: context.org, scopeSha256: context.scopeSha256,
+  reservationId: claim.row.id, reservationRevision: 1, proofSha256: claim.proofSha256,
+  authoritySha256: reservationHash("recovery-authority", claim.authority), reason,
+});
+
+async function recoveryReview(c, context, input, secret) {
+  const claim = await recoveryClaim(c, context, input.previous.id);
+  if (claim?.row.state !== "reserved" || claim.row.revision !== input.previous.revision) stale();
+  const reviewSha256 = recoveryIntentHash(context, claim, input.reason);
+  const preview = makeResourceRecoveryPreview(reviewSha256, await resourceReservationClock(c), secret);
+  return okay(context, { state: "ready", input, previous: holdDto(claim.row), next: null, preview });
+}
+
+function acceptedRecovery(context, request, row, replayed) {
+  const { acceptedAtExact, reason } = row.history.disposition;
+  const effect = { id: row.id, proofSha256: request.proofSha256, state: "released", revision: 2 };
+  return accepted(context, request, {
+    operation: RESOURCE_RECOVERY_OPERATION, acceptedAtExact, previous: effect, next: null, reason,
+  }, [effect], replayed);
+}
+
+async function recoveryAcceptedRead(c, args) {
+  const { input, secret } = args, { request } = input;
+  const context = await resourceReservationScope(c, { ...args, readOnly: true });
+  requireResourceReservationScope(context, input.scopeSha256);
+  const claim = await recoveryClaim(c, context, request.reservationId);
+  const disposition = claim?.row.history.disposition;
+  if (!disposition) return { context, result: null };
+
+  // The archived fields alone cannot establish this as a decision taken here.
+  // A local signed review for the exact canonical intent must cover its clock.
+  const preview = readResourceRecoveryPreview(request.previewToken, secret);
+  if (disposition.orgId !== context.org || disposition.actorSha256 !== claim.authority.actorSha256 ||
+      disposition.reason !== request.reason || claim.proofSha256 !== request.proofSha256 ||
+      recoveryIntentHash(context, claim, request.reason) !== request.reviewSha256 ||
+      preview.reviewSha256 !== request.reviewSha256 ||
+      compareGroupExactStamps(disposition.acceptedAtExact, preview.issuedAtExact) < 0 ||
+      compareGroupExactStamps(disposition.acceptedAtExact, preview.expiresAtExact) >= 0)
+    fail(409, "resource_reservation_reconcile", "The saved recovery disposition does not match this review.");
+  return { context, result: acceptedRecovery(context, request, claim.row, true) };
+}
+
+async function recoveryCommit(c, args, hooks) {
+  const { input, secret } = args, { operation, request } = input;
+  const context = await resourceReservationScope(c, { ...args, readOnly: false });
+  requireResourceReservationScope(context, input.scopeSha256);
+  const orgId = context.org;
+  try {
+    const claim = await recoveryClaim(c, context, request.reservationId);
+    if (claim?.row.history.disposition) throw new ReservationReadAgain();
+    if (claim?.row.state !== "reserved" || claim.row.revision !== request.reservationRevision ||
+        claim.proofSha256 !== request.proofSha256) refuse("stale");
+    const preview = readResourceRecoveryPreview(request.previewToken, secret);
+    if (preview.reviewSha256 !== request.reviewSha256 ||
+        recoveryIntentHash(context, claim, request.reason) !== request.reviewSha256) refuse("stale");
+    const nowExact = await resourceReservationClock(c);
+    if (compareGroupExactStamps(nowExact, preview.expiresAtExact) >= 0) refuse("expired");
+    if (compareGroupExactStamps(nowExact, preview.issuedAtExact) < 0) refuse("stale");
+
+    const row = recordResourceRecoveryDisposition({
+      row: claim.row, orgId, actorId: context.member.userId, authority: claim.authority,
+      expectedRevision: request.reservationRevision, acceptedAtExact: nowExact, reason: request.reason,
+    });
+    const quota = await recordResourceReservationDisposition(c, orgId, row);
+    const saved = await findResourceReservationRecovery(c, orgId, row.id);
+    if (stable(saved) !== stable(row))
+      fail(503, "resource_reservation_storage", "The recovery disposition did not settle.");
+    const admitted = await hooks.admitWorkspace(c, {
+      orgId, operation, mode: "release-safety", plan: { state: "ready", row }, stored: { row: saved, quota },
+    });
+    if (admitted === false) refuse("capacity");
+    if (admitted !== true)
+      fail(503, "resource_reservation_admission", "The recovery admission check did not settle.");
+    return acceptedRecovery(context, request, saved, false);
+  } catch (error) {
+    if (error instanceof HttpError && error.code === "resource_reservation_stale") refuse("stale");
+    if (error instanceof HttpError && error.code === "resource_reservation_quota") refuse("capacity");
+    throw error;
+  }
 }
 
 async function acceptedRead(c, args, command) {
@@ -210,17 +303,21 @@ async function commit(c, args, command, hooks) {
 
 async function commitWithReconciliation(db, actorId, args, hooks) {
   const { org, input } = args;
-  const command = resourceReservationCommandHashes({ orgId: org, actorId, operation: input.operation, request: input.request });
-  const read = () => db.tx(actorId, org, c => acceptedRead(c, args, command), lockedRead);
+  const recovery = input.operation === RESOURCE_RECOVERY_OPERATION;
+  const command = recovery ? null :
+    resourceReservationCommandHashes({ orgId: org, actorId, operation: input.operation, request: input.request });
+  const read = () => db.tx(actorId, org, c =>
+    recovery ? recoveryAcceptedRead(c, args) : acceptedRead(c, args, command), lockedRead);
   const initial = await read();
   if (initial.result) return initial.result;
-  if (typeof hooks.admitWorkspace !== "function" || typeof hooks.auditReservation !== "function")
+  if (typeof hooks.admitWorkspace !== "function" || !recovery && typeof hooks.auditReservation !== "function")
     fail(503, "resource_reservation_admission", "The reservation admission and audit hooks are required.");
 
-  const release = input.operation === "release";
-  await db.limit("resource-reservation-" + (release ? "release:" : "write:") + hash(actorId), release ? 120 : 60, 3600);
+  const safety = recovery || input.operation === "release";
+  await db.limit("resource-reservation-" + (safety ? "release:" : "write:") + hash(actorId), safety ? 120 : 60, 3600);
   try {
-    return await db.tx(actorId, org, c => commit(c, args, command, hooks), { lock: true });
+    return await db.tx(actorId, org, c =>
+      recovery ? recoveryCommit(c, args, hooks) : commit(c, args, command, hooks), { lock: true });
   } catch (error) {
     // A failed or uncertain write never runs twice. A successful locked read is
     // required before returning an accepted replay or a definitive refusal.

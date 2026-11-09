@@ -156,6 +156,13 @@ export async function readResourceReservationSources(c, org, selection = null) {
 
 export const resourceReservationRowProof = row => row.proof ?? row.history.proof;
 
+async function sourceIncarnations(c, org, ids, active = false) {
+  return rows(await c.query(`
+    SELECT id,module_id,to_char(created_at AT TIME ZONE 'UTC','${UTC}') AS created_exact
+    FROM os_records WHERE org_id=$1 AND id=ANY($2::text[])` +
+    (active ? " AND deleted_at IS NULL" : ""), [org, ids]), ids.length);
+}
+
 /** Check all affected source incarnations and their restore markers. Old sources
  * may be unapproved or in trash. They carry no fresh booking authority. */
 export async function resourceReservationCommandAuthority(c, context, proofs, replay = false) {
@@ -170,15 +177,28 @@ export async function resourceReservationCommandAuthority(c, context, proofs, re
   }
   const ids = [...expected.keys()];
   if (ids.length < 2 || ids.length > 4) unavailable();
-  const found = rows(await c.query(`
-    SELECT id,module_id,to_char(created_at AT TIME ZONE 'UTC','${UTC}') AS created_exact
-    FROM os_records WHERE org_id=$1 AND id=ANY($2::text[])`, [context.org, ids]), ids.length);
+  const found = await sourceIncarnations(c, context.org, ids);
   if (found.length !== ids.length || new Set(found.map(row => row.id)).size !== ids.length) mismatch();
   for (const row of found) {
     const pin = expected.get(row.id);
     if (!pin || row.module_id !== pin.moduleId || row.created_exact !== pin.createdAtExact) mismatch();
   }
   return authority(context, await groupRestoreEpoch(c, context.org, ids));
+}
+
+/** Recovered proof has source-workspace incarnations. Bind the real current
+ * destination references separately, without adopting the archived approval. */
+export async function resourceReservationRecoveryAuthority(c, context, proof) {
+  const pins = [proof.asset, proof.session], ids = pins.map(pin => pin.id);
+  const current = await sourceIncarnations(c, context.org, ids, true);
+  if (current.length !== ids.length) stale();
+  const sources = pins.map(pin => {
+    const row = current.find(item => item.id === pin.id);
+    if (!row || row.module_id !== pin.moduleId) stale();
+    return { id: row.id, moduleId: row.module_id, createdAtExact: validateGroupExactStamp(row.created_exact) };
+  });
+  const restoreEpochSha256 = await groupRestoreEpoch(c, context.org, ids);
+  return authority(context, reservationHash("recovery-source-epoch", { sources, restoreEpochSha256 }));
 }
 
 /** The effect-only lookup deliberately avoids physical quota and complete inventory reads. */

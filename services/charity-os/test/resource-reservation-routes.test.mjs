@@ -1,6 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { csrf } from "../lib/security.mjs";
+import { makeResourceReservationsBackup, restoreResourceReservationRows } from "../lib/resource-reservation-ledger.mjs";
+import { projectResourceReservationStorageRow } from "../lib/resource-reservation-store.mjs";
 import { resourceReservationRoutes } from "../lib/resource-reservation-routes.mjs";
 
 const org = "fictional_org", actor = "admin_1", sessionId = "session_cookie";
@@ -61,7 +63,8 @@ function fixture() {
             !row.deleted && row.approval && (args[1] === null || args[1].includes(row.id)));
           return result(state.overflowSources && args[1] === null ? Array(2001).fill(selected[0]) : selected);
         }
-        if (sql.includes("FROM os_records WHERE")) return result(args[1].filter(id => state.records.has(id))
+        if (sql.includes("FROM os_records WHERE")) return result(args[1].filter(id =>
+          state.records.has(id) && (!sql.includes("deleted_at IS NULL") || !state.records.get(id).deleted))
           .map(id => { const { module_id, created_exact } = state.records.get(id); return { id, module_id, created_exact }; }));
         if (sql.includes("WITH holds AS")) {
           assert.ok(lock);
@@ -83,6 +86,14 @@ function fixture() {
           if (state.failLookup && readOnly) throw new Error("synthetic receipt read failure");
           return result(receipts.has(args[1]) ? [receipts.get(args[1])] : []);
         }
+        if (sql.includes("AND r.origin_mode='recovered'")) {
+          assert.ok(lock);
+          state.events.push(["recovery-lookup", lock, readOnly]);
+          if (state.failLookup && readOnly) throw new Error("synthetic recovery lookup failure");
+          const row = holds.get(args[1]);
+          return result(row?.origin_mode === "recovered" ?
+            [{ ...row, original_receipt: null, terminal_receipt: null }] : []);
+        }
         if (sql.includes("FROM os_resource_reservations WHERE")) return result(args[1]
           .filter(id => holds.has(id)).map(id => holds.get(id)));
         if (sql.includes("INSERT INTO os_resource_reservation_commands")) {
@@ -97,7 +108,10 @@ function fixture() {
           const row = holds.get(args[1]);
           assert.equal(row.state, "reserved");
           assert.equal(row.proof_sha256, args[3]);
-          holds.set(row.id, { ...row, state: "released", revision: 2, terminal_command_hash: args[2] });
+          const terminal = sql.includes("disposition=$3")
+            ? { disposition: JSON.parse(args[2]) }
+            : { terminal_command_hash: args[2] };
+          holds.set(row.id, { ...row, state: "released", revision: 2, ...terminal });
           return result([{ id: row.id }]);
         }
         if (sql.includes("INSERT INTO os_resource_reservations")) {
@@ -298,4 +312,141 @@ test("bounded sources, JSON body, duplicate keys and review token have no silent
   assert.equal(over.value.ok, false);
   assert.ok(!Object.hasOwn(over.value, "assets"));
   assert.equal(h.state.receipts.size, 0);
+});
+
+const recoveryOperation = "resolve-recovered";
+const recoveryReason = "Carry no internal hold forward.";
+
+function recoveryInput(scopeSha256, hold, reason = recoveryReason) {
+  return { version: 1, scopeSha256, operation: recoveryOperation,
+    previous: { id: hold.id, revision: 1 }, asset: null, session: null, reason };
+}
+
+function recoveryWire(view) {
+  return { version: 1, scopeSha256: view.scopeSha256, operation: recoveryOperation, request: {
+    version: 1, idempotencyKey: view.preview.reviewSha256, reservationId: view.previous.id,
+    reservationRevision: 1, reason: view.input.reason, proofSha256: view.previous.proofSha256,
+    previewToken: view.preview.previewToken, reviewSha256: view.preview.reviewSha256, acknowledge: true,
+  } };
+}
+
+async function recoveredFixture() {
+  const h = fixture(), original = await ready(h);
+  const accepted = await h.call("commit", commitBody(original));
+  assert.equal(accepted.value.state, "accepted");
+  const physical = h.state.holds.get(original.next.id);
+  const live = { version: 1, orgId: org, id: physical.id, originMode: "live", state: "reserved", revision: 1,
+    proof: physical.proof, originalReceipt: h.state.receipts.get(physical.original_command_hash).receipt,
+    terminalReceipt: null, history: null };
+  const refs = [{ id: physical.asset_id, moduleId: "assets" }, { id: physical.occurrence_id, moduleId: "events" }];
+  const backup = makeResourceReservationsBackup(org, [live], refs);
+  const [recovered] = restoreResourceReservationRows(org, backup, org, refs);
+  h.state.holds.set(recovered.id, projectResourceReservationStorageRow(recovered));
+  h.state.receipts.clear();
+  h.state.audits.length = 0;
+  h.state.modes.length = 0;
+  h.state.orgRestore = "34";
+  h.state.now = "2030-01-10T12:00:00.123456Z";
+  for (const { id } of refs) {
+    h.state.records.get(id).created_exact = "2029-12-10T10:00:00.123456Z";
+    h.state.records.get(id).approval = null;
+  }
+  return { h, recovered };
+}
+
+async function recoveryReady(h) {
+  const { value } = await h.call("workspace");
+  const hold = value.reservations[0];
+  const review = await h.call("review", recoveryInput(value.scopeSha256, hold));
+  assert.equal(review.status, 200);
+  assert.equal(review.value.state, "ready");
+  assert.deepEqual(review.value.previous, hold);
+  assert.equal(review.value.next, null);
+  return review.value;
+}
+
+test("only a signed acknowledged recovered review can record one inactive disposition", async () => {
+  const live = fixture(), reserve = await ready(live);
+  assert.equal((await live.call("commit", commitBody(reserve))).value.state, "accepted");
+  assert.equal((await live.call("review", recoveryInput(reserve.scopeSha256, reserve.next))).status, 409);
+  assert.equal(live.state.holds.get(reserve.next.id).state, "reserved");
+
+  const { h, recovered } = await recoveredFixture(), view = await recoveryReady(h), wire = recoveryWire(view);
+  assert.equal(view.previous.originMode, "recovered");
+  assert.equal(view.previous.sourceState, "reserved");
+  assert.equal(view.previous.disposition, null);
+  assert.equal(view.preview.expiresAtExact, "2030-01-10T12:10:00.123456Z");
+  const ignored = await h.call("commit", { ...wire, request: { ...wire.request, acknowledge: false } });
+  assert.equal(ignored.status, 422);
+  const forged = await h.call("commit", { ...wire, request: { ...wire.request, previewToken: reserve.preview.previewToken } });
+  assert.equal(forged.status, 422);
+  assert.equal(h.state.holds.get(recovered.id).state, "reserved");
+
+  const result = await h.call("commit", wire);
+  assert.equal(result.value.state, "accepted");
+  assert.equal(result.value.decision.operation, recoveryOperation);
+  assert.equal(result.value.decision.reason, recoveryReason);
+  assert.deepEqual(result.value.current, [result.value.decision.previous]);
+  assert.equal(result.value.decision.previous.revision, 2);
+  assert.equal(result.value.decision.next, null);
+  const saved = h.state.holds.get(recovered.id);
+  assert.deepEqual(saved.history_core.proof, recovered.history.proof);
+  assert.equal(saved.history_core.sourceState, "reserved");
+  assert.match(saved.disposition.actorSha256, /^[a-f0-9]{64}$/);
+  assert.equal(saved.disposition.orgId, org);
+  assert.equal(saved.terminal_command_hash, null);
+  assert.equal(h.state.receipts.size, 0);
+  assert.deepEqual(h.state.modes, ["release-safety"]);
+  assert.equal(h.state.audits.length, 0);
+
+  h.state.now = "2030-01-11T10:00:00.000000Z";
+  h.state.events.length = 0;
+  const retry = await h.call("commit", wire, { admitWorkspace: undefined, auditReservation: undefined });
+  assert.equal(retry.value.replayed, true);
+  assert.deepEqual(retry.value.decision, result.value.decision);
+  assert.deepEqual(h.state.events.filter(event => /lookup|clock|measure/.test(event[0])),
+    [["recovery-lookup", true, true]]);
+  const changed = await h.call("commit", { ...wire, request: { ...wire.request, reason: "Different reason." } });
+  assert.equal(changed.status, 409);
+  const rotated = await h.call("commit", wire, { secret: secret + "rotated" });
+  assert.equal(rotated.status, 422);
+  assert.deepEqual(h.state.holds.get(recovered.id), saved);
+});
+
+test("recovered scope staleness, capacity rollback and a lost reply keep the exact one-write semantics", async () => {
+  const { h, recovered } = await recoveredFixture(), view = await recoveryReady(h), wire = recoveryWire(view);
+  h.state.restored.set(recovered.history.proof.asset.id, "37");
+  assert.equal((await h.call("commit", wire)).value.reasonCode, "stale");
+  h.state.restored.clear();
+  h.state.now = view.preview.expiresAtExact;
+  assert.equal((await h.call("commit", wire)).value.reasonCode, "expired");
+  h.state.now = "2030-01-10T12:00:00.123456Z";
+  h.state.readAdmission = () => false;
+  assert.equal((await h.call("commit", wire)).value.reasonCode, "capacity");
+  assert.equal(h.state.holds.get(recovered.id).disposition, null);
+
+  h.state.readAdmission = null;
+  h.state.loseAfterCommit = true;
+  const lost = await h.call("commit", wire);
+  assert.equal(lost.value.state, "accepted");
+  assert.equal(lost.value.replayed, true);
+  assert.equal(h.state.receipts.size, 0);
+  assert.equal(h.state.audits.length, 0);
+  assert.equal((await h.call("workspace")).value.reservations[0].disposition.reason, recoveryReason);
+  h.state.memberRevision++;
+  assert.equal((await h.call("commit", wire)).status, 403);
+});
+
+test("an inherited same-organization disposition cannot settle an unrelated signed review", async () => {
+  const { h, recovered } = await recoveredFixture(), view = await recoveryReady(h), wire = recoveryWire(view);
+  const accepted = await h.call("commit", wire);
+  assert.equal(accepted.value.state, "accepted");
+  const record = h.state.holds.get(recovered.id);
+  // Model a historical disposition retained before this workspace's review.
+  record.disposition.acceptedAtExact = "2030-01-10T11:59:59.999999Z";
+  const historical = await h.call("commit", wire);
+  assert.equal(historical.status, 409);
+  assert.equal(record.state, "released");
+  assert.equal(h.state.receipts.size, 0);
+  assert.equal(h.state.audits.length, 0);
 });

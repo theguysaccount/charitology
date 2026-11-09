@@ -12,7 +12,11 @@ const PREVIEW_FORMAT = "charitology-resource-reservation-preview";
 const KEY_DOMAIN = "charitology:resource-reservation-preview:key:v1\0";
 const MAC_DOMAIN = "charitology:resource-reservation-preview:mac:v1\0";
 const PAYLOAD_BYTES = 2048;
-const operations = ["reserve", "release", "replace"];
+const RECOVERY_FORMAT = "charitology-resource-recovery-review";
+const RECOVERY_KEY_DOMAIN = "charitology:resource-recovery-review:key:v1\0";
+const RECOVERY_MAC_DOMAIN = "charitology:resource-recovery-review:mac:v1\0";
+export const RESOURCE_RECOVERY_OPERATION = "resolve-recovered";
+const operations = ["reserve", "release", "replace", RESOURCE_RECOVERY_OPERATION];
 const invalid = () => fail(422, "resource_reservation_fields", "Use the exact bounded reservation fields.");
 const invalidPreview = () => fail(422, "resource_reservation_preview", "Use the exact signed reservation review.");
 
@@ -37,7 +41,8 @@ export function resourceReservationReviewInput(input) {
     invalid();
   if (value.operation === "reserve" ? value.previous !== null || value.reason !== null
     : !pin(value.previous) || value.previous.revision !== 1 || !reason(value.reason)) invalid();
-  if (value.operation === "release" ? value.asset !== null || value.session !== null
+  const needsSources = value.operation === "reserve" || value.operation === "replace";
+  if (!needsSources ? value.asset !== null || value.session !== null
     : !pin(value.asset) || !pin(value.session) || value.asset.id === value.session.id) invalid();
   return value;
 }
@@ -46,9 +51,24 @@ export function resourceReservationCommitInput(input) {
   const value = ownGroupValue(input, limits.requestBytes);
   if (!sameFields(value, ["version", "scopeSha256", "operation", "request"]) || value.version !== 1 ||
       !resourceReservationSha256(value.scopeSha256) || !operations.includes(value.operation)) invalid();
-  const request = validateResourceReservationRequest(value.operation, value.request);
+  const request = value.operation === RESOURCE_RECOVERY_OPERATION
+    ? recoveryRequest(value.request)
+    : validateResourceReservationRequest(value.operation, value.request);
   if (value.operation !== "reserve" && !reason(request.reason)) invalid();
   return { ...value, request };
+}
+
+const validToken = token => typeof token === "string" && token.length <= limits.tokenBytes &&
+  /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(token);
+
+function recoveryRequest(value) {
+  if (!sameFields(value, ["version", "idempotencyKey", "reservationId", "reservationRevision", "reason",
+    "proofSha256", "previewToken", "reviewSha256", "acknowledge"]) ||
+    value.version !== 1 || value.reservationRevision !== 1 || value.acknowledge !== true ||
+    !resourceReservationId(value.reservationId) || !resourceReservationSha256(value.proofSha256) ||
+    !resourceReservationSha256(value.reviewSha256) || value.idempotencyKey !== value.reviewSha256 ||
+    !validToken(value.previewToken)) invalid();
+  return value;
 }
 
 /** Preserve the SQL clock's exact fractional microseconds at the ten-minute boundary. */
@@ -58,11 +78,11 @@ export function resourceReservationPreviewExpiry(issuedAtExact) {
   return validateGroupExactStamp(end.slice(0, -1) + issuedAtExact.slice(23, 26) + "Z");
 }
 
-function signature(bytes, secret) {
+function signature(bytes, secret, recovery) {
   if (typeof secret !== "string" || secret.length < 32 || Buffer.byteLength(secret) > 4096)
     throw new TypeError("A bounded server signing secret is required.");
-  const key = createHmac("sha256", secret).update(KEY_DOMAIN).digest();
-  return createHmac("sha256", key).update(MAC_DOMAIN).update(bytes).digest();
+  const key = createHmac("sha256", secret).update(recovery ? RECOVERY_KEY_DOMAIN : KEY_DOMAIN).digest();
+  return createHmac("sha256", key).update(recovery ? RECOVERY_MAC_DOMAIN : MAC_DOMAIN).update(bytes).digest();
 }
 
 function previewPayload(input) {
@@ -88,25 +108,53 @@ export function resourceReservationReviewHash(payload, previous, reason) {
 export function makeResourceReservationPreview(pins, previous, reason, secret) {
   const body = { format: PREVIEW_FORMAT, version: 1, ...pins, expiresAtExact: resourceReservationPreviewExpiry(pins.issuedAtExact) };
   const reviewSha256 = resourceReservationReviewHash(body, previous, reason);
-  const payload = previewPayload({ ...body, reviewSha256 });
+  return signedPreview(previewPayload({ ...body, reviewSha256 }), secret, false);
+}
+
+function signedPreview(payload, secret, recovery) {
   const bytes = Buffer.from(stable(payload), "utf8");
-  const previewToken = bytes.toString("base64url") + "." + signature(bytes, secret).toString("base64url");
+  const previewToken = bytes.toString("base64url") + "." + signature(bytes, secret, recovery).toString("base64url");
   if (previewToken.length > limits.tokenBytes) invalidPreview();
-  return { previewToken, reviewSha256, expiresAtExact: payload.expiresAtExact };
+  return { previewToken, reviewSha256: payload.reviewSha256, expiresAtExact: payload.expiresAtExact };
 }
 
 /** Call only for a new intent, after current authorization and the exact accepted-key read. */
 export function readResourceReservationPreview(token, secret) {
-  if (typeof token !== "string" || token.length > limits.tokenBytes ||
-      !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(token)) invalidPreview();
+  return verifiedPreview(token, secret, previewPayload, false);
+}
+
+function verifiedPreview(token, secret, validate, recovery) {
+  if (!validToken(token)) invalidPreview();
   const [encoded, mac] = token.split(".");
   const bytes = Buffer.from(encoded, "base64url"), supplied = Buffer.from(mac, "base64url");
   if (bytes.length > PAYLOAD_BYTES || encoded !== bytes.toString("base64url") ||
       supplied.length !== 32 || mac !== supplied.toString("base64url") ||
-      !timingSafeEqual(supplied, signature(bytes, secret))) invalidPreview();
+      !timingSafeEqual(supplied, signature(bytes, secret, recovery))) invalidPreview();
   try {
-    const payload = previewPayload(parseBackupJson(bytes, PAYLOAD_BYTES));
+    const payload = validate(parseBackupJson(bytes, PAYLOAD_BYTES));
     if (bytes.equals(Buffer.from(stable(payload), "utf8"))) return payload;
   } catch {}
   invalidPreview();
+}
+
+function recoveryPreviewPayload(input) {
+  const value = ownGroupValue(input, PAYLOAD_BYTES);
+  if (!sameFields(value, ["format", "version", "reviewSha256", "issuedAtExact", "expiresAtExact"]) ||
+      value.format !== RECOVERY_FORMAT || value.version !== 1 || !resourceReservationSha256(value.reviewSha256) ||
+      value.expiresAtExact !== resourceReservationPreviewExpiry(value.issuedAtExact)) invalidPreview();
+  return value;
+}
+
+export function makeResourceRecoveryPreview(reviewSha256, issuedAtExact, secret) {
+  const payload = recoveryPreviewPayload({
+    format: RECOVERY_FORMAT, version: 1, reviewSha256, issuedAtExact,
+    expiresAtExact: resourceReservationPreviewExpiry(issuedAtExact),
+  });
+  return signedPreview(payload, secret, true);
+}
+
+/** A current signature proves local review, even for an already settled claim.
+ * The route compares the accepted clock with the original signed window. */
+export function readResourceRecoveryPreview(token, secret) {
+  return verifiedPreview(token, secret, recoveryPreviewPayload, true);
 }

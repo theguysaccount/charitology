@@ -2,7 +2,7 @@ import { participationChargeJsonSQL, PARTICIPATION_REMINDER_LEGACY_SQL } from ".
 import pg from "pg";
 import { readFile } from "node:fs/promises";
 import { verifiedNeonConnectionString } from "./connection.mjs";
-import { id, fail, HttpError } from "./security.mjs";
+import { id, fail, stable, HttpError } from "./security.mjs";
 import { guardParticipationWrite } from "./participation-guards.mjs";
 import { guardTaskRecurrenceWrite } from "./task-recurrence.mjs";
 import { guardLearningWrite } from "./learning-guards.mjs";
@@ -138,24 +138,36 @@ const measuredCapacityCodes = new Set([
   "participation_backup_size", "checkin_capacity",
 ]);
 
-/** The mounted reservation route calls this after the complete store plan and
- * mandatory ordinary audit. Release uses its prepaid terminal receipt. */
-export async function admitResourceReservationWorkspace(c, { orgId, operation, mode, plan, stored }) {
-  const state = transactionAudits.get(c), decision = stored?.receipt?.decision;
-  const release = operation === "release";
-  const savedPlan = decision?.orgId === orgId && decision.operation === operation &&
-    plan?.state === "ready" && plan.receipt?.commandHash === stored.receipt.commandHash &&
+function savedReservationPlan(orgId, operation, plan, stored) {
+  if (plan?.state !== "ready") return false;
+  if (operation === "resolve-recovered") {
+    const row = stored?.row;
+    return row?.orgId === orgId && row.originMode === "recovered" && row.state === "released" && row.revision === 2 &&
+      row.history?.sourceState === "reserved" && row.history?.disposition?.orgId === orgId &&
+      stored.quota?.reservations > 0 && stable(plan.row) === stable(row);
+  }
+  const decision = stored?.receipt?.decision;
+  return decision?.orgId === orgId && decision.operation === operation &&
+    plan.receipt?.commandHash === stored.receipt.commandHash &&
     plan.receipt?.requestHash === stored.receipt.requestHash &&
     stored.insertedId === (decision.next?.id ?? null) && stored.releasedId === (decision.previous?.id ?? null);
-  const validAction = release ? state?.actions.size === 0 :
+}
+
+/** The mounted reservation route calls this after the complete store plan and
+ * any mandatory ordinary audit. Release and disposition spend prepaid growth. */
+export async function admitResourceReservationWorkspace(c, { orgId, operation, mode, plan, stored }) {
+  const state = transactionAudits.get(c);
+  const safety = operation === "release" || operation === "resolve-recovered";
+  const validAction = safety ? state?.actions.size === 0 :
     Object.hasOwn(resourceOrdinaryAudit, operation) && state?.actions.size === 1 &&
     state.actions.has(resourceOrdinaryAudit[operation]);
   if (!state?.locked || state.readOnly || state.orgId !== orgId || state.resourceAdmission ||
-      mode !== (release ? "release-safety" : "ordinary") || !validAction || !savedPlan)
+      mode !== (safety ? "release-safety" : "ordinary") || !validAction ||
+      !savedReservationPlan(orgId, operation, plan, stored))
     fail(503, "resource_reservation_admission", "The reservation transaction cannot be admitted.");
 
   try {
-    await checkCompleteWorkspaceCapacity(c, orgId, !release, true);
+    await checkCompleteWorkspaceCapacity(c, orgId, !safety, true);
   } catch (error) {
     if (error instanceof HttpError && error.status === 422 && measuredCapacityCodes.has(error.code)) return false;
     throw error;

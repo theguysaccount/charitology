@@ -1,5 +1,9 @@
 /** Staff display and command bindings. The server checks approval, scope and capacity. */
-const OPERATIONS = Object.freeze({ reserve: "Reserve", release: "Release", replace: "Replace" });
+const RESOLVE_RECOVERED = "resolve-recovered";
+const OPERATIONS = Object.freeze({ reserve: "Reserve", release: "Release", replace: "Replace",
+  [RESOLVE_RECOVERED]: "Resolve recovered claim" });
+const needsNewHold = operation => operation === "reserve" || operation === "replace";
+const RECOVERY_SCOPE = "This records an inactive claim disposition. Live holds and external bookings are handled separately.";
 const BLOCKED = Object.freeze({
   conflict: "The selected item has a conflicting hold. Choose another item or session.",
   unchanged: "The same item and session interval are already held. Choose a different replacement.",
@@ -90,6 +94,7 @@ function retainedHold(row) {
     row.revision === (disposition || row.originMode === "live" && terminal ? 2 : 1));
 }
 const activeHold = row => row.originMode === "live" && row.state === "reserved";
+const unresolvedClaim = row => row.originMode === "recovered" && row.state === "reserved";
 const pin = row => row && { id: row.id, revision: row.revision };
 
 function envelope(value, orgId, keys) {
@@ -115,23 +120,21 @@ function reviewResponse(value, orgId, input, prior, asset, session) {
   need(ready || Object.hasOwn(BLOCKED, value.state));
   if (prior) retainedHold(value.previous);
   need(same(value.previous, prior));
-  if (input.operation === "release") {
-    need(ready && value.next === null && value.preview === null);
-  } else {
+  if (needsNewHold(input.operation)) {
     exact(value.next, ["id", "proofSha256", "asset", "session"]);
     source(value.next.asset, "asset");
     source(value.next.session, "session");
     need(sha(value.next.proofSha256) && same(value.next.asset, asset) &&
       same(value.next.session, session) && (ready ? id(value.next.id) : value.next.id === null));
-    if (ready) {
-      need(value.next.id !== prior?.id);
-      exact(value.preview, ["previewToken", "reviewSha256", "expiresAtExact"]);
-      need(typeof value.preview.previewToken === "string" && value.preview.previewToken.length <= 8192 &&
-        /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(value.preview.previewToken) &&
-        sha(value.preview.reviewSha256));
-      stamp(value.preview.expiresAtExact);
-    } else need(value.preview === null);
-  }
+    if (ready) need(value.next.id !== prior?.id);
+  } else need(ready && value.next === null);
+  if (ready && input.operation !== "release") {
+    exact(value.preview, ["previewToken", "reviewSha256", "expiresAtExact"]);
+    need(typeof value.preview.previewToken === "string" && value.preview.previewToken.length <= 8192 &&
+      /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(value.preview.previewToken) &&
+      sha(value.preview.reviewSha256));
+    stamp(value.preview.expiresAtExact);
+  } else need(value.preview === null);
   return structuredClone(value);
 }
 function effect(value, expected, state, expectedRevision) {
@@ -243,13 +246,18 @@ export function createResourceReservationsWorkspace({
   const stop = button("Stop retrying this command", stopRetrying);
   const back = button("Previous history page", () => { page--; renderHistory(); sync(); });
   const more = button("Next history page", () => { page++; renderHistory(); sync(); });
+  const priorKind = () => draft.operation === RESOLVE_RECOVERED ? unresolvedClaim : activeHold;
   const pickers = {
-    hold: picker("hold", "Saved internal hold", row => holdLabel(row), () => current.reservations.filter(activeHold)),
+    hold: picker("hold", "Saved internal hold", holdLabel, () => current.reservations.filter(priorKind())),
     asset: picker("asset", "Approved room or equipment", row => row.title + " · " + row.id, () => current.assets),
     session: picker("session", "Approved Events session", row => row.title + " · " + row.id, () => current.sessions),
   };
-  const oldFields = node("div", { class: "stack" }, pickers.hold.element,
-    field("Reason for release", reason, node("p", { class: "field-help" }, "Record a short operational reason.")));
+  const reasonField = field("Reason for release", reason,
+    node("p", { class: "field-help" }, "Record a short operational reason."));
+  const reasonLabel = reasonField.querySelector("label");
+  const [holdSearchLabel, holdChoiceLabel] = pickers.hold.element.querySelectorAll("label");
+  const recoveryScope = node("p", { class: "notice", hidden: true }, RECOVERY_SCOPE);
+  const oldFields = node("div", { class: "stack" }, recoveryScope, pickers.hold.element, reasonField);
   const newFields = node("div", { class: "stack" }, pickers.asset.element, pickers.session.element);
   privateHost.append(card("Choose the reservation decision", field("Action", operation),
     oldFields, newFields, node("div", { class: "actions" }, prepare)), reviewHost,
@@ -310,6 +318,7 @@ export function createResourceReservationsWorkspace({
   operation.addEventListener("change", () => {
     if (!readyToEdit() || !Object.hasOwn(OPERATIONS, operation.value)) return;
     draft.operation = operation.value;
+    pickers.hold.render();
     changed();
   });
   reason.addEventListener("input", () => { if (readyToEdit()) { draft.reason = reason.value; changed(); } });
@@ -324,13 +333,15 @@ export function createResourceReservationsWorkspace({
 
   function selection() {
     if (!current) return null;
+    const matchesPrior = priorKind();
     const previous = draft.operation === "reserve" ? null :
-      current.reservations.find(row => row.id === draft.hold && activeHold(row));
-    const asset = draft.operation === "release" ? null : current.assets.find(row => row.id === draft.asset);
-    const session = draft.operation === "release" ? null : current.sessions.find(row => row.id === draft.session);
+      current.reservations.find(row => row.id === draft.hold && matchesPrior(row));
+    const selectsSources = needsNewHold(draft.operation);
+    const asset = selectsSources ? current.assets.find(row => row.id === draft.asset) : null;
+    const session = selectsSources ? current.sessions.find(row => row.id === draft.session) : null;
     const writing = draft.operation === "reserve" ? null : draft.reason.trim();
     if (draft.operation !== "reserve" && (!previous || !reasonText(writing)) ||
-        draft.operation !== "release" && (!asset || !session)) return null;
+        selectsSources && (!asset || !session)) return null;
     const input = {
       version: 1, scopeSha256: binding, operation: draft.operation,
       previous: pin(previous), asset: pin(asset), session: pin(session), reason: writing,
@@ -342,8 +353,14 @@ export function createResourceReservationsWorkspace({
     refresh.disabled = !live() || busy();
     operation.disabled = reason.disabled = !editing;
     for (const picker of Object.values(pickers)) picker.search.disabled = picker.select.disabled = !editing;
+    const resolving = draft.operation === RESOLVE_RECOVERED;
+    const priorLabel = resolving ? "Recovered claim" : "Saved internal hold";
+    holdSearchLabel.textContent = "Search " + priorLabel.toLowerCase();
+    holdChoiceLabel.textContent = priorLabel;
+    reasonLabel.textContent = resolving ? "Reason for resolving the recovered claim" : "Reason for release";
+    recoveryScope.hidden = !resolving;
     oldFields.hidden = draft.operation === "reserve";
-    newFields.hidden = draft.operation === "release";
+    newFields.hidden = !needsNewHold(draft.operation);
     prepare.disabled = !editing || !selection();
     ack.disabled = !editing || review?.state !== "ready";
     commit.disabled = ack.disabled || !acknowledged;
@@ -360,12 +377,19 @@ export function createResourceReservationsWorkspace({
     }
     const before = visible.previous;
     const after = visible.next;
+    const resolving = visible.input.operation === RESOLVE_RECOVERED;
+    commit.textContent = resolving ? "Record reviewed recovery disposition" : "Record reviewed reservation decision";
+    retry.textContent = resolving ? "Retry the same recovery disposition" : "Retry the same reservation command";
     const parts = [
       node("p", {}, OPERATIONS[visible.input.operation] + " · " +
         (visible.state === "ready" ? "Ready for your decision" : "Review needs a change")),
-      before ? node("div", {}, node("h3", {}, "Hold to release"),
+      before ? node("div", {}, node("h3", {}, resolving ? "Frozen recovered claim" : "Hold to release"),
         node("p", {}, before.id + " · revision " + before.revision),
-        ...holdPins(before), node("pre", { tabindex: "0" }, visible.input.reason)) : null,
+        ...holdPins(before),
+        resolving ? node("p", {}, "Original decision " + OPERATIONS[before.original.operation] + " · " +
+          before.original.acceptedAtExact + " · source state " + before.sourceState) : null,
+        resolving ? node("p", {}, "Keep this claim as inactive history. No internal hold will be carried forward.") : null,
+        node("pre", { tabindex: "0" }, visible.input.reason)) : null,
       after ? node("div", {}, node("h3", {}, "New internal hold"),
         node("p", {}, after.asset.title + " · " + after.asset.id + " · revision " + after.asset.revision),
         node("p", {}, "One item · whole session"),
@@ -378,7 +402,8 @@ export function createResourceReservationsWorkspace({
       field("I understand this command may already have been recorded.", stopAck),
       node("div", { class: "actions" }, retry, stop));
     else if (visible.state === "ready") parts.push(
-      field("I reviewed the exact records, time and effect of this decision.", ack),
+      field(resolving ? "I reviewed the frozen claim and confirm that no internal hold is carried forward. Any external cancellation requires a separate action."
+        : "I reviewed the exact records, time and effect of this decision.", ack),
       node("div", { class: "actions" }, commit));
     else parts.push(node("p", { class: "notice" }, BLOCKED[visible.state]));
     reviewHost.replaceChildren(card("Review the exact decision", ...parts));
@@ -387,17 +412,19 @@ export function createResourceReservationsWorkspace({
     if (!savedAdmitted || !saved) { savedHost.replaceChildren(); return; }
     const decision = saved.decision;
     const rows = [decision.previous, decision.next].filter(Boolean);
-    savedHost.replaceChildren(card("Recorded decision",
+    const resolving = decision.operation === RESOLVE_RECOVERED;
+    savedHost.replaceChildren(card(resolving ? "Recorded recovery disposition" : "Recorded decision",
       node("p", {}, OPERATIONS[decision.operation] + " recorded " + decision.acceptedAtExact +
         (saved.replayed ? " · Original result retrieved" : "")),
-      ...rows.map(row => node("p", {}, "Original effect on " + row.id + " · " + row.state +
-        " · revision " + row.revision)),
+      ...rows.map(row => node("p", {}, (resolving ? "Recovered claim " + row.id :
+        "Original effect on " + row.id + " · " + row.state) + " · revision " + row.revision)),
+      resolving ? node("p", {}, RECOVERY_SCOPE) : null,
       decision.reason ? node("pre", { tabindex: "0" }, decision.reason) : null,
       node("h3", {}, "Current disposition"),
       ...rows.map(row => {
         const now = saved.current.find(value => value.id === row.id);
-        return node("p", {}, now ? now.id + " · " + now.state + " · revision " + now.revision :
-          row.id + " · Current disposition unavailable");
+        return node("p", {}, now ? now.id + " · " + (resolving ? "inactive recovered history" : now.state) +
+          " · revision " + now.revision : row.id + " · Current disposition unavailable");
       })));
   }
   function renderHistory() {
@@ -419,7 +446,8 @@ export function createResourceReservationsWorkspace({
         row.terminal ? node("pre", { tabindex: "0" }, row.terminal.reason) : null,
         row.disposition ? node("p", {}, "Recovery disposition recorded " + row.disposition.acceptedAtExact) : null,
         row.disposition ? node("pre", { tabindex: "0" }, row.disposition.reason) : null,
-        node("p", {}, "Current disposition " + row.state + " · revision " + row.revision))));
+        node("p", {}, "Current disposition " + (row.originMode === "live" ? row.state :
+          unresolvedClaim(row) ? "needs reconciliation" : "inactive recovered history") + " · revision " + row.revision))));
   }
   function render() {
     privateHost.hidden = !current;
@@ -491,6 +519,9 @@ export function createResourceReservationsWorkspace({
         saved.current = [saved.decision.previous, saved.decision.next].filter(Boolean).flatMap(effect => {
           const row = byId.get(effect.id);
           if (row?.proofSha256 !== effect.proofSha256) return [];
+          if (saved.decision.operation === RESOLVE_RECOVERED && (row.originMode !== "recovered" ||
+              row.disposition?.acceptedAtExact !== saved.decision.acceptedAtExact ||
+              row.disposition.reason !== saved.decision.reason)) return [];
           const { id, proofSha256, state, revision } = row;
           return [{ id, proofSha256, state, revision }];
         });
@@ -541,7 +572,10 @@ export function createResourceReservationsWorkspace({
     if (!live() || !current || busy()) return;
     if (!replaying) {
       if (pending || !acknowledged || review?.state !== "ready" || !same(review.input, selection()?.input)) return;
-      const idempotencyKey = makeCommandKey();
+      const resolving = review.input.operation === RESOLVE_RECOVERED;
+      // A reviewed recovery uses its canonical intent digest. The exact wire,
+      // including the original signed review, is retained for deliberate Retry.
+      const idempotencyKey = resolving ? review.preview.reviewSha256 : makeCommandKey();
       if (!id(idempotencyKey) || idempotencyKey.length < 16) {
         say("The command key could not be prepared. Review again before recording.", true, true);
         return;
@@ -550,6 +584,7 @@ export function createResourceReservationsWorkspace({
       if (review.previous) Object.assign(request, {
         reservationId: review.previous.id, reservationRevision: review.previous.revision, reason: review.input.reason,
       });
+      if (resolving) request.proofSha256 = review.previous.proofSha256;
       if (review.preview) Object.assign(request, {
         previewToken: review.preview.previewToken, reviewSha256: review.preview.reviewSha256, acknowledge: true,
       });
@@ -581,7 +616,9 @@ export function createResourceReservationsWorkspace({
       draft = blank();
       render();
       mark();
-      say("Recorded the original decision. Refresh saved holds before preparing another decision.", false, true);
+      say(result.decision.operation === RESOLVE_RECOVERED
+        ? "Recovery disposition recorded. Refresh saved holds before preparing another decision."
+        : "Recorded the original decision. Refresh saved holds before preparing another decision.", false, true);
       notify(onChanged, result.decision.operation);
     }, () => {
       say("The result is uncertain. Use deliberate Retry for the original command.", true, true);

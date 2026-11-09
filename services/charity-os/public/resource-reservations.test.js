@@ -29,6 +29,12 @@ const recovered = {
 };
 const released = { ...previous, revision: 2, state: "released", sourceState: "released",
   terminal: { operation: "release", acceptedAtExact: later, reason: "Ended the original internal hold.", replacedById: null } };
+const recoveryOperation = "resolve-recovered";
+const recoveryCommit = "Record reviewed recovery disposition";
+const recoveryRetry = "Retry the same recovery disposition";
+const recoveryReason = "Keep the restored claim as history.";
+const resolvedClaim = { ...recovered, state: "released", revision: 2,
+  disposition: { acceptedAtExact: later, reason: recoveryReason } };
 const preview = {
   previewToken: "fictional-review." + "z".repeat(43),
   reviewSha256: "d".repeat(64),
@@ -43,9 +49,10 @@ const buttonText = Object.freeze({
 
 function accepted(body, { replayed = false, nextState = "reserved" } = {}) {
   const { request, operation } = body;
+  const resolving = operation === recoveryOperation;
   const previousEffect = operation === "reserve" ? null :
-    { id: previous.id, proofSha256: oldProof, state: "released", revision: 2 };
-  const nextEffect = operation === "release" ? null :
+    { id: resolving ? recovered.id : previous.id, proofSha256: oldProof, state: "released", revision: 2 };
+  const nextEffect = operation === "release" || resolving ? null :
     { id: "new_hold", proofSha256: newProof, state: "reserved", revision: 1 };
   const effects = [previousEffect, nextEffect].filter(Boolean);
   return success({ state: "accepted", idempotencyKey: request.idempotencyKey, replayed,
@@ -69,7 +76,7 @@ async function harness(run) {
         asset: context.assets.find(row => row.id === input.asset.id),
         session: context.sessions.find(row => row.id === input.session.id),
       } : null,
-      preview: state === "ready" && input.asset ? preview : null,
+      preview: state === "ready" && (input.asset || input.operation === recoveryOperation) ? preview : null,
     });
   }
   const handlers = {
@@ -115,10 +122,10 @@ async function harness(run) {
   const choose = async (operation, asset = assetB, session = sessionB, reason = "  Move the equipment.  ") => {
     await write("operation", operation);
     if (operation !== "reserve") {
-      await write("hold", previous.id);
+      await write("hold", operation === recoveryOperation ? recovered.id : previous.id);
       await write("reason", reason, "input");
     }
-    if (operation !== "release") {
+    if (operation === "reserve" || operation === "replace") {
       await write("asset", asset.id);
       await write("session", session.id);
     }
@@ -305,4 +312,122 @@ test("source search and history page keep the rendered lists bounded", () =>
     assert.equal(h.get("asset").value, "room_44");
     await h.click("Next history page");
     assert.equal(h.view.querySelectorAll("details").length, 3);
+  }));
+
+test("recovering a claim requires its own unresolved selection, exact frozen review and fresh acknowledgement", () =>
+  harness(async h => {
+    const alreadyResolved = { ...resolvedClaim, id: "earlier_recovered_claim" };
+    // History IDs are unique even when the frozen source pins are shared.
+    h.context({ reservations: [previous, recovered, alreadyResolved, { ...released, id: "earlier_live_hold" }] });
+    await h.click(buttonText.read);
+    await h.write("operation", "release");
+    assert.deepEqual(h.get("hold").children.map(row => row.value), ["", previous.id]);
+    await h.write("operation", recoveryOperation);
+    assert.deepEqual(h.get("hold").children.map(row => row.value), ["", recovered.id]);
+    assert.equal(h.get("asset").parentElement.parentElement.parentElement.hidden, true);
+    await h.write("hold", previous.id);
+    await h.write("reason", "  " + recoveryReason + "  ", "input");
+    assert.equal(h.control(buttonText.review).disabled, true);
+    await h.write("hold", recovered.id);
+    for (const tamper of [
+      result => { result.previous = { ...recovered, interval: { ...recovered.interval, timeZone: "Retired/Different" } }; },
+      result => { result.preview = null; },
+    ]) {
+      h.handlers.review = ({ body }) => {
+        const result = h.makeReview(body);
+        tamper(result);
+        return result;
+      };
+      await h.click(buttonText.review);
+      assert.equal(h.control(recoveryCommit), undefined);
+      assert.match(h.view.textContent, /review could not be verified/);
+    }
+    h.handlers.review = ({ body }) => h.makeReview(body);
+    await h.click(buttonText.review);
+    assert.deepEqual(h.calls.at(-1).body, { version: 1, scopeSha256, operation: recoveryOperation,
+      previous: { id: recovered.id, revision: 1 }, asset: null, session: null, reason: recoveryReason });
+    assert.match(h.view.textContent, /Frozen recovered claim.*Time zone Retired\/Example/);
+    assert.match(h.view.textContent, /Original decision Reserve.*source state reserved/);
+    assert.match(h.view.textContent, /inactive claim disposition.*Live holds and external bookings are handled separately/);
+    assert.match(h.view.textContent, /confirm that no internal hold is carried forward/);
+    assert.doesNotMatch(h.view.textContent, /Hold to release|New internal hold/);
+    assert.equal(h.control(recoveryCommit).disabled, true);
+    await h.write("ack", true);
+    await h.write("reason", recoveryReason + " Changed.", "input");
+    assert.equal(h.control(recoveryCommit), undefined);
+    assert.equal(h.keyCount(), 0);
+    assert.equal(h.calls.filter(call => call.route === "commit").length, 0);
+  }));
+
+test("recovery Retry keeps the original signed command and displays inactive history separately from live effects", () =>
+  harness(async h => {
+    let attempts = 0;
+    await h.click(buttonText.read);
+    await h.choose(recoveryOperation, null, null, "  " + recoveryReason + "  ");
+    await h.click(buttonText.review);
+    await h.write("ack", true);
+    h.handlers.commit = ({ body }) => {
+      if (++attempts === 1) {
+        h.context({ reservations: [previous, resolvedClaim] });
+        throw new TypeError("The fictional response was lost.");
+      }
+      if (attempts === 2) {
+        const malformed = accepted(body, { replayed: true });
+        malformed.decision.previous = { ...malformed.decision.previous, id: previous.id };
+        return malformed;
+      }
+      return accepted(body, { replayed: true });
+    };
+    await h.click(recoveryCommit);
+    assert.equal(h.view.hasPendingCommand(), true);
+    assert.match(h.view.textContent, /result is uncertain/i);
+    await h.click(buttonText.read);
+    assert.equal(attempts, 1);
+    assert.equal(h.view.hasPendingCommand(), true);
+    await h.click(recoveryRetry);
+    assert.equal(h.view.hasPendingCommand(), true);
+    await h.click(recoveryRetry);
+    const writes = h.calls.filter(call => call.route === "commit");
+    assert.equal(writes.length, 3);
+    assert.equal(new Set(writes.map(call => call.wire)).size, 1);
+    assert.deepEqual(writes[0].body, { version: 1, scopeSha256, operation: recoveryOperation,
+      request: { version: 1, idempotencyKey: preview.reviewSha256, reservationId: recovered.id,
+        reservationRevision: 1, reason: recoveryReason, proofSha256: recovered.proofSha256,
+        previewToken: preview.previewToken, reviewSha256: preview.reviewSha256, acknowledge: true } });
+    assert.equal(h.keyCount(), 0);
+    assert.deepEqual(h.changed, [recoveryOperation]);
+    assert.equal(h.view.hasPendingCommand(), false);
+    assert.match(h.view.textContent, /Recorded recovery disposition.*Original result retrieved/);
+    assert.match(h.view.textContent, /Current disposition.*recovered_hold · inactive recovered history · revision 2/);
+    assert.doesNotMatch(h.view.textContent, /Original effect on|Hold to release/);
+    h.context({ reservations: [previous, recovered] });
+    await h.click(buttonText.read);
+    assert.match(h.view.textContent, /Recorded recovery disposition.*Current disposition unavailable/);
+    h.context({ reservations: [previous, resolvedClaim] });
+    await h.click(buttonText.read);
+    assert.match(h.view.textContent, /Recovery disposition recorded.*Source state reserved|Source state reserved.*Recovery disposition recorded/);
+    await h.write("operation", recoveryOperation);
+    assert.deepEqual(h.get("hold").children.map(row => row.value), [""]);
+  }));
+
+test("a definitive stale recovery command keeps untrimmed writing until a fresh scope clears it", () =>
+  harness(async h => {
+    const written = "  " + recoveryReason + "  ";
+    await h.click(buttonText.read);
+    await h.choose(recoveryOperation, null, null, written);
+    await h.click(buttonText.review);
+    await h.write("ack", true);
+    h.handlers.commit = ({ body }) => success({ state: "refused", idempotencyKey: body.request.idempotencyKey,
+      reasonCode: "stale" });
+    await h.click(recoveryCommit);
+    assert.equal(h.view.hasPendingCommand(), false);
+    assert.equal(h.view.hasUnsavedChanges(), true);
+    await h.click(buttonText.read);
+    assert.equal(h.get("reason").value, written);
+    assert.equal(h.get("ack"), null);
+    h.context({ scopeSha256: "e".repeat(64) });
+    await h.click(buttonText.read);
+    assert.equal(h.get("reason").value, "");
+    assert.equal(h.get("operation").value, "reserve");
+    assert.equal(h.view.hasUnsavedChanges(), false);
   }));

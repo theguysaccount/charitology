@@ -154,6 +154,21 @@ export async function findResourceReservationReceipt(c, org, commandHash) {
   return projected.receipt;
 }
 
+/** Exact recovered claim lookup, including its optional inactive disposition.
+ * Caller reauthorizes the reader. No live receipt or family quota is loaded. */
+export async function findResourceReservationRecovery(c, org, id) {
+  selector(org);
+  selector(id);
+  const raw = limited(await c.query(`SELECT ${projections},
+      NULL::jsonb AS original_receipt,NULL::jsonb AS terminal_receipt
+    FROM os_resource_reservations r WHERE r.org_id=$1 AND r.id=$2 AND r.origin_mode='recovered'`,
+  [org, id]), 1);
+  if (!raw.length) return null;
+  const row = rowFromSql(raw[0], org);
+  need(row.id === id && row.originMode === "recovered");
+  return row;
+}
+
 function changed(result, id) {
   const rows = limited(result, 1);
   need(rows.length === 1 && rows[0]?.id === id, "resource_reservation_stale");
