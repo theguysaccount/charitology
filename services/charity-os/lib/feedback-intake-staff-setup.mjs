@@ -4,8 +4,8 @@ import { proposedFeedbackForm } from "./feedback-intake-form.mjs";
 import { recordFeedbackPublication } from "./feedback-intake-publication.mjs";
 import { feedbackIntakeSchemaReady } from "./feedback-intake-schema.mjs";
 import { publicationAccepting } from "./intake.mjs";
-import { bodyBytes, fail, hash, json } from "./security.mjs";
-import { parseBackupJson } from "./backup-json.mjs";
+import { fail, hash, json } from "./security.mjs";
+import { parseBackupJson, readBackupBodyBytes } from "./backup-json.mjs";
 
 const path = /^\/api\/orgs\/([A-Za-z0-9_-]{1,100})\/intake\/feedback\/(template|publications)$/;
 const headers = { "referrer-policy": "no-referrer" };
@@ -42,7 +42,7 @@ export async function feedbackIntakeStaffSetup({ request, url, db, session, sett
     await db.tx(actor, org, c => requireFeedbackIntakeStaff(c, org, session, { readOnly: true }), { readOnly: true });
     if (!/^application\/json(?:;|$)/i.test(request.headers.get("content-type") || ""))
       fail(415, "feedback_setup_type", "Send the reviewed form and revision as JSON.");
-    const bytes = await bodyBytes(request, 4096);
+    const bytes = await readBackupBodyBytes(request, 4096);
     try { input = parseBackupJson(bytes, 4096); }
     catch { fail(400, "feedback_setup_json", "Use valid JSON with each field once."); }
   }

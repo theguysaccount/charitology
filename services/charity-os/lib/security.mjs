@@ -58,7 +58,7 @@ export function checkCsrf(request, session, settings) {
   )
     fail(403, "csrf", "Refresh the page before trying again.");
 }
-export async function bodyBytes(request, limit = 8 * 1024 * 1024) {
+export async function body(request, limit = 8 * 1024 * 1024) {
   if (Number(request.headers.get("content-length") || 0) > limit)
     fail(413, "size", "This request is too large.");
   let bytes = 0;
@@ -70,17 +70,11 @@ export async function bodyBytes(request, limit = 8 * 1024 * 1024) {
       chunks.push(chunk);
     }
   }
-  return Buffer.concat(chunks, bytes);
-}
-export function parseBodyJson(bytes) {
   try {
-    return JSON.parse(bytes.toString("utf8") || "{}");
+    return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
   } catch {
     fail(400, "json", "Supply valid JSON.");
   }
-}
-export async function body(request, limit) {
-  return parseBodyJson(await bodyBytes(request, limit));
 }
 export function clean(value, max = 240) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";

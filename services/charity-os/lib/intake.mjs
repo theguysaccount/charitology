@@ -3,8 +3,8 @@ import { createHmac, randomBytes } from "node:crypto";
 import { requireAdmin, visibleRecord } from "./access.mjs";
 import { allRecords, rowRecord, saveRecord, audit, notePublicFeedbackReceiptReplay } from "./database.mjs";
 import { getModule, validateRecord } from "./modules.mjs";
-import { bodyBytes, parseBodyJson, checkOrigin, fail, hash, id, json } from "./security.mjs";
-import { parseBackupJson } from "./backup-json.mjs";
+import { checkOrigin, fail, hash, id, json } from "./security.mjs";
+import { parseBackupJson, readBackupBodyBytes } from "./backup-json.mjs";
 import {
   FEEDBACK_INTAKE_CONSENT,
   feedbackSelection,
@@ -426,8 +426,16 @@ export async function publicIntakeRoutes({
     )
   )
     fail(415, "content_type", "Supply JSON.");
-  const bytes = await bodyBytes(request, INTAKE_LIMITS.requestBytes);
-  const input = parseBodyJson(bytes);
+  let bytes, input;
+  try { bytes = await readBackupBodyBytes(request, INTAKE_LIMITS.requestBytes); }
+  catch (error) {
+    if (error?.status === 413) fail(413, "size", "This request is too large.");
+    throw error;
+  }
+  // Preserve the existing parsing semantics for the three ordinary kinds.
+  // Feedback rechecks the same wire bytes with the stricter lexical reader.
+  try { input = JSON.parse(bytes.toString("utf8") || "{}"); }
+  catch { fail(400, "json", "Supply valid JSON."); }
   const ip = (
     request.headers.get("x-forwarded-for") ||
     request.headers.get("x-real-ip") ||

@@ -107,6 +107,10 @@ test("real PostgreSQL keeps reviewed anonymous Feedback conversion exact and pri
     const answers = { topic: "Using a form", experience: "Hard to follow" };
     const publicForm = "/api/public/intake/" + org + "/" + publication.id;
     const publicInput = { answers, consent: true, website: "", idempotencyKey: "fictional_feedback_public_ci" };
+    const duplicate = JSON.stringify(publicInput).replace(/}$/, ',"consent":true}');
+    assert.equal((await call(publicForm + "/submissions", {
+      actor: null, body: duplicate, status: 400,
+    })).code, "intake_json");
     const received = await call(publicForm + "/submissions", {
       actor: null, body: publicInput, status: 201,
     });

@@ -8,7 +8,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {isProxy} from 'node:util/types';
 import path from 'node:path';
 import {requireRecurrenceCi17Profile} from './participation-recurrence-ci17-profile.mjs';
-const MANIFEST_SHA='3d805566c74ce3932b38a0bfd6fd9a76ce28a1d1c3703b431c35ee62d022e885',states=new WeakMap();
+const MANIFEST_SHA='e7927c63ad47fad2ad928f6325ecb271ab27c5c14e7a63dbcf2ccf972bf4c242',states=new WeakMap();
 const ROOT=path.resolve(fileURLToPath(new URL('../../../../',import.meta.url)));
 const digest=b=>createHash('sha256').update(b).digest('hex');
 // These retained type sources are hashed as data; the hook never executes them.

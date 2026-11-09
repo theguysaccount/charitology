@@ -129,8 +129,8 @@ export function parseBackupJson(input, limit = MAX_BACKUP_JSON_BYTES) {
   catch { bad(); }
 }
 
-/** Read the direct envelope before JSON.parse can erase lexical evidence. */
-export async function readBackupBody(request, limit = DIRECT_BACKUP_JSON_BYTES) {
+/** Read one bounded wire body before JSON.parse can erase lexical evidence. */
+export async function readBackupBodyBytes(request, limit = DIRECT_BACKUP_JSON_BYTES) {
   checkedLimit(limit);
   const declared = Number(request.headers.get("content-length") || 0);
   if (declared > limit) {
@@ -156,6 +156,11 @@ export async function readBackupBody(request, limit = DIRECT_BACKUP_JSON_BYTES) 
       chunks.push(value);
     }
   } finally { reader?.releaseLock(); }
+  return Buffer.concat(chunks, length);
+}
+
+export async function readBackupBody(request, limit = DIRECT_BACKUP_JSON_BYTES) {
+  const bytes = await readBackupBodyBytes(request, limit);
   // Preserve the old generic reader's empty-envelope behavior for downstream validation.
-  return parseBackupJson(length ? Buffer.concat(chunks, length) : "{}", limit);
+  return parseBackupJson(bytes.length ? bytes : "{}", limit);
 }
