@@ -18,6 +18,8 @@ The second actual run used `9cc14d33`. All ten main scenarios and capacity accou
 
 The third run, `85731043`, establishes a valid measured frontier: 1,260 participations charge 8,376,803 source bytes and 7,641,293 projected inactive bytes. All ten main scenarios and RC01 pass again, but RC02 stops at a later assertion. Its cause is not inferred from cleanup or query hashes. The successor retains the exact business checks and adds bounded phase, last-call and assertion diagnostics. A pure Node 24 control verifies native assertion locations and omission of object contents. Final business readback and owned cleanup pass separately; later scenarios remain unearned.
 
+The fourth run, `98f21149`, identifies that assertion precisely: activation returned HTTP 422 with `participation_group_safety_capacity`; the fixture expected the later `participation_reminder_capacity` guard. The successor requires that exact observed existing-safety refusal, while retaining complete rollback and no-write checks. It does not claim the reminder NULL credit alone caused the refusal. The cancellation helper also now supplies the real route's required bounded reason. This is a fixture correction, with no application guard or limit relaxed. Final business readback and owned cleanup passed for the failed fourth run.
+
 ## The participant chooses separately
 
 The person must have the current verified account and own-request link. General operational email consent and the new reminder choice are separate. Staff cannot opt in for someone else. Historical email preferences, check-in permission, a booking or a restored file cannot enable reminders.

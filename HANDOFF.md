@@ -4,6 +4,8 @@ Read this first, then `STYLE.md`. The full original brief is preserved; do not r
 
 ## Current implementation: shared OS and mega-list acceptance
 
+- **Reminder refusal diagnosed:** the fourth actual PG18 run (`98f21149`) shows a real HTTP 422 from the existing GROUP/check-in safety guard; the fixture expected a later reminder-capacity code. The successor requires the exact observed guard, preserves rollback/no-write checks and supplies the cancellation route's required reason. No application limits or guards change. Final business readback and owned cleanup pass separately; later capacity/worker scenarios remain unearned.
+
 - **Reminder capacity frontier now measured, later assertion open:** source `85731043` passes all ten main PostgreSQL 18.6 scenarios and RC01. Its corrected fixture retains 1,260 participations within both the source and complete inactive family limits; RC02 then fails a later assertion. The successor adds bounded phase/last-call/assertion diagnostics without changing business expectations or product limits. Fresh final business checks and owned cleanup pass independently. All twenty scenarios, browser acceptance, hosted delivery and release remain open as applicable.
 
 - **Second actual reminder database run:** source `9cc14d33` passes all ten main scenarios and RC01 on PostgreSQL 18.6. RC02 exposes a fixture that fits source storage but not its full inactive-recovery projection. Later scenarios remain unexecuted. Fresh final business/ACL/client checks and owned cleanup pass separately; the suite remains failed. The next fixture must calibrate against the actual complete projection without changing application limits.

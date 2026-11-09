@@ -40,7 +40,7 @@ export async function runReminderCapacityWorkerCases(context,options){
   const before=await A.digest(f),offset=H.trace.length;let refused;phase='rc02-first-on';
   try{refused=await H.choice(f,f.people[0],true,{status:422});}
   catch(error){const last=H.calls.at(-1);if(last?.method==='POST'&&last.tail===H.ownPath(f,f.people[0])+'/reminder-preference'&&last.status===200)throw Object.assign(Error('REMINDER_NEAR8_ACTIVATION_ADMITTED'),{code:'REMINDER_NEAR8_ACTIVATION_ADMITTED',facts:{calibration:frontier.calibration,actualStatus:200,notABoundaryPass:true}});throw error;}
-  phase='rc02-refusal-code';assert.equal(refused.value.code,'participation_reminder_capacity');
+  phase='rc02-refusal-code';assert.equal(refused.value.code,'participation_group_safety_capacity','The real first activation is refused by the existing remaining GROUP/check-in safety guard');
   phase='rc02-refusal-rollback';assert.deepEqual(await A.digest(f),before);
   phase='rc02-refusal-no-dml';H.noDml(offset);
   phase='rc02-absent-after-refusal';assert.equal((await A.oracle(f)).actual.present,false);
@@ -50,7 +50,7 @@ export async function runReminderCapacityWorkerCases(context,options){
   phase='rc02-legacy-credit';assert.equal(after.actual.reminderNullCompatibilityCreditBytes,frontier.accounting.actual.reminderNullCompatibilityCreditBytes);
   const noOpBefore=await A.digest(f),noOpOffset=H.trace.length;phase='rc02-null-off';await H.choice(f,f.people[0],false,{status:409});
   phase='rc02-null-off-clock';H.noClock(noOpOffset);phase='rc02-null-off-dml';H.noDml(noOpOffset);phase='rc02-null-off-rollback';assert.deepEqual(await A.digest(f),noOpBefore);
-  await H.artifact('capacity-near8-activation-and-legacy-exit.json',{frontier,exit,after,refusalCode:refused.value.code,notCreditOnlyCauseClaim:true,fullDomainRollbackDigest:before,actualPhysicalMaximumNotClaimed:true});return{actualBindingFamilyFrontier:true,activationRefused:true,legacyNullPrivacyExit:true};
+  await H.artifact('capacity-near8-activation-and-legacy-exit.json',{frontier,exit,after,refusalCode:refused.value.code,notCreditOnlyCauseClaim:true,fullDomainRollbackDigest:before,actualPhysicalMaximumNotClaimed:true});return{actualBindingFamilyFrontier:true,activationRefused:true,existingSafetyRefusalCode:refused.value.code,reminderCreditOnlyCauseNotClaimed:true,legacyNullPrivacyExit:true};
  });
  group(async()=>{
   const calibration=await H.seedTenant('cap_calibration'),small=await A.measure(calibration),probe=await A.probeSequence(calibration);assert(probe.accepted);const overhead=probe.peakUsage-small.usage,onOverhead=probe.metrics[0].requiredUsage-small.usage;assert(overhead>=onOverhead&&onOverhead>512&&overhead<128*1024);
