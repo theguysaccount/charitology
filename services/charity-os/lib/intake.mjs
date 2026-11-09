@@ -364,6 +364,11 @@ async function lock(c, org) {
   await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
 }
 
+async function requireFeedbackCollectionLayout(c) {
+  if (!(await feedbackIntakeSchemaReady(c)))
+    fail(404, "intake_unavailable", "This feedback form is not accepting new responses.");
+}
+
 export async function publicIntakeRoutes({
   request,
   url = new URL(request.url),
@@ -394,10 +399,11 @@ export async function publicIntakeRoutes({
   if (request.method === "GET" && !action)
     return db.tx(null, org, async (c) => {
       const { publication } = await publicationState(c, org, publicationId);
+      const feedback = publication.kind === "feedback";
+      if (feedback) await requireFeedbackCollectionLayout(c);
       const organizationName = (
         await c.query("SELECT name FROM os_orgs WHERE id=$1", [org])
       ).rows[0]?.name;
-      const feedback = publication.kind === "feedback";
       return okay({
         publication: {
           id: publication.id,
@@ -534,7 +540,10 @@ export async function publicIntakeRoutes({
         if (feedback) notePublicFeedbackReceiptReplay(c, org);
         return okay(publicStatus(old));
       }
-      if (feedback) await currentPublicationState(c, org, publication);
+      if (feedback) {
+        await requireFeedbackCollectionLayout(c);
+        await currentPublicationState(c, org, publication);
+      }
       const submissionIpHash = feedback ? null : ipHash;
       const receipt = randomBytes(32).toString("base64url"),
         submissionId = id(),
@@ -668,7 +677,7 @@ export async function intakeRoutes({
         title: r.schema.title,
         createdAt: time(r.created_at),
         withdrawnAt: time(r.withdrawn_at),
-        accepting: publicationAccepting(
+        accepting: (r.kind !== "feedback" || enabled) && publicationAccepting(
           r,
           records.find((x) => x.id === r.record_id),
           records.find((x) => x.id === r.target_id),

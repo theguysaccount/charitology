@@ -105,8 +105,10 @@ test("real PostgreSQL keeps reviewed anonymous Feedback conversion exact and pri
     assert.equal(publication.kind, "feedback");
 
     const answers = { topic: "Using a form", experience: "Hard to follow" };
-    await call("/api/public/intake/" + org + "/" + publication.id + "/submissions", {
-      actor: null, body: { answers, consent: true, website: "", idempotencyKey: "fictional_feedback_public_ci" }, status: 201,
+    const publicForm = "/api/public/intake/" + org + "/" + publication.id;
+    const publicInput = { answers, consent: true, website: "", idempotencyKey: "fictional_feedback_public_ci" };
+    const received = await call(publicForm + "/submissions", {
+      actor: null, body: publicInput, status: 201,
     });
     const queue = base + "/intake/submissions";
     const { submissions: [submitted] } = await call(queue);
@@ -149,6 +151,20 @@ test("real PostgreSQL keeps reviewed anonymous Feedback conversion exact and pri
     assert.equal(event.record_id, saved.id);
     assert.equal(event.detail.intakeId, submitted.id);
     assert.ok(!Object.hasOwn(event.detail, "requestSha256") && !Object.hasOwn(event.detail, "authoritySha256"));
+
+    // A missing receipt index must close fresh collection while retaining
+    // the exact status Retry and the existing private receipt.
+    await migration.pool.query("DROP INDEX os_feedback_intake_conversion");
+    assert.equal((await call(publicForm, { actor: null, status: 404 })).code, "intake_unavailable");
+    assert.equal((await call(publicForm + "/submissions", { actor: null, status: 404,
+      body: { ...publicInput, idempotencyKey: "fictional_feedback_fresh_ci" },
+    })).code, "intake_unavailable");
+    const retry = await call(publicForm + "/submissions", { actor: null, body: publicInput });
+    assert.deepEqual(retry, { ok: true, status: "converted" });
+    const receipt = await call(publicForm + "/receipt", { actor: null, body: { action: "status", receipt: received.receipt } });
+    assert.deepEqual(receipt, { ok: true, status: "converted", kind: "feedback", participantClaimAvailable: false });
+    await migration.pool.query(`CREATE UNIQUE INDEX os_feedback_intake_conversion
+      ON os_events(org_id,(detail->>'intakeId')) WHERE action='intake.feedback-converted'`);
     assert.equal(providerCalls, 0);
     await t.test("Feedback exit reserve and inactive recovery stay bounded", async () => {
       const { count } = await runFeedbackIntakeCapacityCases({ owner: migration.pool, runtime: db });
