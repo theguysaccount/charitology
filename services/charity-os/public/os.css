@@ -2194,3 +2194,26 @@ textarea[aria-invalid="true"] {
 .recurrence-occurrence legend { max-width: 100%; font-weight: 650; }
 .participation-recurrence pre { max-width: 100%; overflow: auto; }
 @media (max-width: 640px) { .recurrence-values { grid-template-columns: minmax(0, 1fr); } .recurrence-occurrence { padding: .75rem; } }
+
+.resource-reservations,
+.resource-reservations .snapshot,
+.resource-reservations .field {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.resource-reservations input,
+.resource-reservations select,
+.resource-reservations textarea,
+.resource-reservations .button {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+.resource-reservations .button {
+  min-height: 44px;
+  white-space: normal;
+}
+.resource-reservations [role="status"]:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}

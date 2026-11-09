@@ -15,7 +15,7 @@ test('neither foreign or caller-shaped profile/fixture handle admits lazy runtim
 
 const manifestData=async()=>JSON.parse(await readFile(new URL('../test-db/fixtures/participation-recurrence-runtime-manifest-v1.json',import.meta.url),'utf8'));
 test('portable manifest is closed immutable data and malformed graph inputs never become authority',async()=>{
- const original=await manifestData(),admitted=checkedRecurrenceCi17RuntimeManifest(original);assert.equal(admitted.files.length,152);assert(Object.isFrozen(admitted)&&Object.isFrozen(admitted.files)&&admitted.files.every(Object.isFrozen));
+ const original=await manifestData(),admitted=checkedRecurrenceCi17RuntimeManifest(original);assert.equal(admitted.files.length,161);assert(Object.isFrozen(admitted)&&Object.isFrozen(admitted.files)&&admitted.files.every(Object.isFrozen));
  const typeNames=admitted.files.filter(row=>row.name.endsWith('.ts')||row.name.endsWith('.mts')).map(row=>row.name);
  assert.deepEqual(typeNames,['incubator-bridge-types.ts','incubator-native-entry.ts','learning-native-entry.ts','learning-transport.d.mts','learning-types.ts']);
  for(const name of ['incubator-bridge-types-future.ts','incubator-bridge-types-future.d.mts']){

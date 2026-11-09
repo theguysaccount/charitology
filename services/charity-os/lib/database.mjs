@@ -2,12 +2,13 @@ import { participationChargeJsonSQL, PARTICIPATION_REMINDER_LEGACY_SQL } from ".
 import pg from "pg";
 import { readFile } from "node:fs/promises";
 import { verifiedNeonConnectionString } from "./connection.mjs";
-import { id, fail } from "./security.mjs";
+import { id, fail, HttpError } from "./security.mjs";
 import { guardParticipationWrite } from "./participation-guards.mjs";
 import { guardTaskRecurrenceWrite } from "./task-recurrence.mjs";
 import { guardLearningWrite } from "./learning-guards.mjs";
-// Only server calls to audit classify a completed transaction. HTTP inputs
-// cannot supply a deferral flag or a replacement capacity validator.
+import { guardResourceReservationWrite, resourceReservationHistoryPresent } from "./resource-reservation-guards.mjs";
+// Only trusted server actions classify a transaction. HTTP inputs cannot
+// supply a deferral flag or a replacement capacity validator.
 const transactionAudits = new WeakMap();
 const safetyActions = new Set([
   "task-recurrence.ended",
@@ -44,6 +45,125 @@ export function noteContactReconciliationReceiptReplay(c, org) {
   if (transaction?.orgId === org && transaction.actions.size === 0)
     transaction.receiptReplay = true;
 }
+async function checkCompleteWorkspaceCapacity(c, orgId, ordinary, requireResourceHistory = false) {
+  const present = (
+    await c.query(
+      `SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders, EXISTS(SELECT 1 FROM os_resource_reservations WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_resource_reservation_commands WHERE org_id=$1) AS "resourceReservations"`,
+      [orgId],
+    )
+  ).rows[0];
+  if (requireResourceHistory && present.resourceReservations !== true)
+    fail(503, "resource_reservation_admission", "The reservation transaction has no stored history.");
+  if (present.recurrence) {
+    const { checkParticipationRecurrenceFamilyCapacity } = await import("./participation-recurrence-capacity.mjs");
+    await checkParticipationRecurrenceFamilyCapacity(c, orgId);
+  }
+  if (present.resourceReservations && !ordinary && !present.groups && !present.reminders) {
+    const { checkResourceReservationSafetyCapacity } = await import("./resource-reservation-capacity.mjs");
+    await checkResourceReservationSafetyCapacity(c, orgId);
+    return;
+  }
+  let participation;
+  if (present.participation) {
+    const { checkParticipationExportCapacity } = await import(
+      "./participation-capacity.mjs"
+    );
+    participation = await checkParticipationExportCapacity(c, orgId, {
+      reserve: ordinary && !present.groups && !present.reminders,
+      legacySafety: present.checkins || present.groups || present.reminders,
+    });
+    if (!ordinary && !present.groups && !present.reminders) {
+      const { checkActualParticipationSafetyPacket } = await import(
+        "./participation-capacity.mjs"
+      );
+      await checkActualParticipationSafetyPacket(c, orgId);
+    }
+  }
+  if (present.reminders) {
+    const {checkReminderOrdinaryCapacity,checkReminderSafetyCapacity} = await import('./participation-reminder-capacity.mjs');
+    if (ordinary) await checkReminderOrdinaryCapacity(c,orgId);
+    else await checkReminderSafetyCapacity(c,orgId);
+  } else if (present.groups) {
+    // GROUP owns the union of the same actual operational baseline,
+    // remaining person/booking/policy/outbox exits and check-ins once.
+    // Re-purchasing the old full constants after cancellation strands
+    // exits. Accepted no-write Replay uses only this remaining gate.
+    if (ordinary) {
+      const { checkGroupOrdinaryCapacity } = await import("./participation-group-write-capacity.mjs");
+      await checkGroupOrdinaryCapacity(c, orgId);
+    } else {
+      const { checkGroupSafetyCapacity } = await import("./participation-group-safety-capacity.mjs");
+      await checkGroupSafetyCapacity(c, orgId);
+    }
+  }
+  if (!present.groups && !present.reminders && (
+    (present.present || present.participation || present.incubator || present.checkins || present.field || present.crm || present.recurrence || present.resourceReservations) &&
+    ordinary
+  )) {
+    const { checkWorkspaceExportCapacity } = await import(
+      "./workspace-backup.mjs"
+    );
+    const whole = await checkWorkspaceExportCapacity(c, orgId);
+    if (present.checkins) {
+      const { checkCheckInCapacity, checkCombinedCheckInCapacity } = await import("./participant-check-in-capacity.mjs");
+      const checkins = await checkCheckInCapacity(c, orgId);
+      checkCombinedCheckInCapacity(whole, checkins, participation);
+    }
+    if (participation) {
+      const { checkCombinedParticipationCapacity } = await import(
+        "./participation-capacity.mjs"
+      );
+      checkCombinedParticipationCapacity(whole, participation);
+    }
+  }
+  if (present.checkins && !ordinary && !present.groups && !present.reminders) {
+    const { checkCheckInSafetyCapacity } = await import("./participant-check-in-capacity.mjs");
+    await checkCheckInSafetyCapacity(c, orgId);
+  }
+  if ((present.incubator || present.checkins || present.field || present.crm || present.recurrence) && !ordinary && !present.groups && !present.reminders) {
+    const { checkActualWorkspaceBackupCapacity } = await import(
+      "./workspace-backup.mjs"
+    );
+    await checkActualWorkspaceBackupCapacity(c, orgId);
+  }
+}
+
+const resourceOrdinaryAudit = {
+  reserve: "resource-reservation.reserved",
+  replace: "resource-reservation.replaced",
+};
+const measuredCapacityCodes = new Set([
+  "resource_reservation_capacity", "resource_reservation_quota", "quota", "backup_size",
+  "learning_backup_size", "learning_operational_capacity", "learning_restore_capacity",
+  "participation_backup_size", "checkin_capacity",
+]);
+
+/** The mounted reservation route calls this after the complete store plan and
+ * mandatory ordinary audit. Release uses its prepaid terminal receipt. */
+export async function admitResourceReservationWorkspace(c, { orgId, operation, mode, plan, stored }) {
+  const state = transactionAudits.get(c), decision = stored?.receipt?.decision;
+  const release = operation === "release";
+  const savedPlan = decision?.orgId === orgId && decision.operation === operation &&
+    plan?.state === "ready" && plan.receipt?.commandHash === stored.receipt.commandHash &&
+    plan.receipt?.requestHash === stored.receipt.requestHash &&
+    stored.insertedId === (decision.next?.id ?? null) && stored.releasedId === (decision.previous?.id ?? null);
+  const validAction = release ? state?.actions.size === 0 :
+    Object.hasOwn(resourceOrdinaryAudit, operation) && state?.actions.size === 1 &&
+    state.actions.has(resourceOrdinaryAudit[operation]);
+  if (!state?.locked || state.readOnly || state.orgId !== orgId || state.resourceAdmission ||
+      mode !== (release ? "release-safety" : "ordinary") || !validAction || !savedPlan)
+    fail(503, "resource_reservation_admission", "The reservation transaction cannot be admitted.");
+
+  try {
+    await checkCompleteWorkspaceCapacity(c, orgId, !release, true);
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 422 && measuredCapacityCodes.has(error.code)) return false;
+    throw error;
+  }
+  state.resourceAdmission = { mode, auditRevision: state.auditRevision };
+  return true;
+}
+
 export function database(url, { schema } = {}) {
   if (schema && !/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("Invalid schema.");
@@ -62,6 +182,8 @@ export function database(url, { schema } = {}) {
         orgId,
         locked: Boolean(lock && orgId),
         actions: new Set(),
+        auditRevision: 0,
+        readOnly,
       };
       transactionAudits.set(c, state);
       try {
@@ -83,84 +205,15 @@ export function database(url, { schema } = {}) {
         // immutable history and mandatory audits. Intermediate audit checks
         // intentionally retain raw SQL accounting below.
         if (!readOnly && orgId && (state.locked || state.actions.size)) {
-          const present = (
-            await c.query(
-              `SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders`,
-              [orgId],
-            )
-          ).rows[0];
           const ordinary =
-            (!state.actions.size && !state.receiptReplay) ||
-            [...state.actions].some(
-              (action) => !projectionExemptActions.has(action),
-            );
-          if (present.recurrence) {
-            const { checkParticipationRecurrenceFamilyCapacity } = await import("./participation-recurrence-capacity.mjs");
-            await checkParticipationRecurrenceFamilyCapacity(c, orgId);
-          }
-          let participation;
-          if (present.participation) {
-            const { checkParticipationExportCapacity } = await import(
-              "./participation-capacity.mjs"
-            );
-            participation = await checkParticipationExportCapacity(c, orgId, {
-              reserve: ordinary && !present.groups && !present.reminders,
-              legacySafety: present.checkins || present.groups || present.reminders,
-            });
-            if (!ordinary && !present.groups && !present.reminders) {
-              const { checkActualParticipationSafetyPacket } = await import(
-                "./participation-capacity.mjs"
-              );
-              await checkActualParticipationSafetyPacket(c, orgId);
-            }
-          }
-          if (present.reminders) {
-            const {checkReminderOrdinaryCapacity,checkReminderSafetyCapacity} = await import('./participation-reminder-capacity.mjs');
-            if (ordinary) await checkReminderOrdinaryCapacity(c,orgId);
-            else await checkReminderSafetyCapacity(c,orgId);
-          } else if (present.groups) {
-            // GROUP owns the union of the same actual operational baseline,
-            // remaining person/booking/policy/outbox exits and check-ins once.
-            // Re-purchasing the old full constants after cancellation strands
-            // exits. Accepted no-write Replay uses only this remaining gate.
-            if (ordinary) {
-              const { checkGroupOrdinaryCapacity } = await import("./participation-group-write-capacity.mjs");
-              await checkGroupOrdinaryCapacity(c, orgId);
-            } else {
-              const { checkGroupSafetyCapacity } = await import("./participation-group-safety-capacity.mjs");
-              await checkGroupSafetyCapacity(c, orgId);
-            }
-          }
-          if (!present.groups && !present.reminders && (
-            (present.present || present.participation || present.incubator || present.checkins || present.field || present.crm || present.recurrence) &&
-            ordinary
-          )) {
-            const { checkWorkspaceExportCapacity } = await import(
-              "./workspace-backup.mjs"
-            );
-            const whole = await checkWorkspaceExportCapacity(c, orgId);
-            if (present.checkins) {
-              const { checkCheckInCapacity, checkCombinedCheckInCapacity } = await import("./participant-check-in-capacity.mjs");
-              const checkins = await checkCheckInCapacity(c, orgId);
-              checkCombinedCheckInCapacity(whole, checkins, participation);
-            }
-            if (participation) {
-              const { checkCombinedParticipationCapacity } = await import(
-                "./participation-capacity.mjs"
-              );
-              checkCombinedParticipationCapacity(whole, participation);
-            }
-          }
-          if (present.checkins && !ordinary && !present.groups && !present.reminders) {
-            const { checkCheckInSafetyCapacity } = await import("./participant-check-in-capacity.mjs");
-            await checkCheckInSafetyCapacity(c, orgId);
-          }
-          if ((present.incubator || present.checkins || present.field || present.crm || present.recurrence) && !ordinary && !present.groups && !present.reminders) {
-            const { checkActualWorkspaceBackupCapacity } = await import(
-              "./workspace-backup.mjs"
-            );
-            await checkActualWorkspaceBackupCapacity(c, orgId);
-          }
+            (!state.actions.size && !state.receiptReplay && state.resourceAdmission?.mode !== "release-safety") ||
+            [...state.actions].some((action) => !projectionExemptActions.has(action));
+          const mode = ordinary ? "ordinary" : "release-safety";
+          // The resource hook has already measured the complete final graph
+          // on this client. A later audit or a different class rechecks it.
+          if (state.resourceAdmission?.mode !== mode ||
+              state.resourceAdmission.auditRevision !== state.auditRevision)
+            await checkCompleteWorkspaceCapacity(c, orgId, ordinary);
         }
         await c.query("COMMIT");
         return result;
@@ -196,6 +249,7 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
   if (transaction && transaction.orgId === org) {
     // Track intent even when an optional or emergency-reserve audit is skipped.
     transaction.actions.add(action);
+    transaction.auditRevision++;
     if (!transaction.locked) {
       await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
         org,
@@ -238,49 +292,59 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
         "This workspace reached its60 MiB record, history and file export budget. Export your records before continuing in a new workspace.",
       );
   }
-  if (action === "backup.exported") {
-    const { canRetainIncubatorExportAudit } = await import(
-      "./workspace-backup.mjs"
-    );
-    if (
-      !(await canRetainIncubatorExportAudit(c, org, {
-        org_id: org,
-        actor_id: user,
-        action,
-        record_id: record?.id || null,
-        module_id: record?.moduleId || null,
-        detail,
-      }))
-    )
-      return false;
-  }
-  if (safetyActions.has(action) || action === "backup.exported") {
-    const { groupStateCount } = await import("./participation-group-store.mjs");
-    const reminderPresent=(await c.query(`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`,[org])).rows[0]?.present;
-    if (reminderPresent === true) {
-      const {canRetainReminderSafetyAudit}=await import('./participation-reminder-capacity.mjs');
-      if (!(await canRetainReminderSafetyAudit(c,org,{org_id:org,actor_id:user,action,record_id:record?.id||null,module_id:record?.moduleId||null,detail}))) return false;
-    } else if (await groupStateCount(c, org)) {
-      const { canRetainGroupSafetyAudit } = await import("./participation-group-safety-capacity.mjs");
-      if (!(await canRetainGroupSafetyAudit(c, org, { org_id: org, actor_id: user, action,
-        record_id: record?.id || null, module_id: record?.moduleId || null, detail }))) return false;
-    } else {
-    const { canRetainCheckInSafetyAudit } = await import("./participant-check-in-capacity.mjs");
-    if (!(await canRetainCheckInSafetyAudit(c, org, { org_id: org, actor_id: user, action, record_id: record?.id || null, module_id: record?.moduleId || null, detail }))) return false;
-    const { canRetainParticipationSafetyAudit } = await import(
-      "./participation-capacity.mjs"
-    );
-    if (
-      !(await canRetainParticipationSafetyAudit(c, org, {
-        org_id: org,
-        actor_id: user,
-        action,
-        record_id: record?.id || null,
-        module_id: record?.moduleId || null,
-        detail,
-      }))
-    )
-      return false;
+  const optional = action === "backup.exported" || safetyActions.has(action);
+  if (optional && await resourceReservationHistoryPresent(c, org)) {
+    const { canRetainResourceReservationSafetyAudit } = await import("./resource-reservation-capacity.mjs");
+    const resourceAudit = await canRetainResourceReservationSafetyAudit(c, org, {
+      org_id: org, actor_id: user, action, record_id: record?.id || null,
+      module_id: record?.moduleId || null, detail,
+    });
+    if (resourceAudit !== true) return false;
+  } else {
+    if (action === "backup.exported") {
+      const { canRetainIncubatorExportAudit } = await import(
+        "./workspace-backup.mjs"
+      );
+      if (
+        !(await canRetainIncubatorExportAudit(c, org, {
+          org_id: org,
+          actor_id: user,
+          action,
+          record_id: record?.id || null,
+          module_id: record?.moduleId || null,
+          detail,
+        }))
+      )
+        return false;
+    }
+    if (safetyActions.has(action) || action === "backup.exported") {
+      const { groupStateCount } = await import("./participation-group-store.mjs");
+      const reminderPresent=(await c.query(`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`,[org])).rows[0]?.present;
+      if (reminderPresent === true) {
+        const {canRetainReminderSafetyAudit}=await import('./participation-reminder-capacity.mjs');
+        if (!(await canRetainReminderSafetyAudit(c,org,{org_id:org,actor_id:user,action,record_id:record?.id||null,module_id:record?.moduleId||null,detail}))) return false;
+      } else if (await groupStateCount(c, org)) {
+        const { canRetainGroupSafetyAudit } = await import("./participation-group-safety-capacity.mjs");
+        if (!(await canRetainGroupSafetyAudit(c, org, { org_id: org, actor_id: user, action,
+          record_id: record?.id || null, module_id: record?.moduleId || null, detail }))) return false;
+      } else {
+      const { canRetainCheckInSafetyAudit } = await import("./participant-check-in-capacity.mjs");
+      if (!(await canRetainCheckInSafetyAudit(c, org, { org_id: org, actor_id: user, action, record_id: record?.id || null, module_id: record?.moduleId || null, detail }))) return false;
+      const { canRetainParticipationSafetyAudit } = await import(
+        "./participation-capacity.mjs"
+      );
+      if (
+        !(await canRetainParticipationSafetyAudit(c, org, {
+          org_id: org,
+          actor_id: user,
+          action,
+          record_id: record?.id || null,
+          module_id: record?.moduleId || null,
+          detail,
+        }))
+      )
+        return false;
+      }
     }
   }
   await c.query(
@@ -325,6 +389,7 @@ export async function saveRecord(c, r, options = {}) {
   await guardParticipationWrite(c, r, options);
   await guardTaskRecurrenceWrite(c, r, options);
   await guardLearningWrite(c, r, options);
+  await guardResourceReservationWrite(c, r, { operation: options.operation });
   const size = Buffer.byteLength(JSON.stringify(r.data));
   const usage = (
     await c.query(
@@ -382,6 +447,8 @@ export async function logicalBackupBytes(c, org) {
     "os_task_recurrence_series",
     "os_task_recurrence_occurrences",
     "os_resource_directory_history",
+    "os_resource_reservations",
+    "os_resource_reservation_commands",
     "os_learning_history",
     "os_incubator_history",
     "os_learning_previews",

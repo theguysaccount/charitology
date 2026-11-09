@@ -11,6 +11,8 @@ import {
   operationalGrowth, LEARNING_RESTORE_CAPACITY as C, LEARNING_OPERATIONAL_CAPACITY as O,
 } from "./learning-capacity.mjs";
 
+import { measureResourceReservationRemaining } from "./resource-reservation-capacity.mjs";
+
 const MAX = 2147483647, DIGEST = "f".repeat(64), wireStamp = O.serviceTime;
 const wireBytes = value => Buffer.byteLength(JSON.stringify(value));
 const bad = () => fail(422, "participation_group_safety_capacity", "The complete current participation safety projection is unavailable or exceeds its existing limits.");
@@ -270,10 +272,14 @@ async function sourceSnapshot(c, org, candidate) {
   const operational = await measureLearningOperationalCapacity(c, org, backup.participation);
   const remaining = await measureRemaining(c, org, { backup, operational }, append);
   const group = await measureGroupCapacity(c, org), checkins = await checkCheckInCapacity(c, org);
-  const requiredUsage = usage + remaining.operationalSourceLogicalGrowthBytes + remaining.retainedGrowthAboveOperational + group.retainedGrowthBytes + checkins.wholeRetainedReserve;
-  const requiredBackupBytes = wireBytes(backup) + operational.sourceWireGrowthBytes + remaining.nativeGrowthAboveOperational + group.nativeGrowthBytes + checkins.wholeNativeReserve;
+  const resources = await measureResourceReservationRemaining(c, org, backup.resourceReservations);
+  const requiredUsage = usage + remaining.operationalSourceLogicalGrowthBytes + remaining.retainedGrowthAboveOperational +
+    group.retainedGrowthBytes + checkins.wholeRetainedReserve + (resources?.retainedGrowthBytes ?? 0);
+  const requiredBackupBytes = wireBytes(backup) + operational.sourceWireGrowthBytes + remaining.nativeGrowthAboveOperational +
+    group.nativeGrowthBytes + checkins.wholeNativeReserve + (resources?.nativeGrowthBytes ?? 0);
   need(Number.isSafeInteger(requiredUsage) && Number.isSafeInteger(requiredBackupBytes));
-  return { requiredUsage, requiredBackupBytes, usage, backupBytes: wireBytes(backup), remaining, group, checkins };
+  return { requiredUsage, requiredBackupBytes, usage, backupBytes: wireBytes(backup), remaining, group, checkins,
+    ...(resources ? { resourceReservations: resources } : {}) };
 }
 // Existing trusted emergency policy only. Ordinary60MiB/restore admission is
 // the caller's separate path; no HTTP or request-supplied mode is accepted.

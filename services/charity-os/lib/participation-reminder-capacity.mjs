@@ -12,6 +12,7 @@ import { validateReminderEnvelope, validateReminderStoredRow, REMINDER_PREVIEW_K
 import { reminderChoiceAuditCandidates, reminderScheduleAuditCandidate } from './participation-reminder-audit.mjs';
 import { REMINDER_OUTBOX_COLUMNS } from './participation-reminder-outbox.mjs';
 import { GROUP_SAFETY_SQL } from './participation-group-safety-capacity.mjs';
+import { measureResourceReservationRemaining } from './resource-reservation-capacity.mjs';
 import { learningOperationalOutboxProjectionSQL, LEARNING_RESTORE_CAPACITY as C,
   LEARNING_OPERATIONAL_CAPACITY as O } from './learning-capacity.mjs';
 
@@ -112,7 +113,8 @@ async function current(c, org) {
   const group = await measureGroupCapacity(c, org), checkins = await checkCheckInCapacity(c, org);
   const targets = rows(await c.query('SELECT * FROM os_participation_targets WHERE org_id=$1 ORDER BY target_id', [org]), 500);
   need(backup.participation.participations.length === accounting.count);
-  return { backup, usage, accounting, operational, remaining, group, checkins, targets, previews };
+  const resources = await measureResourceReservationRemaining(c, org, backup.resourceReservations);
+  return { backup, usage, accounting, operational, remaining, group, checkins, targets, previews, resources };
 }
 
 // Source-derived fixed bounds from the SAME remaining-union implementation.
@@ -188,7 +190,7 @@ async function evaluate(c, org, source, { person = null, added = [], audits = []
   need(source.usage >= source.accounting.chargedBytes + currentOutbox + replacedPending);
   const retained = sum([source.usage - source.accounting.chargedBytes - currentOutbox - replacedPending,
     allPeople.projected, boxes.projected, source.remaining.bookingRetainedGrowth, source.remaining.policyRetainedGrowth,
-    source.group.retainedGrowthBytes, source.checkins.wholeRetainedReserve, journal.retained, pending?.bytes || 0]);
+    source.group.retainedGrowthBytes, source.checkins.wholeRetainedReserve, source.resources?.retainedGrowthBytes ?? 0, journal.retained, pending?.bytes || 0]);
   // Reuse already-admitted native temporal transports for source rows (including
   // extended/BC provider dates). Only new SQL6 candidate rows use Date transport.
   const originalPeople = new Map(source.backup.participation.participations.map(p => [p.id, p]));
@@ -220,7 +222,7 @@ async function evaluate(c, org, source, { person = null, added = [], audits = []
   need(bytes(actualParticipation.targets)<=LIMIT.family && bytes(actualParticipation.participations)+personGrowth<=LIMIT.family &&
     bytes(actualParticipation.outbox)+outboxGrowth<=LIMIT.family);
   const requiredBackupBytes = sum([bytes(actualPacket), personGrowth, outboxGrowth, source.remaining.bookingNativeGrowth,
-    source.remaining.policyNativeGrowth, source.group.nativeGrowthBytes, source.checkins.wholeNativeReserve]);
+    source.remaining.policyNativeGrowth, source.group.nativeGrowthBytes, source.checkins.wholeNativeReserve, source.resources?.nativeGrowthBytes ?? 0]);
   need(retained <= LIMIT[mode] && requiredBackupBytes <= LIMIT.native);
   const metrics = { requiredUsage: retained, requiredBackupBytes, actualProspectiveBackupBytes: bytes(actualPacket),
     accounting: source.accounting, actualExistingOutboxChargedBytes: currentOutbox, projectedOutboxChargedBytes: boxes.projected,
@@ -231,7 +233,8 @@ async function evaluate(c, org, source, { person = null, added = [], audits = []
     prospectiveParticipationChargedBytes: allPeople.actual, prospectiveParticipationRawBytes: allPeople.raw,
     projectedParticipationChargedBytes: allPeople.projected, projectedParticipationRawBytes: allPeople.projectedRaw,
     lostReminderNullCreditBytes: source.accounting.reminderNullCompatibilityCreditBytes, actualProspectivePacketSha256: hash(actualPacket),
-    replacedPendingBytes: replacedPending, pendingCompositeBytes: pending?.bytes || 0, mandatoryAuditBytes: journal.retained };
+    replacedPendingBytes: replacedPending, pendingCompositeBytes: pending?.bytes || 0, mandatoryAuditBytes: journal.retained,
+    ...(source.resources ? { resourceReservations: source.resources } : {}) };
   if (mode === 'ordinary') {
     const { checkLearningRestoreCapacity } = await import('./learning-capacity.mjs');
     const namespace = await projectedGroupNamespace(c, org, source), checkInNamespace=await projectedCheckInNamespace(c,org,source);

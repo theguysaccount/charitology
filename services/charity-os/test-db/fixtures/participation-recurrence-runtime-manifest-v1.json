@@ -29,8 +29,8 @@
     },
     {
       "name": "backup.mjs",
-      "bytes": 6995,
-      "sha256": "0c3c7a81adae9f9e73d5eec2ad2a0b765373c966ee2d45483eb8081b6721a326"
+      "bytes": 7123,
+      "sha256": "ae0507ffbd7e3da2fdb182b12bb1ec6ae048f0b2e1b4b075f1f42c87aeb2f620"
     },
     {
       "name": "connection.mjs",
@@ -94,8 +94,8 @@
     },
     {
       "name": "database.mjs",
-      "bytes": 21685,
-      "sha256": "779d4f37844f2b4951a00733baa924ba29e4450822c4dd1b18e01907827c929d"
+      "bytes": 25203,
+      "sha256": "e8c98d02dd78cf0ab880d1fe9ca7d2a011a6fdf35267d9599c27c00cc7b6dc35"
     },
     {
       "name": "directory-catalog-data.json",
@@ -189,8 +189,8 @@
     },
     {
       "name": "handler.mjs",
-      "bytes": 81455,
-      "sha256": "fead9465b8a204a0125b19136c4cedfaa3cc94a0ed526f99b07abe003f7cd0ca"
+      "bytes": 84858,
+      "sha256": "ff4b3d69dfee9ae137aef8275bc594e0aaa6c5749c1faf88474213e8ed8a3022"
     },
     {
       "name": "incubator-bridge-access.mjs",
@@ -294,8 +294,8 @@
     },
     {
       "name": "learning-capacity.mjs",
-      "bytes": 43970,
-      "sha256": "02c7f74eb80b9f9bdda9804f103353477640cb9ca46cc4d586748a6907495421"
+      "bytes": 45260,
+      "sha256": "53ca13c958179115284b93c26fc3e615d117d7ae60b158a0fe75c4061c6a65fd"
     },
     {
       "name": "learning-commands.mjs",
@@ -409,8 +409,8 @@
     },
     {
       "name": "migration-grants.mjs",
-      "bytes": 2295,
-      "sha256": "8c138445dbbe5bd966eb375da3a0efffd74ae9d9090dab4c1ffffeef4542cce7"
+      "bytes": 2890,
+      "sha256": "9ff9ff92b109532c24b9ad2e21e9d7ed69f385d5a6405774d8d05346611fd0db"
     },
     {
       "name": "migration.mjs",
@@ -544,8 +544,8 @@
     },
     {
       "name": "participation-group-safety-capacity.mjs",
-      "bytes": 29884,
-      "sha256": "eccd340c21b7b415175bb4ce50306522bd0be4ec398760cd5a98598560070bb9"
+      "bytes": 30225,
+      "sha256": "bfbf6b663922afb158849f564a3f3a1fd001bcd0e4b7a135b8a45d2e5727b8ef"
     },
     {
       "name": "participation-group-store.mjs",
@@ -554,8 +554,8 @@
     },
     {
       "name": "participation-group-write-capacity.mjs",
-      "bytes": 23326,
-      "sha256": "1523934f16ce77396d1a3705055aad8ad8e1c29ed378d46e5b4d04c8e9f242cb"
+      "bytes": 23520,
+      "sha256": "04a2bfc770979847982118e6e3073d4604516d642b3b8b2e70e54e2efe204614"
     },
     {
       "name": "participation-group-write-routes.mjs",
@@ -579,8 +579,8 @@
     },
     {
       "name": "participation-recurrence-capacity.mjs",
-      "bytes": 22363,
-      "sha256": "3fe107ab8707e73a2d96d879b083bd624ae709ca831cb9f2905dfd23b6d36d81"
+      "bytes": 22463,
+      "sha256": "86617855670aea85ff30803033fe703d8482c1d6223e5b5a249c443195ee83a6"
     },
     {
       "name": "participation-recurrence-commands.mjs",
@@ -649,8 +649,8 @@
     },
     {
       "name": "participation-reminder-capacity.mjs",
-      "bytes": 36665,
-      "sha256": "5b1c3d9dda428b6c588c07959dd428b9aa364ae9a102849b623afef94198ae2e"
+      "bytes": 37030,
+      "sha256": "db43f25c506258338801e66064266baad40a219667dd3a4ea743f90f4279457d"
     },
     {
       "name": "participation-reminder-choice.mjs",
@@ -723,14 +723,59 @@
       "sha256": "3e1bdcac36a51306f841880522d2962b0bdac51922bc5da04ee941b10239672e"
     },
     {
+      "name": "resource-reservation-backup.mjs",
+      "bytes": 4742,
+      "sha256": "1b9d2d3de83e31a137aaacd37d400c556a37f16ab015353a095d302e89c6f29f"
+    },
+    {
+      "name": "resource-reservation-capacity.mjs",
+      "bytes": 12105,
+      "sha256": "b6de59e96de560f47fe8f6a5aa75bb15ce4141790b5915aa75df1a3bb4fe2b64"
+    },
+    {
+      "name": "resource-reservation-context.mjs",
+      "bytes": 11613,
+      "sha256": "9f683a9aa8c80afef762b67d7e3b06ee57edbe2685d72beb06b68f94bae67d20"
+    },
+    {
+      "name": "resource-reservation-guards.mjs",
+      "bytes": 8640,
+      "sha256": "f36c9818a97fece69bbf2e9d524c9056f90e297b5099ac76e17d797262a2d7a9"
+    },
+    {
+      "name": "resource-reservation-ledger.mjs",
+      "bytes": 24291,
+      "sha256": "f17fef3a19926809c12b229129f204dcd35586712c7a479a6d01be3d34613e1d"
+    },
+    {
+      "name": "resource-reservation-model.mjs",
+      "bytes": 7658,
+      "sha256": "d8762b5bf033ad71c3b3b11c1ad3867872bcf1b677cfcd49abadac21607bf64c"
+    },
+    {
+      "name": "resource-reservation-preview.mjs",
+      "bytes": 6613,
+      "sha256": "92f1fcc9ee9a7c3f813eaf051af8a97b2d9731b6fabaa8e93bf58db7a8039ab7"
+    },
+    {
+      "name": "resource-reservation-routes.mjs",
+      "bytes": 16579,
+      "sha256": "c7e28e681dce9f9977485921b4b148a46d6ebffdb6baccf1490b56c2f9ce820b"
+    },
+    {
+      "name": "resource-reservation-store.mjs",
+      "bytes": 11791,
+      "sha256": "8bfc2c63c77ace5fbc123889a6d1df0b7561f8c8671714c934679bf39185591c"
+    },
+    {
       "name": "schedule.mjs",
       "bytes": 1635,
       "sha256": "bc83e34c1b9a18a3b038be5af7b2f676b8a2d515e26f91c8563afabe1998edec"
     },
     {
       "name": "schema.sql",
-      "bytes": 61287,
-      "sha256": "23ca297b0b676cac6058fecc3ce14f6e8bb721347492f71d886c28a416aa0b93"
+      "bytes": 80959,
+      "sha256": "fac2a5a98047509838999ec3cbcc7177520521d3053fac2629cf36b988202322"
     },
     {
       "name": "security.mjs",
@@ -759,8 +804,8 @@
     },
     {
       "name": "workspace-backup.mjs",
-      "bytes": 9985,
-      "sha256": "a69330477aece41e1a3cb80e5bc0e698c51a6d3a8c804dab8b14faca67ce9176"
+      "bytes": 11363,
+      "sha256": "c1ec74e9e566ea2ef4e5e448a50a5fb209c88b65a460da43b6ef75c77d6017a0"
     }
   ]
 }

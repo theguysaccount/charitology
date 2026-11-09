@@ -1,3 +1,4 @@
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 // Actual pure modules and closed fake SELECT/INSERT seams; no PG/auth/rollback proof.
 import test from 'node:test';
 import legacyProjection from './fixtures/field-legacy-restore-projection-v1.json' with {type:'json'};
@@ -176,6 +177,7 @@ test('FIELD-only optional export journal measures declared remaining headroom in
 });
 test('FIELD-only nonordinary transaction reaches actual hard packet gate without new restore reserve',async()=>{
  const f=exporter([],{field:true}),calls=[],c={release(){calls.push('RELEASE');},async query(sql,args){calls.push(sql);
+  if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
   if(sql==='SELECT * FROM os_orgs WHERE id=$1')throw Error('FIELD_ACTUAL_EXIT_GATE');
   if(sql.includes(' AS participation,')&&sql.includes(' AS field'))return {rows:[{present:false,participation:false,incubator:false,checkins:false,groups:false,field:true}]};
   if(sql==='SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1')return {rows:[{count:0}]};

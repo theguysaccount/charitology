@@ -1,3 +1,4 @@
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -141,6 +142,7 @@ test("an optional export journal cannot consume the last byte of a v3 exit packe
   ]);
   const c = {
     query: async (sql, values) => {
+      if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
       const emptyGroups = emptyParticipationGroupsQuery(sql, values);
       if (emptyGroups !== undefined) return emptyGroups;
       if (

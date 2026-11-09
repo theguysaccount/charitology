@@ -1,3 +1,4 @@
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import {PARTICIPATION_REMINDER_LEGACY_SQL} from '../lib/participation-storage.mjs';
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -83,6 +84,8 @@ function fixture({ moduleId = "events", state = "requested", usage = 0,
     async query(sql, values = []) {
       db.calls.push({ sql, values: structuredClone(values) });
       if (throwAt && sql.startsWith(throwAt)) throw new Error("Fictional SQL failure");
+      if (sql === reservationSql.projection) return { rows: [], rowCount: 0 };
+      if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
       // Historical domain rows/journal have no reminder choice, marker or review.
       if (sql === `SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`) {
         assert.deepEqual(values,[ORG]); return {rows:[{present:false}],rowCount:1};

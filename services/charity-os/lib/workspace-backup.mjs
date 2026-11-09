@@ -16,10 +16,13 @@ import {exportIncubatorBridge} from './incubator-bridge-backup.mjs';
 import {exportParticipantCheckins} from './participant-check-in-backup.mjs';
 import {exportParticipationGroups} from './participation-group-recovery.mjs';
 
-const workspaceFeatures=async(c,org)=>(await c.query(`SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders`,[org])).rows[0];
+import {exportResourceReservations} from './resource-reservation-backup.mjs';
+import {measureResourceReservationRemaining} from './resource-reservation-capacity.mjs';
+
+export const readWorkspaceFeatures=async(c,org)=>(await c.query(`SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders, EXISTS(SELECT 1 FROM os_resource_reservations WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_resource_reservation_commands WHERE org_id=$1) AS reservations`,[org])).rows[0];
 
 /** The HTTP export and transaction capacity check use this same exact inventory. */
-export async function assembleWorkspaceBackup(c,org,{organization,records}={}){
+export async function assembleWorkspaceBackup(c,org,{organization,records,features}={}){
   organization??=(await c.query('SELECT * FROM os_orgs WHERE id=$1',[org])).rows[0];
   if(!organization)fail(404,'organization','This organization is unavailable.');
   records??=await allRecords(c,org);
@@ -34,6 +37,8 @@ export async function assembleWorkspaceBackup(c,org,{organization,records}={}){
   const incubatorBridge=await exportIncubatorBridge(c,org,{records,trash});
   const participantCheckins=await exportParticipantCheckins(c,org);
   const participationGroups=await exportParticipationGroups(c,org);
+  features??=await readWorkspaceFeatures(c,org);
+  const resourceReservations=features?.reservations===true?await exportResourceReservations(c,org,{records,trash}):undefined;
   return makeBackup(organization,records,{comments,events,reports,files,trash,trashFiles,integrations,
     intake:await exportIntake(c,org),participation:await exportParticipation(c,org),
     delivery:await exportDelivery(c,org),taskRecurrence:await exportTaskRecurrence(c,org),
@@ -41,21 +46,26 @@ export async function assembleWorkspaceBackup(c,org,{organization,records}={}){
     ...(learningBridge===undefined?{}:{learningBridge}),
     ...(incubatorBridge===undefined?{}:{incubatorBridge}),
     ...(participantCheckins===undefined?{}:{participantCheckins}),
-    ...(participationGroups===undefined?{}:{participationGroups})});
+    ...(participationGroups===undefined?{}:{participationGroups}),
+    ...(resourceReservations===undefined?{}:{resourceReservations})});
 }
 export async function checkWorkspaceExportCapacity(c,org){
   const usage=await logicalBackupBytes(c,org);
   if(usage>60*1024*1024)fail(422,'quota','This workspace reached its 60 MiB retained record and history budget.');
-  const backup=await assembleWorkspaceBackup(c,org),bytes=Buffer.byteLength(JSON.stringify(backup));
+  const features=await readWorkspaceFeatures(c,org);
+  const backup=await assembleWorkspaceBackup(c,org,{features}),bytes=Buffer.byteLength(JSON.stringify(backup));
   if(bytes>64*1024*1024)fail(422,'learning_backup_size','The complete workspace backup would exceed 64 MiB. This change was rolled back.');
-  const features=await workspaceFeatures(c,org);
-  const needsProjection=features.present||features.incubator||features.checkins||features.groups||features.field||features.crm||features.recurrence||features.reminders||restoredParticipationRecurrenceReports(backup).present||restoredContactReconciliationReports(backup).present||inspectFieldResponseRecovery(backup).present||backup.participationGroups!==undefined||backup.participantCheckins!==undefined||backup.incubatorBridge!==undefined||[3,4].includes(backup.participation?.version);
+  const needsProjection=backup.resourceReservations!==undefined||features.present||features.incubator||features.checkins||features.groups||features.field||features.crm||features.recurrence||features.reminders||restoredParticipationRecurrenceReports(backup).present||restoredContactReconciliationReports(backup).present||inspectFieldResponseRecovery(backup).present||backup.participationGroups!==undefined||backup.participantCheckins!==undefined||backup.incubatorBridge!==undefined||[3,4].includes(backup.participation?.version);
   const operational=needsProjection?await measureLearningOperationalCapacity(c,org,backup.participation):null;
-  const requiredUsage=usage+(operational?.sourceLogicalGrowthBytes||0),requiredBackupBytes=bytes+(operational?.sourceWireGrowthBytes||0);
+  const resources=await measureResourceReservationRemaining(c,org,backup.resourceReservations);
+  const requiredUsage=usage+(operational?.sourceLogicalGrowthBytes||0)+(resources?.retainedGrowthBytes||0);
+  const requiredBackupBytes=bytes+(operational?.sourceWireGrowthBytes||0)+(resources?.nativeGrowthBytes||0);
+  if(resources&&(requiredUsage>60*1024*1024||requiredBackupBytes>64*1024*1024))
+    fail(422,'resource_reservation_capacity','The workspace must retain enough capacity for its remaining participation and reservation exits.');
   if(requiredUsage>60*1024*1024||requiredBackupBytes>64*1024*1024)
     fail(422,'learning_operational_capacity','The complete workspace cannot retain its bounded delivery status growth within the existing 60 MiB storage and 64 MiB backup limits.');
   const restore=needsProjection?await checkLearningRestoreCapacity(c,backup):null;
-  return {usage,backupBytes:bytes,requiredUsage,requiredBackupBytes,operational,restore};
+  return {usage,backupBytes:bytes,requiredUsage,requiredBackupBytes,operational,restore,...(resources?{resourceReservations:resources}:{})};
 }
 
 /** The optional export journal must not strand an already valid exit. This
@@ -63,7 +73,11 @@ export async function checkWorkspaceExportCapacity(c,org){
  * path unchanged. Failure to measure simply omits this optional journal. */
 export async function canRetainIncubatorExportAudit(c, org, event) {
   try {
-    const features = await workspaceFeatures(c, org);
+    const features = await readWorkspaceFeatures(c, org);
+    if (features.reservations && (!features.recurrence || features.reminders)) {
+      const {canRetainResourceReservationSafetyAudit} = await import('./resource-reservation-capacity.mjs');
+      return (await canRetainResourceReservationSafetyAudit(c,org,event)) === true;
+    }
     if (features.reminders) {
       const {canRetainReminderSafetyAudit} = await import('./participation-reminder-capacity.mjs');
       return canRetainReminderSafetyAudit(c,org,event);

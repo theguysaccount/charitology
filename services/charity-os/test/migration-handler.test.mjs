@@ -12,6 +12,7 @@ import { makeParticipationGroupsBackup, PARTICIPATION_GROUP_BACKUP_DOMAIN, PARTI
 import { exportParticipationGroups, restoreParticipationGroups } from "../lib/participation-group-recovery.mjs";
 import { measureLearningRestoreCapacity } from "../lib/learning-capacity.mjs";
 import { restoreMeasurementFixture } from "./restore-capacity-fixture.mjs";
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 const settings = {
   origin: "https://os.example.invalid",
   secret: "synthetic-migration-handler-secret-over-thirty-two-characters",
@@ -103,6 +104,7 @@ function fixture({
   intakeOccupied = 0,
   fieldOccupied = 0,
   crmOccupied = 0,
+  reservationOccupied = false,
   withRestoreMeasurements = false,
 } = {}) {
   let activeRole = role,
@@ -118,11 +120,21 @@ function fixture({
     occupied,
     fieldOccupied,
     crmOccupied,
+    reservationOccupied,
   };
   const measurements = withRestoreMeasurements ? restoreMeasurementFixture() : null;
   const c = {
     query: async (sql, args = []) => {
       state.queryCount++;
+      if (sql === reservationSql.destination) {
+        assert.deepEqual(args, [org]);
+        return { rows: [{ occupied: state.reservationOccupied }], rowCount: 1 };
+      }
+      if (sql === reservationSql.projection) {
+        assert.equal(args[0], org);
+        assert.equal(state.records.has(args[1]), false);
+        return { rows: [], rowCount: 0 };
+      }
       if (sql === "SELECT EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE $2) AS occupied,EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND id=ANY($3::text[])) AS collision") {
         // Every valid source here has no reports; the destination has no
         // recurrence family. FIELD/CRM occupancy is modeled separately below.
@@ -958,4 +970,18 @@ test("existing CRM history blocks a CRM-free legacy restore at preview and commi
   assert.equal(changed.state.records.size, 0);
   assert.equal(changed.state.events.length, 0);
   assert.equal(changed.state.previews.get(preview.value.previewId).committed_at, null);
+});
+
+test("retained reservation history blocks an older backup at both restore checkpoints", async () => {
+  const f = fixture({ reservationOccupied: true });
+  const preview = await f.call("import/preview", { input: { backup: legacy() } });
+  assert.equal(preview.response.status, 200);
+  assert.deepEqual(preview.value.issues.map(issue => issue.field), ["organization"]);
+  const denied = await f.call("import/commit", { input: { previewId: preview.value.previewId } });
+  assert.equal(denied.response.status, 409);
+  assert.equal(denied.value.code, "restore_conflict");
+  assert.equal(f.state.reservationOccupied, true);
+  assert.equal(f.state.records.size, 0);
+  assert.equal(f.state.events.length, 0);
+  assert.equal(f.state.previews.get(preview.value.previewId).committed_at, null);
 });

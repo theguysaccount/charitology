@@ -717,3 +717,289 @@ ALTER TABLE os_participation_outbox ADD CONSTRAINT os_participation_reminder_mar
 CREATE UNIQUE INDEX IF NOT EXISTS os_participation_reminder_original
  ON os_participation_outbox(org_id,participation_id,((payload->'reminder')->>'commitmentSha256'))
  WHERE intent_kind='reminder';
+
+-- One internal hold for one existing Asset and approved Events session.
+CREATE OR REPLACE FUNCTION os_resource_reservation_proof_shape(
+ value jsonb, asset text, occurrence text
+) RETURNS boolean LANGUAGE sql IMMUTABLE STRICT SET search_path=pg_catalog AS $$
+ SELECT (
+  jsonb_typeof(value)='object' AND octet_length(value::text)<=4096
+  AND value ?& ARRAY['version','orgId','asset','session','quantity','interval']
+  AND value-ARRAY['version','orgId','asset','session','quantity','interval']='{}'::jsonb
+  AND value->'version'='1'::jsonb AND value->'quantity'='1'::jsonb
+  AND jsonb_typeof(value->'orgId')='string' AND value->>'orgId' ~ '^[A-Za-z0-9_-]{1,100}$'
+  AND asset<>occurrence
+  AND NOT EXISTS(
+   SELECT 1 FROM (VALUES
+    (value->'asset',asset,'assets','asset'),
+    (value->'session',occurrence,'events','session')
+   ) AS source(pin,id,module_id,kind)
+   WHERE (
+    jsonb_typeof(pin)='object'
+    AND pin ?& ARRAY['id','moduleId','kind','revision','createdAtExact','dataSha256','approvalSha256']
+    AND pin-ARRAY['id','moduleId','kind','revision','createdAtExact','dataSha256','approvalSha256']='{}'::jsonb
+    AND pin->'id'=to_jsonb(id) AND pin->'moduleId'=to_jsonb(module_id) AND pin->'kind'=to_jsonb(kind)
+    AND jsonb_typeof(pin->'revision')='number' AND pin->>'revision' ~ '^[1-9][0-9]{0,9}$'
+    AND pin->'revision'<='2147483647'::jsonb
+    AND jsonb_typeof(pin->'createdAtExact')='string'
+    AND pin->>'createdAtExact' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6}Z$'
+    AND jsonb_typeof(pin->'dataSha256')='string' AND pin->>'dataSha256' ~ '^[a-f0-9]{64}$'
+    AND jsonb_typeof(pin->'approvalSha256')='string' AND pin->>'approvalSha256' ~ '^[a-f0-9]{64}$'
+   ) IS NOT TRUE
+  )
+  AND jsonb_typeof(value->'interval')='object'
+  AND value->'interval' ?& ARRAY['startAt','endAt','timeZone']
+  AND (value->'interval')-ARRAY['startAt','endAt','timeZone']='{}'::jsonb
+  AND jsonb_typeof(value#>'{interval,startAt}')='string'
+  AND value#>>'{interval,startAt}' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([.][0-9]{1,3})?(Z|[+-][0-9]{2}:[0-9]{2})$'
+  AND jsonb_typeof(value#>'{interval,endAt}')='string'
+  AND value#>>'{interval,endAt}' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([.][0-9]{1,3})?(Z|[+-][0-9]{2}:[0-9]{2})$'
+  AND jsonb_typeof(value#>'{interval,timeZone}')='string'
+  AND value#>>'{interval,timeZone}' ~ '^[A-Za-z0-9_./][A-Za-z0-9_+./-]{0,99}$'
+ ) IS TRUE
+$$;
+
+CREATE OR REPLACE FUNCTION os_resource_reservation_decision_shape(value jsonb)
+ RETURNS boolean LANGUAGE sql IMMUTABLE STRICT SET search_path=pg_catalog AS $$
+ SELECT (
+  jsonb_typeof(value)='object'
+  AND value ?& ARRAY['operation','orgId','actorSha256','acceptedAtExact','previous','next','reason']
+  AND value-ARRAY['operation','orgId','actorSha256','acceptedAtExact','previous','next','reason']='{}'::jsonb
+  AND value->>'operation' IN ('reserve','release','replace')
+  AND jsonb_typeof(value->'orgId')='string' AND value->>'orgId' ~ '^[A-Za-z0-9_-]{1,100}$'
+  AND jsonb_typeof(value->'actorSha256')='string' AND value->>'actorSha256' ~ '^[a-f0-9]{64}$'
+  AND jsonb_typeof(value->'acceptedAtExact')='string'
+  AND value->>'acceptedAtExact' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6}Z$'
+  AND ((value->>'operation'='reserve' AND value->'previous'='null'::jsonb AND value->'reason'='null'::jsonb)
+   OR (value->>'operation'<>'reserve' AND jsonb_typeof(value->'previous')='object'
+    AND jsonb_typeof(value->'reason')='string' AND length(btrim(value->>'reason'))>0
+    AND length(value->>'reason')+length(regexp_replace(value->>'reason',U&'[^\+010000-\+10FFFF]','','g'))<=300
+    AND value->>'reason' !~ '[[:cntrl:]]'))
+  AND ((value->>'operation'='release' AND value->'next'='null'::jsonb)
+   OR (value->>'operation'<>'release' AND jsonb_typeof(value->'next')='object'))
+  AND (value->>'operation'<>'replace' OR value#>>'{previous,id}'<>value#>>'{next,id}')
+  AND NOT EXISTS(
+   SELECT 1 FROM (VALUES (value->'previous','released',2),(value->'next','reserved',1)) AS e(effect,state,revision)
+   WHERE effect<>'null'::jsonb AND (
+    jsonb_typeof(effect)='object' AND effect ?& ARRAY['id','proofSha256','state','revision']
+    AND effect-ARRAY['id','proofSha256','state','revision']='{}'::jsonb
+    AND jsonb_typeof(effect->'id')='string' AND effect->>'id' ~ '^[A-Za-z0-9_-]{1,100}$'
+    AND jsonb_typeof(effect->'proofSha256')='string' AND effect->>'proofSha256' ~ '^[a-f0-9]{64}$'
+    AND effect->'state'=to_jsonb(state) AND effect->'revision'=to_jsonb(revision)
+   ) IS NOT TRUE
+  )
+ ) IS TRUE
+$$;
+
+CREATE TABLE IF NOT EXISTS os_resource_reservation_commands (
+ org_id text NOT NULL REFERENCES os_orgs(id),
+ command_hash text NOT NULL CHECK(command_hash ~ '^[a-f0-9]{64}$'),
+ receipt jsonb NOT NULL,
+ previous_id text GENERATED ALWAYS AS (receipt#>>'{decision,previous,id}') STORED,
+ next_id text GENERATED ALWAYS AS (receipt#>>'{decision,next,id}') STORED,
+ PRIMARY KEY(org_id,command_hash),
+ CHECK((
+  jsonb_typeof(receipt)='object' AND octet_length(receipt::text)<=4096
+  AND receipt ?& ARRAY['version','decision','commandHash','requestHash','authority','reviewSha256']
+  AND receipt-ARRAY['version','decision','commandHash','requestHash','authority','reviewSha256']='{}'::jsonb
+  AND receipt->'version'='1'::jsonb AND receipt->'commandHash'=to_jsonb(command_hash)
+  AND jsonb_typeof(receipt->'requestHash')='string' AND receipt->>'requestHash' ~ '^[a-f0-9]{64}$'
+  AND os_resource_reservation_decision_shape(receipt->'decision')
+  AND receipt#>'{decision,orgId}'=to_jsonb(org_id)
+  AND jsonb_typeof(receipt->'authority')='object'
+  AND receipt->'authority' ?& ARRAY['actorSha256','sessionSha256','membershipSha256','memberCreatedAtExact','restoreEpochSha256']
+  AND (receipt->'authority')-ARRAY['actorSha256','sessionSha256','membershipSha256','memberCreatedAtExact','restoreEpochSha256']='{}'::jsonb
+  AND receipt#>'{authority,actorSha256}'=receipt#>'{decision,actorSha256}'
+  AND jsonb_typeof(receipt#>'{authority,sessionSha256}')='string' AND receipt#>>'{authority,sessionSha256}' ~ '^[a-f0-9]{64}$'
+  AND jsonb_typeof(receipt#>'{authority,membershipSha256}')='string' AND receipt#>>'{authority,membershipSha256}' ~ '^[a-f0-9]{64}$'
+  AND jsonb_typeof(receipt#>'{authority,restoreEpochSha256}')='string' AND receipt#>>'{authority,restoreEpochSha256}' ~ '^[a-f0-9]{64}$'
+  AND jsonb_typeof(receipt#>'{authority,memberCreatedAtExact}')='string'
+  AND receipt#>>'{authority,memberCreatedAtExact}' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6}Z$'
+  AND (receipt#>>'{authority,memberCreatedAtExact}')::timestamptz <= (receipt#>>'{decision,acceptedAtExact}')::timestamptz
+  AND ((receipt#>>'{decision,operation}'='release' AND receipt->'reviewSha256'='null'::jsonb)
+   OR (receipt#>>'{decision,operation}'<>'release' AND jsonb_typeof(receipt->'reviewSha256')='string'
+    AND receipt->>'reviewSha256' ~ '^[a-f0-9]{64}$'))
+ ) IS TRUE)
+);
+
+CREATE TABLE IF NOT EXISTS os_resource_reservations (
+ org_id text NOT NULL REFERENCES os_orgs(id),
+ id text NOT NULL CHECK(id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ asset_id text NOT NULL CHECK(asset_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ occurrence_id text NOT NULL CHECK(occurrence_id ~ '^[A-Za-z0-9_-]{1,100}$'),
+ origin_mode text NOT NULL CHECK(origin_mode IN ('live','recovered')),
+ state text NOT NULL CHECK(state IN ('reserved','released')),
+ revision integer NOT NULL CHECK(revision IN (1,2)),
+ proof jsonb,
+ proof_sha256 text NOT NULL CHECK(proof_sha256 ~ '^[a-f0-9]{64}$'),
+ original_command_hash text,
+ terminal_command_hash text,
+ history_core jsonb,
+ disposition jsonb,
+ PRIMARY KEY(org_id,id),
+ FOREIGN KEY(org_id,asset_id) REFERENCES os_records(org_id,id),
+ FOREIGN KEY(org_id,occurrence_id) REFERENCES os_records(org_id,id),
+ FOREIGN KEY(org_id,original_command_hash) REFERENCES os_resource_reservation_commands(org_id,command_hash) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY(org_id,terminal_command_hash) REFERENCES os_resource_reservation_commands(org_id,command_hash) DEFERRABLE INITIALLY DEFERRED,
+ CHECK(os_resource_reservation_proof_shape(COALESCE(proof,history_core->'proof'),asset_id,occurrence_id) IS TRUE),
+ CHECK((
+  (origin_mode='live' AND proof IS NOT NULL AND proof->'orgId'=to_jsonb(org_id)
+   AND history_core IS NULL AND disposition IS NULL AND original_command_hash IS NOT NULL
+   AND ((state='reserved' AND revision=1 AND terminal_command_hash IS NULL)
+    OR (state='released' AND revision=2 AND terminal_command_hash IS NOT NULL
+     AND terminal_command_hash<>original_command_hash)))
+  OR (origin_mode='recovered' AND proof IS NULL AND original_command_hash IS NULL AND terminal_command_hash IS NULL
+   AND jsonb_typeof(history_core)='object'
+   AND octet_length((history_core||jsonb_build_object('disposition',disposition))::text)<=8192
+   AND history_core ?& ARRAY['version','id','sourceState','proof','original','terminal']
+   AND history_core-ARRAY['version','id','sourceState','proof','original','terminal']='{}'::jsonb
+   AND history_core->'version'='1'::jsonb AND history_core->'id'=to_jsonb(id)
+   AND os_resource_reservation_decision_shape(history_core->'original')
+   AND history_core#>'{original,orgId}'=history_core#>'{proof,orgId}'
+   AND history_core#>'{original,next,id}'=to_jsonb(id)
+   AND history_core#>'{original,next,proofSha256}'=to_jsonb(proof_sha256)
+   AND ((history_core->>'sourceState'='released' AND state='released' AND revision=1 AND disposition IS NULL
+     AND os_resource_reservation_decision_shape(history_core->'terminal')
+     AND history_core#>'{terminal,orgId}'=history_core#>'{proof,orgId}'
+     AND history_core#>'{terminal,previous,id}'=to_jsonb(id)
+     AND history_core#>'{terminal,previous,proofSha256}'=to_jsonb(proof_sha256)
+     AND (history_core#>>'{terminal,acceptedAtExact}')::timestamptz >= (history_core#>>'{original,acceptedAtExact}')::timestamptz)
+    OR (history_core->>'sourceState'='reserved' AND history_core->'terminal'='null'::jsonb
+     AND ((state='reserved' AND revision=1 AND disposition IS NULL)
+      OR (state='released' AND revision=2 AND jsonb_typeof(disposition)='object' AND octet_length(disposition::text)<=2048
+       AND disposition ?& ARRAY['orgId','actorSha256','acceptedAtExact','reason']
+       AND disposition-ARRAY['orgId','actorSha256','acceptedAtExact','reason']='{}'::jsonb
+       AND jsonb_typeof(disposition->'orgId')='string' AND disposition->>'orgId' ~ '^[A-Za-z0-9_-]{1,100}$'
+       AND jsonb_typeof(disposition->'actorSha256')='string' AND disposition->>'actorSha256' ~ '^[a-f0-9]{64}$'
+       AND jsonb_typeof(disposition->'acceptedAtExact')='string'
+       AND disposition->>'acceptedAtExact' ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{6}Z$'
+       AND (disposition->>'acceptedAtExact')::timestamptz >= (history_core#>>'{original,acceptedAtExact}')::timestamptz
+       AND jsonb_typeof(disposition->'reason')='string' AND length(btrim(disposition->>'reason'))>0
+       AND length(disposition->>'reason')+length(regexp_replace(disposition->>'reason',U&'[^\+010000-\+10FFFF]','','g'))<=300
+       AND disposition->>'reason' !~ '[[:cntrl:]]')))))
+ ) IS TRUE)
+);
+
+DO $resource_reservation_links$
+BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='os_resource_reservation_commands'::regclass AND conname='os_resource_reservation_previous') THEN
+  ALTER TABLE os_resource_reservation_commands ADD CONSTRAINT os_resource_reservation_previous
+   FOREIGN KEY(org_id,previous_id) REFERENCES os_resource_reservations(org_id,id) DEFERRABLE INITIALLY DEFERRED;
+ END IF;
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='os_resource_reservation_commands'::regclass AND conname='os_resource_reservation_next') THEN
+  ALTER TABLE os_resource_reservation_commands ADD CONSTRAINT os_resource_reservation_next
+   FOREIGN KEY(org_id,next_id) REFERENCES os_resource_reservations(org_id,id) DEFERRABLE INITIALLY DEFERRED;
+ END IF;
+END $resource_reservation_links$;
+
+CREATE INDEX IF NOT EXISTS os_resource_reservations_asset ON os_resource_reservations(org_id,asset_id,state,origin_mode,id);
+CREATE UNIQUE INDEX IF NOT EXISTS os_resource_reservations_live_pair
+ ON os_resource_reservations(org_id,asset_id,occurrence_id) WHERE origin_mode='live' AND state='reserved';
+
+ALTER TABLE os_resource_reservations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_resource_reservations FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_resource_reservations;
+CREATE POLICY tenant ON os_resource_reservations
+ USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+ALTER TABLE os_resource_reservation_commands ENABLE ROW LEVEL SECURITY;
+ALTER TABLE os_resource_reservation_commands FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS tenant ON os_resource_reservation_commands;
+CREATE POLICY tenant ON os_resource_reservation_commands
+ USING(org_id=current_setting('app.org_id',true)) WITH CHECK(org_id=current_setting('app.org_id',true));
+
+CREATE OR REPLACE FUNCTION os_resource_reservation_guard() RETURNS trigger
+ LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,pg_temp AS $$
+DECLARE sources_match boolean;
+BEGIN
+ IF TG_OP='DELETE' THEN RAISE EXCEPTION 'reservation history is retained' USING ERRCODE='23514'; END IF;
+ IF TG_OP='INSERT' THEN
+  IF NEW.origin_mode='live' AND (NEW.state<>'reserved' OR NEW.revision<>1) THEN
+   RAISE EXCEPTION 'live reservation must start reserved' USING ERRCODE='23514';
+  END IF;
+  EXECUTE format(
+   'SELECT EXISTS(SELECT 1 FROM %1$I.os_records a JOIN %1$I.os_records e ON e.org_id=a.org_id
+    WHERE a.org_id=$1 AND a.id=$2 AND e.id=$3 AND a.module_id=''assets'' AND e.module_id=''events''
+    AND ($4=''recovered'' OR (
+     a.deleted_at IS NULL AND e.deleted_at IS NULL AND a.data->>''kind''=''asset'' AND e.data->>''kind''=''session''
+     AND a.data->''quantity''=''1''::jsonb AND a.revision=($5#>>''{asset,revision}'')::integer
+     AND e.revision=($5#>>''{session,revision}'')::integer
+     AND to_char(a.created_at AT TIME ZONE ''UTC'',''YYYY-MM-DD"T"HH24:MI:SS.US"Z"'')=$5#>>''{asset,createdAtExact}''
+     AND to_char(e.created_at AT TIME ZONE ''UTC'',''YYYY-MM-DD"T"HH24:MI:SS.US"Z"'')=$5#>>''{session,createdAtExact}''
+     AND e.data->''startAt''=$5#>''{interval,startAt}'' AND e.data->''endAt''=$5#>''{interval,endAt}''
+     AND e.data->''timeZone''=$5#>''{interval,timeZone}''
+    )))',TG_TABLE_SCHEMA
+  ) INTO sources_match USING NEW.org_id,NEW.asset_id,NEW.occurrence_id,NEW.origin_mode,NEW.proof;
+  IF sources_match IS NOT TRUE THEN RAISE EXCEPTION 'reservation sources changed or are unavailable' USING ERRCODE='23514'; END IF;
+ ELSIF OLD.state<>'reserved' OR OLD.revision<>1 OR NEW.state<>'released' OR NEW.revision<>2
+  OR (to_jsonb(NEW)-ARRAY['state','revision','terminal_command_hash','disposition']) IS DISTINCT FROM
+     (to_jsonb(OLD)-ARRAY['state','revision','terminal_command_hash','disposition'])
+  OR (OLD.origin_mode='live' AND (NEW.disposition IS NOT NULL OR NEW.terminal_command_hash IS NULL))
+  OR (OLD.origin_mode='recovered' AND (NEW.disposition IS NULL OR NEW.terminal_command_hash IS NOT NULL
+   OR NEW.disposition->'orgId' IS DISTINCT FROM to_jsonb(OLD.org_id)))
+ THEN RAISE EXCEPTION 'invalid terminal reservation transition' USING ERRCODE='23514';
+ END IF;
+ RETURN NEW;
+END $$;
+
+DROP TRIGGER IF EXISTS resource_reservation_guard ON os_resource_reservations;
+CREATE TRIGGER resource_reservation_guard BEFORE INSERT OR UPDATE OR DELETE ON os_resource_reservations
+ FOR EACH ROW EXECUTE FUNCTION os_resource_reservation_guard();
+DROP TRIGGER IF EXISTS immutable_resource_reservation_command ON os_resource_reservation_commands;
+CREATE TRIGGER immutable_resource_reservation_command BEFORE UPDATE OR DELETE ON os_resource_reservation_commands
+ FOR EACH ROW EXECUTE FUNCTION os_immutable();
+
+-- Validate both sides at transaction end, including the earlier side of Replace.
+CREATE OR REPLACE FUNCTION os_resource_reservation_integrity() RETURNS trigger
+ LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,pg_temp AS $$
+DECLARE linked boolean; held record; original record; terminal record;
+BEGIN
+ IF TG_TABLE_NAME='os_resource_reservation_commands' THEN
+  EXECUTE format(
+   'SELECT ($2::text IS NULL OR EXISTS(SELECT 1 FROM %1$I.os_resource_reservations r
+    WHERE r.org_id=$1 AND r.id=$2 AND r.origin_mode=''live'' AND r.state=''released''
+     AND r.terminal_command_hash=$4 AND r.proof_sha256=$5#>>''{decision,previous,proofSha256}''))
+   AND ($3::text IS NULL OR EXISTS(SELECT 1 FROM %1$I.os_resource_reservations r
+    WHERE r.org_id=$1 AND r.id=$3 AND r.origin_mode=''live''
+     AND r.original_command_hash=$4 AND r.proof_sha256=$5#>>''{decision,next,proofSha256}''))',TG_TABLE_SCHEMA
+  ) INTO linked USING NEW.org_id,NEW.previous_id,NEW.next_id,NEW.command_hash,NEW.receipt;
+ ELSE
+  EXECUTE format(
+   'SELECT origin_mode,state,proof,proof_sha256,original_command_hash,terminal_command_hash,history_core
+    FROM %I.os_resource_reservations WHERE org_id=$1 AND id=$2',TG_TABLE_SCHEMA
+  ) INTO STRICT held USING NEW.org_id,NEW.id;
+  IF held.origin_mode='recovered' THEN
+   EXECUTE format(
+    'SELECT ($3#>>''{original,previous,id}'' IS NULL OR EXISTS(SELECT 1 FROM %1$I.os_resource_reservations r
+     WHERE r.org_id=$1 AND r.id=$3#>>''{original,previous,id}'' AND r.origin_mode=''recovered''
+      AND r.history_core->''terminal''=$3->''original''))
+     AND ($3#>>''{terminal,next,id}'' IS NULL OR EXISTS(SELECT 1 FROM %1$I.os_resource_reservations r
+     WHERE r.org_id=$1 AND r.id=$3#>>''{terminal,next,id}'' AND r.origin_mode=''recovered''
+      AND r.history_core->''original''=$3->''terminal''))',TG_TABLE_SCHEMA
+   ) INTO linked USING NEW.org_id,NEW.id,held.history_core;
+  ELSE
+   EXECUTE format('SELECT next_id,receipt FROM %I.os_resource_reservation_commands WHERE org_id=$1 AND command_hash=$2',
+    TG_TABLE_SCHEMA) INTO STRICT original USING NEW.org_id,held.original_command_hash;
+   linked := original.next_id=NEW.id AND original.receipt#>>'{decision,next,proofSha256}'=held.proof_sha256
+    AND (original.receipt#>>'{decision,acceptedAtExact}')::timestamptz < (held.proof#>>'{interval,startAt}')::timestamptz
+    AND (held.proof#>>'{interval,startAt}')::timestamptz < (held.proof#>>'{interval,endAt}')::timestamptz;
+   IF held.terminal_command_hash IS NOT NULL THEN
+    EXECUTE format('SELECT previous_id,receipt FROM %I.os_resource_reservation_commands WHERE org_id=$1 AND command_hash=$2',
+     TG_TABLE_SCHEMA) INTO STRICT terminal USING NEW.org_id,held.terminal_command_hash;
+    linked := linked AND terminal.previous_id=NEW.id
+     AND terminal.receipt#>>'{decision,previous,proofSha256}'=held.proof_sha256
+     AND (terminal.receipt#>>'{decision,acceptedAtExact}')::timestamptz >= (original.receipt#>>'{decision,acceptedAtExact}')::timestamptz;
+   END IF;
+  END IF;
+ END IF;
+ IF linked IS NOT TRUE THEN RAISE EXCEPTION 'incomplete reservation history links' USING ERRCODE='23514'; END IF;
+ RETURN NULL;
+EXCEPTION WHEN no_data_found THEN
+ RAISE EXCEPTION 'incomplete reservation history links' USING ERRCODE='23514';
+END $$;
+
+DROP TRIGGER IF EXISTS complete_resource_reservation ON os_resource_reservations;
+CREATE CONSTRAINT TRIGGER complete_resource_reservation AFTER INSERT OR UPDATE ON os_resource_reservations
+ DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION os_resource_reservation_integrity();
+DROP TRIGGER IF EXISTS complete_resource_reservation_command ON os_resource_reservation_commands;
+CREATE CONSTRAINT TRIGGER complete_resource_reservation_command AFTER INSERT ON os_resource_reservation_commands
+ DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION os_resource_reservation_integrity();

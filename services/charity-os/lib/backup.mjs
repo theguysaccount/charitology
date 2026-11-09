@@ -12,6 +12,7 @@ import { restoredParticipationGroups } from "./participation-group-recovery.mjs"
 import { inspectFieldResponseRecovery } from './field-response-recovery.mjs';
 import { restoredContactReconciliationReports } from './contact-reconciliation-recovery.mjs';
 import { restoredParticipationRecurrenceReports } from "./participation-recurrence-recovery.mjs";
+import { restoredResourceReservations } from "./resource-reservation-backup.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -113,6 +114,7 @@ export function validateBackup(input, orgId, userId) {
       recordId: r.id,
       status: r.status,
     });
+  restoredResourceReservations(input, orgId);
   return records;
 }
 export function toCsv(records, module) {
