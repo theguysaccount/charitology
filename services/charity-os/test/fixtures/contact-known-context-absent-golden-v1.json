@@ -1,0 +1,150 @@
+{
+  "format": "private-pre-known-history-context-golden",
+  "version": 1,
+  "sourceSha256": "9cb79a421f3ae5ad796d3437f0a665441454faba04806dacd630979b8654deb2",
+  "scope": "Actual preserved pre-integration context over the same strictly fictional fake SELECT fixture; no SQL/auth proof.",
+  "result": {
+    "authority": {
+      "actorId": "fictional_owner",
+      "memberCreatedAtExact": "2026-11-08T12:00:00.123456Z",
+      "membershipSha256": "c69202b72692e0b8d3d695a87b8dc3ccf9868989abe18a00e20d8b8ae593e878",
+      "restoreEpochSha256": "06b621c155909d4a4ca13d2f1b54d4c25b368475d570b87f627d68335fdb96cc",
+      "sessionSha256": "a644308646a930b6306c48463ee45d2fc74dcad2ca82de8282bbacccbfa88bd9"
+    },
+    "contextSha256": "308ec1668fe3a81182f48735866890e40ebb46397df176283a9934723e3d1e89",
+    "coverage": {
+      "callerOrgLockRequired": true,
+      "catalogTables": 33,
+      "enumeratedTables": [
+        "os_records",
+        "os_reports",
+        "os_publications",
+        "os_intake",
+        "os_participations",
+        "os_participation_groups",
+        "os_participation_group_receipts",
+        "os_participation_checkins",
+        "os_comments",
+        "os_events",
+        "os_files",
+        "os_grant_report_previews",
+        "os_incubator_history",
+        "os_jobs",
+        "os_learning_history",
+        "os_learning_previews",
+        "os_participation_delivery_policies",
+        "os_participation_delivery_previews",
+        "os_participation_outbox",
+        "os_participation_targets",
+        "os_previews",
+        "os_resource_directory_history",
+        "os_task_recurrence_occurrences",
+        "os_task_recurrence_series"
+      ],
+      "method": "closed-catalog-tenant-pages-v1",
+      "ownParticipantLinks": "not-read-own-RLS;mandatory-intake-publication-transitive",
+      "preservedOrdinaryContactCrudAudits": {
+        "count": 0,
+        "sha256": "ae68f00d7e1b21498535933544d3ee743a4a22263b9e706289e0b7c1873c5aa3"
+      },
+      "unknownFamilyOrLinkage": "refuse",
+      "unsupportedPacketFamilies": [
+        "os_grant_report_previews",
+        "os_learning_previews",
+        "os_learning_history",
+        "os_incubator_history",
+        "os_resource_directory_history",
+        "os_task_recurrence_series",
+        "os_task_recurrence_occurrences",
+        "os_participation_groups",
+        "os_participation_group_receipts",
+        "os_participation_checkins",
+        "os_participation_delivery_previews"
+      ]
+    },
+    "plannerContext": {
+      "orgId": "fictional_org",
+      "organizations": [],
+      "pair": [
+        {
+          "approval": null,
+          "data": {
+            "contactPreference": "permission-needed",
+            "displayLabel": null,
+            "email": null,
+            "externalId": null,
+            "externalSystem": null,
+            "externalUrl": null,
+            "kind": "person-reference",
+            "organizationId": null,
+            "purpose": "Fictional coordination only",
+            "relationship": null,
+            "reviewDate": null,
+            "title": "Fictional left"
+          },
+          "deletedAt": null,
+          "id": "left",
+          "moduleId": "contacts",
+          "orgId": "fictional_org",
+          "revision": 1,
+          "snapshot": null,
+          "source": null,
+          "status": "draft"
+        },
+        {
+          "approval": null,
+          "data": {
+            "contactPreference": "permission-needed",
+            "displayLabel": null,
+            "email": null,
+            "externalId": null,
+            "externalSystem": null,
+            "externalUrl": null,
+            "kind": "person-reference",
+            "organizationId": null,
+            "purpose": "Fictional coordination only",
+            "relationship": null,
+            "reviewDate": null,
+            "title": "Fictional right"
+          },
+          "deletedAt": null,
+          "id": "right",
+          "moduleId": "contacts",
+          "orgId": "fictional_org",
+          "revision": 1,
+          "snapshot": null,
+          "source": null,
+          "status": "draft"
+        }
+      ],
+      "references": []
+    },
+    "reportDependencies": [],
+    "rowStamps": [
+      {
+        "createdAtExact": "2026-11-08T12:00:00.123456Z",
+        "deletedAtExact": null,
+        "id": "left",
+        "rowSha256": "2eaf0bbccfd16264cf9a0d2f281f4fe4e1ab729509155f1ac7b0a4860308a2b8",
+        "updatedAtExact": "2026-11-08T12:00:00.123456Z"
+      },
+      {
+        "createdAtExact": "2026-11-08T12:00:00.123456Z",
+        "deletedAtExact": null,
+        "id": "right",
+        "rowSha256": "d4cc09bf3ed80d380582d4306d9e4216d1de93a988a6d53e501c4641610f11c7",
+        "updatedAtExact": "2026-11-08T12:00:00.123456Z"
+      }
+    ],
+    "sourceOwnership": [
+      {
+        "classification": "local-draft",
+        "id": "left"
+      },
+      {
+        "classification": "local-draft",
+        "id": "right"
+      }
+    ]
+  }
+}

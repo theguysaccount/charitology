@@ -1,3 +1,4 @@
+import {planRestoredParticipationRecurrenceReports,participationRecurrenceRestoreSummary,isParticipationRecurrenceRecoveryFamily,PARTICIPATION_RECURRENCE_REPORT_LIMITS} from './participation-recurrence-recovery.mjs';
 import { participationChargeJsonSQL, legacyRecoveredParticipation } from "./participation-storage.mjs";
 /** Read-only projection of the actual full-restore representation, never restore authority. */
 import { makeBackup, validateBackup, restoredIntegrations } from './backup.mjs';
@@ -169,14 +170,18 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const groups = restoredParticipationGroups(backup.participationGroups);
   const field=planRestoredFieldResponseReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const crm=planRestoredContactReconciliationReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
+  const occurrence=planRestoredParticipationRecurrenceReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
+  const incomingReportIds=new Set(occurrence.reports.map(report=>report.id));
   const operational = operationalGrowth(backup.participation), operationalBounds = new Map(operational.outboxBounds.map(value => [value.id, value]));
   if (operational.active && (operational.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || operational.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes)) operationalFailure();
-  await schemaCheck(c,field.present||crm.present);
+  await schemaCheck(c,field.present||crm.present||occurrence.present);
   const baseline = { events: [], reports: [], bytes: 0 };
   if (baselineOrgId !== undefined) {
     for (const [key, table] of [['events', 'os_events'], ['reports', 'os_reports']]) {
       const result = await c.query(`SELECT t.*,octet_length(to_jsonb(t)::text) AS capacity_bytes FROM ${table} t WHERE org_id=$1 ORDER BY id`, [baselineOrgId]);
       for (const { capacity_bytes, ...original } of result.rows) {
+        if (table === 'os_reports' && isParticipationRecurrenceRecoveryFamily(original.payload)) fail(409,'restore_conflict','Restore requires a destination without recurring draft history.');
+        if (table === 'os_reports' && incomingReportIds.has(original.id)) fail(409,'restore_conflict','A destination report collides with recovered report history.');
         if (table === 'os_reports' && isContactReconciliationRecoveryFamily(original.payload)) fail(409,'restore_conflict','Restore requires a destination without contact reconciliation history.');
         if (table === 'os_reports' && crm.reports.some(report=>report.id===original.id)) fail(409,'restore_conflict','A destination report collides with recovered contact reconciliation history.');
         if (table === 'os_reports' && isFieldResponseRecoveryFamily(original.payload)) fail(409,'restore_conflict','Restore requires a destination without aggregate import history.');
@@ -191,7 +196,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
       fail(409, 'restore_conflict', 'Restore requires a destination without retained records, files or feature sidecars. Original audit history and legacy reports are preserved.');
   }
   const tables = Object.fromEntries(Object.keys(columns).map(table => [table, []]));
-  if (field.present||crm.present) tables.os_reports=[];
+  if (field.present||crm.present||occurrence.present) tables.os_reports=[];
   const add = (table, fields) => { const value = row(table, fields); tables[table].push(value); return value; };
   const audit = (action, record, detail) => add('os_events', { org_id: orgId, id: C.auditId, actor_id: actorId, action,
     record_id: record?.id, module_id: record?.moduleId, detail, created_at: C.timestamp });
@@ -272,7 +277,8 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   });
   for (const report of field.reports) add('os_reports',report);
   for (const report of crm.reports) add('os_reports',report);
-  audit('backup.restored', null, { ...fieldResponseRestoreSummary(field), ...contactReconciliationRestoreSummary(crm), count: records.length, checksum: backup.checksum, sourceArchiveId: C.archiveId,
+  for (const report of occurrence.reports) add('os_reports',report);
+  audit('backup.restored', null, { ...fieldResponseRestoreSummary(field), ...contactReconciliationRestoreSummary(crm), ...participationRecurrenceRestoreSummary(occurrence), count: records.length, checksum: backup.checksum, sourceArchiveId: C.archiveId,
     // Projection only: the largest possible JS array length fixes count width across optional export audits and re-restores.
     sourceHistoryCount: 4294967295, sourceCommentCount: backup.comments?.length || 0, sourceReportCount: backup.reports?.length || 0,
     learningSourcesRecovered: learning?.sources.length || 0, learningEventsRetained: learning?.events.length || 0,
@@ -293,6 +299,10 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     logicalBytes += categories[table].bytes;
     if (table === 'os_records') structuredRecordBytes = sizes[table].reduce((sum, value) => sum + value.dataBytes, 0);
   }
+  if (occurrence.present) {
+    const familyBytes=tables.os_reports.reduce((total,value,index)=>total+(isParticipationRecurrenceRecoveryFamily(value.payload)?sizes.os_reports[index].bytes:0),0);
+    if (occurrence.reports.length>PARTICIPATION_RECURRENCE_REPORT_LIMITS.reports||familyBytes>PARTICIPATION_RECURRENCE_REPORT_LIMITS.familyBytes) over();
+  }
   const files = [], inputFiles = backup.files || [];
   if (!Array.isArray(inputFiles) || inputFiles.length > 1000) over();
   let fileBytes = 0, fileCharge = 0;
@@ -309,7 +319,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   categories.targetBaseline = { count: baseline.events.length + baseline.reports.length, bytes: baseline.bytes };
   const projectedClient = { query: async sql => {
     const match = sql.match(/\bFROM (os_[a-z_]+)\b/), table = match?.[1];
-    if (table === 'os_reports') return { rows: [] }; // Learning-only reader; FIELD/CRM rows are retained explicitly in extras.reports.
+    if (table === 'os_reports') return { rows: [] }; // Learning-only reader; FIELD/CRM/recurrence rows are retained explicitly in extras.reports.
     if (!table || !Object.hasOwn(tables, table)) badSchema();
     if (table === 'os_learning_history') return { rows: tables[table].map((value, index) => ({ ...wireRow(value),
       learning_payload_bytes: learned.rows[index].payloadBytes, learning_receipt_bytes: 0, learning_row_bytes: sizes[table][index].bytes })) };
@@ -328,7 +338,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
       categories.os_participation_groups.bytes + categories.os_participation_group_receipts.bytes > GROUP_LIMITS.familyBytes) over();
   if (categories.os_incubator_history.count>1000 || categories.os_incubator_history.bytes>16777216) over();
   const projectedRecords = tables.os_records.map(value => rowRecord(wireRow(value)));
-  const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: (field.present||crm.present)?[...baseline.reports,...tables.os_reports.map(wireRow)]:baseline.reports, files, trash: [], trashFiles: [],
+  const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: (field.present||crm.present||occurrence.present)?[...baseline.reports,...tables.os_reports.map(wireRow)]:baseline.reports, files, trash: [], trashFiles: [],
     integrations: tables.os_integrations.map(value => ({ id: value.id, provider: value.provider, name: value.name, config: value.config })),
     intake: await exportIntake(projectedClient, orgId), participation: await exportParticipation(projectedClient, orgId),
     delivery: await exportDelivery(projectedClient, orgId), taskRecurrence: await exportTaskRecurrence(projectedClient, orgId),

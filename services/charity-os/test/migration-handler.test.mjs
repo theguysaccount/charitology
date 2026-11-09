@@ -123,6 +123,12 @@ function fixture({
   const c = {
     query: async (sql, args = []) => {
       state.queryCount++;
+      if (sql === "SELECT EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE $2) AS occupied,EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND id=ANY($3::text[])) AS collision") {
+        // Every valid source here has no reports; the destination has no
+        // recurrence family. FIELD/CRM occupancy is modeled separately below.
+        assert.deepEqual(args, [org, "charitology-participation-occurrence-generation%", []]);
+        return { rows: [{ occupied: false, collision: false }] };
+      }
       if (sql === "SELECT count(*) AS count FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation'") {
         assert.deepEqual(args, [org]);
         return { rows: [{ count: state.crmOccupied }] };

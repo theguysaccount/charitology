@@ -1,3 +1,7 @@
+import {participationRecurrenceRoutes} from './participation-recurrence-routes.mjs';
+import {RecurringOccurrenceError} from './participation-recurrence-values.mjs';
+import {RecurringOccurrencePacketError} from './participation-recurrence-packets.mjs';
+import {restoredParticipationRecurrenceReports,assertParticipationRecurrenceRestoreDestination,restoreParticipationRecurrenceReports,participationRecurrenceRestoreSummary,participationRecurrenceRestoreWarning} from './participation-recurrence-recovery.mjs';
 import { CheckInError } from "./participant-check-in-model.mjs";
 import { participantCheckInRoutes, staffCheckInRoutes, readCheckInBody, isParticipantCheckInPath } from "./participant-check-in.mjs";
 import { restoredParticipantCheckins, restoreParticipantCheckins } from "./participant-check-in-backup.mjs";
@@ -174,7 +178,7 @@ export function createHandler({
   send,
   participationTransport = participationMailer(settings),
 }) {
-  return async function handle(request) {
+  const handle = async function handle(request) {
     try {
       const url = new URL(request.url),
         path = url.pathname,
@@ -372,6 +376,8 @@ export function createHandler({
       if (incubatorResponse) return incubatorResponse;
       const fieldResponse = await fieldResponseRoutes({ request, url, db, session });
       if (fieldResponse) return fieldResponse;
+      const recurrenceResponse = await participationRecurrenceRoutes({request,url,db,session});
+      if (recurrenceResponse) return recurrenceResponse;
       const contactResponse = await contactReconciliationRoutes({ request, url, db, session });
       if (contactResponse) return contactResponse;
       if (isParticipationGroupPath(path)) {
@@ -753,6 +759,7 @@ export function createHandler({
             const participantCheckins = restoredParticipantCheckins(backup.participantCheckins);
             const participationGroups = restoredParticipationGroups(backup.participationGroups);
             const fieldResponses = inspectFieldResponseRecovery(backup);
+            const participationRecurrence = await assertParticipationRecurrenceRestoreDestination(c, org, backup);
             const contactReconciliation = restoredContactReconciliationReports(backup);
             if (contactReconciliation.present) await currentContactReconciliationMember(c, { org, session }, { readOnly: false });
             const issues = [];
@@ -792,7 +799,7 @@ export function createHandler({
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
-            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || backup.participation?.version === 3))
+            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || backup.participation?.version === 3))
               await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
@@ -829,6 +836,7 @@ export function createHandler({
                 ...(participationGroups === null ? {} : { participationGroupsRecovered: participationGroups.groups.length }),
                 ...fieldResponseRestoreSummary(fieldResponses),
               ...contactReconciliationRestoreSummary(contactReconciliation),
+              ...participationRecurrenceRestoreSummary(participationRecurrence),
               ...(incubatorBridge ? { incubatorSourcesRecovered: incubatorBridge.sources.length, incubatorEventsRetained: incubatorBridge.events.length } : {}),
                 ...(migration ? { migration: migration.summary } : {}),
               },
@@ -838,6 +846,7 @@ export function createHandler({
                 ...(participantCheckins === null ? [] : [{ field: "participantCheckins", message: "Arrival assertions restore as unverified inactive history, without accounts, receipts, live consent or attendance authority." }]),
                 ...(fieldResponses.present ? [{ field: "reports", message: "Aggregate import manifests restore as historical data. They do not restore accepted commands, approval, credentials or current definition authority." }] : []),
                 ...(contactReconciliation.present ? [{ field: "reports", message: "Contact decisions restore as immutable historical data. Earlier commands, account relationships, consent and undo authority are not restored. Source trash remains in the retained source archive." }] : []),
+                ...(participationRecurrence.present ? [{field:"reports",message:participationRecurrenceRestoreWarning(participationRecurrence)}] : []),
                 ...(participationGroups === null ? [] : [{ field: "participationGroups", message: "Group decisions restore as inactive history. They restore no live places, consent, coordinator authority or command keys." }]),
                 ...participation.warnings,
                 ...(incubatorBridge ? [{ field: "incubatorBridge", message: "Incubator selections and copy history restore as inactive historical material. No session, command, approval or live binding authority is restored. Explicit adoption creates two fresh editable planned records." }] : []),
@@ -909,6 +918,7 @@ export function createHandler({
             const participantCheckins = restoredParticipantCheckins(p.payload.participantCheckins);
             const participationGroups = restoredParticipationGroups(p.payload.participationGroups);
             const fieldResponses = inspectFieldResponseRecovery(p.payload);
+            const participationRecurrence = await assertParticipationRecurrenceRestoreDestination(c, org, p.payload);
             const contactReconciliation = restoredContactReconciliationReports(p.payload);
             const contactRecoveryMember = contactReconciliation.present
               ? (await currentContactReconciliationMember(c, { org, session }, { readOnly: false })).member : null;
@@ -968,7 +978,7 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
-            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || p.payload.participation?.version === 3)
+            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || p.payload.participation?.version === 3)
               await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -1037,8 +1047,9 @@ export function createHandler({
             await restoreIncubatorBridge(c, org, p.payload.incubatorBridge, { records: p.payload.records, trash: p.payload.trash || [] });
             await restoreParticipantCheckins(c, org, p.payload.participantCheckins);
             await restoreParticipationGroups(c, org, p.payload.participationGroups);
-            if (fieldResponses.present || contactReconciliation.present) {
+            if (fieldResponses.present || contactReconciliation.present || participationRecurrence.present) {
               const createdAtExact = (await c.query(`SELECT to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at`)).rows[0].created_at;
+              if (participationRecurrence.present) await restoreParticipationRecurrenceReports(c, p.payload, {orgId:org,member,createdAtExact});
               if (fieldResponses.present) await restoreFieldResponseReports(c, p.payload, { orgId: org, actorId: user, createdAtExact });
               if (contactReconciliation.present) await restoreContactReconciliationReports(c, p.payload, { orgId: org, member: contactRecoveryMember, createdAtExact });
             }
@@ -1057,6 +1068,7 @@ export function createHandler({
               ...(participationGroups === null ? {} : { participationGroupsRecovered: participationGroups.groups.length }),
               ...fieldResponseRestoreSummary(fieldResponses),
               ...contactReconciliationRestoreSummary(contactReconciliation),
+              ...participationRecurrenceRestoreSummary(participationRecurrence),
               ...(incubatorBridge ? { incubatorSourcesRecovered: incubatorBridge.sources.length, incubatorEventsRetained: incubatorBridge.events.length } : {}),
               intakePublicationsClosed: intake.publications.length,
               intakeRequests: intake.submissions.length,
@@ -1654,7 +1666,7 @@ export function createHandler({
           },
           422,
         );
-      if (error instanceof ContactReconciliationError || error instanceof ContactContextError || error instanceof ContactReconciliationReportError || error instanceof ContactReconciliationPreviewError || error instanceof FieldResponseError || error instanceof ParticipationGroupError || error instanceof ParticipationGroupAllocationError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
+      if (error instanceof RecurringOccurrenceError || error instanceof RecurringOccurrencePacketError || error instanceof ContactReconciliationError || error instanceof ContactContextError || error instanceof ContactReconciliationReportError || error instanceof ContactReconciliationPreviewError || error instanceof FieldResponseError || error instanceof ParticipationGroupError || error instanceof ParticipationGroupAllocationError || error instanceof CheckInError || error instanceof HttpError || (error instanceof LearningError || error instanceof IncubatorError) || error instanceof ParticipationIntervalError)
         return json(
           {
             ok: false,
@@ -1687,6 +1699,15 @@ export function createHandler({
         500,
       );
     }
+  };
+  // Header policy belongs to the namespace, including sign-in/CSRF and errors
+  // occurring before its dedicated router. Other feature responses stay exact.
+  return async function recurrenceResponsePolicy(request) {
+    const response = await handle(request);
+    const path = new URL(request.url).pathname;
+    if (!/^\/api\/orgs\/[^/]*\/participation-recurrence(?:\/|$)/.test(path)) return response;
+    const headers = new Headers(response.headers); headers.set('referrer-policy','no-referrer');
+    return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
   };
 }
 async function learningStateCount(c, org) {

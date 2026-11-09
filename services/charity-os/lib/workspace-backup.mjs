@@ -1,3 +1,4 @@
+import {exportParticipationRecurrenceReports,restoredParticipationRecurrenceReports} from './participation-recurrence-recovery.mjs';
 import {fieldResponseNativeReports,inspectFieldResponseRecovery} from './field-response-recovery.mjs';
 import {exportContactReconciliationReports,restoredContactReconciliationReports} from './contact-reconciliation-recovery.mjs';
 import {makeBackup} from './backup.mjs';
@@ -14,7 +15,7 @@ import {exportIncubatorBridge} from './incubator-bridge-backup.mjs';
 import {exportParticipantCheckins} from './participant-check-in-backup.mjs';
 import {exportParticipationGroups} from './participation-group-recovery.mjs';
 
-const workspaceFeatures=async(c,org)=>(await c.query("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm",[org])).rows[0];
+const workspaceFeatures=async(c,org)=>(await c.query("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence",[org])).rows[0];
 
 /** The HTTP export and transaction capacity check use this same exact inventory. */
 export async function assembleWorkspaceBackup(c,org,{organization,records}={}){
@@ -23,7 +24,7 @@ export async function assembleWorkspaceBackup(c,org,{organization,records}={}){
   records??=await allRecords(c,org);
   const comments=(await c.query('SELECT * FROM os_comments WHERE org_id=$1',[org])).rows;
   const events=(await c.query('SELECT * FROM os_events WHERE org_id=$1 ORDER BY id',[org])).rows;
-  const reports=exportContactReconciliationReports(fieldResponseNativeReports((await c.query('SELECT * FROM os_reports WHERE org_id=$1',[org])).rows.filter(row=>!isLearningReportFamily(row.payload)),org),org);
+  const reports=exportParticipationRecurrenceReports(exportContactReconciliationReports(fieldResponseNativeReports((await c.query('SELECT * FROM os_reports WHERE org_id=$1',[org])).rows.filter(row=>!isLearningReportFamily(row.payload)),org),org),org);
   const files=(await c.query("SELECT id,record_id AS \"recordId\",name,mime,checksum,size,encode(bytes,'base64') AS content FROM os_files WHERE org_id=$1 AND record_id IN (SELECT id FROM os_records WHERE org_id=$1 AND deleted_at IS NULL)",[org])).rows;
   const trash=(await c.query('SELECT * FROM os_records WHERE org_id=$1 AND deleted_at IS NOT NULL',[org])).rows.map(rowRecord);
   const trashFiles=(await c.query("SELECT id,record_id AS \"recordId\",name,mime,checksum,size,encode(bytes,'base64') AS content FROM os_files WHERE org_id=$1 AND record_id IN (SELECT id FROM os_records WHERE org_id=$1 AND deleted_at IS NOT NULL)",[org])).rows;
@@ -47,7 +48,7 @@ export async function checkWorkspaceExportCapacity(c,org){
   const backup=await assembleWorkspaceBackup(c,org),bytes=Buffer.byteLength(JSON.stringify(backup));
   if(bytes>64*1024*1024)fail(422,'learning_backup_size','The complete workspace backup would exceed 64 MiB. This change was rolled back.');
   const features=await workspaceFeatures(c,org);
-  const needsProjection=features.present||features.incubator||features.checkins||features.groups||features.field||features.crm||restoredContactReconciliationReports(backup).present||inspectFieldResponseRecovery(backup).present||backup.participationGroups!==undefined||backup.participantCheckins!==undefined||backup.incubatorBridge!==undefined||backup.participation?.version===3;
+  const needsProjection=features.present||features.incubator||features.checkins||features.groups||features.field||features.crm||features.recurrence||restoredParticipationRecurrenceReports(backup).present||restoredContactReconciliationReports(backup).present||inspectFieldResponseRecovery(backup).present||backup.participationGroups!==undefined||backup.participantCheckins!==undefined||backup.incubatorBridge!==undefined||backup.participation?.version===3;
   const operational=needsProjection?await measureLearningOperationalCapacity(c,org,backup.participation):null;
   const requiredUsage=usage+(operational?.sourceLogicalGrowthBytes||0),requiredBackupBytes=bytes+(operational?.sourceWireGrowthBytes||0);
   if(requiredUsage>60*1024*1024||requiredBackupBytes>64*1024*1024)
@@ -62,8 +63,8 @@ export async function checkWorkspaceExportCapacity(c,org){
 export async function canRetainIncubatorExportAudit(c, org, event) {
   try {
     const features = await workspaceFeatures(c, org);
-    if (!features.incubator && !features.field && !features.crm) return true;
-    if ((await exportParticipation(c, org)).version === 3) return true;
+    if (!features.incubator && !features.field && !features.crm && !features.recurrence) return true;
+    if (!features.recurrence && (await exportParticipation(c, org)).version === 3) return true;
     const backup = await assembleWorkspaceBackup(c, org),
       usage = await logicalBackupBytes(c, org);
     const candidate = {
@@ -95,6 +96,12 @@ export async function canRetainIncubatorExportAudit(c, org, event) {
           created_at: "2200-12-31T23:59:59.999Z",
         }),
       ) + 2;
+    if (features.recurrence) {
+      const { measureParticipationRecurrenceSourceCapacity } = await import('./participation-recurrence-capacity.mjs');
+      const remaining = await measureParticipationRecurrenceSourceCapacity(c, org, backup);
+      return remaining.requiredUsage + Number(measured.bytes) <= 60 * 1024 * 1024 &&
+        remaining.requiredBackupBytes + wireBound <= 64 * 1024 * 1024;
+    }
     return (
       usage + Number(measured.bytes) <= 60 * 1024 * 1024 &&
       Buffer.byteLength(JSON.stringify(backup)) + wireBound <= 64 * 1024 * 1024

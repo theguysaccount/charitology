@@ -21,6 +21,7 @@ import {FIELD_FORMAT,FIELD_METHOD,inspectFieldAggregateFile,makeFieldMapping,com
 import {makeFieldResponseReportRow} from '../lib/field-response-store.mjs';
 import {validateGroupReceipt,projectGroupHistory,GROUP_METHOD} from '../lib/participation-group-model.mjs';
 import {makeParticipationGroupsBackup} from '../lib/participation-group-backup.mjs';
+import {fakeContext as recurrenceContext,packets as recurrencePackets} from './fixtures/recurrence-fake-context.mjs';
 
 const ORG='fictional_origin',ACTOR='fictional_actor',AT='2026-11-08T12:34:56.123456Z';
 const organization={name:'Fictional source',currency:'USD',time_zone:'UTC'};
@@ -185,4 +186,20 @@ test('trusted CRM Replay marker cannot skip actual current hard-cap refusal',asy
   return f.client.query(sql,args);
  }};const Old=pg.Pool;pg.Pool=class{async connect(){return client;}};
  try{await assert.rejects(database('postgres://fictional.invalid/crm').tx(ACTOR,ORG,async c=>{noteContactReconciliationReceiptReplay(c,ORG);return{receipt:true};},{lock:true}),e=>e.code==='quota');assert.deepEqual(calls.slice(-2),['ROLLBACK','RELEASE']);assert(!calls.includes('COMMIT'));assert(!calls.some(q=>q.startsWith('INSERT')));}finally{pg.Pool=Old;}
+});
+
+// A generic source report is retained inside the source archive, not INSERTed.
+// The fake meter uses declared row bytes; this is not PostgreSQL size proof.
+test('legacy archived report identity remains compatible with its unchanged destination baseline',async()=>{
+ const legacy={org_id:ORG,id:'ordinary-legacy-report',created_by:ACTOR,title:'Fictional legacy',checksum:'a'.repeat(64),payload:{ordinary:true},created_at:AT},charge=bytes(legacy),b=packet([legacy]),before=clone(b),m=measurement({baseline:[{...legacy,capacity_bytes:charge}],usage:charge});
+ const value=await measure(m.client,b,{orgId:ORG,actorId:ACTOR,baselineOrgId:ORG});assert.deepEqual(value.categories.targetBaseline,{count:1,bytes:charge});assert(!Object.hasOwn(value.categories,'os_reports'));assert.equal(m.observed.has('os_reports'),false);assert.equal(m.observed.get('os_events').at(-1).detail.sourceReportCount,1);assert.deepEqual(b,before);
+});
+test('recurrence projection still refuses any destination ID collision and retained recurrence for legacy input',async()=>{
+ const {report:incoming}=await recurrencePackets(recurrenceContext()),legacy={...incoming,org_id:ORG,payload:{ordinary:true}},charge=bytes(legacy),collision=measurement({baseline:[{...legacy,capacity_bytes:charge}],usage:charge});
+ await assert.rejects(measure(collision.client,packet([incoming]),{orgId:ORG,actorId:ACTOR,baselineOrgId:ORG}),e=>e.code==='restore_conflict');assert.equal(collision.observed.has('os_reports'),false);
+ const retained=measurement({baseline:[{...incoming,org_id:ORG,capacity_bytes:bytes(incoming)}],usage:bytes(incoming)});await assert.rejects(measure(retained.client,packet(),{orgId:ORG,actorId:ACTOR,baselineOrgId:ORG}),e=>e.code==='restore_conflict');assert.equal(retained.observed.has('os_reports'),false);
+});
+test('recurrence projection stages only its typed report beside an ordinary baseline',async()=>{
+ const {report:incoming}=await recurrencePackets(recurrenceContext()),legacy={org_id:ORG,id:'ordinary-legacy-report',created_by:ACTOR,title:'Fictional legacy',checksum:'a'.repeat(64),payload:{ordinary:true},created_at:AT},charge=bytes(legacy),b=packet([incoming,legacy]),before=clone(b),m=measurement({baseline:[{...legacy,capacity_bytes:charge}],usage:charge});
+ const value=await measure(m.client,b,{orgId:ORG,actorId:ACTOR,baselineOrgId:ORG});assert.deepEqual(value.categories.targetBaseline,{count:1,bytes:charge});assert.equal(value.categories.os_reports.count,1);assert.equal(m.observed.get('os_reports').length,1);assert.equal(m.observed.get('os_reports')[0].id,incoming.id);assert.deepEqual(m.observed.get('os_reports')[0].payload,incoming.payload);assert.equal(m.observed.get('os_events').at(-1).detail.sourceReportCount,2);assert.equal(m.observed.get('os_events').at(-1).detail.participationRecurrenceReportsRecovered,1);assert.deepEqual(b,before);
 });

@@ -38,7 +38,7 @@ function fixture() {
     if (count) { const all = tableRows(count[1]); return { rows: [{ n: String(all.length), bytes: String(all.reduce((n, r) => n + Buffer.byteLength(JSON.stringify(r)), 0)) }] }; }
     if (page) {
       const t = page[1], all = tableRows(t).map(row => ({ row, key: key(t, row) })).filter(x => params[1] === null || x.key > params[1]).sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0).slice(0, params[2]);
-      return { rows: all.map(({ row, key }) => ({ row_key: key, row_json: JSON.stringify(row), ...(t === "os_records" ? { created_exact: row.created_at, updated_exact: row.updated_at, deleted_exact: row.deleted_at } : t === "os_reports" ? { created_exact: row.created_at } : {}) })) };
+      return { rows: all.map(({ row, key }) => ({ row_key: key, row_json: JSON.stringify(row), ...(t === "os_records" ? { created_exact: row.created_at, updated_exact: row.updated_at, deleted_exact: row.deleted_at } : t === "os_reports" ? { created_exact: row.created_at } : t === "os_previews" ? { preview_created_exact: row.created_at, preview_expires_exact: row.expires_at, preview_committed_exact: row.committed_at } : {}) })) };
     }
     if (sql.startsWith("/*crm:command:lookup*/")) {
       const found = f.previews.filter(r => r.org_id === params[0] && r.actor_id === params[1] && r.kind === params[2] && (r.id === params[3] || r.committed_at !== null && r.payload.commandSha256 === params[4])).sort((a, b) => a.id < b.id ? -1 : 1).slice(0, 3);

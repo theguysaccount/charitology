@@ -27,3 +27,7 @@ The next integration needs explicit observation scope, measure and CSV-source va
 The combined local run passes 63 cases: 38 recurrence and 25 Education cases. The complete OS unit/client suite passes 1,718 cases after adding the recurrence tests. These are local checks. Future controller, PostgreSQL, browser, CI and publication results need their own evidence.
 
 The [tracked backlog](CURRENT_IMPLEMENTATION_BACKLOG.md) retains all twenty-two software IDs and eight conditional decisions. The [original brief](ORIGINAL_BRIEF.md) still contains all 26 programs, 19 tools and 21 information bases. These foundations close none of those broader workflows or human operating gates.
+
+## Later implementation checkpoints
+
+The pure-only scope above is historical. The [Education acceptance](HUMANITARIAN_PLAN_CLUSTER_ACCEPTANCE.md#finite-public-release) now records the published observation, exact public responses and completed native exports. The [finite occurrence draft record](PARTICIPATION_RECURRENCE_ACCEPTANCE.md) separately records the stored workflow candidate, its eighteen-group local PostgreSQL result, interface correction and remaining integration and release checks. Neither later checkpoint closes the broader backlog.

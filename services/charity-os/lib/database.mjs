@@ -84,7 +84,7 @@ export function database(url, { schema } = {}) {
         if (!readOnly && orgId && (state.locked || state.actions.size)) {
           const present = (
             await c.query(
-              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm",
+              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence",
               [orgId],
             )
           ).rows[0];
@@ -93,6 +93,10 @@ export function database(url, { schema } = {}) {
             [...state.actions].some(
               (action) => !projectionExemptActions.has(action),
             );
+          if (present.recurrence) {
+            const { checkParticipationRecurrenceFamilyCapacity } = await import("./participation-recurrence-capacity.mjs");
+            await checkParticipationRecurrenceFamilyCapacity(c, orgId);
+          }
           let participation;
           if (present.participation) {
             const { checkParticipationExportCapacity } = await import(
@@ -123,7 +127,7 @@ export function database(url, { schema } = {}) {
             }
           }
           if (!present.groups && (
-            (present.present || present.participation || present.incubator || present.checkins || present.field || present.crm) &&
+            (present.present || present.participation || present.incubator || present.checkins || present.field || present.crm || present.recurrence) &&
             ordinary
           )) {
             const { checkWorkspaceExportCapacity } = await import(
@@ -146,7 +150,7 @@ export function database(url, { schema } = {}) {
             const { checkCheckInSafetyCapacity } = await import("./participant-check-in-capacity.mjs");
             await checkCheckInSafetyCapacity(c, orgId);
           }
-          if ((present.incubator || present.checkins || present.field || present.crm) && !ordinary && !present.groups) {
+          if ((present.incubator || present.checkins || present.field || present.crm || present.recurrence) && !ordinary && !present.groups) {
             const { checkActualWorkspaceBackupCapacity } = await import(
               "./workspace-backup.mjs"
             );
@@ -381,7 +385,7 @@ export async function logicalBackupBytes(c, org) {
       )
       .join(" UNION ALL ") +
     " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1" +
-    " UNION ALL SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS size FROM os_previews t WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')";
+    " UNION ALL SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS size FROM os_previews t WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1','participation-recurrence-v1')";
   return Number(
     (await c.query(`SELECT sum(size) AS size FROM (${sql}) usage`, [org]))
       .rows[0]?.size || 0,

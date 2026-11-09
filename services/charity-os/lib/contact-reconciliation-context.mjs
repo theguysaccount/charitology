@@ -1,3 +1,4 @@
+import {validateRecurringOccurrenceManifest,validateRecurringOccurrenceReportRow,validateRecurringOccurrencePreviewRow,RECURRENCE_PACKET_KIND} from './participation-recurrence-packets.mjs';
 /** Private SELECT-only candidate. Caller owns the same-c tenant transaction and org lock. */
 import { isProxy } from "node:util/types";
 import { getModule, validateRecord } from "./modules.mjs";
@@ -10,6 +11,8 @@ import { validateContactReconciliationReport, validateContactReconciliationRepor
 import { validInstant } from "./schedule.mjs";
 import { validateFieldImportManifest } from "./field-response-model.mjs";
 import { CONTACT_PREVIEW_KIND, validateContactReconciliationPreviewRow } from "./contact-reconciliation-preview.mjs";
+import { validateStoredGrantInventory, GRANT_HISTORY_FIELD_PROFILE_SHA256 } from "./grant-report-history.mjs";
+import { validateContactLearningClosure, CONTACT_LEARNING_REFERENCE_PROFILE_SHA256 } from "./contact-known-history.mjs";
 
 export const CONTACT_CONTEXT_LIMITS = Object.freeze({ rows: 20000, bytes: 32 * 1024 * 1024, batch: 32, references: 128 });
 const ID = /^[A-Za-z0-9_-]{1,100}$/;
@@ -55,7 +58,7 @@ const TABLES = [...FIRST, ...Object.keys(CONTACT_CONTEXT_CATALOG).filter(t => !O
 // has not been connected. A later reviewed extension must validate the actual
 // family/closure before replacing any one of these unsupported refusals.
 const UNPARSED_PACKETS = Object.freeze([
-  "os_grant_report_previews", "os_learning_previews", "os_learning_history",
+  "os_grant_report_previews", "os_learning_previews",
   "os_incubator_history", "os_resource_directory_history", "os_task_recurrence_series", "os_task_recurrence_occurrences",
   "os_participation_groups", "os_participation_group_receipts", "os_participation_checkins", "os_participation_delivery_previews",
 ]);
@@ -188,16 +191,34 @@ function scan(value, maps, chosen, budget, depth = 0) {
 // Their narrative leaves are never serialized packets or identifier guesses.
 function classifyReport(payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
+  if (typeof payload.format === 'string' && payload.format.startsWith('charitology-participation-occurrence-generation')) {
+    try { return {kind:'recurrence',payload:validateRecurringOccurrenceManifest(payload)}; } catch { return null; }
+  }
   if (payload.format === "charitology-field-response-import") {
     try { return { kind: "field", payload: validateFieldImportManifest(payload) }; } catch { return null; }
   }
   if (payload.format === "charitology-contact-reconciliation") {
     try { return { kind: "contact", payload: validateContactReconciliationReport(payload) }; } catch { return null; }
   }
-  // Generic legacy snapshot, Learning and grant reports require their actual
-  // closed source-derived validators. A checksum/modules discriminator cannot
-  // prove complete reference coverage or safely admit unknown payload fields.
+  // Discriminators only select a complete deferred family validator. They do
+  // not admit a body or waive an unsupported/changed version.
+  if (payload.kind === "grant-period" || payload.methodVersion === "grant-report-v1")
+    return { kind: "grant-history", payload };
+  if (payload.kind === "learning-review" || payload.methodVersion === "learning-review-v1")
+    return { kind: "learning-history", payload };
   return null;
+}
+function recurrenceReportReferences(payload,maps,modules,org) {
+  // Cross-organization restore preserves original historical identities. They
+  // must not alias unrelated destination IDs merely sharing their spelling.
+  if(payload.originOrgId!==org)return empty();
+  const refs=[{id:payload.source.id,moduleId:payload.source.moduleId},...payload.dependencies.references,...payload.candidates.map(r=>({id:r.id,moduleId:r.moduleId}))];
+  let found=empty();for(const ref of refs){if(modules.has(ref.id))need(modules.get(ref.id)===ref.moduleId);found=union(found,get(maps.record,ref.id));}return found;
+}
+function passiveRecurrenceAudit(row,reports) {
+  if(row.action!=='participation-recurrence.generated'||row.record_id!==null||row.module_id!==null)return false;
+  const d=exact(row.detail,['reportId','reportSha256','sourceId','recordIds']),m=reports.get(d.reportId);need(m);
+  need(d.reportSha256===m.sha256&&d.sourceId===m.source.id&&stable(d.recordIds)===stable(m.candidates.map(c=>c.id)));return true;
 }
 function contactReportReferences(payload, chosen) {
   // checkedReport admits at most one nested original merge. No reason, title,
@@ -213,6 +234,62 @@ function contactReportReferences(payload, chosen) {
   for (const change of payload.changes) { record(change.before); record(change.after); }
   if (payload.reverses !== null) for (const contactId of contactReportReferences(payload.reverses, chosen)) add(contactId);
   return found;
+}
+// Complete inventories only. No account/receipt/creator field supplies current
+// authority, and no historical row is fabricated to satisfy a typed reference.
+function finalizeKnownHistory(known, org, recordModules, maps, chosen, pushRef, reportDependencies) {
+  const grantPresent = known.grants.length > 0;
+  const learningPresent = known.history.length > 0 || known.learning.length > 0;
+  if (!grantPresent && !learningPresent) return null;
+  let grants = null, learning = null;
+  try {
+    if (grantPresent) grants = validateStoredGrantInventory({ reportRows: known.grants.map(x => x.entry) });
+    if (learningPresent) learning = validateContactLearningClosure({ historyRows: known.history, reportRows: known.learning.map(x => x.entry) });
+  } catch { reconcile(); }
+  const types = new Map();
+  const identity = (originOrgId, moduleId, recordId) => {
+    const key = stable([originOrgId, recordId]);
+    need(!types.has(key) || types.get(key) === moduleId, "contact_context_reconcile", 409);
+    types.set(key, moduleId);
+    if (originOrgId === org && recordModules.has(recordId))
+      need(recordModules.get(recordId) === moduleId, "contact_context_reconcile", 409);
+  };
+  if (learning) for (const r of learning.recordIdentities) identity(r.originOrgId, r.moduleId, r.recordId);
+  if (grants) for (const report of grants.reports) {
+    for (const module of report.modules) for (const r of module.records) {
+      identity(report.orgId, r.moduleId, r.id);
+      if (Object.hasOwn(r, "submittedArtifact")) {
+        const submitted = r.submittedArtifact.record;
+        identity(report.orgId, submitted.moduleId, submitted.id);
+      }
+    }
+  }
+  if (grants) for (const projection of grants.referenceProjections) for (const r of projection.recordRefs) {
+    identity(r.originOrgId, r.moduleId, r.recordId);
+    identity(r.originOrgId, r.targetModuleId, r.targetRecordId);
+  }
+  const actual = (originOrgId, recordId) => originOrgId === org ? get(maps.record, recordId) : empty();
+  if (grants) for (const projection of grants.referenceProjections) {
+    let affected = empty();
+    const report = grants.reports.find(r => r.id === projection.report.id);
+    for (const module of report.modules) for (const r of module.records)
+      affected = union(affected, actual(report.orgId, r.id));
+    for (const r of projection.recordRefs) {
+      affected = union(affected, actual(r.originOrgId, r.recordId), actual(r.originOrgId, r.targetRecordId));
+      if (r.originOrgId === org && r.targetModuleId === "contacts" && chosen.has(r.targetRecordId)) affected.add(r.targetRecordId);
+    }
+    const stored = known.grants.find(x => x.entry.row.id === report.id);
+    const referenceId = H("reference-id", { table: "os_reports", key: stored.rowKey });
+    for (const contactId of affected) pushRef({ family: "immutable-history", id: referenceId,
+      moduleId: null, field: null, contactId, revision: null, sha256: stored.pin, deleted: false });
+    if (affected.size) reportDependencies.push({ referenceId, reportId: report.id, checksum: report.checksum,
+      classification: "frozen-report", contactIds: [...affected].sort() });
+  }
+  // Only a present, fully admitted inventory adds this closed interpretation pin.
+  // Raw row/census pins independently retain every payload and new SQL alias.
+  return H("known-history-method", { method: "contact-known-history-context-v1",
+    grantFieldProfileSha256: grantPresent ? GRANT_HISTORY_FIELD_PROFILE_SHA256 : null,
+    learningReferenceProfileSha256: learningPresent ? CONTACT_LEARNING_REFERENCE_PROFILE_SHA256 : null });
 }
 function reminderReferences(row, maps) {
   exact(row, ["org_id", "id", "kind", "payload"]); id(row.id);
@@ -283,8 +360,9 @@ async function readContext(c, input, inverse) {
   const { member, authority } = await authenticate(c, org, session); await catalog(c);
   const chosen = new Set([leftId, rightId]), maps = { record: new Map(), participation: new Map(), intake: new Map(), group: new Map(), publication: new Map() };
   for (const x of chosen) maps.record.set(x, new Set([x]));
-  const pair = new Map(), contacts = new Map(), rowStamps = new Map(), references = new Map(), pins = [], census = [], snapshots = [], recordModules = new Map(), preservedAudits = [], reportDependencies = [], currentRecords = [], contactReports = new Map();
+  const pair = new Map(), contacts = new Map(), rowStamps = new Map(), references = new Map(), pins = [], census = [], snapshots = [], recordModules = new Map(), preservedAudits = [], reportDependencies = [], currentRecords = [], contactReports = new Map(), recurrenceReports = new Map();
   const budget = { nodes: 0, decoded: 0, literalModuleData: new WeakMap() }; let totalRows = 0, totalBytes = 0;
+  const known = { grants: [], learning: [], history: [] };
   const pushRef = r => {
     const key = stable([r.family, r.id, r.field, r.contactId]);
     if (references.has(key)) return;
@@ -299,11 +377,11 @@ async function readContext(c, input, inverse) {
     need(expected === 0 || !UNPARSED_PACKETS.includes(table), "contact_context_unsupported", 409);
     let after = null, seen = 0, seenBytes = 0;
     while (seen < expected) {
-      const stamps = table === "os_records" ? ",to_char(t.created_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_exact,to_char(t.updated_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS updated_exact,to_char(t.deleted_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS deleted_exact" : table === "os_reports" ? ",to_char(t.created_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_exact" : "";
+      const stamps = table === "os_records" ? ",to_char(t.created_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_exact,to_char(t.updated_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS updated_exact,to_char(t.deleted_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS deleted_exact" : ["os_reports", "os_learning_history"].includes(table) ? ",to_char(t.created_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS created_exact" + (table === "os_learning_history" ? ",octet_length(t.payload::text) AS payload_bytes,COALESCE(octet_length(t.receipt::text),0) AS receipt_bytes" : "") : table === "os_previews" ? ",to_char(t.created_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS preview_created_exact,to_char(t.expires_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS preview_expires_exact,to_char(t.committed_at AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.US\"Z\"') AS preview_committed_exact" : "";
       const page = rows(await c.query(`/*crm:page:${table}*/ SELECT ${keyExpr} AS row_key,(${projection})::text AS row_json${stamps} FROM ${table} t WHERE t.org_id=$1 AND ($2::text IS NULL OR (${keyExpr}) COLLATE "C">$2::text COLLATE "C") ORDER BY (${keyExpr}) COLLATE "C" LIMIT $3`, [org, after, CONTACT_CONTEXT_LIMITS.batch]));
       need(page.length > 0 && page.length <= CONTACT_CONTEXT_LIMITS.batch);
       for (const raw of page) {
-        const entry = exact(raw, ["row_key", "row_json", ...(table === "os_records" ? ["created_exact", "updated_exact", "deleted_exact"] : table === "os_reports" ? ["created_exact"] : [])]);
+        const entry = exact(raw, ["row_key", "row_json", ...(table === "os_records" ? ["created_exact", "updated_exact", "deleted_exact"] : table === "os_reports" ? ["created_exact"] : table === "os_learning_history" ? ["created_exact", "payload_bytes", "receipt_bytes"] : table === "os_previews" ? ["preview_created_exact", "preview_expires_exact", "preview_committed_exact"] : [])]);
         need(typeof entry.row_key === "string" && entry.row_key.length <= 256 && (after === null || entry.row_key > after));
         need(typeof entry.row_json === "string" && Buffer.byteLength(entry.row_json) <= CONTACT_CONTEXT_LIMITS.bytes);
         seenBytes += Buffer.byteLength(entry.row_json); need(seenBytes <= bytes);
@@ -314,6 +392,7 @@ async function readContext(c, input, inverse) {
           try {
             validateGroupExactStamp(entry.created_exact);
             reportClass = classifyReport(row.payload); need(reportClass);
+            if (reportClass.kind === 'recurrence') { const admitted=validateRecurringOccurrenceReportRow({...row,created_at:entry.created_exact}); recurrenceReports.set(admitted.id,admitted.payload); }
             if (reportClass.kind === "contact") {
               const report = validateContactReconciliationReportRow({ ...row, created_at: entry.created_exact });
               contactReports.set(report.id, { checksum: report.checksum, operation: report.payload.operation });
@@ -321,10 +400,18 @@ async function readContext(c, input, inverse) {
           } catch { reconcile(); }
         }
         if (table === "os_previews") {
-          need(row.kind === CONTACT_PREVIEW_KIND, "contact_context_unsupported", 409);
-          try { validateContactReconciliationPreviewRow(row); } catch { reconcile(); }
+          if(row.kind===RECURRENCE_PACKET_KIND){try{validateRecurringOccurrencePreviewRow({...row,created_at:entry.preview_created_exact,expires_at:entry.preview_expires_exact,committed_at:entry.preview_committed_exact});}catch{reconcile();}}
+          else { need(row.kind === CONTACT_PREVIEW_KIND, "contact_context_unsupported", 409);
+          try { validateContactReconciliationPreviewRow(row); } catch { reconcile(); } }
         }
-        const pin = H("row", { table, value: row, ...(table === "os_reports" ? { createdAtExact: entry.created_exact } : {}) }); pins.push([table, entry.row_key, pin]);
+        const pin = H("row", { table, value: row, ...(table === "os_reports" ? { createdAtExact: entry.created_exact }
+          : table === "os_learning_history" ? { createdAtExact: entry.created_exact, payloadBytes: entry.payload_bytes, receiptBytes: entry.receipt_bytes } : table === "os_previews" && row.kind === RECURRENCE_PACKET_KIND ? { createdAtExact: entry.preview_created_exact, expiresAtExact: entry.preview_expires_exact, committedAtExact: entry.preview_committed_exact } : {}) }); pins.push([table, entry.row_key, pin]);
+        if (reportClass?.kind === "grant-history" || reportClass?.kind === "learning-history") {
+          known[reportClass.kind === "grant-history" ? "grants" : "learning"].push({
+            entry: { row, createdAtExact: entry.created_exact }, rowKey: entry.row_key, pin });
+        }
+        if (table === "os_learning_history") known.history.push({ row, createdAtExact: entry.created_exact,
+          payloadBytes: entry.payload_bytes, receiptBytes: entry.receipt_bytes });
         if (table === "os_records") {
           need(Object.keys(row).length === CONTACT_CONTEXT_CATALOG.os_records.length && Object.keys(row).every(k => CONTACT_CONTEXT_CATALOG.os_records.includes(k)));
           id(row.id); revision(row.revision); need(typeof row.module_id === "string");
@@ -373,7 +460,7 @@ async function readContext(c, input, inverse) {
           if (table === "os_participation_groups") {
             need(Array.isArray(row.roster_ids)); const linked = union(...row.roster_ids.map(x => get(maps.participation, x)), get(maps.intake, row.coordinator_intake_id), scan(row.history, maps, chosen, budget)); addMap(maps.group, row.id, linked);
           }
-          const passiveAudit = table === "os_events" && passiveContactAudit(row, contactReports);
+          const passiveAudit = table === "os_events" && (passiveContactAudit(row, contactReports) || passiveRecurrenceAudit(row, recurrenceReports));
           const auditRecord = table === "os_events" ? ordinaryRecordAudit(row, org, currentRecords) : null;
           if (auditRecord) budget.literalModuleData.set(auditRecord.data, auditRecord.moduleId);
           const preserved = table === "os_events" && preserveOrdinaryContactAudit(row, auditRecord, chosen);
@@ -388,8 +475,8 @@ async function readContext(c, input, inverse) {
           if (preserved) preservedAudits.push([entry.row_key, pin, row.record_id]);
           // FIELD's validated mapping/created pins are Programs/Outcomes only.
           // Known CRM previews and linked audit metadata are passive bookkeeping.
-          const affected = preserved || passiveAudit || table === "os_previews" || reportClass?.kind === "field" ? empty()
-            : reportClass?.kind === "contact" ? contactReportReferences(reportClass.payload, chosen) : jobReferences ?? scan(row, maps, chosen, budget);
+          const affected = preserved || passiveAudit || table === "os_previews" || table === "os_learning_history" || ["field", "grant-history", "learning-history"].includes(reportClass?.kind) ? empty()
+            : reportClass?.kind === "contact" ? contactReportReferences(reportClass.payload, chosen) : reportClass?.kind === "recurrence" ? recurrenceReportReferences(reportClass.payload, maps, recordModules, org) : jobReferences ?? scan(row, maps, chosen, budget);
           if (table === "os_events" && !preserved && affected.size && ["record.created", "record.updated", "record.deleted", "record.restored"].includes(row.action) && row.module_id === "contacts") reconcile();
           if (table === "os_publications") for (const x of get(maps.publication, row.id)) affected.add(x);
           if (table === "os_intake") for (const x of get(maps.intake, row.id)) affected.add(x);
@@ -406,6 +493,7 @@ async function readContext(c, input, inverse) {
     need(seen === expected && seenBytes === bytes); census.push([table, expected, bytes]);
     if (table === "os_records") for (const s of snapshots) for (const contactId of scan(s.value, maps, chosen, budget)) pushRef({ family: "immutable-history", id: H("snapshot-id", s.id), moduleId: null, field: null, contactId, revision: s.revision, sha256: s.pin, deleted: s.deleted });
   }
+  const knownHistoryMethodPin = finalizeKnownHistory(known, org, recordModules, maps, chosen, pushRef, reportDependencies);
   need(pair.size === 2);
   const orderedPair = [pair.get(leftId), pair.get(rightId)], organizations = [];
   for (const row of orderedPair) if (row.data.organizationId !== null && !organizations.some(x => x.id === row.data.organizationId)) {
@@ -428,5 +516,5 @@ async function readContext(c, input, inverse) {
     unsupportedPacketFamilies: UNPARSED_PACKETS };
   const context = inverse ? { inverseContext: { pair: orderedPair, organizations, references: [...references.values()] } } : { plannerContext };
   return learningOwned({ ...context, authority, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)], sourceOwnership, coverage, reportDependencies,
-    contextSha256: H("context", { org, authority, pins, census, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)] }) }, { bytes: 131072 });
+    contextSha256: H("context", { org, authority, pins, census, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)], ...(knownHistoryMethodPin === null ? {} : { knownHistoryMethodPin }) }) }, { bytes: 131072 });
 }

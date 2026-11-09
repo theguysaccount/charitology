@@ -2178,3 +2178,19 @@ textarea[aria-invalid="true"] {
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+/* Finite occurrence review: external classes preserve the existing CSP. */
+.participation-recurrence { min-width: 0; overflow-wrap: anywhere; }
+.participation-recurrence fieldset, .participation-recurrence .field { min-width: 0; max-width: 100%; }
+.participation-recurrence input:not([type="checkbox"]), .participation-recurrence select, .participation-recurrence textarea { width: 100%; max-width: 100%; min-width: 0; min-height: 44px; box-sizing: border-box; }
+.participation-recurrence .button { max-width: 100%; min-height: 44px; white-space: normal; overflow-wrap: anywhere; }
+.participation-recurrence [role="status"]:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.recurrence-values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin: 0; }
+.recurrence-values > div { min-width: 0; padding: .65rem; border: 1px solid var(--rule); border-radius: 6px; }
+.recurrence-values dt { font-weight: 650; }
+.recurrence-values dd { margin: .3rem 0 0; }
+.recurrence-literal { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; }
+.recurrence-occurrence { border: 1px solid var(--rule); border-radius: 6px; padding: 1rem; display: grid; gap: .75rem; }
+.recurrence-occurrence legend { max-width: 100%; font-weight: 650; }
+.participation-recurrence pre { max-width: 100%; overflow: auto; }
+@media (max-width: 640px) { .recurrence-values { grid-template-columns: minmax(0, 1fr); } .recurrence-occurrence { padding: .75rem; } }
