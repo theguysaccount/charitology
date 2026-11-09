@@ -478,3 +478,21 @@ export function contactReconciliationAPI(org) {
     historyDetail: (id, options) => request(`${base}/history/${part(id)}`, options),
   });
 }
+
+// Fixed finite-draft callbacks use the existing same-origin JSON/CSRF sender.
+export function participationRecurrenceAPI(org) {
+  const base = `${orgPath(org)}/participation-recurrence`;
+  const post = (suffix, body, options) => request(`${base}/${suffix}`, { ...options, method: "POST", body });
+  return Object.freeze({
+    records: (moduleId, cursor, options) => {
+      if (!["events", "volunteers"].includes(moduleId)) throw new ApiError("Choose Events or Volunteers.", 422, "recurrence_module");
+      return api.records(org, moduleId, cursor, options);
+    },
+    inspect: (body, options) => post("inspect", body, options),
+    plan: (body, options) => post("plan", body, options),
+    preview: (body, options) => post("preview", body, options),
+    create: (body, options) => post("create", body, options),
+    history: ({ after, limit }, options) => request(`${base}/history?limit=${part(limit)}${after ? `&after=${part(after)}` : ""}`, options),
+    historyDetail: (id, options) => request(`${base}/history/${part(id)}`, options),
+  });
+}

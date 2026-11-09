@@ -52,7 +52,7 @@ function fixture() {
     if (kind === "count") return { rows: [state.fakeCount?.(table) ?? { n: String(data.length), bytes: String(data.reduce((n, x) => n + Buffer.byteLength(x.row_json), 0)) }] };
     assert.equal(params[2], 32); assert(sql.includes('COLLATE "C"')); assert(sql.includes("LIMIT $3"));
     let output = data.filter(x => params[1] === null || x.row_key > params[1]).slice(0, params[2]).map(x => ({ row_key: x.row_key, row_json: x.row_json,
-      ...(table === "os_records" ? { created_exact: x.row.created_at, updated_exact: x.row.updated_at, deleted_exact: x.row.deleted_at } : table === "os_reports" && sql.includes("AS created_exact") ? { created_exact: NOW } : {}) }));
+      ...(table === "os_records" ? { created_exact: x.row.created_at, updated_exact: x.row.updated_at, deleted_exact: x.row.deleted_at } : table === "os_reports" && sql.includes("AS created_exact") ? { created_exact: NOW } : table === "os_previews" ? { preview_created_exact: x.row.created_at, preview_expires_exact: x.row.expires_at, preview_committed_exact: x.row.committed_at } : {}) }));
     if (state.pageMutation) output = state.pageMutation(table, output);
     return { rows: output };
   } };
@@ -266,7 +266,7 @@ test("complete future unknown preview row refuses before opaque payload scanning
   f.tables.os_previews=[row];await refuse(f.read(),"contact_context_unsupported",409);
 });
 test("unparsed versioned history families refuse before packet body interpretation", async () => {
-  for (const table of ["os_grant_report_previews", "os_learning_previews", "os_learning_history", "os_incubator_history", "os_resource_directory_history", "os_task_recurrence_series", "os_task_recurrence_occurrences", "os_participation_groups", "os_participation_group_receipts", "os_participation_checkins", "os_participation_delivery_previews"]) {
+  for (const table of ["os_grant_report_previews", "os_learning_previews", "os_incubator_history", "os_resource_directory_history", "os_task_recurrence_series", "os_task_recurrence_occurrences", "os_participation_groups", "os_participation_group_receipts", "os_participation_checkins", "os_participation_delivery_previews"]) {
     const f = fixture(), row = Object.fromEntries(CATALOG[table].map(k => [k, null]));
     Object.assign(row, { org_id: ORG, id: "unparsed_packet", payload: { opaqueCode: "left" }, series_id: "series", sequence: 1, command_hash: "a".repeat(64) });
     f.tables[table] = [row]; await refuse(f.read(), "contact_context_unsupported", 409);

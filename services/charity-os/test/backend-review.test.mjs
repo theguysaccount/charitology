@@ -84,6 +84,15 @@ function fixture(
       if (extra !== undefined) return extra;
       const emptyGroups = emptyParticipationGroupsQuery(sql, args);
       if (emptyGroups !== undefined) return emptyGroups;
+      if (sql === "SELECT EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE $2) AS occupied,EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND id=ANY($3::text[])) AS collision") {
+        assert.equal(args[0], org);
+        assert.equal(args[1], "charitology-participation-occurrence-generation%");
+        assert(Array.isArray(args[2]));
+        return { rows: [{
+          occupied: reports.some(report => typeof report.payload?.format === "string" && report.payload.format.startsWith("charitology-participation-occurrence-generation")),
+          collision: reports.some(report => args[2].includes(report.id)),
+        }] };
+      }
       // This historical fixture retains no participant self-report sidecar.
       if (sql === "SELECT t.* FROM os_participation_checkins t WHERE org_id=$1 ORDER BY id") return { rows: [] };
       if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return { rows: [{ count: 0 }] };

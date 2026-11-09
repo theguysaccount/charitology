@@ -11,6 +11,7 @@ import { restoredParticipantCheckins } from "./participant-check-in-backup.mjs";
 import { restoredParticipationGroups } from "./participation-group-recovery.mjs";
 import { inspectFieldResponseRecovery } from './field-response-recovery.mjs';
 import { restoredContactReconciliationReports } from './contact-reconciliation-recovery.mjs';
+import { restoredParticipationRecurrenceReports } from "./participation-recurrence-recovery.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -47,6 +48,7 @@ export function validateBackup(input, orgId, userId) {
   });
   inspectFieldResponseRecovery(input);
   restoredContactReconciliationReports(input);
+  restoredParticipationRecurrenceReports(input);
   const { checksum, ...payload } = input;
   restoredParticipantCheckins(input.participantCheckins);
   restoredParticipationGroups(input.participationGroups);

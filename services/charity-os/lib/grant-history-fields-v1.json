@@ -1,0 +1,762 @@
+{
+  "schemaVersion": 1,
+  "currencies": {
+    "USD": 2,
+    "EUR": 2,
+    "GBP": 2,
+    "CAD": 2,
+    "AUD": 2,
+    "NZD": 2,
+    "CHF": 2,
+    "JPY": 0,
+    "KWD": 3
+  },
+  "roles": [
+    "owner",
+    "admin",
+    "program_lead",
+    "grants_lead",
+    "finance_reviewer",
+    "contributor",
+    "board_reader",
+    "external_reviewer"
+  ],
+  "modules": {
+    "programs": {
+      "title": "Mission and program design",
+      "fields": [
+        {
+          "key": "title",
+          "type": "text",
+          "nullable": false,
+          "required": true,
+          "maxLength": 180
+        },
+        {
+          "key": "kind",
+          "type": "select",
+          "nullable": false,
+          "required": true,
+          "options": [
+            "program",
+            "system-map",
+            "assumption"
+          ]
+        },
+        {
+          "key": "purpose",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "community",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "mechanism",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "depth",
+          "type": "integer",
+          "nullable": true,
+          "min": 0,
+          "max": 4
+        },
+        {
+          "key": "evidence",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "hypothesis",
+            "documented",
+            "established",
+            "debated"
+          ]
+        },
+        {
+          "key": "assumptions",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "sourceUrl",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 1200,
+          "format": "https"
+        },
+        {
+          "key": "reviewDate",
+          "type": "date",
+          "nullable": true
+        }
+      ]
+    },
+    "grant-seeking": {
+      "title": "Grant seeking",
+      "fields": [
+        {
+          "key": "title",
+          "type": "text",
+          "nullable": false,
+          "required": true,
+          "maxLength": 180
+        },
+        {
+          "key": "kind",
+          "type": "select",
+          "nullable": false,
+          "required": true,
+          "options": [
+            "opportunity",
+            "application"
+          ]
+        },
+        {
+          "key": "programId",
+          "type": "reference",
+          "nullable": true,
+          "target": "programs"
+        },
+        {
+          "key": "funderId",
+          "type": "reference",
+          "nullable": true,
+          "target": "contacts"
+        },
+        {
+          "key": "eligibility",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "unknown",
+            "eligible",
+            "ineligible"
+          ]
+        },
+        {
+          "key": "requested",
+          "type": "money",
+          "nullable": true
+        },
+        {
+          "key": "applicationVersion",
+          "type": "integer",
+          "nullable": true,
+          "min": 1,
+          "max": 1000000000
+        },
+        {
+          "key": "deadlineAt",
+          "type": "datetime",
+          "nullable": true
+        },
+        {
+          "key": "timeZone",
+          "type": "timezone",
+          "nullable": true
+        },
+        {
+          "key": "applicationSummary",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "documentIds",
+          "type": "references",
+          "nullable": true,
+          "maxItems": 100,
+          "target": "documents"
+        },
+        {
+          "key": "submissionReference",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 240
+        },
+        {
+          "key": "decisionDate",
+          "type": "date",
+          "nullable": true
+        }
+      ]
+    },
+    "grant-delivery": {
+      "title": "Grant delivery",
+      "fields": [
+        {
+          "key": "title",
+          "type": "text",
+          "nullable": false,
+          "required": true,
+          "maxLength": 180
+        },
+        {
+          "key": "kind",
+          "type": "select",
+          "nullable": false,
+          "required": true,
+          "options": [
+            "agreement",
+            "restriction",
+            "report",
+            "amendment"
+          ]
+        },
+        {
+          "key": "programId",
+          "type": "reference",
+          "nullable": true,
+          "target": "programs"
+        },
+        {
+          "key": "applicationId",
+          "type": "reference",
+          "nullable": true,
+          "target": "grant-seeking"
+        },
+        {
+          "key": "agreementId",
+          "type": "reference",
+          "nullable": true,
+          "target": "grant-delivery"
+        },
+        {
+          "key": "awarded",
+          "type": "money",
+          "nullable": true
+        },
+        {
+          "key": "committed",
+          "type": "money",
+          "nullable": true
+        },
+        {
+          "key": "spent",
+          "type": "money",
+          "nullable": true
+        },
+        {
+          "key": "restriction",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "unknown",
+            "unrestricted",
+            "restricted"
+          ]
+        },
+        {
+          "key": "restrictionCode",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 240,
+          "format": "opaque"
+        },
+        {
+          "key": "allowedPurpose",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "varianceReason",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "startDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "endDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "reportDue",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "documentIds",
+          "type": "references",
+          "nullable": true,
+          "maxItems": 100,
+          "target": "documents"
+        }
+      ]
+    },
+    "finance": {
+      "title": "Finance planning",
+      "fields": [
+        {
+          "key": "title",
+          "type": "text",
+          "nullable": false,
+          "required": true,
+          "maxLength": 180
+        },
+        {
+          "key": "kind",
+          "type": "select",
+          "nullable": false,
+          "required": true,
+          "options": [
+            "budget",
+            "allocation",
+            "scenario",
+            "actual-reference"
+          ]
+        },
+        {
+          "key": "programId",
+          "type": "reference",
+          "nullable": true,
+          "target": "programs"
+        },
+        {
+          "key": "parentBudgetId",
+          "type": "reference",
+          "nullable": true,
+          "target": "finance"
+        },
+        {
+          "key": "agreementId",
+          "type": "reference",
+          "nullable": true,
+          "target": "grant-delivery"
+        },
+        {
+          "key": "planned",
+          "type": "money",
+          "nullable": true
+        },
+        {
+          "key": "actual",
+          "type": "money",
+          "nullable": true
+        },
+        {
+          "key": "actualClass",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "unknown",
+            "cash-spent",
+            "other"
+          ]
+        },
+        {
+          "key": "actualDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "allocationBps",
+          "type": "integer",
+          "nullable": true,
+          "min": 0,
+          "max": 10000
+        },
+        {
+          "key": "scenario",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "base",
+            "lower",
+            "higher"
+          ]
+        },
+        {
+          "key": "restrictionCode",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 240,
+          "format": "opaque"
+        },
+        {
+          "key": "purpose",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "startDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "endDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "varianceReason",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "externalSystem",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 240
+        },
+        {
+          "key": "externalId",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 160
+        },
+        {
+          "key": "externalUrl",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 1200,
+          "format": "https"
+        }
+      ]
+    },
+    "fundraising": {
+      "title": "Giving and fundraising",
+      "fields": [
+        {
+          "key": "title",
+          "type": "text",
+          "nullable": false,
+          "required": true,
+          "maxLength": 180
+        },
+        {
+          "key": "kind",
+          "type": "select",
+          "nullable": false,
+          "required": true,
+          "options": [
+            "campaign",
+            "pledge",
+            "gift-reference",
+            "acknowledgment"
+          ]
+        },
+        {
+          "key": "programId",
+          "type": "reference",
+          "nullable": true,
+          "target": "programs"
+        },
+        {
+          "key": "agreementId",
+          "type": "reference",
+          "nullable": true,
+          "target": "grant-delivery"
+        },
+        {
+          "key": "contactId",
+          "type": "reference",
+          "nullable": true,
+          "target": "contacts"
+        },
+        {
+          "key": "campaignId",
+          "type": "reference",
+          "nullable": true,
+          "target": "fundraising"
+        },
+        {
+          "key": "amount",
+          "type": "money",
+          "nullable": true
+        },
+        {
+          "key": "restricted",
+          "type": "boolean",
+          "nullable": true
+        },
+        {
+          "key": "restrictionPurpose",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "expectedDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "receivedDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "receiptReference",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 240
+        },
+        {
+          "key": "externalSystem",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 240
+        },
+        {
+          "key": "externalId",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 160
+        },
+        {
+          "key": "externalUrl",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 1200,
+          "format": "https"
+        }
+      ]
+    },
+    "outcomes": {
+      "title": "Evidence and outcomes",
+      "fields": [
+        {
+          "key": "title",
+          "type": "text",
+          "nullable": false,
+          "required": true,
+          "maxLength": 180
+        },
+        {
+          "key": "kind",
+          "type": "select",
+          "nullable": false,
+          "required": true,
+          "options": [
+            "indicator",
+            "observation",
+            "harm"
+          ]
+        },
+        {
+          "key": "programId",
+          "type": "reference",
+          "nullable": true,
+          "target": "programs"
+        },
+        {
+          "key": "indicatorId",
+          "type": "reference",
+          "nullable": true,
+          "target": "outcomes"
+        },
+        {
+          "key": "value",
+          "type": "number",
+          "nullable": true,
+          "min": -1000000000000,
+          "max": 1000000000000
+        },
+        {
+          "key": "unit",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 240
+        },
+        {
+          "key": "denominator",
+          "type": "number",
+          "nullable": true,
+          "min": 0,
+          "max": 1000000000000
+        },
+        {
+          "key": "startDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "endDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "geography",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 240
+        },
+        {
+          "key": "method",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "unknown",
+            "administrative",
+            "survey",
+            "observation",
+            "experiment"
+          ]
+        },
+        {
+          "key": "evidence",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "unknown",
+            "self-reported",
+            "source-linked",
+            "independently-reviewed"
+          ]
+        },
+        {
+          "key": "sourceUrl",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 1200,
+          "format": "https"
+        },
+        {
+          "key": "limitations",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        }
+      ]
+    },
+    "reporting": {
+      "title": "Reporting",
+      "fields": [
+        {
+          "key": "title",
+          "type": "text",
+          "nullable": false,
+          "required": true,
+          "maxLength": 180
+        },
+        {
+          "key": "kind",
+          "type": "select",
+          "nullable": false,
+          "required": true,
+          "options": [
+            "board",
+            "funder",
+            "public",
+            "template"
+          ]
+        },
+        {
+          "key": "programId",
+          "type": "reference",
+          "nullable": true,
+          "target": "programs"
+        },
+        {
+          "key": "agreementId",
+          "type": "reference",
+          "nullable": true,
+          "target": "grant-delivery"
+        },
+        {
+          "key": "outcomeIds",
+          "type": "references",
+          "nullable": true,
+          "maxItems": 100,
+          "target": "outcomes"
+        },
+        {
+          "key": "financeIds",
+          "type": "references",
+          "nullable": true,
+          "maxItems": 100,
+          "target": "finance"
+        },
+        {
+          "key": "receiptIds",
+          "type": "references",
+          "nullable": true,
+          "maxItems": 100,
+          "target": "fundraising"
+        },
+        {
+          "key": "assemblyMethod",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "grant-report-v1",
+            "learning-review-v1"
+          ]
+        },
+        {
+          "key": "sourceDigest",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 64
+        },
+        {
+          "key": "supersedesReportId",
+          "type": "text",
+          "nullable": true,
+          "maxLength": 100,
+          "format": "opaque"
+        },
+        {
+          "key": "revisionReason",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "startDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "endDate",
+          "type": "date",
+          "nullable": true
+        },
+        {
+          "key": "summary",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "missingness",
+          "type": "textarea",
+          "nullable": true,
+          "maxLength": 4000
+        },
+        {
+          "key": "visibility",
+          "type": "select",
+          "nullable": true,
+          "options": [
+            "private",
+            "board",
+            "funder",
+            "public"
+          ]
+        },
+        {
+          "key": "issueDate",
+          "type": "date",
+          "nullable": true
+        }
+      ]
+    }
+  }
+}

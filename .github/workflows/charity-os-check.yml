@@ -72,6 +72,8 @@ jobs:
           GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_field_ci_owner;
           CREATE ROLE os_crm_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-crm-owner-only-password';
           GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_crm_ci_owner;
+          CREATE ROLE os_recurrence_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-recurrence-owner-only-password';
+          GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_recurrence_ci_owner;
           SQL
       - name: Exercise real Postgres, Better Auth and tenant workflows
         # The fixture migrates a random temporary schema with the owner, grants
@@ -95,3 +97,12 @@ jobs:
         env:
           CRM_TEST_PROFILE: github-crm-pg17-v1
         run: node --test --test-concurrency=1 test-db/contact-reconciliation.ci17.mjs
+      - name: Exercise finite occurrence drafts using the closed PG17.11 CI profile
+        env:
+          RECURRENCE_TEST_PROFILE: github-recurrence-pg17-v1
+          RECURRENCE_RESULTS_ROOT: ${{ runner.temp }}
+        run: |
+          node --input-type=module <<'JS'
+          import { runRecurrenceCi17 } from './test-db/participation-recurrence.ci17.mjs';
+          await runRecurrenceCi17();
+          JS

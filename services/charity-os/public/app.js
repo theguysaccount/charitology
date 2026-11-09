@@ -6,6 +6,7 @@ import {
   request as apiRequest,
   fieldResponsesAPI,
   contactReconciliationAPI,
+  participationRecurrenceAPI,
 } from "./api.js";
 import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
@@ -14,6 +15,7 @@ import { createLearningWorkspace } from "./learning.js";
 import { createIncubatorBridgeWorkspace } from "./incubator-bridge.js";
 import { createFieldResponsesWorkspace, canUseFieldResponses } from "./field-responses.js";
 import { createContactReconciliationWorkspace, canUseContactReconciliation } from "./contact-reconciliation.js";
+import { createParticipationRecurrenceWorkspace, canUseParticipationRecurrence } from "./participation-recurrence.js";
 import { LEARNING_ROLES, learningRecordFragment, learningRecordMatches, resolveLearningRecordRoute, checkedLearningReport } from "./learning-model.js";
 import {
   createDirectoryResourceWorkspace,
@@ -73,6 +75,7 @@ const state = {
   incubatorWorkspace: null,
   fieldResponsesWorkspace: null,
   contactReconciliationWorkspace: null,
+  participationRecurrenceWorkspace: null,
   participationWorkspace: null,
   learningRecordAbort: null,
   reportReadAbort: null,
@@ -80,6 +83,9 @@ const state = {
   taskRecurrencePanel: null,
   directoryResourceWorkspace: null,
 };
+// Exact unresolved finite-draft intents stay in this page memory only.
+const participationRecurrenceIntents = new Map();
+const recurrenceIntentKey = (org, actor) => JSON.stringify([org, actor]);
 function node(tag, attrs = {}, ...children) {
   const element = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
@@ -324,6 +330,8 @@ function safeRoute() {
 }
 function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
+  if (state.participationRecurrenceWorkspace) { state.participationRecurrenceWorkspace.dispose(); state.pageDirty = false; }
+  state.participationRecurrenceWorkspace = null;
   if (state.contactReconciliationWorkspace) { state.contactReconciliationWorkspace.dispose(); state.pageDirty = false; }
   state.contactReconciliationWorkspace = null;
   state.participationWorkspace?.dispose();
@@ -399,6 +407,12 @@ async function discardEditor() {
   return true;
 }
 async function discardPage({ signingOut = false } = {}) {
+  if (state.participationRecurrenceWorkspace?.hasPendingCommand() || signingOut && participationRecurrenceIntents.size) {
+    if (!signingOut) { toast("Resolve the retained exact draft Create before leaving this workspace."); return false; }
+    if (!(await confirmAction("Sign out with an unresolved draft Create?", "The batch may already be saved. Signing out discards this tab’s exact in-memory Retry; it cancels nothing and does not establish the earlier outcome. Nothing is resent automatically. Read authorized batch history after signing in again.", "Sign out and discard local Retry"))) return false;
+    state.participationRecurrenceWorkspace?.discardPendingOnSignOut();
+    participationRecurrenceIntents.clear(); state.pageDirty = false; return true;
+  }
   if (state.contactReconciliationWorkspace?.hasPendingCommand()) {
     if (!signingOut) { toast("Resolve the retained contact decision before leaving this workspace."); return false; }
     if (!(await confirmAction("Sign out with an unresolved contact decision?", "The decision may already be saved. Signing out discards this page’s in-memory exact Retry. Nothing is resent automatically. Read the saved decision history after signing in again.", "Sign out and discard Retry"))) return false;
@@ -427,7 +441,8 @@ async function discardPage({ signingOut = false } = {}) {
     !state.directoryResourceWorkspace?.isDirty() &&
     !state.incubatorWorkspace?.isDirty() &&
     !state.fieldResponsesWorkspace?.isDirty() &&
-    !state.contactReconciliationWorkspace?.isDirty()
+    !state.contactReconciliationWorkspace?.isDirty() &&
+    !state.participationRecurrenceWorkspace?.isDirty()
   ) return true;
   if (
     !(await confirmAction(
@@ -437,6 +452,7 @@ async function discardPage({ signingOut = false } = {}) {
     ))
   )
     return false;
+  if (state.participationRecurrenceWorkspace?.hasPendingCommand()) { toast("Resolve the retained draft Create before leaving this workspace."); return false; }
   if (state.fieldResponsesWorkspace?.hasPendingCommand()) { toast("Resolve the retained aggregate import command before leaving this workspace."); return false; }
   if (state.contactReconciliationWorkspace?.hasPendingCommand()) { toast("Resolve the retained contact decision before leaving this workspace."); return false; }
   state.pageDirty = false;
@@ -447,6 +463,7 @@ function configureEditor(eyebrow, title, saveLabel, fields, onSave) {
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.contactReconciliationWorkspace?.invalidate();
+  state.participationRecurrenceWorkspace?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.dirty = false;
   $("#editor-eyebrow").textContent = eyebrow;
@@ -545,6 +562,7 @@ function renderAccount() {
             await api.logout();
             invalidateModules();
             state.session = null;
+            participationRecurrenceIntents.clear();
             setCsrfToken("");
             showSignedOut();
             toast("Signed out.");
@@ -577,6 +595,9 @@ function canUseIncubator() {
     can(moduleById("programs"),"read",role()) && can(moduleById("projects"),"read",role()) && can(moduleById("projects"),"write",role());
 }
 function renderNav() {
+  let recurrenceLink = document.querySelector('[data-nav="participation-recurrence"]');
+  if (!recurrenceLink) { recurrenceLink = link("Finite occurrence drafts", "#participation-recurrence", { "data-nav": "participation-recurrence" }); document.querySelector(".secondary-nav").prepend(recurrenceLink); }
+  recurrenceLink.hidden = !canUseParticipationRecurrence(role(), state.modules);
   let contactLink = document.querySelector('[data-nav="contact-reconciliation"]');
   if (!contactLink) { contactLink = link("Contact reconciliation", "#contact-reconciliation", { "data-nav": "contact-reconciliation" }); document.querySelector(".secondary-nav").prepend(contactLink); }
   contactLink.hidden = !canUseContactReconciliation(role(), moduleById("contacts"));
@@ -727,6 +748,7 @@ async function route() {
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.contactReconciliationWorkspace?.invalidate();
+  state.participationRecurrenceWorkspace?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
   state.learningRecordAbort?.abort();
@@ -776,6 +798,21 @@ async function route() {
       const [, module, id] = state.route.split("/");
       if (id) await renderDetail(module, id, current);
       else await renderModule(module, current);
+    } else if (state.route === "participation-recurrence" || state.route.startsWith("participation-recurrence/")) {
+      const org = state.org, session = state.session, currentRole = role(), pieces = state.route.split("/");
+      if (!canUseParticipationRecurrence(currentRole, state.modules)) throw new ApiError("Current full Events or Volunteers read access is required.", 403);
+      if (![1, 3].includes(pieces.length) || pieces.length === 3 && (!["events", "volunteers"].includes(pieces[1]) || !/^[A-Za-z0-9_-]{1,100}$/.test(pieces[2]))) throw new ApiError("This draft source is unavailable.", 404);
+      const key = recurrenceIntentKey(org, session.user.id); let view;
+      view = createParticipationRecurrenceWorkspace({ org, actorId: session.user.id, role: currentRole, modules: state.modules, api: participationRecurrenceAPI(org),
+        initialSource: pieces.length === 3 ? { moduleId: pieces[1], id: pieces[2] } : null,
+        retainedIntent: participationRecurrenceIntents.get(key) || null,
+        isCurrent: () => current === state.epoch && org === state.org && session === state.session && currentRole === role(),
+        onDirty: value => { if (current === state.epoch) state.pageDirty = value; },
+        onPending: handle => { if (current !== state.epoch || org !== state.org || session !== state.session || view && state.participationRecurrenceWorkspace !== view) return; if (handle) participationRecurrenceIntents.set(key, handle); else participationRecurrenceIntents.delete(key); },
+        onChanged: moduleId => { if (current === state.epoch) { invalidateModules(org, [moduleId]); renderNav(); } },
+        confirmDiscardIntent: () => confirmAction("Stop this local Retry after checking history?", "The shown history is historical evidence, not accepted-command proof. This only discards the local exact Retry. It cancels nothing, does not establish the earlier outcome, and creates no new command or key.", "Discard only local Retry"),
+      });
+      if (current === state.epoch) { setContent(view); state.participationRecurrenceWorkspace = view; } else view.dispose();
     } else if (state.route === "contact-reconciliation") {
       const org = state.org, session = state.session, currentRole = role(), contactsModule = moduleById("contacts");
       if (!canUseContactReconciliation(currentRole, contactsModule)) throw new ApiError("Contact reconciliation requires current unscoped owner or administrator Contacts read/write access.", 403);
@@ -2209,6 +2246,8 @@ async function renderDetail(moduleId, id, epoch) {
     can(module, "write", role())
       ? button("Edit", () => openRecordEditor(module, record), "primary")
       : null,
+    ["events", "volunteers"].includes(moduleId) && record.data.kind === (moduleId === "events" ? "session" : "shift") && can(module, "read", role()) && can(module, "write", role())
+      ? link("Review a finite draft batch", `#participation-recurrence/${moduleId}/${encodeURIComponent(record.id)}`, { class: "button subtle" }) : null,
     remove,
   ].filter(Boolean);
   const details = node(
@@ -5529,6 +5568,7 @@ $("#org-switch").addEventListener("change", async (event) => {
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.contactReconciliationWorkspace?.invalidate();
+  state.participationRecurrenceWorkspace?.invalidate({ preserveWriting: true });
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
   state.learningRecordAbort?.abort();
@@ -5538,6 +5578,7 @@ $("#org-switch").addEventListener("change", async (event) => {
     event.target.value = state.org;
     return;
   }
+  state.participationRecurrenceWorkspace?.invalidate();
   state.org = next;
   invalidateModules();
   state.details = null;
@@ -5553,6 +5594,7 @@ $("#new-org").addEventListener("click", async () => {
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.contactReconciliationWorkspace?.invalidate();
+  state.participationRecurrenceWorkspace?.invalidate({ preserveWriting: true });
   state.directoryResourceWorkspace?.invalidate();
   state.learningWorkspace?.invalidate();
   state.learningRecordAbort?.abort();
@@ -5583,6 +5625,7 @@ window.addEventListener("hashchange", async () => {
   state.incubatorWorkspace?.invalidate();
   state.taskRecurrencePanel?.invalidate();
   state.contactReconciliationWorkspace?.invalidate();
+  state.participationRecurrenceWorkspace?.invalidate({ preserveWriting: true });
   state.directoryResourceWorkspace?.invalidate();
   if ((state.editor && !(await discardEditor())) || !(await discardPage())) {
     history.replaceState(null, "", `#${state.route}`);
@@ -5594,7 +5637,7 @@ window.addEventListener("hashchange", async () => {
 window.addEventListener("beforeunload", (event) => {
   if (
     state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty() ||
-    state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty() || state.fieldResponsesWorkspace?.isDirty() || state.contactReconciliationWorkspace?.isDirty()
+    state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty() || state.fieldResponsesWorkspace?.isDirty() || state.contactReconciliationWorkspace?.isDirty() || state.participationRecurrenceWorkspace?.isDirty() || participationRecurrenceIntents.size > 0
   ) {
     event.preventDefault();
     event.returnValue = "";
