@@ -12,8 +12,8 @@ import { readReminderRuntimeSource } from "./participation-reminder-binding.mjs"
 const ROOT = "/Users/jack/Documents/Codex/2026-10-25/i-m-continuing-my-project-charitology/work/os-private/output-cost-spreadsheet";
 const admitted = new WeakSet();
 const ROLE = Object.freeze({ bootstrap: "os_test_owner", owner: "os_reminder_local_owner", runtime: "os_test_app" });
-const DESCRIPTOR = "/Users/jack/Documents/Codex/2026-10-25/i-m-continuing-my-project-charitology/work/os-private/learning-continuation-2026-11-05/os-comms-pg-source-v6/candidate/local18-target.private.json";
-const DIRECTORY = "/Users/jack/Documents/Codex/2026-10-25/i-m-continuing-my-project-charitology/work/os-private/learning-continuation-2026-11-05/os-comms-pg-source-v6/candidate/owned-pg18/data";
+const DESCRIPTOR = "/Users/jack/Documents/Codex/2026-10-25/i-m-continuing-my-project-charitology/work/os-private/learning-continuation-2026-11-05/os-comms-pg-source-v7/candidate/local18-target.private.json";
+const DIRECTORY = "/Users/jack/Documents/Codex/2026-10-25/i-m-continuing-my-project-charitology/work/os-private/learning-continuation-2026-11-05/os-comms-pg-source-v7/candidate/owned-pg18/data";
 const INPUT_KEYS = ["marker", "commit", "runId", "bootstrapUrl", "ownerUrl", "runtimeUrl", "port", "directory", "system", "started"];
 let TARGET = null;
 const TIMEOUTS = Object.freeze({ statement_timeout_ms: 30000, lock_timeout_ms: 3000, idle_timeout_ms: 30000, transaction_timeout_ms: 120000 });

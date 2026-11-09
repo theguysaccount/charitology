@@ -16,6 +16,8 @@ The first actual PostgreSQL 18.6 run used source `d045b439`. Main scenarios RM01
 
 The second actual run used `9cc14d33`. All ten main scenarios and capacity accounting scenario RC01 passed. RC02 failed because its SQL-seeded source rows fit the charged 8 MiB family budget while the complete inactive-recovery projection did not. Its count formula had measured only the source row. Later scenarios remain unexecuted. Fresh final business/ACL/client checks and owned cleanup passed independently; they do not convert this failed suite into a passing result. The fixture correction must calibrate against the complete actual recovery projection and retain the real activation refusal and rollback checks, with no application-limit change.
 
+The third run, `85731043`, establishes a valid measured frontier: 1,260 participations charge 8,376,803 source bytes and 7,641,293 projected inactive bytes. All ten main scenarios and RC01 pass again, but RC02 stops at a later assertion. Its cause is not inferred from cleanup or query hashes. The successor retains the exact business checks and adds bounded phase, last-call and assertion diagnostics. A pure Node 24 control verifies native assertion locations and omission of object contents. Final business readback and owned cleanup pass separately; later scenarios remain unearned.
+
 ## The participant chooses separately
 
 The person must have the current verified account and own-request link. General operational email consent and the new reminder choice are separate. Staff cannot opt in for someone else. Historical email preferences, check-in permission, a booking or a restored file cannot enable reminders.
