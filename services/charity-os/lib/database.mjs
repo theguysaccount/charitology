@@ -7,6 +7,7 @@ import { guardParticipationWrite } from "./participation-guards.mjs";
 import { guardTaskRecurrenceWrite } from "./task-recurrence.mjs";
 import { guardLearningWrite } from "./learning-guards.mjs";
 import { guardResourceReservationWrite, resourceReservationHistoryPresent } from "./resource-reservation-guards.mjs";
+import { resourceReservationHistoryExpression, resourceReservationSchemaReady } from "./resource-reservation-schema.mjs";
 // Only trusted server actions classify a transaction. HTTP inputs cannot
 // supply a deferral flag or a replacement capacity validator.
 const transactionAudits = new WeakMap();
@@ -46,9 +47,10 @@ export function noteContactReconciliationReceiptReplay(c, org) {
     transaction.receiptReplay = true;
 }
 async function checkCompleteWorkspaceCapacity(c, orgId, ordinary, requireResourceHistory = false) {
+  const resourceHistory = await resourceReservationHistoryExpression(c);
   const present = (
     await c.query(
-      `SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders, EXISTS(SELECT 1 FROM os_resource_reservations WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_resource_reservation_commands WHERE org_id=$1) AS "resourceReservations"`,
+      `SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders, ${resourceHistory} AS "resourceReservations"`,
       [orgId],
     )
   ).rows[0];
@@ -438,6 +440,7 @@ export async function saveRecord(c, r, options = {}) {
 }
 
 export async function logicalBackupBytes(c, org) {
+  const reservationsReady = await resourceReservationSchemaReady(c);
   const tables = [
     "os_records",
     "os_events",
@@ -459,8 +462,7 @@ export async function logicalBackupBytes(c, org) {
     "os_task_recurrence_series",
     "os_task_recurrence_occurrences",
     "os_resource_directory_history",
-    "os_resource_reservations",
-    "os_resource_reservation_commands",
+    ...(reservationsReady ? ["os_resource_reservations", "os_resource_reservation_commands"] : []),
     "os_learning_history",
     "os_incubator_history",
     "os_learning_previews",

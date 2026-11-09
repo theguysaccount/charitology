@@ -6,7 +6,11 @@ import { requirePermission } from "./access.mjs";
 import { hash, stable } from "./security.mjs";
 import { learningOwned } from "./learning-transport.mjs";
 import { validateGroupExactStamp } from "./participation-group-model.mjs";
-import { CONTACT_CONTEXT_CATALOG } from "./contact-context-catalog.mjs";
+import {
+  CONTACT_CONTEXT_CATALOG, CONTACT_RESOURCE_RESERVATION_CATALOG, CONTACT_RESOURCE_RESERVATION_LAYOUT,
+} from "./contact-context-catalog.mjs";
+import { RESOURCE_RESERVATION_METHOD } from "./resource-reservation-ledger.mjs";
+import { loadResourceReservationInventory } from "./resource-reservation-store.mjs";
 import { validateContactReconciliationReport, validateContactReconciliationReportRow } from "./contact-reconciliation-report.mjs";
 import { validInstant } from "./schedule.mjs";
 import { validateFieldImportManifest } from "./field-response-model.mjs";
@@ -54,6 +58,8 @@ const OMIT = {
 };
 const FIRST = ["os_records", "os_reports", "os_publications", "os_intake", "os_participations", "os_participation_groups", "os_participation_group_receipts", "os_participation_checkins"];
 const TABLES = [...FIRST, ...Object.keys(CONTACT_CONTEXT_CATALOG).filter(t => !OMIT[t] && !FIRST.includes(t)).sort()];
+const RESOURCE_TABLES = Object.keys(CONTACT_RESOURCE_RESERVATION_CATALOG);
+const BASE_CATALOG_SIZE = Object.keys(CONTACT_CONTEXT_CATALOG).length;
 // No generic no-match result may admit a packet family whose versioned parser
 // has not been connected. A later reviewed extension must validate the actual
 // family/closure before replacing any one of these unsupported refusals.
@@ -103,19 +109,52 @@ export async function currentContactReconciliationMember(c, input, options) {
   need(typeof settings.readOnly === "boolean");
   return learningOwned(await authenticate(c, org, session, settings.readOnly), { bytes: 4096 });
 }
+const RESOURCE_LAYOUT_SQL = `/*crm:reservation-layout*/
+  SELECT t.relname AS table_name,t.relkind::text AS relation_kind,
+    t.relrowsecurity AS rls,t.relforcerowsecurity AS forced_rls,
+    (SELECT jsonb_agg(jsonb_build_array(a.attname,format_type(a.atttypid,a.atttypmod),a.attnotnull,
+      a.attgenerated::text,pg_get_expr(d.adbin,d.adrelid)) ORDER BY a.attnum)
+      FROM pg_attribute a LEFT JOIN pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum
+      WHERE a.attrelid=t.oid AND a.attnum>0 AND NOT a.attisdropped) AS columns,
+    (SELECT jsonb_agg(jsonb_build_array(pg_get_constraintdef(k.oid),k.convalidated,
+      COALESCE(parent.relnamespace=t.relnamespace,true)) ORDER BY pg_get_constraintdef(k.oid) COLLATE "C")
+      FROM pg_constraint k LEFT JOIN pg_class parent ON parent.oid=k.confrelid
+      WHERE k.conrelid=t.oid AND k.contype IN ('p','f')) AS keys,
+    (SELECT jsonb_agg(jsonb_build_array(p.polname,p.polcmd::text,p.polpermissive,p.polroles::text,
+      pg_get_expr(p.polqual,p.polrelid),pg_get_expr(p.polwithcheck,p.polrelid)) ORDER BY p.polname COLLATE "C")
+      FROM pg_policy p WHERE p.polrelid=t.oid) AS policies,
+    (SELECT jsonb_agg(jsonb_build_array(g.tgname,g.tgtype,g.tgenabled::text,g.tginitdeferred,g.tgdeferrable,
+      f.proname,f.pronamespace=t.relnamespace) ORDER BY g.tgname COLLATE "C")
+      FROM pg_trigger g JOIN pg_proc f ON f.oid=g.tgfoid WHERE g.tgrelid=t.oid AND NOT g.tgisinternal) AS triggers
+  FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace
+  WHERE n.nspname=current_schema() AND t.relname=ANY($1::text[])
+  ORDER BY t.relname COLLATE "C" LIMIT 3`;
 async function catalog(c) {
   const found = rows(await c.query("/*crm:catalog*/ SELECT t.relname AS table_name,array_agg(a.attname::text ORDER BY a.attnum) AS columns FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid AND a.attnum>0 AND NOT a.attisdropped WHERE n.nspname=current_schema() AND t.relkind IN ('r','p') AND t.relname LIKE 'os\\_%' ESCAPE '\\' GROUP BY t.relname ORDER BY t.relname COLLATE \"C\"", []));
-  need(found.length === Object.keys(CONTACT_CONTEXT_CATALOG).length);
+  const hasResources = found.length === BASE_CATALOG_SIZE + RESOURCE_TABLES.length;
+  need(hasResources || found.length === BASE_CATALOG_SIZE);
+  const vector = hasResources ? { ...CONTACT_CONTEXT_CATALOG, ...CONTACT_RESOURCE_RESERVATION_CATALOG } : CONTACT_CONTEXT_CATALOG;
   const names = new Set();
   for (const value of found) {
-    const r = exact(value, ["table_name", "columns"]); need(!names.has(r.table_name) && Object.hasOwn(CONTACT_CONTEXT_CATALOG, r.table_name));
-    need(Array.isArray(r.columns) && same([...r.columns].sort(), [...CONTACT_CONTEXT_CATALOG[r.table_name]].sort())); names.add(r.table_name);
+    const r = exact(value, ["table_name", "columns"]);
+    need(!names.has(r.table_name) && Object.hasOwn(vector, r.table_name));
+    need(Array.isArray(r.columns) && same([...r.columns].sort(), [...vector[r.table_name]].sort()));
+    names.add(r.table_name);
+  }
+  if (hasResources) {
+    const resource = rows(await c.query(RESOURCE_LAYOUT_SQL, [RESOURCE_TABLES]));
+    need(resource.length === RESOURCE_TABLES.length);
+    for (let i = 0; i < RESOURCE_TABLES.length; i++) {
+      const expected = CONTACT_RESOURCE_RESERVATION_LAYOUT[RESOURCE_TABLES[i]];
+      need(same(exact(resource[i], Object.keys(expected)), expected));
+    }
   }
   const fks = rows(await c.query("/*crm:link-fks*/ SELECT c.confrelid::regclass::text AS parent,array(SELECT a.attname::text FROM unnest(c.conkey) WITH ORDINALITY k(attnum,n) JOIN pg_attribute a ON a.attrelid=c.conrelid AND a.attnum=k.attnum ORDER BY k.n) AS child_columns,array(SELECT a.attname::text FROM unnest(c.confkey) WITH ORDINALITY k(attnum,n) JOIN pg_attribute a ON a.attrelid=c.confrelid AND a.attnum=k.attnum ORDER BY k.n) AS parent_columns,c.convalidated AS validated,c.confdeltype::text AS delete_type,c.confupdtype::text AS update_type FROM pg_constraint c WHERE c.conrelid='os_participant_links'::regclass AND c.contype='f' ORDER BY c.confrelid::regclass::text", []));
   need(fks.length === 3);
   for (const [parent, child, target] of [["os_orgs", ["org_id"], ["id"]], ["os_intake", ["org_id", "intake_id"], ["org_id", "id"]], ["os_publications", ["org_id", "publication_id"], ["org_id", "id"]]]) {
     need(fks.filter(f => f.parent === parent && same(f.child_columns, child) && same(f.parent_columns, target) && f.validated === true && f.delete_type === "a" && f.update_type === "a").length === 1);
   }
+  return hasResources;
 }
 function referenceFields(data, moduleId, chosen) {
   need(data && typeof data === "object" && !Array.isArray(data));
@@ -300,6 +339,45 @@ function reminderReferences(row, maps) {
   // account identity and literal title/organization text do not create edges.
   return new Set(get(maps.record, p.recordId));
 }
+async function readReservationHistory(c, org, enabled) {
+  if (!enabled) return null;
+  try { return await loadResourceReservationInventory(c, org); }
+  catch { reconcile(); }
+}
+function reservationSourceProof(row) { return row.proof ?? row.history.proof; }
+function requireReservationSources(reservations, records, chosen) {
+  for (const row of reservations.values()) {
+    const proof = reservationSourceProof(row);
+    const asset = records.get(proof.asset.id), session = records.get(proof.session.id);
+    for (const [record, pin] of [[asset, proof.asset], [session, proof.session]]) {
+      if (!record || chosen.has(pin.id) || record.moduleId !== pin.moduleId ||
+          row.originMode === "live" && record.createdAtExact !== pin.createdAtExact) reconcile();
+    }
+    if (row.originMode === "live" && row.state === "reserved") {
+      const { startAt, endAt, timeZone } = session.data;
+      if (asset.trashed || session.trashed || asset.data.kind !== "asset" || asset.data.quantity !== 1 ||
+          session.data.kind !== "session" || !same({ startAt, endAt, timeZone }, proof.interval)) reconcile();
+    }
+  }
+}
+function passiveReservationAudit(row, reservations, seen) {
+  if (!["resource-reservation.reserved", "resource-reservation.replaced"].includes(row.action)) return false;
+  exact(row, CONTACT_CONTEXT_CATALOG.os_events);
+  const detail = exact(row.detail, ["previousId", "reservationId", "assetId", "proofSha256", "acceptedAtExact"]);
+  const hold = reservations.get(detail.reservationId);
+  const decision = hold?.originalReceipt?.decision;
+  const actorSha256 = hash({ method: RESOURCE_RESERVATION_METHOD, kind: "actor",
+    value: { orgId: row.org_id, actorId: id(row.actor_id) } });
+  need(hold?.originMode === "live" && decision && decision.orgId === row.org_id &&
+    decision.operation === (row.action === "resource-reservation.reserved" ? "reserve" : "replace") &&
+    decision.actorSha256 === actorSha256 && !seen.has(hold.id) && row.module_id === "events" &&
+    row.record_id === hold.proof.session.id && same(detail, {
+      previousId: decision.previous?.id ?? null, reservationId: hold.id, assetId: hold.proof.asset.id,
+      proofSha256: decision.next.proofSha256, acceptedAtExact: decision.acceptedAtExact,
+    }), "contact_context_reconcile", 409);
+  seen.add(hold.id);
+  return true;
+}
 function passiveContactAudit(row, reports) {
   if (row.action !== "contact-reconciliation.recorded") return false;
   exact(row, CONTACT_CONTEXT_CATALOG.os_events); id(row.actor_id);
@@ -357,11 +435,20 @@ export async function readContactReconciliationInverseContext(c, input) {
 async function readContext(c, input, inverse) {
   const { org, session, leftId, rightId } = exact(input, ["org", "session", "leftId", "rightId"]);
   id(org); id(leftId); id(rightId); need(leftId !== rightId);
-  const { member, authority } = await authenticate(c, org, session); await catalog(c);
+  const { member, authority } = await authenticate(c, org, session);
+  const reservationInventory = await readReservationHistory(c, org, await catalog(c));
+  const reservations = new Map((reservationInventory?.rows ?? []).map(row => [row.id, row]));
+  const reservationSourceIds = new Set([...reservations.values()].flatMap(row => {
+    const { asset, session } = reservationSourceProof(row);
+    return [asset.id, session.id];
+  }));
+  const reservationSources = new Map(), reservationAudits = new Set();
   const chosen = new Set([leftId, rightId]), maps = { record: new Map(), participation: new Map(), intake: new Map(), group: new Map(), publication: new Map() };
   for (const x of chosen) maps.record.set(x, new Set([x]));
   const pair = new Map(), contacts = new Map(), rowStamps = new Map(), references = new Map(), pins = [], census = [], snapshots = [], recordModules = new Map(), preservedAudits = [], reportDependencies = [], currentRecords = [], contactReports = new Map(), recurrenceReports = new Map();
-  const budget = { nodes: 0, decoded: 0, literalModuleData: new WeakMap() }; let totalRows = 0, totalBytes = 0;
+  const budget = { nodes: 0, decoded: 0, literalModuleData: new WeakMap() };
+  let totalRows = reservationInventory ? reservationInventory.quota.reservations + reservationInventory.quota.commands : 0;
+  let totalBytes = reservationInventory?.quota.bytes ?? 0;
   const known = { grants: [], learning: [], history: [] };
   const pushRef = r => {
     const key = stable([r.family, r.id, r.field, r.contactId]);
@@ -416,6 +503,11 @@ async function readContext(c, input, inverse) {
           need(Object.keys(row).length === CONTACT_CONTEXT_CATALOG.os_records.length && Object.keys(row).every(k => CONTACT_CONTEXT_CATALOG.os_records.includes(k)));
           id(row.id); revision(row.revision); need(typeof row.module_id === "string");
           recordModules.set(row.id, row.module_id);
+          if (reservationSourceIds.has(row.id)) {
+            need(!reservationSources.has(row.id));
+            reservationSources.set(row.id, { moduleId: row.module_id, createdAtExact: entry.created_exact,
+              trashed: row.deleted_at !== null, data: row.data });
+          }
           currentRecords.push({ id: row.id, orgId: org, moduleId: row.module_id, data: row.data, status: row.status, revision: row.revision });
           const refs = referenceFields(row.data, row.module_id, chosen);
           const linked = new Set(refs.map(x => x.contactId)); if (chosen.has(row.id)) linked.add(row.id); addMap(maps.record, row.id, linked);
@@ -460,7 +552,8 @@ async function readContext(c, input, inverse) {
           if (table === "os_participation_groups") {
             need(Array.isArray(row.roster_ids)); const linked = union(...row.roster_ids.map(x => get(maps.participation, x)), get(maps.intake, row.coordinator_intake_id), scan(row.history, maps, chosen, budget)); addMap(maps.group, row.id, linked);
           }
-          const passiveAudit = table === "os_events" && (passiveContactAudit(row, contactReports) || passiveRecurrenceAudit(row, recurrenceReports));
+          const passiveAudit = table === "os_events" && (passiveContactAudit(row, contactReports) ||
+            passiveRecurrenceAudit(row, recurrenceReports) || passiveReservationAudit(row, reservations, reservationAudits));
           const auditRecord = table === "os_events" ? ordinaryRecordAudit(row, org, currentRecords) : null;
           if (auditRecord) budget.literalModuleData.set(auditRecord.data, auditRecord.moduleId);
           const preserved = table === "os_events" && preserveOrdinaryContactAudit(row, auditRecord, chosen);
@@ -491,7 +584,10 @@ async function readContext(c, input, inverse) {
       }
     }
     need(seen === expected && seenBytes === bytes); census.push([table, expected, bytes]);
-    if (table === "os_records") for (const s of snapshots) for (const contactId of scan(s.value, maps, chosen, budget)) pushRef({ family: "immutable-history", id: H("snapshot-id", s.id), moduleId: null, field: null, contactId, revision: s.revision, sha256: s.pin, deleted: s.deleted });
+    if (table === "os_records") {
+      requireReservationSources(reservations, reservationSources, chosen);
+      for (const s of snapshots) for (const contactId of scan(s.value, maps, chosen, budget)) pushRef({ family: "immutable-history", id: H("snapshot-id", s.id), moduleId: null, field: null, contactId, revision: s.revision, sha256: s.pin, deleted: s.deleted });
+    }
   }
   const knownHistoryMethodPin = finalizeKnownHistory(known, org, recordModules, maps, chosen, pushRef, reportDependencies);
   need(pair.size === 2);
@@ -510,11 +606,14 @@ async function readContext(c, input, inverse) {
   }
   const plannerContext = { orgId: org, pair: orderedPair, organizations, references: [...references.values()] };
   const sourceOwnership = orderedPair.map(r => ({ id: r.id, classification: r.source !== null ? "source-owned" : ["externalSystem", "externalId", "externalUrl"].some(k => r.data[k] !== null) ? "external-reference" : r.status !== "draft" || r.approval !== null || r.snapshot !== null ? "non-draft" : "local-draft" }));
-  const coverage = { method: "closed-catalog-tenant-pages-v1", enumeratedTables: TABLES, catalogTables: Object.keys(CONTACT_CONTEXT_CATALOG).length,
+  const resourceInventoryPin = reservations.size ? H("resource-reservation-inventory-v1", reservationInventory) : null;
+  const coverage = { method: "closed-catalog-tenant-pages-v1", enumeratedTables: resourceInventoryPin ? [...TABLES, ...RESOURCE_TABLES] : TABLES,
+    catalogTables: BASE_CATALOG_SIZE + (resourceInventoryPin ? RESOURCE_TABLES.length : 0),
     ownParticipantLinks: "not-read-own-RLS;mandatory-intake-publication-transitive", unknownFamilyOrLinkage: "refuse", callerOrgLockRequired: true,
     preservedOrdinaryContactCrudAudits: { count: preservedAudits.length, sha256: H("preserved-crud-audits", preservedAudits) },
     unsupportedPacketFamilies: UNPARSED_PACKETS };
   const context = inverse ? { inverseContext: { pair: orderedPair, organizations, references: [...references.values()] } } : { plannerContext };
   return learningOwned({ ...context, authority, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)], sourceOwnership, coverage, reportDependencies,
-    contextSha256: H("context", { org, authority, pins, census, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)], ...(knownHistoryMethodPin === null ? {} : { knownHistoryMethodPin }) }) }, { bytes: 131072 });
+    contextSha256: H("context", { org, authority, pins, census, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)],
+      ...(knownHistoryMethodPin === null ? {} : { knownHistoryMethodPin }), ...(resourceInventoryPin === null ? {} : { resourceInventoryPin }) }) }, { bytes: 131072 });
 }

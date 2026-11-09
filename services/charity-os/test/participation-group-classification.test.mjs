@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 /** Actual database.tx/audit classification over a closed fake pg client.
  * The gates are reached, not replaced with request flags or success stubs.
  * No socket, PostgreSQL engine or complete SQL capacity result is claimed. */
@@ -10,6 +11,7 @@ async function fixture(run) {
   const calls = []; let usage = 0, sum = 0;
   const c = { release() { calls.push('RELEASE'); }, async query(sql) {
     calls.push(sql);
+    if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     if (sql.includes(' AS checkins')) return { rows: [{ present: false, participation: false, incubator: false, checkins: false, groups: true }] };
     if (sql === 'SELECT count(*)::int AS count FROM os_participation_groups WHERE org_id=$1') return { rows: [{ count: 1 }] };
     if (sql.startsWith('SELECT sum(size) AS size FROM (')) {

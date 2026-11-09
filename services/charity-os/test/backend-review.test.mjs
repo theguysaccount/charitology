@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import {PARTICIPATION_REMINDER_LEGACY_SQL} from '../lib/participation-storage.mjs';
 import test from "node:test";
@@ -82,6 +83,7 @@ function fixture(
   const saves = [];
   const c = {
     query: async (sql, args = []) => {
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       const extra = await extraQuery?.(sql, args);
       if (extra !== undefined) return extra;
       if (sql === reservationSql.projection) return { rows: [], rowCount: 0 };
@@ -180,6 +182,7 @@ function fixture(
         };
       if (sql.startsWith("SELECT COALESCE(sum(octet_length(data::text))"))
         return { rows: [{ size: 0, count: 0 }] };
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql.startsWith("SELECT sum(size) AS size FROM ("))
         return { rows: [{ size: 0 }] };
       if (sql.startsWith("SELECT (SELECT count(*) FROM os_publications"))
@@ -880,6 +883,7 @@ test("Reconnecting a restored integration retains its identity, encrypts only th
     key = "synthetic-storage-encryption-key-at-least-thirty-two-characters";
   const c = {
     query: async (sql, args) => {
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql.startsWith("SELECT sum(size) AS size FROM ("))
         return { rows: [{ size: 0 }] };
       if (sql.startsWith("SELECT * FROM os_integrations"))
@@ -1029,6 +1033,7 @@ test("Access revocation remains possible with minimal audit reserve and after th
       const events = [],
         c = {
           query: async (sql, args) => {
+            if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
             if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
             const emptyGroups = emptyParticipationGroupsQuery(sql, args);
             if (emptyGroups !== undefined) return emptyGroups;
@@ -1091,6 +1096,7 @@ test("The central active-record limit also protects bulk callers of saveRecord",
   let writes = 0;
   const c = {
     query: async (sql) => {
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql === reservationSql.lock || sql === reservationSql.projection)
         return { rows: [], rowCount: 0 };
       if (

@@ -108,3 +108,9 @@ The additive mail schema committed separately and retained all 1,116 rows in the
 On November 9, 2026, a protected test deployment used the same reminder relay and provider code. Its temporary entry required the approved test inbox and one exact test key. An unsigned request and a signed request with the wrong key were both refused before the relay. The one approved request returned acceptance; the canonical relay status reported delivery, and one matching message was confirmed in Gmail. The temporary deployment was removed.
 
 The relay test had no hosted participation record, staff scheduling action or scheduler run. It changed no newsletter subscriptions or provider suppressions. The first OS schema attempt rolled back before commit when the previous runtime could not size a backup with the new column. The separate [compatibility release](https://github.com/theguysaccount/charitology/pull/61) proved that an empty nullable reminder column keeps existing backup content and charged storage unchanged.
+
+## Production OS schema verification
+
+After the compatibility release was live, a fresh read verified the earlier rollback. A separate transaction then applied the reminder-only OS changes. The current and next runtimes verified unchanged records and backup limits before commit. Fresh readback after commit preserved all 130 existing rows across 38 tables and four workspaces. The new choice column remained empty.
+
+The exact tested reminder build was promoted with both switches off. Twelve canonical responses matched the protected preview: eight selected assets, service health and three refusals without application authentication. [PR #59](https://github.com/theguysaccount/charitology/pull/59) merged that same runtime into the public repository. Hosted participant consent, staff review and a scheduled attempt still need a pilot. Do not repeat the recorded relay delivery as proof of the scheduler.

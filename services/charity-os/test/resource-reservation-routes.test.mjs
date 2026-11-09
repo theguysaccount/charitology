@@ -1,3 +1,4 @@
+import { reservationSchemaSql, currentReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { csrf } from "../lib/security.mjs";
@@ -39,6 +40,8 @@ function fixture() {
       assert.equal(tenant, org);
       const holds = structuredClone(state.holds), receipts = structuredClone(state.receipts), audits = [...state.audits];
       const c = { audits, async query(sql, args = []) {
+        if (sql === reservationSchemaSql.layout) return currentReservationLayout;
+        if (sql === reservationSchemaSql.access) return result([{ ready: true }]);
         const write = /^(?:INSERT|UPDATE)\b/.test(sql.trim());
         if (write) assert.ok(lock && !readOnly, "all writes require the owned lock and mutable transaction");
         if (sql.includes('AS current_user_id')) {

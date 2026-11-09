@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./resource-reservation-schema.mjs";
 /** Strict fake SELECT fixture. Controlled SQL byte values are NOT a PG oracle. */
 import assert from 'node:assert/strict';
 import {reminderCapacityFixture as baseFixture} from './reminder-capacity-source.mjs';
@@ -22,7 +23,8 @@ export function fixture(options={}){
  });
  f.c.query=async(sql,args=[])=>{
   calls.push({sql,args:clone(args)});
-  assert(/^(SELECT|WITH)\b/.test(sql));
+  assert(/^(SELECT|WITH)\b/.test(sql.trimStart()));
+  if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
   if(sql===Q.accounting)return{rows:[{count:f.people.length,raw_bytes:raw(),interval_bytes:interval(),charged_bytes:charged(),reminder_absent:!present()}]};
   if(sql===Q.choices)return{rows:f.people.filter(p=>p.reminder_consent!==null).map(p=>({id:p.id,reminder_consent:clone(p.reminder_consent)}))};
   if(sql===Q.schema)return{rows:Object.entries(columns).flatMap(([table_name,names])=>names.split(' ').filter(name=>!(missingColumn&&name==='reminder_consent')).map(column_name=>({table_name,column_name})))};

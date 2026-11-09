@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -165,6 +166,7 @@ function fixture(module = "events") {
   const c = {
     async query(sql, p = []) {
       state.queries.push(sql);
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql === reservationSql.projection) return result([]);
       if (sql === reservationSql.destination) return result([{ occupied: false }]);
       const emptyGroups = emptyParticipationGroupsQuery(sql, p);

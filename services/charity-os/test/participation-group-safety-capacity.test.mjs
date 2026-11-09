@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 /** Controlled fake SQL byte returns, actual native exporter/policy fragments.
  * No PostgreSQL, current permission or complete-reserve proof. */
 import test from "node:test";
@@ -204,7 +205,8 @@ async function fullGuardFixture() {
   const emptyTables = new Set(["os_comments", "os_events", "os_reports", "os_files", "os_integrations", "os_learning_history", "os_incubator_history", "os_participation_checkins", "os_publications", "os_intake", "os_task_recurrence_series", "os_task_recurrence_occurrences", "os_resource_directory_history"]);
   const c = { async query(sql, args = []) {
     calls.push({ sql, args: clone(args) });
-    assert(/^(SELECT|WITH)\b/.test(sql), "Sizing must never execute fixture writes");
+    assert(/^(SELECT|WITH)\b/.test(sql.trimStart()), "Sizing must never execute fixture writes");
+    if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     if(sql===`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`)return {rows:[{present:false}]};
     if(sql==="SELECT id,reminder_consent FROM os_participations WHERE org_id=$1 AND reminder_consent IS NOT NULL ORDER BY id LIMIT 2001")return {rows:[]};
     if (Object.values(SQL).includes(sql)) {

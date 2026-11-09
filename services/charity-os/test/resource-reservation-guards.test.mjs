@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout, currentReservationLayout, partialReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -37,7 +38,11 @@ const fixture = (record, rows = [projection(record)]) => {
         assert.deepEqual(args, [orgId]);
         return { rows: [{}], rowCount: 1 };
       }
-      assert.equal(calls.length, 2);
+      if (calls.length === 2) {
+        assert.equal(text, reservationSchemaSql.layout);
+        return currentReservationLayout;
+      }
+      assert.equal(calls.length, 3);
       assert.equal(text, sql.projection);
       assert.deepEqual(args, [orgId, record.id]);
       return { rows, rowCount: rows.length };
@@ -53,7 +58,7 @@ test("a safe Asset edit may invalidate approval while protecting its exact capac
   const next = { ...asset, data: { ...asset.data, title: "Room A setup", unitValue: "10.00" },
     revision: 3, status: "review", approval: null };
   await guardResourceReservationWrite(c, next);
-  assert.equal(c.calls.length, 2);
+  assert.equal(c.calls.length, 3);
   assert.deepEqual(resourceReservationDefiningData(next.moduleId, next.data), {
     kind: "asset", programId: "program_a", assetCode: "R-A", locationCode: "North", quantity: 1,
   });
@@ -142,6 +147,7 @@ test("malformed and mismatched bounded projections fail closed before generic wr
 
 test("full restore checks both retained families without loading private ledger bodies", async () => {
   const c = { query: async (text, params) => {
+    if (text === reservationSchemaSql.layout) return currentReservationLayout;
     assert.equal(text, sql.destination);
     assert.deepEqual(params, [orgId]);
     return { rows: [{ occupied: true }], rowCount: 1 };
@@ -150,6 +156,24 @@ test("full restore checks both retained families without loading private ledger 
   assert.match(sql.destination, /EXISTS\(SELECT 1 FROM os_resource_reservations/);
   assert.match(sql.destination, /EXISTS\(SELECT 1 FROM os_resource_reservation_commands/);
   await assert.rejects(resourceReservationHistoryPresent({
-    query: async () => ({ rows: [{ occupied: "false" }], rowCount: 1 }),
+    query: async text => text === reservationSchemaSql.layout ? currentReservationLayout :
+      { rows: [{ occupied: "false" }], rowCount: 1 },
   }, orgId), guardState);
+});
+
+test("legacy absence skips family SQL only after the source guard's tenant lock", async () => {
+  const calls = [], c = { async query(text) {
+    calls.push(text);
+    if (text === sql.lock) return { rows: [{}], rowCount: 1 };
+    assert.equal(text, reservationSchemaSql.layout);
+    return legacyReservationLayout;
+  } };
+  await guardResourceReservationWrite(c, asset, { operation: "delete" });
+  assert.deepEqual(calls, [sql.lock, reservationSchemaSql.layout]);
+  assert.equal(await resourceReservationHistoryPresent(c, orgId), false);
+  assert.equal(calls.at(-1), reservationSchemaSql.layout);
+  await assert.rejects(resourceReservationHistoryPresent({ async query(text) {
+    assert.equal(text, reservationSchemaSql.layout);
+    return partialReservationLayout;
+  } }, orgId), { status: 503, code: "resource_reservation_schema" });
 });

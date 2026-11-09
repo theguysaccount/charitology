@@ -3,6 +3,7 @@ import { readBackupBody } from "./backup-json.mjs";
 import { checkCsrf, fail, hash, id, json, stable, HttpError } from "./security.mjs";
 import { compareGroupExactStamps, ParticipationGroupError } from "./participation-group-model.mjs";
 import { ResourceReservationError, reviewExclusiveResourceCapacity } from "./resource-reservation-model.mjs";
+import { requireResourceReservationAccess } from "./resource-reservation-schema.mjs";
 import {
   RESOURCE_RESERVATION_LIMITS as limits,
   planResourceReservationWrite, reconcileResourceReservationReceipt, recordResourceRecoveryDisposition,
@@ -360,8 +361,11 @@ export async function resourceReservationRoutes({ request, url = new URL(request
       fail(400, "request", "Use the exact reservation request.");
     const actorId = session?.user?.id;
     if (!resourceReservationId(actorId)) fail(401, "session", "Sign in to use reservations.");
-    await db.tx(actorId, org, c => currentResourceReservationMember(c, org, session, true), { readOnly: true });
-    if (!read) checkCsrf(request, session, settings);
+    await db.tx(actorId, org, async c => {
+      await currentResourceReservationMember(c, org, session, true);
+      if (!read) checkCsrf(request, session, settings);
+      await requireResourceReservationAccess(c);
+    }, { readOnly: true });
     await db.limit("resource-reservation-route:" + hash(actorId), 120, 3600);
     const args = { org, session, secret: settings?.secret };
     if (read) return response(await db.tx(actorId, org, c => workspace(c, args), lockedRead));

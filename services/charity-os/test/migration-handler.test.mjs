@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout, currentReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 // Exercise the real authenticated handler with an explicit, bounded SQL fixture.
 // Synthetic example.invalid data only; no database/provider/network mutations.
 import test from "node:test";
@@ -126,6 +127,7 @@ function fixture({
   const c = {
     query: async (sql, args = []) => {
       state.queryCount++;
+      if (sql === reservationSchemaSql.layout) return state.reservationOccupied ? currentReservationLayout : legacyReservationLayout;
       if (sql === reservationSql.destination) {
         assert.deepEqual(args, [org]);
         return { rows: [{ occupied: state.reservationOccupied }], rowCount: 1 };

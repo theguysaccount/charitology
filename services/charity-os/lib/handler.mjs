@@ -90,6 +90,7 @@ import { currentResourceReservationMember } from "./resource-reservation-context
 import { guardResourceReservationWrite, resourceReservationHistoryPresent } from "./resource-reservation-guards.mjs";
 import { restoredResourceReservations, restoreResourceReservations, resourceReservationRestoreSummary } from "./resource-reservation-backup.mjs";
 import { ResourceReservationError } from "./resource-reservation-model.mjs";
+import { resourceReservationAccessReady, requireResourceReservationAccess } from "./resource-reservation-schema.mjs";
 import { LearningError } from "./learning-json.mjs";
 import { learningRoutes } from "./learning-routes.mjs";
 import { incubatorBridgeRoutes } from "./incubator-bridge.mjs";
@@ -163,18 +164,7 @@ async function resourceReservationFeatures(c, member) {
     const permission = modulePermissions(moduleId, member.role);
     if (!permission.read || !permission.write) return {};
   }
-  const [row] = (await c.query(`
-    SELECT to_regclass('os_resource_reservations') IS NOT NULL
-      AND to_regclass('os_resource_reservation_commands') IS NOT NULL
-      AND has_table_privilege(to_regclass('os_resource_reservations'), 'SELECT')
-      AND has_table_privilege(to_regclass('os_resource_reservations'), 'INSERT')
-      AND has_table_privilege(to_regclass('os_resource_reservation_commands'), 'SELECT')
-      AND has_table_privilege(to_regclass('os_resource_reservation_commands'), 'INSERT')
-      AND has_column_privilege(to_regclass('os_resource_reservations'), 'state', 'UPDATE')
-      AND has_column_privilege(to_regclass('os_resource_reservations'), 'revision', 'UPDATE')
-      AND has_column_privilege(to_regclass('os_resource_reservations'), 'terminal_command_hash', 'UPDATE') AS ready
-  `)).rows;
-  return row?.ready === true ? { features: { resourceReservations: true } } : {};
+  return await resourceReservationAccessReady(c) ? { features: { resourceReservations: true } } : {};
 }
 const iso = (x) => x?.toISOString?.() || x;
 const stale = (input, record) => {
@@ -800,7 +790,10 @@ export function createHandler({
             const participantCheckins = restoredParticipantCheckins(backup.participantCheckins);
             const participationGroups = restoredParticipationGroups(backup.participationGroups);
             const resourceReservations = restoredResourceReservations(backup, org);
-            if (resourceReservations) await currentResourceReservationMember(c, org, session, false);
+            if (resourceReservations) {
+              await currentResourceReservationMember(c, org, session, false);
+              await requireResourceReservationAccess(c);
+            }
             const fieldResponses = inspectFieldResponseRecovery(backup);
             const participationRecurrence = await assertParticipationRecurrenceRestoreDestination(c, org, backup);
             const contactReconciliation = restoredContactReconciliationReports(backup);
@@ -965,7 +958,10 @@ export function createHandler({
             const participantCheckins = restoredParticipantCheckins(p.payload.participantCheckins);
             const participationGroups = restoredParticipationGroups(p.payload.participationGroups);
             const resourceReservations = restoredResourceReservations(p.payload, org);
-            if (resourceReservations) await currentResourceReservationMember(c, org, session, false);
+            if (resourceReservations) {
+              await currentResourceReservationMember(c, org, session, false);
+              await requireResourceReservationAccess(c);
+            }
             const fieldResponses = inspectFieldResponseRecovery(p.payload);
             const participationRecurrence = await assertParticipationRecurrenceRestoreDestination(c, org, p.payload);
             const contactReconciliation = restoredContactReconciliationReports(p.payload);

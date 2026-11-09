@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout, currentReservationLayout, partialReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import pg from "pg";
@@ -26,11 +27,12 @@ const guardRow = {
 const rows = (...values) => ({ rows: values, rowCount: values.length });
 
 function mountedFixture() {
-  const state = { ready: true, loggedIn: true, role: "admin", programIds: [], includeAsset: true, calls: [], txs: [] };
+  const state = { ready: true, layout: currentReservationLayout, loggedIn: true, role: "admin", programIds: [], includeAsset: true, calls: [], txs: [] };
   const c = {
     async query(sql) {
       state.calls.push(sql);
-      if (sql.includes("SELECT to_regclass")) return rows({ ready: state.ready });
+      if (sql === reservationSchemaSql.layout) return state.layout;
+      if (sql === reservationSchemaSql.access) return rows({ ready: state.ready });
       if (sql.includes("AS current_user_id"))
         return rows({ session_id: sessionId, user_id: actor, current_user_id: actor });
       if (sql.includes("FROM os_members"))
@@ -91,9 +93,9 @@ test("the mounted reservation workspace uses fresh scope and private headers", a
   state.ready = false;
   assert.equal(Object.hasOwn(await (await call("")).json(), "features"), false);
   state.programIds = ["limited"];
-  const checks = state.calls.filter(sql => sql.includes("SELECT to_regclass")).length;
+  const checks = state.calls.filter(sql => sql === reservationSchemaSql.layout).length;
   assert.equal(Object.hasOwn(await (await call("")).json(), "features"), false);
-  assert.equal(state.calls.filter(sql => sql.includes("SELECT to_regclass")).length, checks);
+  assert.equal(state.calls.filter(sql => sql === reservationSchemaSql.layout).length, checks);
   assert.equal((await call("/resource-reservations/workspace")).status, 403);
   state.loggedIn = false;
   const denied = await call("/resource-reservations/workspace");
@@ -125,6 +127,7 @@ test("the central save checks resource-defining data before any record upsert", 
     async query(sql) {
       called.push(sql);
       if (sql === guardSql.lock) return rows({});
+      if (sql === reservationSchemaSql.layout) return currentReservationLayout;
       if (sql === guardSql.projection) return rows({ ...guardRow, live_reserved: true });
       throw new Error("A guarded write reached the upsert");
     },
@@ -132,7 +135,7 @@ test("the central save checks resource-defining data before any record upsert", 
   await assert.rejects(saveRecord(client, {
     id: asset.id, orgId: org, moduleId: "assets", status: "assigned", source: null, data: { ...data, quantity: 2 },
   }, { participationCommand: true }), { status: 409, code: "resource_reservation_guard" });
-  assert.deepEqual(called, [guardSql.lock, guardSql.projection]);
+  assert.deepEqual(called, [guardSql.lock, reservationSchemaSql.layout, guardSql.projection]);
 });
 
 test("the transaction measures Reserve and Release once through their existing ordinary and safety dispatch", async t => {
@@ -146,6 +149,7 @@ test("the transaction measures Reserve and Release once through their existing o
   const client = {
     async query(sql) {
       queries.push(sql);
+      if (sql === reservationSchemaSql.layout) return currentReservationLayout;
       if (sql.includes('AS "resourceReservations"')) return rows({ resourceReservations: true });
       if (sql.startsWith("SELECT sum(size)")) return rows({ size: "0" });
       return rows();
@@ -177,4 +181,17 @@ test("the transaction measures Reserve and Release once through their existing o
       admitResourceReservationWorkspace(c, evidence("reserve", "ordinary", null, effect)), { lock: true }),
     { status: 503, code: "resource_reservation_admission" });
   } finally { pg.Pool = Original; }
+});
+
+test("legacy schema hides mounted reservations and partial schema refuses without a family data read", async () => {
+  const { call, state } = mountedFixture();
+  state.layout = legacyReservationLayout;
+  assert.equal(Object.hasOwn(await (await call("")).json(), "features"), false);
+  assert.equal((await call("/resource-reservations/workspace")).status, 503);
+  state.layout = partialReservationLayout;
+  const settings = await call("");
+  assert.equal(settings.status, 503);
+  assert.equal((await settings.json()).code, "resource_reservation_schema");
+  assert.equal((await call("/resource-reservations/workspace")).status, 503);
+  assert.equal(state.calls.some(sql => sql.includes("WITH holds AS") || sql === reservationSchemaSql.access), false);
 });

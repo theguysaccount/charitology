@@ -3,6 +3,7 @@
 import { isProxy } from "node:util/types";
 import { fail, stable } from "./security.mjs";
 import { validateHistoricalExclusiveResourceInterval } from "./resource-reservation-model.mjs";
+import { RESOURCE_RESERVATION_HISTORY_SQL, resourceReservationSchemaReady } from "./resource-reservation-schema.mjs";
 
 const assetFields = ["kind", "programId", "assetCode", "locationCode", "quantity"];
 const intervalFields = ["startAt", "endAt", "timeZone"];
@@ -80,8 +81,7 @@ export const RESOURCE_RESERVATION_GUARD_SQL = Object.freeze({
     jsonProjection(assetFields) + " WHEN 'events' THEN " + jsonProjection(sessionFields) +
     " END AS defining_data) p WHERE r.org_id=$1 AND r.id=$2 " +
     "AND EXISTS(SELECT 1 FROM os_resource_reservations h WHERE " + sourcePin + ") LIMIT 1",
-  destination: "SELECT EXISTS(SELECT 1 FROM os_resource_reservations WHERE org_id=$1) " +
-    "OR EXISTS(SELECT 1 FROM os_resource_reservation_commands WHERE org_id=$1) AS occupied",
+  destination: "SELECT " + RESOURCE_RESERVATION_HISTORY_SQL + " AS occupied",
 });
 function checkedRows(result) {
   if (!Array.isArray(result?.rows) || result.rowCount !== result.rows.length ||
@@ -95,6 +95,7 @@ export async function guardResourceReservationWrite(c, record, { operation = "sa
   // Take the lock first in its own statement. The next READ COMMITTED snapshot
   // must include a reservation committed by any writer this lock waited for.
   await c.query(RESOURCE_RESERVATION_GUARD_SQL.lock, [orgId]);
+  if (!await resourceReservationSchemaReady(c)) return;
   const [before] = checkedRows(await c.query(RESOURCE_RESERVATION_GUARD_SQL.projection, [orgId, recordId]));
   if (!before) return;
   if (!exact(before, rowFields) || before.org_id !== orgId || before.id !== recordId ||
@@ -132,6 +133,7 @@ export async function guardResourceReservationWrite(c, record, { operation = "sa
 /** Use in both full import checks under their existing organization lock. */
 export async function resourceReservationHistoryPresent(c, orgId) {
   if (!id(orgId)) stateRefusal();
+  if (!await resourceReservationSchemaReady(c)) return false;
   const [row] = checkedRows(await c.query(RESOURCE_RESERVATION_GUARD_SQL.destination, [orgId]));
   if (!exact(row, ["occupied"]) || typeof row.occupied !== "boolean") stateRefusal();
   return row.occupied;

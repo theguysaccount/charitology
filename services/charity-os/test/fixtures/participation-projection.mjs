@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./resource-reservation-schema.mjs";
 /** Closed fictional whole-only projection; importing it opens no connection. */
 import { participationTerms } from "../../lib/participation.mjs";
 import { hash } from "../../lib/security.mjs";
@@ -108,6 +109,7 @@ export function projectionFixture({
   const c = {
     query: async (sql) => {
       calls.push(sql);
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if(sql===`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`)return {rows:[{present:false}]};
       if(sql==="SELECT id,reminder_consent FROM os_participations WHERE org_id=$1 AND reminder_consent IS NOT NULL ORDER BY id LIMIT 2001")return {rows:[]};
       if (sql.startsWith("SELECT * FROM os_participation_targets"))

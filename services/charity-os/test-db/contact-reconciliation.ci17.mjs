@@ -8,6 +8,7 @@ import { CRM_CASE_NAMES, runCrmCases } from "./fixtures/contact-reconciliation-c
 import sql from "./fixtures/contact-reconciliation-sql.json" with { type: "json" };
 import absentGolden from "../test/fixtures/contact-reconciliation-legacy75-v1.json" with { type: "json" };
 import catalogVectors from "../test/fixtures/contact-schema-column-vectors-v1.json" with { type: "json" };
+import resourceCatalogVectors from "../test/fixtures/contact-resource-reservation-column-vectors-v1.json" with { type: "json" };
 
 let profile, fixture, caps, modules, caseWork, result, failed = false, registered = false;
 const completed = [], artifacts = [];
@@ -33,7 +34,7 @@ try {
   // numbered JSON records distinguish cases; no TAP subtest count is invented.
   test("CRM actual sixteen-case handler and SQL journey", async () => {
     try {
-      caseWork = runCrmCases({ ...caps, modules, sql, absentGolden, catalogVectors, expectedServerVersionNum: 170011,
+      caseWork = runCrmCases({ ...caps, modules, sql, absentGolden, catalogVectors, resourceCatalogVectors, expectedServerVersionNum: 170011,
         onCase: async value => {
           assert(value.number === completed.length + 1 && value.name === CRM_CASE_NAMES[value.number - 1]); completed.push(value);
           const { number, name, status, code, diagnostic, lastCalls } = value;
