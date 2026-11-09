@@ -100,3 +100,11 @@ The two CI evidence artifacts retain all case results, catalog and business read
 An actual in-app browser rehearsal uses the intact participant page and the production staff pane and transport in a small private host. Only the fixture copy of the UI switch is enabled. The participant saves a separate reminder choice. A mixed selection with a person who has no reminder choice cannot be scheduled. The eligible preview shows the exact message and UTC due time, exposes HTML as text and requires a deliberate acknowledgment. An interrupted Schedule retains the same command. Refresh does not submit it, a 429 leaves Retry available and the final replay returns the one original fictional schedule. All three request bodies match exactly. The participant turns the reminder off and reads it back while operational email updates remain enabled. The owned tab and server close with no remaining sockets or handlers.
 
 This rehearsal uses synthetic sessions and temporary in-memory responses. It does not establish full hosted staff workspace integration, real sign-in, production migration, provider delivery or charity adoption. The production switches stay false.
+
+## Mail transport verification
+
+The additive mail schema committed separately and retained all 1,116 rows in the eight existing tables. Fresh readback verified the old data and catalog. The canonical relay kept its previous health and unsigned-request refusal behavior.
+
+On November 9, 2026, a protected test deployment used the same reminder relay and provider code. Its temporary entry required the approved test inbox and one exact test key. An unsigned request and a signed request with the wrong key were both refused before the relay. The one approved request returned acceptance; the canonical relay status reported delivery, and one matching message was confirmed in Gmail. The temporary deployment was removed.
+
+The relay test had no hosted participation record, staff scheduling action or scheduler run. It changed no newsletter subscriptions or provider suppressions. The first OS schema attempt rolled back before commit when the previous runtime could not size a backup with the new column. The separate [compatibility release](https://github.com/theguysaccount/charitology/pull/61) proved that an empty nullable reminder column keeps existing backup content and charged storage unchanged.
