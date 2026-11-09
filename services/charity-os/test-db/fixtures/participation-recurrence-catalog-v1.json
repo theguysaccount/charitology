@@ -419,5 +419,27 @@
     "command_hash",
     "group_id",
     "receipt"
+  ],
+  "os_resource_reservation_commands": [
+    "org_id",
+    "command_hash",
+    "receipt",
+    "previous_id",
+    "next_id"
+  ],
+  "os_resource_reservations": [
+    "org_id",
+    "id",
+    "asset_id",
+    "occurrence_id",
+    "origin_mode",
+    "state",
+    "revision",
+    "proof",
+    "proof_sha256",
+    "original_command_hash",
+    "terminal_command_hash",
+    "history_core",
+    "disposition"
   ]
 }
