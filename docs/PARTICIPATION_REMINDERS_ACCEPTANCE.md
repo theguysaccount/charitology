@@ -20,6 +20,8 @@ The third run, `85731043`, establishes a valid measured frontier: 1,260 particip
 
 The fourth run, `98f21149`, identifies that assertion precisely: activation returned HTTP 422 with `participation_group_safety_capacity`; the fixture expected the later `participation_reminder_capacity` guard. The successor requires that exact observed existing-safety refusal, while retaining complete rollback and no-write checks. It does not claim the reminder NULL credit alone caused the refusal. The cancellation helper also now supplies the real route's required bounded reason. This is a fixture correction, with no application guard or limit relaxed. Final business readback and owned cleanup passed for the failed fourth run.
 
+The fifth local run, `c27a8325`, passes all ten main scenarios and RC01–RC02, including the actual activation refusal, full rollback and both legacy exits. RC03 stops before filling because its private 15,000-comment fixture allowance is too small for 60 MiB of legal 4,000-character comments. The successor permits at most 16,000 fixture comments, with the body cap and every application limit unchanged. Its actual near-60 MiB result is still pending. Fresh final business readback and owned cleanup pass for this failed run.
+
 ## The participant chooses separately
 
 The person must have the current verified account and own-request link. General operational email consent and the new reminder choice are separate. Staff cannot opt in for someone else. Historical email preferences, check-in permission, a booking or a restored file cannot enable reminders.
