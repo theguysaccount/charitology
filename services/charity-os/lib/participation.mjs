@@ -410,7 +410,7 @@ async function managed(c, org, targetId, { forUpdate = true } = {}) {
 async function entries(c, org, targetId) {
   return (
     await c.query(
-      "SELECT p.*,i.status AS intake_status,i.cancelled_at AS intake_cancelled_at FROM os_participations p LEFT JOIN os_intake i ON i.org_id=p.org_id AND i.id=p.intake_id WHERE p.org_id=$1 AND p.target_id=$2 ORDER BY p.waitlist_sequence NULLS LAST,p.created_at,p.id",
+      "SELECT p.*,i.status AS intake_status,i.cancelled_at AS intake_cancelled_at,i.revision AS intake_revision FROM os_participations p LEFT JOIN os_intake i ON i.org_id=p.org_id AND i.id=p.intake_id WHERE p.org_id=$1 AND p.target_id=$2 ORDER BY p.waitlist_sequence NULLS LAST,p.created_at,p.id",
       [org, targetId],
     )
   ).rows;
@@ -587,6 +587,7 @@ function staffObject(p, t, source, records, member) {
     bookingRecordId: p.booking_record_id,
     contactId: p.contact_id,
     intakeId: p.intake_id,
+    intakeRevision: Number.isSafeInteger(p.intake_revision) && p.intake_revision >= 1 && p.intake_revision <= 2147483647 ? p.intake_revision : null,
     source: p.source,
     waitlistSequence:
       p.waitlist_sequence == null ? null : Number(p.waitlist_sequence),

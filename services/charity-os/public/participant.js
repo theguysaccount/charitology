@@ -1,4 +1,6 @@
 import { createOwnCheckInPane } from "./participant-check-in.js";
+import { createOwnReminderPane } from "./participant-reminders.js";
+import { participationRemindersEnabled as participantRemindersEnabled } from "./participation-reminder-feature.js";
 const $ = (selector) => document.querySelector(selector);
 const receiptPattern =
   /^([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{43})$/;
@@ -80,6 +82,7 @@ const state = {
   participationVersion: 0,
   bookingIntents: new Map(),
   checkInPanes: new Map(),
+  reminderPanes: new Map(),
 };
 
 export function parseReceipt(value, origin) {
@@ -248,10 +251,10 @@ async function request(path, { method = "GET", body, signal } = {}) {
   return result;
 }
 function checkInDirty() {
-  state.dirty = state.requestDirty || state.participationDirty || [...state.checkInPanes.values()].some(v => v.pane.hasUnsavedChanges());
+  state.dirty = state.requestDirty || state.participationDirty || [...state.checkInPanes.values(), ...state.reminderPanes.values()].some(v => v.pane.hasUnsavedChanges());
 }
 function clearCheckInPanes() {
-  const panes = [...state.checkInPanes.values()];state.checkInPanes.clear();
+  const panes = [...state.checkInPanes.values(), ...state.reminderPanes.values()];state.checkInPanes.clear();state.reminderPanes.clear();
   for (const v of panes) v.pane.dispose();
 }
 function ownCheckInPane(item, row) {
@@ -262,6 +265,20 @@ function ownCheckInPane(item, row) {
       isCurrent:()=>state.user?.id===user && state.accessVersion===access && sameRequest(state.current,item) && !state.privateSuspended,
       onDirty:checkInDirty,runMutation:mutation,onAccessLost:error=>{if(error.status===404){clearPrivate();message($("#participant-status"),"Own self-report access is unavailable. Refresh your session before continuing.",true);}else denyIfAccessLost(error);}});
     entry = {pane};state.checkInPanes.set(key,entry);
+  }
+  return entry.pane;
+}
+function ownReminderPane(item, row) {
+  const user = state.user?.id, access = state.accessVersion, key = JSON.stringify([user,item.orgId,item.id,row.id]);
+  let entry = state.reminderPanes.get(key);
+  if (!entry) {
+    const pane = createOwnReminderPane({orgId:item.orgId,intakeId:item.id,participationId:row.id,request,
+      getDisplayedPins:()=>({revision:state.participations.find(p=>p.id===row.id)?.revision,intakeRevision:state.current?.revision}),
+      isCurrent:()=>state.user?.id===user && state.accessVersion===access && sameRequest(state.current,item) && !state.privateSuspended,
+      onDirty:checkInDirty,runMutation:mutation,onAccessLost:error=>{if(error.status===404){clearPrivate();message($("#participant-status"),"Own reminder access is unavailable. Refresh your session before continuing.",true);}else denyIfAccessLost(error);}});
+    entry = {pane,revision:row.revision,intakeRevision:item.revision};state.reminderPanes.set(key,entry);
+  } else if(entry.revision!==row.revision || entry.intakeRevision!==item.revision) {
+    entry.pane.pause();entry.revision=row.revision;entry.intakeRevision=item.revision;
   }
   return entry.pane;
 }
@@ -488,8 +505,12 @@ async function openRequest(item, { preserveDraft = false, focus = true } = {}) {
 }
 function chooseRequest(item) {
   if (state.mutationBusy) return;
-  const open = () =>
-    openRequest(item).catch((error) => {
+  const reminderPending=()=>[...state.reminderPanes.values()].some(v=>v.pane.hasPendingCommand());
+  const open = () => {
+    if(reminderPending() && !sameRequest(item,state.current)) {
+      message($("#participant-status"),"A reminder save may already be recorded. Reconcile it or explicitly stop retrying that save before opening another request.",true);return;
+    }
+    return openRequest(item,{preserveDraft:reminderPending()}).catch((error) => {
       if (error.status === 404 && sameRequest(item, state.current)) {
         state.current = null;
         state.dirty = false;
@@ -511,6 +532,8 @@ function chooseRequest(item) {
       denyIfAccessLost(error);
       message($("#participant-status"), error.message, true);
     });
+  };
+  if(reminderPending()){void open();return;}
   if (state.dirty)
     confirmPanel(
       "Discard unsaved corrections?",
@@ -528,6 +551,9 @@ function confirmPanel(
   trigger = document.activeElement,
 ) {
   if (state.mutationBusy) return;
+  const hasReminderPending=()=>[...state.reminderPanes.values()].some(v=>v.pane.hasPendingCommand());
+  let reminderWarningShown=hasReminderPending();
+  const reminderWarning=" A reminder save may already be recorded. Continuing does not undo it; signing out or discarding its pane removes only this tab’s retained retry.";
   const target = $("#participant-detail");
   target.querySelector("#participant-confirmation")?.remove();
   const heading = node("h3", { id: "participant-confirmation-title" }, title),
@@ -548,7 +574,7 @@ function confirmPanel(
         "aria-labelledby": heading.id,
       },
       heading,
-      node("p", {}, description),
+      node("p", {class:"participant-confirmation-description"}, description+(reminderWarningShown?reminderWarning:"")),
       node("div", { class: "actions" }, confirm, keep),
       output,
     );
@@ -558,6 +584,7 @@ function confirmPanel(
     if (trigger?.isConnected) trigger.focus();
   });
   confirm.addEventListener("click", () => {
+    if(hasReminderPending()&&!reminderWarningShown){reminderWarningShown=true;panel.querySelector(".participant-confirmation-description").textContent=description+reminderWarning;return;}
     if (!state.mutationBusy) void mutation(() => onConfirm(output), output);
   });
   target.append(panel);
@@ -1343,6 +1370,10 @@ function renderOwnParticipations(item) {
     const checkIn = ownCheckInPane(item,row);
     card.append(node("button", {type:"button",class:"button subtle",onclick:()=>void checkIn.load()}, "Arrival self-report"),checkIn.element);
     card.append(renderDeliveryPreference(item, row));
+    if (participantRemindersEnabled) {
+      const reminder = ownReminderPane(item,row);
+      card.append(node("button",{type:"button",class:"button subtle",onclick:()=>void reminder.load()},"Read participation reminder choice"),reminder.element);
+    }
     if (row.notifications?.requested)
       card.append(
         node(
@@ -2123,7 +2154,7 @@ async function refreshSession(force = false) {
   }
 }
 function suspendPrivate() {
-  for (const v of state.checkInPanes.values()) v.pane.pause();
+  for (const v of [...state.checkInPanes.values(), ...state.reminderPanes.values()]) v.pane.pause();
   state.privateSuspended = true;
   $("#participant-private").hidden = true;
 }

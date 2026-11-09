@@ -46,7 +46,7 @@ function fixture({ moduleId = "volunteers", partial = true } = {}) {
     if (sql === "SELECT pg_advisory_xact_lock(hashtextextended($1,0))") return { rows: [] };
     if (sql === "SELECT * FROM os_records WHERE org_id=$1 AND deleted_at IS NULL ORDER BY created_at,id") return { rows: records.map(raw) };
     if (sql === "SELECT * FROM os_participation_targets WHERE org_id=$1 AND target_id=$2") return { rows: [t] };
-    if (sql === "SELECT p.*,i.status AS intake_status,i.cancelled_at AS intake_cancelled_at FROM os_participations p LEFT JOIN os_intake i ON i.org_id=p.org_id AND i.id=p.intake_id WHERE p.org_id=$1 AND p.target_id=$2 ORDER BY p.waitlist_sequence NULLS LAST,p.created_at,p.id") return { rows: waitlist };
+    if (sql === "SELECT p.*,i.status AS intake_status,i.cancelled_at AS intake_cancelled_at,i.revision AS intake_revision FROM os_participations p LEFT JOIN os_intake i ON i.org_id=p.org_id AND i.id=p.intake_id WHERE p.org_id=$1 AND p.target_id=$2 ORDER BY p.waitlist_sequence NULLS LAST,p.created_at,p.id") return { rows: waitlist };
     if (sql === "SELECT * FROM os_participations WHERE org_id=$1 AND state='confirmed'") return { rows: confirmed };
     if (sql === "SELECT target_id FROM os_participation_targets WHERE org_id=$1") return { rows: [{ target_id: source.id }] };
     throw new Error("Unexpected closed read-only seam SQL: " + sql);

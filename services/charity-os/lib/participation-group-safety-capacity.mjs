@@ -2,8 +2,8 @@
 import { fail, hash } from "./security.mjs";
 import { ownGroupValue } from "./participation-group-model.mjs";
 import { groupStateCount } from "./participation-group-store.mjs";
-import { PARTICIPATION_LEGACY_SQL } from "./participation-storage.mjs";
-import { exportParticipation } from "./participation-backup.mjs";
+import { PARTICIPATION_LEGACY_SQL, PARTICIPATION_REMINDER_LEGACY_SQL } from "./participation-storage.mjs";
+import { exportParticipation, participationNativeInventory } from "./participation-backup.mjs";
 import { DELIVERY_CONSENT_VERSION, DELIVERY_TEMPLATE_VERSION, DELIVERY_LIMITS } from "./participation-delivery.mjs";
 import {
   learningOperationalParticipationProjectionSQL,
@@ -32,12 +32,29 @@ const pCommand = Object.freeze({ intentHash: DIGEST, payloadHash: DIGEST, action
 const deliveryConsent = Object.freeze({ version: DELIVERY_CONSENT_VERSION, enabled: false, revision: MAX, at: wireStamp });
 const policyCommand = Object.freeze({ intentHash: DIGEST, payloadHash: DIGEST, action: "delivery.disable", actorHash: DIGEST,
   result: { policy: { revision: MAX, enabled: false, templateVersion: DELIVERY_TEMPLATE_VERSION }, cancelled: DELIVERY_LIMITS.outbox, auditRetained: false } });
-const bounds = Object.freeze({ pCommand, deliveryConsent, policyCommand });
+const reminderCommand = Object.freeze({ format: "charitology-participation-reminder-choice", version: 1, method: "participation-reminder-v1", action: "choice",
+  actorSha256: DIGEST, sessionSha256: DIGEST, linkSha256: DIGEST, commandSha256: DIGEST, requestSha256: DIGEST, acceptedAtExact: C.timestamp,
+  result: { participationId: "p".repeat(100), revision: MAX, intakeRevision: MAX,
+    reminder: { version: "participation-reminder-v1", enabled: false, revision: MAX, atExact: C.timestamp }, auditRetained: false } });
+const bounds = Object.freeze({ pCommand, deliveryConsent, policyCommand, reminderCommand });
+/** Fixed shared projection policy, never caller SQL or an authority token. */
+export function participationSafetyProjectionBindings(org, affectedIds) {
+  id(org); need(Array.isArray(affectedIds) && affectedIds.length <= 2000);
+  const ids = affectedIds.slice(); ids.forEach(id);
+  need(new Set(ids).size === ids.length);
+  return [org, C.timestamp, O.attempts, DELIVERY_CONSENT_VERSION, O.serviceTime, ids, JSON.stringify(bounds)];
+}
 // All fragments/aliases/parameter positions below are server constants.
 const wider = (actual, bound) => `(CASE WHEN octet_length((${actual})::text)>octet_length((${bound})::text) THEN ${actual} ELSE ${bound} END)`;
-const charge = value => `(CASE WHEN ${PARTICIPATION_LEGACY_SQL} THEN (${value})-'requested_interval' ELSE ${value} END)`;
+const charge = value => {
+  const interval = `(CASE WHEN ${PARTICIPATION_LEGACY_SQL} THEN (${value})-'requested_interval' ELSE ${value} END)`;
+  return `(CASE WHEN ${PARTICIPATION_REMINDER_LEGACY_SQL} THEN (${interval})-'reminder_consent' ELSE ${interval} END)`;
+};
 const pOp = learningOperationalParticipationProjectionSQL();
-const pFuture = `(${pOp.base})||jsonb_build_object('state','cancelled','cancelled_at',CASE WHEN t.state='cancelled' THEN to_jsonb(t.cancelled_at) ELSE to_jsonb($2::timestamptz) END,'last_command',${wider("to_jsonb(t.last_command)", "$7::jsonb->'pCommand'")},'consent',CASE WHEN jsonb_typeof(t.consent)='object' THEN t.consent||jsonb_build_object('emailUpdates',false) ELSE t.consent END,'delivery_consent',${wider("to_jsonb(t.delivery_consent)", "$7::jsonb->'deliveryConsent'")})`;
+const reminderExit = `jsonb_set($7::jsonb->'reminderCommand','{result,participationId}',to_jsonb(t.id))`;
+const reminderEnabled = `t.reminder_consent->'enabled'='true'::jsonb`;
+const commandBound = `CASE WHEN ${reminderEnabled} THEN ${wider(wider("to_jsonb(t.last_command)", "$7::jsonb->'pCommand'"), reminderExit)} ELSE ${wider("to_jsonb(t.last_command)", "$7::jsonb->'pCommand'")} END`;
+const pFuture = `(${pOp.base})||jsonb_build_object('state','cancelled','cancelled_at',CASE WHEN t.state='cancelled' THEN to_jsonb(t.cancelled_at) ELSE to_jsonb($2::timestamptz) END,'last_command',${commandBound},'consent',CASE WHEN jsonb_typeof(t.consent)='object' THEN t.consent||jsonb_build_object('emailUpdates',false) ELSE t.consent END,'delivery_consent',${wider("to_jsonb(t.delivery_consent)", "$7::jsonb->'deliveryConsent'")},'reminder_consent',CASE WHEN ${reminderEnabled} THEN ${wider("to_jsonb(t.reminder_consent)", "("+reminderExit+")->'result'->'reminder'")} ELSE to_jsonb(t.reminder_consent) END)`;
 const pOperationalRaw = `CASE WHEN t.id=ANY($6::text[]) THEN GREATEST(octet_length((${pOp.base})::text),octet_length((${pOp.changed})::text)) ELSE octet_length(to_jsonb(t)::text) END`;
 const pOperationalCharge = `CASE WHEN t.id=ANY($6::text[]) THEN GREATEST(octet_length(${charge(pOp.base)}::text),octet_length(${charge(pOp.changed)}::text)) ELSE octet_length(${charge("to_jsonb(t)")}::text) END`;
 const oOp = learningOperationalOutboxProjectionSQL();
@@ -86,13 +103,7 @@ async function futureParticipationNative(org, source, measured) {
     consent_copy: o.consentCopy, template_version: o.templateVersion, first_attempt_at: o.attemptedAt,
     attempts: o.attempts, last_checked_at: o.lastCheckedAt, safe_code: o.safeCode,
     provider_event_at: o.providerEventAt, recovered_state: o.recoveredState }));
-  const projectedClient = { async query(sql) {
-    if (sql === "SELECT * FROM os_participation_targets WHERE org_id=$1 ORDER BY target_id") return { rows: targets };
-    if (sql === "SELECT * FROM os_participations WHERE org_id=$1 ORDER BY created_at,id") return { rows: futureRows };
-    if (sql === "SELECT * FROM os_participation_outbox WHERE org_id=$1 ORDER BY created_at,id") return { rows: outbox };
-    bad();
-  } };
-  const result = await exportParticipation(projectedClient, org);
+  const result = participationNativeInventory(targets, futureRows, outbox);
   need(result.version === source.version && result.participations.length === source.participations.length);
   return indexed(result.participations);
 }
@@ -105,14 +116,15 @@ async function measureRemaining(c, org, context, append) {
   id(org); exact(context, ["backup", "operational"]);
   const { backup, operational } = context, source = backup.participation;
   need(source && Array.isArray(source.participations) && source.participations.length <= 2000 && Array.isArray(source.outbox) && source.outbox.length <= DELIVERY_LIMITS.outbox);
-  const growth = operationalGrowth(source);
+  const growth = operationalGrowth(source, { reminderChoiceIds: operational.reminderChoiceIds || [] });
   need(growth.sourceWireGrowthBytes === operational.sourceWireGrowthBytes);
-  const params = [org, C.timestamp, O.attempts, DELIVERY_CONSENT_VERSION, O.serviceTime, growth.affectedParticipationIds, JSON.stringify(bounds)];
+  const params = participationSafetyProjectionBindings(org, growth.affectedParticipationIds);
   const people = resultRows(await c.query(GROUP_SAFETY_SQL.participations, params), 2000);
   const peopleById = indexed(people); need(peopleById.size === source.participations.length && source.participations.every(p => peopleById.has(p.id)));
   const p = sumRows(people, ["actual", "actual_raw", "operational", "operational_raw", "projected", "projected_raw"]);
   for (const row of people) need(integer(row.actual_raw) >= integer(row.actual) && integer(row.operational) >= integer(row.actual) && integer(row.operational_raw) >= integer(row.operational) && integer(row.projected) >= integer(row.operational) && integer(row.projected_raw) >= integer(row.operational_raw) && integer(row.projected_raw) >= integer(row.projected));
-  need(p.operational_raw - p.actual_raw === integer(operational.sourceParticipationGrowthBytes));
+  need(p.operational - p.actual === integer(operational.sourceParticipationGrowthBytes));
+  need(p.operational_raw - p.actual_raw === integer(operational.sourceParticipationRawGrowthBytes ?? operational.sourceParticipationGrowthBytes));
   if (p.projected > 8 * 1024 * 1024) bad();
 
   const bookings = resultRows(await c.query(GROUP_SAFETY_SQL.bookings, [org, C.timestamp, MAX, C.worstActorId]), 2000);
@@ -173,7 +185,7 @@ async function measureRemaining(c, org, context, append) {
   return freeze({ participationCount: people.length, outboxCount: outboxRows.length,
     actualParticipationChargedBytes: p.actual, actualParticipationRawBytes: p.actual_raw,
     projectedParticipationChargedBytes: p.projected, projectedParticipationRawBytes: p.projected_raw,
-    existingOperationalParticipationGrowth: p.operational_raw - p.actual_raw,
+    existingOperationalParticipationGrowth: p.operational - p.actual, existingOperationalParticipationRawGrowth: p.operational_raw - p.actual_raw,
     remainingParticipationGrowthAboveOperational: p.projected - p.operational,
     bookingRetainedGrowth, bookingNativeGrowth, policyRetainedGrowth: policyProjected - policyActual, policyNativeGrowth,
     actualOutboxBytes: outbox.actual, projectedOutboxBytes: outbox.projected,

@@ -863,8 +863,9 @@ test(
               state: "cancelled",
             },
           };
-          // The only changed schema field is removed for the real old-schema
-          // baseline; all original data and typed history remain intact.
+          // Isolate the interval-column migration. The later reminder NULL
+          // column stays present; its separate compatibility credit is measured
+          // below. Original data and typed history remain intact.
           await c.query(
             "ALTER TABLE os_participations DROP COLUMN requested_interval",
           );
@@ -965,12 +966,15 @@ test(
             reserve: false,
           });
           assert.equal(accounting.version, 2);
-          assert.equal(accounting.chargedRetainedBytes, used);
+          assert(accounting.reminderNullCompatibilityCreditBytes > 0);
+          assert.equal(accounting.chargedRetainedBytes + accounting.reminderNullCompatibilityCreditBytes, used);
+          assert.equal(accounting.intervalCompatibilityCreditBytes, 28 * (count + 1));
           assert.equal(accounting.rawRetainedBytes - used, 28 * (count + 1));
           assert(accounting.rawRetainedBytes > 8 * 1024 * 1024);
           const rawGlobalAfter = await oldLogicalBackupBytes(c, f.org),
             chargedGlobalAfter = await logicalBackupBytes(c, f.org);
-          assert.equal(chargedGlobalAfter, oldGlobal);
+          assert.equal(chargedGlobalAfter + accounting.reminderNullCompatibilityCreditBytes, oldGlobal);
+          assert.equal(rawGlobalAfter - chargedGlobalAfter, accounting.intervalCompatibilityCreditBytes + accounting.reminderNullCompatibilityCreditBytes);
           assert.equal(rawGlobalAfter - oldGlobal, 28 * (count + 1));
           assert(rawGlobalAfter > 60 * 1024 * 1024);
           assert.equal(

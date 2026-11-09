@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { CONSENT_VERSION } from "./config.mjs";
 import { hashToken, newToken } from "./security.mjs";
 import { verifiedNeonConnectionString } from "./connection.mjs";
-import { mergeProviderFacts } from "./os-mail.mjs";
+import { mergeProviderFacts, isParticipationMailPurpose } from "./os-mail.mjs";
 // Transactions always use one checked-out client. No subscriber data is logged.
 export function database(connectionString, { schema } = {}) {
   const providerLockKey = schema
@@ -171,8 +171,8 @@ export function database(connectionString, { schema } = {}) {
           if (row?.payload_hash !== payloadHash)
             return { state: "conflict", reserved: false };
           if (
-            purpose === "participation" &&
-            row.purpose === "participation" &&
+            isParticipationMailPurpose(purpose) &&
+            row.purpose === purpose &&
             row.state === "preflight" &&
             !row.attempted_at
           ) {
@@ -232,7 +232,7 @@ export function database(connectionString, { schema } = {}) {
         ).rows[0];
         if (
           !row ||
-          row.purpose !== "participation" ||
+          !isParticipationMailPurpose(row.purpose) ||
           row.payload_hash !== payloadHash
         )
           throw new Error("Unbound participation attempt");
@@ -280,7 +280,7 @@ export function database(connectionString, { schema } = {}) {
         ).rows[0];
         if (
           !row ||
-          row.purpose !== "participation" ||
+          !isParticipationMailPurpose(row.purpose) ||
           row.payload_hash !== payloadHash
         )
           throw new Error("Unbound participation outcome");
@@ -306,15 +306,16 @@ export function database(connectionString, { schema } = {}) {
           )
         ).rows[0];
       }),
-    observeParticipationMail: (keyHash, providerId, type) =>
+    observeParticipationMail: (keyHash, providerId, type, { purpose = "participation", payloadHash = null } = {}) =>
       tx(async (client) => {
+        if (!isParticipationMailPurpose(purpose)) throw new Error("Unbound provider observation");
         const row = (
           await client.query(
-            "SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1 AND purpose='participation' AND provider_id=$2 FOR UPDATE",
-            [keyHash, providerId],
+            "SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1 AND purpose=$3 AND provider_id=$2 FOR UPDATE",
+            [keyHash, providerId, purpose],
           )
         ).rows[0];
-        if (!row) throw new Error("Unbound provider observation");
+        if (!row || (payloadHash !== null && row.payload_hash !== payloadHash)) throw new Error("Unbound provider observation");
         // Retrieval has no last-event timestamp. Preserve verified callback time,
         // otherwise the observation is deliberately timestamp-null.
         const facts = mergeProviderFacts(row.provider_facts, type);

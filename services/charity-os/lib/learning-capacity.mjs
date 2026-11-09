@@ -1,5 +1,6 @@
+import { validateReminderPreference } from './participation-reminder-model.mjs';
 import {planRestoredParticipationRecurrenceReports,participationRecurrenceRestoreSummary,isParticipationRecurrenceRecoveryFamily,PARTICIPATION_RECURRENCE_REPORT_LIMITS} from './participation-recurrence-recovery.mjs';
-import { participationChargeJsonSQL, legacyRecoveredParticipation } from "./participation-storage.mjs";
+import { participationChargeJsonSQL, participationIntervalChargeJsonSQL, legacyRecoveredParticipation } from "./participation-storage.mjs";
 /** Read-only projection of the actual full-restore representation, never restore authority. */
 import { makeBackup, validateBackup, restoredIntegrations } from './backup.mjs';
 import { restoredIntake, exportIntake } from './intake-backup.mjs';
@@ -44,10 +45,11 @@ function portableOutboxBound(value, bound, { restored = false } = {}) {
     ...(restored ? { recoveredState: wider(value.recoveredState, O.state) } : {}) };
 }
 /** Separate hypothetical metadata only. Never changes the source object, its checksum or any payload/proof. */
-export function operationalGrowth(participation) {
+export function operationalGrowth(participation, { reminderChoiceIds = [] } = {}) {
   const outbox = participation?.outbox ?? [], participations = participation?.participations ?? [];
   if (!Array.isArray(outbox) || !Array.isArray(participations)) badSchema();
-  const affectedParticipationIds = [...new Set(outbox.filter(value => ['snapshot', 'transition'].includes(value.intentKind)).map(value => value.participationId))].sort();
+  if (!Array.isArray(reminderChoiceIds) || reminderChoiceIds.length > 2000 || reminderChoiceIds.some(id => typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,100}$/.test(id))) badSchema();
+  const affectedParticipationIds = [...new Set([...outbox.filter(value => ['snapshot', 'transition', 'reminder'].includes(value.intentKind)).map(value => value.participationId), ...reminderChoiceIds])].sort();
   const active = affectedParticipationIds.length > 0, ids = new Set(affectedParticipationIds);
   const outboxBounds = active ? outbox.map(value => ({ id: value.id, state: O.state, safeCode: O.safeCode,
     attempts: Math.max(value.attempts || 0, O.attempts), attemptedAt: wider(value.attemptedAt, O.serviceTime),
@@ -65,7 +67,8 @@ const longerJSONB = (key, bound) => `(CASE WHEN octet_length((to_jsonb(t)->'${ke
  * Alias and parameter positions are literal; callers supply no expressions. */
 export function learningOperationalParticipationProjectionSQL() {
   const base = `to_jsonb(t)||jsonb_build_object('revision',${longerJSONB('revision', 'to_jsonb($3::integer)')},'updated_at',${longerJSONB('updated_at', 'to_jsonb($2::timestamptz)')})`;
-  const changed = `(${base})||jsonb_build_object('delivery_consent',jsonb_build_object('version',$4::text,'enabled',false,'revision',$3::integer,'at',$5::text))`;
+  const reminderOff = `CASE WHEN t.reminder_consent->'enabled'='true'::jsonb THEN jsonb_build_object('version','participation-reminder-v1','enabled',false,'revision',$3::integer,'atExact','${C.timestamp}'::text) ELSE to_jsonb(t.reminder_consent) END`;
+  const changed = `(${base})||jsonb_build_object('delivery_consent',jsonb_build_object('version',$4::text,'enabled',false,'revision',$3::integer,'at',$5::text),'reminder_consent',${reminderOff})`;
   return Object.freeze({ base, changed });
 }
 /** The same fixed operational envelope also measures an optional notice before
@@ -79,27 +82,46 @@ export function learningOperationalOutboxProjectionSQL() {
 }
 /** Actual current-tenant PG rows; SELECT only, including legacy positive growth without a prepaid budget. */
 export async function measureLearningOperationalCapacity(c, org, participation) {
-  const growth = operationalGrowth(participation);
-  if (!growth.active) return frozen({ active: false, affectedParticipations: 0, sourceLogicalGrowthBytes: 0, sourceParticipationGrowthBytes: 0,
+  const choices = (await c.query("SELECT id,reminder_consent FROM os_participations WHERE org_id=$1 AND reminder_consent IS NOT NULL ORDER BY id LIMIT 2001", [org])).rows;
+  if (!Array.isArray(choices) || choices.length > 2000) operationalFailure();
+  const reminderChoiceIds = [], choiceIds = new Set();
+  for (const row of choices) {
+    if (typeof row.id !== 'string' || !/^[A-Za-z0-9_-]{1,100}$/.test(row.id) || choiceIds.has(row.id)) operationalFailure();
+    choiceIds.add(row.id); let preference;
+    try { preference = validateReminderPreference(row.reminder_consent); } catch { operationalFailure(); }
+    if (!preference) operationalFailure();
+    if (preference.enabled) reminderChoiceIds.push(row.id);
+  }
+  const growth = operationalGrowth(participation, { reminderChoiceIds });
+  if (!growth.active) return frozen({ active: false, affectedParticipations: 0, reminderChoiceIds,
+    sourceLogicalGrowthBytes: 0, sourceParticipationGrowthBytes: 0, sourceParticipationRawGrowthBytes: 0,
     sourceOutboxGrowthBytes: 0, sourceWireGrowthBytes: 0, sourceOutboxWireBytes: growth.sourceOutboxWireBytes, sourceParticipationWireBytes: growth.sourceParticipationWireBytes,
     sourceOutboxBytes: 0, sourceParticipationBytes: 0, nonlegacyRows: 0, maxNonlegacyRowBytes: 0 });
   const rows = (await c.query(`SELECT id,intent_kind,budget_bytes,octet_length(to_jsonb(t)::text) AS actual,octet_length((${learningOperationalOutboxProjectionSQL()})::text) AS projected FROM os_participation_outbox t WHERE org_id=$1`, [org, C.timestamp, O.providerPhysicalTime, O.safeCode, O.attempts, 'f'.repeat(32)])).rows;
   let sourceOutboxGrowthBytes = 0, sourceOutboxBytes = 0, nonlegacyRows = 0, maxNonlegacyRowBytes = 0;
   for (const value of rows) {
     const actual = Number(value.actual), projected = Number(value.projected), budget = Number(value.budget_bytes) || 0;
+    if (![actual, projected, budget].every(Number.isSafeInteger) || actual < 0 || projected < actual || budget < 0) operationalFailure();
     if (value.intent_kind !== 'legacy' && (budget <= 0 || projected > budget)) operationalFailure();
     if (value.intent_kind !== 'legacy') { nonlegacyRows++; maxNonlegacyRowBytes = Math.max(maxNonlegacyRowBytes, projected); }
     const charged = Math.max(actual, budget), future = Math.max(projected, budget);
     sourceOutboxGrowthBytes += Math.max(0, future - charged); sourceOutboxBytes += future;
   }
   const { base, changed } = learningOperationalParticipationProjectionSQL();
-  const people = (await c.query(`SELECT octet_length(to_jsonb(t)::text) AS actual,GREATEST(octet_length((${base})::text),octet_length((${changed})::text)) AS projected FROM os_participations t WHERE org_id=$1 AND id=ANY($6::text[])`, [org, C.timestamp, O.attempts, DELIVERY_CONSENT_VERSION, O.serviceTime, growth.affectedParticipationIds])).rows;
-  const sourceParticipationGrowthBytes = people.reduce((sum, value) => sum + Math.max(0, Number(value.projected) - Number(value.actual)), 0);
+  const people = (await c.query(`SELECT octet_length(${participationChargeJsonSQL("t")}::text) AS actual,GREATEST(octet_length(${participationChargeJsonSQL("r")}::text),octet_length(${participationChargeJsonSQL("p")}::text)) AS projected,octet_length(to_jsonb(t)::text) AS actual_raw,GREATEST(octet_length(to_jsonb(r)::text),octet_length(to_jsonb(p)::text)) AS projected_raw FROM os_participations t CROSS JOIN LATERAL jsonb_populate_record(NULL::os_participations,${base}) r CROSS JOIN LATERAL jsonb_populate_record(NULL::os_participations,${changed}) p WHERE t.org_id=$1 AND t.id=ANY($6::text[])`, [org, C.timestamp, O.attempts, DELIVERY_CONSENT_VERSION, O.serviceTime, growth.affectedParticipationIds])).rows;
+  if (people.length !== growth.affectedParticipationIds.length) operationalFailure();
+  let sourceParticipationGrowthBytes = 0, sourceParticipationRawGrowthBytes = 0;
+  for (const row of people) {
+    const values = [row.actual, row.projected, row.actual_raw, row.projected_raw].map(Number);
+    if (!values.every(Number.isSafeInteger) || values.some(n => n < 0) || values[1] < values[0] || values[3] < values[2] || values[2] < values[0] || values[3] < values[1]) operationalFailure();
+    sourceParticipationGrowthBytes += values[1] - values[0]; sourceParticipationRawGrowthBytes += values[3] - values[2];
+  }
   const sourceParticipationBytes = Number((await c.query(`SELECT COALESCE(sum(octet_length(${participationChargeJsonSQL("t")}::text)),0) AS bytes FROM os_participations t WHERE org_id=$1`, [org])).rows[0].bytes) + sourceParticipationGrowthBytes;
   if (sourceOutboxBytes > PARTICIPATION_LIMITS.outboxBytes || sourceParticipationBytes > PARTICIPATION_LIMITS.participationBytes ||
       growth.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || growth.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes) operationalFailure();
-  return frozen({ active: true, affectedParticipations: growth.affectedParticipationIds.length, sourceLogicalGrowthBytes: sourceParticipationGrowthBytes + sourceOutboxGrowthBytes,
-    sourceParticipationGrowthBytes, sourceOutboxGrowthBytes, sourceWireGrowthBytes: growth.sourceWireGrowthBytes,
+  return frozen({ active: true, affectedParticipations: growth.affectedParticipationIds.length, reminderChoiceIds,
+    sourceLogicalGrowthBytes: sourceParticipationGrowthBytes + sourceOutboxGrowthBytes,
+    sourceParticipationGrowthBytes, sourceParticipationRawGrowthBytes, sourceOutboxGrowthBytes, sourceWireGrowthBytes: growth.sourceWireGrowthBytes,
     sourceOutboxWireBytes: growth.sourceOutboxWireBytes, sourceParticipationWireBytes: growth.sourceParticipationWireBytes, sourceOutboxBytes, sourceParticipationBytes,
     nonlegacyRows, maxNonlegacyRowBytes });
 }
@@ -113,7 +135,7 @@ const columns = Object.freeze(Object.fromEntries(Object.entries({
   os_publications: 'org_id id record_id source_revision kind target_id target_module target_revision schema created_by created_at withdrawn_at',
   os_intake: 'org_id id publication_id answers consent_at status revision idempotency_hash payload_hash receipt_hash ip_hash reviewed_by reviewed_at converted_ids created_at updated_at erased_at cancelled_at',
   os_participation_targets: 'org_id target_id module_id revision mode source_revision terms terms_hash recovery_block created_by created_at updated_at last_command',
-  os_participations: 'org_id id target_id module_id booking_record_id contact_id intake_id state revision source consent frozen waitlist_sequence confirmed_at cancelled_at created_by created_at updated_at recovered recovered_state last_command delivery_consent requested_interval',
+  os_participations: 'org_id id target_id module_id booking_record_id contact_id intake_id state revision source consent frozen waitlist_sequence confirmed_at cancelled_at created_by created_at updated_at recovered recovered_state last_command delivery_consent requested_interval reminder_consent',
   os_participation_outbox: 'org_id id participation_id event_revision purpose channel state payload created_at participation_revision intent_kind consent_revision consent_copy user_id link_id link_revision recipient_hash policy_epoch template_version relay_key payload_hash first_attempt_at attempts lease_owner lease_until next_at last_checked_at safe_code provider_event_at budget_bytes recovered_state',
   os_participation_delivery_policies: 'org_id revision enabled epoch activated_at template_version last_command updated_at',
   os_task_recurrence_series: 'org_id id root_record_id method anchor state revision tip_record_id tip_sequence created_by created_at ended_at end_code recovered_state budget_bytes last_end_command',
@@ -136,17 +158,21 @@ async function schemaCheck(c, fieldPresent=false) {
   for (const [table, expected] of Object.entries(required))
     if (JSON.stringify([...(actual.get(table) ?? [])].sort()) !== JSON.stringify([...expected].sort())) badSchema();
 }
-async function measure(c, table, rows, legacyParticipation = false) {
+async function measure(c, table, rows, legacyParticipation = false, reminderHistory = false) {
   if (!rows.length) return [];
   // Composite JSON timestamp transport only: payload/data/proof objects retain their exact original strings.
   const sqlRows = rows.map(value => Object.fromEntries(Object.entries(value).map(([key, field]) => [key,
     typeof field === 'string' && key.endsWith('_at') ? participationTimestampParameter(field) : field])));
-  const result = await c.query(`SELECT item.ordinality::integer AS position,octet_length(${table === 'os_participations' && legacyParticipation ? "(to_jsonb(r)-'requested_interval')" : 'to_jsonb(r)'}::text) AS bytes${table === 'os_participations' ? ',octet_length(to_jsonb(r)::text) AS raw_bytes' : ''}${table === 'os_records' ? ',octet_length(r.data::text) AS data_bytes' : ''}${table === 'os_participation_groups' ? ',octet_length(r.history::text) AS history_bytes' : ''} FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS item(value,ordinality) CROSS JOIN LATERAL jsonb_populate_record(NULL::${table},item.value) AS r ORDER BY item.ordinality`, [JSON.stringify(sqlRows)]);
+  const interval = table === 'os_participations' && legacyParticipation ? "(to_jsonb(r)-'requested_interval')" : 'to_jsonb(r)';
+  const charged = table === 'os_participations' && !reminderHistory ? `(${interval})-'reminder_consent'` : interval;
+  const result = await c.query(`SELECT item.ordinality::integer AS position,octet_length((${charged})::text) AS bytes${table === 'os_participations' ? `,octet_length(to_jsonb(r)::text) AS raw_bytes,octet_length((${interval})::text) AS interval_bytes` : ''}${table === 'os_records' ? ',octet_length(r.data::text) AS data_bytes' : ''}${table === 'os_participation_groups' ? ',octet_length(r.history::text) AS history_bytes' : ''} FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS item(value,ordinality) CROSS JOIN LATERAL jsonb_populate_record(NULL::${table},item.value) AS r ORDER BY item.ordinality`, [JSON.stringify(sqlRows)]);
   if (result.rows.length !== rows.length) badSchema();
   return result.rows.map((value, index) => {
     if (Number(value.position) !== index + 1 || !Number.isSafeInteger(Number(value.bytes)) || Number(value.bytes) < 0) badSchema();
     if (table === 'os_participation_groups' && (!Number.isSafeInteger(value.history_bytes) || value.history_bytes < 1 || value.history_bytes > GROUP_LIMITS.historyBytes)) over();
-    return { bytes: Number(value.bytes), rawBytes: Number(value.raw_bytes ?? value.bytes), dataBytes: Number(value.data_bytes) || 0 };
+    const rawBytes = Number(value.raw_bytes ?? value.bytes), intervalBytes = Number(value.interval_bytes ?? value.bytes), chargedBytes = Number(value.bytes);
+    if (![rawBytes, intervalBytes].every(Number.isSafeInteger) || rawBytes < intervalBytes || intervalBytes < chargedBytes) badSchema();
+    return { bytes: chargedBytes, rawBytes, intervalCreditBytes: rawBytes - intervalBytes, reminderNullCreditBytes: intervalBytes - chargedBytes, dataBytes: Number(value.data_bytes) || 0 };
   });
 }
 function wireRow(value) {
@@ -220,7 +246,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     terms_hash: value.termsHash, recovery_block: true, created_by: actorId, created_at: value.createdAt, updated_at: C.timestamp });
   for (const value of participation.participations) add('os_participations', { org_id: orgId, id: value.id, target_id: value.targetId,
     module_id: value.moduleId, booking_record_id: value.bookingRecordId, contact_id: value.contactId, intake_id: value.intakeId,
-    state: value.state, revision: 1, source: 'recovered', requested_interval: value.requestedInterval, frozen: value.frozen, cancelled_at: value.cancelledAt,
+    state: value.state, revision: 1, source: 'recovered', reminder_consent: null, requested_interval: value.requestedInterval, frozen: value.frozen, cancelled_at: value.cancelledAt,
     created_by: actorId, created_at: value.createdAt, updated_at: C.timestamp, recovered: true, recovered_state: value.recoveredState });
   for (const value of participation.outbox) add('os_participation_outbox', { org_id: orgId, id: value.id, participation_id: value.participationId,
     event_revision: value.eventRevision, purpose: 'participation', channel: 'email', state: 'cancelled', payload: value.payload,
@@ -292,10 +318,10 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const sizes = {}, categories = {};
   let logicalBytes = baseline.bytes, structuredRecordBytes = 0;
   for (const [table, values] of Object.entries(tables)) {
-    sizes[table] = await measure(c, table, values, table === 'os_participations' && legacyRecoveredParticipation(backup, participation));
+    sizes[table] = await measure(c, table, values, table === 'os_participations' && legacyRecoveredParticipation(backup, participation), backup.participation?.version === 4);
     const charges = sizes[table].map((value, index) => Math.max(value.bytes, Number(values[index].budget_bytes) || 0));
     for (const [index, value] of values.entries()) if (['os_learning_history', 'os_resource_directory_history', 'os_incubator_history'].includes(table) && sizes[table][index].bytes > value.budget_bytes) over();
-    categories[table] = { count: values.length, bytes: charges.reduce((sum, value) => sum + value, 0), rawBytes: sizes[table].reduce((sum,value,index)=>sum+Math.max(value.rawBytes,Number(values[index].budget_bytes)||0),0) };
+    categories[table] = { count: values.length, bytes: charges.reduce((sum, value) => sum + value, 0), ...(table === 'os_participations' && backup.participation?.version === 4 ? { intervalCompatibilityCreditBytes: sizes[table].reduce((sum, value) => sum + value.intervalCreditBytes, 0), reminderNullCompatibilityCreditBytes: sizes[table].reduce((sum, value) => sum + value.reminderNullCreditBytes, 0) } : {}), rawBytes: sizes[table].reduce((sum,value,index)=>sum+Math.max(value.rawBytes,Number(values[index].budget_bytes)||0),0) };
     logicalBytes += categories[table].bytes;
     if (table === 'os_records') structuredRecordBytes = sizes[table].reduce((sum, value) => sum + value.dataBytes, 0);
   }

@@ -1,5 +1,7 @@
 import { createStaffCheckInPane } from "./participant-check-in.js";
 import { createStaffParticipationGroupPane } from "./participation-groups.js";
+import { createStaffReminderPane } from "./participation-reminders.js";
+import { participationRemindersEnabled as staffRemindersEnabled } from "./participation-reminder-feature.js";
 const part = (value) => encodeURIComponent(String(value));
 const states = {
   requested: "Awaiting a staff decision",
@@ -437,6 +439,8 @@ export async function createStaffParticipationWorkspace({
   };
   let attendanceEditor = null;
   let groupPane = null, groupTargetId = null, groupDirty = false, groupSuspended = false;
+  let reminderPane = null, reminderTargetId = null, reminderDirty = false;
+  let activePaneMutation = null;
   const groupQueueRequests = new Set();
   const checkInReaders = new Map();
   const clearCheckInReaders = () => {for (const reader of checkInReaders.values()) reader.dispose();checkInReaders.clear();};
@@ -454,6 +458,7 @@ export async function createStaffParticipationWorkspace({
     targetHost = node("section", { class: "panel section-gap" }),
     queueHost = node("section", { class: "panel section-gap" }),
     groupHost = node("section", { class: "panel section-gap", hidden: true }),
+    reminderHost = node("section", { class: "panel section-gap", hidden: true }),
     formHost = node("section", { class: "panel section-gap", hidden: true });
   const path = (id = state.target?.targetId) => `${base}/${part(id)}`;
   function renderPicker(selected = picker.value) {
@@ -474,28 +479,40 @@ export async function createStaffParticipationWorkspace({
     picker.value = selected;
   }
   function reportDirty() {
-    if (isCurrent()) onDirty(Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges()));
+    if (isCurrent()) onDirty(Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges() || reminderDirty || reminderPane?.hasUnsavedChanges()));
   }
   function dirty(value) {
     state.dirty = value;
     reportDirty();
   }
-  function pendingGroup() { return groupPane?.hasPendingCommand() === true; }
+  function pendingGroup() { return groupPane?.hasPendingCommand() === true || reminderPane?.hasPendingCommand() === true; }
+  function canPaneMutate(kind) {
+    return !state.busy && !attendanceEditor?.pending && (!activePaneMutation || activePaneMutation===kind) &&
+      (kind==="group" || !groupPane?.hasPendingCommand()) && (kind==="reminder" || !reminderPane?.hasPendingCommand());
+  }
+  async function paneRequest(kind,path,options={}) {
+    if(!options.method || options.method==="GET")return request(path,options);
+    if(!canPaneMutate(kind))throw Object.assign(new Error("Reconcile the other participation command before making another change."),{status:409,code:"workspace_pending"});
+    activePaneMutation=kind;
+    try{return await request(path,options);}finally{if(activePaneMutation===kind)activePaneMutation=null;}
+  }
   function reconcilePendingGroup() {
     if (!isCurrent()) return;
-    writeStatus(notice, "The earlier group command may already be saved. Refresh group tools and retry that exact retained command before another conflicting action.", true);
+    writeStatus(notice, reminderPane?.hasPendingCommand() ? "The earlier reminder schedule may already be saved. Refresh reminder tools and reconcile that retained command before another conflicting action." : "The earlier group command may already be saved. Refresh group tools and retry that exact retained command before another conflicting action.", true);
     if (root.isConnected && notice.isConnected) { notice.setAttribute("tabindex", "-1"); notice.focus(); }
   }
   function abortGroupQueueReads() {
     for (const entry of groupQueueRequests) { clearTimeout(entry.timer); entry.controller.abort(); }
     groupQueueRequests.clear();
   }
-  function pauseGroups() { abortGroupQueueReads(); groupPane?.pause(); }
+  function pauseGroups() { abortGroupQueueReads(); groupPane?.pause(); reminderPane?.pause(); }
   function disposeGroups() {
     const old = groupPane;
     groupPane = null; groupTargetId = null; groupDirty = false;
     old?.dispose();
     groupHost.replaceChildren(); groupHost.hidden = true;
+    const oldReminder = reminderPane;reminderPane = null;reminderTargetId = null;reminderDirty = false;
+    oldReminder?.dispose();reminderHost.replaceChildren();reminderHost.hidden = true;
     reportDirty();
   }
   function displayGroupTitle(value) {
@@ -532,7 +549,7 @@ export async function createStaffParticipationWorkspace({
     if (groupPane) return; // Same-target refresh already resumed the owned pane.
     const target = currentGroupTarget();
     let pane;
-    pane = createStaffParticipationGroupPane({ orgId, target, candidates: currentGroupCandidates(), admin, request,
+    pane = createStaffParticipationGroupPane({ orgId, target, candidates: currentGroupCandidates(), admin, request:(path,options)=>paneRequest("group",path,options),canMutate:()=>canPaneMutate("group"),
       isCurrent: () => isCurrent() && groupPane === pane && groupTargetId === targetId && state.target?.targetId === targetId,
       onDirty: value => { if (groupPane === pane) { groupDirty = value; reportDirty(); } },
       onChanged: () => {
@@ -547,6 +564,27 @@ export async function createStaffParticipationWorkspace({
       button("Refresh group tools", () => confirmDiscard(() => work(() => loadTarget(targetId, Math.max(20, state.rows.length))), { preserveGroup: true })),
       pane.element);
     await pane.load();
+  }
+  function currentReminderCandidates() {
+    return state.rows.filter(row=>row.targetId===state.target.targetId && row.moduleId===state.target.moduleId && row.state==="confirmed" && !row.recovered && ["staff","intake"].includes(row.source) && Number.isSafeInteger(row.intakeRevision) && row.intakeRevision>0 && row.intakeId)
+      .map(row=>({participationId:row.id,revision:row.revision,intakeRevision:row.intakeRevision,label:"Participant "+row.id}));
+  }
+  async function syncReminders(version) {
+    const pane = reminderPane;
+    if (!pane || !live(version) || groupSuspended || globalThis.document?.hidden || reminderTargetId!==state.target?.targetId) return;
+    pane.setCandidates(currentReminderCandidates(),currentGroupTarget());pane.resume();
+  }
+  async function openReminderTools() {
+    const targetId = state.target?.targetId;if(!targetId || !admin)return;
+    await loadTarget(targetId,Math.max(20,state.rows.length));
+    if(!isCurrent() || groupSuspended || globalThis.document?.hidden || state.target?.targetId!==targetId || reminderPane)return;
+    let pane;
+    pane = createStaffReminderPane({orgId,target:currentGroupTarget(),candidates:currentReminderCandidates(),admin,portalUrl:new URL("/participant",globalThis.location.origin).href,request:(path,options)=>paneRequest("reminder",path,options),canMutate:()=>canPaneMutate("reminder"),
+      isCurrent:()=>isCurrent() && reminderPane===pane && reminderTargetId===targetId && state.target?.targetId===targetId,
+      onDirty:value=>{if(reminderPane===pane){reminderDirty=value;reportDirty();}},onChanged:()=>{if(isCurrent()&&reminderPane===pane)onChanged();}});
+    reminderPane=pane;reminderTargetId=targetId;reminderHost.hidden=false;
+    reminderHost.replaceChildren(button("Refresh reminder tools",()=>confirmDiscard(()=>work(()=>loadTarget(targetId,Math.max(20,state.rows.length))),{preserveGroup:true})),pane.element);
+    pane.resume();
   }
   const live = (version = state.version) =>
     isCurrent() && version === state.version;
@@ -579,6 +617,7 @@ export async function createStaffParticipationWorkspace({
     targetHost,
     queueHost,
     groupHost,
+    reminderHost,
     formHost,
   );
   const deliveryBase = `/api/orgs/${part(orgId)}/participation-delivery`;
@@ -1180,7 +1219,7 @@ export async function createStaffParticipationWorkspace({
       );
       return;
     }
-    const groupChoices = !preserveGroup && groupPane?.hasUnsavedChanges();
+    const groupChoices = !preserveGroup && (groupPane?.hasUnsavedChanges() || reminderPane?.hasUnsavedChanges());
     const proceed = () => {
       if (pendingGroup() && !preserveGroup) { reconcilePendingGroup(); return; }
       if (!preserveGroup) disposeGroups();
@@ -1239,6 +1278,7 @@ export async function createStaffParticipationWorkspace({
   }
   async function work(fn, status = notice) {
     if (state.busy) return;
+    if (activePaneMutation) {writeStatus(status,"Wait for the current participation command to finish before changing this workspace.",true);return;}
     state.busy = true;
     const controls = [
       ...root.querySelectorAll("button,input,select,textarea"),
@@ -1298,7 +1338,7 @@ export async function createStaffParticipationWorkspace({
   }
   async function loadTarget(id = picker.value, groupPrefixCount = 0) {
     if (!globalThis.document?.hidden) groupSuspended = false;
-    if (groupPane && id !== groupTargetId) {
+    if (groupPane && id !== groupTargetId || reminderPane && id !== reminderTargetId) {
       if (pendingGroup()) { reconcilePendingGroup(); return; }
       disposeGroups();
     }
@@ -1454,6 +1494,8 @@ export async function createStaffParticipationWorkspace({
     }
     if (target.mode === "managed" && Number.isSafeInteger(target.revision) && target.revision > 0)
       actions.append(button("Open staff group tools", () => confirmDiscard(() => work(openGroupTools), { preserveGroup: true })));
+    if (staffRemindersEnabled && admin && target.mode === "managed" && !target.recoveryBlock)
+      actions.append(button("Review participation reminders",()=>confirmDiscard(()=>work(openReminderTools),{preserveGroup:true})));
     targetHost.append(actions);
   }
   const attendanceMethod = "whole-occurrence-staff-reported-v1";
@@ -2393,8 +2435,8 @@ export async function createStaffParticipationWorkspace({
     startForm("Prepare a nonallocating candidate", form);
   }
   async function loadQueue(append = false, version = state.version, groupPrefixCount = 0) {
-    const refreshPrefix = Boolean(groupPane || groupPrefixCount);
-    if (groupPane) pauseGroups();
+    const refreshPrefix = Boolean(groupPane || reminderPane || groupPrefixCount);
+    if (groupPane || reminderPane) pauseGroups();
     let result;
     if (refreshPrefix) {
       const desired = Math.min(2000, Math.max(20, groupPrefixCount || state.rows.length + (append ? 20 : 0)));
@@ -2438,6 +2480,7 @@ export async function createStaffParticipationWorkspace({
     state.cursor = result.nextCursor || null;
     renderQueue();
     if (groupPane) await syncGroups(version);
+    if (reminderPane) await syncReminders(version);
   }
   function renderQueue() {
     clearCheckInReaders();
@@ -2969,7 +3012,7 @@ export async function createStaffParticipationWorkspace({
   globalThis.window?.addEventListener?.("pagehide", suspendGroups);
   globalThis.document?.addEventListener?.("visibilitychange", groupVisibility);
   root.hasPendingGroupCommand = pendingGroup;
-  root.hasUnsavedChanges = () => Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges());
+  root.hasUnsavedChanges = () => Boolean(state.dirty || groupDirty || groupPane?.hasUnsavedChanges() || reminderDirty || reminderPane?.hasUnsavedChanges());
   root.reconcilePendingGroup = reconcilePendingGroup;
   root.dispose = () => {
     if (workspaceDisposed) return;

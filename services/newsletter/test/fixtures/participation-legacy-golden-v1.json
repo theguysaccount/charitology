@@ -1,0 +1,23 @@
+{
+  "source": "Literal fixed copy and normalized three-field payload from exact preserved base os-mail.mjs. Hashes independently calculated with Python stdlib over fictional inputs.",
+  "input": {
+    "purpose": "participation",
+    "to": "owner@example.invalid",
+    "url": "https://os.example.invalid/participant"
+  },
+  "validatedJson": "{\"purpose\":\"participation\",\"to\":\"owner@example.invalid\",\"url\":\"https://os.example.invalid/participant\"}",
+  "payloadHash": "3de7df30cf79ec7470c27ff30c973c6854f7db8d861b38e41bbfe3c2096449b9",
+  "key": "fictional-legacy-golden-key",
+  "keyHash": "c892a5a9ff0e937d631550b1655ae46d920532dc54b322b37371b36894fb2330",
+  "rendered": {
+    "to": "owner@example.invalid",
+    "subject": "Your Charity OS participation update",
+    "html": "<h1>Your Charity OS participation update</h1><p>There is an update in your Charity OS participant portal. Sign in to review the current details.</p><p><a href=\"https://os.example.invalid/participant\">Open your participant portal</a></p><p>This operational message does not subscribe you to The Charitology Letter. Manage participation email choices after signing in to your portal.</p><p>Charitology · 938 Peacock Station Rd, McLean, VA 22102</p>",
+    "text": "Your Charity OS participation update\n\nThere is an update in your Charity OS participant portal. Sign in to review the current details.\n\nOpen your participant portal: https://os.example.invalid/participant\n\nThis operational message does not subscribe you to The Charitology Letter. Manage participation email choices after signing in to your portal.\nCharitology · 938 Peacock Station Rd, McLean, VA 22102"
+  },
+  "schemaLegacyPrefixSha256": "74a1e74a99133b40c57794c4648a4ea94d0733b6a59c356ae24e295f4cee29e9",
+  "oldParticipationIndexLines": [
+    "CREATE UNIQUE INDEX IF NOT EXISTS newsletter_os_participation_correlation ON newsletter_os_mail_intents(correlation_hash) WHERE purpose='participation' AND correlation_hash IS NOT NULL;",
+    "CREATE UNIQUE INDEX IF NOT EXISTS newsletter_os_participation_provider ON newsletter_os_mail_intents(provider_id) WHERE purpose='participation' AND provider_id IS NOT NULL;"
+  ]
+}

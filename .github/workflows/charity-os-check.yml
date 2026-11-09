@@ -74,6 +74,8 @@ jobs:
           GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_crm_ci_owner;
           CREATE ROLE os_recurrence_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-recurrence-owner-only-password';
           GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_recurrence_ci_owner;
+          CREATE ROLE os_reminder_ci_owner LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION BYPASSRLS PASSWORD 'ci-reminder-owner-only-password';
+          GRANT CONNECT,CREATE ON DATABASE charitology_os_ci TO os_reminder_ci_owner;
           SQL
       - name: Exercise real Postgres, Better Auth and tenant workflows
         # The fixture migrates a random temporary schema with the owner, grants
@@ -106,3 +108,20 @@ jobs:
           import { runRecurrenceCi17 } from './test-db/participation-recurrence.ci17.mjs';
           await runRecurrenceCi17();
           JS
+      - name: Exercise participant reminder commands, capacity and worker using the closed PG17.11 profile
+        env:
+          REMINDER_TEST_PROFILE: github-reminder-pg17-v1
+          REMINDER_RESULTS_ROOT: ${{ runner.temp }}
+        run: |
+          node --input-type=module <<'JS'
+          import { runReminderCi17 } from './test-db/participation-reminder.ci17.mjs';
+          await runReminderCi17();
+          JS
+      - name: Retain fictional reminder database evidence, including failed cases
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reminder-pg17-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/charitology-reminder-ci17-*/*.json
+          retention-days: 7
+          if-no-files-found: warn

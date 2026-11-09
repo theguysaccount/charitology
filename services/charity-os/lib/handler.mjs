@@ -1,3 +1,4 @@
+import {PARTICIPATION_REMINDERS_ENABLED,ownParticipationReminderRoutes,participationReminderRoutes,isParticipationReminderPath} from './participation-reminder-routes.mjs';
 import {participationRecurrenceRoutes} from './participation-recurrence-routes.mjs';
 import {RecurringOccurrenceError} from './participation-recurrence-values.mjs';
 import {RecurringOccurrencePacketError} from './participation-recurrence-packets.mjs';
@@ -376,6 +377,12 @@ export function createHandler({
       if (incubatorResponse) return incubatorResponse;
       const fieldResponse = await fieldResponseRoutes({ request, url, db, session });
       if (fieldResponse) return fieldResponse;
+      if (PARTICIPATION_REMINDERS_ENABLED) {
+        const ownReminder = await ownParticipationReminderRoutes({request,url,db,settings,session});
+        if (ownReminder) return ownReminder;
+        const reminder = await participationReminderRoutes({request,url,db,settings,session});
+        if (reminder) return reminder;
+      }
       const recurrenceResponse = await participationRecurrenceRoutes({request,url,db,session});
       if (recurrenceResponse) return recurrenceResponse;
       const contactResponse = await contactReconciliationRoutes({ request, url, db, session });
@@ -1705,7 +1712,7 @@ export function createHandler({
   return async function recurrenceResponsePolicy(request) {
     const response = await handle(request);
     const path = new URL(request.url).pathname;
-    if (!/^\/api\/orgs\/[^/]*\/participation-recurrence(?:\/|$)/.test(path)) return response;
+    if (!/^\/api\/orgs\/[^/]*\/participation-recurrence(?:\/|$)/.test(path) && !isParticipationReminderPath(path)) return response;
     const headers = new Headers(response.headers); headers.set('referrer-policy','no-referrer');
     return new Response(response.body,{status:response.status,statusText:response.statusText,headers});
   };

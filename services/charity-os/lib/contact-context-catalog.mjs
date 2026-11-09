@@ -231,7 +231,8 @@ export const CONTACT_CONTEXT_CATALOG = Object.freeze(Object.fromEntries(Object.e
     "recovered_state",
     "last_command",
     "requested_interval",
-    "delivery_consent"
+    "delivery_consent",
+    "reminder_consent"
   ],
   "os_participation_outbox": [
     "org_id",

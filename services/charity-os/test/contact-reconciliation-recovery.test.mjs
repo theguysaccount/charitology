@@ -53,7 +53,7 @@ function measurement({baseline=[],usage=0,badSchema=false,reportBytes}={}){
  return {calls,observed:f.observed,client:{async query(sql,args){
   calls.push({sql,args:clone(args)});
   if(sql.startsWith('SELECT t.relname AS table_name')){const rows=f.query(sql,args).rows;if(args[0].includes('os_reports'))rows.push(...'org_id id created_by title checksum payload created_at'.split(' ').filter(k=>!badSchema||k!=='checksum').map(column_name=>({table_name:'os_reports',column_name})));return{rows};}
-  if(sql.startsWith('SELECT item.ordinality::integer AS position')&&sql.includes('NULL::os_reports')){assert.match(sql,/octet_length\(to_jsonb\(r\)::text\)/);const values=JSON.parse(args[0]);f.observed.set('os_reports',values);return{rows:values.map((r,i)=>({position:i+1,bytes:reportBytes??bytes(r)}))};}
+  if(sql.startsWith('SELECT item.ordinality::integer AS position')&&sql.includes('NULL::os_reports')){assert.match(sql,/octet_length\(\(to_jsonb\(r\)\)::text\) AS bytes/);const values=JSON.parse(args[0]);f.observed.set('os_reports',values);return{rows:values.map((r,i)=>({position:i+1,bytes:reportBytes??bytes(r)}))};}
   if(sql.startsWith('SELECT t.*,octet_length(to_jsonb(t)::text) AS capacity_bytes FROM os_events'))return{rows:[]};
   if(sql.startsWith('SELECT t.*,octet_length(to_jsonb(t)::text) AS capacity_bytes FROM os_reports'))return{rows:clone(baseline)};
   if(sql.startsWith('SELECT sum(size) AS size FROM ('))return{rows:[{size:usage}]};
@@ -67,7 +67,7 @@ function exporter(reports=[],features={}){
   if(sql.startsWith('SELECT t.relname AS table_name')||sql.startsWith('SELECT item.ordinality::integer AS position'))return m.client.query(sql,args);
   calls.push({sql,args:clone(args)});const empty=emptyParticipationGroupsQuery(sql,args);if(empty!==undefined)return empty;
   if(sql.startsWith('SELECT sum(size) AS size FROM ('))return{rows:[{size:reports.reduce((n,r)=>n+bytes(r),0)}]};
-  if(sql.startsWith('SELECT EXISTS(SELECT 1 FROM os_learning_history'))return{rows:[{present:false,incubator:false,checkins:false,groups:false,field:reports.some(r=>r.payload?.format==='charitology-field-response-import'),crm:reports.some(r=>r.payload?.format==='charitology-contact-reconciliation'),...features}]};
+  if(sql.startsWith('SELECT EXISTS(SELECT 1 FROM os_learning_history'))return{rows:[{present:false,incubator:false,checkins:false,groups:false,reminders:false,field:reports.some(r=>r.payload?.format==='charitology-field-response-import'),crm:reports.some(r=>r.payload?.format==='charitology-contact-reconciliation'),...features}]};
   if(sql==='SELECT * FROM os_orgs WHERE id=$1')return{rows:[organization]};
   assert.match(sql,/^SELECT /);assert.doesNotMatch(sql,/\b(?:INSERT|UPDATE|DELETE|FOR UPDATE)\b/);const table=sql.match(/\bFROM (os_[a-z_]+)/)?.[1];assert(allowed.has(table),'unknown fake export table');
   if(sql==='SELECT * FROM os_reports WHERE org_id=$1')return{rows:clone(reports)};return{rows:[]};

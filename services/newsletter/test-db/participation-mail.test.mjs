@@ -8,7 +8,7 @@ import {database} from '../lib/database.mjs';
 import {verifiedNeonConnectionString} from '../lib/connection.mjs';
 import {config,FROM} from '../lib/config.mjs';
 import {createHandler} from '../lib/handler.mjs';
-import {handleOsMail,handleOsMailStatus,osMailKeyHash,PARTICIPATION_SUBJECT} from '../lib/os-mail.mjs';
+import {handleOsMail,handleOsMailStatus,osMailKeyHash,PARTICIPATION_SUBJECT,PARTICIPATION_REMINDER_SUBJECT} from '../lib/os-mail.mjs';
 import {hashToken} from '../lib/security.mjs';
 const settings=config({OS_MAIL_RELAY_SECRET:'r'.repeat(40),OS_ORIGIN:'https://os.example.invalid',OS_PARTICIPATION_DELIVERY_ENABLED:'true',OS_PARTICIPATION_TEST_RECIPIENT:'owner@example.invalid',RESEND_WEBHOOK_SECRET:'whsec_'+Buffer.alloc(32,8).toString('base64')});
 const payload={purpose:'participation',to:'owner@example.invalid',url:settings.osOrigin+'/participant'};
@@ -78,6 +78,36 @@ test('Actual isolated Postgres: participation preflight, attempts, feedback and 
       const handler=createHandler({db,mail,settings,logger:()=>{}});assert.equal((await handler(signed(event,'atomic-bounce'))).status,200);assert.equal((await handler(signed(event,'atomic-bounce'))).status,200);
       assert.equal((await status('early')).body.state,'suppressed');assert.equal((await query('SELECT state FROM newsletter_subscribers WHERE email=$1',[payload.to])).rows[0].state,'blocked');
       assert.equal((await query("SELECT count(*)::int AS n FROM newsletter_webhook_events WHERE id='atomic-bounce'")).rows[0].n,1);
+    });
+    await t.test('fixed reminder preserves preflight-only retry and stores its own versioned purpose',async()=>{
+      const reminder={...payload,variant:'pre-occurrence-v1'},originalReady=mail.ready,originalSend=mail.sendOsMail;let rendered;
+      try{
+        const prior=(await query("SELECT COALESCE(sum(hits),0)::int AS n FROM newsletter_rate_limits WHERE key LIKE 'os-mail:global:%'")).rows[0].n;
+        mail.ready=async()=>{throw new Error('fictional reminder readiness');};assert.equal((await send('fixed-reminder',reminder)).body.safeCode,'preflight_unavailable');
+        const preflight=(await query('SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1',[osMailKeyHash('fixed-reminder')])).rows[0];assert.equal(preflight.purpose,'participation-reminder-v1');assert.equal(preflight.attempted_at,null);
+        assert.equal((await query("SELECT COALESCE(sum(hits),0)::int AS n FROM newsletter_rate_limits WHERE key LIKE 'os-mail:global:%'")).rows[0].n,prior);
+        mail.ready=originalReady;mail.sendOsMail=async(message,key,options)=>{rendered=message;return originalSend(message,key,options);};const before=sends;
+        assert.equal((await send('fixed-reminder',reminder)).status,202);assert.equal(rendered.subject,PARTICIPATION_REMINDER_SUBJECT);assert.match(rendered.text,/does not confirm a place or record attendance/);
+        assert.equal((await send('fixed-reminder',reminder)).body.state,'accepted');assert.equal(sends-before,1);assert.equal((await send('fixed-reminder',payload)).body.safeCode,'intent_conflict');
+        await assert.rejects(query("UPDATE newsletter_os_mail_intents SET state='preflight' WHERE key_hash=$1",[osMailKeyHash('fixed-reminder')]),error=>error.code==='23514');
+      }finally{mail.ready=originalReady;mail.sendOsMail=originalSend;}
+    });
+    await t.test('status and signed feedback enforce the exact subject for each persisted variant',async()=>{
+      await send('fixed-generic',payload);const oldGet=mail.getEmail;
+      try{for(const [key,subject,wrong]of [['fixed-generic',PARTICIPATION_SUBJECT,PARTICIPATION_REMINDER_SUBJECT],['fixed-reminder',PARTICIPATION_REMINDER_SUBJECT,PARTICIPATION_SUBJECT]]){
+        const row=(await query('SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1',[osMailKeyHash(key)])).rows[0];
+        mail.getEmail=async()=>({id:row.provider_id,from:FROM,to:[payload.to],subject:wrong,last_event:'delivered'});assert.equal((await status(key)).body.state,'accepted');
+        const e={type:'email.delivered',created_at:'2026-10-26T11:00:00.000Z',data:{email_id:row.provider_id,from:FROM,to:[payload.to],subject:wrong,tags:{os_delivery:row.correlation_hash}}};
+        const handler=createHandler({db,mail,settings,logger:()=>{}});assert.equal((await handler(signed(e,'wrong-subject-'+key))).status,200);
+        assert.equal((await query('SELECT provider_facts FROM newsletter_os_mail_intents WHERE key_hash=$1',[row.key_hash])).rows[0].provider_facts.delivered,undefined);
+        mail.getEmail=async()=>({id:row.provider_id,from:FROM,to:[payload.to],subject,last_event:'delivered'});assert.equal((await status(key)).body.state,'delivered');
+      }}finally{if(oldGet)mail.getEmail=oldGet;else delete mail.getEmail;}
+    });
+    await t.test('additive union indexes keep cross-variant provider and correlation identities unique',async()=>{
+      const row=(await query('SELECT * FROM newsletter_os_mail_intents WHERE key_hash=$1',[osMailKeyHash('fixed-generic')])).rows[0];
+      await assert.rejects(query("INSERT INTO newsletter_os_mail_intents(key_hash,payload_hash,purpose,recipient_hash,state,correlation_hash) VALUES($1,$2,'participation-reminder-v1',$3,'creating',$4)",[hashToken('cross-correlation'),hashToken('cross-payload'),row.recipient_hash,row.correlation_hash]),error=>error.code==='23505');
+      await assert.rejects(query('UPDATE newsletter_os_mail_intents SET provider_id=$2 WHERE key_hash=$1',[osMailKeyHash('fixed-reminder'),row.provider_id]),error=>error.code==='23505');
+      assert.equal((await query('SELECT purpose FROM newsletter_os_mail_intents WHERE key_hash=$1',[row.key_hash])).rows[0].purpose,'participation');
     });
     await t.test('status is private, missing keys stay unknown, and durable status limits never charge a send',async()=>{
       const before=(await query("SELECT sum(hits)::int AS n FROM newsletter_rate_limits WHERE key LIKE 'os-mail:global:%'")).rows[0].n;

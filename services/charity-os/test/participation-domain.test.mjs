@@ -1,3 +1,4 @@
+import {PARTICIPATION_REMINDER_LEGACY_SQL} from '../lib/participation-storage.mjs';
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -82,6 +83,10 @@ function fixture({ moduleId = "events", state = "requested", usage = 0,
     async query(sql, values = []) {
       db.calls.push({ sql, values: structuredClone(values) });
       if (throwAt && sql.startsWith(throwAt)) throw new Error("Fictional SQL failure");
+      // Historical domain rows/journal have no reminder choice, marker or review.
+      if (sql === `SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`) {
+        assert.deepEqual(values,[ORG]); return {rows:[{present:false}],rowCount:1};
+      }
       // The historical single-person fixture has no group containers.
       if (sql === "SELECT count(*)::int AS count FROM os_participation_groups WHERE org_id=$1")
         return { rows: [{ count: 0 }], rowCount: 1 };

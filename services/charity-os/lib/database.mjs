@@ -1,4 +1,4 @@
-import { participationChargeJsonSQL } from "./participation-storage.mjs";
+import { participationChargeJsonSQL, PARTICIPATION_REMINDER_LEGACY_SQL } from "./participation-storage.mjs";
 import pg from "pg";
 import { readFile } from "node:fs/promises";
 import { verifiedNeonConnectionString } from "./connection.mjs";
@@ -23,6 +23,7 @@ const safetyActions = new Set([
   "participation.preferences",
   "participation.delivery.disabled",
   "participation.delivery.preference_off",
+  "participation.reminder.preference_off",
   "participant-checkin.withdrawn",
   "participation-group.cancelled",
   "participation-group.closed",
@@ -84,7 +85,7 @@ export function database(url, { schema } = {}) {
         if (!readOnly && orgId && (state.locked || state.actions.size)) {
           const present = (
             await c.query(
-              "SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence",
+              `SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_learning_previews WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND (payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%')) AS present, EXISTS(SELECT 1 FROM os_participation_targets WHERE org_id=$1) AS participation, EXISTS(SELECT 1 FROM os_incubator_history WHERE org_id=$1) OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1')) AS incubator, EXISTS(SELECT 1 FROM os_participation_checkins WHERE org_id=$1) AS checkins, EXISTS(SELECT 1 FROM os_participation_groups WHERE org_id=$1) AS groups, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-field-response-import') AS field, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format'='charitology-contact-reconciliation') AS crm, EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE 'charitology-participation-occurrence-generation%') OR EXISTS(SELECT 1 FROM os_previews WHERE org_id=$1 AND committed_at IS NULL AND kind='participation-recurrence-v1') AS recurrence, NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminders`,
               [orgId],
             )
           ).rows[0];
@@ -103,17 +104,21 @@ export function database(url, { schema } = {}) {
               "./participation-capacity.mjs"
             );
             participation = await checkParticipationExportCapacity(c, orgId, {
-              reserve: ordinary && !present.groups,
-              legacySafety: present.checkins || present.groups,
+              reserve: ordinary && !present.groups && !present.reminders,
+              legacySafety: present.checkins || present.groups || present.reminders,
             });
-            if (!ordinary && !present.groups) {
+            if (!ordinary && !present.groups && !present.reminders) {
               const { checkActualParticipationSafetyPacket } = await import(
                 "./participation-capacity.mjs"
               );
               await checkActualParticipationSafetyPacket(c, orgId);
             }
           }
-          if (present.groups) {
+          if (present.reminders) {
+            const {checkReminderOrdinaryCapacity,checkReminderSafetyCapacity} = await import('./participation-reminder-capacity.mjs');
+            if (ordinary) await checkReminderOrdinaryCapacity(c,orgId);
+            else await checkReminderSafetyCapacity(c,orgId);
+          } else if (present.groups) {
             // GROUP owns the union of the same actual operational baseline,
             // remaining person/booking/policy/outbox exits and check-ins once.
             // Re-purchasing the old full constants after cancellation strands
@@ -126,7 +131,7 @@ export function database(url, { schema } = {}) {
               await checkGroupSafetyCapacity(c, orgId);
             }
           }
-          if (!present.groups && (
+          if (!present.groups && !present.reminders && (
             (present.present || present.participation || present.incubator || present.checkins || present.field || present.crm || present.recurrence) &&
             ordinary
           )) {
@@ -146,11 +151,11 @@ export function database(url, { schema } = {}) {
               checkCombinedParticipationCapacity(whole, participation);
             }
           }
-          if (present.checkins && !ordinary && !present.groups) {
+          if (present.checkins && !ordinary && !present.groups && !present.reminders) {
             const { checkCheckInSafetyCapacity } = await import("./participant-check-in-capacity.mjs");
             await checkCheckInSafetyCapacity(c, orgId);
           }
-          if ((present.incubator || present.checkins || present.field || present.crm || present.recurrence) && !ordinary && !present.groups) {
+          if ((present.incubator || present.checkins || present.field || present.crm || present.recurrence) && !ordinary && !present.groups && !present.reminders) {
             const { checkActualWorkspaceBackupCapacity } = await import(
               "./workspace-backup.mjs"
             );
@@ -251,7 +256,11 @@ export async function audit(c, org, user, action, record = null, detail = {}) {
   }
   if (safetyActions.has(action) || action === "backup.exported") {
     const { groupStateCount } = await import("./participation-group-store.mjs");
-    if (await groupStateCount(c, org)) {
+    const reminderPresent=(await c.query(`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`,[org])).rows[0]?.present;
+    if (reminderPresent === true) {
+      const {canRetainReminderSafetyAudit}=await import('./participation-reminder-capacity.mjs');
+      if (!(await canRetainReminderSafetyAudit(c,org,{org_id:org,actor_id:user,action,record_id:record?.id||null,module_id:record?.moduleId||null,detail}))) return false;
+    } else if (await groupStateCount(c, org)) {
       const { canRetainGroupSafetyAudit } = await import("./participation-group-safety-capacity.mjs");
       if (!(await canRetainGroupSafetyAudit(c, org, { org_id: org, actor_id: user, action,
         record_id: record?.id || null, module_id: record?.moduleId || null, detail }))) return false;
@@ -385,7 +394,7 @@ export async function logicalBackupBytes(c, org) {
       )
       .join(" UNION ALL ") +
     " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1" +
-    " UNION ALL SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS size FROM os_previews t WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1','participation-recurrence-v1')";
+    " UNION ALL SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS size FROM os_previews t WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1','participation-recurrence-v1','participation-reminder-v1')";
   return Number(
     (await c.query(`SELECT sum(size) AS size FROM (${sql}) usage`, [org]))
       .rows[0]?.size || 0,

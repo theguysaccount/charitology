@@ -8,7 +8,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {isProxy} from 'node:util/types';
 import path from 'node:path';
 import {requireRecurrenceCi17Profile} from './participation-recurrence-ci17-profile.mjs';
-const MANIFEST_SHA='1dd7ccdda47d71975f13c76b7ffef42888821bc5530d51cf76069b093def0a6a',states=new WeakMap();
+const MANIFEST_SHA='a20e2f0cb0b3cdc0c042a476c8e24d3349f1bd5bbc84430ccb438102d5f38028',states=new WeakMap();
 const ROOT=path.resolve(fileURLToPath(new URL('../../../../',import.meta.url)));
 const digest=b=>createHash('sha256').update(b).digest('hex');
 // These retained type sources are hashed as data; the hook never executes them.
@@ -25,9 +25,9 @@ export function checkedRecurrenceCi17RuntimeManifest(value){
  assert.equal(arguments.length,1);const fields=exact(value,['format','version','files']);
  assert.equal(fields.format.value,'charitology-recurrence-ci17-runtime-source-manifest');assert.equal(fields.version.value,1);
  const list=fields.files.value;assert(Array.isArray(list)&&!isProxy(list)&&Object.getPrototypeOf(list)===Array.prototype);
- const descriptors=Object.getOwnPropertyDescriptors(list);assert.equal(descriptors.length?.value,140);assert.equal(Reflect.ownKeys(descriptors).length,141);
+ const descriptors=Object.getOwnPropertyDescriptors(list);assert.equal(descriptors.length?.value,152);assert.equal(Reflect.ownKeys(descriptors).length,153);
  const files=[],names=new Set();let previous='';
- for(let i=0;i<140;i++){
+ for(let i=0;i<152;i++){
   assert(descriptors[String(i)]?.enumerable&&Object.hasOwn(descriptors[String(i)],'value'));
   const row=exact(descriptors[String(i)].value,['name','bytes','sha256']),name=row.name.value,bytes=row.bytes.value,sha256=row.sha256.value;
   assert(typeof name==='string'&&(/^(?:[A-Za-z0-9][A-Za-z0-9_.-]*\.(?:mjs|json)|schema\.sql)$/.test(name)||DATA_ONLY_TYPE_FILES.includes(name))&&!names.has(name)&&name>previous);
