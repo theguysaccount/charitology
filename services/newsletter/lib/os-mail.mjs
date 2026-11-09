@@ -2,6 +2,13 @@ import { createHmac } from 'node:crypto';
 import { authorized, boundedBody, hashToken, InputError, normalizeEmail } from './security.mjs';
 import { escapeHtml } from './content.mjs';
 import { FROM } from './config.mjs';
+import { PARTICIPATION_REMINDER_VARIANT, PARTICIPATION_REMINDER_SUBJECT, renderParticipationReminderTemplate } from './participation-reminder-template-v1/participation-reminder-template.mjs';
+
+export { PARTICIPATION_REMINDER_VARIANT, PARTICIPATION_REMINDER_SUBJECT };
+export const PARTICIPATION_REMINDER_PURPOSE = 'participation-reminder-v1';
+export const isParticipationMailPurpose = purpose => purpose === 'participation' || purpose === PARTICIPATION_REMINDER_PURPOSE;
+const persistedParticipationPurpose = payload => Object.hasOwn(payload, 'variant') ? PARTICIPATION_REMINDER_PURPOSE : 'participation';
+const participationMailSubject = purpose => purpose === 'participation' ? PARTICIPATION_SUBJECT : purpose === PARTICIPATION_REMINDER_PURPOSE ? PARTICIPATION_REMINDER_SUBJECT : null;
 
 export const PARTICIPATION_SUBJECT = 'Your Charity OS participation update';
 export const PARTICIPATION_MESSAGE = 'There is an update in your Charity OS participant portal. Sign in to review the current details.';
@@ -35,9 +42,10 @@ export function mergeProviderFacts(old,type,at=null){
 
 export function validateOsMail(input, settings) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw new InputError('Use a JSON message object.');
-  if (Object.keys(input).some(key => !['purpose','to','url','organizationName','title','message'].includes(key))) throw new InputError('Unknown transactional message field.');
+  if (Object.keys(input).some(key => !['purpose','to','url','organizationName','title','message','variant'].includes(key))) throw new InputError('Unknown transactional message field.');
   const purpose = input.purpose;
   if (!['login','invitation','reminder','participation'].includes(purpose)) throw new InputError('Choose a supported transactional purpose.');
+  if (Object.hasOwn(input, 'variant') && (purpose !== 'participation' || input.variant !== PARTICIPATION_REMINDER_VARIANT)) throw new InputError('Choose the fixed participation reminder variant.');
   const to = normalizeEmail(input.to);
   if (!to) throw new InputError('Use one valid recipient address.');
   const string = (key, maximum, required = false, multiline = false) => {
@@ -50,7 +58,11 @@ export function validateOsMail(input, settings) {
   let url;
   try { url = new URL(rawUrl); } catch { throw new InputError('Invalid OS link.'); }
   if(purpose==='participation'){
-    if(Object.keys(input).some(k=>!['purpose','to','url'].includes(k))||rawUrl!==`${settings.osOrigin}/participant`||url.search||url.hash||url.username||url.password)throw new InputError('Use only the fixed participation notice and clean portal URL.');
+    if(Object.keys(input).some(k=>!['purpose','to','url','variant'].includes(k))||rawUrl!==`${settings.osOrigin}/participant`||url.search||url.hash||url.username||url.password)throw new InputError('Use only the fixed participation notice and clean portal URL.');
+    if (Object.hasOwn(input, 'variant')) {
+      try { renderParticipationReminderTemplate(rawUrl); } catch { throw new InputError('Use the fixed reminder and clean HTTPS participant portal URL.'); }
+      return {purpose,to,url:url.toString(),variant:PARTICIPATION_REMINDER_VARIANT};
+    }
     return {purpose,to,url:url.toString()};
   }
   const correctPath = purpose === 'login' ? url.pathname === '/auth/confirm' : purpose === 'invitation' ? url.pathname === '/invite' : (url.pathname === '/app' || url.pathname.startsWith('/app/'));
@@ -62,6 +74,11 @@ export function validateOsMail(input, settings) {
 }
 
 export function renderOsMail(input) {
+  if(input.purpose==='participation' && Object.hasOwn(input,'variant')) {
+    if(input.variant!==PARTICIPATION_REMINDER_VARIANT)throw new InputError('Choose the fixed participation reminder variant.');
+    const {subject,html,text}=renderParticipationReminderTemplate(input.url);
+    return {to:input.to,subject,html,text};
+  }
   if(input.purpose==='participation')return {to:input.to,subject:PARTICIPATION_SUBJECT,html:`<h1>${PARTICIPATION_SUBJECT}</h1><p>${PARTICIPATION_MESSAGE}</p><p><a href="${escapeHtml(input.url)}">Open your participant portal</a></p><p>This operational message does not subscribe you to The Charitology Letter. Manage participation email choices after signing in to your portal.</p><p>Charitology · 938 Peacock Station Rd, McLean, VA 22102</p>`,text:`${PARTICIPATION_SUBJECT}\n\n${PARTICIPATION_MESSAGE}\n\nOpen your participant portal: ${input.url}\n\nThis operational message does not subscribe you to The Charitology Letter. Manage participation email choices after signing in to your portal.\nCharitology · 938 Peacock Station Rd, McLean, VA 22102`};
   const organization = input.organizationName || 'your organization';
   const subject = input.purpose === 'login' ? 'Sign in to Charity OS' : input.purpose === 'invitation' ? 'Your Charity OS invitation' : (input.title || 'Charity OS reminder');
@@ -131,13 +148,13 @@ const outcomeStatus=state=>['accepted','delivered','suppressed'].includes(state)
 async function handleParticipationMail({db,mail,settings,logger,payload,keyHash,payloadHash,recipientHash}){
   let existing;
   try{existing=await db.osMailIntent(keyHash);}catch{logger();return participationResponse({state:'unknown',safeCode:'intent_lookup_unavailable',providerEventAt:null},503);}
-  if(existing&&existing.payload_hash!==payloadHash)return participationResponse({state:'unknown',safeCode:'intent_conflict',providerEventAt:null},409);
+  if(existing&&(existing.payload_hash!==payloadHash||existing.purpose!==persistedParticipationPurpose(payload)))return participationResponse({state:'unknown',safeCode:'intent_conflict',providerEventAt:null},409);
   if(existing&&(existing.state!=='preflight'||existing.attempted_at)){const outcome=osMailOutcome(existing);return participationResponse(outcome,outcomeStatus(outcome.state));}
   // Existing possible attempts are resolved before configuration gates. A gate
   // cannot disguise an accepted/unknown intent as permission to start again.
   if(!settings.participationEnabled||settings.participationTestOnly&&(!normalizeEmail(settings.participationTestRecipient)||payload.to!==settings.participationTestRecipient))return participationResponse({state:'unavailable',safeCode:'preflight_unavailable',providerEventAt:null},503);
   let reservation;
-  try{reservation=await db.reserveOsMail({keyHash,payloadHash,purpose:'participation',recipientHash,correlationHash:osMailCorrelation(settings,keyHash),rateKeys:[]});}
+  try{reservation=await db.reserveOsMail({keyHash,payloadHash,purpose:persistedParticipationPurpose(payload),recipientHash,correlationHash:osMailCorrelation(settings,keyHash),rateKeys:[]});}
   catch{logger();return participationResponse({state:'unknown',safeCode:'reservation_unconfirmed',providerEventAt:null},503);}
   if(!reservation.reserved){if(reservation.state==='conflict')return participationResponse({state:'unknown',safeCode:'intent_conflict',providerEventAt:null},409);const outcome=osMailOutcome(reservation);return participationResponse(outcome,outcomeStatus(outcome.state));}
   let phase='preflight';
@@ -180,13 +197,13 @@ export async function handleOsMailStatus(request,{db,mail,settings,logger=()=>{}
     if(!await db.rate([{key:`os-mail:status:minute:${Math.floor(Date.now()/60000)}`,limit:60}]))return reply(429,'unavailable','status_rate_limited');
     const keyHash=osMailKeyHash(input.idempotencyKey);
     let row=await db.osMailIntent(keyHash);
-    if(!row||row.purpose!=='participation')return reply(200,'unknown','intent_unknown',null,true);
+    if(!row||!isParticipationMailPurpose(row.purpose))return reply(200,'unknown','intent_unknown',null,true);
     if(row.provider_id&&typeof mail.getEmail==='function'){
       try{
         const bounded=typeof mail.withDeadline==='function'?mail.withDeadline(Date.now()+10000):mail;
         const email=await bounded.getEmail(row.provider_id);
-        if(email.id!==row.provider_id||email.from!==FROM||email.subject!==PARTICIPATION_SUBJECT||email.to.length!==1||osMailHmac(settings,normalizeEmail(email.to[0])||'')!==row.recipient_hash)throw new Error('Unbound provider observation');
-        row=await db.observeParticipationMail(keyHash,row.provider_id,email.last_event);
+        if(email.id!==row.provider_id||email.from!==FROM||email.subject!==participationMailSubject(row.purpose)||email.to.length!==1||osMailHmac(settings,normalizeEmail(email.to[0])||'')!==row.recipient_hash)throw new Error('Unbound provider observation');
+        row=await db.observeParticipationMail(keyHash,row.provider_id,email.last_event,{purpose:row.purpose,payloadHash:row.payload_hash});
       }catch{logger();/* Cached durable evidence remains authoritative on a read outage. */}
     }
     return {status:200,body:{ok:true,...osMailOutcome(row)}};
@@ -205,11 +222,11 @@ export async function applyOsMailFeedback(client,event,settings){
   const correlation=!suppression&&plain(data.tags)&&typeof data.tags.os_delivery==='string'&&/^[a-f0-9]{64}$/.test(data.tags.os_delivery)?data.tags.os_delivery:null;
   if(!providerId(id)||!settings.osMailSecret)return;
   const recipient=suppression?normalizeEmail(data.email):Array.isArray(data.to)&&data.to.length===1?normalizeEmail(data.to[0]):null;
-  if(!recipient||!suppression&&(data.from!==FROM||data.subject!==PARTICIPATION_SUBJECT))return;
-  const rows=(await client.query("SELECT * FROM newsletter_os_mail_intents WHERE purpose='participation' AND (provider_id=$1 OR correlation_hash=$2) FOR UPDATE",[id,correlation])).rows;
+  if(!recipient||!suppression&&(data.from!==FROM||![PARTICIPATION_SUBJECT,PARTICIPATION_REMINDER_SUBJECT].includes(data.subject)))return;
+  const rows=(await client.query("SELECT * FROM newsletter_os_mail_intents WHERE purpose IN ('participation','participation-reminder-v1') AND (provider_id=$1 OR correlation_hash=$2) FOR UPDATE",[id,correlation])).rows;
   if(rows.length!==1)return;
   const row=rows[0];
-  if(row.recipient_hash!==osMailHmac(settings,recipient)||row.provider_id&&row.provider_id!==id||!row.attempted_at)return;
+  if(!isParticipationMailPurpose(row.purpose)||!suppression&&data.subject!==participationMailSubject(row.purpose)||row.recipient_hash!==osMailHmac(settings,recipient)||row.provider_id&&row.provider_id!==id||!row.attempted_at)return;
   const facts=mergeProviderFacts(row.provider_facts,suppression?'suppressed':emailType,at);
   await client.query("UPDATE newsletter_os_mail_intents SET state=CASE WHEN state IN ('creating','unknown') THEN 'accepted' ELSE state END,provider_id=COALESCE(provider_id,$2),provider_facts=$3,updated_at=now() WHERE key_hash=$1",[row.key_hash,id,JSON.stringify(facts)]);
 }

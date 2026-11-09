@@ -229,10 +229,10 @@ test("safety and receipt Replay still enforce actual retained SQL participation 
   const c = {
     query: (sql, args) =>
       sql.startsWith("SELECT COALESCE(sum(") &&
-      sql.includes(" AS raw_bytes FROM os_participations t")
+      sql.includes(" AS interval_bytes FROM os_participations t")
         ? Promise.resolve({
             rows: [
-              { bytes: 8 * 1024 * 1024 + 1, raw_bytes: 8 * 1024 * 1024 + 1 },
+              { bytes: 8 * 1024 * 1024 + 1, raw_bytes: 8 * 1024 * 1024 + 1, interval_bytes: 8 * 1024 * 1024 + 1 },
             ],
           })
         : f.c.query(sql, args),

@@ -1,4 +1,6 @@
-import { participationVersion } from "./participation-storage.mjs";
+import { participationEnvelopeVersion } from "./participation-storage.mjs";
+import { participationNativeInput, reminderNativeBasis, reminderNativeRows,
+  reminderOutboxPresence, admittedReminderOutbox } from "./participation-reminder-backup.mjs";
 import {
   validateRequestedInterval,
   frozenParticipationInterval,
@@ -196,14 +198,16 @@ function requestHistory(row, target) {
 }
 
 export async function exportParticipation(c, org) {
-  const unsupportedReminder = () => fail(409, 'participation_reminder_runtime',
-    'This workspace has reminder data. Open it with the current Charity OS release before exporting.');
-  const targets = (
-    await c.query(
-      "SELECT * FROM os_participation_targets WHERE org_id=$1 ORDER BY target_id",
-      [org],
-    )
-  ).rows.map((t) => ({
+  const targets = (await c.query("SELECT * FROM os_participation_targets WHERE org_id=$1 ORDER BY target_id", [org])).rows;
+  const rows = (await c.query("SELECT * FROM os_participations WHERE org_id=$1 ORDER BY created_at,id", [org])).rows;
+  const outbox = (await c.query("SELECT * FROM os_participation_outbox WHERE org_id=$1 ORDER BY created_at,id", [org])).rows;
+  return participationNativeInventory(targets, rows, outbox);
+}
+/** Pure actual-inventory serializer, also used for measured counterfactuals.
+ * Inventories must be caller-owned actual rows or SQL-cast candidate rows; this
+ * function supplies no database usage, current authority or send eligibility. */
+export function participationNativeInventory(targetRows, rows, outboxRows) {
+  const targets = targetRows.map((t) => ({
     targetId: t.target_id,
     moduleId: t.module_id,
     revision: t.revision,
@@ -214,52 +218,6 @@ export async function exportParticipation(c, org) {
     recoveryBlock: t.recovery_block,
     createdAt: iso(t.created_at),
   }));
-  const rows = (
-    await c.query(
-      "SELECT * FROM os_participations WHERE org_id=$1 ORDER BY created_at,id",
-      [org],
-    )
-  ).rows;
-  if (rows.some(p => p.reminder_consent != null
-      || p.last_command?.format === 'charitology-participation-reminder-choice'
-      || p.last_command?.method === 'participation-reminder-v1')) unsupportedReminder();
-  const version = participationVersion(targets, rows);
-  const participations = rows.map((p) => ({
-    id: p.id,
-    targetId: p.target_id,
-    moduleId: p.module_id,
-    bookingRecordId: p.booking_record_id,
-    contactId: p.contact_id,
-    intakeId: p.intake_id,
-    state: p.state,
-    revision: p.revision,
-    source: p.source,
-    consent: historicalConsent(p.consent),
-    ...(version === 3
-      ? { requestedInterval: p.requested_interval || null }
-      : {}),
-    frozen:
-      version === 3
-        ? requestHistory(
-            p,
-            targets.find((t) => t.targetId === p.target_id),
-          )
-        : p.frozen,
-    waitlistSequence:
-      p.waitlist_sequence == null ? null : Number(p.waitlist_sequence),
-    confirmedAt: iso(p.confirmed_at),
-    cancelledAt: iso(p.cancelled_at),
-    recovered: p.recovered,
-    recoveredState: p.recovered_state,
-    createdAt: iso(p.created_at),
-  }));
-  const outboxRows = (
-    await c.query(
-      "SELECT * FROM os_participation_outbox WHERE org_id=$1 ORDER BY created_at,id",
-      [org],
-    )
-  ).rows;
-  if (outboxRows.some(o => o.intent_kind === 'reminder' || Object.hasOwn(o.payload ?? {}, 'reminder'))) unsupportedReminder();
   const outbox = outboxRows.map((o) => ({
     id: o.id,
     participationId: o.participation_id,
@@ -281,17 +239,54 @@ export async function exportParticipation(c, org) {
     providerEventAt: iso(o.provider_event_at),
     recoveredState: o.recovered_state || null,
   }));
-  return { version, targets, participations, outbox };
+  const header = participationEnvelopeVersion(targets, rows, reminderOutboxPresence(outbox)),
+    version = header.version, basis = header.basisVersion ?? version;
+  const participations = rows.map((p) => ({
+    id: p.id,
+    targetId: p.target_id,
+    moduleId: p.module_id,
+    bookingRecordId: p.booking_record_id,
+    contactId: p.contact_id,
+    intakeId: p.intake_id,
+    state: p.state,
+    revision: p.revision,
+    source: p.source,
+    consent: historicalConsent(p.consent),
+    ...(basis === 3
+      ? { requestedInterval: p.requested_interval || null }
+      : {}),
+    frozen:
+      basis === 3
+        ? requestHistory(
+            p,
+            targets.find((t) => t.targetId === p.target_id),
+          )
+        : p.frozen,
+    waitlistSequence:
+      p.waitlist_sequence == null ? null : Number(p.waitlist_sequence),
+    confirmedAt: iso(p.confirmed_at),
+    cancelledAt: iso(p.cancelled_at),
+    recovered: p.recovered,
+    recoveredState: p.recovered_state,
+    createdAt: iso(p.created_at),
+  }));
+  const result = { ...header, targets, participations, outbox };
+  if (version === 4) {
+    reminderNativeBasis(result); reminderNativeRows(result, basis);
+    const people = new Map(participations.map(p => [p.id, p])), retained = new Set(people.keys()), commitments = new Set();
+    for (const row of outbox) admittedReminderOutbox(row, result, people, retained, commitments);
+  }
+  return result;
 }
 
 export function restoredParticipation(backup) {
-  if (!plain(backup)) bad();
-  const input = backup.participation;
+  const input = participationNativeInput(backup);
   if (input === undefined)
     return { targets: [], participations: [], outbox: [], warnings: [] };
+  const basis = reminderNativeBasis(input);
   if (
     !plain(input) ||
-    ![1, 2, 3].includes(input.version) ||
+    ![1, 2, 3, 4].includes(input.version) ||
     !Array.isArray(input.targets) ||
     !Array.isArray(input.participations) ||
     !Array.isArray(input.outbox) ||
@@ -309,6 +304,7 @@ export function restoredParticipation(backup) {
       PARTICIPATION_LIMITS.outboxBytes
   )
     bad();
+  reminderNativeRows(input, basis);
   if (
     !Array.isArray(backup.records) ||
     backup.records.some(
@@ -348,7 +344,7 @@ export function restoredParticipation(backup) {
     )
       bad();
     targetIds.add(t.targetId);
-    if (input.version < 3 && Object.hasOwn(t.terms || {}, "intervalPolicy"))
+    if (basis < 3 && Object.hasOwn(t.terms || {}, "intervalPolicy"))
       bad();
     const normalized = terms(t.terms, t.moduleId);
     if (t.termsHash !== hash(normalized)) bad();
@@ -390,7 +386,7 @@ export function restoredParticipation(backup) {
     const t = allTargets.get(p.targetId);
     if (p.moduleId !== t.moduleId) bad();
     if (
-      input.version < 3 &&
+      basis < 3 &&
       (Object.hasOwn(p, "requestedInterval") ||
         Object.hasOwn(p.frozen || {}, "interval") ||
         Object.hasOwn(p.frozen || {}, "allocationHash") ||
@@ -400,11 +396,11 @@ export function restoredParticipation(backup) {
         Object.hasOwn(p.frozen?.terms || {}, "intervalPolicy"))
     )
       bad();
-    if (input.version === 3 && !Object.hasOwn(p, "requestedInterval")) bad();
+    if (basis === 3 && !Object.hasOwn(p, "requestedInterval")) bad();
     let requested;
     try {
       requested = validateRequestedInterval(
-        input.version === 3 ? p.requestedInterval : null,
+        basis === 3 ? p.requestedInterval : null,
         p.frozen?.allocationKnown === false
           ? p.frozen.sourceHistory?.terms ||
               (p.requestedInterval
@@ -463,11 +459,11 @@ export function restoredParticipation(backup) {
     let frozen = null;
     const priorConsent =
       p.consent ||
-      (input.version === 3 && p.frozen?.allocationKnown !== false
+      ((basis === 3 || input.version === 4) && p.frozen?.allocationKnown !== false
         ? p.frozen?.sourceHistory?.consent
         : null) ||
       null;
-    if (input.version === 3 && p.frozen?.allocationKnown === false) {
+    if (basis === 3 && p.frozen?.allocationKnown === false) {
       frozen = admitNonallocatingHistory(
         p.frozen,
         former,
@@ -518,7 +514,7 @@ export function restoredParticipation(backup) {
           consent: historicalConsent(priorConsent),
           confirmedAt: stamp(p.confirmedAt)
             ? p.confirmedAt
-            : input.version === 3 && stamp(p.frozen.sourceHistory?.confirmedAt)
+            : (basis === 3 || input.version === 4) && stamp(p.frozen.sourceHistory?.confirmedAt)
               ? p.frozen.sourceHistory.confirmedAt
               : null,
         },
@@ -526,7 +522,7 @@ export function restoredParticipation(backup) {
     }
     if (former === "confirmed" && (!frozen || frozen.allocationKnown === false))
       bad();
-    if (input.version === 3 && !frozen) {
+    if (basis === 3 && !frozen) {
       frozen = admitNonallocatingHistory(
         requestHistory(
           { state: former, consent: p.consent, requested_interval: requested },
@@ -568,7 +564,7 @@ export function restoredParticipation(backup) {
         p.state === "cancelled" && stamp(p.cancelledAt) ? p.cancelledAt : null,
     });
   }
-  if (input.version === 3) {
+  if (basis === 3) {
     for (const t of allTargets.values()) {
       const occupants = participations.filter(
         (p) =>
@@ -594,6 +590,7 @@ export function restoredParticipation(backup) {
       }
     }
   }
+  const people = new Map(input.participations.map(p => [p.id, p])), commitments = new Set();
   const retained = new Set(participations.map((p) => p.id)),
     outbox = [],
     outboxIds = new Set(),
@@ -625,7 +622,7 @@ export function restoredParticipation(backup) {
       !stamp(o.createdAt) ||
       !o.payload ||
       Object.keys(o.payload).some(
-        (k) => !["state", "participationId", "revision"].includes(k),
+        (k) => !["state", "participationId", "revision", ...(input.version === 4 ? ["reminder"] : [])].includes(k),
       ) ||
       o.payload.participationId !== o.participationId ||
       o.payload.revision !== o.eventRevision ||
@@ -638,7 +635,7 @@ export function restoredParticipation(backup) {
     if (
       input.version >= 2 &&
       (!positive(o.participationRevision) ||
-        !["legacy", "snapshot", "transition"].includes(o.intentKind) ||
+        !["legacy", "snapshot", "transition", ...(input.version === 4 ? ["reminder"] : [])].includes(o.intentKind) ||
         !Number.isSafeInteger(o.consentRevision) ||
         o.consentRevision < 0 ||
         !Number.isSafeInteger(o.attempts) ||
@@ -666,6 +663,7 @@ export function restoredParticipation(backup) {
           ].includes(o.recoveredState)))
     )
       bad();
+    const reminderPayload = admittedReminderOutbox(o, input, people, retained, commitments);
     outboxIds.add(o.id);
     const key = o.participationId + ":" + o.eventRevision;
     if (eventKeys.has(key)) bad();
@@ -678,7 +676,7 @@ export function restoredParticipation(backup) {
         purpose: "participation",
         channel: "email",
         state: "cancelled",
-        payload: o.payload,
+        payload: reminderPayload || o.payload,
         createdAt: o.createdAt,
         participationRevision:
           input.version >= 2 ? o.participationRevision : o.eventRevision,

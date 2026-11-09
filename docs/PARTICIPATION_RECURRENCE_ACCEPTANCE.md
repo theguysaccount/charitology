@@ -48,4 +48,13 @@ That walkthrough finds two actual display defects. The pending-command notice st
 
 The fictional document was disposed through ordinary navigation. Its cleanup verifies only the two known origin preferences are absent. The temporary viewport resets, the owned tab closes and the owned server exits with all 82 requests settled, zero active handlers and zero sockets. This proves no global memory erasure, real logout, production migration, provider operation or email.
 
-Final-source CI, corrected browser confirmation and deployment remain pending. This checkpoint does not establish pilot adoption, all feature combinations or completion of the original 66-item brief.
+At this checkpoint, final-source CI, corrected browser confirmation and deployment remained pending. This checkpoint does not establish pilot adoption, all feature combinations or completion of the original 66-item brief.
+
+
+## Finite production release
+
+The corrected source `0e773562f7f7b2f978e44eb4d1b96db890672b76` passes all eight jobs on attempt 1 in [push CI](https://github.com/theguysaccount/charitology/actions/runs/42537501689) and [pull request CI](https://github.com/theguysaccount/charitology/actions/runs/42537507375). Each OS job passes 1,861 unit and client checks and all eighteen recurrence cases on PostgreSQL 17.11, alongside the existing suites. The protected stage passes 32 selected application responses.
+
+A new in-app browser run on the exact application files checks the corrected pending text, history reads without another Create, retained Retry after a 429, original replay and historical detail without a stray `null`. Three identical 93-byte requests produce one fictional acceptance. The earlier failed browser attempts and a private test server shutdown that did not save its receipt remain separate. The successor changes only private socket accounting and waits for closure. It settles all 45 requests with no remaining sockets or handlers. The task tab closes. This is a default viewport test with fictional HTTP responses; it supplies no real authentication, SQL, email, Chrome-specific behavior or preference removal evidence.
+
+[PR #58](https://github.com/theguysaccount/charitology/pull/58) merges normally as `74bcbefe027a69d3d2b21412e9cd91ea10b57d71`. The result keeps the tested OS, newsletter and workflow files unchanged and includes the independent club release. The fresh READY production deployment at [the canonical OS](https://os.charitology.org) has the exact main Git source. All 32 selected responses pass, including 25 exact assets, one health response and six exact sign-in refusals. A separate offline rehash covers all 1,353,167 saved body bytes and allowed security headers. No production schema migration or manual stage promotion is needed. This verifies selected deployment behavior, not a signed-in hosted command or a real charity pilot.

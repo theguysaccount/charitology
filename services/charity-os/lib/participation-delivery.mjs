@@ -1,4 +1,6 @@
+import {PARTICIPATION_REMINDER_LEGACY_SQL} from './participation-storage.mjs';
 import { retainParticipationAuditOutcome } from "./participation-receipt.mjs";
+import { checkReminderDispatch, clearParticipationReminderAuthority } from "./participation-reminder-worker.mjs";
 import {
   audit,
   noteParticipationReceiptReplay,
@@ -405,17 +407,18 @@ export async function ownDeliverySummary(
 
 export async function suppressParticipationDelivery(
   c,
-  { org, intakeId, participationId, reason = "preference_off" },
+  { org, intakeId, participationId, reason = "preference_off", recipientSha256 = null },
 ) {
   if (
     !opaque(org) ||
     (intakeId && !opaque(intakeId)) ||
-    (participationId && !opaque(participationId))
+    (participationId && !opaque(participationId)) ||
+    (recipientSha256 !== null && !digest(recipientSha256))
   )
     fail(422, "participation_delivery_scope", "Use a bounded delivery scope.");
   if (["erased", "unlink"].includes(reason))
     await c.query(
-      "UPDATE os_participations SET delivery_consent=jsonb_build_object('version',$4::text,'enabled',false,'revision',COALESCE((delivery_consent->>'revision')::integer,0)+1,'at',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')),revision=revision+1,updated_at=now() WHERE org_id=$1 AND ($2::text IS NULL OR intake_id=$2) AND ($3::text IS NULL OR id=$3) AND delivery_consent->>'enabled'='true'",
+      "UPDATE os_participations SET delivery_consent=jsonb_build_object('version',$4::text,'enabled',false,'revision',LEAST(COALESCE((delivery_consent->>'revision')::bigint,0)+1,2147483647)::integer,'at',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')),revision=LEAST(revision::bigint+1,2147483647)::integer,updated_at=now() WHERE org_id=$1 AND ($2::text IS NULL OR intake_id=$2) AND ($3::text IS NULL OR id=$3) AND delivery_consent->>'enabled'='true'",
       [
         org,
         intakeId || null,
@@ -423,9 +426,11 @@ export async function suppressParticipationDelivery(
         DELIVERY_CONSENT_VERSION,
       ],
     );
+  if (["erased", "unlink", "preference_off"].includes(reason))
+    await clearParticipationReminderAuthority(c, { org, intakeId: intakeId || null, participationId: participationId || null });
   return (
     await c.query(
-      "UPDATE os_participation_outbox o SET state='cancelled',safe_code=$4,lease_owner=NULL,lease_until=NULL FROM os_participations p WHERE p.org_id=o.org_id AND p.id=o.participation_id AND o.org_id=$1 AND ($2::text IS NULL OR p.intake_id=$2) AND ($3::text IS NULL OR p.id=$3) AND o.first_attempt_at IS NULL AND o.state IN ('paused','pending','leased')",
+      "UPDATE os_participation_outbox o SET state='cancelled',safe_code=$4,lease_owner=NULL,lease_until=NULL FROM os_participations p WHERE p.org_id=o.org_id AND p.id=o.participation_id AND o.org_id=$1 AND ($2::text IS NULL OR p.intake_id=$2) AND ($3::text IS NULL OR p.id=$3) AND o.first_attempt_at IS NULL AND o.state IN ('paused','pending','leased') AND ($5::boolean=false OR o.intent_kind<>'reminder' OR o.recipient_hash=$6)",
       [
         org,
         intakeId || null,
@@ -439,6 +444,8 @@ export async function suppressParticipationDelivery(
         ].includes(reason)
           ? reason
           : "authority_withdrawn",
+        reason === "recipient_blocked",
+        reason === "recipient_blocked" ? recipientSha256 : null,
       ],
     )
   ).rowCount;
@@ -452,7 +459,7 @@ async function appendIntent(
   const duplicate = live
     ? (
         await c.query(
-          "SELECT id FROM os_participation_outbox WHERE org_id=$1 AND participation_id=$2 AND participation_revision=$3 AND consent_revision=$4 AND template_version=$5 AND intent_kind<>'legacy' LIMIT 1",
+          "SELECT id FROM os_participation_outbox WHERE org_id=$1 AND participation_id=$2 AND participation_revision=$3 AND consent_revision=$4 AND template_version=$5 AND intent_kind IN ('snapshot','transition') LIMIT 1",
           [
             org,
             p.id,
@@ -476,7 +483,7 @@ async function appendIntent(
     return { queued: false, alreadyRecorded: true };
   // Any earlier unsent causal state is stale, including a preflight-only defer.
   await c.query(
-    "UPDATE os_participation_outbox SET state='cancelled',safe_code='superseded',lease_owner=NULL,lease_until=NULL WHERE org_id=$1 AND participation_id=$2 AND first_attempt_at IS NULL AND state IN ('pending','leased')",
+    "UPDATE os_participation_outbox SET state='cancelled',safe_code='superseded',lease_owner=NULL,lease_until=NULL WHERE org_id=$1 AND participation_id=$2 AND intent_kind IN ('snapshot','transition') AND first_attempt_at IS NULL AND state IN ('pending','leased')",
     [org, p.id],
   );
   const usage = (
@@ -488,13 +495,14 @@ async function appendIntent(
   const reserve = live ? DELIVERY_LIMITS.reserve : 2048;
   const { groupStateCount } = await import("./participation-group-store.mjs");
   const groupPresent = (await groupStateCount(c, org)) > 0;
+  const reminderPresent=(await c.query(`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`,[org])).rows[0]?.present===true;
   if (
     Number(usage.count) >= DELIVERY_LIMITS.outbox ||
     Number(usage.bytes) + reserve > DELIVERY_LIMITS.outboxBytes ||
     (await logicalBackupBytes(c, org)) + reserve + 1000 >
       DELIVERY_LIMITS.workspaceBytes
   ) {
-    if (safe || groupPresent) return { queued: false, alreadyRecorded: false };
+    if (safe || groupPresent || reminderPresent) return { queued: false, alreadyRecorded: false };
     fail(
       422,
       "participation_delivery_quota",
@@ -536,7 +544,10 @@ async function appendIntent(
     payload_hash: live ? eligible.payloadHash : null,
     budget_bytes: live ? DELIVERY_LIMITS.reserve : 0,
   };
-  if (groupPresent) {
+  if (reminderPresent) {
+    const {canRetainReminderParticipationNotice}=await import('./participation-reminder-capacity.mjs');
+    if (!(await canRetainReminderParticipationNotice(c,org,notice))) return {queued:false,alreadyRecorded:false};
+  } else if (groupPresent) {
     const { canRetainGroupParticipationNotice } = await import("./participation-group-safety-capacity.mjs");
     if (!(await canRetainGroupParticipationNotice(c, org, notice))) return { queued: false, alreadyRecorded: false };
   }
@@ -1102,12 +1113,19 @@ export async function ownDeliveryRoutes({
               [org, pid, JSON.stringify(consent), JSON.stringify(command)],
             )
           ).rows[0];
-          if (!input.enabled)
+          if (!input.enabled) {
             await suppressParticipationDelivery(c, {
               org,
               participationId: pid,
               reason: "preference_off",
             });
+            // Privacy clearing may advance the row again; retain and return the
+            // actual row rather than the earlier UPDATE's stale revision.
+            current = (
+              await c.query("SELECT * FROM os_participations WHERE org_id=$1 AND id=$2 AND intake_id=$3 FOR UPDATE", [org, pid, intakeId])
+            ).rows[0];
+            if (!current) unavailable();
+          }
           const auditRetained = await audit(
             c,
             org,
@@ -1331,12 +1349,12 @@ async function workerTransaction(
 async function leaseWork(db, org, budget) {
   return workerTransaction(db, org, budget, async (c) => {
     await c.query(
-      "UPDATE os_participation_outbox SET state=CASE WHEN first_attempt_at IS NULL THEN 'pending' ELSE 'unknown' END,safe_code=CASE WHEN first_attempt_at IS NULL THEN safe_code ELSE 'attempt_unconfirmed' END,lease_owner=NULL,lease_until=NULL WHERE org_id=$1 AND intent_kind<>'legacy' AND state='leased' AND lease_until<now()",
+      "UPDATE os_participation_outbox SET state=CASE WHEN first_attempt_at IS NULL THEN 'pending' ELSE 'unknown' END,safe_code=CASE WHEN first_attempt_at IS NULL THEN safe_code ELSE 'attempt_unconfirmed' END,lease_owner=NULL,lease_until=NULL WHERE org_id=$1 AND purpose='participation' AND channel='email' AND intent_kind IN ('snapshot','transition','reminder') AND state='leased' AND lease_until<now()",
       [org],
     );
     const row = (
       await c.query(
-        "SELECT * FROM os_participation_outbox WHERE org_id=$1 AND intent_kind<>'legacy' AND relay_key IS NOT NULL AND state IN ('pending','unknown','accepted','delivered') AND next_at<=now() AND (lease_until IS NULL OR lease_until<now()) ORDER BY next_at,created_at,id LIMIT 1 FOR UPDATE SKIP LOCKED",
+        "SELECT * FROM os_participation_outbox WHERE org_id=$1 AND purpose='participation' AND channel='email' AND intent_kind IN ('snapshot','transition','reminder') AND relay_key IS NOT NULL AND state IN ('pending','unknown','accepted','delivered') AND next_at<=now() AND (lease_until IS NULL OR lease_until<now()) ORDER BY next_at,created_at,id LIMIT 1 FOR UPDATE SKIP LOCKED",
         [org],
       )
     ).rows[0];
@@ -1350,7 +1368,7 @@ async function leaseWork(db, org, budget) {
       ...row,
       lease_owner: owner,
       operation:
-        row.first_attempt_at || ["unknown", "accepted"].includes(row.state)
+        row.first_attempt_at || ["unknown", "accepted", "delivered"].includes(row.state)
           ? "status"
           : "send",
     };
@@ -1364,9 +1382,12 @@ async function finalCheck(db, org, job, settings, budget) {
         [org, job.id, job.lease_owner],
       )
     ).rows[0];
-    if (!row) return null;
+    if (!row || row.purpose !== "participation" || row.channel !== "email" ||
+        !["snapshot", "transition", "reminder"].includes(row.intent_kind)) return null;
     if (job.operation === "status") return { job: row, message: null };
     if (row.state !== "leased" || row.first_attempt_at) return null;
+    if (row.intent_kind === "reminder")
+      return checkReminderDispatch(c, { org, row, owner: job.lease_owner, settings });
     const p = (
         await c.query(
           "SELECT * FROM os_participations WHERE org_id=$1 AND id=$2",
@@ -1487,7 +1508,7 @@ async function completeWork(db, org, job, result, budget) {
       );
       if (result.state === "suppressed") {
         await c.query(
-          "UPDATE os_participations SET delivery_consent=jsonb_build_object('version',$4::text,'enabled',false,'revision',COALESCE((delivery_consent->>'revision')::integer,0)+1,'at',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')),revision=revision+1,updated_at=now() WHERE org_id=$1 AND id=$2 AND delivery_consent->>'recipientHash'=$3 AND delivery_consent->>'enabled'='true'",
+          "UPDATE os_participations SET delivery_consent=jsonb_build_object('version',$4::text,'enabled',false,'revision',LEAST(COALESCE((delivery_consent->>'revision')::bigint,0)+1,2147483647)::integer,'at',to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')),revision=LEAST(revision::bigint+1,2147483647)::integer,updated_at=now() WHERE org_id=$1 AND id=$2 AND delivery_consent->>'recipientHash'=$3 AND delivery_consent->>'enabled'='true'",
           [
             org,
             row.participation_id,
@@ -1495,10 +1516,16 @@ async function completeWork(db, org, job, result, budget) {
             DELIVERY_CONSENT_VERSION,
           ],
         );
+        await clearParticipationReminderAuthority(c, {
+          org,
+          participationId: row.participation_id,
+          recipientSha256: row.recipient_hash,
+        });
         await suppressParticipationDelivery(c, {
           org,
           participationId: row.participation_id,
           reason: "recipient_blocked",
+          recipientSha256: row.recipient_hash,
         });
       }
       return true;
@@ -1613,3 +1640,9 @@ export async function runParticipationDelivery({
     budget.remaining === 0 || Date.now() >= budget.deadline - 5000;
   return result;
 }
+
+// Narrow same-client seams for the separately gated reminder family.
+export const readOwnParticipationEmailBinding = (c, args) => ownBinding(c, args);
+export const readParticipationDeliveryPolicy = (c, org) => policy(c, org, false);
+export const participationDeliveryGate = (settings, email) => gate(settings, email);
+export const currentParticipationDeliveryApproval = record => approved(record);

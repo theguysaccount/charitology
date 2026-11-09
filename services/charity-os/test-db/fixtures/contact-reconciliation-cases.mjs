@@ -100,13 +100,13 @@ export async function runCrmCases({db,owner,modules:M,sql,healthy,onCase,onArtif
   const identity=await read(source.org,c=>one(c,sql.runtimeIdentity));equal('actual-server-version',identity.version_num,expectedServerVersionNum);equal('runtime-no-memberships',identity.memberships,0);for(const k of ['rolsuper','rolbypassrls','rolcreatedb','rolcreaterole','rolinherit','rolreplication'])equal('six-false-'+k,identity[k],false);
   const catalogResult=await owner.query(sql.catalogVector);
   await artifact('catalog-driver-raw-before-assertions.json',{fields:catalogResult.fields.map(({name,dataTypeID})=>({name,dataTypeID})),rows:catalogResult.rows,arrayFlags:catalogResult.rows.map(row=>({tableName:row.table_name,isArray:Array.isArray(row.columns),jsType:typeof row.columns}))});
-  const catalog=catalogResult.rows,expected=catalogVectors;equal('source-catalog-independent-vector',M.crmCatalog.CONTACT_CONTEXT_CATALOG,catalogVectors);equal('catalog-tables',catalog.length,33);equal('catalog-columns',catalog.reduce((n,r)=>n+r.columns.length,0),354);
+  const catalog=catalogResult.rows,expected=catalogVectors;equal('source-catalog-independent-vector',M.crmCatalog.CONTACT_CONTEXT_CATALOG,catalogVectors);equal('catalog-tables',catalog.length,33);equal('catalog-columns',catalog.reduce((n,r)=>n+r.columns.length,0),355);
   for(const r of catalog)equal('catalog-vector-'+r.table_name,[...r.columns].sort(),[...expected[r.table_name]].sort());
   const context=await inspect(source);truth('actual-catalog-context',M.crmModel.planContactReconciliation({...context.plannerContext,decision:mergeDecision(source)}).proposal!==null);
   const free=await db.tx('', '',c=>one(c,sql.contextFree),{readOnly:true});equal('context-free-rows',free,{records:0,reports:0,previews:0});
   const cross=await read(source.org,c=>one(c,'SELECT count(*)::int AS n FROM os_records WHERE org_id=$1',['crm_witness']));equal('cross-org-rows',cross.n,0);
   await owner.query(sql.createFaultSequence);await owner.query(sql.grantFaultSequence.replace('__RUNTIME__','"'+identity.role+'"'));await owner.query(sql.createFaultFunction);
-  await artifact('actual-catalog-identity.json',{identity,catalog,context,contextFree:free,crossOrg:cross});return{actualPg:identity.version_num,actualCatalogTables:33,actualCatalogColumns:354,syntheticAuthNotBetterAuth:true,fixtureNativePressure:false};
+  await artifact('actual-catalog-identity.json',{identity,catalog,context,contextFree:free,crossOrg:cross});return{actualPg:identity.version_num,actualCatalogTables:33,actualCatalogColumns:355,syntheticAuthNotBetterAuth:true,fixtureNativePressure:false};
  });
  await run(2,async()=>{
   const f=await tenant('crm_no_merge'),p=await preview(f,separateDecision()),before=await records(f.org),response=await commit(p),v=await verifyAccepted(p,response);

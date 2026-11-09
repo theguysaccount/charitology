@@ -18,6 +18,7 @@ const source = await readFile(
   "utf8",
 );
 const checkInSource = await readFile(new URL("./participant-check-in.js", import.meta.url),"utf8");
+const reminderSource = await readFile(new URL("./participant-reminders.js", import.meta.url),"utf8");
 const origin = "https://os.example.invalid";
 const token = "a".repeat(43);
 const code = `org.pub.${token}`;
@@ -192,6 +193,7 @@ async function harness({
   linked = true,
   fragment = false,
   participations = [],
+  remindersEnabled = false,
 } = {}) {
   let document;
   class Element {
@@ -452,6 +454,10 @@ async function harness({
       const value = await model.checkInResponse({path,body,options});
       return response(value.payload || value,value.status || 200);
     }
+    if (path.startsWith(`${participationBase}/participation/reminder`)) {
+      if(!model.reminderResponse)throw Error("Unexpected unchosen fictional reminder read");
+      const value=await model.reminderResponse({path,body,options});return response(value.payload||value,value.status||200);
+    }
     if (path.startsWith(`${participationBase}/`)) {
       const [, pid, action] = path.slice(participationBase.length).split("/");
       const old = model.participations.find((row) => row.id === pid);
@@ -617,7 +623,7 @@ async function harness({
     crypto: webcrypto,
     console,
   });
-  vm.runInContext(checkInSource.replace(/^export /gm, "")+"\n"+source.replace('import { createOwnCheckInPane } from "./participant-check-in.js";\n', "").replace(/^export /gm, ""), context);
+  vm.runInContext(checkInSource.replace(/^export /gm, "")+"\nconst {createOwnReminderPane} = (()=>{\n"+reminderSource.replace(/^export /gm, "")+"\nreturn {createOwnReminderPane};})();\nconst participantRemindersEnabled = "+String(remindersEnabled===true)+";\n"+source.replace('import { createOwnCheckInPane } from "./participant-check-in.js";\n', "").replace('import { createOwnReminderPane } from "./participant-reminders.js";\n', "").replace('import { participationRemindersEnabled as participantRemindersEnabled } from "./participation-reminder-feature.js";\n', "").replace(/^export /gm, ""), context);
   const flush = async () => {
     for (let n = 0; n < 12; n++)
       await new Promise((resolve) => setImmediate(resolve));
@@ -651,6 +657,22 @@ async function harness({
     windowEvents,
   };
 }
+
+const ownReminderDTO=()=>({ok:true,participationId:"participation",revision:1,intakeRevision:1,reminder:{version:"participation-reminder-v1",enabled:false,revision:0,atExact:null,currentCommitmentSha256:"a".repeat(64),canEnable:true,canDisable:false,unavailableReason:null}});
+async function prepareOwnReminder(h) {
+  await h.click("Read participation reminder choice");
+  const box=h.root.querySelectorAll("input").find(n=>n.attributes.type==="checkbox"&&n.parentElement.textContent.includes("Email me one reminder before"));assert.ok(box);assert.equal(box.checked,false);box.checked=true;await box.emit("change");
+}
+test("own reminder remains manual, separate, and readable after portal pause and fresh session admission",async()=>{
+  const h=await harness({remindersEnabled:true,participations:[participation({state:"confirmed",canConsent:false})]});h.model.reminderResponse=()=>ownReminderDTO();await h.open();assert.equal(h.calls.filter(c=>c.path.includes("/reminder")).length,0);await prepareOwnReminder(h);
+  h.document.visibilityState="hidden";h.events.get("visibilitychange")();assert.doesNotMatch(h.root.textContent,/No reminder choice is recorded/);h.document.visibilityState="visible";await h.refresh();await h.flush();const before=h.calls.filter(c=>c.path.includes("/reminder")).length;await h.click("Read participation reminder choice");assert.equal(h.calls.filter(c=>c.path.includes("/reminder")).length,before+1);assert.match(h.root.textContent,/No reminder choice is recorded/);
+});
+test("same-request refresh retains uncertain reminder bytes, dirty warning, and explicit retry without an automatic write",async()=>{
+  const h=await harness({remindersEnabled:true,participations:[participation({state:"confirmed",canConsent:false})]});let writes=0;h.model.reminderResponse=({path,body})=>{if(path.endsWith("/reminder"))return ownReminderDTO();writes++;if(writes<3)throw Error("Fictional interrupted or refused response");return {ok:true,participationId:"participation",revision:2,intakeRevision:1,reminder:{version:"participation-reminder-v1",enabled:true,revision:1,atExact:"2026-11-08T10:00:00.123456Z"},auditRetained:true,replayed:true};};await h.open();await prepareOwnReminder(h);await h.click("Save reminder choice");assert.equal(writes,1);await h.refresh();assert.equal(writes,1);assert.equal(vm.runInContext("state.dirty",h.context),true);let warned=false;h.windowEvents.get("beforeunload")({preventDefault(){warned=true;}});assert.equal(warned,true);await h.click("Read participation reminder choice");await h.click("Retry the same save");assert.equal(writes,2);await h.click("Retry the same save");const sent=h.calls.filter(c=>c.path.endsWith("/reminder-preference"));assert.equal(new Set(sent.map(c=>JSON.stringify(c.body))).size,1);assert.equal(vm.runInContext("state.dirty",h.context),false);
+});
+test("sign-out warns that an uncertain reminder save may remain recorded and clears only local retry authority",async()=>{
+  const h=await harness({remindersEnabled:true,participations:[participation({state:"confirmed",canConsent:false})]});h.model.reminderResponse=({path})=>{if(path.endsWith("/reminder"))return ownReminderDTO();throw Error("Fictional lost save response");};await h.open();await prepareOwnReminder(h);await h.click("Save reminder choice");await h.get("participant-logout").emit("click");await h.flush();assert.match(h.get("participant-confirmation").textContent,/reminder save may already be recorded/);assert.equal(h.calls.some(c=>c.path==="/api/auth/logout"),false);await h.click("Discard corrections and sign out");assert.equal(vm.runInContext("state.reminderPanes.size",h.context),0);assert.equal(h.model.user,null);assert.equal(h.calls.filter(c=>c.path.endsWith("/reminder-preference")).length,1);
+});
 
 test("the original signed-out tab keeps its fragment and sends only the allowlisted login destination", async () => {
   const h = await harness({ user: null, linked: false, fragment: true });

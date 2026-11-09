@@ -1,0 +1,439 @@
+{
+  "v2": {
+    "serialized": "{\"version\":2,\"targets\":[{\"targetId\":\"shift\",\"moduleId\":\"volunteers\",\"revision\":1,\"mode\":\"managed\",\"sourceRevision\":4,\"terms\":{\"title\":\"Fictional shift\",\"kind\":\"shift\",\"startAt\":\"2026-11-10T08:00:00Z\",\"endAt\":\"2026-11-10T16:00:00Z\",\"timeZone\":\"UTC\",\"participationPurpose\":\"Fictional participation for codec checks only.\",\"participantInstructions\":null,\"organizerEmail\":\"fixture@example.invalid\",\"organizerUrl\":null},\"termsHash\":\"8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460\",\"recoveryBlock\":false,\"createdAt\":\"2026-11-07T09:00:00.000Z\"}],\"participations\":[{\"id\":\"p00\",\"targetId\":\"shift\",\"moduleId\":\"volunteers\",\"bookingRecordId\":\"booking\",\"contactId\":\"contact\",\"intakeId\":\"intake\",\"state\":\"confirmed\",\"revision\":4,\"source\":\"intake\",\"consent\":{\"revision\":1,\"sourceRevision\":4,\"termsHash\":\"8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460\",\"at\":\"2026-11-07T09:00:00.000Z\",\"waitlistAllowed\":false,\"emailUpdates\":true,\"method\":\"Fictional codec receipt\",\"evidenceRef\":null,\"withdrawalAcknowledged\":true},\"frozen\":{\"terms\":{\"title\":\"Fictional shift\",\"kind\":\"shift\",\"startAt\":\"2026-11-10T08:00:00Z\",\"endAt\":\"2026-11-10T16:00:00Z\",\"timeZone\":\"UTC\",\"participationPurpose\":\"Fictional participation for codec checks only.\",\"participantInstructions\":null,\"organizerEmail\":\"fixture@example.invalid\",\"organizerUrl\":null},\"sourceRevision\":4,\"termsHash\":\"8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460\",\"programId\":null},\"waitlistSequence\":null,\"confirmedAt\":\"2026-11-07T09:00:00.000Z\",\"cancelledAt\":null,\"recovered\":false,\"recoveredState\":null,\"createdAt\":\"2026-11-07T09:00:00.000Z\"}],\"outbox\":[{\"id\":\"notice\",\"participationId\":\"p00\",\"eventRevision\":1,\"purpose\":\"participation\",\"channel\":\"email\",\"state\":\"paused\",\"payload\":{\"state\":\"confirmed\",\"participationId\":\"p00\",\"revision\":1},\"createdAt\":\"2026-11-07T09:00:00.000Z\",\"participationRevision\":4,\"intentKind\":\"legacy\",\"consentRevision\":0,\"consentCopy\":null,\"templateVersion\":null,\"attemptedAt\":null,\"attempts\":0,\"lastCheckedAt\":null,\"safeCode\":null,\"providerEventAt\":null,\"recoveredState\":null}]}",
+    "normalized": {
+      "targets": [
+        {
+          "targetId": "shift",
+          "moduleId": "volunteers",
+          "sourceRevision": 4,
+          "terms": {
+            "title": "Fictional shift",
+            "kind": "shift",
+            "startAt": "2026-11-10T08:00:00Z",
+            "endAt": "2026-11-10T16:00:00Z",
+            "timeZone": "UTC",
+            "participationPurpose": "Fictional participation for codec checks only.",
+            "participantInstructions": null,
+            "organizerEmail": "fixture@example.invalid",
+            "organizerUrl": null
+          },
+          "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+          "createdAt": "2026-11-07T09:00:00.000Z"
+        }
+      ],
+      "participations": [
+        {
+          "id": "p00",
+          "targetId": "shift",
+          "moduleId": "volunteers",
+          "bookingRecordId": "booking",
+          "contactId": "contact",
+          "intakeId": "intake",
+          "state": "requested",
+          "recoveredState": "confirmed",
+          "requestedInterval": null,
+          "frozen": {
+            "terms": {
+              "title": "Fictional shift",
+              "kind": "shift",
+              "startAt": "2026-11-10T08:00:00Z",
+              "endAt": "2026-11-10T16:00:00Z",
+              "timeZone": "UTC",
+              "participationPurpose": "Fictional participation for codec checks only.",
+              "participantInstructions": null,
+              "organizerEmail": "fixture@example.invalid",
+              "organizerUrl": null
+            },
+            "sourceRevision": 4,
+            "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+            "programId": null,
+            "legacy": true,
+            "approvalKnown": false,
+            "sourceHistory": {
+              "state": "confirmed",
+              "consent": {
+                "revision": 1,
+                "sourceRevision": 4,
+                "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+                "at": "2026-11-07T09:00:00.000Z",
+                "waitlistAllowed": false,
+                "emailUpdates": true,
+                "method": "Fictional codec receipt",
+                "evidenceRef": null,
+                "withdrawalAcknowledged": true
+              },
+              "confirmedAt": "2026-11-07T09:00:00.000Z"
+            }
+          },
+          "createdAt": "2026-11-07T09:00:00.000Z",
+          "cancelledAt": null
+        }
+      ],
+      "outbox": [
+        {
+          "id": "notice",
+          "participationId": "p00",
+          "eventRevision": 1,
+          "purpose": "participation",
+          "channel": "email",
+          "state": "cancelled",
+          "payload": {
+            "state": "confirmed",
+            "participationId": "p00",
+            "revision": 1
+          },
+          "createdAt": "2026-11-07T09:00:00.000Z",
+          "participationRevision": 4,
+          "intentKind": "legacy",
+          "recoveredState": "paused",
+          "consentRevision": 0,
+          "consentCopy": null,
+          "templateVersion": null,
+          "attemptedAt": null,
+          "attempts": 0,
+          "lastCheckedAt": null,
+          "safeCode": null,
+          "providerEventAt": null
+        }
+      ],
+      "warnings": [
+        {
+          "field": "participation",
+          "message": "Participation restores as blocked, inactive provenance. An administrator must freshly approve sources and reconcile all former confirmed occupancy before enabling this occurrence. No participant access or notification delivery is restored."
+        }
+      ]
+    }
+  },
+  "v1": {
+    "input": {
+      "version": 1,
+      "targets": [
+        {
+          "targetId": "shift",
+          "moduleId": "volunteers",
+          "revision": 1,
+          "mode": "managed",
+          "sourceRevision": 4,
+          "terms": {
+            "title": "Fictional shift",
+            "kind": "shift",
+            "startAt": "2026-11-10T08:00:00Z",
+            "endAt": "2026-11-10T16:00:00Z",
+            "timeZone": "UTC",
+            "participationPurpose": "Fictional participation for codec checks only.",
+            "participantInstructions": null,
+            "organizerEmail": "fixture@example.invalid",
+            "organizerUrl": null
+          },
+          "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+          "recoveryBlock": false,
+          "createdAt": "2026-11-07T09:00:00.000Z"
+        }
+      ],
+      "participations": [
+        {
+          "id": "p00",
+          "targetId": "shift",
+          "moduleId": "volunteers",
+          "bookingRecordId": "booking",
+          "contactId": "contact",
+          "intakeId": "intake",
+          "state": "confirmed",
+          "revision": 4,
+          "source": "intake",
+          "consent": {
+            "revision": 1,
+            "sourceRevision": 4,
+            "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+            "at": "2026-11-07T09:00:00.000Z",
+            "waitlistAllowed": false,
+            "emailUpdates": true,
+            "method": "Fictional codec receipt",
+            "evidenceRef": null,
+            "withdrawalAcknowledged": true
+          },
+          "frozen": {
+            "terms": {
+              "title": "Fictional shift",
+              "kind": "shift",
+              "startAt": "2026-11-10T08:00:00Z",
+              "endAt": "2026-11-10T16:00:00Z",
+              "timeZone": "UTC",
+              "participationPurpose": "Fictional participation for codec checks only.",
+              "participantInstructions": null,
+              "organizerEmail": "fixture@example.invalid",
+              "organizerUrl": null
+            },
+            "sourceRevision": 4,
+            "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+            "programId": null
+          },
+          "waitlistSequence": null,
+          "confirmedAt": "2026-11-07T09:00:00.000Z",
+          "cancelledAt": null,
+          "recovered": false,
+          "recoveredState": null,
+          "createdAt": "2026-11-07T09:00:00.000Z"
+        }
+      ],
+      "outbox": [
+        {
+          "id": "notice",
+          "participationId": "p00",
+          "eventRevision": 1,
+          "purpose": "participation",
+          "channel": "email",
+          "state": "paused",
+          "payload": {
+            "state": "confirmed",
+            "participationId": "p00",
+            "revision": 1
+          },
+          "createdAt": "2026-11-07T09:00:00.000Z",
+          "participationRevision": 4,
+          "intentKind": "legacy",
+          "consentRevision": 0,
+          "consentCopy": null,
+          "templateVersion": null,
+          "attemptedAt": null,
+          "attempts": 0,
+          "lastCheckedAt": null,
+          "safeCode": null,
+          "providerEventAt": null,
+          "recoveredState": null
+        }
+      ]
+    },
+    "normalized": {
+      "targets": [
+        {
+          "targetId": "shift",
+          "moduleId": "volunteers",
+          "sourceRevision": 4,
+          "terms": {
+            "title": "Fictional shift",
+            "kind": "shift",
+            "startAt": "2026-11-10T08:00:00Z",
+            "endAt": "2026-11-10T16:00:00Z",
+            "timeZone": "UTC",
+            "participationPurpose": "Fictional participation for codec checks only.",
+            "participantInstructions": null,
+            "organizerEmail": "fixture@example.invalid",
+            "organizerUrl": null
+          },
+          "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+          "createdAt": "2026-11-07T09:00:00.000Z"
+        }
+      ],
+      "participations": [
+        {
+          "id": "p00",
+          "targetId": "shift",
+          "moduleId": "volunteers",
+          "bookingRecordId": "booking",
+          "contactId": "contact",
+          "intakeId": "intake",
+          "state": "requested",
+          "recoveredState": "confirmed",
+          "requestedInterval": null,
+          "frozen": {
+            "terms": {
+              "title": "Fictional shift",
+              "kind": "shift",
+              "startAt": "2026-11-10T08:00:00Z",
+              "endAt": "2026-11-10T16:00:00Z",
+              "timeZone": "UTC",
+              "participationPurpose": "Fictional participation for codec checks only.",
+              "participantInstructions": null,
+              "organizerEmail": "fixture@example.invalid",
+              "organizerUrl": null
+            },
+            "sourceRevision": 4,
+            "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+            "programId": null,
+            "legacy": true,
+            "approvalKnown": false,
+            "sourceHistory": {
+              "state": "confirmed",
+              "consent": {
+                "revision": 1,
+                "sourceRevision": 4,
+                "termsHash": "8ef372ca3d643d7c97ef785c1703da907f06a5ebf07a492b77bf83ad15793460",
+                "at": "2026-11-07T09:00:00.000Z",
+                "waitlistAllowed": false,
+                "emailUpdates": true,
+                "method": "Fictional codec receipt",
+                "evidenceRef": null,
+                "withdrawalAcknowledged": true
+              },
+              "confirmedAt": "2026-11-07T09:00:00.000Z"
+            }
+          },
+          "createdAt": "2026-11-07T09:00:00.000Z",
+          "cancelledAt": null
+        }
+      ],
+      "outbox": [
+        {
+          "id": "notice",
+          "participationId": "p00",
+          "eventRevision": 1,
+          "purpose": "participation",
+          "channel": "email",
+          "state": "cancelled",
+          "payload": {
+            "state": "confirmed",
+            "participationId": "p00",
+            "revision": 1
+          },
+          "createdAt": "2026-11-07T09:00:00.000Z",
+          "participationRevision": 1,
+          "intentKind": "legacy",
+          "recoveredState": "paused",
+          "consentRevision": 0,
+          "consentCopy": null,
+          "templateVersion": null,
+          "attemptedAt": null,
+          "attempts": 0,
+          "lastCheckedAt": null,
+          "safeCode": null,
+          "providerEventAt": null
+        }
+      ],
+      "warnings": [
+        {
+          "field": "participation",
+          "message": "Participation restores as blocked, inactive provenance. An administrator must freshly approve sources and reconcile all former confirmed occupancy before enabling this occurrence. No participant access or notification delivery is restored."
+        }
+      ]
+    }
+  },
+  "v3": {
+    "serialized": "{\"version\":3,\"targets\":[{\"targetId\":\"shift\",\"moduleId\":\"volunteers\",\"revision\":1,\"mode\":\"managed\",\"sourceRevision\":4,\"terms\":{\"title\":\"Fictional shift\",\"kind\":\"shift\",\"startAt\":\"2026-11-10T08:00:00Z\",\"endAt\":\"2026-11-10T16:00:00Z\",\"timeZone\":\"UTC\",\"participationPurpose\":\"Fictional participation for codec checks only.\",\"participantInstructions\":null,\"organizerEmail\":\"fixture@example.invalid\",\"organizerUrl\":null,\"intervalPolicy\":{\"version\":1,\"mode\":\"within-shift\"}},\"termsHash\":\"66850acd0dc21a1d625570e1f04ac2309b5625043ccb9bf49b662f1da5baee34\",\"recoveryBlock\":false,\"createdAt\":\"2026-11-07T09:00:00.000Z\"}],\"participations\":[{\"id\":\"p00\",\"targetId\":\"shift\",\"moduleId\":\"volunteers\",\"bookingRecordId\":\"booking\",\"contactId\":\"contact\",\"intakeId\":\"intake\",\"state\":\"confirmed\",\"revision\":4,\"source\":\"intake\",\"consent\":{\"revision\":1,\"sourceRevision\":4,\"termsHash\":\"66850acd0dc21a1d625570e1f04ac2309b5625043ccb9bf49b662f1da5baee34\",\"at\":\"2026-11-07T09:00:00.000Z\",\"waitlistAllowed\":false,\"emailUpdates\":true,\"method\":\"Fictional codec receipt\",\"evidenceRef\":null,\"withdrawalAcknowledged\":true,\"allocationHash\":\"af8bf165dfc9a19225c92384ee4f9137a528c4b6faa74b9ee0bd0d882824b483\"},\"requestedInterval\":{\"version\":1,\"startAt\":\"2026-11-10T09:00:00Z\",\"endAt\":\"2026-11-10T10:00:00Z\",\"timeZone\":\"UTC\"},\"frozen\":{\"terms\":{\"title\":\"Fictional shift\",\"kind\":\"shift\",\"startAt\":\"2026-11-10T08:00:00Z\",\"endAt\":\"2026-11-10T16:00:00Z\",\"timeZone\":\"UTC\",\"participationPurpose\":\"Fictional participation for codec checks only.\",\"participantInstructions\":null,\"organizerEmail\":\"fixture@example.invalid\",\"organizerUrl\":null,\"intervalPolicy\":{\"version\":1,\"mode\":\"within-shift\"}},\"sourceRevision\":4,\"termsHash\":\"66850acd0dc21a1d625570e1f04ac2309b5625043ccb9bf49b662f1da5baee34\",\"programId\":null,\"interval\":{\"version\":1,\"startAt\":\"2026-11-10T09:00:00Z\",\"endAt\":\"2026-11-10T10:00:00Z\",\"timeZone\":\"UTC\"},\"allocationHash\":\"af8bf165dfc9a19225c92384ee4f9137a528c4b6faa74b9ee0bd0d882824b483\"},\"waitlistSequence\":null,\"confirmedAt\":\"2026-11-07T09:00:00.000Z\",\"cancelledAt\":null,\"recovered\":false,\"recoveredState\":null,\"createdAt\":\"2026-11-07T09:00:00.000Z\"}],\"outbox\":[{\"id\":\"notice\",\"participationId\":\"p00\",\"eventRevision\":1,\"purpose\":\"participation\",\"channel\":\"email\",\"state\":\"paused\",\"payload\":{\"state\":\"confirmed\",\"participationId\":\"p00\",\"revision\":1},\"createdAt\":\"2026-11-07T09:00:00.000Z\",\"participationRevision\":4,\"intentKind\":\"legacy\",\"consentRevision\":0,\"consentCopy\":null,\"templateVersion\":null,\"attemptedAt\":null,\"attempts\":0,\"lastCheckedAt\":null,\"safeCode\":null,\"providerEventAt\":null,\"recoveredState\":null}]}",
+    "normalized": {
+      "targets": [
+        {
+          "targetId": "shift",
+          "moduleId": "volunteers",
+          "sourceRevision": 4,
+          "terms": {
+            "title": "Fictional shift",
+            "kind": "shift",
+            "startAt": "2026-11-10T08:00:00Z",
+            "endAt": "2026-11-10T16:00:00Z",
+            "timeZone": "UTC",
+            "participationPurpose": "Fictional participation for codec checks only.",
+            "participantInstructions": null,
+            "organizerEmail": "fixture@example.invalid",
+            "organizerUrl": null,
+            "intervalPolicy": {
+              "version": 1,
+              "mode": "within-shift"
+            }
+          },
+          "termsHash": "66850acd0dc21a1d625570e1f04ac2309b5625043ccb9bf49b662f1da5baee34",
+          "createdAt": "2026-11-07T09:00:00.000Z"
+        }
+      ],
+      "participations": [
+        {
+          "id": "p00",
+          "targetId": "shift",
+          "moduleId": "volunteers",
+          "bookingRecordId": "booking",
+          "contactId": "contact",
+          "intakeId": "intake",
+          "state": "requested",
+          "recoveredState": "confirmed",
+          "requestedInterval": {
+            "version": 1,
+            "startAt": "2026-11-10T09:00:00Z",
+            "endAt": "2026-11-10T10:00:00Z",
+            "timeZone": "UTC"
+          },
+          "frozen": {
+            "interval": {
+              "version": 1,
+              "startAt": "2026-11-10T09:00:00Z",
+              "endAt": "2026-11-10T10:00:00Z",
+              "timeZone": "UTC"
+            },
+            "allocationHash": "af8bf165dfc9a19225c92384ee4f9137a528c4b6faa74b9ee0bd0d882824b483",
+            "terms": {
+              "title": "Fictional shift",
+              "kind": "shift",
+              "startAt": "2026-11-10T08:00:00Z",
+              "endAt": "2026-11-10T16:00:00Z",
+              "timeZone": "UTC",
+              "participationPurpose": "Fictional participation for codec checks only.",
+              "participantInstructions": null,
+              "organizerEmail": "fixture@example.invalid",
+              "organizerUrl": null,
+              "intervalPolicy": {
+                "version": 1,
+                "mode": "within-shift"
+              }
+            },
+            "sourceRevision": 4,
+            "termsHash": "66850acd0dc21a1d625570e1f04ac2309b5625043ccb9bf49b662f1da5baee34",
+            "programId": null,
+            "legacy": true,
+            "approvalKnown": false,
+            "sourceHistory": {
+              "state": "confirmed",
+              "consent": {
+                "revision": 1,
+                "sourceRevision": 4,
+                "termsHash": "66850acd0dc21a1d625570e1f04ac2309b5625043ccb9bf49b662f1da5baee34",
+                "at": "2026-11-07T09:00:00.000Z",
+                "waitlistAllowed": false,
+                "emailUpdates": true,
+                "method": "Fictional codec receipt",
+                "evidenceRef": null,
+                "withdrawalAcknowledged": true,
+                "allocationHash": "af8bf165dfc9a19225c92384ee4f9137a528c4b6faa74b9ee0bd0d882824b483"
+              },
+              "confirmedAt": "2026-11-07T09:00:00.000Z"
+            }
+          },
+          "createdAt": "2026-11-07T09:00:00.000Z",
+          "cancelledAt": null
+        }
+      ],
+      "outbox": [
+        {
+          "id": "notice",
+          "participationId": "p00",
+          "eventRevision": 1,
+          "purpose": "participation",
+          "channel": "email",
+          "state": "cancelled",
+          "payload": {
+            "state": "confirmed",
+            "participationId": "p00",
+            "revision": 1
+          },
+          "createdAt": "2026-11-07T09:00:00.000Z",
+          "participationRevision": 4,
+          "intentKind": "legacy",
+          "recoveredState": "paused",
+          "consentRevision": 0,
+          "consentCopy": null,
+          "templateVersion": null,
+          "attemptedAt": null,
+          "attempts": 0,
+          "lastCheckedAt": null,
+          "safeCode": null,
+          "providerEventAt": null
+        }
+      ],
+      "warnings": [
+        {
+          "field": "participation",
+          "message": "Participation restores as blocked, inactive provenance. An administrator must freshly approve sources and reconcile all former confirmed occupancy before enabling this occurrence. No participant access or notification delivery is restored."
+        }
+      ]
+    }
+  }
+}

@@ -34,10 +34,10 @@ class E{
  focus(){if(this.isConnected)document.activeElement=this;}
 }
 class Doc extends EventTarget{constructor(){super();this.activeElement=null;this.hidden=false;}createElement(tag){return new E(tag);}createTextNode(value){return String(value);}}
-async function mounted(run,{rows=candidates(),g=group(),admin=false,targetInput=target}={}){
+async function mounted(run,{rows=candidates(),g=group(),admin=false,targetInput=target,canMutate=()=>true}={}){
  const old={document:globalThis.document,window:globalThis.window};globalThis.document=new Doc();globalThis.window=new EventTarget();let active=true,handler=async(path,options)=>path.includes('?')?page():detail(g);const calls=[],changes=[],dirty=[];
  const request=async(path,options={})=>{calls.push({path,method:options.method||'GET',body:options.body&&structuredClone(options.body),wire:options.body&&JSON.stringify(options.body),signal:options.signal});return handler(path,options);};
- const pane=createStaffParticipationGroupPane({orgId:'org',target:targetInput,candidates:rows,admin,request,isCurrent:()=>active,onChanged:value=>changes.push(value),onDirty:value=>dirty.push(value)});pane.element.connect(true);
+ const pane=createStaffParticipationGroupPane({orgId:'org',target:targetInput,candidates:rows,admin,request,isCurrent:()=>active,canMutate,onChanged:value=>changes.push(value),onDirty:value=>dirty.push(value)});pane.element.connect(true);
  const flush=async()=>{for(let i=0;i<12;i++)await new Promise(resolve=>setImmediate(resolve));};
  const h={pane,calls,changes,dirty,flush,all:()=>pane.element.all(),text:()=>pane.element.textContent,field:name=>pane.element.all().find(x=>x.attrs['aria-label']===name),button:name=>pane.element.all().find(x=>x.tagName==='BUTTON'&&x.textContent===name),setHandler:fn=>handler=fn,inactive:()=>active=false,
   click:async name=>{const b=h.button(name);assert(b,'Missing button '+name);b.emit('click');await flush();},
@@ -47,6 +47,9 @@ async function mounted(run,{rows=candidates(),g=group(),admin=false,targetInput=
  try{await run(h);}finally{pane.dispose();globalThis.document=old.document;globalThis.window=old.window;}
 }
 async function choose(h,ids=['p0001','p0002']){for(const id of ids)await h.check('Group member '+id);}
+test('shared workspace exclusion prevents a group write and preserves an existing exact Retry',async()=>{
+ let allowed=false;await mounted(async h=>{await h.load();await choose(h);await h.click('Save group draft');assert.equal(h.calls.filter(c=>c.method==='POST').length,0);assert.equal(h.pane.hasPendingCommand(),false);assert(h.text().includes('other participation command'));allowed=true;h.setHandler(async()=>{throw Error('Fictional interrupted response');});await h.click('Save group draft');assert.equal(h.pane.hasPendingCommand(),true);const before=h.calls.filter(c=>c.method==='POST').length;allowed=false;await h.click('Retry exact command');assert.equal(h.calls.filter(c=>c.method==='POST').length,before);assert.equal(h.pane.hasPendingCommand(),true);},{canMutate:()=>allowed});
+});
 async function ready(h,g=group(),operation='admit'){
  await h.load();await h.open();h.setHandler(async(_path,o)=>o.method==='POST'?preview(g,operation,o.body):detail(g));
  if(operation==='cancel'){await h.check('Cancel member p0001');await h.write('Common group cancellation reason','Fictional cancellation request');}

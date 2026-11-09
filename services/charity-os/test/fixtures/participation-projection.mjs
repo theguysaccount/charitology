@@ -1,6 +1,7 @@
 /** Closed fictional whole-only projection; importing it opens no connection. */
 import { participationTerms } from "../../lib/participation.mjs";
 import { hash } from "../../lib/security.mjs";
+import { PARTICIPATION_REMINDER_LEGACY_SQL } from "../../lib/participation-storage.mjs";
 export function projectionFixture({
   count = 1998,
   intervalAware = false,
@@ -63,6 +64,7 @@ export function projectionFixture({
     },
     frozen: null,
     requested_interval: null,
+    reminder_consent: null,
     created_at: at,
     updated_at: at,
     confirmed_at: null,
@@ -97,11 +99,17 @@ export function projectionFixture({
       }),
     ),
   ];
-  const used = Buffer.byteLength(JSON.stringify(participations));
+  // Explicit controlled JSON encoding, not PostgreSQL byte evidence.
+  const rawUsed=Buffer.byteLength(JSON.stringify(participations));
+  const intervalRows=participations.map(value=>{const row={...value};if(!intervalAware)delete row.requested_interval;return row;});
+  const intervalUsed=Buffer.byteLength(JSON.stringify(intervalRows));
+  const used=Buffer.byteLength(JSON.stringify(intervalRows.map(value=>{const row={...value};delete row.reminder_consent;return row;})));
   const calls = [];
   const c = {
     query: async (sql) => {
       calls.push(sql);
+      if(sql===`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`)return {rows:[{present:false}]};
+      if(sql==="SELECT id,reminder_consent FROM os_participations WHERE org_id=$1 AND reminder_consent IS NOT NULL ORDER BY id LIMIT 2001")return {rows:[]};
       if (sql.startsWith("SELECT * FROM os_participation_targets"))
         return { rows: targets };
       if (sql.startsWith("SELECT * FROM os_participations"))
@@ -113,7 +121,7 @@ export function projectionFixture({
         return { rows: [] };
       if (sql.startsWith("SELECT * FROM os_records")) return { rows: records };
       if (sql.includes("sum(octet_length(to_jsonb(t)::text))"))
-        return { rows: [{ bytes: used, raw_bytes: used }] };
+        return { rows: [{ bytes: used, raw_bytes: rawUsed, interval_bytes: intervalUsed }] };
       throw Error("Unexpected closed fixture query");
     },
   };

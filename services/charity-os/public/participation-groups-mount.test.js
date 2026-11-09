@@ -3,11 +3,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {createStaffParticipationWorkspace} from './participation.js';
+import {renderParticipationReminderTemplate} from '../lib/participation-reminder-template.mjs';
+// Exercise the actual enabled UI branches without changing the release switch.
+test.mock.module(new URL('./participation-reminder-feature.js',import.meta.url).href,{exports:{participationRemindersEnabled:true}});
+const {createStaffParticipationWorkspace}=await import('./participation.js');
 const SHA='a'.repeat(64),STAMP='2026-11-08T12:00:00.123456Z';
 class E {
  constructor(tag){this.tagName=tag.toUpperCase();this.children=[];this.attrs={};this.attributes=this.attrs;this.events=new Map();this.disabled=false;this.hidden=false;this.checked=false;this.isConnected=false;this._value='';this.classList={toggle(){}};}
  setAttribute(k,v){this.attrs[k]=String(v);if(k==='id')this.id=String(v);if(k==='value')this.value=v;if(k==='hidden')this.hidden=true;}
+ getAttribute(k){return this.attrs[k]??null;}
  get value(){return this.tagName==='SELECT'?(this._selected??this.all().find(x=>x.tagName==='OPTION')?.attrs.value??''):this._value;}
  set value(v){if(this.tagName==='SELECT')this._selected=this.all().some(x=>x.tagName==='OPTION'&&x.attrs.value===String(v))?String(v):'';else this._value=String(v);}
  connect(on){this.isConnected=on;if(!on&&document.activeElement===this)document.activeElement=null;for(const c of this.children)if(c instanceof E)c.connect(on);}
@@ -18,7 +22,7 @@ class E {
  set textContent(v){this.replaceChildren(String(v));}
  addEventListener(t,fn){const a=this.events.get(t)||[];a.push(fn);this.events.set(t,a);}
  emit(t){if(this.disabled)return;for(const fn of this.events.get(t)||[])Promise.resolve(fn({preventDefault(){},currentTarget:this})).catch(e=>{throw e;});}
- querySelectorAll(selector){const ss=selector.split(',').map(x=>x.trim());return this.all().filter(x=>ss.some(s=>s[0]==='#'?x.id===s.slice(1):s[0]==='.'?(x.attrs.class||'').split(/\s+/).includes(s.slice(1)):x.tagName===s.toUpperCase()));}
+ querySelectorAll(selector){const ss=selector.split(',').map(x=>x.trim());return this.all().filter(x=>ss.some(s=>{const a=/^(?:([a-z]+))?\[([^=\]]+)(?:=["']?([^"'\]]+)["']?)?\]$/i.exec(s);if(a)return (!a[1]||x.tagName===a[1].toUpperCase())&&Object.hasOwn(x.attrs,a[2])&&(!a[3]||x.attrs[a[2]]===a[3]);return s[0]==='#'?x.id===s.slice(1):s[0]==='.'?(x.attrs.class||'').split(/\s+/).includes(s.slice(1)):x.tagName===s.toUpperCase();}));}
  querySelector(s){return this.querySelectorAll(s)[0]||null;}
  contains(x){return x===this||this.all().includes(x);}
  remove(){if(this.parentElement)this.parentElement.children=this.parentElement.children.filter(x=>x!==this);this.connect(false);}
@@ -33,7 +37,7 @@ const page=()=>({ok:true,targetId:'target',groups:[],nextCursor:null});
 function created(body){const ids=body.members.map(x=>x.participationId);return {ok:true,replayed:true,acceptedAtExact:STAMP,accepted:{groupId:'group',groupRevision:1,state:'draft',target:{targetId:'target',moduleId:'volunteers'},rosterIds:ids,coordinatorIntakeId:body.coordinatorIntakeId},currentDisposition:{groupId:'group',groupRevision:1,state:'draft',members:ids.map(participationId=>({participationId,revision:2,state:participationId==='p0002'?'waitlisted':'requested'}))}};}
 const group=()=>({ok:true,targetId:'target',group:{groupId:'group',groupRevision:1,state:'draft',originMode:'live',coordinatorIntakeId:null,roster:[1,2].map(n=>({participationId:row(n).id,label:'Fictional authorized '+n,revision:2,state:row(n).state,admitted:false}))}});
 async function mounted(run,{rows=[row(1),row(2),row(3)],admin=true}={}){
- const old={document:globalThis.document,window:globalThis.window,Node:globalThis.Node};globalThis.document=new Doc();globalThis.window=new EventTarget();globalThis.Node=E;
+ const old={document:globalThis.document,window:globalThis.window,Node:globalThis.Node,location:globalThis.location};globalThis.document=new Doc();globalThis.window=new EventTarget();globalThis.Node=E;globalThis.location={origin:'https://os.example.invalid'};
  let active=true,allRows=rows,sourceRevision=7,hook=null,root;const calls=[],changes=[],dirty=[];
  const request=async(path,o={})=>{const call={path,method:o.method||'GET',body:o.body&&structuredClone(o.body),wire:o.body&&JSON.stringify(o.body),signal:o.signal};calls.push(call);if(hook){const result=await hook(path,o);if(result!==undefined)return result;}
   if(path==='/api/orgs/org/participation-targets')return {ok:true,targets:[target(),target('other')]};
@@ -51,10 +55,25 @@ async function mounted(run,{rows=[row(1),row(2),row(3)],admin=true}={}){
   check:async(name,value=true)=>{const x=h.field(name);assert(x,'Missing checkbox '+name);x.checked=value;x.emit('change');await flush();},
   picker:async id=>{const x=root.querySelector('#participation-target-picker');x.value=id;x.emit('change');await flush();},
  };await run(h);
- }finally{root?.dispose();globalThis.document=old.document;globalThis.window=old.window;globalThis.Node=old.Node;}
+ }finally{root?.dispose();globalThis.document=old.document;globalThis.window=old.window;globalThis.Node=old.Node;globalThis.location=old.location;}
 }
 async function choose(h){await h.check('Group member p0001');await h.check('Group member p0002');}
 function writes(h){return h.calls.filter(x=>x.method==='POST');}
+const reminderRow=()=>row(3,{state:'confirmed',canConsent:false,intakeId:'fictional_intake',intakeRevision:6});
+function reminderPreview(body){return {ok:true,previewId:'reminder_preview',expiresAtExact:'2026-12-08T10:10:00.000000Z',review:{bestEffort:true,template:renderParticipationReminderTemplate('https://os.example.invalid/participant'),items:body.participations.map(p=>({participationId:p.participationId,range:{startAt:'2026-12-10T10:00:00Z',endAt:'2026-12-10T11:00:00Z',timeZone:'UTC'},dueAtExact:'2026-12-09T10:00:00.000000Z'}))}};}
+async function prepareReminder(h){await h.click('Review participation reminders');const c=h.root.querySelector('input[data-reminder-person="p0003"]');assert(c);c.checked=true;c.emit('change');await h.flush();await h.click('Preview selected reminders');const pane=h.root.all().find(n=>n.attrs['aria-label']==='Staff participation reminders');const ack=pane.all().find(n=>n.tagName==='INPUT'&&!n.attrs['data-reminder-person']);assert(ack);ack.checked=true;ack.emit('change');await h.flush();}
+test('actual workspace reminder entry is manual and uses the same scoped intake revision without selecting offline or missing-request rows',async()=>mounted(async h=>{
+ assert.equal(h.calls.some(c=>c.path.includes('participation-reminders')),false);h.hook(async(p,o)=>p.endsWith('/participation-reminders/preview')?reminderPreview(o.body):undefined);await h.click('Review participation reminders');assert(h.root.querySelector('input[data-reminder-person="p0003"]'));assert(!h.root.querySelector('input[data-reminder-person="p0004"]'));assert(!h.root.querySelector('input[data-reminder-person="p0005"]'));const c=h.root.querySelector('input[data-reminder-person="p0003"]');assert.equal(c.checked,false);c.checked=true;c.emit('change');await h.flush();await h.click('Preview selected reminders');assert.deepEqual(writes(h)[0].body.participations,[{participationId:'p0003',revision:2,intakeRevision:6}]);
+},{rows:[row(1),reminderRow(),row(4,{state:'confirmed',intakeId:'missing'}),row(5,{state:'confirmed',source:'legacy',intakeRevision:1})]}));
+test('retained group command prevents another mounted reminder pane from previewing or scheduling',async()=>mounted(async h=>{
+ h.hook(async(p,o)=>p.endsWith('/participation-reminders/preview')?reminderPreview(o.body):undefined);await prepareReminder(h);await h.click('Open staff group tools');await choose(h);h.hook(async(p,o)=>{if(p==='/api/orgs/org/participation-groups'&&o.method==='POST')throw Error('Fictional unknown group response');});await h.click('Save group draft');assert(h.root.hasPendingGroupCommand());const before=writes(h).length;await h.click('Preview selected reminders');assert.equal(writes(h).length,before);assert(h.text().includes('other participation command'));assert(!h.button('Schedule these reminders'));
+},{rows:[row(1),row(2),reminderRow()]}));
+test('retained reminder schedule blocks a previously mounted group and ordinary target navigation, while same-target refresh preserves exact Retry',async()=>mounted(async h=>{
+ await h.click('Open staff group tools');await choose(h);h.hook(async(p,o)=>{if(p.endsWith('/participation-reminders/preview'))return reminderPreview(o.body);if(p.endsWith('/participation-reminders/schedule'))throw Error('Fictional unknown reminder response');});await prepareReminder(h);await h.click('Schedule these reminders');assert(h.root.hasPendingGroupCommand());const before=writes(h).length;await h.click('Save group draft');assert.equal(writes(h).length,before);await h.picker('other');assert.equal(h.root.querySelector('#participation-target-picker').value,'target');assert(h.text().includes('reminder schedule may already be saved'));await h.click('Refresh reminder tools');assert.equal(writes(h).length,before);assert(h.button('Retry the same schedule'));await h.click('Retry the same schedule');const sent=writes(h).filter(c=>c.path.endsWith('/participation-reminders/schedule'));assert.equal(sent.length,2);assert.equal(sent[0].wire,sent[1].wire);
+},{rows:[row(1),row(2),reminderRow()]}));
+test('an in-flight reminder preview excludes group writes and ordinary workspace actions until it settles',async()=>mounted(async h=>{
+ await h.click('Open staff group tools');await choose(h);await h.click('Review participation reminders');const c=h.root.querySelector('input[data-reminder-person="p0003"]');c.checked=true;c.emit('change');await h.flush();let release;h.hook((p,o)=>p.endsWith('/participation-reminders/preview')?new Promise(r=>release=()=>r(reminderPreview(o.body))):undefined);await h.click('Preview selected reminders');assert(release);const before=writes(h).length;await h.click('Save group draft');assert.equal(writes(h).length,before);assert.equal(h.root.hasPendingGroupCommand(),false);await h.click('Refresh occurrence');assert.equal(writes(h).length,before);assert(h.text().includes('Wait for the current participation command'));release();await h.flush();assert(h.button('Schedule these reminders'));assert.equal(h.root.hasPendingGroupCommand(),false);
+},{rows:[row(1),row(2),reminderRow()]}));
 
 test('staff group tools are manually opened, use current source revision and display-only whitespace, with no inferred candidate names',async()=>mounted(async h=>{
  assert.equal(h.calls.filter(x=>x.path.includes('participation-groups')).length,0);await h.click('Open staff group tools');assert(h.pane());assert(h.button('Save group draft')); /* Strict child target admission would reject raw TAB/LF. */assert(h.field('Group member p0001'));assert(h.field('Group member p0002'));assert(!h.field('Group member p0003'));assert(!h.field('Group member p0004'));assert(!h.field('Group member p0005'));await choose(h);h.hook(async(p,o)=>p==='/api/orgs/org/participation-groups'&&o.method==='POST'?created(o.body):undefined);await h.click('Save group draft');assert.deepEqual(writes(h)[0].body.target,{targetId:'target',targetRevision:3,sourceRevision:7});assert.equal(h.changes.length,1);assert.equal(h.root.hasPendingGroupCommand(),false);assert.equal(h.root.hasUnsavedChanges(),false);

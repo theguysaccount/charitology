@@ -11,6 +11,7 @@ import { DELIVERY_TEMPLATE_VERSION } from "../lib/participation-delivery.mjs";
 import { validateGroupReceipt } from "../lib/participation-group-model.mjs";
 import { GROUP_CAPACITY_SQL } from "../lib/participation-group-capacity.mjs";
 import { GROUP_AUDIT_SQL } from "../lib/participation-group-safety-capacity.mjs";
+import { PARTICIPATION_REMINDER_LEGACY_SQL } from "../lib/participation-storage.mjs";
 
 const ORG = "fixture_org", MAX = 2147483647, AT = "2026-11-08T00:00:00.000Z", HASH = "a".repeat(64);
 const clone = value => structuredClone(value);
@@ -20,7 +21,7 @@ function person(overrides = {}) {
   return { org_id: ORG, id: "person", target_id: "target", module_id: "volunteers", booking_record_id: "booking", contact_id: "contact", intake_id: null,
     state: "requested", revision: 1, source: "staff", consent: null, frozen: null, waitlist_sequence: null, confirmed_at: null, cancelled_at: null,
     created_by: "fixture", created_at: AT, updated_at: AT, recovered: false, recovered_state: null, last_command: null, delivery_consent: null,
-    requested_interval: null, ...overrides };
+    requested_interval: null, reminder_consent: null, ...overrides };
 }
 function notice(active = false, overrides = {}) {
   return { org_id: ORG, id: "notice", participation_id: "person", event_revision: 1, participation_revision: 1, purpose: "participation", channel: "email", state: "paused",
@@ -56,8 +57,8 @@ async function fixture({ active = false, bounded = false, interval = false, noPo
     let rows, phase;
     if (sql === SQL.participations) {
       const actual = 1000, op = actual + pOp, projected = bounded ? op : op + 200;
-      rows = [{ id: raw.id, row: clone(raw), future_row: clone(terminal), actual: String(actual), actual_raw: String(actual + 22),
-        operational: String(op), operational_raw: String(op + 22), projected: String(projected), projected_raw: String(projected + 22) }]; phase = "people";
+      rows = [{ id: raw.id, row: clone(raw), future_row: clone(terminal), actual: String(actual), actual_raw: String(actual + 48),
+        operational: String(op), operational_raw: String(op + 48), projected: String(projected), projected_raw: String(projected + 48) }]; phase = "people";
     } else if (sql === SQL.bookings) {
       rows = bounded ? [] : [{ id: "booking", row: { org_id: ORG, id: "booking" }, future_row: { org_id: ORG, id: "booking" }, actual: "500", projected: "550" }]; phase = "bookings";
     } else if (sql === SQL.policy) {
@@ -77,7 +78,7 @@ test("legacy suppression and remaining p/booking/policy growth are actual-return
   assert.equal(result.bookingRetainedGrowth, 50); assert.equal(result.policyRetainedGrowth, 30);
   assert.equal(result.remainingSuppressionGrowthAboveOperational, 40); assert.equal(result.retainedGrowthAboveOperational, 320);
   assert(result.nativeSuppressionGrowth > 0); assert(result.nativePeopleGrowth > 0);
-  assert.equal(result.actualParticipationRawBytes - result.actualParticipationChargedBytes, 22);
+  assert.equal(result.actualParticipationRawBytes - result.actualParticipationChargedBytes, 48);
   assert.equal(JSON.stringify(f.backup), before); assert(!Object.isFrozen(f.backup));
 });
 
@@ -204,6 +205,8 @@ async function fullGuardFixture() {
   const c = { async query(sql, args = []) {
     calls.push({ sql, args: clone(args) });
     assert(/^(SELECT|WITH)\b/.test(sql), "Sizing must never execute fixture writes");
+    if(sql===`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`)return {rows:[{present:false}]};
+    if(sql==="SELECT id,reminder_consent FROM os_participations WHERE org_id=$1 AND reminder_consent IS NOT NULL ORDER BY id LIMIT 2001")return {rows:[]};
     if (Object.values(SQL).includes(sql)) {
       const result = await f.c.query(sql, args);
       if (sql === SQL.participations && args[5].length) return { rows: result.rows.map(r => ({ ...r, operational: String(Number(r.actual) + 100), operational_raw: String(Number(r.actual_raw) + 100) })) };
@@ -230,7 +233,7 @@ async function fullGuardFixture() {
     if (sql === "SELECT * FROM os_participations WHERE org_id=$1 ORDER BY created_at,id") return { rows: [f.raw] };
     if (sql === "SELECT * FROM os_participation_outbox WHERE org_id=$1 ORDER BY created_at,id") return { rows: Array.from({ length: sourceOutboxCount }, (_, index) => notice(false, { id: index ? "notice_" + index : "notice", event_revision: index + 1 })) };
     if (sql.startsWith("SELECT id,intent_kind,budget_bytes,octet_length(to_jsonb(t)::text) AS actual")) return { rows: [{ id: "notice", intent_kind: "legacy", budget_bytes: 0, actual: 500, projected: 550 }] };
-    if (sql.startsWith("SELECT octet_length(to_jsonb(t)::text) AS actual,GREATEST")) return { rows: [{ actual: 1022, projected: 1122 }] };
+    if (sql.startsWith("SELECT octet_length(") && sql.includes(" AS actual_raw,") && sql.includes("WHERE t.org_id=$1 AND t.id=ANY")) return { rows: args[5].map(() => ({ actual: 1000, projected: 1100, actual_raw: 1048, projected_raw: 1148 })) };
     if (sql.startsWith("SELECT COALESCE(sum(octet_length(") && sql.includes("FROM os_participations t")) return { rows: [{ bytes: 1000 }] };
     if (sql === "SELECT revision,enabled,activated_at,template_version,updated_at FROM os_participation_delivery_policies WHERE org_id=$1") return { rows: [{ revision: 1, enabled: false, activated_at: null, template_version: DELIVERY_TEMPLATE_VERSION, updated_at: AT }] };
     if (sql.startsWith("SELECT * FROM os_records WHERE org_id=$1 AND deleted_at IS NULL")) {

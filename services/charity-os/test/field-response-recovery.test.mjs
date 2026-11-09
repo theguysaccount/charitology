@@ -39,7 +39,7 @@ function measurement({baseline=[],usage=0,badReportSchema=false}={}) {
       return {rows};
     }
     if(sql.startsWith('SELECT item.ordinality::integer AS position')&&sql.includes('NULL::os_reports')) {
-      assert.match(sql,/octet_length\(to_jsonb\(r\)::text\)/);const values=JSON.parse(args[0]);f.observed.set('os_reports',values);
+      assert.match(sql,/octet_length\(\(to_jsonb\(r\)\)::text\) AS bytes/);const values=JSON.parse(args[0]);f.observed.set('os_reports',values);
       return {rows:values.map((r,i)=>({position:i+1,bytes:bytes(r)}))};
     }
     if(sql.startsWith('SELECT t.*,octet_length(to_jsonb(t)::text) AS capacity_bytes FROM os_events'))return {rows:[]};
@@ -57,7 +57,7 @@ function exporter(reports=[],features={}) {
     calls.push({sql,args:clone(args)});
     const emptyGroup=emptyParticipationGroupsQuery(sql,args);if(emptyGroup!==undefined)return emptyGroup;
     if(sql.startsWith('SELECT sum(size) AS size FROM ('))return {rows:[{size:reports.reduce((s,r)=>s+bytes(r),0)}]};
-    if(sql.startsWith('SELECT EXISTS(SELECT 1 FROM os_learning_history'))return {rows:[{present:false,incubator:false,checkins:false,groups:false,field:reports.length>0,...features}]};
+    if(sql.startsWith('SELECT EXISTS(SELECT 1 FROM os_learning_history'))return {rows:[{present:false,incubator:false,checkins:false,groups:false,reminders:false,field:reports.length>0,...features}]};
     if(sql==='SELECT * FROM os_orgs WHERE id=$1')return {rows:[organization]};
     assert.match(sql,/^SELECT /);assert.doesNotMatch(sql,/\b(?:INSERT|UPDATE|DELETE|FOR UPDATE)\b/);
     const table=sql.match(/\bFROM (os_[a-z_]+)/)?.[1];assert(allowed.has(table),'unknown fake export table');

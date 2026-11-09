@@ -1,4 +1,4 @@
-import { participationChargeJsonSQL } from "./participation-storage.mjs";
+import { participationChargeJsonSQL, participationIntervalChargeJsonSQL } from "./participation-storage.mjs";
 /** Exact native/recovery budgeting, called only inside the owning tenant transaction. */
 import {
   exportParticipation,
@@ -146,7 +146,7 @@ export async function checkParticipationExportCapacity(
   });
   // Only the new self-report family requests the legacy activation allowance;
   // absent-family v2 accounting and serialization remain unchanged.
-  const safety = exported.version === 3 || legacySafety === true;
+  const safety = exported.version === 3 || (exported.version === 4 && exported.basisVersion === 3) || legacySafety === true;
   const active = safety && reserve ? exported.participations.length : 0;
   const retainedReserve = active * PARTICIPATION_SAFETY_RESERVE.retained,
     nativeReserve = active * PARTICIPATION_SAFETY_RESERVE.native;
@@ -165,15 +165,16 @@ export async function checkParticipationExportCapacity(
   }
   const accounting = (
     await c.query(
-      `SELECT COALESCE(sum(octet_length(${participationChargeJsonSQL("t")}::text)),0) AS bytes,COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS raw_bytes FROM os_participations t WHERE org_id=$1`,
+      `SELECT COALESCE(sum(octet_length(${participationChargeJsonSQL("t")}::text)),0) AS bytes,COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS raw_bytes,COALESCE(sum(octet_length(${participationIntervalChargeJsonSQL("t")}::text)),0) AS interval_bytes FROM os_participations t WHERE org_id=$1`,
       [org],
     )
   ).rows[0];
   const chargedRetainedBytes = Number(accounting.bytes),
-    rawRetainedBytes = Number(accounting.raw_bytes);
+    rawRetainedBytes = Number(accounting.raw_bytes), intervalRetainedBytes = Number(accounting.interval_bytes);
   if (
     !Number.isSafeInteger(chargedRetainedBytes) ||
     !Number.isSafeInteger(rawRetainedBytes) ||
+    !Number.isSafeInteger(intervalRetainedBytes) || intervalRetainedBytes < chargedRetainedBytes || intervalRetainedBytes > rawRetainedBytes ||
     chargedRetainedBytes < 0 ||
     rawRetainedBytes < chargedRetainedBytes ||
     chargedRetainedBytes + retainedReserve >
@@ -183,6 +184,8 @@ export async function checkParticipationExportCapacity(
   return {
     version: exported.version,
     rawRetainedBytes,
+    intervalCompatibilityCreditBytes: rawRetainedBytes - intervalRetainedBytes,
+    reminderNullCompatibilityCreditBytes: intervalRetainedBytes - chargedRetainedBytes,
     chargedRetainedBytes,
     retainedReserve,
     nativeReserve,

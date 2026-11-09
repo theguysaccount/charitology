@@ -27,6 +27,13 @@ export function participationVersion(targets, rows) {
     ? 3
     : 2;
 }
+/** Native version is separate from interval basis; caller supplies only its
+ * descriptor-checked actual outbox presence, never a capacity/authority flag. */
+export function participationEnvelopeVersion(targets, rows, reminderPresent) {
+  if (typeof reminderPresent !== "boolean") throw new Error("Invalid reminder presence.");
+  const basis = participationVersion(targets, rows);
+  return reminderPresent ? { version: 4, basisVersion: basis } : { version: basis };
+}
 const sqlMarker = (base, path) => {
   const key = path.at(-1),
     parent = path
@@ -42,19 +49,18 @@ export function participationIntervalChargeJsonSQL(alias) {
     throw new Error("Unknown internal participation row alias.");
   return `(CASE WHEN ${PARTICIPATION_LEGACY_SQL} THEN to_jsonb(${alias})-'requested_interval' ELSE to_jsonb(${alias}) END)`;
 }
-// The bridge must run before and after the nullable column is added. Row JSON
-// lookup works on both schemas. Charge the physical key whenever this tenant
-// has any reminder data; the old runtime cannot interpret that data.
-const noReminderHistory = `(NOT EXISTS(SELECT 1 FROM os_participations pr WHERE pr.org_id=$1 AND (NULLIF(to_jsonb(pr)->'reminder_consent','null'::jsonb) IS NOT NULL OR pr.last_command->>'format'='charitology-participation-reminder-choice' OR pr.last_command->>'method'='participation-reminder-v1')) AND NOT EXISTS(SELECT 1 FROM os_participation_outbox pr WHERE pr.org_id=$1 AND (pr.intent_kind='reminder' OR pr.payload ? 'reminder')) AND NOT EXISTS(SELECT 1 FROM os_previews pr WHERE pr.org_id=$1 AND pr.kind='participation-reminder-v1'))`;
+// Deliberate upgrade policy: only a whole-org absence proof can credit the
+// new SQL NULL column. Full raw rows remain observable and independently measured.
+export const PARTICIPATION_REMINDER_LEGACY_SQL = `(NOT EXISTS(SELECT 1 FROM os_participations pr_row WHERE pr_row.org_id=$1 AND (pr_row.reminder_consent IS NOT NULL OR pr_row.last_command->>'format'='charitology-participation-reminder-choice' OR pr_row.last_command->>'method'='participation-reminder-v1')) AND NOT EXISTS(SELECT 1 FROM os_participation_outbox pr_outbox WHERE pr_outbox.org_id=$1 AND (pr_outbox.intent_kind='reminder' OR pr_outbox.payload ? 'reminder')) AND NOT EXISTS(SELECT 1 FROM os_previews pr_preview WHERE pr_preview.org_id=$1 AND pr_preview.kind='participation-reminder-v1'))`;
 export function participationChargeJsonSQL(alias) {
   const interval = participationIntervalChargeJsonSQL(alias);
-  return `(CASE WHEN ${noReminderHistory} THEN (${interval})-'reminder_consent' ELSE ${interval} END)`;
+  return `(CASE WHEN ${PARTICIPATION_REMINDER_LEGACY_SQL} THEN (${interval})-'reminder_consent' ELSE ${interval} END)`;
 }
 /** Called only after restoredParticipation strictly admitted the complete input.
- * A declared v3 packet always charges full new rows, including NULL columns. */
+ * Interval basis3 always charges its requested_interval key, including NULL. */
 export function legacyRecoveredParticipation(backup, normalized) {
-  if (!backup.participation || ![1, 2].includes(backup.participation.version))
-    return false;
+  const basis = backup.participation?.version === 4 ? backup.participation.basisVersion : backup.participation?.version;
+  if (![1, 2].includes(basis)) return false;
   return (
     participationVersion(
       normalized.targets,

@@ -249,7 +249,7 @@ ALTER TABLE os_participation_outbox DROP CONSTRAINT IF EXISTS os_participation_o
 ALTER TABLE os_participation_outbox ADD CONSTRAINT os_participation_outbox_state_check CHECK(state IN ('paused','pending','leased','accepted','delivered','suppressed','failed','unknown','cancelled'));
 ALTER TABLE os_participation_outbox DROP CONSTRAINT IF EXISTS os_participation_outbox_delivery_bounds;
 ALTER TABLE os_participation_outbox ADD CONSTRAINT os_participation_outbox_delivery_bounds CHECK(
- participation_revision>0 AND intent_kind IN ('legacy','snapshot','transition') AND consent_revision>=0
+ participation_revision>0 AND intent_kind IN ('legacy','snapshot','transition','reminder') AND consent_revision>=0
  AND attempts>=0 AND budget_bytes BETWEEN 0 AND 16384
  AND (safe_code IS NULL OR length(safe_code)<=100)
  AND (relay_key IS NULL OR length(relay_key)<=128)
@@ -701,3 +701,19 @@ CREATE CONSTRAINT TRIGGER complete_group_chain AFTER INSERT OR UPDATE ON os_part
 DROP TRIGGER IF EXISTS receipt_in_group_chain ON os_participation_group_receipts;
 CREATE CONSTRAINT TRIGGER receipt_in_group_chain AFTER INSERT ON os_participation_group_receipts
  DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION os_participation_group_integrity();
+
+-- Reminder authority is separate, initially absent and never backfilled.
+ALTER TABLE os_participations ADD COLUMN IF NOT EXISTS reminder_consent jsonb;
+ALTER TABLE os_participations DROP CONSTRAINT IF EXISTS os_participations_reminder_consent_size;
+ALTER TABLE os_participations ADD CONSTRAINT os_participations_reminder_consent_size
+ CHECK(reminder_consent IS NULL OR (jsonb_typeof(reminder_consent)='object' AND octet_length(reminder_consent::text)<=4096));
+ALTER TABLE os_participation_outbox DROP CONSTRAINT IF EXISTS os_participation_reminder_marker;
+ALTER TABLE os_participation_outbox ADD CONSTRAINT os_participation_reminder_marker CHECK(
+ intent_kind<>'reminder' OR ((jsonb_typeof(payload)='object' AND octet_length(payload::text)<=2048
+ AND jsonb_typeof(payload->'reminder')='object'
+ AND payload#>>'{reminder,method}'='participation-reminder-v1'
+ AND payload#>>'{reminder,version}'='1'
+ AND (payload#>>'{reminder,commitmentSha256}')~'^[a-f0-9]{64}$') IS TRUE));
+CREATE UNIQUE INDEX IF NOT EXISTS os_participation_reminder_original
+ ON os_participation_outbox(org_id,participation_id,((payload->'reminder')->>'commitmentSha256'))
+ WHERE intent_kind='reminder';

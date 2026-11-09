@@ -1,3 +1,4 @@
+import {PARTICIPATION_REMINDER_LEGACY_SQL} from '../lib/participation-storage.mjs';
 import test from "node:test";
 import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
@@ -1026,6 +1027,10 @@ test("Access revocation remains possible with minimal audit reserve and after th
             if (emptyGroups !== undefined) return emptyGroups;
             if (sql.startsWith("SELECT sum(size) AS size FROM ("))
               return { rows: [{ size: usage }] };
+            // This legacy quota graph has no choice, reminder marker or reserved preview.
+            if (sql === `SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`) {
+              assert.deepEqual(args,[org]); return {rows:[{present:false}]};
+            }
             // No check-in history participates in this legacy audit-reserve case.
             if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1") return { rows: [{ count: 0 }] };
             // This historical quota fixture has no participation feature state.

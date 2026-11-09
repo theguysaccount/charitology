@@ -39,8 +39,8 @@
     },
     {
       "name": "contact-context-catalog.mjs",
-      "bytes": 7289,
-      "sha256": "0f9f00c54aeecb68afc5edaa1124a819155cd77e832765d1c7cdfaa75645eb8d"
+      "bytes": 7313,
+      "sha256": "70cbf5b7ceb903fe5ed463ac00c151ab338c6b2dde3baf7ac80ea8587021f3ad"
     },
     {
       "name": "contact-known-history.mjs",
@@ -94,8 +94,8 @@
     },
     {
       "name": "database.mjs",
-      "bytes": 20643,
-      "sha256": "cb79ccd1213357ae26c3be51b81e6f37bac37eaea4aed0486c298256834b75d8"
+      "bytes": 21685,
+      "sha256": "779d4f37844f2b4951a00733baa924ba29e4450822c4dd1b18e01907827c929d"
     },
     {
       "name": "directory-catalog-data.json",
@@ -189,8 +189,8 @@
     },
     {
       "name": "handler.mjs",
-      "bytes": 80912,
-      "sha256": "6fb9a5968341c50481aee4f074f23c56aa28fb6108117d80450ad3d85c433bf6"
+      "bytes": 81455,
+      "sha256": "fead9465b8a204a0125b19136c4cedfaa3cc94a0ed526f99b07abe003f7cd0ca"
     },
     {
       "name": "incubator-bridge-access.mjs",
@@ -294,8 +294,8 @@
     },
     {
       "name": "learning-capacity.mjs",
-      "bytes": 41133,
-      "sha256": "334d1c026f6b1cad2c56687d079caf596a614b545dc2aca86688b4468b9282da"
+      "bytes": 43970,
+      "sha256": "02c7f74eb80b9f9bdda9804f103353477640cb9ca46cc4d586748a6907495421"
     },
     {
       "name": "learning-commands.mjs",
@@ -399,8 +399,8 @@
     },
     {
       "name": "mail.mjs",
-      "bytes": 6879,
-      "sha256": "afac3f2085e64b71c9eb7f21ff3d9eaa870f7bad498e65d723a201876ed6773f"
+      "bytes": 7300,
+      "sha256": "8d064082276d69147adc3d21ce339dfe34d7da8dd03b19a771a253b6cad5456f"
     },
     {
       "name": "members.mjs",
@@ -454,13 +454,13 @@
     },
     {
       "name": "participation-backup.mjs",
-      "bytes": 25593,
-      "sha256": "4d20a91e8a33fed27092319453d75b886d3aa7e04aa627aaa1eaa9a9f534ce88"
+      "bytes": 26361,
+      "sha256": "1f6a595a7d3b2f2ff528e8c451a5eade91925a8bbac59c006e02ddb33f89a3c6"
     },
     {
       "name": "participation-capacity.mjs",
-      "bytes": 9649,
-      "sha256": "a95554fb61f9354568053993e8c682a44f3b821b97f5537aeef21d3efac844cf"
+      "bytes": 10213,
+      "sha256": "853a732df8118cf67043d6de550bfd2874284eef71a7e0b941f3231540cf7cfe"
     },
     {
       "name": "participation-delivery-backup.mjs",
@@ -469,8 +469,8 @@
     },
     {
       "name": "participation-delivery.mjs",
-      "bytes": 53895,
-      "sha256": "3278c7697f50eeb828807fc8342a3de0a87429700cd9d136ada696d0de3afee4"
+      "bytes": 56592,
+      "sha256": "3ac12fe4e32d1b12de57f109aa34bca9f796a0123441607f91651e23af1bc54a"
     },
     {
       "name": "participation-group-access.mjs",
@@ -544,8 +544,8 @@
     },
     {
       "name": "participation-group-safety-capacity.mjs",
-      "bytes": 28383,
-      "sha256": "4a2ca95925172e4e85b05cba488631d6142d5b143905c45992543bf176384998"
+      "bytes": 29884,
+      "sha256": "eccd340c21b7b415175bb4ce50306522bd0be4ec398760cd5a98598560070bb9"
     },
     {
       "name": "participation-group-store.mjs",
@@ -638,9 +638,69 @@
       "sha256": "a6cdfd69c247087fe38319a9ea335a745ce5b03c2ec3c8336a79346c0e949ce2"
     },
     {
+      "name": "participation-reminder-audit.mjs",
+      "bytes": 1882,
+      "sha256": "507fb483aa34b0f05feab9256f8bd77e78f41daaa7601adabfbdf4c4b1d22ba9"
+    },
+    {
+      "name": "participation-reminder-backup.mjs",
+      "bytes": 7762,
+      "sha256": "8051dcdb13963169f41ba1056467f7a5dc9a0a8544d938e05bbebce0fbb90d17"
+    },
+    {
+      "name": "participation-reminder-capacity.mjs",
+      "bytes": 36665,
+      "sha256": "5b1c3d9dda428b6c588c07959dd428b9aa364ae9a102849b623afef94198ae2e"
+    },
+    {
+      "name": "participation-reminder-choice.mjs",
+      "bytes": 7631,
+      "sha256": "99e191370bdce5970f8ef728f6048a33cd58257d4794b4309a58f9b32074ffa5"
+    },
+    {
+      "name": "participation-reminder-commands.mjs",
+      "bytes": 14155,
+      "sha256": "1fc77018430d7fdfa7273cf590272b4cc6a3ab7434774f0e2a74193973184a4c"
+    },
+    {
+      "name": "participation-reminder-context.mjs",
+      "bytes": 20000,
+      "sha256": "fe211b1b9ea40b4474c21f610fef5023d816171e5ccba1684fc72f0a648b9616"
+    },
+    {
+      "name": "participation-reminder-model.mjs",
+      "bytes": 16891,
+      "sha256": "f4e47b864e7db58abacee7233c03483f62f2a238dc23c8f05cbb4e72fad22e11"
+    },
+    {
+      "name": "participation-reminder-outbox.mjs",
+      "bytes": 5098,
+      "sha256": "3fb821dc9a46175df7be419598c8eddddf0ed5d4d70a740759da8415e90be56d"
+    },
+    {
+      "name": "participation-reminder-routes.mjs",
+      "bytes": 4958,
+      "sha256": "8a48bdcf3c97eec1bcc24c07defd1a65a8ead7f0720510a4925f3afcb75e515a"
+    },
+    {
+      "name": "participation-reminder-store.mjs",
+      "bytes": 10101,
+      "sha256": "e57b4f4005594a48ec169891ba0cfb19567696237382594e628e8fbf338380b5"
+    },
+    {
+      "name": "participation-reminder-template.mjs",
+      "bytes": 2863,
+      "sha256": "ae90e7903c6f5ed6856534a0d233fca5cd1b7181e59ccce4c90bb2885db46a51"
+    },
+    {
+      "name": "participation-reminder-worker.mjs",
+      "bytes": 8653,
+      "sha256": "4c09af7854cfc73f4324993e49e0d95ff058093c2bbff662e5dcf7ae4add76ff"
+    },
+    {
       "name": "participation-storage.mjs",
-      "bytes": 3964,
-      "sha256": "3f27ef5b7510d0848a89f8a4cd9f0af3947db579d61f807e2d7afe60bc8f8ae5"
+      "bytes": 4511,
+      "sha256": "01841349e00d9eacc68556ed2479e4d54c30ad82256394460582bf2c7890952f"
     },
     {
       "name": "participation-timestamp.mjs",
@@ -649,8 +709,8 @@
     },
     {
       "name": "participation.mjs",
-      "bytes": 69659,
-      "sha256": "e56623544b57c16246d293f0137e821f38c1bde43c7c17b0b8370ba651486602"
+      "bytes": 69838,
+      "sha256": "80699cd3784f0ae6cd26008099b232f3aeb518d00b3b24cfee8869528f5f13ea"
     },
     {
       "name": "public-registry.mjs",
@@ -669,8 +729,8 @@
     },
     {
       "name": "schema.sql",
-      "bytes": 60103,
-      "sha256": "92564915c0b0ed71fc20d7969f779a33f30a65e507ae98557f4530a2f953a4e2"
+      "bytes": 61287,
+      "sha256": "23ca297b0b676cac6058fecc3ce14f6e8bb721347492f71d886c28a416aa0b93"
     },
     {
       "name": "security.mjs",
@@ -699,8 +759,8 @@
     },
     {
       "name": "workspace-backup.mjs",
-      "bytes": 9627,
-      "sha256": "709a152a2185d8ade2cc838acc4dd248e17b87e8871170a15a2dcdb2a799f1e4"
+      "bytes": 9985,
+      "sha256": "a69330477aece41e1a3cb80e5bc0e698c51a6d3a8c804dab8b14faca67ce9176"
     }
   ]
 }

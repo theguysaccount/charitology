@@ -1,4 +1,5 @@
 import { fail, hash } from "./security.mjs";
+import { PARTICIPATION_REMINDER_VARIANT, renderParticipationReminderTemplate } from "./participation-reminder-template.mjs";
 export function mailer(settings) {
   return async function send(message, key, { deadline } = {}) {
     if (!settings.relaySecret)
@@ -189,9 +190,10 @@ export function participationMailer(settings, { fetcher = fetch } = {}) {
       if (
         !message ||
         Object.keys(message).some(
-          (field) => !["purpose", "to", "url"].includes(field),
+          (field) => !["purpose", "to", "url", "variant"].includes(field),
         ) ||
         message.purpose !== "participation" ||
+        (Object.hasOwn(message, "variant") && message.variant !== PARTICIPATION_REMINDER_VARIANT) ||
         typeof message.to !== "string" ||
         message.to.length > 254 ||
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(message.to)
@@ -204,6 +206,10 @@ export function participationMailer(settings, { fetcher = fetch } = {}) {
         return outcome("failed", "invalid_request");
       }
       if (message.url !== expected) return outcome("failed", "invalid_request");
+      if (Object.hasOwn(message, "variant")) {
+        try { renderParticipationReminderTemplate(message.url); }
+        catch { return outcome("failed", "invalid_request"); }
+      }
       if (
         settings.participationTestOnly &&
         (!settings.participationTestRecipient ||

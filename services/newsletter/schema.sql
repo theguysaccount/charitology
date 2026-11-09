@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS newsletter_os_mail_intents (
 );
 -- Widen deployed constraints explicitly; CREATE IF NOT EXISTS alone does not.
 ALTER TABLE newsletter_os_mail_intents DROP CONSTRAINT IF EXISTS newsletter_os_mail_intents_purpose_check;
-ALTER TABLE newsletter_os_mail_intents ADD CONSTRAINT newsletter_os_mail_intents_purpose_check CHECK(purpose IN ('login','invitation','reminder','participation'));
+ALTER TABLE newsletter_os_mail_intents ADD CONSTRAINT newsletter_os_mail_intents_purpose_check CHECK(purpose IN ('login','invitation','reminder','participation','participation-reminder-v1'));
 ALTER TABLE newsletter_os_mail_intents DROP CONSTRAINT IF EXISTS newsletter_os_mail_intents_state_check;
 ALTER TABLE newsletter_os_mail_intents ADD CONSTRAINT newsletter_os_mail_intents_state_check CHECK(state IN ('creating','accepted','unknown','failed','limited','preflight'));
 ALTER TABLE newsletter_os_mail_intents ADD COLUMN IF NOT EXISTS attempted_at timestamptz;
@@ -72,9 +72,12 @@ ALTER TABLE newsletter_os_mail_intents ADD COLUMN IF NOT EXISTS correlation_hash
 ALTER TABLE newsletter_os_mail_intents ADD COLUMN IF NOT EXISTS safe_code text CHECK(safe_code IS NULL OR safe_code ~ '^[a-z_]{1,64}$');
 ALTER TABLE newsletter_os_mail_intents ADD COLUMN IF NOT EXISTS provider_facts jsonb NOT NULL DEFAULT '{}'::jsonb CHECK(jsonb_typeof(provider_facts)='object' AND octet_length(provider_facts::text)<=2048);
 ALTER TABLE newsletter_os_mail_intents DROP CONSTRAINT IF EXISTS newsletter_os_mail_preflight_check;
-ALTER TABLE newsletter_os_mail_intents ADD CONSTRAINT newsletter_os_mail_preflight_check CHECK(state<>'preflight' OR(purpose='participation' AND attempted_at IS NULL));
+ALTER TABLE newsletter_os_mail_intents ADD CONSTRAINT newsletter_os_mail_preflight_check CHECK(state<>'preflight' OR(purpose IN ('participation','participation-reminder-v1') AND attempted_at IS NULL));
 CREATE UNIQUE INDEX IF NOT EXISTS newsletter_os_participation_correlation ON newsletter_os_mail_intents(correlation_hash) WHERE purpose='participation' AND correlation_hash IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS newsletter_os_participation_provider ON newsletter_os_mail_intents(provider_id) WHERE purpose='participation' AND provider_id IS NOT NULL;
+-- Keep the deployed indexes and add cross-variant uniqueness; no accepted row is rewritten.
+CREATE UNIQUE INDEX IF NOT EXISTS newsletter_os_participation_family_correlation ON newsletter_os_mail_intents(correlation_hash) WHERE purpose IN ('participation','participation-reminder-v1') AND correlation_hash IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS newsletter_os_participation_family_provider ON newsletter_os_mail_intents(provider_id) WHERE purpose IN ('participation','participation-reminder-v1') AND provider_id IS NOT NULL;
 
 -- R5 is additive: legacy campaign evidence stays nullable and is never backfilled.
 CREATE TABLE IF NOT EXISTS newsletter_issue_reviews (
