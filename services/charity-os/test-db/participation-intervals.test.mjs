@@ -4,6 +4,8 @@ import {
   participationVersion,
   PARTICIPATION_LEGACY_SQL,
   participationChargeJsonSQL,
+  participationIntervalChargeJsonSQL,
+  PARTICIPATION_REMINDER_LEGACY_SQL,
 } from "../lib/participation-storage.mjs";
 import { buildLearningFixture } from "../test/learning-fixtures.mjs";
 import { restoreLearningBridge } from "../lib/learning-backup.mjs";
@@ -911,9 +913,27 @@ test(
               )
             ).rows[0].bytes,
           );
+          // The old-schema oracle still measures raw rows. Calibrate the
+          // fixture against the independently proved, whole-org reminder NULL
+          // credit so this remains a genuine charged-cap frontier.
+          assert.equal(
+            (await c.query(`SELECT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS legacy`, [f.org])).rows[0].legacy,
+            true,
+          );
+          const reminderNullKeyBytes = (
+            await c.query(
+              "SELECT octet_length(to_jsonb(p)::text)-octet_length((to_jsonb(p)-'reminder_consent')::text) AS bytes FROM jsonb_populate_record(NULL::os_participations,$1) p",
+              [JSON.stringify(sample)],
+            )
+          ).rows[0].bytes;
+          assert.equal(reminderNullKeyBytes, 26);
+          const existingCount = Number((await c.query(
+            "SELECT count(*) AS count FROM os_participations WHERE org_id=$1", [f.org],
+          )).rows[0].count);
+          assert.equal(existingCount, 1);
           const count = Math.min(
             1900,
-            Math.floor((8 * 1024 * 1024 - 1000 - existing) / measured),
+            Math.floor((8 * 1024 * 1024 - 1000 - (existing - reminderNullKeyBytes * existingCount)) / (measured - reminderNullKeyBytes)),
           );
           assert(count > 1000);
           await c.query(
@@ -932,17 +952,20 @@ test(
               )
             ).rows[0].bytes,
           );
+          const reminderNullCredit = reminderNullKeyBytes * (count + existingCount),
+            chargedUsed = used - reminderNullCredit;
           assert(
-            used > 8 * 1024 * 1024 - 8000 && used <= 8 * 1024 * 1024 - 1000,
+            chargedUsed > 8 * 1024 * 1024 - 8000 && chargedUsed <= 8 * 1024 * 1024 - 1000,
           );
           const oldGlobalBase = await oldLogicalBackupBytes(c, f.org);
           await c.query(
             "INSERT INTO os_events(org_id,actor_id,action,detail) VALUES($1,$2,'fixture.historical',jsonb_build_object('preserved',repeat('x',$3::int)))",
-            [f.org, f.staff, 60 * 1024 * 1024 - oldGlobalBase - 1000],
+            [f.org, f.staff, 60 * 1024 * 1024 - (oldGlobalBase - reminderNullCredit) - 1000],
           );
           const oldGlobal = await oldLogicalBackupBytes(c, f.org);
           assert(
-            oldGlobal > 60 * 1024 * 1024 - 2000 && oldGlobal < 60 * 1024 * 1024,
+            oldGlobal - reminderNullCredit > 60 * 1024 * 1024 - 2000 &&
+            oldGlobal - reminderNullCredit < 60 * 1024 * 1024,
           );
           const oldNative = await exportParticipation(c, f.org),
             oldNativeHash = hash(JSON.stringify(oldNative));
@@ -966,7 +989,8 @@ test(
             reserve: false,
           });
           assert.equal(accounting.version, 2);
-          assert(accounting.reminderNullCompatibilityCreditBytes > 0);
+          assert.equal(accounting.reminderNullCompatibilityCreditBytes, reminderNullCredit);
+          assert.equal(accounting.chargedRetainedBytes, chargedUsed);
           assert.equal(accounting.chargedRetainedBytes + accounting.reminderNullCompatibilityCreditBytes, used);
           assert.equal(accounting.intervalCompatibilityCreditBytes, 28 * (count + 1));
           assert.equal(accounting.rawRetainedBytes - used, 28 * (count + 1));
@@ -992,6 +1016,7 @@ test(
           );
           return {
             used,
+            chargedUsed,
             rawAfterMigration: accounting.rawRetainedBytes,
             oldGlobal,
             rawGlobalAfter,
@@ -1030,7 +1055,7 @@ test(
                 )
               ).rows[0].bytes,
             );
-            assert(used - before.used <= PARTICIPATION_SAFETY_RESERVE.retained);
+            assert(used - before.chargedUsed <= PARTICIPATION_SAFETY_RESERVE.retained);
             assert(
               booking - before.bookingBytes <=
                 PARTICIPATION_SAFETY_RESERVE.bookingRetained,
@@ -1085,7 +1110,8 @@ test(
           JSON.stringify({
             fixtureOnly: true,
             legacyRows: before.count,
-            legacyChargedBytes: before.used,
+            legacyRawBytes: before.used,
+            legacyChargedBytes: before.chargedUsed,
             rawAfterNullableMigration: before.rawAfterMigration,
             oldGlobal: before.oldGlobal,
             rawGlobalAfter: before.rawGlobalAfter,
@@ -1100,8 +1126,25 @@ test(
         await t.test(
           "separate v3 full-row overflow cannot use legacy compatibility, including reserve:false",
           async () => {
-            // After old safety commands consumed emergency headroom, a new
-            // ordinary opt-in must refuse atomically with the old v2 exit intact.
+            // Measure the exact target-row write after the real safety exits.
+            // The raw historical oracle and reminder credit remain separate;
+            // a fixture that misses this frontier must fail before the command.
+            const ordinaryBoundary = await f.migration.tx(f.staff, f.org, async (c) => {
+              const currentUsage = await logicalBackupBytes(c, f.org);
+              await c.query("SAVEPOINT ordinary_target_size_probe");
+              await c.query(
+                "UPDATE os_records SET data=jsonb_set(data,'{allowPartialIntervals}','true'::jsonb),revision=revision+1,approval=jsonb_set(approval,'{revision}',to_jsonb(revision+1)),updated_at=now() WHERE org_id=$1 AND id=$2",
+                [f.org, target.id],
+              );
+              const targetWriteUsage = await logicalBackupBytes(c, f.org);
+              await c.query("ROLLBACK TO ordinary_target_size_probe");
+              await c.query("RELEASE ordinary_target_size_probe");
+              assert(currentUsage > 60 * 1024 * 1024 - 2000 && currentUsage < 61 * 1024 * 1024);
+              assert(targetWriteUsage > 60 * 1024 * 1024);
+              return { currentUsage, targetWriteUsage };
+            });
+            t.diagnostic(JSON.stringify({ fixtureOnly: true, ordinaryBoundary }));
+            // A new ordinary opt-in still refuses atomically, code unchanged.
             await assert.rejects(
               edit(
                 f,
@@ -1165,16 +1208,17 @@ test(
               f.org,
               async (c) => {
                 const packet = await exportParticipation(c, f.org),
-                  raw = Number(
-                    (
-                      await c.query(
-                        "SELECT sum(octet_length(to_jsonb(p)::text))::int AS bytes FROM os_participations p WHERE org_id=$1",
-                        [f.org],
-                      )
-                    ).rows[0].bytes,
-                  );
+                  measuredV3 = (
+                    await c.query(
+                      `SELECT sum(octet_length(to_jsonb(p)::text))::int AS raw,sum(octet_length(${participationIntervalChargeJsonSQL("p")}::text))::int AS interval_charged,sum(octet_length(${participationChargeJsonSQL("p")}::text))::int AS charged FROM os_participations p WHERE org_id=$1`,
+                      [f.org],
+                    )
+                  ).rows[0],
+                  raw = measuredV3.raw;
                 assert.equal(packet.version, 3);
-                assert(raw > 8 * 1024 * 1024);
+                assert.equal(measuredV3.raw, measuredV3.interval_charged);
+                assert.equal(measuredV3.interval_charged - measuredV3.charged, 26 * before.count);
+                assert(measuredV3.charged > 8 * 1024 * 1024);
                 assert(
                   Buffer.byteLength(JSON.stringify(packet.participations)) <
                     8 * 1024 * 1024,
@@ -1189,6 +1233,7 @@ test(
                   JSON.stringify({
                     fixtureOnly: true,
                     deliberateV3RawOverflow: raw,
+                    deliberateV3ChargedOverflow: measuredV3.charged,
                     refusedWithoutReserve: true,
                   }),
                 );
@@ -1731,11 +1776,15 @@ test(
           );
           const bytes = (
             await c.query(
-              `SELECT octet_length(to_jsonb(p)::text)::int AS raw,octet_length(${participationChargeJsonSQL("p")}::text)::int AS charged FROM os_participations p WHERE org_id=$1 AND id=$2`,
+              `SELECT octet_length(to_jsonb(p)::text)::int AS raw,octet_length(${participationIntervalChargeJsonSQL("p")}::text)::int AS interval_charged,octet_length(${participationChargeJsonSQL("p")}::text)::int AS charged,${PARTICIPATION_REMINDER_LEGACY_SQL} AS reminder_absent FROM os_participations p WHERE org_id=$1 AND id=$2`,
               [f.org, p.id],
             )
           ).rows[0];
-          assert.equal(bytes.raw - bytes.charged, sql ? 28 : 0);
+          // Preserve the original interval golden and prove the separate NULL
+          // reminder credit even when an interval marker makes the basis v3.
+          assert.equal(bytes.raw - bytes.interval_charged, sql ? 28 : 0);
+          assert.equal(bytes.reminder_absent, true);
+          assert.equal(bytes.interval_charged - bytes.charged, 26);
           await c.query("ROLLBACK TO marker_case");
         }
       });

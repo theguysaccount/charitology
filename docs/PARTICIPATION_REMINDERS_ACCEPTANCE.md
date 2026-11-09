@@ -22,6 +22,12 @@ The fourth run, `98f21149`, identifies that assertion precisely: activation retu
 
 The fifth local run, `c27a8325`, passes all ten main scenarios and RC01–RC02, including the actual activation refusal, full rollback and both legacy exits. RC03 stops before filling because its private 15,000-comment fixture allowance is too small for 60 MiB of legal 4,000-character comments. The successor permits at most 16,000 fixture comments, with the body cap and every application limit unchanged. Its actual near-60 MiB result is still pending. Fresh final business readback and owned cleanup pass for this failed run.
 
+## Existing-database CI compatibility
+
+Source `d13433c1` passes all 2,050 OS unit/client checks in both GitHub profiles. The existing PostgreSQL 17.11 suite passes 225 of 228 tests, with one failed parent and two distinct failed assertions. The reminder twenty-case entry is not reached, so no reminder CI database success is claimed.
+
+Both assertions predate the new independent reminder NULL credit. One near-cap fixture gains 34,320 charged bytes of real headroom, invalidating its expected refusal; another calls the combined 54-byte credit the old 28-byte interval credit. The fixture-only successor preserves the raw historical oracle and exact interval golden, separately proves the 26-byte reminder credit, calibrates actual charged boundaries and retains the original quota/refusal expectations. It also measures the target write inside a rolled-back savepoint and corrects a later raw-only overflow witness. No application quota, runtime guard or historical golden changes. Fresh actual PostgreSQL verification remains required.
+
 ## The participant chooses separately
 
 The person must have the current verified account and own-request link. General operational email consent and the new reminder choice are separate. Staff cannot opt in for someone else. Historical email preferences, check-in permission, a booking or a restored file cannot enable reminders.
