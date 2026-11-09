@@ -1090,6 +1090,75 @@ check(
     await d.window.fire("pagehide");
   },
 );
+check(
+  "chapter four-meeting starter requires discard and review, saves ordinary editable records and exact native export",
+  async () => {
+    const p = "university-chapters", d = await start(p), source = d.saved();
+    assert.equal(source.records.sessions.length, 6);
+    for (const other of programs.filter(id => id !== p))
+      assert.doesNotMatch(html.get(other), /id="pw-four-starter"/);
+    await d.set("#pw-context-name", "Keep this unfinished chapter name");
+    await d.$("#pw-four-starter").click();
+    await settleTools(() => /unfinished|discard/i.test(d.$("#pw-status").textContent));
+    assert.equal(d.$("#pw-sample-preview").hidden, true);
+    assert.equal(d.get("#pw-context-name"), "Keep this unfinished chapter name");
+    assert.deepEqual(d.saved(), source);
+    await d.set("#pw-sample-discard", true, "change");
+    await d.$("#pw-four-starter").click();
+    await settleTools(() => !d.$("#pw-sample-preview").hidden);
+    assert.match(d.$("#pw-sample-summary").textContent, /four-meeting starter replacement: 4 sessions/);
+    const titles = ["Follow the chain", "Check the comparison", "Ask who decides", "Revise and hand over"];
+    for (const title of titles) assert(d.$("#pw-four-draft").textContent.includes(title));
+    assert.match(d.$("#pw-four-draft").textContent, /Illustrative four-meeting starter/);
+    assert.match(d.$("#pw-four-draft").textContent, /No source check, human review, partner approval, institutional recognition or public adoption is implied/);
+    assert.deepEqual(d.saved(), source, "Review alone writes nothing");
+    await d.$("#pw-sample-apply").click();
+    await settleTools(() => d.$("#pw-sample-preview").hidden && !d.$("#pw-four-starter").disabled);
+    const saved = d.saved();
+    assert.equal(saved.version, 1);assert.equal(saved.program, p);
+    assert.equal(saved.context.term, "Illustrative four-meeting starter");
+    assert.deepEqual(saved.records.sessions.map(row => row.values.title), titles);
+    assert.equal(new Set(saved.records.sessions.map(row => row.id)).size, 4);
+    for (const row of saved.records.sessions) {
+      assert.match(row.values.agenda, /50 minutes/);
+      assert.equal(row.values.reading, "/learn/clubs/#first-meetings");
+      for (const key of ["date", "facilitator", "location", "notes"]) assert.equal(row.values[key], "");
+    }
+    await d.$("#pw-export").click();assert.deepEqual(JSON.parse(await d.downloads.at(-1).text()), saved);
+    await d.$("#pw-markdown").click();const md = await d.downloads.at(-1).text();for (const title of titles) assert(md.includes(title));
+    await d.$("#pw-csv").click();const csv = await d.downloads.at(-1).text();for (const title of titles) assert(csv.includes(title));
+    // The existing six-session action is still independently available.
+    await d.set("#pw-sample-discard", true, "change");await d.$("#pw-sample").click();
+    await settleTools(() => !d.$("#pw-sample-preview").hidden);
+    assert.match(d.$("#pw-sample-summary").textContent, /FICTIONAL replacement: 6 sessions/);
+    assert.equal(d.$("#pw-four-draft").hidden, true);
+    await d.$("#pw-sample-apply").click();
+    await settleTools(() => d.$("#pw-sample-preview").hidden && !d.$("#pw-sample").disabled);
+    assert.deepEqual(d.saved().records.sessions.map(row => row.values), source.records.sessions.map(row => row.values));
+    assert.equal(d.saved().context.term, source.context.term);
+    await d.window.fire("pagehide");
+  },
+);
+check(
+  "new writing and persisted hide revoke the four-meeting review without replacing saved or unfinished work",
+  async () => {
+    const d = await start(), source = d.saved();
+    await d.set("#pw-sample-discard", true, "change");await d.$("#pw-four-starter").click();
+    await settleTools(() => !d.$("#pw-sample-preview").hidden);
+    await d.set("#pw-context-name", "Newer writing after starter review");
+    assert.equal(d.$("#pw-sample-preview").hidden, true);
+    assert.equal(d.$("#pw-four-draft").textContent, "");
+    await d.$("#pw-sample-apply").click();assert.deepEqual(d.saved(), source);
+    assert.equal(d.get("#pw-context-name"), "Newer writing after starter review");
+    await d.set("#pw-sample-discard", true, "change");await d.$("#pw-four-starter").click();
+    await settleTools(() => !d.$("#pw-sample-preview").hidden);
+    await d.window.fire("pagehide", {persisted:true});
+    assert.equal(d.$("#pw-sample-preview").hidden, true);
+    await d.$("#pw-sample-apply").click();assert.deepEqual(d.saved(), source);
+    assert.equal(d.get("#pw-context-name"), "Newer writing after starter review");
+    await d.window.fire("pagehide");
+  },
+);
 try {
   const pure = await build({
     stdin: {

@@ -6,7 +6,7 @@ This is the first scheduled-message component of **OS-COMMS-01**. It implements 
 
 ## Current state
 
-The combined implementation is local and unreleased. The server route gate and browser feature switch are both false. No participant can use the new controls on the published service, and no new reminder has been sent. Actual reminder database, hosted delivery and browser acceptance are still pending.
+The reminder candidate has passed actual PostgreSQL checks and a private browser rehearsal. The server route gate and browser feature switch are both false. No participant can use the new controls on the published service, and no reminder has been sent. Hosted configuration, production schema readback and a controlled delivery test remain open. Earlier checkpoints below retain their original limits.
 
 The corrected local composition passes **2,046 OS unit/client checks and 113 mail-service unit checks**, with no skipped or cancelled tests. This includes sixteen pure database-profile admission checks. The final OS run uses the installed package implementations with external sockets and Fetch blocked, apart from the existing bounded loopback registry test. The earlier 2,030-case result retains its own source and closed-import scope. The native admission bundle check retains its exact 254,934 bytes and fourteen source inputs. These are component checks, not actual reminder SQL, hosted delivery or real sign-in evidence.
 
@@ -89,3 +89,14 @@ Before enabling either feature switch, qualify the final composed source and run
 Then verify the actual participant/staff browser flow, current hosted configuration and additive production migration/readback. A real send requires the already authorized controlled recipient, both current consents, deliberate staff review and a distinct retained outcome. Existing accepted emails must not be resent for newer evidence. Release publication and real charity use remain separate acceptance steps.
 
 Implementation: [own choice](../services/charity-os/lib/participation-reminder-choice.mjs), [staff commands](../services/charity-os/lib/participation-reminder-commands.mjs), [worker](../services/charity-os/lib/participation-reminder-worker.mjs), [capacity](../services/charity-os/lib/participation-reminder-capacity.mjs), [native recovery](../services/charity-os/lib/participation-reminder-backup.mjs), [existing delivery contract](PARTICIPATION_DELIVERY.md).
+
+
+## Actual database and browser rehearsal
+
+Source `fd3c50ff5b0c9e9acdd2096d26df87aef6515f39`, tree `0f8c2dba9843451f4b7ef303912b49dbb4791965`, passes all eight jobs on attempt 1 in [push CI](https://github.com/theguysaccount/charitology/actions/runs/42570038157) and [pull request CI](https://github.com/theguysaccount/charitology/actions/runs/42570042710). The PR job checks out synthetic merge `b6ee6ee37859b0733dc161b031bd262563d8e09f` with the same tree and runtime sources. Each Shared OS job passes 2,054 unit and client checks, 228 existing database tests, thirteen check-in, fifteen group, fourteen field, sixteen contact and eighteen recurrence cases. All twenty reminder cases pass on PostgreSQL 17.11: ten main cases, six capacity cases and four worker cases. The corrected scheduling audit passes the measured ordinary boundary and still rolls back on a required failure.
+
+The two CI evidence artifacts retain all case results, catalog and business readback, and separate cleanup. No worker provider calls occurred. The worker cases use local callbacks after the real committed SQL checkpoint; they do not verify hosted sending. Neither artifact reports borrowed clients, remaining fixture work or a new native 64 MiB attainment.
+
+An actual in-app browser rehearsal uses the intact participant page and the production staff pane and transport in a small private host. Only the fixture copy of the UI switch is enabled. The participant saves a separate reminder choice. A mixed selection with a person who has no reminder choice cannot be scheduled. The eligible preview shows the exact message and UTC due time, exposes HTML as text and requires a deliberate acknowledgment. An interrupted Schedule retains the same command. Refresh does not submit it, a 429 leaves Retry available and the final replay returns the one original fictional schedule. All three request bodies match exactly. The participant turns the reminder off and reads it back while operational email updates remain enabled. The owned tab and server close with no remaining sockets or handlers.
+
+This rehearsal uses synthetic sessions and temporary in-memory responses. It does not establish full hosted staff workspace integration, real sign-in, production migration, provider delivery or charity adoption. The production switches stay false.
