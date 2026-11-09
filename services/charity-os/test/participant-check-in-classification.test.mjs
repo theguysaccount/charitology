@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 /** Actual db.tx with a closed fake pg client; no socket or SQL engine. */
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -8,6 +9,7 @@ async function fixture(run) {
   const calls = []; let sum = 0, safetyAudit = false;
   const c = { release() { calls.push("RELEASE"); }, async query(sql) {
     calls.push(sql);
+    if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     if (sql.startsWith("SELECT sum(size)")) { sum++; if (sum > 1) throw Error("ORDINARY_FINAL_GATE"); return { rows: [{ size: safetyAudit ? 61 * 1024 * 1024 : 0 }] }; }
     if (sql.includes(" AS checkins")) return { rows: [{ present: false, participation: false, incubator: false, checkins: true }] };
     if (sql.startsWith("SELECT t.* FROM os_participation_checkins")) throw Error("SAFETY_ACTUAL_AND_REMAINING_GATE");

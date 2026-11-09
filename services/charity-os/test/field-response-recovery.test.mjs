@@ -1,3 +1,5 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 // Actual pure modules and closed fake SELECT/INSERT seams; no PG/auth/rollback proof.
 import test from 'node:test';
 import legacyProjection from './fixtures/field-legacy-restore-projection-v1.json' with {type:'json'};
@@ -32,6 +34,7 @@ const destination={orgId:'destination',actorId:'restorer',createdAtExact:'2026-1
 function measurement({baseline=[],usage=0,badReportSchema=false}={}) {
   const f=restoreMeasurementFixture(),calls=[];
   return {calls,observed:f.observed,client:{async query(sql,args){
+    if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     calls.push({sql,args:clone(args)});
     if(sql.startsWith('SELECT t.relname AS table_name')) {
       const rows=f.query(sql,args).rows;
@@ -54,6 +57,7 @@ function exporter(reports=[],features={}) {
   const allowed=new Set(['os_comments','os_events','os_reports','os_files','os_records','os_integrations','os_publications','os_intake','os_participation_targets','os_participations','os_participation_outbox','os_participation_delivery_policies','os_task_recurrence_series','os_task_recurrence_occurrences','os_resource_directory_history','os_learning_history','os_incubator_history','os_participation_checkins','os_participation_groups','os_participation_group_receipts']);
   return {calls,client:{async query(sql,args){
     if(sql.startsWith('SELECT t.relname AS table_name')||sql.startsWith('SELECT item.ordinality::integer AS position'))return m.client.query(sql,args);
+    if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     calls.push({sql,args:clone(args)});
     const emptyGroup=emptyParticipationGroupsQuery(sql,args);if(emptyGroup!==undefined)return emptyGroup;
     if(sql.startsWith('SELECT sum(size) AS size FROM ('))return {rows:[{size:reports.reduce((s,r)=>s+bytes(r),0)}]};
@@ -154,6 +158,7 @@ test('FIELD-only workspace reaches complete inactive projection with actual repo
 });
 test('actual transaction classifier reaches complete gate for FIELD-only ordinary changes',async()=>{
   const calls=[],c={release(){calls.push('RELEASE');},async query(sql){calls.push(sql);
+    if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     if(sql.includes(' AS checkins'))return {rows:[{present:false,participation:false,incubator:false,checkins:false,groups:false,field:true}]};
     if(sql.startsWith('SELECT sum(size) AS size FROM ('))return {rows:[{size:0}]};
     if(sql==='SELECT * FROM os_orgs WHERE id=$1')throw Error('ACTUAL_FIELD_COMPLETE_GATE');
@@ -176,6 +181,7 @@ test('FIELD-only optional export journal measures declared remaining headroom in
 });
 test('FIELD-only nonordinary transaction reaches actual hard packet gate without new restore reserve',async()=>{
  const f=exporter([],{field:true}),calls=[],c={release(){calls.push('RELEASE');},async query(sql,args){calls.push(sql);
+  if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
   if(sql==='SELECT * FROM os_orgs WHERE id=$1')throw Error('FIELD_ACTUAL_EXIT_GATE');
   if(sql.includes(' AS participation,')&&sql.includes(' AS field'))return {rows:[{present:false,participation:false,incubator:false,checkins:false,groups:false,field:true}]};
   if(sql==='SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1')return {rows:[{count:0}]};

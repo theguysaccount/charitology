@@ -81,8 +81,8 @@ export async function measureParticipationRecurrenceSourceCapacity(c,org,backup)
   const checkins=await checkCheckInCapacity(c,org);
   const inactive=whole.restore??await checkLearningRestoreCapacity(c,backup);
   const pRetained=number(participation.wholeRetainedReserve),pNative=number(participation.wholeNativeReserve);
-  const requiredUsage=total([whole.usage,operational.sourceLogicalGrowthBytes,pRetained,checkins.wholeRetainedReserve]);
-  const requiredBackupBytes=total([whole.backupBytes,operational.sourceWireGrowthBytes,pNative,checkins.wholeNativeReserve]);
+  const requiredUsage=total([whole.usage,operational.sourceLogicalGrowthBytes,pRetained,checkins.wholeRetainedReserve,whole.resourceReservations?.retainedGrowthBytes??0]);
+  const requiredBackupBytes=total([whole.backupBytes,operational.sourceWireGrowthBytes,pNative,checkins.wholeNativeReserve,whole.resourceReservations?.nativeGrowthBytes??0]);
   fits(requiredUsage,requiredBackupBytes);fits(inactive.requiredLogicalBytes+pRetained,inactive.backupBytes+pNative);
   return freeze({requiredUsage,requiredBackupBytes,usage:number(whole.usage),backupBytes:number(whole.backupBytes),
     inactiveRequiredUsage:number(inactive.requiredLogicalBytes)+pRetained,inactiveBackupBytes:number(inactive.backupBytes)+pNative,

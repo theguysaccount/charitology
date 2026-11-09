@@ -422,3 +422,65 @@ export const CONTACT_CONTEXT_CATALOG = Object.freeze(Object.fromEntries(Object.e
     "receipt"
   ]
 }).map(([table, columns]) => [table, Object.freeze(columns)])));
+
+// The optional tables are one reviewed layout. Keep the legacy vector above
+// stable for old deployments and empty-tenant CRM context compatibility.
+const resourcePolicy = Object.freeze(["tenant", "*", true, "{0}", "(org_id = current_setting('app.org_id'::text, true))", "(org_id = current_setting('app.org_id'::text, true))"]);
+const freezeVector = values => Object.freeze(values.map(value => Object.freeze(value)));
+export const CONTACT_RESOURCE_RESERVATION_LAYOUT = Object.freeze({
+  os_resource_reservation_commands: Object.freeze({
+    table_name: "os_resource_reservation_commands", relation_kind: "r", rls: true, forced_rls: true,
+    columns: freezeVector([
+      ["org_id", "text", true, "", null],
+      ["command_hash", "text", true, "", null],
+      ["receipt", "jsonb", true, "", null],
+      ["previous_id", "text", false, "s", "(receipt #>> '{decision,previous,id}'::text[])"],
+      ["next_id", "text", false, "s", "(receipt #>> '{decision,next,id}'::text[])"],
+    ]),
+    keys: freezeVector([
+      ["FOREIGN KEY (org_id) REFERENCES os_orgs(id)", true, true],
+      ["FOREIGN KEY (org_id, next_id) REFERENCES os_resource_reservations(org_id, id) DEFERRABLE INITIALLY DEFERRED", true, true],
+      ["FOREIGN KEY (org_id, previous_id) REFERENCES os_resource_reservations(org_id, id) DEFERRABLE INITIALLY DEFERRED", true, true],
+      ["PRIMARY KEY (org_id, command_hash)", true, true],
+    ]),
+    triggers: freezeVector([
+      ["complete_resource_reservation_command", 5, "O", true, true, "os_resource_reservation_integrity", true],
+      ["immutable_resource_reservation_command", 27, "O", false, false, "os_immutable", true],
+    ]),
+    policies: Object.freeze([resourcePolicy]),
+  }),
+  os_resource_reservations: Object.freeze({
+    table_name: "os_resource_reservations", relation_kind: "r", rls: true, forced_rls: true,
+    columns: freezeVector([
+      ["org_id", "text", true, "", null],
+      ["id", "text", true, "", null],
+      ["asset_id", "text", true, "", null],
+      ["occurrence_id", "text", true, "", null],
+      ["origin_mode", "text", true, "", null],
+      ["state", "text", true, "", null],
+      ["revision", "integer", true, "", null],
+      ["proof", "jsonb", false, "", null],
+      ["proof_sha256", "text", true, "", null],
+      ["original_command_hash", "text", false, "", null],
+      ["terminal_command_hash", "text", false, "", null],
+      ["history_core", "jsonb", false, "", null],
+      ["disposition", "jsonb", false, "", null],
+    ]),
+    keys: freezeVector([
+      ["FOREIGN KEY (org_id) REFERENCES os_orgs(id)", true, true],
+      ["FOREIGN KEY (org_id, asset_id) REFERENCES os_records(org_id, id)", true, true],
+      ["FOREIGN KEY (org_id, occurrence_id) REFERENCES os_records(org_id, id)", true, true],
+      ["FOREIGN KEY (org_id, original_command_hash) REFERENCES os_resource_reservation_commands(org_id, command_hash) DEFERRABLE INITIALLY DEFERRED", true, true],
+      ["FOREIGN KEY (org_id, terminal_command_hash) REFERENCES os_resource_reservation_commands(org_id, command_hash) DEFERRABLE INITIALLY DEFERRED", true, true],
+      ["PRIMARY KEY (org_id, id)", true, true],
+    ]),
+    triggers: freezeVector([
+      ["complete_resource_reservation", 21, "O", true, true, "os_resource_reservation_integrity", true],
+      ["resource_reservation_guard", 31, "O", false, false, "os_resource_reservation_guard", true],
+    ]),
+    policies: Object.freeze([resourcePolicy]),
+  }),
+});
+export const CONTACT_RESOURCE_RESERVATION_CATALOG = Object.freeze(Object.fromEntries(
+  Object.entries(CONTACT_RESOURCE_RESERVATION_LAYOUT).map(([table, layout]) =>
+    [table, Object.freeze(layout.columns.map(([name]) => name))])));

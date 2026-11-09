@@ -213,7 +213,7 @@ export const api = {
     request("/api/invitations/accept", { method: "POST", body: { token } }),
   orgs: (options) => request("/api/orgs", options),
   createOrg: (data) => request("/api/orgs", { method: "POST", body: data }),
-  org: (org) => request(orgPath(org)),
+  org: (org, options) => request(orgPath(org), options),
   dashboard: (org) => request(`${orgPath(org)}/dashboard`),
   updateOrg: (org, data) =>
     request(orgPath(org), { method: "PATCH", body: data }),

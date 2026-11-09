@@ -1,3 +1,5 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 // Closed fake-SQL/controller tests, not actual PostgreSQL, RLS or capacity measurements.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -15,6 +17,8 @@ class Fake{
  constructor(){const p=raw('program','programs',validateRecord('programs',{title:'Fictional program',kind:'program'}));const i=raw('indicator','outcomes',validateRecord('outcomes',{title:'Fictional visits',kind:'indicator',programId:p.id,unit:'visits'},{orgId:ORG,recordId:'indicator',records:[{...p,orgId:ORG,moduleId:'programs'}]}));this.records=[p,i];this.reports=[];this.previews=[];this.events=[];this.role='owner';this.scopes=[];this.memberRevision=1;this.epoch='0';this.session=true;this.connection={id:'connection',provider:'csv',name:'Fictional local file',config:{baseUrl:null,moduleId:'outcomes',fieldMap:{}},status:'unconfigured',revision:1,has_credentials:false};this.trace=[];this.writes=[];this.expired=false;this.limits=[];this.rateRefusal=false;this.failAudit=false;this.failLastSave=false;}
  result(rows){return {rows,rowCount:rows.length};}
  async query(sql,args=[]){this.trace.push(sql);const result=rows=>this.result(rows);
+  if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
+  if(sql===reservationSql.projection)return result([]);
   if(sql.startsWith('SELECT s.id AS session_id'))return result(this.session?[{session_id:SESSION.session.id,user_id:ACTOR,current_user_id:ACTOR}]:[]);
   if(sql.startsWith('SELECT user_id,role,program_ids,revision,to_char'))return result([{user_id:ACTOR,role:this.role,program_ids:this.scopes,revision:this.memberRevision,created_exact:STAMP}]);
   if(sql.startsWith("SELECT COALESCE(max(id)::text,'0') AS epoch"))return result([{epoch:this.epoch}]);

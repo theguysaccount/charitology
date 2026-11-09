@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import pg from 'pg';
@@ -8,6 +9,7 @@ async function withClient(run) {
   const calls = [], client = {
     async query(sql, values) {
       calls.push({ sql, values });
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql.includes('AS present')) throw new Error('complete mutation gate reached');
       return { rows: [] };
     },

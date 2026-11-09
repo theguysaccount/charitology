@@ -83,7 +83,7 @@ async function sourceProof(input) {
   const [commit, tree] = (await git(["rev-parse", "HEAD", "HEAD^{tree}"])).trim().split("\n");
   must(commit === input.githubSha && /^[a-f0-9]{40}$/.test(tree));
   must(await git(["status", "--porcelain=v1"]) === "");
-  const paths = (await git(["ls-files", "-z", "--", ".nvmrc", ".github/workflows/charity-os-check.yml", "package-lock.json", "services/charity-os/package.json", "services/charity-os/package-lock.json", "services/charity-os/lib", "services/charity-os/test-db", "services/charity-os/test/contact-reconciliation-ci17-profile.test.mjs", "services/charity-os/test/fixtures/contact-reconciliation-legacy75-v1.json", "services/charity-os/test/fixtures/contact-schema-column-vectors-v1.json"])).split("\0").filter(Boolean);
+  const paths = (await git(["ls-files", "-z", "--", ".nvmrc", ".github/workflows/charity-os-check.yml", "package-lock.json", "services/charity-os/package.json", "services/charity-os/package-lock.json", "services/charity-os/lib", "services/charity-os/test-db", "services/charity-os/test/contact-reconciliation-ci17-profile.test.mjs", "services/charity-os/test/fixtures/contact-reconciliation-legacy75-v1.json", "services/charity-os/test/fixtures/contact-schema-column-vectors-v1.json", "services/charity-os/test/fixtures/contact-resource-reservation-column-vectors-v1.json"])).split("\0").filter(Boolean);
   must(paths.length > 10 && paths.length <= 512 && new Set(paths).size === paths.length);
   const files = [];
   for (const name of paths) {

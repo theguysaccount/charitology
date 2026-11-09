@@ -1,3 +1,4 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 // Pure/closed fake-SQL proposal only; no PostgreSQL, auth, RLS or rollback proof.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -51,6 +52,7 @@ const packet=(reports=[],extra={})=>makeBackup(organization,[],{reports,...extra
 function measurement({baseline=[],usage=0,badSchema=false,reportBytes}={}){
  const f=restoreMeasurementFixture(),calls=[];
  return {calls,observed:f.observed,client:{async query(sql,args){
+  if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
   calls.push({sql,args:clone(args)});
   if(sql.startsWith('SELECT t.relname AS table_name')){const rows=f.query(sql,args).rows;if(args[0].includes('os_reports'))rows.push(...'org_id id created_by title checksum payload created_at'.split(' ').filter(k=>!badSchema||k!=='checksum').map(column_name=>({table_name:'os_reports',column_name})));return{rows};}
   if(sql.startsWith('SELECT item.ordinality::integer AS position')&&sql.includes('NULL::os_reports')){assert.match(sql,/octet_length\(\(to_jsonb\(r\)\)::text\) AS bytes/);const values=JSON.parse(args[0]);f.observed.set('os_reports',values);return{rows:values.map((r,i)=>({position:i+1,bytes:reportBytes??bytes(r)}))};}
@@ -65,6 +67,7 @@ function exporter(reports=[],features={}){
  const allowed=new Set(['os_comments','os_events','os_reports','os_files','os_records','os_integrations','os_publications','os_intake','os_participation_targets','os_participations','os_participation_outbox','os_participation_delivery_policies','os_task_recurrence_series','os_task_recurrence_occurrences','os_resource_directory_history','os_learning_history','os_incubator_history','os_participation_checkins','os_participation_groups','os_participation_group_receipts']);
  return{calls,client:{async query(sql,args){
   if(sql.startsWith('SELECT t.relname AS table_name')||sql.startsWith('SELECT item.ordinality::integer AS position'))return m.client.query(sql,args);
+  if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
   calls.push({sql,args:clone(args)});const empty=emptyParticipationGroupsQuery(sql,args);if(empty!==undefined)return empty;
   if(sql.startsWith('SELECT sum(size) AS size FROM ('))return{rows:[{size:reports.reduce((n,r)=>n+bytes(r),0)}]};
   if(sql.startsWith('SELECT EXISTS(SELECT 1 FROM os_learning_history'))return{rows:[{present:false,incubator:false,checkins:false,groups:false,reminders:false,field:reports.some(r=>r.payload?.format==='charitology-field-response-import'),crm:reports.some(r=>r.payload?.format==='charitology-contact-reconciliation'),...features}]};

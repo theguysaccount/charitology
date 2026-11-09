@@ -1,3 +1,5 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -481,6 +483,8 @@ test("existing-contact conversion preserves all associations while creating only
     let storedRefs;
     const c = {
       query: async (sql, args = []) => {
+        if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
+        if (sql === reservationSql.projection) return { rows: [], rowCount: 0 };
         if (sql.startsWith("SELECT pg_advisory_xact_lock")) return { rows: [] };
         if (/FROM os_participation(?:_targets|s)\b/.test(sql))
           return { rows: [] };

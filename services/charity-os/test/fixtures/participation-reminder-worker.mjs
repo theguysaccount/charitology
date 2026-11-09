@@ -1,3 +1,5 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./resource-reservation-schema.mjs";
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../../lib/resource-reservation-guards.mjs";
 import {PARTICIPATION_REMINDER_LEGACY_SQL} from '../../lib/participation-storage.mjs';
 /** Fictional producer fixtures and closed SQL responses. This is orchestration
  * evidence, never PostgreSQL, real current-member/consent or provider evidence. */
@@ -35,6 +37,8 @@ export function makeWorkerFixture({attemptSql,count=1,sqlClock='2030-01-02T10:00
   const owned=(row,args)=>row&&row.org_id===args[0]&&row.id===args[1]&&row.lease_owner===args[2];
   const client={query:async(input,values)=>{
     const sql=typeof input==='string'?input:input.text,args=values||input.values||[];if(typeof input==='object')assert.ok(input.query_timeout>0&&input.query_timeout<=2000);calls.push({sql,args});
+    if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
+    if(sql===reservationSql.destination)return {rows:[{occupied:false}],rowCount:1};
     if(sql===`SELECT NOT ${PARTICIPATION_REMINDER_LEGACY_SQL} AS present`){
       assert.deepEqual(args,[ORG]);assert([...outbox.values()].some(row=>row.intent_kind==='reminder'||Object.hasOwn(row.payload,'reminder')));
       return {rows:[{present:true}],rowCount:1};

@@ -1,3 +1,5 @@
+import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
+import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import {PARTICIPATION_REMINDER_LEGACY_SQL} from '../lib/participation-storage.mjs';
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -81,8 +83,14 @@ function fixture(
   const saves = [];
   const c = {
     query: async (sql, args = []) => {
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       const extra = await extraQuery?.(sql, args);
       if (extra !== undefined) return extra;
+      if (sql === reservationSql.projection) return { rows: [], rowCount: 0 };
+      if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
+      if (sql.startsWith("SELECT EXISTS(SELECT 1 FROM os_learning_history WHERE org_id=$1)") &&
+          sql.endsWith(" AS reservations"))
+        return { rows: [{ reservations: false }], rowCount: 1 };
       const emptyGroups = emptyParticipationGroupsQuery(sql, args);
       if (emptyGroups !== undefined) return emptyGroups;
       if (sql === "SELECT EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE $2) AS occupied,EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND id=ANY($3::text[])) AS collision") {
@@ -174,6 +182,7 @@ function fixture(
         };
       if (sql.startsWith("SELECT COALESCE(sum(octet_length(data::text))"))
         return { rows: [{ size: 0, count: 0 }] };
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql.startsWith("SELECT sum(size) AS size FROM ("))
         return { rows: [{ size: 0 }] };
       if (sql.startsWith("SELECT (SELECT count(*) FROM os_publications"))
@@ -874,6 +883,7 @@ test("Reconnecting a restored integration retains its identity, encrypts only th
     key = "synthetic-storage-encryption-key-at-least-thirty-two-characters";
   const c = {
     query: async (sql, args) => {
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql.startsWith("SELECT sum(size) AS size FROM ("))
         return { rows: [{ size: 0 }] };
       if (sql.startsWith("SELECT * FROM os_integrations"))
@@ -1023,6 +1033,8 @@ test("Access revocation remains possible with minimal audit reserve and after th
       const events = [],
         c = {
           query: async (sql, args) => {
+            if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
+            if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
             const emptyGroups = emptyParticipationGroupsQuery(sql, args);
             if (emptyGroups !== undefined) return emptyGroups;
             if (sql.startsWith("SELECT sum(size) AS size FROM ("))
@@ -1084,6 +1096,9 @@ test("The central active-record limit also protects bulk callers of saveRecord",
   let writes = 0;
   const c = {
     query: async (sql) => {
+      if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
+      if (sql === reservationSql.lock || sql === reservationSql.projection)
+        return { rows: [], rowCount: 0 };
       if (
         sql ===
           "SELECT s.* FROM os_task_recurrence_series s WHERE s.org_id=$1 AND (s.root_record_id=$2 OR EXISTS(SELECT 1 FROM os_task_recurrence_occurrences o WHERE o.org_id=s.org_id AND o.series_id=s.id AND (o.source_record_id=$2 OR o.generated_record_id=$2)))" ||

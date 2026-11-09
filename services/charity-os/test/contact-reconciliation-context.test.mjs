@@ -3,6 +3,13 @@ import assert from "node:assert/strict";
 import * as contextApi from "../lib/contact-reconciliation-context.mjs";
 const { readContactReconciliationContext: read, currentContactReconciliationMember: currentMember } = contextApi;
 import CATALOG from "./fixtures/contact-schema-column-vectors-v1.json" with { type: "json" };
+import RESOURCE_CATALOG from "./fixtures/contact-resource-reservation-column-vectors-v1.json" with { type: "json" };
+import { CONTACT_RESOURCE_RESERVATION_LAYOUT as RESOURCE_LAYOUT } from "../lib/contact-context-catalog.mjs";
+import {
+  makeResourceReservationAuthority, planResourceReservationWrite, makeResourceReservationsBackup,
+  restoreResourceReservationRows, recordResourceRecoveryDisposition,
+} from "../lib/resource-reservation-ledger.mjs";
+import { projectResourceReservationStorageRow, projectResourceReservationCommandStorage } from "../lib/resource-reservation-store.mjs";
 import { planContactReconciliation } from "../lib/contact-reconciliation-model.mjs";
 import { makeContactReconciliationReport, makeContactReconciliationReportRow, planContactReconciliationReversal } from "../lib/contact-reconciliation-report.mjs";
 import { validateRecord, getModule } from "../lib/modules.mjs";
@@ -45,6 +52,23 @@ function fixture() {
     if (sql.startsWith("/*crm:epoch*/")) { assert.deepEqual(params, [ORG]); return { rows: [{ epoch: state.epoch }] }; }
     if (sql.startsWith("/*crm:catalog*/")) return { rows: structuredClone(state.catalog) };
     if (sql.startsWith("/*crm:link-fks*/")) return { rows: structuredClone(state.fks) };
+    if (sql.startsWith("/*crm:reservation-layout*/")) {
+      assert.deepEqual(params, [Object.keys(RESOURCE_CATALOG)]);
+      return { rows: structuredClone(state.resourceLayout) };
+    }
+    if (sql.includes("WITH holds AS (") && sql.includes("FROM os_resource_reservation_commands")) {
+      assert.deepEqual(params, [ORG]);
+      const bytes = values => String(values.reduce((total, row) => total + Buffer.byteLength(JSON.stringify(row)), 0));
+      return { rows: [{ reservation_count: String(state.resourceRows.length), command_count: String(state.resourceCommands.length),
+        reservation_bytes: bytes(state.resourceRows), command_bytes: bytes(state.resourceCommands) }], rowCount: 1 };
+    }
+    if (sql.includes("LEFT JOIN os_resource_reservation_commands a")) {
+      assert.deepEqual(params, [ORG]);
+      const commands = new Map(state.resourceCommands.map(item => [item.command_hash, item.receipt]));
+      const values = state.resourceRows.map(row => ({ ...row, original_receipt: commands.get(row.original_command_hash) ?? null,
+        terminal_receipt: commands.get(row.terminal_command_hash) ?? null }));
+      return { rows: structuredClone(values), rowCount: values.length };
+    }
     const m = /^\/\*crm:(count|page):(os_[a-z_]+)\*\//.exec(sql);
     if (!m) throw Error("Unexpected fictional SQL");
     const [, kind, table] = m; assert(Object.hasOwn(CATALOG, table)); assert(sql.includes("t.org_id=$1")); assert.equal(params[0], ORG);
@@ -437,5 +461,117 @@ test("invitation and unknown jobs remain unsupported without selecting addresses
     const f = fixture(); f.tables.os_jobs = [{ org_id: ORG, id: "job", kind, payload: { to: "not-selected@example.invalid", token: "not-selected-secret" } }];
     await refuse(f.read(), "contact_context_unsupported", 409);
     assert(f.calls.filter(c => /crm:(count|page):os_jobs/.test(c.sql)).every(c => c.sql.includes("CASE WHEN t.kind='reminder' THEN t.payload ELSE '{}'::jsonb END")));
+  }
+});
+
+function installResourceLayout(f) {
+  f.catalog.push(...Object.entries(RESOURCE_CATALOG).map(([table_name, columns]) => ({ table_name, columns: [...columns] })));
+  f.resourceLayout = structuredClone(Object.values(RESOURCE_LAYOUT));
+  f.resourceRows = [];
+  f.resourceCommands = [];
+}
+function seededReservation(f, { supplierId = null, withAudit = true } = {}) {
+  installResourceLayout(f);
+  const asset = raw("room_source", "assets", { title: "Fictional Room", kind: "asset", quantity: 1, supplierId });
+  const interval = { startAt: "2026-12-08T10:00:00Z", endAt: "2026-12-08T11:00:00Z", timeZone: "UTC" };
+  const occurrence = raw("session_source", "events", { title: "Fictional Session", kind: "session", ...interval });
+  f.tables.os_records.push(asset, occurrence);
+  const source = (row, kind) => ({ id: row.id, moduleId: row.module_id, kind, revision: 1, createdAtExact: NOW,
+    dataSha256: "a".repeat(64), approvalSha256: "b".repeat(64) });
+  const proof = { version: 1, orgId: ORG, quantity: 1, interval,
+    asset: source(asset, "asset"), session: source(occurrence, "session") };
+  const authority = makeResourceReservationAuthority({ orgId: ORG, actorId: USER, sessionId: session().session.id,
+    role: "owner", programIds: [], memberRevision: 1, memberCreatedAtExact: NOW, restoreEpochSha256: "c".repeat(64) });
+  const plan = planResourceReservationWrite({ orgId: ORG, actorId: USER, authority, operation: "reserve",
+    request: { version: 1, idempotencyKey: "fictional_room_command", previewToken: "fictional." + "d".repeat(43),
+      reviewSha256: "e".repeat(64), acknowledge: true },
+    acceptedAtExact: NOW, rows: [], newReservation: { id: "private_hold_id", proof } });
+  assert.equal(plan.state, "ready");
+  f.resourceRows.push(projectResourceReservationStorageRow(plan.insert));
+  f.resourceCommands.push(projectResourceReservationCommandStorage(plan.receipt));
+  const event = { org_id: ORG, id: "1", actor_id: USER, action: "resource-reservation.reserved",
+    record_id: occurrence.id, module_id: "events", created_at: NOW,
+    detail: { previousId: null, reservationId: plan.insert.id, assetId: asset.id,
+      proofSha256: plan.receipt.decision.next.proofSha256, acceptedAtExact: NOW } };
+  if (withAudit) f.tables.os_events = [event];
+  return { asset, occurrence, plan, event, authority };
+}
+
+test("both installed but empty reservation tables keep exact legacy CRM coverage and pins", async () => {
+  const old = fixture(), installed = fixture();
+  installResourceLayout(installed);
+  assert.deepEqual(await installed.read(), await old.read());
+  assert(installed.calls.some(call => call.sql.startsWith("/*crm:reservation-layout*/")));
+  assert(installed.calls.some(call => call.sql.includes("WITH holds AS (")));
+  assert(old.calls.every(call => !/resource_reservation/.test(call.sql)));
+});
+
+test("half-installed, unexpected or structurally drifted reservation tables refuse before any ledger read", async () => {
+  for (const change of [
+    f => { f.catalog.pop(); },
+    f => { f.catalog.at(-1).table_name = "os_new_history"; },
+    f => { f.resourceLayout[0].columns[3][3] = ""; },
+    f => { f.resourceLayout[0].columns[3][4] = "wrong default"; },
+    f => { f.resourceLayout[1].forced_rls = false; },
+    f => { f.resourceLayout[1].policies.push(f.resourceLayout[0].policies[0]); },
+    f => { f.resourceLayout[1].keys[0][1] = false; },
+    f => { f.resourceLayout[1].keys[0][2] = false; },
+    f => { f.resourceLayout[1].triggers.pop(); },
+  ]) {
+    const f = fixture(); installResourceLayout(f); change(f);
+    await refuse(f.read());
+    assert(f.calls.every(call => !call.sql.includes("WITH holds AS (")));
+  }
+});
+
+test("closed resource history changes the private CRM pin without emitting resource rows or contact edges", async () => {
+  const f = fixture(), seed = seededReservation(f);
+  const ordinary = fixture(); ordinary.tables.os_records.push(seed.asset, seed.occurrence);
+  const initial = await f.read(), base = await ordinary.read();
+  assert.equal(initial.coverage.catalogTables, 35);
+  assert(mergePlan(initial).proposal);
+  assert.notEqual(initial.contextSha256, base.contextSha256);
+  assert.deepEqual(initial.plannerContext, base.plannerContext);
+  assert(!JSON.stringify(initial).includes(seed.plan.insert.id));
+  assert(!JSON.stringify(initial).includes(seed.plan.receipt.commandHash));
+
+  // Only the ordinary Asset field supplies an actual contact edge.
+  seed.asset.data.supplierId = "right";
+  const linked = await f.read();
+  assert.equal(mergePlan(linked).proposal, null);
+  assert.deepEqual(linked.plannerContext.references.map(r => [r.family, r.field, r.contactId]), [["record", "supplierId", "right"]]);
+  seed.asset.data.supplierId = null;
+
+  const refs = [seed.asset, seed.occurrence].map(row => ({ id: row.id, moduleId: row.module_id }));
+  const block = makeResourceReservationsBackup(ORG, [seed.plan.insert], refs);
+  const [recovered] = restoreResourceReservationRows(ORG, block, ORG, refs);
+  f.tables.os_events = [];
+  f.resourceRows = [projectResourceReservationStorageRow(recovered)];
+  f.resourceCommands = [];
+  const before = await f.read();
+  const resolved = recordResourceRecoveryDisposition({ row: recovered, orgId: ORG, actorId: USER,
+    authority: seed.authority, expectedRevision: 1, acceptedAtExact: NOW, reason: '{"contactId":"right"}' });
+  f.resourceRows = [projectResourceReservationStorageRow(resolved)];
+  const after = await f.read();
+  assert.notEqual(before.contextSha256, after.contextSha256);
+  assert.deepEqual(before.plannerContext, after.plannerContext);
+  assert(!JSON.stringify(after).includes("contactId"));
+  assert(mergePlan(after).proposal);
+});
+
+test("wrong source type, incarnation, interval, receipt graph or linked audit refuses without widening generic approvals", async () => {
+  for (const change of [
+    (f, s) => { f.tables.os_records[f.tables.os_records.indexOf(s.asset)] = contact(s.asset.id); },
+    (_f, s) => { s.occurrence.created_at = "2026-11-08T12:00:00.223456Z"; },
+    (_f, s) => { s.occurrence.data.endAt = "2026-12-08T12:00:00Z"; },
+    f => { f.resourceCommands = []; },
+    f => { f.resourceCommands.push({ ...f.resourceCommands[0], command_hash: "f".repeat(64) }); },
+    (_f, s) => { s.event.detail.assetId = "right"; },
+    (_f, s) => { s.event.actor_id = "another_actor"; },
+    (_f, s) => { s.event.detail.contactId = "right"; },
+    (f, s) => { f.tables.os_events.push(event(s.asset, "record.approved", { id: "2", module_id: "assets" })); },
+  ]) {
+    const f = fixture(), seed = seededReservation(f); change(f, seed);
+    await refuse(f.read());
   }
 });

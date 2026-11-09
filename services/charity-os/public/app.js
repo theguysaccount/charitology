@@ -16,6 +16,8 @@ import { createIncubatorBridgeWorkspace } from "./incubator-bridge.js";
 import { createFieldResponsesWorkspace, canUseFieldResponses } from "./field-responses.js";
 import { createContactReconciliationWorkspace, canUseContactReconciliation } from "./contact-reconciliation.js";
 import { createParticipationRecurrenceWorkspace, canUseParticipationRecurrence } from "./participation-recurrence.js";
+import { createResourceReservationsWorkspace } from "./resource-reservations.js";
+import { resourceReservationsAPI } from "./resource-reservations-api.js";
 import { LEARNING_ROLES, learningRecordFragment, learningRecordMatches, resolveLearningRecordRoute, checkedLearningReport } from "./learning-model.js";
 import {
   createDirectoryResourceWorkspace,
@@ -76,6 +78,8 @@ const state = {
   fieldResponsesWorkspace: null,
   contactReconciliationWorkspace: null,
   participationRecurrenceWorkspace: null,
+  resourceReservationAccess: null,
+  resourceReservationsWorkspace: null,
   participationWorkspace: null,
   learningRecordAbort: null,
   reportReadAbort: null,
@@ -289,6 +293,45 @@ function role() {
 function admin() {
   return ["owner", "admin", "administrator"].includes(role());
 }
+const resourceReservationAccessMessage =
+  "Room and equipment reservations require current organization-wide owner or administrator access to Assets and Events.";
+function resourceReservationMember() {
+  const member = activeOrg();
+  if (!state.session?.user || !["owner", "admin"].includes(member?.role) ||
+      !Array.isArray(member.programIds) || member.programIds.length !== 0) return null;
+  return ["assets", "events"].every(id =>
+    ["read", "write"].every(action => can(moduleById(id), action, member.role))) ? member : null;
+}
+function ownsResourceReservationAccess(access) {
+  return !!access && state.resourceReservationAccess === access && access.session === state.session &&
+    access.member === resourceReservationMember() && access.orgId === state.org && access.role === role();
+}
+function clearResourceReservationAccess() {
+  state.resourceReservationAccess?.controller.abort();
+  state.resourceReservationAccess = null;
+}
+function readResourceReservationAccess({ fresh = false } = {}) {
+  const member = resourceReservationMember(), prior = state.resourceReservationAccess;
+  if (ownsResourceReservationAccess(prior) && (!fresh || prior.reading)) return prior.result;
+  clearResourceReservationAccess();
+  if (!member) return Promise.resolve(false);
+  const controller = new AbortController();
+  const access = { controller, member, session: state.session, orgId: member.id,
+    role: member.role, granted: false, reading: true };
+  state.resourceReservationAccess = access;
+  access.result = api.org(access.orgId, {
+    signal: AbortSignal.any([controller.signal, AbortSignal.timeout(8000)]),
+  }).then(result => {
+    if (!ownsResourceReservationAccess(access)) return false;
+    access.granted = result?.org?.id === access.orgId && result.org.role === access.role &&
+      result.features?.resourceReservations === true;
+    return access.granted;
+  }, () => false).finally(() => {
+    access.reading = false;
+    if (ownsResourceReservationAccess(access)) renderNav();
+  });
+  return access.result;
+}
 function readable() {
   return state.modules.filter((module) => can(module, "read", role()));
 }
@@ -332,6 +375,11 @@ function setContent(...content) {
   state.taskRecurrencePanel?.dispose();
   if (state.participationRecurrenceWorkspace) { state.participationRecurrenceWorkspace.dispose(); state.pageDirty = false; }
   state.participationRecurrenceWorkspace = null;
+  if (state.resourceReservationsWorkspace) {
+    state.resourceReservationsWorkspace.dispose();
+    state.pageDirty = false;
+  }
+  state.resourceReservationsWorkspace = null;
   if (state.contactReconciliationWorkspace) { state.contactReconciliationWorkspace.dispose(); state.pageDirty = false; }
   state.contactReconciliationWorkspace = null;
   state.participationWorkspace?.dispose();
@@ -407,6 +455,17 @@ async function discardEditor() {
   return true;
 }
 async function discardPage({ signingOut = false } = {}) {
+  if (state.resourceReservationsWorkspace?.hasPendingCommand()) {
+    if (!signingOut) {
+      toast("Use Retry or stop retrying the pending reservation command before leaving this workspace.");
+      return false;
+    }
+    return confirmAction(
+      "Sign out with a reservation command awaiting confirmation?",
+      "The decision may already be saved. Signing out clears the exact Retry in this tab. Read saved holds after signing in to check the current disposition.",
+      "Sign out and clear local Retry",
+    );
+  }
   if (state.participationRecurrenceWorkspace?.hasPendingCommand() || signingOut && participationRecurrenceIntents.size) {
     if (!signingOut) { toast("Resolve the retained exact draft Create before leaving this workspace."); return false; }
     if (!(await confirmAction("Sign out with an unresolved draft Create?", "The batch may already be saved. Signing out discards this tab’s exact in-memory Retry; it cancels nothing and does not establish the earlier outcome. Nothing is resent automatically. Read authorized batch history after signing in again.", "Sign out and discard local Retry"))) return false;
@@ -442,7 +501,8 @@ async function discardPage({ signingOut = false } = {}) {
     !state.incubatorWorkspace?.isDirty() &&
     !state.fieldResponsesWorkspace?.isDirty() &&
     !state.contactReconciliationWorkspace?.isDirty() &&
-    !state.participationRecurrenceWorkspace?.isDirty()
+    !state.participationRecurrenceWorkspace?.isDirty() &&
+    !state.resourceReservationsWorkspace?.hasUnsavedChanges()
   ) return true;
   if (
     !(await confirmAction(
@@ -452,6 +512,10 @@ async function discardPage({ signingOut = false } = {}) {
     ))
   )
     return false;
+  if (state.resourceReservationsWorkspace?.hasPendingCommand()) {
+    toast("Use Retry or stop retrying the pending reservation command before leaving this workspace.");
+    return false;
+  }
   if (state.participationRecurrenceWorkspace?.hasPendingCommand()) { toast("Resolve the retained draft Create before leaving this workspace."); return false; }
   if (state.fieldResponsesWorkspace?.hasPendingCommand()) { toast("Resolve the retained aggregate import command before leaving this workspace."); return false; }
   if (state.contactReconciliationWorkspace?.hasPendingCommand()) { toast("Resolve the retained contact decision before leaving this workspace."); return false; }
@@ -559,7 +623,11 @@ function renderAccount() {
           state.directoryResourceWorkspace?.invalidate();
           if (!(await discardEditor()) || !(await discardPage({ signingOut: true }))) return;
           await action(async () => {
-            await api.logout();
+            const reservations = state.resourceReservationsWorkspace;
+            reservations?.pause();
+            try { await api.logout(); }
+            catch (error) { reservations?.resume(); throw error; }
+            clearResourceReservationAccess();
             invalidateModules();
             state.session = null;
             participationRecurrenceIntents.clear();
@@ -595,6 +663,15 @@ function canUseIncubator() {
     can(moduleById("programs"),"read",role()) && can(moduleById("projects"),"read",role()) && can(moduleById("projects"),"write",role());
 }
 function renderNav() {
+  let reservationsLink = document.querySelector('[data-nav="resource-reservations"]');
+  if (!reservationsLink) {
+    reservationsLink = link("Room and equipment reservations", "#resource-reservations", {
+      "data-nav": "resource-reservations", hidden: true,
+    });
+    document.querySelector(".secondary-nav").prepend(reservationsLink);
+  }
+  const access = state.resourceReservationAccess;
+  reservationsLink.hidden = !ownsResourceReservationAccess(access) || access.granted !== true;
   let recurrenceLink = document.querySelector('[data-nav="participation-recurrence"]');
   if (!recurrenceLink) { recurrenceLink = link("Finite occurrence drafts", "#participation-recurrence", { "data-nav": "participation-recurrence" }); document.querySelector(".secondary-nav").prepend(recurrenceLink); }
   recurrenceLink.hidden = !canUseParticipationRecurrence(role(), state.modules);
@@ -686,6 +763,7 @@ function renderNav() {
     );
 }
 function showSignedOut() {
+  clearResourceReservationAccess();
   ++state.epoch;
   setContent();
   $("#connecting").hidden = true;
@@ -765,6 +843,7 @@ async function route() {
   if (state.route === "privacy") return showPrivacy();
   if (!state.org && !pinnedLearningRecord) return renderCreateOrganization();
   setContent(loading());
+  if (state.route !== "resource-reservations") void readResourceReservationAccess();
   try {
     if (pinnedLearningRecord) {
       const fragment = location.hash, oldSession = state.session;
@@ -813,6 +892,27 @@ async function route() {
         confirmDiscardIntent: () => confirmAction("Stop this local Retry after checking history?", "The shown history is historical evidence, not accepted-command proof. This only discards the local exact Retry. It cancels nothing, does not establish the earlier outcome, and creates no new command or key.", "Discard only local Retry"),
       });
       if (current === state.epoch) { setContent(view); state.participationRecurrenceWorkspace = view; } else view.dispose();
+    } else if (state.route === "resource-reservations") {
+      const granted = await readResourceReservationAccess({ fresh: true });
+      if (current !== state.epoch) return;
+      const access = state.resourceReservationAccess;
+      if (!granted || !ownsResourceReservationAccess(access) || access.granted !== true)
+        throw new ApiError(resourceReservationAccessMessage, 403);
+      const isCurrent = () => current === state.epoch && ownsResourceReservationAccess(access) && access.granted;
+      const view = createResourceReservationsWorkspace({
+        orgId: access.orgId, api: resourceReservationsAPI(access.orgId), isCurrent,
+        onDirty: value => { if (isCurrent()) state.pageDirty = value; },
+        onAccessLost: () => {
+          if (!isCurrent()) return;
+          clearResourceReservationAccess();
+          renderNav();
+          setContent(heading("Workspace", "Reservation access changed.", resourceReservationAccessMessage),
+            button("Check reservation access again", () => route(), "primary"));
+          focusHeading();
+        },
+      });
+      setContent(view);
+      state.resourceReservationsWorkspace = view;
     } else if (state.route === "contact-reconciliation") {
       const org = state.org, session = state.session, currentRole = role(), contactsModule = moduleById("contacts");
       if (!canUseContactReconciliation(currentRole, contactsModule)) throw new ApiError("Contact reconciliation requires current unscoped owner or administrator Contacts read/write access.", 403);
@@ -3436,6 +3536,8 @@ function showInvitation() {
       clearInvitation();
       closeSavedEditor();
       const refreshed = await api.session();
+      if (state.resourceReservationsWorkspace) setContent(loading());
+      clearResourceReservationAccess();
       state.session = refreshed;
       setCsrfToken(refreshed.csrfToken);
       state.orgs = refreshed.orgs || [];
@@ -5579,6 +5681,8 @@ $("#org-switch").addEventListener("change", async (event) => {
     return;
   }
   state.participationRecurrenceWorkspace?.invalidate();
+  if (state.resourceReservationsWorkspace) setContent(loading());
+  clearResourceReservationAccess();
   state.org = next;
   invalidateModules();
   state.details = null;
@@ -5637,6 +5741,7 @@ window.addEventListener("hashchange", async () => {
 window.addEventListener("beforeunload", (event) => {
   if (
     state.dirty || state.pageDirty || state.taskRecurrencePanel?.isDirty() ||
+    state.resourceReservationsWorkspace?.hasUnsavedChanges() ||
     state.directoryResourceWorkspace?.isDirty() || state.incubatorWorkspace?.isDirty() || state.fieldResponsesWorkspace?.isDirty() || state.contactReconciliationWorkspace?.isDirty() || state.participationRecurrenceWorkspace?.isDirty() || participationRecurrenceIntents.size > 0
   ) {
     event.preventDefault();

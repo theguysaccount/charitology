@@ -29,6 +29,9 @@ import { GROUP_LIMITS } from './participation-group-model.mjs';
 import { planRestoredFieldResponseReports, fieldResponseRestoreSummary, isFieldResponseRecoveryFamily } from './field-response-recovery.mjs';
 import { planRestoredContactReconciliationReports, contactReconciliationRestoreSummary, isContactReconciliationRecoveryFamily } from './contact-reconciliation-recovery.mjs';
 
+import { restoredResourceReservations, resourceReservationRestoreSummary } from './resource-reservation-backup.mjs';
+import { measureResourceReservationRestore } from './resource-reservation-capacity.mjs';
+
 export const LEARNING_RESTORE_CAPACITY = Object.freeze({ logicalBytes: 60 * 1024 * 1024, backupBytes: 64 * 1024 * 1024,
   auditCheckReserveBytes: 1000, worstOrgId: 'o'.repeat(100), worstActorId: 'u'.repeat(100),
   timestamp: '2200-12-31T23:59:59.999999Z', auditId: '9223372036854775807', archiveId: 'a'.repeat(32) });
@@ -194,6 +197,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     learning = restoredLearningBridge(backup.learningBridge, context), incubator = restoredIncubatorBridge(backup.incubatorBridge, context), integrations = restoredIntegrations(backup);
   const checkins = restoredParticipantCheckins(backup.participantCheckins);
   const groups = restoredParticipationGroups(backup.participationGroups);
+  const reservationRecovery = restoredResourceReservations(backup, orgId);
   const field=planRestoredFieldResponseReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const crm=planRestoredContactReconciliationReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const occurrence=planRestoredParticipationRecurrenceReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
@@ -201,6 +205,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const operational = operationalGrowth(backup.participation), operationalBounds = new Map(operational.outboxBounds.map(value => [value.id, value]));
   if (operational.active && (operational.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || operational.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes)) operationalFailure();
   await schemaCheck(c,field.present||crm.present||occurrence.present);
+  const resourceRestore = await measureResourceReservationRestore(c, orgId, reservationRecovery);
   const baseline = { events: [], reports: [], bytes: 0 };
   if (baselineOrgId !== undefined) {
     for (const [key, table] of [['events', 'os_events'], ['reports', 'os_reports']]) {
@@ -311,6 +316,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     learningReportsRecovered: learning?.reports.length || 0, intakePublicationsClosed: intake.publications.length, intakeRequests: intake.submissions.length,
     ...(checkins === null ? {} : { participantCheckinsRecovered: checkins.length }),
     ...(groups === null ? {} : { participationGroupsRecovered: groups.groups.length }),
+    ...resourceReservationRestoreSummary(reservationRecovery),
     ...(incubator ? { incubatorSourcesRecovered: incubator.sources.length, incubatorEventsRetained: incubator.events.length } : {}),
     participationTargetsRecovered: participation.targets.length, participationsRecovered: participation.participations.length,
     taskRecurrenceSeriesRecovered: recurrence.series.length, taskRecurrenceOccurrencesRetained: recurrence.occurrences.length });
@@ -324,6 +330,14 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     categories[table] = { count: values.length, bytes: charges.reduce((sum, value) => sum + value, 0), ...(table === 'os_participations' && backup.participation?.version === 4 ? { intervalCompatibilityCreditBytes: sizes[table].reduce((sum, value) => sum + value.intervalCreditBytes, 0), reminderNullCompatibilityCreditBytes: sizes[table].reduce((sum, value) => sum + value.reminderNullCreditBytes, 0) } : {}), rawBytes: sizes[table].reduce((sum,value,index)=>sum+Math.max(value.rawBytes,Number(values[index].budget_bytes)||0),0) };
     logicalBytes += categories[table].bytes;
     if (table === 'os_records') structuredRecordBytes = sizes[table].reduce((sum, value) => sum + value.dataBytes, 0);
+  }
+  if (resourceRestore !== null) {
+    categories.os_resource_reservations = {
+      count: resourceRestore.count, bytes: resourceRestore.projectedRetainedBytes,
+      rawBytes: resourceRestore.retainedBytes,
+    };
+    categories.os_resource_reservation_commands = { count: 0, bytes: 0, rawBytes: 0 };
+    logicalBytes += resourceRestore.projectedRetainedBytes;
   }
   if (occurrence.present) {
     const familyBytes=tables.os_reports.reduce((total,value,index)=>total+(isParticipationRecurrenceRecoveryFamily(value.payload)?sizes.os_reports[index].bytes:0),0);
@@ -378,6 +392,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   // Restored groups are inactive histories; they have no executable receipts.
   const projectedGroups = makeParticipationGroupsBackup(groups?.groups ?? []);
   if (projectedGroups !== undefined) extras.participationGroups = projectedGroups;
+  if (resourceRestore?.namespace !== undefined) extras.resourceReservations = resourceRestore.namespace;
   let destinationWireMetadataExtraBytes = 0;
   if (operational.active) {
     const originalWireBytes = compactBytes(extras.participation.outbox);
@@ -392,6 +407,13 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   if (checkins === null) delete categories.os_participation_checkins;
   return frozen({ logicalBytes, requiredLogicalBytes: logicalBytes + C.auditCheckReserveBytes, backupBytes,
     auditCheckReserveBytes: C.auditCheckReserveBytes, structuredRecordBytes, categories,
+    ...(resourceRestore === null ? {} : { resourceReservations: {
+      retainedBytes: resourceRestore.retainedBytes,
+      projectedRetainedBytes: resourceRestore.projectedRetainedBytes,
+      nativeBytes: resourceRestore.nativeBytes,
+      projectedNativeBytes: resourceRestore.projectedNativeBytes,
+      pendingDispositions: resourceRestore.pendingDispositions,
+    } }),
     operational: { active: operational.active, affectedParticipations: operational.affectedParticipationIds.length,
       sourceWireGrowthBytes: operational.sourceWireGrowthBytes, sourceOutboxWireBytes: operational.sourceOutboxWireBytes,
       sourceParticipationWireBytes: operational.sourceParticipationWireBytes,
