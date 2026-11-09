@@ -12,7 +12,9 @@ function route(request) {
       send = mailer(settings),
       auth = authentication({ settings, db, send });
     handler = createHandler({ settings, db, send, auth,
-      volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({db,settings}) });
+      volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({
+        db,enabled:process.env.OS_VOLUNTEER_SUBSTITUTIONS_ENABLED==="1",
+      }) });
   }
   return handler(request);
 }

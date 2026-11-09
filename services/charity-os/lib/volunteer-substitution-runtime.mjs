@@ -1,6 +1,6 @@
 /** Application wiring is opt-in through a reviewed server dependency, not
  * through an HTTP field or a boolean environment switch by itself. */
-import { fail } from "./security.mjs";
+import { fail, hash } from "./security.mjs";
 import { createVolunteerSubstitutionAuthorityReader, volunteerSubstitutionAuthorityReady } from "./volunteer-substitution-authority.mjs";
 import { checkActualWorkspaceBackupCapacity, checkWorkspaceExportCapacity } from "./workspace-backup.mjs";
 import { readOwnVolunteerSubstitutionOffer } from "./volunteer-substitution-offer.mjs";
@@ -33,6 +33,13 @@ export function createVolunteerSubstitutionRuntime({
       if(!match)return null;
       if(configuredDb!==db)throw new Error("Shift handoff database does not match its reviewed runtime.");
       if(!session?.user?.id||session.user.emailVerified!==true)fail(401,"session","Sign in to continue.");
+      // Bound an authenticated actor before catalog checks or tenant locks.
+      // Own requests share the portal's existing read/write budget.
+      const bucket=hash(session.user.id);
+      if(ownerPath) {
+        const read=request.method==="GET";
+        await db.limit(`participant-${read?"read":"write"}:${bucket}`,read?120:60,3600);
+      } else await db.limit(`shift-substitution:staff-transport:${bucket}`,180,3600);
       if(!await available(session,match[1]))
         fail(503,"substitution_unavailable","Shift handoffs are currently unavailable.");
       return ownerPath
@@ -46,10 +53,10 @@ export function createVolunteerSubstitutionRuntime({
 
 /** Server composition. Configuration can hide the workflow. It cannot grant
  * permissions or bypass the live, scoped database and verifier checks. */
-export function createHostedVolunteerSubstitutionRuntime({db,settings,authorityOptions={
+export function createHostedVolunteerSubstitutionRuntime({db,enabled,authorityOptions={
   managedDatabaseOwner:true,
 }}) {
-  if(settings.volunteerSubstitutionsEnabled!==true) return null;
+  if(enabled!==true) return null;
   const authority=Object.freeze({...authorityOptions});
   return createVolunteerSubstitutionRuntime({
     db,

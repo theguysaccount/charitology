@@ -20,10 +20,10 @@ function local(value) {
 const ownerUrl = local(process.env.DATABASE_URL), runtimeUrl = local(process.env.OS_DATABASE_URL);
 const enabled = process.env.NODE_ENV === "test" && ownerUrl && runtimeUrl &&
   ownerUrl.host === runtimeUrl.host && ownerUrl.pathname === runtimeUrl.pathname && ownerUrl.username !== runtimeUrl.username;
-const settings = { origin:"https://handoff.example.invalid",secret:"fictional-handoff-secret-with-thirty-two-characters",volunteerSubstitutionsEnabled:true };
+const settings = { origin:"https://handoff.example.invalid",secret:"fictional-handoff-secret-with-thirty-two-characters" };
 const org = "fictional-handoff", shiftId = "shift-one";
 const actor = id => ({ user:{id,email:id+"@example.invalid",emailVerified:true},session:{id:"session-"+id} });
-const staff = actor("staff"), leaving = actor("leaving"), joining = actor("joining");
+const staff = actor("staff"), scoped = actor("scoped"), leaving = actor("leaving"), joining = actor("joining");
 const entry = a => ({ intake:"request-"+a.user.id, participation:"place-"+a.user.id, contact:"contact-"+a.user.id, booking:"assignment-"+a.user.id });
 
 async function seed(c) {
@@ -46,11 +46,12 @@ async function seed(c) {
   await c.query(`INSERT INTO os_publications(org_id,id,record_id,source_revision,kind,target_id,target_module,target_revision,schema,created_by)
     VALUES($1,'publication','form',1,'volunteer-interest',$2,'volunteers',3,$3::jsonb,'fixture-editor')`,
     [org,shiftId,JSON.stringify(intakeSchema({data:form},"volunteer-interest"))]);
-  for(const a of [staff,leaving,joining]) {
+  for(const a of [staff,scoped,leaving,joining]) {
     await c.query('INSERT INTO "user"(id,email,"emailVerified") VALUES($1,$2,true)',[a.user.id,a.user.email]);
     await c.query('INSERT INTO "session" VALUES($1,$2,clock_timestamp()+interval \'1 hour\')',[a.session.id,a.user.id]);
   }
   await c.query("INSERT INTO os_members(org_id,user_id,role) VALUES($1,$2,'owner')",[org,staff.user.id]);
+  await c.query("INSERT INTO os_members(org_id,user_id,role,program_ids) VALUES($1,$2,'admin','[\"limited-program\"]')",[org,scoped.user.id]);
   for(const [a,confirmed] of [[leaving,true],[joining,false]]) {
     const v=entry(a);
     await save(v.contact,"contacts",{kind:"person-reference",title:"Fictional contact"},"draft",1,false);
@@ -90,10 +91,10 @@ test("restricted PostgreSQL: verified staff selects the saved waitlist, two own 
     await seed(migration.pool);
     db=database(runtimeUrl.href,{schema});
     const handle=createHandler({db,settings,
-      auth:{api:{getSession:async({headers})=>[staff,leaving,joining].find(a=>a.user.id===headers.get("x-fixture-actor"))??null}},
+      auth:{api:{getSession:async({headers})=>[staff,scoped,leaving,joining].find(a=>a.user.id===headers.get("x-fixture-actor"))??null}},
       send:async()=>{providerAttempts++;throw Error("No mail during handoff tests");},
       participationTransport:async()=>{providerAttempts++;throw Error("No mail during handoff tests");},
-      volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({db,settings,authorityOptions}),
+      volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({db,enabled:true,authorityOptions}),
     });
     const call=async(a,path,{body,method=body===undefined?"GET":"POST",status=200}={})=>{
       const response=await handle(new Request(settings.origin+path,{method,
@@ -106,6 +107,7 @@ test("restricted PostgreSQL: verified staff selects the saved waitlist, two own 
     assert.equal((await call(staff,"/api/session")).volunteerSubstitutions,undefined);
     await migration.pool.query(volunteerSubstitutionVerifierSql(role,authorityOptions)); installed=true;
     assert.equal((await call(staff,"/api/session")).volunteerSubstitutions,true);
+    assert.equal((await call(scoped,"/api/session")).volunteerSubstitutions,undefined);
     assert.equal((await call(leaving,"/api/session")).volunteerSubstitutions,undefined);
     assert.equal((await call(joining,"/api/participant/session")).volunteerSubstitutions,true);
     const base=`/api/orgs/${org}/volunteer-substitutions`, optionsPath=`${base}/shifts/${shiftId}/${entry(leaving).participation}`;
@@ -134,6 +136,9 @@ test("restricted PostgreSQL: verified staff selects the saved waitlist, two own 
     const body={version:1,reviewSha256:review.reviewSha256,idempotencyKey:"fictional-handoff-command",acknowledge:true};
     const accepted=await call(staff,confirmPath,{body});
     assert.equal(accepted.replayed,false);
+    assert((await call(staff,`/api/orgs/${org}/audit`)).events.some(e=>e.action==="participation.substituted"));
+    assert(!(await call(scoped,`/api/orgs/${org}/audit`)).events.some(e=>e.action==="participation.substituted"));
+    assert.equal((await call(scoped,`/api/orgs/${org}/export`,{status:403})).code,"substitution_history_scope");
     await migration.pool.query("DELETE FROM os_previews WHERE org_id=$1 AND id=$2",[org,offer.intentId]);
     assert.deepEqual(await call(staff,confirmPath,{body}),{...accepted,replayed:true});
     assert.deepEqual((await migration.pool.query("SELECT id,state FROM os_participations WHERE org_id=$1 ORDER BY id",[org])).rows,

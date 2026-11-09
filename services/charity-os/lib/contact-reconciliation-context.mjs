@@ -28,7 +28,8 @@ import {
   CONTACT_SUBSTITUTION_AUDIT, CONTACT_SUBSTITUTION_CHOICE_TABLE, CONTACT_SUBSTITUTION_CHOICE_PROJECTION,
   CONTACT_SUBSTITUTION_METHOD, closeContactSubstitutions, collectContactSubstitutionSource, contactSubstitutionAudit,
   contactSubstitutionChoice, contactSubstitutionGraph, contactSubstitutionOffer, contactSubstitutionReport,
-  contactSubstitutionArchive, closeContactSubstitutionRestore, isContactSubstitutionRestoreAudit,
+  archivedContactSubstitutionRestoreRecords, contactSubstitutionArchive, closeContactSubstitutionRestore,
+  isContactSubstitutionRestoreAudit,
 } from "./contact-reconciliation-substitution.mjs";
 
 export const CONTACT_CONTEXT_LIMITS = Object.freeze({ rows: 20000, bytes: 32 * 1024 * 1024, batch: 32, references: 128 });
@@ -615,9 +616,11 @@ function archivedSubstitutionReferences(archive, chosen, maps, budget, recordMod
     "id", "orgId", "moduleId", "data", "status", "ownerId", "lastEditedBy", "revision", "approval",
     "snapshot", "source", "createdAt", "updatedAt",
   ]));
+  for (const record of archivedContactSubstitutionRestoreRecords(archive.value)) readRecord(record);
   for (const event of originalEvents) {
     const row = exact(event, CONTACT_CONTEXT_CATALOG.os_events);
     need(row.org_id === sourceOrgId && storedTime(row.created_at));
+    if (isContactSubstitutionRestoreAudit(row)) continue;
     if (["organization.created", "organization.updated"].includes(row.action)) {
       need(row.record_id === null && row.module_id === null); exact(row.detail, []); continue;
     }

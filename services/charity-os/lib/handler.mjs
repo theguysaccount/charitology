@@ -166,6 +166,17 @@ import {
 } from "./task-recurrence-backup.mjs";
 const okay = (value) => json({ ok: true, ...value });
 
+function canReadHandoffHistory(member) {
+  const access = modulePermissions("volunteers", member.role);
+  return Array.isArray(member.programIds) && member.programIds.length === 0 && access.read && access.write;
+}
+function requireHandoffBackupAccess(backup, member) {
+  if (backup?.volunteerSubstitutions !== undefined && !canReadHandoffHistory(member))
+    fail(403, "substitution_history_scope", "Whole-workspace Volunteers access is required for this backup.");
+}
+const scopedHandoffAuditSQL = "AND action <> 'participation.substituted'";
+const scopedHandoffArchiveSQL = "AND NOT (payload ? 'volunteerSubstitutions')";
+
 async function resourceReservationFeatures(c, member) {
   if (!administrators(member.role) || !Array.isArray(member.programIds) || member.programIds.length)
     return {};
@@ -370,10 +381,7 @@ export function createHandler({
             programIds: r.program_ids,
           })),
         );
-        const canReviewHandoffs = volunteerSubstitutionRuntime && orgs.some(org=>{
-          const permission=modulePermissions("volunteers",org.role);
-          return Array.isArray(org.programIds)&&org.programIds.length===0&&permission.read&&permission.write;
-        });
+        const canReviewHandoffs = volunteerSubstitutionRuntime && orgs.some(canReadHandoffHistory);
         return okay({
           user: {
             id: session.user.id,
@@ -720,6 +728,7 @@ export function createHandler({
           });
           if (grantReportResponse) return grantReportResponse;
           const mayReadFeedback = canManageFeedbackIntake(member);
+          const mayReadHandoffHistory = canReadHandoffHistory(member);
           if (tail === "export" && method === "GET") {
             await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
             requireAdmin(await membership(c, org, user));
@@ -782,7 +791,7 @@ export function createHandler({
                 await c.query(
                   `SELECT id,actor_id AS "actorId",action,record_id AS "recordId",module_id AS "moduleId",
                      ${feedbackSafeAuditDetailSQL},created_at AS "createdAt" FROM os_events WHERE org_id=$1
-                     ${mayReadFeedback ? "" : scopedFeedbackAuditSQL} ORDER BY id DESC LIMIT 500`,
+                     ${mayReadFeedback ? "" : scopedFeedbackAuditSQL}${mayReadHandoffHistory ? "" : " " + scopedHandoffAuditSQL} ORDER BY id DESC LIMIT 500`,
                   mayReadFeedback ? [org] : [org, [...linkedPrivate]],
                 )
               ).rows,
@@ -791,6 +800,7 @@ export function createHandler({
           if (tail === "export" && method === "GET") {
             requireAdmin(member);
             const backup = await assembleWorkspaceBackup(c, org, { organization, records });
+            requireHandoffBackupAccess(backup, member);
             if (Buffer.byteLength(JSON.stringify(backup)) > 64 * 1024 * 1024)
               fail(422, "backup_size", "The complete workspace backup exceeds 64 MiB.");
             await audit(c, org, user, "backup.exported", null, {
@@ -812,6 +822,7 @@ export function createHandler({
               ? previewLocalOsMigration(backup, { organization })
               : null;
             if (migration) backup = migration.backup;
+            requireHandoffBackupAccess(backup, member);
             const imported = validateBackup(backup, org, user);
             const intake = restoredIntake(backup);
             if (intake?.publications.some(p => p.kind === "feedback"))
@@ -967,6 +978,7 @@ export function createHandler({
                 "preview",
                 "This preview expired or has already been imported.",
               );
+            requireHandoffBackupAccess(p.payload, member);
             if (
               Number(
                 (
@@ -1182,7 +1194,7 @@ export function createHandler({
                 await c.query(
                   `SELECT id,checksum,created_at AS "createdAt",committed_at AS "committedAt" FROM os_previews
                      WHERE org_id=$1 AND kind='backup' AND committed_at IS NOT NULL
-                     ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`} ORDER BY created_at DESC`,
+                     ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}${mayReadHandoffHistory ? "" : " " + scopedHandoffArchiveSQL} ORDER BY created_at DESC`,
                   [org],
                 )
               ).rows,
@@ -1197,11 +1209,12 @@ export function createHandler({
               await c.query(
                 `SELECT payload, ${feedbackBackupSQL} AS feedback FROM os_previews
                    WHERE org_id=$1 AND id=$2 AND kind='backup' AND committed_at IS NOT NULL
-                   ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}`,
+                   ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}${mayReadHandoffHistory ? "" : " " + scopedHandoffArchiveSQL}`,
                 [org, archiveMatch[1]],
               )
             ).rows[0];
             if (!archive) fail(404, "backup", "Import archive not found.");
+            requireHandoffBackupAccess(archive.payload, member);
             if (archive.feedback === true)
               await requireFeedbackIntakeStaff(c, org, session, { readOnly: true });
             return downloadJson(
@@ -1529,7 +1542,7 @@ export function createHandler({
                   await c.query(
                     `SELECT action,actor_id AS "actorId",${feedbackSafeAuditDetailSQL},created_at AS "createdAt"
                        FROM os_events WHERE org_id=$1 AND record_id=$2
-                       ${mayReadFeedback ? "" : scopedFeedbackIntakeAuditSQL} ORDER BY id DESC LIMIT 100`,
+                       ${mayReadFeedback ? "" : scopedFeedbackIntakeAuditSQL}${mayReadHandoffHistory ? "" : " " + scopedHandoffAuditSQL} ORDER BY id DESC LIMIT 100`,
                     [org, record.id],
                   )
                 ).rows;

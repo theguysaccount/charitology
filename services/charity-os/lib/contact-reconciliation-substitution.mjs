@@ -6,6 +6,7 @@ import { restoredIntake } from "./intake-backup.mjs";
 import { restoredParticipation } from "./participation-backup.mjs";
 import { restoredDelivery } from "./participation-delivery-backup.mjs";
 import { restoredTaskRecurrence } from "./task-recurrence-backup.mjs";
+import { getModule, validateRecord } from "./modules.mjs";
 import { validateGroupExactStamp } from "./participation-group-model.mjs";
 import { VOLUNTEER_SUBSTITUTION_OFFER_KIND } from "./volunteer-substitution-offer.mjs";
 import { VOLUNTEER_SUBSTITUTION_STORAGE_LIMITS } from "./volunteer-substitution-store.mjs";
@@ -128,7 +129,8 @@ export function contactSubstitutionArchive(row, rowKey, stamps) {
   };
   return { actorId: row.actor_id, at: stamps.committed, records, sourceOrgId: a.volunteerSubstitutions.sourceOrgId,
     originalRecords: a.records, originalEvents: a.events,
-    reports: reports.reports, summary };
+    reports: reports.reports, summary, intake, participation,
+    priorHistories: a.volunteerSubstitutions.entries.filter(entry => entry.source === "recovered").map(entry => entry.history) };
 }
 export function isContactSubstitutionRestoreAudit(row) {
   return row.action === "backup.restored" && Object.hasOwn(row.detail ?? {}, "volunteerSubstitutionsRecovered") ||
@@ -162,6 +164,69 @@ export function closeContactSubstitutionRestore(archives, audits, reports) {
   }
   need(summary && remaining.size === 0);
   return archives[0];
+}
+
+// Native export carries the source workspace's prior restore journal, but
+// never the old source archive or a live command. Require the single prior
+// journal to account for the same closed inactive history and source links.
+export function archivedContactSubstitutionRestoreRecords(archive) {
+  const journal = archive.originalEvents.filter(isContactSubstitutionRestoreAudit);
+  if (!journal.length) return [];
+  const summaries = journal.filter(row => row.action === "backup.restored");
+  need(summaries.length === 1 && archive.priorHistories.length > 0);
+  const summary = summaries[0], detail = exact(summary.detail, Object.keys(archive.summary));
+  const at = storedExact(summary.created_at);
+  need(id(summary.actor_id) && summary.record_id === null && summary.module_id === null &&
+    intent(detail.sourceArchiveId) && sha(detail.checksum) && Number.isInteger(detail.sourceHistoryCount) &&
+    detail.sourceHistoryCount >= 0 && detail.sourceHistoryCount <= 2000 &&
+    detail.count === journal.length - 1 && detail.count <= archive.originalRecords.length &&
+    same(detail, { ...archive.summary, count: detail.count, sourceHistoryCount: detail.sourceHistoryCount,
+      checksum: detail.checksum, sourceArchiveId: detail.sourceArchiveId,
+      volunteerSubstitutionsRecovered: archive.priorHistories.length }));
+  const archivedById = new Map(archive.originalRecords.map(record => [record.id, record]));
+  const restoredById = new Map();
+  for (const row of journal) {
+    need(row.org_id === archive.sourceOrgId && row.actor_id === summary.actor_id && storedExact(row.created_at) === at);
+    if (row === summary) continue;
+    const { record, sourceChecksum } = exact(row.detail, ["record", "sourceChecksum"]);
+    const original = exact(record, ["id", "orgId", "moduleId", "data", "status", "ownerId", "revision",
+      "approval", "snapshot", "source", "updatedAt"]);
+    need(id(original.id) && original.id === row.record_id && original.orgId === archive.sourceOrgId &&
+      original.moduleId === row.module_id && archivedById.get(original.id)?.moduleId === original.moduleId &&
+      !restoredById.has(original.id) && sourceChecksum === detail.checksum &&
+      original.ownerId === summary.actor_id && original.revision === 1 &&
+      original.status === getModule(original.moduleId).workflow.initial && original.source === null &&
+      original.approval === null && original.snapshot === null &&
+      typeof original.updatedAt === "string" && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(original.updatedAt));
+    storedExact(original.updatedAt);
+    restoredById.set(original.id, original);
+  }
+  const records = [...restoredById.values()];
+  for (const record of records)
+    need(same(validateRecord(record.moduleId, record.data, { orgId: archive.sourceOrgId,
+      recordId: record.id, status: record.status, records }), record.data));
+  const people = new Map(archive.participation.participations.map(p => [p.id, p]));
+  const intake = new Map(archive.intake.submissions.map(row => [row.id, row]));
+  const publications = new Map(archive.intake.publications.map(row => [row.id, row]));
+  const required = (id, moduleId, fields = {}) => {
+    const record = restoredById.get(id);
+    need(record?.moduleId === moduleId && Object.entries(fields).every(([key, value]) => record.data[key] === value));
+  };
+  // Wire events retain milliseconds. Accept the original decision only if it
+  // precedes the end of that same millisecond, without inventing a precise time.
+  const restoreUpperBound = at.slice(0,23) + "999Z";
+  for (const history of archive.priorHistories) {
+    need(history.acceptedAtExact <= restoreUpperBound);
+    required(history.shift.id, "volunteers", { kind: "shift" });
+    for (const leg of [history.outgoing, history.replacement]) {
+      const p = people.get(leg.participationId), entry = intake.get(p?.intakeId), publication = publications.get(entry?.publicationId);
+      need(p && publication);
+      required(leg.assignmentId, "volunteers", { kind: "assignment", shiftId: history.shift.id, contactId: p.contactId });
+      required(p.contactId, "contacts");
+      required(publication.recordId, "forms", { kind: "form" });
+    }
+  }
+  return records;
 }
 
 export function contactSubstitutionGraph() {

@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { hash } from "../lib/security.mjs";
-import { CONTACT_SUBSTITUTION_CHOICE_PROJECTION, closeContactSubstitutions, collectContactSubstitutionSource,
+import { getModule, validateRecord } from "../lib/modules.mjs";
+import { archivedContactSubstitutionRestoreRecords, CONTACT_SUBSTITUTION_CHOICE_PROJECTION, closeContactSubstitutions, collectContactSubstitutionSource,
   contactSubstitutionAudit, contactSubstitutionChoice, contactSubstitutionGraph, contactSubstitutionOffer,
 } from "../lib/contact-reconciliation-substitution.mjs";
 
@@ -82,4 +83,54 @@ test("expired/withdrawn packets project typed contact provenance, and a contradi
   assert.throws(() => contactSubstitutionAudit({ ...audit, detail: { ...audit.detail, contactId: "staff" } }));
   g.audits.push(ref(contactSubstitutionAudit(audit), "os_events"));
   assert.throws(() => closeContactSubstitutions(g, records));
+});
+
+function priorJournalFixture() {
+  const { g, records } = graphFixture();
+  const actorId = "previous-restoring-staff", archivedAt = "2026-11-08T12:30:00.125Z", checksum = "d".repeat(64);
+  const restored = records.map(({ id, moduleId, data }) => ({
+    id, orgId: org, moduleId, data: { title: "Fixture " + id, ...data },
+    status: getModule(moduleId).workflow.initial, ownerId: actorId, revision: 1,
+    approval: null, snapshot: null, source: null, updatedAt: archivedAt,
+  }));
+  for (const record of restored) record.data = validateRecord(record.moduleId, record.data, {
+    orgId: org, recordId: record.id, status: record.status, records: restored,
+  });
+  const summary = { count: restored.length, checksum, sourceArchiveId: "e".repeat(32), sourceHistoryCount: 0,
+    sourceCommentCount: 0, sourceReportCount: 0, volunteerSubstitutionsRecovered: 1,
+    learningSourcesRecovered: 0, learningEventsRetained: 0, learningReportsRecovered: 0,
+    intakePublicationsClosed: 1, intakeRequests: 2, participationTargetsRecovered: 1, participationsRecovered: 2,
+    taskRecurrenceSeriesRecovered: 0, taskRecurrenceOccurrencesRetained: 0 };
+  const audit = (action, record_id, module_id, detail) =>
+    ({ org_id: org, actor_id: actorId, created_at: archivedAt, action, record_id, module_id, detail });
+  return { sourceOrgId: org, summary, originalRecords: restored.map(record=>({ ...record })),
+    originalEvents: [...restored.map(record=>audit("record.restored",record.id,record.moduleId,{ record, sourceChecksum: checksum })),
+      audit("backup.restored", null, null, { ...summary })],
+    priorHistories: [{ shift: { id: shiftId }, acceptedAtExact: issued,
+      outgoing: { participationId: "place-out", assignmentId: "assignment-out" },
+      replacement: { participationId: "place-in", assignmentId: "assignment-in" } }],
+    intake: { submissions: [...g.intake.values()].map(r=>({ id: r.id, publicationId: r.publication_id })),
+      publications: [...g.publications.values()].map(r=>({ id: r.id, recordId: r.record_id })) },
+    participation: { participations: [...g.participants.values()].map(r=>({ id: r.id, intakeId: r.intake_id, contactId: r.contact_id })) },
+  };
+}
+
+test("a prior inactive native restore journal binds typed records and refuses duplicates, a private family or mismatches", () => {
+  const archive = priorJournalFixture();
+  assert.deepEqual(archivedContactSubstitutionRestoreRecords(archive).map(row=>row.id), archive.originalRecords.map(row=>row.id));
+  for (const change of [
+    x=>x.originalEvents.push(structuredClone(x.originalEvents.at(-1))),
+    x=>x.originalEvents.push(structuredClone(x.originalEvents[0])),
+    x=>{ x.originalEvents.at(-1).detail.participantCheckinsRecovered = 1; },
+    x=>{ x.originalEvents[0].detail.sourceChecksum = "f".repeat(64); },
+    x=>{ x.originalEvents[0].org_id = "different-tenant"; },
+    x=>{ x.originalEvents[0].created_at = "2026-11-08T12:30:00.126Z"; },
+    x=>{ x.originalEvents.find(row=>row.record_id==="assignment-out").detail.record.data.contactId = "staff"; },
+    x=>{ x.priorHistories[0].acceptedAtExact = "2026-11-08T12:30:00.126000Z"; },
+    x=>{ x.priorHistories = []; },
+  ]) {
+    const altered = structuredClone(archive);
+    change(altered);
+    assert.throws(() => archivedContactSubstitutionRestoreRecords(altered));
+  }
 });

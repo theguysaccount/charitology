@@ -12,7 +12,9 @@ const settings = readSettings(),
   send = mailer(settings),
   auth = authentication({ settings, db, send }),
   handle = createHandler({ settings, db, send, auth,
-    volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({db,settings}) });
+    volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({
+      db,enabled:process.env.OS_VOLUNTEER_SUBSTITUTIONS_ENABLED==="1",
+    }) });
 const root = resolve(new URL("../public", import.meta.url).pathname);
 const types = {
   ".html": "text/html; charset=utf-8",
