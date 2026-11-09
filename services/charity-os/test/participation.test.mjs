@@ -344,7 +344,7 @@ test("own serialization hides working edits, roster and staff provenance", () =>
   assert.equal(own.notifications.enabled, false);
   assert.equal(own.notifications.preferenceOnly, true);
 });
-test("participation storage uses actual PostgreSQL row bytes with exact inclusive bounds", async () => {
+test("participation quota applies supplied row-byte measurements with exact inclusive bounds", async () => {
   for (const [table, count, bytes] of [
     ["os_participation_targets", 500, PARTICIPATION_LIMITS.targetBytes],
     ["os_participations", 2000, PARTICIPATION_LIMITS.participationBytes],
@@ -353,7 +353,7 @@ test("participation storage uses actual PostgreSQL row bytes with exact inclusiv
     const c = {
       query: async (sql) => ({
         rows: [
-          sql.includes(`FROM ${table} `)
+          sql.endsWith(` AS bytes FROM ${table} t WHERE org_id=$1`)
             ? { count, bytes }
             : { count: 0, bytes: 0 },
         ],
@@ -363,7 +363,7 @@ test("participation storage uses actual PostgreSQL row bytes with exact inclusiv
     const bad = {
       query: async (sql) => ({
         rows: [
-          sql.includes(`FROM ${table} `)
+          sql.endsWith(` AS bytes FROM ${table} t WHERE org_id=$1`)
             ? { count, bytes: bytes + 1 }
             : { count: 0, bytes: 0 },
         ],

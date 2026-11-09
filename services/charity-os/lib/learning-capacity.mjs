@@ -130,9 +130,16 @@ const frozen = learningFreeze;
 
 async function schemaCheck(c, fieldPresent=false) {
   const required=fieldPresent?{...columns,os_reports:fieldReportColumns}:columns;
-  const result = await c.query("SELECT t.relname AS table_name,a.attname AS column_name FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid WHERE n.nspname=current_schema() AND t.relname=ANY($1::text[]) AND a.attnum>0 AND NOT a.attisdropped ORDER BY t.relname,a.attnum", [Object.keys(required)]);
+  const result = await c.query("SELECT t.relname AS table_name,a.attname AS column_name,(a.atttypid='pg_catalog.jsonb'::regtype AND a.atttypmod=-1 AND a.attndims=0 AND NOT a.attnotnull AND NOT a.atthasdef AND NOT a.atthasmissing AND a.attidentity='' AND a.attgenerated='') AS bare_nullable_jsonb FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace JOIN pg_attribute a ON a.attrelid=t.oid WHERE n.nspname=current_schema() AND t.relname=ANY($1::text[]) AND a.attnum>0 AND NOT a.attisdropped ORDER BY t.relname,a.attnum", [Object.keys(required)]);
   const actual = new Map();
-  for (const item of result.rows) { if (!actual.has(item.table_name)) actual.set(item.table_name, []); actual.get(item.table_name).push(item.column_name); }
+  for (const item of result.rows) {
+    if (item.table_name === 'os_participations' && item.column_name === 'reminder_consent') {
+      if (item.bare_nullable_jsonb !== true) badSchema();
+      continue;
+    }
+    if (!actual.has(item.table_name)) actual.set(item.table_name, []);
+    actual.get(item.table_name).push(item.column_name);
+  }
   for (const [table, expected] of Object.entries(required))
     if (JSON.stringify([...(actual.get(table) ?? [])].sort()) !== JSON.stringify([...expected].sort())) badSchema();
 }
@@ -141,7 +148,12 @@ async function measure(c, table, rows, legacyParticipation = false) {
   // Composite JSON timestamp transport only: payload/data/proof objects retain their exact original strings.
   const sqlRows = rows.map(value => Object.fromEntries(Object.entries(value).map(([key, field]) => [key,
     typeof field === 'string' && key.endsWith('_at') ? participationTimestampParameter(field) : field])));
-  const result = await c.query(`SELECT item.ordinality::integer AS position,octet_length(${table === 'os_participations' && legacyParticipation ? "(to_jsonb(r)-'requested_interval')" : 'to_jsonb(r)'}::text) AS bytes${table === 'os_participations' ? ',octet_length(to_jsonb(r)::text) AS raw_bytes' : ''}${table === 'os_records' ? ',octet_length(r.data::text) AS data_bytes' : ''}${table === 'os_participation_groups' ? ',octet_length(r.history::text) AS history_bytes' : ''} FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS item(value,ordinality) CROSS JOIN LATERAL jsonb_populate_record(NULL::${table},item.value) AS r ORDER BY item.ordinality`, [JSON.stringify(sqlRows)]);
+  // Old packets cannot carry a reminder preference. The typed projection fills
+  // the optional column with SQL NULL. Keep it in raw size, never charge it.
+  const charged = table === 'os_participations'
+    ? `(to_jsonb(r)-'reminder_consent'${legacyParticipation ? "-'requested_interval'" : ''})`
+    : 'to_jsonb(r)';
+  const result = await c.query(`SELECT item.ordinality::integer AS position,octet_length(${charged}::text) AS bytes${table === 'os_participations' ? ',octet_length(to_jsonb(r)::text) AS raw_bytes' : ''}${table === 'os_records' ? ',octet_length(r.data::text) AS data_bytes' : ''}${table === 'os_participation_groups' ? ',octet_length(r.history::text) AS history_bytes' : ''} FROM jsonb_array_elements($1::jsonb) WITH ORDINALITY AS item(value,ordinality) CROSS JOIN LATERAL jsonb_populate_record(NULL::${table},item.value) AS r ORDER BY item.ordinality`, [JSON.stringify(sqlRows)]);
   if (result.rows.length !== rows.length) badSchema();
   return result.rows.map((value, index) => {
     if (Number(value.position) !== index + 1 || !Number.isSafeInteger(Number(value.bytes)) || Number(value.bytes) < 0) badSchema();

@@ -196,6 +196,8 @@ function requestHistory(row, target) {
 }
 
 export async function exportParticipation(c, org) {
+  const unsupportedReminder = () => fail(409, 'participation_reminder_runtime',
+    'This workspace has reminder data. Open it with the current Charity OS release before exporting.');
   const targets = (
     await c.query(
       "SELECT * FROM os_participation_targets WHERE org_id=$1 ORDER BY target_id",
@@ -218,6 +220,9 @@ export async function exportParticipation(c, org) {
       [org],
     )
   ).rows;
+  if (rows.some(p => p.reminder_consent != null
+      || p.last_command?.format === 'charitology-participation-reminder-choice'
+      || p.last_command?.method === 'participation-reminder-v1')) unsupportedReminder();
   const version = participationVersion(targets, rows);
   const participations = rows.map((p) => ({
     id: p.id,
@@ -248,12 +253,14 @@ export async function exportParticipation(c, org) {
     recoveredState: p.recovered_state,
     createdAt: iso(p.created_at),
   }));
-  const outbox = (
+  const outboxRows = (
     await c.query(
       "SELECT * FROM os_participation_outbox WHERE org_id=$1 ORDER BY created_at,id",
       [org],
     )
-  ).rows.map((o) => ({
+  ).rows;
+  if (outboxRows.some(o => o.intent_kind === 'reminder' || Object.hasOwn(o.payload ?? {}, 'reminder'))) unsupportedReminder();
+  const outbox = outboxRows.map((o) => ({
     id: o.id,
     participationId: o.participation_id,
     eventRevision: o.event_revision,
