@@ -1,3 +1,5 @@
+export const fundraisingLearningFormUrl = 'https://github.com/theguysaccount/charitology/issues/new?template=fundraising-learning.yml';
+
 /** Editorial proposals, not tested fundraising interventions or organization ratings. */
 export const fundraisingSources = [
   {
@@ -484,5 +486,74 @@ export const fundraisingMethods = [
     ],
     sourceIds: ['acknowledgments', 'donor-rights', 'fep', 'mr-fundraising'],
     osModules: ['fundraising', 'communications', 'projects'],
+  },
+];
+
+export const fundraisingResults = [
+  {
+    review: 'draft', id: 'thank-you-calls', methodId: 'donor-follow-up',
+    title: 'Thank-you calls and repeat giving', design: 'Randomized field experiment',
+    context: 'New donors to U.S. public television stations between 2011 and 2016.',
+    comparison: 'Donors were assigned a thank-you call or no call. Both groups continued to receive the usual renewal mail. The calls came five to seven months after the first gift and expressed thanks without asking for another gift.',
+    window: 'One year after donors were assigned to a group.',
+    measurement: {
+      caption: 'Share of donors who gave again',
+      columns: ['Group', 'Donors', 'Gave again'],
+      rows: [
+        ['Assigned a call', '439,510', '27.97%'],
+        ['Assigned no call', '54,606', '28.06%'],
+      ],
+    },
+    finding: 'These figures come from Table 2, Panel A of the authors’ 2019 draft. The published 2023 paper reported no detectable increase in donor retention.',
+    costs: 'Unknown',
+    limits: 'This comparison covers calls made months after a first gift. A prompt thank-you, a call from a volunteer or a follow-up email would answer a different question.',
+    sources: [
+      { label: 'Authors’ 2019 draft, Table 2, Panel A', url: 'https://www.aeaweb.org/conference/2020/preliminary/paper/45yhKA34#page=36' },
+      { label: 'Samek and Longfield, published paper (2023)', url: 'https://www.aeaweb.org/articles?id=10.1257/app.20210068' },
+    ],
+  },
+  {
+    review: 'draft', id: 'direct-mail-match-offer', methodId: 'direct-mail',
+    title: 'A match offer in a mailed appeal', design: 'Randomized field experiment',
+    context: 'Past donors to one U.S. civil liberties nonprofit.',
+    comparison: 'Recipients were assigned a mailed appeal with a matching offer or an appeal without the offer. The match group includes the different match ratios tested.',
+    window: 'One month after the direct mail appeal.',
+    measurement: {
+      caption: 'Share of donors who gave again',
+      columns: ['Group', 'Donors', 'Gave again'],
+      rows: [
+        ['Assigned a match offer', '33,396', '2.2%'],
+        ['Assigned no match offer', '16,687', '1.8%'],
+      ],
+    },
+    finding: 'More recipients gave when offered a match. Donor gifts averaged $0.97 per letter with a match offer and $0.81 without one, excluding matching funds.',
+    costs: 'Unknown',
+    limits: 'This was one appeal to people who had already given. New donors, online appeals and different match terms need their own evidence.',
+    sources: [
+      { label: 'Karlan and List, published paper (2007)', url: 'https://www.aeaweb.org/articles?id=10.1257/aer.97.5.1774' },
+      { label: 'Open copy at Yale, Table 2A, Panel A (p. 1781)', url: 'https://isps.yale.edu/sites/default/files/publication/2012/12/AER%2C%202007%2C%20Karlan%2C%20DoesPriceMatter.pdf' },
+    ],
+  },
+  {
+    review: 'draft', id: 'facebook-video-ads', methodId: 'paid-ads',
+    title: 'Facebook video ads and gift revenue', design: 'Randomized field experiment',
+    context: 'The analysis covered 7,686 postal codes across Germany.',
+    comparison: 'Postal codes were assigned to a fundraising video ad campaign on Facebook or to a control group without those ads. Researchers counted gifts to the featured charity across donation channels and adjusted for past donations and local characteristics.',
+    window: '52 days, including the 14-day campaign and 38 days afterward.',
+    measurement: {
+      caption: 'Donation revenue per million residents per day',
+      columns: ['Comparison', 'Gift revenue'],
+      rows: [
+        ['Average in control areas', '€129.30'],
+        ['Adjusted difference from control', '+€17.65'],
+      ],
+    },
+    finding: 'The authors estimated €47,726 in extra gifts across the areas assigned ads. Their 90% confidence interval, a measure of uncertainty, ranged from €4,892 to €90,571.',
+    costs: 'The authors reported €33,700 in direct campaign costs. Full cash and staff-time costs are unknown.',
+    limits: 'The estimate is imprecise. The study also found signs that some giving shifted away from similar charities. This comparison covers one campaign and its 52-day window.',
+    sources: [
+      { label: 'Authors’ working paper (2024), Table 2, Panel B and section 4.3.4', url: 'https://www.ifo.de/DocDL/cesifo1_wp10954.pdf#page=14' },
+      { label: 'Adena and Hager, published paper in Management Science', url: 'https://pubsonline.informs.org/doi/10.1287/mnsc.2020.00596' },
+    ],
   },
 ];

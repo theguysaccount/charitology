@@ -17,3 +17,9 @@ If a draft save is unconfirmed, Retry checks the same request. Its original deci
 - Isolated database checks also cover exact schema admission, whole-workspace limits, older data without feedback, and inactive backup recovery. The two settings that control participant reminders stay off.
 
 This is private process feedback. Public aggregate responses, evidence of better outcomes, and real charity use require separate work.
+
+## Production release
+
+[PR #63](https://github.com/theguysaccount/charitology/pull/63) merged as `a9a5c1fa2897e425ec6344b7d804b92e24e22144`. Its tree matches the tested head `5a30b3a17d8c453723f957cf8c0cba71c6267512`. All four jobs passed on both the [push](https://github.com/theguysaccount/charitology/actions/runs/42606578374) and the [pull request](https://github.com/theguysaccount/charitology/actions/runs/42606584673).
+
+The compatible release served the tested application before the schema change. A single production transaction changed two publication constraints and created one receipt index. A fresh read verified the new structure and all 130 existing rows across 40 tables. The deployment from the merged Git commit then matched all 16 selected responses, including nine assets, five signed-out refusals, the unpublished-form refusal and the health response. These checks did not submit feedback or publish a real organization's form.

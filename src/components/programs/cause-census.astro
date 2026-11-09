@@ -143,6 +143,9 @@ const fields = [
           >
             <h3>{cause.name}</h3>
             <p>{cause.summary}</p>
+            {cause.id === "education" && (
+              <p><a href={url("/record/gap-map/#education-plan-funding")}>Read the Afghanistan Education case for 2024</a>. It shows how one plan reports estimated need, planned reach and funding as separate measures.</p>
+            )}
             <ul>
               {entries.map((entry) => (
                 <li>

@@ -21,27 +21,37 @@ const originalFilename = data ? new URL(data.source.url).pathname.split('/').at(
   <header>
     <p class="eyebrow">One plan cluster · draft cause mapping</p>
     <h2 id="education-plan-title">Education in Afghanistan’s 2024 humanitarian plan</h2>
-    <p>A concrete view of reported money in the system: what one emergency Education plan requested, and what funding was reported against it. A planning request is a different quantity from independently measured human need.</p>
+    <p>See how many people this plan estimated needed education assistance and how many it aimed to support, alongside the funding figures for the same response.</p>
   </header>
+  <section aria-labelledby="education-plan-context-title">
+    <h3 id="education-plan-context-title">Estimated need and planned reach</h3>
+    <dl class="plan-people">
+      <div><dt>Estimated to need education assistance</dt><dd>About 8 million people</dd></div>
+      <div><dt>Targeted for education assistance</dt><dd>About 1.4 million people</dd></div>
+    </dl>
+    <p>The plan publishes both figures rounded. Its target describes how many people it aimed to support. The number who received support is a separate measure.</p>
+    <p class="note"><a href="https://digitallibrary.un.org/nanna/record/4042660/files/AFG_HNRP_2024_V10.pdf?registerDownload=1&version=1&withMetadata=0&withWatermark=0#page=19">Education section of the published humanitarian plan (PDF, printed page 37)</a>.</p>
+  </section>
   {data ? <>
+    <h3>Plan funding</h3>
     <dl class="plan-amounts">
       <div><dt>Plan requirements</dt><dd>{data.row.raw.requirements === '' ? 'Unknown' : fundingUsd(data.row.raw.requirements)}</dd></div>
       <div><dt>Reported funding</dt><dd>{data.row.raw.funding === '' ? 'Unknown' : fundingUsd(data.row.raw.funding)}</dd></div>
       <div><dt>Derived funding / requirements</dt><dd>{data.derived.status === 'comparable' ? `${data.derived.displayPercent}%` : 'Unknown'}</dd></div>
     </dl>
     <p>{data.derived.status === 'comparable'
-      ? 'This ratio uses the two reported amounts. It is rounded to two decimals; signed adjustments and values above 100% are retained.'
+      ? 'This percentage compares two dollar amounts. The display rounds to two decimals and retains signed adjustments and values above 100%.'
       : reasons[data.derived.status]} {data.row.raw.percentFunded === '' ? 'The source percentage is blank.' : <>FTS separately reports <strong>{data.row.raw.percentFunded}%</strong> in its source-rounded percentage field.</>}</p>
     {data.derived.differenceUSD !== null && <p>Plan requirements minus reported funding: <strong>{fundingUsd(data.derived.differenceUSD)}</strong>. A negative result means reported funding exceeds this request. This subtraction does not measure unmet human need, final spending or the effectiveness of a charity.</p>}
     <p>Only Afghanistan · plan <code>1185 / HAFG24</code> · Education cluster <code>7415</code> · January 1–December 31, 2024. Other plans, shared funding, countries and years are excluded. The cause mapping is draft; no funding-by-depth estimate is assigned.</p>
     <p>Recorded CSV response completion: <time datetime={data.source.retrievedAt}>{data.source.retrievedAt}</time>. Recorded edition assembly: <time datetime={data.capturedAt}>{data.capturedAt}</time>. {meta('responseHttpDate') && <>The separate response HTTP Date was <code>{meta('responseHttpDate')}</code>.</>} Publisher modification is an original metadata literal: <code>{meta('resourceModifiedLiteral')}</code>. This is a fixed snapshot; checksum validation alone does not prove an external retrieval or its clock.</p>
-    <nav class="plan-downloads" aria-label="Education plan data downloads">
+    <nav class="plan-downloads" aria-label="Education plan funding downloads">
       <a class="btn btn-small" href={url(`${exportRoot}.json`)} download>Selected JSON</a>
       <a class="btn btn-small btn-ghost" href={url(`${exportRoot}.csv`)} download>Selected CSV</a>
       <a href={url(`/observations/files/${data.source.payload.raw.path}`)} download={originalFilename}>Original licensed CSV</a>
       <a href={url('/api/v1/humanitarian-plan-cluster.json')}>API</a>
     </nav>
-    <p class="note">JSON preserves original source strings. The selected CSV adds provenance and derived columns, with a documented reversible apostrophe rule for formula-like text. The original CSV is a separate, byte-preserved download.</p>
+    <p class="note">These downloads cover the funding figures. JSON preserves original source strings. The selected CSV adds provenance and derived columns, with a documented reversible apostrophe rule for formula-like text. The original CSV is a separate, byte-preserved download.</p>
     <details>
       <summary>Inspect the original row, evidence and limitations</summary>
       <p>CSV record {data.row.locator.recordNumber}, including its header as record 1; lines {data.row.locator.firstLine}–{data.row.locator.lastLine}; UTF-8 bytes [{data.row.locator.byteStart}, {data.row.locator.byteEnd}). The byte span includes the original record ending.</p>
@@ -52,15 +62,15 @@ const originalFilename = data ? new URL(data.source.url).pathname.split('/').at(
       <ul>{data.limitations.map(note => <li>{note}</li>)}</ul>
       <p>Original CSV SHA-256: <code>{data.source.rawSha256}</code>. Raw row SHA-256: <code>{data.row.locator.rawSha256}</code>. Source code commit: <code>{data.code.commit}</code>. Edition SHA-256: <code>{data.edition.hash}</code>.</p>
     </details>
-  </> : <p class="note">No captured Education plan-cluster value is selected in this edition. No amount or coverage ratio is supplied.</p>}
+  </> : <p class="note">No captured Education plan-cluster value is selected in this edition. The funding amount and percentage are unknown here.</p>}
 </section>
 <style>
   .plan-reference { border:1px solid var(--rule); border-radius:var(--radius); padding:clamp(.75rem,2vw,1.5rem); min-width:0; }
   .plan-reference p,.plan-reference li { max-width:80ch; }
-  .plan-amounts { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr)); gap:1rem; margin-block:1.5rem; }
-  .plan-amounts div { padding:1rem; background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius); min-width:0; }
+  .plan-amounts,.plan-people { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr)); gap:1rem; margin-block:1.5rem; }
+  .plan-amounts div,.plan-people div { padding:1rem; background:var(--surface); border:1px solid var(--rule); border-radius:var(--radius); min-width:0; }
   dt { font-family:var(--font-sans); font-size:.9rem; }
-  .plan-amounts dd { margin:.5rem 0 0; font-family:var(--font-sans); font-size:clamp(1.1rem,2vw,1.6rem); overflow-wrap:anywhere; }
+  .plan-amounts dd,.plan-people dd { margin:.5rem 0 0; font-family:var(--font-sans); font-size:clamp(1.1rem,2vw,1.6rem); overflow-wrap:anywhere; }
   .plan-downloads { display:flex; flex-wrap:wrap; align-items:center; gap:.8rem; margin-block:1rem; }
   .plan-raw { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr)); gap:.75rem; }
   .plan-raw dd { margin:.3rem 0; white-space:pre-wrap; overflow-wrap:anywhere; }
