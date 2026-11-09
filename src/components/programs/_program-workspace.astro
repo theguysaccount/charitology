@@ -1,7 +1,15 @@
 ---
 import { programWorkspaces } from "../../data/program-workspaces";
+import { beginnerMeetings } from "../../data/education-kit.mjs";
 const { program } = Astro.props;
 const config = programWorkspaces[program];
+const fourMeetingStarter = program === "university-chapters" ? beginnerMeetings.map(meeting => ({
+  title: meeting.title,
+  objective: meeting.activity,
+  agenda: `${meeting.timing} (50 minutes).\n\n${meeting.activity}`,
+  reading: "/learn/clubs/#first-meetings",
+  output: meeting.output,
+})) : null;
 ---
 
 <section class="tool pw-tool" data-program={program} aria-labelledby="pw-title">
@@ -68,7 +76,9 @@ const config = programWorkspaces[program];
   <div class="btn-row pw-actions">
     <button type="button" class="btn btn-small btn-ghost" id="pw-sample" disabled
       >Review fictional example</button>
+    {fourMeetingStarter && <button type="button" class="btn btn-small btn-ghost" id="pw-four-starter" data-sessions={JSON.stringify(fourMeetingStarter)} disabled>Review four-meeting starter</button>}
   </div>
+  {fourMeetingStarter && <p class="note">Choose the four beginner meetings or keep the six-session fictional example. Both require review before replacing this local workspace; neither registers a club or confirms a meeting.</p>}
   <p class="note">
     Use Backups and recovery above to restore native JSON, remove this saved key,
     undo a record change or retry a failed save. Unfinished fields have a separate
@@ -79,6 +89,7 @@ const config = programWorkspaces[program];
   </label>
   <div id="pw-sample-preview" class="callout" hidden>
     <p id="pw-sample-summary"></p>
+    <pre id="pw-four-draft" tabindex="0" aria-label="Four-meeting starter draft to review" hidden></pre>
     <div class="btn-row">
       <button type="button" class="btn btn-small" id="pw-sample-apply"
         >Apply reviewed fictional example</button>
@@ -156,7 +167,7 @@ const config = programWorkspaces[program];
   .pw-actions {
     margin-top: 1.5rem;
   }
-  #pw-draft {
+  #pw-draft, #pw-four-draft {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     max-height: 65vh;
@@ -226,6 +237,8 @@ const config = programWorkspaces[program];
     busy = false,
     disposed = false;
   let sample: PRRestorePreview<typeof key> | undefined;
+  let sampleIsFour = false;
+  const fourStarterButton = root.querySelector<HTMLButtonElement>("#pw-four-starter");
   type FieldInput = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
   // Native controls can sanitize an admitted string while displaying it. Keep
   // its original bytes until an explicit input/change owns the displayed text.
@@ -249,7 +262,11 @@ const config = programWorkspaces[program];
       : "This local action could not finish.";
   function invalidateSample() {
     sample = undefined;
+    sampleIsFour = false;
     $("#pw-sample-preview").hidden = true;
+    $("#pw-four-draft").textContent = "";
+    $("#pw-four-draft").hidden = true;
+    $("#pw-sample-apply").textContent = "Apply reviewed fictional example";
     $<HTMLInputElement>("#pw-sample-discard").checked = false;
   }
   function changed(form?: PRFormId) {
@@ -282,6 +299,7 @@ const config = programWorkspaces[program];
     for (const id of ["pw-export", "pw-markdown", "pw-csv", "pw-preview"])
       $<HTMLButtonElement>("#" + id).disabled = !hasCurrent;
     $<HTMLButtonElement>("#pw-sample").disabled = busy || !snapshot?.canRecover;
+    if (fourStarterButton) fourStarterButton.disabled = busy || !snapshot?.canRecover;
     $<HTMLButtonElement>("#pw-sample-apply").disabled = busy || !sample;
     $("#pw-save-state").textContent = !snapshot
       ? "Opening the local record snapshot…"
@@ -889,16 +907,31 @@ const config = programWorkspaces[program];
     $("#pw-sample-preview").hidden = true;
     refreshStatus();
   });
-  $("#pw-sample").addEventListener("click", () => {
+  function reviewExample(four = false) {
     if (!session || busy) return;
     const discardLocal = $<HTMLInputElement>("#pw-sample-discard").checked;
     sample = undefined;
     $("#pw-sample-preview").hidden = true;
     let pending: Promise<PRRestorePreview<typeof key>>;
+    let candidate: ProgramState;
     try {
-      pending = session.previewReplace(sampleWorkspace(config), {
+      candidate = sampleWorkspace(config);
+      if (four) {
+        if (!fourStarterButton || config.id !== "university-chapters") return;
+        const sessions = JSON.parse(fourStarterButton.dataset.sessions || "null");
+        if (!Array.isArray(sessions) || sessions.length !== 4)
+          throw Error("The four-meeting starter is unavailable. Keep your current work.");
+        const fields = config.collections.find(collection => collection.key === "sessions")!.fields;
+        candidate.context.term = "Illustrative four-meeting starter";
+        candidate.records.sessions = sessions.map(values => ({
+          id: recordId(), values: { ...defaults(fields), ...values },
+        }));
+      }
+      const at = new Date().toISOString();
+      candidate.updated = at;
+      pending = session.previewReplace(candidate, {
         kind: "example",
-        at: new Date().toISOString(),
+        at,
         discardLocal,
       });
     } catch (error) {
@@ -913,8 +946,12 @@ const config = programWorkspaces[program];
       .then((preview) => {
         if (disposed || !view.isCurrent(token)) return;
         sample = preview;
+        sampleIsFour = four;
+        $("#pw-four-draft").textContent = four ? workspaceMarkdown(config, candidate) : "";
+        $("#pw-four-draft").hidden = !four;
+        $("#pw-sample-apply").textContent = four ? "Apply reviewed four-meeting starter" : "Apply reviewed fictional example";
         $("#pw-sample-summary").textContent =
-          "FICTIONAL replacement: " +
+          (four ? "FICTIONAL four-meeting starter replacement: " : "FICTIONAL replacement: ") +
           Object.entries(preview.summary.counts)
             .map(([name, count]) => count + " " + name)
             .join(", ") +
@@ -930,10 +967,12 @@ const config = programWorkspaces[program];
         busy = false;
         refreshStatus();
       });
-  });
+  }
+  $("#pw-sample").addEventListener("click", () => reviewExample());
+  fourStarterButton?.addEventListener("click", () => reviewExample(true));
   $("#pw-sample-apply").addEventListener("click", () => {
     if (!session || !sample || busy) return;
-    const selected = sample;
+    const selected = sample, selectedFour = sampleIsFour;
     sample = undefined;
     $("#pw-sample-preview").hidden = true;
     busy = true;
@@ -949,7 +988,7 @@ const config = programWorkspaces[program];
         ) {
           accept(result.snapshot, selected.view, true);
           say(
-            "Saved the explicitly fictional example. Guarded Undo is available in recovery.",
+            selectedFour ? "Saved the four-meeting teaching starter. It confirms no actual meeting or recognition. Guarded Undo is available in recovery." : "Saved the explicitly fictional example. Guarded Undo is available in recovery.",
           );
         } else {
           accept(result.snapshot);

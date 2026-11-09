@@ -769,7 +769,7 @@ Fill in only agreed organizational information:
 
 ${clubHandover.map(item => `- ${item} ____________________`).join('\n')}
 
-The separate [six-session chapter-launch workspace](https://charitology.org/programs/university-chapters/) remains available for a longer local plan. This four-meeting starter neither changes that workspace nor establishes a recognized chapter.`;
+[Review this four-meeting starter in the chapter workspace](https://charitology.org/programs/university-chapters/#pw-four-starter), or use its longer six-session fictional example. Review and apply are separate actions; either kit replaces the local workspace only after its discard checks. The existing stored format is unchanged, and neither kit establishes a recognized chapter.`;
 
 const osMarkdown = `## Optional fictional Charity OS demonstration
 

@@ -2,6 +2,14 @@
 
 Status: local implementation acceptance, October 28, 2026 UTC. The release record is [PR #35](https://github.com/theguysaccount/charitology/pull/35). AI-assisted content and source review; all teaching resources remain untested editorial drafts.
 
+## Four-meeting starter update, November 9
+
+The club guide now links to a distinct four-meeting preset in the chapter workspace. It uses the same authored beginner sequence as the guide, with editable objectives, timed agendas, readings and outputs. The complete proposed kit is visible before Apply. Existing discard checks protect saved records and unfinished fields; review alone writes nothing. The six-session example, local key and native version 1 format remain unchanged. Neither preset registers a club or confirms a meeting.
+
+The final local build produces 611 pages, and the complete `npm run check` passes. Thirty-seven actual Astro-rendered, mounted interface groups pass, including two new behavioral groups for discard/review/Apply, exact JSON/Markdown/CSV exports and invalidation after new writing or persisted page hide. The earlier unchanged ten pure planning checks retain their separate source scope. Independent AI-assisted source review caught a six-session term label inherited by the new preset; a retained negative control fails the prior source, and the corrected preset says “Illustrative four-meeting starter.” No historical reference output was regenerated.
+
+An actual in-app-browser journey follows the club link, preserves unfinished text until explicit discard, reviews the four titled meetings, applies four editable sessions with two roles and two tasks, then uses guarded Undo. A reload confirms the disposable workspace is empty again. The task tab and static preview server are closed. This verifies that finite browser flow; it is not Chrome/phone-layout, native file-picker, print, screen-reader or institutional-adoption evidence. Native file-save checks from earlier releases were not repeated. Publication and canonical checks remain separate from this local record.
+
 ## Scope
 
 Five public `/learn/` pages provide a teaching hub, a 50-minute lesson, an eight-session university outline, a four-meeting beginner club guide and an adult-educator-led school adaptation. Seven editable, self-contained Markdown downloads include a starting guide, facilitator guide, separate student worksheet, syllabus, club starter, school pack and complete pack. Entry points appear in the footer, menu, charity hub and existing course/chapter wrappers.
