@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import {PARTICIPATION_REMINDER_LEGACY_SQL} from '../lib/participation-storage.mjs';
@@ -83,6 +84,7 @@ function fixture({ moduleId = "events", state = "requested", usage = 0,
     intake: { status: "converted", cancelled_at: null }, quotaFull: false };
   const c = {
     async query(sql, values = []) {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       db.calls.push({ sql, values: structuredClone(values) });
       if (throwAt && sql.startsWith(throwAt)) throw new Error("Fictional SQL failure");
       if (sql === reservationSchemaSql.layout) return legacyReservationLayout;

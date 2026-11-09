@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import test from "node:test";
@@ -381,6 +382,7 @@ test("review metadata cannot push the pending queue beyond its actual row-byte c
   };
   const c = {
     query: async (sql) => {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       if (sql.includes("AS publication_kind FROM os_intake")) return { rows: [row] };
       if (sql.startsWith("UPDATE os_intake"))
         return { rows: [{ ...row, revision: 2, status: "reviewed" }] };
@@ -483,6 +485,7 @@ test("existing-contact conversion preserves all associations while creating only
     let storedRefs;
     const c = {
       query: async (sql, args = []) => {
+        const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
         if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
         if (sql === reservationSql.projection) return { rows: [], rowCount: 0 };
         if (sql.startsWith("SELECT pg_advisory_xact_lock")) return { rows: [] };

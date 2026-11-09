@@ -105,6 +105,7 @@ export function settings(env = process.env) {
     relaySecret: env.OS_MAIL_RELAY_SECRET || "",
     participationDeliveryEnabled:
       env.OS_PARTICIPATION_DELIVERY_ENABLED === "true",
+    volunteerSubstitutionsEnabled: env.OS_VOLUNTEER_SUBSTITUTIONS_ENABLED === "1",
     participationTestOnly: env.OS_PARTICIPATION_TEST_ONLY !== "false",
     participationTestRecipient: (env.OS_PARTICIPATION_TEST_RECIPIENT || "")
       .trim()

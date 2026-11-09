@@ -19,6 +19,7 @@ const source = await readFile(
 );
 const checkInSource = await readFile(new URL("./participant-check-in.js", import.meta.url),"utf8");
 const reminderSource = await readFile(new URL("./participant-reminders.js", import.meta.url),"utf8");
+const substitutionSource = await readFile(new URL("./participant-substitution.js", import.meta.url), "utf8");
 const origin = "https://os.example.invalid";
 const token = "a".repeat(43);
 const code = `org.pub.${token}`;
@@ -408,6 +409,7 @@ async function harness({
       linked,
       detail: detail(),
       sessionFailure: false,
+      substitutionCapability: undefined,
       sessionGate: null,
       detailGate: null,
       participations: structuredClone(participations),
@@ -428,6 +430,7 @@ async function harness({
       return response({
         user: model.user,
         ...(model.user ? { csrfToken: "synthetic-csrf" } : {}),
+        ...(model.substitutionCapability === undefined ? {} : { volunteerSubstitutions: model.substitutionCapability }),
       });
     }
     if (path === "/api/auth/request-link") return response({ accepted: true });
@@ -457,6 +460,11 @@ async function harness({
     if (path.startsWith(`${participationBase}/participation/reminder`)) {
       if(!model.reminderResponse)throw Error("Unexpected unchosen fictional reminder read");
       const value=await model.reminderResponse({path,body,options});return response(value.payload||value,value.status||200);
+    }
+    if (path === `${participationBase}/participation/substitution-choice`) {
+      assert.equal(typeof model.substitutionResponse, "function", "no automatic offer read");
+      const value = await model.substitutionResponse({ path, body, options });
+      return response(value.payload || value, value.status || 200);
     }
     if (path.startsWith(`${participationBase}/`)) {
       const [, pid, action] = path.slice(participationBase.length).split("/");
@@ -615,7 +623,7 @@ async function harness({
         const old = windowEvents.get(type);windowEvents.set(type, event=>{old?.(event);fn(event);});
       },
     },
-    fetch,
+    hostFetch: fetch,
     AbortSignal,
     AbortController,
     TextEncoder,
@@ -623,7 +631,15 @@ async function harness({
     crypto: webcrypto,
     console,
   });
-  vm.runInContext(checkInSource.replace(/^export /gm, "")+"\nconst {createOwnReminderPane} = (()=>{\n"+reminderSource.replace(/^export /gm, "")+"\nreturn {createOwnReminderPane};})();\nconst participantRemindersEnabled = "+String(remindersEnabled===true)+";\n"+source.replace('import { createOwnCheckInPane } from "./participant-check-in.js";\n', "").replace('import { createOwnReminderPane } from "./participant-reminders.js";\n', "").replace('import { participationRemindersEnabled as participantRemindersEnabled } from "./participation-reminder-feature.js";\n', "").replace(/^export /gm, ""), context);
+  const pane = (name, code) => `const ${name} = (() => {\n${code.replace(/^export /gm, "")}\nreturn ${name};})();\n`;
+  const portal = source.replace(/^import .*;\n/gm, "").replace(/^export /gm, "");
+  const localFetch = `async function fetch(...args) {
+    const response = await hostFetch(...args);
+    return { ok: response.ok, status: response.status, json: async () => JSON.parse(await response.text()) };
+  }\n`;
+  vm.runInContext(localFetch + checkInSource.replace(/^export /gm, "") +
+    pane("createOwnReminderPane", reminderSource) + pane("createOwnSubstitutionPane", substitutionSource) +
+    "const participantRemindersEnabled = " + String(remindersEnabled === true) + ";\n" + portal, context);
   const flush = async () => {
     for (let n = 0; n < 12; n++)
       await new Promise((resolve) => setImmediate(resolve));
@@ -1680,4 +1696,114 @@ test("portal outer mutation restoration leaves an uncertain withdrawal disabled 
  await h.click("Arrival self-report");const ack=h.root.querySelectorAll("input").find(n=>n.attributes.type==="checkbox"&&n.parentElement.textContent.includes("withdraw only this unverified"));ack.checked=true;await ack.emit("change");await h.click("Withdraw this assertion");
  const normal=h.root.querySelectorAll("button").find(n=>n.textContent==="Withdraw this assertion"),retry=h.root.querySelectorAll("button").find(n=>n.textContent==="Retry exact command");assert(normal.disabled);assert(ack.disabled);assert.equal(retry.disabled,false);assert.equal(h.calls.filter(c=>c.path.endsWith("/check-in/withdraw")).length,1);
  h.windowEvents.get("pagehide")({persisted:true});
+});
+
+const handoffReads = harness => harness.calls.filter(call => call.path.endsWith("/substitution-choice"));
+const handoffWrites = harness => handoffReads(harness).filter(call => call.options.method === "POST");
+const portalButton = (harness, title) => harness.root.querySelectorAll("button").find(button => button.textContent.trim() === title);
+async function openHandoffRequest(h, ...capability) {
+  h.model.substitutionCapability = capability.length ? capability[0] : true;
+  h.model.detail = { ...h.model.detail, status: "converted", editable: false,
+    publication: { ...h.model.detail.publication, kind: "volunteer-interest" } };
+  await h.refresh();
+  await h.open();
+}
+const handoffDate = "2099-01-01T22:00:00.000001Z";
+const handoffExpiry = "2099-01-01T22:04:00.000001Z";
+const offerExpiry = "2099-01-01T22:08:00.000001Z";
+function ownHandoffDTO(state = "unanswered", replayed = false) {
+  const choiceRevision = state === "unanswered" ? 0 : state === "accepted" ? 1 : 2;
+  return { ok: true, replayed, choice: { version: 1, party: "leaving",
+    shift: { title: "Fictional whole shift", startAt: "2099-01-01T23:00:00Z", endAt: "2099-01-02T03:00:00Z", timeZone: "UTC" },
+    offerExpiresAtExact: offerExpiry, state, choiceRevision, canAccept: state === "unanswered", canWithdraw: state === "accepted",
+    acceptedAtExact: choiceRevision ? handoffDate : null, expiresAtExact: choiceRevision ? handoffExpiry : null,
+    withdrawnAtExact: choiceRevision === 2 ? "2099-01-01T22:01:00.000001Z" : null,
+    reviewSha256: "abc"[choiceRevision].repeat(64),
+  } };
+}
+async function acknowledgeShiftChoice(h) {
+  const checkbox = h.root.querySelector(".participant-substitution").querySelector("input");
+  assert.equal(checkbox.parentElement.tagName, "LABEL");
+  assert.equal(checkbox.checked, false);
+  checkbox.checked = true;
+  await checkbox.emit("change");
+}
+
+test("the actual portal requires an explicit true session capability and a linked full volunteer row", async () => {
+  for (const [capability, row] of [
+    [undefined, participation({ state: "confirmed" })], ["true", participation({ state: "confirmed" })],
+    [true, participation({ state: "requested" })], [true, participation({ state: "confirmed", recovered: true })],
+  ]) {
+    const h = await harness({ participations: [row] });
+    await openHandoffRequest(h, capability);
+    assert.equal(portalButton(h, "Read shift substitution offer"), undefined);
+    assert.deepEqual(handoffReads(h), []);
+  }
+  const h = await harness({ participations: [participation({ state: "waitlisted" })] });
+  await openHandoffRequest(h);
+  assert.ok(portalButton(h, "Read shift substitution offer"));
+  assert.deepEqual(handoffReads(h), []);
+});
+
+test("own portal retains exact choice through a current-session recheck and withdraws only after a new read", async () => {
+  const h = await harness({ participations: [participation({ state: "confirmed", canConsent: false })] });
+  let writes = 0;
+  h.model.substitutionResponse = ({ options }) => {
+    if (options.method !== "POST") return ownHandoffDTO(writes ? "accepted" : "unanswered");
+    if (++writes === 1) throw new Error("Fictional lost response");
+    return ownHandoffDTO(writes === 2 ? "accepted" : "withdrawn", writes === 2);
+  };
+  await openHandoffRequest(h);
+  await h.click("Read shift substitution offer");
+  const pane = h.root.querySelector(".participant-substitution");
+  assert.equal(h.document.activeElement.attributes.role, "status");
+  assert.equal(h.document.activeElement.attributes["aria-atomic"], "true");
+  assert.match(pane.textContent, /Leave your confirmed place/);
+  assert.equal(portalButton(h, "Save my agreement").disabled, true);
+  await acknowledgeShiftChoice(h);
+  await h.click("Save my agreement");
+  assert.equal(handoffWrites(h).length, 1);
+  assert.equal(vm.runInContext("state.dirty", h.context), true);
+  await h.refresh();
+  assert.equal(handoffReads(h).length, 2, "session recheck did not read or write the offer");
+  await h.click("Read shift substitution offer");
+  await h.click("Retry the same choice");
+  const posts = handoffWrites(h);
+  assert.equal(posts[0].options.body, posts[1].options.body);
+  assert.equal(posts[0].options.headers["X-CSRF-Token"], "synthetic-csrf");
+  assert.deepEqual(posts[0].body, { version: 1, choice: "accept", reviewSha256: "a".repeat(64),
+    expectedChoiceRevision: 0, acknowledge: true });
+  await h.click("Read shift substitution offer");
+  await acknowledgeShiftChoice(h);
+  await h.click("Withdraw my agreement");
+  assert.deepEqual(handoffWrites(h).at(-1).body, { version: 1, choice: "withdraw", reviewSha256: "b".repeat(64),
+    expectedChoiceRevision: 1, acknowledge: true });
+  assert.match(pane.textContent, /withdrew your agreement/);
+  assert.doesNotMatch(pane.textContent, /counterpart|other volunteer|waitlist position/i);
+  h.windowEvents.get("pagehide")({ persisted: true });
+  assert.equal(vm.runInContext("state.substitutionPanes.size", h.context), 0);
+});
+
+test("own portal gives an absent offer a deliberate recheck and clears an uncertain choice when capability ends", async () => {
+  const h = await harness({ participations: [participation({ state: "confirmed", canConsent: false })] });
+  h.model.substitutionResponse = () => ({ payload: { code: "substitution_unavailable" }, status: 404 });
+  await openHandoffRequest(h);
+  await h.click("Read shift substitution offer");
+  assert.match(h.root.querySelector(".participant-substitution").textContent, /offer is unavailable/);
+  assert.equal(handoffReads(h).length, 1);
+  h.model.substitutionResponse = ({ options }) => {
+    if (options.method === "POST") throw new Error("Fictional lost response");
+    return ownHandoffDTO();
+  };
+  await h.click("Reload saved request");
+  assert.equal(handoffReads(h).length, 1);
+  await h.click("Read shift substitution offer");
+  await acknowledgeShiftChoice(h);
+  await h.click("Save my agreement");
+  assert.equal(vm.runInContext("state.substitutionPanes.size", h.context), 1);
+  h.model.substitutionCapability = undefined;
+  await h.refresh();
+  assert.equal(vm.runInContext("state.substitutionPanes.size", h.context), 0);
+  assert.equal(h.root.querySelector(".participant-substitution"), null);
+  assert.equal(handoffWrites(h).length, 1);
 });

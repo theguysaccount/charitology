@@ -1,6 +1,7 @@
 import { createOwnCheckInPane } from "./participant-check-in.js";
 import { createOwnReminderPane } from "./participant-reminders.js";
 import { participationRemindersEnabled as participantRemindersEnabled } from "./participation-reminder-feature.js";
+import { createOwnSubstitutionPane } from "./participant-substitution.js";
 const $ = (selector) => document.querySelector(selector);
 const receiptPattern =
   /^([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{43})$/;
@@ -83,6 +84,8 @@ const state = {
   bookingIntents: new Map(),
   checkInPanes: new Map(),
   reminderPanes: new Map(),
+  substitutionEnabled: false,
+  substitutionPanes: new Map(),
 };
 
 export function parseReceipt(value, origin) {
@@ -235,27 +238,35 @@ async function request(path, { method = "GET", body, signal } = {}) {
   try {
     result = await response.json();
   } catch {
-    throw new Error(
-      "The service returned an unreadable response. Refresh before repeating a change.",
-    );
+    throw Object.assign(new Error("The service returned an unreadable response. Refresh before repeating a change."),
+      { status: response.status });
   }
-  if (!response.ok || result.ok !== true) {
+  if (!response.ok || result?.ok !== true) {
     const error = new Error(
-      result.message || "This request could not be completed.",
+      result?.message || "This request could not be completed.",
     );
     error.status = response.status;
-    error.code = result.code;
-    error.issues = Array.isArray(result.issues) ? result.issues : [];
+    error.code = result?.code;
+    error.issues = Array.isArray(result?.issues) ? result.issues : [];
     throw error;
   }
   return result;
 }
 function checkInDirty() {
-  state.dirty = state.requestDirty || state.participationDirty || [...state.checkInPanes.values(), ...state.reminderPanes.values()].some(v => v.pane.hasUnsavedChanges());
+  state.dirty = state.requestDirty || state.participationDirty ||
+    [...state.checkInPanes.values(), ...state.reminderPanes.values(), ...state.substitutionPanes.values()]
+      .some(entry => entry.pane.hasUnsavedChanges());
+}
+function clearSubstitutionPanes() {
+  const panes = [...state.substitutionPanes.values()];
+  state.substitutionPanes.clear();
+  for (const { pane } of panes) pane.dispose();
+  checkInDirty();
 }
 function clearCheckInPanes() {
   const panes = [...state.checkInPanes.values(), ...state.reminderPanes.values()];state.checkInPanes.clear();state.reminderPanes.clear();
   for (const v of panes) v.pane.dispose();
+  clearSubstitutionPanes();
 }
 function ownCheckInPane(item, row) {
   const user = state.user?.id, access = state.accessVersion, key = JSON.stringify([user,item.orgId,item.id,row.id]);
@@ -281,6 +292,59 @@ function ownReminderPane(item, row) {
     entry.pane.pause();entry.revision=row.revision;entry.intakeRevision=item.revision;
   }
   return entry.pane;
+}
+const substitutionPending = () => [...state.substitutionPanes.values()].some(entry => entry.pane.hasPendingCommand());
+const substitutionKey = (item, row) => JSON.stringify([item.orgId, item.id, row.id]);
+function eligibleOwnSubstitution(item, row) {
+  return state.substitutionEnabled === true && state.user?.emailVerified === true &&
+    item?.status === "converted" && item.erasedAt === null && item.publication?.kind === "volunteer-interest" &&
+    ["confirmed", "waitlisted"].includes(row?.state) && row.recovered === false && row.requestedInterval == null &&
+    (row.terms || row.frozenTerms)?.kind === "shift" && Number.isSafeInteger(row.revision) && row.revision >= 1 &&
+    [item.orgId, item.id, row.id].every(value => typeof value === "string" && /^[A-Za-z0-9_-]{1,100}$/.test(value));
+}
+function pruneSubstitutionPanes(item) {
+  for (const [key, entry] of state.substitutionPanes) {
+    const row = state.participations.find(candidate => substitutionKey(item, candidate) === key);
+    if (!eligibleOwnSubstitution(item, row)) {
+      state.substitutionPanes.delete(key);
+      entry.pane.dispose();
+    } else if (row.revision !== entry.revision || item.revision !== entry.intakeRevision) {
+      entry.pane.pause();
+      entry.revision = row.revision;
+      entry.intakeRevision = item.revision;
+    }
+  }
+  checkInDirty();
+}
+function ownSubstitutionControl(item, row) {
+  const key = substitutionKey(item, row), user = state.user.id, access = state.accessVersion, csrf = state.csrf;
+  const host = node("div"), current = () => alive(user, access) && csrf === state.csrf &&
+    !state.privateSuspended && sameRequest(state.current, item) &&
+    eligibleOwnSubstitution(state.current, state.participations.find(entry => entry.id === row.id));
+  const open = node("button", { type: "button", class: "button subtle" }, "Read shift substitution offer");
+  open.addEventListener("click", async () => {
+    if (!current() || !open.isConnected || state.mutationBusy || state.sessionBusy) return;
+    if (substitutionPending() && !state.substitutionPanes.get(key)?.pane.hasPendingCommand()) {
+      message($("#participant-status"), "Check the earlier shift choice or stop retrying it before opening another offer.", true);
+      return;
+    }
+    const pane = createOwnSubstitutionPane({ enabled: true, orgId: item.orgId, intakeId: item.id,
+      participationId: row.id, request, isCurrent: current, onDirty: checkInDirty,
+      runMutation: (fn, output) => {
+        if ([...state.substitutionPanes].some(([other, entry]) => other !== key && entry.pane.hasPendingCommand())) {
+          message(output, "Check the earlier shift choice or stop retrying it before saving another choice.", true);
+          return false;
+        }
+        return mutation(fn, output);
+      }, onAccessLost: denyIfAccessLost, disposeOnPageHide: false });
+    state.substitutionPanes.set(key, { pane, revision: row.revision, intakeRevision: item.revision });
+    host.replaceChildren(pane.element);
+    await pane.load();
+  });
+  const previous = state.substitutionPanes.get(key);
+  host.append(previous ? previous.pane.element : open);
+  previous?.pane.resume();
+  return host;
 }
 function clearPrivate() {
   clearCheckInPanes();
@@ -346,6 +410,7 @@ function denyIfAccessLost(error) {
     clearPrivate();
     state.user = null;
     state.csrf = "";
+    state.substitutionEnabled = false;
     state.privateSuspended = false;
     renderSession();
     message(
@@ -507,11 +572,16 @@ function chooseRequest(item) {
   if (state.mutationBusy) return;
   const reminderPending=()=>[...state.reminderPanes.values()].some(v=>v.pane.hasPendingCommand());
   const open = () => {
+    if (substitutionPending() && !sameRequest(item, state.current)) {
+      message($("#participant-status"), "The earlier shift choice may already be saved. Check it or stop retrying before opening another request.", true);
+      return;
+    }
     if(reminderPending() && !sameRequest(item,state.current)) {
       message($("#participant-status"),"A reminder save may already be recorded. Reconcile it or explicitly stop retrying that save before opening another request.",true);return;
     }
-    return openRequest(item,{preserveDraft:reminderPending()}).catch((error) => {
+    return openRequest(item,{preserveDraft:reminderPending() || substitutionPending()}).catch((error) => {
       if (error.status === 404 && sameRequest(item, state.current)) {
+        clearSubstitutionPanes();
         state.current = null;
         state.dirty = false;
         state.detailVersion++;
@@ -533,7 +603,7 @@ function chooseRequest(item) {
       message($("#participant-status"), error.message, true);
     });
   };
-  if(reminderPending()){void open();return;}
+  if(reminderPending() || substitutionPending()){void open();return;}
   if (state.dirty)
     confirmPanel(
       "Discard unsaved corrections?",
@@ -553,7 +623,11 @@ function confirmPanel(
   if (state.mutationBusy) return;
   const hasReminderPending=()=>[...state.reminderPanes.values()].some(v=>v.pane.hasPendingCommand());
   let reminderWarningShown=hasReminderPending();
+  let substitutionWarningShown = substitutionPending();
   const reminderWarning=" A reminder save may already be recorded. Continuing does not undo it; signing out or discarding its pane removes only this tab’s retained retry.";
+  const substitutionWarning = " The earlier shift choice may already be saved. Leaving this request clears the retained retry from this tab.";
+  const confirmationDescription = () => description + (reminderWarningShown ? reminderWarning : "") +
+    (substitutionWarningShown ? substitutionWarning : "");
   const target = $("#participant-detail");
   target.querySelector("#participant-confirmation")?.remove();
   const heading = node("h3", { id: "participant-confirmation-title" }, title),
@@ -574,7 +648,7 @@ function confirmPanel(
         "aria-labelledby": heading.id,
       },
       heading,
-      node("p", {class:"participant-confirmation-description"}, description+(reminderWarningShown?reminderWarning:"")),
+      node("p", {class:"participant-confirmation-description"}, confirmationDescription()),
       node("div", { class: "actions" }, confirm, keep),
       output,
     );
@@ -584,7 +658,12 @@ function confirmPanel(
     if (trigger?.isConnected) trigger.focus();
   });
   confirm.addEventListener("click", () => {
-    if(hasReminderPending()&&!reminderWarningShown){reminderWarningShown=true;panel.querySelector(".participant-confirmation-description").textContent=description+reminderWarning;return;}
+    if (hasReminderPending() && !reminderWarningShown || substitutionPending() && !substitutionWarningShown) {
+      reminderWarningShown ||= hasReminderPending();
+      substitutionWarningShown ||= substitutionPending();
+      panel.querySelector(".participant-confirmation-description").textContent = confirmationDescription();
+      return;
+    }
     if (!state.mutationBusy) void mutation(() => onConfirm(output), output);
   });
   target.append(panel);
@@ -1298,6 +1377,7 @@ async function loadOwnParticipations(item, { preserveDraft = false } = {}) {
     );
   const discarded = preserveDraft && state.participationDirty && !unchanged;
   state.participations = result.participations;
+  pruneSubstitutionPanes(item);
   state.bookingIntents.clear();
   if (!(preserveDraft && state.participationDirty && unchanged)) {
     state.participationDirty = false;
@@ -1374,6 +1454,7 @@ function renderOwnParticipations(item) {
       const reminder = ownReminderPane(item,row);
       card.append(node("button",{type:"button",class:"button subtle",onclick:()=>void reminder.load()},"Read participation reminder choice"),reminder.element);
     }
+    if (eligibleOwnSubstitution(item, row)) card.append(ownSubstitutionControl(item, row));
     if (row.notifications?.requested)
       card.append(
         node(
@@ -1897,6 +1978,7 @@ async function saveOwnParticipation(item, row, action, payload, status) {
   state.participations = state.participations.map((entry) =>
     entry.id === row.id ? result.participation : entry,
   );
+  pruneSubstitutionPanes(item);
   state.participationDirty = false;
   state.participationDraftKeys.clear();
   state.dirty = state.requestDirty;
@@ -2098,10 +2180,13 @@ async function refreshSession(force = false) {
     const result = await request("/api/participant/session");
     if (version !== state.sessionVersion) return;
     const next = result.user || null;
+    const nextCsrf = next && typeof result.csrfToken === "string" ? result.csrfToken : "";
+    const substitutionEnabled = next?.emailVerified === true && !!nextCsrf && result.volunteerSubstitutions === true;
     if (state.user?.id !== next?.id) clearPrivate();
+    else if (!substitutionEnabled || state.csrf !== nextCsrf) clearSubstitutionPanes();
     state.user = next;
-    state.csrf =
-      next && typeof result.csrfToken === "string" ? result.csrfToken : "";
+    state.csrf = nextCsrf;
+    state.substitutionEnabled = substitutionEnabled;
     state.lastSessionAt = Date.now();
     state.autoRefreshStopped = false;
     if (next?.emailVerified === true) {
@@ -2122,6 +2207,7 @@ async function refreshSession(force = false) {
       }
     } else if (next) clearPrivate();
     state.privateSuspended = document.visibilityState === "hidden";
+    if (!state.privateSuspended) for (const { pane } of state.substitutionPanes.values()) pane.resume();
     renderSession();
     $("#participant-retry-session").hidden = true;
     if (!$("#participant-status").classList.contains("error"))
@@ -2154,7 +2240,7 @@ async function refreshSession(force = false) {
   }
 }
 function suspendPrivate() {
-  for (const v of [...state.checkInPanes.values(), ...state.reminderPanes.values()]) v.pane.pause();
+  for (const v of [...state.checkInPanes.values(), ...state.reminderPanes.values(), ...state.substitutionPanes.values()]) v.pane.pause();
   state.privateSuspended = true;
   $("#participant-private").hidden = true;
 }
@@ -2288,6 +2374,7 @@ function install() {
       clearPrivate();
       state.user = null;
       state.csrf = "";
+      state.substitutionEnabled = false;
       state.privateSuspended = false;
       state.autoRefreshStopped = true;
       renderSession();

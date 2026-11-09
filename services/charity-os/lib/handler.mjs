@@ -80,6 +80,9 @@ import { ContactContextError, currentContactReconciliationMember } from "./conta
 import { ContactReconciliationReportError } from "./contact-reconciliation-report.mjs";
 import { ContactReconciliationPreviewError } from "./contact-reconciliation-preview.mjs";
 import { restoredContactReconciliationReports, restoreContactReconciliationReports, contactReconciliationRestoreSummary } from "./contact-reconciliation-recovery.mjs";
+import { assertVolunteerSubstitutionRestoreDestination, restoreVolunteerSubstitutionReports } from "./volunteer-substitution-native.mjs";
+import { isVolunteerSubstitutionRuntime } from "./volunteer-substitution-runtime.mjs";
+import { guardVolunteerSubstitutionRecord } from "./volunteer-substitution-retention.mjs";
 import { inspectFieldResponseRecovery, restoreFieldResponseReports, fieldResponseRestoreSummary } from "./field-response-recovery.mjs";
 import { ParticipationGroupError } from "./participation-group-model.mjs";
 import { ParticipationGroupAllocationError } from "./participation-group-allocation.mjs";
@@ -201,8 +204,11 @@ export function createHandler({
   db,
   auth,
   send,
+  volunteerSubstitutionRuntime = null,
   participationTransport = participationMailer(settings),
 }) {
+  if (volunteerSubstitutionRuntime !== null && !isVolunteerSubstitutionRuntime(volunteerSubstitutionRuntime))
+    throw new TypeError("Use the reviewed shift handoff runtime.");
   const handle = async function handle(request) {
     try {
       const url = new URL(request.url),
@@ -340,6 +346,8 @@ export function createHandler({
                   emailVerified: session.user.emailVerified === true,
                 },
                 csrfToken: csrf(session.session.id, settings.secret),
+                ...(volunteerSubstitutionRuntime && await volunteerSubstitutionRuntime.discover(session)
+                  ? { volunteerSubstitutions: true } : {}),
               }
             : { user: null },
         );
@@ -362,6 +370,10 @@ export function createHandler({
             programIds: r.program_ids,
           })),
         );
+        const canReviewHandoffs = volunteerSubstitutionRuntime && orgs.some(org=>{
+          const permission=modulePermissions("volunteers",org.role);
+          return Array.isArray(org.programIds)&&org.programIds.length===0&&permission.read&&permission.write;
+        });
         return okay({
           user: {
             id: session.user.id,
@@ -370,6 +382,8 @@ export function createHandler({
           },
           orgs,
           csrfToken: csrf(session.session.id, settings.secret),
+          ...(canReviewHandoffs && await volunteerSubstitutionRuntime.discover(session)
+            ? { volunteerSubstitutions: true } : {}),
         });
       }
       if (!session) fail(401, "session", "Sign in to continue.");
@@ -409,6 +423,10 @@ export function createHandler({
       }
       const recurrenceResponse = await participationRecurrenceRoutes({request,url,db,session});
       if (recurrenceResponse) return recurrenceResponse;
+      if (volunteerSubstitutionRuntime) {
+        const response = await volunteerSubstitutionRuntime.route({request,url,db,settings,session});
+        if (response) return response;
+      }
       if (isResourceReservationPath(path))
         return resourceReservationRoutes({
           request, url, db, settings, session, auditReservation: audit,
@@ -816,6 +834,8 @@ export function createHandler({
             }
             const fieldResponses = inspectFieldResponseRecovery(backup);
             const participationRecurrence = await assertParticipationRecurrenceRestoreDestination(c, org, backup);
+            const volunteerSubstitutions = backup.volunteerSubstitutions === undefined ? null :
+              await assertVolunteerSubstitutionRestoreDestination(c, org, backup);
             const contactReconciliation = restoredContactReconciliationReports(backup);
             if (contactReconciliation.present) await currentContactReconciliationMember(c, { org, session }, { readOnly: false });
             const issues = [];
@@ -856,7 +876,7 @@ export function createHandler({
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
-            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || resourceReservations || backup.participation?.version === 3))
+            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present || resourceReservations || backup.participation?.version === 3))
               await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
@@ -904,6 +924,7 @@ export function createHandler({
                 ...(participantCheckins === null ? [] : [{ field: "participantCheckins", message: "Arrival assertions restore as unverified inactive history, without accounts, receipts, live consent or attendance authority." }]),
                 ...(fieldResponses.present ? [{ field: "reports", message: "Aggregate import manifests restore as historical data. They do not restore accepted commands, approval, credentials or current definition authority." }] : []),
                 ...(contactReconciliation.present ? [{ field: "reports", message: "Contact decisions restore as immutable historical data. Earlier commands, account relationships, consent and undo authority are not restored. Source trash remains in the retained source archive." }] : []),
+                ...(volunteerSubstitutions?.present ? [{ field: "volunteerSubstitutions", message: "Shift handoffs restore as inactive history. A new handoff needs both volunteers' current choices and a staff review." }] : []),
                 ...(participationRecurrence.present ? [{field:"reports",message:participationRecurrenceRestoreWarning(participationRecurrence)}] : []),
                 ...(participationGroups === null ? [] : [{ field: "participationGroups", message: "Group decisions restore as inactive history. They restore no live places, consent, coordinator authority or command keys." }]),
                 ...(resourceReservations ? [{ field: "resourceReservations", message: "Room and equipment holds restore as inactive history. Review unresolved claims before reserving the same asset." }] : []),
@@ -986,6 +1007,8 @@ export function createHandler({
             }
             const fieldResponses = inspectFieldResponseRecovery(p.payload);
             const participationRecurrence = await assertParticipationRecurrenceRestoreDestination(c, org, p.payload);
+            const volunteerSubstitutions = p.payload.volunteerSubstitutions === undefined ? null :
+              await assertVolunteerSubstitutionRestoreDestination(c, org, p.payload);
             const contactReconciliation = restoredContactReconciliationReports(p.payload);
             const contactRecoveryMember = contactReconciliation.present
               ? (await currentContactReconciliationMember(c, { org, session }, { readOnly: false })).member : null;
@@ -1045,7 +1068,7 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
-            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || resourceReservations || p.payload.participation?.version === 3)
+            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present || resourceReservations || p.payload.participation?.version === 3)
               await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -1115,11 +1138,13 @@ export function createHandler({
             await restoreParticipantCheckins(c, org, p.payload.participantCheckins);
             await restoreParticipationGroups(c, org, p.payload.participationGroups);
             if (resourceReservations) await restoreResourceReservations(c, org, resourceReservations);
-            if (fieldResponses.present || contactReconciliation.present || participationRecurrence.present) {
+            if (fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present) {
               const createdAtExact = (await c.query(`SELECT to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS created_at`)).rows[0].created_at;
               if (participationRecurrence.present) await restoreParticipationRecurrenceReports(c, p.payload, {orgId:org,member,createdAtExact});
               if (fieldResponses.present) await restoreFieldResponseReports(c, p.payload, { orgId: org, actorId: user, createdAtExact });
               if (contactReconciliation.present) await restoreContactReconciliationReports(c, p.payload, { orgId: org, member: contactRecoveryMember, createdAtExact });
+              if (volunteerSubstitutions?.present)
+                await restoreVolunteerSubstitutionReports(c, p.payload, { orgId:org, member, createdAtExact });
             }
             await checkLearningActiveRecords(c, org);
             await audit(c, org, user, "backup.restored", null, {
@@ -1129,6 +1154,7 @@ export function createHandler({
               sourceHistoryCount: p.payload.events?.length || 0,
               sourceCommentCount: p.payload.comments?.length || 0,
               sourceReportCount: p.payload.reports?.length || 0,
+              ...(volunteerSubstitutions?.present ? {volunteerSubstitutionsRecovered:volunteerSubstitutions.entries.length} : {}),
               learningSourcesRecovered: learningBridge?.sources.length || 0,
               learningEventsRetained: learningBridge?.events.length || 0,
               learningReportsRecovered: learningBridge?.reports.length || 0,
@@ -1570,6 +1596,7 @@ export function createHandler({
             await guardTaskRecurrenceWrite(c, record, { operation: "delete" });
             await guardLearningWrite(c, record, { operation: "delete" });
             await guardResourceReservationWrite(c, record, { operation: "delete" });
+            await guardVolunteerSubstitutionRecord(c, record, { operation: "delete" });
             const linked = records.some(
               (r) =>
                 r.id !== record.id &&

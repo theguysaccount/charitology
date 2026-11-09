@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import test from "node:test";
@@ -165,6 +166,7 @@ function fixture(module = "events") {
   const result = (rows) => ({ rows: clone(rows), rowCount: rows.length });
   const c = {
     async query(sql, p = []) {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       state.queries.push(sql);
       if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql === reservationSql.projection) return result([]);

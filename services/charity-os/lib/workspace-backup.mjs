@@ -1,3 +1,4 @@
+import {exportVolunteerSubstitutionNative} from './volunteer-substitution-native.mjs';
 import {PARTICIPATION_REMINDER_LEGACY_SQL} from './participation-storage.mjs';
 import {exportParticipationRecurrenceReports,restoredParticipationRecurrenceReports} from './participation-recurrence-recovery.mjs';
 import {fieldResponseNativeReports,inspectFieldResponseRecovery} from './field-response-recovery.mjs';
@@ -33,7 +34,10 @@ export async function assembleWorkspaceBackup(c,org,{organization,records,featur
   records??=await allRecords(c,org);
   const comments=(await c.query('SELECT * FROM os_comments WHERE org_id=$1',[org])).rows;
   const events=(await c.query('SELECT * FROM os_events WHERE org_id=$1 ORDER BY id',[org])).rows;
-  const reports=exportParticipationRecurrenceReports(exportContactReconciliationReports(fieldResponseNativeReports((await c.query('SELECT * FROM os_reports WHERE org_id=$1',[org])).rows.filter(row=>!isLearningReportFamily(row.payload)),org),org),org);
+  const rawReports=(await c.query('SELECT * FROM os_reports WHERE org_id=$1',[org])).rows;
+  const intake=await exportIntake(c,org),participation=await exportParticipation(c,org);
+  const substitutions=await exportVolunteerSubstitutionNative(c,{orgId:org,reports:rawReports,events,records,intake,participation});
+  const reports=exportParticipationRecurrenceReports(exportContactReconciliationReports(fieldResponseNativeReports(substitutions.reports.filter(row=>!isLearningReportFamily(row.payload)),org),org),org);
   const files=(await c.query("SELECT id,record_id AS \"recordId\",name,mime,checksum,size,encode(bytes,'base64') AS content FROM os_files WHERE org_id=$1 AND record_id IN (SELECT id FROM os_records WHERE org_id=$1 AND deleted_at IS NULL)",[org])).rows;
   const trash=(await c.query('SELECT * FROM os_records WHERE org_id=$1 AND deleted_at IS NOT NULL',[org])).rows.map(rowRecord);
   const trashFiles=(await c.query("SELECT id,record_id AS \"recordId\",name,mime,checksum,size,encode(bytes,'base64') AS content FROM os_files WHERE org_id=$1 AND record_id IN (SELECT id FROM os_records WHERE org_id=$1 AND deleted_at IS NOT NULL)",[org])).rows;
@@ -44,15 +48,16 @@ export async function assembleWorkspaceBackup(c,org,{organization,records,featur
   const participationGroups=await exportParticipationGroups(c,org);
   features??=await readWorkspaceFeatures(c,org);
   const resourceReservations=features?.reservations===true?await exportResourceReservations(c,org,{records,trash}):undefined;
-  return makeBackup(organization,records,{comments,events,reports,files,trash,trashFiles,integrations,
-    intake:await exportIntake(c,org),participation:await exportParticipation(c,org),
+  return makeBackup(organization,records,{comments,events:substitutions.events,reports,files,trash,trashFiles,integrations,
+    intake,participation,
     delivery:await exportDelivery(c,org),taskRecurrence:await exportTaskRecurrence(c,org),
     directoryResources:await exportDirectoryResources(c,org,{records,trash}),
     ...(learningBridge===undefined?{}:{learningBridge}),
     ...(incubatorBridge===undefined?{}:{incubatorBridge}),
     ...(participantCheckins===undefined?{}:{participantCheckins}),
     ...(participationGroups===undefined?{}:{participationGroups}),
-    ...(resourceReservations===undefined?{}:{resourceReservations})});
+    ...(resourceReservations===undefined?{}:{resourceReservations}),
+    ...(substitutions.volunteerSubstitutions===undefined?{}:{volunteerSubstitutions:substitutions.volunteerSubstitutions})});
 }
 export async function checkWorkspaceExportCapacity(c,org){
   const usage=await logicalBackupBytes(c,org);
@@ -61,7 +66,7 @@ export async function checkWorkspaceExportCapacity(c,org){
   const backup=await assembleWorkspaceBackup(c,org,{features}),bytes=Buffer.byteLength(JSON.stringify(backup));
   if(bytes>64*1024*1024)fail(422,'learning_backup_size','The complete workspace backup would exceed 64 MiB. This change was rolled back.');
   const feedback=await measureFeedbackIntakeRemaining(c,org,backup.intake,{expected:features.feedback===true});
-  const needsProjection=feedback!==null||backup.resourceReservations!==undefined||features.present||features.incubator||features.checkins||features.groups||features.field||features.crm||features.recurrence||features.reminders||restoredParticipationRecurrenceReports(backup).present||restoredContactReconciliationReports(backup).present||inspectFieldResponseRecovery(backup).present||backup.participationGroups!==undefined||backup.participantCheckins!==undefined||backup.incubatorBridge!==undefined||[3,4].includes(backup.participation?.version);
+  const needsProjection=feedback!==null||backup.resourceReservations!==undefined||backup.volunteerSubstitutions!==undefined||features.present||features.incubator||features.checkins||features.groups||features.field||features.crm||features.recurrence||features.reminders||restoredParticipationRecurrenceReports(backup).present||restoredContactReconciliationReports(backup).present||inspectFieldResponseRecovery(backup).present||backup.participationGroups!==undefined||backup.participantCheckins!==undefined||backup.incubatorBridge!==undefined||[3,4].includes(backup.participation?.version);
   const operational=needsProjection?await measureLearningOperationalCapacity(c,org,backup.participation):null;
   const resources=await measureResourceReservationRemaining(c,org,backup.resourceReservations);
   const requiredUsage=usage+(operational?.sourceLogicalGrowthBytes||0)+(resources?.retainedGrowthBytes||0)+(feedback?.retainedGrowthBytes||0);

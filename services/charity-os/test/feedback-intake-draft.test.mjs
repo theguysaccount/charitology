@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import test from "node:test";
 import assert from "node:assert/strict";
 import { feedbackIntakeDraftRoutes } from "../lib/feedback-intake-draft.mjs";
@@ -36,6 +37,7 @@ function fixture() {
       state.trace.push({ type: "tx", options });
       const snapshot = structuredClone({ entry: state.entry, draft: state.draft, receipt: state.receipt });
       const c = { async query(sql, args = []) {
+        const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
         if (/^(INSERT|UPDATE)/.test(sql.trim())) assert.ok(options.lock && !options.readOnly);
         if (sql.includes('FROM "session" s'))
           return state.live ? rows({ session_id: session.session.id, user_id: actor }) : rows();

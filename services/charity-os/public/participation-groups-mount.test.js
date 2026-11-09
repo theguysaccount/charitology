@@ -36,7 +36,7 @@ function row(n,patch={}){return {id:'p'+String(n).padStart(4,'0'),targetId:'targ
 const page=()=>({ok:true,targetId:'target',groups:[],nextCursor:null});
 function created(body){const ids=body.members.map(x=>x.participationId);return {ok:true,replayed:true,acceptedAtExact:STAMP,accepted:{groupId:'group',groupRevision:1,state:'draft',target:{targetId:'target',moduleId:'volunteers'},rosterIds:ids,coordinatorIntakeId:body.coordinatorIntakeId},currentDisposition:{groupId:'group',groupRevision:1,state:'draft',members:ids.map(participationId=>({participationId,revision:2,state:participationId==='p0002'?'waitlisted':'requested'}))}};}
 const group=()=>({ok:true,targetId:'target',group:{groupId:'group',groupRevision:1,state:'draft',originMode:'live',coordinatorIntakeId:null,roster:[1,2].map(n=>({participationId:row(n).id,label:'Fictional authorized '+n,revision:2,state:row(n).state,admitted:false}))}});
-async function mounted(run,{rows=[row(1),row(2),row(3)],admin=true}={}){
+async function mounted(run,{rows=[row(1),row(2),row(3)],admin=true,substitutions=false}={}){
  const old={document:globalThis.document,window:globalThis.window,Node:globalThis.Node,location:globalThis.location};globalThis.document=new Doc();globalThis.window=new EventTarget();globalThis.Node=E;globalThis.location={origin:'https://os.example.invalid'};
  let active=true,allRows=rows,sourceRevision=7,hook=null,root;const calls=[],changes=[],dirty=[];
  const request=async(path,o={})=>{const call={path,method:o.method||'GET',body:o.body&&structuredClone(o.body),wire:o.body&&JSON.stringify(o.body),signal:o.signal};calls.push(call);if(hook){const result=await hook(path,o);if(result!==undefined)return result;}
@@ -50,7 +50,7 @@ async function mounted(run,{rows=[row(1),row(2),row(3)],admin=true}={}){
   throw Error('Unexpected fictional route '+path);
  };
  const flush=async()=>{for(let i=0;i<16;i++)await new Promise(r=>setImmediate(r));};
- try{root=await createStaffParticipationWorkspace({orgId:'org',admin,request,loadRecords:async()=>[],isCurrent:()=>active,onChanged:()=>changes.push(true),onDirty:v=>dirty.push(v),initialTargetId:'target'});root.connect(true);await flush();const h={root,calls,changes,dirty,flush,text:()=>root.textContent,all:()=>root.all(),pane:()=>root.all().find(x=>x.attrs['aria-label']==='Staff group participation'),button:name=>root.all().find(x=>x.tagName==='BUTTON'&&x.textContent===name),field:name=>root.all().find(x=>x.attrs['aria-label']===name),hook:fn=>hook=fn,rows:value=>allRows=value,sourceRevision:value=>sourceRevision=value,inactive:()=>active=false,
+ try{root=await createStaffParticipationWorkspace({orgId:'org',admin,request,loadRecords:async()=>[],isCurrent:()=>active,onChanged:()=>changes.push(true),onDirty:v=>dirty.push(v),canUseSubstitutions:()=>substitutions,initialTargetId:'target'});root.connect(true);await flush();const h={root,calls,changes,dirty,flush,text:()=>root.textContent,all:()=>root.all(),pane:()=>root.all().find(x=>x.attrs['aria-label']==='Staff group participation'),button:name=>root.all().find(x=>x.tagName==='BUTTON'&&x.textContent===name),field:name=>root.all().find(x=>x.attrs['aria-label']===name),hook:fn=>hook=fn,rows:value=>allRows=value,sourceRevision:value=>sourceRevision=value,inactive:()=>active=false,
   click:async name=>{const b=h.button(name);assert(b,'Missing button '+name);assert.equal(b.disabled,false,'Disabled button '+name);b.emit('click');await flush();},
   check:async(name,value=true)=>{const x=h.field(name);assert(x,'Missing checkbox '+name);x.checked=value;x.emit('change');await flush();},
   picker:async id=>{const x=root.querySelector('#participation-target-picker');x.value=id;x.emit('change');await flush();},
@@ -140,3 +140,121 @@ test('stale discard prompt cannot erase a group command begun after the prompt o
  assert.equal(writes(h).at(-1).wire,wire);
  assert.equal(h.changes.length,1);
 }));
+
+const handoffRow = () => row(1, { state: "confirmed", source: "intake", intakeId: "intake",
+  requestedInterval: null, intakeRevision: 2 });
+const handoffBase = "/api/orgs/org/volunteer-substitutions";
+const handoffIntent = "7".repeat(32);
+const handoffDates = { startsAt: "2099-01-01T12:00:00.000000Z", endsAt: "2099-01-01T14:00:00.000000Z", timeZone: "UTC" };
+const prepared = { version: 1, intentId: handoffIntent, expiresAtExact: "2099-01-01T11:10:00.000000Z" };
+const handoffOptions = (offer = null, replacement = { id: "p0002", revision: 2, label: "Fictional first waiting <em>" }) => ({
+  ok: true, options: { version: 1, shift: { id: "target", revision: 7, title: "Fictional shift", ...handoffDates },
+    outgoing: { id: "p0001", revision: 2, label: "Fictional confirmed" }, replacement, offer },
+});
+const handoffReview = () => ({ ok: true, review: { version: 1, shift: { title: "Fictional shift", ...handoffDates },
+  outgoing: { label: "Fictional confirmed", state: "confirmed", nextState: "cancelled" },
+  replacement: { label: "Fictional first waiting", state: "waitlisted", nextState: "confirmed" },
+  confirmedPlaces: { before: 1, after: 1 }, ready: true, reviewSha256: SHA,
+} });
+const handoffDecision = () => ({ ok: true, replayed: true, decision: { version: 1,
+  acceptedAtExact: "2099-01-01T11:06:00.000000Z",
+  shift: { startsAtExact: handoffDates.startsAt, endsAtExact: handoffDates.endsAt },
+  outgoing: { fromState: "confirmed", toState: "cancelled" }, replacement: { fromState: "waitlisted", toState: "confirmed" },
+  confirmedPlaces: { before: 1, after: 1 },
+} });
+const handoffCalls = h => h.calls.filter(call => call.path.startsWith(handoffBase));
+const handoffControl = "Review shift handoff options";
+async function acknowledgeHandoff(h, label) {
+  const pane = h.all().find(node => node.attrs["aria-label"] === label);
+  assert.ok(pane);
+  const checkbox = pane.all().find(input => input.tagName === "INPUT" && !input.disabled);
+  assert.equal(checkbox.parentElement.tagName, "LABEL");
+  assert.equal(checkbox.checked, false);
+  checkbox.checked = true;
+  checkbox.emit("change");
+  await h.flush();
+}
+
+test("actual staff ledger only opens handoff tools for a confirmed typed row and a literal capability", async () => {
+  const rows = [handoffRow(), row(2, { source: "intake", intakeId: "waiting" }),
+    row(3, { state: "confirmed", source: "staff", intakeId: "offline" })];
+  for (const substitutions of [false, "true"]) await mounted(async h => {
+    assert.equal(h.button(handoffControl), undefined);
+    assert.deepEqual(handoffCalls(h), []);
+  }, { rows, substitutions });
+  await mounted(async h => {
+    assert.equal(h.all().filter(node => node.attrs["data-handoff-participation"]).length, 1);
+    assert.deepEqual(handoffCalls(h), []);
+    h.hook(path => path === handoffBase + "/shifts/target/p0001" ? handoffOptions(null, null) : undefined);
+    await h.click(handoffControl);
+    assert.equal(handoffCalls(h).length, 1);
+    assert.match(h.text(), /This shift has no eligible replacement/);
+    assert.equal(h.button("Prepare this handoff offer").disabled, true);
+    assert.equal(document.activeElement.attrs.role, "status");
+  }, { rows, admin: false, substitutions: true });
+});
+
+test("actual staff ledger issues the exact server pair, checks uncertain issue and preserves one exact confirmation Retry", async () => {
+  await mounted(async h => {
+    let reads = 0, confirms = 0;
+    h.hook((path, opts) => {
+      if (path === handoffBase + "/shifts/target/p0001") return handoffOptions(++reads >= 3 ? prepared : null);
+      if (path === handoffBase + "/offers") throw new Error("Fictional issue response lost");
+      if (path === handoffBase + "/" + handoffIntent + "/review") return handoffReview();
+      if (path === handoffBase + "/" + handoffIntent + "/confirm" && opts.method === "POST") {
+        if (++confirms === 1) throw new Error("Fictional confirmation response lost");
+        return handoffDecision();
+      }
+    });
+    await h.click(handoffControl);
+    assert.equal(h.button("Prepare this handoff offer").disabled, true);
+    assert.match(h.text(), /First eligible replacementFictional first waiting <em>/);
+    assert.equal(h.root.querySelectorAll("em").length, 0);
+    await acknowledgeHandoff(h, "Prepare a volunteer shift handoff");
+    await h.click("Prepare this handoff offer");
+    assert.deepEqual(writes(h)[0].body, { version: 1, shiftId: "target", shiftRevision: 7,
+      outgoing: { id: "p0001", revision: 2 }, replacement: { id: "p0002", revision: 2 } });
+    assert.equal(h.root.hasPendingSubstitutionCommand(), true);
+    await h.picker("other");
+    assert.equal(h.root.querySelector("#participation-target-picker").value, "target");
+    await h.click("Refresh occurrence");
+    assert.equal(handoffCalls(h).length, 2);
+    await h.click("Check saved handoff offer");
+    assert.equal(h.root.hasPendingSubstitutionCommand(), true);
+    assert.equal(writes(h).length, 1);
+    await h.click("Check saved handoff offer");
+    assert.equal(h.root.hasPendingSubstitutionCommand(), false);
+    assert.equal(handoffCalls(h).filter(call => call.path.endsWith("/review")).length, 0);
+    await h.click("Read handoff review");
+    assert.equal(h.button("Confirm handoff").disabled, true);
+    await acknowledgeHandoff(h, "Volunteer shift handoff");
+    await h.click("Confirm handoff");
+    assert.equal(h.root.hasPendingSubstitutionCommand(), true);
+    await h.click("Retry the same confirmation");
+    assert.equal(h.root.hasPendingSubstitutionCommand(), false);
+    assert.equal(writes(h).filter(call => call.path.endsWith("/offers")).length, 1);
+    assert.equal(writes(h)[1].wire, writes(h)[2].wire);
+    assert.match(h.text(), /Original saved decision/);
+    assert.match(h.text(), /1 before · 1 after/);
+    assert.equal(h.changes.length, 1);
+  }, { rows: [handoffRow()], substitutions: true });
+});
+
+test("actual staff ledger refuses a cross-row options response and clears feature controls on access loss", async () => {
+  await mounted(async h => {
+    const response = handoffOptions();
+    response.options.outgoing.id = "another-row";
+    h.hook(path => path.includes("/volunteer-substitutions/") ? response : undefined);
+    await h.click(handoffControl);
+    assert.equal(h.button("Prepare this handoff offer").disabled, true);
+    assert.doesNotMatch(h.text(), /Fictional first waiting/);
+    h.hook(path => {
+      if (path.includes("/volunteer-substitutions/")) throw Object.assign(new Error("Fictional private denial"), { status: 403 });
+    });
+    await h.click("Check handoff options");
+    assert.equal(h.button(handoffControl), undefined);
+    assert.equal(h.root.hasPendingSubstitutionCommand(), false);
+    assert.doesNotMatch(h.text(), /Fictional private denial/);
+    assert.equal(writes(h).length, 0);
+  }, { rows: [handoffRow()], substitutions: true });
+});

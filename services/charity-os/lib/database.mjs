@@ -9,7 +9,9 @@ import { guardLearningWrite } from "./learning-guards.mjs";
 import { guardFeedbackPublicationWrite } from "./feedback-intake-safety.mjs";
 import { FEEDBACK_INTAKE_HISTORY_SQL } from "./feedback-intake-capacity.mjs";
 import { guardResourceReservationWrite, resourceReservationHistoryPresent } from "./resource-reservation-guards.mjs";
+import { guardVolunteerSubstitutionRecord } from "./volunteer-substitution-retention.mjs";
 import { resourceReservationHistoryExpression, resourceReservationSchemaReady } from "./resource-reservation-schema.mjs";
+import { volunteerSubstitutionSchemaReady } from "./volunteer-substitution-schema.mjs";
 // Only trusted server actions classify a transaction. HTTP inputs cannot
 // supply a deferral flag or a replacement capacity validator.
 const transactionAudits = new WeakMap();
@@ -50,6 +52,14 @@ export function noteContactReconciliationReceiptReplay(c, org) {
 }
 // An exact accepted public feedback intent is a read-only receipt Retry.
 export const notePublicFeedbackReceiptReplay = noteContactReconciliationReceiptReplay;
+
+// Trusted own-choice route only, after one exact terminal update. Its only
+// change is the withdrawn_at value already reserved in logicalBackupBytes.
+export function noteVolunteerSubstitutionWithdrawal(c, org) {
+  const transaction = transactionAudits.get(c);
+  if (transaction?.orgId === org && transaction.locked && !transaction.readOnly)
+    transaction.substitutionWithdrawal = true;
+}
 
 async function checkCompleteWorkspaceCapacity(c, orgId, ordinary, requireResourceHistory = false) {
   const resourceHistory = await resourceReservationHistoryExpression(c);
@@ -199,6 +209,20 @@ export async function admitFeedbackIntakeWorkspace(c, orgId) {
   return true;
 }
 
+/** The standalone and same-transaction rate paths use the same fixed window. */
+export async function consumeRateLimit(client, key, max = 5, seconds = 600) {
+  const result = await client.query(
+    `INSERT INTO os_rate_limits(key,hits,expires_at) VALUES($1,1,now()+$2*interval '1 second')
+     ON CONFLICT(key) DO UPDATE SET
+       hits=CASE WHEN os_rate_limits.expires_at<now() THEN 1 ELSE os_rate_limits.hits+1 END,
+       expires_at=CASE WHEN os_rate_limits.expires_at<now() THEN now()+$2*interval '1 second' ELSE os_rate_limits.expires_at END
+     RETURNING hits`,
+    [key, seconds],
+  );
+  if (result.rows[0].hits > max)
+    fail(429, "rate", "Please wait before trying again.");
+}
+
 export function database(url, { schema } = {}) {
   if (schema && !/^[a-z][a-z0-9_]{0,62}$/.test(schema))
     throw new Error("Invalid schema.");
@@ -241,7 +265,7 @@ export function database(url, { schema } = {}) {
         // intentionally retain raw SQL accounting below.
         if (!readOnly && orgId && (state.locked || state.actions.size)) {
           const ordinary =
-            (!state.actions.size && !state.receiptReplay && state.resourceAdmission?.mode !== "release-safety") ||
+            (!state.actions.size && !state.receiptReplay && !state.substitutionWithdrawal && state.resourceAdmission?.mode !== "release-safety") ||
             [...state.actions].some((action) => !projectionExemptActions.has(action));
           const mode = ordinary ? "ordinary" : "release-safety";
           // The resource hook has already measured the complete final graph
@@ -265,16 +289,8 @@ export function database(url, { schema } = {}) {
         await readFile(new URL("./schema.sql", import.meta.url), "utf8"),
       );
     },
-    async limit(key, max = 5, seconds = 600) {
-      const r = await pool.query(
-        `INSERT INTO os_rate_limits(key,hits,expires_at) VALUES($1,1,now()+$2*interval '1 second') ON CONFLICT(key) DO UPDATE SET hits=CASE WHEN os_rate_limits.expires_at<now() THEN1 ELSE os_rate_limits.hits+1 END,expires_at=CASE WHEN os_rate_limits.expires_at<now() THEN now()+$2*interval '1 second' ELSE os_rate_limits.expires_at END RETURNING hits`.replace(
-          "THEN1",
-          "THEN 1",
-        ),
-        [key, seconds],
-      );
-      if (r.rows[0].hits > max)
-        fail(429, "rate", "Please wait before trying again.");
+    limit(key, max, seconds) {
+      return consumeRateLimit(pool, key, max, seconds);
     },
     close: () => pool.end(),
   };
@@ -429,6 +445,7 @@ export async function saveRecord(c, r, options = {}) {
   await guardLearningWrite(c, r, options);
   await guardFeedbackPublicationWrite(c, r);
   await guardResourceReservationWrite(c, r, { operation: options.operation });
+  await guardVolunteerSubstitutionRecord(c, r, options);
   const size = Buffer.byteLength(JSON.stringify(r.data));
   const usage = (
     await c.query(
@@ -466,6 +483,7 @@ export async function saveRecord(c, r, options = {}) {
 
 export async function logicalBackupBytes(c, org) {
   const reservationsReady = await resourceReservationSchemaReady(c);
+  const substitutionReady = await volunteerSubstitutionSchemaReady(c);
   const tables = [
     "os_records",
     "os_events",
@@ -500,12 +518,21 @@ export async function logicalBackupBytes(c, org) {
       )
       .join(" UNION ALL ") +
     " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1" +
-    " UNION ALL SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS size FROM os_previews t WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1','participation-recurrence-v1','participation-reminder-v1')";
+    " UNION ALL SELECT COALESCE(sum(octet_length(to_jsonb(t)::text)),0) AS size FROM os_previews t WHERE org_id=$1 AND committed_at IS NULL AND kind IN ('incubator-source-inspection-v1','incubator-copy-preview-v1','participation-recurrence-v1','participation-reminder-v1','volunteer-substitution-offer-v1')" +
+    (substitutionReady ? " UNION ALL " + substitutionChoiceUsageSQL : "");
   return Number(
     (await c.query(`SELECT sum(size) AS size FROM (${sql}) usage`, [org]))
       .rows[0]?.size || 0,
   );
 }
+
+// The exact row already includes a JSON null for withdrawn_at. Forty bytes
+// bound the replacement string, including microseconds and any UTC offset.
+// No private choice is part of the portable backup. Stored reports and
+// pending offers are already charged by the existing table projections.
+const substitutionChoiceUsageSQL = `SELECT COALESCE(sum(
+    octet_length(to_jsonb(t)::text) + CASE WHEN withdrawn_at IS NULL THEN 40 ELSE 0 END
+  ),0) AS size FROM os_participation_substitution_choices t WHERE org_id=$1`;
 
 // Source archives are separate from the current-workspace export budget. Keep
 // both pending and committed payloads bounded, including empty import journals.
@@ -571,7 +598,7 @@ export async function storePreview(
 export async function commitPreview(c, org, previewId) {
   await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
   const { rows } = await c.query(
-    "SELECT payload FROM os_previews WHERE org_id=$1 AND id=$2 AND committed_at IS NULL AND expires_at>now() FOR UPDATE",
+    "SELECT payload FROM os_previews WHERE org_id=$1 AND id=$2 AND committed_at IS NULL AND kind<>'volunteer-substitution-offer-v1' AND expires_at>now() FOR UPDATE",
     [org, previewId],
   );
   if (!rows[0])

@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import { RESOURCE_RESERVATION_GUARD_SQL as reservationSql } from "../lib/resource-reservation-guards.mjs";
 import {PARTICIPATION_REMINDER_LEGACY_SQL} from '../lib/participation-storage.mjs';
@@ -83,6 +84,7 @@ function fixture(
   const saves = [];
   const c = {
     query: async (sql, args = []) => {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql==="SELECT EXISTS(SELECT 1 FROM os_publications WHERE org_id=$1 AND kind='feedback') AS present")
         return { rows: [{ present: false }] };
@@ -530,6 +532,7 @@ async function runReminder(record, member) {
   };
   const c = {
     query: async (sql, args = []) => {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       if (sql.startsWith("SELECT * FROM os_jobs")) {
         if (claimed) return { rows: [] };
         claimed = true;
@@ -662,6 +665,7 @@ function uploadStore() {
     parts,
     c: {
       query: async (sql, args) => {
+        const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
         if (sql.startsWith("DELETE FROM os_uploads")) return { rows: [] };
         if (sql.startsWith("SELECT count(DISTINCT id)"))
           return {
@@ -887,6 +891,7 @@ test("Reconnecting a restored integration retains its identity, encrypts only th
     key = "synthetic-storage-encryption-key-at-least-thirty-two-characters";
   const c = {
     query: async (sql, args) => {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql.startsWith("SELECT sum(size) AS size FROM ("))
         return { rows: [{ size: 0 }] };
@@ -1037,6 +1042,7 @@ test("Access revocation remains possible with minimal audit reserve and after th
       const events = [],
         c = {
           query: async (sql, args) => {
+            const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
             if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
             if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
             if (sql==="SELECT EXISTS(SELECT 1 FROM os_publications WHERE org_id=$1 AND kind='feedback') AS present")
@@ -1102,6 +1108,7 @@ test("The central active-record limit also protects bulk callers of saveRecord",
   let writes = 0;
   const c = {
     query: async (sql) => {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
       if (sql === reservationSql.lock || sql === reservationSql.projection)
         return { rows: [], rowCount: 0 };

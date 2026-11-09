@@ -6,11 +6,13 @@ import { database } from "../lib/database.mjs";
 import { authentication } from "../lib/auth.mjs";
 import { mailer } from "../lib/mail.mjs";
 import { createHandler } from "../lib/handler.mjs";
+import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
 const settings = readSettings(),
   db = database(settings.databaseUrl),
   send = mailer(settings),
   auth = authentication({ settings, db, send }),
-  handle = createHandler({ settings, db, send, auth });
+  handle = createHandler({ settings, db, send, auth,
+    volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({db,settings}) });
 const root = resolve(new URL("../public", import.meta.url).pathname);
 const types = {
   ".html": "text/html; charset=utf-8",

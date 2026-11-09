@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout, currentReservationLayout, partialReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -30,6 +31,7 @@ function mountedFixture() {
   const state = { ready: true, layout: currentReservationLayout, loggedIn: true, role: "admin", programIds: [], includeAsset: true, calls: [], txs: [] };
   const c = {
     async query(sql) {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       state.calls.push(sql);
       if (sql === reservationSchemaSql.layout) return state.layout;
       if (sql === reservationSchemaSql.access) return rows({ ready: state.ready });
@@ -125,6 +127,7 @@ test("the central save checks resource-defining data before any record upsert", 
   const called = [];
   const client = {
     async query(sql) {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       called.push(sql);
       if (sql === guardSql.lock) return rows({});
       if (sql === reservationSchemaSql.layout) return currentReservationLayout;
@@ -148,6 +151,7 @@ test("the transaction measures Reserve and Release once through their existing o
   });
   const client = {
     async query(sql) {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       queries.push(sql);
       if (sql === reservationSchemaSql.layout) return currentReservationLayout;
       if (sql.includes('AS "resourceReservations"')) return rows({ resourceReservations: true });

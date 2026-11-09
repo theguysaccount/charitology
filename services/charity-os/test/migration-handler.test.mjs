@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout, currentReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 // Exercise the real authenticated handler with an explicit, bounded SQL fixture.
 // Synthetic example.invalid data only; no database/provider/network mutations.
@@ -126,6 +127,7 @@ function fixture({
   const measurements = withRestoreMeasurements ? restoreMeasurementFixture() : null;
   const c = {
     query: async (sql, args = []) => {
+      const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       state.queryCount++;
       if (sql === reservationSchemaSql.layout) return state.reservationOccupied ? currentReservationLayout : legacyReservationLayout;
       if (sql === reservationSql.destination) {

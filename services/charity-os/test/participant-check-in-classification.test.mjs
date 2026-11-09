@@ -1,3 +1,4 @@
+import { legacyVolunteerSubstitutions } from './fixtures/volunteer-substitution-legacy.mjs';
 import { reservationSchemaSql, legacyReservationLayout } from "./fixtures/resource-reservation-schema.mjs";
 /** Actual db.tx with a closed fake pg client; no socket or SQL engine. */
 import test from "node:test";
@@ -8,6 +9,7 @@ import { database, audit, noteParticipationReceiptReplay } from "../lib/database
 async function fixture(run) {
   const calls = []; let sum = 0, safetyAudit = false;
   const c = { release() { calls.push("RELEASE"); }, async query(sql) {
+    const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
     calls.push(sql);
     if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
     if (sql.startsWith("SELECT sum(size)")) { sum++; if (sum > 1) throw Error("ORDINARY_FINAL_GATE"); return { rows: [{ size: safetyAudit ? 61 * 1024 * 1024 : 0 }] }; }

@@ -484,3 +484,9 @@ export const CONTACT_RESOURCE_RESERVATION_LAYOUT = Object.freeze({
 export const CONTACT_RESOURCE_RESERVATION_CATALOG = Object.freeze(Object.fromEntries(
   Object.entries(CONTACT_RESOURCE_RESERVATION_LAYOUT).map(([table, layout]) =>
     [table, Object.freeze(layout.columns.map(([name]) => name))])));
+// Optional only after the substitution storage/ACL verifier accepts this layout.
+export const CONTACT_SUBSTITUTION_CHOICE_CATALOG = Object.freeze([
+  "org_id", "intent_id", "party", "shift_id", "shift_revision", "participation_id", "participation_revision",
+  "user_id", "intake_id", "link_id", "link_revision", "person_identity_sha256", "link_scope_sha256",
+  "accepted_at", "expires_at", "withdrawn_at", "own_authority_sha256",
+]);

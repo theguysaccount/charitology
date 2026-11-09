@@ -268,6 +268,8 @@ Download an organization JSON backup before a migration or handover. It contains
 
 Backups also include deliberately published schemas and private intake answers/status, including erasure tombstones, but omit receipt, idempotency, payload and IP hashes. Restored publications are withdrawn, old receipt capabilities remain disabled and prior staff reviews do not authorize conversion. An erased active request restores closed, with no answers. Publish a newly approved form for new requests and handle recovered requests manually. Historical source archives and previously downloaded backups can still contain answers that were subsequently erased from the live queue.
 
+[Volunteer shift handoffs](../../docs/VOLUNTEER_SHIFT_HANDOFFS.md) require two current own choices and a staff decision. Backup and restore keep the saved decision as inactive history.
+
 Delivery backups preserve policy/outcome provenance, including former outbox state, while restoring a fresh disabled policy, cancelled legacy intents and no delivery consent, recipient/relay bindings or account grants. Historical accepted/unknown outcomes never authorize a resend. Answer erasure and unlinking disable current delivery consent and cancel unattempted work without cancelling attendance or recalling an email already attempted.
 
 Directory history backups preserve complete retained source cores and exact event chains, including recovered/archive-only provenance. They omit live receipts, command/proof/session authority and account grants. Restored history stays inactive; an authorized member must inspect and explicitly adopt a currently readable Resource. A selected Resource evidence file is partial and cannot be imported as a full organization backup.

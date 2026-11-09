@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { legacyVolunteerSubstitutions } from "./fixtures/volunteer-substitution-legacy.mjs";
 import {
   restoredIntake,
   restoreIntake,
@@ -313,6 +314,8 @@ test("central saves allow private work but block publication permission while th
   const { records } = feedbackPacket();
   const draft = { ...records[1], orgId: "fictional_org", revision: 2, ownerId: "staff", approval: null, snapshot: null };
   const fixture = linked => ({ calls: [], async query(sql, params) {
+    const handoff = legacyVolunteerSubstitutions(sql);
+    if (handoff) return handoff;
     this.calls.push({ sql, params });
     if (sql === FEEDBACK_PUBLICATION_GUARD_SQL) return { rows: [{ linked }], rowCount: 1 };
     if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
