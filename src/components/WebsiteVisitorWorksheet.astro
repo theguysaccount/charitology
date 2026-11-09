@@ -1,0 +1,115 @@
+---
+import {
+  worksheetMeasures, worksheetOutcomes, worksheetRows, worksheetStages, worksheetTextLimits,
+} from "../lib/client/website-visitor-worksheet-model";
+import { url } from "../lib/site";
+---
+<section id="visitor-task-worksheet" class="visitor-worksheet" data-visitor-worksheet aria-labelledby="visitor-worksheet-title">
+  <p class="eyebrow">Practice draft · Manual observations</p>
+  <h2 id="visitor-worksheet-title">Compare one visitor task.</h2>
+  <p>Try the same task on the current page and the proposed version. Keep the starting point and success criteria consistent where possible. Record what happened and any differences in the setup.</p>
+  <p>Use general task descriptions and roles. Leave names, contact details and private links out. Entries stay on this page until you leave. Download a copy if you want to keep the handoff. Use the <a href="#case-guide">case guide</a> for a larger project or a case you want to resume.</p>
+
+  <fieldset class="visitor-controls" data-visitor-controls disabled>
+    <legend>Visitor task worksheet</legend>
+    <div class="visitor-notes">
+      <div class="visitor-note">
+        <label for="visitor-task">Visitor task <small>Required</small></label>
+        <textarea id="visitor-task" data-visitor-field="task" maxlength={worksheetTextLimits.task} rows="2" autocomplete="off" required aria-describedby="visitor-task-help"></textarea>
+        <small id="visitor-task-help">For example, find the next volunteer orientation from the home page.</small>
+      </div>
+      <div class="visitor-note">
+        <label for="visitor-change">Proposed change <small>Required</small></label>
+        <textarea id="visitor-change" data-visitor-field="change" maxlength={worksheetTextLimits.change} rows="3" autocomplete="off" required aria-describedby="visitor-change-help"></textarea>
+        <small id="visitor-change-help">Describe one change and include a short version reference if you have one.</small>
+      </div>
+      <div class="visitor-note">
+        <label for="visitor-setup">Test setup and differences <small>Optional</small></label>
+        <textarea id="visitor-setup" data-visitor-field="setup" maxlength={worksheetTextLimits.setup} rows="2" autocomplete="off" aria-describedby="visitor-setup-help"></textarea>
+        <small id="visitor-setup-help">Record the starting point, device and input method. Include differences that affect the comparison.</small>
+      </div>
+    </div>
+
+    <p id="visitor-measure-help">Use the same rule for counting steps and time in both runs. Leave unmeasured values blank.</p>
+    <div class="visitor-versions">
+      {worksheetStages.map((stage) => <fieldset>
+        <legend>{stage.label}</legend>
+        <label for={`visitor-${stage.id}-outcome`}>
+          <span>Completion</span>
+          <select id={`visitor-${stage.id}-outcome`} data-visitor-field={`${stage.id}-outcome`} autocomplete="off">
+            {worksheetOutcomes.map((option) => <option value={option.value}>{option.label}</option>)}
+          </select>
+        </label>
+        {worksheetMeasures.map((measure) => <label for={`visitor-${stage.id}-${measure.id}`}>
+          <span>{measure.label} <small>Optional</small></span>
+          <input id={`visitor-${stage.id}-${measure.id}`} data-visitor-field={`${stage.id}-${measure.id}`} type="text" inputmode="numeric" maxlength={String(measure.max).length} autocomplete="off" aria-describedby="visitor-measure-help" />
+        </label>)}
+      </fieldset>)}
+    </div>
+
+    <div class="visitor-note">
+      <label for="visitor-next">Proposed next step <small>Optional</small></label>
+      <textarea id="visitor-next" data-visitor-field="next" maxlength={worksheetTextLimits.next} rows="2" autocomplete="off" aria-describedby="visitor-next-help"></textarea>
+      <small id="visitor-next-help">Suggest a further check, a revision or keeping the current page. Use a role if someone needs to own the work.</small>
+    </div>
+    <button type="button" class="btn" data-visitor-review>Review the handoff</button>
+  </fieldset>
+
+  <noscript><p>Use the <a href={url("/for-charities/website-pilots/materials/website-preview-brief.md")}>editable website brief</a> when JavaScript is unavailable.</p></noscript>
+  <p data-visitor-status role="status" tabindex="-1">Enable JavaScript to prepare a local handoff.</p>
+  <section data-visitor-preview hidden aria-labelledby="visitor-preview-title">
+    <h3 id="visitor-preview-title">Review the draft handoff.</h3>
+    <table class="data visitor-comparison">
+      <caption>Current and proposed task observations</caption>
+      <thead><tr><th scope="col">Measure</th>{worksheetStages.map((stage) => <th scope="col">{stage.label}</th>)}</tr></thead>
+      <tbody>
+        {worksheetRows.map((row) => <tr><th scope="row">{row.label}</th><td data-visitor-value></td><td data-visitor-value></td></tr>)}
+      </tbody>
+    </table>
+    <p>Inspect the exact text of the file below.</p>
+    <pre data-visitor-text tabindex="0" aria-label="Exact website visitor task handoff"></pre>
+    <label class="visitor-ack">
+      <input type="checkbox" data-visitor-ack disabled />
+      <span>I reviewed this draft and checked that it uses non-identifying details.</span>
+    </label>
+    <button type="button" class="btn btn-ghost" data-visitor-save disabled>Download handoff as Markdown</button>
+  </section>
+</section>
+
+<script>
+  import { mountWebsiteVisitorWorksheet } from "../lib/client/website-visitor-worksheet";
+  const root = document.querySelector<HTMLElement>("[data-visitor-worksheet]");
+  if (root) mountWebsiteVisitorWorksheet(root);
+</script>
+
+<style>
+  .visitor-worksheet {
+    max-width: 80ch;
+    min-width: 0;
+    padding-block: 2rem;
+    border-block: 1px solid var(--rule);
+    scroll-margin-top: 5rem;
+  }
+  .visitor-worksheet [hidden] { display: none; }
+  .visitor-worksheet fieldset { min-width: 0; }
+  .visitor-controls { padding: 1rem; border: 1px solid var(--rule); border-radius: var(--radius-sm); }
+  .visitor-notes, .visitor-versions { display: grid; gap: 1rem; }
+  .visitor-versions { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 1rem; }
+  .visitor-versions fieldset { padding: .75rem; border: 1px solid var(--rule); border-radius: var(--radius-sm); }
+  .visitor-versions label + label { margin-top: .75rem; }
+  .visitor-note, .visitor-versions label { display: grid; gap: .35rem; min-width: 0; }
+  .visitor-controls label { font-weight: 600; }
+  .visitor-controls small { font-weight: 400; color: var(--ink-2); }
+  .visitor-controls :is(input, textarea, select) { box-sizing: border-box; width: 100%; min-width: 0; min-height: 2.8rem; }
+  .visitor-controls textarea { resize: vertical; }
+  .visitor-controls button { margin-top: 1rem; }
+  [data-visitor-status]:focus, .visitor-worksheet pre:focus { outline: 2px solid var(--accent); outline-offset: .25rem; }
+  .visitor-comparison { table-layout: fixed; margin-bottom: 1rem; }
+  .visitor-comparison caption { text-align: left; }
+  .visitor-comparison :is(th, td) { overflow-wrap: anywhere; }
+  .visitor-worksheet pre { max-height: 24rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; border: 1px solid var(--rule); background: var(--surface); font-size: .875rem; }
+  .visitor-ack { display: flex; align-items: flex-start; gap: .6rem; margin-block: 1rem; }
+  .visitor-ack input { width: 1.25rem; height: 1.25rem; flex: 0 0 auto; }
+  @media (max-width: 620px) { .visitor-versions { grid-template-columns: 1fr; } }
+  @media (max-width: 380px) { .visitor-comparison :is(th, td) { padding-inline: .3rem; } }
+</style>
