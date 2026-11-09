@@ -106,7 +106,7 @@ test('malformed reserved version/suffix and all-family duplicate report IDs refu
   const {report}=await packets(fakeContext());for(const edit of [r=>r.payload.version=2,r=>r.payload.format+='-unknown']){const r=structuredClone(report);edit(r);assert.throws(()=>recover({reports:[r]}));}
   assert.throws(()=>recover({reports:[report,{id:report.id,payload:{format:'another-family'}}]}),e=>e.code==='recurrence_report_duplicate');
 });
-test('legacy-absent destination guard still checks existing family and any incoming report ID before writes',async()=>{
+test('legacy-absent destination guard still refuses retained family or a reported collision before writes',async()=>{
   const calls=[];const c={async query(sql,args){calls.push({sql,args});return{rows:[{occupied:true,collision:false}]};}};await reject(()=>destination(c,ORG,{reports:[]}), 'restore_conflict');assert.equal(calls.length,1);assert(!calls.some(x=>/INSERT|UPDATE|DELETE/.test(x.sql)));
   const collision={async query(){return{rows:[{occupied:false,collision:true}]};}};await reject(()=>destination(collision,ORG,{reports:[{id:'generic-report',payload:{}}]}),'restore_conflict');
 });
@@ -157,4 +157,17 @@ test('ordinary CRM-purpose preview row digest remains independent of added recur
   crm.tables.os_previews=[{org_id:CRM_ORG,id:'ordinary-crm-preview',actor_id:CRM_USER,kind:CONTACT_PREVIEW_KIND,payload,checksum:hash(payload),base_revision:payload.reviewedContextSha256,created_at:CRM_NOW,expires_at:'2026-11-08T12:30:00.123456Z',committed_at:null}];const changes={};
   crm.pageMutation=(table,output)=>table==='os_previews'?output.map(x=>{const r=JSON.parse(x.row_json);return{...x,preview_created_exact:r.created_at,preview_expires_exact:r.expires_at,preview_committed_exact:r.committed_at,...changes};}):output;
   const pinned=await crm.read();Object.assign(changes,{preview_created_exact:'2026-11-08T12:00:00.123457Z',preview_expires_exact:'2026-11-08T12:30:00.123457Z',preview_committed_exact:'2026-11-08T12:01:00.123456Z'});assert.equal((await crm.read()).contextSha256,pinned.contextSha256);
+});
+
+// Regression from genuine PG17 legacy restore preview: generic report bodies
+// are archived, not reinserted. SQL membership is modeled, not forced here.
+test('legacy archived report IDs do not collide with unchanged destination reports',async()=>{
+  const archived={id:'generic-report',payload:{ordinary:true}},destinationIds=new Set([archived.id]),calls=[];
+  const c={async query(sql,args){calls.push({sql,args});assert.deepEqual(args,[ORG,'charitology-participation-occurrence-generation%',[]]);return{rows:[{occupied:false,collision:args[2].some(id=>destinationIds.has(id))}]};}};
+  const result=await destination(c,ORG,{reports:[archived]});assert.deepEqual(result,{present:false,reports:[]});assert.equal(calls.length,1);assert(!calls.some(x=>/INSERT|UPDATE|DELETE/.test(x.sql)));
+});
+test('only incoming recurrence reports reserve IDs against every destination report family',async()=>{
+  const {report}=await packets(fakeContext()),archived={id:'generic-report',payload:{ordinary:true}},calls=[];let existing=new Set([report.id]);
+  const c={async query(sql,args){calls.push({sql,args});assert.deepEqual(args,[ORG,'charitology-participation-occurrence-generation%',[report.id]]);return{rows:[{occupied:false,collision:args[2].some(id=>existing.has(id))}]};}};
+  await reject(()=>destination(c,ORG,{reports:[report,archived]}),'restore_conflict');existing=new Set([archived.id]);const result=await destination(c,ORG,{reports:[report,archived]});assert.equal(result.present,true);assert.equal(result.reports[0].id,report.id);assert.equal(result.reports[0].checksum,report.checksum);assert.equal(calls.length,2);assert(!calls.some(x=>/INSERT|UPDATE|DELETE/.test(x.sql)));
 });

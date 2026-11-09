@@ -1,8 +1,10 @@
-// Required exact-event history gate. No fetch, automatic base choice or skip.
+// Required exact-event history gate. Only explicit created branches may use a
+// labeled merge-base against existing local origin/main; never fetch or skip.
 import { readFileSync, lstatSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { checkDirectoryResourcesGit } from "./check-directory-resources.mjs";
 import { parseBackupJson } from "../services/charity-os/lib/backup-json.mjs";
+import { selectHistoryComparisonBase } from "./history-event-base.mjs";
 
 try {
   const valid = (v) =>
@@ -27,23 +29,21 @@ try {
   }).trim();
   if (head !== process.env.GITHUB_SHA)
     throw Error("Checkout differs from the event head.");
-  let base;
-  if (process.env.GITHUB_EVENT_NAME === "pull_request")
-    base = event.pull_request?.base?.sha;
-  else if (process.env.GITHUB_EVENT_NAME === "push") base = event.before;
-  else if (process.env.GITHUB_EVENT_NAME === "workflow_dispatch")
-    base = event.inputs?.directory_resources_base_sha;
-  else throw Error("Unsupported directory resource release event.");
-  if (!valid(base))
-    throw Error(
-      "The actual nonzero committed base is required; it cannot be inferred or skipped.",
-    );
+  const selection = selectHistoryComparisonBase({
+    eventName: process.env.GITHUB_EVENT_NAME, event, head,
+    githubSha: process.env.GITHUB_SHA, githubRef: process.env.GITHUB_REF,
+    dispatchInput: "directory_resources_base_sha",
+  }, args => execFileSync("git", ["--no-replace-objects", ...args], {
+    encoding: "utf8", maxBuffer: 1024, timeout: 10_000,
+    stdio: ["ignore", "pipe", "pipe"],
+    env: { ...process.env, GIT_NO_LAZY_FETCH: "1", GIT_TERMINAL_PROMPT: "0", GIT_OPTIONAL_LOCKS: "0" },
+  }).trim());
   const proof = checkDirectoryResourcesGit({
     repo: process.cwd(),
-    exactBase: base,
+    exactBase: selection.comparisonBase,
     exactHead: head,
   });
-  process.stdout.write(JSON.stringify(proof, null, 2) + "\n");
+  process.stdout.write(JSON.stringify({ ...proof, ...selection }, null, 2) + "\n");
 } catch (error) {
   process.stderr.write(`Directory Resource history gate failed: ${error.message}\n`);
   process.exitCode = 1;

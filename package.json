@@ -37,7 +37,7 @@
     "check:publication-history": "node scripts/check-publication-editions-ci.mjs",
     "publication:capture": "node scripts/capture-publication-edition.mjs",
     "check:observations": "node scripts/check-observation-model.mjs && node scripts/check-observation-capture.mjs && node scripts/check-observation-git.mjs && node scripts/check-observation-git-offline.mjs && node scripts/check-observations-ui.mjs && node scripts/check-observations-build.mjs",
-    "check:observations-history": "node scripts/check-observations-history.mjs",
+    "check:observations-history": "node --test scripts/history-event-base.test.mjs && node scripts/check-observations-history.mjs",
     "observations:prepare": "node scripts/prepare-observations.mjs",
     "observations:capture": "node scripts/capture-observations.mjs",
     "check:program-record-recovery": "node scripts/check-program-record-recovery-schemas.mjs && node scripts/check-program-record-recovery-engine.mjs && node scripts/check-program-record-recovery-controls.mjs && node scripts/check-program-record-recovery-os.mjs && node scripts/check-program-record-recovery-programs.mjs",

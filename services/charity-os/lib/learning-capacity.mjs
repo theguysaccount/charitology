@@ -171,7 +171,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const field=planRestoredFieldResponseReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const crm=planRestoredContactReconciliationReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const occurrence=planRestoredParticipationRecurrenceReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
-  const incomingReportIds=new Set((backup.reports||[]).map(report=>report.id));
+  const incomingReportIds=new Set(occurrence.reports.map(report=>report.id));
   const operational = operationalGrowth(backup.participation), operationalBounds = new Map(operational.outboxBounds.map(value => [value.id, value]));
   if (operational.active && (operational.sourceOutboxWireBytes > PARTICIPATION_LIMITS.outboxBytes || operational.sourceParticipationWireBytes > PARTICIPATION_LIMITS.participationBytes)) operationalFailure();
   await schemaCheck(c,field.present||crm.present||occurrence.present);

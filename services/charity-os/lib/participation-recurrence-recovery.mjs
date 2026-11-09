@@ -55,11 +55,11 @@ export function participationRecurrenceRestoreSummary(recovery){
 }
 export const participationRecurrenceRestoreWarning=recovery=>recovery.present?'Recovered recurring draft manifests are inactive history. No accepted command, approval, consent or future generation was restored.':null;
 
-/** Always called, including legacy sources without this family. This checks
- * every incoming report ID before the first restore write; no payload inventory
- * or historical foreign-key repair is needed. */
+/** Always called, including legacy sources without this family. Retained
+ * recurrence history blocks restore. Only validated recurrence rows are inserted;
+ * generic legacy reports remain in the source archive and reserve no new row ID. */
 export async function assertParticipationRecurrenceRestoreDestination(c,orgId,backup){
-  id(orgId);const source=restoredParticipationRecurrenceReports(backup),incoming=entries(optional(backup,'reports')).map(row=>id(optional(row,'id')));
+  id(orgId);const source=restoredParticipationRecurrenceReports(backup),incoming=source.reports.map(row=>row.id);
   const result=(await c.query("SELECT EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND payload->>'format' LIKE $2) AS occupied,EXISTS(SELECT 1 FROM os_reports WHERE org_id=$1 AND id=ANY($3::text[])) AS collision",[orgId,RECURRENCE_MANIFEST_FORMAT+'%',incoming])).rows;
   need(Array.isArray(result)&&result.length===1,'recurrence_recovery_driver',500);
   const flags=fields(result[0],['occupied','collision']);need(typeof flags.occupied==='boolean'&&typeof flags.collision==='boolean','recurrence_recovery_driver',500);
