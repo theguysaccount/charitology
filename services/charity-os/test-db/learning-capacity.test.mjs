@@ -4,10 +4,11 @@ import { randomBytes } from 'node:crypto';
 import { database, logicalBackupBytes, saveRecord, audit } from '../lib/database.mjs';
 import { applicationGrantsSql } from '../lib/migration-grants.mjs';
 import { makeBackup, validateBackup, restoredIntegrations } from '../lib/backup.mjs';
-import { assembleWorkspaceBackup } from '../lib/workspace-backup.mjs';
+import { assembleWorkspaceBackup, checkWorkspaceExportCapacity } from '../lib/workspace-backup.mjs';
 import { measureLearningRestoreCapacity, checkLearningRestoreCapacity, LEARNING_RESTORE_CAPACITY as LIMIT } from '../lib/learning-capacity.mjs';
 import { restoredIntake, restoreIntake } from '../lib/intake-backup.mjs';
 import { restoredParticipation, restoreParticipation } from '../lib/participation-backup.mjs';
+import { checkParticipationExportCapacity } from '../lib/participation-capacity.mjs';
 import { restoredDelivery, restoreDelivery } from '../lib/participation-delivery-backup.mjs';
 import { restoredTaskRecurrence, restoreTaskRecurrence } from '../lib/task-recurrence-backup.mjs';
 import { restoreDirectoryResources } from '../lib/directory-resource-backup.mjs';
@@ -174,6 +175,40 @@ test('actual PostgreSQL read-only whole restore capacity and near-limit emitted 
       const c = await migration.pool.connect();
       try { await c.query('BEGIN'); await c.query('ALTER TABLE os_records ADD COLUMN fictional_future_metadata text');
         await assert.rejects(measureLearningRestoreCapacity(c, emitted), error => error.code === 'learning_capacity_schema');
+      } finally { await c.query('ROLLBACK'); c.release(); }
+    });
+    await t.test('the old runtime preserves native bytes and charged headroom across the nullable reminder column', async () => {
+      const c = await migration.pool.connect();
+      try {
+        await c.query('BEGIN');
+        await c.query("SELECT set_config('app.org_id',$1,true),set_config('app.user_id',$2,true)", [org, actor]);
+        const content = ({createdAt,checksum,...packet}) => packet;
+        const inspect = async () => {
+          const backup = await assembleWorkspaceBackup(c, org);
+          const part = await checkParticipationExportCapacity(c, org, {reserve:false});
+          const restore = await measureLearningRestoreCapacity(c, backup);
+          const whole = await checkWorkspaceExportCapacity(c, org);
+          return {backup,part,restore,usage:whole.usage,requiredUsage:whole.requiredUsage,requiredBackupBytes:whole.requiredBackupBytes};
+        };
+        const before = await inspect();
+        const count = before.backup.participation.participations.length;
+        assert.ok(count > 0);
+        await c.query("ALTER TABLE os_participations ADD COLUMN reminder_consent jsonb CHECK(reminder_consent IS NULL OR (jsonb_typeof(reminder_consent)='object' AND octet_length(reminder_consent::text)<=4096))");
+        const after = await inspect();
+        assert.deepEqual(content(after.backup), content(before.backup));
+        assert.equal(after.usage, before.usage);
+        assert.equal(after.requiredUsage, before.requiredUsage);
+        assert.equal(after.requiredBackupBytes, before.requiredBackupBytes);
+        assert.equal(after.restore.requiredLogicalBytes, before.restore.requiredLogicalBytes);
+        assert.equal(after.restore.backupBytes, before.restore.backupBytes);
+        assert.equal(after.part.chargedRetainedBytes, before.part.chargedRetainedBytes);
+        assert.equal(after.part.rawRetainedBytes - before.part.rawRetainedBytes, 26 * count);
+        assert.equal(after.restore.categories.os_participations.rawBytes - before.restore.categories.os_participations.rawBytes, 26 * count);
+        await c.query("ALTER TABLE os_participations ALTER COLUMN reminder_consent SET DEFAULT '{}'::jsonb");
+        await assert.rejects(measureLearningRestoreCapacity(c, before.backup), {code:'learning_capacity_schema'});
+        await c.query('ALTER TABLE os_participations ALTER COLUMN reminder_consent DROP DEFAULT');
+        await c.query("UPDATE os_participations SET reminder_consent='{}'::jsonb WHERE org_id=$1", [org]);
+        await assert.rejects(assembleWorkspaceBackup(c, org), {code:'participation_reminder_runtime'});
       } finally { await c.query('ROLLBACK'); c.release(); }
     });
     await t.test('real near-60 MiB source emits under 64 MiB and restores with mandatory ordinary journals', async () => {
