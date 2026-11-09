@@ -1,9 +1,18 @@
 import { suppressParticipationDelivery } from "./participation-delivery.mjs";
 import { createHmac, randomBytes } from "node:crypto";
 import { requireAdmin, visibleRecord } from "./access.mjs";
-import { allRecords, rowRecord, saveRecord, audit } from "./database.mjs";
+import { allRecords, rowRecord, saveRecord, audit, notePublicFeedbackReceiptReplay } from "./database.mjs";
 import { getModule, validateRecord } from "./modules.mjs";
-import { body, checkOrigin, fail, hash, id, json } from "./security.mjs";
+import { checkOrigin, fail, hash, id, json } from "./security.mjs";
+import { parseBackupJson, readBackupBodyBytes } from "./backup-json.mjs";
+import {
+  FEEDBACK_INTAKE_CONSENT,
+  feedbackSelection,
+  requireFeedbackPublicationSchema,
+} from "./feedback-intake-model.mjs";
+import { feedbackSchemaFromReviewedFormData } from "./feedback-intake-form.mjs";
+import { canManageFeedbackIntake, requireFeedbackIntakeStaff } from "./feedback-intake-access.mjs";
+import { feedbackIntakeSchemaReady } from "./feedback-intake-schema.mjs";
 import { isManagedParticipationTarget, participationValidationContext } from "./participation-guards.mjs";
 
 export const INTAKE_LIMITS = Object.freeze({
@@ -19,6 +28,8 @@ const kinds = ["contact", "event-interest", "volunteer-interest"];
 const statuses = ["pending", "reviewed", "dismissed", "converted", "cancelled"];
 const message =
   "Request received. This is not a confirmed booking, payment or newsletter subscription.";
+const feedbackMessage = "Feedback received. The organization can review your selections privately.";
+const feedbackNotice = "This form asks for no name or contact details. The organization uses a private review queue.";
 export const consentText =
   "I agree that this organization may review these operational answers and contact me about this request. I will not include sensitive personal or case information.";
 const opaque = (v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,100}$/.test(v);
@@ -223,7 +234,51 @@ function approved(record, revision, allowed) {
     record.approval.actorId !== record.lastEditedBy
   );
 }
-export function publicationAccepting(publication, source, target) {
+function savedFeedbackSchema(publication) {
+  if (publication.target_id !== null || publication.target_module !== null || publication.target_revision !== null)
+    return null;
+  try {
+    return requireFeedbackPublicationSchema(publication.schema);
+  } catch (error) {
+    if (["feedback_schema", "feedback_retention"].includes(error?.code)) return null;
+    throw error;
+  }
+}
+
+function exactFeedbackBody(bytes, fields) {
+  let parsed;
+  try {
+    parsed = parseBackupJson(bytes, INTAKE_LIMITS.requestBytes);
+  } catch (error) {
+    if (error?.code === "backup_json")
+      fail(400, "intake_json", "Supply valid UTF-8 JSON with each field used once.");
+    throw error;
+  }
+  exact(parsed, fields);
+  if (Object.keys(parsed).length !== fields.length)
+    fail(422, "intake_fields", "Supply all documented feedback fields.");
+  return parsed;
+}
+
+function feedbackAnswers(input) {
+  try {
+    return feedbackSelection(input);
+  } catch (error) {
+    if (error?.code === "feedback_choices") fail(422, error.code, error.message);
+    throw error;
+  }
+}
+
+function fixedFeedbackSchema(record) {
+  if (!record || record.moduleId !== "forms") return null;
+  try { return feedbackSchemaFromReviewedFormData(record.data); }
+  catch (error) {
+    if (["feedback_form_profile", "feedback_retention"].includes(error?.code)) return null;
+    throw error;
+  }
+}
+
+export function publicationAccepting(publication, source, target, { today = new Date().toISOString().slice(0, 10) } = {}) {
   if (
     publication.withdrawn_at ||
     !approved(source, publication.source_revision, ["published"]) ||
@@ -231,9 +286,14 @@ export function publicationAccepting(publication, source, target) {
     source.data.kind !== "form"
   )
     return false;
+  if (publication.kind === "feedback") {
+    const saved = savedFeedbackSchema(publication);
+    if (!saved || !date(today) || saved.retentionUntil < today) return false;
+    return fixedFeedbackSchema(source)?.retentionUntil === saved.retentionUntil;
+  }
   if (
     !date(publication.schema.retentionUntil) ||
-    publication.schema.retentionUntil < new Date().toISOString().slice(0, 10)
+    publication.schema.retentionUntil < today
   )
     return false;
   if (!publication.target_id) return true;
@@ -248,20 +308,23 @@ export function publicationAccepting(publication, source, target) {
     target.data.kind === (volunteer ? "shift" : "session")
   );
 }
-export async function publicationState(
-  c,
-  org,
-  publicationId,
-  unavailable = true,
-) {
+async function readPublication(c, org, publicationId, required = true) {
   const publication = (
     await c.query("SELECT * FROM os_publications WHERE org_id=$1 AND id=$2", [
       org,
       publicationId,
     ])
   ).rows[0];
-  if (!publication)
+  if (!publication && required)
     fail(404, "intake_unavailable", "This intake is unavailable.");
+  return publication;
+}
+
+export async function publicationState(c, org, publicationId, unavailable = true) {
+  return currentPublicationState(c, org, await readPublication(c, org, publicationId), unavailable);
+}
+
+async function currentPublicationState(c, org, publication, unavailable = true) {
   const records = (
     await c.query(
       "SELECT * FROM os_records WHERE org_id=$1 AND deleted_at IS NULL AND id=ANY($2::text[])",
@@ -283,7 +346,7 @@ export async function publicationState(
 }
 const publicUrl = (settings, org, publicationId) =>
   `${settings.origin}/p/${org}.${publicationId}`;
-const safeSubmission = (r) => ({
+const safeSubmission = (r, feedback = false) => ({
   id: r.id,
   publicationId: r.publication_id,
   status: r.status,
@@ -294,10 +357,16 @@ const safeSubmission = (r) => ({
   reviewedAt: time(r.reviewed_at),
   erasedAt: time(r.erased_at),
   convertedIds: r.converted_ids,
+  ...(feedback ? { kind: "feedback" } : {}),
 });
 const publicStatus = (row) => ({ status: row.status });
 async function lock(c, org) {
   await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
+}
+
+async function requireFeedbackCollectionLayout(c) {
+  if (!(await feedbackIntakeSchemaReady(c)))
+    fail(404, "intake_unavailable", "This feedback form is not accepting new responses.");
 }
 
 export async function publicIntakeRoutes({
@@ -330,6 +399,8 @@ export async function publicIntakeRoutes({
   if (request.method === "GET" && !action)
     return db.tx(null, org, async (c) => {
       const { publication } = await publicationState(c, org, publicationId);
+      const feedback = publication.kind === "feedback";
+      if (feedback) await requireFeedbackCollectionLayout(c);
       const organizationName = (
         await c.query("SELECT name FROM os_orgs WHERE id=$1", [org])
       ).rows[0]?.name;
@@ -338,8 +409,9 @@ export async function publicIntakeRoutes({
           id: publication.id,
           organizationName,
           ...publication.schema,
-          consentText,
-          message,
+          consentText: feedback ? FEEDBACK_INTAKE_CONSENT : consentText,
+          message: feedback ? feedbackMessage : message,
+          ...(feedback ? { notice: feedbackNotice } : {}),
           limits: INTAKE_LIMITS,
           url: publicUrl(settings, org, publicationId),
         },
@@ -354,7 +426,16 @@ export async function publicIntakeRoutes({
     )
   )
     fail(415, "content_type", "Supply JSON.");
-  const input = await body(request, INTAKE_LIMITS.requestBytes);
+  let bytes, input;
+  try { bytes = await readBackupBodyBytes(request, INTAKE_LIMITS.requestBytes); }
+  catch (error) {
+    if (error?.status === 413) fail(413, "size", "This request is too large.");
+    throw error;
+  }
+  // Preserve the existing parsing semantics for the three ordinary kinds.
+  // Feedback rechecks the same wire bytes with the stricter lexical reader.
+  try { input = JSON.parse(bytes.toString("utf8") || "{}"); }
+  catch { fail(400, "json", "Supply valid JSON."); }
   const ip = (
     request.headers.get("x-forwarded-for") ||
     request.headers.get("x-real-ip") ||
@@ -386,6 +467,9 @@ export async function publicIntakeRoutes({
           )
         ).rows[0];
         if (!row) fail(404, "intake_receipt", "This receipt is unavailable.");
+        const publication = await readPublication(c, org, publicationId, false);
+        const feedback = publication?.kind === "feedback";
+        if (feedback) exactFeedbackBody(bytes, ["receipt", "action"]);
         if (input.action === "cancel" && row.status !== "cancelled") {
           await c.query(
             "UPDATE os_intake SET status='cancelled',cancelled_at=now(),revision=revision+1,updated_at=now() WHERE org_id=$1 AND id=$2",
@@ -396,16 +480,12 @@ export async function publicIntakeRoutes({
             converted: row.converted_ids.length > 0,
           });
           row.status = "cancelled";
-        }
-        const publication = (
-          await c.query(
-            "SELECT * FROM os_publications WHERE org_id=$1 AND id=$2",
-            [org, publicationId],
-          )
-        ).rows[0];
+        } else if (feedback) notePublicFeedbackReceiptReplay(c, org);
         return okay({
           ...publicStatus(row),
+          ...(feedback ? { kind: "feedback" } : {}),
           participantClaimAvailable:
+            !feedback &&
             !row.erased_at &&
             typeof row.answers?.email === "string" &&
             !!row.answers.email.trim() &&
@@ -439,9 +519,19 @@ export async function publicIntakeRoutes({
     org,
     async (c) => {
       await lock(c, org);
-      const { publication } = await publicationState(c, org, publicationId);
-      const answers = intakeAnswers(publication.schema, input.answers),
-        payloadHash = hash({ answers, consent: true });
+      const publication = await readPublication(c, org, publicationId);
+      const feedback = publication.kind === "feedback";
+      let answers;
+      if (feedback) {
+        const received = exactFeedbackBody(bytes, ["answers", "consent", "website", "idempotencyKey"]);
+        if (!savedFeedbackSchema(publication))
+          fail(404, "intake_unavailable", "This intake is unavailable.");
+        answers = feedbackAnswers(received.answers);
+      } else {
+        await currentPublicationState(c, org, publication);
+        answers = intakeAnswers(publication.schema, input.answers);
+      }
+      const payloadHash = hash({ answers, consent: true });
       const old = (
         await c.query(
           "SELECT * FROM os_intake WHERE org_id=$1 AND publication_id=$2 AND idempotency_hash=$3",
@@ -449,14 +539,20 @@ export async function publicIntakeRoutes({
         )
       ).rows[0];
       if (old) {
-        if (old.payload_hash !== payloadHash)
+        if ((feedback && old.erased_at) || old.payload_hash !== payloadHash)
           fail(
             409,
             "intake_identity",
             "This request identifier was already used for different answers.",
           );
+        if (feedback) notePublicFeedbackReceiptReplay(c, org);
         return okay(publicStatus(old));
       }
+      if (feedback) {
+        await requireFeedbackCollectionLayout(c);
+        await currentPublicationState(c, org, publication);
+      }
+      const submissionIpHash = feedback ? null : ipHash;
       const receipt = randomBytes(32).toString("base64url"),
         submissionId = id(),
         encoded = JSON.stringify(answers);
@@ -471,7 +567,7 @@ export async function publicIntakeRoutes({
         idempotency_hash: hash(input.idempotencyKey),
         payload_hash: payloadHash,
         receipt_hash: hash(receipt),
-        ip_hash: ipHash,
+        ip_hash: submissionIpHash,
         reviewed_by: null,
         reviewed_at: null,
         converted_ids: [],
@@ -510,7 +606,7 @@ export async function publicIntakeRoutes({
           hash(input.idempotencyKey),
           payloadHash,
           hash(receipt),
-          ipHash,
+          submissionIpHash,
         ],
       );
       await audit(c, org, "public-intake", "intake.received", null, {
@@ -522,7 +618,7 @@ export async function publicIntakeRoutes({
           status: "pending",
           receipt,
           receiptUrl: `${settings.origin}/p/receipt#${org}.${publicationId}.${receipt}`,
-          message,
+          message: feedback ? feedbackMessage : message,
         },
         201,
       );
@@ -536,6 +632,7 @@ export async function intakeRoutes({
   org,
   user,
   member,
+  session,
   tail,
   method,
   input = {},
@@ -544,15 +641,40 @@ export async function intakeRoutes({
 }) {
   if (!/^intake(?:\/|$)/.test(tail)) return null;
   requireAdmin(member);
+  let feedbackAccess;
+  async function canReadFeedback() {
+    if (feedbackAccess !== undefined) return feedbackAccess;
+    feedbackAccess = false;
+    if (session && canManageFeedbackIntake(member)) {
+      await lock(c, org);
+      await requireFeedbackIntakeStaff(c, org, session, { readOnly: method === "GET" });
+      feedbackAccess = true;
+    }
+    return feedbackAccess;
+  }
   if (tail === "intake/publications" && method === "GET") {
+    const includeFeedback = await canReadFeedback();
     const rows = (
       await c.query(
-        "SELECT * FROM os_publications WHERE org_id=$1 ORDER BY created_at DESC,id DESC LIMIT 1000",
-        [org],
+        "SELECT * FROM os_publications WHERE org_id=$1 AND ($2::boolean OR kind<>'feedback') ORDER BY created_at DESC,id DESC LIMIT 1000",
+        [org, includeFeedback],
       )
     ).rows;
     const records = await allRecords(c, org);
+    const enabled = includeFeedback && await feedbackIntakeSchemaReady(c);
+    const today = enabled ? (await c.query(
+      "SELECT to_char(clock_timestamp() AT TIME ZONE 'UTC','YYYY-MM-DD') AS day",
+    )).rows[0]?.day : null;
+    const linked = new Set(rows.filter(r => r.kind === "feedback").map(r => `${r.record_id}:${r.source_revision}`));
+    const feedbackFormCandidates = enabled && date(today) ? records.flatMap(record => {
+      if (!approved(record, record.revision, ["published"]) || linked.has(`${record.id}:${record.revision}`))
+        return [];
+      const schema = fixedFeedbackSchema(record);
+      return schema && schema.retentionUntil >= today
+        ? [{ id: record.id, revision: record.revision, title: schema.title, retentionUntil: schema.retentionUntil }] : [];
+    }) : [];
     return okay({
+      ...(enabled ? { feedbackIntakeAvailable: true, feedbackFormCandidates } : {}),
       publications: rows.map((r) => ({
         id: r.id,
         recordId: r.record_id,
@@ -563,7 +685,7 @@ export async function intakeRoutes({
         title: r.schema.title,
         createdAt: time(r.created_at),
         withdrawnAt: time(r.withdrawn_at),
-        accepting: publicationAccepting(
+        accepting: (r.kind !== "feedback" || enabled) && publicationAccepting(
           r,
           records.find((x) => x.id === r.record_id),
           records.find((x) => x.id === r.target_id),
@@ -590,6 +712,8 @@ export async function intakeRoutes({
       source.revision !== input.revision
     )
       fail(409, "revision", "Reload the form before publishing.");
+    if (fixedFeedbackSchema(source))
+      fail(422, "feedback_publication_route", "Publish a fixed feedback form through the anonymous feedback setup.");
     const schema = intakeSchema(source, input.kind),
       publication = {
         id: id(),
@@ -678,6 +802,10 @@ export async function intakeRoutes({
     /^intake\/publications\/([A-Za-z0-9_-]{1,100})\/withdraw$/.exec(tail);
   if (withdraw && method === "POST") {
     const { publication } = await publicationState(c, org, withdraw[1], false);
+    if (publication.kind === "feedback" && !(await canReadFeedback()))
+      fail(404, "intake_unavailable", "This intake is unavailable.");
+    if (publication.kind === "feedback" && publication.withdrawn_at)
+      notePublicFeedbackReceiptReplay(c, org);
     if (!publication.withdrawn_at) {
       await c.query(
         "UPDATE os_publications SET withdrawn_at=now() WHERE org_id=$1 AND id=$2",
@@ -703,14 +831,30 @@ export async function intakeRoutes({
         "intake_filter",
         "Choose a valid publication, status or page cursor.",
       );
+    const includeFeedback = await canReadFeedback();
+    const visible = "(p.kind<>'feedback' OR $5::boolean)";
+    // An excluded cursor must not establish an ordering cut in a visible queue.
+    if (publicationId && !(await c.query(
+      "SELECT 1 FROM os_publications p WHERE org_id=$1 AND id=$2 AND (p.kind<>'feedback' OR $3::boolean)",
+      [org, publicationId, includeFeedback],
+    )).rows.length) fail(404, "intake_submission", "This request is unavailable.");
+    if (cursor && !(await c.query(
+      "SELECT 1 FROM os_intake i JOIN os_publications p ON p.org_id=i.org_id AND p.id=i.publication_id " +
+      "WHERE i.org_id=$1 AND i.id=$2 AND (p.kind<>'feedback' OR $3::boolean)",
+      [org, cursor, includeFeedback],
+    )).rows.length) fail(404, "intake_submission", "This request is unavailable.");
     const rows = (
       await c.query(
-        "SELECT * FROM os_intake WHERE org_id=$1 AND ($2::text IS NULL OR publication_id=$2) AND ($3::text IS NULL OR status=$3) AND ($4::text IS NULL OR (created_at,id)<(SELECT created_at,id FROM os_intake WHERE org_id=$1 AND id=$4)) ORDER BY created_at DESC,id DESC LIMIT 101",
-        [org, publicationId, status, cursor],
+        `SELECT i.*,p.kind AS publication_kind FROM os_intake i
+         JOIN os_publications p ON p.org_id=i.org_id AND p.id=i.publication_id
+         WHERE i.org_id=$1 AND ($2::text IS NULL OR i.publication_id=$2) AND ($3::text IS NULL OR i.status=$3)
+           AND ($4::text IS NULL OR (i.created_at,i.id)<(SELECT created_at,id FROM os_intake WHERE org_id=$1 AND id=$4))
+           AND ${visible} ORDER BY i.created_at DESC,i.id DESC LIMIT 101`,
+        [org, publicationId, status, cursor, includeFeedback],
       )
     ).rows;
     return okay({
-      submissions: rows.slice(0, 100).map(safeSubmission),
+      submissions: rows.slice(0, 100).map(r => safeSubmission(r, r.publication_kind === "feedback")),
       nextCursor: rows.length > 100 ? rows[99].id : null,
     });
   }
@@ -719,16 +863,27 @@ export async function intakeRoutes({
   if (!item) fail(404, "intake_route", "This intake action is unavailable.");
   const row = (
     await c.query(
-      `SELECT * FROM os_intake WHERE org_id=$1 AND id=$2${["GET", "HEAD"].includes(method) ? "" : " FOR UPDATE"}`,
+      `SELECT *, (SELECT p.kind FROM os_publications p WHERE p.org_id=os_intake.org_id AND p.id=os_intake.publication_id)
+         AS publication_kind FROM os_intake WHERE org_id=$1 AND id=$2${["GET", "HEAD"].includes(method) ? "" : " FOR UPDATE"}`,
       [org, item[1]],
     )
   ).rows[0];
   if (!row) fail(404, "intake_submission", "This request is unavailable.");
+  const feedback = row.publication_kind === "feedback";
+  if (feedback && !(await canReadFeedback()))
+    fail(404, "intake_submission", "This request is unavailable.");
   if (method === "GET" && !item[2])
-    return okay({ submission: safeSubmission(row) });
+    return okay({ submission: safeSubmission(row, feedback) });
   if (method !== "POST" || item[2] !== "review")
     fail(405, "method", "Use the documented intake method.");
   exact(input, ["revision", "action", "contactId"]);
+  if (feedback && (input.contactId !== undefined || input.action === "convert"))
+    fail(409, "feedback_conversion", "Use the anonymous feedback draft workflow for this submission.");
+  if (feedback && input.action === "erase" && row.erased_at &&
+      Number.isInteger(input.revision) && input.revision > 0 && input.revision <= row.revision) {
+    notePublicFeedbackReceiptReplay(c, org);
+    return okay({ submission: safeSubmission(row, true), records: [] });
+  }
   if (!Number.isInteger(input.revision) || input.revision !== row.revision)
     fail(409, "revision", "Reload this request before reviewing it.");
   if (input.action === "erase") {
@@ -738,7 +893,7 @@ export async function intakeRoutes({
         [org, row.id],
       )
     ).rows[0];
-    await suppressParticipationDelivery(c, {
+    if (!feedback) await suppressParticipationDelivery(c, {
       org,
       intakeId: row.id,
       reason: "erased",
@@ -747,7 +902,7 @@ export async function intakeRoutes({
       intakeId: row.id,
       converted: row.converted_ids.length > 0,
     });
-    return okay({ submission: safeSubmission(erased), records: [] });
+    return okay({ submission: safeSubmission(erased, feedback), records: [] });
   }
   if (!["review", "dismiss", "convert"].includes(input.action))
     fail(422, "intake_review", "Choose review, dismiss, convert or erase.");
@@ -777,6 +932,8 @@ export async function intakeRoutes({
       org,
       row.publication_id,
     );
+    if (publication.kind === "feedback")
+      fail(409, "feedback_conversion", "Use the anonymous feedback draft workflow for this submission.");
     const records = await allRecords(c, org),
       contactId = input.contactId || id();
     let contact = records.find((r) => r.id === input.contactId);
@@ -918,7 +1075,7 @@ export async function intakeRoutes({
     recordIds: conversionIds.map((r) => r.id),
   });
   return okay({
-    submission: safeSubmission(changed),
+    submission: safeSubmission(changed, feedback),
     records: converted.map((r) => ({
       id: r.id,
       moduleId: r.moduleId,

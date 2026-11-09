@@ -14,7 +14,7 @@ const unexpected = () => { throw Error('Unexpected database helper in fictional 
 mock.module(new URL('../lib/database.mjs', import.meta.url).href, { namedExports: {
   rowRecord, audit: unexpected, database: unexpected, allRecords: unexpected, saveRecord: unexpected,
   logicalBackupBytes: unexpected, storePreview: unexpected, commitPreview: unexpected,
-  noteParticipationReceiptReplay: unexpected, noteContactReconciliationReceiptReplay: unexpected,
+  noteParticipationReceiptReplay: unexpected, noteContactReconciliationReceiptReplay: unexpected, notePublicFeedbackReceiptReplay: unexpected,
   PREVIEW_LIMITS: Object.freeze({ pendingCount: 4, committedCount: 32, pendingBytes: 134217728, committedBytes: 134217728 }),
 } });
 const { ownReminderEnableBinding, REMINDER_CONTEXT_SQL } = await import('../lib/participation-reminder-context.mjs');

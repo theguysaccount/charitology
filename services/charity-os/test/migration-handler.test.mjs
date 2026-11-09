@@ -327,7 +327,8 @@ function fixture({
         state.previews.get(args[1]).committed_at = new Date();
         return { rows: [], rowCount: 1 };
       }
-      if (sql.startsWith("SELECT payload FROM os_previews")) {
+      if (sql.startsWith("SELECT payload FROM os_previews") ||
+          (sql.startsWith("SELECT payload, COALESCE(payload") && sql.includes("FROM os_previews"))) {
         const p = state.previews.get(args[1]),
           pending = sql.includes("committed_at IS NULL");
         return {

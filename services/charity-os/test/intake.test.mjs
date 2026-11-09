@@ -381,7 +381,7 @@ test("review metadata cannot push the pending queue beyond its actual row-byte c
   };
   const c = {
     query: async (sql) => {
-      if (sql.startsWith("SELECT * FROM os_intake")) return { rows: [row] };
+      if (sql.includes("AS publication_kind FROM os_intake")) return { rows: [row] };
       if (sql.startsWith("UPDATE os_intake"))
         return { rows: [{ ...row, revision: 2, status: "reviewed" }] };
       if (sql.startsWith("SELECT COALESCE(sum(octet_length(to_jsonb(i)"))
@@ -490,7 +490,7 @@ test("existing-contact conversion preserves all associations while creating only
           return { rows: [] };
         if (sql.startsWith("SELECT data,status FROM os_records"))
           return { rows: records.filter((r) => r.id === args[1]).map(raw) };
-        if (sql.startsWith("SELECT * FROM os_intake"))
+        if (sql.includes("AS publication_kind FROM os_intake"))
           return { rows: [submission] };
         if (sql.startsWith("SELECT * FROM os_publications"))
           return { rows: [publication] };

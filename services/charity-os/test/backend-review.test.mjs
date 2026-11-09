@@ -84,6 +84,10 @@ function fixture(
   const c = {
     query: async (sql, args = []) => {
       if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
+      if (sql==="SELECT EXISTS(SELECT 1 FROM os_publications WHERE org_id=$1 AND kind='feedback') AS present")
+        return { rows: [{ present: false }] };
+      if (sql.includes("SELECT DISTINCT ref.value->>'id' AS id FROM os_intake i"))
+        return { rows: [] };
       const extra = await extraQuery?.(sql, args);
       if (extra !== undefined) return extra;
       if (sql === reservationSql.projection) return { rows: [], rowCount: 0 };
@@ -1035,6 +1039,8 @@ test("Access revocation remains possible with minimal audit reserve and after th
           query: async (sql, args) => {
             if (sql === reservationSchemaSql.layout) return legacyReservationLayout;
             if (sql === reservationSql.destination) return { rows: [{ occupied: false }], rowCount: 1 };
+            if (sql==="SELECT EXISTS(SELECT 1 FROM os_publications WHERE org_id=$1 AND kind='feedback') AS present")
+              return { rows: [{ present: false }] };
             const emptyGroups = emptyParticipationGroupsQuery(sql, args);
             if (emptyGroups !== undefined) return emptyGroups;
             if (sql.startsWith("SELECT sum(size) AS size FROM ("))

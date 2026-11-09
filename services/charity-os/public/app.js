@@ -7,6 +7,7 @@ import {
   fieldResponsesAPI,
   contactReconciliationAPI,
   participationRecurrenceAPI,
+  feedbackIntakeDraftAPI,
 } from "./api.js";
 import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
@@ -18,6 +19,7 @@ import { createContactReconciliationWorkspace, canUseContactReconciliation } fro
 import { createParticipationRecurrenceWorkspace, canUseParticipationRecurrence } from "./participation-recurrence.js";
 import { createResourceReservationsWorkspace } from "./resource-reservations.js";
 import { resourceReservationsAPI } from "./resource-reservations-api.js";
+import { mountFeedbackIntakeDraft } from "./feedback-intake-draft.js";
 import { LEARNING_ROLES, learningRecordFragment, learningRecordMatches, resolveLearningRecordRoute, checkedLearningReport } from "./learning-model.js";
 import {
   createDirectoryResourceWorkspace,
@@ -90,6 +92,8 @@ const state = {
 // Exact unresolved finite-draft intents stay in this page memory only.
 const participationRecurrenceIntents = new Map();
 const recurrenceIntentKey = (org, actor) => JSON.stringify([org, actor]);
+const feedbackDraftIntents = new Map();
+const feedbackDraftIntentKey = (org, actor, id) => JSON.stringify([org, actor, id]);
 function node(tag, attrs = {}, ...children) {
   const element = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
@@ -455,6 +459,11 @@ async function discardEditor() {
   return true;
 }
 async function discardPage({ signingOut = false } = {}) {
+  if (signingOut && feedbackDraftIntents.size && !(await confirmAction(
+    "Sign out with a feedback draft awaiting confirmation?",
+    "The draft may already be saved. Signing out clears Retry in this tab. Read the request again after signing in.",
+    "Sign out and clear Retry",
+  ))) return false;
   if (state.resourceReservationsWorkspace?.hasPendingCommand()) {
     if (!signingOut) {
       toast("Use Retry or stop retrying the pending reservation command before leaving this workspace.");
@@ -631,6 +640,7 @@ function renderAccount() {
             invalidateModules();
             state.session = null;
             participationRecurrenceIntents.clear();
+            feedbackDraftIntents.clear();
             setCsrfToken("");
             showSignedOut();
             toast("Signed out.");
@@ -1963,18 +1973,18 @@ async function referenceOptions(module, record) {
   });
   return result;
 }
-async function openRecordEditor(module, record = null) {
+async function openRecordEditor(module, record = null, { initialData = null, isCurrent = () => true } = {}) {
   state.taskRecurrencePanel?.invalidate();
   state.directoryResourceWorkspace?.invalidate();
   if (!can(module, "write", role()))
     return toast("Your role can read this module but cannot edit it.");
   const org = state.org;
   const references = await referenceOptions(module, record);
-  if (org !== state.org) return;
+  if (org !== state.org || !isCurrent()) return;
   const controls = new Map();
   const fields = module.fields.map((spec) => {
     const id = `record-field-${spec.key}`;
-    const value = record?.data?.[spec.key] ?? spec.default ?? null;
+    const value = (record?.data ?? initialData)?.[spec.key] ?? spec.default ?? null;
     let control;
     let read;
     const common = {
@@ -4730,6 +4740,7 @@ const intakeKinds = {
   "event-interest": "Event interest",
   "volunteer-interest": "Volunteer interest",
 };
+const intakeKind = kind => kind === "feedback" ? "Anonymous feedback" : intakeKinds[kind] || "Request";
 const intakeStates = {
   pending: "Awaiting review",
   reviewed: "Reviewed",
@@ -4773,6 +4784,8 @@ async function renderIntake(epoch) {
   const result = await api.intakePublications(org);
   if (epoch !== state.epoch) return;
   const publications = result.publications || [];
+  const feedbackAvailable = result.feedbackIntakeAvailable === true;
+  const feedbackForms = Array.isArray(result.feedbackFormCandidates) ? result.feedbackFormCandidates : [];
   const publicationNames = new Map(
     publications.map((item) => [item.id, item.title || "Public form"]),
   );
@@ -4796,13 +4809,15 @@ async function renderIntake(epoch) {
       node(
         "p",
         { class: "fine" },
-        `${intakeKinds[publication.kind] || "Request"} · approved source revision ${publication.sourceRevision}`,
+        `${intakeKind(publication.kind)} · approved source revision ${publication.sourceRevision}`,
       ),
       node(
         "p",
         { class: "fine" },
         publication.accepting
-          ? "This link accepts requests for private review. It does not promise places or assignments."
+          ? publication.kind === "feedback"
+            ? "This link accepts two anonymous selections for private review."
+            : "This link accepts requests for private review. It does not promise places or assignments."
           : "Source changes, a retention review date or withdrawal can stop new requests. Review the source before publishing another version.",
       ),
       node(
@@ -4922,7 +4937,7 @@ async function renderIntake(epoch) {
           ),
           tag(intakeStates[submission.status] || labelFor(submission.status)),
           button(
-            "Review request",
+            submission.kind === "feedback" ? "Review feedback" : "Review request",
             (event) =>
               action(
                 () => openIntakeSubmission(org, submission.id, publications),
@@ -4961,6 +4976,16 @@ async function renderIntake(epoch) {
             action(() => openIntakePublication(org), event.currentTarget),
           "primary",
         ),
+        feedbackAvailable ? button(
+          "Prepare anonymous feedback form",
+          (event) => action(() => openFeedbackFormStarter(org, epoch), event.currentTarget),
+          "subtle",
+        ) : null,
+        feedbackAvailable ? button(
+          "Publish approved feedback link",
+          (event) => action(() => openFeedbackPublication(org, epoch, feedbackForms), event.currentTarget),
+          "subtle",
+        ) : null,
       ],
     ),
     node(
@@ -5167,25 +5192,82 @@ async function openIntakePublication(org) {
     },
   );
 }
+function openFeedbackFormStarter(org, epoch) {
+  if (org !== state.org || epoch !== state.epoch) return;
+  const date = node("input", { id: "feedback-retention-until", type: "date", required: true });
+  configureEditor("Anonymous feedback", "Prepare a form for review", "Open form draft", [
+    node("p", { class: "full-width" }, "The form asks two questions about a process. People choose from a list. It collects no name, email or written answer."),
+    field("Retention review date", date, "New responses stop after this date. Review and erase retained answers separately."),
+  ], async () => {
+    const session = state.session, editor = state.editor;
+    const current = () => state.org === org && state.epoch === epoch && state.session === session;
+    const response = await api.feedbackFormTemplate(org, date.value);
+    if (!current() || state.editor !== editor) return;
+    if (response.form?.moduleId !== "forms" || response.form.status !== "draft" ||
+        typeof response.form.data?.definition !== "string")
+      throw new Error("The anonymous form template could not be read.");
+    const forms = moduleById("forms");
+    if (!forms) throw new Error("Forms is unavailable.");
+    closeSavedEditor();
+    await openRecordEditor(forms, null, { initialData: response.form.data, isCurrent: () => current() && !state.editor });
+  });
+}
+function openFeedbackPublication(org, epoch, candidates) {
+  if (org !== state.org || epoch !== state.epoch) return;
+  if (!candidates.length) {
+    configureEditor("Anonymous feedback", "Approve a form first", "Close", [
+      node("p", { class: "full-width" }, "Save the fixed form from the starter. A different authorized person must approve that revision. Set the approved record to Published, then return here to create the link."),
+      link("Open Forms and intake", "#module/forms", { class: "button subtle", onclick: closeSavedEditor }),
+    ], async () => closeSavedEditor());
+    return;
+  }
+  const choose = node("select", { id: "feedback-publication-source", required: true },
+    node("option", { value: "" }, "Choose an approved form"),
+    candidates.map(item => node("option", { value: item.id },
+      `${item.title} · revision ${item.revision} · closes after ${item.retentionUntil}`)),
+  );
+  configureEditor("Anonymous feedback", "Publish the approved link", "Publish anonymous form", [
+    node("p", { class: "full-width" }, "Only the form questions become public. Staff review answers privately. Publishing this link gives no permission to publish a response or a summary."),
+    field("Approved form revision", choose),
+  ], async () => {
+    const source = candidates.find(item => item.id === choose.value), editor = state.editor;
+    if (!source) throw new Error("Choose a current approved feedback form.");
+    const response = await api.publishFeedbackForm(org, { recordId: source.id, revision: source.revision });
+    if (org !== state.org || epoch !== state.epoch || state.editor !== editor) return;
+    if (!response.publication?.id || response.publication.kind !== "feedback")
+      throw new Error("The publication is unconfirmed. Refresh public forms before trying again.");
+    closeSavedEditor();
+    toast("Anonymous feedback form published.");
+    await route();
+  });
+}
 async function openIntakeSubmission(org, id, publications) {
+  const epoch = state.epoch, session = state.session;
   const result = await api.intakeSubmission(org, id);
-  if (org !== state.org) return;
+  if (org !== state.org || epoch !== state.epoch || session !== state.session) return;
   const submission = result.submission;
   if (!submission) throw new Error("This private request could not be loaded.");
   const publication = publications.find(
     (item) => item.id === submission.publicationId,
   );
+  const feedback = submission.kind === "feedback";
+  const pendingKey = feedbackDraftIntentKey(org, session?.user?.id, id);
+  const mount = feedback && (feedbackDraftIntents.has(pendingKey) ||
+    submission.status === "reviewed" && !submission.erasedAt || submission.convertedIds?.length > 0)
+      ? node("section", { class: "feedback-draft-panel full-width stack", "aria-label": "Private feedback draft" }) : null;
   const status = node("p", { class: "form-status full-width", role: "status" });
+  const overview = node(
+    "p", { class: "full-width" },
+    `${intakeStates[submission.status] || labelFor(submission.status)} · received ${formatDate(submission.createdAt, true)} · revision ${submission.revision}`,
+  );
   const fields = [
-    node(
-      "p",
-      { class: "full-width" },
-      `${intakeStates[submission.status] || labelFor(submission.status)} · received ${formatDate(submission.createdAt, true)} · revision ${submission.revision}`,
-    ),
+    overview,
     node(
       "p",
       { class: "full-width fine" },
-      `Explicit purpose consent recorded ${formatDate(submission.consentAt, true)}. These answers are not newsletter consent or a booking confirmation.`,
+      feedback
+        ? `Private process review consent recorded ${formatDate(submission.consentAt, true)}. No publication permission was requested.`
+        : `Explicit purpose consent recorded ${formatDate(submission.consentAt, true)}. These answers are not newsletter consent or a booking confirmation.`,
     ),
     node(
       "dl",
@@ -5236,7 +5318,7 @@ async function openIntakeSubmission(org, id, publications) {
         "primary",
       ),
     );
-  if (submission.status === "reviewed" && !submission.erasedAt)
+  if (!feedback && submission.status === "reviewed" && !submission.erasedAt)
     actions.push(
       button(
         "Prepare draft records",
@@ -5291,7 +5373,9 @@ async function openIntakeSubmission(org, id, publications) {
               if (
                 !(await confirmAction(
                   "Erase these submitted answers?",
-                  "Erase submitted answers; previously prepared contacts and drafts remain. Their retention is managed separately. Earlier source archives and downloaded backups are not changed. The request’s status and minimal receipt history remain.",
+                  feedback
+                    ? "Erase the selections from this submission. A feedback draft, if already created, remains a separate record and can be reviewed in Community feedback."
+                    : "Erase submitted answers; previously prepared contacts and drafts remain. Their retention is managed separately. Earlier source archives and downloaded backups are not changed. The request’s status and minimal receipt history remain.",
                   "Erase answers",
                 ))
               )
@@ -5320,7 +5404,7 @@ async function openIntakeSubmission(org, id, publications) {
         `Submitted answers were erased ${formatDate(submission.erasedAt, true)}. Request status, minimal receipt history and any prepared records are retained separately.`,
       ),
     );
-  if (Array.isArray(submission.convertedIds))
+  if (!feedback && Array.isArray(submission.convertedIds))
     fields.push(
       node(
         "div",
@@ -5336,8 +5420,9 @@ async function openIntakeSubmission(org, id, publications) {
           ),
       ),
     );
-  fields.push(node("div", { class: "actions full-width" }, actions), status);
-  if (submission.status === "converted")
+  const actionArea = node("div", { class: "actions full-width" }, actions);
+  fields.push(actionArea, status);
+  if (!feedback && submission.status === "converted")
     fields.push(
       node(
         "p",
@@ -5346,12 +5431,44 @@ async function openIntakeSubmission(org, id, publications) {
       ),
     );
   configureEditor(
-    "Private request",
-    publication?.title || "Review a request",
+    feedback ? "Anonymous feedback" : "Private request",
+    publication?.title || (feedback ? "Review a response" : "Review a request"),
     "Close",
-    fields,
+    [...fields, mount],
     async () => closeSavedEditor(),
   );
+  if (mount) {
+    const editor = state.editor;
+    const current = () => state.org === org && state.epoch === epoch &&
+      state.session === session && state.editor === editor && mount.isConnected && $("#editor-dialog").open;
+    mountFeedbackIntakeDraft(mount, {
+      orgId: org, submissionId: id, ownerKey: session.user.id, isCurrent: current,
+      pendingHandle: feedbackDraftIntents.get(pendingKey) || null,
+      load: () => feedbackIntakeDraftAPI.read(org, id),
+      send: raw => feedbackIntakeDraftAPI.send(org, id, raw),
+      draftHref: draftId => recordHref("feedback", draftId),
+      onObserved: view => {
+        if (!current() || !view.current || view.current.submission?.revision === submission.revision) return;
+        const latest = view.current.submission;
+        overview.textContent = latest
+          ? `${intakeStates[latest.status] || labelFor(latest.status)} · current revision ${latest.revision}`
+          : "This submission no longer has a current record.";
+        actionArea.replaceChildren(button("Reload request actions", (event) =>
+          action(async () => {
+            closeSavedEditor();
+            await openIntakeSubmission(org, id, publications);
+          }, event.currentTarget, status), "small subtle"));
+      },
+      onPending: handle => {
+        if (!current()) return;
+        if (handle) feedbackDraftIntents.set(pendingKey, handle);
+        else {
+          feedbackDraftIntents.delete(pendingKey);
+          invalidateModules(org, ["feedback"]);
+        }
+      },
+    });
+  }
 }
 async function openIntakeConversion(org, submission, publication) {
   const contacts = await allRecords(org, "contacts");
@@ -5642,13 +5759,15 @@ $("#sign-in-form").addEventListener("submit", (event) => {
     $("#sign-in-status"),
   );
 });
-$("#editor-form").addEventListener("input", () => {
+$("#editor-form").addEventListener("input", (event) => {
+  if (event.target.closest?.(".feedback-draft-panel")) return;
   if (state.editor) {
     state.dirty = true;
     state.directoryResourceWorkspace?.invalidate();
   }
 });
-$("#editor-form").addEventListener("change", () => {
+$("#editor-form").addEventListener("change", (event) => {
+  if (event.target.closest?.(".feedback-draft-panel")) return;
   if (state.editor) {
     state.dirty = true;
     state.directoryResourceWorkspace?.invalidate();

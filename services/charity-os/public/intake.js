@@ -205,17 +205,21 @@ function receiptLink(parts, token) {
   return `${location.origin}/p/receipt#${parts[0]}.${parts[1]}.${token}`;
 }
 function received(result) {
+  const feedback = publication?.kind === "feedback";
+  const accountAvailable = !feedback && publication?.questions?.some(
+    (question) => question.key === "email" && question.type === "text",
+  );
   $("#intake-workspace").hidden = true;
   const target = $("#intake-received");
   target.hidden = false;
   target.replaceChildren(
-    node("span", { class: "eyebrow" }, "Request recorded"),
+    node("span", { class: "eyebrow" }, feedback ? "Feedback recorded" : "Request recorded"),
     node(
       "h1",
       { tabindex: "-1" },
       result.status === "pending"
-        ? "Thank you. The next step is review."
-        : "Your request was already recorded.",
+        ? feedback ? "Thank you for sharing feedback." : "Thank you. The next step is review."
+        : feedback ? "Your feedback was already recorded." : "Your request was already recorded.",
     ),
     node(
       "p",
@@ -225,7 +229,9 @@ function received(result) {
     node(
       "p",
       {},
-      "This status does not confirm a booking, place or assignment. Only the organization can confirm the next operational step.",
+      feedback
+        ? publication.message
+        : "This status does not confirm a booking, place or assignment. Only the organization can confirm the next operational step.",
     ),
   );
   if (
@@ -262,9 +268,7 @@ function received(result) {
           "Copy private link",
         ),
         node("a", { class: "button", href: url }, "Check status or cancel"),
-        publication?.questions?.some(
-          (question) => question.key === "email" && question.type === "text",
-        )
+        accountAvailable
           ? node(
               "a",
               {
@@ -276,9 +280,7 @@ function received(result) {
           : null,
       ),
       output,
-      publication?.questions?.some(
-        (question) => question.key === "email" && question.type === "text",
-      )
+      accountAvailable
         ? node(
             "p",
             { class: "fine" },
@@ -330,7 +332,7 @@ $("#intake-form").addEventListener("submit", async (event) => {
         "These answers are too long. Shorten them before sending.",
       );
     if (!attempt) attempt = { canonical, key };
-    status(output, "Sending your request… Keep this page open.");
+    status(output, publication.kind === "feedback" ? "Sending your feedback…" : "Sending your request… Keep this page open.");
     const result = await request(`${endpoint()}/submissions`, body);
     received(result);
   } catch (error) {
@@ -369,7 +371,7 @@ const statusLabels = {
   converted: "Reviewed and linked for follow-up",
   cancelled: "Cancelled",
 };
-function confirmCancellation(target, trigger, parts) {
+function confirmCancellation(target, trigger, parts, feedback) {
   if (receiptBusy) return;
   const existing = target.querySelector("#receipt-cancel-panel");
   if (existing) {
@@ -379,7 +381,7 @@ function confirmCancellation(target, trigger, parts) {
   const keep = node(
     "button",
     { type: "button", class: "button" },
-    "Keep request",
+    feedback ? "Keep feedback" : "Keep request",
   );
   const confirmButton = node(
     "button",
@@ -395,11 +397,13 @@ function confirmCancellation(target, trigger, parts) {
       "aria-labelledby": "receipt-cancel-title",
       tabindex: "-1",
     },
-    node("h3", { id: "receipt-cancel-title" }, "Cancel this request?"),
+    node("h3", { id: "receipt-cancel-title" }, feedback ? "Withdraw this feedback?" : "Cancel this request?"),
     node(
       "p",
       {},
-      "The organization will see that you withdrew this original request. This does not cancel a separately confirmed place or volunteer assignment. Use Cancel participation in your verified account, or contact the organizer, for that action. Submitted answers and previously prepared contacts and drafts remain for separate retention review. Earlier archives and downloaded backups are not changed.",
+      feedback
+        ? "The organization will see that you withdrew this feedback. The selections and any private draft remain subject to its separate retention process."
+        : "The organization will see that you withdrew this original request. This does not cancel a separately confirmed place or volunteer assignment. Use Cancel participation in your verified account, or contact the organizer, for that action. Submitted answers and previously prepared contacts and drafts remain for separate retention review. Earlier archives and downloaded backups are not changed.",
     ),
     node("div", { class: "actions" }, confirmButton, keep),
   );
@@ -452,6 +456,7 @@ async function checkReceipt(parts, action = "status") {
       receipt: parts[2],
       action,
     });
+    const feedback = result.kind === "feedback";
     receiptScope = parts;
     $("#receipt-entry-form").hidden = true;
     $("#receipt-entry").value = "";
@@ -465,7 +470,9 @@ async function checkReceipt(parts, action = "status") {
       node(
         "p",
         {},
-        "A receipt status is not a booking confirmation. Only the organization can confirm an event place or volunteer assignment.",
+        feedback
+          ? "The receipt shows only the status of your feedback."
+          : "A receipt status is not a booking confirmation. Only the organization can confirm an event place or volunteer assignment.",
       ),
     );
     const actions = node("div", { class: "actions" });
@@ -491,9 +498,9 @@ async function checkReceipt(parts, action = "status") {
             onclick: (event) =>
               confirmCancellation(target, event.currentTarget, [
                 ...receiptScope,
-              ]),
+              ], feedback),
           },
-          "Cancel this request",
+          feedback ? "Withdraw feedback" : "Cancel this request",
         ),
       );
     if (result.participantClaimAvailable === true)
@@ -509,7 +516,9 @@ async function checkReceipt(parts, action = "status") {
       node(
         "p",
         { class: "fine section-gap" },
-        "Keep the private receipt link. This page does not display your answers or email address. Cancellation withdraws the original request; it does not cancel a separately confirmed participation or erase submitted answers, contacts or drafts. Use your verified account's separate Cancel participation control, or contact the organizer, to cancel a place. Ask the organization about its retention process.",
+        feedback
+          ? "Keep the receipt link private. Withdrawing feedback does not erase your selections or any private draft already created. Ask the organization about its retention process."
+          : "Keep the private receipt link. This page does not display your answers or email address. Cancellation withdraws the original request; it does not cancel a separately confirmed participation or erase submitted answers, contacts or drafts. Use your verified account's separate Cancel participation control, or contact the organizer, to cancel a place. Ask the organization about its retention process.",
       ),
     );
     status(
@@ -582,12 +591,23 @@ async function boot() {
   document.title = `${publication.title} · Charity OS`;
   $("#intake-title").textContent = publication.title;
   $("#intake-organization").textContent = publication.organizationName;
-  $("#intake-purpose").textContent = publication.purpose;
+  $("#intake-purpose").textContent = publication.kind === "feedback" && typeof publication.notice === "string"
+    ? `${publication.purpose} ${publication.notice}`
+    : publication.purpose;
+  const feedback = publication.kind === "feedback";
+  if (feedback) {
+    $("#intake-boundary-title").textContent = "Help improve the process";
+    $("#intake-boundary-purpose").textContent = "Staff review your selections privately. This form asks permission for that review only.";
+    $("#intake-boundary-details").textContent = "No account is needed. After submitting, save the private receipt if you want to check status or withdraw your feedback.";
+    $("#intake-form-title").textContent = "Your feedback";
+    $("#intake-answer-help").textContent = "Choose one answer to each question.";
+    $("#intake-submit").textContent = "Send feedback";
+  }
   $("#intake-consent-text").textContent =
     publication.consentText ||
     `I agree that ${publication.organizationName} may use these answers for the purpose described above.`;
   $("#intake-retention").textContent = publication.retentionUntil
-    ? `This form closes to new requests after ${publication.retentionUntil}, its retention review date. Submitted answers are not automatically deleted on that date. Ask the organization about corrections or its separate retention process.`
+    ? `This form closes to new ${feedback ? "responses" : "requests"} after ${publication.retentionUntil}, its retention review date. Submitted answers are not automatically deleted on that date. Ask the organization about corrections or its separate retention process.`
     : "Ask the organization about corrections and how long it keeps responses.";
   $("#intake-questions").replaceChildren(
     ...publication.questions.map(questionControl),

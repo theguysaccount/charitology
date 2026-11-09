@@ -155,6 +155,8 @@ function fixture({ moduleId = "events", state = "requested", usage = 0,
       }
       if (sql === "SELECT count(*) AS count FROM os_participation_checkins WHERE org_id=$1")
         return { rows: [{ count: 0 }] };
+      if (sql === "SELECT EXISTS(SELECT 1 FROM os_publications WHERE org_id=$1 AND kind='feedback') AS present")
+        return { rows: [{ present: false }] };
       if (sql === "SELECT * FROM os_participation_outbox WHERE org_id=$1 ORDER BY created_at,id")
         return { rows: db.journal };
       if (sql.startsWith("UPDATE os_participations SET state=$3")) {

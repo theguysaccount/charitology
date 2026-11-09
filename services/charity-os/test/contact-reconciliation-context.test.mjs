@@ -16,6 +16,8 @@ import { validateRecord, getModule } from "../lib/modules.mjs";
 import { hash } from "../lib/security.mjs";
 import { CONTACT_PREVIEW_KIND, makeContactReconciliationPreview, makeContactReconciliationReceipt } from "../lib/contact-reconciliation-preview.mjs";
 import { inspectFieldAggregateFile, makeFieldMapping, compileFieldObservationDrafts } from "../lib/field-response-model.mjs";
+import { feedbackPublicationSchema, proposedFeedbackDraft } from "../lib/feedback-intake-model.mjs";
+import { proposedFeedbackForm } from "../lib/feedback-intake-form.mjs";
 
 // Strict fake SELECT rows only. This does not execute or parse PostgreSQL SQL,
 // apply RLS/constraints, establish auth, or supply a real complete SQL snapshot.
@@ -33,10 +35,14 @@ const fkRows = () => [["os_orgs", ["org_id"], ["id"]], ["os_intake", ["org_id", 
 function fixture() {
   const state = { tables: { os_records: [contact("left"), contact("right")] }, calls: [], role: "owner", scopes: [], sessionValid: true,
     createdExact: NOW, revision: 1, epoch: "0", catalog: Object.entries(CATALOG).map(([table_name, columns]) => ({ table_name, columns: [...columns] })), fks: fkRows(), pageMutation: null, fakeCount: null, allowLocks: false };
-  const projected = (table, row) => {
+  const projected = (table, row, sql) => {
     const omitted = table === "os_files" ? ["bytes"] : table === "os_intake" ? ["answers", "idempotency_hash", "payload_hash", "receipt_hash", "ip_hash"] : table === "os_participation_outbox" ? ["payload", "consent_copy", "relay_key", "recipient_hash", "user_id", "link_id"] : [];
     if (table === "os_jobs") return { org_id: row.org_id, id: row.id, kind: row.kind, payload: row.kind === "reminder" ? row.payload : {} };
-    return Object.fromEntries(Object.entries(row).filter(([k]) => !omitted.includes(k)));
+    const value = Object.fromEntries(Object.entries(row).filter(([k]) => !omitted.includes(k)));
+    if (table === "os_intake" && sql.includes("'feedback_check'") &&
+        state.tables.os_publications?.some(publication => publication.id === row.publication_id && publication.kind === "feedback"))
+      value.feedback_check = state.feedbackChecks.get(row.id);
+    return value;
   };
   const key = (table, row) => table === "os_task_recurrence_occurrences" ? row.series_id + ":" + row.sequence : table === "os_participation_group_receipts" ? row.command_hash : table === "os_participation_delivery_policies" ? row.org_id : String(row.id);
   const c = { async query(sql, params) {
@@ -52,6 +58,10 @@ function fixture() {
     if (sql.startsWith("/*crm:epoch*/")) { assert.deepEqual(params, [ORG]); return { rows: [{ epoch: state.epoch }] }; }
     if (sql.startsWith("/*crm:catalog*/")) return { rows: structuredClone(state.catalog) };
     if (sql.startsWith("/*crm:link-fks*/")) return { rows: structuredClone(state.fks) };
+    if (sql.includes("conname=ANY(ARRAY['os_publications_kind_check','os_publications_feedback_no_target'])"))
+      return { rows: structuredClone(state.feedbackLayout.checks) };
+    if (sql.includes("ix.relname='os_feedback_intake_conversion'"))
+      return { rows: structuredClone(state.feedbackLayout.indexes) };
     if (sql.startsWith("/*crm:reservation-layout*/")) {
       assert.deepEqual(params, [Object.keys(RESOURCE_CATALOG)]);
       return { rows: structuredClone(state.resourceLayout) };
@@ -72,7 +82,7 @@ function fixture() {
     const m = /^\/\*crm:(count|page):(os_[a-z_]+)\*\//.exec(sql);
     if (!m) throw Error("Unexpected fictional SQL");
     const [, kind, table] = m; assert(Object.hasOwn(CATALOG, table)); assert(sql.includes("t.org_id=$1")); assert.equal(params[0], ORG);
-    const data = (state.tables[table] ?? []).map(row => ({ row, row_key: key(table, row), row_json: JSON.stringify(projected(table, row)) })).sort((a, b) => a.row_key < b.row_key ? -1 : a.row_key > b.row_key ? 1 : 0);
+    const data = (state.tables[table] ?? []).map(row => ({ row, row_key: key(table, row), row_json: JSON.stringify(projected(table, row, sql)) })).sort((a, b) => a.row_key < b.row_key ? -1 : a.row_key > b.row_key ? 1 : 0);
     if (kind === "count") return { rows: [state.fakeCount?.(table) ?? { n: String(data.length), bytes: String(data.reduce((n, x) => n + Buffer.byteLength(x.row_json), 0)) }] };
     assert.equal(params[2], 32); assert(sql.includes('COLLATE "C"')); assert(sql.includes("LIMIT $3"));
     let output = data.filter(x => params[1] === null || x.row_key > params[1]).slice(0, params[2]).map(x => ({ row_key: x.row_key, row_json: x.row_json,
@@ -574,4 +584,130 @@ test("wrong source type, incarnation, interval, receipt graph or linked audit re
     const f = fixture(), seed = seededReservation(f); change(f, seed);
     await refuse(f.read());
   }
+});
+
+const feedbackLayout = () => ({
+  checks: [
+    { conname: "os_publications_feedback_no_target", contype: "c", convalidated: true, enforced: true,
+      expr: "((kind <> 'feedback'::text) OR ((target_id IS NULL) AND (target_module IS NULL) AND (target_revision IS NULL)))" },
+    { conname: "os_publications_kind_check", contype: "c", convalidated: true, enforced: true,
+      expr: "(kind = ANY (ARRAY['contact'::text, 'event-interest'::text, 'volunteer-interest'::text, 'feedback'::text]))" },
+  ],
+  indexes: [{ indisunique: true, indisvalid: true, indisready: true, indislive: true,
+    indnullsnotdistinct: false, schema_name: "fictional_schema",
+    definition: "CREATE UNIQUE INDEX os_feedback_intake_conversion ON fictional_schema.os_events USING btree (org_id, ((detail ->> 'intakeId'::text))) WHERE (action = 'intake.feedback-converted'::text)" }],
+});
+const fixedAnswers = { topic: "Using a form", experience: "Could not finish" };
+function seededFeedback(f, { inert = false, missing = false } = {}) {
+  const forms = proposedFeedbackForm("2026-11-30");
+  const form = raw("feedback_source", "forms", validateRecord("forms", forms.data,
+    { orgId: ORG, recordId: "feedback_source", status: "published", records: [] }), { status: "published", revision: 4 });
+  const draft = proposedFeedbackDraft({ answers: fixedAnswers, receivedAt: NOW });
+  const record = raw("feedback_draft", "feedback", validateRecord("feedback", draft.data,
+    { orgId: ORG, recordId: "feedback_draft", status: draft.status, records: [] }), { status: draft.status });
+  if (!missing) f.tables.os_records.push(form, record);
+  const publication = { org_id: ORG, id: "feedback_pub", record_id: form.id, source_revision: 4, kind: "feedback",
+    target_id: null, target_module: null, target_revision: null, schema: feedbackPublicationSchema("2026-11-30"),
+    created_by: USER, created_at: NOW, withdrawn_at: inert ? NOW : null };
+  const intake = { org_id: ORG, id: "feedback_entry", publication_id: publication.id, answers: fixedAnswers,
+    consent_at: NOW, status: "converted", revision: inert ? 1 : 3, idempotency_hash: inert ? null : "1".repeat(64),
+    payload_hash: inert ? null : "2".repeat(64), receipt_hash: inert ? null : "3".repeat(64), ip_hash: null,
+    reviewed_by: inert ? null : USER, reviewed_at: inert ? null : NOW, converted_ids: [{ id: record.id, moduleId: "feedback" }],
+    created_at: NOW, updated_at: NOW, erased_at: null, cancelled_at: null };
+  f.feedbackLayout = feedbackLayout();
+  f.feedbackChecks = new Map([[intake.id, { origin: inert ? "inert" : "local", answersValid: true }]]);
+  f.tables.os_publications = [publication]; f.tables.os_intake = [intake];
+  const audit = (n, action, detail, fields = {}) => ({ org_id: ORG, id: String(n), actor_id: USER, action, record_id: null,
+    module_id: null, detail, created_at: "2026-11-08T12:00:00.123Z", ...fields });
+  const approval = { status: "approved", revision: 3, actorId: "fictional_reviewer", reason: "Reviewed the fixed form", at: "2026-11-08T12:00:00.123Z" };
+  const prior = { ...recordProjection(form), status: "review", revision: 3, approval };
+  const snapshot = { id: form.id, orgId: ORG, moduleId: "forms", data: form.data, status: "review", ownerId: USER,
+    revision: 3, createdAt: prior.createdAt, updatedAt: prior.updatedAt, files: [] };
+  prior.snapshot = snapshot;
+  const approved = audit(1, "record.approved", { record: prior }, { record_id: form.id, module_id: "forms", actor_id: approval.actorId });
+  const transitioned = audit(2, "record.transitioned", { record: { ...recordProjection(form), approval: { ...approval, revision: 4 },
+    snapshot: { ...snapshot, status: "published", revision: 4 } }, reason: "Publish fixed form" }, { record_id: form.id, module_id: "forms" });
+  const converted = audit(6, "intake.feedback-converted", { version: 1, intakeId: intake.id, publicationId: publication.id,
+    sourceRevision: publication.source_revision, reviewedRevision: 2, submissionRevision: 3, draftRevision: 1,
+    acceptedAtExact: NOW, requestSha256: "a".repeat(64), authoritySha256: "b".repeat(64) }, { record_id: record.id, module_id: "feedback" });
+  f.tables.os_events = inert ? [] : [approved, transitioned,
+    audit(3, "intake.published", { publicationId: publication.id, kind: "feedback", targetId: null }, { record_id: form.id, module_id: "forms" }),
+    audit(4, "intake.received", { intakeId: intake.id, publicationId: publication.id }, { actor_id: "public-intake" }),
+    audit(5, "intake.reviewed", { intakeId: intake.id, publicationId: publication.id, recordIds: [] }), converted];
+  return { form, record, intake, publication, converted, approved, transitioned, audit };
+}
+
+test("fixed local Feedback and exact source/audit history remain passive to an ordinary contact pair", async () => {
+  const f = fixture();
+  const before = await f.read();
+  assert(f.calls.every(call => !/os_publications_feedback_no_target|os_feedback_intake_conversion/.test(call.sql)));
+  const seed = seededFeedback(f);
+  const after = await f.read();
+  assert.deepEqual(after.plannerContext, before.plannerContext);
+  assert.deepEqual(after.coverage, before.coverage);
+  assert.notEqual(after.contextSha256, before.contextSha256);
+  assert(mergePlan(after).proposal);
+  for (const value of [seed.intake.id, seed.record.id, fixedAnswers.experience, seed.intake.receipt_hash, seed.converted.detail.authoritySha256])
+    assert(!JSON.stringify(after).includes(value));
+  seed.intake.status = "cancelled"; seed.intake.revision = 5; seed.intake.cancelled_at = NOW; seed.intake.erased_at = NOW;
+  seed.record.deleted_at = NOW;
+  seed.publication.withdrawn_at = NOW;
+  f.tables.os_events.push(seed.audit(7, "intake.cancelled", { intakeId: seed.intake.id, converted: true }, { actor_id: "public-intake" }),
+    seed.audit(8, "intake.erased", { intakeId: seed.intake.id, converted: true }),
+    seed.audit(9, "intake.publication.withdrawn", { publicationId: seed.publication.id }));
+  assert(mergePlan(await f.read()).proposal);
+});
+
+test("an inert withdrawn Feedback link may be missing without adopting a local receipt or identity", async () => {
+  const f = fixture();
+  const seed = seededFeedback(f, { inert: true, missing: true });
+  const result = await f.read();
+  assert(mergePlan(result).proposal);
+  assert.deepEqual(result.plannerContext.references, []);
+  seed.intake.erased_at = NOW; seed.intake.revision = 2;
+  f.tables.os_events.push(seed.audit(7, "intake.erased", { intakeId: seed.intake.id, converted: true }));
+  assert(mergePlan(await f.read()).proposal);
+  f.tables.os_events.push(seed.converted);
+  await refuse(f.read(), "contact_context_reconcile", 409);
+});
+
+test("malformed Feedback catalog, authority projection or current typed closure refuses before CRM planning", async () => {
+  for (const change of [
+    f => { f.feedbackLayout.indexes = []; },
+    f => { f.feedbackLayout.checks[0].convalidated = false; },
+    f => { f.feedbackLayout.checks[0].enforced = false; },
+    f => { f.feedbackLayout.indexes[0].indnullsnotdistinct = true; },
+    f => { f.feedbackLayout.indexes[0].definition = f.feedbackLayout.indexes[0].definition.replace("org_id,", "org_id DESC,"); },
+    f => { f.feedbackLayout.indexes[0].definition = f.feedbackLayout.indexes[0].definition.replace("org_id,", 'org_id COLLATE "C",'); },
+    (f, s) => { f.feedbackChecks.get(s.intake.id).answersValid = false; },
+    (f, s) => { f.feedbackChecks.get(s.intake.id).origin = "invalid"; },
+    (_f, s) => { s.publication.target_id = "right"; },
+    (_f, s) => { s.intake.converted_ids[0].id = "right"; },
+    (_f, s) => { s.intake.converted_ids[0].id = "missing"; },
+    (_f, s) => { s.record.data.publicationConsent = "publish-approved"; },
+    (_f, s) => { s.record.snapshot = { ...recordProjection(s.record), status: "published" }; },
+    (f, s) => { f.tables.os_events = f.tables.os_events.filter(row => row !== s.converted); },
+    (f, s) => { f.tables.os_events.push({ ...s.converted, id: "7" }); },
+    (_f, s) => { delete s.converted.detail.requestSha256; delete s.converted.detail.authoritySha256; },
+    (_f, s) => { s.converted.detail.sourceRevision++; },
+    (_f, s) => { s.converted.detail.contactId = "right"; },
+    (_f, s) => { s.approved.detail.record.approval.contactId = "right"; },
+    (_f, s) => { s.transitioned.detail.record.snapshot.files = [{ id: "right" }]; },
+  ]) {
+    const f = fixture(), seed = seededFeedback(f); change(f, seed);
+    await refuse(f.read());
+  }
+});
+
+test("the exact Feedback audit exception grants no legacy Forms or generic Feedback link scope", async () => {
+  const f = fixture(), seed = seededFeedback(f);
+  const unrelated = { ...seed.form, id: "other_form" };
+  f.tables.os_records.push(unrelated);
+  f.tables.os_events.push(seed.audit(7, "record.approved", seed.approved.detail,
+    { record_id: unrelated.id, module_id: "forms", actor_id: "fictional_reviewer" }));
+  await refuse(f.read(), "contact_context_reconcile", 409);
+  const legacy = fixture(); addForm(legacy);
+  legacy.tables.os_publications = [publication()];
+  legacy.tables.os_intake = [{ org_id: ORG, id: "legacy_entry", publication_id: "pub", converted_ids: [{ id: "left", moduleId: "feedback" }] }];
+  await refuse(legacy.read());
 });

@@ -173,8 +173,9 @@ async function actual(c,org){
   const operational=await measureLearningOperationalCapacity(c,org,backup.participation);
   const oldLogical=number(whole.operational?.sourceLogicalGrowthBytes??0),oldNative=number(whole.operational?.sourceWireGrowthBytes??0);
   const resourceRetained=number(whole.resourceReservations?.retainedGrowthBytes??0),resourceNative=number(whole.resourceReservations?.nativeGrowthBytes??0);
-  need(number(whole.requiredUsage)===sum(whole.usage,oldLogical,resourceRetained)&&
-    number(whole.requiredBackupBytes)===sum(whole.backupBytes,oldNative,resourceNative));
+  const feedbackRetained=number(whole.feedbackIntake?.retainedGrowthBytes??0),feedbackNative=number(whole.feedbackIntake?.nativeGrowthBytes??0);
+  need(number(whole.requiredUsage)===sum(whole.usage,oldLogical,resourceRetained,feedbackRetained)&&
+    number(whole.requiredBackupBytes)===sum(whole.backupBytes,oldNative,resourceNative,feedbackNative));
   need(number(operational.sourceLogicalGrowthBytes)>=oldLogical&&number(operational.sourceWireGrowthBytes)>=oldNative);
   const missingOperationalRetained=operational.sourceLogicalGrowthBytes-oldLogical,missingOperationalNative=operational.sourceWireGrowthBytes-oldNative;
   const remaining=await measureGroupRemainingParticipationSafety(c,org,{backup,operational});

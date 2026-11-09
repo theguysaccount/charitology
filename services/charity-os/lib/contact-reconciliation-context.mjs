@@ -11,6 +11,10 @@ import {
 } from "./contact-context-catalog.mjs";
 import { RESOURCE_RESERVATION_METHOD } from "./resource-reservation-ledger.mjs";
 import { loadResourceReservationInventory } from "./resource-reservation-store.mjs";
+import { feedbackPublicationSchema, requireFeedbackPublicationSchema } from "./feedback-intake-model.mjs";
+import { feedbackSchemaFromReviewedFormData } from "./feedback-intake-form.mjs";
+import { FEEDBACK_CONVERSION_ACTION, feedbackPortableConversionEvent, isWithheldFeedbackDraft } from "./feedback-intake-safety.mjs";
+import { feedbackIntakeSchemaReady } from "./feedback-intake-schema.mjs";
 import { validateContactReconciliationReport, validateContactReconciliationReportRow } from "./contact-reconciliation-report.mjs";
 import { validInstant } from "./schedule.mjs";
 import { validateFieldImportManifest } from "./field-response-model.mjs";
@@ -79,6 +83,118 @@ const keyFor = t => t === "os_task_recurrence_occurrences" ? "t.series_id||':'||
 const projectFor = t => PROJECTION[t] ?? (EXCLUDED_COLUMNS[t]
   ? `jsonb_build_object(${CONTACT_CONTEXT_CATALOG[t].filter(k => !EXCLUDED_COLUMNS[t].includes(k)).map(k => `'${k}',t.${k}`).join(",")})`
   : "to_jsonb(t)");
+
+const FEEDBACK_INTAKE_KEYS = CONTACT_CONTEXT_CATALOG.os_intake.filter(key => !EXCLUDED_COLUMNS.os_intake.includes(key));
+const answerLiterals = Object.fromEntries(feedbackPublicationSchema("2000-01-01").questions.map(q =>
+  [q.key, q.options.map(value => "'" + value.replaceAll("'", "''") + "'").join(",")]));
+// The exact local/inert discriminator and closed choice check never return an answer or hash.
+const FEEDBACK_INTAKE_METADATA = `CASE WHEN EXISTS(SELECT 1 FROM os_publications p
+    WHERE p.org_id=t.org_id AND p.id=t.publication_id AND p.kind='feedback') THEN
+  jsonb_build_object('feedback_check',jsonb_build_object(
+    'origin',CASE
+      WHEN t.ip_hash IS NULL AND t.idempotency_hash IS NULL AND t.receipt_hash IS NULL AND t.payload_hash IS NULL
+        AND t.reviewed_by IS NULL AND t.reviewed_at IS NULL THEN 'inert'
+      WHEN t.ip_hash IS NULL AND t.idempotency_hash ~ '^[0-9a-f]{64}$' AND t.receipt_hash ~ '^[0-9a-f]{64}$'
+        AND (CASE WHEN t.erased_at IS NULL THEN t.payload_hash ~ '^[0-9a-f]{64}$' ELSE t.payload_hash IS NULL END)
+        THEN 'local' ELSE 'invalid' END,
+    'answersValid',CASE WHEN t.erased_at IS NOT NULL THEN t.answers='{}'::jsonb
+      WHEN jsonb_typeof(t.answers)='object' AND octet_length(t.answers::text)<=512 THEN
+        t.answers ?& ARRAY['topic','experience'] AND (t.answers-ARRAY['topic','experience'])='{}'::jsonb
+        AND jsonb_typeof(t.answers->'topic')='string' AND jsonb_typeof(t.answers->'experience')='string'
+        AND t.answers->>'topic' IN (${answerLiterals.topic}) AND t.answers->>'experience' IN (${answerLiterals.experience})
+      ELSE false END))
+  ELSE '{}'::jsonb END`;
+const storedTime = value => typeof value === "string" &&
+  /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,6})?(?:Z|[+-]\d\d:\d\d)$/.test(value) && Number.isFinite(Date.parse(value));
+function admitFeedbackPublication(row, graph, recordModules) {
+  exact(row, CONTACT_CONTEXT_CATALOG.os_publications);
+  id(row.id); id(row.record_id); id(row.created_by); revision(row.source_revision);
+  const hasSource = recordModules.has(row.record_id), withdrawn = row.withdrawn_at !== null;
+  if (row.target_id !== null || row.target_module !== null || row.target_revision !== null || !storedTime(row.created_at) ||
+      withdrawn && !storedTime(row.withdrawn_at) || hasSource && recordModules.get(row.record_id) !== "forms" ||
+      !hasSource && !withdrawn || graph.publications.has(row.id)) reconcile();
+  try { requireFeedbackPublicationSchema(row.schema); } catch { reconcile(); }
+  graph.publications.set(row.id, { sourceId: row.record_id, sourceRevision: row.source_revision, hasSource, withdrawn, actorId: row.created_by });
+  graph.formIds.add(row.record_id);
+}
+function admitFeedbackIntake(row, publication, graph, recordModules, draftRecords) {
+  exact(row, [...FEEDBACK_INTAKE_KEYS, "feedback_check"]);
+  const { origin, answersValid } = exact(row.feedback_check, ["origin", "answersValid"]);
+  id(row.id); revision(row.revision);
+  const local = origin === "local", erased = row.erased_at !== null, status = row.status;
+  if (answersValid !== true || !["local", "inert"].includes(origin) || graph.entries.has(row.id) ||
+      !["pending", "reviewed", "dismissed", "converted", "cancelled"].includes(status) ||
+      ![row.created_at, row.updated_at, row.consent_at].every(storedTime) || erased && !storedTime(row.erased_at) ||
+      (status === "cancelled" ? !storedTime(row.cancelled_at) : row.cancelled_at !== null)) reconcile();
+  if (row.reviewed_by === null ? row.reviewed_at !== null : !id(row.reviewed_by) || !storedTime(row.reviewed_at)) reconcile();
+  if (local ? !publication.hasSource : !publication.withdrawn || ["pending", "reviewed"].includes(status) ||
+      row.revision > 1 && !erased) reconcile();
+  const links = row.converted_ids;
+  if (!Array.isArray(links) || links.length > 1 || status === "converted" && links.length !== 1 ||
+      !["converted", "cancelled"].includes(status) && links.length) reconcile();
+  if (local && (status === "reviewed" || links.length) && row.reviewed_by === null) reconcile();
+  let draftId = null;
+  if (links.length) {
+    const link = exact(links[0], ["id", "moduleId"]);
+    draftId = id(link.id);
+    const present = recordModules.has(draftId);
+    if (link.moduleId !== "feedback" || graph.draftIds.has(draftId) || local && !present ||
+        present && !isWithheldFeedbackDraft(draftRecords.get(draftId))) reconcile();
+    graph.draftIds.add(draftId);
+  }
+  graph.entries.set(row.id, { publicationId: row.publication_id, local, status, revision: row.revision,
+    reviewed: row.reviewed_by !== null, erased, draftId });
+}
+function passiveFeedbackIntakeAudit(row, graph) {
+  if (row.action === FEEDBACK_CONVERSION_ACTION) {
+    if (!storedTime(row.created_at)) reconcile();
+    let event;
+    // The raw PG JSON timestamp remains pinned. The portable event reader
+    // accepts the corresponding driver Date as the export path would supply it.
+    try { event = feedbackPortableConversionEvent({ ...row, created_at: new Date(row.created_at) }, true); }
+    catch { reconcile(); }
+    const { intakeId, publicationId, sourceRevision, submissionRevision } = event.detail;
+    const intake = graph.entries.get(intakeId), publication = graph.publications.get(publicationId);
+    if (!Object.hasOwn(row.detail, "requestSha256") || !Object.hasOwn(row.detail, "authoritySha256") ||
+        !intake?.local || intake.publicationId !== publicationId || intake.draftId !== row.record_id ||
+        publication?.sourceRevision !== sourceRevision || intake.revision < submissionRevision ||
+        !["converted", "cancelled"].includes(intake.status) || graph.receipts.has(intakeId)) reconcile();
+    graph.receipts.add(intakeId);
+    return true;
+  }
+  if (["intake.published", "intake.publication.withdrawn"].includes(row.action)) {
+    const publication = graph.publications.get(row.detail?.publicationId);
+    if (!publication) return false;
+    exact(row, CONTACT_CONTEXT_CATALOG.os_events); id(row.actor_id);
+    if (row.action === "intake.published") {
+      const detail = exact(row.detail, ["publicationId", "kind", "targetId"]);
+      if (!publication.hasSource || publication.actorId !== row.actor_id || row.record_id !== publication.sourceId ||
+          row.module_id !== "forms" || detail.kind !== "feedback" || detail.targetId !== null) reconcile();
+    } else {
+      exact(row.detail, ["publicationId"]);
+      if (!publication.withdrawn || row.record_id !== null || row.module_id !== null) reconcile();
+    }
+    return true;
+  }
+  if (!["intake.received", "intake.reviewed", "intake.dismissed", "intake.cancelled", "intake.erased"].includes(row.action)) return false;
+  const intake = graph.entries.get(row.detail?.intakeId);
+  if (!intake) return false;
+  exact(row, CONTACT_CONTEXT_CATALOG.os_events); id(row.actor_id);
+  if (row.record_id !== null || row.module_id !== null) reconcile();
+  if (row.action === "intake.received") {
+    const detail = exact(row.detail, ["intakeId", "publicationId"]);
+    if (!intake.local || row.actor_id !== "public-intake" || detail.publicationId !== intake.publicationId) reconcile();
+  } else if (["intake.reviewed", "intake.dismissed"].includes(row.action)) {
+    const detail = exact(row.detail, ["intakeId", "publicationId", "recordIds"]);
+    if (!intake.local || !intake.reviewed || intake.revision < 2 || detail.publicationId !== intake.publicationId ||
+        !Array.isArray(detail.recordIds) || detail.recordIds.length) reconcile();
+  } else {
+    const detail = exact(row.detail, ["intakeId", "converted"]);
+    if (detail.converted !== Boolean(intake.draftId) || intake.revision < 2 || (row.action === "intake.erased" ? !intake.erased
+      : !intake.local || intake.status !== "cancelled" || row.actor_id !== "public-intake")) reconcile();
+  }
+  return true;
+}
 
 async function authenticate(c, org, session, readOnly = true) {
   const sessionId = id(prop(prop(session, "session"), "id")), userId = id(prop(prop(session, "user"), "id"));
@@ -397,7 +513,9 @@ function passiveContactAudit(row, reports) {
 function ordinaryRecordAudit(row, org, records) {
   if (!["record.created", "record.updated", "record.deleted", "record.restored"].includes(row.action)) return null;
   if (!row.detail || Object.keys(row.detail).length !== 1 || !Object.hasOwn(row.detail, "record")) reconcile();
-  const r = row.detail.record;
+  return admitAuditRecord(row, row.detail.record, org, records);
+}
+function admitAuditRecord(row, r, org, records) {
   const base = ["id", "orgId", "moduleId", "data", "status", "ownerId", "lastEditedBy", "revision", "approval", "snapshot", "createdAt", "updatedAt"];
   exact(r, row.action === "record.created" ? base : [...base, "source"]);
   id(r.id); need(r.id === row.record_id && r.orgId === org && r.moduleId === row.module_id);
@@ -416,6 +534,43 @@ function ordinaryRecordAudit(row, org, records) {
   let normalized; try { normalized = validateRecord(r.moduleId, r.data, { orgId: org, recordId: r.id, status: r.status, records }); } catch { reconcile(); }
   need(same(normalized, r.data));
   return r;
+}
+function requireFixedFeedbackForm(data) {
+  try { feedbackSchemaFromReviewedFormData(data); } catch { reconcile(); }
+}
+function passiveFeedbackFormAudit(row, graph, recordModules, org, records) {
+  const approved = row.action === "record.approved";
+  if ((!approved && row.action !== "record.transitioned") || row.module_id !== "forms" ||
+      !graph.formIds.has(row.record_id)) return false;
+  if (recordModules.get(row.record_id) !== "forms") reconcile();
+  exact(row, CONTACT_CONTEXT_CATALOG.os_events);
+  const detail = exact(row.detail, approved ? ["record"] : ["record", "reason"]);
+  const r = admitAuditRecord(row, detail.record, org, records);
+  requireFixedFeedbackForm(r.data);
+  if (r.revision < 2 || !approved && (typeof detail.reason !== "string" || detail.reason.length > 2000)) reconcile();
+  if (approved && (!r.approval || !r.snapshot)) reconcile();
+  if (r.approval !== null) {
+    const approval = exact(r.approval, ["status", "revision", "actorId", "reason", "at"]);
+    id(approval.actorId);
+    if (approval.status !== "approved" || approval.revision !== r.revision || !validInstant(approval.at) ||
+        typeof approval.reason !== "string" || !approval.reason.trim() || approval.reason.length > 2000 ||
+        approved && (approval.actorId !== row.actor_id || approval.actorId === r.lastEditedBy)) reconcile();
+  }
+  if (r.snapshot !== null) {
+    const snapshot = exact(r.snapshot, ["id", "orgId", "moduleId", "data", "status", "ownerId", "revision", "createdAt", "updatedAt", "files"]);
+    id(snapshot.ownerId); revision(snapshot.revision);
+    if (snapshot.id !== r.id || snapshot.orgId !== org || snapshot.moduleId !== "forms" ||
+        snapshot.revision > r.revision || !Array.isArray(snapshot.files) || snapshot.files.length ||
+        !validInstant(snapshot.createdAt) || !validInstant(snapshot.updatedAt) ||
+        !getModule("forms").workflow.states.some(state => state.id === snapshot.status) ||
+        approved && (snapshot.revision !== r.revision || snapshot.status !== r.status || !same(snapshot.data, r.data))) reconcile();
+    requireFixedFeedbackForm(snapshot.data);
+    let checked;
+    try { checked = validateRecord("forms", snapshot.data, { orgId: org, recordId: r.id, status: snapshot.status, records }); }
+    catch { reconcile(); }
+    if (!same(checked, snapshot.data)) reconcile();
+  }
+  return true;
 }
 function preserveOrdinaryContactAudit(row, record, chosen) {
   if (!record || row.module_id !== "contacts" || !chosen.has(row.record_id)) return false;
@@ -443,6 +598,8 @@ async function readContext(c, input, inverse) {
     return [asset.id, session.id];
   }));
   const reservationSources = new Map(), reservationAudits = new Set();
+  const feedback = { publications: new Map(), entries: new Map(), formIds: new Set(), draftIds: new Set(), receipts: new Set() };
+  const feedbackDraftRecords = new Map();
   const chosen = new Set([leftId, rightId]), maps = { record: new Map(), participation: new Map(), intake: new Map(), group: new Map(), publication: new Map() };
   for (const x of chosen) maps.record.set(x, new Set([x]));
   const pair = new Map(), contacts = new Map(), rowStamps = new Map(), references = new Map(), pins = [], census = [], snapshots = [], recordModules = new Map(), preservedAudits = [], reportDependencies = [], currentRecords = [], contactReports = new Map(), recurrenceReports = new Map();
@@ -456,7 +613,10 @@ async function readContext(c, input, inverse) {
     need(references.size < CONTACT_CONTEXT_LIMITS.references, "contact_context_limit", 409); references.set(key, r);
   };
   for (const table of TABLES) {
-    const projection = projectFor(table), keyExpr = keyFor(table);
+    const feedbackIntake = table === "os_intake" && feedback.publications.size > 0;
+    if (feedbackIntake && !(await feedbackIntakeSchemaReady(c))) reconcile();
+    const projection = feedbackIntake ? projectFor(table) + " || " + FEEDBACK_INTAKE_METADATA : projectFor(table);
+    const keyExpr = keyFor(table);
     const a = rows(await c.query(`/*crm:count:${table}*/ SELECT count(*)::text AS n,COALESCE(sum(octet_length((${projection})::text)),0)::text AS bytes FROM ${table} t WHERE t.org_id=$1`, [org]));
     need(a.length === 1); const expected = count(prop(a[0], "n")), bytes = count(prop(a[0], "bytes"));
     totalRows += expected; totalBytes += bytes;
@@ -503,6 +663,9 @@ async function readContext(c, input, inverse) {
           need(Object.keys(row).length === CONTACT_CONTEXT_CATALOG.os_records.length && Object.keys(row).every(k => CONTACT_CONTEXT_CATALOG.os_records.includes(k)));
           id(row.id); revision(row.revision); need(typeof row.module_id === "string");
           recordModules.set(row.id, row.module_id);
+          if (row.module_id === "feedback") feedbackDraftRecords.set(row.id, {
+            id: row.id, moduleId: row.module_id, status: row.status, data: row.data, snapshot: row.snapshot,
+          });
           if (reservationSourceIds.has(row.id)) {
             need(!reservationSources.has(row.id));
             reservationSources.set(row.id, { moduleId: row.module_id, createdAtExact: entry.created_exact,
@@ -525,25 +688,36 @@ async function readContext(c, input, inverse) {
           }
         } else {
           const jobReferences = table === "os_jobs" ? reminderReferences(row, maps) : null;
+          let passiveFeedbackRow = false;
           if (table === "os_publications") {
-            need(maps.record.has(row.record_id));
-            if (row.target_id !== null) need(maps.record.has(row.target_id));
-            const linked = union(get(maps.record, row.record_id), get(maps.record, row.target_id)); addMap(maps.publication, row.id, linked);
+            if (row.kind === "feedback") {
+              admitFeedbackPublication(row, feedback, recordModules);
+              addMap(maps.publication, row.id, empty());
+              passiveFeedbackRow = true;
+            } else {
+              need(maps.record.has(row.record_id));
+              if (row.target_id !== null) need(maps.record.has(row.target_id));
+              addMap(maps.publication, row.id, union(get(maps.record, row.record_id), get(maps.record, row.target_id)));
+            }
           }
           if (table === "os_intake") {
             need(maps.publication.has(row.publication_id));
-            need(Array.isArray(row.converted_ids));
-            for (const raw of row.converted_ids) {
-              const x = exact(raw, ["id", "moduleId"]); id(x.id); need(["contacts", "events", "volunteers"].includes(x.moduleId));
-              // Missing historical converted rows cannot silently establish no
-              // linkage. Current or trash rows must retain the declared module.
-              need(recordModules.get(x.id) === x.moduleId);
+            const publication = feedback.publications.get(row.publication_id);
+            if (publication) {
+              admitFeedbackIntake(row, publication, feedback, recordModules, feedbackDraftRecords);
+              addMap(maps.intake, row.id, empty());
+              passiveFeedbackRow = true;
+            } else {
+              need(Array.isArray(row.converted_ids));
+              for (const raw of row.converted_ids) {
+                const x = exact(raw, ["id", "moduleId"]); id(x.id); need(["contacts", "events", "volunteers"].includes(x.moduleId));
+                // Legacy current and trash links must retain the declared module.
+                need(recordModules.get(x.id) === x.moduleId);
+              }
+              // The complete tenant graph includes erased and closed intake.
+              const linked = union(get(maps.publication, row.publication_id), ...row.converted_ids.map(x => get(maps.record, x.id)));
+              addMap(maps.intake, row.id, linked);
             }
-            // Every tenant intake and publication is read regardless of status
-            // or erasure. An own link requires both parents; no staff link-row
-            // visibility or equality of the two independent FKs is invented.
-            const linked = union(get(maps.publication, row.publication_id), ...row.converted_ids.map(x => get(maps.record, x.id)));
-            addMap(maps.intake, row.id, linked);
           }
           if (table === "os_participations") {
             const linked = union(chosen.has(row.contact_id) ? new Set([row.contact_id]) : empty(), get(maps.record, row.booking_record_id), get(maps.intake, row.intake_id));
@@ -553,7 +727,8 @@ async function readContext(c, input, inverse) {
             need(Array.isArray(row.roster_ids)); const linked = union(...row.roster_ids.map(x => get(maps.participation, x)), get(maps.intake, row.coordinator_intake_id), scan(row.history, maps, chosen, budget)); addMap(maps.group, row.id, linked);
           }
           const passiveAudit = table === "os_events" && (passiveContactAudit(row, contactReports) ||
-            passiveRecurrenceAudit(row, recurrenceReports) || passiveReservationAudit(row, reservations, reservationAudits));
+            passiveRecurrenceAudit(row, recurrenceReports) || passiveReservationAudit(row, reservations, reservationAudits) ||
+            passiveFeedbackIntakeAudit(row, feedback) || passiveFeedbackFormAudit(row, feedback, recordModules, org, currentRecords));
           const auditRecord = table === "os_events" ? ordinaryRecordAudit(row, org, currentRecords) : null;
           if (auditRecord) budget.literalModuleData.set(auditRecord.data, auditRecord.moduleId);
           const preserved = table === "os_events" && preserveOrdinaryContactAudit(row, auditRecord, chosen);
@@ -568,7 +743,7 @@ async function readContext(c, input, inverse) {
           if (preserved) preservedAudits.push([entry.row_key, pin, row.record_id]);
           // FIELD's validated mapping/created pins are Programs/Outcomes only.
           // Known CRM previews and linked audit metadata are passive bookkeeping.
-          const affected = preserved || passiveAudit || table === "os_previews" || table === "os_learning_history" || ["field", "grant-history", "learning-history"].includes(reportClass?.kind) ? empty()
+          const affected = preserved || passiveAudit || passiveFeedbackRow || table === "os_previews" || table === "os_learning_history" || ["field", "grant-history", "learning-history"].includes(reportClass?.kind) ? empty()
             : reportClass?.kind === "contact" ? contactReportReferences(reportClass.payload, chosen) : reportClass?.kind === "recurrence" ? recurrenceReportReferences(reportClass.payload, maps, recordModules, org) : jobReferences ?? scan(row, maps, chosen, budget);
           if (table === "os_events" && !preserved && affected.size && ["record.created", "record.updated", "record.deleted", "record.restored"].includes(row.action) && row.module_id === "contacts") reconcile();
           if (table === "os_publications") for (const x of get(maps.publication, row.id)) affected.add(x);
@@ -589,6 +764,9 @@ async function readContext(c, input, inverse) {
       for (const s of snapshots) for (const contactId of scan(s.value, maps, chosen, budget)) pushRef({ family: "immutable-history", id: H("snapshot-id", s.id), moduleId: null, field: null, contactId, revision: s.revision, sha256: s.pin, deleted: s.deleted });
     }
   }
+  for (const [intakeId, entry] of feedback.entries)
+    if (entry.local && entry.draftId && !feedback.receipts.has(intakeId)) reconcile();
+  const feedbackMethodPin = feedback.publications.size ? H("feedback-context-method", "feedback-typed-links-v1") : null;
   const knownHistoryMethodPin = finalizeKnownHistory(known, org, recordModules, maps, chosen, pushRef, reportDependencies);
   need(pair.size === 2);
   const orderedPair = [pair.get(leftId), pair.get(rightId)], organizations = [];
@@ -615,5 +793,6 @@ async function readContext(c, input, inverse) {
   const context = inverse ? { inverseContext: { pair: orderedPair, organizations, references: [...references.values()] } } : { plannerContext };
   return learningOwned({ ...context, authority, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)], sourceOwnership, coverage, reportDependencies,
     contextSha256: H("context", { org, authority, pins, census, rowStamps: [rowStamps.get(leftId), rowStamps.get(rightId)],
-      ...(knownHistoryMethodPin === null ? {} : { knownHistoryMethodPin }), ...(resourceInventoryPin === null ? {} : { resourceInventoryPin }) }) }, { bytes: 131072 });
+      ...(knownHistoryMethodPin === null ? {} : { knownHistoryMethodPin }), ...(resourceInventoryPin === null ? {} : { resourceInventoryPin }),
+      ...(feedbackMethodPin === null ? {} : { feedbackMethodPin }) }) }, { bytes: 131072 });
 }
