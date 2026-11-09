@@ -1,8 +1,9 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Crumbs from '../../../components/Crumbs.astro';
+import FundraisingResults from '../../../components/FundraisingResults.astro';
 import ReviewNote from '../../../components/ReviewNote.astro';
-import { fundraisingMethods, fundraisingSources } from '../../../data/fundraising.mjs';
+import { fundraisingMethods, fundraisingResults, fundraisingSources } from '../../../data/fundraising.mjs';
 import type { FundraisingMethod } from '../../../data/fundraising.mjs';
 import { url } from '../../../lib/site';
 
@@ -11,6 +12,7 @@ export function getStaticPaths() {
 }
 interface Props { method: FundraisingMethod }
 const { method } = Astro.props;
+const results = fundraisingResults.filter((result) => result.methodId === method.id);
 const sources = method.sourceIds.map((id) => {
   const source = fundraisingSources.find((item) => item.id === id);
   if (!source) throw new Error(`Unknown fundraising source: ${id}`);
@@ -47,6 +49,7 @@ const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
         <li><a href="#experiment">A bounded experiment</a></li>
         <li><a href="#followup">Follow through</a></li>
         <li><a href="#pitfalls">Watch for</a></li>
+        {results.length > 0 && <li><a href="#results">Results from practice</a></li>}
         <li><a href="#sources">Sources and limits</a></li>
         <li><a href="#workspace">Keep a working record</a></li>
       </ol>
@@ -90,6 +93,7 @@ const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
         <h2 id="pitfalls-title">Watch for</h2>
         <ul>{method.pitfalls.map((item) => <li>{item}</li>)}</ul>
       </section>
+      {results.length > 0 && <FundraisingResults results={results} />}
       <section id="sources" aria-labelledby="sources-title">
         <div class="prose"><h2 id="sources-title">Sources and their limits</h2><p>These are starting points for your own review. Benchmarks describe particular cohorts; practice guidance and provider experiments answer different questions. No named-charity rating or universal return forecast is supplied.</p></div>
         <div class="method-sources">{sources.map((source) => <article class="source-capsule">

@@ -39,12 +39,31 @@ const sections = all(page, n => attr(n, "id") === "education-plan-funding");
 assert.equal(sections.length, 1);
 const section = sections[0], names = json("/api/v1/index.json").endpoints.map(e => e.name);
 
+check("The published plan's rounded need and target have their own labels and source", () => {
+  const contexts = all(section, n => n.tagName === "section" && attr(n, "aria-labelledby") === "education-plan-context-title");
+  assert.equal(contexts.length, 1);
+  const context = contexts[0];
+  const headings = all(context, n => n.tagName === "h3" && attr(n, "id") === "education-plan-context-title");
+  assert.deepEqual(headings.map(text), ["Estimated need and planned reach"]);
+  assert.deepEqual(all(context, n => n.tagName === "dt").map(text), [
+    "Estimated to need education assistance", "Targeted for education assistance",
+  ]);
+  assert.deepEqual(all(context, n => n.tagName === "dd").map(text), [
+    "About 8 million people", "About 1.4 million people",
+  ]);
+  const links = all(context, n => n.tagName === "a");
+  assert.deepEqual(links.map(text), ["Education section of the published humanitarian plan (PDF, printed page 37)"]);
+  assert.equal(attr(links[0], "href"), "https://digitallibrary.un.org/nanna/record/4042660/files/AFG_HNRP_2024_V10.pdf?registerDownload=1&version=1&withMetadata=0&withWatermark=0#page=19");
+  assert.match(text(context), /The number who received support is a separate measure/);
+  assert.equal(all(context, n => n.tagName === "script").length, 0);
+});
+
 check("Only an actual selected capture exposes the current API and values", () => {
   assert.equal(names.filter(n => n === "humanitarian-plan-cluster").length, Number(current !== null));
   assert.equal(existsSync(file("/api/v1/humanitarian-plan-cluster.json")), current !== null);
   if (!current) {
     assert.match(text(section), /No captured Education plan-cluster value is selected/);
-    assert.equal(all(section, n => n.tagName === "dd").length, 0);
+    assert.equal(all(section, n => attr(n, "class") === "plan-amounts").length, 0);
     return;
   }
   const api = json("/api/v1/humanitarian-plan-cluster.json");
@@ -79,6 +98,7 @@ if (current) {
       current.derived.status === "comparable" ? current.derived.displayPercent + "%" : "Unknown",
     ]);
     const content = text(section);
+    if (current.derived.status === "comparable") assert.match(content, /This percentage compares two dollar amounts/);
     for (const literal of [current.source.retrievedAt, current.capturedAt, current.source.rawSha256, current.row.locator.rawSha256, current.code.commit, current.edition.hash]) assert.ok(content.includes(literal));
     assert.match(content, /draft cause mapping/); assert.match(content, /no funding-by-depth estimate/);
     assert.match(content, /checksum validation alone does not prove an external retrieval or its clock/);
@@ -114,12 +134,19 @@ if (current) {
   });
 }
 
-check("Atlas and local census point to the qualified reference without assigning global depth", () => {
+check("The Education Atlas and Census cards link to the case, and the local depth census stays separate", () => {
   const atlas = parse(bytes("/record/cause-atlas/").toString("utf8"));
+  const causeCensus = parse(bytes("/programs/cause-census/").toString("utf8"));
   const target = base + "/record/gap-map/#education-plan-funding";
-  assert.ok(all(atlas, n => n.tagName === "a" && attr(n, "href") === target).length > 0);
+  const linksToCase = node => all(node, n => n.tagName === "a" && attr(n, "href") === target);
+  for (const document of [atlas, causeCensus]) {
+    const education = all(document, n => n.tagName === "article" && attr(n, "data-cause") === "education");
+    assert.equal(education.length, 1);
+    assert.equal(linksToCase(document).length, 1);
+    assert.equal(linksToCase(education[0]).length, 1);
+  }
   const census = all(page, n => attr(n, "id") === "depth-census"); assert.equal(census.length, 1);
-  assert.ok(all(census[0], n => n.tagName === "a" && attr(n, "href") === target).length > 0);
+  assert.equal(linksToCase(census[0]).length, 1);
   assert.match(text(census[0]), /supplies no depth allocation or global total/);
 });
 console.log(`Education plan cluster: ${groups} actual built-output groups passed (no network, native Save or source-truth certification).`);

@@ -25,5 +25,26 @@ export interface FundraisingMethod {
   sourceIds: readonly string[];
   osModules: readonly string[];
 }
+export interface FundraisingResult {
+  review: 'draft';
+  id: string;
+  methodId: string;
+  title: string;
+  design: string;
+  context: string;
+  comparison: string;
+  window: string;
+  measurement: {
+    caption: string;
+    columns: readonly [string, string, ...string[]];
+    rows: readonly (readonly [string, string, ...string[]])[];
+  };
+  finding: string;
+  costs: string;
+  limits: string;
+  sources: readonly { label: string; url: string }[];
+}
+export const fundraisingLearningFormUrl: string;
 export const fundraisingSources: readonly FundraisingSource[];
 export const fundraisingMethods: readonly FundraisingMethod[];
+export const fundraisingResults: readonly FundraisingResult[];

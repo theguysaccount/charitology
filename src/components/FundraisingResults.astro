@@ -1,0 +1,79 @@
+---
+import { fundraisingLearningFormUrl, fundraisingMethods } from '../data/fundraising.mjs';
+import type { FundraisingResult } from '../data/fundraising.mjs';
+import { url } from '../lib/site';
+
+interface Props {
+  results: readonly FundraisingResult[];
+  showMethodLinks?: boolean;
+}
+const { results, showMethodLinks = false } = Astro.props;
+---
+<section class:list={['fundraising-results', { 'section-tight': showMethodLinks }]} id="results" aria-labelledby="results-title">
+  <p class="eyebrow">Fundraising evidence</p>
+  <h2 id="results-title">Results from practice</h2>
+  <p class="intro">See who was included, what changed and when the team measured it. Each result describes one setting.</p>
+  <div class="results-list">
+    {results.map((result) => {
+      const method = fundraisingMethods.find((item) => item.id === result.methodId);
+      return <article class="result-card" id={`result-${result.id}`} aria-labelledby={`result-${result.id}-title`}>
+        <p class="result-labels"><span class="badge">Editorial {result.review}</span> <span>{result.design}</span></p>
+        <h3 id={`result-${result.id}-title`}>{result.title}</h3>
+        <p>{result.context}</p>
+        <p><strong>Comparison.</strong> {result.comparison}</p>
+        <p><strong>Observation window.</strong> {result.window}</p>
+        <table class="data">
+          <caption>{result.measurement.caption}</caption>
+          <thead><tr>
+            <th scope="col">{result.measurement.columns[0]}</th>
+            {result.measurement.columns.slice(1).map((label) => <th scope="col" class="num">{label}</th>)}
+          </tr></thead>
+          <tbody>{result.measurement.rows.map(([label, ...values]) => <tr>
+            <th scope="row">{label}</th>
+            {values.map((value) => <td class="num">{value}</td>)}
+          </tr>)}</tbody>
+        </table>
+        <p>{result.finding}</p>
+        <p><strong>Costs.</strong> {result.costs}</p>
+        <p><strong>Limit.</strong> {result.limits}</p>
+        <ul class="result-sources" aria-label="Study sources">
+          {result.sources.map((source) => <li><a href={source.url} rel="noopener">{source.label}</a></li>)}
+        </ul>
+        {showMethodLinks && method && <p><a href={url(`/for-charities/fundraising/${method.id}/#results`)}>Read the {method.title.toLowerCase()} playbook</a></p>}
+      </article>;
+    })}
+  </div>
+  <p class="contribute"><a href={fundraisingLearningFormUrl}>Share a de-identified result</a>. The form opens a public GitHub issue. Include only aggregate results you have permission to publish, with the comparison and limits. Disappointing and inconclusive results are welcome.</p>
+</section>
+
+<style>
+  .fundraising-results { scroll-margin-top: calc(var(--header-h) + 1rem); }
+  .fundraising-results:not(.section-tight) { margin-top: 2.5rem; }
+  .intro, .contribute { max-width: 65ch; }
+  .results-list { display: grid; gap: 1rem; }
+  .result-card {
+    min-width: 0;
+    max-width: 75ch;
+    padding: 1.25rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    overflow-wrap: anywhere;
+  }
+  .result-card h3 { margin: .45rem 0 .75rem; }
+  .result-card p { margin: .7rem 0; }
+  .result-card > :first-child { margin-top: 0; }
+  .result-card > :last-child { margin-bottom: 0; }
+  .result-labels { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; font: .85rem var(--font-sans); color: var(--ink-2); }
+  .result-card table { margin: .85rem 0; }
+  .result-card caption { padding-bottom: .35rem; text-align: left; }
+  .result-card td.num { white-space: nowrap; }
+  .result-sources { padding-left: 1.25rem; margin: .75rem 0; font-size: .95rem; }
+  .result-sources li + li { margin-top: .3rem; }
+  .contribute { margin-top: 1rem; }
+  @media (max-width: 380px) {
+    .result-card { padding: .85rem; }
+    .result-card :is(th, td) { padding-inline: .35rem; }
+  }
+  @media print { .result-card { break-inside: avoid; } }
+</style>
