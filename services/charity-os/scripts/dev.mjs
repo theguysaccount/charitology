@@ -7,6 +7,7 @@ import { authentication } from "../lib/auth.mjs";
 import { mailer } from "../lib/mail.mjs";
 import { createHandler } from "../lib/handler.mjs";
 import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
+import { volunteerProfileConfiguration } from "../lib/volunteer-profile-routes.mjs";
 const settings = readSettings(),
   db = database(settings.databaseUrl),
   send = mailer(settings),
@@ -14,7 +15,8 @@ const settings = readSettings(),
   handle = createHandler({ settings, db, send, auth,
     volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({
       db,enabled:process.env.OS_VOLUNTEER_SUBSTITUTIONS_ENABLED==="1",
-    }) });
+    }),
+    volunteerProfileConfig:volunteerProfileConfiguration() });
 const root = resolve(new URL("../public", import.meta.url).pathname);
 const types = {
   ".html": "text/html; charset=utf-8",

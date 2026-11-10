@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { test } from "node:test";
-import { database } from "../lib/database.mjs";
+import { database, logicalBackupBytes } from "../lib/database.mjs";
 import { createHandler } from "../lib/handler.mjs";
 import { intakeSchema } from "../lib/intake.mjs";
 import { applicationGrantsSql } from "../lib/migration-grants.mjs";
@@ -9,6 +9,8 @@ import { participationTerms } from "../lib/participation.mjs";
 import { csrf, hash } from "../lib/security.mjs";
 import { volunteerSubstitutionVerifierSql } from "../lib/volunteer-substitution-authority.mjs";
 import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
+import { volunteerProfileInstallationSql } from "../lib/volunteer-profile-storage.mjs";
+import { assembleWorkspaceBackup } from "../lib/workspace-backup.mjs";
 
 function local(value) {
   if (!value) return null;
@@ -72,12 +74,13 @@ async function seed(c) {
   }
 }
 
-test("restricted PostgreSQL: verified staff selects the saved waitlist, two own choices settle once and protect history",{
+test("restricted PostgreSQL: an exact volunteer handoff and private preferences have independent authority and retention",{
   skip:enabled?false:"Requires isolated test PostgreSQL URLs on loopback",timeout:60000,
 },async()=>{
   const suffix=randomBytes(7).toString("hex"), schema="os_handoff_"+suffix, verifierRole="handoff_verify_"+suffix;
+  const profileSchema="os_profile_"+suffix, purgeRole="profile_purge_"+suffix;
   const owner=database(ownerUrl.href);
-  let migration,db,schemaCreated=false,installed=false,providerAttempts=0;
+  let migration,db,schemaCreated=false,installed=false,purgeCreated=false,profileInstalled=false,providerAttempts=0;
   try {
     assert.equal((await owner.pool.query(`SELECT rolsuper AS allowed FROM pg_roles WHERE rolname=current_user`)).rows[0].allowed,true);
     await owner.pool.query(`CREATE SCHEMA "${schema}"`); schemaCreated=true;
@@ -90,26 +93,91 @@ test("restricted PostgreSQL: verified staff selects the saved waitlist, two own 
     await migration.pool.query(applicationGrantsSql(role,schema));
     await seed(migration.pool);
     db=database(runtimeUrl.href,{schema});
-    const handle=createHandler({db,settings,
-      auth:{api:{getSession:async({headers})=>[staff,scoped,leaving,joining].find(a=>a.user.id===headers.get("x-fixture-actor"))??null}},
-      send:async()=>{providerAttempts++;throw Error("No mail during handoff tests");},
-      participationTransport:async()=>{providerAttempts++;throw Error("No mail during handoff tests");},
+    assert.deepEqual((await db.pool.query(`SELECT current_schema() AS schema,current_user AS role,rolsuper,rolbypassrls
+      FROM pg_roles WHERE rolname=current_user`)).rows[0],{schema,role,rolsuper:false,rolbypassrls:false});
+    const rejectProvider=async()=>{providerAttempts++;throw Error("No provider during the volunteer fixture");};
+    const handlerOptions={db,settings,
+      auth:{api:{getSession:async({headers})=>[staff,scoped,leaving,joining].find(a=>a.user.id===headers.get("x-fixture-actor"))??null},
+        handler:rejectProvider},
+      send:rejectProvider,participationTransport:{send:rejectProvider,status:rejectProvider},
       volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({db,enabled:true,authorityOptions}),
-    });
-    const call=async(a,path,{body,method=body===undefined?"GET":"POST",status=200}={})=>{
-      const response=await handle(new Request(settings.origin+path,{method,
+    };
+    const off=createHandler(handlerOptions);
+    const handle=createHandler({...handlerOptions,volunteerProfileConfig:{applicationSchema:schema,storageSchema:profileSchema}});
+    const request=(a,path,method,body)=>new Request(settings.origin+path,{method,
         headers:{"x-fixture-actor":a.user.id,origin:settings.origin,"content-type":"application/json",
-          "x-csrf-token":csrf(a.session.id,settings.secret)},...(body===undefined?{}:{body:JSON.stringify(body)})}));
+          "x-csrf-token":csrf(a.session.id,settings.secret)},...(body===undefined?{}:{body:JSON.stringify(body)})});
+    const call=async(a,path,{body,method=body===undefined?"GET":"POST",status=200}={})=>{
+      const response=await handle(request(a,path,method,body));
       const value=await response.json();
       assert.equal(response.status,status,`${method} ${path}: ${value.code??""}`);
       return value;
     };
+    const ownRequest=a=>`/api/participant/orgs/${org}/requests/${entry(a).intake}`;
+    const profile=a=>ownRequest(a)+"/volunteer-profile";
+    const detailRequest=()=>request(leaving,ownRequest(leaving),"GET");
+    const originalDetail=await (await off(detailRequest())).text();
+    assert.equal(await (await handle(detailRequest())).text(),originalDetail);
+    assert.equal((await call(leaving,profile(leaving),{status:503})).code,"volunteer_profile_storage");
     assert.equal((await call(staff,"/api/session")).volunteerSubstitutions,undefined);
     await migration.pool.query(volunteerSubstitutionVerifierSql(role,authorityOptions)); installed=true;
+    await owner.pool.query(`CREATE ROLE "${purgeRole}" NOLOGIN NOSUPERUSER NOBYPASSRLS NOCREATEROLE NOCREATEDB NOREPLICATION NOINHERIT`);
+    purgeCreated=true;
+    // The DDL is submitted together as one implicit transaction on the disposable schema.
+    await migration.pool.query(volunteerProfileInstallationSql({
+      applicationSchema:schema,storageSchema:profileSchema,runtimeRole:role,purgeRole,
+    }));
+    profileInstalled=true;
+    assert.equal(await (await off(detailRequest())).text(),originalDetail);
+    assert.equal(await (await handle(detailRequest())).text(),originalDetail.slice(0,-1)+',"volunteerProfile":true}');
     assert.equal((await call(staff,"/api/session")).volunteerSubstitutions,true);
     assert.equal((await call(scoped,"/api/session")).volunteerSubstitutions,undefined);
     assert.equal((await call(leaving,"/api/session")).volunteerSubstitutions,undefined);
     assert.equal((await call(joining,"/api/participant/session")).volunteerSubstitutions,true);
+    assert.equal((await call(joining,"/api/participant/session")).volunteerProfile,undefined);
+    assert.equal((await call(joining,"/api/participant/requests")).volunteerProfile,undefined);
+
+    const profileTable=`"${profileSchema}".preferences`;
+    const stored=async a=>(await migration.pool.query(`SELECT revision,skills_bits,availability_bits,time_zone
+      FROM ${profileTable} WHERE org_id=$1 AND intake_id=$2`,[org,entry(a).intake])).rows;
+    const visible=async a=>db.tx(a.user.id,org,c=>c.query(`SELECT intake_id FROM ${profileTable}`)
+      .then(result=>result.rows),{readOnly:true});
+    const workspace=()=>db.tx(staff.user.id,org,async c=>{
+      const {createdAt,checksum,...backup}=await assembleWorkspaceBackup(c,org);
+      return {backup,bytes:await logicalBackupBytes(c,org)};
+    },{readOnly:true,lock:true});
+    const staffIntake=a=>`/api/orgs/${org}/intake/submissions/${entry(a).intake}`;
+    const originalWorkspace=await workspace(), originalIntake=await call(staff,staffIntake(leaving));
+    assert.equal((await call(staff,profile(leaving),{status:404})).code,"volunteer_profile");
+    assert.equal((await call(joining,profile(leaving),{status:404})).code,"volunteer_profile");
+    const command=({revision,scopeSha256},operation)=>({version:1,operation,scopeSha256,expectedRevision:revision,
+      acknowledge:true,...(operation==="save"?{skills:["operations"],availability:["mon-evening"]}:{})});
+    const empty=await call(leaving,profile(leaving));
+    assert.deepEqual(Object.keys(empty).sort(),["ok","profile","replayed","revision","scopeSha256","version","workspaceTimeZone"]);
+    assert.deepEqual([empty.revision,empty.workspaceTimeZone,empty.profile],[0,"UTC",null]);
+    const first=command(empty,"save");
+    const retries=await Promise.all([call(leaving,profile(leaving),{body:first}),call(leaving,profile(leaving),{body:first})]);
+    assert.deepEqual(retries.map(r=>r.replayed).sort(),[false,true]);
+    const saved=retries.find(r=>!r.replayed);
+    assert.deepEqual(retries.find(r=>r.replayed),{...saved,replayed:true});
+    assert.deepEqual(Object.keys(saved.profile).sort(),["availability","skills","timeZone","updatedAtExact"]);
+    assert.deepEqual([saved.revision,saved.profile.skills,saved.profile.availability],[1,["operations"],["mon-evening"]]);
+    const clearing=command(saved,"clear"), cleared=await call(leaving,profile(leaving),{body:clearing});
+    assert.deepEqual([cleared.revision,cleared.profile],[2,null]);
+    assert.deepEqual(await stored(leaving),[{revision:2,skills_bits:0,availability_bits:0,time_zone:null}]);
+    assert.deepEqual(await call(leaving,profile(leaving),{body:clearing}),{...cleared,replayed:true});
+    assert.equal((await call(leaving,profile(leaving),{body:first,status:409})).code,"volunteer_profile_changed");
+    const leavingProfile=await call(leaving,profile(leaving),{body:command(cleared,"save")});
+    const joiningEmpty=await call(joining,profile(joining));
+    const joiningProfile=await call(joining,profile(joining),{body:command(joiningEmpty,"save")});
+    assert.equal(leavingProfile.revision,3);
+    assert.equal(joiningProfile.revision,1);
+    assert.deepEqual(await visible(staff),[]);
+    assert.deepEqual(await visible(leaving),[{intake_id:entry(leaving).intake}]);
+    assert.deepEqual(await visible(joining),[{intake_id:entry(joining).intake}]);
+    assert.deepEqual(await call(staff,staffIntake(leaving)),originalIntake);
+    assert.deepEqual(await workspace(),originalWorkspace);
+
     const base=`/api/orgs/${org}/volunteer-substitutions`, optionsPath=`${base}/shifts/${shiftId}/${entry(leaving).participation}`;
     await call(leaving,optionsPath,{status:403});
     const opts=(await call(staff,optionsPath)).options;
@@ -146,12 +214,25 @@ test("restricted PostgreSQL: verified staff selects the saved waitlist, two own 
     const refused=await call(staff,`/api/orgs/${org}/modules/contacts/records/${entry(leaving).contact}`,
       {method:"DELETE",body:{revision:1},status:409});
     assert.equal(refused.code,"substitution_source_retained");
+    assert.deepEqual(await call(leaving,profile(leaving)),leavingProfile);
+    assert.deepEqual(await call(joining,profile(joining)),joiningProfile);
+    await call(staff,staffIntake(leaving)+"/review",{body:{revision:1,action:"erase"}});
+    assert.deepEqual(await stored(leaving),[]);
+    assert.equal((await call(leaving,ownRequest(leaving))).volunteerProfile,undefined);
+    assert.equal((await call(leaving,profile(leaving),{body:command(leavingProfile,"save"),status:404})).code,"volunteer_profile");
+    assert.deepEqual(await call(joining,profile(joining)),joiningProfile);
+    await call(joining,ownRequest(joining)+"/unlink",{body:{revision:1}});
+    assert.deepEqual(await stored(joining),[]);
+    assert.equal((await call(joining,profile(joining),{status:404})).code,"volunteer_profile");
+    assert.deepEqual(await call(staff,confirmPath,{body}),{...accepted,replayed:true});
     assert.equal(providerAttempts,0);
   } finally {
     if(db) await db.close();
     if(migration) await migration.close();
     try {
+      if(profileInstalled) await owner.pool.query(`DROP SCHEMA "${profileSchema}" CASCADE`);
       if(schemaCreated) await owner.pool.query(`DROP SCHEMA "${schema}" CASCADE`);
+      if(purgeCreated) await owner.pool.query(`DROP ROLE "${purgeRole}"`);
       if(installed) await owner.pool.query(`DROP ROLE "${verifierRole}"`);
     } finally { await owner.close(); }
   }

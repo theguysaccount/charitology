@@ -2,6 +2,7 @@ import { createOwnCheckInPane } from "./participant-check-in.js";
 import { createOwnReminderPane } from "./participant-reminders.js";
 import { participationRemindersEnabled as participantRemindersEnabled } from "./participation-reminder-feature.js";
 import { createOwnSubstitutionPane } from "./participant-substitution.js";
+import { createOwnVolunteerProfilePane } from "./volunteer-profile.js";
 const $ = (selector) => document.querySelector(selector);
 const receiptPattern =
   /^([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{43})$/;
@@ -86,6 +87,8 @@ const state = {
   reminderPanes: new Map(),
   substitutionEnabled: false,
   substitutionPanes: new Map(),
+  volunteerProfileAccess: null,
+  volunteerProfile: null,
 };
 
 export function parseReceipt(value, origin) {
@@ -253,7 +256,7 @@ async function request(path, { method = "GET", body, signal } = {}) {
   return result;
 }
 function checkInDirty() {
-  state.dirty = state.requestDirty || state.participationDirty ||
+  state.dirty = state.requestDirty || state.participationDirty || !!state.volunteerProfile?.pane.hasUnsavedChanges() ||
     [...state.checkInPanes.values(), ...state.reminderPanes.values(), ...state.substitutionPanes.values()]
       .some(entry => entry.pane.hasUnsavedChanges());
 }
@@ -263,10 +266,69 @@ function clearSubstitutionPanes() {
   for (const { pane } of panes) pane.dispose();
   checkInDirty();
 }
+function clearVolunteerProfile() {
+  const previous = state.volunteerProfile;
+  state.volunteerProfileAccess = state.volunteerProfile = null;
+  previous?.pane.dispose();
+  const host = $("#participant-volunteer-profile");
+  if (host) { host.hidden = true; host.replaceChildren(); }
+  checkInDirty();
+}
+function volunteerProfileKey(item) {
+  if (state.user?.emailVerified !== true || !state.csrf || item?.publication?.kind !== "volunteer-interest" ||
+      !["pending", "reviewed", "converted"].includes(item.status) || item.erasedAt !== null ||
+      !Number.isSafeInteger(item.revision) || item.revision < 1 || typeof item.linkedAt !== "string" ||
+      !item.linkedAt || item.linkedAt.length > 80 || ![state.user.id, item.orgId, item.id, item.publicationId].every(
+        value => typeof value === "string" && /^[A-Za-z0-9_-]{1,100}$/.test(value))) return null;
+  return JSON.stringify([state.user.id, state.accessVersion, state.csrf, item.orgId, item.id, item.publicationId, item.linkedAt]);
+}
+function admitVolunteerProfile(item, flag) {
+  const key = flag === true ? volunteerProfileKey(item) : null;
+  if (!key || state.volunteerProfileAccess !== key) clearVolunteerProfile();
+  else state.volunteerProfile?.pane.pause();
+  state.volunteerProfileAccess = key;
+}
+const volunteerProfilePending = () => state.volunteerProfile?.pane.hasPendingCommand() === true;
+function syncVolunteerProfile() {
+  const host = $("#participant-volunteer-profile"), item = state.current, access = state.volunteerProfileAccess;
+  if (!host) return;
+  const allowed = () => !!access && state.volunteerProfileAccess === access &&
+    volunteerProfileKey(state.current) === access && !state.privateSuspended;
+  host.hidden = !allowed();
+  if (!allowed()) return;
+  const entry = state.volunteerProfile;
+  if (entry) {
+    if (entry.pane.element.parentElement !== host) host.replaceChildren(entry.pane.element);
+    entry.pane.resume();
+    return;
+  }
+  host.replaceChildren(node("button", { type: "button", class: "button subtle", onclick: async () => {
+    if (!allowed() || !host.isConnected || state.volunteerProfile || state.mutationBusy || state.sessionBusy) return;
+    const opening = { pane: null };
+    const pane = createOwnVolunteerProfilePane({ enabled: true, orgId: item.orgId, intakeId: item.id, request,
+      isCurrent: () => allowed() && state.volunteerProfile === opening, onDirty: checkInDirty,
+      runMutation: (fn, output) => mutateOwnVolunteerPanel(opening.pane, fn, output),
+      onAccessLost: error => {
+        if (state.volunteerProfile !== opening) return;
+        if ([401, 403].includes(error.status)) denyIfAccessLost(error);
+        else {
+          clearVolunteerProfile();
+          message($("#participant-status"), "Volunteer preferences are unavailable. Reload your linked request to check them.", true);
+        }
+      },
+    });
+    opening.pane = pane;
+    state.volunteerProfile = opening;
+    host.replaceChildren(pane.element);
+    pane.resume();
+    await pane.load();
+  } }, "Your volunteer preferences"));
+}
 function clearCheckInPanes() {
   const panes = [...state.checkInPanes.values(), ...state.reminderPanes.values()];state.checkInPanes.clear();state.reminderPanes.clear();
   for (const v of panes) v.pane.dispose();
   clearSubstitutionPanes();
+  clearVolunteerProfile();
 }
 function ownCheckInPane(item, row) {
   const user = state.user?.id, access = state.accessVersion, key = JSON.stringify([user,item.orgId,item.id,row.id]);
@@ -294,6 +356,15 @@ function ownReminderPane(item, row) {
   return entry.pane;
 }
 const substitutionPending = () => [...state.substitutionPanes.values()].some(entry => entry.pane.hasPendingCommand());
+function mutateOwnVolunteerPanel(pane, fn, output) {
+  const profile = state.volunteerProfile?.pane;
+  if (profile !== pane && profile?.hasPendingCommand() ||
+      [...state.substitutionPanes.values()].some(entry => entry.pane !== pane && entry.pane.hasPendingCommand())) {
+    message(output, "Check or stop retrying the earlier volunteer change before saving another.", true);
+    return false;
+  }
+  return mutation(fn, output);
+}
 const substitutionKey = (item, row) => JSON.stringify([item.orgId, item.id, row.id]);
 function eligibleOwnSubstitution(item, row) {
   return state.substitutionEnabled === true && state.user?.emailVerified === true &&
@@ -330,13 +401,8 @@ function ownSubstitutionControl(item, row) {
     }
     const pane = createOwnSubstitutionPane({ enabled: true, orgId: item.orgId, intakeId: item.id,
       participationId: row.id, request, isCurrent: current, onDirty: checkInDirty,
-      runMutation: (fn, output) => {
-        if ([...state.substitutionPanes].some(([other, entry]) => other !== key && entry.pane.hasPendingCommand())) {
-          message(output, "Check the earlier shift choice or stop retrying it before saving another choice.", true);
-          return false;
-        }
-        return mutation(fn, output);
-      }, onAccessLost: denyIfAccessLost, disposeOnPageHide: false });
+      runMutation: (fn, output) => mutateOwnVolunteerPanel(pane, fn, output),
+      onAccessLost: denyIfAccessLost, disposeOnPageHide: false });
     state.substitutionPanes.set(key, { pane, revision: row.revision, intakeRevision: item.revision });
     host.replaceChildren(pane.element);
     await pane.load();
@@ -553,8 +619,12 @@ async function openRequest(item, { preserveDraft = false, focus = true } = {}) {
     state.current.revision === result.request.revision &&
     (!state.requestDirty || result.request.editable);
   const discardedDraft = preserveDraft && state.dirty && !keepDraft;
-  if (!keepDraft) renderDetail(result.request);
-  else state.current = result.request;
+  if (!keepDraft) renderDetail(result.request, { volunteerProfile: result.volunteerProfile });
+  else {
+    state.current = result.request;
+    admitVolunteerProfile(result.request, result.volunteerProfile);
+    syncVolunteerProfile();
+  }
   if (keepDraft)
     await loadOwnParticipations(result.request, { preserveDraft: true });
   if (discardedDraft)
@@ -576,12 +646,18 @@ function chooseRequest(item) {
       message($("#participant-status"), "The earlier shift choice may already be saved. Check it or stop retrying before opening another request.", true);
       return;
     }
+    if (volunteerProfilePending() && !sameRequest(item, state.current)) {
+      message($("#participant-status"), "The earlier preference change may already be saved. Check it or stop retrying before opening another request.", true);
+      return;
+    }
     if(reminderPending() && !sameRequest(item,state.current)) {
       message($("#participant-status"),"A reminder save may already be recorded. Reconcile it or explicitly stop retrying that save before opening another request.",true);return;
     }
-    return openRequest(item,{preserveDraft:reminderPending() || substitutionPending()}).catch((error) => {
+    return openRequest(item, { preserveDraft: reminderPending() || substitutionPending() ||
+      sameRequest(item, state.current) && state.volunteerProfile?.pane.hasUnsavedChanges() }).catch((error) => {
       if (error.status === 404 && sameRequest(item, state.current)) {
         clearSubstitutionPanes();
+        clearVolunteerProfile();
         state.current = null;
         state.dirty = false;
         state.detailVersion++;
@@ -603,7 +679,8 @@ function chooseRequest(item) {
       message($("#participant-status"), error.message, true);
     });
   };
-  if(reminderPending() || substitutionPending()){void open();return;}
+  if (reminderPending() || substitutionPending() || volunteerProfilePending() ||
+      sameRequest(item, state.current) && state.volunteerProfile?.pane.hasUnsavedChanges()) { void open(); return; }
   if (state.dirty)
     confirmPanel(
       "Discard unsaved corrections?",
@@ -624,10 +701,12 @@ function confirmPanel(
   const hasReminderPending=()=>[...state.reminderPanes.values()].some(v=>v.pane.hasPendingCommand());
   let reminderWarningShown=hasReminderPending();
   let substitutionWarningShown = substitutionPending();
+  let profileWarningShown = volunteerProfilePending();
   const reminderWarning=" A reminder save may already be recorded. Continuing does not undo it; signing out or discarding its pane removes only this tab’s retained retry.";
+  const profileWarning = " The earlier preference change may already be saved. Ending this request view clears its retry from this tab.";
   const substitutionWarning = " The earlier shift choice may already be saved. Leaving this request clears the retained retry from this tab.";
   const confirmationDescription = () => description + (reminderWarningShown ? reminderWarning : "") +
-    (substitutionWarningShown ? substitutionWarning : "");
+    (substitutionWarningShown ? substitutionWarning : "") + (profileWarningShown ? profileWarning : "");
   const target = $("#participant-detail");
   target.querySelector("#participant-confirmation")?.remove();
   const heading = node("h3", { id: "participant-confirmation-title" }, title),
@@ -658,9 +737,11 @@ function confirmPanel(
     if (trigger?.isConnected) trigger.focus();
   });
   confirm.addEventListener("click", () => {
-    if (hasReminderPending() && !reminderWarningShown || substitutionPending() && !substitutionWarningShown) {
+    if (hasReminderPending() && !reminderWarningShown || substitutionPending() && !substitutionWarningShown ||
+        volunteerProfilePending() && !profileWarningShown) {
       reminderWarningShown ||= hasReminderPending();
       substitutionWarningShown ||= substitutionPending();
+      profileWarningShown ||= volunteerProfilePending();
       panel.querySelector(".participant-confirmation-description").textContent = confirmationDescription();
       return;
     }
@@ -759,7 +840,7 @@ function questionInput(question, value) {
     ),
   };
 }
-function renderDetail(item) {
+function renderDetail(item, { volunteerProfile = false } = {}) {
   if (!sameRequest(state.current,item)) clearCheckInPanes();
   state.current = item;
   state.dirty = false;
@@ -767,6 +848,7 @@ function renderDetail(item) {
   state.participationDirty = false;
   state.participationDraftKeys.clear();
   state.participations = [];
+  admitVolunteerProfile(item, volunteerProfile);
   const target = $("#participant-detail"),
     publication = item.publication || {},
     heading = node(
@@ -937,7 +1019,9 @@ function renderDetail(item) {
       "Unlink account access",
     ),
   );
-  target.append(actions, output);
+  target.append(node("div", { id: "participant-volunteer-profile", class: "section-gap", hidden: true }), actions, output);
+  syncVolunteerProfile();
+  checkInDirty();
   const ownHost = node(
     "section",
     {
@@ -1382,7 +1466,7 @@ async function loadOwnParticipations(item, { preserveDraft = false } = {}) {
   if (!(preserveDraft && state.participationDirty && unchanged)) {
     state.participationDirty = false;
     state.participationDraftKeys.clear();
-    state.dirty = state.requestDirty;
+    checkInDirty();
     renderOwnParticipations(item);
     if (discarded)
       $("#participant-participations")?.prepend(
@@ -1981,7 +2065,7 @@ async function saveOwnParticipation(item, row, action, payload, status) {
   pruneSubstitutionPanes(item);
   state.participationDirty = false;
   state.participationDraftKeys.clear();
-  state.dirty = state.requestDirty;
+  checkInDirty();
   state.bookingIntents.delete(`${row.id}:${action}`);
   renderOwnParticipations(item);
   $("#participant-confirmation")?.remove();
@@ -2183,7 +2267,10 @@ async function refreshSession(force = false) {
     const nextCsrf = next && typeof result.csrfToken === "string" ? result.csrfToken : "";
     const substitutionEnabled = next?.emailVerified === true && !!nextCsrf && result.volunteerSubstitutions === true;
     if (state.user?.id !== next?.id) clearPrivate();
-    else if (!substitutionEnabled || state.csrf !== nextCsrf) clearSubstitutionPanes();
+    else {
+      if (!substitutionEnabled || state.csrf !== nextCsrf) clearSubstitutionPanes();
+      if (state.csrf !== nextCsrf) clearVolunteerProfile();
+    }
     state.user = next;
     state.csrf = nextCsrf;
     state.substitutionEnabled = substitutionEnabled;
@@ -2209,6 +2296,7 @@ async function refreshSession(force = false) {
     state.privateSuspended = document.visibilityState === "hidden";
     if (!state.privateSuspended) for (const { pane } of state.substitutionPanes.values()) pane.resume();
     renderSession();
+    syncVolunteerProfile();
     $("#participant-retry-session").hidden = true;
     if (!$("#participant-status").classList.contains("error"))
       message(
@@ -2241,6 +2329,7 @@ async function refreshSession(force = false) {
 }
 function suspendPrivate() {
   for (const v of [...state.checkInPanes.values(), ...state.reminderPanes.values(), ...state.substitutionPanes.values()]) v.pane.pause();
+  state.volunteerProfile?.pane.pause();
   state.privateSuspended = true;
   $("#participant-private").hidden = true;
 }
@@ -2389,7 +2478,7 @@ function install() {
         "Signed out. Displayed private answers were cleared. Any saved receipt in this original tab remains until you clear it.",
       );
     };
-    if (state.dirty)
+    if (state.dirty || volunteerProfilePending())
       confirmPanel(
         "Sign out without saving corrections?",
         "Unsaved corrections will be discarded. The saved request remains unchanged.",
@@ -2415,7 +2504,7 @@ function install() {
     }
   });
   window.addEventListener("beforeunload", (event) => {
-    if (state.dirty) {
+    if (state.dirty || volunteerProfilePending()) {
       event.preventDefault();
       event.returnValue = "";
     }

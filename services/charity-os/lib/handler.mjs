@@ -113,6 +113,7 @@ import { canManageFeedbackIntake, requireFeedbackIntakeStaff } from "./feedback-
 import { FEEDBACK_INTAKE_HISTORY_SQL } from "./feedback-intake-capacity.mjs";
 import { feedbackBackupSQL, feedbackSafeAuditDetailSQL, linkedFeedbackDraftIds, scopedFeedbackAuditSQL, scopedFeedbackIntakeAuditSQL } from "./feedback-intake-privacy.mjs";
 import { participantRoutes } from "./participants.mjs";
+import { createVolunteerProfileRoute } from "./volunteer-profile-routes.mjs";
 import {
   participationRoutes,
   participantParticipationRoutes,
@@ -216,10 +217,15 @@ export function createHandler({
   auth,
   send,
   volunteerSubstitutionRuntime = null,
+  volunteerProfileConfig = null,
   participationTransport = participationMailer(settings),
 }) {
   if (volunteerSubstitutionRuntime !== null && !isVolunteerSubstitutionRuntime(volunteerSubstitutionRuntime))
     throw new TypeError("Use the reviewed shift handoff runtime.");
+  const { applicationSchema, storageSchema } = volunteerProfileConfig ?? {};
+  const profileSchema = value => typeof value === "string" && /^[a-z][a-z0-9_]{0,62}$/.test(value);
+  const volunteerProfile = profileSchema(applicationSchema) && profileSchema(storageSchema) && storageSchema !== applicationSchema
+    ? createVolunteerProfileRoute({ applicationSchema, storageSchema }) : null;
   const handle = async function handle(request) {
     try {
       const url = new URL(request.url),
@@ -435,6 +441,10 @@ export function createHandler({
         const response = await volunteerSubstitutionRuntime.route({request,url,db,settings,session});
         if (response) return response;
       }
+      if (volunteerProfile) {
+        const response = await volunteerProfile({ request, url, db, settings, session });
+        if (response) return response;
+      }
       if (isResourceReservationPath(path))
         return resourceReservationRoutes({
           request, url, db, settings, session, auditReservation: audit,
@@ -547,6 +557,7 @@ export function createHandler({
           settings,
           session,
           input,
+          volunteerProfileAvailable: volunteerProfile?.available,
         });
         if (response) return response;
         fail(404, "route", "This route is unavailable.");

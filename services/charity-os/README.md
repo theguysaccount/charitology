@@ -93,6 +93,8 @@ Runtime `a6202f32a7fa7b9ac610bfc5676717530c1ba5ee` / `dpl_39nM5eZuamArw2rLYv5Dyo
 
 The portal paginates 20 own requests, shows only submitted answers/public schema/status, and permits revision-checked corrections while a request is pending and its approved publication is current. Corrections require fresh purpose consent and cannot change the original verified email. Withdrawal, answer erasure and permanent account unlinking have separate confirmations and consequences. They do not erase separate contacts or earlier backups. After unlinking, this request cannot be claimed by another account or re-linked with the same receipt.
 
+[Private volunteer preferences](../../docs/VOLUNTEER_PREFERENCES.md) let a verified volunteer save, retry or clear interests and weekly availability on their own linked volunteer interest request. The separate private store is outside workspace backups. Its choices cannot confirm a place, authorize messages or establish training eligibility.
+
 A forced own-user RLS index provides cross-organization navigation; intake and publication tables retain their strict tenant policies. Links are capped at 100/account and 1,000/organization including revoked links, under organization-then-user locks. Durable limits cover claims, reads and writes. Private exports restore no account grants, and existing publication/receipt recovery stays inactive. [The pre-implementation plan and acceptance record](../../docs/PARTICIPANT_PORTAL.md) distinguishes actual authentication, simulated frontend checks, controlled browser evidence and deployment status. The bounded booking and separately gated delivery controls below extend this portal.
 
 ## Confirmed participation and waitlists
@@ -158,6 +160,7 @@ Use a dedicated development database. Set these values privately in `.env.local`
 | `OS_MAIL_RELAY_URL` | Purpose-limited mail endpoint, normally `https://mail.charitology.org/api/system/os-mail`. |
 | `OS_MAIL_RELAY_SECRET` | Dedicated shared bearer secret, matching the relay configuration. Never expose it in the browser. |
 | `CRON_SECRET` | Independent bearer for maintenance. |
+| `OS_VOLUNTEER_PROFILE_ENABLED`, `OS_VOLUNTEER_PROFILE_STORAGE_SCHEMA` | Enable the optional own-request preferences panel after [qualifying its separate schema](../../docs/VOLUNTEER_PREFERENCES.md#running-this-feature-on-your-own-server). The panel defaults off. |
 
 Generate independent secret values with a cryptographically secure generator, for example `openssl rand -base64 48`. Replace every example value. For development mail, use a separately configured local relay or a transport test; the production relay accepts only its configured OS origin. Unit and database tests mock mail and need no real provider credential.
 
@@ -259,6 +262,8 @@ Authenticated catalog paths are `GET /api/directory-resources/catalogs` and `GET
 Public paths are `GET /api/public/intake/:orgId/:publicationId`, `POST .../submissions` and `POST .../receipt`. Standalone pages use `/p/:orgId.:publicationId` and `/p/receipt#orgId.publicationId.privateToken`. GET never cancels. Public endpoints return no private queue answers, contact addresses, approval identities or receipt hashes.
 
 Own booking paths are `GET /api/participant/orgs/:orgId/requests/:intakeId/participations` and `POST .../participations/:participationId/consent`, `/cancel` or `/preferences`. Fresh delivery uses `GET .../participations/:participationId/delivery` and `POST .../delivery-preference`, with expected participation/intake revisions, the current consent-copy version, an enabled choice and a random command key. These paths require a verified session and the existing active own-request link; they expose no roster, private staff reasons or contact identifiers. The server chooses the verified recipient; clients cannot submit one.
+
+Own volunteer preferences use `GET, POST /api/participant/orgs/:orgId/requests/:intakeId/volunteer-profile` when storage is enabled and the linked request is current. The write uses the scope from the current read and the expected preferences revision. A repeated exact change can return the saved revision without another write.
 
 Record replacement/approval/transition/delete uses the expected integer `revision`. A stale revision returns 409. Domain validation returns 422 with field issues. A broken connection or interrupted mutation is not proof that the write failed; reload saved state before deciding whether to repeat it. Imports commit a server-stored preview and refuse expired, previously committed or changed-workspace previews. They do not trust client-supplied preview records.
 
