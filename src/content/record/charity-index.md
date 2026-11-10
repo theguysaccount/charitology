@@ -2,7 +2,7 @@
 title: "Global Charity Index"
 group: "Flagship references"
 order: 2
-summary: "Search dated IRS organization identities and a separate editorial collection of draft depth hypotheses, sources and research dossiers."
+summary: "Search dated organization identities, Australian financial filings and an editorial collection of draft depth hypotheses, sources and research dossiers."
 status: live
 statusNote: "1,975,975 IRS identities from the 2026-10-13 extract, searchable locally by name prefix or EIN, plus 16 editorial draft classifications. US registry coverage is not a worldwide census or a charity rating."
 conditions: ["overhead-myth", "symptom-trap"]
@@ -17,7 +17,7 @@ sources:
   - {"title": "EO BMF information sheet", "publisher": "Internal Revenue Service", "url": "https://www.irs.gov/pub/foia/ig/tege/eo-info.pdf"}
 ---
 
-The Index has two distinct collections. A dated IRS identity snapshot supports local name-prefix or exact-EIN searches and source-preserving JSON/CSV exports. A separate small editorial collection describes *where the work sits on the chain from symptom to source*, with draft hypotheses that anyone can challenge. Neither collection is a worldwide census.
+The Index brings together distinct sources. A dated IRS identity snapshot supports local name-prefix or exact-EIN searches and source-preserving JSON/CSV exports. [Search Australian financial filings](/record/charity-financials/) by name or Australian Business Number to read two years of available revenue, expenses and grant-making figures. A small editorial collection describes *where the work sits on the chain from symptom to source*, with draft hypotheses that anyone can challenge. Coverage varies by source and jurisdiction.
 
 ## IRS snapshot coverage
 
@@ -31,7 +31,7 @@ The Index is not a rating. Depth describes where work acts, not how good it is. 
 
 ## How it’s built
 
-Each editorial entry is a small file in `src/content/charities/` with the organization’s name, website, a one-line description of what it does, a depth hypothesis, cause areas and linked interventions. The 16 profiles remain drafts awaiting human review. Finances, filings and funders stay in the external registries that publish them.
+Each editorial entry is a small file in `src/content/charities/` with the organization’s name, website, a one-line description of what it does, a depth hypothesis, cause areas and linked interventions. The 16 profiles remain drafts awaiting human review. Financial snapshots identify the regulator and original filings that supply the figures.
 
 The IRS snapshot is generated separately by `scripts/update-irs-registry.mjs`. Its downloadable manifest records the four original URLs, source hashes, retrieval times, counts and compressed-shard hashes. Ordinary builds use the committed snapshot; they do not fetch new IRS data or imply that the posting date changed.
 

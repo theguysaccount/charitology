@@ -2,6 +2,8 @@
 
 Read this first, then `STYLE.md`. The full original brief is preserved; do not replace it with a list of what is already built.
 
+The [Global Charity Index release plan](docs/GLOBAL_CHARITY_INDEX.md) records the Australian financial edition, reproducibility commands and the next jurisdiction, funding flow and funding-versus-need milestones.
+
 ## Updating the live Charity OS
 
 [Charity OS](https://os.charitology.org/app) runs from [`services/charity-os/`](services/charity-os/) in the Vercel project `charitology-os`, under `jacksonjezio-7345s-projects`. Vercel's GitHub integration builds previews for pull requests and uses `main` for production. The public website deploys separately through GitHub Pages.

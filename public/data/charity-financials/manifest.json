@@ -1,0 +1,57 @@
+{
+  "format": "charitology-acnc-ais-v1",
+  "date": "2026-11-10",
+  "jurisdiction": "AU",
+  "currency": "AUD",
+  "license": "https://creativecommons.org/licenses/by/3.0/au/",
+  "organizations": 46622,
+  "organizationsWithBothYears": 43298,
+  "periodFields": [
+    "aisYear",
+    "periodStart",
+    "periodEnd",
+    "consolidation",
+    "accountingBasis",
+    "sourceRecord",
+    "total revenue",
+    "total expenses",
+    "revenue from government",
+    "grants and donations made for use in Australia",
+    "grants and donations made for use outside Australia"
+  ],
+  "sources": [
+    {
+      "year": 2023,
+      "sha256": "79c8e766113a5a0843ba9d838e30391ebf74608ca9ab31ffec610f288a0c8fcf",
+      "dataset": "https://data.gov.au/data/dataset/ff6905d6-9d5d-4ef1-8478-72b833864fb7",
+      "csv": "https://data.gov.au/data/dataset/ff6905d6-9d5d-4ef1-8478-72b833864fb7/resource/2b0fb746-57c5-4523-bb4c-74b7b78279d9/download/datadotgov_ais23.csv",
+      "notes": "https://data.gov.au/data/dataset/ff6905d6-9d5d-4ef1-8478-72b833864fb7/resource/ff1aad35-e468-453b-bad1-d3bedf457c01/download/2023-ais-data.gov.au-explanatory-notes.pdf",
+      "bytes": 36891002,
+      "inputRows": 53566,
+      "duplicateRows": 0,
+      "undated": 8025,
+      "olderOnly": 1900,
+      "includedPeriods": 43641
+    },
+    {
+      "year": 2024,
+      "sha256": "7213b28f384ca4bea48cb5001d8ad69c4d1a97d2cb825bcc79c1637896456a9d",
+      "dataset": "https://data.gov.au/data/dataset/276ec1bc-4971-461c-88bc-be9f3c99a0f8",
+      "csv": "https://data.gov.au/data/dataset/276ec1bc-4971-461c-88bc-be9f3c99a0f8/resource/710630ea-1202-4bbb-95f7-3973a972ddf8/download/datadotgov_ais24.csv",
+      "notes": "https://data.gov.au/data/dataset/276ec1bc-4971-461c-88bc-be9f3c99a0f8/resource/014d919b-aa79-4da4-8aab-438141391f99/download/explanatory-notes.pdf",
+      "bytes": 38104147,
+      "inputRows": 54198,
+      "duplicateRows": 1,
+      "undated": 7918,
+      "olderOnly": 0,
+      "includedPeriods": 46279
+    }
+  ],
+  "asset": {
+    "path": "au-ais-2023-2024.json.gz",
+    "bytes": 2326248,
+    "decodedBytes": 9213709,
+    "sha256": "c8e412c3505041fd1417cb6c26e70ac01b57acd6e87d52ab8d3ed449af5c8c17",
+    "decodedSha256": "c4b5d5e709b3a13b3ebf4dfc0371084287d69ce2feee9ed445b46e69b0e6fa6d"
+  }
+}

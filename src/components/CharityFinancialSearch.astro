@@ -1,0 +1,169 @@
+---
+import manifest from '../../public/data/charity-financials/manifest.json';
+import { url } from '../lib/site';
+---
+
+<section data-au-finance data-manifest={JSON.stringify(manifest)} data-asset={url(`/data/charity-financials/${manifest.asset.path}`)} aria-labelledby="au-financial-search">
+  <h2 id="au-financial-search">Search Australian charity filings</h2>
+  <p id="au-finance-hint">Use a charity name or its 11-digit Australian Business Number (ABN). Search loads about 2.3 MB of public data once in this tab. Your query stays in the browser.</p>
+  <form data-finance-form aria-describedby="au-finance-hint">
+    <label for="au-finance-query">Charity name or ABN</label>
+    <div class="finance-actions">
+      <input id="au-finance-query" name="q" type="search" maxlength="120" autocomplete="off" disabled />
+      <button class="btn" type="submit" disabled>Search filings</button>
+      <button class="btn btn-ghost" type="button" data-finance-clear disabled>Clear</button>
+    </div>
+  </form>
+  <p role="status" data-finance-status>Search when you’re ready to load the snapshot.</p>
+  <div class="finance-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-finance-json disabled>Export displayed results as JSON</button>
+    <button class="btn btn-ghost btn-small" type="button" data-finance-csv disabled>Export displayed results as CSV</button>
+  </div>
+  <ol data-finance-results class="finance-results" aria-label="Australian charity filing results"></ol>
+  <noscript><p>For search without JavaScript, download the official CSVs from the coverage section.</p></noscript>
+</section>
+
+<script>
+  import { $, h } from '../lib/client/dom';
+  import { download, toCsv } from '../lib/client/files';
+  import { financialQuery, searchFinancials, validateFinancialRows } from '../lib/charity-financials.mjs';
+
+  type Manifest = typeof import('../../public/data/charity-financials/manifest.json').default;
+  type Period = [number, string, string, 'y' | 'n' | null, 'Cash' | 'Accrual' | null, number,
+    number | null, number | null, number | null, number | null, number | null];
+  type Organization = [string, string, Period[]];
+  type Search = { total: number; matches: Organization[] };
+  const labels = ['Total revenue', 'Total expenses', 'Revenue from government',
+    'Grants and donations made for use in Australia', 'Grants and donations made for use outside Australia'];
+  const currency = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', currencyDisplay: 'code', maximumFractionDigits: 0 });
+
+  async function readBytes(stream: ReadableStream<Uint8Array>, limit: number) {
+    const buffer = new Uint8Array(limit);
+    const reader = stream.getReader();
+    let offset = 0;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) return buffer.slice(0, offset);
+        if (offset + value.length > limit) throw new Error('Financial snapshot exceeds its expected size.');
+        buffer.set(value, offset);
+        offset += value.length;
+      }
+    } finally { await reader.cancel(); }
+  }
+
+  async function sha256(bytes: Uint8Array<ArrayBuffer>) {
+    return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), byte => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function loadSnapshot(assetUrl: string, manifest: Manifest): Promise<Organization[]> {
+    if (!globalThis.crypto?.subtle) throw new Error('Use HTTPS to verify this snapshot, or open the official source downloads.');
+    const response = await fetch(assetUrl, { credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(30_000) });
+    if (!response.ok || !response.body) throw new Error('The financial snapshot could not be downloaded.');
+    const asset = manifest.asset;
+    const raw = await readBytes(response.body, Math.max(asset.bytes, asset.decodedBytes));
+    let decoded = raw;
+    if (raw.length === asset.bytes && await sha256(raw) === asset.sha256) {
+      if (typeof DecompressionStream !== 'function') throw new Error('This browser cannot open the snapshot. Use the official source downloads.');
+      decoded = await readBytes(new Blob([raw]).stream().pipeThrough(new DecompressionStream('gzip')), asset.decodedBytes);
+    }
+    if (decoded.length !== asset.decodedBytes || await sha256(decoded) !== asset.decodedSha256) throw new Error('The financial snapshot did not match its published fingerprint.');
+    const data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(decoded));
+    return validateFinancialRows(data, manifest) as Organization[];
+  }
+
+  const scope = (value: Period[3]) => value === 'y' ? 'Consolidated with other entities' : value === 'n' ? 'No consolidation indicated' : 'Consolidation field blank';
+  const csvName = (name: string) => /^(?:\s*[=+\-@]|[\t\r\n])/.test(name) ? `'${name}` : name;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-au-finance]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const assetUrl = root.dataset.asset!;
+    const form = $<HTMLFormElement>('[data-finance-form]', root);
+    const input = $<HTMLInputElement>('input', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-finance-clear]', root);
+    const status = $('[data-finance-status]', root);
+    const results = $('[data-finance-results]', root);
+    const json = $<HTMLButtonElement>('[data-finance-json]', root);
+    const csv = $<HTMLButtonElement>('[data-finance-csv]', root);
+    let snapshot: Promise<Organization[]> | undefined;
+    let result: Search | undefined;
+    let sequence = 0;
+    input.disabled = submit.disabled = clear.disabled = false;
+
+    function reset() {
+      result = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function filing(period: Period) {
+      const [year, from, to, consolidation, basis, record, ...amounts] = period;
+      const source = manifest.sources.find(entry => entry.year === year)!;
+      return h('section', { class: 'finance-period' },
+        h('h4', {}, `AIS ${year} · ${from} to ${to}`),
+        h('p', { class: 'note' }, `${scope(consolidation)}. Accounting basis field: ${basis ?? 'blank'}.`),
+        h('dl', { class: 'finance-amounts' }, labels.map((label, index) => h('div', {},
+          h('dt', {}, label), h('dd', {}, amounts[index] === null ? 'Not supplied' : currency.format(amounts[index]!))))),
+        h('p', { class: 'note' }, h('a', { href: source.dataset }, `ACNC ${year} source`), ` · data record ${record} after the header.`));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      try {
+        const query = financialQuery(input.value);
+        submit.disabled = true;
+        status.textContent = 'Checking the public financial snapshot.';
+        snapshot ??= loadSnapshot(assetUrl, manifest).catch(error => { snapshot = undefined; throw error; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        result = searchFinancials(rows, query) as Search;
+        status.textContent = result.total
+          ? `${result.total.toLocaleString('en-US')} ${result.total === 1 ? 'match' : 'matches'}. Showing ${result.matches.length}.`
+          : 'No matching dated filing in this snapshot. Try a shorter name or check the current ACNC register.';
+        for (const [abn, name, history] of result.matches) {
+          results.append(h('li', { class: 'card' }, h('h3', {}, name), h('p', { class: 'note' }, `Australian Business Number ${abn} · name in the 2024 extract`), history.map(filing)));
+        }
+        json.disabled = csv.disabled = result.matches.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The financial search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    json.addEventListener('click', () => {
+      if (result) download('acnc-financial-search.json', JSON.stringify({ manifest, ...result }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!result) return;
+      const rows = result.matches.flatMap(([abn, name, periods]) => periods.map(([year, from, to, consolidation, basis, sourceRecord, ...amounts]) => {
+        const source = manifest.sources.find(entry => entry.year === year)!;
+        return { abn, name: csvName(name), aisYear: year, from, to, consolidation, basis, currency: manifest.currency,
+          ...Object.fromEntries(labels.map((label, index) => [label, amounts[index]])), sourceRecord, source: source.csv,
+          sourceSha256: source.sha256, capturedOn: manifest.date, publisher: 'Australian Charities and Not-for-profits Commission', license: manifest.license };
+      }));
+      download('acnc-financial-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>
+
+<style>
+  label { display: block; font-weight: 600; margin-bottom: .35rem; }
+  input { flex: 1 1 14rem; min-width: 0; padding: .65rem; font: inherit; }
+  .finance-actions { display: flex; gap: .65rem; flex-wrap: wrap; align-items: stretch; }
+  .finance-results { list-style: none; padding: 0; display: grid; gap: 1rem; }
+  .finance-results :global(h3) { margin-top: 0; overflow-wrap: anywhere; }
+  .finance-results :global(.finance-period) { border-top: 1px solid var(--line); margin-top: 1rem; }
+  .finance-results :global(.finance-amounts) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: .65rem; }
+  .finance-results :global(dd) { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+</style>
