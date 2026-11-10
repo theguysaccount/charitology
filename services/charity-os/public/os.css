@@ -2177,6 +2177,11 @@ textarea[aria-invalid="true"] {
 .participant-checkin button { min-height: 44px; white-space: normal; }
 .participant-checkin .actions { flex-wrap: wrap; }
 .participant-checkin [role="status"]:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.volunteer-profile-editor { display: grid; gap: .8rem; }
+.volunteer-profile fieldset { min-width: 0; margin: 0; }
+.volunteer-profile-grid { display: grid; gap: .5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+.volunteer-profile-grid label { display: flex; align-items: center; gap: .5rem; min-height: 44px; }
+.volunteer-profile-grid input { flex: 0 0 auto; }
 
 /* Staff group pane: external stylesheet rules preserve the existing self-only CSP. */
 .participation-groups-pane {

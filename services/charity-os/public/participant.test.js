@@ -20,6 +20,7 @@ const source = await readFile(
 const checkInSource = await readFile(new URL("./participant-check-in.js", import.meta.url),"utf8");
 const reminderSource = await readFile(new URL("./participant-reminders.js", import.meta.url),"utf8");
 const substitutionSource = await readFile(new URL("./participant-substitution.js", import.meta.url), "utf8");
+const volunteerProfileSource = await readFile(new URL("./volunteer-profile.js", import.meta.url), "utf8");
 const origin = "https://os.example.invalid";
 const token = "a".repeat(43);
 const code = `org.pub.${token}`;
@@ -412,6 +413,9 @@ async function harness({
       substitutionCapability: undefined,
       sessionGate: null,
       detailGate: null,
+      profileCapability: undefined,
+      profileSessionCapability: undefined,
+      csrfToken: "synthetic-csrf",
       participations: structuredClone(participations),
       participationGate: null,
     };
@@ -429,7 +433,8 @@ async function harness({
         throw new Error("Synthetic connection interrupted");
       return response({
         user: model.user,
-        ...(model.user ? { csrfToken: "synthetic-csrf" } : {}),
+        ...(model.user ? { csrfToken: model.csrfToken } : {}),
+        ...(model.profileSessionCapability === undefined ? {} : { volunteerProfile: model.profileSessionCapability }),
         ...(model.substitutionCapability === undefined ? {} : { volunteerSubstitutions: model.substitutionCapability }),
       });
     }
@@ -598,12 +603,18 @@ async function harness({
       model.linked = false;
       return response({ unlinked: true });
     }
+    if (path === "/api/participant/orgs/org/requests/request/volunteer-profile") {
+      assert.equal(typeof model.profileReply, "function", "profile request must be deliberate");
+      const value = await model.profileReply({ body, options });
+      return value instanceof Response ? value : response(value.payload || value, value.status || 200);
+    }
     if (path === "/api/participant/orgs/org/requests/request") {
       const snapshot = structuredClone(model.detail),
         wasLinked = model.linked;
       if (model.detailGate) await model.detailGate;
       return wasLinked
-        ? response({ request: snapshot })
+        ? response({ request: snapshot,
+          ...(model.profileCapability === undefined ? {} : { volunteerProfile: model.profileCapability }) })
         : response({ code: "request", message: "Unavailable" }, 404);
     }
     throw new Error(`Unexpected synthetic endpoint ${path}`);
@@ -639,6 +650,7 @@ async function harness({
   }\n`;
   vm.runInContext(localFetch + checkInSource.replace(/^export /gm, "") +
     pane("createOwnReminderPane", reminderSource) + pane("createOwnSubstitutionPane", substitutionSource) +
+    pane("createOwnVolunteerProfilePane", volunteerProfileSource) +
     "const participantRemindersEnabled = " + String(remindersEnabled === true) + ";\n" + portal, context);
   const flush = async () => {
     for (let n = 0; n < 12; n++)
@@ -1806,4 +1818,184 @@ test("own portal gives an absent offer a deliberate recheck and clears an uncert
   assert.equal(vm.runInContext("state.substitutionPanes.size", h.context), 0);
   assert.equal(h.root.querySelector(".participant-substitution"), null);
   assert.equal(handoffWrites(h).length, 1);
+});
+
+const profileScope = "a".repeat(64);
+const profileCalls = h => h.calls.filter(call => call.path.endsWith("/volunteer-profile"));
+const profileWrites = h => profileCalls(h).filter(call => call.options.method === "POST");
+const profileView = (revision = 0, stored = null, replayed = false) => ({ ok: true, version: 1, revision,
+  workspaceTimeZone: "America/New_York", profile: stored, scopeSha256: profileScope, replayed });
+const preferences = { skills: ["event-support"], availability: ["mon-morning"], timeZone: "America/New_York",
+  updatedAtExact: "2026-11-09T12:00:00.123456Z" };
+function profileRequest(h, status = "pending", kind = "volunteer-interest") {
+  h.model.detail = { ...h.model.detail, status, publication: { ...h.model.detail.publication, kind } };
+}
+async function editVolunteerProfile(h) {
+  const pane = h.root.querySelector(".volunteer-profile");
+  for (const label of ["Event support", "Monday morning"]) {
+    const option = pane.querySelectorAll("input").find(input => input.attributes["aria-label"] === label);
+    option.checked = true;
+    await option.emit("change");
+  }
+  const agree = pane.querySelectorAll("input").find(input =>
+    input.parentElement.textContent.includes("I want to save these optional preferences"));
+  assert.equal(agree.checked, false);
+  agree.checked = true;
+  await agree.emit("change");
+}
+
+test("My requests admits preferences only from an exact fresh own detail capability", async () => {
+  for (const [capability, status, kind] of [
+    [undefined, "pending", "volunteer-interest"], ["true", "reviewed", "volunteer-interest"],
+    [true, "cancelled", "volunteer-interest"], [true, "pending", "contact"],
+  ]) {
+    const h = await harness({});
+    h.model.profileSessionCapability = true;
+    h.model.profileCapability = capability;
+    profileRequest(h, status, kind);
+    await h.refresh();
+    await h.open();
+    assert.equal(h.get("participant-volunteer-profile").hidden, true);
+    assert.equal(profileCalls(h).length, 0);
+  }
+  for (const status of ["pending", "reviewed", "converted"]) {
+    const h = await harness({});
+    h.model.profileCapability = true;
+    profileRequest(h, status);
+    await h.open();
+    assert.equal(h.get("participant-volunteer-profile").hidden, false);
+    assert.match(h.get("participant-volunteer-profile").textContent, /Your volunteer preferences/);
+    assert.equal(profileCalls(h).length, 0);
+  }
+});
+
+test("My requests keeps exact pending preferences across a current same-account refresh", async () => {
+  const h = await harness({});
+  h.model.profileCapability = true;
+  profileRequest(h);
+  let writes = 0;
+  h.model.profileReply = ({ options }) => {
+    if (options.method !== "POST") return writes ? profileView(1, preferences) : profileView();
+    if (++writes === 1) throw new Error("Fictional response lost");
+    return profileView(1, preferences, true);
+  };
+  await h.open();
+  await h.click("Your volunteer preferences");
+  assert.match(h.root.querySelector(".volunteer-profile").textContent, /America\/New_York/);
+  assert.equal(h.document.activeElement.attributes.role, "status");
+  await editVolunteerProfile(h);
+  await h.click("Save preferences");
+  await h.refresh();
+  assert.equal(profileCalls(h).length, 2);
+  assert.equal(vm.runInContext("volunteerProfilePending() && state.dirty", h.context), true);
+  const retry = h.root.querySelector(".volunteer-profile").querySelectorAll("button")
+    .find(button => button.textContent.trim() === "Retry the same preference change");
+  assert.equal(retry.disabled, true);
+  await h.click("Read saved volunteer preferences");
+  await h.click("Retry the same preference change");
+  const posts = profileWrites(h);
+  assert.equal(posts.length, 2);
+  assert.equal(posts[0].options.body, posts[1].options.body);
+  assert.equal(posts[0].options.headers["X-CSRF-Token"], "synthetic-csrf");
+  assert.deepEqual(posts[0].body, { version: 1, operation: "save", expectedRevision: 0, scopeSha256: profileScope,
+    acknowledge: true, skills: ["event-support"], availability: ["mon-morning"] });
+  assert.match(h.root.querySelector(".volunteer-profile").textContent, /Saved revision 1/);
+  assert.equal(vm.runInContext("state.dirty", h.context), false);
+});
+
+test("a fresh session token or capability withdrawal discards an old pending preference", async () => {
+  for (const changed of ["csrf", "capability"]) {
+    const h = await harness({});
+    h.model.profileCapability = true;
+    profileRequest(h);
+    h.model.profileReply = ({ options }) => {
+      if (options.method === "POST") throw new Error("Fictional response lost");
+      return profileView();
+    };
+    await h.open();
+    await h.click("Your volunteer preferences");
+    await editVolunteerProfile(h);
+    await h.click("Save preferences");
+    assert.equal(vm.runInContext("volunteerProfilePending()", h.context), true);
+    if (changed === "csrf") h.model.csrfToken = "replacement-synthetic-csrf";
+    else h.model.profileCapability = undefined;
+    await h.refresh();
+    assert.equal(vm.runInContext("state.volunteerProfile === null && !volunteerProfilePending()", h.context), true);
+    assert.equal(h.root.querySelector(".volunteer-profile"), null);
+    assert.equal(h.get("participant-volunteer-profile").hidden, changed === "capability");
+    assert.equal(profileWrites(h).length, 1);
+  }
+});
+
+test("a fresh detail read keeps preference writing and asks for the latest profile before another save", async () => {
+  const h = await harness({});
+  h.model.profileCapability = true;
+  profileRequest(h);
+  h.model.profileReply = () => profileView();
+  await h.open();
+  await h.click("Your volunteer preferences");
+  await editVolunteerProfile(h);
+  await h.click("Reload saved request");
+  assert.equal(profileCalls(h).length, 1);
+  const pane = h.root.querySelector(".volunteer-profile");
+  const field = pane.querySelectorAll("input").find(input => input.attributes["aria-label"] === "Monday morning");
+  assert.equal(field.checked, true);
+  assert.equal(field.disabled, true);
+  await h.click("Read saved volunteer preferences");
+  assert.equal(field.checked, true);
+  assert.equal(field.disabled, false);
+  assert.equal(profileWrites(h).length, 0);
+});
+
+test("missing profile access clears only that panel while non-JSON authorization loss clears the private portal", async () => {
+  for (const status of [404, 401]) {
+    const h = await harness({});
+    h.model.profileCapability = true;
+    profileRequest(h);
+    h.model.profileReply = () => new Response("Fictional denial", { status });
+    await h.open();
+    await h.click("Your volunteer preferences");
+    assert.equal(h.root.querySelector(".volunteer-profile"), null);
+    assert.equal(h.get("participant-private").hidden, status === 401);
+    assert.equal(vm.runInContext("state.volunteerProfileAccess", h.context), null);
+  }
+});
+
+test("profile and handoff share one pending change while preserving the second panel's reviewed writing", async () => {
+  for (const first of ["profile", "handoff"]) {
+    const h = await harness({ participations: [participation({ state: "confirmed", canConsent: false })] });
+    h.model.profileCapability = h.model.substitutionCapability = true;
+    profileRequest(h, "converted");
+    let profileAttempts = 0, handoffAttempts = 0;
+    h.model.profileReply = ({ options }) => {
+      if (options.method !== "POST") return profileView();
+      if (++profileAttempts === 1 && first === "profile") throw new Error("Fictional profile response lost");
+      return profileView(1, preferences, profileAttempts > 1);
+    };
+    h.model.substitutionResponse = ({ options }) => {
+      if (options.method !== "POST") return ownHandoffDTO();
+      if (++handoffAttempts === 1 && first === "handoff") throw new Error("Fictional handoff response lost");
+      return ownHandoffDTO("accepted", handoffAttempts > 1);
+    };
+    await h.refresh();
+    await h.open();
+    await h.click("Your volunteer preferences");
+    await h.click("Read shift substitution offer");
+    await editVolunteerProfile(h);
+    await acknowledgeShiftChoice(h);
+    const firstSave = first === "profile" ? "Save preferences" : "Save my agreement";
+    const secondSave = first === "profile" ? "Save my agreement" : "Save preferences";
+    const firstRetry = first === "profile" ? "Retry the same preference change" : "Retry the same choice";
+    await h.click(firstSave);
+    await h.click(secondSave);
+    assert.equal(profileWrites(h).length + handoffWrites(h).length, 1);
+    assert.match(h.root.textContent, /Check or stop retrying the earlier volunteer change/);
+    assert.equal(vm.runInContext("volunteerProfilePending()", h.context), first === "profile");
+    assert.equal(vm.runInContext("substitutionPending()", h.context), first === "handoff");
+    await h.click(firstRetry);
+    await h.click(secondSave);
+    assert.equal(profileWrites(h).length, first === "profile" ? 2 : 1);
+    assert.equal(handoffWrites(h).length, first === "handoff" ? 2 : 1);
+    assert.equal(vm.runInContext("volunteerProfilePending() || substitutionPending()", h.context), false);
+  }
 });

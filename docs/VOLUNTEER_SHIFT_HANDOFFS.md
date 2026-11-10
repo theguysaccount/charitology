@@ -13,4 +13,12 @@ Saved handoffs remain readable as inactive history in a workspace backup. A rest
 
 For Contact reconciliation, handoff history supplies a typed dependency for the Contacts it actually involves. It does not create a dependency for unrelated Contacts or treat archived consent as current authority. An archive that includes another unsupported history family still needs review before reconciliation.
 
+## Try one practice shift
+
+Have a coordinator and two adult volunteers choose to take part. Set up a made-up future shift in a separate workspace and arrange independent approval in advance. Give the shift one confirmed place and one eligible person on its waitlist. Keep your actual roster in its usual system. Start the offer only when the coordinator and both volunteers can follow the steps together.
+
+Have each volunteer explain what their choice will do. Check the roster before the offer, after each choice and after staff confirm. Record whether the same number of places stayed confirmed and where anyone needed help. Leave outcomes unknown until the practice happens. Do not put names, emails, schedules from live programs or screenshots of private requests in shared notes.
+
+If the team wants to try it, [discuss a shift handoff pilot](https://charitology.org/for-charities/website-pilots/#pilot). Agree first on what to observe, who can stop the practice and when to remove the test records.
+
 For self-hosting, install the additive migration in `services/charity-os/scripts/migrations/2026-11-09-volunteer-substitution.sql` after the application and sign-in tables exist. Use the dedicated choice grants and verifier generator for the same schema and constrained runtime role, in the migration transaction. For a non-superuser database owner, use `managedDatabaseOwner: true` so the temporary role transfer grant is removed. Enable `OS_VOLUNTEER_SUBSTITUTIONS_ENABLED=1` after the database checks pass. The hosted and development entry points expect the default verifier name and schema. Keep the new data and its grants in place when hiding the workflow, so existing history stays readable.

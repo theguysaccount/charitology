@@ -398,8 +398,8 @@ async function claimRequest({ db, user, org, publicationId, input }) {
   );
 }
 
-async function ownRequest({ db, user, org, intakeId, action, input }) {
-  await ownLink(db, user, org, intakeId);
+async function ownRequest({ db, user, org, intakeId, action, input, volunteerProfileAvailable, session, settings }) {
+  const link = await ownLink(db, user, org, intakeId);
   return db.tx(
     user.id,
     org,
@@ -408,7 +408,18 @@ async function ownRequest({ db, user, org, intakeId, action, input }) {
         await loadOwn(c, user, org, [intakeId], { forUpdate: !!action })
       )[0];
       if (!loaded) unavailable();
-      if (!action) return okay({ request: serialize(loaded, user, org) });
+      if (!action) {
+        const detail = { request: serialize(loaded, user, org) };
+        if (volunteerProfileAvailable && loaded.publication.kind === "volunteer-interest" &&
+            !loaded.row.erased_at && ["pending", "reviewed", "converted"].includes(loaded.row.status) &&
+            link.id === loaded.row.link_id &&
+            await volunteerProfileAvailable(c, {
+              orgId: org, intakeId, linkId: link.id, linkRevision: link.revision,
+              intakeRevision: loaded.row.revision, publicationId: loaded.publication.id, session, settings,
+            }) === true)
+          detail.volunteerProfile = true;
+        return okay(detail);
+      }
       exact(
         input,
         action === "correct"
@@ -546,6 +557,7 @@ export async function participantRoutes({
   settings,
   session,
   input,
+  volunteerProfileAvailable,
 }) {
   if (!url.pathname.startsWith("/api/participant/")) return null;
   if (url.pathname === "/api/participant/session") return null;
@@ -566,7 +578,7 @@ export async function participantRoutes({
       url.pathname,
     );
   if (own && !own[3] && request.method === "GET")
-    return ownRequest({ db, user, org: own[1], intakeId: own[2] });
+    return ownRequest({ db, user, org: own[1], intakeId: own[2], volunteerProfileAvailable, session, settings });
   if (request.method !== "POST" || (!claim && !own?.[3]))
     fail(404, "participant_route", "This participant action is unavailable.");
   checkCsrf(request, session, settings);
