@@ -1,7 +1,7 @@
 ---
 import Entry from '../../../../layouts/Entry.astro';
 import StaticBars from '../../../../components/StaticBars.astro';
-import { url } from '../../../../lib/site';
+import CaseDataDownload from '../../../../components/CaseDataDownload.astro';
 import data from '../../../../data/home-from-hospital.json';
 
 const title = 'From hospital discharge pressure to nine community grants';
@@ -49,7 +49,8 @@ const sources = [
   <h2>What the sources can answer</h2>
   <p>The award records show one community fund’s commitments. The NHS figures show system-wide pressure in Greater Manchester during delivery. They cover different groups of people and use different units, so the page reports them side by side. It does not divide awards by patients or infer how much need the fund met.</p>
   <p>10GM separately reports that the projects supported 594 people to be discharged and that 32 of them were readmitted within seven days. Those are program-reported results. The sources shown here do not establish what would have happened without the projects.</p>
-  <p><a href={url(route + 'data.json')} download="greater-manchester-home-from-hospital.json">Download the award and daily-count records</a>. The export retains source fingerprints, workbook coordinates and licences. The workbook data is attributed to 10GM under CC BY 4.0. The regulator and NHS figures use the Open Government Licence.</p>
+  <CaseDataDownload path={route + 'data.json'} filename="greater-manchester-home-from-hospital.json" label="Save the award and daily-count records" />
+  <p>The export retains source fingerprints, workbook coordinates and licences. The workbook data is attributed to 10GM under CC BY 4.0. The regulator and NHS figures use the Open Government Licence.</p>
 </Entry>
 
 <style>

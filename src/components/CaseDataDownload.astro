@@ -1,0 +1,38 @@
+---
+import { url } from '../lib/site';
+interface Props { path: string; filename: string; label: string; }
+const { path, filename, label } = Astro.props;
+const href = url(path);
+---
+
+<div data-case-download data-href={href} data-filename={filename}>
+  <div class="btn-row">
+    <button class="btn btn-ghost btn-small" type="button" disabled>{label}</button>
+    <a href={href}>Open the JSON data</a>
+  </div>
+  <p role="status"></p>
+</div>
+
+<script>
+  import { download } from '../lib/client/files';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-case-download]')) {
+    const button = root.querySelector<HTMLButtonElement>('button')!;
+    const status = root.querySelector<HTMLElement>('[role=status]')!;
+    button.disabled = false;
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      status.textContent = 'Loading the public case records.';
+      try {
+        const response = await fetch(root.dataset.href!, { credentials: 'omit', redirect: 'error', signal: AbortSignal.timeout(20_000) });
+        if (!response.ok) throw new Error('The case download is unavailable.');
+        download(root.dataset.filename!, await response.blob());
+        status.textContent = 'The JSON file is ready to save.';
+      } catch {
+        status.textContent = 'The file could not be downloaded. Try again or open the JSON data.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
