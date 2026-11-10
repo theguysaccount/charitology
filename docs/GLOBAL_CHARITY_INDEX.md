@@ -30,3 +30,16 @@ GlobalGiving already offers international registry lookup. Candid and ProPublica
 | 4 | Expand geography and language coverage and reduce the search payload. | Qualify official sources and a published coverage denominator before making completeness claims. Reuse exact-ID matching, corrections and browser-local search. Split larger data assets by jurisdiction and search partition. |
 
 The initial global release remains in progress until all four data layers have reviewable evidence, search and exports, a correction route and reproducible builds. Treat each completed slice as an independently testable contribution.
+
+## England and Wales annual returns
+
+The [England and Wales financial filings page](https://charitology.org/record/charity-financials/england-wales/) uses a separate Commission edition under the Open Government Licence v3.0. It covers 157,367 of 171,945 main registered charities in the November 10, 2026 register extract, with 452,394 received returns for financial periods ending in 2023, 2024 or 2025. The date of receipt is distinct from the period end. Data record coordinates refer to one-based tab-delimited source records after the header. All money figures remain in GBP.
+
+The two [original public Commission extracts](https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download) join on the Commission's organization number with an exact cross-check against the charity registration number. Exclusions are applied in this order: suppressed or unknown suppression status, linked or out-of-scope organizations, other period ends and records without a received return. No name matching or imputation takes place. The names reflect the dated register, which can differ from names at the time of a historical filing. The [manifest](../public/data/charity-financials/ew/manifest.json) records original hashes, coverage and one fingerprint per published shard. It excludes all contact, address, trustee and free-text narrative fields. The lookup uses a two-digit directory for exact numbers and the first normalized letter or digit for name-prefix queries. All queries run in the browser.
+
+Rebuild offline from the exact `charity-register.zip` and `annual-return-history.zip` source captures. The official download page replaces its current files over time. A mismatched input hash requires a new edition.
+
+```sh
+python3 scripts/build-ew-charity-financials.py /path/to/captured-inputs /path/to/new-rebuild
+node scripts/check-ew-charity-financials.mjs
+```

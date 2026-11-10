@@ -1,0 +1,168 @@
+---
+import manifest from '../../public/data/charity-financials/ew/manifest.json';
+import { url } from '../lib/site';
+import '../styles/charity-financial-search.css';
+---
+
+<section class="charity-financial-search" data-ew-finance data-base={url('/data/charity-financials/ew/')} data-manifest={JSON.stringify(manifest)} aria-labelledby="ew-finance-heading">
+  <h2 id="ew-finance-heading">Search annual returns</h2>
+  <p id="ew-finance-hint">Enter the start of a charity’s registered name or its exact charity registration number. Search loads part of the public snapshot. Your query stays in the browser.</p>
+  <form aria-describedby="ew-finance-hint">
+    <label for="ew-finance-query">Name or charity registration number</label>
+    <div class="finance-actions">
+      <input id="ew-finance-query" name="q" type="search" maxlength="250" autocomplete="off" disabled />
+      <button class="btn" type="submit" disabled>Search returns</button>
+      <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+    </div>
+  </form>
+  <p role="status" data-status>Search when you’re ready to load the snapshot.</p>
+  <div class="finance-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export displayed results as JSON</button>
+    <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export displayed results as CSV</button>
+  </div>
+  <ol data-results class="finance-results" aria-label="England and Wales charity filing results"></ol>
+  <noscript><p>For search without JavaScript, use the Commission’s register and original downloads in the coverage section.</p></noscript>
+</section>
+
+<script>
+  import { $, h } from '../lib/client/dom';
+  import { download, toCsv } from '../lib/client/files';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../lib/client/verified-json';
+
+  type Filing = [string, string, string, string | null, string | null, number];
+  type Organization = [string, string, string, Filing[]];
+  type DirectoryEntry = [string, string];
+  type Asset = VerifiedJsonAsset & { path: string; rows: number };
+  type Source = { publisher: string; url: string; sha256: string };
+  type Manifest = { date: string; currency: string; jurisdiction: string; license: string; periodFields: string[];
+    sources: { register: Source; returns: Source }; names: Record<string, Asset>; ids: Record<string, Asset> };
+  type Result = { total: number; organizations: Organization[] };
+
+  const limit = 25;
+  const currency = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 2 });
+  const normalize = (value: string) => value.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const amount = (value: string | null) => value === null ? 'Not supplied' : currency.format(Number(value));
+  const csvName = (name: string) => /^(?:\s*[=+\-@]|[\t\r\n])/.test(name) ? `'${name}` : name;
+
+  function shardLoader<Row>(base: string, assets: Record<string, Asset>) {
+    let cached: { key: string; rows: Promise<Row[]> } | undefined;
+    return (key: string) => {
+      const asset = Object.hasOwn(assets, key) ? assets[key] : undefined;
+      if (!asset) return Promise.resolve([] as Row[]);
+      if (cached?.key === key) return cached.rows;
+      const rows = loadVerifiedJson(base + asset.path, asset).then(value => {
+        if (!Array.isArray(value) || value.length !== asset.rows) throw new Error('The snapshot has an unexpected row count.');
+        return value as Row[];
+      });
+      cached = { key, rows };
+      void rows.catch(() => { if (cached?.rows === rows) cached = undefined; });
+      return rows;
+    };
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-ew-finance]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const loadNames = shardLoader<Organization>(base, manifest.names);
+    const loadIds = shardLoader<DirectoryEntry>(base, manifest.ids);
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let result: Result | undefined;
+    let sequence = 0;
+    input.disabled = submit.disabled = clear.disabled = false;
+
+    function reset() {
+      result = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function filing([start, end, received, income, expenditure, record]: Filing) {
+      return h('section', { class: 'finance-period' },
+        h('h4', {}, `${start} to ${end}`),
+        h('p', { class: 'note' }, `Annual return received ${received}.`),
+        h('dl', { class: 'finance-amounts' },
+          h('div', {}, h('dt', {}, 'Gross income'), h('dd', {}, amount(income))),
+          h('div', {}, h('dt', {}, 'Gross expenditure'), h('dd', {}, amount(expenditure)))),
+        h('p', { class: 'note' }, h('a', { href: manifest.sources.returns.url }, 'Commission annual return history'), ` · data record ${record} after the header.`));
+    }
+
+    async function search(value: string): Promise<Result> {
+      const id = /^(?:GB-CHC-)?([0-9]{6,8})$/i.exec(value.trim())?.[1];
+      if (id) {
+        const entry = (await loadIds(id.slice(0, 2))).find(([number]) => number === id);
+        if (!entry) return { total: 0, organizations: [] };
+        const organization = (await loadNames(entry[1])).find(([number]) => number === id);
+        if (!organization) throw new Error('The registration number could not be matched to the snapshot.');
+        return { total: 1, organizations: [organization] };
+      }
+
+      const query = normalize(value);
+      if ([...query].length < 2) throw new Error('Enter at least two characters of the name or use an exact registration number.');
+      const bucket = /^[a-z0-9]/.test(query) ? query[0] : '_';
+      const organizations: Organization[] = [];
+      let total = 0;
+      for (const row of await loadNames(bucket)) {
+        if (!normalize(row[1]).startsWith(query)) continue;
+        total++;
+        if (organizations.length < limit) organizations.push(row);
+      }
+      return { total, organizations };
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      status.textContent = 'Checking the public annual return snapshot.';
+      try {
+        const found = await search(input.value);
+        if (ticket !== sequence) return;
+        result = found;
+        status.textContent = found.total
+          ? `${found.total.toLocaleString('en-GB')} ${found.total === 1 ? 'match' : 'matches'}. Showing ${found.organizations.length}.`
+          : 'No matching dated return in this snapshot. Try a shorter name or check the current Commission register.';
+        for (const [number, name, , history] of found.organizations) {
+          results.append(h('li', { class: 'card' }, h('h3', {}, name), h('p', { class: 'note' }, `Charity registration number ${number} · GBP`), history.map(filing)));
+        }
+        json.disabled = csv.disabled = found.organizations.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The financial search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { date, currency: currencyCode, jurisdiction, license, periodFields, sources } = manifest;
+    json.addEventListener('click', () => {
+      if (!result) return;
+      const organizations = result.organizations.map(([number, name, regulatorId, filings]) => ({
+        number, name, regulatorId, filings: filings.map(values => Object.fromEntries(periodFields.map((field, index) => [field, values[index]]))),
+      }));
+      download('england-wales-annual-return-search.json', JSON.stringify({ date, currency: currencyCode, jurisdiction, license, sources, total: result.total, organizations }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!result) return;
+      const rows = result.organizations.flatMap(([number, name, regulatorId, filings]) => filings.map(([start, end, annualReturnReceived, grossIncomeGBP, grossExpenditureGBP, sourceRecord]) => ({
+        number, name: csvName(name), regulatorId, start, end, annualReturnReceived, grossIncomeGBP, grossExpenditureGBP, sourceRecord,
+        currency: currencyCode, jurisdiction, capturedOn: date, publisher: sources.returns.publisher, license,
+        source: sources.returns.url, sourceSha256: sources.returns.sha256, registerSource: sources.register.url, registerSha256: sources.register.sha256,
+      })));
+      download('england-wales-annual-return-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>
