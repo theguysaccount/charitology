@@ -3,7 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { database, allRecords, saveRecord, audit } from "../lib/database.mjs";
-import { attendanceRoutes } from "../lib/attendance-from-bookings.mjs";
+import { attendanceRoutes, isOfflineAttendanceReview } from "../lib/attendance-from-bookings.mjs";
 import { participationTerms } from "../lib/participation.mjs";
 import { validateRecord } from "../lib/modules.mjs";
 import { hash } from "../lib/security.mjs";
@@ -77,8 +77,10 @@ test(
         user: { id: staff },
         session: { id: "session-" + staff },
       };
-      const call = (target, action = "", input = {}, o = org) =>
-        db.tx(
+      const call = (target, action = "", input = {}, o = org, caller = session) => {
+        const method = !action || action === "offline/issue" ? "GET" : "POST";
+        const endpoint = `/api/orgs/${o}/participation-targets/${target}/attendance${action ? "/" + action : ""}`;
+        return db.tx(
           staff,
           o,
           async (c) => {
@@ -86,19 +88,20 @@ test(
               c,
               org: o,
               user: staff,
-              session,
+              session: caller,
               settings,
               tail: `participation-targets/${target}/attendance${action ? "/" + action : ""}`,
-              method: action ? "POST" : "GET",
+              method,
               input,
               url: new URL(
-                `https://os.example.invalid/api/orgs/${o}/participation-targets/${target}/attendance`,
+                `https://os.example.invalid${endpoint}`,
               ),
             });
             return response.json();
           },
-          { lock: !!action, readOnly: !action },
+          { lock: method !== "GET", readOnly: method === "GET" || isOfflineAttendanceReview(endpoint, method) },
         );
+      };
       const seed = (target, module = "events") =>
         db.tx(
           staff,
@@ -230,6 +233,53 @@ test(
           previewToken: p.previewToken,
           idempotencyKey: key,
         });
+      await t.test("worksheet review is read-only and concurrent devices share one retained attendance receipt", async () => {
+        const target = "offline-event";
+        await seed(target);
+        const second = { ...session, session: { id: "fictional-attendance-second-device" } };
+        await migration.pool.query('INSERT INTO "session" VALUES($1,$2,now()+interval \'1 day\')',[second.session.id,staff]);
+        const issued = await call(target,"offline/issue");
+        const blank = JSON.parse(Buffer.from(issued.packetBase64,"base64"));
+        assert.equal(blank.counts.reportedAttendance,null);
+        const exactBytes = Buffer.from(JSON.stringify({ ...blank, counts: { ...blank.counts, reportedAttendance: 0 } })+"\n");
+        const file = { packetBase64: exactBytes.toString("base64") };
+        const changed = { packetBase64: Buffer.concat([exactBytes,Buffer.from(" ")]).toString("base64") };
+        const preview = async (body, caller) => {
+          const checked = await call(target,"offline/inspect",body,org,caller);
+          assert.equal(checked.kind,"review-file");
+          return call(target,"offline/preview",{
+            ...body, fileSha256: checked.fileSha256, contextSha256: checked.context.contextSha256,
+            title:"Fictional whole-event worksheet", wholeOccurrence:true,
+          },org,caller);
+        };
+        const [one,two,different] = await Promise.all([
+          preview(file,session),preview(file,second),preview(changed,second),
+        ]);
+        const body = { previewToken:one.previewToken,idempotencyKey:"fictional-offline-device-a" };
+        const [a,b] = await Promise.all([
+          call(target,"create",body),
+          call(target,"create",{previewToken:two.previewToken,idempotencyKey:"fictional-offline-device-b"},org,second),
+        ]);
+        assert.deepEqual([a.kind,b.kind].sort(),["already-created","created"]);
+        assert.equal(a.record.id,b.record.id);
+        assert.equal(a.record.approval,null);
+        assert.equal(a.record.data.attendanceCount,0);
+        assert.equal(a.record.data.registeredCount,null);
+        assert.equal((await call(target,"offline/inspect",file,org,second)).kind,"already-file");
+        await assert.rejects(call(target,"create",{
+          previewToken:different.previewToken,idempotencyKey:"fictional-offline-device-c",
+        },org,second),{code:"offline_attendance_conflict"});
+        await db.tx(staff,org,async c=>{
+          const kept = await c.query("SELECT detail FROM os_events WHERE org_id=$1 AND action='attendance.draft-created' AND record_id=$2",[org,a.record.id]);
+          assert.equal(kept.rowCount,1);
+          assert.equal(kept.rows[0].detail.attendanceReceipt.offlinePacket.fileSha256,hash(exactBytes));
+          assert.doesNotMatch(JSON.stringify(kept.rows[0].detail),/packetBase64|issueSeal/);
+          assert.equal((await c.query("SELECT count(*)::int AS n FROM os_participation_outbox WHERE org_id=$1",[org])).rows[0].n,0);
+          await c.query("UPDATE os_records SET deleted_at=now() WHERE org_id=$1 AND id=$2",[org,a.record.id]);
+        });
+        assert.equal((await call(target,"offline/inspect",file,org,second)).context.existing.disposition,"trash");
+        await assert.rejects(call(target,"offline/inspect",changed,org,second),{code:"offline_attendance_conflict"});
+      });
       await t.test(
         "read-only GET, explicit zero and whole count above confirmations preserve null facts for both modules",
         async () => {

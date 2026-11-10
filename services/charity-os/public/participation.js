@@ -3,6 +3,7 @@ import { createStaffParticipationGroupPane } from "./participation-groups.js";
 import { createStaffReminderPane } from "./participation-reminders.js";
 import { participationRemindersEnabled as staffRemindersEnabled } from "./participation-reminder-feature.js";
 import { createVolunteerSubstitutionOfferPane, staffSubstitutionScope } from "./volunteer-substitution-offer.js";
+import { attendanceWorksheetHtml, readAttendanceWorksheet, saveAttendanceWorksheet } from "./attendance-worksheet.js";
 const part = (value) => encodeURIComponent(String(value));
 const states = {
   requested: "Awaiting a staff decision",
@@ -1814,6 +1815,151 @@ export async function createStaffParticipationWorkspace({
       sync: () => {},
     };
     const endpoint = `${path(targetId)}/attendance`;
+    const offline = context.target.moduleId === "events" ? { file: null, attempted: null, reviewed: null } : null;
+    const fileInput = node("input", {
+      id: "attendance-offline-file",
+      type: "file",
+      accept: ".json,application/json",
+    });
+    const fileScope = node("input", { id: "attendance-offline-scope", type: "checkbox" });
+    const fileResult = node("div", {});
+    const issueWorksheet = button("Download offline worksheet", () =>
+      attendanceWork(editor, async () => {
+        const result = await attendanceRequest(editor, endpoint + "/offline/issue");
+        if (!attendanceLive(editor)) return;
+        saveAttendanceWorksheet("charity-os-attendance-worksheet.html", new Blob(
+          [attendanceWorksheetHtml(result)], { type: "text/html;charset=utf-8" },
+        ));
+        attendanceMessage(editor, "Open the downloaded worksheet offline. Save its JSON when you have counted attendance.");
+      }),
+    );
+    const inspectWorksheet = button("Check worksheet file", () =>
+      attendanceWork(editor, inspectOffline),
+    );
+    const previewWorksheet = button("Review worksheet draft", () =>
+      attendanceWork(editor, previewOffline),
+      "primary",
+    );
+    const copySelected = button("Save original worksheet copy", () => {
+      if (attendanceLive(editor) && offline.file)
+        saveAttendanceWorksheet("attendance-worksheet-original-copy.json", offline.file.original());
+    });
+    const copyAttempted = button("Save changed file copy", () => {
+      if (attendanceLive(editor) && offline.attempted)
+        saveAttendanceWorksheet("attendance-worksheet-changed-copy.json", offline.attempted.original());
+    });
+    const clearWorksheet = button("Clear worksheet selection", () => {
+      if (!attendanceLive(editor) || editor.pending || editor.completed) return;
+      offline.file = offline.attempted = offline.reviewed = null;
+      fileInput.value = "";
+      fileResult.replaceChildren();
+      changed();
+      attendanceMessage(editor, "Worksheet selection cleared. You can choose another file or use the manual form.");
+    });
+    const offlineHost = offline && node(
+      "section", { class: "notice" },
+      node("h3", {}, "Offline attendance worksheet"),
+      node("p", {}, "Download a worksheet for this session. After the event, choose its saved JSON to review the whole-event counts."),
+      issueWorksheet,
+      field("Attendance worksheet JSON", fileInput),
+      node("div", { class: "actions" }, inspectWorksheet, copySelected, copyAttempted, clearWorksheet),
+      fileResult,
+      node("label", { class: "intake-consent", for: fileScope.id }, fileScope,
+        node("span", {}, "I checked that this worksheet covers the whole event.")),
+      previewWorksheet,
+    );
+    function clearOfflineReview() {
+      if (!offline) return;
+      offline.reviewed = null;
+      fileScope.checked = false;
+      fileResult.replaceChildren();
+    }
+    function checkedOfflineReview(result) {
+      if (result?.ok !== true || result.fileSha256 !== offline.file.fileSha256 ||
+          !["review-file", "unknown-attendance", "already-file"].includes(result.kind))
+        throw new Error("The worksheet review response could not be verified. The original file is kept.");
+      const current = checkedAttendanceContext(result.context, targetId);
+      if (result.kind === "already-file") {
+        if (!current.existing || current.canPrepare)
+          throw new Error("The saved worksheet response could not be verified.");
+      } else {
+        const counts = result.counts;
+        if (!current.canPrepare || !/^[a-f0-9]{32}$/.test(result.packetId ?? "") ||
+            !counts || Object.keys(counts).length !== 3 ||
+            !["reportedAttendance", "registeredCount", "walkInCount"].every(key =>
+              Object.hasOwn(counts, key) && (counts[key] === null || attendanceCount(counts[key]))) ||
+            (result.kind === "unknown-attendance") !== (counts.reportedAttendance === null))
+          throw new Error("The worksheet counts could not be verified. The original file is kept.");
+      }
+      editor.context = current;
+      editor.contextStale = false;
+      renderContext();
+      return result;
+    }
+    function displayOfflineReview(result) {
+      if (result.kind === "already-file") {
+        clearOfflineReview();
+        fileResult.append(node("p", {}, "This exact file already supplied the saved attendance draft."));
+        attendanceMessage(editor, "Saved attendance found for this exact worksheet. Open its ordinary record to continue.");
+        return;
+      }
+      const { counts } = result;
+      const label = value => value === null ? "Unknown" : String(value);
+      offline.reviewed = result;
+      fileResult.replaceChildren(
+        node("p", {}, `Worksheet counts. Total attendance ${label(counts.reportedAttendance)}. Registrations ${label(counts.registeredCount)}. Walk-ins ${label(counts.walkInCount)}.`),
+      );
+      attendanceMessage(editor, result.kind === "unknown-attendance"
+        ? "The total is unknown. Keep this file and complete the count before preparing a draft."
+        : "Worksheet verified for this session. Check the whole-event scope to review a draft.");
+    }
+    async function inspectOffline() {
+      const picked = fileInput.files?.[0];
+      clearOfflineReview();
+      changed();
+      const file = picked ? await readAttendanceWorksheet(picked) : offline.file;
+      if (!attendanceLive(editor)) return;
+      if (!file) throw new Error("Choose one saved attendance worksheet.");
+      if (offline.file && offline.file.packetBase64 !== file.packetBase64) {
+        offline.attempted = file;
+        throw new Error("A different file is already selected. Save both copies, then clear the selection to choose again.");
+      }
+      offline.file = file;
+      offline.attempted = null;
+      const result = await attendanceRequest(editor, endpoint + "/offline/inspect", {
+        method: "POST", body: { packetBase64: file.packetBase64 },
+      });
+      if (attendanceLive(editor)) displayOfflineReview(checkedOfflineReview(result));
+    }
+    async function previewOffline() {
+      const inspected = offline.reviewed;
+      if (!offline.file || inspected?.kind !== "review-file" || !fileScope.checked || editor.pending)
+        throw new Error("Review the selected worksheet and confirm the whole-event count first.");
+      if (!title.value.trim()) throw new Error("Enter a title for the attendance draft.");
+      const { counts } = inspected, current = editor.context;
+      editor.preview = null;
+      reviewHost.replaceChildren();
+      const result = await attendanceRequest(editor, endpoint + "/offline/preview", {
+        method: "POST",
+        body: {
+          packetBase64: offline.file.packetBase64, fileSha256: offline.file.fileSha256,
+          contextSha256: current.contextSha256, title: title.value, wholeOccurrence: true,
+        },
+      });
+      if (!attendanceLive(editor)) return;
+      if (result.kind === "already-file") {
+        displayOfflineReview(checkedOfflineReview(result));
+        return;
+      }
+      editor.preview = checkedPreview(result, {
+        title: title.value,
+        reportedAttendance: counts.reportedAttendance,
+        registeredCount: counts.registeredCount ?? current.sourceContext.knownRegisteredCount,
+        walkInCount: counts.walkInCount ?? current.sourceContext.knownWalkInCount,
+      });
+      renderPreview();
+      attendanceMessage(editor, "Exact worksheet draft prepared. Review and acknowledge every value before creating it.");
+    }
     const review = node(
       "button",
       { type: "submit", class: "button primary" },
@@ -1865,6 +2011,7 @@ export async function createStaffParticipationWorkspace({
       editor.preview = null;
       reviewHost.replaceChildren();
       scope.checked = false;
+      fileScope.checked = false;
       dirty(true);
       editor.sync();
     }
@@ -1921,10 +2068,21 @@ export async function createStaffParticipationWorkspace({
     }
     editor.sync = () => {
       const frozen = !!editor.pending || editor.completed;
-      for (const control of [title, reported, registered, walkIn, scope])
-        control.disabled = frozen;
+      const hasFile = !!offline && (!!offline.file || !!fileInput.files?.length);
+      title.disabled = frozen;
+      for (const control of [reported, registered, walkIn, scope]) control.disabled = frozen || hasFile;
       review.disabled =
-        frozen || editor.contextStale || !editor.context.canPrepare;
+        frozen || hasFile || editor.contextStale || !editor.context.canPrepare;
+      if (offline) {
+        issueWorksheet.disabled = frozen || !!editor.context.existing;
+        fileInput.disabled = frozen;
+        inspectWorksheet.disabled = frozen || !hasFile;
+        copySelected.hidden = !offline.file;
+        copyAttempted.hidden = !offline.attempted;
+        clearWorksheet.disabled = frozen || !hasFile;
+        fileScope.disabled = frozen || offline.reviewed?.kind !== "review-file";
+        previewWorksheet.disabled = fileScope.disabled || !fileScope.checked || editor.contextStale;
+      }
       retry.hidden = !editor.pending;
       retry.disabled = !editor.pending || editor.reconcileOnly;
       reload.disabled = state.busy;
@@ -1944,6 +2102,7 @@ export async function createStaffParticipationWorkspace({
       editor.preview = null;
       editor.serial++;
       scope.checked = false;
+      clearOfflineReview();
       reviewHost.replaceChildren();
       renderContext();
       if (editor.pending && current.existing) {
@@ -2130,6 +2289,8 @@ export async function createStaffParticipationWorkspace({
             "attendance_stale",
             "attendance_exists",
             "attendance_preview",
+            "offline_attendance_stale",
+            "offline_attendance_conflict",
           ].includes(error.code)
         ) {
           editor.pending = null;
@@ -2137,6 +2298,7 @@ export async function createStaffParticipationWorkspace({
           reviewHost.replaceChildren();
           editor.contextStale = error.code !== "attendance_preview";
           scope.checked = false;
+          clearOfflineReview();
         } else if (error.code === "attendance_command")
           editor.reconcileOnly = true;
         if (editor.pending) {
@@ -2157,6 +2319,20 @@ export async function createStaffParticipationWorkspace({
     }
     for (const control of [title, reported, registered, walkIn])
       control.addEventListener("input", changed);
+    if (offline) {
+      fileInput.addEventListener("change", () => {
+        clearOfflineReview();
+        changed();
+      });
+      fileScope.addEventListener("change", () => {
+        if (editor.pending) return;
+        editor.serial++;
+        editor.preview = null;
+        reviewHost.replaceChildren();
+        dirty(true);
+        editor.sync();
+      });
+    }
     scope.addEventListener("change", () => {
       if (editor.pending) return;
       editor.serial++;
@@ -2170,6 +2346,7 @@ export async function createStaffParticipationWorkspace({
         state.busy ||
         editor.pending ||
         editor.completed ||
+        (offline && (offline.file || fileInput.files?.length)) ||
         !form.reportValidity()
       )
         return;
@@ -2217,6 +2394,7 @@ export async function createStaffParticipationWorkspace({
     });
     form.append(
       contextHost,
+      ...(offlineHost ? [offlineHost] : []),
       node(
         "p",
         { class: "notice" },

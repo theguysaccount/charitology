@@ -2285,3 +2285,77 @@ test("staff arrival read is deliberate, read-only and disposed when its ledger s
     h.root.dispose();assert.doesNotMatch(h.root.textContent,/No live self-report/);
   } finally {h.cleanup();}
 });
+
+test("Events worksheet import uses the ordinary preview and exact Create Retry while preserving conflicting file selection", async () => {
+  const original = new TextEncoder().encode('{"fictional":"zero attendance worksheet"}\n');
+  const sha = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", original)), byte => byte.toString(16).padStart(2, "0")).join("");
+  const base64 = btoa(String.fromCharCode(...original));
+  let attempts = 0;
+  const h = await staffHarness({
+    managed: true, attendance: true,
+    attendanceRequest: ({ path, options, model, context, candidate }) => {
+      if (path.endsWith("/offline/inspect")) {
+        assert.deepEqual(options.body, { packetBase64: base64 });
+        return {
+          ok: true, kind: "review-file", packetId: "a".repeat(32), fileSha256: sha,
+          counts: { reportedAttendance: 0, registeredCount: null, walkInCount: 0 }, context: context(),
+        };
+      }
+      if (path.endsWith("/offline/preview")) {
+        assert.equal(options.body.packetBase64, base64);
+        assert.equal(options.body.fileSha256, sha);
+        assert.equal(options.body.wholeOccurrence, true);
+        assert.equal(options.body.contextSha256, context().contextSha256);
+        model.lastAttendanceCandidate = candidate({
+          title: options.body.title, reportedAttendance: 0, registeredCount: 2, walkInCount: 0,
+        });
+        return {
+          ok: true, previewToken: "fictional-ordinary-signed-preview", expiresAt: "2099-01-01T00:00:00Z",
+          preview: { method: "whole-occurrence-staff-reported-v1", scope: "whole-occurrence",
+            sourceContext: context().sourceContext, candidate: model.lastAttendanceCandidate },
+        };
+      }
+      if (path.endsWith("/create") && ++attempts === 1)
+        throw Object.assign(new Error("Interrupted"), { status: 0, code: "connection_interrupted" });
+    },
+  });
+  try {
+    h.model.knownRegisteredCount = 2;
+    await h.click("Load occurrence for attendance");
+    const file = h.root.querySelector("#attendance-offline-file");
+    assert.ok(file);
+    const pick = async bytes => {
+      file.files = [new File([bytes], "fictional-attendance.json")];
+      await file.emit("change");
+      await h.click("Check worksheet file");
+    };
+    await pick(original);
+    assert.match(h.root.textContent, /Total attendance 0\. Registrations Unknown\. Walk-ins 0/);
+    assert.equal(h.root.querySelector("#attendance-reported").disabled, true);
+    assert.equal(h.root.querySelectorAll("button").find(x => x.textContent === "Review worksheet draft").disabled, true);
+    await pick(new TextEncoder().encode('{"different":"same selection"}'));
+    assert.match(h.root.textContent, /different file is already selected/);
+    assert.equal(h.root.querySelectorAll("button").find(x => x.textContent === "Save original worksheet copy").hidden, false);
+    assert.equal(h.root.querySelectorAll("button").find(x => x.textContent === "Save changed file copy").hidden, false);
+    assert.equal(h.calls.filter(call => call.path.endsWith("/offline/inspect")).length, 1);
+    await pick(original);
+    const whole = h.root.querySelector("#attendance-offline-scope");
+    whole.checked = true;
+    await whole.emit("change");
+    await h.click("Review worksheet draft");
+    const ack = h.root.querySelector("#attendance-review-check");
+    assert.ok(ack);
+    ack.checked = true;
+    await ack.emit("change");
+    await h.click("Create unapproved attendance draft");
+    assert.match(h.root.textContent, /attendance response is unresolved/);
+    assert.equal(file.disabled, true);
+    await h.click("Retry exact attendance create");
+    const creates = h.calls.filter(call => call.path.endsWith("/attendance/create"));
+    assert.equal(creates.length, 2);
+    assert.deepEqual(creates[0].body, creates[1].body);
+    assert.equal(creates[0].body.previewToken, "fictional-ordinary-signed-preview");
+    assert.equal(h.calls.filter(call => call.path.endsWith("/attendance/preview")).length, 0);
+    assert.match(h.root.textContent, /Unapproved attendance draft created/);
+  } finally { h.cleanup(); }
+});

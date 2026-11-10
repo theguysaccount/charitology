@@ -187,6 +187,15 @@ function fixture(module = "events") {
         return result(p[1] === state.member.user_id ? [{}] : []);
       if (sql.startsWith("SELECT record_id,max(id)::text"))
         return result(state.restores);
+      if (sql.includes("AS org_created_exact") && sql.includes("AS backup_restored_id"))
+        return result([{
+          org_created_exact: state.orgCreatedAtExact ?? "2001-01-01T00:00:00.000000Z",
+          backup_restored_id: state.backupRestoreId ?? null,
+          records: p[1].map(recordId => ({
+            recordId,
+            lastRestoredAuditId: state.restores.find(row => row.record_id === recordId)?.id ?? null,
+          })),
+        }]);
       if (sql.startsWith("SELECT sum(size)"))
         return result([{ size: state.quota ? 60 * 1024 * 1024 : 0 }]);
       if (sql.includes("AS size,count(*) FILTER"))
@@ -892,4 +901,173 @@ test("actual authenticated handler routes context/review/create/Retry through bo
   );
   assert.equal(bad.status, 422);
   assert.equal(f.state.queries.length, before);
+});
+
+const issueFile = f => f.call("offline/issue", {}, { method: "GET" });
+function editFile(issue, change) {
+  const value = JSON.parse(Buffer.from(issue.packetBase64, "base64").toString("utf8"));
+  change(value);
+  return { packetBase64: Buffer.from(JSON.stringify(value, null, 2) + "\n").toString("base64") };
+}
+const zeroFile = issue => editFile(issue, p => { p.counts.reportedAttendance = 0; p.counts.walkInCount = 0; });
+const offlinePrepare = (f, file, reviewed, extra={}) => f.call("offline/preview", {
+  ...file, fileSha256: reviewed.fileSha256, contextSha256: reviewed.context.contextSha256,
+  title: "Fictional worksheet attendance", wholeOccurrence: true,
+}, extra);
+const secondDevice = { session: { ...session, session: { id: "fictional-second-device-session" } } };
+
+test("worksheet issuance precedes a future Events session with no roster or personal data", async () => {
+  const f = fixture(), source = f.state.records.get("target");
+  source.data.startAt = "2199-01-02T09:00:00Z";
+  source.data.endAt = "2199-01-02T11:00:00Z";
+  f.state.managed.terms = participationTerms({ ...f.source, data: source.data });
+  f.state.managed.terms_hash = hash(f.state.managed.terms);
+  f.state.ledger = [];
+  const before = f.state.queries.length;
+  const issue = await issueFile(f);
+  assert.equal(issue.kind, "offline-worksheet");
+  assert.equal(f.state.queries.slice(before).some(sql => sql.includes("FROM os_participations")), false);
+  const bytes = Buffer.from(issue.packetBase64, "base64");
+  const value = JSON.parse(bytes);
+  assert.deepEqual(Object.keys(value).sort(), ["counts","coverage","format","issueSeal","occurrence","packetId","version"]);
+  assert.deepEqual(value.counts, { reportedAttendance: null, registeredCount: null, walkInCount: null });
+  assert.equal(value.occurrence.sourceRevision, source.revision);
+  assert.equal(value.occurrence.startAt, source.data.startAt);
+  assert.doesNotMatch(bytes.toString(), /fictional@example\.invalid|contactId|approval|booking|sessionHash|actorId/);
+  await assert.rejects(f.call("offline/inspect", zeroFile(issue)), err("attendance_stale"));
+  const volunteer = fixture("volunteers");
+  await assert.rejects(issueFile(volunteer), err("attendance_unavailable"));
+  f.state.live = false;
+  await assert.rejects(issueFile(f), err("session"));
+});
+
+test("fresh staff inspection and normal draft preview preserve zero, unknown and exact file bytes", async () => {
+  const f = fixture(), issued = await issueFile(f);
+  const unknown = await f.call("offline/inspect", { packetBase64: issued.packetBase64 });
+  assert.equal(unknown.kind, "unknown-attendance");
+  assert.equal(unknown.counts.reportedAttendance, null);
+  await assert.rejects(offlinePrepare(f, { packetBase64: issued.packetBase64 }, unknown), err("attendance_count"));
+  const file = zeroFile(issued);
+  const review = await f.call("offline/inspect", file);
+  assert.equal(review.kind, "review-file");
+  assert.equal(review.fileSha256, hash(Buffer.from(file.packetBase64, "base64")));
+  assert.deepEqual(review.counts, { reportedAttendance: 0, registeredCount: null, walkInCount: 0 });
+  f.state.live = false;
+  await assert.rejects(offlinePrepare(f, file, review), err("session"));
+  f.state.live = true;
+  f.state.ledger[0].revision++;
+  await assert.rejects(offlinePrepare(f, file, review), err("offline_attendance_stale"));
+  const current = await f.call("offline/inspect", file);
+  const candidate = (await offlinePrepare(f, file, current)).preview.candidate;
+  assert.equal(candidate.data.attendanceCount, 0);
+  assert.equal(candidate.data.registeredCount, null);
+  assert.equal(candidate.data.walkInCount, 0);
+  assert.equal(candidate.data.contactId, null);
+  assert.equal(candidate.approval, null);
+  assert.equal(candidate.status, "draft");
+  assert.equal(f.state.records.size, 4);
+  assert.deepEqual(f.state.events, []);
+});
+
+test("sealed worksheet metadata and exact source, managed and restore context cannot be rebound", async () => {
+  const f = fixture(), issue = await issueFile(f), file = zeroFile(issue);
+  const tampered = editFile(issue, packet => { packet.occurrence.managedRevision++; });
+  await assert.rejects(f.call("offline/inspect", tampered), err("offline_attendance_issuer"));
+  const invalid = editFile(issue, packet => { packet.counts.contactId = "fictional-private"; });
+  await assert.rejects(f.call("offline/inspect", invalid), err("offline_attendance_fields"));
+  const lexical = Buffer.from(Buffer.from(file.packetBase64, "base64").toString()
+    .replace('"reportedAttendance": 0', '"reportedAttendance": 0, "\\u0072eportedAttendance": 1')).toString("base64");
+  await assert.rejects(f.call("offline/inspect", { packetBase64: lexical }), err("offline_attendance_fields"));
+  f.state.backupRestoreId = "204";
+  await assert.rejects(f.call("offline/inspect", file), err("offline_attendance_stale"));
+  f.state.backupRestoreId = null;
+  f.state.restores = [{ record_id: "target", id: "205" }];
+  await assert.rejects(f.call("offline/inspect", file), err("offline_attendance_stale"));
+  f.state.restores = [];
+  f.state.managed.revision++;
+  await assert.rejects(f.call("offline/inspect", file), err("offline_attendance_stale"));
+  f.state.managed.revision--;
+  f.state.records.get("target").revision++;
+  f.state.records.get("target").approval.revision++;
+  f.state.managed.source_revision++;
+  await assert.rejects(f.call("offline/inspect", file), err("offline_attendance_stale"));
+});
+
+test("one signed receipt recognizes the exact file on a second device and refuses changed bytes or Trash replacement", async () => {
+  const f = fixture(), issued = await issueFile(f), file = zeroFile(issued);
+  const changed = { packetBase64: Buffer.concat([Buffer.from(file.packetBase64, "base64"), Buffer.from(" ")]).toString("base64") };
+  const another = zeroFile(await issueFile(f));
+  const prepare = async (selected, device) => {
+    const review = await f.call("offline/inspect", selected, device);
+    return offlinePrepare(f, selected, review, device);
+  };
+  const original = await prepare(file);
+  const same = await prepare(file, secondDevice);
+  const changedPreview = await prepare(changed, secondDevice);
+  const body = { previewToken: original.previewToken, idempotencyKey: "fictional-file-original-1" };
+  const made = await f.call("create", body);
+  assert.equal(made.kind, "created");
+  assert.equal((await f.call("create", body)).kind, "already-created");
+  const duplicate = await f.call("create", {
+    previewToken: same.previewToken, idempotencyKey: "fictional-file-device-2",
+  }, secondDevice);
+  assert.equal(duplicate.kind, "already-created");
+  assert.equal(duplicate.record.id, made.record.id);
+  assert.equal((await f.call("offline/inspect", file, secondDevice)).kind, "already-file");
+  await assert.rejects(f.call("offline/inspect", changed, secondDevice), err("offline_attendance_conflict"));
+  await assert.rejects(f.call("create", {
+    previewToken: changedPreview.previewToken, idempotencyKey: "fictional-file-changed-2",
+  }, secondDevice), err("offline_attendance_conflict"));
+  await assert.rejects(f.call("offline/inspect", another, secondDevice), err("attendance_exists"));
+  await assert.rejects(issueFile(f), err("attendance_exists"));
+  const event = f.state.events.find(e => e.action === "attendance.draft-created");
+  assert.deepEqual(Object.keys(event.detail.attendanceReceipt.offlinePacket).sort(), [
+    "fileSha256","packetId","restoreEpochSha256","scopeSha256",
+  ]);
+  assert.equal(event.detail.attendanceReceipt.offlinePacket.fileSha256, hash(Buffer.from(file.packetBase64, "base64")));
+  assert.doesNotMatch(JSON.stringify(event.detail), /issueSeal|packetBase64/);
+  f.state.records.get(made.record.id).deleted_at = new Date("2001-01-03T00:00:00Z");
+  const trash = await f.call("offline/inspect", file, secondDevice);
+  assert.equal(trash.context.existing.disposition, "trash");
+  assert.equal((await f.call("create", body)).disposition, "trash");
+  assert.equal(f.state.events.filter(e => e.action === "attendance.draft-created").length, 1);
+  f.state.backupRestoreId = "206";
+  await assert.rejects(f.call("create", body), err("offline_attendance_stale"));
+});
+
+test("existing authenticated handler dispatches worksheet issue, inspect and signed preview with ordinary CSRF and bounds", async () => {
+  const f = fixture(), transactions = [];
+  const configuration = { ...settings, origin: "https://os.example.invalid" };
+  const handle = createHandler({
+    settings: configuration,
+    db: { async limit(){}, async tx(user, org, fn, options){ transactions.push(options);return f.tx(()=>fn(f.c)); } },
+    auth: { api: { async getSession(){return session;} } },
+    send: async () => { throw Error("No mail transport in this fixture"); },
+  });
+  const endpoint = configuration.origin + "/api/orgs/org/participation-targets/target/attendance/offline/";
+  const issue = await handle(new Request(endpoint+"issue"));
+  assert.equal(issue.status, 200);
+  assert.equal(issue.headers.get("cache-control"), "no-store");
+  assert.equal(transactions[0].readOnly, true);
+  const file = zeroFile(await issue.json());
+  const post = (path, value, token = csrf(session.session.id, configuration.secret)) => handle(new Request(endpoint+path, {
+    method: "POST",
+    headers: { origin: configuration.origin, "content-type": "application/json", "x-csrf-token": token },
+    body: JSON.stringify(value),
+  }));
+  assert.equal((await post("inspect", file, "wrong")).status, 403);
+  assert.equal((await post("inspect", { packetBase64: "a".repeat(9000) })).status, 413);
+  const reviewed = await post("inspect", file);
+  assert.equal(reviewed.status, 200);
+  assert.equal(transactions.at(-1).readOnly, true);
+  const review = await reviewed.json();
+  assert.equal(review.kind, "review-file");
+  const preview = await post("preview", {
+    ...file, fileSha256: review.fileSha256, contextSha256: review.context.contextSha256,
+    title: "Fictional worksheet attendance", wholeOccurrence: true,
+  });
+  assert.equal(preview.status, 200);
+  assert.equal(transactions.at(-1).readOnly, true);
+  assert.equal((await preview.json()).preview.candidate.data.attendanceCount, 0);
+  assert.deepEqual(f.state.events, []);
 });
