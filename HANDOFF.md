@@ -2,6 +2,28 @@
 
 Read this first, then `STYLE.md`. The full original brief is preserved; do not replace it with a list of what is already built.
 
+## Updating the live Charity OS
+
+[Charity OS](https://os.charitology.org/app) runs from [`services/charity-os/`](services/charity-os/) in the Vercel project `charitology-os`, under `jacksonjezio-7345s-projects`. Vercel's GitHub integration builds previews for pull requests and uses `main` for production. The public website deploys separately through GitHub Pages.
+
+1. Open a pull request and get the [Charity OS checks](.github/workflows/charity-os-check.yml) green, including the isolated PostgreSQL tests. To reproduce the unit and browser model suite from the repo root, use the Node version in [`.nvmrc`](.nvmrc), then run `npm ci`, `npm --prefix services/charity-os ci`, and `npm --prefix services/charity-os test`.
+2. For a routine change compatible with current production settings and schema, check the Vercel preview and merge the approved PR. Follow the Vercel status from GitHub, then confirm the live app serves the merged change. A successful build and a ready custom domain are separate checks. Use the live checks below before calling the release complete.
+3. For schema changes, configuration changes or a release that needs a protected production stage, coordinate with the release operator **before merging**. Agree the rollout and rollback, rehearse the exact change with isolated data, and verify compatibility with the currently live version. Record the production migration and readback separately. See the [service setup](services/charity-os/README.md) and [release evidence](docs/SHARED_OS_RELEASE.md). Keep credentials and production records in their respective private systems.
+
+### Staging, promotion and rollback for release operators
+
+1. Use a clean checkout of the exact approved release commit and a personal Vercel account authorized to stage, promote and roll back production. Run these commands from the **repository root** so Vercel can apply its configured root directory and [upload exclusions](.vercelignore). Confirm the team, project, and previous live deployment ID before staging.
+
+   ```sh
+   vercel link --project charitology-os --scope jacksonjezio-7345s-projects
+   vercel project inspect charitology-os --scope jacksonjezio-7345s-projects
+   vercel inspect https://os.charitology.org --scope jacksonjezio-7345s-projects
+   vercel deploy --prod --skip-domain --scope jacksonjezio-7345s-projects
+   ```
+
+2. Inspect the staged deployment and confirm it is ready for production. Use [authenticated Vercel CLI requests](https://vercel.com/docs/cli/curl) for the protected staging URL. Check that `/app` and changed public assets match the reviewed commit, `/api/health` reports `ok` and `authenticationConfigured`, `/api/session` returns an anonymous session while signed out, and a private route returns `401`. The staged production build uses production configuration, so use read-only smoke checks there and rehearse writes and email with fictional records in an isolated environment.
+3. Promote the verified **staged production** deployment ID with `vercel promote <deployment-id> --scope jacksonjezio-7345s-projects`. Inspect `https://os.charitology.org` again to confirm the custom domain points to that ID, then repeat the read-only smoke checks on the live URL. Record the source commit, prior and new deployment IDs, checks and any migration outcome in the PR or release record. If verification fails, confirm schema compatibility before running `vercel rollback <previous-deployment-id> --scope jacksonjezio-7345s-projects`.
+
 ## Current implementation: shared OS and mega-list acceptance
 
 - **Public evidence examples:** the [fundraising guide](https://charitology.org/for-charities/fundraising/#results) compares three actual studies of donor follow-up, matched direct mail and paid video ads. It gives the measurement window, comparison, costs when reported and study limits. The [Afghanistan Education case](https://charitology.org/record/gap-map/#education-plan-funding) shows published estimates of need and planned reach alongside the original funding edition. Both additions preserve the difference between a reported result and a broader conclusion.
