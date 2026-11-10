@@ -6,6 +6,7 @@ import {
 } from "./participation-intervals.mjs";
 export { intervalsOverlap } from "./participation-intervals.mjs";
 import { fail, stable } from "./security.mjs";
+import { volunteerOrientationForTarget } from "./volunteer-orientation-marker.mjs";
 
 export const participationModule = (m) => ["events", "volunteers"].includes(m);
 export const parentKey = (m) => (m === "events" ? "eventId" : "shiftId");
@@ -63,6 +64,11 @@ export async function guardParticipationWrite(
       [org, record.id],
     )
   ).rows[0];
+  if (m === "volunteers" && (data.kind === "shift" || old?.data?.kind === "shift")) {
+    const orientation = await volunteerOrientationForTarget(c, org, record);
+    if (orientation && (operation === "delete" || data.kind !== "shift" || data.programId !== orientation.marker.programId))
+      fail(409, "volunteer_orientation_source", "Keep the shift and program linked to the retained orientation requirement.");
+  }
   if (data.kind === "attendance" || old?.data?.kind === "attendance") {
     // A live server audit reserves the helper's original occurrence identity.
     // Full imports archive original events; they never install these receipts.

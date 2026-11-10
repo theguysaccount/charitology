@@ -13,6 +13,7 @@ import {
   participationTerms,
 } from "../lib/participation.mjs";
 import { hash } from "../lib/security.mjs";
+import { VOLUNTEER_ORIENTATION_MARKER_SQL } from "../lib/volunteer-orientation-marker.mjs";
 
 // Closed fake SQL command fixtures only. These exercise the actual domain,
 // validators, record saves, audits and outbox code, not PostgreSQL/RLS, physical
@@ -84,6 +85,7 @@ function fixture({ moduleId = "events", state = "requested", usage = 0,
     intake: { status: "converted", cancelled_at: null }, quotaFull: false };
   const c = {
     async query(sql, values = []) {
+      if (sql === VOLUNTEER_ORIENTATION_MARKER_SQL) return {rows: []};
       const handoff = legacyVolunteerSubstitutions(sql); if (handoff) return handoff;
       db.calls.push({ sql, values: structuredClone(values) });
       if (throwAt && sql.startsWith(throwAt)) throw new Error("Fictional SQL failure");

@@ -3,6 +3,7 @@ import { createOwnReminderPane } from "./participant-reminders.js";
 import { participationRemindersEnabled as participantRemindersEnabled } from "./participation-reminder-feature.js";
 import { createOwnSubstitutionPane } from "./participant-substitution.js";
 import { createOwnVolunteerProfilePane } from "./volunteer-profile.js";
+import { mountMembershipRenewal } from "./membership-renewal.js";
 const $ = (selector) => document.querySelector(selector);
 const receiptPattern =
   /^([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{1,100})\.([A-Za-z0-9_-]{43})$/;
@@ -619,7 +620,8 @@ async function openRequest(item, { preserveDraft = false, focus = true } = {}) {
     state.current.revision === result.request.revision &&
     (!state.requestDirty || result.request.editable);
   const discardedDraft = preserveDraft && state.dirty && !keepDraft;
-  if (!keepDraft) renderDetail(result.request, { volunteerProfile: result.volunteerProfile });
+  if (!keepDraft) renderDetail(result.request, { volunteerProfile: result.volunteerProfile,
+    membershipRenewal: result.membershipRenewal });
   else {
     state.current = result.request;
     admitVolunteerProfile(result.request, result.volunteerProfile);
@@ -840,7 +842,7 @@ function questionInput(question, value) {
     ),
   };
 }
-function renderDetail(item, { volunteerProfile = false } = {}) {
+function renderDetail(item, { volunteerProfile = false, membershipRenewal = false } = {}) {
   if (!sameRequest(state.current,item)) clearCheckInPanes();
   state.current = item;
   state.dirty = false;
@@ -1020,6 +1022,20 @@ function renderDetail(item, { volunteerProfile = false } = {}) {
     ),
   );
   target.append(node("div", { id: "participant-volunteer-profile", class: "section-gap", hidden: true }), actions, output);
+  if (membershipRenewal === true && item.publication?.kind === "contact" && item.status === "converted") {
+    const host = node("section", { class: "section-gap stack", "aria-label": "Membership renewal" });
+    const user = state.user?.id, access = state.accessVersion, token = state.csrf;
+    const current = () => alive(user, access) && state.csrf === token &&
+      !state.privateSuspended && sameRequest(state.current, item);
+    host.append(node("button", { type: "button", class: "button subtle", onclick: () => {
+      if (!current() || !host.isConnected || state.sessionBusy || state.mutationBusy) return;
+      mountMembershipRenewal(host, {
+        orgId: item.orgId, intakeId: item.id, request, node, current,
+        runMutation: mutation, onAccessLost: denyIfAccessLost,
+      });
+    } }, "Your membership renewal"));
+    target.append(host);
+  }
   syncVolunteerProfile();
   checkInDirty();
   const ownHost = node(

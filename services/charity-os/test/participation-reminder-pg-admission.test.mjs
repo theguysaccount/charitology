@@ -96,7 +96,7 @@ test('manifest sparse arrays accessors and proxies are rejected without caller e
  const sparse=runtimeManifest();delete sparse.files[2];assert.throws(()=>checkedReminderRuntimeManifest(sparse));
 });
 test('manifest data budgets enforce independent count per-file and exact aggregate byte bounds',()=>{
- for(const size of [139,201]){const value=runtimeManifest();while(value.files.length<size)value.files.push({name:'zzz-extra-'+value.files.length+'.mjs',bytes:1,sha256:'a'.repeat(64)});value.files.length=size;assert.throws(()=>checkedReminderRuntimeManifest(value));}
+ for(const size of [REMINDER_RUNTIME_SOURCE_LIMITS.filesMin-1,REMINDER_RUNTIME_SOURCE_LIMITS.filesMax+1]){const value=runtimeManifest();while(value.files.length<size)value.files.push({name:'zzz-extra-'+value.files.length+'.mjs',bytes:1,sha256:'a'.repeat(64)});value.files.length=size;assert.throws(()=>checkedReminderRuntimeManifest(value));}
  const large=runtimeManifest();large.files[0].bytes=REMINDER_RUNTIME_SOURCE_LIMITS.fileBytes+1;assert.throws(()=>checkedReminderRuntimeManifest(large));
  const exact=runtimeManifest(),each=Math.floor(REMINDER_RUNTIME_SOURCE_LIMITS.totalBytes/exact.files.length);exact.files.forEach(r=>r.bytes=each);exact.files.at(-1).bytes+=REMINDER_RUNTIME_SOURCE_LIMITS.totalBytes-each*exact.files.length;assert.equal(checkedReminderRuntimeManifest(exact).files.reduce((n,r)=>n+r.bytes,0),REMINDER_RUNTIME_SOURCE_LIMITS.totalBytes);
  exact.files.at(-1).bytes++;assert.throws(()=>checkedReminderRuntimeManifest(exact));

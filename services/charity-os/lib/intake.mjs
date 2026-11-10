@@ -14,6 +14,7 @@ import { feedbackSchemaFromReviewedFormData } from "./feedback-intake-form.mjs";
 import { canManageFeedbackIntake, requireFeedbackIntakeStaff } from "./feedback-intake-access.mjs";
 import { feedbackIntakeSchemaReady } from "./feedback-intake-schema.mjs";
 import { isManagedParticipationTarget, participationValidationContext } from "./participation-guards.mjs";
+import { refuseProtectedVolunteerOrientation } from "./volunteer-orientation-marker.mjs";
 
 export const INTAKE_LIMITS = Object.freeze({
   requestBytes: 16384,
@@ -747,6 +748,7 @@ export async function intakeRoutes({
         "intake_approval",
         "Publish only the current independently approved form revision and, when linked, its current approved session or shift.",
       );
+    if (input.kind === "volunteer-interest" && target) await refuseProtectedVolunteerOrientation(c, org, target);
     const daily = Number(
       (
         await c.query(

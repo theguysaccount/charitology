@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { participationTerms } from "../lib/participation.mjs";
 import { csrf, hash } from "../lib/security.mjs";
+import { makeVolunteerOrientationMarkerRow, VOLUNTEER_ORIENTATION_MARKER_SQL } from "../lib/volunteer-orientation-marker.mjs";
 import {
   participantVolunteerSubstitutionRoutes, volunteerSubstitutionLinkIdentity,
   VOLUNTEER_SUBSTITUTION_OWN_SQL as SQL,
@@ -73,6 +74,7 @@ function fixture() {
         actor, org, options,
         async query(sql, values) {
           calls.push(["sql", sql, values]);
+          if (sql === VOLUNTEER_ORIENTATION_MARKER_SQL) return {rows: control.orientationMarkers ?? []};
           if (sql.startsWith(SQL.session)) {
             const [sessionId, userId] = values;
             assert.equal(actor, userId);
@@ -198,6 +200,21 @@ test("two own accounts see only their own offer and shift, and choosing changes 
   assert.equal((await f.post(joining, wire(b, "accept"))).choice.state, "accepted");
   assert.deepEqual([...f.people], roster);
   assert.equal(f.writes("record"), 2);
+});
+
+test("a protected handoff blocks fresh own consent while exact retained choice and withdrawal still work", async () => {
+  const f = fixture(), first = await f.read(leaving), second = await f.read(joining);
+  const accept = wire(first, "accept"), saved = await f.post(leaving, accept);
+  f.control.orientationMarkers = [makeVolunteerOrientationMarkerRow(orgId, "fictional-admin", {
+    version: 1, moduleId: "volunteers", targetId: shift.id, programId: "fictional-program",
+    requirementId: "fictional-policy", policyRevision: 1, sourceRevision: 3, termsHash,
+    disposition: "review-needed",
+  }, "live")];
+  assert.equal((await f.read(joining)).choice.canAccept, false);
+  await refuses(f.post(joining, wire(second, "accept")), 409, "volunteer_orientation_operation");
+  assert.equal((await f.post(leaving, accept)).replayed, true);
+  assert.equal((await f.post(leaving, wire(saved, "withdraw"))).choice.state, "withdrawn");
+  assert.equal(f.writes("record"), 1);
 });
 
 test("fresh authority and exact own context reconcile lost acceptance and terminal withdrawal", async () => {

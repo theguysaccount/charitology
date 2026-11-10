@@ -8,6 +8,21 @@ import { validateRecord } from "../lib/modules.mjs";
 import { visibleRecord } from "../lib/access.mjs";
 
 import { ORG, USER, SID, SHA, stamp, next, session, result, code, range, fixture } from "./fixtures/group-context.mjs";
+import { makeVolunteerOrientationMarkerRow, VOLUNTEER_ORIENTATION_MARKER_SQL } from "../lib/volunteer-orientation-marker.mjs";
+
+test("a protected group refuses fresh Create and Admit while reads, Retry and exits skip orientation", async () => {
+  const f = fixture({moduleId: "volunteers"});
+  f.orientationMarkers = [makeVolunteerOrientationMarkerRow(ORG, USER, {
+    version: 1, moduleId: "volunteers", targetId: f.source.id, programId: "fictional-program",
+    requirementId: "fictional-policy", policyRevision: 1, sourceRevision: f.source.revision, termsHash: SHA,
+    disposition: "review-needed",
+  }, "live")];
+  for (const operation of ["create", "admit", "admission-preview"])
+    await assert.rejects(f.read(operation), {code: "volunteer_orientation_operation", status: 409});
+  f.calls.length = 0;
+  for (const operation of ["read", "replay", "cancellation-preview", "cancel", "close"]) await f.read(operation);
+  assert.equal(f.calls.some(call => call.sql === VOLUNTEER_ORIENTATION_MARKER_SQL), false);
+});
 
 test("read/replay scope proves the complete chosen graph and performs no NEW clock/ledger/queue work",async()=>{
   for(const operation of ['read','replay','close','cancel','cancellation-preview']){

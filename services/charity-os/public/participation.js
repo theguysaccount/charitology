@@ -4,6 +4,7 @@ import { createStaffReminderPane } from "./participation-reminders.js";
 import { participationRemindersEnabled as staffRemindersEnabled } from "./participation-reminder-feature.js";
 import { createVolunteerSubstitutionOfferPane, staffSubstitutionScope } from "./volunteer-substitution-offer.js";
 import { attendanceWorksheetHtml, readAttendanceWorksheet, saveAttendanceWorksheet } from "./attendance-worksheet.js";
+import { staffOrientationEditor } from "./volunteer-orientation.js";
 const part = (value) => encodeURIComponent(String(value));
 const states = {
   requested: "Awaiting a staff decision",
@@ -421,6 +422,7 @@ export async function createStaffParticipationWorkspace({
   onChanged = () => {},
   onDirty = () => {},
   canUseSubstitutions = () => false,
+  canUseOrientation = () => false,
   initialTargetId = "",
   initialCandidateId = "",
   initialIntakeId = "",
@@ -1558,6 +1560,10 @@ export async function createStaffParticipationWorkspace({
         ),
       );
     const actions = node("div", { class: "actions" });
+    if (target.moduleId === "volunteers" && canUseOrientation()) {
+      actions.append(button("Review site orientation requirement",
+        () => confirmDiscard(() => work(() => showOrientation())), "subtle"));
+    }
     actions.append(
       button(
         "Refresh occurrence",
@@ -2755,6 +2761,20 @@ export async function createStaffParticipationWorkspace({
     if (groupPane) await syncGroups(version);
     if (reminderPane) await syncReminders(version);
   }
+  async function showOrientation(participationId = null) {
+    const version = state.version, shiftId = state.target?.targetId;
+    if (!shiftId || !live(version) || !canUseOrientation()) return;
+    let pane;
+    const editor = await staffOrientationEditor({
+      orgId, shiftId, participationId, node, button, field,
+      request: (url, options) => paneRequest("orientation", url, options),
+      current: () => live(version) && canUseOrientation() && !!pane?.isConnected,
+      onDirty: dirty,
+    });
+    if (!live(version) || !canUseOrientation()) return;
+    pane = editor;
+    startForm(participationId ? "Review this volunteer’s site orientation" : "Review shift orientation", pane);
+  }
   function renderQueue() {
     clearCheckInReaders();
     const filter = node(
@@ -2834,6 +2854,11 @@ export async function createStaffParticipationWorkspace({
         intervalSchedule(row, state.detail?.terms || state.target?.terms),
       );
       const actions = node("div", { class: "actions" });
+      if (state.target?.moduleId === "volunteers" && canUseOrientation() &&
+          !row.recovered && !row.requestedInterval && row.state !== "cancelled") {
+        actions.append(button("Review site orientation", () =>
+          confirmDiscard(() => work(() => showOrientation(row.id))), "small subtle"));
+      }
       if (substitutionScope(row))
         actions.append(button("Review shift handoff options", () => {
           if (card.isConnected) return openSubstitution(row);

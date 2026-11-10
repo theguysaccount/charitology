@@ -104,7 +104,7 @@ import { readLearningReport } from "./learning-reports.mjs";
 import { isLearningReportFamily, restoredLearningBridge, restoreLearningBridge } from "./learning-backup.mjs";
 import { guardLearningWrite, learningWriteCapability } from "./learning-guards.mjs";
 import { checkLearningActiveRecords } from "./learning-history.mjs";
-import { assembleWorkspaceBackup } from "./workspace-backup.mjs";
+import { assembleWorkspaceBackup, checkWorkspaceExportCapacity } from "./workspace-backup.mjs";
 import { checkLearningRestoreCapacity } from "./learning-capacity.mjs";
 import { publicIntakeRoutes, intakeRoutes } from "./intake.mjs";
 import { feedbackIntakeDraftRoutes } from "./feedback-intake-draft.mjs";
@@ -113,6 +113,11 @@ import { canManageFeedbackIntake, requireFeedbackIntakeStaff } from "./feedback-
 import { FEEDBACK_INTAKE_HISTORY_SQL } from "./feedback-intake-capacity.mjs";
 import { feedbackBackupSQL, feedbackSafeAuditDetailSQL, linkedFeedbackDraftIds, scopedFeedbackAuditSQL, scopedFeedbackIntakeAuditSQL } from "./feedback-intake-privacy.mjs";
 import { participantRoutes } from "./participants.mjs";
+import { guardOrientationSource, restoredVolunteerOrientation } from "./volunteer-orientation-native.mjs";
+import { insertRecoveredVolunteerOrientationMarker } from "./volunteer-orientation-marker.mjs";
+import { volunteerOrientationRoutes } from "./volunteer-orientation-routes.mjs";
+import { volunteerOrientationStorageReady } from "./volunteer-orientation-storage.mjs";
+import { createMembershipRenewalRoute } from "./membership-renewal-routes.mjs";
 import { createVolunteerProfileRoute } from "./volunteer-profile-routes.mjs";
 import {
   participationRoutes,
@@ -179,6 +184,17 @@ function requireHandoffBackupAccess(backup, member) {
 const scopedHandoffAuditSQL = "AND action <> 'participation.substituted'";
 const scopedHandoffArchiveSQL = "AND NOT (payload ? 'volunteerSubstitutions')";
 
+function canReadOrientationHistory(member) {
+  return administrators(member.role) && Array.isArray(member.programIds) &&
+    member.programIds.length === 0 && modulePermissions("volunteers", member.role).read &&
+    modulePermissions("safeguarding", member.role).read;
+}
+function requireOrientationBackupAccess(backup, member) {
+  if (backup && Object.hasOwn(backup, "volunteerOrientation") && !canReadOrientationHistory(member))
+    fail(403, "orientation_backup_scope", "Whole-workspace access to Volunteers and Safeguarding is required for this backup.");
+}
+const scopedOrientationArchiveSQL = "AND NOT (payload ? 'volunteerOrientation')";
+
 async function resourceReservationFeatures(c, member) {
   if (!administrators(member.role) || !Array.isArray(member.programIds) || member.programIds.length)
     return {};
@@ -219,6 +235,8 @@ export function createHandler({
   send,
   volunteerSubstitutionRuntime = null,
   volunteerProfileConfig = null,
+  volunteerOrientationEnabled = false,
+  membershipRenewalConfig = null,
   participationTransport = participationMailer(settings),
 }) {
   if (volunteerSubstitutionRuntime !== null && !isVolunteerSubstitutionRuntime(volunteerSubstitutionRuntime))
@@ -227,6 +245,8 @@ export function createHandler({
   const profileSchema = value => typeof value === "string" && /^[a-z][a-z0-9_]{0,62}$/.test(value);
   const volunteerProfile = profileSchema(applicationSchema) && profileSchema(storageSchema) && storageSchema !== applicationSchema
     ? createVolunteerProfileRoute({ applicationSchema, storageSchema }) : null;
+  const membershipRenewal = membershipRenewalConfig
+    ? createMembershipRenewalRoute(membershipRenewalConfig) : null;
   const handle = async function handle(request) {
     try {
       const url = new URL(request.url),
@@ -389,6 +409,22 @@ export function createHandler({
           })),
         );
         const canReviewHandoffs = volunteerSubstitutionRuntime && orgs.some(canReadHandoffHistory);
+        let staffFeatures = {};
+        const candidate = (volunteerOrientationEnabled || membershipRenewal) &&
+          orgs.find((member) => administrators(member.role) && member.programIds?.length === 0);
+        if (candidate) {
+          try {
+            staffFeatures = await db.tx(session.user.id, candidate.id, async (c) => ({
+              ...(volunteerOrientationEnabled && canReadOrientationHistory(candidate) &&
+                await volunteerOrientationStorageReady(c) ? { volunteerOrientation: true } : {}),
+              ...(membershipRenewal && await membershipRenewal.staffAvailable(c, {
+                orgId: candidate.id, session,
+              }) ? { membershipRenewals: true } : {}),
+            }), { readOnly: true });
+          } catch {
+            // Optional catalogue checks cannot take away ordinary workspace access.
+          }
+        }
         return okay({
           user: {
             id: session.user.id,
@@ -399,6 +435,7 @@ export function createHandler({
           csrfToken: csrf(session.session.id, settings.secret),
           ...(canReviewHandoffs && await volunteerSubstitutionRuntime.discover(session)
             ? { volunteerSubstitutions: true } : {}),
+          ...staffFeatures,
         });
       }
       if (!session) fail(401, "session", "Sign in to continue.");
@@ -446,6 +483,10 @@ export function createHandler({
         const response = await volunteerProfile({ request, url, db, settings, session });
         if (response) return response;
       }
+      if (membershipRenewal) {
+        const response = await membershipRenewal({ request, url, db, settings, session });
+        if (response) return response;
+      }
       if (isResourceReservationPath(path))
         return resourceReservationRoutes({
           request, url, db, settings, session, auditReservation: audit,
@@ -464,8 +505,21 @@ export function createHandler({
             (request.headers.has("content-length") && request.headers.get("content-length") !== "0")))
           fail(400, "group_body", "Read group views without a request body.");
       }
+      const orientationPath = volunteerOrientationEnabled &&
+        /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/volunteer-orientation(?:\/|$)/.test(path);
+      if (orientationPath) {
+        if (!["GET", "POST"].includes(method))
+          fail(405, "volunteer_orientation_method", "Use the documented orientation review action.");
+        if (method === "POST" && !/^application\/json(?:;|$)/i.test(request.headers.get("content-type") || ""))
+          fail(415, "content_type", "Supply JSON.");
+        const read = method === "GET";
+        await db.limit(`volunteer-orientation-${read ? "read" : "write"}:${hash(session.user.id)}`,
+          read ? 120 : 60, 3600);
+      }
       const input = ["GET", "HEAD"].includes(method)
         ? {}
+        : orientationPath
+          ? await readBackupBody(request, 2048)
         : isParticipationGroupPath(path)
           ? await readParticipationGroupBody(request)
           : isParticipantCheckInPath(path)
@@ -559,6 +613,7 @@ export function createHandler({
           session,
           input,
           volunteerProfileAvailable: volunteerProfile?.available,
+          membershipRenewalAvailable: membershipRenewal?.available,
         });
         if (response) return response;
         fail(404, "route", "This route is unavailable.");
@@ -709,6 +764,14 @@ export function createHandler({
             settings,
           });
           if (attendanceResponse) return attendanceResponse;
+          if (orientationPath) {
+            const result = await volunteerOrientationRoutes({
+              c, org, session, tail, method, input, url,
+              settings: { ...settings, volunteerOrientation: true },
+              checkCapacity: checkWorkspaceExportCapacity,
+            });
+            if (result) return result;
+          }
           const checkInResponse = await staffCheckInRoutes({ c, org, member, tail, method, url });
           if (checkInResponse) return checkInResponse;
           const groupWriteResponse = await participationGroupWriteRoutes({ c, org, session, tail, method, input, url, settings });
@@ -813,6 +876,7 @@ export function createHandler({
             requireAdmin(member);
             const backup = await assembleWorkspaceBackup(c, org, { organization, records });
             requireHandoffBackupAccess(backup, member);
+            requireOrientationBackupAccess(backup, member);
             if (Buffer.byteLength(JSON.stringify(backup)) > 64 * 1024 * 1024)
               fail(422, "backup_size", "The complete workspace backup exceeds 64 MiB.");
             await audit(c, org, user, "backup.exported", null, {
@@ -835,7 +899,9 @@ export function createHandler({
               : null;
             if (migration) backup = migration.backup;
             requireHandoffBackupAccess(backup, member);
+            requireOrientationBackupAccess(backup, member);
             const imported = validateBackup(backup, org, user);
+            const orientation = restoredVolunteerOrientation(backup);
             const intake = restoredIntake(backup);
             if (intake?.publications.some(p => p.kind === "feedback"))
               await requireFeedbackIntakeStaff(c, org, session, { readOnly: false });
@@ -899,7 +965,7 @@ export function createHandler({
                 message:
                   "Restore into an empty organization, including its trash, to preserve existing records.",
               });
-            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present || resourceReservations || backup.participation?.version === 3))
+            if (!issues.length && (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present || orientation || resourceReservations || backup.participation?.version === 3))
               await checkLearningRestoreCapacity(c, backup, { orgId: org, actorId: user, baselineOrgId: org });
             const previewId = id(),
               base = hash(records.map((r) => [r.id, r.revision]));
@@ -948,6 +1014,9 @@ export function createHandler({
                 ...(fieldResponses.present ? [{ field: "reports", message: "Aggregate import manifests restore as historical data. They do not restore accepted commands, approval, credentials or current definition authority." }] : []),
                 ...(contactReconciliation.present ? [{ field: "reports", message: "Contact decisions restore as immutable historical data. Earlier commands, account relationships, consent and undo authority are not restored. Source trash remains in the retained source archive." }] : []),
                 ...(volunteerSubstitutions?.present ? [{ field: "volunteerSubstitutions", message: "Shift handoffs restore as inactive history. A new handoff needs both volunteers' current choices and a staff review." }] : []),
+                ...(orientation ? [{ field: "volunteerOrientation", message: orientation.restore
+                  ? "The shift keeps its orientation requirement and needs review before anyone is confirmed."
+                  : "The trashed shift and its orientation requirement stay in the source archive." }] : []),
                 ...(participationRecurrence.present ? [{field:"reports",message:participationRecurrenceRestoreWarning(participationRecurrence)}] : []),
                 ...(participationGroups === null ? [] : [{ field: "participationGroups", message: "Group decisions restore as inactive history. They restore no live places, consent, coordinator authority or command keys." }]),
                 ...(resourceReservations ? [{ field: "resourceReservations", message: "Room and equipment holds restore as inactive history. Review unresolved claims before reserving the same asset." }] : []),
@@ -991,6 +1060,7 @@ export function createHandler({
                 "This preview expired or has already been imported.",
               );
             requireHandoffBackupAccess(p.payload, member);
+            requireOrientationBackupAccess(p.payload, member);
             if (
               Number(
                 (
@@ -1009,6 +1079,7 @@ export function createHandler({
                 "Restore requires an empty, unchanged organization.",
               );
             const imported = validateBackup(p.payload, org, user);
+            const orientation = restoredVolunteerOrientation(p.payload);
             const connections = restoredIntegrations(p.payload);
             const intake = restoredIntake(p.payload);
             if (intake?.publications.some(p => p.kind === "feedback"))
@@ -1092,7 +1163,7 @@ export function createHandler({
                 "restore_conflict",
                 "Restore requires an organization without existing public intake records.",
               );
-            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present || resourceReservations || p.payload.participation?.version === 3)
+            if (learningBridge || incubatorBridge || participantCheckins !== null || participationGroups !== null || fieldResponses.present || contactReconciliation.present || participationRecurrence.present || volunteerSubstitutions?.present || orientation || resourceReservations || p.payload.participation?.version === 3)
               await checkLearningRestoreCapacity(c, p.payload, { orgId: org, actorId: user, baselineOrgId: org });
             await commitPreview(c, org, p.id);
             for (const connection of connections)
@@ -1153,6 +1224,8 @@ export function createHandler({
               );
             }
             await restoreIntake(c, org, user, intake);
+            if (orientation?.restore)
+              await insertRecoveredVolunteerOrientationMarker(c, org, user, orientation.marker);
             await restoreParticipation(c, org, user, participation);
             await restoreDelivery(c, org, user, delivery);
             await restoreTaskRecurrence(c, org, user, taskRecurrence);
@@ -1206,7 +1279,7 @@ export function createHandler({
                 await c.query(
                   `SELECT id,checksum,created_at AS "createdAt",committed_at AS "committedAt" FROM os_previews
                      WHERE org_id=$1 AND kind='backup' AND committed_at IS NOT NULL
-                     ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}${mayReadHandoffHistory ? "" : " " + scopedHandoffArchiveSQL} ORDER BY created_at DESC`,
+                     ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}${mayReadHandoffHistory ? "" : " " + scopedHandoffArchiveSQL}${canReadOrientationHistory(member) ? "" : " " + scopedOrientationArchiveSQL} ORDER BY created_at DESC`,
                   [org],
                 )
               ).rows,
@@ -1221,12 +1294,13 @@ export function createHandler({
               await c.query(
                 `SELECT payload, ${feedbackBackupSQL} AS feedback FROM os_previews
                    WHERE org_id=$1 AND id=$2 AND kind='backup' AND committed_at IS NOT NULL
-                   ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}${mayReadHandoffHistory ? "" : " " + scopedHandoffArchiveSQL}`,
+                   ${mayReadFeedback ? "" : `AND NOT ${feedbackBackupSQL}`}${mayReadHandoffHistory ? "" : " " + scopedHandoffArchiveSQL}${canReadOrientationHistory(member) ? "" : " " + scopedOrientationArchiveSQL}`,
                 [org, archiveMatch[1]],
               )
             ).rows[0];
             if (!archive) fail(404, "backup", "Import archive not found.");
             requireHandoffBackupAccess(archive.payload, member);
+            requireOrientationBackupAccess(archive.payload, member);
             if (archive.feedback === true)
               await requireFeedbackIntakeStaff(c, org, session, { readOnly: true });
             return downloadJson(
@@ -1622,6 +1696,7 @@ export function createHandler({
             await guardLearningWrite(c, record, { operation: "delete" });
             await guardResourceReservationWrite(c, record, { operation: "delete" });
             await guardVolunteerSubstitutionRecord(c, record, { operation: "delete" });
+            await guardOrientationSource(c, record, true);
             const linked = records.some(
               (r) =>
                 r.id !== record.id &&

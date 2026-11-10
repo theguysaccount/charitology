@@ -22,6 +22,7 @@ import { CONTACT_PREVIEW_KIND, validateContactReconciliationPreviewRow } from ".
 import { validateStoredGrantInventory, GRANT_HISTORY_FIELD_PROFILE_SHA256 } from "./grant-report-history.mjs";
 import { validateContactLearningClosure, CONTACT_LEARNING_REFERENCE_PROFILE_SHA256 } from "./contact-known-history.mjs";
 import { isVolunteerSubstitutionNativeReport } from "./volunteer-substitution-native.mjs";
+import { isVolunteerOrientationMarkerRow, validateVolunteerOrientationMarkerRow } from "./volunteer-orientation-marker.mjs";
 import { VOLUNTEER_SUBSTITUTION_OFFER_KIND } from "./volunteer-substitution-offer.mjs";
 import { volunteerSubstitutionAccessReady } from "./volunteer-substitution-schema.mjs";
 import {
@@ -700,6 +701,15 @@ async function readContext(c, input, inverse) {
               const value = contactSubstitutionReport(row, entry.row_key, entry.created_exact);
               need(hasSubstitutions || value.source === "recovered");
               substitutionRow = { family: "reports", value };
+            } else if (isVolunteerOrientationMarkerRow(row)) {
+              exact(row, CONTACT_CONTEXT_CATALOG.os_reports);
+              const { marker } = validateVolunteerOrientationMarkerRow(row, org);
+              const shift = currentRecords.find((record) => record.id === marker.targetId);
+              const program = currentRecords.find((record) => record.id === marker.programId);
+              need(shift?.moduleId === "volunteers" && shift.data.kind === "shift" &&
+                shift.data.programId === marker.programId && program?.moduleId === "programs" &&
+                program.data.kind === "program");
+              reportClass = { kind: "orientation" };
             } else { reportClass = classifyReport(row.payload); need(reportClass); }
             if (reportClass?.kind === 'recurrence') { const admitted=validateRecurringOccurrenceReportRow({...row,created_at:entry.created_exact}); recurrenceReports.set(admitted.id,admitted.payload); }
             if (reportClass?.kind === "contact") {
@@ -839,7 +849,7 @@ async function readContext(c, input, inverse) {
           if (preserved) preservedAudits.push([entry.row_key, pin, row.record_id]);
           // FIELD's validated mapping/created pins are Programs/Outcomes only.
           // Known CRM previews and linked audit metadata are passive bookkeeping.
-          const affected = preserved || passiveAudit || passiveFeedbackRow || table === "os_previews" || table === "os_learning_history" || ["field", "grant-history", "learning-history"].includes(reportClass?.kind) ? empty()
+          const affected = preserved || passiveAudit || passiveFeedbackRow || table === "os_previews" || table === "os_learning_history" || ["field", "grant-history", "learning-history", "orientation"].includes(reportClass?.kind) ? empty()
             : reportClass?.kind === "contact" ? contactReportReferences(reportClass.payload, chosen) : reportClass?.kind === "recurrence" ? recurrenceReportReferences(reportClass.payload, maps, recordModules, org) : jobReferences ?? scan(row, maps, chosen, budget);
           if (table === "os_events" && !preserved && affected.size && ["record.created", "record.updated", "record.deleted", "record.restored"].includes(row.action) && row.module_id === "contacts") reconcile();
           if (table === "os_publications") for (const x of get(maps.publication, row.id)) affected.add(x);

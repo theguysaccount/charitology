@@ -5,6 +5,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import * as participation from "../lib/participation.mjs";
 import { hash } from "../lib/security.mjs";
+import { VOLUNTEER_ORIENTATION_MARKER_SQL } from "../lib/volunteer-orientation-marker.mjs";
 
 const ORG = "fictional_org", member = { role: "owner", programIds: [], revision: 1 };
 const at = "2099-01-02T08:00:00.123456Z", expires = "2099-01-02T08:10:00.123456Z";
@@ -39,6 +40,7 @@ function fixture({ moduleId = "volunteers", partial = true } = {}) {
     waitlist.push(p); return p;
   };
   f.c = { async query(sql, values) {
+    if (sql === VOLUNTEER_ORIENTATION_MARKER_SQL) return {rows: []};
     calls.push({ sql, values });
     if (sql.startsWith("WITH moment AS MATERIALIZED")) return { rows: [{ at_exact: at, expires_at_exact: expires,
       epoch_microseconds: (BigInt(Date.parse(at.slice(0, 23) + "Z")) * 1000n + 456n).toString(), within_window: true }] };

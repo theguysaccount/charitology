@@ -9,6 +9,7 @@ import { frozenParticipationInterval } from "./participation-intervals.mjs";
 import { fail, hash, id } from "./security.mjs";
 import { requireVolunteerSubstitutionAccess } from "./volunteer-substitution-schema.mjs";
 import { consumeVolunteerSubstitutionFreshWrite } from "./volunteer-substitution-rate.mjs";
+import { refuseProtectedVolunteerOrientation } from "./volunteer-orientation-marker.mjs";
 
 export const VOLUNTEER_SUBSTITUTION_OFFER_KIND = "volunteer-substitution-offer-v1";
 const FORMAT = "charitology-volunteer-substitution-offer";
@@ -225,6 +226,7 @@ export async function readVolunteerSubstitutionOptions(c, raw) {
     outgoingAssignment?.moduleId==="volunteers" && outgoingAssignment.data.kind==="assignment" &&
     outgoingAssignment.data.shiftId===shiftId && outgoingAssignment.data.contactId===outgoing.contact_id &&
     outgoingAssignment.status==="assigned" && revision(outgoing.revision));
+  await refuseProtectedVolunteerOrientation(c, orgId, source);
   const terms = participationTerms(source);
   const startsAt = exactRangeTime(terms.startAt), endsAt = exactRangeTime(terms.endAt);
   const serverClock = await readParticipationDomainClock(c);
@@ -275,6 +277,7 @@ export async function issueVolunteerSubstitutionOffer(c, raw) {
   need(input.outgoing.id !== input.replacement.id,invalid);
   const issuer = await currentStaff(c,input.orgId,input.session,false);
   const graph = await readGraph(c,input,true);
+  await refuseProtectedVolunteerOrientation(c, input.orgId, {id: input.shiftId, moduleId: "volunteers"});
   const placeIds = [input.outgoing.id,input.replacement.id];
   const pending = resultRows(await c.query(staffOverlap+" FOR SHARE OF p",[input.orgId,KIND,placeIds]),2);
   const clock = await readParticipationDomainClock(c);
@@ -318,6 +321,7 @@ export async function readVolunteerSubstitutionOfferForStaff(c, raw) {
   const retained = rowOf(found,input.orgId);
   await requireCurrentIssuer(c,retained);
   const graph = await readGraph(c,retained.offer,!input.readOnly);
+  await refuseProtectedVolunteerOrientation(c, input.orgId, {id: retained.offer.shiftId, moduleId: "volunteers"});
   const clock = await readParticipationDomainClock(c);
   need(graph.scopeSha256 === retained.offer.scopeSha256 && retained.offer.issuedAtExact <= clock.atExact &&
     clock.atExact < retained.offer.expiresAtExact && retained.offer.expiresAtExact <= graph.startsAtExact,stale);

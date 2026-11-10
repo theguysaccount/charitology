@@ -11,6 +11,7 @@ import {
 } from "./api.js";
 import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
+import { mountMembershipRenewal } from "./membership-renewal.js";
 import { createGrantReportWorkspace } from "./grant-reports.js";
 import { createLearningWorkspace } from "./learning.js";
 import { createIncubatorBridgeWorkspace } from "./incubator-bridge.js";
@@ -1024,6 +1025,10 @@ async function route() {
         isCurrent: () => current === state.epoch && orgId === state.org && participationSession === state.session && participationRole === role(),
         canUseSubstitutions: () => !!substitutionMember && participationSession === state.session &&
           orgId === state.org && volunteerSubstitutionMember() === substitutionMember,
+        canUseOrientation: () => state.session === participationSession &&
+          state.session?.volunteerOrientation === true && admin() &&
+          Array.isArray(activeOrg()?.programIds) && activeOrg().programIds.length === 0 &&
+          ["volunteers", "safeguarding"].every(id => can(moduleById(id), "read", role())),
         onChanged: () => {
           invalidateModules(orgId, ["events", "volunteers"]);
           renderNav();
@@ -5273,6 +5278,10 @@ async function openIntakeSubmission(org, id, publications) {
     (item) => item.id === submission.publicationId,
   );
   const feedback = submission.kind === "feedback";
+  const membershipMount = session?.membershipRenewals === true && admin() &&
+    activeOrg()?.programIds?.length === 0 && submission.kind === "contact" &&
+    submission.status === "converted" && !submission.erasedAt
+    ? node("section", { class: "panel stack full-width", "aria-label": "Membership renewal" }) : null;
   const pendingKey = feedbackDraftIntentKey(org, session?.user?.id, id);
   const mount = feedback && (feedbackDraftIntents.has(pendingKey) ||
     submission.status === "reviewed" && !submission.erasedAt || submission.convertedIds?.length > 0)
@@ -5456,9 +5465,22 @@ async function openIntakeSubmission(org, id, publications) {
     feedback ? "Anonymous feedback" : "Private request",
     publication?.title || (feedback ? "Review a response" : "Review a request"),
     "Close",
-    [...fields, mount],
+    [...fields, mount, membershipMount],
     async () => closeSavedEditor(),
   );
+  if (membershipMount) {
+    const editor = state.editor;
+    const current = () => state.org === org && state.epoch === epoch && state.session === session &&
+      state.editor === editor && $("#editor-dialog").open;
+    membershipMount.append(button("Review membership renewal", () => {
+      if (!current()) return;
+      mountMembershipRenewal(membershipMount, {
+        orgId: org, intakeId: id, staff: true, request: apiRequest, node, current,
+        loadRecords: () => allRecords(org, "memberships"),
+        onChanged: () => invalidateModules(org, ["memberships"]),
+      });
+    }, "subtle"));
+  }
   if (mount) {
     const editor = state.editor;
     const current = () => state.org === org && state.epoch === epoch &&
