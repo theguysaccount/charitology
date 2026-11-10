@@ -32,7 +32,7 @@ export function mountMembershipRenewal(host, {
 
   function action(label, fn, primary = false) {
     const control = node("button", { type: "button", class: primary ? "button primary" : "button subtle" }, label);
-    control.addEventListener("click", () => { if (live() && !busy) void fn(); });
+    control.addEventListener("click", () => { if (control.isConnected && live() && !busy) void fn(); });
     return control;
   }
   function message(text, problem = false) {
