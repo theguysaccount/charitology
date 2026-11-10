@@ -10,6 +10,10 @@ const files = [
   "src/pages/for-charities/os-plan.astro",
   "src/components/DepthCensus.astro",
   "src/components/ReaderNotebook.astro",
+  "src/components/CharityFinancialSearch.astro",
+  "src/components/EwCharityFinancialSearch.astro",
+  "src/components/UsCharityFinancialSearch.astro",
+  "src/components/RegistrySearch.astro",
   ...[
     "country-profiles",
     "charitology-100",
