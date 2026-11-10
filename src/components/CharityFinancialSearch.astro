@@ -30,7 +30,7 @@ import '../styles/charity-financial-search.css';
   import { loadVerifiedJson } from '../lib/client/verified-json';
   import { financialQuery, searchFinancials, validateFinancialRows } from '../lib/charity-financials.mjs';
 
-  type Manifest = typeof import('../../public/data/charity-financials/manifest.json').default;
+  type Manifest = typeof import('../../public/data/charity-financials/manifest.json');
   type Period = [number, string, string, 'y' | 'n' | null, 'Cash' | 'Accrual' | null, number,
     number | null, number | null, number | null, number | null, number | null];
   type Organization = [string, string, Period[]];

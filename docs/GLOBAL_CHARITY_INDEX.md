@@ -43,3 +43,16 @@ Rebuild offline from the exact `charity-register.zip` and `annual-return-history
 python3 scripts/build-ew-charity-financials.py /path/to/captured-inputs /path/to/new-rebuild
 node scripts/check-ew-charity-financials.mjs
 ```
+
+## United States Form 990 financial extracts
+
+The [U.S. financial filings page](https://charitology.org/record/charity-financials/united-states/) uses the IRS's processed extracts for the 2023 and 2024 filing calendar years. It includes 516,109 periods for 277,047 EINs with subsection code 03 on full Form 990. The periods end in 2022–2024. The source supplies the tax-period end month rather than a start date or day. The projected fields are revenue, functional expenses, program service revenue, grants to U.S. governments and organizations, and grants to organizations and individuals outside the U.S. Source record numbers count CSV records after the header.
+
+The name lookup and the finances remain separate editions. A match means the exact EIN appears in the October 13, 2026 EO BMF identity snapshot. The data retain historical EINs without a registry match. The extract is selected and processed by the IRS, so compare the original filed return before attributing a difference to the organization. The edition does not cover short returns, private-foundation returns or electronic notices. The [financial manifest](../public/data/charity-financials/us/manifest.json) describes selection counts, file checksums and published shards. The browser loads only the two-digit EIN partition after an explicit search.
+
+Rebuild using the two IRS ZIPs and their XLSX documentation files, together with the pinned EO BMF snapshot from this source edition. The generated directory must be new.
+
+```sh
+python3 scripts/build-us-charity-financials.py /path/to/captures public/data/irs-registry /path/to/new-rebuild
+node scripts/check-us-charity-financials.mjs
+```

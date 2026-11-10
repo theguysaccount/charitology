@@ -1,0 +1,151 @@
+---
+import manifest from '../../public/data/charity-financials/us/manifest.json';
+import { url } from '../lib/site';
+import '../styles/charity-financial-search.css';
+---
+
+<section class="charity-financial-search" data-us-finance data-base={url('/data/charity-financials/us/')} data-registry={url('/record/charity-index/')} data-manifest={JSON.stringify(manifest)} aria-labelledby="us-finance-heading">
+  <h2 id="us-finance-heading">Search Form 990 extracts</h2>
+  <p id="us-finance-hint">Enter all nine digits of an Employer Identification Number (EIN). To find a number by name, use the <a href={url('/record/charity-index/')}>IRS identity lookup</a>. Search requests only the data shard for the first two digits. The complete EIN stays in the browser.</p>
+  <form aria-describedby="us-finance-hint">
+    <label for="us-finance-query">Employer Identification Number</label>
+    <div class="finance-actions">
+      <input id="us-finance-query" name="q" type="search" maxlength="10" autocomplete="off" disabled />
+      <button class="btn" type="submit" disabled>Search extracts</button>
+      <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+    </div>
+  </form>
+  <p role="status" data-status>Search when you’re ready to load the data.</p>
+  <div class="finance-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export result as JSON</button>
+    <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export result as CSV</button>
+  </div>
+  <ol class="finance-results" data-results aria-label="United States Form 990 financial results"></ol>
+  <noscript><p>For search without JavaScript, use the original IRS ZIP archives in the coverage section.</p></noscript>
+</section>
+
+<script>
+  import { $, h } from '../lib/client/dom';
+  import { download, toCsv } from '../lib/client/files';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../lib/client/verified-json';
+  import { normalizeEin } from '../lib/irs-registry.mjs';
+
+  type Reference = [number, number];
+  type Period = [string, string | null, string | null, string | null, string | null, string | null, Reference[]];
+  type Organization = [string, boolean, Period[]];
+  type Manifest = { capturedOn: string; currency: string; form: string; registry: {date: string; manifestSha256: string};
+    sources: Record<string, {archive: string; sha256: string; documentation: string; documentationSha256: string}>;
+    shards: Record<string, VerifiedJsonAsset & { path: string; rows: number }>; periodFields: string[] };
+
+  const fields = ['Total revenue', 'Total functional expenses', 'Program service revenue',
+    'Grants to US governments and organizations', 'Grants to organizations and individuals outside the US'];
+  const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-us-finance]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let result: Organization | undefined;
+    let cache: { prefix: string; pending: Promise<unknown> } | undefined;
+    let sequence = 0;
+    const prefilled = new URLSearchParams(location.hash.slice(1)).get('ein');
+    if (prefilled && /^(?:[0-9]{9}|[0-9]{2}-[0-9]{7})$/.test(prefilled)) input.value = prefilled;
+    input.disabled = submit.disabled = clear.disabled = false;
+
+    function reset() {
+      result = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function filing([month, revenue, expenses, programRevenue, grantsUS, grantsOutsideUS, references]: Period) {
+      const amounts = [revenue, expenses, programRevenue, grantsUS, grantsOutsideUS];
+      return h('section', { class: 'finance-period' }, h('h4', {}, `Tax period ended ${month}`),
+        h('dl', { class: 'finance-amounts' }, fields.map((label, index) => {
+          const amount = amounts[index];
+          return h('div', {}, h('dt', {}, label), h('dd', {}, amount === null ? 'Not supplied' : currency.format(Number(amount))));
+        })),
+        references.map(([year, record]) => h('p', { class: 'note' },
+          h('a', { href: manifest.sources[year].archive }, `IRS calendar-year ${year} extract`), ` · data record ${record} after the header.`)));
+    }
+
+    async function lookup(ein: string) {
+      const prefix = ein.slice(0, 2);
+      const asset = manifest.shards[prefix];
+      if (!asset) return undefined;
+      if (cache?.prefix !== prefix) {
+        const pending = loadVerifiedJson(root.dataset.base! + asset.path, asset);
+        cache = { prefix, pending };
+        void pending.catch(() => { if (cache?.pending === pending) cache = undefined; });
+      }
+      const rows = await cache.pending;
+      if (!Array.isArray(rows) || rows.length !== asset.rows) throw new Error('The financial extract has an unexpected row count.');
+      return (rows as Organization[]).find(([number]) => number === ein);
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      status.textContent = 'Checking the public Form 990 extract.';
+      try {
+        const ein = normalizeEin(input.value);
+        const row = await lookup(ein);
+        if (ticket !== sequence) return;
+        if (!row) {
+          status.textContent = 'This EIN has no matching return in the two extracts and periods covered here.';
+          return;
+        }
+        result = row;
+        const [number, registryMatch, history] = row;
+        const displayEin = number.slice(0, 2) + '-' + number.slice(2);
+        status.textContent = `${history.length} ${history.length === 1 ? 'period' : 'periods'} for EIN ${displayEin}.`;
+        results.append(h('li', { class: 'card' }, h('h3', {}, `Form 990 · EIN ${displayEin}`),
+          h('p', { class: 'note' }, registryMatch
+            ? h('a', { href: root.dataset.registry! + '#q=' + number }, `Find this EIN in the ${manifest.registry.date} IRS identity snapshot`)
+            : `No exact EIN match in the ${manifest.registry.date} IRS identity snapshot.`),
+          history.map(filing)));
+        json.disabled = csv.disabled = false;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The financial search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      input.value = '';
+      submit.disabled = false;
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { capturedOn, currency: currencyCode, form: formType, registry, sources, periodFields } = manifest;
+    function sourceRows(history: Period[]) {
+      return history.map(period => Object.fromEntries(periodFields.map((field, index) => [field, period[index]])));
+    }
+    json.addEventListener('click', () => {
+      if (!result) return;
+      const [ein, registryMatch, history] = result;
+      const exported = { ein, registryMatch, capturedOn, currency: currencyCode, form: formType, registry, sources, periods: sourceRows(history) };
+      download('irs-form-990-financial-search.json', JSON.stringify(exported, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!result) return;
+      const [ein, registryMatch, history] = result;
+      const rows = sourceRows(history).flatMap(({ sourceRecords, ...period }) => (sourceRecords as Reference[]).map(([year, sourceRecord]) => ({
+        ein, registryMatch, registryDate: registry.date, registryManifestSha256: registry.manifestSha256, currency: currencyCode,
+        form: formType, ...period, calendarYearFiled: year, sourceRecord, capturedOn, publisher: 'Internal Revenue Service',
+        source: sources[year].archive, sourceSha256: sources[year].sha256,
+      })));
+      download('irs-form-990-financial-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>
