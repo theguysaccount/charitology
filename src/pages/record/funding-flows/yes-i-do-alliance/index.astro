@@ -1,0 +1,94 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import data from '../../../../data/funding-flows/yes-i-do.json';
+
+const title = 'Following money through the Yes I Do Alliance';
+const route = '/record/funding-flows/yes-i-do-alliance/';
+const guidance = 'https://reference.iatistandard.org/en/guidance/standard-guidance/traceability/';
+const format = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+const source = (key: string) => data.sources[key as keyof typeof data.sources];
+const sources = Object.values(data.sources).map(item => ({ title: item.activityId, publisher: item.publisher, url: item.sourceUrl }));
+const exact = data.routes.reduce((sum, item) => sum + item.pairs.filter(pair => pair.daysApart === 0).length, 0);
+const near = data.routes.reduce((sum, item) => sum + item.pairs.filter(pair => pair.daysApart !== 0).length, 0);
+const amount = (value: string) => format.format(Number(value));
+const dateAndValue = (row: {date: string; valueDate: string; amount: string}) =>
+  `${amount(row.amount)} on ${row.date}${row.valueDate === row.date ? '' : ` (value date ${row.valueDate})`}`;
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Compare what a government funder, international charities and country partners published about the movement of money through one program." crumbs={[{label:'The Record',href:'/record/'},{label:'Gap Map',href:'/record/gap-map/'},{label:title}]} sources={sources}>
+  <p>Six publishers describe activities in the Yes I Do Alliance, which worked on child marriage, early pregnancy, and female genital mutilation and cutting. The source files connect the Dutch Ministry of Foreign Affairs to Plan International Netherlands, Plan to Amref Flying Doctors Netherlands, and Amref Netherlands to partners in Ethiopia, Kenya and Malawi. This case follows the public records along those routes.</p>
+  <h2>Two views of a transfer</h2>
+  <p>Plan reported a <strong>€321,108 disbursement</strong> to Amref on April 7, 2020. Amref reported the same amount and date as incoming funds and named Plan’s exact activity as the source. The two records are candidate views of one transfer. Adding both amounts would double count the candidate.</p>
+  <p>Across all five routes, {exact} pairs have the same reported date and amount. A further {near} have the same amount with dates up to {data.candidateDateWindowDays} days apart. No shared transaction identifier was established across publishers. These comparisons preserve both reporting dates and any records left unmatched.</p>
+  <h2>Reported records by route</h2>
+  <div class="flow-routes">
+    {data.routes.map(item => {
+      const sender = source(item.from);
+      const recipient = source(item.to);
+      const sent = new Map(item.outgoing.map(row => [row.position, row]));
+      const received = new Map(item.incoming.map(row => [row.position, row]));
+      return <details>
+        <summary>{sender.publisher} to {recipient.publisher} · {item.pairs.length} candidate {item.pairs.length === 1 ? 'pair' : 'pairs'}</summary>
+        <p>{item.outgoing.length} published disbursement {item.outgoing.length === 1 ? 'record' : 'records'} and {item.incoming.length} qualifying incoming {item.incoming.length === 1 ? 'record' : 'records'}.</p>
+        {item.from === 'ministry' && <p>The ministry identifies Plan as an implementing organization on the activity. Its disbursement rows lack a recipient identifier. Plan’s incoming rows name the ministry and its exact activity.</p>}
+        {item.to === 'ethiopia' && <p>The Ethiopian activity carries no transactions in this capture. The outgoing records are available from the Dutch publisher.</p>}
+        {item.to === 'malawi' && <p>One additional Malawi receipt record names a different provider organization and activity identifier. It falls outside this exact-identifier comparison.</p>}
+        {item.pairs.length > 0 && <ul>{item.pairs.map(pair => {
+          const first = sent.get(pair.outgoing)!;
+          const second = received.get(pair.incoming)!;
+          return <li>
+            <strong>{pair.daysApart === 0 ? 'Same date and amount' : 'Same amount with different dates'}</strong>
+            <div>Disbursement {dateAndValue(first)} · transaction {first.position}{first.ref && ` · reference ${first.ref}`}</div>
+            <div>Incoming funds {dateAndValue(second)} · transaction {second.position}{second.ref && ` · reference ${second.ref}`}</div>
+          </li>;
+        })}</ul>}
+        {(item.unmatchedOutgoing.length > 0 || item.unmatchedIncoming.length > 0) && <>
+          <h3>Records without a pair</h3>
+          <ul>
+            {item.unmatchedOutgoing.map(position => <li>Disbursement {dateAndValue(sent.get(position)!)} · transaction {position}</li>)}
+            {item.unmatchedIncoming.map(position => <li>Incoming funds {dateAndValue(received.get(position)!)} · transaction {position}</li>)}
+          </ul>
+        </>}
+        <p><a href={sender.sourceUrl}>Publisher’s outgoing source</a> · <a href={recipient.sourceUrl}>Publisher’s incoming source</a>.</p>
+      </details>;
+    })}
+  </div>
+  <h2>How the comparison works</h2>
+  <p>The comparison uses published IATI activity and organization identifiers. Within each route, it first pairs unique same-day records with the same signed euro amount. It then pairs remaining same-amount records only when each has one counterpart within {data.candidateDateWindowDays} days. The chosen date window is a Charitology rule for this case. Different amounts and ambiguous candidates stay separate.</p>
+  <p>The records describe disbursements and incoming funds. They do not identify which particular upstream euro paid for a later disbursement or what reached the people the program aimed to serve. Adding stages would count some of the same money again. The case excludes spending, commitments, other alliance partners and results indicators.</p>
+  <div class="btn-row"><button class="btn btn-ghost btn-small" type="button" data-save-case={url(route + 'data.json')} disabled>Save the records and matching decisions</button><a href={url(route + 'data.json')}>Open the JSON data</a></div>
+  <p role="status" data-case-status></p>
+  <p>The export identifies the publishing organization, source file, activity, transaction position and reference where supplied. Source fingerprints and licence codes come from the captured files and <a href={data.metadataIndex.url}>IATI dataset metadata</a>. Charitology selected factual fields for this comparison. See the <a href={guidance}>IATI traceability guidance</a> for transaction types and activity references.</p>
+</Entry>
+
+<script>
+  import { download } from '../../../../lib/client/files';
+
+  const button = document.querySelector<HTMLButtonElement>('[data-save-case]');
+  const status = document.querySelector<HTMLElement>('[data-case-status]');
+  if (button && status) {
+    button.disabled = false;
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      status.textContent = 'Loading the public case records.';
+      try {
+        const response = await fetch(button.dataset.saveCase!, { credentials: 'omit', redirect: 'error', signal: AbortSignal.timeout(20_000) });
+        if (!response.ok) throw new Error('The case download is unavailable.');
+        download('yes-i-do-alliance-funding-flows.json', await response.blob());
+        status.textContent = 'The JSON file is ready to save.';
+      } catch {
+        status.textContent = 'The file could not be downloaded. Try again or open the JSON data.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .flow-routes { display: grid; gap: .65rem; }
+  .flow-routes details { border: 1px solid var(--line); border-radius: .5rem; padding: .7rem .9rem; overflow-wrap: anywhere; }
+  .flow-routes summary { cursor: pointer; min-height: 2.75rem; align-content: center; font-weight: 600; }
+  .flow-routes li + li { margin-block-start: .6rem; }
+</style>

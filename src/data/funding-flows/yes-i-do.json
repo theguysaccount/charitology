@@ -1,0 +1,894 @@
+{
+  "schema": "charitology-iati-transfer-trace-v1",
+  "capturedOn": "2026-11-10",
+  "currency": "EUR",
+  "metadataIndex": {
+    "url": "https://bulk-data.iatistandard.org/datasets-full",
+    "sha256": "d8a8d282be2a585c330b36769feac1ad848d0db07b994001acde9ada8898969e",
+    "created": "2026-11-10 14:55:21+00:00"
+  },
+  "sources": {
+    "ministry": {
+      "publisher": "Netherlands Ministry of Foreign Affairs",
+      "organizationId": "XM-DAC-7",
+      "activityId": "XM-DAC-7-PPR-28431",
+      "dataset": "minbuza_nl-activities20162017",
+      "sourceUrl": "https://static.rijksoverheid.nl/bz/IATIACTIVITIES20162017.xml",
+      "licenseCode": "cc-zero",
+      "sha256": "97783a0c63112219997677f3db06bd0b761553a17ebd3dc1912679e776222ac5",
+      "transactionsInActivity": 9
+    },
+    "plan": {
+      "publisher": "Plan International Netherlands",
+      "organizationId": "NL-KVK-41198890",
+      "activityId": "NL-KVK-41198890-YID",
+      "dataset": "plannlno-ao",
+      "sourceUrl": "https://iati-website-assets.s3.eu-west-1.amazonaws.com/NL-KVK-41198890-IATI-Activity-File.xml",
+      "licenseCode": "cc-by",
+      "sha256": "51759596f070834a04178dc99870e2ce575dd8b7bb895e8d0daf36bdf705b9b9",
+      "transactionsInActivity": 97
+    },
+    "amref": {
+      "publisher": "Amref Flying Doctors Netherlands",
+      "organizationId": "NL-KVK-41150298",
+      "activityId": "NL-KVK-41150298-4203",
+      "dataset": "amrefnl-activity",
+      "sourceUrl": "https://aidstream.s3.us-west-2.amazonaws.com/xml/amrefnl-activities.xml",
+      "licenseCode": "other-open",
+      "sha256": "0a266c998defb348b91d2f7605e89400930d5ae39d076f18bc548cca002b6cef",
+      "transactionsInActivity": 62
+    },
+    "ethiopia": {
+      "publisher": "Amref Health Africa in Ethiopia",
+      "organizationId": "ET-MFA-0001989741",
+      "activityId": "ET-MFA-0001989741-R177",
+      "dataset": "amrefeth-et",
+      "sourceUrl": "https://aidstream.s3.us-west-2.amazonaws.com/xml/amrefeth-et.xml",
+      "licenseCode": "other-open",
+      "sha256": "5fabb5d69fb03a02aeabe3bf6aba9eefd15a7f1d71a1dba84d5f4185a8310fce",
+      "transactionsInActivity": 0
+    },
+    "kenya": {
+      "publisher": "Amref Health Africa in Kenya",
+      "organizationId": "KE-NCB-93175",
+      "activityId": "KE-NCB-93175-C237",
+      "dataset": "amrefkenya-activity",
+      "sourceUrl": "https://aidstream.s3.us-west-2.amazonaws.com/xml/amrefkenya-activities.xml",
+      "licenseCode": "odc-by",
+      "sha256": "c507f7b62c2414e88d9ee27f09bbc1de3a0d9cb15c8d257851f4cea3267eed65",
+      "transactionsInActivity": 18
+    },
+    "malawi": {
+      "publisher": "Amref Health Africa in Malawi",
+      "organizationId": "MW-NBM-R1527",
+      "activityId": "MW-NBM-R1527-W106",
+      "dataset": "amrefmw-activities",
+      "sourceUrl": "https://aidstream.s3.us-west-2.amazonaws.com/xml/amrefmw-activities.xml",
+      "licenseCode": "other-open",
+      "sha256": "098e33f8ae43f0a17ec970cc32d7883ec6f88eb09d17e2124af0251408c45212",
+      "transactionsInActivity": 12
+    }
+  },
+  "candidateDateWindowDays": 45,
+  "routes": [
+    {
+      "from": "ministry",
+      "to": "plan",
+      "outgoing": [
+        {
+          "position": 1,
+          "ref": null,
+          "date": "2016-02-08",
+          "valueDate": "2016-02-08",
+          "amount": "3465449",
+          "currency": "EUR"
+        },
+        {
+          "position": 2,
+          "ref": null,
+          "date": "2022-01-13",
+          "valueDate": "2022-01-13",
+          "amount": "262714",
+          "currency": "EUR"
+        },
+        {
+          "position": 3,
+          "ref": null,
+          "date": "2016-09-05",
+          "valueDate": "2016-09-05",
+          "amount": "2697462",
+          "currency": "EUR"
+        },
+        {
+          "position": 4,
+          "ref": null,
+          "date": "2017-04-06",
+          "valueDate": "2017-04-06",
+          "amount": "6314634",
+          "currency": "EUR"
+        },
+        {
+          "position": 5,
+          "ref": null,
+          "date": "2018-03-28",
+          "valueDate": "2018-03-28",
+          "amount": "6422133",
+          "currency": "EUR"
+        },
+        {
+          "position": 6,
+          "ref": null,
+          "date": "2019-03-05",
+          "valueDate": "2019-03-05",
+          "amount": "5244182",
+          "currency": "EUR"
+        },
+        {
+          "position": 7,
+          "ref": null,
+          "date": "2020-02-20",
+          "valueDate": "2020-02-20",
+          "amount": "3224690",
+          "currency": "EUR"
+        }
+      ],
+      "incoming": [
+        {
+          "position": 1,
+          "ref": null,
+          "date": "2016-02-29",
+          "valueDate": "2016-02-29",
+          "amount": "222840",
+          "currency": "EUR"
+        },
+        {
+          "position": 2,
+          "ref": null,
+          "date": "2016-02-29",
+          "valueDate": "2016-02-29",
+          "amount": "3465449",
+          "currency": "EUR"
+        },
+        {
+          "position": 3,
+          "ref": null,
+          "date": "2016-09-30",
+          "valueDate": "2016-09-30",
+          "amount": "2697462",
+          "currency": "EUR"
+        },
+        {
+          "position": 4,
+          "ref": null,
+          "date": "2016-12-31",
+          "valueDate": "2016-12-31",
+          "amount": "5216",
+          "currency": "EUR"
+        },
+        {
+          "position": 5,
+          "ref": null,
+          "date": "2022-01-14",
+          "valueDate": "2022-01-14",
+          "amount": "262714",
+          "currency": "EUR"
+        },
+        {
+          "position": 6,
+          "ref": null,
+          "date": "2018-03-29",
+          "valueDate": "2018-03-29",
+          "amount": "6422133",
+          "currency": "EUR"
+        },
+        {
+          "position": 7,
+          "ref": null,
+          "date": "2017-04-10",
+          "valueDate": "2017-04-10",
+          "amount": "6314634",
+          "currency": "EUR"
+        },
+        {
+          "position": 8,
+          "ref": null,
+          "date": "2020-03-02",
+          "valueDate": "2020-03-02",
+          "amount": "3224690",
+          "currency": "EUR"
+        },
+        {
+          "position": 9,
+          "ref": null,
+          "date": "2019-03-06",
+          "valueDate": "2019-03-06",
+          "amount": "5244182",
+          "currency": "EUR"
+        }
+      ],
+      "pairs": [
+        {
+          "outgoing": 1,
+          "incoming": 2,
+          "daysApart": 21,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 2,
+          "incoming": 5,
+          "daysApart": 1,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 3,
+          "incoming": 3,
+          "daysApart": 25,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 4,
+          "incoming": 7,
+          "daysApart": 4,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 5,
+          "incoming": 6,
+          "daysApart": 1,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 6,
+          "incoming": 9,
+          "daysApart": 1,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 7,
+          "incoming": 8,
+          "daysApart": 11,
+          "category": "same-amount-different-date"
+        }
+      ],
+      "unmatchedOutgoing": [],
+      "unmatchedIncoming": [
+        1,
+        4
+      ]
+    },
+    {
+      "from": "plan",
+      "to": "amref",
+      "outgoing": [
+        {
+          "position": 15,
+          "ref": "UB1540",
+          "date": "2021-09-27",
+          "valueDate": "2021-09-27",
+          "amount": "-19584",
+          "currency": "EUR"
+        },
+        {
+          "position": 20,
+          "ref": "UB756",
+          "date": "2019-03-31",
+          "valueDate": "2019-03-31",
+          "amount": "891511",
+          "currency": "EUR"
+        },
+        {
+          "position": 23,
+          "ref": "UB759",
+          "date": "2016-03-31",
+          "valueDate": "2016-03-31",
+          "amount": "598527",
+          "currency": "EUR"
+        },
+        {
+          "position": 27,
+          "ref": "UB763",
+          "date": "2016-10-25",
+          "valueDate": "2016-10-25",
+          "amount": "400310",
+          "currency": "EUR"
+        },
+        {
+          "position": 31,
+          "ref": "UB767",
+          "date": "2017-05-29",
+          "valueDate": "2017-05-29",
+          "amount": "1054989",
+          "currency": "EUR"
+        },
+        {
+          "position": 38,
+          "ref": "UB774",
+          "date": "2018-04-23",
+          "valueDate": "2018-04-23",
+          "amount": "1326083",
+          "currency": "EUR"
+        },
+        {
+          "position": 40,
+          "ref": "UB1078",
+          "date": "2020-04-07",
+          "valueDate": "2020-04-07",
+          "amount": "321108",
+          "currency": "EUR"
+        }
+      ],
+      "incoming": [
+        {
+          "position": 5,
+          "ref": "60",
+          "date": "2021-10-31",
+          "valueDate": "2021-10-31",
+          "amount": "-17491",
+          "currency": "EUR"
+        },
+        {
+          "position": 9,
+          "ref": "4",
+          "date": "2016-03-16",
+          "valueDate": "2016-03-16",
+          "amount": "598527",
+          "currency": "EUR"
+        },
+        {
+          "position": 15,
+          "ref": "18",
+          "date": "2017-05-29",
+          "valueDate": "2017-05-29",
+          "amount": "1054989",
+          "currency": "EUR"
+        },
+        {
+          "position": 22,
+          "ref": "30",
+          "date": "2018-04-19",
+          "valueDate": "2018-04-19",
+          "amount": "1285331",
+          "currency": "EUR"
+        },
+        {
+          "position": 30,
+          "ref": "40",
+          "date": "2019-03-27",
+          "valueDate": "2019-03-27",
+          "amount": "891511",
+          "currency": "EUR"
+        },
+        {
+          "position": 48,
+          "ref": "10",
+          "date": "2016-09-30",
+          "valueDate": "2016-09-30",
+          "amount": "400310",
+          "currency": "EUR"
+        },
+        {
+          "position": 62,
+          "ref": "58",
+          "date": "2020-04-07",
+          "valueDate": "2020-04-07",
+          "amount": "321108",
+          "currency": "EUR"
+        }
+      ],
+      "pairs": [
+        {
+          "outgoing": 20,
+          "incoming": 30,
+          "daysApart": -4,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 23,
+          "incoming": 9,
+          "daysApart": -15,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 27,
+          "incoming": 48,
+          "daysApart": -25,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 31,
+          "incoming": 15,
+          "daysApart": 0,
+          "category": "same-date-and-amount"
+        },
+        {
+          "outgoing": 40,
+          "incoming": 62,
+          "daysApart": 0,
+          "category": "same-date-and-amount"
+        }
+      ],
+      "unmatchedOutgoing": [
+        15,
+        38
+      ],
+      "unmatchedIncoming": [
+        5,
+        22
+      ]
+    },
+    {
+      "from": "amref",
+      "to": "ethiopia",
+      "outgoing": [
+        {
+          "position": 8,
+          "ref": "2",
+          "date": "2016-02-29",
+          "valueDate": "2016-02-29",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 12,
+          "ref": "9",
+          "date": "2016-08-26",
+          "valueDate": "2016-08-26",
+          "amount": "215288",
+          "currency": "EUR"
+        },
+        {
+          "position": 14,
+          "ref": "16",
+          "date": "2017-02-23",
+          "valueDate": "2017-02-23",
+          "amount": "187657",
+          "currency": "EUR"
+        },
+        {
+          "position": 18,
+          "ref": "21",
+          "date": "2017-08-24",
+          "valueDate": "2017-08-24",
+          "amount": "187657",
+          "currency": "EUR"
+        },
+        {
+          "position": 23,
+          "ref": "48",
+          "date": "2020-02-20",
+          "valueDate": "2020-02-20",
+          "amount": "220000",
+          "currency": "EUR"
+        },
+        {
+          "position": 52,
+          "ref": "37",
+          "date": "2019-02-14",
+          "valueDate": "2019-02-14",
+          "amount": "157601",
+          "currency": "EUR"
+        },
+        {
+          "position": 53,
+          "ref": "28",
+          "date": "2018-02-23",
+          "valueDate": "2018-02-23",
+          "amount": "196920",
+          "currency": "EUR"
+        },
+        {
+          "position": 55,
+          "ref": "32",
+          "date": "2018-08-23",
+          "valueDate": "2018-08-23",
+          "amount": "196919",
+          "currency": "EUR"
+        },
+        {
+          "position": 56,
+          "ref": "41",
+          "date": "2019-08-26",
+          "valueDate": "2019-08-26",
+          "amount": "157601",
+          "currency": "EUR"
+        },
+        {
+          "position": 57,
+          "ref": "53",
+          "date": "2020-07-24",
+          "valueDate": "2020-07-24",
+          "amount": "102000",
+          "currency": "EUR"
+        },
+        {
+          "position": 60,
+          "ref": "56",
+          "date": "2020-11-26",
+          "valueDate": "2020-11-26",
+          "amount": "8356",
+          "currency": "EUR"
+        }
+      ],
+      "incoming": [],
+      "pairs": [],
+      "unmatchedOutgoing": [
+        8,
+        12,
+        14,
+        18,
+        23,
+        52,
+        53,
+        55,
+        56,
+        57,
+        60
+      ],
+      "unmatchedIncoming": []
+    },
+    {
+      "from": "amref",
+      "to": "kenya",
+      "outgoing": [
+        {
+          "position": 11,
+          "ref": "15",
+          "date": "2017-02-23",
+          "valueDate": "2017-02-23",
+          "amount": "178860",
+          "currency": "EUR"
+        },
+        {
+          "position": 16,
+          "ref": "19",
+          "date": "2017-08-24",
+          "valueDate": "2017-08-24",
+          "amount": "178860",
+          "currency": "EUR"
+        },
+        {
+          "position": 17,
+          "ref": "42",
+          "date": "2019-08-26",
+          "valueDate": "2019-08-26",
+          "amount": "176921",
+          "currency": "EUR"
+        },
+        {
+          "position": 21,
+          "ref": "27",
+          "date": "2018-02-22",
+          "valueDate": "2018-02-22",
+          "amount": "183998",
+          "currency": "EUR"
+        },
+        {
+          "position": 34,
+          "ref": "47",
+          "date": "2020-02-20",
+          "valueDate": "2020-02-20",
+          "amount": "100000",
+          "currency": "EUR"
+        },
+        {
+          "position": 36,
+          "ref": "52",
+          "date": "2020-06-25",
+          "valueDate": "2020-06-25",
+          "amount": "45972",
+          "currency": "EUR"
+        },
+        {
+          "position": 37,
+          "ref": "8",
+          "date": "2016-08-26",
+          "valueDate": "2016-08-26",
+          "amount": "196469",
+          "currency": "EUR"
+        },
+        {
+          "position": 43,
+          "ref": "5",
+          "date": "2016-03-24",
+          "valueDate": "2016-03-24",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 50,
+          "ref": "34",
+          "date": "2018-10-26",
+          "valueDate": "2018-10-26",
+          "amount": "83999",
+          "currency": "EUR"
+        },
+        {
+          "position": 51,
+          "ref": "36",
+          "date": "2019-02-14",
+          "valueDate": "2019-02-14",
+          "amount": "176921",
+          "currency": "EUR"
+        },
+        {
+          "position": 54,
+          "ref": "31",
+          "date": "2018-08-23",
+          "valueDate": "2018-08-23",
+          "amount": "100000",
+          "currency": "EUR"
+        },
+        {
+          "position": 59,
+          "ref": "55",
+          "date": "2020-11-26",
+          "valueDate": "2020-11-26",
+          "amount": "8000",
+          "currency": "EUR"
+        }
+      ],
+      "incoming": [
+        {
+          "position": 1,
+          "ref": "3",
+          "date": "2016-03-24",
+          "valueDate": "2016-03-24",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 2,
+          "ref": "RN65846",
+          "date": "2018-02-28",
+          "valueDate": "2016-03-24",
+          "amount": "183998",
+          "currency": "EUR"
+        },
+        {
+          "position": 3,
+          "ref": "13",
+          "date": "2017-02-23",
+          "valueDate": "2017-02-23",
+          "amount": "178860",
+          "currency": "EUR"
+        },
+        {
+          "position": 4,
+          "ref": "RN71119",
+          "date": "2018-08-26",
+          "valueDate": "2016-08-26",
+          "amount": "100000",
+          "currency": "EUR"
+        },
+        {
+          "position": 12,
+          "ref": "4",
+          "date": "2016-08-26",
+          "valueDate": "2016-08-26",
+          "amount": "196469",
+          "currency": "EUR"
+        },
+        {
+          "position": 14,
+          "ref": "19",
+          "date": "2017-08-24",
+          "valueDate": "2017-08-24",
+          "amount": "178860",
+          "currency": "EUR"
+        },
+        {
+          "position": 16,
+          "ref": "RN 2019",
+          "date": "2019-02-15",
+          "valueDate": "2019-02-15",
+          "amount": "176921",
+          "currency": "EUR"
+        }
+      ],
+      "pairs": [
+        {
+          "outgoing": 11,
+          "incoming": 3,
+          "daysApart": 0,
+          "category": "same-date-and-amount"
+        },
+        {
+          "outgoing": 16,
+          "incoming": 14,
+          "daysApart": 0,
+          "category": "same-date-and-amount"
+        },
+        {
+          "outgoing": 21,
+          "incoming": 2,
+          "daysApart": 6,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 37,
+          "incoming": 12,
+          "daysApart": 0,
+          "category": "same-date-and-amount"
+        },
+        {
+          "outgoing": 43,
+          "incoming": 1,
+          "daysApart": 0,
+          "category": "same-date-and-amount"
+        },
+        {
+          "outgoing": 51,
+          "incoming": 16,
+          "daysApart": 1,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 54,
+          "incoming": 4,
+          "daysApart": 3,
+          "category": "same-amount-different-date"
+        }
+      ],
+      "unmatchedOutgoing": [
+        17,
+        34,
+        36,
+        50,
+        59
+      ],
+      "unmatchedIncoming": []
+    },
+    {
+      "from": "amref",
+      "to": "malawi",
+      "outgoing": [
+        {
+          "position": 2,
+          "ref": "29",
+          "date": "2018-03-30",
+          "valueDate": "2018-03-30",
+          "amount": "80116",
+          "currency": "EUR"
+        },
+        {
+          "position": 3,
+          "ref": "20",
+          "date": "2017-08-24",
+          "valueDate": "2017-08-24",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 13,
+          "ref": "12",
+          "date": "2016-12-29",
+          "valueDate": "2016-12-29",
+          "amount": "112150",
+          "currency": "EUR"
+        },
+        {
+          "position": 26,
+          "ref": "33",
+          "date": "2018-08-23",
+          "valueDate": "2018-08-23",
+          "amount": "80000",
+          "currency": "EUR"
+        },
+        {
+          "position": 31,
+          "ref": "43",
+          "date": "2019-08-31",
+          "valueDate": "2019-08-31",
+          "amount": "84972",
+          "currency": "EUR"
+        },
+        {
+          "position": 35,
+          "ref": "51",
+          "date": "2020-05-25",
+          "valueDate": "2020-05-25",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 44,
+          "ref": "6",
+          "date": "2016-03-24",
+          "valueDate": "2016-03-24",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 45,
+          "ref": "17",
+          "date": "2017-03-30",
+          "valueDate": "2017-03-30",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 49,
+          "ref": "39",
+          "date": "2019-03-21",
+          "valueDate": "2019-03-21",
+          "amount": "84972",
+          "currency": "EUR"
+        },
+        {
+          "position": 58,
+          "ref": "54",
+          "date": "2020-08-25",
+          "valueDate": "2020-08-25",
+          "amount": "7224",
+          "currency": "EUR"
+        }
+      ],
+      "incoming": [
+        {
+          "position": 5,
+          "ref": "2",
+          "date": "2016-03-31",
+          "valueDate": "2016-03-31",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 6,
+          "ref": "3",
+          "date": "2016-12-31",
+          "valueDate": "2016-12-31",
+          "amount": "112150",
+          "currency": "EUR"
+        },
+        {
+          "position": 8,
+          "ref": "5",
+          "date": "2017-05-31",
+          "valueDate": "2017-05-31",
+          "amount": "50000",
+          "currency": "EUR"
+        },
+        {
+          "position": 9,
+          "ref": "6",
+          "date": "2017-08-30",
+          "valueDate": "2017-08-30",
+          "amount": "50000",
+          "currency": "EUR"
+        }
+      ],
+      "pairs": [
+        {
+          "outgoing": 3,
+          "incoming": 9,
+          "daysApart": 6,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 13,
+          "incoming": 6,
+          "daysApart": 2,
+          "category": "same-amount-different-date"
+        },
+        {
+          "outgoing": 44,
+          "incoming": 5,
+          "daysApart": 7,
+          "category": "same-amount-different-date"
+        }
+      ],
+      "unmatchedOutgoing": [
+        2,
+        26,
+        31,
+        35,
+        45,
+        49,
+        58
+      ],
+      "unmatchedIncoming": [
+        8
+      ]
+    }
+  ]
+}
