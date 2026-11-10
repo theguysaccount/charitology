@@ -18,7 +18,7 @@ function mountedStandardDetail(t, fetcher) {
   const state = { org: "org-A", session: { user: { id: "staff" } }, epoch: 1, members: [] }, location = { hash: "" };
   function node(tag, attrs = {}, ...children) { const element = dom.document.createElement(tag); for (const [key, value] of Object.entries(attrs)) if (value !== null && value !== undefined) element.setAttribute(key, value); for (const child of children.flat(Infinity)) if (child !== null && child !== undefined && child !== false) element.append(child instanceof dom.Element ? child : String(child)); return element; }
   const context = {
-    state, location, api, ApiError, can, learningRecordMatches,
+    state, location, api, ApiError, can, learningRecordMatches, canAssistRenewal: () => false,
     safeRoute: () => location.hash.slice(1), moduleById: () => module, role: () => state.currentRole,
     referenceOptions: async () => new Map(), recordTitle: (record) => record.data.title,
     link: (text, href) => node("a", { href }, text), node, tag: (text) => node("span", {}, text),

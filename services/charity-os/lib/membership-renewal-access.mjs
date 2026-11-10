@@ -160,12 +160,12 @@ function reviewedTerm(term, member, window) {
     previousEndDate:previousDay(term.data.startDate),...dates(term.data),...window,
     duesPolicy:noDues ? "no-payment-required" : "external-settlement-required"};
 }
-export async function membershipGraph(c, {link,selection,offer,binding,staff,nowExact,readOnly,finalWrite=false}) {
-  const {org} = link, {memberId,termId} = selection;
+async function membershipCoverage(c, {org,memberId,termId,linkedContactId,binding,staff,readOnly,finalWrite=false}) {
   if (memberId === termId) changed();
-  const contact = await record(c,org,link.contactId,"contacts",readOnly);
+  let contact = linkedContactId === undefined ? null : await record(c,org,linkedContactId,"contacts",readOnly);
   const member = await record(c,org,memberId,"memberships",readOnly,finalWrite ? "UPDATE" : "SHARE");
   const term = await record(c,org,termId,"memberships",readOnly);
+  if (linkedContactId === undefined && id(member?.data.contactId)) contact = await record(c,org,member.data.contactId,"contacts",readOnly);
   if (!contact || contact.data.kind !== "person-reference" || contact.status === "archived" || !member ||
       member.data.kind !== "member" || member.data.contactId !== contact.id ||
       !["active","renewal-due","expired","cancelled"].includes(member.status)) unavailable();
@@ -179,11 +179,18 @@ export async function membershipGraph(c, {link,selection,offer,binding,staff,now
   const window = binding ? {opensOn:binding.opensOn,closesOn:binding.closesOn} :
     {opensOn:member.data.renewalDate,closesOn:member.data.endDate};
   if (!validDate(window.opensOn) || !validDate(window.closesOn) || window.opensOn > window.closesOn) changed();
-  const restoreEpochSha256 = await groupRestoreEpoch(c,org,[memberId,termId,contact.id]);
   const usableTerm = !binding || binding.termCreatedAtExact === term?.createdAtExact ? reviewedTerm(term,member,window) : null;
+  const memberFacts = {orgId:org,id:member.id,kind:"member",status:member.status,revision:member.revision,createdAtExact:member.createdAtExact,
+    lastEditedBy:member.lastEditedBy,...dates(member.data),duesReferencePresent:typeof member.data.duesReference === "string" && !!member.data.duesReference.trim()};
+  return {memberFacts,term:usableTerm,member,contact,chapter,termRow:term,contactSha256:contactIdentity(contact),window};
+}
+export async function membershipGraph(c, {link,selection,offer,binding,staff,nowExact,readOnly,finalWrite=false}) {
+  const {org} = link, {memberId,termId} = selection;
+  const coverage = await membershipCoverage(c,{org,memberId,termId,linkedContactId:link.contactId,binding,staff,readOnly,finalWrite});
+  const {memberFacts,term,member,contact,chapter,termRow,contactSha256,window} = coverage;
+  const restoreEpochSha256 = await groupRestoreEpoch(c,org,[memberId,termId,contact.id]);
   const subject = {
-    member:{orgId:org,id:member.id,kind:"member",status:member.status,revision:member.revision,createdAtExact:member.createdAtExact,
-      lastEditedBy:member.lastEditedBy,...dates(member.data),duesReferencePresent:typeof member.data.duesReference === "string" && !!member.data.duesReference.trim()},
+    member:memberFacts,
     link:{orgId:org,memberId,ownerUserId:link.userId,id:link.linkId,revision:link.linkRevision,
       createdAtExact:link.linkCreatedAtExact,intakeId:link.intake,intakeRevision:link.intakeRevision,
       intakeCreatedAtExact:link.intakeCreatedAtExact,publicationId:link.publicationId,publicationCreatedAtExact:link.publicationCreatedAtExact,
@@ -191,7 +198,15 @@ export async function membershipGraph(c, {link,selection,offer,binding,staff,now
     workspaceTimeZone:link.workspaceTimeZone,restoreEpochSha256,
   };
   const directorySubject = staff ? null : {...subject,restoreEpochSha256:await groupRestoreEpoch(c,org,[memberId,contact.id])};
-  return {subject,directorySubject,term:usableTerm,member,contact,chapter,termRow:term,contactSha256:contactIdentity(contact),window};
+  return {subject,directorySubject,term,member,contact,chapter,termRow,contactSha256,window};
+}
+export async function readAssistedMembershipGraph(c, {org,memberId,termId,staff,readOnly,finalWrite=false}) {
+  const coverage = await membershipCoverage(c,{org,memberId,termId,staff,readOnly,finalWrite});
+  const workspace = one(await c.query("SELECT time_zone FROM public.os_orgs WHERE id=$1" + (readOnly ? "" : " FOR SHARE"),[org]));
+  if (!workspace) unavailable();
+  const restoreEpochSha256 = await groupRestoreEpoch(c,org,
+    [memberId,termId,coverage.contact.id,...(coverage.chapter ? [coverage.chapter.id] : [])]);
+  return {...coverage,workspaceTimeZone:workspace.time_zone,restoreEpochSha256};
 }
 export function bindingReview(graph, link, offer, staff, nowExact) {
   if (staff.actor.id === link.userId) denied();

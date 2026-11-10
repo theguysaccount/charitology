@@ -118,6 +118,7 @@ import { insertRecoveredVolunteerOrientationMarker } from "./volunteer-orientati
 import { volunteerOrientationRoutes } from "./volunteer-orientation-routes.mjs";
 import { volunteerOrientationStorageReady } from "./volunteer-orientation-storage.mjs";
 import { createMembershipRenewalRoute } from "./membership-renewal-routes.mjs";
+import { createMembershipAssistedRoute } from "./membership-assisted-routes.mjs";
 import { createVolunteerProfileRoute } from "./volunteer-profile-routes.mjs";
 import {
   participationRoutes,
@@ -237,6 +238,8 @@ export function createHandler({
   volunteerProfileConfig = null,
   volunteerOrientationEnabled = false,
   membershipRenewalConfig = null,
+  membershipAssistedEnabled = false,
+  membershipAssistedRetained = false,
   participationTransport = participationMailer(settings),
 }) {
   if (volunteerSubstitutionRuntime !== null && !isVolunteerSubstitutionRuntime(volunteerSubstitutionRuntime))
@@ -246,7 +249,16 @@ export function createHandler({
   const volunteerProfile = profileSchema(applicationSchema) && profileSchema(storageSchema) && storageSchema !== applicationSchema
     ? createVolunteerProfileRoute({ applicationSchema, storageSchema }) : null;
   const membershipRenewal = membershipRenewalConfig
-    ? createMembershipRenewalRoute(membershipRenewalConfig) : null;
+    ? createMembershipRenewalRoute({
+      ...membershipRenewalConfig,
+      assistedStorageRequired: membershipAssistedRetained || membershipAssistedEnabled,
+    }) : null;
+  const membershipAssistance = createMembershipAssistedRoute({
+    applicationSchema: "public",
+    storageSchema: "charitology_membership_assistance",
+    onlineStorageSchema: membershipRenewalConfig?.storageSchema ?? "charitology_membership_renewals",
+    enabled: membershipAssistedEnabled === true,
+  });
   const handle = async function handle(request) {
     try {
       const url = new URL(request.url),
@@ -410,9 +422,8 @@ export function createHandler({
         );
         const canReviewHandoffs = volunteerSubstitutionRuntime && orgs.some(canReadHandoffHistory);
         let staffFeatures = {};
-        const candidate = (volunteerOrientationEnabled || membershipRenewal) &&
-          orgs.find((member) => administrators(member.role) && member.programIds?.length === 0);
-        if (candidate) {
+        const candidate = orgs.find((member) => administrators(member.role) && member.programIds?.length === 0);
+        if (candidate && (volunteerOrientationEnabled || membershipRenewal)) {
           try {
             staffFeatures = await db.tx(session.user.id, candidate.id, async (c) => ({
               ...(volunteerOrientationEnabled && canReadOrientationHistory(candidate) &&
@@ -423,6 +434,15 @@ export function createHandler({
             }), { readOnly: true });
           } catch {
             // Optional catalogue checks cannot take away ordinary workspace access.
+          }
+        }
+        if (candidate && (membershipAssistedRetained || membershipAssistedEnabled)) {
+          try {
+            const ready = await db.tx(session.user.id, candidate.id, c =>
+              membershipAssistance.staffAvailable(c, { orgId: candidate.id, session }), { readOnly: true });
+            if (ready) staffFeatures.membershipAssistance = true;
+          } catch {
+            // Keep existing tools available if the optional staff case store is unavailable.
           }
         }
         return okay({
@@ -487,6 +507,8 @@ export function createHandler({
         const response = await membershipRenewal({ request, url, db, settings, session });
         if (response) return response;
       }
+      const assistanceResponse = await membershipAssistance({ request, url, db, settings, session });
+      if (assistanceResponse) return assistanceResponse;
       if (isResourceReservationPath(path))
         return resourceReservationRoutes({
           request, url, db, settings, session, auditReservation: audit,

@@ -12,6 +12,7 @@ import {
 import { parseBackupJson as parseSelectedBackupJson } from "./backup-json.js";
 import { createStaffParticipationWorkspace } from "./participation.js";
 import { mountMembershipRenewal } from "./membership-renewal.js";
+import { mountMembershipAssistance } from "./membership-assistance.js";
 import { createGrantReportWorkspace } from "./grant-reports.js";
 import { createLearningWorkspace } from "./learning.js";
 import { createIncubatorBridgeWorkspace } from "./incubator-bridge.js";
@@ -568,7 +569,8 @@ function configureEditor(eyebrow, title, saveLabel, fields, onSave) {
       .filter((v) => v !== null && v !== undefined && v !== false),
   );
   state.editor = { onSave };
-  $("#editor-dialog").showModal();
+  const dialog = $("#editor-dialog");
+  if (!dialog.open) dialog.showModal();
   setTimeout(
     () =>
       $(
@@ -1665,10 +1667,54 @@ async function renderModule(id, epoch) {
   renderRecordResults();
   renderNav();
 }
+function canAssistRenewal(module, record) {
+  const member = activeOrg();
+  return module.id === "memberships" && record.data?.kind === "member" &&
+    state.session?.membershipAssistance === true && ["owner","admin"].includes(member?.role) &&
+    Array.isArray(member.programIds) && member.programIds.length === 0 &&
+    ["read","write","approve"].every(permission => can(module,permission,member.role));
+}
+function openMembershipAssistance(module, record, isCurrent, closureOnly = false) {
+  if (!isCurrent() || !canAssistRenewal(module,record)) return;
+  const orgId = state.org, dialog = $("#editor-dialog");
+  const host = node("section",{class:"membership-assistance-panel full-width stack","aria-label":"In-person membership renewal"});
+  let refresh = false, hiding = false;
+  configureEditor(module.title,closureOnly ? "In-person cases from Trash" : "Renew in person","Close",[host],async () => closeSavedEditor());
+  const editor = state.editor;
+  const current = () => isCurrent() && canAssistRenewal(module,record) && state.editor === editor && dialog.open;
+  const noteConfirmed = item => {
+    if (current() && item.state === "confirmed") {
+      refresh = true;
+      invalidateModules(orgId,["memberships"]);
+    }
+  };
+  const pane = mountMembershipAssistance(host,{
+    orgId,memberId:record.id,node,current,request:apiRequest,closureOnly,
+    loadTerms:async () => (await allRecords(orgId,"memberships")).filter(term =>
+      term.data?.kind === "renewal" && term.status === "approved" &&
+      term.data.contactId === record.data.contactId && (term.data.chapterId ?? null) === (record.data.chapterId ?? null))
+      .map(term => ({id:term.id,title:recordTitle(term),revision:term.revision})),
+    onChanged:noteConfirmed,onObserved:noteConfirmed,
+    onAccessLost:error => { if (error.status === 401) showError(error); },
+  });
+  const hide = () => {
+    hiding = true;
+    pane.dispose();
+    if (state.editor === editor && dialog.open) closeSavedEditor();
+  };
+  window.addEventListener("pagehide",hide,{once:true});
+  dialog.addEventListener("close",() => {
+    window.removeEventListener("pagehide",hide);
+    pane.dispose();
+    if (!hiding && refresh && isCurrent() && !state.editor) void route();
+  },{once:true});
+}
 async function showTrash(module) {
-  const org = state.org,
-    result = await api.trashRecords(org, module.id);
-  if (org !== state.org) return;
+  const org = state.org, epoch = state.epoch, session = state.session;
+  const current = () => org === state.org && epoch === state.epoch && session === state.session;
+  const result = await api.trashRecords(org,module.id);
+  if (!current()) return;
+  let editor;
   const content = node(
     "div",
     { class: "full-width" },
@@ -1688,6 +1734,10 @@ async function showTrash(module) {
             "div",
             { class: "row" },
             node("span", {}, recordTitle(record)),
+            canAssistRenewal(module,record) ? button("Review in-person cases",event => {
+              if (state.editor === editor && event.currentTarget.isConnected)
+                openMembershipAssistance(module,record,current,true);
+            },"small subtle") : null,
             button(
               "Restore record",
               async (event) =>
@@ -1727,6 +1777,7 @@ async function showTrash(module) {
     [content],
     async () => closeSavedEditor(),
   );
+  editor = state.editor;
 }
 function renderRecordResults() {
   const container = $("#record-results");
@@ -2385,6 +2436,8 @@ async function renderDetail(moduleId, id, epoch) {
       : null,
     ["events", "volunteers"].includes(moduleId) && record.data.kind === (moduleId === "events" ? "session" : "shift") && can(module, "read", role()) && can(module, "write", role())
       ? link("Review a finite draft batch", `#participation-recurrence/${moduleId}/${encodeURIComponent(record.id)}`, { class: "button subtle" }) : null,
+    canAssistRenewal(module,record)
+      ? button("Renew in person",() => openMembershipAssistance(module,record,ownsDetail),"subtle") : null,
     remove,
   ].filter(Boolean);
   const details = node(
@@ -5804,14 +5857,14 @@ $("#sign-in-form").addEventListener("submit", (event) => {
   );
 });
 $("#editor-form").addEventListener("input", (event) => {
-  if (event.target.closest?.(".feedback-draft-panel")) return;
+  if (event.target.closest?.(".feedback-draft-panel, .membership-assistance-panel")) return;
   if (state.editor) {
     state.dirty = true;
     state.directoryResourceWorkspace?.invalidate();
   }
 });
 $("#editor-form").addEventListener("change", (event) => {
-  if (event.target.closest?.(".feedback-draft-panel")) return;
+  if (event.target.closest?.(".feedback-draft-panel, .membership-assistance-panel")) return;
   if (state.editor) {
     state.dirty = true;
     state.directoryResourceWorkspace?.invalidate();

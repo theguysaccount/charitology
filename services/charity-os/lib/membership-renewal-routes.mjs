@@ -1,5 +1,6 @@
 import { readBackupBody } from "./backup-json.mjs";
 import { audit, saveRecord } from "./database.mjs";
+import { createMembershipAssistedStore } from "./membership-assisted-storage.mjs";
 import {
   bindingAuthority, bindingReview, changed, clock, currentMembershipStaff, currentOfferedMembershipLink,
   currentOwnMembershipLink, digest, discoverOwnMembershipLink, duplicate, id, membershipGraph,
@@ -65,6 +66,7 @@ function assertOther(staff, offer) {
  * transaction; none of the sidecar state can grant account or staff access. */
 export function createMembershipRenewalRoute(config) {
   const store = createMembershipRenewalStore(config), s = store.schema;
+  const assistance = createMembershipAssistedStore({applicationSchema:config.applicationSchema,onlineStorageSchema:s});
   const getOffer = async (c, org, intake) => one(await c.query(`SELECT user_id AS "userId",link_id AS "linkId",
     link_revision AS "linkRevision",${sqlStamp("link_created_at")} AS "linkCreatedAtExact",
     intake_revision AS "intakeRevision",${sqlStamp("intake_created_at")} AS "intakeCreatedAtExact",
@@ -204,6 +206,8 @@ export function createMembershipRenewalRoute(config) {
       } else {
         const graph = await membershipGraph(c,{link,selection,offer,binding,staff,nowExact,readOnly});
         const {authority,review} = bindingReview(graph,link,offer,staff,nowExact);
+        if (config.assistedStorageRequired === true && !await assistance.present(c)) membershipStorageUnavailable();
+        if (await assistance.readConflict(c,{orgId:org,...selection})) duplicate();
         if (action === "binding-review") return review;
         if (!equal(body.reviewSha256,review.reviewSha256)) changed();
         await insertBinding(c,link,graph,{...pins,authority},nowExact);
