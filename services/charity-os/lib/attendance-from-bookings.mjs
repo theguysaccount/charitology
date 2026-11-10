@@ -1,6 +1,6 @@
 /** Whole-occurrence staff reports. A booking count is context, never attendance. */
 import { createHmac } from "node:crypto";
-import { allRecords, rowRecord, saveRecord, audit } from "./database.mjs";
+import { allRecords, rowRecord, saveRecord, audit, noteParticipationReceiptReplay } from "./database.mjs";
 import { requirePermission, visibleRecord } from "./access.mjs";
 import { validateRecord } from "./modules.mjs";
 import { participationTerms } from "./participation.mjs";
@@ -9,6 +9,11 @@ import { fail, hash, stable, equal, json } from "./security.mjs";
 import { readLearningBytes } from "./learning-requests.mjs";
 import { parseTaskRecurrenceJson } from "./task-recurrence.mjs";
 import { checkWorkspaceExportCapacity } from "./workspace-backup.mjs";
+import { groupRestoreEpoch } from "./participation-group-access.mjs";
+import {
+  makeOfflineAttendanceTemplate, offlineAttendanceBytes, readOfflineAttendancePacket,
+  offlineAttendanceEvidence, offlineAttendanceOccurrence, offlineOccurrenceHash,
+} from "./offline-attendance-packet.mjs";
 
 export const ATTENDANCE_METHOD = "whole-occurrence-staff-reported-v1";
 export const ATTENDANCE_LIMITS = Object.freeze({
@@ -173,6 +178,7 @@ function readToken(value, secret) {
     "input",
     "issuedAt",
     "expiresAt",
+    ...(Object.hasOwn(p, "offlinePacket") ? ["offlinePacket"] : []),
   ]);
   if (
     p.version !== 1 ||
@@ -183,6 +189,7 @@ function readToken(value, secret) {
   )
     bad();
   attendanceInput(p.input);
+  if (Object.hasOwn(p, "offlinePacket")) offlineAttendanceEvidence(p.offlinePacket);
   return p;
 }
 async function currentMember(c, org, user, session, readOnly = false) {
@@ -233,7 +240,7 @@ const targetDto = (r) => ({
   endAt: r.data.endAt,
   timeZone: r.data.timeZone,
 });
-async function context(c, org, targetId, member, readOnly = false) {
+async function attendanceScope(c, org, targetId, member, readOnly) {
   const records = await allRecords(c, org),
     source = records.find((r) => r.id === targetId);
   if (
@@ -262,6 +269,36 @@ async function context(c, org, targetId, member, readOnly = false) {
       [org, targetId],
     )
   ).rows[0];
+  return { records, source, program, managed };
+}
+async function attendanceExisting(c, org, source, member) {
+  const targetId = source.id, id = childId(org, source.moduleId, targetId),
+    existingRows = (
+      await c.query(
+        "SELECT * FROM os_records WHERE org_id=$1 AND ((module_id=$2 AND data->>'kind'='attendance' AND data->>$3=$4) OR id=$5) ORDER BY id",
+        [org, source.moduleId, parentKey(source.moduleId), targetId, id],
+      )
+    ).rows;
+  if (existingRows.some((r) => !fullyVisible(rowRecord(r), member)))
+    unavailable();
+  const existing =
+    existingRows.length === 1
+      ? {
+          record: rowRecord(existingRows[0]),
+          disposition: existingRows[0].deleted_at ? "trash" : "active",
+        }
+      : null;
+  return { id, existing, existingRows };
+}
+const attendanceApproved = source =>
+  !!source.approval && source.approval.status === "approved" &&
+  source.approval.revision === source.revision && !!source.approval.actorId &&
+  source.approval.actorId !== source.lastEditedBy &&
+  ["approved", "scheduled", "open", "assigned", "completed"].includes(source.status);
+const attendanceTermsMatch = (managed, terms) =>
+  managed.terms_hash === hash(terms) && stable(managed.terms) === stable(terms);
+async function context(c, org, targetId, member, readOnly = false) {
+  const { records, source, program, managed } = await attendanceScope(c, org, targetId, member, readOnly);
   const ledger = (
     await c.query(
       "SELECT * FROM os_participations WHERE org_id=$1 AND target_id=$2 ORDER BY id LIMIT 2001",
@@ -296,45 +333,18 @@ async function context(c, org, targetId, member, readOnly = false) {
     contacts.add(p.contact_id);
     linked.push({ booking, contact });
   }
-  const id = childId(org, source.moduleId, targetId),
-    existingRows = (
-      await c.query(
-        "SELECT * FROM os_records WHERE org_id=$1 AND ((module_id=$2 AND data->>'kind'='attendance' AND data->>$3=$4) OR id=$5) ORDER BY id",
-        [org, source.moduleId, parentKey(source.moduleId), targetId, id],
-      )
-    ).rows;
-  if (existingRows.some((r) => !fullyVisible(rowRecord(r), member)))
-    unavailable();
-  const existing =
-    existingRows.length === 1
-      ? {
-          record: rowRecord(existingRows[0]),
-          disposition: existingRows[0].deleted_at ? "trash" : "active",
-        }
-      : null;
+  const { id, existing, existingRows } = await attendanceExisting(c, org, source, member);
   let reason = null,
     terms = null;
   if (!managed || managed.mode !== "managed" || managed.recovery_block)
     reason = "Reconcile this managed occurrence before reporting attendance.";
-  else if (
-    !source.approval ||
-    source.approval.status !== "approved" ||
-    source.approval.revision !== source.revision ||
-    source.approval.actorId === source.lastEditedBy ||
-    !source.approval.actorId ||
-    !["approved", "scheduled", "open", "assigned", "completed"].includes(
-      source.status,
-    )
-  )
+  else if (!attendanceApproved(source))
     reason = "The current occurrence needs independent final-state approval.";
   else {
     terms = participationTerms(source);
     if (Date.parse(terms.endAt) > Date.now())
       reason = "Attendance is available only after this whole occurrence ends.";
-    else if (
-      managed.terms_hash !== hash(terms) ||
-      stable(managed.terms) !== stable(terms)
-    )
+    else if (!attendanceTermsMatch(managed, terms))
       reason = "The managed occurrence terms changed; reconcile them first.";
     else if (!confirmed.length)
       reason =
@@ -396,6 +406,7 @@ async function context(c, org, targetId, member, readOnly = false) {
   return {
     records,
     source,
+    program,
     managed,
     id,
     epoch,
@@ -470,6 +481,118 @@ const publicContext = (ctx) => ({
   reason: ctx.reason,
   existing: ctx.existing,
 });
+const attendanceExists = () =>
+  fail(409, "attendance_exists", "This occurrence already has attendance. Review its ordinary record.");
+export const isOfflineAttendanceReview = (path, method) =>
+  method === "POST" &&
+  /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/participation-targets\/[A-Za-z0-9_-]{1,100}\/attendance\/offline\/(?:inspect|preview)$/.test(path);
+
+const offlineStale = () =>
+  fail(409, "offline_attendance_stale", "The worksheet belongs to an earlier occurrence or workspace state. Keep the file and review the current session.");
+const offlineUnavailable = () =>
+  fail(409, "offline_attendance_stale", "Choose an independently approved Events session and reconcile its current managed schedule.");
+
+function offlineLineage(c, org, { source, id, program }) {
+  return groupRestoreEpoch(c, org, [...new Set([source.id, id, ...(program ? [program.id] : [])])]);
+}
+function offlinePins(org, { source, managed }, restoreEpochSha256, unavailable = offlineStale) {
+  if (source.moduleId !== "events" || managed?.module_id !== "events" ||
+      managed.mode !== "managed" || managed.recovery_block || managed.source_revision !== source.revision ||
+      !attendanceApproved(source) || typeof source.approval.actorId !== "string")
+    unavailable();
+  const terms = participationTerms(source);
+  if (!attendanceTermsMatch(managed, terms)) unavailable();
+  return offlineAttendanceOccurrence({
+    orgId: org, targetId: source.id, moduleId: "events", kind: "session",
+    sourceRevision: source.revision, managedRevision: managed.revision,
+    termsSha256: managed.terms_hash, restoreEpochSha256,
+    startAt: terms.startAt, endAt: terms.endAt, timeZone: terms.timeZone,
+  });
+}
+const sameOfflineEvidence = (a, b) => stable(a) === stable(b);
+
+/** The existing signed attendance event is the only durable accepted-file receipt. */
+async function acceptedOfflineAttendance(c, org, ctx, file, settings) {
+  if (!ctx.existingRows.length) return null;
+  if (ctx.existing?.record.id !== ctx.id) attendanceExists();
+  const rows = (await c.query(
+    "SELECT detail FROM os_events WHERE org_id=$1 AND action='attendance.draft-created' AND record_id=$2 ORDER BY id LIMIT 2",
+    [org, ctx.id],
+  )).rows;
+  if (rows.length !== 1) attendanceExists();
+  const { attendanceReceipt: receipt, attendanceSignature } = rows[0].detail ?? {};
+  if (!receipt?.offlinePacket || !equal(attendanceSignature, sign("receipt", receipt, settings.secret)) ||
+      receipt.version !== 1 || receipt.method !== ATTENDANCE_METHOD || receipt.scope !== scope ||
+      receipt.orgId !== org || receipt.moduleId !== "events" || receipt.targetId !== ctx.source.id || receipt.recordId !== ctx.id)
+    attendanceExists();
+  const accepted = offlineAttendanceEvidence(receipt.offlinePacket);
+  if (accepted.packetId !== file.packetId) attendanceExists();
+  if (!sameOfflineEvidence(accepted, file))
+    fail(409, "offline_attendance_conflict", "This worksheet ID was accepted with different bytes. Keep both files and review the saved attendance.");
+  return ctx.existing;
+}
+
+function prepareAttendancePreview(ctx, org, user, member, session, settings, input, offlinePacket) {
+  if (ctx.existingRows.length) attendanceExists();
+  if (!ctx.canPrepare || input.contextSha256 !== ctx.contextSha256) stale();
+  const candidate = attendanceCandidate(input, ctx, user, org),
+    issuedAt = Date.now(),
+    expiresAt = issuedAt + ATTENDANCE_LIMITS.reviewMs;
+  const p = {
+    version: 1,
+    method: ATTENDANCE_METHOD,
+    scope,
+    orgId: org,
+    targetId: ctx.source.id,
+    moduleId: ctx.source.moduleId,
+    actorHash: identity(member),
+    membershipHash: membershipHash(member),
+    sessionHash: sessionHash(session),
+    contextSha256: ctx.contextSha256,
+    candidateSha256: H("candidate", candidate),
+    input,
+    issuedAt,
+    expiresAt,
+    ...(offlinePacket ? { offlinePacket } : {}),
+  };
+  return json({
+    ok: true,
+    previewToken: token(p, settings.secret),
+    expiresAt: new Date(expiresAt).toISOString(),
+    preview: {
+      method: ATTENDANCE_METHOD,
+      scope,
+      sourceContext: ctx.sourceContext,
+      candidate,
+    },
+  });
+}
+
+async function inspectOfflineAttendance(c, org, user, member, session, ctx, settings, input, action) {
+  const preparing = action === "offline/preview";
+  exact(input, preparing ? ["packetBase64", "fileSha256", "contextSha256", "title", "wholeOccurrence"] : ["packetBase64"]);
+  const { packet, fileSha256 } = readOfflineAttendancePacket(input.packetBase64);
+  const { packetId, occurrence } = packet;
+  if (!equal(packet.issueSeal, sign("offline-worksheet", { packetId, occurrence }, settings.secret)))
+    fail(422, "offline_attendance_issuer", "Use a worksheet downloaded from Charity OS for this session.");
+  const restoreEpochSha256 = await offlineLineage(c, org, ctx);
+  const scopeSha256 = offlineOccurrenceHash(occurrence);
+  if (offlineOccurrenceHash(offlinePins(org, ctx, restoreEpochSha256)) !== scopeSha256) offlineStale();
+  const evidence = offlineAttendanceEvidence({ packetId, fileSha256, scopeSha256, restoreEpochSha256 });
+  const accepted = await acceptedOfflineAttendance(c, org, ctx, evidence, settings);
+  if (accepted) return json({ ok: true, kind: "already-file", fileSha256, context: publicContext(ctx) });
+  if (!ctx.canPrepare) fail(409, "attendance_stale", ctx.reason);
+  if (!preparing) return json({
+    ok: true, kind: packet.counts.reportedAttendance === null ? "unknown-attendance" : "review-file",
+    packetId, fileSha256, counts: packet.counts, context: publicContext(ctx),
+  });
+  if (fileSha256 !== input.fileSha256 || input.contextSha256 !== ctx.contextSha256) offlineStale();
+  const proposal = attendanceInput({
+    contextSha256: input.contextSha256, title: input.title,
+    ...packet.counts, wholeOccurrence: input.wholeOccurrence,
+  });
+  return prepareAttendancePreview(ctx, org, user, member, session, settings, proposal, evidence);
+}
 async function replay(c, org, member, session, p, input, ctx, settings) {
   const commandHash = H("command", {
       org,
@@ -514,6 +637,7 @@ async function replay(c, org, member, session, p, input, ctx, settings) {
     "commandHash",
     "requestHash",
     "acceptedAt",
+    ...(Object.hasOwn(receipt, "offlinePacket") ? ["offlinePacket"] : []),
   ]);
   if (
     receipt.version !== 1 ||
@@ -529,6 +653,7 @@ async function replay(c, org, member, session, p, input, ctx, settings) {
     receipt.candidateSha256 !== p.candidateSha256 ||
     receipt.contextSha256 !== p.contextSha256 ||
     receipt.reportedAttendance !== p.input.reportedAttendance ||
+    !sameOfflineEvidence(receipt.offlinePacket, p.offlinePacket) ||
     receipt.requestHash !== requestHash ||
     receipt.actorHash !== identity(member) ||
     receipt.membershipHash !== membershipHash(member) ||
@@ -571,7 +696,7 @@ export async function attendanceRoutes({
   if (!/^participation-targets\/[A-Za-z0-9_-]+\/attendance(?:\/|$)/.test(tail))
     return null;
   const match =
-    /^participation-targets\/([A-Za-z0-9_-]{1,100})\/attendance(?:\/(preview|create))?$/.exec(
+    /^participation-targets\/([A-Za-z0-9_-]{1,100})\/attendance(?:\/(preview|create|offline\/(?:issue|inspect|preview)))?$/.exec(
       tail,
     );
   if (!match)
@@ -588,56 +713,33 @@ export async function attendanceRoutes({
       "attendance_fields",
       "Do not put private attendance data in a query.",
     );
-  if ((match[2] && method !== "POST") || (!match[2] && method !== "GET"))
+  const [targetId, action] = match.slice(1);
+  const reading = !action || action === "offline/issue";
+  if (method !== (reading ? "GET" : "POST"))
     fail(
       405,
       "attendance_route",
       "Use GET context or an explicit POST attendance command.",
     );
+  const readOnly = reading || action?.startsWith("offline/");
   await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [org]);
-  const member = await currentMember(c, org, user, session, method === "GET"),
-    ctx = await context(c, org, match[1], member, method === "GET");
-  if (!match[2]) return json({ ok: true, ...publicContext(ctx) });
-  if (match[2] === "preview") {
-    const x = attendanceInput(input);
-    if (ctx.existingRows.length)
-      fail(
-        409,
-        "attendance_exists",
-        "This occurrence already has attendance. Review its ordinary record.",
-      );
-    if (!ctx.canPrepare || x.contextSha256 !== ctx.contextSha256) stale();
-    const candidate = attendanceCandidate(x, ctx, user, org),
-      issuedAt = Date.now(),
-      expiresAt = issuedAt + ATTENDANCE_LIMITS.reviewMs;
-    const p = {
-      version: 1,
-      method: ATTENDANCE_METHOD,
-      scope,
-      orgId: org,
-      targetId: ctx.source.id,
-      moduleId: ctx.source.moduleId,
-      actorHash: identity(member),
-      membershipHash: membershipHash(member),
-      sessionHash: sessionHash(session),
-      contextSha256: ctx.contextSha256,
-      candidateSha256: H("candidate", candidate),
-      input: x,
-      issuedAt,
-      expiresAt,
-    };
-    return json({
-      ok: true,
-      previewToken: token(p, settings.secret),
-      expiresAt: new Date(expiresAt).toISOString(),
-      preview: {
-        method: ATTENDANCE_METHOD,
-        scope,
-        sourceContext: ctx.sourceContext,
-        candidate,
-      },
-    });
+  const member = await currentMember(c, org, user, session, readOnly);
+  if (action === "offline/issue") {
+    const target = await attendanceScope(c, org, targetId, member, true);
+    if (target.source.moduleId !== "events") unavailable();
+    const existing = await attendanceExisting(c, org, target.source, member);
+    if (existing.existingRows.length) attendanceExists();
+    const epoch = await offlineLineage(c, org, { ...target, id: existing.id });
+    const packet = makeOfflineAttendanceTemplate(offlinePins(org, target, epoch, offlineUnavailable),
+      evidence => sign("offline-worksheet", evidence, settings.secret));
+    return json({ ok: true, kind: "offline-worksheet", packetBase64: offlineAttendanceBytes(packet).toString("base64") });
   }
+  const ctx = await context(c, org, targetId, member, readOnly);
+  if (!action) return json({ ok: true, ...publicContext(ctx) });
+  if (action === "preview")
+    return prepareAttendancePreview(ctx, org, user, member, session, settings, attendanceInput(input));
+  if (action === "offline/inspect" || action === "offline/preview")
+    return inspectOfflineAttendance(c, org, user, member, session, ctx, settings, input, action);
   exact(input, ["previewToken", "idempotencyKey"]);
   if (
     typeof input.idempotencyKey !== "string" ||
@@ -649,6 +751,8 @@ export async function attendanceRoutes({
       "Use one bounded command identity for this exact create.",
     );
   const p = readToken(input.previewToken, settings.secret);
+  const epoch = p.offlinePacket ? await offlineLineage(c, org, ctx) : null;
+  if (p.offlinePacket && p.offlinePacket.restoreEpochSha256 !== epoch) offlineStale();
   const accepted = await replay(
     c,
     org,
@@ -659,7 +763,10 @@ export async function attendanceRoutes({
     ctx,
     settings,
   );
-  if (accepted.response) return accepted.response;
+  if (accepted.response) {
+    if (p.offlinePacket) noteParticipationReceiptReplay(c, org);
+    return accepted.response;
+  }
   if (
     p.orgId !== org ||
     p.targetId !== ctx.source.id ||
@@ -669,12 +776,15 @@ export async function attendanceRoutes({
     p.sessionHash !== sessionHash(session)
   )
     stale();
-  if (ctx.existingRows.length)
-    fail(
-      409,
-      "attendance_exists",
-      "This occurrence already has attendance. Review its ordinary record.",
-    );
+  if (p.offlinePacket) {
+    if (offlineOccurrenceHash(offlinePins(org, ctx, epoch)) !== p.offlinePacket.scopeSha256) offlineStale();
+    const existing = await acceptedOfflineAttendance(c, org, ctx, p.offlinePacket, settings);
+    if (existing) {
+      noteParticipationReceiptReplay(c, org);
+      return json({ ok: true, kind: "already-created", ...existing });
+    }
+  }
+  if (ctx.existingRows.length) attendanceExists();
   if (
     !ctx.canPrepare ||
     p.expiresAt <= Date.now() ||
@@ -704,6 +814,7 @@ export async function attendanceRoutes({
     commandHash: accepted.commandHash,
     requestHash: accepted.requestHash,
     acceptedAt: new Date().toISOString(),
+    ...(p.offlinePacket ? { offlinePacket: p.offlinePacket } : {}),
   };
   await audit(c, org, user, "attendance.draft-created", candidate, {
     record: candidate,

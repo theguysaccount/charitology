@@ -122,6 +122,7 @@ import { guardParticipationWrite, participationValidationContext } from "./parti
 import {
   attendanceRoutes,
   readAttendanceBody,
+  isOfflineAttendanceReview,
 } from "./attendance-from-bookings.mjs";
 import {
   deliveryRoutes,
@@ -1763,7 +1764,8 @@ export function createHandler({
         },
         {
           lock: !["GET", "HEAD"].includes(method) || tail === "export",
-          readOnly: (["GET", "HEAD"].includes(method) && tail !== "export") || isParticipationGroupPreview(path, method),
+          readOnly: (["GET", "HEAD"].includes(method) && tail !== "export") ||
+            isParticipationGroupPreview(path, method) || isOfflineAttendanceReview(path, method),
         },
       );
       if (method === "POST" && tail === "invitations")
