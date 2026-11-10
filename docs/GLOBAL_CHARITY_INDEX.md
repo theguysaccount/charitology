@@ -24,12 +24,12 @@ GlobalGiving already offers international registry lookup. Candid and ProPublica
 
 | Priority | Gap | Verification before release |
 | --- | --- | --- |
-| 1 | Add England and Wales so the Index can show more than two reporting jurisdictions. | Read the [official register extract](https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download) documentation and reuse terms. Reconcile totals and reporting periods from sampled original records. Keep entity identifiers and consolidated accounts distinct. |
-| 2 | Trace one actual award or transfer from funder to identified recipient and reported activity. | Qualify the [360Giving API](https://www.360giving.org/api-docs/use/) or IATI as a source. Preserve dates, currency and transaction type. Do not join a recipient or activity on name alone, and do not count a reported award again as the recipient's expense. |
-| 3 | Compare funding and need in a defined place and period. | Reuse the [Gap Map](https://charitology.org/record/gap-map/) where definitions align. Name the independent denominator, geography and periods and show missingness. Keep service counts and evidence of an intervention's effectiveness separate. |
-| 4 | Expand geography and language coverage and reduce the search payload. | Qualify official sources and a published coverage denominator before making completeness claims. Reuse exact-ID matching, corrections and browser-local search. Split larger data assets by jurisdiction and search partition. |
+| 1 | Verify additional stages of money movement. | Start with published awards and add payments or recipient spending only when the same funding can be linked by exact transaction or agreement references. Use the [360Giving API](https://www.360giving.org/api-docs/use/) or [IATI](https://iatistandard.org/en/iati-standard/203/codelists/transactiontype/) where coverage supports the join. Keep intermediaries, currencies, reporting dates and unmatched amounts visible. |
+| 2 | Grow U.S. financial coverage beyond the historical panels. | Qualify the [IRS financial extracts](https://www.irs.gov/statistics/soi-tax-stats-annual-extract-of-tax-exempt-organization-financial-data) against the dated identity snapshot. Retain the form type and tax period. Distinguish filing calendar year from fiscal year and processed extract amounts from copies of returns. Do not turn missing or unmatched filings into zeroes. |
+| 3 | Repeat funding and need comparisons in another place or cause. | Use the [Gap Map](https://charitology.org/record/gap-map/) where geography, periods and definitions align. State the independent denominator, its missingness and who is included. Keep output counts, unique people and evidence of effectiveness separate. |
+| 4 | Expand geography and language coverage and reduce the search payload. | Qualify primary sources and a coverage denominator before making completeness claims. Prioritize places missing from existing bulk datasets. Reuse exact-ID matching, corrections and browser-local search. |
 
-The initial global release remains in progress until all four data layers have reviewable evidence, search and exports, a correction route and reproducible builds. Treat each completed slice as an independently testable contribution.
+Each improvement should be independently verifiable. Publish the source versions, included and excluded populations, and what a reader can infer before adding another source or geography.
 
 ## England and Wales annual returns
 
