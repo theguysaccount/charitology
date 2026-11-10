@@ -1,6 +1,6 @@
 ---
 import Entry from '../../../../layouts/Entry.astro';
-import { url } from '../../../../lib/site';
+import CaseDataDownload from '../../../../components/CaseDataDownload.astro';
 import data from '../../../../data/funding-flows/yes-i-do.json';
 
 const title = 'Following money through the Yes I Do Alliance';
@@ -57,34 +57,9 @@ const dateAndValue = (row: {date: string; valueDate: string; amount: string}) =>
   <h2>How the comparison works</h2>
   <p>The comparison uses published IATI activity and organization identifiers. Within each route, it first pairs unique same-day records with the same signed euro amount. It then pairs remaining same-amount records only when each has one counterpart within {data.candidateDateWindowDays} days. The chosen date window is a Charitology rule for this case. Different amounts and ambiguous candidates stay separate.</p>
   <p>The records describe disbursements and incoming funds. They do not identify which particular upstream euro paid for a later disbursement or what reached the people the program aimed to serve. Adding stages would count some of the same money again. The case excludes spending, commitments, other alliance partners and results indicators.</p>
-  <div class="btn-row"><button class="btn btn-ghost btn-small" type="button" data-save-case={url(route + 'data.json')} disabled>Save the records and matching decisions</button><a href={url(route + 'data.json')}>Open the JSON data</a></div>
-  <p role="status" data-case-status></p>
+  <CaseDataDownload path={route + 'data.json'} filename="yes-i-do-alliance-funding-flows.json" label="Save the records and matching decisions" />
   <p>The export identifies the publishing organization, source file, activity, transaction position and reference where supplied. Source fingerprints and licence codes come from the captured files and <a href={data.metadataIndex.url}>IATI dataset metadata</a>. Charitology selected factual fields for this comparison. See the <a href={guidance}>IATI traceability guidance</a> for transaction types and activity references.</p>
 </Entry>
-
-<script>
-  import { download } from '../../../../lib/client/files';
-
-  const button = document.querySelector<HTMLButtonElement>('[data-save-case]');
-  const status = document.querySelector<HTMLElement>('[data-case-status]');
-  if (button && status) {
-    button.disabled = false;
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      status.textContent = 'Loading the public case records.';
-      try {
-        const response = await fetch(button.dataset.saveCase!, { credentials: 'omit', redirect: 'error', signal: AbortSignal.timeout(20_000) });
-        if (!response.ok) throw new Error('The case download is unavailable.');
-        download('yes-i-do-alliance-funding-flows.json', await response.blob());
-        status.textContent = 'The JSON file is ready to save.';
-      } catch {
-        status.textContent = 'The file could not be downloaded. Try again or open the JSON data.';
-      } finally {
-        button.disabled = false;
-      }
-    });
-  }
-</script>
 
 <style>
   .flow-routes { display: grid; gap: .65rem; }
