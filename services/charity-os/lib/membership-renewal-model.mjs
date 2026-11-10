@@ -8,6 +8,8 @@ import { fail, hash } from "./security.mjs";
 const ID = /^[A-Za-z0-9_-]{1,100}$/, LINK = /^[a-f0-9]{32}$/, SHA = /^[a-f0-9]{64}$/;
 const KEY = /^[A-Za-z0-9_-]{16,100}$/, MAX_REVISION = 2147483647;
 const memberStatuses = ["active","renewal-due","expired","cancelled"];
+const memberFields = ["orgId","id","kind","status","revision","createdAtExact","lastEditedBy",
+  "startDate","endDate","renewalDate","duesReferencePresent"];
 const liveStatus = status => status === "active" || status === "renewal-due";
 const matches = (value,pattern) => typeof value === "string" && pattern.test(value);
 const rev = value => Number.isSafeInteger(value) && value > 0 && value <= MAX_REVISION;
@@ -49,8 +51,7 @@ function subject(value, nowExact) {
   closed(value,["member","link","workspaceTimeZone","restoreEpochSha256"]);
   const {member,link,workspaceTimeZone,restoreEpochSha256} = value;
   if (member === null || link === null) inaccessible();
-  closed(member,["orgId","id","kind","status","revision","createdAtExact","lastEditedBy",
-    "startDate","endDate","renewalDate","duesReferencePresent"]);
+  closed(member,memberFields);
   closed(link,["orgId","memberId","ownerUserId","id","revision","createdAtExact","intakeId","intakeRevision",
     "intakeCreatedAtExact","publicationId","publicationCreatedAtExact","bindingRevision","bindingCreatedAtExact",
     "active","verifiedEmailMatches"]);
@@ -167,6 +168,20 @@ const decisionView = decision => decision ? {
 export function reviewMembershipTermEligibility({subject:input,term,nowExact}) {
   const facts = subject(input,nowExact), source = checkedTerm(term,facts);
   return {ready:source?.ready === true,dues:duesView(facts)};
+}
+/** Staff must prove the selected typed member and term separately. This
+ * evaluates the same period rule without creating an own-link authority. */
+export function reviewAssistedMembershipTermEligibility({member,workspaceTimeZone,term,nowExact}) {
+  closed(member,memberFields);
+  need([member.orgId,member.id,member.lastEditedBy].every(value => matches(value,ID)) &&
+    member.kind === "member" && memberStatuses.includes(member.status) && rev(member.revision) &&
+    typeof member.duesReferencePresent === "boolean" && typeof workspaceTimeZone === "string" &&
+    validZone(workspaceTimeZone) && !/^[+-]/.test(workspaceTimeZone));
+  const now = exactStamp(nowExact);
+  need(exactStamp(member.createdAtExact) <= now,inaccessible);
+  const today = localDay(now,workspaceTimeZone), current = dates(member);
+  const source = checkedTerm(term,{member,current,now,today});
+  return {ready:source?.ready === true,current,proposed:source?.period ?? null,today};
 }
 function command(value) {
   closed(value,["version","reviewSha256","idempotencyKey","acknowledge"]);

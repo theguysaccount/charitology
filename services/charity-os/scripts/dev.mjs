@@ -19,7 +19,9 @@ const settings = readSettings(),
     }),
     volunteerProfileConfig:volunteerProfileConfiguration(),
     volunteerOrientationEnabled:process.env.OS_VOLUNTEER_ORIENTATION_ENABLED==="1",
-    membershipRenewalConfig:membershipRenewalConfiguration() });
+    membershipRenewalConfig:membershipRenewalConfiguration(),
+      membershipAssistedEnabled:process.env.OS_MEMBERSHIP_ASSISTANCE_ENABLED==="1",
+      membershipAssistedRetained:process.env.OS_MEMBERSHIP_ASSISTANCE_STORAGE_SCHEMA==="charitology_membership_assistance" });
 const root = resolve(new URL("../public", import.meta.url).pathname);
 const types = {
   ".html": "text/html; charset=utf-8",

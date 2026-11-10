@@ -8,7 +8,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {isProxy} from 'node:util/types';
 import path from 'node:path';
 import {requireRecurrenceCi17Profile} from './participation-recurrence-ci17-profile.mjs';
-const MANIFEST_SHA='1f8e0672f0024abadf6752361e1d0eaeed25f0f82a16b47dc2a42c8e8846fbb6', EXPECTED_RUNTIME_FILES=204, states=new WeakMap();
+const MANIFEST_SHA='d4b18affb6b537dbc8c22e71cca8ca3297bf198b3b3207c7096b1a9faadc40c9', EXPECTED_RUNTIME_FILES=207, states=new WeakMap();
 const ROOT=path.resolve(fileURLToPath(new URL('../../../../',import.meta.url)));
 const digest=b=>createHash('sha256').update(b).digest('hex');
 // These retained type sources are hashed as data; the hook never executes them.
@@ -39,7 +39,7 @@ export function checkedRecurrenceCi17RuntimeManifest(value){
 async function regular(file,max=2097152){const s=await lstat(file);assert(s.isFile()&&!s.isSymbolicLink()&&s.size>0&&s.size<=max&&await realpath(file)===file);const b=await readFile(file);assert.equal(b.length,s.size);return b;}
 export async function loadRecurrenceModules(profile){
  assert.equal(arguments.length,1);requireRecurrenceCi17Profile(profile);assert(!states.has(profile));
- const manifestPath=fileURLToPath(new URL('./participation-recurrence-runtime-manifest-v5.json',import.meta.url)),raw=await regular(manifestPath);assert.equal(digest(raw),MANIFEST_SHA);
+ const manifestPath=fileURLToPath(new URL('./participation-recurrence-runtime-manifest-v6.json',import.meta.url)),raw=await regular(manifestPath);assert.equal(digest(raw),MANIFEST_SHA);
  const manifest=checkedRecurrenceCi17RuntimeManifest(JSON.parse(raw.toString('utf8'))),lib=path.join(ROOT,'services/charity-os/lib'),selected=new Map(),cacheTag='?recurrence_source='+MANIFEST_SHA+'&fixture='+randomBytes(16).toString('hex');
  for(const entry of manifest.files){const file=path.join(lib,entry.name),bytes=await regular(file);assert.equal(bytes.length,entry.bytes);assert.equal(digest(bytes),entry.sha256);selected.set(entry.name,{...entry,bytes,virtual:pathToFileURL(file).href+cacheTag,plain:pathToFileURL(file).href});}
  const urls=new Map([...selected.values()].map(e=>[e.virtual,e])),plainUrls=new Map([...selected.values()].map(e=>[e.plain,e])),prefix=pathToFileURL(lib+path.sep).href;

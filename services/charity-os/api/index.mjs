@@ -19,7 +19,9 @@ function route(request) {
       }),
       volunteerProfileConfig:volunteerProfileConfiguration(),
       volunteerOrientationEnabled:process.env.OS_VOLUNTEER_ORIENTATION_ENABLED==="1",
-      membershipRenewalConfig:membershipRenewalConfiguration() });
+      membershipRenewalConfig:membershipRenewalConfiguration(),
+      membershipAssistedEnabled:process.env.OS_MEMBERSHIP_ASSISTANCE_ENABLED==="1",
+      membershipAssistedRetained:process.env.OS_MEMBERSHIP_ASSISTANCE_STORAGE_SCHEMA==="charitology_membership_assistance" });
   }
   return handler(request);
 }
