@@ -1,0 +1,69 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import australia from '../../../../public/data/charity-financials/manifest.json';
+import englandWales from '../../../../public/data/charity-financials/ew/manifest.json';
+import usa from '../../../../public/data/charity-financials/us/manifest.json';
+import registry from '../../../../public/data/irs-registry/manifest.json';
+import manchester from '../../../data/home-from-hospital.json';
+
+const title = 'Charity Index coverage';
+const number = (value: number) => value.toLocaleString('en-US');
+const australianPeriods = australia.sources.reduce((sum, source) => sum + source.includedPeriods, 0);
+const panels = [
+  {
+    name: 'Australia', flag: 'Annual Information Statements', route: '/record/charity-financials/',
+    label: 'Search Australian filings', date: australia.date,
+    coverage: `${number(australia.organizations)} ABNs and ${number(australianPeriods)} dated records in the selected extracts.`,
+    history: `${number(australia.organizationsWithBothYears)} ABNs have dated reporting in both source years, 2023 and 2024.`,
+    boundary: 'The 2024 extract sets the identity scope. Earlier unmatched and undated records are left out. The grant fields distinguish money for use inside and outside Australia.',
+    manifest: '/data/charity-financials/manifest.json',
+  },
+  {
+    name: 'England and Wales', flag: 'Charity Commission annual returns', route: '/record/charity-financials/england-wales/',
+    label: 'Search England and Wales returns', date: englandWales.date,
+    coverage: `${number(englandWales.organizations)} of ${number(englandWales.registeredMain)} main registered charities with eligible records.`,
+    history: `${number(englandWales.counts.included)} received annual returns for periods ending in 2023–2025. ${number(englandWales.multiPeriod)} charities have multiple periods.`,
+    boundary: 'The figures are gross income and expenditure in GBP. Linked, suppressed and unreceived records are outside the included scope.',
+    manifest: '/data/charity-financials/ew/manifest.json',
+  },
+  {
+    name: 'United States', flag: 'IRS identity and Form 990 extracts', route: '/record/charity-financials/united-states/',
+    label: 'Search U.S. Form 990 finances', date: usa.capturedOn,
+    coverage: `${number(registry.recordCount)} dated federal registry identities. Separately, ${number(usa.counts.organizations)} EINs have a selected full Form 990 period.`,
+    history: `${number(usa.counts.includedPeriods)} processed financial records for periods ending in 2022–2024. ${number(usa.counts.multiPeriod)} EINs have multiple periods.`,
+    boundary: 'The financial edition covers subsection 03 on the full form. Other forms and entities outside the filing scope require separate sources.',
+    manifest: '/data/charity-financials/us/manifest.json',
+  },
+];
+const sources = [
+  { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
+  { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
+  { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary="See which organizations, financial periods and funding stages each source covers." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Coverage'}]} sources={sources}>
+  <p>The Index separates registry identities, reported financial periods and individual funding records. This page describes the current editions and where each one leaves questions open. Coverage counts describe the included source records. Organization identities, currencies and reporting rules differ across jurisdictions.</p>
+  <h2 id="filings">Registry and financial editions</h2>
+  <div class="coverage-list" aria-labelledby="filings">
+    {panels.map(panel => <section class="card">
+      <p class="eyebrow">{panel.flag}</p>
+      <h3>{panel.name}</h3>
+      <p><strong>{panel.coverage}</strong></p>
+      <p>{panel.history}</p>
+      <p>{panel.boundary}</p>
+      <p>Captured on <time datetime={panel.date}>{panel.date}</time>. <a href={url(panel.route)}>{panel.label}</a> · <a href={url(panel.manifest)}>Source and coverage manifest</a>.</p>
+    </section>)}
+  </div>
+  <h2>Where money goes</h2>
+  <p>The <a href={url('/record/funding-flows/greater-manchester-home-from-hospital/')}>Greater Manchester discharge-support case</a> connects {manchester.awards.length} reported awards to a delivery period and shows independent NHS discharge figures from the same place. The source does not establish a matching payment or expense for each award. Follow the <a href={url('/record/gap-map/')}>Gap Map</a> for more comparisons between funding and need.</p>
+  <h2>Help close a gap</h2>
+  <p>Suggest a source with a public download, an identifier definition, a period, and published reuse terms. For a correction, use the link below and give the source record or organization identifier and the reported period. Use public source references when reporting an error.</p>
+  <p><a href="https://github.com/theguysaccount/charitology/blob/main/docs/GLOBAL_CHARITY_INDEX.md">Read the reproducible build steps and priority list</a>.</p>
+</Entry>
+
+<style>
+  .coverage-list { display: grid; gap: 1rem; }
+  .coverage-list h3 { margin-block-start: 0; }
+</style>
