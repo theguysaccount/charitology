@@ -15,3 +15,5 @@ related: ["/open-problems/the-depth-census/", "/record/state-of-charity/", "/rec
 ---
 
 Use the published U.S. financial baseline alongside a local depth-census workspace. The worksheet records actual activities, money and classification rationales, retains unclassified money and exports the sample for another contributor to inspect. A personal sample does not fill the global evidence gap.
+
+[Trace a Greater Manchester funding example](/record/funding-flows/greater-manchester-home-from-hospital/). Read nine community grants alongside independent NHS discharge figures from the same delivery period.
