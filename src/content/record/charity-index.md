@@ -17,7 +17,7 @@ sources:
   - {"title": "EO BMF information sheet", "publisher": "Internal Revenue Service", "url": "https://www.irs.gov/pub/foia/ig/tege/eo-info.pdf"}
 ---
 
-The Index brings together distinct sources. A dated IRS identity snapshot supports local name-prefix or exact-EIN searches and source-preserving JSON/CSV exports. [Search Australian financial filings](/record/charity-financials/) by name or Australian Business Number to read two years of available revenue, expenses and grant-making figures. A small editorial collection describes *where the work sits on the chain from symptom to source*, with draft hypotheses that anyone can challenge. Coverage varies by source and jurisdiction.
+The Index brings together distinct sources. A dated IRS identity snapshot supports local name-prefix or exact-EIN searches and source-preserving JSON/CSV exports. [Search Australian financial filings](/record/charity-financials/) by name or Australian Business Number to read two years of available revenue, expenses and grant-making figures. [Search England and Wales annual returns](/record/charity-financials/england-wales/) by registered name or number to read available gross income and expenditure for periods ending in 2023–2025. A small editorial collection describes *where the work sits on the chain from symptom to source*, with draft hypotheses that anyone can challenge. Coverage varies by source and jurisdiction.
 
 ## IRS snapshot coverage
 

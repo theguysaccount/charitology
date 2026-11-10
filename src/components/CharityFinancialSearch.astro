@@ -1,9 +1,10 @@
 ---
 import manifest from '../../public/data/charity-financials/manifest.json';
 import { url } from '../lib/site';
+import '../styles/charity-financial-search.css';
 ---
 
-<section data-au-finance data-manifest={JSON.stringify(manifest)} data-asset={url(`/data/charity-financials/${manifest.asset.path}`)} aria-labelledby="au-financial-search">
+<section class="charity-financial-search" data-au-finance data-manifest={JSON.stringify(manifest)} data-asset={url(`/data/charity-financials/${manifest.asset.path}`)} aria-labelledby="au-financial-search">
   <h2 id="au-financial-search">Search Australian charity filings</h2>
   <p id="au-finance-hint">Use a charity name or its 11-digit Australian Business Number (ABN). Search loads about 2.3 MB of public data once in this tab. Your query stays in the browser.</p>
   <form data-finance-form aria-describedby="au-finance-hint">
@@ -26,6 +27,7 @@ import { url } from '../lib/site';
 <script>
   import { $, h } from '../lib/client/dom';
   import { download, toCsv } from '../lib/client/files';
+  import { loadVerifiedJson } from '../lib/client/verified-json';
   import { financialQuery, searchFinancials, validateFinancialRows } from '../lib/charity-financials.mjs';
 
   type Manifest = typeof import('../../public/data/charity-financials/manifest.json').default;
@@ -37,39 +39,8 @@ import { url } from '../lib/site';
     'Grants and donations made for use in Australia', 'Grants and donations made for use outside Australia'];
   const currency = new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', currencyDisplay: 'code', maximumFractionDigits: 0 });
 
-  async function readBytes(stream: ReadableStream<Uint8Array>, limit: number) {
-    const buffer = new Uint8Array(limit);
-    const reader = stream.getReader();
-    let offset = 0;
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) return buffer.slice(0, offset);
-        if (offset + value.length > limit) throw new Error('Financial snapshot exceeds its expected size.');
-        buffer.set(value, offset);
-        offset += value.length;
-      }
-    } finally { await reader.cancel(); }
-  }
-
-  async function sha256(bytes: Uint8Array<ArrayBuffer>) {
-    return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), byte => byte.toString(16).padStart(2, '0')).join('');
-  }
-
   async function loadSnapshot(assetUrl: string, manifest: Manifest): Promise<Organization[]> {
-    if (!globalThis.crypto?.subtle) throw new Error('Use HTTPS to verify this snapshot, or open the official source downloads.');
-    const response = await fetch(assetUrl, { credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(30_000) });
-    if (!response.ok || !response.body) throw new Error('The financial snapshot could not be downloaded.');
-    const asset = manifest.asset;
-    const raw = await readBytes(response.body, Math.max(asset.bytes, asset.decodedBytes));
-    let decoded = raw;
-    if (raw.length === asset.bytes && await sha256(raw) === asset.sha256) {
-      if (typeof DecompressionStream !== 'function') throw new Error('This browser cannot open the snapshot. Use the official source downloads.');
-      decoded = await readBytes(new Blob([raw]).stream().pipeThrough(new DecompressionStream('gzip')), asset.decodedBytes);
-    }
-    if (decoded.length !== asset.decodedBytes || await sha256(decoded) !== asset.decodedSha256) throw new Error('The financial snapshot did not match its published fingerprint.');
-    const data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(decoded));
-    return validateFinancialRows(data, manifest) as Organization[];
+    return validateFinancialRows(await loadVerifiedJson(assetUrl, manifest.asset), manifest) as Organization[];
   }
 
   const scope = (value: Period[3]) => value === 'y' ? 'Consolidated with other entities' : value === 'n' ? 'No consolidation indicated' : 'Consolidation field blank';
@@ -156,14 +127,3 @@ import { url } from '../lib/site';
     });
   }
 </script>
-
-<style>
-  label { display: block; font-weight: 600; margin-bottom: .35rem; }
-  input { flex: 1 1 14rem; min-width: 0; padding: .65rem; font: inherit; }
-  .finance-actions { display: flex; gap: .65rem; flex-wrap: wrap; align-items: stretch; }
-  .finance-results { list-style: none; padding: 0; display: grid; gap: 1rem; }
-  .finance-results :global(h3) { margin-top: 0; overflow-wrap: anywhere; }
-  .finance-results :global(.finance-period) { border-top: 1px solid var(--line); margin-top: 1rem; }
-  .finance-results :global(.finance-amounts) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: .65rem; }
-  .finance-results :global(dd) { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
-</style>

@@ -1,0 +1,31 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import EwCharityFinancialSearch from '../../../components/EwCharityFinancialSearch.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-financials/ew/manifest.json';
+
+const title = 'England and Wales charity financial filings';
+const count = (value: number) => value.toLocaleString('en-GB');
+const official = 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download';
+const sources = [
+  { title: 'Full register download and data definitions', publisher: manifest.sources.register.publisher, url: official },
+  { title: 'Open Government Licence v3.0', publisher: 'The National Archives', url: manifest.license },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary="Look up gross income and expenditure reported to the Charity Commission for England and Wales." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Financial filings',href:'/record/charity-financials/'},{label:'England and Wales'}]} sources={sources}>
+  <p>This edition contains {count(manifest.counts.included)} received annual returns for {count(manifest.organizations)} of the {count(manifest.registeredMain)} main charities shown as registered in the Commission’s extract. {count(manifest.multiPeriod)} have more than one included financial period. The periods end in 2023, 2024 or 2025.</p>
+  <EwCharityFinancialSearch />
+  <h2 id="coverage">Coverage and original data</h2>
+  <p>The Commission’s register and return history extracts are dated <time datetime={manifest.date}>{manifest.date}</time>. This edition links the Commission’s internal organization identifier and checks the public registration number on both extracts. The displayed name comes from the register extract.</p>
+  <ul>
+    <li>{count(manifest.counts.suppressedOrUnknown)} records were excluded because their suppression status was true or unknown.</li>
+    <li>{count(manifest.counts.outsideRegisteredMainScope)} remaining records were outside the current main registered scope.</li>
+    <li>{count(manifest.counts.outsidePeriod)} remaining records were outside the financial periods selected.</li>
+    <li>{count(manifest.counts.returnNotReceived)} remaining records lacked an annual return receipt date.</li>
+  </ul>
+  <p>The amounts are Part A gross income and expenditure in pounds sterling. Blank amounts remain unavailable and figures of zero or less appear as reported. The selected fields do not establish the boundaries of consolidated accounts. Financial periods and organizational scope can differ, so use the original accounts before comparing or adding figures.</p>
+  <p>Contains public sector information from the Charity Commission for England and Wales, licensed under the <a href={manifest.license}>Open Government Licence v3.0</a>. Charitology selected and reformatted records. Use the <a href="https://register-of-charities.charitycommission.gov.uk/en/charity-search">current Commission register</a> to check later amendments, filings and registration status.</p>
+  <p><a href={manifest.sources.register.url}>Original register ZIP</a> · <a href={manifest.sources.returns.url}>Original return history ZIP</a> · <a href={url('/data/charity-financials/ew/manifest.json')} download="england-wales-annual-returns-manifest.json">Download the coverage and source manifest</a>. The manifest gives the shard paths and fingerprints. Import registration numbers and organization identifiers as text when opening an export in a spreadsheet.</p>
+  <p>To suggest a correction, use the <a href={url('/record/charity-index/')}>Global Charity Index</a> and include the registration number, financial period and original source.</p>
+</Entry>

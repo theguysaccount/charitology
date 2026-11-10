@@ -1,0 +1,8 @@
+.charity-financial-search label { display: block; font-weight: 600; margin-bottom: .35rem; }
+.charity-financial-search input { flex: 1 1 14rem; min-width: 0; padding: .65rem; font: inherit; }
+.charity-financial-search .finance-actions { display: flex; gap: .65rem; flex-wrap: wrap; align-items: stretch; }
+.charity-financial-search .finance-results { list-style: none; padding: 0; display: grid; gap: 1rem; }
+.charity-financial-search .finance-results h3 { margin-top: 0; overflow-wrap: anywhere; }
+.charity-financial-search .finance-results .finance-period { border-top: 1px solid var(--line); margin-top: 1rem; }
+.charity-financial-search .finance-results .finance-amounts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: .65rem; }
+.charity-financial-search .finance-results dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
