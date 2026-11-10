@@ -772,6 +772,7 @@ async function mountedDetail(overrides = {}) {
   context.location = { hash: `#module/projects/${record.id}` };
   context.moduleById = () => module;
   context.can = () => true;
+  context.canAssistRenewal = () => false;
   context.role = () => "staff";
   context.referenceOptions = async () => new Map();
   context.formatDate = () => "Fictional saved time";
