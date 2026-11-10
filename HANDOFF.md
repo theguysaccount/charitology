@@ -2,6 +2,24 @@
 
 Read this first, then `STYLE.md`. The full original brief is preserved; do not replace it with a list of what is already built.
 
+## Updating the live Charity OS
+
+[Charity OS](https://os.charitology.org/app) runs from [`services/charity-os/`](services/charity-os/) in the Vercel project `charitology-os`, under `jacksonjezio-7345s-projects`. The project's root directory is `services/charity-os`. The public website deploys through GitHub Pages. A merge gives the OS release a reviewed source commit, and the Vercel promotion below publishes it.
+
+1. Open a pull request and get the [Charity OS checks](.github/workflows/charity-os-check.yml) green, including the isolated PostgreSQL tests. To reproduce the unit and browser model suite from the repo root, use the Node version in [`.nvmrc`](.nvmrc), then run `npm ci`, `npm --prefix services/charity-os ci`, and `npm --prefix services/charity-os test`.
+2. Start from a clean checkout of the exact approved commit on `main`. Use a personal Vercel account authorized to stage, promote and roll back this production project. Run the CLI commands from the **repository root** so Vercel can apply its configured root directory and [upload exclusions](.vercelignore). Confirm the team, project, and previous live deployment ID before staging.
+
+   ```sh
+   vercel link --project charitology-os --scope jacksonjezio-7345s-projects
+   vercel project inspect charitology-os --scope jacksonjezio-7345s-projects
+   vercel inspect https://os.charitology.org --scope jacksonjezio-7345s-projects
+   vercel deploy --prod --skip-domain --scope jacksonjezio-7345s-projects
+   ```
+
+3. Inspect the staged deployment and confirm it is ready for production. Use [authenticated Vercel CLI requests](https://vercel.com/docs/cli/curl) for the protected staging URL. Check that `/app` and changed public assets match the reviewed commit, `/api/health` reports `ok` and `authenticationConfigured`, `/api/session` returns an anonymous session while signed out, and a private route returns `401`. The staged production build uses production configuration, so use read-only smoke checks there and rehearse writes and email with fictional records in an isolated environment.
+4. For a schema or configuration change, agree the rollout and rollback with the responsible database or service operator before promotion. Rehearse the exact change with isolated data, verify compatibility with the currently live version, and record the production migration and readback separately. See the [service setup](services/charity-os/README.md) and [release evidence](docs/SHARED_OS_RELEASE.md). Keep credentials and production records in their respective private systems.
+5. Promote the verified **staged production** deployment ID with `vercel promote <deployment-id> --scope jacksonjezio-7345s-projects`. Inspect `https://os.charitology.org` again to confirm the custom domain points to that ID, then repeat the read-only smoke checks on the live URL. Record the source commit, prior and new deployment IDs, checks and any migration outcome in the PR or release record. If verification fails, coordinate rollback with the release operator and confirm schema compatibility before running `vercel rollback <previous-deployment-id> --scope jacksonjezio-7345s-projects`.
+
 ## Current implementation: shared OS and mega-list acceptance
 
 - **Public evidence examples:** the [fundraising guide](https://charitology.org/for-charities/fundraising/#results) compares three actual studies of donor follow-up, matched direct mail and paid video ads. It gives the measurement window, comparison, costs when reported and study limits. The [Afghanistan Education case](https://charitology.org/record/gap-map/#education-plan-funding) shows published estimates of need and planned reach alongside the original funding edition. Both additions preserve the difference between a reported result and a broader conclusion.
