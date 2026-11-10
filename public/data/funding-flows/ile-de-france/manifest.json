@@ -1,0 +1,62 @@
+{
+  "format": "charitology-idf-paid-grants-v1",
+  "capturedOn": "2026-11-10",
+  "currency": "EUR",
+  "source": {
+    "publisher": "Région Île-de-France",
+    "dataset": "https://data.iledefrance.fr/explore/dataset/subventions-versees-par-la-region-ile-de-france-aux-associations/",
+    "csv": "https://data.iledefrance.fr/api/explore/v2.1/catalog/datasets/subventions-versees-par-la-region-ile-de-france-aux-associations/exports/csv?use_labels=true",
+    "sha256": "8be996a61f4b92d12a244f3c56767a8997e4e52770f607b4762900e9ce3e19fc",
+    "lastPublishedUpdate": "2026-09-08",
+    "license": "https://www.data.gouv.fr/pages/legal/licences/etalab-2-0"
+  },
+  "counts": {
+    "2024": {
+      "input": 4555,
+      "delegated": 267,
+      "missingOrUnusableSiret": 7,
+      "missingPaymentDate": 0,
+      "included": 4281,
+      "otherPaymentCalendarYear": 0
+    },
+    "2025": {
+      "input": 4933,
+      "delegated": 0,
+      "missingOrUnusableSiret": 7,
+      "missingPaymentDate": 4,
+      "included": 4922,
+      "otherPaymentCalendarYear": 5
+    }
+  },
+  "establishments": 2945,
+  "legalUnits": 2850,
+  "duplicateCandidates": [
+    [
+      500,
+      3839
+    ],
+    [
+      6840,
+      6886
+    ]
+  ],
+  "fields": [
+    "sourceRecord",
+    "siret",
+    "publishedName",
+    "budgetYear",
+    "paymentDate",
+    "amountEUR",
+    "decision",
+    "dossier",
+    "aidProgram"
+  ],
+  "asset": {
+    "path": "payments.json.gz",
+    "rows": 9203,
+    "bytes": 283516,
+    "decodedBytes": 1746845,
+    "sha256": "9c0fd29b46ac7b8a2fa08389f9b6ca143689ce7ef819ac35bdf30d95650237f5",
+    "decodedSha256": "3313b52470ab7cca00e00e159258bf0147824aa9c0b9c18580d916f8a8129082"
+  }
+}
