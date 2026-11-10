@@ -34,6 +34,8 @@ import { measureResourceReservationRestore } from './resource-reservation-capaci
 import { measureFeedbackIntakeRestore } from './feedback-intake-capacity.mjs';
 import { isVolunteerSubstitutionNativeReport, planRestoredVolunteerSubstitutionReports } from './volunteer-substitution-native.mjs';
 import { VOLUNTEER_SUBSTITUTION_STORAGE_LIMITS } from './volunteer-substitution-store.mjs';
+import { orientationBackupSection, restoredVolunteerOrientation } from './volunteer-orientation-native.mjs';
+import { isVolunteerOrientationMarkerRow, makeVolunteerOrientationMarkerRow } from './volunteer-orientation-marker.mjs';
 
 export const LEARNING_RESTORE_CAPACITY = Object.freeze({ logicalBytes: 60 * 1024 * 1024, backupBytes: 64 * 1024 * 1024,
   auditCheckReserveBytes: 1000, worstOrgId: 'o'.repeat(100), worstActorId: 'u'.repeat(100),
@@ -200,6 +202,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
     learning = restoredLearningBridge(backup.learningBridge, context), incubator = restoredIncubatorBridge(backup.incubatorBridge, context), integrations = restoredIntegrations(backup);
   const checkins = restoredParticipantCheckins(backup.participantCheckins);
   const groups = restoredParticipationGroups(backup.participationGroups);
+  const orientation = restoredVolunteerOrientation(backup);
   const reservationRecovery = restoredResourceReservations(backup, orgId);
   const field=planRestoredFieldResponseReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
   const crm=planRestoredContactReconciliationReports(backup,{orgId,actorId,createdAtExact:C.timestamp});
@@ -207,7 +210,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   const substitution=planRestoredVolunteerSubstitutionReports(backup,{
     orgId,actorId,createdAtExact:'9999-12-31T23:59:59.999999Z',
   });
-  const reportsPresent=field.present||crm.present||occurrence.present||substitution.present;
+  const reportsPresent=field.present||crm.present||occurrence.present||substitution.present||orientation?.restore;
   const incomingReportIds=new Set(occurrence.reports.map(report=>report.id));
   const substitutionReportIds=new Set(substitution.reports.map(report=>report.id));
   const operational = operationalGrowth(backup.participation), operationalBounds = new Map(operational.outboxBounds.map(value => [value.id, value]));
@@ -227,6 +230,8 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
         if (table === 'os_reports' && field.reports.some(report=>report.id===original.id)) fail(409,'restore_conflict','A destination report collides with recovered aggregate import history.');
         if (table === 'os_reports' && (isVolunteerSubstitutionNativeReport(original) || substitutionReportIds.has(original.id)))
           fail(409,'restore_conflict','Restore requires a destination without volunteer substitution history or a colliding report.');
+        if (table === 'os_reports' && isVolunteerOrientationMarkerRow(original))
+          fail(409,'restore_conflict','Restore requires a destination without an orientation requirement.');
         if (table === 'os_reports' && isLearningReportFamily(original.payload)) fail(409, 'restore_conflict', 'Restore requires a destination without learning reports.');
         if (table === 'os_reports' && learning?.reports.some(report => original.id === report.id || original.checksum === report.checksum || original.payload?.id === report.id || original.payload?.checksum === report.checksum))
           fail(409, 'restore_conflict', 'An original destination report collides with recovered learning report identity.');
@@ -320,6 +325,9 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   for (const report of crm.reports) add('os_reports',report);
   for (const report of occurrence.reports) add('os_reports',report);
   for (const report of substitution.reports) add('os_reports',report);
+  if (orientation?.restore) add('os_reports', {
+    ...makeVolunteerOrientationMarkerRow(orgId, actorId, orientation.marker), created_at: C.timestamp,
+  });
   audit('backup.restored', null, { ...fieldResponseRestoreSummary(field), ...contactReconciliationRestoreSummary(crm), ...participationRecurrenceRestoreSummary(occurrence), count: records.length, checksum: backup.checksum, sourceArchiveId: C.archiveId,
     // Projection only: the largest possible JS array length fixes count width across optional export audits and re-restores.
     sourceHistoryCount: 4294967295, sourceCommentCount: backup.comments?.length || 0, sourceReportCount: backup.reports?.length || 0,
@@ -398,7 +406,7 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
       categories.os_participation_groups.bytes + categories.os_participation_group_receipts.bytes > GROUP_LIMITS.familyBytes) over();
   if (categories.os_incubator_history.count>1000 || categories.os_incubator_history.bytes>16777216) over();
   const projectedRecords = tables.os_records.map(value => rowRecord(wireRow(value)));
-  const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: reportsPresent?[...baseline.reports,...tables.os_reports.filter(value=>!isVolunteerSubstitutionNativeReport(value)).map(wireRow)]:baseline.reports, files, trash: [], trashFiles: [],
+  const extras = { comments: [], events: [...baseline.events, ...tables.os_events.map(wireRow)], reports: reportsPresent?[...baseline.reports,...tables.os_reports.filter(value=>!isVolunteerSubstitutionNativeReport(value)&&!isVolunteerOrientationMarkerRow(value)).map(wireRow)]:baseline.reports, files, trash: [], trashFiles: [],
     integrations: tables.os_integrations.map(value => ({ id: value.id, provider: value.provider, name: value.name, config: value.config })),
     intake: await exportIntake(projectedClient, orgId), participation: await exportParticipation(projectedClient, orgId),
     delivery: await exportDelivery(projectedClient, orgId), taskRecurrence: await exportTaskRecurrence(projectedClient, orgId),
@@ -414,6 +422,10 @@ export async function measureLearningRestoreCapacity(c, backup, { orgId = C.wors
   if (projectedGroups !== undefined) extras.participationGroups = projectedGroups;
   if (resourceRestore?.namespace !== undefined) extras.resourceReservations = resourceRestore.namespace;
   if (substitution.present) extras.volunteerSubstitutions = substitution.namespace;
+  if (orientation?.restore) {
+    extras.version = 2;
+    extras.volunteerOrientation = orientationBackupSection(orientation.marker);
+  }
   let destinationWireMetadataExtraBytes = 0;
   if (operational.active) {
     const originalWireBytes = compactBytes(extras.participation.outbox);

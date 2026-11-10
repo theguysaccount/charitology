@@ -33,6 +33,17 @@ import { validateRecord, modulePermissions } from "./modules.mjs";
 import { verifiedParticipant, participantQuery } from "./participants.mjs";
 import { checkCsrf, body, hash, id, fail, json, stable } from "./security.mjs";
 import {
+  orientationOperation, orientationRequired, orientationUnavailable, refuseProtectedVolunteerOrientation,
+  volunteerOrientationForTarget,
+} from "./volunteer-orientation-marker.mjs";
+import {
+  makeOrientationAcceptance, orientationAcceptanceSummary, readVolunteerOrientationAcceptance,
+  requireVolunteerOrientationStorage, retainVolunteerOrientationAcceptance,
+} from "./volunteer-orientation-storage.mjs";
+import {
+  readDeclaredVolunteerOrientationPolicy, requireVolunteerOrientationForPlace,
+} from "./volunteer-orientation-admission.mjs";
+import {
   participationModule,
   targetKind,
   bookingKind,
@@ -115,6 +126,7 @@ const sourceApproved = (r) =>
 const sqlDomainClocks = new WeakMap();
 const LEGACY_DOMAIN_CLOCK = Object.freeze({});
 const QUIET_SUBSTITUTION = Symbol("reviewed shift substitution");
+const GROUP_CHILD = Symbol("reviewed group participation");
 const TEN_MINUTES_MICROS = 600000000n;
 function exactClockMicros(value) {
   if (
@@ -653,17 +665,35 @@ function waitlistHintIntervalMatches(p, source, terms) {
 }
 const hintAllocationRefusal = error =>
   ["participation_capacity", "participation_overlap", "participation_duplicate", "participation_interval"].includes(error.code);
-async function waitlistSuggestion(c, org, source, records, member, releasedId = null) {
+async function waitlistSuggestion(c, org, source, records, member, releasedId = null, orientation = {}) {
   const terms = participationTerms(source);
+  const unavailableOrientation = error => ["volunteer_orientation_required", "volunteer_orientation_unavailable"].includes(error?.code);
+  let declaration, clock, policy, target;
+  try {
+    declaration = orientation.declaration === undefined ? await volunteerOrientationForTarget(c, org, source) : orientation.declaration;
+    if (declaration) {
+      if (declaration.originMode !== "live") return null;
+      if (!orientation.policy) await requireVolunteerOrientationStorage(c);
+      policy = orientation.policy ?? await readDeclaredVolunteerOrientationPolicy(c, org, declaration);
+      clock = orientation.clock ?? await readParticipationDomainClock(c);
+      target = orientation.target ?? await managed(c, org, source.id, {forUpdate: false});
+    }
+  } catch (error) {
+    if (unavailableOrientation(error)) return null;
+    throw error;
+  }
   for (const p of (await entries(c, org, source.id)).filter(
     (p) => p.state === "waitlisted" && !p.recovered,
   )) {
     if (!waitlistHintEligible(p, source, records, member, terms)) continue;
     try {
       if (!waitlistHintIntervalMatches(p, source, terms)) continue;
+      if (declaration) await requireVolunteerOrientationForPlace({
+        c, source, target, terms, p, action: "waitlist-hint", declaration, clock, policy,
+      });
       await allocationCheck(c, org, p, source, records, terms, releasedId);
     } catch (error) {
-      if (hintAllocationRefusal(error)) continue;
+      if (hintAllocationRefusal(error) || unavailableOrientation(error)) continue;
       throw error;
     }
     return p.id;
@@ -1100,6 +1130,7 @@ async function adopt({ c, org, user, member, source, t, records, input }) {
       adopted: t.last_command.adopted || 0,
     });
   }
+  await refuseProtectedVolunteerOrientation(c, org, source);
   revision(input, source.revision, "targetRevision");
   const preview = await adoptionPreview(c, org, source, t, records);
   if (input.expectedLegacyHash !== preview.legacyHash)
@@ -1699,10 +1730,35 @@ async function staffSchedulingCommand({
   const intent = participationIntent(input, user, action);
   if (participationReplay(p.last_command, intent)) {
     noteParticipationReceiptReplay(c, org);
+    const accepted = p.last_command.orientationAcceptance;
     // These older receipts deliberately contain no journal/audit outcome.
-    return { p, replayed: true, notificationQueued: null, auditRetained: null };
+    return { p, replayed: true, notificationQueued: null, auditRetained: null,
+      ...(accepted ? {orientationAcceptance: orientationAcceptanceSummary(accepted)} : {}) };
+  }
+  let declaration = null, policy = null, observation = null, orientationAcceptance = null;
+  if (action !== "waitlist") {
+    declaration = await volunteerOrientationForTarget(c, org, source);
+    if (declaration) {
+      if (mode === GROUP_CHILD || quiet) orientationOperation();
+      if (declaration.originMode !== "live") orientationRequired();
+      await requireVolunteerOrientationStorage(c);
+      const accepted = await readVolunteerOrientationAcceptance(c, org, source.id, p, intent);
+      if (accepted) {
+        noteParticipationReceiptReplay(c, org);
+        return {p, replayed: true, notificationQueued: null, auditRetained: null, orientationAcceptance: accepted};
+      }
+      serverClock = await readParticipationDomainClock(c);
+      policy = await readDeclaredVolunteerOrientationPolicy(c, org, declaration);
+    }
   }
   const { terms, candidate } = await schedulingEligibility({ c, org, member, source, t, records, input, p, action, serverClock });
+  if (declaration) {
+    if (candidate.data.programId !== declaration.marker.programId) orientationRequired();
+    observation = await requireVolunteerOrientationForPlace({
+      c, source, target: t, terms, p, action, declaration, clock: serverClock, policy,
+    });
+    orientationAcceptance = makeOrientationAcceptance(action, p, serverClock.atExact, policy);
+  }
   let changes;
   let recordAuditRetained = true;
   if (action === "waitlist") {
@@ -1723,6 +1779,8 @@ async function staffSchedulingCommand({
         source,
         records,
         member,
+        null,
+        {declaration, target: t, policy, clock: declaration ? serverClock : null},
       );
       requireParticipationPromotionReason({ participationId: p.id, suggestedId: suggested, reason: input.reason });
     } else if (input.reason != null) text(input.reason, 300);
@@ -1768,7 +1826,7 @@ async function staffSchedulingCommand({
       },
     };
   }
-  const next = await update(c, org, p, changes, intent, mode);
+  const next = await update(c, org, p, changes, orientationAcceptance ? {...intent, orientationAcceptance} : intent, mode);
   const notificationQueued = !quiet && await outbox(c, org, next, { settings });
   await participationQuota(c, org);
   if (quiet) return { p: next, replayed: false, notificationQueued: false, auditRetained: null };
@@ -1777,11 +1835,17 @@ async function staffSchedulingCommand({
     targetId: source.id,
     reason: input.reason || null,
   });
+  if (orientationAcceptance) {
+    if (!recordAuditRetained || !finalAuditRetained || next.state !== "confirmed" ||
+        next.revision !== orientationAcceptance.resultRevision) orientationUnavailable();
+    await retainVolunteerOrientationAcceptance(c, org, source.id, p, intent, orientationAcceptance, observation);
+  }
   return {
     p: next,
     replayed: false,
     notificationQueued,
     auditRetained: recordAuditRetained && finalAuditRetained,
+    ...(orientationAcceptance ? {orientationAcceptance} : {}),
   };
 }
 
@@ -1790,8 +1854,8 @@ async function staffSchedulingCommand({
  * pins, all row locks and the ONE outer transaction. A clock is not authority.
  * @returns {Promise<{p: object, replayed: boolean, notificationQueued: boolean|null, auditRetained: boolean|null}>}
  */
-export async function applyParticipationDomainCommand(args) {
-  return applyScopedParticipationCommand(args);
+export async function applyParticipationDomainCommand(args, operation = null) {
+  return applyScopedParticipationCommand(args, operation === "group" ? GROUP_CHILD : undefined);
 }
 async function applyScopedParticipationCommand({
   settings,
@@ -1892,6 +1956,7 @@ export async function stageVolunteerSubstitutionPlaces(c, selector, context, pla
       !t || t.org_id !== org || t.target_id !== source.id || t.module_id !== "volunteers")
     stale();
   permit(source, member, "write");
+  await refuseProtectedVolunteerOrientation(c, org, source);
   approvedTarget(source, t, c, serverClock);
   const matches = (p, leg, from, to) => p.org_id === org && p.module_id === "volunteers" &&
     p.target_id === source.id && p.id === leg.id && p.revision === leg.revision &&
@@ -1968,6 +2033,7 @@ async function staffCommand(args) {
     });
     return okay({
       participation: staffObject(result.p, t, source, records, member),
+      ...(result.orientationAcceptance ? {orientationAcceptance: result.orientationAcceptance, replayed: result.replayed} : {}),
       ...(action === "cancel"
         ? {
             notificationQueued: result.notificationQueued,
@@ -2077,6 +2143,7 @@ export async function participationRoutes({
   if (!match[2] && method === "GET") {
     const preview = await adoptionPreview(c, org, source, t, records),
       current = currentTerms(source);
+    const protectedTarget = await volunteerOrientationForTarget(c, org, source);
     return okay({
       target: targetObject(
         t,
@@ -2111,7 +2178,7 @@ export async function participationRoutes({
       sourceApproved: sourceApproved(source),
       capacity: source.data.capacity ?? null,
       occupied: preview.occupants.length,
-      canAdopt: administrators(member.role) && preview.issues.length === 0,
+      canAdopt: !protectedTarget && administrators(member.role) && preview.issues.length === 0,
     });
   }
   if (match[2] === "adopt" && method === "POST")

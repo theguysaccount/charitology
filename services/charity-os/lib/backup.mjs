@@ -15,6 +15,7 @@ import { restoredContactReconciliationReports } from './contact-reconciliation-r
 import { restoredParticipationRecurrenceReports } from "./participation-recurrence-recovery.mjs";
 import { restoredResourceReservations } from "./resource-reservation-backup.mjs";
 import { restoredVolunteerSubstitutionNative } from "./volunteer-substitution-native.mjs";
+import { restoredVolunteerOrientation } from "./volunteer-orientation-native.mjs";
 export const FORMAT = "charitology-os";
 export function makeBackup(org, records, extras = {}) {
   const payload = {
@@ -37,11 +38,11 @@ export function validateBackup(input, orgId, userId) {
   if (
     !input ||
     input.format !== FORMAT ||
-    input.version !== 1 ||
+    ![1, 2].includes(input.version) ||
     input.schemaVersion !== SCHEMA_VERSION ||
     !Array.isArray(input.records)
   )
-    fail(422, "backup", "Use a version1 Charity OS backup.");
+    fail(422, "backup", "Use a supported Charity OS backup.");
   if (input.records.length > 2000)
     fail(422, "backup", "A backup may contain at most2,000 records.");
   // This feature has a closed independent grammar; a native selected packet
@@ -62,6 +63,7 @@ export function validateBackup(input, orgId, userId) {
       "checksum",
       "The backup checksum does not match. Nothing was imported.",
     );
+  restoredVolunteerOrientation(input);
   restoredVolunteerSubstitutionNative(input);
   const connections = restoredIntegrations(input);
   restoredIntake(input);

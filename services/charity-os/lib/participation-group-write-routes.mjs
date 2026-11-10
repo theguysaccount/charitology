@@ -154,7 +154,7 @@ export async function participationGroupWriteRoutes({ c, org, session, tail, met
   for (const { p, step, child } of childCommands) {
     const applied = await applyParticipationDomainCommand({ settings, c, org, user: context.member.userId,
       member: context.member, source: context.source, t: context.t, records: context.records,
-      input: child, p, action: step.action, serverClock: clock });
+      input: child, p, action: step.action, serverClock: clock }, "group");
     // A child Replay cannot stand in for a new all-or-none aggregate decision.
     if (applied.replayed || applied.p.id !== p.id || applied.p.revision !== p.revision + 1 ||
         applied.p.state !== (operation === 'admit' ? 'confirmed' : 'cancelled') ||

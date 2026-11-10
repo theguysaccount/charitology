@@ -8,6 +8,7 @@ import { validateGroupExactStamp } from "./participation-group-model.mjs";
 import { frozenParticipationInterval } from "./participation-intervals.mjs";
 import { checkCsrf, equal, fail, hash, json, stable } from "./security.mjs";
 import { noteParticipationReceiptReplay, noteVolunteerSubstitutionWithdrawal } from "./database.mjs";
+import { refuseProtectedVolunteerOrientation, volunteerOrientationForTarget } from "./volunteer-orientation-marker.mjs";
 
 const PATH = /^\/api\/participant\/orgs\/([A-Za-z0-9_-]{1,100})\/requests\/([A-Za-z0-9_-]{1,100})\/participations\/([A-Za-z0-9_-]{1,100})\/substitution-choice$/;
 const ID = /^[A-Za-z0-9_-]{1,100}$/, LINK = /^[a-f0-9]{32}$/, SHA = /^[a-f0-9]{64}$/;
@@ -249,7 +250,18 @@ export async function participantVolunteerSubstitutionRoutes({
         acceptedAtExact: row?.acceptedAtExact ?? null, expiresAtExact, withdrawnAtExact: row?.withdrawnAtExact ?? null,
         reviewSha256: review(choiceRevision) };
     };
-    if (!write) return okay(summary(existing));
+    const shift = {id: binding.shiftId, moduleId: "volunteers"};
+    if (!write) {
+      const current = summary(existing);
+      if (current.canAccept) {
+        try { current.canAccept = !await volunteerOrientationForTarget(c, orgId, shift); }
+        catch (error) {
+          if (error?.code !== "volunteer_orientation_unavailable") throw error;
+          current.canAccept = false;
+        }
+      }
+      return okay(current);
+    }
     if (!equal(input.reviewSha256, review(input.expectedChoiceRevision))) stale();
     if (input.choice === "accept") {
       if (existing?.choiceRevision === 1) {
@@ -257,6 +269,7 @@ export async function participantVolunteerSubstitutionRoutes({
         return okay(summary(existing), true);
       }
       if (existing) stale();
+      await refuseProtectedVolunteerOrientation(c, orgId, shift);
       const saved = storeChoice(await recordChoice(c, { ...bound, acceptedAtExact: clock.atExact,
         expiresAtExact: choiceDeadline }), bound);
       if (saved?.choiceRevision !== 1 || saved.acceptedAtExact !== clock.atExact ||

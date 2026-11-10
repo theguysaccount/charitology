@@ -12,6 +12,7 @@ import { guardResourceReservationWrite, resourceReservationHistoryPresent } from
 import { guardVolunteerSubstitutionRecord } from "./volunteer-substitution-retention.mjs";
 import { resourceReservationHistoryExpression, resourceReservationSchemaReady } from "./resource-reservation-schema.mjs";
 import { volunteerSubstitutionSchemaReady } from "./volunteer-substitution-schema.mjs";
+import { guardOrientationSource } from "./volunteer-orientation-native.mjs";
 // Only trusted server actions classify a transaction. HTTP inputs cannot
 // supply a deferral flag or a replacement capacity validator.
 const transactionAudits = new WeakMap();
@@ -446,6 +447,7 @@ export async function saveRecord(c, r, options = {}) {
   await guardFeedbackPublicationWrite(c, r);
   await guardResourceReservationWrite(c, r, { operation: options.operation });
   await guardVolunteerSubstitutionRecord(c, r, options);
+  await guardOrientationSource(c, r);
   const size = Buffer.byteLength(JSON.stringify(r.data));
   const usage = (
     await c.query(
@@ -514,7 +516,7 @@ export async function logicalBackupBytes(c, org) {
     tables
       .map(
         (table) =>
-          `SELECT COALESCE(sum(${table === "os_reports" ? "CASE WHEN payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%' THEN GREATEST(octet_length(to_jsonb(t)::text),octet_length(payload::text)+4096) ELSE octet_length(to_jsonb(t)::text) END" : ["os_participation_outbox", "os_task_recurrence_series", "os_resource_directory_history", "os_learning_history", "os_incubator_history"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : table === "os_participations" ? `octet_length(${participationChargeJsonSQL("t")}::text)` : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
+          `SELECT COALESCE(sum(${table === "os_reports" ? "CASE WHEN payload->>'kind'='learning-review' OR payload->>'methodVersion' LIKE 'learning-%' THEN GREATEST(octet_length(to_jsonb(t)::text),octet_length(payload::text)+4096) WHEN payload->>'format'='charitology-os-volunteer-orientation-marker' AND payload->>'originMode'='live' THEN octet_length(to_jsonb(t)::text)+131072 ELSE octet_length(to_jsonb(t)::text) END" : ["os_participation_outbox", "os_task_recurrence_series", "os_resource_directory_history", "os_learning_history", "os_incubator_history"].includes(table) ? "GREATEST(octet_length(to_jsonb(t)::text),COALESCE(budget_bytes,0))" : table === "os_participations" ? `octet_length(${participationChargeJsonSQL("t")}::text)` : "octet_length(to_jsonb(t)::text)"}),0) AS size FROM ${table} t WHERE org_id=$1`,
       )
       .join(" UNION ALL ") +
     " UNION ALL SELECT COALESCE(sum(ceil(size::numeric/3)*4+1000),0) AS size FROM os_files WHERE org_id=$1" +

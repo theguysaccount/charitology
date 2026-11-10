@@ -4,6 +4,7 @@ import { readGroupContext, GROUP_CONTEXT_SQL as SQL } from "../../lib/participat
 import { participationTerms } from "../../lib/participation.mjs";
 import { hash } from "../../lib/security.mjs";
 import { GROUP_COLLECTION_SQL } from "../../lib/participation-group-read-routes.mjs";
+import { VOLUNTEER_ORIENTATION_MARKER_SQL } from "../../lib/volunteer-orientation-marker.mjs";
 
 const ORG = "fictional_org", USER = "fictional_user", SID = "fictional_session", SHA = "a".repeat(64);
 const stamp = "2026-11-08T12:00:00.123456Z", next = "2026-11-08T12:00:00.123457Z";
@@ -54,6 +55,7 @@ function fixture({ moduleId = "events" } = {}) {
   };
   f.c={async query(sql,args=[]) {
     calls.push({sql,args:structuredClone(args)});
+    if(sql===VOLUNTEER_ORIENTATION_MARKER_SQL)return result(f.orientationMarkers??[]);
     if(sql===SQL.lock||sql===SQL.utc)return result([]);
     if(sql===SQL.targetSeed){const row=tables.os_records.get(args[1]);return result(row&&row.deleted_at==null?[{id:row.id,module_id:row.module_id}]:[]);}
     if(sql===SQL.groupSeed||sql===SQL.receiptSeed){

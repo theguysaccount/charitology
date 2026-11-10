@@ -398,7 +398,8 @@ async function claimRequest({ db, user, org, publicationId, input }) {
   );
 }
 
-async function ownRequest({ db, user, org, intakeId, action, input, volunteerProfileAvailable, session, settings }) {
+async function ownRequest({ db, user, org, intakeId, action, input, volunteerProfileAvailable,
+  membershipRenewalAvailable, session, settings }) {
   const link = await ownLink(db, user, org, intakeId);
   return db.tx(
     user.id,
@@ -418,6 +419,13 @@ async function ownRequest({ db, user, org, intakeId, action, input, volunteerPro
               intakeRevision: loaded.row.revision, publicationId: loaded.publication.id, session, settings,
             }) === true)
           detail.volunteerProfile = true;
+        if (membershipRenewalAvailable && loaded.publication.kind === "contact" &&
+            loaded.row.status === "converted" && !loaded.row.erased_at && link.id === loaded.row.link_id &&
+            await membershipRenewalAvailable(c, {
+              orgId: org, intakeId, linkId: link.id, linkRevision: link.revision,
+              intakeRevision: loaded.row.revision, publicationId: loaded.publication.id, session, settings,
+            }) === true)
+          detail.membershipRenewal = true;
         return okay(detail);
       }
       exact(
@@ -558,6 +566,7 @@ export async function participantRoutes({
   session,
   input,
   volunteerProfileAvailable,
+  membershipRenewalAvailable,
 }) {
   if (!url.pathname.startsWith("/api/participant/")) return null;
   if (url.pathname === "/api/participant/session") return null;
@@ -578,7 +587,8 @@ export async function participantRoutes({
       url.pathname,
     );
   if (own && !own[3] && request.method === "GET")
-    return ownRequest({ db, user, org: own[1], intakeId: own[2], volunteerProfileAvailable, session, settings });
+    return ownRequest({ db, user, org: own[1], intakeId: own[2], volunteerProfileAvailable,
+      membershipRenewalAvailable, session, settings });
   if (request.method !== "POST" || (!claim && !own?.[3]))
     fail(404, "participant_route", "This participant action is unavailable.");
   checkCsrf(request, session, settings);

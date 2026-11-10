@@ -8,6 +8,7 @@ import { mailer } from "../lib/mail.mjs";
 import { createHandler } from "../lib/handler.mjs";
 import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
 import { volunteerProfileConfiguration } from "../lib/volunteer-profile-routes.mjs";
+import { membershipRenewalConfiguration } from "../lib/membership-renewal-storage.mjs";
 const settings = readSettings(),
   db = database(settings.databaseUrl),
   send = mailer(settings),
@@ -16,7 +17,9 @@ const settings = readSettings(),
     volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({
       db,enabled:process.env.OS_VOLUNTEER_SUBSTITUTIONS_ENABLED==="1",
     }),
-    volunteerProfileConfig:volunteerProfileConfiguration() });
+    volunteerProfileConfig:volunteerProfileConfiguration(),
+    volunteerOrientationEnabled:process.env.OS_VOLUNTEER_ORIENTATION_ENABLED==="1",
+    membershipRenewalConfig:membershipRenewalConfiguration() });
 const root = resolve(new URL("../public", import.meta.url).pathname);
 const types = {
   ".html": "text/html; charset=utf-8",

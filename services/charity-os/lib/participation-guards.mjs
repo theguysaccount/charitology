@@ -6,6 +6,7 @@ import {
 } from "./participation-intervals.mjs";
 export { intervalsOverlap } from "./participation-intervals.mjs";
 import { fail, stable } from "./security.mjs";
+import { readVolunteerOrientationMarker, volunteerOrientationForTarget } from "./volunteer-orientation-marker.mjs";
 
 export const participationModule = (m) => ["events", "volunteers"].includes(m);
 export const parentKey = (m) => (m === "events" ? "eventId" : "shiftId");
@@ -52,6 +53,12 @@ export async function guardParticipationWrite(
   record,
   { participationCommand = false, operation = "save" } = {},
 ) {
+  if (record.moduleId === "programs" && (operation === "delete" || record.data?.kind !== "program")) {
+    await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [record.orgId]);
+    const orientation = await readVolunteerOrientationMarker(c, record.orgId);
+    if (orientation?.marker.programId === record.id)
+      fail(409, "volunteer_orientation_source", "Keep the saved program type and its orientation requirement.");
+  }
   if (!participationModule(record.moduleId) || participationCommand) return;
   const org = record.orgId,
     m = record.moduleId,
@@ -63,6 +70,11 @@ export async function guardParticipationWrite(
       [org, record.id],
     )
   ).rows[0];
+  if (m === "volunteers" && (data.kind === "shift" || old?.data?.kind === "shift")) {
+    const orientation = await volunteerOrientationForTarget(c, org, record);
+    if (orientation && (operation === "delete" || data.kind !== "shift" || data.programId !== orientation.marker.programId))
+      fail(409, "volunteer_orientation_source", "Keep the shift and program linked to the retained orientation requirement.");
+  }
   if (data.kind === "attendance" || old?.data?.kind === "attendance") {
     // A live server audit reserves the helper's original occurrence identity.
     // Full imports archive original events; they never install these receipts.

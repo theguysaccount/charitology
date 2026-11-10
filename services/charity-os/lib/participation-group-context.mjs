@@ -3,6 +3,7 @@
  */
 import { isProxy } from "node:util/types";
 import { fail } from "./security.mjs";
+import { refuseProtectedVolunteerOrientation } from "./volunteer-orientation-marker.mjs";
 import { visibleRecord, administrators, requireAdmin } from "./access.mjs";
 import { rowRecord } from "./database.mjs";
 import { ModuleValidationError } from "./modules.mjs";
@@ -312,6 +313,7 @@ export async function readGroupContext(c, input) {
   }
   const records = rawRecords.map(r => rowRecord({ ...r, created_at: new Date(r.created_at), updated_at: new Date(r.updated_at) }));
   const source = typed(records, targetId, initial.module_id, member); need(source.data.kind === targetKind(source.moduleId));
+  if (operation === "create" || admission) await refuseProtectedVolunteerOrientation(c, org, source);
   const t = await rawRow(c, org, "os_participation_targets", targetId, pins); need(t.module_id === source.moduleId);
   if (operation === "create") need(t.mode === "managed" && !t.recovery_block);
   const actualParts = new Map();
