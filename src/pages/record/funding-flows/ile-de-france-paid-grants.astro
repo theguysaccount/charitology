@@ -1,0 +1,149 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/funding-flows/ile-de-france/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Paid grants to associations in Île-de-France';
+const count = (value: number) => value.toLocaleString('en-US');
+const official = 'https://www.insee.fr/fr/metadonnees/definition/c1841';
+const sources = [
+  { title: 'Regional grant payments and data definitions', publisher: manifest.source.publisher, url: manifest.source.dataset },
+  { title: 'SIRET establishment identifier', publisher: 'Insee', url: official },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Search reported regional grant payments by association name or French establishment and legal-unit identifiers." crumbs={[{label:'The Record',href:'/record/'},{label:'Gap Map',href:'/record/gap-map/'},{label:title}]} sources={sources}>
+  <p>This edition includes {count(manifest.asset.rows)} reported payment rows for {count(manifest.establishments)} establishments. The region published the figures for its 2024 and 2025 budget years. Each result shows the budget year and actual payment date as separate fields.</p>
+  <section class="charity-financial-search" data-idf-search data-manifest={JSON.stringify(manifest)} data-file={url('/data/funding-flows/ile-de-france/payments.json.gz')} aria-labelledby="idf-search-heading">
+    <h2 id="idf-search-heading">Find paid grants</h2>
+    <p id="idf-hint">Enter the beginning of the published recipient name, a 14-digit SIRET establishment number or a nine-digit SIREN legal-unit number. Search downloads about 284 KB of public data. Your query stays in this browser.</p>
+    <form aria-describedby="idf-hint">
+      <label for="idf-query">Recipient name, SIRET or SIREN</label>
+      <div class="finance-actions">
+        <input id="idf-query" type="search" maxlength="200" autocomplete="off" disabled />
+        <button class="btn" type="submit" disabled>Search payments</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you’re ready to load the public records.</p>
+    <div class="finance-actions">
+      <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export displayed results as JSON</button>
+      <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" aria-label="Regional payment results" data-results></ol>
+    <noscript><p>For search without JavaScript, use the original regional CSV in the coverage section.</p></noscript>
+  </section>
+  <h2 id="coverage">Coverage and original data</h2>
+  <ul>{Object.entries(manifest.counts).map(([year, entry]) => <li>
+    <strong>Budget year {year}.</strong> {count(entry.included)} included from {count(entry.input)} source records. {count(entry.delegated)} were marked as delegated.
+    {' '}{count(entry.missingOrUnusableSiret)} remaining records lacked a usable SIRET. {count(entry.missingPaymentDate)} remaining records lacked a payment date.
+    {entry.otherPaymentCalendarYear > 0 && ` ${count(entry.otherPaymentCalendarYear)} included records show a payment in the next calendar year.`}
+  </li>)}</ul>
+  <p>Two pairs share a date, amount, decision, dossier and SIRET but have different published recipient names. Both source rows are visible with a possible duplicate label. This edition does not compute a total across those unresolved rows. The SIRET is the establishment named in the payment records. It does not establish where the funded work took place.</p>
+  <p>The Région Île-de-France last updated the dataset on <time datetime={manifest.source.lastPublishedUpdate}>{manifest.source.lastPublishedUpdate}</time> and published it under <a href={manifest.source.license}>France’s Open Licence 2.0</a>. Charitology selected fields and checked identifier formats. <a href={manifest.source.csv}>Original CSV</a> · <a href={url('/data/funding-flows/ile-de-france/manifest.json')}>Source and coverage manifest</a> · <a href={url('/data/funding-flows/ile-de-france/payments.json.gz')}>Full selected snapshot as compressed JSON</a>. Import identifiers as text when opening a CSV export.</p>
+</Entry>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { loadVerifiedJson } from '../../../lib/client/verified-json';
+
+  type Row = [number, string, string, string, string, string, string, string, string | null];
+  type Manifest = typeof import('../../../../public/data/funding-flows/ile-de-france/manifest.json');
+  const normalize = (value: string) => value.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const format = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'EUR' });
+  const safeCsv = (value: unknown) => typeof value === 'string' && /^(?:\s*[=+\-@]|[\t\r\n])/.test(value) ? `'${value}` : value;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-idf-search]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const flagged = new Set(manifest.duplicateCandidates.flat());
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let snapshot: Promise<Row[]> | undefined;
+    let displayed: Row[] = [];
+    let sequence = 0;
+    input.disabled = submit.disabled = clear.disabled = false;
+
+    async function load() {
+      const rows = await loadVerifiedJson(root.dataset.file!, manifest.asset);
+      if (!Array.isArray(rows) || rows.length !== manifest.asset.rows) throw new Error('The payment snapshot has an unexpected row count.');
+      return rows as Row[];
+    }
+
+    function reset() {
+      displayed = [];
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function payment([record, siret, name, year, paid, amount, decision, dossier, program]: Row) {
+      return h('li', { class: 'card' }, h('h3', {}, name),
+        h('p', {}, `${format.format(Number(amount))} · Paid ${paid} · Budget year ${year}`),
+        h('p', {}, program ?? 'Aid program not supplied'),
+        h('p', { class: 'note' }, `SIRET ${siret} · `, h('a', {
+          href: 'https://avis-situation-sirene.insee.fr/',
+        }, `Check SIREN ${siret.slice(0, 9)} in the official lookup`)),
+        h('p', { class: 'note' }, `Decision ${decision} · Dossier ${dossier} · Source record ${record}`),
+        flagged.has(record) && h('p', { class: 'note' }, 'Possible duplicate. A different recipient name appears on the paired source record.'));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      try {
+        const id = input.value.replace(/\s/g, '');
+        const query = normalize(input.value);
+        if (query.length < 2) throw new Error('Enter at least two characters or an exact SIRET or SIREN.');
+        submit.disabled = true;
+        status.textContent = 'Checking the public payments snapshot.';
+        snapshot ??= load().catch(error => { snapshot = undefined; throw error; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        const found = rows.filter(([, siret, name]) => /^\d{14}$/.test(id) ? siret === id : /^\d{9}$/.test(id) ? siret.slice(0, 9) === id : normalize(name).startsWith(query));
+        found.sort((a, b) => b[4].localeCompare(a[4]) || a[0] - b[0]);
+        displayed = found.slice(0, 50);
+        status.textContent = found.length ? `${found.length} ${found.length === 1 ? 'record' : 'records'}. Showing ${displayed.length}.`
+          : 'No matching payment records in this edition.';
+        results.append(...displayed.map(payment));
+        json.disabled = csv.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The payment search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      input.value = '';
+      submit.disabled = false;
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    function exportRows() {
+      return displayed.map(row => ({ ...Object.fromEntries(manifest.fields.map((field, index) => [field, row[index]])),
+        siren: row[1].slice(0, 9), possibleDuplicate: flagged.has(row[0]) }));
+    }
+    json.addEventListener('click', () => {
+      if (!displayed.length) return;
+      const { source, capturedOn, currency } = manifest;
+      download('ile-de-france-paid-grants.json', JSON.stringify({ source, capturedOn, currency, payments: exportRows() }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!displayed.length) return;
+      const { source, capturedOn, currency } = manifest;
+      const rows = exportRows().map(row => Object.fromEntries(Object.entries({ ...row, capturedOn, currency,
+        source: source.csv, sourceSha256: source.sha256, sourceLastPublishedUpdate: source.lastPublishedUpdate, publisher: source.publisher, license: source.license,
+      }).map(([key, value]) => [key, safeCsv(value)])));
+      download('ile-de-france-paid-grants.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>
