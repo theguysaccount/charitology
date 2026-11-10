@@ -1,0 +1,769 @@
+{
+  "edition": "greater-manchester-home-from-hospital-2026-11-10",
+  "capturedOn": "2026-11-10",
+  "sources": {
+    "awards": {
+      "url": "https://10gm.org.uk/wp-content/uploads/2024/09/10GM-Targeted-InvestmentFundGrantRecipientsv1_360Givingdata.xlsx",
+      "sha256": "624c738d6dfa353e9985236c7dd0a087351a76df4add53beb951607c1240d4ce",
+      "publisher": "10GM",
+      "license": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "register": {
+      "url": "https://ccewuksprdoneregsadata1.blob.core.windows.net/data/txt/publicextract.charity.zip",
+      "sha256": "9457e2d45addfbeac7e3689c8cb5999edb1fa77c672b3bf0eef1459da86a0c24",
+      "publisher": "Charity Commission for England and Wales",
+      "license": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+    },
+    "2022-12": {
+      "url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2023/10/Daily-discharge-sitrep-monthly-data-webfile-December2022-revised.xlsx",
+      "sha256": "06d6b2d80505f8ee41732e16e5457db9583b56c3d63184b7799e346f31a30c27",
+      "publisher": "NHS England",
+      "license": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+    },
+    "2023-01": {
+      "url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2023/10/Daily-discharge-sitrep-monthly-data-webfile-January2023-revised.xlsx",
+      "sha256": "261478c58345e01a0fed67e747265002e61f616c3a3c5f9189aef3ae42cb2c4f",
+      "publisher": "NHS England",
+      "license": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+    },
+    "2023-02": {
+      "url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2023/10/Daily-discharge-sitrep-monthly-data-webfile-February2023-revised.xlsx",
+      "sha256": "d9c34b3a2b94221417b68628661259a95ab97a5b69b041129d337264e6752732",
+      "publisher": "NHS England",
+      "license": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+    },
+    "2023-03": {
+      "url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2023/10/Daily-discharge-sitrep-monthly-data-webfile-March2023-revised.xlsx",
+      "sha256": "a41dc2d93da2c34f3f1a7633020d25e578cd4462e5ae4bf58e7d97aabb4572b7",
+      "publisher": "NHS England",
+      "license": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+    }
+  },
+  "awards": [
+    {
+      "id": "360G-10GM-2022-001",
+      "recipient": "Age UK Bury",
+      "recipientId": "GB-CHC-1141901",
+      "amountGBP": 20000,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Bury",
+      "sourceRow": 2,
+      "registerName": "AGE UK BURY"
+    },
+    {
+      "id": "360G-10GM-2022-002",
+      "recipient": "Age UK Manchester",
+      "recipientId": "GB-CHC-1083242",
+      "amountGBP": 10492,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Manchester",
+      "sourceRow": 3,
+      "registerName": "AGE CONCERN MANCHESTER"
+    },
+    {
+      "id": "360G-10GM-2022-003",
+      "recipient": "Age UK Stockport",
+      "recipientId": "GB-CHC-1139547",
+      "amountGBP": 20000,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Stockport",
+      "sourceRow": 4,
+      "registerName": "AGE UK STOCKPORT"
+    },
+    {
+      "id": "360G-10GM-2022-004",
+      "recipient": "Caribbean African Health Network",
+      "recipientId": "GB-COH-10845632",
+      "amountGBP": 34650,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Greater Manchester",
+      "sourceRow": 5,
+      "registerName": null
+    },
+    {
+      "id": "360G-10GM-2022-005",
+      "recipient": "Care & Repair Manchester",
+      "recipientId": "GB-CHC-1147174",
+      "amountGBP": 19000,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Bury",
+      "sourceRow": 6,
+      "registerName": "MANCHESTER CARE AND REPAIR"
+    },
+    {
+      "id": "360G-10GM-2022-006",
+      "recipient": "Groundwork (Wigan)",
+      "recipientId": "GB-CHC-514727",
+      "amountGBP": 22415,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Wigan",
+      "sourceRow": 7,
+      "registerName": "GROUNDWORK CHESHIRE LANCASHIRE & MERSEYSIDE"
+    },
+    {
+      "id": "360G-10GM-2022-007",
+      "recipient": "LGBT Foundation",
+      "recipientId": "GB-CHC-1070904",
+      "amountGBP": 19752,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Greater Manchester",
+      "sourceRow": 8,
+      "registerName": "LGBT FOUNDATION LTD"
+    },
+    {
+      "id": "360G-10GM-2022-008",
+      "recipient": "Tameside Oldham and Glossop Mind",
+      "recipientId": "GB-CHC-123549",
+      "amountGBP": 22500,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Oldham",
+      "sourceRow": 9,
+      "registerName": null
+    },
+    {
+      "id": "360G-10GM-2022-009",
+      "recipient": "Wai Yin Society",
+      "recipientId": "GB-CHC-1073437",
+      "amountGBP": 9880,
+      "awardDate": "2022-09-27",
+      "publishedLocation": "Greater Manchester",
+      "sourceRow": 10,
+      "registerName": "WAI YIN SOCIETY"
+    }
+  ],
+  "need": [
+    {
+      "month": "2022-12",
+      "sheet": "Table 2",
+      "sourceRow": 42,
+      "daily": [
+        {
+          "date": "2022-12-01",
+          "remaining": 936,
+          "column": 7
+        },
+        {
+          "date": "2022-12-02",
+          "remaining": 961,
+          "column": 10
+        },
+        {
+          "date": "2022-12-03",
+          "remaining": 975,
+          "column": 13
+        },
+        {
+          "date": "2022-12-04",
+          "remaining": 952,
+          "column": 16
+        },
+        {
+          "date": "2022-12-05",
+          "remaining": 886,
+          "column": 19
+        },
+        {
+          "date": "2022-12-06",
+          "remaining": 921,
+          "column": 22
+        },
+        {
+          "date": "2022-12-07",
+          "remaining": 914,
+          "column": 25
+        },
+        {
+          "date": "2022-12-08",
+          "remaining": 896,
+          "column": 28
+        },
+        {
+          "date": "2022-12-09",
+          "remaining": 914,
+          "column": 31
+        },
+        {
+          "date": "2022-12-10",
+          "remaining": 946,
+          "column": 34
+        },
+        {
+          "date": "2022-12-11",
+          "remaining": 943,
+          "column": 37
+        },
+        {
+          "date": "2022-12-12",
+          "remaining": 914,
+          "column": 40
+        },
+        {
+          "date": "2022-12-13",
+          "remaining": 915,
+          "column": 43
+        },
+        {
+          "date": "2022-12-14",
+          "remaining": 770,
+          "column": 46
+        },
+        {
+          "date": "2022-12-15",
+          "remaining": 749,
+          "column": 49
+        },
+        {
+          "date": "2022-12-16",
+          "remaining": 765,
+          "column": 52
+        },
+        {
+          "date": "2022-12-17",
+          "remaining": 806,
+          "column": 55
+        },
+        {
+          "date": "2022-12-18",
+          "remaining": 921,
+          "column": 58
+        },
+        {
+          "date": "2022-12-19",
+          "remaining": 888,
+          "column": 61
+        },
+        {
+          "date": "2022-12-20",
+          "remaining": 878,
+          "column": 64
+        },
+        {
+          "date": "2022-12-21",
+          "remaining": 929,
+          "column": 67
+        },
+        {
+          "date": "2022-12-22",
+          "remaining": 905,
+          "column": 70
+        },
+        {
+          "date": "2022-12-23",
+          "remaining": 825,
+          "column": 73
+        },
+        {
+          "date": "2022-12-24",
+          "remaining": 855,
+          "column": 76
+        },
+        {
+          "date": "2022-12-25",
+          "remaining": 814,
+          "column": 79
+        },
+        {
+          "date": "2022-12-26",
+          "remaining": 848,
+          "column": 82
+        },
+        {
+          "date": "2022-12-27",
+          "remaining": 828,
+          "column": 85
+        },
+        {
+          "date": "2022-12-28",
+          "remaining": 834,
+          "column": 88
+        },
+        {
+          "date": "2022-12-29",
+          "remaining": 890,
+          "column": 91
+        },
+        {
+          "date": "2022-12-30",
+          "remaining": 876,
+          "column": 94
+        },
+        {
+          "date": "2022-12-31",
+          "remaining": 897,
+          "column": 97
+        }
+      ]
+    },
+    {
+      "month": "2023-01",
+      "sheet": "Table 2",
+      "sourceRow": 42,
+      "daily": [
+        {
+          "date": "2023-01-01",
+          "remaining": 883,
+          "column": 7
+        },
+        {
+          "date": "2023-01-02",
+          "remaining": 864,
+          "column": 10
+        },
+        {
+          "date": "2023-01-03",
+          "remaining": 834,
+          "column": 13
+        },
+        {
+          "date": "2023-01-04",
+          "remaining": 916,
+          "column": 16
+        },
+        {
+          "date": "2023-01-05",
+          "remaining": 980,
+          "column": 19
+        },
+        {
+          "date": "2023-01-06",
+          "remaining": 1009,
+          "column": 22
+        },
+        {
+          "date": "2023-01-07",
+          "remaining": 1010,
+          "column": 25
+        },
+        {
+          "date": "2023-01-08",
+          "remaining": 944,
+          "column": 28
+        },
+        {
+          "date": "2023-01-09",
+          "remaining": 759,
+          "column": 31
+        },
+        {
+          "date": "2023-01-10",
+          "remaining": 768,
+          "column": 34
+        },
+        {
+          "date": "2023-01-11",
+          "remaining": 782,
+          "column": 37
+        },
+        {
+          "date": "2023-01-12",
+          "remaining": 777,
+          "column": 40
+        },
+        {
+          "date": "2023-01-13",
+          "remaining": 772,
+          "column": 43
+        },
+        {
+          "date": "2023-01-14",
+          "remaining": 753,
+          "column": 46
+        },
+        {
+          "date": "2023-01-15",
+          "remaining": 725,
+          "column": 49
+        },
+        {
+          "date": "2023-01-16",
+          "remaining": 852,
+          "column": 52
+        },
+        {
+          "date": "2023-01-17",
+          "remaining": 866,
+          "column": 55
+        },
+        {
+          "date": "2023-01-18",
+          "remaining": 864,
+          "column": 58
+        },
+        {
+          "date": "2023-01-19",
+          "remaining": 839,
+          "column": 61
+        },
+        {
+          "date": "2023-01-20",
+          "remaining": 833,
+          "column": 64
+        },
+        {
+          "date": "2023-01-21",
+          "remaining": 855,
+          "column": 67
+        },
+        {
+          "date": "2023-01-22",
+          "remaining": 833,
+          "column": 70
+        },
+        {
+          "date": "2023-01-23",
+          "remaining": 790,
+          "column": 73
+        },
+        {
+          "date": "2023-01-24",
+          "remaining": 816,
+          "column": 76
+        },
+        {
+          "date": "2023-01-25",
+          "remaining": 854,
+          "column": 79
+        },
+        {
+          "date": "2023-01-26",
+          "remaining": 862,
+          "column": 82
+        },
+        {
+          "date": "2023-01-27",
+          "remaining": 864,
+          "column": 85
+        },
+        {
+          "date": "2023-01-28",
+          "remaining": 897,
+          "column": 88
+        },
+        {
+          "date": "2023-01-29",
+          "remaining": 875,
+          "column": 91
+        },
+        {
+          "date": "2023-01-30",
+          "remaining": 813,
+          "column": 94
+        },
+        {
+          "date": "2023-01-31",
+          "remaining": 870,
+          "column": 97
+        }
+      ]
+    },
+    {
+      "month": "2023-02",
+      "sheet": "Table 2",
+      "sourceRow": 42,
+      "daily": [
+        {
+          "date": "2023-02-01",
+          "remaining": 893,
+          "column": 7
+        },
+        {
+          "date": "2023-02-02",
+          "remaining": 855,
+          "column": 10
+        },
+        {
+          "date": "2023-02-03",
+          "remaining": 841,
+          "column": 13
+        },
+        {
+          "date": "2023-02-04",
+          "remaining": 880,
+          "column": 16
+        },
+        {
+          "date": "2023-02-05",
+          "remaining": 826,
+          "column": 19
+        },
+        {
+          "date": "2023-02-06",
+          "remaining": 792,
+          "column": 22
+        },
+        {
+          "date": "2023-02-07",
+          "remaining": 791,
+          "column": 25
+        },
+        {
+          "date": "2023-02-08",
+          "remaining": 818,
+          "column": 28
+        },
+        {
+          "date": "2023-02-09",
+          "remaining": 821,
+          "column": 31
+        },
+        {
+          "date": "2023-02-10",
+          "remaining": 798,
+          "column": 34
+        },
+        {
+          "date": "2023-02-11",
+          "remaining": 869,
+          "column": 37
+        },
+        {
+          "date": "2023-02-12",
+          "remaining": 817,
+          "column": 40
+        },
+        {
+          "date": "2023-02-13",
+          "remaining": 861,
+          "column": 43
+        },
+        {
+          "date": "2023-02-14",
+          "remaining": 868,
+          "column": 46
+        },
+        {
+          "date": "2023-02-15",
+          "remaining": 851,
+          "column": 49
+        },
+        {
+          "date": "2023-02-16",
+          "remaining": 844,
+          "column": 52
+        },
+        {
+          "date": "2023-02-17",
+          "remaining": 854,
+          "column": 55
+        },
+        {
+          "date": "2023-02-18",
+          "remaining": 892,
+          "column": 58
+        },
+        {
+          "date": "2023-02-19",
+          "remaining": 896,
+          "column": 61
+        },
+        {
+          "date": "2023-02-20",
+          "remaining": 809,
+          "column": 64
+        },
+        {
+          "date": "2023-02-21",
+          "remaining": 822,
+          "column": 67
+        },
+        {
+          "date": "2023-02-22",
+          "remaining": 841,
+          "column": 70
+        },
+        {
+          "date": "2023-02-23",
+          "remaining": 900,
+          "column": 73
+        },
+        {
+          "date": "2023-02-24",
+          "remaining": 894,
+          "column": 76
+        },
+        {
+          "date": "2023-02-25",
+          "remaining": 940,
+          "column": 79
+        },
+        {
+          "date": "2023-02-26",
+          "remaining": 890,
+          "column": 82
+        },
+        {
+          "date": "2023-02-27",
+          "remaining": 843,
+          "column": 85
+        },
+        {
+          "date": "2023-02-28",
+          "remaining": 882,
+          "column": 88
+        }
+      ]
+    },
+    {
+      "month": "2023-03",
+      "sheet": "Table 2",
+      "sourceRow": 42,
+      "daily": [
+        {
+          "date": "2023-03-01",
+          "remaining": 898,
+          "column": 7
+        },
+        {
+          "date": "2023-03-02",
+          "remaining": 911,
+          "column": 10
+        },
+        {
+          "date": "2023-03-03",
+          "remaining": 929,
+          "column": 13
+        },
+        {
+          "date": "2023-03-04",
+          "remaining": 933,
+          "column": 16
+        },
+        {
+          "date": "2023-03-05",
+          "remaining": 941,
+          "column": 19
+        },
+        {
+          "date": "2023-03-06",
+          "remaining": 860,
+          "column": 22
+        },
+        {
+          "date": "2023-03-07",
+          "remaining": 929,
+          "column": 25
+        },
+        {
+          "date": "2023-03-08",
+          "remaining": 936,
+          "column": 28
+        },
+        {
+          "date": "2023-03-09",
+          "remaining": 902,
+          "column": 31
+        },
+        {
+          "date": "2023-03-10",
+          "remaining": 885,
+          "column": 34
+        },
+        {
+          "date": "2023-03-11",
+          "remaining": 891,
+          "column": 37
+        },
+        {
+          "date": "2023-03-12",
+          "remaining": 909,
+          "column": 40
+        },
+        {
+          "date": "2023-03-13",
+          "remaining": 837,
+          "column": 43
+        },
+        {
+          "date": "2023-03-14",
+          "remaining": 890,
+          "column": 46
+        },
+        {
+          "date": "2023-03-15",
+          "remaining": 934,
+          "column": 49
+        },
+        {
+          "date": "2023-03-16",
+          "remaining": 840,
+          "column": 52
+        },
+        {
+          "date": "2023-03-17",
+          "remaining": 863,
+          "column": 55
+        },
+        {
+          "date": "2023-03-18",
+          "remaining": 852,
+          "column": 58
+        },
+        {
+          "date": "2023-03-19",
+          "remaining": 848,
+          "column": 61
+        },
+        {
+          "date": "2023-03-20",
+          "remaining": 850,
+          "column": 64
+        },
+        {
+          "date": "2023-03-21",
+          "remaining": 884,
+          "column": 67
+        },
+        {
+          "date": "2023-03-22",
+          "remaining": 922,
+          "column": 70
+        },
+        {
+          "date": "2023-03-23",
+          "remaining": 875,
+          "column": 73
+        },
+        {
+          "date": "2023-03-24",
+          "remaining": 887,
+          "column": 76
+        },
+        {
+          "date": "2023-03-25",
+          "remaining": 893,
+          "column": 79
+        },
+        {
+          "date": "2023-03-26",
+          "remaining": 863,
+          "column": 82
+        },
+        {
+          "date": "2023-03-27",
+          "remaining": 807,
+          "column": 85
+        },
+        {
+          "date": "2023-03-28",
+          "remaining": 854,
+          "column": 88
+        },
+        {
+          "date": "2023-03-29",
+          "remaining": 943,
+          "column": 91
+        },
+        {
+          "date": "2023-03-30",
+          "remaining": 925,
+          "column": 94
+        },
+        {
+          "date": "2023-03-31",
+          "remaining": 915,
+          "column": 97
+        }
+      ]
+    }
+  ]
+}
