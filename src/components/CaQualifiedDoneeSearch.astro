@@ -1,0 +1,225 @@
+---
+import manifest from '../../public/data/funding-flows/ca-qualified-donees/manifest.json';
+import { url } from '../lib/site';
+import '../styles/charity-financial-search.css';
+
+const finances = url('/record/charity-financials/canada/');
+---
+
+<section class="charity-financial-search" data-ca-gifts data-base={url('/data/funding-flows/ca-qualified-donees/')} data-finances={finances} data-manifest={JSON.stringify(manifest)} aria-labelledby="ca-gifts-heading">
+  <h2 id="ca-gifts-heading">Follow a charity’s reported gifts</h2>
+  <p id="ca-gifts-hint">Enter the full account number, including RR and its four digits. <a href={finances}>Find a charity account by name</a>. The search runs in your browser.</p>
+  <form aria-describedby="ca-gifts-hint">
+    <label for="ca-gifts-account">Charity account number</label>
+    <div class="finance-actions">
+      <input id="ca-gifts-account" type="search" maxlength="25" autocomplete="off" spellcheck="false" disabled />
+    </div>
+    <div class="gift-filters">
+      <div>
+        <label for="ca-gifts-direction">Look up the charity as</label>
+        <select id="ca-gifts-direction" data-direction disabled>
+          <option value="given">Filer who reported giving</option>
+          <option value="received">Recipient named by filers</option>
+        </select>
+      </div>
+      <div>
+        <label for="ca-gifts-year">Filer’s fiscal period end year</label>
+        <select id="ca-gifts-year" data-year disabled>
+          <option value="both">Both years</option>
+          {Object.keys(manifest.editions).map(year => <option value={year}>{year}</option>)}
+        </select>
+      </div>
+    </div>
+    <div class="finance-actions">
+      <button class="btn" type="submit" disabled>Search gifts</button>
+      <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+    </div>
+  </form>
+  <p role="status" data-status></p>
+  <div class="finance-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export all matches as JSON</button>
+    <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export all matches as CSV</button>
+  </div>
+  <ol class="finance-results" data-results aria-label="Canadian charity gift results"></ol>
+  <noscript><p>Use the original CRA downloads in the coverage section to inspect worksheets without JavaScript.</p></noscript>
+</section>
+
+<style>
+  .gift-filters { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; margin-block: .8rem; }
+  .gift-filters > div { min-width: 0; max-width: 100%; }
+  .gift-filters select { max-width: 100%; padding: .5rem; font: inherit; }
+</style>
+
+<script>
+  import { $, h } from '../lib/client/dom';
+  import { download, toCsv } from '../lib/client/files';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../lib/client/verified-json';
+  import { charityAccountPattern, formatCad, normalizeCharityAccount } from '../lib/ca-charity-account';
+
+  type Direction = 'given' | 'received';
+  type Gift = [string, string, string, string, number, string, number, string, string | null];
+  type Asset = VerifiedJsonAsset & { path: string; rows: number };
+  type Source = { file: string; sha256: string; url: string };
+  type Edition = { sources: Record<'gifts' | 'finance' | 'identification', Source>; indexes: Record<Direction, Record<string, Asset>> };
+  type Manifest = { format: string; includedRows: number; capturedOn: string; jurisdiction: string; currency: string;
+    licence: string; publisher: string; rowFields: string[]; editions: Record<string, Edition> };
+  type Shard = { identities: Record<string, string>; gifts: Gift[] };
+  type Match = { gift: Gift; filerName: string; recipientName: string };
+  type Selection = { account: string; direction: Direction; year: string };
+  type Result = { selection: Selection; matches: Match[] };
+
+  const count = (value: number) => value.toLocaleString('en-CA');
+  const shown = 40;
+
+  function totalGift(matches: Match[]) {
+    let cents = 0n;
+    for (const { gift } of matches) {
+      const [whole, fraction = ''] = gift[7].split('.');
+      cents += BigInt(whole) * 100n + BigInt(fraction.padEnd(2, '0'));
+    }
+    return formatCad(`${cents / 100n}.${(cents % 100n).toString().padStart(2, '0')}`);
+  }
+
+  function fragment({ account, direction, year }: Selection) {
+    return '#' + new URLSearchParams({ bn: account, direction, year }).toString();
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-ca-gifts]')) {
+    const manifest = JSON.parse(root.dataset.manifest!) as Manifest;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const yearInput = $<HTMLSelectElement>('[data-year]', form);
+    const directionInput = $<HTMLSelectElement>('[data-direction]', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', form);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let current: Result | undefined;
+    let sequence = 0;
+
+    function reset(message = '') {
+      sequence++;
+      current = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+      submit.disabled = false;
+      status.textContent = message;
+    }
+
+    async function loadMatches(selection: Selection): Promise<Match[]> {
+      const { account, direction, year } = selection;
+      const years = year === 'both' ? Object.keys(manifest.editions) : [year];
+      const key = account.slice(7, 9);
+      const endpoint = direction === 'given' ? 0 : 1;
+      const perYear = await Promise.all(years.map(async yearKey => {
+        const index = manifest.editions[yearKey].indexes[direction];
+        if (!Object.hasOwn(index, key)) return [];
+        const asset = index[key];
+        const shard = await loadVerifiedJson(root.dataset.base! + asset.path, asset) as Shard;
+        if (!Array.isArray(shard?.gifts) || shard.gifts.length !== asset.rows || !shard.identities) {
+          throw new Error('The gift records did not match the published coverage.');
+        }
+        return shard.gifts.filter(row => row[endpoint] === account).map(gift => ({
+          gift, filerName: shard.identities[gift[0]], recipientName: shard.identities[gift[1]],
+        }));
+      }));
+      return perYear.flat().sort((a, b) => b.gift[2].localeCompare(a.gift[2]) || a.gift[4] - b.gift[4]);
+    }
+
+    function display({ gift, filerName, recipientName }: Match, selection: Selection) {
+      const [filer, recipient, period, version, record, worksheetSequence, financeRecord, total, inKind] = gift;
+      const edition = manifest.editions[period.slice(0, 4)];
+      const next = selection.direction === 'given' ? recipient : filer;
+      const finance = root.dataset.finances!;
+      return h('li', { class: 'card' },
+        h('h3', {}, 'Gift to ', recipientName),
+        h('p', {}, h('strong', {}, 'Reported by '), h('a', { href: finance + '#bn=' + filer }, filerName), ` (${filer})`),
+        h('p', {}, h('strong', {}, 'Recipient '), h('a', { href: finance + '#bn=' + recipient }, recipient)),
+        h('p', {}, `Filer’s period ended ${period}. Reported total ${formatCad(total)}. Gift in kind included in that total: ${formatCad(inKind)}.`),
+        h('p', { class: 'note' }, h('a', { href: edition.sources.gifts.url }, 'Worksheet CSV'),
+          ` record ${record}, sequence ${worksheetSequence} · `, h('a', { href: edition.sources.finance.url }, 'Filer’s financial CSV'),
+          ` record ${financeRecord} · Form version ${version}`),
+        h('p', { class: 'note' }, h('a', { href: fragment({ ...selection, account: next }) },
+          selection.direction === 'given' ? 'Look up gifts this recipient reported giving' : 'Look up gifts reported to this filer')));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      reset();
+      const ticket = sequence;
+      const account = normalizeCharityAccount(input.value);
+      if (!charityAccountPattern.test(account)) {
+        status.textContent = 'Enter all nine business-number digits, RR and the four digits after it.';
+        return;
+      }
+      const selection: Selection = { account, direction: directionInput.value === 'received' ? 'received' : 'given', year: yearInput.value };
+      if (selection.year !== 'both' && !Object.hasOwn(manifest.editions, selection.year)) return;
+      input.value = account;
+      history.replaceState(history.state, '', fragment(selection));
+      submit.disabled = true;
+      status.textContent = 'Checking the public worksheets.';
+      try {
+        const matches = await loadMatches(selection);
+        if (ticket !== sequence) return;
+        if (!matches.length) {
+          status.textContent = 'No gift records matched this account, role and period in these editions.';
+          return;
+        }
+        current = { selection, matches };
+        const label = selection.direction === 'given' ? matches[0].filerName : matches[0].recipientName;
+        const visible = matches.slice(0, shown);
+        status.textContent = `${label}. ${count(matches.length)} ${matches.length === 1 ? 'record' : 'records'}. Showing ${visible.length}. Reported total for these rows ${totalGift(matches)}.`;
+        results.append(...visible.map(match => display(match, selection)));
+        json.disabled = csv.disabled = false;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The lookup failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    });
+
+    function followFragment() {
+      const query = new URLSearchParams(location.hash.slice(1));
+      const account = normalizeCharityAccount(query.get('bn') ?? '');
+      if (!charityAccountPattern.test(account)) return;
+      const year = query.get('year') ?? 'both';
+      input.value = account;
+      yearInput.value = Object.hasOwn(manifest.editions, year) ? year : 'both';
+      directionInput.value = query.get('direction') === 'received' ? 'received' : 'given';
+      form.requestSubmit();
+    }
+
+    for (const field of [input, yearInput, directionInput]) field.addEventListener('input', () => reset('Choose Search gifts to update the results.'));
+    clear.addEventListener('click', () => {
+      form.reset();
+      history.replaceState(history.state, '', location.pathname + location.search);
+      reset('Search cleared.');
+      input.focus();
+    });
+    input.disabled = yearInput.disabled = directionInput.disabled = submit.disabled = clear.disabled = false;
+    window.addEventListener('hashchange', followFragment);
+    followFragment();
+
+    const fields = (gift: Gift) => Object.fromEntries(manifest.rowFields.map((field, index) => [field, gift[index]]));
+    const exportScope = { format: manifest.format, currency: manifest.currency, licence: manifest.licence,
+      capturedOn: manifest.capturedOn, publisher: manifest.publisher };
+    json.addEventListener('click', () => {
+      if (!current) return;
+      const sources = Object.fromEntries(Object.entries(manifest.editions).map(([year, edition]) => [year, edition.sources]));
+      const gifts = current.matches.map(({ gift, filerName, recipientName }) => ({ ...fields(gift), filerName, recipientName }));
+      const payload = { ...exportScope, ...current.selection, sources, gifts };
+      download('canada-qualified-donee-gifts.json', JSON.stringify(payload, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!current) return;
+      const safe = (name: string) => /^(?:\s*[=+\-@]|[\t\r\n])/.test(name) ? "'" + name : name;
+      const rows = current.matches.map(({ gift, filerName, recipientName }) => {
+        const { gifts, finance, identification } = manifest.editions[gift[2].slice(0, 4)].sources;
+        return { ...fields(gift), filerName: safe(filerName), recipientName: safe(recipientName), ...exportScope,
+          worksheetSource: gifts.url, worksheetSha256: gifts.sha256, financeSource: finance.url, financeSha256: finance.sha256,
+          identificationSource: identification.url, identificationSha256: identification.sha256 };
+      });
+      download('canada-qualified-donee-gifts.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>
