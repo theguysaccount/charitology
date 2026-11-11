@@ -1,0 +1,188 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/funding-flows/brazil-transferegov/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Federal transfers to civil society in Brazil';
+const base = '/data/funding-flows/brazil-transferegov/';
+const count = (value: number) => value.toLocaleString('en-US');
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'BRL', currencyDisplay: 'code' });
+const orders = Object.values(manifest.coverage).reduce((sum, year) => sum + year.includedOrders, 0);
+const sources = [
+  { title: 'Transferegov public downloads', publisher: manifest.source.publisher, url: manifest.source.dataset },
+  { title: 'Transferegov data model and field definitions', publisher: manifest.source.publisher, url: manifest.source.model.url },
+  { title: 'Mapa das OSCs civil society registry', publisher: 'Ipea', url: 'https://mapaosc.ipea.gov.br/base-dados' },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Search Brazilian federal bank orders by organization, registration number or agreement and trace them to the source records." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Brazil federal transfers'}]} sources={sources}>
+  <p>This edition links {count(orders)} reported federal bank orders to {count(manifest.asset.rows)} agreements and {count(manifest.organizations)} organization registration numbers. Transferegov classifies the proponents in these records as civil society organizations. The bank-order dates fall in 2024 or 2025.</p>
+  <p>Transferegov reports the amount made available to an agreement account on each bank order. The agreement record also shows the federal contribution recorded when the agreement was made, as listed in the captured file. Keep the two amounts separate. Recipient spending and outcomes require further records.</p>
+  <section class="charity-financial-search" data-brazil-transfers data-manifest={JSON.stringify(manifest)} data-file={url(base + manifest.asset.path)} aria-labelledby="brazil-transfer-heading">
+    <h2 id="brazil-transfer-heading">Find agreements and bank orders</h2>
+    <p id="brazil-transfer-hint">Enter the start of the organization name, its full CNPJ registration number or the agreement number. The lookup loads the public snapshot after your first search. Your query stays in this browser.</p>
+    <form aria-describedby="brazil-transfer-hint">
+      <label for="brazil-transfer-query">Organization name, CNPJ or agreement number</label>
+      <div class="finance-actions">
+        <input id="brazil-transfer-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <button class="btn" type="submit" disabled>Search transfers</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+      <label for="brazil-transfer-year">Bank-order year</label>
+      <select id="brazil-transfer-year" disabled>
+        <option value="">All years in this edition</option>
+        {Object.keys(manifest.coverage).map(year => <option value={year}>{year}</option>)}
+      </select>
+    </form>
+    <p role="status" data-status>Search when you’re ready to load the public records.</p>
+    <div class="finance-actions">
+      <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export matched agreements and orders as JSON</button>
+      <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export matched orders as CSV</button>
+    </div>
+    <ol class="finance-results" aria-label="Brazilian agreement and bank-order results" data-results></ol>
+    <noscript><p>The complete selected data and original files are available below.</p></noscript>
+  </section>
+  <h2 id="coverage">Coverage and original files</h2>
+  <ul>{Object.entries(manifest.coverage).map(([year, entry]) => <li>
+    <strong>{year}.</strong> {count(entry.includedOrders)} included orders from {count(entry.sourceRows)} orders in the source. The included orders report {money.format(entry.reportedOrderCents / 100)} made available to agreement accounts. {count(entry.outsideJoinedAgreements)} source orders did not link to an agreement in the civil society selection.
+    {entry.invalidOrderRows > 0 && ` ${count(entry.invalidOrderRows)} orders lacked usable identifiers, dates or amounts.`}
+    {entry.duplicateOrderRows > 0 && ` ${count(entry.duplicateOrderRows)} orders had repeated source IDs.`}
+  </li>)}</ul>
+  <p>Each result links the proposal to its agreement and to individual bank-order records. The state in a result describes the proponent in the proposal. Where the work took place requires separate records. Ipea's Mapa das OSCs provides an independent place to check organization identity.</p>
+  <p>Transferegov.br published the source data under the <a href={manifest.source.license}>Open Database License</a>. Charitology selected and reformatted the fields. The derived snapshot is available under the same license.</p>
+  <p><a href={manifest.source.archives.proposta.url}>Original proposals</a> · <a href={manifest.source.archives.convenio.url}>Original agreements</a> · <a href={manifest.source.archives.desembolso.url}>Original bank orders</a> · <a href={url(base + 'manifest.json')}>Source and coverage manifest</a> · <a href={url(base + manifest.asset.path)}>Full snapshot as compressed JSON</a>. Keep identifiers as text when opening CSV exports.</p>
+</Entry>
+
+<style>
+  .charity-financial-search select { max-width: 100%; padding: .5rem; font: inherit; }
+  .charity-financial-search form label:not(:first-child) { margin-top: .75rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { loadVerifiedJson } from '../../../lib/client/verified-json';
+
+  type Order = [string, string, number, number];
+  type Agreement = [string, string, string, string, string | null, number, number, string | null, number | null, Order[]];
+  type Manifest = typeof import('../../../../public/data/funding-flows/brazil-transferegov/manifest.json');
+  const number = (value: number) => value.toLocaleString('en-US');
+  const normalizedName = (value: string) => value.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const formattedCnpj = (value: string) => value.replace(/^(.{2})(.{3})(.{3})(.{4})(.{2})$/, '$1.$2.$3/$4-$5');
+  function isCnpj(value: string) {
+    if (!/^[A-Z0-9]{12}[0-9]{2}$/.test(value) || new Set(value).size === 1) return false;
+    return [12, 13].every(position => {
+      const remainder = [...value.slice(0, position)].reverse().reduce((sum, char, index) => sum + (char.charCodeAt(0) - 48) * (2 + index % 8), 0) % 11;
+      return Number(value[position]) === (remainder < 2 ? 0 : 11 - remainder);
+    });
+  }
+  const brl = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'BRL', currencyDisplay: 'code' });
+  const money = (cents: number) => brl.format(cents / 100);
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-brazil-transfers]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const form = $<HTMLFormElement>('form', root);
+    const query = $<HTMLInputElement>('input', form);
+    const year = $<HTMLSelectElement>('select', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let snapshot: Promise<Agreement[]> | undefined;
+    let matches: Agreement[] = [];
+    let sequence = 0;
+    query.disabled = year.disabled = submit.disabled = clear.disabled = false;
+
+    async function load() {
+      const data = await loadVerifiedJson(root.dataset.file!, manifest.asset);
+      if (!Array.isArray(data) || data.length !== manifest.asset.rows) throw new Error('The transfer snapshot has an unexpected agreement count.');
+      return data as Agreement[];
+    }
+
+    function reset() {
+      matches = [];
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function display([agreement, proposal, cnpj, name, state, proposalRecord, agreementRecord, signed, contribution, orders]: Agreement) {
+      return h('li', { class: 'card' }, h('h3', {}, name),
+        h('p', {}, `CNPJ ${formattedCnpj(cnpj)} · Agreement ${agreement}`),
+        h('p', { class: 'note' }, `Proposal ${proposal} · Proponent state ${state ?? 'not supplied'} · ${signed ? 'Signed ' + signed : 'Signature date not supplied'}`),
+        h('p', {}, contribution === null ? 'Federal agreement contribution not supplied' : `Federal agreement contribution ${money(contribution)}`),
+        h('details', {}, h('summary', {}, `${number(orders.length)} reported bank ${orders.length === 1 ? 'order' : 'orders'}`),
+          h('ul', {}, orders.map(([order, date, amount, record]) => h('li', {}, `${date} · ${money(amount)} made available to the agreement account`,
+            h('p', { class: 'note' }, `Disbursement ${order} · Source record ${record}`))))),
+        h('p', { class: 'note' }, `Proposal source record ${proposalRecord} · Agreement source record ${agreementRecord}`));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      const value = query.value.trim();
+      const compact = value.replace(/[./-]/g, '').toUpperCase();
+      const cnpj = isCnpj(compact) ? compact : null;
+      const agreement = !cnpj && /^(?:[0-9]{1,20}|[0-9][A-Z]{5})$/i.test(value) ? value.toUpperCase() : null;
+      const name = normalizedName(value);
+      const selectedYear = year.value;
+      if (!cnpj && !agreement && name.length < 3) {
+        status.textContent = 'Enter at least three characters from the start of a name, a CNPJ or an agreement number.';
+        return;
+      }
+      submit.disabled = true;
+      status.textContent = 'Checking the public transfer records.';
+      try {
+        snapshot ??= load().catch(error => { snapshot = undefined; throw error; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        for (const row of rows) {
+          const match = cnpj ? row[2] === cnpj : agreement ? row[0] === agreement : normalizedName(row[3]).startsWith(name);
+          if (!match) continue;
+          const orders = selectedYear ? row[9].filter(order => order[1].startsWith(selectedYear + '-')) : row[9];
+          if (orders.length) {
+            const matchRow: Agreement = [...row];
+            matchRow[9] = orders;
+            matches.push(matchRow);
+          }
+        }
+        matches.sort((a, b) => a[3].localeCompare(b[3], 'pt-BR') || a[0].localeCompare(b[0]));
+        const shown = matches.slice(0, 40);
+        status.textContent = matches.length ? `${number(matches.length)} matching ${matches.length === 1 ? 'agreement' : 'agreements'}. Showing ${number(shown.length)}.` : 'No matching agreements in this edition.';
+        results.append(...shown.map(display));
+        json.disabled = csv.disabled = !matches.length;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The transfer search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      query.value = year.value = '';
+      submit.disabled = false;
+      status.textContent = 'Search cleared.';
+      query.focus();
+    });
+
+    const { source, currency, capturedOn, agreementFields, orderFields } = manifest;
+    const fields = (names: string[], values: unknown[]) => Object.fromEntries(names.map((name, i) => [name, values[i]]));
+    json.addEventListener('click', () => {
+      if (!matches.length) return;
+      const agreements = matches.map(row => ({ ...fields(agreementFields.slice(0, -1), row), orders: row[9].map(order => fields(orderFields, order)) }));
+      download('brazil-transferegov-agreements.json', JSON.stringify({ source, currency, capturedOn, agreements }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!matches.length) return;
+      const rows = matches.flatMap(([agreementId, proposalId, cnpj, , , proposalRecord, agreementRecord, , , orders]) => orders.map(order => ({
+        agreementId, proposalId, cnpj, proposalRecord, agreementRecord, ...fields(orderFields, order), currency, capturedOn,
+        publisher: source.publisher, license: source.license, originalOrders: source.archives.desembolso.url,
+        ordersSha256: source.archives.desembolso.sha256, agreementsSha256: source.archives.convenio.sha256, proposalsSha256: source.archives.proposta.sha256,
+      })));
+      download('brazil-transferegov-orders.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>

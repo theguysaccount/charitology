@@ -1,0 +1,85 @@
+{
+  "format": "charitology-br-transferegov-v1",
+  "currency": "BRL",
+  "capturedOn": "2026-11-10",
+  "source": {
+    "publisher": "Transferegov.br",
+    "dataset": "https://api-publica.transferegov.gestao.gov.br/downloads",
+    "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+    "licenseName": "ODbL-1.0",
+    "legalNature": "Organização da Sociedade Civil",
+    "model": {
+      "url": "https://www.gov.br/transferegov/pt-br/ferramentas-gestao/paineis-gerenciais/arquivos/modelo-dados-csvs-discricionarias-e-legais.zip/@@display-file/file",
+      "sha256": "558e962ec1854f001ad6a54ae406b6436847d02101233a96e5bff4427c0b7716"
+    },
+    "archives": {
+      "proposta": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_proposta.zip",
+        "sha256": "8ef18d1536a8d6d36a8ef71550978c7bede2a546b74ff33d756d3290ecc17e4e"
+      },
+      "convenio": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_convenio.zip",
+        "sha256": "96110a017e3e0b8d139faedc6a105334d13d8f86f433e67b840d6f75779c6f4d"
+      },
+      "desembolso": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_desembolso.zip",
+        "sha256": "c58bbe64621d6300a4154193a1714d3d68127d423ad6aa660fb3b8d4b2efe833"
+      }
+    }
+  },
+  "counts": {
+    "agreementRows": 288852,
+    "civilSocietyProposalRows": 92770,
+    "disbursementRows": 386864,
+    "duplicateAgreementNumbers": 0,
+    "duplicateCivilSocietyProposalRows": 0,
+    "joinedCivilSocietyAgreements": 48434,
+    "proposalRows": 1160558,
+    "usableCivilSocietyProposals": 92770
+  },
+  "coverage": {
+    "2024": {
+      "sourceRows": 17419,
+      "outsideJoinedAgreements": 12852,
+      "invalidOrderRows": 0,
+      "duplicateOrderRows": 0,
+      "includedOrders": 4567,
+      "reportedOrderCents": 454975539842
+    },
+    "2025": {
+      "sourceRows": 24570,
+      "outsideJoinedAgreements": 17079,
+      "invalidOrderRows": 0,
+      "duplicateOrderRows": 0,
+      "includedOrders": 7491,
+      "reportedOrderCents": 555693713347
+    }
+  },
+  "organizations": 3811,
+  "agreementFields": [
+    "agreementId",
+    "proposalId",
+    "cnpj",
+    "publishedOrganizationName",
+    "proponentState",
+    "proposalRecord",
+    "agreementRecord",
+    "signatureDate",
+    "federalContributionAtCaptureCentsBRL",
+    "orders"
+  ],
+  "orderFields": [
+    "disbursementId",
+    "bankOrderDate",
+    "madeAvailableToAgreementAccountCentsBRL",
+    "disbursementRecord"
+  ],
+  "asset": {
+    "path": "agreements.json.gz",
+    "rows": 7900,
+    "bytes": 466435,
+    "decodedBytes": 1492084,
+    "sha256": "e104204207990851b245721a8a6e22746e59ad7f4935da7ac41abf5e0dd01798",
+    "decodedSha256": "f6af51fcd75721c69f3cb81021216cfd4feb7ca755bd79d08c610a37602c1335"
+  }
+}
