@@ -171,6 +171,11 @@ import '../styles/charity-financial-search.css';
       input.focus();
     });
     input.disabled = authority.disabled = financeOnly.disabled = submit.disabled = clear.disabled = false;
+    const linkedNumber = new URLSearchParams(location.hash.slice(1)).get('corporate');
+    if (linkedNumber && /^[0-9]{13}$/.test(linkedNumber)) {
+      input.value = linkedNumber;
+      form.requestSubmit();
+    }
 
     const { format, asOf, capturedOn, publisher, licence, currency, sources } = manifest;
     const metadata = { format, asOf, capturedOn, publisher, licence, currency };

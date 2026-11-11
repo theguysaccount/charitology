@@ -156,3 +156,17 @@ Source data from the Cabinet Office NPO Portal, adapted by Charitology under [Ja
 python3 scripts/build-japan-npo.py /path/to/captures /path/to/new-rebuild
 node scripts/check-japan-npo.mjs
 ```
+
+### Child-support awards and food hardship in Hokkaido
+
+The [Hokkaido case](https://charitology.com/record/funding-flows/hokkaido-child-support/) follows 16 rows in two years of the Children's Future Support Fund. The report footnotes define the amounts as the values at selection, in thousands of yen. Six of seven fiscal 2022 award rows and all nine fiscal 2023 rows match the original selection names. Five of the 2023 rows link by exact corporate number to a unique NPO Portal entry. The funder's listed prefecture and the documented location of a specific project are separate observations. [Fund archive](https://kodomonomiraiouen.cfa.go.jp/support/network/archive) · [Noboribetsu activity profile](https://www.pref.hokkaido.lg.jp/hf/kms/st/182714.html).
+
+The Hokkaido survey asked sampled single-parent allowance households outside Sapporo about food they could not afford during the preceding year. It ran in August 2022, during the first award period. Four household groups keep their exact sample sizes and published percentages. A municipal prevalence estimate, bank payment confirmation and participant outcomes each require separate sources. [Survey report](https://www.pref.hokkaido.lg.jp/fs/8/8/6/7/3/5/5/_/2022_hitorioya_houkokusyo.pdf).
+
+The case exports exact source references and dates. Its builder checks the five original PDF digests, the award footnotes and the survey scope. Rebuild from the filenames listed in the committed projection with `pypdfium2==5.14.0`.
+
+```sh
+python3 scripts/build-hokkaido-child-support.py /path/to/captures /path/to/new-case.json
+npm run build
+node scripts/check-hokkaido-child-support.mjs
+```
