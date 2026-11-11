@@ -225,6 +225,18 @@ npm run build
 node scripts/check-brazil-infrastructure-procurement-payments.mjs
 ```
 
+### Works contract lots and start authorizations
+
+The [works lot lookup](https://charitology.com/record/funding-flows/brazil-infrastructure-work-lots/) links 55 of 65 CIPI-backed contracts to 57 lots in 53 agreements. It requires the same proposal, a checksum-valid institutional supplier identifier, the printed contract number and signing day. It checks the signature across the full contract archive before linking the unique works contract and its lots. The 58 contracts verified in the payment cohort have no exact works match in this capture.
+
+The works files link 73 planned subgoals by instrument and lot. Each published row retains its tendered amount, planned start, budget reference date and locality code. A budget locality code describes the budget record. Assigning work to a site requires a location reference at the lot or subgoal level. The authorization archive has 53 instrument records, including 51 with a recorded issue date. A recorded authorization, the actual start, the amount paid and the work measured are separate observations. The next source search is for a record that names both a payment or monitoring item and its works lot. [Official download catalogue](https://api-publica.transferegov.gestao.gov.br/downloads) · [Official works process](https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras).
+
+```sh
+python3 scripts/build-brazil-infrastructure-work-lots.py --inputs /path/to/captures /path/to/rebuilt-work-lots.json
+npm run build
+node scripts/check-brazil-infrastructure-work-lots.mjs
+```
+
 ## Brazil Cisternas agreement and water access
 
 The [Cisternas case](https://charitology.com/record/funding-flows/brazil-cisterns/) follows agreement 945310 and its exact proposal and organization IDs. Its eleven bank orders show BRL 31,499,882.76 made available in 2023–2026. The six pinned Transferegov archives identify the original agreement, amendment and reported movements from the agreement account. The 2026 records cover the November 11 capture. The current federal contribution, reported bank orders, account payments and internal transfers belong to different stages. The named-payee subset uses the full CNPJ and exact agreement number. It stays inside the other-payment total. All 190 selected internal transfers have an onward record with a missing amount.

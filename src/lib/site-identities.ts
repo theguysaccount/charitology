@@ -186,6 +186,7 @@ export const sections: Section[] = [
     'funding-flows/brazil-infrastructure-account-movements': 'bankOrder',
     'funding-flows/brazil-infrastructure-invoice-items': 'calculator',
     'funding-flows/brazil-infrastructure-procurement-payments': 'match',
+    'funding-flows/brazil-infrastructure-work-lots': 'layers',
     'funding-flows/brazil-solidarity-kitchens/account-payments': 'coins', 'funding-flows/brazil-cisterns': 'water',
     'funding-flows/us-schedule-i': 'table', 'funding-flows/iberia-hrsa': 'medical', 'funding-flows/ile-de-france-paid-grants': 'pin',
     'funding-flows/greater-manchester-home-from-hospital': 'heart', 'funding-flows/hokkaido-child-support': 'seed',
