@@ -1,0 +1,109 @@
+{
+  "format": "charitology-br-planned-geography-v1",
+  "sources": {
+    "workPlan": {
+      "file": "siconv_meta_crono_fisico.zip",
+      "member": "siconv_meta_crono_fisico.csv",
+      "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_meta_crono_fisico.zip",
+      "bytes": 112305037,
+      "sha256": "2072a4aaec570f721e3306a828fc07a3d1c77b082d911457bf858e5d8350dbfe",
+      "capturedOn": "2026-11-11",
+      "publisher": "Transferegov.br",
+      "licence": "https://opendatacommons.org/licenses/odbl/1-0/",
+      "dataRecords": 1563191,
+      "catalog": "https://api-publica.transferegov.gestao.gov.br/downloads",
+      "dictionary": {
+        "url": "https://www.gov.br/transferegov/pt-br/ferramentas-gestao/paineis-gerenciais/arquivos/modelo-dados-csvs-discricionarias-e-legais.zip/@@display-file/file",
+        "sha256": "558e962ec1854f001ad6a54ae406b6436847d02101233a96e5bff4427c0b7716"
+      }
+    },
+    "municipalities": {
+      "file": "DTB_2025.zip",
+      "member": "RELATORIO_DTB_BRASIL_2025_MUNICIPIOS.ods",
+      "url": "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/DTB_2025.zip",
+      "bytes": 1635600,
+      "sha256": "d077a0e48c36cf18bcc96268b4a436200c014c6b8522c1a62d894acaf39dad27",
+      "edition": 2025,
+      "capturedOn": "2026-11-11",
+      "publisher": "IBGE",
+      "catalog": "https://www.ibge.gov.br/geociencias/organizacao-do-territorio/divisao-regional/23701-divisao-territorial-brasileira.html?edicao=43194&t=acesso-ao-produto",
+      "listedLocalities": 5571
+    },
+    "transfers": {
+      "base": "/data/funding-flows/brazil-transferegov/",
+      "capturedOn": "2026-11-10",
+      "asset": {
+        "path": "agreements.json.gz",
+        "rows": 7900,
+        "bytes": 466435,
+        "decodedBytes": 1492084,
+        "sha256": "e104204207990851b245721a8a6e22746e59ad7f4935da7ac41abf5e0dd01798",
+        "decodedSha256": "f6af51fcd75721c69f3cb81021216cfd4feb7ca755bd79d08c610a37602c1335"
+      }
+    }
+  },
+  "selection": {
+    "otherAgreementForSelectedProposal": 0,
+    "agreements": 7900,
+    "goals": 20219,
+    "municipalities": 953,
+    "goalStatuses": {
+      "municipality-linked": 11329,
+      "missing-state-or-municipality": 8871,
+      "unresolved-municipality": 19
+    },
+    "agreementCoverage": {
+      "allGoalsResolved": 4491,
+      "someGoalsResolved": 693,
+      "noGoalsResolved": 2716,
+      "multipleMunicipalities": 86,
+      "plannedStateDiffersFromProponent": 150
+    },
+    "byBankOrderYear": {
+      "2024": {
+        "agreementsWithBankOrders": 2823,
+        "agreementsWithOverlappingGoals": 2790,
+        "agreementsWithLinkedOverlappingGoals": 1902,
+        "linkedOverlappingGoals": 4375,
+        "linkedMunicipalities": 518
+      },
+      "2025": {
+        "agreementsWithBankOrders": 5583,
+        "agreementsWithOverlappingGoals": 5522,
+        "agreementsWithLinkedOverlappingGoals": 3507,
+        "linkedOverlappingGoals": 6741,
+        "linkedMunicipalities": 758
+      }
+    }
+  },
+  "coordinates": {
+    "sourceDataRecord": "One-based CSV data record after the header in the work-plan archive.",
+    "odsPhysicalRow": "One-based table-row element in content.xml of the IBGE municipality workbook."
+  },
+  "fields": {
+    "goals": [
+      "proposalId",
+      "agreementId",
+      "workPlanGoalId",
+      "sourceDataRecord",
+      "reportedGoalState",
+      "ibgeMunicipalityCode",
+      "matchStatus",
+      "plannedStart",
+      "plannedEnd"
+    ],
+    "municipalities": [
+      "municipalityCode",
+      "municipalityName",
+      "stateNameFromIBGE",
+      "odsPhysicalRow"
+    ]
+  },
+  "asset": {
+    "path": "planned-goals.json.gz",
+    "bytes": 288184,
+    "sha256": "37db3c2e25dc5194b1c6335191296e07f328f99cad386c5d9ee6908dc05ed22d",
+    "decodedBytes": 2135818,
+    "decodedSha256": "19f71bdd0bcbfa9c672d00f52833fd4fd05a5faecaba98bd3111d7359521b66b"
+  }
+}

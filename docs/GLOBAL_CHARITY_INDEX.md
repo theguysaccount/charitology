@@ -85,6 +85,28 @@ python3 scripts/build-brazil-transferegov.py /path/to/captures /path/to/new-braz
 node scripts/check-brazil-transferegov.mjs
 ```
 
+### Planned locations in Brazil
+
+The [planned-location lookup](https://charitology.com/record/funding-flows/brazil-planned-geography/) joins 20,219 goals to all 7,900 agreements in the pinned 2024–2025 bank-order edition. Both the proposal ID and agreement number must match. Each goal has a distinct Transferegov ID and one-based source record coordinate. A reported state and exact code or unique normalized municipality name must match the [2025 IBGE territorial division](https://www.ibge.gov.br/geociencias/organizacao-do-territorio/divisao-regional/23701-divisao-territorial-brasileira.html?edicao=43194&t=acesso-ao-produto). Each retained municipality has its workbook XML row coordinate. The [edition manifest](../public/data/funding-flows/brazil-planned-geography/manifest.json) records the exact source bytes, date, field order, record counts and fingerprints.
+
+11,329 goals match 953 municipality codes. 8,871 have a missing state or municipality field and 19 have both fields but no unique match. At the agreement level, 4,491 have complete goal-level location coverage, 693 have partial coverage and 2,716 have none. 86 agreements have goals in multiple matched municipalities. 150 have at least one matched goal in a different state from the proponent. The exact intersection for each year requires a bank order in that year and a goal with at least one planned day in that year. Those intersections retain their own denominators and can overlap across years. Neither a plan nor overlapping dates allocate a bank order to a goal or prove work took place.
+
+The [Cisternas case](https://charitology.com/record/funding-flows/brazil-cisterns/#planned) demonstrates why separate location evidence matters. The work-plan archive lists Santarém on six goals for agreement 945310 and leaves five without a linked municipality. The 2025 tender names its two lots in Óbidos and Oriximiná. Keep the tender locations, plans, census denominators and operator report at their respective scopes. [Work-plan archive](https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_meta_crono_fisico.zip) · [2025 tender](https://www.gov.br/mds/pt-br/acoes-e-programas/acesso-a-alimentos-e-a-agua/programa-cisternas/editais-de-chamada-publica/2025/01-2025_ceaps_edital.pdf).
+
+The site searches by municipality or IBGE code, exact agreement or CNPJ, reported state and bank-order-year overlap. CSV and JSON export all matched goals, including unresolved goals in agreement searches. Goal exports leave out payment amounts, free text, addresses and personal fields. The separately pinned financial edition retains its own bank-order exports and currency. Rebuild using `siconv_meta_crono_fisico.zip`, `DTB_2025.zip` and `modelo-dados-real.zip` with the exact pinned bytes. The two available official work-plan captures produced the same selected goal rows. The builder uses the earlier retained capture named in the manifest.
+
+\`\`\`sh
+python3 scripts/build-brazil-planned-geography.py /path/to/captures /path/to/new-output
+npm run build
+node scripts/check-brazil-planned-geography.mjs
+\`\`\`
+
+The next Brazil geography work is ordered by what it would resolve.
+
+1. Qualify work-plan adjustment records by exact agreement and revision date. Test whether the source supplies historical locations, and leave version history unknown where it does not. [Transferegov announcement](https://www.gov.br/transferegov/pt-br/noticias/noticias/2024/outubro/transferegov-br-disponibiliza-novas-informacoes).
+2. Look for inspection or acceptance records with a distinct worksite and an exact agreement or lot identifier. Retain report dates and unresolved joins before comparing planned and observed locations.
+3. Add local need denominators only where the population, geography, date and intervention in the selected case support a comparison. Prioritize places with missing delivery evidence and keep outputs distinct from outcomes.
+
 ### Civil society registration links
 
 The [Brazil registry comparison](https://charitology.com/record/charity-index/brazil/) checks all 3,811 full CNPJs in the transfer edition against the August 2026 Mapa das OSCs CSV. It finds one exact record for 3,645 identifiers, covering 7,598 agreements and 11,651 bank orders. The remaining 166 identifiers cover 302 agreements and 407 orders. The full establishment number is the sole match key. The UI links each result to the separate agreements and orders and shows the amount reported made available by bank-order year in BRL. Registry dates, proposal locations and where services took place describe different observations.

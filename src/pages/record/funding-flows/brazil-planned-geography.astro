@@ -1,0 +1,106 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/funding-flows/brazil-planned-geography/manifest.json';
+
+const title = 'Where Brazilian civil society agreements planned work';
+const base = '/data/funding-flows/brazil-planned-geography/';
+const transfer = '/record/funding-flows/brazil-transferegov/';
+const { selection, sources: { workPlan, municipalities, transfers } } = manifest;
+const { goalStatuses, agreementCoverage, byBankOrderYear } = selection;
+const count = (value: number) => value.toLocaleString('en-US');
+const states = 'AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO'.split(' ');
+const sources = [
+  { title: 'Transferegov downloads and dataset terms', publisher: workPlan.publisher, url: workPlan.catalog },
+  { title: 'Original work-plan schedule archive', publisher: workPlan.publisher, url: workPlan.url },
+  { title: 'Transferegov data model and field definitions', publisher: workPlan.publisher, url: workPlan.dictionary.url },
+  { title: 'Brazilian Territorial Division, 2025 edition', publisher: municipalities.publisher, url: municipalities.catalog },
+  { title: 'Original 2025 municipality workbook archive', publisher: municipalities.publisher, url: municipalities.url },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Search planned locations by municipality, agreement or organization registration and see which goals lack a usable location."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazil planned locations'}]}
+  sections={[
+    {slug:'lookup',text:'Find work-plan goals',symbol:'fileSearch'},
+    {slug:'coverage',text:'What the locations cover',symbol:'table'},
+    {slug:'sources-and-data',text:'Download data and sources',symbol:'download'},
+  ]} sources={sources} filePath="src/pages/record/funding-flows/brazil-planned-geography.astro">
+  <p>Where a charity is registered can differ from where it plans to work. Transferegov’s work plans contain {count(selection.goals)} goals for the {count(selection.agreements)} civil society agreements in our <a href={url(transfer)}>2024–2025 bank-order edition</a>. Of those goals, {count(goalStatuses['municipality-linked'])} link to {count(selection.municipalities)} IBGE municipality codes. The plans describe intended work. Spending and completed delivery need their own records.</p>
+  <p>For example, <a href={url('/record/funding-flows/brazil-planned-geography/') + '?agreement=949266#lookup'}>agreement 949266</a> records Minas Gerais as the proponent’s state and a goal in Belém, Pará. The lookup shows the goal and original source record separately from the <a href={url(transfer) + '?agreement=949266#brazil-transfer-heading'}>agreement’s bank orders</a>.</p>
+
+  <section data-planned-geography data-manifest={JSON.stringify(manifest)} data-file={url(base + manifest.asset.path)}
+    data-transfer-file={url(transfers.base + transfers.asset.path)} data-transfers={url(transfer)} aria-labelledby="lookup">
+    <h2 id="lookup">Find work-plan goals</h2>
+    <p id="plan-help">Search by municipality name or seven-digit IBGE code, agreement number or full CNPJ. To browse all selected goals, leave the filters empty and search. Searches run in this browser.</p>
+    <form aria-describedby="plan-help">
+      <fieldset disabled>
+        <legend class="visually-hidden">Filter published goals</legend>
+        <div class="plan-filters">
+          <label>Municipality name or IBGE code<input type="search" name="place" maxlength="100" autocomplete="off" /></label>
+          <label>Agreement number or CNPJ<input type="search" name="agreement" maxlength="30" autocomplete="off" /></label>
+          <label>Reported planned state<select name="state"><option value="">All states, including unknown</option>{states.map(uf => <option value={uf}>{uf}</option>)}</select></label>
+          <label>Bank-order year and plan overlap<select name="year"><option value="">All plan dates</option>{Object.keys(byBankOrderYear).map(year => <option value={year}>{year}</option>)}</select></label>
+        </div>
+        <div class="plan-actions">
+          <button class="btn" type="submit">Search plans</button>
+          <button class="btn btn-ghost" type="button" data-clear>Clear filters</button>
+        </div>
+      </fieldset>
+    </form>
+    <p data-status role="status">Search when you’re ready to load the public records.</p>
+    <div class="plan-actions">
+      <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export all matches as CSV</button>
+      <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export all matches as JSON</button>
+    </div>
+    <div class="table-wrap plan-table" data-result-table role="region" aria-label="Matching planned goals" tabindex="0" hidden>
+      <table class="data">
+        <thead><tr><th scope="col">Planned place</th><th scope="col">Agreement and proponent</th><th scope="col">Planned dates</th><th scope="col">Source records</th></tr></thead>
+        <tbody data-results></tbody>
+      </table>
+    </div>
+    <div class="plan-actions" data-pagination hidden>
+      <button class="btn btn-ghost btn-small" type="button" data-previous>Previous rows</button>
+      <span data-page role="status"></span>
+      <button class="btn btn-ghost btn-small" type="button" data-next>Next rows</button>
+    </div>
+    <noscript><p>The source files, coverage and complete download remain available below.</p></noscript>
+  </section>
+
+  <h2 id="coverage">What the locations cover</h2>
+  <p>Of {count(selection.agreements)} agreements, {count(agreementCoverage.allGoalsResolved)} have a municipality match for every goal, {count(agreementCoverage.someGoalsResolved)} have matches for some goals and {count(agreementCoverage.noGoalsResolved)} have none. {count(agreementCoverage.multipleMunicipalities)} agreements name more than one linked municipality. In {count(agreementCoverage.plannedStateDiffersFromProponent)} agreements, at least one linked goal is in a different state from the one recorded for the proponent.</p>
+  <p>{count(goalStatuses['missing-state-or-municipality'])} goals have a missing state or municipality field. Another {count(goalStatuses['unresolved-municipality'])} have both fields but no unique match. We match the reported state and an exact IBGE code or a unique municipality name after folding accents, case and spaces. A municipality search only returns linked goals. Searching by agreement can show its unresolved goals too.</p>
+  <div class="table-wrap plan-table" role="region" aria-label="Coverage by bank-order year" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Bank-order year</th><th scope="col">Agreements with a bank order</th><th scope="col">With an overlapping goal</th><th scope="col">With an overlapping goal linked to a municipality</th><th scope="col">Distinct linked municipalities</th></tr></thead>
+      <tbody>{Object.entries(byBankOrderYear).map(([year, row]) => (
+        <tr><th scope="row">{year}</th><td>{count(row.agreementsWithBankOrders)}</td>
+          <td>{count(row.agreementsWithOverlappingGoals)}</td><td>{count(row.agreementsWithLinkedOverlappingGoals)}</td>
+          <td>{count(row.linkedMunicipalities)}</td></tr>
+      ))}</tbody>
+    </table>
+  </div>
+  <p>The year filter requires at least one bank order for the agreement and at least one day of the goal’s planned dates in that calendar year. A goal or agreement can appear in both years. Each year’s municipality count is distinct within that year. The overlap shows timing, while allocation of bank orders to places requires a separate source.</p>
+  <p>For <a href={url('/record/funding-flows/brazil-planned-geography/') + '?agreement=945310#lookup'}>Cisternas agreement 945310</a>, the work-plan file lists Santarém on six goals and leaves five without a linked municipality. The 2025 tender names Óbidos and Oriximiná for its two lots. Use the tender to read those planned lots alongside local census measures in the <a href={url('/record/funding-flows/brazil-cisterns/#need')}>rainwater systems case</a>.</p>
+
+  <h2 id="sources-and-data">Download data and sources</h2>
+  <p><a href={url(base + 'manifest.json')} download>Download the source and coverage manifest</a> · <a href={url(base + manifest.asset.path)} download>Download all selected goals and municipality identities as compressed JSON</a>.</p>
+  <p>Source data came from Transferegov’s work-plan archive and IBGE’s 2025 Brazilian Territorial Division workbook, captured on <time datetime={workPlan.capturedOn}>{workPlan.capturedOn}</time>. We joined work plans by both agreement number and proposal ID, selected location and date fields, and kept the original CSV and workbook row coordinates. Transferegov data and the work-plan derivative are available under the <a href={workPlan.licence}>Open Database License</a>. The municipality names and codes are attributed to IBGE.</p>
+</Entry>
+
+<style>
+  [data-planned-geography] fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+  .plan-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: .75rem; }
+  .plan-filters label { display: flex; flex-direction: column; gap: .3rem; font: 600 .88rem/1.4 var(--font-sans); }
+  .plan-filters :is(input, select) { width: 100%; min-height: 2.75rem; padding: .45rem; }
+  .plan-actions:not([hidden]) { display: flex; align-items: center; flex-wrap: wrap; gap: .55rem; margin-block: .8rem; }
+  .plan-table:not([hidden]) { margin-block: 1rem; }
+  .plan-table table { min-width: 36rem; }
+  .plan-table :global(small) { display: block; color: var(--ink-2); font-weight: 450; }
+</style>
+
+<script>
+  import { mountBrazilPlannedGeography } from '../../../lib/client/brazil-planned-geography';
+  document.querySelectorAll<HTMLElement>('[data-planned-geography]').forEach(mountBrazilPlannedGeography);
+</script>
