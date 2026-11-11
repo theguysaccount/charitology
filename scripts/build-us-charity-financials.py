@@ -25,6 +25,38 @@ FIELDS = {
     'grntstogovt': 'grantsToUSGovernmentsAndOrganizationsUSD',
     'grntstofrgngovt': 'grantsToOrganizationsAndIndividualsOutsideUSUSD',
 }
+ADDITIONAL_FORMS = {
+    '990-ez': {
+        'form': '990-EZ', 'format': 'charitology-us-form990-ez-v1',
+        'period': 'taxpd', 'subsection': 'subseccd',
+        'archives': {
+            2023: ('23eoextractez.zip', '173c976e05fcedff79ae58c2e90698e44d91ea543c81f89a805c6e7de9a68375'),
+            2024: ('24eoextract990EZ.zip', 'da6a12f42c300031b33a624f6e3ecee108bc25113a4262384ea65747fbd61313'),
+        },
+        'fields': {
+            'totrevnue': 'totalRevenueUSD',
+            'totexpns': 'totalExpensesUSD',
+            'prgmservrev': 'programServiceRevenueUSD',
+            'totassetsend': 'yearEndAssetsUSD',
+        },
+    },
+    '990-pf': {
+        'form': '990-PF', 'format': 'charitology-us-form990-pf-v1',
+        'period': 'tax_prd', 'subsection': 'subcd',
+        'archives': {
+            2023: ('23eoextract990pf.zip', 'e29d278cf429831a5f27d428ff2cc971fc8307aa84e90248e1782b582942cefb'),
+            2024: ('24eoextract990pf.zip', 'f293695ca38409d59d3872b6fe6b717e9ff116459cc7fd1fbf5bc9b9d2a5dab5'),
+        },
+        'fields': {
+            'totrcptperbks': 'totalRevenuePerBooksUSD',
+            'totexpnspbks': 'totalExpensesPerBooksUSD',
+            'contrpdpbks': 'contributionsGiftsAndGrantsPaidPerBooksUSD',
+            'grntapprvfut': 'grantsApprovedForFuturePaymentUSD',
+            'totexpnsexempt': 'expensesForExemptPurposesUSD',
+            'fairmrktvalamt': 'yearEndAssetFairMarketValueUSD',
+        },
+    },
+}
 
 
 def digest(body):
@@ -68,10 +100,15 @@ def normalize_amount(raw):
     return raw
 
 
-def read_extract(inputs, year, history):
+def read_extract(inputs, year, history, edition):
     archive_name = f'{year % 100:02d}eoextract990.zip'
     documentation = f'{year % 100:02d}eofinextractdoc.xlsx'
     archive_hash, documentation_hash = FILES[year]
+    period_field, subsection_field, fields, accepted_codes = 'tax_pd', 'subseccd', FIELDS, ('03',)
+    if edition:
+        archive_name, archive_hash = edition['archives'][year]
+        period_field, subsection_field, fields = edition['period'], edition['subsection'], edition['fields']
+        accepted_codes = ('3', '03')
     checked_file(inputs / documentation, documentation_hash)
     counts = Counter()
     with ZipFile(checked_file(inputs / archive_name, archive_hash)) as archive:
@@ -79,12 +116,12 @@ def read_extract(inputs, year, history):
             reader = csv.reader(io.TextIOWrapper(raw, encoding='utf-8-sig', newline=''))
             header = [column.strip().lower() for column in next(reader)]
             assert len(set(header)) == len(header)
-            indexes = [header.index(column) for column in ('ein', 'tax_pd', 'subseccd', *FIELDS)]
+            indexes = [header.index(column) for column in ('ein', period_field, subsection_field, *fields)]
             for source_record, row in enumerate(reader, 1):
                 assert len(row) == len(header)
                 counts['input'] += 1
                 raw_ein, month, subsection, *amounts = [row[index].strip() for index in indexes]
-                if subsection != '03':
+                if subsection not in accepted_codes:
                     counts['otherSubsection'] += 1
                     continue
                 assert re.fullmatch(r'[0-9]{1,9}', raw_ein) and re.fullmatch(r'20[0-9]{2}(?:0[1-9]|1[0-2])', month)
@@ -112,10 +149,10 @@ def write_shard(target, prefix, records):
             'sha256': digest(body), 'decodedSha256': digest(raw)}
 
 
-def build(inputs, registry, target):
+def build(inputs, registry, target, edition=None):
     eins, registry_date = load_eins(registry)
     histories = defaultdict(lambda: defaultdict(list))
-    sources = {str(year): read_extract(inputs, year, histories) for year in FILES}
+    sources = {str(year): read_extract(inputs, year, histories, edition) for year in FILES}
     counts = Counter()
     shards = defaultdict(list)
     for ein, history in histories.items():
@@ -141,12 +178,13 @@ def build(inputs, registry, target):
     assert sum(source['counts']['selected'] for source in sources.values()) == counts['includedPeriods'] + counts['identicalRecordsCollapsed'] + counts['conflictingRecords']
     target.mkdir(parents=True)
     manifest = {
-        'format': 'charitology-us-form990-v1', 'capturedOn': EDITION, 'currency': 'USD', 'form': '990',
+        'format': edition['format'] if edition else 'charitology-us-form990-v1',
+        'capturedOn': EDITION, 'currency': 'USD', 'form': edition['form'] if edition else '990',
         'registry': {'date': registry_date, 'manifestSha256': REGISTRY_SHA256},
         'sourcePage': 'https://www.irs.gov/statistics/soi-tax-stats-annual-extract-of-tax-exempt-organization-financial-data',
         'counts': {key: counts[key] for key in ('organizations', 'registryMatches', 'multiPeriod', 'includedPeriods',
                     'identicalRecordsCollapsed', 'conflictingPeriods', 'conflictingRecords')},
-        'periodFields': ['taxPeriodEndMonth', *FIELDS.values(), 'sourceRecords'],
+        'periodFields': ['taxPeriodEndMonth', *(edition['fields'] if edition else FIELDS).values(), 'sourceRecords'],
         'sources': sources,
         'shards': {prefix: write_shard(target, prefix, sorted(rows)) for prefix, rows in sorted(shards.items())},
     }
@@ -155,6 +193,7 @@ def build(inputs, registry, target):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 4:
-        raise SystemExit('Usage: python3 scripts/build-us-charity-financials.py <captures> <pinned-irs-registry> <new-output>')
-    build(*map(Path, sys.argv[1:]))
+    if len(sys.argv) not in (4, 5) or (len(sys.argv) == 5 and sys.argv[4] not in ADDITIONAL_FORMS):
+        raise SystemExit('Usage: python3 scripts/build-us-charity-financials.py <captures> <pinned-irs-registry> <new-output> [990-ez|990-pf]')
+    edition = ADDITIONAL_FORMS.get(sys.argv[4]) if len(sys.argv) == 5 else None
+    build(*map(Path, sys.argv[1:4]), edition=edition)

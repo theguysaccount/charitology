@@ -4,6 +4,8 @@ import { url } from '../../../lib/site';
 import australia from '../../../../public/data/charity-financials/manifest.json';
 import englandWales from '../../../../public/data/charity-financials/ew/manifest.json';
 import usa from '../../../../public/data/charity-financials/us/manifest.json';
+import usaShort from '../../../../public/data/charity-financials/us-990-ez/manifest.json';
+import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/manifest.json';
 import registry from '../../../../public/data/irs-registry/manifest.json';
 import manchester from '../../../data/home-from-hospital.json';
 
@@ -32,7 +34,7 @@ const panels = [
     label: 'Search U.S. Form 990 finances', date: usa.capturedOn,
     coverage: `${number(registry.recordCount)} dated federal registry identities. Separately, ${number(usa.counts.organizations)} EINs have a selected full Form 990 period.`,
     history: `${number(usa.counts.includedPeriods)} processed financial records for periods ending in 2022–2024. ${number(usa.counts.multiPeriod)} EINs have multiple periods.`,
-    boundary: 'The financial edition covers subsection 03 on the full form. Other forms and entities outside the filing scope require separate sources.',
+    boundary: 'The full-form financial edition covers subsection 03. The other U.S. editions below use their own extract populations.',
     manifest: '/data/charity-financials/us/manifest.json',
   },
 ];
@@ -56,6 +58,14 @@ const sources = [
       <p>Captured on <time datetime={panel.date}>{panel.date}</time>. <a href={url(panel.route)}>{panel.label}</a> · <a href={url(panel.manifest)}>Source and coverage manifest</a>.</p>
     </section>)}
   </div>
+  <h3>Additional United States financial editions</h3>
+  <ul>
+    {[usaShort, usaFoundation].map(manifest => <li>
+      <a href={url(`/record/charity-financials/united-states/${manifest.form.toLowerCase()}/`)}>Form {manifest.form}</a> covers {number(manifest.counts.includedPeriods)} periods for {number(manifest.counts.organizations)} EINs.
+      {' '}{number(manifest.counts.multiPeriod)} EINs have more than one period.
+    </li>)}
+  </ul>
+  <p>The same EIN can appear in different form editions. These counts describe each edition separately.</p>
   <h2>Where money goes</h2>
   <p>The <a href={url('/record/funding-flows/greater-manchester-home-from-hospital/')}>Greater Manchester discharge-support case</a> connects {manchester.awards.length} reported awards to a delivery period and shows independent NHS discharge figures from the same place. The source does not establish a matching payment or expense for each award. Follow the <a href={url('/record/gap-map/')}>Gap Map</a> for more comparisons between funding and need.</p>
   <p>The <a href={url('/record/funding-flows/yes-i-do-alliance/')}>Yes I Do Alliance trace</a> compares reported disbursements and receipts across six publisher activities. The same reported amount can appear at more than one stage. Candidate matches and unresolved rows are shown separately.</p>
