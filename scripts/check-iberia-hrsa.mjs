@@ -9,7 +9,7 @@ const route = '/record/funding-flows/iberia-hrsa/';
 const built = '..' + '/dist' + route;
 const base = (process.env.BASE_PATH || '/').replace(/\/$/, '');
 const dollars = cents => (cents / 100).toFixed(2);
-const { organization, audits, agencyAwards, agencySource } = data;
+const { organization, audits, agencyAwards, agencySource, parishCoverage } = data;
 
 assert.equal(data.currency, 'USD');
 assert.equal(data.review, 'draft');
@@ -74,13 +74,38 @@ assert.deepEqual(schedule, audits.flatMap(audit => audit.grants.map(row => [
   audit.fiscalPeriodStart, audit.fiscalPeriodEnd, row.programPeriodStart, row.programPeriodEnd,
   audit.reportId, String(audit.scheduleSource.pdfPage), audit.scheduleSource.url, audit.scheduleSource.sha256,
 ])));
+const [parishHead, ...parishRows] = csv('parish-coverage.csv');
+assert.equal(parishCoverage.countyFips, '22045');
+assert.equal(parishCoverage.confidenceLevelPercent, 90);
+assert.deepEqual(parishCoverage.estimates.map(row => [
+  row.calendarYear, row.population, row.uninsured, row.uninsuredMargin, row.uninsuredPercent, row.uninsuredPercentMargin,
+]), [
+  [2022, 55_765, 4_811, 647, '8.6', '1.2'],
+  [2023, 54_725, 4_766, 632, '8.7', '1.2'],
+  [2024, 54_125, 4_940, 542, '9.1', '1.0'],
+]);
+assert.deepEqual(parishHead, [
+  'countyFips', 'calendarYear', 'statefips', 'countyfips', 'geocat', 'agecat', 'racecat', 'sexcat', 'iprcat',
+  'population', 'populationMargin', 'uninsured', 'uninsuredMargin', 'uninsuredPercent', 'uninsuredPercentMargin',
+  'confidenceLevelPercent', 'sourceVersion', 'sourceUrl', 'sourceMember', 'sourceRecord', 'sourceSha256',
+]);
+assert.deepEqual(parishRows, parishCoverage.estimates.map(row => [
+  parishCoverage.countyFips, String(row.calendarYear), ...Object.values(parishCoverage.selection),
+  String(row.population), String(row.populationMargin), String(row.uninsured), String(row.uninsuredMargin),
+  row.uninsuredPercent, row.uninsuredPercentMargin, String(parishCoverage.confidenceLevelPercent),
+  row.sourceVersion, row.source.url, row.source.member, String(row.source.sourceRecord), row.source.sha256,
+]));
 const page = read(built + 'index.html');
 assert.ok(page.includes('Report an error'));
 assert.ok(page.includes('data-site-symbol="medical"'));
 assert.ok(page.includes(base + '/record/charity-financials/united-states/#ein=' + organization.ein));
-for (const audit of audits) assert.ok(page.includes(audit.scheduleSource.url + '#page=' + audit.scheduleSource.pdfPage));
+for (const audit of audits) {
+  assert.ok(page.includes(audit.scheduleSource.url + '#page=' + audit.scheduleSource.pdfPage));
+  assert.ok(page.includes(audit.scheduleSource.url + '#page=' + audit.patientLocationPdfPage));
+}
+assert.ok(read('../dist/record/gap-map/index.html').includes(`href="${base + route}#parish"`));
 for (const path of ['charity-index/', 'charity-index/coverage/', 'charity-financials/united-states/']) {
   assert.ok(read('../dist/record/' + path + 'index.html').includes(`href="${base + route}"`), path);
 }
 assert.ok(read('../dist/record/charity-financials/united-states/index.html').includes(`id="ein=${organization.ein}"`));
-console.log('Iberia: four grant identities, 15 agency award rows, three exact audit totals, distinct stage exports and IRS navigation passed.');
+console.log('Iberia: four grant identities, 15 agency award rows, three exact audit totals, three parish estimates, distinct exports and IRS navigation passed.');

@@ -6,9 +6,11 @@ from decimal import Decimal
 from hashlib import sha256
 import io
 import json
+from itertools import chain
 from pathlib import Path
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
+from zipfile import ZipFile
 
 parser = argparse.ArgumentParser(description=__doc__)
 mode = parser.add_mutually_exclusive_group(required=True)
@@ -106,12 +108,15 @@ for row, award in zip(rows, edition['agencyAwards']):
             award['grantNumber'], award['federalIssueYear'], award['awardedCents'],
             award['projectPeriodStart'], award['projectPeriodEnd'], award['agencyMapObjectId'])
 
+general_fields = ('auditee_ein', 'auditee_uei', 'report_id', 'fy_start_date', 'fy_end_date',
+                  'fac_accepted_date', 'resubmission_status', 'audit_period_covered',
+                  'resubmission_version', 'total_amount_expended')
 for audit in edition['audits']:
     source = audit['generalSource']
     [(position, record)] = select(source,
         lambda row: row['is_public'] == 't' and row['entity_type'] == 'non-profit'
         and (row['auditee_ein'] == entity['ein'] or row['auditee_uei'] == entity['uei']),
-        lambda row, position: (position, row))
+        lambda row, position: (position, {key: row[key] for key in general_fields}))
     assert position == source['record']
     assert (record['auditee_ein'], record['auditee_uei'], record['report_id']) == (entity['ein'], entity['uei'], audit['reportId'])
     assert (record['fy_start_date'], record['fy_end_date'], record['fac_accepted_date']) == (
@@ -121,4 +126,26 @@ for audit in edition['audits']:
     assert cents(record['total_amount_expended']) == audit['reportedExpensesCents']
     assert bytes_for(audit['scheduleSource'], audit['reportId'] + '.pdf').startswith(b'%PDF-')
 
-print('Verified the award CSV, agency map, field definitions, three FAC general CSVs and three original audit PDF fingerprints.')
+coverage = edition['parishCoverage']
+for estimate in coverage['estimates']:
+    source = estimate['source']
+    with ZipFile(io.BytesIO(bytes_for(source))) as archive:
+        with io.TextIOWrapper(archive.open(source['member']), encoding='utf-8-sig', newline='') as stream:
+            for _ in range(source['preambleLines']):
+                next(stream)
+            header = next(stream)
+            assert header.lstrip().lower().startswith('year,version,')
+            records = csv.DictReader(chain([header], stream), skipinitialspace=True)
+            records.fieldnames = [field.strip().lower() for field in records.fieldnames]
+            [(position, row)] = [(n, row) for n, row in enumerate(records, 1)
+                                 if all(row[key].strip() == value for key, value in coverage['selection'].items())]
+    assert position == source['sourceRecord']
+    assert row['county_name'].strip() == 'Iberia Parish'
+    assert int(row['year']) == estimate['calendarYear'] and row['version'].strip() == estimate['sourceVersion']
+    for field, column in {'population':'nipr', 'populationMargin':'nipr_moe',
+                          'uninsured':'nui', 'uninsuredMargin':'nui_moe'}.items():
+        assert estimate[field] == int(row[column])
+    assert estimate['uninsuredPercent'] == row['pctui'].strip()
+    assert estimate['uninsuredPercentMargin'] == row['pctui_moe'].strip()
+
+print('Verified the HRSA source files, three FAC general CSVs, three original audit PDFs and three Census archives.')

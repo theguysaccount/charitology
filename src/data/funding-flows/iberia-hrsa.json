@@ -278,7 +278,8 @@
           "reportedReceiptsCents": 17500000,
           "reportedExpensesCents": 17500000
         }
-      ]
+      ],
+      "patientLocationPdfPage": 16
     },
     {
       "fiscalPeriodStart": "2023-06-01",
@@ -330,7 +331,8 @@
           "reportedReceiptsCents": 4000000,
           "reportedExpensesCents": 4000000
         }
-      ]
+      ],
+      "patientLocationPdfPage": 16
     },
     {
       "fiscalPeriodStart": "2024-06-01",
@@ -366,7 +368,81 @@
           "reportedReceiptsCents": 397015200,
           "reportedExpensesCents": 397015200
         }
-      ]
+      ],
+      "patientLocationPdfPage": 19
     }
-  ]
+  ],
+  "parishCoverage": {
+    "place": "Iberia Parish, Louisiana",
+    "countyFips": "22045",
+    "confidenceLevelPercent": 90,
+    "publisher": "U.S. Census Bureau",
+    "catalogUrl": "https://www.census.gov/data/datasets/time-series/demo/sahie/estimates-acs.html",
+    "fileLayout": "https://www2.census.gov/programs-surveys/sahie/technical-documentation/file-layouts/sahie-file-layout-2008-2024.pdf",
+    "selection": {
+      "statefips": "22",
+      "countyfips": "045",
+      "geocat": "50",
+      "agecat": "0",
+      "racecat": "0",
+      "sexcat": "0",
+      "iprcat": "0"
+    },
+    "estimates": [
+      {
+        "calendarYear": 2022,
+        "sourceVersion": "",
+        "population": 55765,
+        "populationMargin": 0,
+        "uninsured": 4811,
+        "uninsuredMargin": 647,
+        "uninsuredPercent": "8.6",
+        "uninsuredPercentMargin": "1.2",
+        "source": {
+          "url": "https://www2.census.gov/programs-surveys/sahie/datasets/time-series/estimates-acs/sahie-2022-csv.zip",
+          "bytes": 11951867,
+          "sha256": "aefb9015a50d16513d60118f86a5fee4132f95c209fc44e1f253f5a401c00441",
+          "member": "sahie_2022.csv",
+          "preambleLines": 84,
+          "sourceRecord": 122947
+        }
+      },
+      {
+        "calendarYear": 2023,
+        "sourceVersion": "",
+        "population": 54725,
+        "populationMargin": 0,
+        "uninsured": 4766,
+        "uninsuredMargin": 632,
+        "uninsuredPercent": "8.7",
+        "uninsuredPercentMargin": "1.2",
+        "source": {
+          "url": "https://www2.census.gov/programs-surveys/sahie/datasets/time-series/estimates-acs/sahie-2023-csv.zip",
+          "bytes": 11407595,
+          "sha256": "227b1eaa20f9b30644150207fa7db3bccd4a9c1cbe77d429555ad01474421a93",
+          "member": "sahie_2023.csv",
+          "preambleLines": 84,
+          "sourceRecord": 122947
+        }
+      },
+      {
+        "calendarYear": 2024,
+        "sourceVersion": "",
+        "population": 54125,
+        "populationMargin": 0,
+        "uninsured": 4940,
+        "uninsuredMargin": 542,
+        "uninsuredPercent": "9.1",
+        "uninsuredPercentMargin": "1.0",
+        "source": {
+          "url": "https://www2.census.gov/programs-surveys/sahie/datasets/time-series/estimates-acs/sahie-2024-csv.zip",
+          "bytes": 13653790,
+          "sha256": "5ec0a0cc5cb2e4e17cf046d9f68508decfdb4d9bbb982781d94bbf56ce50347a",
+          "member": "sahie_2024.csv",
+          "preambleLines": 85,
+          "sourceRecord": 146149
+        }
+      }
+    ]
+  }
 }

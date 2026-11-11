@@ -18,7 +18,9 @@ const pdfPage = (audit: typeof data.audits[number]) => audit.scheduleSource.url 
 const finances = url('/record/charity-financials/united-states/#ein=' + data.organization.ein);
 const vaccination = data.agencyAwards.find(row => row.grantNumber === 'H8GCS48002')!;
 const vaccinationExpenses = data.audits.flatMap(audit => audit.grants.filter(row => row.grantNumber === 'H8GCS48002'));
+const coverage = data.parishCoverage;
 const sources = [
+  { title: 'Small Area Health Insurance Estimates', publisher: coverage.publisher, url: coverage.catalogUrl },
   { title: 'Awarded Grants CSV (91 MB)', publisher: data.agencySource.publisher, url: data.agencySource.url },
   { title: 'Awarded Grants field definitions (Excel)', publisher: data.agencySource.publisher, url: data.agencySource.dictionary.url },
   { title: 'Selected grant-year records in the agency map service', publisher: data.agencySource.publisher, url: data.agencySource.crossCheck.url },
@@ -34,13 +36,15 @@ const sources = [
   <h2>One grant across two reporting calendars</h2>
   <p>For <a href="#H8GCS48002">COVID-19 vaccination expansion</a>, HRSA lists <strong>USD {money(vaccination.awardedCents)}</strong> awarded in federal fiscal {vaccination.federalIssueYear}. The center’s schedules show expenses of <strong>USD {money(vaccinationExpenses[0].reportedExpensesCents)}</strong> in the fiscal year ending May 2023 and <strong>USD {money(vaccinationExpenses[1].reportedExpensesCents)}</strong> in the following fiscal year. Together those expenses equal the agency award amount. The audit schedules use accrual accounting. Payment dates, bank settlement and the number of people vaccinated require other records.</p>
 
-  <nav class="catalog-jump" aria-label="Jump to a grant">
+  <nav class="catalog-jump" aria-label="Explore this case">
     {grants.map(([grant, label]) => <a href={'#' + grant}><SiteSymbol name={marks[grant]} />{label}</a>)}
+    <a href="#parish"><SiteSymbol name="pin" />Iberia Parish coverage</a>
   </nav>
   <div class="btn-row">
     <a class="btn btn-ghost btn-small" href={url(route + 'data.json')} download="iberia-hrsa.json">Download case JSON</a>
     <a class="btn btn-ghost btn-small" href={url(route + 'agency-awards.csv')} download="iberia-hrsa-agency-awards.csv">Download agency CSV</a>
     <a class="btn btn-ghost btn-small" href={url(route + 'audit-schedules.csv')} download="iberia-hrsa-audit-schedules.csv">Download audit CSV</a>
+    <a class="btn btn-ghost btn-small" href={url(route + 'parish-coverage.csv')} download="iberia-parish-coverage.csv">Download parish estimates CSV</a>
   </div>
 
   <h2>Totals from the center’s audit schedules</h2>
@@ -55,6 +59,21 @@ const sources = [
     </table>
   </div>
   <p>Each schedule reports the two columns on an accrual basis, which records financial activity in the period it is recognized. Adding receipts to expenses would count the same grant activity at two stages.</p>
+
+  <h2 id="parish">Health insurance coverage in Iberia Parish</h2>
+  <p>All three audit reports say that most of the center’s patients are located in Iberia Parish, Louisiana. The Census Bureau independently estimates health insurance coverage for parish residents. The figures below cover people under 65 at all income levels in its estimation population. {data.audits.map((audit, index) => <><a href={audit.scheduleSource.url + '#page=' + audit.patientLocationPdfPage}>{audit.fiscalPeriodEnd.slice(0, 4)} audit note</a>{index === data.audits.length - 1 ? '.' : ' · '}</>)}</p>
+  <div class="table-wrap" role="region" aria-label="Uninsured estimates for people under 65 in Iberia Parish" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Calendar year</th><th scope="col">Estimated population under 65</th><th scope="col">Estimated number uninsured</th><th scope="col">Estimated share uninsured</th><th scope="col">Source</th></tr></thead>
+      <tbody>{coverage.estimates.map(row => <tr>
+        <th scope="row">{row.calendarYear}</th><td>{count(row.population)}</td>
+        <td>{count(row.uninsured)} ± {count(row.uninsuredMargin)}</td>
+        <td>{row.uninsuredPercent}% ± {row.uninsuredPercentMargin} percentage points</td>
+        <td><a href={row.source.url}>Census ZIP</a></td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The margins of error use a {coverage.confidenceLevelPercent}% confidence level. Census estimates use calendar years and overlap the center’s June-to-May reporting periods. They describe insurance coverage for the parish’s residents. The reports give no dollar breakdown for the parish or counts of uninsured patients reached by these grants. The comparison supplies context about access to care. <a href={coverage.fileLayout}>Census definitions and margins of error</a>.</p>
 
   <h2>Source records by grant</h2>
   {grants.map(([grant, label]) => {
@@ -93,8 +112,8 @@ const sources = [
     <li>Read the complete federal-award schedule in each of those three PDFs. Keep each grant number, Assistance Listing, printed program dates and both reported amounts. The grants add to the printed expenses for each fiscal period, and those totals agree with the corresponding FAC general records.</li>
     <li>Read the HRSA Awarded Grants file captured on <time datetime={data.capturedOn}>{data.capturedOn}</time>. All {data.agencyAwards.length} rows for the four grant numbers carry the same recipient identifier. The federal issue years run from 2016 to 2026 in this capture. The agency map extract agrees on those grant-year amounts and project dates.</li>
   </ol>
-  <p>The HRSA file groups awarded dollars by grant and federal fiscal year. The organization reports June-to-May fiscal periods. A grant can run for several years and have multiple federal award rows. Match the grant and recipient identifiers across sources. Repeated amounts and overlapping dates alone cannot identify the same payment. The JSON contains source fingerprints, while the two CSVs keep agency awards and audit schedules in separate files.</p>
-  <p>This case covers one organization and three audited fiscal years. Agency project periods can start before the file’s award-year coverage. Expenses before or after the selected audit periods remain outside the case. The agency lists the grantee’s mailing location. Spending by clinic, patient needs and service outcomes require separate evidence. The <a href={finances}>Form 990 financial lookup for this EIN</a> gives organization-wide IRS figures for periods ending May 2022 and May 2023.</p>
+  <p>The HRSA file groups awarded dollars by grant and federal fiscal year. The organization reports June-to-May fiscal periods. A grant can run for several years and have multiple federal award rows. Match the grant and recipient identifiers across sources. Repeated amounts and overlapping dates alone cannot identify the same payment. The JSON contains source fingerprints. The three CSVs keep agency awards, audit schedules and parish estimates in separate files.</p>
+  <p>This case covers one organization and three audited fiscal years. Agency project periods can start before the file’s award-year coverage. Expenses before or after the selected audit periods remain outside the case. Spending by clinic and service outcomes require additional evidence. The <a href={finances}>Form 990 financial lookup for this EIN</a> gives organization-wide IRS figures for periods ending May 2022 and May 2023.</p>
 </Entry>
 
 <style>
