@@ -1,0 +1,158 @@
+:root {
+  --tone-wine: var(--accent);
+  --tone-blue: var(--accent);
+  --tone-teal: var(--accent);
+  --tone-violet: var(--accent);
+  --tone-amber: var(--accent);
+  --tone-green: var(--accent);
+  --tone-slate: var(--accent);
+}
+
+@supports (color: light-dark(black, white)) {
+  :root {
+    --tone-wine: light-dark(#8b1e2d, #e88a95);
+    --tone-blue: light-dark(#25508b, #99baf0);
+    --tone-teal: light-dark(#1d6764, #86c5be);
+    --tone-violet: light-dark(#67469a, #c4acf6);
+    --tone-amber: light-dark(#815016, #e3b778);
+    --tone-green: light-dark(#426438, #adc594);
+    --tone-slate: light-dark(#515969, #acb8ce);
+  }
+}
+
+/* Destination marks use the same symbol in a list, in search and on arrival. */
+:where(main:not([data-site-home]) h1, .site-symbol, a.card, .starting-grid > a, .method-card,
+  .guide-card, .nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
+  a.r-title, .list-row .numeral, .problems .pnum, .prob-grid .pnum,
+  .cond-grid .numeral)::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  width: var(--symbol-size, 1em);
+  height: var(--symbol-size, 1em);
+  background: var(--symbol-ink, var(--link-tone, var(--site-tone, var(--accent))));
+  mask: var(--link-glyph, var(--site-symbol, var(--glyph-document))) center / contain no-repeat;
+  vertical-align: -0.13em;
+}
+
+:where(main:not([data-site-home]) h1)::before {
+  --symbol-size: clamp(1.65rem, 4vw, 2.65rem);
+  display: block;
+  margin-block-end: 0.45rem;
+}
+
+:where(a.card, .starting-grid > a, .method-card, .guide-card)::before {
+  --symbol-size: 1.95rem;
+  display: block;
+  margin-block-end: 0.38rem;
+}
+
+:where(a.card, .starting-grid > a, .method-card, .guide-card) {
+  --link-glyph: var(--glyph-external);
+}
+
+:where(.nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a, a.r-title)::before {
+  margin-inline-end: 0.48em;
+}
+
+.nav > a::before {
+  --symbol-size: 0.95em;
+  margin-inline-end: 0.32em;
+}
+
+.menu-panel > a {
+  position: relative;
+  padding-inline-start: 2.35rem;
+}
+
+.menu-panel > a::before {
+  position: absolute;
+  inset-inline-start: 0.8rem;
+  top: 0.9rem;
+}
+
+:where(.list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral)::before {
+  --symbol-size: 1.35rem;
+  display: block;
+  margin-block-end: 0.23rem;
+}
+
+:where(.prose, main) ul:not([class]) > li::marker {
+  content: "◇  ";
+}
+
+:where(main) :where(ol, ul) > li::marker {
+  color: var(--site-tone, var(--accent));
+}
+
+.site-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--symbol-tile, 2rem);
+  block-size: var(--symbol-tile, 2rem);
+  flex: none;
+  border-radius: 8px;
+  color: var(--site-tone, var(--accent));
+  background: color-mix(in srgb, currentColor 11%, var(--surface));
+  --symbol-size: 1.25rem;
+}
+
+.site-symbol::before {
+  --symbol-ink: currentColor;
+}
+
+.identity-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+a.card,
+a.method-card,
+a.guide-card {
+  border-top-color: color-mix(in srgb, var(--link-tone, var(--site-tone, var(--accent))) 42%, var(--rule));
+  background: linear-gradient(145deg,
+    color-mix(in srgb, var(--link-tone, var(--site-tone, var(--accent))) 5%, var(--surface)),
+    var(--surface) 55%);
+}
+
+.catalog-jump {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1.25rem;
+}
+
+.catalog-jump a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  min-height: 2.75rem;
+  padding: 0.2rem 0.75rem 0.2rem 0.4rem;
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  background: var(--surface);
+  font: 620 0.82rem var(--font-sans);
+  text-decoration: none;
+}
+
+.catalog-jump a:hover {
+  border-color: var(--site-tone);
+}
+
+@media (forced-colors: active) {
+  :where(main:not([data-site-home]) h1, .site-symbol, a.card, .starting-grid > a, .method-card,
+    .guide-card, .nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
+    a.r-title, .list-row .numeral, .problems .pnum, .prob-grid .pnum,
+    .cond-grid .numeral)::before {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+}
+
+@media print {
+  .catalog-jump { display: none; }
+  main:not([data-site-home]) h1::before { display: none; }
+}

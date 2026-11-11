@@ -59,7 +59,7 @@
   --header-h: 64px;
 }
 
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
     --bg: #121110;
@@ -96,39 +96,41 @@
   }
 }
 
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg: #121110;
-  --bg-2: #1e1c19;
-  --surface: #1a1916;
-  --ink: #efebe3;
-  --ink-2: #c9c3b6;
-  --ink-3: #9d978a;
-  --rule: #38352e;
-  --rule-2: #2a2823;
-  --accent: #e88a95;
-  --accent-2: #f2a6ae;
-  --accent-wash: #3a2124;
-  --on-accent: #1a1916;
-  --focus: #6da7ec;
-  --highlight: #5a4a12;
-  --depth-0: #184f95;
-  --depth-1: #256abf;
-  --depth-2: #3987e5;
-  --depth-3: #6da7ec;
-  --depth-4: #9ec5f4;
-  --series-1: #3987e5;
-  --series-2: #d95926;
-  --series-3: #199e70;
-  --series-4: #c98500;
-  --series-5: #d55181;
-  --series-6: #008300;
-  --series-7: #9085e9;
-  --series-8: #e66767;
-  --grid: #2c2c2a;
-  --axis: #383835;
-  --good-text: #0ca30c;
-  --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 28px -14px rgba(0, 0, 0, 0.7);
+@media screen {
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+    --bg: #121110;
+    --bg-2: #1e1c19;
+    --surface: #1a1916;
+    --ink: #efebe3;
+    --ink-2: #c9c3b6;
+    --ink-3: #9d978a;
+    --rule: #38352e;
+    --rule-2: #2a2823;
+    --accent: #e88a95;
+    --accent-2: #f2a6ae;
+    --accent-wash: #3a2124;
+    --on-accent: #1a1916;
+    --focus: #6da7ec;
+    --highlight: #5a4a12;
+    --depth-0: #184f95;
+    --depth-1: #256abf;
+    --depth-2: #3987e5;
+    --depth-3: #6da7ec;
+    --depth-4: #9ec5f4;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --series-6: #008300;
+    --series-7: #9085e9;
+    --series-8: #e66767;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --good-text: #0ca30c;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 10px 28px -14px rgba(0, 0, 0, 0.7);
+  }
 }
 
 /* ---------- Base ---------- */
@@ -370,7 +372,7 @@ hr {
 }
 
 .nav a:hover,
-.nav a[aria-current='page'] {
+.nav a[aria-current] {
   color: var(--ink);
   background: var(--bg-2);
 }
@@ -383,7 +385,7 @@ hr {
 }
 
 /* Keep every header control reachable on narrow screens without shrinking targets. */
-@media (max-width: 389px) {
+@media (max-width: 459px) {
   :root { --header-h: 110px; }
   .site-header .bar {
     flex-wrap: wrap;
@@ -393,7 +395,7 @@ hr {
   .site-header .brand { flex-basis: 100%; }
 }
 
-@media (min-width: 1040px) {
+@media (min-width: 1130px) {
   .nav {
     display: flex;
   }
@@ -465,7 +467,8 @@ hr {
   color: var(--ink);
 }
 
-.menu-panel a:hover {
+.menu-panel a:hover,
+.menu-panel a[aria-current] {
   background: var(--bg-2);
   color: var(--ink);
 }
@@ -1438,7 +1441,7 @@ a.chip:hover {
 }
 
 .prose li::marker {
-  color: var(--ink-3);
+  color: var(--site-tone, var(--ink-3));
 }
 
 .prose blockquote {

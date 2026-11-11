@@ -10,7 +10,7 @@ interface Props {
 const { entry, base } = Astro.props;
 ---
 
-<a class="card" href={url(`${base}${entry.id}/`)}>
+<a class="card" id={`item-${entry.id}`} href={url(`${base}${entry.id}/`)}>
   <h3>{entry.data.title}</h3>
   <p>{entry.data.summary}</p>
   <div class="card-meta">

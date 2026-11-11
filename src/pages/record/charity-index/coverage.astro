@@ -1,6 +1,8 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import SiteSymbol from '../../../components/SiteSymbol.astro';
+import { pageIdentity } from '../../../lib/site-identities';
 import australia from '../../../../public/data/charity-financials/manifest.json';
 import canada from '../../../../public/data/charity-financials/ca/manifest.json';
 import englandWales from '../../../../public/data/charity-financials/ew/manifest.json';
@@ -70,7 +72,7 @@ const sources = [
   <h2 id="filings">Registry and financial editions</h2>
   <div class="coverage-list" aria-labelledby="filings">
     {panels.map(panel => <section class="card">
-      <p class="eyebrow">{panel.flag}</p>
+      <p class="eyebrow identity-label"><SiteSymbol name={pageIdentity(panel.route).symbol} />{panel.flag}</p>
       <h3>{panel.name}</h3>
       <p><strong>{panel.coverage}</strong></p>
       <p>{panel.history}</p>

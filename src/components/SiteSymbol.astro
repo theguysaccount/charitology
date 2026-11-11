@@ -1,0 +1,10 @@
+---
+import type { SymbolName } from '../lib/site-identities';
+
+interface Props {
+  name: SymbolName;
+}
+const { name } = Astro.props;
+---
+
+<span class="site-symbol" data-site-symbol={name} aria-hidden="true"></span>

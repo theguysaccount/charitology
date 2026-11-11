@@ -1,5 +1,18 @@
 ---
 import { url } from '../lib/site';
+import SiteSymbol from './SiteSymbol.astro';
+import type { SymbolName } from '../lib/site-identities';
+
+const listingSymbols: Record<string, SymbolName> = {
+  civicrm: 'person', cryptpad: 'lock', decidim: 'dialogue', donorbox: 'wallet',
+  givebutter: 'heart', kobotoolbox: 'pin', limesurvey: 'checks', matomo: 'signal',
+  metabase: 'chart', nextcloud: 'folder', odk: 'notes', openrefine: 'filter',
+  uwazi: 'archive', wordpress: 'window', zeffy: 'coins',
+  airtable: 'table', asana: 'steps', atlassian: 'network', canva: 'spark',
+  github: 'code', 'google-ad-grants': 'megaphone', 'google-workspace': 'stack',
+  mailchimp: 'mail', 'microsoft-365': 'document', azure: 'orbit', miro: 'board',
+  notion: 'book', salesforce: 'people', slack: 'speech', techsoup: 'tools', zoom: 'eye',
+};
 
 interface Listing {
   id: string;
@@ -45,7 +58,7 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
   <div class="directory-grid">
     {entries.map((entry) => (
       <article id={entry.id} class="directory-card" data-listing data-category={entry.category} data-cost={entry.costType} data-search={`${entry.name} ${entry.category} ${entry.summary} ${entry.cost} ${entry.delivery} ${entry.fit} ${entry.eligibility} ${entry.limits}`.toLowerCase()}>
-        <div class="directory-card-top"><span class="directory-category">{entry.category}</span><span class="directory-cost-type">{entry.costType}</span></div>
+        <div class="directory-card-top"><span class="identity-label"><SiteSymbol name={listingSymbols[entry.id] ?? 'external'} /><span class="directory-category">{entry.category}</span></span><span class="directory-cost-type">{entry.costType}</span></div>
         <h2>{entry.name}</h2>
         <p class="directory-summary">{entry.summary}</p>
         <p class="directory-offer">{entry.cost}</p>
