@@ -1,0 +1,162 @@
+{
+  "format": "charitology-nz-tier3-v1",
+  "capturedAt": "2026-11-11T12:20:58.053383+00:00",
+  "publisher": "Charities Services, New Zealand Department of Internal Affairs",
+  "licence": "https://creativecommons.org/licenses/by/3.0/nz/",
+  "openData": "https://www.charities.govt.nz/charities-in-new-zealand/the-charities-register/open-data",
+  "register": "https://register.charities.govt.nz/Charity/",
+  "odata": "https://www.odata.charities.govt.nz/",
+  "standards": {
+    "current": "https://standards.xrb.govt.nz/standards-navigator/tier-3-nfp-standard/",
+    "previous": "https://www.xrb.govt.nz/dmsdocument/658/"
+  },
+  "tier": 3,
+  "selectedReturnStatus": 10,
+  "fields": [
+    "organisationId",
+    "registrationNumber",
+    "name",
+    "registrationStatus",
+    "registeredOn",
+    "deregisteredOn",
+    "registryGroupId",
+    "returns"
+  ],
+  "returnFields": [
+    "annualReturnId",
+    "periodEnd",
+    "sourceStatusCode",
+    "reportedCurrency",
+    "currency",
+    "currencyBasis",
+    "totalGrossIncome",
+    "totalExpenditure"
+  ],
+  "sources": {
+    "organisations": {
+      "url": "https://www.odata.charities.govt.nz/Organisations?%24format=json&%24select=OrganisationId%2CCharityRegistrationNumber%2CName%2CRegistrationStatus%2CGroupId%2CDateRegistered%2CDeregistrationDate&%24orderby=OrganisationId&%24returnall=true&%24inlinecount=allpages",
+      "bytes": 19333812,
+      "sha256": "692c576977310d94655e8ad3be908b0ccc843532b725af85f11c96c807444263",
+      "rows": 46189,
+      "fields": [
+        "CharityRegistrationNumber",
+        "DateRegistered",
+        "DeregistrationDate",
+        "GroupId",
+        "Name",
+        "OrganisationId",
+        "RegistrationStatus"
+      ]
+    },
+    "tier3-2024": {
+      "url": "https://www.odata.charities.govt.nz/AnnualReturn?%24format=json&%24select=AnnualReturnId%2COrganisationId%2CGroupId%2CReportingTierId%2CStatus%2CYearEnded%2CReportingCurrency%2CTotalGrossIncome%2CTotalExpenditure&%24orderby=AnnualReturnId&%24returnall=true&%24inlinecount=allpages&%24filter=ReportingTierId+eq+3+and+YearEnded+ge+datetime%272024-01-01T00%3A00%3A00%27+and+YearEnded+lt+datetime%272025-01-01T00%3A00%3A00%27",
+      "bytes": 3908342,
+      "sha256": "e0723e59b85a2b19dd04301fba92fcc476905ef1756d5a4d38554a4690d23ee6",
+      "rows": 9906,
+      "fields": [
+        "AnnualReturnId",
+        "GroupId",
+        "OrganisationId",
+        "ReportingCurrency",
+        "ReportingTierId",
+        "Status",
+        "TotalExpenditure",
+        "TotalGrossIncome",
+        "YearEnded"
+      ]
+    },
+    "tier3-2025": {
+      "url": "https://www.odata.charities.govt.nz/AnnualReturn?%24format=json&%24select=AnnualReturnId%2COrganisationId%2CGroupId%2CReportingTierId%2CStatus%2CYearEnded%2CReportingCurrency%2CTotalGrossIncome%2CTotalExpenditure&%24orderby=AnnualReturnId&%24returnall=true&%24inlinecount=allpages&%24filter=ReportingTierId+eq+3+and+YearEnded+ge+datetime%272025-01-01T00%3A00%3A00%27+and+YearEnded+lt+datetime%272026-01-01T00%3A00%3A00%27",
+      "bytes": 4083607,
+      "sha256": "1c18ba172da594b21dab310fff569b73e23327352d453cfeec8369313e73b850",
+      "rows": 10351,
+      "fields": [
+        "AnnualReturnId",
+        "GroupId",
+        "OrganisationId",
+        "ReportingCurrency",
+        "ReportingTierId",
+        "Status",
+        "TotalExpenditure",
+        "TotalGrossIncome",
+        "YearEnded"
+      ]
+    },
+    "tiers": {
+      "url": "https://www.odata.charities.govt.nz/ReportingTier?%24format=json&%24select=ReportingTierId%2CName&%24orderby=ReportingTierId&%24returnall=true&%24inlinecount=allpages",
+      "bytes": 1506,
+      "sha256": "dbd317929ae56af910a420f685c704836f6f25f47790e83042f6b4e5266d348c",
+      "rows": 5,
+      "fields": [
+        "Name",
+        "ReportingTierId"
+      ]
+    },
+    "currencies": {
+      "url": "https://www.odata.charities.govt.nz/ReportingCurrency?%24format=json&%24select=ReportingCurrencyId%2CName&%24orderby=ReportingCurrencyId&%24returnall=true&%24inlinecount=allpages",
+      "bytes": 959,
+      "sha256": "722092082b81693a8b8d41a27ef91cde101a88378dd72554a92a10443ae10a59",
+      "rows": 4,
+      "fields": [
+        "Name",
+        "ReportingCurrencyId"
+      ]
+    }
+  },
+  "editions": {
+    "2024": {
+      "sourceReturns": 9906,
+      "includedReturns": 9829,
+      "excluded": {
+        "otherReturnStatus": 7,
+        "groupReturn": 69,
+        "noSelectedOrganisation": 1,
+        "unresolvedCurrency": 0,
+        "repeatedPeriod": 0
+      },
+      "currencyBasis": {
+        "reported": 1,
+        "tier-3-standard": 9828
+      }
+    },
+    "2025": {
+      "sourceReturns": 10351,
+      "includedReturns": 10239,
+      "excluded": {
+        "otherReturnStatus": 36,
+        "groupReturn": 74,
+        "noSelectedOrganisation": 2,
+        "unresolvedCurrency": 0,
+        "repeatedPeriod": 0
+      },
+      "currencyBasis": {
+        "reported": 1,
+        "tier-3-standard": 10238
+      }
+    }
+  },
+  "registry": {
+    "sourceRows": 46189,
+    "included": 46174,
+    "statuses": {
+      "Deregistered": 16612,
+      "Registered": 29298,
+      "Removed": 264
+    },
+    "excluded": {
+      "unusableRegistrationNumber": 15,
+      "nameUnavailable": 0
+    },
+    "repeatedRegistrationNumbers": [],
+    "withFinancialHistory": 11491,
+    "withBothYears": 8547
+  },
+  "asset": {
+    "path": "records.json.gz",
+    "rows": 46174,
+    "bytes": 1421586,
+    "decodedBytes": 5910493,
+    "sha256": "c02cc0e55cd25adbb97cbfd346a169d56b2f926ad9ceead26e2b3c71e1cdf563",
+    "decodedSha256": "2836ad638e09f9478e443c4aa8ef366156e17d5cea183b88922b5f185bc6ad9b"
+  }
+}

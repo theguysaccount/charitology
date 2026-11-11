@@ -11,6 +11,7 @@ import usaShort from '../../../../public/data/charity-financials/us-990-ez/manif
 import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/manifest.json';
 import registry from '../../../../public/data/irs-registry/manifest.json';
 import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
+import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
 import manchester from '../../../data/home-from-hospital.json';
 
 const title = 'Charity Index coverage';
@@ -48,6 +49,14 @@ const panels = [
     history: `${number(japan.counts.financialSummaries)} entries link to a dated organization-entered financial summary.`,
     boundary: 'The portal includes dissolution records. Corporate numbers can be repeated, and the reported financial figures cover only matched records.',
     manifest: '/data/charity-registry/japan-npo/manifest.json',
+  },
+  {
+    name: 'New Zealand', flag: 'Charities Services register and Tier 3 filings', route: '/record/charity-index/new-zealand/',
+    label: 'Search New Zealand charities and Tier 3 filings', date: newZealand.capturedAt.slice(0, 10),
+    coverage: `${number(newZealand.registry.included)} searchable organization entries, including deregistered and removed entries.`,
+    history: `${number(newZealand.registry.withBothYears)} entries have selected Tier 3 returns for periods ending in both 2024 and 2025.`,
+    boundary: 'The financial selection covers individual Tier 3 returns. Currency follows the reporting standard where the source field is blank.',
+    manifest: '/data/charity-registry/new-zealand/manifest.json',
   },
   {
     name: 'United States', flag: 'IRS identity and Form 990 extracts', route: '/record/charity-financials/united-states/',
