@@ -1,0 +1,188 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { contractRoute } from '../../../../lib/brazil-project-contracts';
+import { procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
+import { count, data, money, municipalities, projectPath } from '../../../../lib/brazil-project-execution';
+import { workLotEdition, workLotsRoute } from '../../../../lib/brazil-infrastructure-work-lots';
+import { worksRoute } from '../../../../lib/brazil-works-measurements';
+import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+import { url } from '../../../../lib/site';
+
+const title = 'Works lots and start authorizations for Brazilian civil society infrastructure';
+const { lots, subgoals, authorizations, coverage, sources } = workLotEdition;
+const catalogue = 'https://api-publica.transferegov.gestao.gov.br/downloads';
+const worksGuide = 'https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras';
+const contractGuide = 'https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras/obras/3-tutorial_contrato.pdf/@@display-file/file';
+const labels: Record<string, string> = {
+  siconv_licitacao: 'Procurement records',
+  siconv_contrato: 'SICONV contract records',
+  siconv_inst_cont_contratos_lotes_empresas_modulo_empresas: 'Works contracts and lots',
+  siconv_inst_cont_proposta_aio_modulo_empresas: 'Works instruments and start authorizations',
+  siconv_inst_cont_metas_submetas_po_modulo_empresas: 'Works lots and subgoals',
+};
+const sourceLinks = [
+  ...Object.entries(sources.archives).map(([key, source]) => ({
+    title: labels[key], publisher: 'Transferegov.br', url: source.url,
+  })),
+  { title: 'Published field definitions', publisher: 'Transferegov.br', url: sources.dataModel.url },
+  { title: 'Works process and start authorization guidance', publisher: 'Transferegov.br', url: worksGuide },
+  { title: 'How works contracts are recorded', publisher: 'Transferegov.br', url: contractGuide },
+];
+const projects = new Map(data.projects.map(project => [project.agreement, project]));
+const projectNames = new Map(data.projects.map(project => [project.agreement,
+  [project.organization, ...municipalities(project).map(place => place.no_municipio)].join(' ')]));
+const authorizationByInstrument = new Map(authorizations.map(row => [row.worksInstrumentId, row]));
+const lotsByInstrument = Map.groupBy(lots, row => row.worksInstrumentId);
+const projectSearch = (agreement: string, proposal: string, project: string, ...keys: (string | null)[]) =>
+  normalizeBrazilName([agreement, proposal, project, projectNames.get(agreement), ...keys].join(' '));
+const statusFor = (instrument: string) => {
+  const row = authorizationByInstrument.get(instrument);
+  if (!row) throw new Error(`Missing works authorization record for instrument ${instrument}`);
+  return row.authorizationStatus === 'Emitida' ? 'issued' : 'unissued';
+};
+const labelFor = (status: string) => status === 'Emitida' ? 'Issued' : 'Not issued';
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Find reported works lots, planned subgoals and authorizations linked to the original civil society infrastructure contracts."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazil infrastructure work lots'}]}
+  sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-infrastructure-work-lots/index.astro">
+  <p>The works archives connect {count(coverage.cipiContractLinkStatuses.linked)} of the {count(coverage.cipiContracts)} <a href={url(contractRoute)}>CIPI-linked contracts</a> to {count(coverage.lots)} lots in {count(coverage.agreementsWithLots)} agreements. A lot is a package of work under a contract. The selected lot records connect to {count(coverage.subgoals)} planned subgoals by instrument and lot IDs. <a href={contractGuide}>Official works contract guide</a>.</p>
+  <div data-work-lot-filter>
+    <h2 id="lots">Find contract lots</h2>
+    <form hidden role="search" aria-label="Filter works lots, plans and authorizations">
+      <label for="work-lot-query">Agreement, proposal, project, works instrument, lot ID, organization or project municipality</label>
+      <input id="work-lot-query" type="search" maxlength="160" autocomplete="off" />
+      <label for="work-lot-authorization">Authorization status</label>
+      <select id="work-lot-authorization">
+        <option value="">All statuses</option>
+        <option value="issued">Issued</option>
+        <option value="unissued">Not issued</option>
+      </select>
+      <button class="btn btn-ghost btn-small" type="reset">Clear filters</button>
+    </form>
+    <p role="status" data-lot-count>{count(lots.length)} lots</p>
+    <div class="table-wrap lot-table" role="region" aria-label="Matched works lots" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Lot ID and number</th><th scope="col">Agreement and project</th><th scope="col">CIPI-linked contract</th><th scope="col">Works instrument and contract IDs</th><th scope="col">Lot archive row</th></tr></thead>
+        <tbody>{lots.map(row => <tr data-work-lot-row="lots" data-agreement={row.agreement} data-authorization={statusFor(row.worksInstrumentId)}
+          data-search={projectSearch(row.agreement, row.proposal, row.project, row.lotId, row.worksInstrumentId, row.contractNumber, row.worksContractId)}>
+          <th scope="row"><span class="identity-code">{row.lotId}</span><small>Lot {row.lotNumber}</small></th>
+          <td><a href={url(projectPath(row.agreement) + '#work-lots')}>{row.agreement} · {row.project}</a><small>{projects.get(row.agreement)?.organization}</small></td>
+          <td><a href={url(contractRoute + `?agreement=${row.agreement}#lookup`)}>{row.contractNumber}</a><small>Signed {row.signedOn}</small></td>
+          <td><code>{row.worksInstrumentId}</code> / <code>{row.worksContractId}</code></td>
+          <td>{count(row.lotSourceRow)}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+    <p hidden data-lot-empty>No lots match these filters.</p>
+
+    <h2 id="subgoals">Read planned subgoals and tendered amounts</h2>
+    <p>The subgoal records give planned start dates and tendered amounts in BRL. The budget reference date and locality code come from the reported budget fields. A project municipality is available on the linked project page. A lot or subgoal needs its own location record to place it at a specific work site. <a href={sources.dataModel.url}>Official field definitions</a>.</p>
+    <p role="status" data-subgoal-count>{count(subgoals.length)} subgoals</p>
+    <div class="table-wrap lot-table" role="region" aria-label="Planned works subgoals and tendered amounts" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Subgoal and budget IDs</th><th scope="col">Agreement, instrument and lot</th><th scope="col">Planned start</th><th scope="col">Reported budget reference</th><th scope="col">Tendered amount</th><th scope="col">Source status and archive row</th></tr></thead>
+        <tbody>{subgoals.map(row => <tr data-work-lot-row="subgoals" data-agreement={row.agreement} data-authorization={statusFor(row.worksInstrumentId)}
+          data-search={projectSearch(row.agreement, row.proposal, row.project, row.lotId, row.worksInstrumentId, row.subgoalId)}>
+          <th scope="row"><span class="identity-code">{row.subgoalId}</span><small>Goal {row.goalId} · Budget {row.budgetId}</small></th>
+          <td><a href={url(projectPath(row.agreement) + '#work-lots')}>{row.agreement}</a><small>{row.worksInstrumentId} / {row.lotId}</small></td>
+          <td>{row.plannedStartOn ?? 'Unknown'}</td>
+          <td>{row.budgetReferenceOn ?? 'Unknown'} · <code>{row.sourceLocalityCode}</code></td>
+          <td>{money(row.tenderedAmountCentsBRL)}</td>
+          <td><code>{row.reportedSubgoalStatus}</code> · Row {count(row.subgoalSourceRow)}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+    <p hidden data-subgoal-empty>No subgoals match these filters.</p>
+
+    <h2 id="authorizations">Check recorded start authorizations</h2>
+    <p>The works archive supplies {count(coverage.authorizations)} instrument records. It reports {count(coverage.issuedAuthorizations)} authorizations issued and gives their issue dates. Actual starts and completion have separate records. <a href={worksGuide}>Official works process</a>.</p>
+    <p role="status" data-authorization-count>{count(authorizations.length)} authorization records</p>
+    <div class="table-wrap lot-table" role="region" aria-label="Recorded authorizations to start works" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Works instrument ID</th><th scope="col">Agreement and project</th><th scope="col">Authorization status</th><th scope="col">Authorization ID and issue date</th><th scope="col">Authorization archive row</th></tr></thead>
+        <tbody>{authorizations.map(row => <tr data-work-lot-row="authorizations" data-agreement={row.agreement} data-authorization={statusFor(row.worksInstrumentId)}
+          data-search={projectSearch(row.agreement, row.proposal, row.project, row.worksInstrumentId, row.authorizationId, ...(lotsByInstrument.get(row.worksInstrumentId) ?? []).map(lot => lot.lotId))}>
+          <th scope="row"><span class="identity-code">{row.worksInstrumentId}</span></th>
+          <td><a href={url(projectPath(row.agreement) + '#work-lots')}>{row.agreement} · {row.project}</a></td>
+          <td>{labelFor(row.authorizationStatus)}</td>
+          <td>{row.authorizationId ?? 'No recorded ID'}<small>{row.issuedOn ?? 'No recorded issue date'}</small></td>
+          <td>{count(row.authorizationSourceRow)}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+    <p hidden data-authorization-empty>No authorization records match these filters.</p>
+  </div>
+
+  <h2 id="coverage">Coverage and evidence boundaries</h2>
+  <p>The contract match requires the same proposal, a checksum-valid institutional supplier identifier, the printed contract number and the signing day. The build checks that the signature points to a single SICONV contract and a single works contract for the selected proposal. {count(coverage.cipiContractLinkStatuses.noExactWorksMatch)} CIPI-linked contracts have no exact works match in this capture.</p>
+  <p>The {count(coverage.paymentContracts)} contracts verified in the <a href={url(procurementPaymentsRoute)}>procurement payment edition</a> have no exact works-lot match under those rules. The <a href={url(worksRoute)}>monitoring edition</a> supplies separate measurement records for the proposals. Connecting an individual payment or a measurement item to one lot requires a source that carries both references.</p>
+  <p>The subgoal status column preserves the source codes AAI and ACT. Tendered amounts describe planned subgoals. Contract totals, money paid and verified delivery each have their own source records. Keep those figures separate.</p>
+
+  <h2 id="downloads">Download the records and source receipts</h2>
+  <ul>
+    <li><a href={url(workLotsRoute + 'data.json')} data-source-symbol="packet" download>Full works lots edition and source receipts (JSON)</a></li>
+    <li><a href={url(workLotsRoute + 'contracts.csv')} data-source-symbol="match" download>Contract match coverage (CSV)</a></li>
+    <li><a href={url(workLotsRoute + 'lots.csv')} data-source-symbol="layers" download>Matched contract lots (CSV)</a></li>
+    <li><a href={url(workLotsRoute + 'subgoals.csv')} data-source-symbol="target" download>Planned subgoals and tendered amounts (CSV)</a></li>
+    <li><a href={url(workLotsRoute + 'authorizations.csv')} data-source-symbol="permit" download>Recorded start authorizations (CSV)</a></li>
+  </ul>
+  <p>Amounts use integer BRL cents. Row numbers count source records after the header. The JSON pins the five official archives and upstream editions. <a href={catalogue}>Transferegov download catalogue</a> · <a href={sources.license}>Open Database License</a>.</p>
+</Entry>
+
+<style>
+  [data-work-lot-filter] form:not([hidden]) { display: grid; gap: .45rem; max-inline-size: 38rem; }
+  [data-work-lot-filter] :is(input, select, button) { min-height: 2.75rem; min-width: 0; }
+  [data-work-lot-filter] form button { justify-self: start; }
+  .lot-table { margin-block: 1rem; }
+  .lot-table table { min-width: 45rem; }
+  .lot-table :is(td, th) { overflow-wrap: anywhere; }
+  .lot-table small { display: block; color: var(--ink-2); font-weight: normal; }
+</style>
+
+<script>
+  import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+  const root = document.querySelector<HTMLElement>('[data-work-lot-filter]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('#work-lot-query')!;
+    const authorization = form.querySelector<HTMLSelectElement>('#work-lot-authorization')!;
+    const agreement = new URLSearchParams(location.search).get('agreement');
+    let exactAgreement = agreement && /^[0-9]{1,20}$/.test(agreement) ? agreement : null;
+    const groups = [
+      { stage: 'lots', field: 'lot', label: 'lots' },
+      { stage: 'subgoals', field: 'subgoal', label: 'subgoals' },
+      { stage: 'authorizations', field: 'authorization', label: 'authorization records' },
+    ].map(({ stage, field, label }) => ({
+      rows: [...root.querySelectorAll<HTMLTableRowElement>(`[data-work-lot-row="${stage}"]`)],
+      count: root.querySelector<HTMLElement>(`[data-${field}-count]`)!,
+      empty: root.querySelector<HTMLElement>(`[data-${field}-empty]`)!, label,
+    }));
+    function filter() {
+      const terms = normalizeBrazilName(query.value).split(' ').filter(Boolean);
+      for (const { rows, count, empty, label } of groups) {
+        let visible = 0;
+        for (const row of rows) {
+          row.hidden = Boolean(authorization.value && authorization.value !== row.dataset.authorization)
+            || (exactAgreement ? row.dataset.agreement !== exactAgreement : !terms.every(term => row.dataset.search?.includes(term)));
+          if (!row.hidden) visible++;
+        }
+        count.textContent = `${visible} of ${rows.length} ${label}`;
+        empty.hidden = visible > 0;
+      }
+    }
+    form.addEventListener('input', event => {
+      if (event.target === query) exactAgreement = null;
+      filter();
+    });
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    form.addEventListener('reset', () => {
+      exactAgreement = null;
+      requestAnimationFrame(() => { filter(); query.focus(); });
+    });
+    if (exactAgreement) query.value = exactAgreement;
+    form.hidden = false;
+    filter();
+  }
+</script>

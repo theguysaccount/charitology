@@ -9,6 +9,7 @@ import BrazilInfrastructureInvoiceItems from '../../../../components/BrazilInfra
 import { invoiceItemsRoute, invoicesByAgreement } from '../../../../lib/brazil-infrastructure-invoice-items';
 import { contractPaymentsByAgreement, procurementPaymentsByAgreement, procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
 import { accountMovementsRoute, movementPeriodsByAgreement } from '../../../../lib/brazil-infrastructure-account-movements';
+import { workLotsByAgreement, workLotsRoute } from '../../../../lib/brazil-infrastructure-work-lots';
 import SiteSymbol from '../../../../components/SiteSymbol.astro';
 import { url } from '../../../../lib/site';
 import type { SymbolName } from '../../../../lib/site-identities';
@@ -26,6 +27,7 @@ interface Props { project: InfrastructureProject }
 const { project } = Astro.props;
 const { agreement, proposal, cnpj, organization, api, bankOrders, commitments, physicalHistory } = project;
 const relatedContracts = contractsByAgreement.get(agreement) ?? [];
+const lots = workLotsByAgreement.get(agreement) ?? [];
 const monitoring = monitoringByAgreement.get(agreement) ?? [];
 const measuredItems = measurementItemsByAgreement.get(agreement) ?? [];
 const accountPeriods = movementPeriodsByAgreement.get(agreement) ?? [];
@@ -59,6 +61,7 @@ const sections: { slug: string; text: string; symbol: SymbolName }[] = [
   { slug: 'locations', text: 'Planned and registered locations', symbol: 'map' },
   { slug: 'commitments', text: 'Paired budget commitments', symbol: 'permit' },
   { slug: 'contracts', text: 'Reported contracts', symbol: 'yearFile' },
+  { slug: 'work-lots', text: 'Works lots and authorizations', symbol: 'layers' },
   { slug: 'bank-orders', text: 'Agreement bank orders', symbol: 'bankOrder' },
   { slug: 'account-movements', text: 'Account movements', symbol: 'coins' },
   { slug: 'invoice-items', text: 'Invoice items', symbol: 'calculator' },
@@ -145,6 +148,16 @@ const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
     <BrazilProjectContractsTable rows={relatedContracts} />
     <p><a class="identity-link" href={url(contractRoute + `?agreement=${agreement}#lookup`)}>Open this agreement in the contract lookup</a>.</p>
   </> : <p>No contract from the captured CIPI archive matches this project. The <a class="identity-link" href={url(contractRoute)}>contract coverage and source notes</a> describe the included records.</p>}
+
+  <h2 id="work-lots"><SiteSymbol name="layers" size="inline" /> Works lots and authorizations</h2>
+  {lots.length > 0 ? <p>
+    The works archive connects this agreement’s reported contracts to {count(lots.length)} {lots.length === 1 ? 'lot' : 'lots'}.
+    <a class="identity-link" href={url(workLotsRoute + `?agreement=${agreement}#lots`)}>Find the linked lots, subgoals and start authorizations</a>.
+    The location records above cover the project. Assigning a lot to a site requires its own location reference.
+  </p> : <p>
+    The captured contract records for this agreement have no exact works-lot match.
+    <a class="identity-link" href={url(workLotsRoute + '#coverage')}>Read the coverage and match rules</a>.
+  </p>}
 
   <h2 id="bank-orders"><SiteSymbol name="bankOrder" size="inline" /> Agreement bank orders</h2>
   <p>These bank orders belong to the agreement in the 2024–2025 Transferegov edition. They record funds made available to the agreement. Separate account and final expense records would be needed to trace purchases or money spent at this work site. <a class="identity-link" href={url(transferRoute + `?agreement=${agreement}#brazil-transfer-heading`)}>Open the agreement in the bank-order lookup</a>.</p>
