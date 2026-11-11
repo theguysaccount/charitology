@@ -1,0 +1,190 @@
+---
+import manifest from '../../public/data/charity-financials/ca/manifest.json';
+import { url } from '../lib/site';
+import '../styles/charity-financial-search.css';
+---
+
+<section class="charity-financial-search" data-ca-finance data-base={url('/data/charity-financials/ca/')} data-manifest={JSON.stringify(manifest)} aria-labelledby="ca-finance-heading">
+  <h2 id="ca-finance-heading">Search registered charity filings</h2>
+  <p id="ca-finance-hint">Enter the start of the legal name or the full charity account number, including RR and the four digits after it. The search runs in your browser.</p>
+  <form aria-describedby="ca-finance-hint">
+    <label for="ca-finance-query">Legal name or charity account number</label>
+    <div class="finance-actions">
+      <input id="ca-finance-query" type="search" maxlength="175" autocomplete="off" disabled />
+      <button class="btn" type="submit" disabled>Search filings</button>
+      <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+    </div>
+  </form>
+  <p role="status" data-status></p>
+  <div class="finance-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export displayed results as JSON</button>
+    <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export displayed results as CSV</button>
+  </div>
+  <ol data-results class="finance-results" aria-label="Canadian charity filing results"></ol>
+  <noscript><p>Use the CRA’s register and the original files in the coverage section to search without JavaScript.</p></noscript>
+</section>
+
+<script>
+  import { $, h } from '../lib/client/dom';
+  import { download, toCsv } from '../lib/client/files';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../lib/client/verified-json';
+
+  type Cad = string | null;
+  type Period = [string, string, 'D' | '6', 'A' | 'C' | null, number, number, Cad, Cad, Cad, Cad, Cad, Cad];
+  type Charity = [string, string, Period[]];
+  type Asset = VerifiedJsonAsset & { path: string; rows: number };
+  type Source = { url: string; file: string; sha256: string };
+  type Edition = { catalogue: string; identification: Source; finance: Source };
+  type Manifest = {
+    capturedOn: string; publisher: string; currency: string; licence: string; jurisdiction: string;
+    editions: Record<string, Edition>; periodFields: string[]; amountLines: Record<string, string>;
+    names: Record<string, Asset>; ids: Record<string, Asset>;
+  };
+  type Results = { total: number; charities: Charity[] };
+
+  const labels = ['Total revenue', 'Total expenditures', 'Charitable program expenditures',
+    'Received from registered charities', 'Gifts to qualified donees', 'Grants to other grantees'];
+  const normalizeName = (name: string) => name.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const accountNumber = (value: string) => value.toUpperCase().replace(/[\s-]/g, '');
+  const completeAccount = /^[0-9]{9}RR[0-9]{4}$/;
+  const count = (value: number) => value.toLocaleString('en-CA');
+
+  function amount(value: Cad) {
+    if (value === null) return 'Not supplied';
+    const [whole, fraction] = value.split('.');
+    const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return `CAD ${grouped}${fraction ? '.' + fraction : ''}`;
+  }
+
+  function shardLoader<Row>(base: string, assets: Record<string, Asset>) {
+    let cached: { key: string; rows: Promise<Row[]> } | undefined;
+    return (key: string) => {
+      if (!Object.hasOwn(assets, key)) return Promise.resolve([] as Row[]);
+      if (cached?.key === key) return cached.rows;
+      const asset = assets[key];
+      const rows = loadVerifiedJson(base + asset.path, asset).then(value => {
+        if (!Array.isArray(value) || value.length !== asset.rows) throw new Error('The snapshot has an unexpected row count.');
+        return value as Row[];
+      });
+      cached = { key, rows };
+      void rows.catch(() => { if (cached?.rows === rows) cached = undefined; });
+      return rows;
+    };
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-ca-finance]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const loadNames = shardLoader<Charity>(base, manifest.names);
+    const loadIds = shardLoader<[string, string]>(base, manifest.ids);
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    function prefillAccount() {
+      const value = new URLSearchParams(location.hash.slice(1)).get('bn');
+      const registration = accountNumber(value ?? '');
+      if (completeAccount.test(registration)) input.value = registration;
+    }
+    prefillAccount();
+    window.addEventListener('hashchange', prefillAccount);
+    input.disabled = submit.disabled = clear.disabled = false;
+    let displayed: Results | undefined;
+    let sequence = 0;
+
+    function renderPeriod([end, version, section, basis, financeRecord, identityRecord, ...amounts]: Period) {
+      const edition = manifest.editions[end.slice(0, 4)];
+      const sectionLabel = section === '6' ? 'Schedule 6' : 'Section D';
+      const basisLabel = basis === 'C' ? 'cash basis' : basis === 'A' ? 'accrual basis' : 'accounting basis not supplied';
+      return h('section', { class: 'finance-period' },
+        h('h4', {}, `Period ending ${end}`),
+        h('p', { class: 'note' }, `Form version ${version} · ${sectionLabel} · ${basisLabel}`),
+        h('dl', { class: 'finance-amounts' }, labels.map((label, i) =>
+          h('div', {}, h('dt', {}, label), h('dd', {}, amount(amounts[i]))))),
+        h('p', { class: 'note' },
+          h('a', { href: edition.finance.url }, 'Finance CSV'), ` record ${financeRecord} · `,
+          h('a', { href: edition.identification.url }, 'Identification CSV'), ` record ${identityRecord}. Record counts begin after the header.`));
+    }
+
+    async function search(value: string): Promise<Results> {
+      const registration = accountNumber(value);
+      if (completeAccount.test(registration)) {
+        const pointer = (await loadIds(registration.slice(7, 9))).find(([id]) => id === registration);
+        if (!pointer) return { total: 0, charities: [] };
+        const match = (await loadNames(pointer[1])).find(([id]) => id === registration);
+        if (!match) throw new Error('The account number could not be matched to the snapshot.');
+        return { total: 1, charities: [match] };
+      }
+      if (/^[0-9]{9}(?:R{1,2}[0-9]*)?$/.test(registration)) {
+        throw new Error('Include RR and its four digits to search by charity account number.');
+      }
+      const query = normalizeName(value);
+      if ([...query].length < 2) throw new Error('Enter at least two characters of the legal name.');
+      const matches = (await loadNames(/^[a-z0-9]/.test(query) ? query[0] : '_'))
+        .filter(([, name]) => normalizeName(name).startsWith(query));
+      return { total: matches.length, charities: matches.slice(0, 25) };
+    }
+
+    function reset() {
+      displayed = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      status.textContent = 'Checking the public filing snapshot.';
+      try {
+        const found = await search(input.value);
+        if (ticket !== sequence) return;
+        displayed = found;
+        status.textContent = found.total
+          ? `${count(found.total)} ${found.total === 1 ? 'match' : 'matches'}. Showing ${found.charities.length}.`
+          : 'No matching filing in these editions. Try a shorter name or check the CRA’s register.';
+        for (const [id, name, periods] of found.charities) {
+          results.append(h('li', { class: 'card' }, h('h3', {}, name), h('p', { class: 'note' }, id), periods.map(renderPeriod)));
+        }
+        json.disabled = csv.disabled = !found.charities.length;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The search failed.';
+      } finally {
+        if (ticket === sequence) submit.disabled = false;
+      }
+    });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { capturedOn, publisher, currency, licence, jurisdiction, periodFields, amountLines, editions } = manifest;
+    const asRecord = (period: Period) => Object.fromEntries(periodFields.map((field, i) => [field, period[i]]));
+    json.addEventListener('click', () => {
+      if (!displayed) return;
+      const accounts = displayed.charities.map(([registration, name, periods]) => ({ registration, name, periods: periods.map(asRecord) }));
+      const output = { capturedOn, publisher, currency, licence, jurisdiction, amountLines, editions, totalMatches: displayed.total, accounts };
+      download('canada-charity-filings.json', JSON.stringify(output, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!displayed) return;
+      const rows = displayed.charities.flatMap(([registration, name, periods]) => periods.map(period => {
+        const edition = editions[period[0].slice(0, 4)];
+        const safeName = /^(?:\s*[=+\-@]|[\t\r\n])/.test(name) ? `'${name}` : name;
+        return { registration, name: safeName, ...asRecord(period), capturedOn, publisher, currency, licence, jurisdiction,
+          financeSource: edition.finance.url, financeSha256: edition.finance.sha256,
+          identitySource: edition.identification.url, identitySha256: edition.identification.sha256 };
+      }));
+      download('canada-charity-filings.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>

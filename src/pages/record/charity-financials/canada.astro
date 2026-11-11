@@ -1,0 +1,32 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import CaCharityFinancialSearch from '../../../components/CaCharityFinancialSearch.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-financials/ca/manifest.json';
+
+const title = 'Canada charity financial filings';
+const count = (value: number) => value.toLocaleString('en-CA');
+const regulator = 'https://www.canada.ca/en/revenue-agency/services/charities-giving/charities/information-about-a-charity.html';
+const guide = 'https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/t4033/t4033-completing-registered-charity-information-return';
+const sources = Object.entries(manifest.editions).map(([year, edition]) => ({
+  title: `${year} List of charities and data dictionary`,
+  publisher: manifest.publisher,
+  url: edition.catalogue,
+}));
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary="Look up Canadian charity revenue, spending, gifts and grants with their reported fiscal dates and original records." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Financial filings',href:'/record/charity-financials/'},{label:'Canada'}]} sources={sources}>
+  <p>Search {count(manifest.financialPeriods)} fiscal periods for {count(manifest.accounts)} charity accounts in the Canada Revenue Agency’s 2023 and 2024 files. {count(manifest.multiYearAccounts)} accounts have a period in both years. A charity account can have more than one fiscal period ending in the same year.</p>
+  <CaCharityFinancialSearch />
+  <h2 id="coverage">Coverage and original data</h2>
+  <p>Each financial record links to an identity row in the same edition by the full charity account number, including its RR suffix. The displayed legal name comes from the most recent included identification extract. Charitology captured the files on <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>. Check the <a href={regulator}>CRA’s List of charities</a> for current registration status and later filings.</p>
+  <ul>
+    {Object.entries(manifest.editions).map(([year, edition]) => <li>
+      <strong>{year}.</strong> {count(edition.financialPeriods)} financial periods and {count(edition.identityAccounts)} accounts in the source identification file.
+      {' '}<a href={edition.catalogue}>Catalogue and dictionary</a> · <a href={edition.finance.url}>Original finance CSV</a> · <a href={edition.identification.url}>Original identification CSV</a>.
+    </li>)}
+  </ul>
+  <p>The amounts are in Canadian dollars. Blank, zero and negative values stay as reported. Each record shows which section of the T3010 the filer used and the reported accounting basis when supplied.</p>
+  <p>Line 4510 reports an incoming aggregate. Line 5050 reports gifts to qualified donees, and line 5045 reports grants to other grantees. The edition dictionaries describe exclusions for lines 4510 and 5050. The CRA’s detailed instructions for Schedule 6 include designated gifts on line 5050. Read the dictionary and filing guide together before comparing these amounts. The annual return aggregates cannot identify which organization sent or received a particular payment. <a href={guide + '-23.html'}>2023 filing guide</a> · <a href={guide + '.html'}>2024 filing guide</a>.</p>
+  <p>Contains information from the Canada Revenue Agency, licensed under the <a href={manifest.licence}>Open Government Licence – Canada</a>. Charitology selected and linked the fields. <a href={url('/data/charity-financials/ca/manifest.json')} download="canada-charity-financials-manifest.json">Download the coverage and source manifest</a> for the exact files, fingerprints, field order and CRA line numbers.</p>
+</Entry>

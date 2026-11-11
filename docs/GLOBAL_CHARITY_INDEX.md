@@ -18,6 +18,19 @@ node scripts/build-au-charity-financials.mjs --check /path/to/rebuild
 npm run check:references
 ```
 
+## Canada T3010 financial filings
+
+The [Canadian financial filings edition](https://charitology.com/record/charity-financials/canada/) joins 167,920 financial periods ending in 2023 or 2024 to the Canada Revenue Agency's dated identification extracts. There are 85,951 included charity accounts, 81,636 with returns in both years. The full nine-digit business number and RR account suffix form the identity key. The precise fiscal period end distinguishes separate periods for the same account, even within a year. Names come from the most recent included identification extract. Check the regulator for current status. [2023 catalogue](https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6) · [2024 catalogue](https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8).
+
+Every financial observation retains the Section D or Schedule 6 marker, form version, accounting basis and one-based data records in the financial and identification CSVs. It keeps six original lines in CAD, with blank, zero and negative values distinct. Revenue and expenditure totals, gifts received and gifts or grants made have different meanings. The figure on line 5000 covers charitable program expenditures. The annual aggregate amounts do not identify a particular grant transaction or its service location. The projection omits addresses, contact information, personal records and free-text fields. Contains information from the Canada Revenue Agency under the [Open Government Licence – Canada](https://open.canada.ca/en/open-government-licence-canada).
+
+The [manifest](../public/data/charity-financials/ca/manifest.json) pins four source files and lists coverage, field order and compressed and decoded fingerprints for each search shard. Rebuild offline with the manifest's exact filenames in the input directory. The independent comparison used every source period and both data-record coordinates. A change to a source fingerprint requires a new reviewed edition.
+
+```sh
+python3 scripts/build-ca-charity-financials.py /path/to/captured-inputs /path/to/new-rebuild
+node scripts/check-ca-charity-financials.mjs
+```
+
 ## Choose the next improvement
 
 GlobalGiving already offers international registry lookup. Candid and ProPublica already offer financial histories or original filings. IATI supplies activity-linked funding flows from its publishers. The opportunity to test is whether primary-source joins, accounting boundaries and coverage disclosures make questions about need and spending easier to answer across sources. [GlobalGiving Atlas](https://icl.globalgiving.org/atlas/) · [Candid Financials](https://candid.org/candid-search/features/financials/) · [ProPublica](https://projects.propublica.org/nonprofits/api) · [IATI d-portal](https://d-portal.iatistandard.org/spa/faq.html)
