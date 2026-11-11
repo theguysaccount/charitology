@@ -2,6 +2,7 @@
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
 import manifest from '../../../../public/data/funding-flows/us-schedule-i/manifest.json';
+import filingContext from '../../../../public/data/funding-flows/us-schedule-i/filing-context.json';
 import '../../../styles/charity-financial-search.css';
 
 const title = 'Grants reported on U.S. Form 990 Schedule I';
@@ -26,6 +27,7 @@ const sources = [
         <button class="btn" type="submit" disabled>Search grants</button>
         <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
       </div>
+      <label class="version-filter"><input type="checkbox" data-include-competing disabled /> Include rows from filings with another published version</label>
     </form>
     <p role="status" data-status>Search when you’re ready to load the public records.</p>
     <div class="finance-actions">
@@ -38,15 +40,22 @@ const sources = [
   <h2 id="coverage">Coverage and original records</h2>
   <p><a href={instructions}>Schedule I Part II</a> asks for domestic organizations or governments that received more than $5,000 from the filer during the tax year. Each source row reports a filer-recipient amount for a period. The noncash value uses the filer’s reported valuation. The source gives no dates for individual payments and the recipient’s own spending requires other evidence.</p>
   <p>Both EINs must match the dated IRS identity snapshot. The edition leaves out unresolved and self-recipient rows, repeated recipient lines within one return, and otherwise eligible rows from competing filings in this archive. A filing outside this archive may change the picture. The edition never adds the cash and noncash figures into one total.</p>
+  <p>Charitology checked the IRS indexes published for 2022–2026 against the original XML. The check found {count(filingContext.counts.alternateFilingObjects)} other filing objects with the same filer EIN and exact tax-period start and end dates as {count(filingContext.counts.filingsWithAnotherVersion)} of the January filings. {count(filingContext.counts.alternateObjectsWithDifferentRecordedPartII)} of those other objects record different Part II recipient identifiers or amounts. By default, search excludes the {count(filingContext.counts.rowsFromFilingsWithAnotherVersion)} rows affected. The optional results link the other filing objects. The IRS files supply the reported values. Selecting an authoritative version requires further evidence.</p>
   <p>Of {count(manifest.counts.partIIOrganizationRows)} source rows, {count(manifest.counts.includedRows)} are included. The source manifest gives the count for each exclusion. The full-form finance links look up the same EIN in a separate extract edition. An available period can add financial context for that organization.</p>
-  <p><a href={manifest.source.archive}>Original IRS ZIP</a> · <a href={url(base + 'manifest.json')}>Source and coverage manifest</a> · <a href={url(base + manifest.asset.path)}>Full selected snapshot as compressed JSON</a>. Import EINs and filing object numbers as text.</p>
+  <p><a href={manifest.source.archive}>Original IRS ZIP</a> · <a href={url(base + 'manifest.json')}>Source and coverage manifest</a> · <a href={url(base + manifest.asset.path)}>Full selected snapshot as compressed JSON</a> · <a href={url(base + 'filing-context.json')}>Filing version references and fingerprints</a>. Import EINs and filing object numbers as text.</p>
 </Entry>
+
+<style>
+  .version-filter { display: flex; align-items: flex-start; gap: .5rem; margin-top: .8rem; }
+  .version-filter input { flex: none; margin: .35rem 0 0; padding: 0; }
+</style>
 
 <script>
   import { $, h } from '../../../lib/client/dom';
   import { download, toCsv } from '../../../lib/client/files';
   import { loadVerifiedJson } from '../../../lib/client/verified-json';
   import { normalizeEin } from '../../../lib/irs-registry.mjs';
+  import filingContext from '../../../../public/data/funding-flows/us-schedule-i/filing-context.json';
 
   type Grant = [string, number, number | null, number | null];
   type Filing = [string, string, string, string, Grant[]];
@@ -57,11 +66,13 @@ const sources = [
   const dollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   const money = (amount: number | null) => amount === null ? 'Not supplied' : dollars.format(amount);
   const formattedEin = (ein: string) => `${ein.slice(0, 2)}-${ein.slice(2)}`;
+  const otherVersions = new Map(filingContext.filings.map(row => [row.filingObjectId, row.alternatives]));
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-us-grants]')) {
     const manifest: Manifest = JSON.parse(root.dataset.manifest!);
     const form = $<HTMLFormElement>('form', root);
-    const input = $<HTMLInputElement>('input', form);
+    const input = $<HTMLInputElement>('input[type=search]', form);
+    const includeCompeting = $<HTMLInputElement>('[data-include-competing]', form);
     const submit = $<HTMLButtonElement>('button[type=submit]', form);
     const clear = $<HTMLButtonElement>('[data-clear]', root);
     const status = $('[data-status]', root);
@@ -71,9 +82,10 @@ const sources = [
     let loaded: Promise<Snapshot> | undefined;
     let matches: Match[] = [];
     let sequence = 0;
+    let omitted = 0;
     const prefilled = new URLSearchParams(location.hash.slice(1)).get('ein');
     if (prefilled && /^(?:[0-9]{9}|[0-9]{2}-[0-9]{7})$/.test(prefilled)) input.value = prefilled;
-    input.disabled = submit.disabled = clear.disabled = false;
+    input.disabled = submit.disabled = clear.disabled = includeCompeting.disabled = false;
 
     async function load() {
       const data = await loadVerifiedJson(root.dataset.file!, manifest.asset) as Snapshot;
@@ -83,6 +95,7 @@ const sources = [
 
     function reset() {
       matches = [];
+      omitted = 0;
       results.replaceChildren();
       json.disabled = csv.disabled = true;
     }
@@ -92,12 +105,17 @@ const sources = [
     }
 
     function display(row: Match) {
+      const alternatives = otherVersions.get(row.filingObjectId);
       return h('li', { class: 'card' },
         h('h3', {}, 'Reported grant to ', financeLink(row.recipientEin)),
         h('p', {}, 'Filer ', financeLink(row.filerEin), ` · Tax period ${row.taxPeriodStart} to ${row.taxPeriodEnd}`),
         h('p', {}, `Cash grant ${money(row.cashGrantUSD)} · Noncash assistance ${money(row.nonCashAssistanceUSD)}`),
         h('p', { class: 'note' }, h('a', { href: manifest.source.archive }, 'IRS archive'),
-          ` · Filing object ${row.filingObjectId} · Schedule I Part II row ${row.partIIRow}`));
+          ` · Filing object ${row.filingObjectId} · Schedule I Part II row ${row.partIIRow}`),
+        alternatives ? h('details', {}, h('summary', {}, 'Other filing objects for this exact tax period'),
+          h('ul', {}, alternatives.map(alternate => h('li', {},
+            h('a', { href: alternate.archive }, 'IRS archive'), ` · Filing object ${alternate.filingObjectId} · `,
+            alternate.sameRecordedPartIIAmountsAndRecipientIdentifiers ? 'Same recorded Part II identifiers and amounts' : 'Different recorded Part II identifiers or amounts')))) : null);
     }
 
     form.addEventListener('submit', async event => {
@@ -106,6 +124,7 @@ const sources = [
       reset();
       try {
         const ein = normalizeEin(input.value);
+        const include = includeCompeting.checked;
         submit.disabled = true;
         status.textContent = 'Checking the public Schedule I records.';
         loaded ??= load().catch(error => { loaded = undefined; throw error; });
@@ -114,12 +133,17 @@ const sources = [
         for (const [filerEin, taxPeriodStart, taxPeriodEnd, filingObjectId, grants] of filings) {
           for (const [recipientEin, partIIRow, cashGrantUSD, nonCashAssistanceUSD] of grants) {
             if (filerEin !== ein && recipientEin !== ein) continue;
+            if (!include && otherVersions.has(filingObjectId)) {
+              omitted++;
+              continue;
+            }
             matches.push({ filerEin, recipientEin, taxPeriodStart, taxPeriodEnd, filingObjectId, partIIRow, cashGrantUSD, nonCashAssistanceUSD, filingSha256: filingSha256[filingObjectId] });
           }
         }
         matches.sort((a, b) => b.taxPeriodEnd.localeCompare(a.taxPeriodEnd) || a.filingObjectId.localeCompare(b.filingObjectId) || a.partIIRow - b.partIIRow);
         const displayed = matches.slice(0, 40);
-        status.textContent = matches.length ? `${matches.length} ${matches.length === 1 ? 'record' : 'records'}. Showing ${displayed.length}.` : 'No matching grant rows in this edition.';
+        const found = matches.length ? `${matches.length} ${matches.length === 1 ? 'record' : 'records'}. Showing ${displayed.length}.` : 'No matching grant rows in this search.';
+        status.textContent = found + (omitted ? ` ${omitted} ${omitted === 1 ? 'row' : 'rows'} from filings with another version left out.` : '');
         results.append(...displayed.map(display));
         json.disabled = csv.disabled = matches.length === 0;
       } catch (error) {
@@ -127,10 +151,15 @@ const sources = [
       } finally { if (ticket === sequence) submit.disabled = false; }
     });
 
+    includeCompeting.addEventListener('change', () => {
+      if (input.value.trim()) form.requestSubmit();
+    });
+
     clear.addEventListener('click', () => {
       sequence++;
       reset();
       input.value = '';
+      includeCompeting.checked = false;
       submit.disabled = false;
       status.textContent = 'Search cleared.';
       input.focus();
@@ -138,12 +167,17 @@ const sources = [
 
     const { source, registry, currency, capturedOn } = manifest;
     json.addEventListener('click', () => {
-      if (matches.length) download('us-schedule-i-grants.json', JSON.stringify({ source, registry, currency, capturedOn, grants: matches }, null, 2) + '\n', 'application/json');
+      if (!matches.length) return;
+      const included = new Set(matches.map(row => row.filingObjectId));
+      const filingVersions = { checkedOn: filingContext.capturedOn, scope: filingContext.scope, omittedGrantRows: omitted,
+        alternatives: filingContext.filings.filter(row => included.has(row.filingObjectId)) };
+      download('us-schedule-i-grants.json', JSON.stringify({ source, registry, currency, capturedOn, grants: matches, filingVersions }, null, 2) + '\n', 'application/json');
     });
     csv.addEventListener('click', () => {
       if (!matches.length) return;
       const rows = matches.map(row => ({ ...row, currency, capturedOn, registryDate: registry.date, registrySha256: registry.manifestSha256,
-        source: source.archive, sourceSha256: source.sha256, publisher: source.publisher, scope: source.scope }));
+        source: source.archive, sourceSha256: source.sha256, publisher: source.publisher, scope: source.scope,
+        alternateFilingCount: otherVersions.get(row.filingObjectId)?.length ?? 0, filingVersionsCheckedOn: filingContext.capturedOn }));
       download('us-schedule-i-grants.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
     });
   }
