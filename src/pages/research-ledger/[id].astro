@@ -2,15 +2,24 @@
 import Base from '../../layouts/Base.astro';
 import Crumbs from '../../components/Crumbs.astro';
 import ResearchLedger from '../../components/ResearchLedger.astro';
-import { loadResearchLedger } from '../../lib/research-ledger';
+import { ledgerVersionTitle, loadResearchLedger } from '../../lib/research-ledger';
 export async function getStaticPaths() {
   const { current } = await loadResearchLedger();
-  return current.graph.records.map((record:any)=>({params:{id:record.id},props:{recordId:record.id}}));
+  return current.views.map((view) => {
+    const version = current.graph.versions.find((item) => item.recordId === view.id && item.version === view.currentVersion.version);
+    return { params: { id: view.id }, props: { recordId: view.id, title: ledgerVersionTitle(version) } };
+  });
 }
-const {recordId} = Astro.props;
+const { recordId, title } = Astro.props;
 const ledger = await loadResearchLedger();
 ---
-<Base title={`${recordId}: research history`} description="Exact source versions, recorded changes and review limitations for this public record.">
-  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'Record',href:'/record/'},{label:'Research ledger',href:'/research-ledger/'},{label:recordId}]}/><h1>Research history</h1></div></header>
+<Base title={`${title}: research history`} description="Exact source versions, recorded changes and review limitations for this public record.">
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'Record', href: '/record/' }, { label: 'Research ledger', href: '/research-ledger/' }, { label: title }]} />
+      <p class="eyebrow">Research history</p>
+      <h1>{title}</h1>
+    </div>
+  </header>
   <section class="wrap section-tight"><ResearchLedger projection={ledger.current} selectedRecordId={recordId} currentEditionId={ledger.input.manifest.currentEditionId}/></section>
 </Base>

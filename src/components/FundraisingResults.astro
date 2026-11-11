@@ -13,7 +13,7 @@ const { results, showMethodLinks = false } = Astro.props;
 ---
 <section class:list={['fundraising-results', { 'section-tight': showMethodLinks }]} id="results" aria-labelledby="results-title">
   <p class="eyebrow">Fundraising evidence</p>
-  <h2 id="results-title">Results from practice</h2>
+  <h2 id="results-title" data-section-symbol="chart">Results from practice</h2>
   <p class="intro">See who was included, what changed and when the team measured it. Each result describes one setting.</p>
   <div class="results-list">
     {results.map((result) => {

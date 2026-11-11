@@ -1,3 +1,5 @@
+import ledgerManifest from '../data/research-ledger/manifest.json' with { type: 'json' };
+
 // Original line symbols for the public site. Reuse a symbol when two links
 // lead to the same work. Keep identity separate from evidence and status.
 export const symbols = {
@@ -66,6 +68,7 @@ export const symbols = {
   bars: 'M3 6h12M3 12h18M3 18h8M17 4v4m-4 8v4',
   table: 'M3 4h18v16H3zm0 5h18M3 14h18M9 4v16m6-16v16',
   megaphone: 'M3 10v5h4l3 5h3l-2-5 9 3V5L7 10H3Zm4 0v5m13-5h2m-2 3h2',
+  mailSend: 'M3 5h18v8M3 5v14h9M3 5l9 7 9-7m-7 12h7m-3-3 3 3-3 3',
   headphones: 'M3 14v-2a9 9 0 0 1 18 0v2M3 13h4v7H4l-1-2zm14 0h4v5l-1 2h-3z',
   mail: 'M3 5h18v14H3zM3 6l9 7 9-7',
   person: 'M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM4 21v-2a8 6 0 0 1 16 0v2H4Z',
@@ -196,7 +199,7 @@ export const sections: Section[] = [
   { path: '/for-charities/', symbol: 'hands', tone: 'green', entries: {
     'start': 'steps', 'fundraising': 'megaphone', 'networks': 'network', 'collaborate': 'dialogue',
     'website-pilots': 'window', 'os-plan': 'ruler', 'tools': 'tools', 'benefits': 'gift',
-    'fundraising/email-appeals': 'megaphone', 'fundraising/paid-ads': 'target',
+    'fundraising/email-appeals': 'mailSend', 'fundraising/paid-ads': 'target',
     'fundraising/fundraising-events': 'calendar', 'fundraising/recurring-giving': 'loop',
     'fundraising/peer-to-peer': 'network', 'fundraising/major-gifts': 'gift',
     'fundraising/grants': 'document', 'fundraising/direct-mail': 'mail',
@@ -285,14 +288,48 @@ const referenceEntries: Record<string, Record<string, SymbolName>> = {
   journal: { 'depth-without-a-ladder': 'layers', 'ten-dollars': 'coins', 'the-feedback-contract': 'loop' },
 };
 
-export const routes = sections.flatMap(({ path, symbol, tone, entries = {} }) => [
+const articleRoutes = sections.flatMap(({ path, symbol, tone, entries = {} }) => [
   { path, symbol, tone },
   ...Object.entries(entries).map(([slug, symbol]) => ({ path: path + slug + '/', symbol, tone })),
 ]).concat(Object.entries(referenceEntries).flatMap(([section, entries]) =>
   Object.entries(entries).map(([slug, symbol]) => ({ path: `/record/${section}/${slug}/`, symbol, tone: 'blue' as const })),
-)).sort((a, b) => a.path.length - b.path.length);
+));
+
+const ledgerPath = '/research-ledger/';
+const ledgerKinds = {
+  problem: ['question', 'amber'], manuscript: ['notes', 'violet'], case: ['folder', 'teal'],
+  method: ['layers', 'slate'], concept: ['book', 'blue'], claim: ['speech', 'wine'],
+  artifact: ['packet', 'green'], challenge: ['flag', 'wine'], decision: ['scale', 'slate'],
+} as const satisfies Record<string, readonly [SymbolName, Tone]>;
+const standaloneLedgerSymbols: Record<string, SymbolName> = {
+  'artifact:pr-3-editorial-framing': 'code',
+  'claim:depth-census-knowledge': 'layers',
+  'claim:ten-dollars-framing': 'compare',
+};
+
+// Bind to the published entry in the ledger manifest. A matching slug alone
+// does not establish that a ledger record documents an article.
+const ledgerArticles = new Map(ledgerManifest.currentSources.map(({ recordId, href }) => [recordId, href]));
+const articleSymbols = new Map(articleRoutes.map(({ path, symbol }) => [path, symbol]));
+function ledgerRecordRoute(id: string, symbol: SymbolName) {
+  const kind = id.split(':', 1)[0] as keyof typeof ledgerKinds;
+  return { path: `${ledgerPath}${id}/`, symbol, tone: ledgerKinds[kind]?.[1] ?? 'blue' as const };
+}
+const ledgerRecords = [...ledgerArticles].map(([id, href]) => {
+  const symbol = articleSymbols.get(href);
+  if (!symbol) throw new Error(`No article symbol for ${id} at ${href}`);
+  return ledgerRecordRoute(id, symbol);
+});
+
+export const routes = [
+  ...articleRoutes,
+  ...Object.entries(ledgerKinds).map(([kind, [symbol, tone]]) => ({ path: `${ledgerPath}${kind}:`, symbol, tone })),
+  ...Object.entries(standaloneLedgerSymbols).map(([id, symbol]) => ledgerRecordRoute(id, symbol)),
+  ...ledgerRecords,
+].sort((a, b) => a.path.length - b.path.length);
 
 export function pageIdentity(path: string) {
-  const normalized = path.endsWith('/') ? path : path + '/';
+  const decoded = path.startsWith(ledgerPath) ? path.replace(/%3a/gi, ':') : path;
+  const normalized = decoded.endsWith('/') ? decoded : decoded + '/';
   return routes.findLast((route) => normalized.startsWith(route.path)) ?? { symbol: 'compass', tone: 'slate' };
 }

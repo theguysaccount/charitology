@@ -41,6 +41,12 @@ export const ledgerEditionCsvHref = (id: string) =>
 export const ledgerSourceHref = (id: string) =>
   `/research-ledger/sources/${encoded(id)}/source.txt`;
 
+export function ledgerVersionTitle(version: ReturnType<typeof projectResearchLedger>['graph']['versions'][number] | undefined) {
+  return version?.subject.type === "entry"
+    ? version.subject.frontmatter.title
+    : version?.subject.title ?? version?.recordId ?? "Unknown subject";
+}
+
 export async function readStaticResearchLedger(
   dataRoot = resolve("src/data/research-ledger"),
 ): Promise<Record<string, any>> {

@@ -61,6 +61,14 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['directory', 'Find a network', 'lens'],
     ['network-question', 'Bring a question', 'speech'],
   ],
+  '/for-charities/fundraising/': [
+    ['methods', 'Explore the methods', 'compass'],
+    ['planner', 'Plan costs and follow-up', 'calculator'],
+    ['os', 'Connect the work to Charity OS', 'board'],
+    ['results', 'Read field results', 'chart'],
+    ['resources', 'Find research and peers', 'book'],
+    ['share', 'Share a learning note', 'speech'],
+  ],
   '/for-charities/collaborate/': [
     ['charity-teams', 'For charity teams', 'hands'],
     ['network-organizers', 'For network organizers', 'network'],
