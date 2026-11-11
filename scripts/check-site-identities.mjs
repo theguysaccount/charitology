@@ -133,7 +133,18 @@ for (const kind of ['tools', 'benefits']) {
   const html = readFileSync(`dist/for-charities/${kind}/index.html`, 'utf8');
   const cardIds = [...html.matchAll(/<article id="([^"]+)" class="directory-card"/g)].map(([, id]) => id);
   assert.ok(cardIds.length > 0, kind);
-  for (const id of cardIds) assert.ok(html.includes(`href="#${id}"`), `Missing listing link for ${id}`);
+  const index = html.match(/<details class="listing-index"[^>]*>[\s\S]*?<\/details>/)?.[0];
+  assert.ok(index, `Missing listing index for ${kind}`);
+  const marks = [];
+  for (const id of cardIds) {
+    const symbol = index.match(new RegExp(`href="#${id}"[^>]*><span[^>]*data-site-symbol="([^"]+)"`))?.[1];
+    assert.ok(symbol && Object.hasOwn(symbols, symbol), `Missing listing shortcut mark for ${id}`);
+    const start = html.indexOf(`<article id="${id}"`);
+    const card = html.slice(start, html.indexOf('</article>', start));
+    assert.ok(card.includes(`data-site-symbol="${symbol}"`), `Shortcut and card marks differ for ${id}`);
+    marks.push(symbol);
+  }
+  assert.equal(new Set(marks).size, cardIds.length, `Duplicate listing marks in ${kind}`);
 }
 
 const fundingIndex = readFileSync('dist/record/funding-flows/index.html', 'utf8');
@@ -145,6 +156,7 @@ assert.ok(fundingIndex.includes('aria-label="Browse funding flows"'));
 const pages = globSync('**/*.html', { cwd: 'dist' });
 assert.ok(pages.length > 0);
 let outlines = 0;
+let matchingHeadings = 0;
 for (const page of pages) {
   const route = '/' + page.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
   const html = readFileSync(`dist/${page}`, 'utf8');
@@ -168,6 +180,14 @@ for (const page of pages) {
     assert.ok(links.length >= 2, page);
     assert.equal(new Set(links).size, links.length, `Duplicate outline destination in ${page}`);
     for (const id of links) assert.ok(html.includes(` id="${id}"`), `Missing ${id} in ${page}`);
+    const headingMarks = new Map([...html.matchAll(/<h2 data-section-symbol="([^"]+)" id="([^"]+)"/g)]
+      .map(([, symbol, id]) => [id, symbol]));
+    for (const [, id, mark] of outline.matchAll(/href="#([^"]+)"[^>]*><span[^>]*data-site-symbol="([^"]+)"/g)) {
+      const headingMark = headingMarks.get(id);
+      if (!headingMark || sectionNavigation[route]?.some(([slug]) => slug === id)) continue;
+      assert.equal(mark, headingMark, `Outline and heading marks differ for ${page}#${id}`);
+      matchingHeadings++;
+    }
     assert.equal([...outline.matchAll(/data-site-symbol="[^"]+"/g)].length, links.length, page);
   }
   const country = page.match(/^record\/countries\/([a-z]{3})\/index\.html$/);
@@ -178,4 +198,10 @@ for (const page of pages) {
   assert.equal(html.match(/<h1(?:\s|>)/g)?.length, 1, `Expected one page title in ${page}`);
 }
 assert.ok(outlines >= 200, "Page outlines should cover country profiles and article templates");
-console.log(`Site identity and theme checked on ${pages.length} pages, including ${outlines} outlines, with distinct symbols in the catalogs, reference libraries and editorial lists.`);
+assert.ok(matchingHeadings >= 100, 'Article shortcut marks should match their heading marks');
+for (const page of ['values-compass', 'due-diligence-checklist', 'giving-dashboard', 'charity-os']) {
+  const html = readFileSync(`dist/tools/${page}/index.html`, 'utf8');
+  const jump = html.indexOf('href="#working-tool"');
+  assert.ok(jump >= 0 && jump < html.indexOf('id="working-tool"'), `Tool shortcut must precede the tool on ${page}`);
+}
+console.log(`Site identity and theme checked on ${pages.length} pages, including ${outlines} outlines and ${matchingHeadings} matching article headings, with distinct symbols in the catalogs, reference libraries and editorial lists.`);

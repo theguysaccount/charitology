@@ -13,7 +13,7 @@ const modes = [
   <legend class="visually-hidden">Color theme</legend>
   {modes.map(({ value, label, symbol }) => (
     <label>
-      <input class="visually-hidden" type="radio" name="site-theme" value={value} checked={value === 'system'} />
+      <input class="visually-hidden" type="radio" name="site-theme" value={value} autocomplete="off" checked={value === 'system'} />
       <span class="theme-option">
         <SiteSymbol name={symbol} />
         <span>{label}</span>
@@ -131,6 +131,10 @@ const modes = [
         if (option.value === 'system') preferences?.removeItem(key);
         else preferences?.setItem(key, option.value);
       } catch {}
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (!event.persisted || !preferences) return;
+      try { apply(preferences.getItem(key)); } catch {}
     });
     window.addEventListener('storage', (event) => {
       if (preferences && event.storageArea === preferences && (event.key === key || event.key === null)) apply(event.newValue);

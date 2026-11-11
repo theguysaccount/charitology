@@ -1,25 +1,16 @@
 ---
 import SiteSymbol from './SiteSymbol.astro';
 import type { SymbolName } from '../lib/site-identities';
+import { headingSymbol } from '../lib/heading-symbol';
+import { pageSections } from '../lib/section-navigation';
+import { url } from '../lib/site';
 
 interface Props {
-  sections: readonly { slug: string; text: string; depth?: number; symbol?: SymbolName }[];
+  sections?: readonly { slug: string; text: string; depth?: number; symbol?: SymbolName }[];
   label?: string;
 }
-const { sections, label = 'On this page' } = Astro.props;
-const labels: [RegExp, SymbolName][] = [
-  [/^(?:what (?:it is|the claim is)|overview|background)/, 'document'],
-  [/^(?:where to start|what to ask|how to help|next steps|use )/, 'steps'],
-  [/^(?:how |the method|what it looks like)/, 'tools'],
-  [/^(?:the debate|where .*stands|why it’s debated)/, 'dialogue'],
-  [/^(?:why |where .*system|through the source lens)/, 'network'],
-  [/^(?:where .*depth|the five levels)/, 'layers'],
-  [/^(?:what .*evidence|sources|what trials|what’s true)/, 'flask'],
-  [/^(?:what .*success|what success|what would close)/, 'target'],
-  [/^(?:what we don’t know|open questions|what remains)/, 'question'],
-  [/^(?:risks|limits|watch for|coverage|what it can’t|what it isn’t)/, 'shield'],
-  [/^(?:what happened|where it came from)/, 'history'],
-];
+const path = Astro.url.pathname.slice(url('/').length - 1);
+const { sections = pageSections(path) ?? [], label = 'On this page' } = Astro.props;
 const links = sections.filter(({ depth }) => depth === undefined || depth === 2);
 ---
 
@@ -28,7 +19,7 @@ const links = sections.filter(({ depth }) => depth === undefined || depth === 2)
     <p>{label}</p>
     <ul role="list">
       {links.map(({ slug, text, symbol }) => (
-        <li><a href={`#${slug}`}><SiteSymbol name={symbol ?? labels.find(([pattern]) => pattern.test(text.toLowerCase()))?.[1] ?? 'bookmark'} size="inline" />{text}</a></li>
+        <li><a href={`#${slug}`}><SiteSymbol name={symbol ?? headingSymbol(text)} size="inline" />{text}</a></li>
       ))}
     </ul>
   </nav>

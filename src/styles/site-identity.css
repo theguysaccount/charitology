@@ -25,8 +25,8 @@
 :where(main:not([data-site-home]) h1:not(:has(> .title-code)), .site-symbol, a.card, .starting-grid > a, .method-card,
   .guide-card, .nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
   a.r-title:not(:has(> .identity-code)), .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
-  a.identity-link, main :is(ul, ol) > li > :is(a:not([class]), a.ext):first-child:not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
-  main :is(h2, h3)[id], .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
+  a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
+  main :is(h2, h3):not(:has(> .site-symbol)):is([id], [data-section-symbol], section[id] > h2, aside[id] > h2, div[id] > h2), .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
   .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   content: "";
   display: inline-block;
@@ -40,7 +40,7 @@
 }
 
 /* A named section repeats its jump-link mark at the destination. */
-:where(main :is(h2, h3)[id])::before {
+:where(main :is(h2, h3):not(:has(> .site-symbol)):is([id], [data-section-symbol], section[id] > h2, aside[id] > h2, div[id] > h2))::before {
   display: var(--heading-mark, none);
   mask-image: var(--heading-glyph);
   margin-inline-end: 0.48em;
@@ -63,13 +63,13 @@
 }
 
 :where(.nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
-  a.r-title:not(:has(> .identity-code)), a.identity-link, main :is(ul, ol) > li > :is(a:not([class]), a.ext):first-child:not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
+  a.r-title:not(:has(> .identity-code)), a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
   .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
   .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   margin-inline-end: 0.48em;
 }
 
-:where(main :is(ul, ol) > li > :is(a:not([class]), a.ext):first-child:not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num)))):not(:where(.sources li > a:first-child))::before {
+:where(main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num)))):not(:where(.sources li > a:first-child))::before {
   display: var(--list-mark, none);
 }
 
@@ -99,7 +99,7 @@
   content: "◇  ";
 }
 
-main ul > li:has(> .identity-link:first-child)::marker {
+main ul > li:has(> :is(.identity-link, .site-symbol):first-child)::marker {
   content: "";
 }
 

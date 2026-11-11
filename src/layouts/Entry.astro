@@ -29,6 +29,8 @@ const { title, description, eyebrow, summary, crumbs, filePath, review = 'draft'
 const destinations = pageSections(Astro.url.pathname.slice(url('/').length - 1)) ?? [];
 const outline = [...(sections ?? []).filter(({ slug }) => !destinations.some((entry) => entry.slug === slug)), ...destinations];
 const hasAside = Astro.slots.has('aside');
+const hasTool = Astro.slots.has('top');
+if (hasTool) outline.unshift({ slug: 'working-tool', text: 'Open the tool', symbol: 'bolt' });
 ---
 
 <Base title={title} description={description ?? summary}>
@@ -42,16 +44,17 @@ const hasAside = Astro.slots.has('aside');
     </div>
   </header>
   {
-    Astro.slots.has('top') && (
+    hasTool && (
       <div class="wrap entry-top">
-        <slot name="top" />
+        <PageSections sections={outline} />
+        <div id="working-tool" tabindex="-1" role="region" aria-label="Working tool"><slot name="top" /></div>
       </div>
     )
   }
   <div class="wrap section-tight">
     <div class={hasAside ? 'split' : ''}>
       <article>
-        <PageSections sections={outline} />
+        {!hasTool && <PageSections sections={outline} />}
         <div class="prose">
           <slot />
         </div>

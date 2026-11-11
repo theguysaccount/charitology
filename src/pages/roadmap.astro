@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import PageSections from '../components/PageSections.astro';
 import Crumbs from '../components/Crumbs.astro';
 import Badges from '../components/Badges.astro';
 import brief from '../data/roadmap.json';
@@ -31,12 +32,13 @@ const counts = entries.reduce((out, entry) => ({ ...out, [entry.data.status]: ou
     </div>
   </div></header>
   <section class="wrap section-tight">
+    <PageSections />
     <div class="callout prose">
-      <h2>What the statuses mean</h2>
+      <h2 id="statuses">What the statuses mean</h2>
       <p><strong>Live ({counts.live})</strong> means the function described on the page is available. <strong>Seeded ({counts.seeded})</strong> means starter content exists. <strong>Designed ({counts.designed})</strong> means a charter or method is written. <strong>Needs partners ({counts.partners})</strong> means people, funding or governance are needed.</p>
       <p>The original brief proposed charity ratings and automatic money splitting. The current method requires public review before any ratings, and the split tool plans gifts without handling money. Those changes are visible below. Availability also does not mean a page has passed <a href={url('/contribute/review/')}>human source review</a>.</p>
     </div>
-    <form class="roadmap-filters" role="search" aria-label="Filter the roadmap" onsubmit="return false">
+    <form id="roadmap-filters" class="roadmap-filters" role="search" aria-label="Filter the roadmap" onsubmit="return false">
       <label class="field">Find an item<input type="search" id="roadmap-search" placeholder="Try forecasting, course or fund" /></label>
       <label class="field">Section<select id="roadmap-section"><option value="">All sections</option><option value="programs">Programs</option><option value="tools">Tools</option><option value="record">Information bases</option></select></label>
       <label class="field">Status<select id="roadmap-status"><option value="">All statuses</option><option value="live">Live</option><option value="seeded">Seeded</option><option value="designed">Designed</option><option value="partners">Needs partners</option></select></label>
@@ -58,14 +60,14 @@ const counts = entries.reduce((out, entry) => ({ ...out, [entry.data.status]: ou
     <p id="roadmap-empty" hidden>No items match these filters. Try a different word or choose all statuses.</p>
   </section>
   <section class="wrap section-tight prose">
-    <h2>Added to the brief</h2>
+    <h2 id="added">Added to the brief</h2>
     <p>These came from the owner’s follow-up request on October 25, 2026. They are tracked separately so the original list stays intact.</p>
     <ul>
       <li><a href={url('/tools/charity-os/')}>Charity OS</a>: a <a href="https://os.charitology.org">shared organization service</a> with 26 typed modules, accounts, linked records, approvals and recovery, plus a smaller local planner. The <a href={url('/for-charities/os-plan/')}>shared OS research and implementation plan</a> records its current scope and remaining pilot gates.</li>
       <li><a href={url('/for-charities/tools/')}>Tools for charities</a>: a directory with categories, costs and official sources.</li>
       <li><a href={url('/for-charities/benefits/')}>Benefits for charities</a>: offers with eligibility, limits and application links.</li>
     </ul>
-    <h2>What a website cannot finish on its own</h2>
+    <h2 id="institutional-work">What a website cannot finish on its own</h2>
     <p>A legal fund, paid fellowship, prize, credential, conference or locally written country profile needs the people, resources and governance stated in its charter. No page claims those institutions are operating simply because their plans are published. The next steps belong in public issues and pull requests.</p>
   </section>
 </Base>

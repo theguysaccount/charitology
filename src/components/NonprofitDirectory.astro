@@ -38,7 +38,7 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
 ---
 
 <div class="nonprofit-directory" data-directory>
-  <form class="directory-filters" role="search" aria-label={`Filter nonprofit ${kind}`}>
+  <form class="directory-filters" hidden role="search" aria-label={`Filter nonprofit ${kind}`}>
     <label class="directory-search">Search this directory
       <input type="search" name="q" placeholder={kind === 'tools' ? 'Try surveys, donors or self-hosted…' : 'Try design, cloud or free…'} autocomplete="off" />
     </label>
@@ -50,6 +50,17 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
     </label>
     <button type="reset" class="directory-reset">Reset filters</button>
   </form>
+  <noscript><p>Use the listing index or read the full directory below.</p></noscript>
+  <details class="listing-index" data-listing-index>
+    <summary><SiteSymbol name="compass" size="inline" /> Jump to a listing</summary>
+    <nav aria-label={`Browse nonprofit ${kind} by name`}>
+      <ul role="list">
+        {entries.map((entry) => <li data-listing-shortcut={entry.id}>
+          <a href={`#${entry.id}`}><SiteSymbol name={listingSymbols[entry.id] ?? 'external'} size="inline" />{entry.name}</a>
+        </li>)}
+      </ul>
+    </nav>
+  </details>
   <div class="directory-results-line">
     <p class="directory-count" aria-live="polite" aria-atomic="true"><span data-count>{entries.length}</span> <span data-count-label>listings</span></p>
     <p>Alphabetical, with no scores or paid placements.</p>
@@ -57,9 +68,9 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
   <p class="directory-empty" data-empty hidden>No listings match those filters. Try fewer words or reset the filters.</p>
   <div class="directory-grid">
     {entries.map((entry) => (
-      <article id={entry.id} class="directory-card" data-listing data-category={entry.category} data-cost={entry.costType} data-search={`${entry.name} ${entry.category} ${entry.summary} ${entry.cost} ${entry.delivery} ${entry.fit} ${entry.eligibility} ${entry.limits}`.toLowerCase()}>
+      <article id={entry.id} class="directory-card" tabindex="-1" aria-labelledby={`listing-${entry.id}`} data-listing data-category={entry.category} data-cost={entry.costType} data-search={`${entry.name} ${entry.category} ${entry.summary} ${entry.cost} ${entry.delivery} ${entry.fit} ${entry.eligibility} ${entry.limits}`.toLowerCase()}>
         <div class="directory-card-top"><span class="identity-label"><SiteSymbol name={listingSymbols[entry.id] ?? 'external'} /><span class="directory-category">{entry.category}</span></span><span class="directory-cost-type">{entry.costType}</span></div>
-        <h2>{entry.name} <a class="listing-permalink" href={`#${entry.id}`} aria-label={`Link to ${entry.name}`}><SiteSymbol name="chain" size="inline" /></a></h2>
+        <h2 id={`listing-${entry.id}`}>{entry.name} <a class="listing-permalink" href={`#${entry.id}`} aria-label={`Link to ${entry.name}`}><SiteSymbol name="chain" size="inline" /></a></h2>
         <p class="directory-summary">{entry.summary}</p>
         <p class="directory-offer">{entry.cost}</p>
         <dl>
@@ -86,6 +97,9 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
     const category = form.querySelector<HTMLSelectElement>('[name="category"]')!;
     const cost = form.querySelector<HTMLSelectElement>('[name="cost"]')!;
     const cards = [...directory.querySelectorAll<HTMLElement>('[data-listing]')];
+    const index = directory.querySelector<HTMLDetailsElement>('[data-listing-index]')!;
+    const shortcuts = new Map([...index.querySelectorAll<HTMLElement>('[data-listing-shortcut]')]
+      .map((item) => [item.dataset.listingShortcut, item]));
     const update = () => {
       const words = query.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
       let count = 0;
@@ -94,16 +108,33 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
           && (!cost.value || card.dataset.cost === cost.value)
           && words.every((word) => card.dataset.search?.includes(word));
         card.hidden = !show;
+        const shortcut = shortcuts.get(card.id);
+        if (shortcut) shortcut.hidden = !show;
         if (show) count++;
       });
       directory.querySelector('[data-count]')!.textContent = String(count);
       directory.querySelector('[data-count-label]')!.textContent = count === 1 ? 'listing' : 'listings';
       directory.querySelector<HTMLElement>('[data-empty]')!.hidden = count !== 0;
+      index.hidden = count === 0;
     };
     form.addEventListener('submit', (event) => event.preventDefault());
     form.addEventListener('input', update);
     form.addEventListener('change', update);
     form.addEventListener('reset', () => requestAnimationFrame(update));
+
+    function revealDestination() {
+      const card = cards.find((item) => '#' + item.id === location.hash);
+      if (!card?.hidden) return;
+      form.reset();
+      update();
+      card.focus({ preventScroll: true });
+      card.scrollIntoView();
+    }
+
+    update();
+    revealDestination();
+    window.addEventListener('hashchange', revealDestination);
+    form.hidden = false;
   });
 </script>
 
@@ -113,11 +144,48 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
   .directory-filters label { display: grid; gap: .45rem; font: 600 .78rem/1.3 var(--font-sans); letter-spacing: .03em; }
   .directory-filters input, .directory-filters select { width: 100%; min-width: 0; height: 2.8rem; font: 400 .95rem var(--font-sans); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: .6rem .7rem; }
   .directory-reset { min-height: 2.8rem; font: 500 .85rem var(--font-sans); color: var(--accent); border: 1px solid var(--rule); border-radius: 3px; background: transparent; padding: .6rem .9rem; cursor: pointer; }
+  .listing-index {
+    margin-block-start: 1rem;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--rule);
+    border-inline-start: 3px solid var(--site-tone);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font: 580 0.87rem/1.4 var(--font-sans);
+  }
+  .listing-index summary {
+    min-block-size: 2.75rem;
+    padding-block: 0.55rem;
+    font-weight: 730;
+    cursor: pointer;
+  }
+  .listing-index summary :global(.site-symbol) { vertical-align: middle; }
+  .listing-index ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 0.2rem 0.55rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.4rem;
+  }
+  .listing-index a {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-block-size: 2.75rem;
+    padding: 0.35rem;
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .listing-index a:hover { background: var(--bg-2); text-decoration: underline; }
+  .directory-filters[hidden], .listing-index[hidden] { display: none; }
   .directory-results-line { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem 1rem; padding: 1rem 0; font: .78rem/1.5 var(--font-sans); color: var(--ink-3); }
   .directory-results-line p { margin: 0; }
   .directory-count { color: var(--ink); font-weight: 600; }
   .directory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
-  .directory-card { border: 1px solid var(--rule); padding: 1.5rem; display: flex; flex-direction: column; background: var(--surface); scroll-margin-top: 5rem; }
+  .directory-card { border: 1px solid var(--rule); padding: 1.5rem; display: flex; flex-direction: column; background: var(--surface); scroll-margin-top: 0.4rem; }
   .directory-card[hidden], .directory-empty[hidden] { display: none; }
   .directory-card-top { display: flex; justify-content: space-between; gap: .6rem; align-items: baseline; font: .7rem/1.4 var(--font-sans); }
   .directory-category { color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; }
@@ -138,6 +206,7 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
   .directory-sources ul { margin: .5rem 0; padding-left: 1.2rem; }
   .directory-checked { margin: .8rem 0 0; color: var(--ink-3); font: .66rem/1.5 var(--font-sans); }
   .directory-empty { padding: 1.5rem; border: 1px dashed var(--rule); }
+  @media print { .listing-index { display: none; } }
   @media (max-width: 900px) { .directory-filters { grid-template-columns: 1fr 1fr; } .directory-search { grid-column: 1 / -1; } .directory-reset { grid-column: 1 / -1; justify-self: start; } }
   @media (max-width: 640px) { .directory-grid { grid-template-columns: 1fr; } .directory-card { padding: 1.15rem; } }
 </style>

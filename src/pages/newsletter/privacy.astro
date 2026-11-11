@@ -12,14 +12,14 @@ import { url } from "../../lib/site";
     { label: "Privacy" },
   ]}
 >
-  <h2>Your choice</h2><p>
+  <h2 id="choice">Your choice</h2><p>
     We ask for an email address and explicit newsletter consent. A confirmation
     email verifies that you control the inbox. A request alone does not join the
     newsletter. Opening a confirmation page alone does not subscribe you;
     confirmation requires a deliberate action. Confirming does not automatically
     send a past issue.
   </p>
-  <h2>What the mail service keeps</h2><p>
+  <h2 id="stored-data">What the mail service keeps</h2><p>
     The mail service keeps your address,
     subscription state, consent version and request/confirmation times.
     Confirmation credentials expire and are stored as hashes. Limited request
@@ -37,13 +37,13 @@ import { url } from "../../lib/site";
     records are not published in the website, public API, search index or GitHub
     repository.
   </p>
-  <h2>What we use it for</h2><p>
+  <h2 id="use">What we use it for</h2><p>
     Your newsletter address is for The Charitology Letter and messages needed to
     manage that subscription. We do not sell it, publish it or add it to a donor
     or volunteer list. Subscribing does not authorize another program to contact
     you. We do not use tracking pixels or tracked links in the letter.
   </p>
-  <h2>Unsubscribe and requests</h2><p>
+  <h2 id="unsubscribe">Unsubscribe and requests</h2><p>
     Use the unsubscribe or preferences link in a letter to stop receiving it.
     Minimal suppression information may remain to prevent accidental
     resubscription. For an access, correction or deletion request, email <a
@@ -56,7 +56,7 @@ import { url } from "../../lib/site";
     Charitology signup must not silently reverse that preference. The
     confirmation flow will explain any additional step needed.
   </p>
-  <h2>Keep reading without subscribing</h2><p>
+  <h2 id="read-online">Keep reading without subscribing</h2><p>
     All editions remain available on the website and through the <a
       href={url("/newsletter.xml")}>newsletter RSS feed</a
     >. Read <a href={url("/newsletter/")}>The Charitology Letter</a>.

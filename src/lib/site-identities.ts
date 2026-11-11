@@ -163,6 +163,7 @@ export const sections: Section[] = [
     'impact-measurement-toolkit': 'dial', 'legacy-planner': 'document', 'model-bundles': 'packet',
     'one-click-split': 'split', 'portfolio-builder': 'layers', 'public-api': 'code', 'values-compass': 'compass',
     'browser-extension/compatibility': 'checks', 'browser-extension/privacy': 'lock',
+    'cost-effectiveness-model-kit/spreadsheet': 'table',
     'giving-dashboard/estimate': 'calculator',
   } },
   { path: '/record/', symbol: 'archive', tone: 'blue', entries: {
@@ -191,7 +192,7 @@ export const sections: Section[] = [
   } },
   { path: '/for-charities/', symbol: 'hands', tone: 'green', entries: {
     'start': 'steps', 'fundraising': 'megaphone', 'networks': 'network', 'collaborate': 'dialogue',
-    'website-pilots': 'window', 'os-plan': 'board', 'tools': 'tools', 'benefits': 'gift',
+    'website-pilots': 'window', 'os-plan': 'ruler', 'tools': 'tools', 'benefits': 'gift',
     'fundraising/email-appeals': 'megaphone', 'fundraising/paid-ads': 'target',
     'fundraising/fundraising-events': 'calendar', 'fundraising/recurring-giving': 'loop',
     'fundraising/peer-to-peer': 'network', 'fundraising/major-gifts': 'gift',

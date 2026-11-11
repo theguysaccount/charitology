@@ -1,5 +1,6 @@
 ---
 import Base from './Base.astro';
+import PageSections from '../components/PageSections.astro';
 import Crumbs from '../components/Crumbs.astro';
 import ReviewNote from '../components/ReviewNote.astro';
 import EducationSources from '../components/EducationSources.astro';
@@ -13,9 +14,9 @@ const pages=[['home','Start here','/learn/'],['teach','50-minute lesson','/learn
   <header class="page-head education-head"><div class="wrap"><Crumbs items={active==='home'?[{label:'Teach and learn'}]:[{label:'Teach and learn',href:'/learn/'},{label:pages.find(p=>p[0]===active)?.[1]??title}]} /><p class="eyebrow">{eyebrow} · teaching draft 0.1</p><h1>{title}</h1><p class="lede">{description}</p><div class="education-actions"><slot name="actions" /></div></div></header>
   <div class="wrap education-body">
     <nav class="education-nav" aria-label="Teaching resources">{pages.map(([id,label,path])=><a href={url(path)} aria-current={active===id?'page':undefined}>{label}</a>)}</nav>
-    <div class="education-content"><slot /></div>
+    <div class="education-content"><PageSections /><slot /></div>
     {sourceIds.length>0&&<EducationSources ids={sourceIds} />}
-    <aside class="education-invitation"><div><p class="eyebrow">Help shape the materials</p><h2>Bring a teaching question.</h2><p>Teachers, faculty and university student organizers can suggest an adaptation or discuss a small pilot. School conversations should go through adult educators. Start with a general description, without student records or personal case details.</p></div><div><a class="btn" href="mailto:hello@charitology.org?subject=Charitology%20teaching%20conversation">Discuss a teaching pilot</a><p><a href="https://github.com/theguysaccount/charitology/issues/new?template=teaching-feedback.yml">Suggest a public correction or adaptation →</a></p></div></aside>
+    <aside class="education-invitation"><div><p class="eyebrow">Help shape the materials</p><h2 id="teaching-question">Bring a teaching question.</h2><p>Teachers, faculty and university student organizers can suggest an adaptation or discuss a small pilot. School conversations should go through adult educators. Start with a general description, without student records or personal case details.</p></div><div><a class="btn" href="mailto:hello@charitology.org?subject=Charitology%20teaching%20conversation">Discuss a teaching pilot</a><p><a href="https://github.com/theguysaccount/charitology/issues/new?template=teaching-feedback.yml">Suggest a public correction or adaptation →</a></p></div></aside>
     <ReviewNote filePath={filePath} title={title} />
   </div>
 </Base>
