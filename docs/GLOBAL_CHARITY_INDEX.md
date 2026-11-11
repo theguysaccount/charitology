@@ -25,7 +25,7 @@ GlobalGiving already offers international registry lookup. Candid and ProPublica
 | Priority | Gap | Verification before release |
 | --- | --- | --- |
 | 1 | Verify additional stages of money movement. | Start with published awards and add payments or recipient spending only when the same funding can be linked by exact transaction or agreement references. Use the [360Giving API](https://www.360giving.org/api-docs/use/) or [IATI](https://iatistandard.org/en/iati-standard/203/codelists/transactiontype/) where coverage supports the join. Keep intermediaries, currencies, reporting dates and unmatched amounts visible. |
-| 2 | Grow U.S. financial coverage beyond the historical panels. | Qualify the [IRS financial extracts](https://www.irs.gov/statistics/soi-tax-stats-annual-extract-of-tax-exempt-organization-financial-data) against the dated identity snapshot. Retain the form type and tax period. Distinguish filing calendar year from fiscal year and processed extract amounts from copies of returns. Do not turn missing or unmatched filings into zeroes. |
+| 2 | Trace U.S. foundation grants to recipient organizations. | Check whether original [IRS electronically filed returns](https://www.irs.gov/charities-non-profits/form-990-series-downloads) supply a recipient identifier alongside a paid-grant line. Keep planned awards, aggregate book amounts and individual recipient records distinct. Leave uncertain recipient matches unresolved. |
 | 3 | Repeat funding and need comparisons in another place or cause. | Use the [Gap Map](https://charitology.org/record/gap-map/) where geography, periods and definitions align. State the independent denominator, its missingness and who is included. Keep output counts, unique people and evidence of effectiveness separate. |
 | 4 | Expand geography and language coverage and reduce the search payload. | Qualify primary sources and a coverage denominator before making completeness claims. Prioritize places missing from existing bulk datasets. Reuse exact-ID matching, corrections and browser-local search. |
 
@@ -48,11 +48,21 @@ node scripts/check-ew-charity-financials.mjs
 
 The [U.S. financial filings page](https://charitology.org/record/charity-financials/united-states/) uses the IRS's processed extracts for the 2023 and 2024 filing calendar years. It includes 516,109 periods for 277,047 EINs with subsection code 03 on full Form 990. The periods end in 2022–2024. The source supplies the tax-period end month rather than a start date or day. The projected fields are revenue, functional expenses, program service revenue, grants to U.S. governments and organizations, and grants to organizations and individuals outside the U.S. Source record numbers count CSV records after the header.
 
-The name lookup and the finances remain separate editions. A match means the exact EIN appears in the October 13, 2026 EO BMF identity snapshot. The data retain historical EINs without a registry match. The extract is selected and processed by the IRS, so compare the original filed return before attributing a difference to the organization. The edition does not cover short returns, private-foundation returns or electronic notices. The [financial manifest](../public/data/charity-financials/us/manifest.json) describes selection counts, file checksums and published shards. The browser loads only the two-digit EIN partition after an explicit search.
+The name lookup and the finances remain separate editions. A match means the exact EIN appears in the October 13, 2026 EO BMF identity snapshot. The data retain historical EINs without a registry match. The extract is selected and processed by the IRS, so compare the original filed return before attributing a difference to the organization. The [full-form manifest](../public/data/charity-financials/us/manifest.json) describes selection counts, file checksums and published shards. The browser loads only the two-digit EIN partition after an explicit search.
 
 Rebuild using the two IRS ZIPs and their XLSX documentation files, together with the pinned EO BMF snapshot from this source edition. The generated directory must be new.
 
 ```sh
 python3 scripts/build-us-charity-financials.py /path/to/captures public/data/irs-registry /path/to/new-rebuild
+node scripts/check-us-charity-financials.mjs
+```
+
+The separate [Form 990-EZ](https://charitology.com/record/charity-financials/united-states/990-ez/) and [Form 990-PF](https://charitology.com/record/charity-financials/united-states/990-pf/) editions project the same filing years, period range and subsection as the full form. The original short-form extracts use `3` in 2023 and `03` in 2024. The foundation extracts also include another subsection code outside this edition. See the [short-form manifest](../public/data/charity-financials/us-990-ez/manifest.json) and [foundation manifest](../public/data/charity-financials/us-990-pf/manifest.json) for counts, names and SHA-256 fingerprints. EINs may recur across editions. Form 990-N remains outside the financial data.
+
+The short form includes total revenue, total expenses, program service revenue and year-end assets. The foundation extract keeps total revenue and expenses per books, expenses for exempt purposes and the year-end fair market value of assets. It also keeps the combined book amount for contributions, gifts and grants paid and the separate amount approved for future payment. Neither figure names a recipient. Rebuild each edition from its exact ZIPs and the corresponding IRS XLSX documentation.
+
+```sh
+python3 scripts/build-us-charity-financials.py /path/to/captures public/data/irs-registry /path/to/new-ez-output 990-ez
+python3 scripts/build-us-charity-financials.py /path/to/captures public/data/irs-registry /path/to/new-pf-output 990-pf
 node scripts/check-us-charity-financials.mjs
 ```

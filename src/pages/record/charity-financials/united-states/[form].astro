@@ -1,0 +1,45 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import UsCharityFinancialSearch from '../../../../components/UsCharityFinancialSearch.astro';
+import { url } from '../../../../lib/site';
+import shortReturn from '../../../../../public/data/charity-financials/us-990-ez/manifest.json';
+import foundationReturn from '../../../../../public/data/charity-financials/us-990-pf/manifest.json';
+
+export function getStaticPaths() {
+  return [
+    { params: { form: '990-ez' }, props: {
+      manifest: shortReturn,
+      summary: 'Find revenue, expenses, program service revenue and year-end assets in selected IRS short-form charity returns.',
+      labels: ['Total revenue', 'Total expenses', 'Program service revenue', 'Year-end assets'],
+      limits: 'The selected fields describe overall finances. Use the original return for expense details beyond the published totals.',
+    } },
+    { params: { form: '990-pf' }, props: {
+      manifest: foundationReturn,
+      summary: 'Find private-foundation finances and see grants reported as paid alongside amounts approved for future payment.',
+      labels: ['Total revenue per books', 'Total expenses per books', 'Contributions, gifts and grants paid per books',
+        'Grants approved for future payment', 'Expenses for exempt purposes', 'Year-end asset fair market value'],
+      limits: 'The reported contributions, gifts and grants paid are a combined book amount. The future-payment field shows a separate commitment. The amounts cannot be added to calculate payments, and the extract cannot identify a recipient or confirm a transfer.',
+    } },
+  ];
+}
+
+const { manifest, summary, labels, limits } = Astro.props;
+const title = `United States charity Form ${manifest.form} finances`;
+const base = `/data/charity-financials/us-${Astro.params.form}/`;
+const count = (value: number) => value.toLocaleString('en-US');
+const sources = [{ title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: manifest.sourcePage }];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary={summary} crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Financial filings',href:'/record/charity-financials/'},{label:'United States',href:'/record/charity-financials/united-states/'},{label:`Form ${manifest.form}`}]} sources={sources}>
+  <p>This edition includes {count(manifest.counts.includedPeriods)} tax periods for {count(manifest.counts.organizations)} Employer Identification Numbers (EINs). {count(manifest.counts.multiPeriod)} EINs have more than one period. The filing calendar years are 2023 and 2024. The selected tax periods end in 2022–2024.</p>
+  <UsCharityFinancialSearch manifest={manifest} base={base} labels={labels} />
+  <h2 id="coverage">Coverage and original data</h2>
+  <p>The extract supplies the month a tax period ended. The IRS describes processing and transcription adjustments that can make the amounts differ from the original return. The edition includes subsection code 03, also written as 3 in the source. {count(manifest.counts.registryMatches)} included EINs matched the separate {manifest.registry.date} IRS identity snapshot. An unmatched EIN leaves current status unresolved.</p>
+  <ul>{Object.entries(manifest.sources).map(([year, source]) => <li>
+    <strong>Calendar-year {year} extract.</strong> {count(source.counts.selected)} selected records out of {count(source.counts.input)}.
+    {' '}{count(source.counts.otherSubsection)} had another subsection code. {count(source.counts.outsidePeriod)} remaining records were outside the selected periods.
+    {' '}<a href={source.archive}>Original ZIP</a> · <a href={source.documentation}>IRS field definitions</a>.
+  </li>)}</ul>
+  <p>Amounts stay in U.S. dollars. The extract can report zero and a missing amount stays unavailable. {limits}</p>
+  <p>Charitology selected and reformatted the public financial data from the Internal Revenue Service. <a href={url(base + 'manifest.json')} download={`irs-form-${Astro.params.form}-manifest.json`}>Download the source and coverage manifest</a>. EINs can begin with a zero, so import them as text.</p>
+</Entry>

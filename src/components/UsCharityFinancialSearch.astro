@@ -1,11 +1,27 @@
 ---
-import manifest from '../../public/data/charity-financials/us/manifest.json';
+import fullForm from '../../public/data/charity-financials/us/manifest.json';
 import { url } from '../lib/site';
 import '../styles/charity-financial-search.css';
+
+interface Props { manifest?: { form: string }; base?: string; labels?: string[] }
+const { manifest = fullForm, base = '/data/charity-financials/us/', labels = [
+  'Total revenue', 'Total functional expenses', 'Program service revenue',
+  'Grants to US governments and organizations', 'Grants to organizations and individuals outside the US',
+] } = Astro.props;
+const forms = [
+  { name: '990', label: 'Full Form 990', route: '/record/charity-financials/united-states/' },
+  { name: '990-EZ', label: 'Form 990-EZ short returns', route: '/record/charity-financials/united-states/990-ez/' },
+  { name: '990-PF', label: 'Form 990-PF private-foundation returns', route: '/record/charity-financials/united-states/990-pf/' },
+];
 ---
 
-<section class="charity-financial-search" data-us-finance data-base={url('/data/charity-financials/us/')} data-registry={url('/record/charity-index/')} data-manifest={JSON.stringify(manifest)} aria-labelledby="us-finance-heading">
-  <h2 id="us-finance-heading">Search Form 990 extracts</h2>
+<section class="charity-financial-search" data-us-finance data-base={url(base)} data-registry={url('/record/charity-index/')} data-manifest={JSON.stringify(manifest)} data-labels={JSON.stringify(labels)} aria-labelledby="us-finance-heading">
+  <h2 id="us-finance-heading">Search Form {manifest.form} extracts</h2>
+  <nav aria-label="United States financial editions" class="finance-actions">
+    {forms.map(item => item.name === manifest.form
+      ? <span aria-current="page">{item.label}</span>
+      : <a href={url(item.route)} data-filing-route={url(item.route)}>{item.label}</a>)}
+  </nav>
   <p id="us-finance-hint">Enter all nine digits of an Employer Identification Number (EIN). To find a number by name, use the <a href={url('/record/charity-index/')}>IRS identity lookup</a>. Search requests only the data shard for the first two digits. The complete EIN stays in the browser.</p>
   <form aria-describedby="us-finance-hint">
     <label for="us-finance-query">Employer Identification Number</label>
@@ -20,7 +36,7 @@ import '../styles/charity-financial-search.css';
     <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export result as JSON</button>
     <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export result as CSV</button>
   </div>
-  <ol class="finance-results" data-results aria-label="United States Form 990 financial results"></ol>
+  <ol class="finance-results" data-results aria-label={`United States Form ${manifest.form} financial results`}></ol>
   <noscript><p>For search without JavaScript, use the original IRS ZIP archives in the coverage section.</p></noscript>
 </section>
 
@@ -31,18 +47,17 @@ import '../styles/charity-financial-search.css';
   import { normalizeEin } from '../lib/irs-registry.mjs';
 
   type Reference = [number, number];
-  type Period = [string, string | null, string | null, string | null, string | null, string | null, Reference[]];
+  type Period = [string, ...(string | null)[], Reference[]];
   type Organization = [string, boolean, Period[]];
   type Manifest = { capturedOn: string; currency: string; form: string; registry: {date: string; manifestSha256: string};
     sources: Record<string, {archive: string; sha256: string; documentation: string; documentationSha256: string}>;
     shards: Record<string, VerifiedJsonAsset & { path: string; rows: number }>; periodFields: string[] };
 
-  const fields = ['Total revenue', 'Total functional expenses', 'Program service revenue',
-    'Grants to US governments and organizations', 'Grants to organizations and individuals outside the US'];
   const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-us-finance]')) {
     const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const fields: string[] = JSON.parse(root.dataset.labels!);
     const form = $<HTMLFormElement>('form', root);
     const input = $<HTMLInputElement>('input', form);
     const submit = $<HTMLButtonElement>('button[type=submit]', form);
@@ -51,12 +66,20 @@ import '../styles/charity-financial-search.css';
     const results = $('[data-results]', root);
     const json = $<HTMLButtonElement>('[data-json]', root);
     const csv = $<HTMLButtonElement>('[data-csv]', root);
+    const filingLinks = root.querySelectorAll<HTMLAnchorElement>('[data-filing-route]');
     let result: Organization | undefined;
     let cache: { prefix: string; pending: Promise<unknown> } | undefined;
     let sequence = 0;
     const prefilled = new URLSearchParams(location.hash.slice(1)).get('ein');
-    if (prefilled && /^(?:[0-9]{9}|[0-9]{2}-[0-9]{7})$/.test(prefilled)) input.value = prefilled;
+    if (prefilled && /^(?:[0-9]{9}|[0-9]{2}-[0-9]{7})$/.test(prefilled)) {
+      input.value = prefilled;
+      updateFilingLinks(normalizeEin(prefilled));
+    }
     input.disabled = submit.disabled = clear.disabled = false;
+
+    function updateFilingLinks(ein = '') {
+      for (const link of filingLinks) link.href = link.dataset.filingRoute! + (ein ? `#ein=${ein}` : '');
+    }
 
     function reset() {
       result = undefined;
@@ -64,8 +87,10 @@ import '../styles/charity-financial-search.css';
       json.disabled = csv.disabled = true;
     }
 
-    function filing([month, revenue, expenses, programRevenue, grantsUS, grantsOutsideUS, references]: Period) {
-      const amounts = [revenue, expenses, programRevenue, grantsUS, grantsOutsideUS];
+    function filing(period: Period) {
+      const [month] = period;
+      const amounts = period.slice(1, -1);
+      const references = period[period.length - 1] as Reference[];
       return h('section', { class: 'finance-period' }, h('h4', {}, `Tax period ended ${month}`),
         h('dl', { class: 'finance-amounts' }, fields.map((label, index) => {
           const amount = amounts[index];
@@ -94,9 +119,10 @@ import '../styles/charity-financial-search.css';
       const ticket = ++sequence;
       reset();
       submit.disabled = true;
-      status.textContent = 'Checking the public Form 990 extract.';
+      status.textContent = `Checking the public Form ${manifest.form} extract.`;
       try {
         const ein = normalizeEin(input.value);
+        updateFilingLinks(ein);
         const row = await lookup(ein);
         if (ticket !== sequence) return;
         if (!row) {
@@ -107,7 +133,7 @@ import '../styles/charity-financial-search.css';
         const [number, registryMatch, history] = row;
         const displayEin = number.slice(0, 2) + '-' + number.slice(2);
         status.textContent = `${history.length} ${history.length === 1 ? 'period' : 'periods'} for EIN ${displayEin}.`;
-        results.append(h('li', { class: 'card' }, h('h3', {}, `Form 990 · EIN ${displayEin}`),
+        results.append(h('li', { class: 'card' }, h('h3', {}, `Form ${manifest.form} · EIN ${displayEin}`),
           h('p', { class: 'note' }, registryMatch
             ? h('a', { href: root.dataset.registry! + '#q=' + number }, `Find this EIN in the ${manifest.registry.date} IRS identity snapshot`)
             : `No exact EIN match in the ${manifest.registry.date} IRS identity snapshot.`),
@@ -122,6 +148,7 @@ import '../styles/charity-financial-search.css';
       sequence++;
       reset();
       input.value = '';
+      updateFilingLinks();
       submit.disabled = false;
       status.textContent = 'Search cleared.';
       input.focus();
@@ -135,7 +162,7 @@ import '../styles/charity-financial-search.css';
       if (!result) return;
       const [ein, registryMatch, history] = result;
       const exported = { ein, registryMatch, capturedOn, currency: currencyCode, form: formType, registry, sources, periods: sourceRows(history) };
-      download('irs-form-990-financial-search.json', JSON.stringify(exported, null, 2) + '\n', 'application/json');
+      download(`irs-form-${formType.toLowerCase()}-financial-search.json`, JSON.stringify(exported, null, 2) + '\n', 'application/json');
     });
     csv.addEventListener('click', () => {
       if (!result) return;
@@ -145,7 +172,7 @@ import '../styles/charity-financial-search.css';
         form: formType, ...period, calendarYearFiled: year, sourceRecord, capturedOn, publisher: 'Internal Revenue Service',
         source: sources[year].archive, sourceSha256: sources[year].sha256,
       })));
-      download('irs-form-990-financial-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+      download(`irs-form-${formType.toLowerCase()}-financial-search.csv`, '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
     });
   }
 </script>
