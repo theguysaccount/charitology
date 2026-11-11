@@ -1,0 +1,199 @@
+---
+import manifest from '../../public/data/charity-registry/japan-npo/manifest.json';
+import { url } from '../lib/site';
+import '../styles/charity-financial-search.css';
+---
+
+<section class="charity-financial-search" data-japan-npo data-asset={url('/data/charity-registry/japan-npo/' + manifest.asset.path)} data-manifest={JSON.stringify(manifest)} aria-labelledby="jp-npo-heading">
+  <h2 id="jp-npo-heading">Search Japan’s NPO records</h2>
+  <p id="jp-npo-hint">Search by Japanese name, name reading, 13-digit corporate number or nine-digit portal ID. You can also browse a supervising authority. The search runs in your browser.</p>
+  <form aria-describedby="jp-npo-hint">
+    <label for="jp-npo-query">Name, reading or number</label>
+    <div class="finance-actions">
+      <input id="jp-npo-query" type="search" maxlength="180" autocomplete="off" disabled />
+    </div>
+    <div class="npo-filters">
+      <div>
+        <label for="jp-npo-authority">Supervising authority</label>
+        <select id="jp-npo-authority" disabled>
+          <option value="">All authorities</option>
+          {manifest.authorities.map(authority => <option lang="ja" value={authority}>{authority}</option>)}
+        </select>
+      </div>
+      <label class="npo-finance-filter"><input type="checkbox" data-finance-only disabled /> Show only entries with a financial summary</label>
+    </div>
+    <div class="finance-actions">
+      <button class="btn" type="submit" disabled>Search records</button>
+      <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+    </div>
+  </form>
+  <p role="status" data-status></p>
+  <div class="finance-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export displayed results as JSON</button>
+    <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export displayed results as CSV</button>
+  </div>
+  <ol class="finance-results" data-results aria-label="Japan NPO results"></ol>
+  <noscript><p>Use the original Cabinet Office links below to search without JavaScript.</p></noscript>
+</section>
+
+<style>
+  .npo-filters { display: flex; flex-wrap: wrap; align-items: end; gap: .7rem 1.4rem; margin-block: .9rem; }
+  .npo-filters select { padding: .45rem; max-width: 100%; font: inherit; }
+  .npo-filters .npo-finance-filter { display: flex; align-items: baseline; gap: .45rem; }
+  .npo-finance-filter input { flex: none; }
+</style>
+
+<script>
+  import { $, h } from '../lib/client/dom';
+  import { download, toCsv } from '../lib/client/files';
+  import { loadVerifiedJson } from '../lib/client/verified-json';
+
+  type Finance = [number, string, string | null, string | null, string | null, string | null];
+  type Npo = [string, string, string | null, string, string | null, string | null, boolean, number, Finance | null];
+  type Manifest = typeof import('../../public/data/charity-registry/japan-npo/manifest.json');
+  type Filters = { query: string; authority: string; finances: boolean };
+  type Result = { filters: Filters; total: number; entries: Npo[] };
+  const count = (value: number) => value.toLocaleString('en-US');
+  const yen = (value: string | null) => value === null ? 'Not supplied' : `JPY ${new Intl.NumberFormat('en-US').format(BigInt(value))}`;
+  const labels = ['Ordinary revenue', 'Ordinary expenses', 'Donations received', 'Grants and similar income received'];
+  const limit = 25;
+
+  function nameKey(value: string) {
+    return value.normalize('NFKC').toLowerCase().replace(/[ぁ-ゖ]/gu, char => String.fromCharCode(char.charCodeAt(0) + 0x60))
+      .replace(/[^\p{L}\p{N}\p{M}]+/gu, '');
+  }
+
+  function exportCell(value: string | null) {
+    return value && /^(?:\s*[=+\-@]|[\t\r\n])/.test(value) ? "'" + value : value;
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-japan-npo]')) {
+    const manifest = JSON.parse(root.dataset.manifest!) as Manifest;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#jp-npo-query', form);
+    const authority = $<HTMLSelectElement>('select', form);
+    const financeOnly = $<HTMLInputElement>('[data-finance-only]', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', form);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let snapshot: Promise<Npo[]> | undefined;
+    let result: Result | undefined;
+    let ticket = 0;
+
+    function load() {
+      snapshot ??= loadVerifiedJson(root.dataset.asset!, manifest.asset).then(value => {
+        if (!Array.isArray(value) || value.length !== manifest.asset.rows) throw new Error('The snapshot has an unexpected row count.');
+        return value as Npo[];
+      }).catch(error => {
+        snapshot = undefined;
+        throw error;
+      });
+      return snapshot;
+    }
+
+    function matching(rows: Npo[], filters: Filters) {
+      const number = filters.query.normalize('NFKC').replace(/[\s-]/g, '');
+      const byNumber = /^[0-9]{9}$|^[0-9]{13}$/.test(number);
+      const name = nameKey(filters.query);
+      if (filters.query && !name) throw new Error('Enter a name or an exact portal or corporate number.');
+      return rows.filter(([id, legalName, kana, supervisingAuthority, corporate, , , , finance]) => {
+        if (filters.authority && supervisingAuthority !== filters.authority) return false;
+        if (filters.finances && finance === null) return false;
+        if (byNumber) return id === number || corporate === number;
+        return !name || nameKey(legalName).includes(name) || (kana !== null && nameKey(kana).includes(name));
+      });
+    }
+
+    function clearResults(message = '') {
+      result = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+      status.textContent = message;
+      submit.disabled = false;
+      ticket++;
+    }
+
+    function showFinance([sourceRecord, fiscalYear, ...amounts]: Finance) {
+      return h('section', { class: 'finance-period' }, h('h4', {}, `Reported financial summary for ${fiscalYear}`),
+        h('dl', { class: 'finance-amounts' }, labels.map((label, index) =>
+          h('div', {}, h('dt', {}, label), h('dd', {}, yen(amounts[index]))))),
+        h('p', { class: 'note' }, h('a', { href: manifest.sources.organization.url }, 'Organization-entered ZIP'),
+          ` · CSV data record ${sourceRecord}`));
+    }
+
+    const officialRecord = (id: string) => manifest.portal + 'gyosei-print/' + id;
+
+    function showRow([id, name, kana, authorityName, number, date, dissolution, sourceRecord, finance]: Npo) {
+      return h('li', { class: 'card' }, h('h3', { lang: 'ja' }, name),
+        kana ? h('p', { lang: 'ja', class: 'note' }, kana) : null,
+        h('p', {}, 'Supervising authority ', h('span', { lang: 'ja' }, authorityName), ` · Portal ID ${id}`),
+        h('p', {}, number ? `Corporate number ${number}` : 'No valid corporate number in the snapshot',
+          date ? ` · Formation certified ${date}` : ''),
+        dissolution ? h('p', { class: 'note' }, 'The snapshot includes dissolution information. See the original administrative record.') : null,
+        h('p', { class: 'note' }, h('a', { href: officialRecord(id) }, 'Official NPO Portal administrative record'),
+          ' · ', h('a', { href: manifest.sources.administrative.url }, 'Administrative ZIP'), ` · CSV data record ${sourceRecord}`),
+        finance ? showFinance(finance) : h('p', { class: 'note' }, 'No dated financial summary linked in this edition.'));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      clearResults();
+      const filters = { query: input.value.trim(), authority: authority.value, finances: financeOnly.checked };
+      if (!filters.query && !filters.authority && !filters.finances) {
+        status.textContent = 'Enter a search or choose a filter.';
+        return;
+      }
+      const current = ticket;
+      status.textContent = 'Checking the public NPO snapshot.';
+      submit.disabled = true;
+      try {
+        const matches = matching(await load(), filters);
+        if (ticket !== current) return;
+        const entries = matches.slice(0, limit);
+        result = { filters, total: matches.length, entries };
+        status.textContent = matches.length
+          ? `${count(matches.length)} ${matches.length === 1 ? 'match' : 'matches'}. Showing ${entries.length}.`
+          : 'No matching portal record. Try a shorter name or a different filter.';
+        results.append(...entries.map(showRow));
+        json.disabled = csv.disabled = entries.length === 0;
+      } catch (error) {
+        if (ticket === current) status.textContent = error instanceof Error ? error.message : 'The search failed.';
+      } finally { if (ticket === current) submit.disabled = false; }
+    });
+
+    for (const field of [input, authority, financeOnly]) field.addEventListener('input', () => clearResults('Choose Search records to update the results.'));
+    clear.addEventListener('click', () => {
+      form.reset();
+      clearResults('Search cleared.');
+      input.focus();
+    });
+    input.disabled = authority.disabled = financeOnly.disabled = submit.disabled = clear.disabled = false;
+
+    const { format, asOf, capturedOn, publisher, licence, currency, sources } = manifest;
+    const metadata = { format, asOf, capturedOn, publisher, licence, currency };
+    const mapFields = (names: string[], values: unknown[]) => Object.fromEntries(names.map((name, i) => [name, values[i]]));
+    json.addEventListener('click', () => {
+      if (!result) return;
+      const entries = result.entries.map(row => ({
+        ...mapFields(manifest.fields, row),
+        reportedFinance: row[8] ? mapFields(manifest.financeFields, row[8]) : null,
+        officialRecord: officialRecord(row[0]),
+      }));
+      download('japan-npo-search.json', JSON.stringify({ ...metadata, sources, ...result, entries }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!result) return;
+      const rows = result.entries.map(([id, name, kana, authority, number, date, dissolution, record, finance]) => ({
+        ...mapFields(manifest.fields.slice(0, -1), [id, exportCell(name), exportCell(kana), authority, number, date, dissolution, record]),
+        ...mapFields(manifest.financeFields, finance ?? Array(manifest.financeFields.length).fill(null)),
+        ...metadata, officialRecord: officialRecord(id),
+        administrativeSource: sources.administrative.url, administrativeSha256: sources.administrative.sha256,
+        organizationSource: sources.organization.url, organizationSha256: sources.organization.sha256,
+      }));
+      download('japan-npo-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>

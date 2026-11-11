@@ -21,6 +21,8 @@ The Index brings together distinct sources. A dated IRS identity snapshot suppor
 
 [Trace reported U.S. grants by filer or recipient EIN](/record/funding-flows/us-schedule-i/). Each included row points to the original Form 990 filing and distinguishes cash from noncash assistance.
 
+[Search Japan’s NPO Portal records](/record/charity-index/japan/) by Japanese name, reading, portal ID or corporate number. View the original administrative records and the available financial summaries.
+
 [Compare Kenya’s reporting coverage and finances](/record/charity-financials/kenya/). Read three years of regulator-reported filing counts and receipts, plus a breakdown of where reporting organizations spent funds.
 
 [Search Canadian charity filings](/record/charity-financials/canada/) by name or full account number. Read reported revenue, expenditure, gifts and grants for periods ending in 2023 or 2024.
