@@ -698,6 +698,29 @@ try {
     },
   );
   await check(
+    "intervention section jumps keep the rendered links and filter while share hashes still update",
+    async () => {
+      const d = dom(await render("tools/compare-tool"));
+      location.hash = "#v=fictional-intervention-2,fictional-intervention-1&d=1";
+      await mountInline("src/components/tools/compare-tool.astro", d);
+      const stack = d.getElementById("ct-stack");
+      const block = stack.children[0];
+      const filter = d.getElementById("ct-diff-only");
+      for (const anchor of ["#ct-title", "#organizations"]) {
+        location.hash = anchor;
+        await window.fire("hashchange");
+        assert.equal(stack.children[0], block, "section navigation keeps the existing keyboard targets");
+        assert.equal(filter.checked, true);
+        assert.equal(d.getElementById("ct-pick-1").value, "fictional-intervention-2");
+      }
+      location.hash = "#v=fictional-intervention-1,fictional-intervention-2";
+      await window.fire("hashchange");
+      assert.notEqual(stack.children[0], block);
+      assert.equal(filter.checked, false);
+      assert.equal(d.getElementById("ct-pick-1").value, "fictional-intervention-1");
+    },
+  );
+  await check(
     "actual intervention copy feedback survives native currentTarget clearing after asynchronous dispatch",
     async () => {
       const d = dom(await render("tools/compare-tool")),
@@ -717,13 +740,16 @@ try {
       });
       try {
         await mountInline("src/components/tools/compare-tool.astro", d);
+        location.hash = "#ct-title";
         const button = d.getElementById("ct-share"),
           event = { currentTarget: button },
           pending = button.listeners.get("click")[0](event);
         event.currentTarget = null;
         resolveCopy();
         await pending;
-        assert.equal(copied, location.href);
+        const share = new URL(copied);
+        assert.equal(new URLSearchParams(share.hash.slice(1)).get("v"), "fictional-intervention-1,fictional-intervention-2");
+        assert.equal(location.hash, "#ct-title");
         assert.equal(button.textContent, "Link copied");
       } finally {
         if (descriptor)
