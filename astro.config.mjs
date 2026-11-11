@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig, passthroughImageService } from 'astro/config';
 import { unified } from '@astrojs/markdown-remark';
+import { headingSymbol } from './src/lib/heading-symbol.ts';
+import { sourceSymbol } from './src/lib/source-symbol.ts';
 
 // SITE_URL and BASE_PATH are set by the deploy workflow from GitHub Pages
 // (https://<owner>.github.io + /charitology, or the custom domain + /).
@@ -20,10 +22,15 @@ function rehypePublicMarkdown() {
     // own title. Preserve its heading order and anchors inside that section.
     const embeddedPlan = file.path?.endsWith('/docs/CHARITY_OS_PLAN.md');
 
+    /** @param {any} node @returns {string} */
+    const text = (node) => node.type === 'text' ? node.value : (node.children ?? []).map(text).join('');
     /** @param {any} node */
     const walk = (node) => {
       if (embeddedPlan && node.type === 'element' && /^h[1-5]$/.test(node.tagName)) {
         node.tagName = `h${Number(node.tagName[1]) + 1}`;
+      }
+      if (node.type === 'element' && node.tagName === 'h2') {
+        node.properties.dataSectionSymbol = headingSymbol(text(node));
       }
       if (node.type === 'element' && node.tagName === 'a') {
         const href = node.properties?.href;
@@ -31,6 +38,8 @@ function rehypePublicMarkdown() {
           if (prefix && href.startsWith('/') && !href.startsWith('//') && !href.startsWith(`${prefix}/`)) {
             node.properties.href = prefix + href;
           } else if (/^https?:\/\//.test(href)) {
+            const symbol = URL.canParse(href) ? sourceSymbol(href) : undefined;
+            if (symbol && symbol !== 'external') node.properties.dataSourceSymbol = symbol;
             node.properties.rel = ['noopener'];
             node.properties.className = [...(node.properties.className || []), 'ext'];
           }

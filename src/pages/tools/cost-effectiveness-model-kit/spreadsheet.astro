@@ -22,7 +22,7 @@ const engineLabel = verification.engine.split(' ').slice(0, 2).join(' ');
   <p><a class="btn" href={url(`${base}.xlsx`)} download>Download spreadsheet (.xlsx)</a></p>
   <p>One worksheet, {verification.artifact.bytes.toLocaleString('en-US')} bytes, version 1. It uses ordinary formulas, with editable input cells and no macros or external workbook connections.</p>
 
-  <h2>Define what the count means</h2>
+  <h2 id="define-the-count">Define what the count means</h2>
   <p>A budget and an activity count are two signals in the charity system. Writing their scope and assumptions makes them easier to inspect and revise from feedback. An output describes work completed; an outcome asks what changed for people or communities.</p>
   <ol>
     <li>Name one output and its counting rule. Keep the same inclusive period for every cost and count.</li>
@@ -32,7 +32,7 @@ const engineLabel = verification.engine.split(' ').slice(0, 2).join(' ');
   </ol>
   <p>The three cost rows cover staff, direct nonstaff and allocated shared cash costs. Explain your allocation and omissions. This is a cash-cost plan; unpriced volunteer time and donated resources are separate exclusions. It is not an accounting ledger.</p>
 
-  <h2>Follow the arithmetic</h2>
+  <h2 id="arithmetic">Follow the arithmetic</h2>
   <table>
     <thead><tr><th scope="col">Result</th><th scope="col">Calculation</th></tr></thead>
     <tbody>
@@ -44,7 +44,7 @@ const engineLabel = verification.engine.split(' ').slice(0, 2).join(' ');
   <p>The fictional example gives USD 100 per completed workshop, with conditional bounds of about USD 57.14–200. These bounds depend on the inputs covering the relevant costs and counts. They are not probabilities, percentiles or confidence intervals, and they do not establish whether a combination is plausible.</p>
   <p>A missing bound leaves that result unknown while a valid point estimate remains available. Zero cost with positive outputs gives 0.00. Zero outputs makes the point ratio unavailable. Positive possible cost with a zero lower output bound has no finite upper ratio; 0 cost divided by 0 outputs stays undefined.</p>
 
-  <h2>Inspect the source and checks</h2>
+  <h2 id="source-and-checks">Inspect the source and checks</h2>
   <p><a href={url(`${base}.formulas.json`)}>Read the exact cell, input and formula specification</a>. The workbook formulas are visible and unlocked. Text supplied through the authoring path stays literal; the template cannot prevent deliberate formula edits in your own spreadsheet app.</p>
   <p>The authored template and formulas are MIT-licensed. Future user-supplied data keep their own rights.</p>
   <p><a href={url(`${base}.verification.json`)}>Read the {verification.cases.length} native recalculation cases</a>. Each disposable input had its formula caches removed before actual headless {engineLabel} recalculated it. The cases cover changed costs/counts, unknown values, zeros, invalid inputs and literal formula-leading text. Native Excel, Google Sheets and spreadsheet-app UI behavior have not been checked.</p>

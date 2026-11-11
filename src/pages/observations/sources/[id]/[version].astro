@@ -1,4 +1,5 @@
 ---
+import type { SymbolName } from "../../../../lib/site-identities";
 import Entry from "../../../../layouts/Entry.astro";
 import ObservationRefs from "../../../../components/ObservationRefs.astro";
 import { loadObservations, observationEditionHref } from "../../../../lib/observations";
@@ -16,19 +17,25 @@ const raw=blob ? new TextDecoder("utf-8",{fatal:true}).decode(file(blob.path)) :
 const refs=p.observations.flatMap(o=>[o.reported.valueRef,...o.sourceRefs]).filter(r=>r.source.id===s.id&&r.source.version===s.version);
 const planCsv=s.payload.kind==='public-csv';
 const jsonExcerpt=s.payload.kind==='external-document'&&s.payload.mediaType==='application/json';
+const sections: {slug: string; text: string; symbol: SymbolName}[] = [
+  {slug:"rights", text:"Rights and attribution", symbol:"permit"},
+  ...(blob ? [{slug:"retained-file", text:"Retained source file", symbol:"packet" as const}] : []),
+  {slug:"locations", text:"Observation locations", symbol:"pin"},
+  {slug:"record-identity", text:"Record and file checksums", symbol:"code"},
+];
 const rawFilename=planCsv ? new URL(s.url).pathname.split('/').at(-1) : undefined;
 ---
-<Entry title={s.title} eyebrow={`Retained source · version ${s.version} · draft`} summary="Inspect retrieval, exact locations, source scope and source-specific reuse terms." crumbs={[{label:"Record",href:"/record/"},{label:"Observations",href:"/observations/"},{label:"Source detail"}]}>
+<Entry sections={sections} title={s.title} eyebrow={`Retained source · version ${s.version} · draft`} summary="Inspect retrieval, exact locations, source scope and source-specific reuse terms." crumbs={[{label:"Record",href:"/record/"},{label:"Observations",href:"/observations/"},{label:"Source detail"}]}>
   <p><a href={s.url} rel="noopener">Open the publisher's source</a>. Publisher: {s.publisher}. {planCsv||jsonExcerpt ? 'Recorded client response completion: ' : 'Retrieved '}<time datetime={s.retrievedAt}>{s.retrievedAt}</time>. The external page can change; the identity below records the retrieved bytes.</p>
   <dl><dt>Source update day</dt><dd>{s.sourceUpdatedDay??"Unknown / not supplied"}</dd><dt>Report day</dt><dd>{s.reportDay??"Unknown / not applicable"}</dd><dt>Publication day or instant</dt><dd>{s.publishedAt ? s.publishedAt.kind==="day"?s.publishedAt.day:s.publishedAt.instant : "Unknown / not established by the retrieval or audit report day"}</dd></dl>
-  <h2>Rights and attribution</h2><p>{s.rights.attribution}</p><p>{s.rights.originalProducerCredit}</p><p>Returned license field: {s.rights.returnedLicense??"null — no literal license field returned"}.</p>
+  <h2 id="rights" data-section-symbol="permit">Rights and attribution</h2><p>{s.rights.attribution}</p><p>{s.rights.originalProducerCredit}</p><p>Returned license field: {s.rights.returnedLicense??"null — no literal license field returned"}.</p>
   {s.rights.publicReuse.kind==="linked-document-only" ? <p>{s.rights.publicReuse.note} Original document bytes are not redistributed here.</p> : <><p><a href={s.rights.publicReuse.termsUrl}>{s.rights.publicReuse.label}</a>{s.rights.publicReuse.kind==="publisher-default-inference"&&" · author inference under publisher-default terms; independent human rights review pending"}.</p><ObservationRefs projection={p} refs={s.rights.publicReuse.evidence}/></>}
   <ul>{[...s.rights.limitations,...s.limitations].map(l=><li>{l}</li>)}</ul>
   {s.payload.kind==="external-document"&&(jsonExcerpt
     ? <p>This page retains only selected licensing and resource fields as a bounded plain-text excerpt. The complete original JSON wrapper remains private. Its original-body byte count and SHA-256 below identify that private input; the public excerpt has a separate file hash. A checksum alone does not prove an external retrieval or its clock.</p>
     : <p>This page retains bounded source evidence or numerical transcription, not the original PDF/HTML. A source's audit opinion does not independently audit Charitology's transcription, comparison or social-impact claims.</p>)}
-  {blob&&<><h2>{jsonExcerpt?'Selected licensing metadata excerpt':planCsv?'Retained original CSV':s.payload.kind==="external-document"?"Public evidence/transcription packet":"Retained raw source text"}</h2><p><a href={url(`/observations/files/${blob.path}`)} download={rawFilename}>Download exact retained {planCsv?'CSV':blob.mediaType==="application/json"?"JSON":"text"}</a> · {blob.bytes.toLocaleString("en-US")} bytes.</p><details><summary>Read inert retained text</summary><pre class="ob-source-text">{raw}</pre></details></>}
-  <h2>Observation locations using this source</h2>{refs.length ? <ObservationRefs projection={p} refs={refs}/> : <p>This source supplies identity, definitions, metadata, rights or other source support in the edition closure.</p>}
+  {blob&&<><h2 id="retained-file" data-section-symbol="packet">{jsonExcerpt?'Selected licensing metadata excerpt':planCsv?'Retained original CSV':s.payload.kind==="external-document"?"Public evidence/transcription packet":"Retained raw source text"}</h2><p><a href={url(`/observations/files/${blob.path}`)} download={rawFilename}>Download exact retained {planCsv?'CSV':blob.mediaType==="application/json"?"JSON":"text"}</a> · {blob.bytes.toLocaleString("en-US")} bytes.</p><details><summary>Read inert retained text</summary><pre class="ob-source-text">{raw}</pre></details></>}
+  <h2 id="locations" data-section-symbol="pin">Observation locations using this source</h2>{refs.length ? <ObservationRefs projection={p} refs={refs}/> : <p>This source supplies identity, definitions, metadata, rights or other source support in the edition closure.</p>}
   <p><a href={url(observationEditionHref(edition.id))}>Read a fixed edition containing this source version</a>.</p>
-  <details><summary>Exact byte and record identities</summary><p class="ob-hash">Original retrieved bytes: {s.rawBytes} · SHA-256 {s.rawSha256}</p><p class="ob-hash">Source record: {s.id} v{s.version} · {s.hash}</p>{blob&&<p class="ob-hash">Public file SHA-256 {blob.sha256}</p>}</details>
+  <details id="record-identity"><summary>Exact byte and record identities</summary><p class="ob-hash">Original retrieved bytes: {s.rawBytes} · SHA-256 {s.rawSha256}</p><p class="ob-hash">Source record: {s.id} v{s.version} · {s.hash}</p>{blob&&<p class="ob-hash">Public file SHA-256 {blob.sha256}</p>}</details>
 </Entry>

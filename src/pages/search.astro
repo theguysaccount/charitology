@@ -18,7 +18,8 @@ import { url } from '../lib/site';
   </header>
   <section class="wrap section-tight">
     <p class="meta" id="search-status" aria-live="polite"></p>
-    <ol class="results" id="results"></ol>
+    <ol class="results" id="results" role="list"></ol>
+    <noscript><p>Search requires JavaScript. Browse <a href={url('/record/')}>the Record</a>, <a href={url('/programs/')}>Programs</a> or <a href={url('/tools/')}>Tools</a>.</p></noscript>
     <p class="note">
       Looking for something the field hasn’t covered? <a href={url('/contribute/')}>Add it</a>, or ask the <a
         href={url('/tools/ai-charitologist/')}>AI Charitologist</a

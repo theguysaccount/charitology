@@ -63,7 +63,8 @@ function resultIdentity(url: string) {
   const [prefix, section, href = prefix] = SECTIONS.find(([prefix]) => path.startsWith(prefix))
     ?? ['/', 'Charitology'];
   const country = path.match(/^\/record\/countries\/([a-z]{3})\//);
-  return { section, sectionHref: BASE + href, code: country?.[1].toUpperCase() };
+  const agreement = path.match(/^\/record\/funding-flows\/brazil-project-execution\/(\d+)\//);
+  return { section, sectionHref: BASE + href, code: country?.[1].toUpperCase() ?? agreement?.[1] };
 }
 
 /** Returns null when the search index isn't available (for example in dev mode). */
