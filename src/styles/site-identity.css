@@ -95,7 +95,7 @@
   margin-block-end: 0.23rem;
 }
 
-:where(.prose, main) ul:not([class]) > li:not(:has(> .identity-link:first-child))::marker {
+:where(.prose, main) ul:not([class], [role='list']) > li:not(:has(> .identity-link:first-child))::marker {
   content: "◇  ";
 }
 
