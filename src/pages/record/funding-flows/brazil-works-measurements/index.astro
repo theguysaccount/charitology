@@ -1,0 +1,106 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import BrazilWorksMeasurements from '../../../../components/BrazilWorksMeasurements.astro';
+import { url } from '../../../../lib/site';
+import { count, infrastructureRoute, projectPath } from '../../../../lib/brazil-project-execution';
+import { measurementStatusLabels, worksArchives, worksEdition, worksRoute } from '../../../../lib/brazil-works-measurements';
+
+const title = 'Works measurements for Brazilian civil society agreements';
+const { coverage, monitoring, items, sources } = worksEdition;
+const sourceLinks = [
+  ...Object.entries(sources.archives).map(([key, source]) => ({
+    title: worksArchives[key as keyof typeof worksArchives], url: source.url, publisher: 'Transferegov.br',
+  })),
+  { title: 'Public data model and table definitions', url: sources.dataModel.url, publisher: 'Transferegov.br' },
+  { title: 'Guide to works monitoring and grantor review', url: 'https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras/obras/8-tutorial_acompanhamento-de-obra-concedente.pdf', publisher: 'Transferegov.br' },
+  { title: 'Transferegov example with cumulative values in reais', url: sources.currencyExample, publisher: 'Municipality of Campina Grande' },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Trace reported measurement periods and accumulated work-item figures to the original proposal and source rows."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazil works measurements'}]}
+  sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-works-measurements/index.astro">
+  <p>The <a class="identity-link" href={url(infrastructureRoute)}>Brazil infrastructure edition</a> links {count(coverage.projectProposals)} proposals to agreements and registered projects. Transferegov’s works monitoring archive supplies {count(coverage.monitoringRows)} rows for {count(coverage.proposalsWithMonitoringRows)} of those proposals. {count(coverage.identifiedMeasurements)} rows identify a dated measurement, covering {count(coverage.proposalsWithMeasurements)} proposals. The remaining rows leave the measurement fields blank.</p>
+  <p>Each monitoring record preserves its period and archive status. An accepted measurement is a report status. Final acceptance of the site and actual payments require separate records. The amounts below show accumulated work in Brazilian reais. Their archive does not give a measurement period for each amount.</p>
+
+  <div data-works-filter>
+    <h2 id="monitoring">Find monitoring records</h2>
+    <form hidden role="search" aria-label="Filter works monitoring and item records">
+      <label for="works-query">Agreement, proposal, project, municipality or organization</label>
+      <input id="works-query" type="search" maxlength="160" autocomplete="off" />
+      <label for="works-status">Status of monitoring records</label>
+      <select id="works-status">
+        <option value="">All statuses</option>
+        {Object.keys(coverage.statusCounts).map(status => <option value={status}>{measurementStatusLabels[status]}</option>)}
+      </select>
+      <button class="btn btn-ghost btn-small" type="reset">Clear filters</button>
+    </form>
+    <p role="status" data-report-count>{count(monitoring.length)} monitoring rows</p>
+    <BrazilWorksMeasurements variant="monitoring" rows={monitoring} directory />
+    <p hidden data-no-reports>No monitoring rows match these filters.</p>
+
+    <h2 id="amounts">Accumulated work-item amounts</h2>
+    <p>{count(coverage.itemRows)} work-item rows connect through the original monitoring contract identifier to {count(coverage.proposalsWithItemAmounts)} of the pinned proposals. Keep the reported total and the figures for the funding institution, agreement holder and company separate. The same value may appear in several fields. The search box filters both tables. Measurement status filters the monitoring table only.</p>
+    <p role="status" data-item-count>{count(items.length)} work-item rows</p>
+    <BrazilWorksMeasurements variant="items" rows={items} directory />
+    <p hidden data-no-items>No work-item rows match this search.</p>
+  </div>
+
+  <h2 id="coverage">Coverage and record boundaries</h2>
+  <p>The monitoring archive names the original proposal. Both works files share the monitoring contract ID, which is qualified against the complete monitoring archive. The procurement and works systems use different identifiers. The recorded work-item ID stays in its source system. A named work item, a location or a procurement contract requires its own link.</p>
+  <p>The <a href={url(projectPath('895978') + '#works-measurements')}>São José dos Campos project</a> and the <a href={url(projectPath('953157') + '#works-measurements')}>Joaçaba project</a> each have two measurements labeled accepted. São José dos Campos has one accumulated item row in this capture. Joaçaba has no matching accumulated item row. The project pages keep these records beside the separate contract, bank-order and census sections.</p>
+  <p>The archive gives a grantor figure in {count(coverage.itemFieldsPresent.grantor)} item rows, a recipient figure in {count(coverage.itemFieldsPresent.recipient)} rows and a company figure in {count(coverage.itemFieldsPresent.company)} rows. Blank fields remain unknown. The two CSVs keep source rows separate from all other funding stages.</p>
+
+  <h2 id="downloads">Download records and sources</h2>
+  <ul>
+    <li><a href={url(worksRoute + 'data.json')} download>Full works evidence and source receipts (JSON)</a></li>
+    <li><a href={url(worksRoute + 'monitoring.csv')} download>Measurement periods and statuses (CSV)</a></li>
+    <li><a href={url(worksRoute + 'work-items.csv')} download>Accumulated amounts by work-item row (CSV)</a></li>
+  </ul>
+  <p>Amounts in the exports are integer BRL cents. Source coordinates count data rows after the archive header. The capture date was <time datetime={worksEdition.capturedOn}>{worksEdition.capturedOn}</time>. Source data are available under the <a href={sources.license}>Open Database License</a>.</p>
+</Entry>
+
+<style>
+  [data-works-filter] form:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem .8rem; }
+  [data-works-filter] :is(input, select, button) { min-height: 2.75rem; min-width: 0; }
+  [data-works-filter] form button { justify-self: start; }
+  @media (max-width: 36rem) { [data-works-filter] form:not([hidden]) { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+
+  const root = document.querySelector<HTMLElement>('[data-works-filter]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('#works-query')!;
+    const status = form.querySelector<HTMLSelectElement>('#works-status')!;
+    const reports = [...root.querySelectorAll<HTMLTableRowElement>('[data-monitoring-row]')];
+    const items = [...root.querySelectorAll<HTMLTableRowElement>('[data-measurement-item]')];
+    const reportCount = root.querySelector<HTMLElement>('[data-report-count]')!;
+    const itemCount = root.querySelector<HTMLElement>('[data-item-count]')!;
+    const emptyReports = root.querySelector<HTMLElement>('[data-no-reports]')!;
+    const emptyItems = root.querySelector<HTMLElement>('[data-no-items]')!;
+
+    function filter() {
+      const terms = normalizeBrazilName(query.value).split(' ').filter(Boolean);
+      const matches = (row: HTMLTableRowElement) => terms.every(term => row.dataset.search?.includes(term));
+      for (const row of reports) row.hidden = !matches(row) || Boolean(status.value && status.value !== row.dataset.status);
+      for (const row of items) row.hidden = !matches(row);
+      const reportTotal = reports.filter(row => !row.hidden).length;
+      const itemTotal = items.filter(row => !row.hidden).length;
+      reportCount.textContent = `${reportTotal} of ${reports.length} monitoring rows`;
+      itemCount.textContent = `${itemTotal} of ${items.length} work-item rows`;
+      emptyReports.hidden = reportTotal > 0;
+      emptyItems.hidden = itemTotal > 0;
+    }
+    form.addEventListener('input', filter);
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    form.addEventListener('reset', () => requestAnimationFrame(() => { filter(); query.focus(); }));
+    const agreement = new URLSearchParams(location.search).get('agreement');
+    if (agreement && /^[0-9]{1,20}$/.test(agreement)) query.value = agreement;
+    form.hidden = false;
+    filter();
+  }
+</script>

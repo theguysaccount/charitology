@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../../layouts/Entry.astro';
 import { contractRoute } from '../../../../lib/brazil-project-contracts';
+import { worksRoute } from '../../../../lib/brazil-works-measurements';
 import { url } from '../../../../lib/site';
 import { count, data, fiscalGuide, geographyLabels, infrastructureRoute, municipalities, percent, projectPath, statusLabels, workPlanRoute, worksGuide } from '../../../../lib/brazil-project-execution';
 
@@ -32,6 +33,8 @@ const downloads = [
   <p>Compare the <a href={url(projectPath('953157'))}>outpatient clinic renovation in Joaçaba</a> with the <a href={url(projectPath('895978'))}>specialized health unit renovation in São José dos Campos</a>. Both have a physical record at 100%. The project registry labels the first in progress and the second completed. Each page also shows the independent 2022 Census estimate for its municipality.</p>
 
   <p><a class="identity-link" href={url(contractRoute)}>Trace reported contract records for these projects</a>. The contract lookup preserves signing dates, global amounts and ambiguous portal references.</p>
+
+  <p><a class="identity-link" href={url(worksRoute)}>Read works measurements linked to the original proposals</a>. Find the recorded dates and status and the separate accumulated work-item amounts.</p>
 
   <h2 id="lookup">Find a project</h2>
   <div data-infrastructure-filter>

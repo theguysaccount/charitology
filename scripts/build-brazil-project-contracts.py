@@ -2,24 +2,19 @@
 """Reproduce the exact public works contract comparison for the November 11 edition."""
 
 from collections import Counter, defaultdict
-from contextlib import contextmanager
-from csv import DictReader, field_size_limit
 from datetime import date, datetime
 from decimal import Decimal
 from hashlib import sha256
-from io import TextIOWrapper
 from pathlib import Path
-from tempfile import TemporaryFile
-from urllib.request import Request, urlopen
-from zipfile import ZipFile
 import argparse
 import json
 import re
 
+from brazil_transferegov_archives import ARCHIVE_BASE, verified_rows
+
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / 'src/data/funding-flows'
 PROJECT_HASH = 'a6a9ebd38da473a623bbcab293ff0047bf61ab19eace9a26659b64b3bc05b0c7'
-ARCHIVE_BASE = 'https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov'
 ARCHIVES = {
     'siconv_contrato_cipi': (4_275_091, '6120b226e3185118dfdf703641493c2057a34786320a1689b97b83aac77f733c', 39_099),
     'siconv_licitacao': (27_194_887, 'dc71781983b8b9175dbb76bfc967e279a01bbc69c09b4ec2495af3d0613b9480', 991_315),
@@ -29,41 +24,6 @@ PORTAL_LINK = re.compile(
     r'https://instrumentoscontratuais\.transferegov\.sistema\.gov\.br/contratos/contratos/'
     r'instrumentos-contratuais/detalhar/detalhar/([0-9]{1,20})&Usr=guest&Pwd=guest'
 )
-field_size_limit(1_000_000)
-
-
-@contextmanager
-def verified_rows(name, directory):
-    size, digest, count = ARCHIVES[name]
-    url = f'{ARCHIVE_BASE}/{name}.zip'
-    checksum = sha256()
-    downloaded = 0
-    response = ((directory / (name + '.zip')).open('rb') if directory
-                else urlopen(Request(url, headers={'Accept-Encoding': 'identity'}), timeout=45))
-    with response as source, TemporaryFile() as spool:
-        while chunk := source.read(1_048_576):
-            downloaded += len(chunk)
-            if downloaded > size:
-                raise ValueError(f'{name}: archive exceeds the pinned size.')
-            checksum.update(chunk)
-            spool.write(chunk)
-        if downloaded != size or checksum.hexdigest() != digest:
-            raise ValueError(f'{name}: unexpected archive fingerprint.')
-        with ZipFile(spool) as archive:
-            member = name + '.csv'
-            if archive.namelist() != [member]:
-                raise ValueError(f'{name}: unexpected archive members.')
-
-            def rows():
-                with TextIOWrapper(archive.open(member), encoding='utf-8-sig',
-                                   errors='surrogateescape', newline='') as stream:
-                    coordinate = 0
-                    for coordinate, record in enumerate(DictReader(stream, delimiter=';'), 1):
-                        yield coordinate, record
-                    if coordinate != count:
-                        raise ValueError(f'{name}: unexpected record count.')
-
-            yield rows
 
 
 def institutional(value):
@@ -109,7 +69,7 @@ def matched_projects(projects, directory):
     by_project = {row['project']: row['agreement'] for row in projects}
     groups = defaultdict(list)
     references = defaultdict(set)
-    with verified_rows('siconv_contrato_cipi', directory) as rows:
+    with verified_rows('siconv_contrato_cipi', directory, ARCHIVES['siconv_contrato_cipi']) as rows:
         for coordinate, row in rows():
             project = row['ID_PROJETO_INVESTIMENTO']
             agreement = by_project.get(project)
@@ -134,7 +94,7 @@ def matched_projects(projects, directory):
 def find_candidates(groups, directory):
     signatures = {key for _, _, key in groups}
     contracts = defaultdict(list)
-    with verified_rows('siconv_contrato', directory) as rows:
+    with verified_rows('siconv_contrato', directory, ARCHIVES['siconv_contrato']) as rows:
         for coordinate, row in rows():
             key = signature(row)
             if key not in signatures:
@@ -156,7 +116,7 @@ def find_candidates(groups, directory):
 
     tender_ids = {procurement_id for procurement_id, _ in keys}
     tenders = defaultdict(list)
-    with verified_rows('siconv_licitacao', directory) as rows:
+    with verified_rows('siconv_licitacao', directory, ARCHIVES['siconv_licitacao']) as rows:
         for coordinate, row in rows():
             procurement_id = row['ID_LICITACAO']
             if procurement_id in tender_ids:

@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../../layouts/Entry.astro';
 import BrazilProjectContractsTable from '../../../../components/BrazilProjectContractsTable.astro';
+import { worksRoute } from '../../../../lib/brazil-works-measurements';
 import { url } from '../../../../lib/site';
 import { count, infrastructureRoute, projectPath } from '../../../../lib/brazil-project-execution';
 import { archiveTitles, contractEdition, contractRoute } from '../../../../lib/brazil-project-contracts';
@@ -23,6 +24,8 @@ const sourceLinks = [
   sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-project-contracts/index.astro">
   <p>The <a class="identity-link" href={url(infrastructureRoute)}>infrastructure edition</a> links {count(coverage.projectEditionAgreements)} civil society agreements to public works projects. {count(coverage.agreementsWithContractRecords)} have a linked contract in the CIPI infrastructure archive. Those agreements supply {count(coverage.cipiSourceRows)} CIPI source rows and {count(coverage.pairedContractReferences)} distinct matches to the federal transfer system’s SICONV contract and procurement records.</p>
   <p>The table reports the global amount written in each contract record, in BRL. A contract, a bank order, a payment and a signed acceptance each have their own source. The CIPI accumulated-amount field is blank in this edition. The table gives individual amounts and source rows.</p>
+
+  <p><a class="identity-link" href={url(worksRoute)}>Read the separate works monitoring edition</a>. It uses proposal and monitoring identifiers for dated measurements and accumulated work-item amounts.</p>
 
   <h2 id="lookup">Find a contract record</h2>
   <div data-contract-filter>
