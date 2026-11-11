@@ -82,4 +82,5 @@ for (const audit of audits) assert.ok(page.includes(audit.scheduleSource.url + '
 for (const path of ['charity-index/', 'charity-index/coverage/', 'charity-financials/united-states/']) {
   assert.ok(read('../dist/record/' + path + 'index.html').includes(`href="${base + route}"`), path);
 }
+assert.ok(read('../dist/record/charity-financials/united-states/index.html').includes(`id="ein=${organization.ein}"`));
 console.log('Iberia: four grant identities, 15 agency award rows, three exact audit totals, distinct stage exports and IRS navigation passed.');
