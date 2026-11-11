@@ -74,9 +74,11 @@ test("A preview token is bearer/config/facts-bound and tampering fails before SQ
       throw Error("must not access");
     },
   };
+  const [body, signature] = preview.previewToken.split(".");
+  const changedSignature = (signature[0] === "A" ? "B" : "A") + signature.slice(1);
   for (const token of [
     preview.previewToken + "x",
-    preview.previewToken.slice(0, -2) + "AA",
+    body + "." + changedSignature,
     "a".repeat(2049),
   ])
     await assert.rejects(
