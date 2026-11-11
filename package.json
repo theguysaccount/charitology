@@ -23,7 +23,7 @@
     "check:completion": "node scripts/check-completion.mjs && node scripts/check-research-programs.mjs && node scripts/check-learning-programs.mjs && node scripts/check-partner-programs.mjs",
     "data:countries": "node scripts/update-country-data.mjs",
     "audio:podcast": "node scripts/make-podcast.mjs",
-    "check:references": "node scripts/check-reference-libraries.mjs && node scripts/build-au-charity-financials.mjs --check && node scripts/check-ew-charity-financials.mjs && node scripts/check-us-charity-financials.mjs && node scripts/check-brazil-transferegov.mjs",
+    "check:references": "node scripts/check-reference-libraries.mjs && node scripts/build-au-charity-financials.mjs --check && node scripts/check-ew-charity-financials.mjs && node scripts/check-us-charity-financials.mjs && node scripts/check-us-schedule-i.mjs && node scripts/check-brazil-transferegov.mjs",
     "check:types": "node scripts/check-publication-types.mjs && node scripts/check-reader-notebook.mjs",
     "check:study-register": "node scripts/check-study-register.mjs && node scripts/check-study-register-store.mjs && node scripts/check-study-register-ui.mjs && node scripts/check-study-register-catalog.mjs && node scripts/check-study-register-types.mjs",
     "check:artifact-results": "node scripts/check-artifact-results.mjs && node scripts/check-artifact-results-store.mjs && node scripts/check-artifact-results-ui.mjs && node scripts/check-artifact-results-adapters.mjs && node scripts/check-artifact-results-types.mjs",

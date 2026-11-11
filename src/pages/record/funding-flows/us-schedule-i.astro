@@ -1,0 +1,150 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/funding-flows/us-schedule-i/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Grants reported on U.S. Form 990 Schedule I';
+const count = (value: number) => value.toLocaleString('en-US');
+const base = '/data/funding-flows/us-schedule-i/';
+const instructions = 'https://www.irs.gov/instructions/i990si';
+const sources = [
+  { title: 'Form 990 electronic filing archive', publisher: manifest.source.publisher, url: 'https://www.irs.gov/charities-non-profits/form-990-series-downloads' },
+  { title: 'Schedule I instructions', publisher: manifest.source.publisher, url: instructions },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Follow cash grants and noncash assistance reported by U.S. organizations, with original filing coordinates and exact recipient EINs." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Schedule I grants'}]} sources={sources}>
+  <p>This edition links {count(manifest.counts.includedRows)} reported grant rows from {count(manifest.counts.includedFilings)} original Form 990 filings to dated IRS identities for the filer and the named recipient. It covers one IRS archive labeled January 2024 and selected tax periods ending in 2022 or 2023.</p>
+  <section class="charity-financial-search" data-us-grants data-manifest={JSON.stringify(manifest)} data-file={url(base + manifest.asset.path)} data-finances={url('/record/charity-financials/united-states/')} aria-labelledby="us-grants-heading">
+    <h2 id="us-grants-heading">Find grants by EIN</h2>
+    <p id="us-grants-hint">Enter an Employer Identification Number (EIN) to find records where it appears as the filer or recipient. The lookup stays in this browser. <a href={url('/record/charity-index/')}>Find an EIN by name</a>.</p>
+    <form aria-describedby="us-grants-hint">
+      <label for="us-grants-query">Employer Identification Number</label>
+      <div class="finance-actions">
+        <input id="us-grants-query" name="q" type="search" maxlength="10" autocomplete="off" disabled />
+        <button class="btn" type="submit" disabled>Search grants</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you’re ready to load the public records.</p>
+    <div class="finance-actions">
+      <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export all matches as JSON</button>
+      <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export all matches as CSV</button>
+    </div>
+    <ol class="finance-results" aria-label="United States Schedule I grants" data-results></ol>
+    <noscript><p>For the original source without JavaScript, use the IRS archive below.</p></noscript>
+  </section>
+  <h2 id="coverage">Coverage and original records</h2>
+  <p><a href={instructions}>Schedule I Part II</a> asks for domestic organizations or governments that received more than $5,000 from the filer during the tax year. Each source row reports a filer-recipient amount for a period. The noncash value uses the filer’s reported valuation. The source gives no dates for individual payments and the recipient’s own spending requires other evidence.</p>
+  <p>Both EINs must match the dated IRS identity snapshot. The edition leaves out unresolved and self-recipient rows, repeated recipient lines within one return, and otherwise eligible rows from competing filings in this archive. A filing outside this archive may change the picture. The edition never adds the cash and noncash figures into one total.</p>
+  <p>Of {count(manifest.counts.partIIOrganizationRows)} source rows, {count(manifest.counts.includedRows)} are included. The source manifest gives the count for each exclusion. The full-form finance links look up the same EIN in a separate extract edition. An available period can add financial context for that organization.</p>
+  <p><a href={manifest.source.archive}>Original IRS ZIP</a> · <a href={url(base + 'manifest.json')}>Source and coverage manifest</a> · <a href={url(base + manifest.asset.path)}>Full selected snapshot as compressed JSON</a>. Import EINs and filing object numbers as text.</p>
+</Entry>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { loadVerifiedJson } from '../../../lib/client/verified-json';
+  import { normalizeEin } from '../../../lib/irs-registry.mjs';
+
+  type Grant = [string, number, number | null, number | null];
+  type Filing = [string, string, string, string, Grant[]];
+  type Snapshot = { filings: Filing[]; filingSha256: Record<string, string> };
+  type Manifest = typeof import('../../../../public/data/funding-flows/us-schedule-i/manifest.json');
+  type Match = { filerEin: string; recipientEin: string; taxPeriodStart: string; taxPeriodEnd: string; filingObjectId: string;
+    partIIRow: number; cashGrantUSD: number | null; nonCashAssistanceUSD: number | null; filingSha256: string };
+  const dollars = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const money = (amount: number | null) => amount === null ? 'Not supplied' : dollars.format(amount);
+  const formattedEin = (ein: string) => `${ein.slice(0, 2)}-${ein.slice(2)}`;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-us-grants]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let loaded: Promise<Snapshot> | undefined;
+    let matches: Match[] = [];
+    let sequence = 0;
+    const prefilled = new URLSearchParams(location.hash.slice(1)).get('ein');
+    if (prefilled && /^(?:[0-9]{9}|[0-9]{2}-[0-9]{7})$/.test(prefilled)) input.value = prefilled;
+    input.disabled = submit.disabled = clear.disabled = false;
+
+    async function load() {
+      const data = await loadVerifiedJson(root.dataset.file!, manifest.asset) as Snapshot;
+      if (!Array.isArray(data?.filings) || data.filings.length !== manifest.asset.rows) throw new Error('The Schedule I edition has an unexpected filing count.');
+      return data;
+    }
+
+    function reset() {
+      matches = [];
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function financeLink(ein: string) {
+      return h('a', { href: root.dataset.finances! + '#ein=' + ein }, `EIN ${formattedEin(ein)}`);
+    }
+
+    function display(row: Match) {
+      return h('li', { class: 'card' },
+        h('h3', {}, 'Reported grant to ', financeLink(row.recipientEin)),
+        h('p', {}, 'Filer ', financeLink(row.filerEin), ` · Tax period ${row.taxPeriodStart} to ${row.taxPeriodEnd}`),
+        h('p', {}, `Cash grant ${money(row.cashGrantUSD)} · Noncash assistance ${money(row.nonCashAssistanceUSD)}`),
+        h('p', { class: 'note' }, h('a', { href: manifest.source.archive }, 'IRS archive'),
+          ` · Filing object ${row.filingObjectId} · Schedule I Part II row ${row.partIIRow}`));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      try {
+        const ein = normalizeEin(input.value);
+        submit.disabled = true;
+        status.textContent = 'Checking the public Schedule I records.';
+        loaded ??= load().catch(error => { loaded = undefined; throw error; });
+        const { filings, filingSha256 } = await loaded;
+        if (ticket !== sequence) return;
+        for (const [filerEin, taxPeriodStart, taxPeriodEnd, filingObjectId, grants] of filings) {
+          for (const [recipientEin, partIIRow, cashGrantUSD, nonCashAssistanceUSD] of grants) {
+            if (filerEin !== ein && recipientEin !== ein) continue;
+            matches.push({ filerEin, recipientEin, taxPeriodStart, taxPeriodEnd, filingObjectId, partIIRow, cashGrantUSD, nonCashAssistanceUSD, filingSha256: filingSha256[filingObjectId] });
+          }
+        }
+        matches.sort((a, b) => b.taxPeriodEnd.localeCompare(a.taxPeriodEnd) || a.filingObjectId.localeCompare(b.filingObjectId) || a.partIIRow - b.partIIRow);
+        const displayed = matches.slice(0, 40);
+        status.textContent = matches.length ? `${matches.length} ${matches.length === 1 ? 'record' : 'records'}. Showing ${displayed.length}.` : 'No matching grant rows in this edition.';
+        results.append(...displayed.map(display));
+        json.disabled = csv.disabled = matches.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The grant search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      input.value = '';
+      submit.disabled = false;
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { source, registry, currency, capturedOn } = manifest;
+    json.addEventListener('click', () => {
+      if (matches.length) download('us-schedule-i-grants.json', JSON.stringify({ source, registry, currency, capturedOn, grants: matches }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!matches.length) return;
+      const rows = matches.map(row => ({ ...row, currency, capturedOn, registryDate: registry.date, registrySha256: registry.manifestSha256,
+        source: source.archive, sourceSha256: source.sha256, publisher: source.publisher, scope: source.scope }));
+      download('us-schedule-i-grants.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>
