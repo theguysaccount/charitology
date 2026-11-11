@@ -182,14 +182,14 @@ export function mountBrazilRegistry(root: HTMLElement) {
     download('brazil-osc-registry-matches.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
   });
 
-  function openCnpj() {
-    const cnpj = readCnpj(readHash('cnpj') ?? '');
+  function openCnpj(value: string | null) {
+    const cnpj = readCnpj(value ?? '');
     if (!cnpj) return;
     query.value = formatCnpj(cnpj);
     match.value = '';
     form.requestSubmit();
   }
   query.disabled = match.disabled = submit.disabled = clear.disabled = false;
-  window.addEventListener('hashchange', openCnpj);
-  openCnpj();
+  window.addEventListener('hashchange', () => openCnpj(readHash('cnpj') ?? null));
+  openCnpj(readHash('cnpj') ?? new URLSearchParams(window.location.search).get('cnpj'));
 }

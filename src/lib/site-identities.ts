@@ -168,7 +168,7 @@ export const sections: Section[] = [
     'failure-archive': 'break', 'funding-flows': 'split', 'funding-flows/canada-qualified-donees': 'chain',
     'funding-flows/canada-grant-geography': 'globe',
     'funding-flows/brazil-transferegov': 'wallet', 'funding-flows/brazil-solidarity-kitchens': 'hands',
-    'funding-flows/brazil-solidarity-kitchens/account-payments': 'coins',
+    'funding-flows/brazil-solidarity-kitchens/account-payments': 'coins', 'funding-flows/brazil-cisterns': 'water',
     'funding-flows/us-schedule-i': 'table', 'funding-flows/iberia-hrsa': 'medical', 'funding-flows/ile-de-france-paid-grants': 'pin',
     'funding-flows/greater-manchester-home-from-hospital': 'heart', 'funding-flows/hokkaido-child-support': 'seed',
     'funding-flows/yes-i-do-alliance': 'network', 'gap-map': 'map', 'interventions': 'target',

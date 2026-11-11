@@ -50,6 +50,7 @@ const sources = [
     {entry.duplicateOrderRows > 0 && ` ${count(entry.duplicateOrderRows)} orders had repeated source IDs.`}
   </li>)}</ul>
   <p>Each result links the proposal to its agreement and to individual bank-order records. The state in a result describes the proponent in the proposal. Where the work took place requires separate records. <a href={url('/record/charity-index/brazil/')}>Compare these registration numbers with Ipea’s August 2026 Mapa das OSCs edition</a>.</p>
+  <p><a href={url('/record/funding-flows/brazil-cisterns/')}>Trace one Cisternas agreement through account payments, planned locations and census water-access figures</a>.</p>
   <p><a href={url('/record/funding-flows/brazil-solidarity-kitchens/')}>Follow the solidarity kitchens funding case</a> for an example that compares recorded plans with a household survey.</p>
   <p>Transferegov.br published the source data under the <a href={manifest.source.license}>Open Database License</a>. Charitology selected and reformatted the fields. The derived snapshot is available under the same license.</p>
   <p><a href={manifest.source.archives.proposta.url}>Original proposals</a> · <a href={manifest.source.archives.convenio.url}>Original agreements</a> · <a href={manifest.source.archives.desembolso.url}>Original bank orders</a> · <a href={url(base + 'manifest.json')}>Source and coverage manifest</a> · <a href={url(base + manifest.asset.path)}>Full snapshot as compressed JSON</a>. Keep identifiers as text when opening CSV exports.</p>

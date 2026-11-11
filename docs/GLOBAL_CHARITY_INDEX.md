@@ -111,6 +111,22 @@ npm run build
 node scripts/check-brazil-kitchen-account-payments.mjs
 ```
 
+## Brazil Cisternas agreement and water access
+
+The [Cisternas case](https://charitology.com/record/funding-flows/brazil-cisterns/) follows agreement 945310 and its exact proposal and organization IDs. Its eleven bank orders show BRL 31,499,882.76 made available in 2023–2026. The six pinned Transferegov archives identify the original agreement, amendment and reported movements from the agreement account. The 2026 records cover the November 11 capture. The current federal contribution, reported bank orders, account payments and internal transfers belong to different stages. The named-payee subset uses the full CNPJ and exact agreement number. It stays inside the other-payment total. All 190 selected internal transfers have an onward record with a missing amount.
+
+The three public calls identify planned water systems and selected organizations. The 2025 call ties the first amendment to planned lots in Óbidos and Oriximiná. It allows a comparison with IBGE 2022 Census table 10103 for quilombola residents in rural areas within quilombola territories in those municipalities. Table 6909 supplies a separate all-resident piped-water measure. The denominators describe residents and the tender counts installations. The single operator report from Pinhel links by implementing organizations and a planned site. Its publication supplies no agreement or lot ID. The separate water-quality study concerns other sites. The case contains no verified expenditure by lot, complete installation audit or water-quality result for the funded work.
+
+The [case data](../src/data/funding-flows/brazil-cisterns.json) names the six archives and two official census responses with exact file sizes, hashes, columns, coordinates and links. Save those exact files in one capture directory under their listed names. Download URLs can serve a later edition. The source check refuses substituted bytes. It only uses the two published institutional identifiers and never emits individual payee data. Documentary sources are checked against the linked tender pages and notices. Routine builds and checks use the committed case.
+
+```sh
+python3 scripts/check-brazil-cisterns-sources.py /path/to/captures
+npm run build
+node scripts/check-brazil-cisterns.mjs
+```
+
+The JSON carries the full case and citations. Four CSV exports keep bank orders, account payment aggregates, named-payee subsets and census measures distinct. A blank amount for an internal-transfer year with no rows preserves absence. Reported zero values stay present. Use the [coverage page](https://charitology.com/record/charity-index/coverage/) and its correction route for this edition.
+
 ## United States Form 990 financial extracts
 
 The [U.S. financial filings page](https://charitology.com/record/charity-financials/united-states/) uses the IRS's processed extracts for the 2023 and 2024 filing calendar years. It includes 516,109 periods for 277,047 EINs with subsection code 03 on full Form 990. The periods end in 2022–2024. The source supplies the tax-period end month rather than a start date or day. The projected fields are revenue, functional expenses, program service revenue, grants to U.S. governments and organizations, and grants to organizations and individuals outside the U.S. Source record numbers count CSV records after the header.

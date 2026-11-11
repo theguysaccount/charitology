@@ -1,0 +1,157 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import { url } from '../../../../lib/site';
+import data from '../../../../data/funding-flows/brazil-cisterns.json';
+
+const title = 'Following public funding for rainwater systems in Pará';
+const route = '/record/funding-flows/brazil-cisterns/';
+const { agreement, amendment, sources: { transferegov, sidra, documents } } = data;
+const registry = url('/record/charity-index/brazil/') + '?cnpj=' + agreement.cnpj + '#lookup';
+const transfers = url('/record/funding-flows/brazil-transferegov/') + '?agreement=' + agreement.id + '#brazil-transfer-heading';
+const brl = new Intl.NumberFormat('en-US', { style: 'currency', currency: data.currency, currencyDisplay: 'code' });
+const money = (cents: number) => brl.format(cents / 100);
+const count = (value: number) => value.toLocaleString('en-US');
+const byCnpj = new Map(data.institutions.map(institution => [institution.cnpj, institution]));
+const orders = data.accountYears.map(period => {
+  const rows = data.bankOrders.filter(order => order.date.startsWith(String(period.calendarYear)));
+  return { year: period.calendarYear, partial: period.partialCalendarYear, rows, cents: rows.reduce((sum, row) => sum + row.madeAvailableCents, 0) };
+});
+const totals = data.accountYears.reduce((sum, period) => ({
+  payments: sum.payments + period.otherPayments.amountCents,
+  transfers: sum.transfers + period.internalTransfers.amountCents,
+  movements: sum.movements + period.internalTransfers.rows,
+  missing: sum.missing + period.onward.internalIdsMissingAnyAmount,
+}), { payments: 0, transfers: 0, movements: 0, missing: 0 });
+const sources = [
+  { title: 'Public financial archives and Open Database License', publisher: transferegov.publisher, url: transferegov.catalog },
+  { title: 'Transferegov data dictionary', publisher: transferegov.publisher, url: transferegov.dictionary },
+  ...Object.values(documents).map(source => ({
+    ...source, url: 'alternateUrl' in source ? source.alternateUrl : source.url,
+  })),
+  { title: '2022 Census table 6909: piped water by municipality', publisher: sidra.publisher, url: sidra.tables['6909'].url },
+  { title: '2022 Census table 10103: primary water source in rural quilombola territories', publisher: sidra.publisher, url: sidra.tables['10103'].url },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Trace one federal agreement from its original terms to reported account payments, planned locations, and an independent census baseline." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Rainwater systems in Pará'}]} sources={sources} filePath="src/pages/record/funding-flows/brazil-cisterns/index.astro">
+  <p>Brazil’s Cisternas program uses rainwater systems to improve access to water. This case follows agreement <strong>{agreement.id}</strong> with {agreement.organization}. Its original total was <strong>{money(agreement.originalAgreementTotalCents)}</strong>. The federal contribution recorded after an amendment was <strong>{money(agreement.currentFederalContributionCents)}</strong>. The agreement, payment and tender records share identifiers, which let readers follow the money to specific organizations and see where the trail ends.</p>
+  <p><a href={registry}>Look up CEAPS in the Brazil registry</a> · <a href={transfers}>Open agreement {agreement.id} in the 2024–25 transfer lookup</a></p>
+
+  <nav class="catalog-jump" aria-label="Explore this funding trace">
+    <a href="#agreement"><SiteSymbol name="document" />Agreement and bank orders</a>
+    <a href="#payments"><SiteSymbol name="wallet" />Account payments</a>
+    <a href="#planned"><SiteSymbol name="pin" />Planned locations</a>
+    <a href="#need"><SiteSymbol name="water" />2022 water access</a>
+    <a href="#delivery"><SiteSymbol name="checks" />Reported delivery</a>
+  </nav>
+  <div class="btn-row" aria-label="Download this case">
+    <a class="btn btn-ghost btn-small" href={url(route + 'data.json')} download="brazil-cisterns.json">Download case JSON</a>
+    <a class="btn btn-ghost btn-small" href={url(route + 'bank-orders.csv')} download="brazil-cisterns-bank-orders.csv">Download bank orders CSV</a>
+    <a class="btn btn-ghost btn-small" href={url(route + 'account-payments.csv')} download="brazil-cisterns-account-payments.csv">Download account payments CSV</a>
+    <a class="btn btn-ghost btn-small" href={url(route + 'institutional-payees.csv')} download="brazil-cisterns-institutional-payees.csv">Download named payees CSV</a>
+    <a class="btn btn-ghost btn-small" href={url(route + 'water-access.csv')} download="brazil-cisterns-water-access.csv">Download census CSV</a>
+  </div>
+
+  <h2 id="agreement">From the federal agreement to its account</h2>
+  <p>Transferegov records the agreement as signed on <time datetime={agreement.signedOn}>{agreement.signedOn}</time>. The first amendment added {money(amendment.federalIncreaseCents)}. The <a href={documents.amendmentGazette.url}>December 2024 Gazette notice</a> and Transferegov list the same increase and different signature dates. The case data preserves both dates.</p>
+  <p>The {data.bankOrders.length} reported bank orders total {money(agreement.reportedMadeAvailableCents)}, equal to the updated federal contribution. Each order records an amount made available to the agreement account. The 2026 figures here and below cover the records available in the November 2026 capture.</p>
+  <div class="table-wrap" role="region" aria-label="Federal bank orders by calendar year" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Calendar year</th><th scope="col" class="num">Orders</th><th scope="col" class="num">Made available (BRL)</th></tr></thead>
+      <tbody>{orders.map(period => <tr>
+        <th scope="row">{period.year}{period.partial && ' (partial)'}</th>
+        <td class="num">{period.rows.length}</td><td class="num">{money(period.cents)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <details>
+    <summary>Show the {data.bankOrders.length} bank orders and their source records</summary>
+    <div class="table-wrap" role="region" aria-label="Individual bank orders" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Order ID</th><th scope="col">Date</th><th scope="col" class="num">Made available (BRL)</th><th scope="col" class="num">Source record</th></tr></thead>
+        <tbody>{data.bankOrders.map(order => <tr><th scope="row">{order.orderId}</th><td>{order.date}</td><td class="num">{money(order.madeAvailableCents)}</td><td class="num">{count(order.sourceRecord)}</td></tr>)}</tbody>
+      </table>
+    </div>
+  </details>
+
+  <h2 id="payments">Payments reported from the agreement account</h2>
+  <p>The payment archive records {money(totals.payments)} in other payments and {money(totals.transfers)} transferred to another account held by CEAPS. A separate onward file has a record for each of those {totals.movements} internal transfers. All {totals.missing} corresponding onward amounts are missing. The internal and onward records describe successive stages of the same movement. <a href={documents.onwardGuide.url}>Transferegov’s reporting guide</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Reported account payments and internal transfers" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Calendar year</th><th scope="col" class="num">Other payments</th><th scope="col" class="num">Internal transfers</th><th scope="col" class="num">Internal transfers missing an onward amount</th></tr></thead>
+      <tbody>{data.accountYears.map(period => <tr>
+        <th scope="row">{period.calendarYear}{period.partialCalendarYear && ' (partial)'}</th>
+        <td class="num">{money(period.otherPayments.amountCents)} · {period.otherPayments.rows} rows</td>
+        <td class="num">{period.internalTransfers.rows ? `${money(period.internalTransfers.amountCents)} · ${period.internalTransfers.rows} rows` : 'No source rows'}</td>
+        <td class="num">{period.internalTransfers.rows ? period.onward.internalIdsMissingAnyAmount : 'No source rows'}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h3>Payments reported for two named organizations</h3>
+  <p>The account records use the same full CNPJ registration numbers as <a href={documents.accreditation.url}>the ministry’s organization list</a> and the <a href={documents.result2025.url}>2025 selection notice</a>. These amounts are already included in the other payments column above. The payment archive ties each record to the agreement and payee. It leaves the individual bank order, contract, lot and location of spending unresolved.</p>
+  <div class="table-wrap" role="region" aria-label="Named organization payments by year" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Calendar year</th><th scope="col">Payee</th><th scope="col" class="num">Payment records</th><th scope="col" class="num">Reported amount (BRL)</th></tr></thead>
+      <tbody>{data.accountYears.flatMap(period => Object.entries(period.institutionalPayees).map(([cnpj, amounts]) =>
+        <tr><td>{period.calendarYear}{period.partialCalendarYear && ' (partial)'}</td><th scope="row">{byCnpj.get(cnpj)!.name}<br /><span class="note">CNPJ {cnpj}</span></th><td class="num">{amounts.rows}</td><td class="num">{money(amounts.amountCents)}</td></tr>
+      ))}</tbody>
+    </table>
+  </div>
+  <p class="note">The two named payees have no matched rows in 2023. One SOMECDH row in 2025 reports a zero amount and remains in the count.</p>
+
+  <h2 id="planned">Where the tenders planned work</h2>
+  <p>CEAPS published three calls for work tied to this agreement. The 2025 call explicitly uses the first amendment. It names low-income families in rural quilombola territories in Óbidos and Oriximiná who face drought or irregular access to water. The tender estimates are maximum amounts for the lots.</p>
+  <div class="table-wrap" role="region" aria-label="Cisternas calls and named locations" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Call</th><th scope="col">Municipalities named in planning records</th><th scope="col" class="num">Planned installations</th><th scope="col">Selected organization</th></tr></thead>
+      <tbody>{data.tenders.map(tender => {
+        const source = documents[tender.planningSource as keyof typeof documents];
+        return <tr>
+          <th scope="row"><a href={'alternateUrl' in source ? source.alternateUrl : source.url}>{tender.id}</a></th>
+          <td>{tender.places.join(' and ')}</td><td class="num">{tender.plannedInstallations} in {tender.lots} lots</td>
+          <td><a href={documents[tender.selectionSource as keyof typeof documents].url}>{byCnpj.get(tender.selectedCnpj)!.name}</a></td>
+        </tr>;
+      })}</tbody>
+    </table>
+  </div>
+  <p>The 2024 selection notice summarizes the work in Santarém. The <a href={documents.tender2024.alternateUrl}>original lot table</a> also lists Aveiro. The 2025 notice invites Instituto Vitória Régia to sign for both lots. The files here establish the selection. A signed 2025 contract and final delivery would require separate records.</p>
+
+  <h2 id="need">Water access before the agreement</h2>
+  <p>In the 2022 Census, Brazil’s statistics agency IBGE counted residents whose households reported rivers, reservoirs, streams, lakes or igarapés, small waterways, as their main source of water. The rows below use the census population closest to the 2025 tender’s stated geography. It includes rural quilombola residents of occupied permanent private dwellings within quilombola territories in each municipality. The tender targets specific places and eligible families within that broader population.</p>
+  <div class="table-wrap" role="region" aria-label="Planned lots and 2022 water-source census figures" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Municipality</th><th scope="col">2022 residents reporting surface water as the main source</th><th scope="col" class="num">2025 installations planned</th><th scope="col" class="num">Tender estimate (BRL)</th></tr></thead>
+      <tbody>{data.amendedTenderLots.map(lot => {
+        const row = data.census.find(series => series.table === '10103')!.rows.find(row => row.municipalityCode === lot.municipalityCode)!;
+        return <tr><th scope="row">{lot.municipality}</th><td>{count(row.residentsWithMeasure)} of {count(row.residents)} · {row.percent}%</td><td class="num">{lot.plannedInstallations}</td><td class="num">{money(lot.maximumEstimatedCents)}</td></tr>;
+      })}</tbody>
+    </table>
+  </div>
+  <p>The <a href={sidra.tables['10103'].url}>census counts</a> describe residents in 2022. The <a href={documents.tender2025.url}>tender figures</a> describe planned installations in 2025. Their different units leave a coverage rate and per-resident spending unknown. An independent water-quality measure would also require a separate source.</p>
+  <details>
+    <summary>Compare piped water across all four municipalities</summary>
+    <p>These separate <a href={sidra.tables['6909'].url}>2022 census figures</a> count all urban and rural residents of occupied permanent private dwellings in each municipality.</p>
+    <div class="table-wrap" role="region" aria-label="Residents without piped water by municipality" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Municipality</th><th scope="col" class="num">Residents without piped water</th><th scope="col" class="num">Residents in scope</th><th scope="col" class="num">Share</th></tr></thead>
+        <tbody>{data.census.find(series => series.table === '6909')!.rows.map(row => <tr><th scope="row">{row.municipality}</th><td class="num">{count(row.residentsWithMeasure)}</td><td class="num">{count(row.residents)}</td><td class="num">{row.percent}%</td></tr>)}</tbody>
+      </table>
+    </div>
+  </details>
+
+  <h2 id="delivery">What the operator reported delivering</h2>
+  <p>CEAPS <a href={documents.contract2023.url}>reported signing with SOMECDH</a> after the 2023 call. It later <a href={documents.delivery2024.url}>reported delivering {data.operatorReport.reportedInstallations} water systems in {data.operatorReport.place}</a> in December 2024. The delivery report names the same organizations and a place listed in the contract announcement. It gives no agreement or lot number. This is one operator-reported output. A complete audited installation count and measured results for households remain open.</p>
+  <p>The work adds water infrastructure. In the <a href={url('/method/#depth')}>depth scale</a>, that is an example of repair, and reliable service could help prevent interruptions in access. A <a href={documents.study.url}>separate study in eastern Pará</a> measured harvested rainwater quality before and after treatment at other sites. It illustrates the value of testing water quality separately from counting installations. This case supplies no water-quality measurements from the funded sites.</p>
+
+  <h2>How to check the records</h2>
+  <p>The case JSON records the proposal and agreement numbers, bank-order IDs, archive fingerprints and census table coordinates. Payment summaries use the exact agreement number and calendar year. The two named subsets also require an exact organization registration number. The CSVs keep bank orders, account payments, payee subsets and census observations separate. The financial archives are attributed to Transferegov.br under the <a href={transferegov.license}>Open Database License</a>. The <a href="https://github.com/theguysaccount/charitology/blob/main/docs/GLOBAL_CHARITY_INDEX.md#brazil-cisternas-agreement-and-water-access">reproduction steps</a> identify the exact inputs.</p>
+</Entry>
+
+<style>
+  .table-wrap { margin-block: 1rem; }
+  .table-wrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .table-wrap table.data { display: table; overflow: visible; }
+  .data .num { font-variant-numeric: tabular-nums; }
+</style>

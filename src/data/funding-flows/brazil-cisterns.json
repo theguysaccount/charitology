@@ -1,0 +1,540 @@
+{
+  "schemaVersion": 1,
+  "review": "draft",
+  "edition": "2026-11-11",
+  "currency": "BRL",
+  "agreement": {
+    "id": "945310",
+    "proposalId": "1904866",
+    "proposalNumber": "46349/2023",
+    "proposalSourceRecord": 67352,
+    "organization": "Centro de Estudos Avançados de Promoção Social e Ambiental (CEAPS)",
+    "cnpj": "55233555000175",
+    "signedOn": "2023-10-06",
+    "sourceRecord": 165378,
+    "originalAgreementTotalCents": 2099992698,
+    "currentFederalContributionCents": 3149988276,
+    "reportedMadeAvailableCents": 3149988276
+  },
+  "amendment": {
+    "id": "1/2024",
+    "federalIncreaseCents": 1049995578,
+    "sourceRecord": 379633,
+    "csvSignedOn": "2024-12-24",
+    "gazettePublishedOn": "2024-12-27",
+    "gazetteListedSignedOn": "2023-10-06"
+  },
+  "bankOrders": [
+    {
+      "date": "2023-10-13",
+      "madeAvailableCents": 337358932,
+      "orderId": "340190",
+      "sourceRecord": 100660
+    },
+    {
+      "date": "2023-10-13",
+      "madeAvailableCents": 203703156,
+      "orderId": "340189",
+      "sourceRecord": 100662
+    },
+    {
+      "date": "2024-10-16",
+      "madeAvailableCents": 203703156,
+      "orderId": "361838",
+      "sourceRecord": 100659
+    },
+    {
+      "date": "2024-11-12",
+      "madeAvailableCents": 337358932,
+      "orderId": "362620",
+      "sourceRecord": 100664
+    },
+    {
+      "date": "2025-02-13",
+      "madeAvailableCents": 346018407,
+      "orderId": "368113",
+      "sourceRecord": 100665
+    },
+    {
+      "date": "2025-02-13",
+      "madeAvailableCents": 175180521,
+      "orderId": "368114",
+      "sourceRecord": 100668
+    },
+    {
+      "date": "2025-07-22",
+      "madeAvailableCents": 754656024,
+      "orderId": "377396",
+      "sourceRecord": 100658
+    },
+    {
+      "date": "2025-07-22",
+      "madeAvailableCents": 245343976,
+      "orderId": "377397",
+      "sourceRecord": 100667
+    },
+    {
+      "date": "2025-12-30",
+      "madeAvailableCents": 220971721,
+      "orderId": "390623",
+      "sourceRecord": 100666
+    },
+    {
+      "date": "2026-05-19",
+      "madeAvailableCents": 100000000,
+      "orderId": "402372",
+      "sourceRecord": 100661
+    },
+    {
+      "date": "2026-05-19",
+      "madeAvailableCents": 225693451,
+      "orderId": "402373",
+      "sourceRecord": 100663
+    }
+  ],
+  "accountYears": [
+    {
+      "calendarYear": 2023,
+      "partialCalendarYear": false,
+      "otherPayments": {
+        "rows": 17,
+        "amountCents": 5928127,
+        "zeroAmountRows": 0
+      },
+      "internalTransfers": {
+        "rows": 0,
+        "amountCents": 0,
+        "zeroAmountRows": 0
+      },
+      "onward": {
+        "matchedInternalIds": 0,
+        "rows": 0,
+        "internalIdsMissingAnyAmount": 0,
+        "internalIdsWithEqualAmount": 0
+      },
+      "institutionalPayees": {}
+    },
+    {
+      "calendarYear": 2024,
+      "partialCalendarYear": false,
+      "otherPayments": {
+        "rows": 192,
+        "amountCents": 861442030,
+        "zeroAmountRows": 0
+      },
+      "internalTransfers": {
+        "rows": 61,
+        "amountCents": 32035600,
+        "zeroAmountRows": 0
+      },
+      "onward": {
+        "matchedInternalIds": 61,
+        "rows": 61,
+        "internalIdsMissingAnyAmount": 61,
+        "internalIdsWithEqualAmount": 0
+      },
+      "institutionalPayees": {
+        "02614277000130": {
+          "rows": 4,
+          "amountCents": 803909649,
+          "zeroAmountRows": 0
+        }
+      }
+    },
+    {
+      "calendarYear": 2025,
+      "partialCalendarYear": false,
+      "otherPayments": {
+        "rows": 126,
+        "amountCents": 1009128268,
+        "zeroAmountRows": 2
+      },
+      "internalTransfers": {
+        "rows": 76,
+        "amountCents": 24477586,
+        "zeroAmountRows": 0
+      },
+      "onward": {
+        "matchedInternalIds": 76,
+        "rows": 76,
+        "internalIdsMissingAnyAmount": 76,
+        "internalIdsWithEqualAmount": 0
+      },
+      "institutionalPayees": {
+        "02614277000130": {
+          "rows": 4,
+          "amountCents": 521289361,
+          "zeroAmountRows": 1
+        },
+        "05670699000110": {
+          "rows": 2,
+          "amountCents": 338196947,
+          "zeroAmountRows": 0
+        }
+      }
+    },
+    {
+      "calendarYear": 2026,
+      "partialCalendarYear": true,
+      "otherPayments": {
+        "rows": 111,
+        "amountCents": 772131170,
+        "zeroAmountRows": 0
+      },
+      "internalTransfers": {
+        "rows": 53,
+        "amountCents": 13984746,
+        "zeroAmountRows": 0
+      },
+      "onward": {
+        "matchedInternalIds": 53,
+        "rows": 53,
+        "internalIdsMissingAnyAmount": 53,
+        "internalIdsWithEqualAmount": 0
+      },
+      "institutionalPayees": {
+        "02614277000130": {
+          "rows": 4,
+          "amountCents": 412618629,
+          "zeroAmountRows": 0
+        },
+        "05670699000110": {
+          "rows": 3,
+          "amountCents": 245961416,
+          "zeroAmountRows": 0
+        }
+      }
+    }
+  ],
+  "institutions": [
+    {
+      "cnpj": "02614277000130",
+      "name": "SOMECDH",
+      "identitySource": "accreditation"
+    },
+    {
+      "cnpj": "05670699000110",
+      "name": "Instituto Vitória Régia",
+      "identitySource": "result2025"
+    }
+  ],
+  "tenders": [
+    {
+      "id": "001/2023",
+      "places": [
+        "Aveiro",
+        "Santarém"
+      ],
+      "plannedInstallations": 339,
+      "lots": 4,
+      "selectedCnpj": "02614277000130",
+      "planningSource": "contract2023",
+      "selectionSource": "result2023"
+    },
+    {
+      "id": "001/2024",
+      "places": [
+        "Aveiro",
+        "Santarém"
+      ],
+      "plannedInstallations": 405,
+      "lots": 3,
+      "selectedCnpj": "02614277000130",
+      "planningSource": "tender2024",
+      "selectionSource": "result2024"
+    },
+    {
+      "id": "001/2025",
+      "places": [
+        "Óbidos",
+        "Oriximiná"
+      ],
+      "plannedInstallations": 358,
+      "lots": 2,
+      "selectedCnpj": "05670699000110",
+      "planningSource": "tender2025",
+      "selectionSource": "result2025"
+    }
+  ],
+  "amendedTenderLots": [
+    {
+      "lot": 1,
+      "municipalityCode": "1505106",
+      "municipality": "Óbidos",
+      "plannedInstallations": 120,
+      "maximumEstimatedCents": 333874860
+    },
+    {
+      "lot": 2,
+      "municipalityCode": "1505304",
+      "municipality": "Oriximiná",
+      "plannedInstallations": 238,
+      "maximumEstimatedCents": 614903542
+    }
+  ],
+  "operatorReport": {
+    "place": "Pinhel, Aveiro",
+    "publishedOn": "2024-12-16",
+    "reportedInstallations": 70,
+    "source": "delivery2024",
+    "connection": "The report names CEAPS and SOMECDH and describes a place in the 2023 contract announcement. The report has no agreement or lot number."
+  },
+  "census": [
+    {
+      "table": "6909",
+      "calendarYear": 2022,
+      "rows": [
+        {
+          "municipalityCode": "1501006",
+          "municipality": "Aveiro",
+          "residents": 18188,
+          "residentsWithMeasure": 3043,
+          "percent": "16.73"
+        },
+        {
+          "municipalityCode": "1505106",
+          "municipality": "Óbidos",
+          "residents": 51953,
+          "residentsWithMeasure": 8333,
+          "percent": "16.04"
+        },
+        {
+          "municipalityCode": "1505304",
+          "municipality": "Oriximiná",
+          "residents": 68115,
+          "residentsWithMeasure": 10641,
+          "percent": "15.62"
+        },
+        {
+          "municipalityCode": "1506807",
+          "municipality": "Santarém",
+          "residents": 330460,
+          "residentsWithMeasure": 13357,
+          "percent": "4.04"
+        }
+      ]
+    },
+    {
+      "table": "10103",
+      "calendarYear": 2022,
+      "rows": [
+        {
+          "municipalityCode": "1505106",
+          "municipality": "Óbidos",
+          "residents": 3696,
+          "residentsWithMeasure": 777,
+          "percent": "21.02"
+        },
+        {
+          "municipalityCode": "1505304",
+          "municipality": "Oriximiná",
+          "residents": 4857,
+          "residentsWithMeasure": 3486,
+          "percent": "71.77"
+        }
+      ]
+    }
+  ],
+  "sources": {
+    "transferegov": {
+      "publisher": "Transferegov.br",
+      "catalog": "https://api-publica.transferegov.gestao.gov.br/downloads",
+      "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+      "dictionary": "https://www.gov.br/transferegov/pt-br/ferramentas-gestao/paineis-gerenciais/arquivos/modelo-dados-csvs-discricionarias-e-legais.zip/@@display-file/file",
+      "archives": {
+        "proposta": {
+          "file": "siconv_proposta.zip",
+          "bytes": 206287309,
+          "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_proposta.zip",
+          "sha256": "8ef18d1536a8d6d36a8ef71550978c7bede2a546b74ff33d756d3290ecc17e4e",
+          "fields": [
+            "ID_PROPOSTA",
+            "NR_PROPOSTA",
+            "IDENTIF_PROPONENTE",
+            "NATUREZA_JURIDICA"
+          ]
+        },
+        "convenio": {
+          "file": "siconv_convenio.zip",
+          "bytes": 18501744,
+          "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_convenio.zip",
+          "sha256": "96110a017e3e0b8d139faedc6a105334d13d8f86f433e67b840d6f75779c6f4d",
+          "fields": [
+            "NR_CONVENIO",
+            "ID_PROPOSTA",
+            "IND_ASSINADO",
+            "DIA_ASSIN_CONV",
+            "VALOR_GLOBAL_ORIGINAL_CONV",
+            "VL_REPASSE_CONV",
+            "VL_DESEMBOLSADO_CONV"
+          ]
+        },
+        "desembolso": {
+          "file": "siconv_desembolso.zip",
+          "bytes": 16863271,
+          "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_desembolso.zip",
+          "sha256": "c58bbe64621d6300a4154193a1714d3d68127d423ad6aa660fb3b8d4b2efe833",
+          "fields": [
+            "NR_CONVENIO",
+            "ID_DESEMBOLSO",
+            "DATA_DESEMBOLSO",
+            "VL_DESEMBOLSADO"
+          ]
+        },
+        "obtv_convenente": {
+          "file": "siconv_obtv_convenente.zip",
+          "bytes": 58726469,
+          "fields": [
+            "NR_MOV_FIN",
+            "VL_PAGO_OBTV_CONV",
+            "IDENTIF_FAVORECIDO_OBTV_CONV"
+          ],
+          "lastModified": "Wed, 11 Nov 2026 11:13:26 GMT",
+          "sha256": "5312063de10c902ea02f9a50fd2980c2c4a0466fe937bf9929a57d751fbe7d88",
+          "sourceRows": 3113841,
+          "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_obtv_convenente.zip"
+        },
+        "pagamento": {
+          "file": "siconv_pagamento.zip",
+          "bytes": 374662483,
+          "fields": [
+            "NR_CONVENIO",
+            "NR_MOV_FIN",
+            "TP_MOV_FINANCEIRA",
+            "DATA_PAG",
+            "DESC_DL",
+            "VL_PAGO",
+            "IDENTIF_FORNECEDOR"
+          ],
+          "lastModified": "Wed, 11 Nov 2026 11:13:46 GMT",
+          "sha256": "36920c43e8efb80f9a1f9a7f0c55620f0dff2210bce012ac613fbbef77338c62",
+          "sourceRows": 7575512,
+          "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_pagamento.zip"
+        },
+        "termo_aditivo": {
+          "file": "siconv_termo_aditivo.zip",
+          "bytes": 61470155,
+          "fields": [
+            "NR_CONVENIO",
+            "NUMERO_TA",
+            "TIPO_TA",
+            "VL_REPASSE_TA",
+            "DT_ASSINATURA_TA"
+          ],
+          "lastModified": "Wed, 11 Nov 2026 11:13:44 GMT",
+          "sha256": "d5d433446a886741fd7468745365e17c861fcc9cfe8adac2a4df682c46054c1a",
+          "sourceRows": 463001,
+          "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_termo_aditivo.zip"
+        }
+      }
+    },
+    "sidra": {
+      "publisher": "IBGE",
+      "tables": {
+        "6909": {
+          "file": "cisterns-four-municipalities-sidra-6909.json",
+          "url": "https://apisidra.ibge.gov.br/values/t/6909/n6/1501006,1505106,1505304,1506807/v/382,1000382/p/2022/c1817/all",
+          "measure": "Residents without piped water",
+          "population": "Residents of occupied permanent private dwellings, urban and rural",
+          "coordinates": {
+            "D2C": "382",
+            "D5C": "95253",
+            "D6C": "95251",
+            "D7C": "72053"
+          },
+          "categoryColumn": "D4C",
+          "totalCategory": "72125",
+          "affectedCategory": "72128",
+          "rateVariable": "1000382",
+          "sha256": "dc8c73535f40aedd1a8afaa66d0b6fc251203e63d04c089e0b7d7c3eb07d0cea",
+          "sourceRows": 32,
+          "bytes": 16823
+        },
+        "10103": {
+          "file": "cisterns-rural-quilombola-sidra-10103.json",
+          "url": "https://apisidra.ibge.gov.br/values/t/10103/n6/1505106,1505304/v/7097/p/2022/c1/all/c301/all/c2661/all",
+          "measure": "Residents whose main water source was a river, reservoir, stream, lake or igarapé",
+          "population": "Quilombola residents of occupied permanent private dwellings in rural areas within quilombola territories",
+          "coordinates": {
+            "D2C": "7097",
+            "D4C": "2",
+            "D6C": "60027"
+          },
+          "categoryColumn": "D5C",
+          "totalCategory": "72053",
+          "affectedCategory": "72090",
+          "rateVariable": null,
+          "sha256": "db74cc01eb5b5e0e119b7b357fed519369030f66f1d0cdc018d23c2e0b2b7d79",
+          "sourceRows": 162,
+          "bytes": 75418
+        }
+      }
+    },
+    "documents": {
+      "amendmentGazette": {
+        "title": "Federal Gazette amendment notice, page 48",
+        "publisher": "Diário Oficial da União",
+        "url": "https://pesquisa.in.gov.br/imprensa/servlet/INPDFViewer?captchafield=firstAccess&data=27%2F12%2F2024&jornal=530&pagina=48"
+      },
+      "accreditation": {
+        "title": "Accredited Cisternas organizations",
+        "publisher": "Brazil’s Ministry of Social Development",
+        "url": "https://www.gov.br/mds/pt-br/acoes-e-programas/acesso-a-alimentos-e-a-agua/programa-cisternas/credenciamento-de-entidades/entidades-credenciadas"
+      },
+      "result2023": {
+        "title": "Final selection for call 001/2023",
+        "publisher": "CEAPS",
+        "url": "https://www.gov.br/mds/pt-br/servicos/modalidade-de-licitacoes/editais-de-chamada-publica/CEAPS_Resultado_final_chamadaPblica0012023.pdf"
+      },
+      "contract2023": {
+        "title": "2023-call contract and planned sites",
+        "publisher": "CEAPS",
+        "url": "https://saudeealegria.org.br/programa-cisterna-beneficiara-mais-de-trezentas-familias-da-resex-tapajos-arapiuns-em-santarem-e-aveiro/"
+      },
+      "tender2024": {
+        "title": "Call 001/2024 and its original lot table",
+        "publisher": "CEAPS",
+        "url": "https://www.gov.br/mds/pt-br/acoes-e-programas/acesso-a-alimentos-e-a-agua/programa-cisternas/editais-de-chamada-publica/2024/01_2024_ceaps/ceaps_edital.pdf",
+        "alternateUrl": "https://drive.google.com/file/d/1cLR852bl0RAzUDFBnREi7vvI-lO1ImOR/view"
+      },
+      "result2024": {
+        "title": "Final selection for call 001/2024",
+        "publisher": "CEAPS",
+        "url": "https://www.gov.br/mds/pt-br/acoes-e-programas/acesso-a-alimentos-e-a-agua/programa-cisternas/editais-de-chamada-publica/2024/01_2024_ceaps/resultado_final_edital_001_2024_ceaps.pdf"
+      },
+      "tender2025": {
+        "title": "Call 001/2025, sections 3, 4 and 6",
+        "publisher": "CEAPS",
+        "url": "https://www.gov.br/mds/pt-br/acoes-e-programas/acesso-a-alimentos-e-a-agua/programa-cisternas/editais-de-chamada-publica/2025/01-2025_ceaps_edital.pdf"
+      },
+      "result2025": {
+        "title": "Final selection for call 001/2025",
+        "publisher": "CEAPS",
+        "url": "https://www.gov.br/mds/pt-br/acoes-e-programas/acesso-a-alimentos-e-a-agua/programa-cisternas/editais-de-chamada-publica/2025/01-2025_ceaps_resultado_final.pdf"
+      },
+      "delivery2024": {
+        "title": "Reported delivery in Pinhel",
+        "publisher": "CEAPS",
+        "url": "https://saudeealegria.org.br/pinhel-na-resex-tapajos-arapiuns-celebra-conclusao-de-sistema-de-abastecimento-de-agua-do-programa-cisternas/"
+      },
+      "onwardGuide": {
+        "title": "How agreement holders report onward payments",
+        "publisher": "Transferegov.br",
+        "url": "https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/11-tutorial_obtv-convenente_convenios_convenente.pdf"
+      },
+      "study": {
+        "title": "Potability of Rainwater in the Eastern Amazon",
+        "publisher": "Neu et al.",
+        "year": 2025,
+        "url": "https://doi.org/10.24857/rgsa.v19n8-021"
+      }
+    }
+  },
+  "limits": [
+    "This case covers one agreement. The 2026 financial figures are partial.",
+    "Federal bank orders and payments from the agreement account are separate financial stages. The payment data do not identify a source bank order or a tender lot.",
+    "Named payee amounts are subsets of other account payments. The join uses agreement number and full legal entity CNPJ.",
+    "The tender figures describe planned installations. The delivery report is from the operator. Water quality and longer-term outcomes for these installations remain unverified.",
+    "Census denominators describe residents in 2022. They do not count eligible families or establish program coverage."
+  ]
+}
