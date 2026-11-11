@@ -1,4 +1,5 @@
 import { routes, symbols } from '../lib/site-identities';
+import { fragmentSymbols } from '../lib/list-identities';
 import { url } from '../lib/site';
 
 export function GET() {
@@ -10,14 +11,20 @@ export function GET() {
   const tones = [...new Set(routes.map(({ tone }) => tone))].map((tone) =>
     `[data-site-tone="${tone}"]{--site-tone:var(--tone-${tone})}`);
   // Shorter route prefixes come first. A specific link overrides its section.
-  const links = routes.map(({ path, symbol, tone }) =>
-    `a[href^="${url(path)}"]{--link-glyph:var(--glyph-${symbol});--link-tone:var(--tone-${tone})}`);
+  const links = routes.map(({ path, symbol, tone }) => {
+    const match = path === '/' ? '=' : '^=';
+    return `a[href${match}"${url(path)}"]{--link-glyph:var(--glyph-${symbol});--link-tone:var(--tone-${tone});--list-mark:inline-block}`;
+  });
   links.unshift(
     'a[href^="https://"]{--link-glyph:var(--glyph-external)}',
-    'a[href^="https://os.charitology.org"]{--link-glyph:var(--glyph-board);--link-tone:var(--tone-green)}',
+    'a[href="https://os.charitology.org"],a[href^="https://os.charitology.org/"]{--link-glyph:var(--glyph-board);--link-tone:var(--tone-green)}',
     'a[href^="mailto:"]{--link-glyph:var(--glyph-mail)}',
+    'a[download]{--link-glyph:var(--glyph-download)}',
   );
-  return new Response([`:root{${assets.join(';')}}`, ...page, ...tones, ...links].join('\n'), {
+  const fragments = Object.entries(fragmentSymbols).flatMap(([path, entries]) =>
+    Object.entries(entries).map(([id, symbol]) =>
+      `a[href="${url(path)}#${id}"],main[data-site-path="${path}"] a[href="#${id}"]{--link-glyph:var(--glyph-${symbol})}`));
+  return new Response([`:root{${assets.join(';')}}`, ...page, ...tones, ...links, ...fragments].join('\n'), {
     headers: { 'Content-Type': 'text/css; charset=utf-8' },
   });
 }

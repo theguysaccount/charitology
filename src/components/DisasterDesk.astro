@@ -1,5 +1,7 @@
 ---
 import type { Packet, Incident, Claim, Source, SourceNote, Edition, Ref, Pin, ReportedTime, Locator, FreshnessView } from '../lib/disaster-incidents/types';
+import SiteSymbol from './SiteSymbol.astro';
+import { hazardSymbols } from '../lib/list-identities';
 import { url } from '../lib/site';
 import '../styles/disaster-desk.css';
 
@@ -103,7 +105,7 @@ const deviceIncidents = incidents.map(v => ({ id: v.incident.id, checkedAt: v.in
 
     <div class="dd-incidents" data-dd-incidents>
       {incidents.map(({ incident, freshness, claims }) => <article class="dd-incident" data-dd-incident data-hazard={incident.hazard} data-sectors={[...new Set(claims.map(c => c.sector.editorial))].join(' ')} data-placement={incident.editorial.placement} data-review={freshness.atCapture} data-search={[incident.name, geographyText(incident.geography), ...claims.map(c => c.attributedSummary)].join(' ').toLowerCase()}>
-        <header><p class="dd-kicker">{incident.hazard} · editorial draft</p><h3><a href={incidentHref(incident.id)}>{incident.name}</a></h3><p>{geographyText(incident.geography)}</p><p class="dd-note">{incident.geography.note}</p></header>
+        <header><p class="dd-kicker identity-label"><SiteSymbol name={hazardSymbols[incident.hazard]} size="inline" />{incident.hazard} · editorial draft</p><h3><a href={incidentHref(incident.id)}>{incident.name}</a></h3><p>{geographyText(incident.geography)}</p><p class="dd-note">{incident.geography.note}</p></header>
         <dl class="dd-facts"><dt>Incident lifecycle</dt><dd><strong>{incident.lifecycle.value}</strong> · {incident.lifecycle.value === 'unknown' ? 'not established by this capture' : 'source-reported incident scope'}<p>{incident.lifecycle.uncertainty}</p></dd><dt>Editorial placement</dt><dd><strong>{incident.editorial.placement}</strong> · decided <time datetime={incident.editorial.decidedAt}>{incident.editorial.decidedAt}</time><p>{incident.editorial.reason}</p></dd><dt>Review as of this capture</dt><dd><strong>{freshness.atCapture === 'review-overdue-at-capture' ? 'Review overdue at capture' : 'Review not due at capture'}</strong><p>Checked <time datetime={incident.checkedAt}>{incident.checkedAt}</time>; recheck after <time datetime={incident.recheckAfter}>{incident.recheckAfter}</time>. {incident.reviewRationale}</p></dd><dt>Incident period</dt><dd>Start: {timeText(incident.period.start)}<br />End: {timeText(incident.period.end)}{incident.period.literal !== null && <p>Source period text: {incident.period.literal}</p>}</dd></dl>
         {incident.identifiers.length > 0 && <ul>{incident.identifiers.map(v => <li>Identifier: {v.publisher} · {v.value} · <a href={v.originalUrl} rel="noopener">Original identifier source</a> · <a href={refHref(v.ref)}>Retained locator</a></li>)}</ul>}
         <ul class="dd-refs">{[...incident.lifecycle.refs, ...incident.refs].map(r => <li><a href={refHref(r)}>Source {r.source.id}, version {r.source.version} · {r.item} · {r.role}</a></li>)}</ul>

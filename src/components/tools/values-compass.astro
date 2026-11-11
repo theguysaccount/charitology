@@ -1,6 +1,8 @@
 ---
 // Values Compass: five aiming questions and eight moral statements, scored
 // against src/data/causes.json and src/data/frameworks.json via src/lib/compass.ts.
+import SiteSymbol from '../SiteSymbol.astro';
+import { lensSymbols } from '../../lib/list-identities';
 import compass from '../../data/compass.json';
 import { url } from '../../lib/site';
 ---
@@ -34,7 +36,7 @@ import { url } from '../../lib/site';
       {
         compass.statements.map((s) => (
           <fieldset class="vc-statement">
-            <legend>{s.text}</legend>
+            <legend><SiteSymbol name={lensSymbols[s.framework]} size="inline" /> {s.text}</legend>
             <div class="vc-scale">
               {compass.scale.map((label, v) => (
                 <label class="vc-opt">
@@ -194,6 +196,7 @@ import { url } from '../../lib/site';
   import compass from '../../data/compass.json';
   import { DIMS, FRAMEWORKS, DIM_LABELS, blindSpots, matchCauses, normalize, type Position } from '../../lib/compass';
   import { $, clear, h } from '../../lib/client/dom';
+  import { lensSymbols } from '../../lib/list-identities';
   import { renderBars } from '../../lib/client/bars';
   import { copy, flash } from '../../lib/client/files';
   import { decodeState, encodeState, readHash, writeHash } from '../../lib/client/store';
@@ -244,7 +247,7 @@ import { url } from '../../lib/site';
       $('#vc-lenses'),
       [...FRAMEWORKS]
         .sort((x, y) => w[y.id] - w[x.id])
-        .map((f) => ({ label: f.name, value: w[f.id], display: `${Math.round(w[f.id] * 100)}%`, note: f.question })),
+        .map((f) => ({ label: f.name, symbol: lensSymbols[f.id], value: w[f.id], display: `${Math.round(w[f.id] * 100)}%`, note: f.question })),
       { max: Math.max(...Object.values(w)), ariaLabel: 'Your lenses' },
     );
 

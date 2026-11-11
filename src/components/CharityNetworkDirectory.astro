@@ -3,7 +3,7 @@ import { charityNetworks } from '../data/charity-networks.mjs';
 import { networkGuides, guideForNetwork } from '../data/charity-network-guides.mjs';
 import { url } from '../lib/site';
 import SiteSymbol from './SiteSymbol.astro';
-import { pageIdentity } from '../lib/site-identities';
+import { networkSymbols } from '../lib/list-identities';
 ---
 <section class="network-directory" data-network-directory aria-labelledby="directory-title">
   <div class="directory-heading"><div><p class="eyebrow">Browse the connections</p><h2 id="directory-title">Find a useful starting point.</h2></div><p>{charityNetworks.length} sourced listings · editorial drafts</p></div>
@@ -18,7 +18,7 @@ import { pageIdentity } from '../lib/site-identities';
     {charityNetworks.map(entry => {
       const guide = guideForNetwork(entry)!;
       return <article class="network-card" data-network-card data-kind={entry.kind} data-search={[entry.name, entry.networkType, entry.region, entry.audience, entry.summary, ...entry.helps].join(' ')}>
-        <div class="network-meta"><span class="identity-label"><SiteSymbol name={pageIdentity(`/for-charities/networks/${guide.id}/`).symbol} />{entry.networkType}</span><span>{entry.region}</span></div>
+        <div class="network-meta"><span class="identity-label"><SiteSymbol name={networkSymbols[entry.id]} />{entry.networkType}</span><span>{entry.region}</span></div>
         <h3><a href={url(`/for-charities/networks/${guide.id}/#${entry.id}`)}>{entry.name}</a></h3>
         <p>{entry.summary}</p>
         <p class="network-audience"><strong>For:</strong> {entry.audience}</p>

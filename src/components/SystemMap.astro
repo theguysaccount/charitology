@@ -5,6 +5,8 @@
 import { conditionsInOrder } from '../lib/content';
 import { DEPTH } from '../lib/labels';
 import { pad, url } from '../lib/site';
+import SiteSymbol from './SiteSymbol.astro';
+import { depthSymbols, stageSymbols } from '../lib/list-identities';
 import figures from '../data/figures.json';
 
 interface Props {
@@ -25,7 +27,7 @@ const STAGES = [
   { node: 'channels', label: 'Channels', text: 'Charities, foundations, donor-advised funds, giving platforms' },
   { node: 'work', label: 'The work', text: '' },
   { node: 'outcomes', label: 'Outcomes', text: 'Lives, institutions, futures' },
-];
+] as const;
 ---
 
 <figure class={compact ? 'sysmap compact' : 'sysmap'} aria-labelledby="sysmap-cap">
@@ -33,13 +35,13 @@ const STAGES = [
     {
       STAGES.map((s, i) => (
         <li class="stage" data-node={s.node}>
-          <span class="stage-num">{i + 1}</span>
+          <span class="stage-num identity-label"><SiteSymbol name={stageSymbols[s.node]} size="inline" />{i + 1}</span>
           <h3>{s.label}</h3>
           {s.node === 'work' ? (
             <ol class="ladder" aria-label="Source depth, from relief to source">
               {[...DEPTH].reverse().map((d) => (
                 <li>
-                  <span class={`swatch d${d.level}`} aria-hidden="true" />
+                  <SiteSymbol name={depthSymbols[d.level]} size="inline" />
                   {d.name}
                 </li>
               ))}
@@ -47,11 +49,11 @@ const STAGES = [
           ) : (
             <p>{s.text}</p>
           )}
-          {s.note && <p class="stage-note">{s.note}</p>}
+          {'note' in s && <p class="stage-note">{s.note}</p>}
           <ul class="pins">
             {at(s.node).map((c) => (
               <li>
-                <a href={url(`/diagnosis/${c.id}/`)}>
+                <a class="identity-link" href={url(`/diagnosis/${c.id}/`)} aria-label={compact ? `C${pad(c.data.number)} ${c.data.title}` : undefined}>
                   <span class="pin-num">C{pad(c.data.number)}</span>
                   {!compact && <span class="pin-title">{c.data.title.replace(/^The /, '')}</span>}
                 </a>
@@ -70,12 +72,12 @@ const STAGES = [
       <span class="loop-dash"></span>
     </div>
     <div class="loop-body">
-      <strong>Feedback, back to givers.</strong> Mostly missing: results rarely travel back to the people who pay.
+      <strong class="identity-label"><SiteSymbol name={stageSymbols.feedback} size="inline" />Feedback, back to givers.</strong> Mostly missing: results rarely travel back to the people who pay.
       <ul class="pins">
         {
           at('feedback').map((c) => (
             <li>
-              <a href={url(`/diagnosis/${c.id}/`)}>
+              <a class="identity-link" href={url(`/diagnosis/${c.id}/`)} aria-label={compact ? `C${pad(c.data.number)} ${c.data.title}` : undefined}>
                 <span class="pin-num">C{pad(c.data.number)}</span>
                 {!compact && <span class="pin-title">{c.data.title.replace(/^The /, '')}</span>}
               </a>
@@ -86,12 +88,12 @@ const STAGES = [
     </div>
   </div>
   <div class="field-ring">
-    <strong>Around all of it, the field.</strong> Nobody is trained to steer the whole system.
+    <strong class="identity-label"><SiteSymbol name={stageSymbols.field} size="inline" />Around all of it, the field.</strong> Nobody is trained to steer the whole system.
     <ul class="pins">
       {
         at('field').map((c) => (
           <li>
-            <a href={url(`/diagnosis/${c.id}/`)}>
+            <a class="identity-link" href={url(`/diagnosis/${c.id}/`)} aria-label={compact ? `C${pad(c.data.number)} ${c.data.title}` : undefined}>
               <span class="pin-num">C{pad(c.data.number)}</span>
               {!compact && <span class="pin-title">{c.data.title.replace(/^The /, '')}</span>}
             </a>
@@ -197,12 +199,6 @@ const STAGES = [
     align-items: center;
     gap: 0.45rem;
   }
-  .swatch {
-    width: 22px;
-    height: 10px;
-    border-radius: 2px;
-    flex: none;
-  }
   .pins {
     list-style: none;
     margin: auto 0 0;
@@ -223,6 +219,9 @@ const STAGES = [
     border: 1px solid var(--rule);
     border-radius: 999px;
     padding: 0.28rem 0.6rem 0.28rem 0.32rem;
+  }
+  .pins a::before {
+    margin-inline-end: 0;
   }
   .compact .pins a {
     padding: 0.28rem 0.5rem;

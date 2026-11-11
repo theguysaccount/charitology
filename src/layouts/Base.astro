@@ -20,7 +20,8 @@ interface Props {
 const { title, description = SITE.description, noindex = false, nosearch = false } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name}: ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const identity = pageIdentity(Astro.url.pathname.slice(url('/').length - 1));
+const sitePath = Astro.url.pathname.slice(url('/').length - 1);
+const identity = pageIdentity(sitePath);
 const ogImage = new URL(url('/og.jpg'), Astro.site);
 const ogImageAlt = 'Charitology: the science of doing the most good. A compass points through an open C, beside a diagram of charity as a system and its five depths: relief, repair, prevention, structure and source.';
 // The brand introduction complements the home page; articles keep their own title and description.
@@ -88,7 +89,7 @@ const ogVideo = Astro.url.pathname === url('/')
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <Header />
-    <main id="main" data-site-home={Astro.url.pathname === url('/') ? '' : undefined} data-site-symbol={identity.symbol} data-site-tone={identity.tone} data-pagefind-body={nosearch || noindex ? undefined : ''}>
+    <main id="main" data-site-home={Astro.url.pathname === url('/') ? '' : undefined} data-site-path={sitePath} data-site-symbol={identity.symbol} data-site-tone={identity.tone} data-pagefind-body={nosearch || noindex ? undefined : ''}>
       <slot />
     </main>
     <Footer />

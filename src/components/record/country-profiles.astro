@@ -109,7 +109,7 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
           data-region={c.region}
           data-name={`${c.name} ${c.id} ${c.iso2}`.toLowerCase()}
         >
-          <a href={url(`/record/countries/${c.id.toLowerCase()}/`)}>{c.name}</a>{" "}
+          <a href={url(`/record/countries/${c.id.toLowerCase()}/`)}><span class="identity-code" aria-hidden="true">{c.id}</span>{c.name}</a>{" "}
           <>
             <span class="note">{c.region}</span>
             <button

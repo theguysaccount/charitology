@@ -1,4 +1,5 @@
 ---
+import type { SymbolName } from "../lib/site-identities";
 import { ledgerHref, projectResearchLedger } from "../lib/research-ledger-model.mjs";
 import { ledgerEditionHref, ledgerEditionJsonHref, ledgerEditionCsvHref, ledgerSourceHref } from "../lib/research-ledger";
 import { url } from "../lib/site";
@@ -26,6 +27,15 @@ if (selectedRecordId !== null && !selected) throw Error("The selected research-l
 const current = (view) => graph.versions.find((v) => v.recordId === view.id && v.version === view.currentVersion.version);
 const title = (version) => version?.subject.type === "entry" ? version.subject.frontmatter.title : version?.subject.title ?? version?.recordId ?? "Unknown subject";
 const kindNames = { problem: "Research problem", manuscript: "Manuscript", case: "Source-derived case", method: "Method", concept: "Encyclopedia entry", claim: "Bounded claim", artifact: "Artifact", challenge: "Challenge", decision: "Disposition decision" };
+const kindSymbols = {
+  problem: 'question', manuscript: 'notes', case: 'folder', method: 'layers', concept: 'book',
+  claim: 'speech', artifact: 'packet', challenge: 'flag', decision: 'scale',
+} as const satisfies Record<keyof typeof kindNames, SymbolName>;
+const eventSymbols = {
+  baseline: 'pin', 'version-recorded': 'document', 'artifact-recorded': 'packet', response: 'dialogue',
+  'challenge-disposition': 'scale', 'review-recorded': 'checks', 'review-withdrawn': 'break',
+  'artifact-withdrawn': 'archive', 'problem-disposition': 'flag',
+} as const satisfies Record<string, SymbolName>;
 const eventNames = { baseline: "Coverage baseline", "version-recorded": "Version recorded", "artifact-recorded": "Artifact recorded", response: "Response", "challenge-disposition": "Challenge disposition", "review-recorded": "Public review declaration recorded", "review-withdrawn": "Review withdrawn", "artifact-withdrawn": "Artifact withdrawn", "problem-disposition": "Problem disposition" };
 const artifactNames = { "editorial-correction": "Editorial correction", "proposed-method": "Proposed method", "software-check": "Software check", "empirical-result": "Empirical result", "replication-result": "Replication result", "synthesis-result": "Synthesis result", "theoretical-result": "Theoretical result" };
 const page = (items) => Array.from({ length: Math.ceil(items.length / 20) }, (_, i) => items.slice(i * 20, i * 20 + 20));
@@ -47,7 +57,7 @@ const scientificLabel = "Qualification follows the exact recorded public declara
 <section class="research-ledger" data-research-ledger aria-label="Public research ledger">
   <header class="rl-panel">
     <p class="rl-kicker">{isCurrent ? "Current published edition" : "Historical edition"}</p>
-    <h2>{selected ? title(current(selected)) : "What is recorded, and what remains unreviewed"}</h2>
+    <h2>{selected && <><span class="site-symbol" data-site-symbol={kindSymbols[selected.kind]} aria-hidden="true"></span> </>}{selected ? title(current(selected)) : "What is recorded, and what remains unreviewed"}</h2>
     <p>As recorded by <time datetime={edition.capturedAt}>{edition.capturedAt}</time>. This is a dated public record of drafts, changes, sources and review declarations. A page, checksum or merged pull request does not establish a scientific result or independent review.</p>
     {!isCurrent && <p class="rl-warning">This edition retains only the evidence pinned at its capture. Later corrections and withdrawals are shown in the <a href={url("/research-ledger/")}>current ledger</a>.</p>}
     <dl class="rl-definitions">
@@ -101,7 +111,7 @@ const scientificLabel = "Qualification follows the exact recorded public declara
       <summary>Records {index * 20 + 1}–{Math.min((index + 1) * 20, views.length)} of {views.length}</summary>
       <table class="rl-table"><thead><tr><th scope="col">Record</th><th scope="col">Type and state</th><th scope="col">Review qualification</th></tr></thead><tbody>
         {batch.map((view) => { const v = current(view); const problem = problemStates.find((p) => p.recordId === view.id); return <tr class="rl-item" data-ledger-kind={view.kind} data-ledger-state={problem?.effectiveStatus ?? view.qualification.sourceReview} data-ledger-search={`${title(v)} ${view.id} ${view.kind}`}>
-          <td><a href={recordLink(view.id)}>{title(v)}</a><p class="rl-meta"><code>{view.id}</code> · version {view.currentVersion.version}</p></td>
+          <td><span class="site-symbol identity-inline" data-site-symbol={kindSymbols[view.kind]} aria-hidden="true"></span> <a href={recordLink(view.id)}>{title(v)}</a><p class="rl-meta"><code>{view.id}</code> · version {view.currentVersion.version}</p></td>
           <td data-label="Type and state">{kindNames[view.kind]}{problem && <p>Effective problem state: <strong>{problem.effectiveStatus}</strong></p>}{v?.subject.type === "artifact" && <p>{artifactNames[v.subject.kind]}</p>}</td>
           <td data-label="Review">Source review: <strong>{view.qualification.sourceReview}</strong>{view.qualification.peerReview !== "not-applicable" && <p>Peer review: {view.qualification.peerReview}</p>}</td>
         </tr>; })}
@@ -111,7 +121,7 @@ const scientificLabel = "Qualification follows the exact recorded public declara
   </section>}
 
   {bodyViews.map((view) => { const v = current(view); const problem = problemStates.find((p) => p.recordId === view.id); const recordVersions = view.versionIds.map((id) => versions.get(id)).sort((a, b) => a.version === view.currentVersion.version ? -1 : b.version === view.currentVersion.version ? 1 : b.version - a.version); const recordEvents = view.eventIds.map((id) => eventMap.get(id)); const recordReviews = graph.reviews.filter((r) => r.subject.recordId === view.id); return <details class="rl-record rl-archive" id={recordAnchor(view.id)} open={Boolean(selected)}>
-    <summary>{title(v)} · {kindNames[view.kind]} · version {view.currentVersion.version}</summary>
+    <summary><span class="site-symbol identity-inline" data-site-symbol={kindSymbols[view.kind]} aria-hidden="true"></span> {title(v)} · {kindNames[view.kind]} · version {view.currentVersion.version}</summary>
     <div class="rl-badges"><span class="rl-badge">Source review: {view.qualification.sourceReview}</span>{view.qualification.peerReview !== "not-applicable" && <span class="rl-badge">Peer review: {view.qualification.peerReview}</span>}{problem && <span class="rl-badge">Problem: {problem.effectiveStatus}</span>}</div>
     <p><code>{view.id}</code></p>
     <ul class="rl-links">{view.qualification.reasons.map((reason) => <li>{reason}</li>)}</ul>
@@ -145,7 +155,7 @@ const scientificLabel = "Qualification follows the exact recorded public declara
       <div class="rl-controls" hidden><div class="rl-control"><label for={`${recordAnchor(view.id)}-event-search`}>Find timeline text</label><input class="rl-text-filter" id={`${recordAnchor(view.id)}-event-search`} type="search" maxlength="180" /></div><div class="rl-control"><label for={`${recordAnchor(view.id)}-event-kind`}>Event type</label><select class="rl-kind-filter" id={`${recordAnchor(view.id)}-event-kind`}><option value="">All event types</option>{Object.entries(eventNames).map(([value, label]) => <option value={value}>{label}</option>)}</select></div><button class="rl-button rl-reset" type="button">Clear filters</button><div class="rl-paging"><button class="rl-button rl-prev" type="button">Previous events</button><button class="rl-button rl-next" type="button">Next events</button><p class="rl-page-status" role="status" aria-live="polite" tabindex="-1"></p></div></div>
       {page(recordEvents).map((batch, index) => <details class="rl-batch" open={index === 0}><summary>Events {index * 20 + 1}–{Math.min((index + 1) * 20, recordEvents.length)}</summary>
         {batch.map((event) => <article class="rl-item rl-event" id={`event-${event.id}`} data-ledger-kind={event.type} data-ledger-search={`${event.type} ${event.id} ${event.reason}`}>
-          <h4>{eventNames[event.type]}</h4>
+          <h4><span class="site-symbol identity-inline" data-site-symbol={eventSymbols[event.type]} aria-hidden="true"></span> {eventNames[event.type]}</h4>
           <dl class="rl-definitions"><dt>Recorded order</dt><dd>{event.ordinal}; sequence {event.sequence} for this record.</dd><dt>Public occurrence</dt><dd>{event.occurredAt === null ? "Undated / no earlier occurrence asserted" : <time datetime={event.occurredAt}>{event.occurredAt}</time>} · {event.timeBasis}</dd><dt>Recorded in ledger</dt><dd><time datetime={event.recordedAt}>{event.recordedAt}</time></dd></dl>
           <p>{event.reason}</p>
           {event.type === "baseline" && <p>Observed baseline: <a href={recordLink(event.version.recordId, event.version.version)}>version {event.version.version}</a>{event.initialProblemState && `; problem ${event.initialProblemState}`}.</p>}

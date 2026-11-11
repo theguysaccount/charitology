@@ -20,17 +20,21 @@
   }
 }
 
-/* Destination marks use the same symbol in a list, in search and on arrival. */
+/* Icons sit beside the item label. Headings and standalone tiles use the
+   item's own mark. Links can pick up a destination mark from the site map. */
 :where(main:not([data-site-home]) h1, .site-symbol, a.card, .starting-grid > a, .method-card,
   .guide-card, .nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
-  a.r-title, .list-row .numeral, .problems .pnum, .prob-grid .pnum,
-  .cond-grid .numeral)::before {
+  a.r-title, .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
+  a.identity-link, main :is(ul, ol) > li > a:first-child:not([class], [href^="#"], :has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
+  .sources li > a:first-child, .bar-label[data-site-symbol],
+  .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4))::before {
   content: "";
   display: inline-block;
   flex: none;
   width: var(--symbol-size, 1em);
   height: var(--symbol-size, 1em);
-  background: var(--symbol-ink, var(--link-tone, var(--site-tone, var(--accent))));
+  background: var(--forced-symbol-ink, var(--symbol-ink, var(--link-tone, var(--site-tone, var(--accent)))));
+  forced-color-adjust: none;
   mask: var(--link-glyph, var(--site-symbol, var(--glyph-document))) center / contain no-repeat;
   vertical-align: -0.13em;
 }
@@ -48,11 +52,18 @@
 }
 
 :where(a.card, .starting-grid > a, .method-card, .guide-card) {
-  --link-glyph: var(--glyph-external);
+  --link-glyph: var(--site-symbol, var(--glyph-external));
 }
 
-:where(.nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a, a.r-title)::before {
+:where(.nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
+  a.r-title, a.identity-link, main :is(ul, ol) > li > a:first-child:not([class], [href^="#"], :has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
+  .sources li > a:first-child, .bar-label[data-site-symbol],
+  .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4))::before {
   margin-inline-end: 0.48em;
+}
+
+:where(main :is(ul, ol) > li > a:first-child:not([class], [href^="#"], :has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num)))):not(:where(.sources li > a:first-child))::before {
+  display: var(--list-mark, none);
 }
 
 .nav > a::before {
@@ -77,8 +88,12 @@
   margin-block-end: 0.23rem;
 }
 
-:where(.prose, main) ul:not([class]) > li::marker {
+:where(.prose, main) ul:not([class]) > li:not(:has(> .identity-link:first-child))::marker {
   content: "◇  ";
+}
+
+main ul > li:has(> .identity-link:first-child)::marker {
+  content: "";
 }
 
 :where(main) :where(ol, ul) > li::marker {
@@ -100,6 +115,36 @@
 
 .site-symbol::before {
   --symbol-ink: currentColor;
+  mask-image: var(--site-symbol);
+}
+
+.identity-label > .site-symbol {
+  vertical-align: middle;
+}
+
+.identity-inline {
+  --symbol-tile: 1.55rem;
+  --symbol-size: 1rem;
+}
+
+.identity-link,
+.sources a,
+.finance-results > li > :is(h3, h4) {
+  overflow-wrap: anywhere;
+}
+
+.identity-code {
+  display: inline-block;
+  min-inline-size: 3.25ch;
+  margin-inline-end: 0.5em;
+  padding: 0.12em 0.42em;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--site-tone, var(--accent));
+  font: 650 0.75em/1.5 var(--font-mono);
+  text-align: center;
+  vertical-align: 0.06em;
 }
 
 .identity-label {
@@ -143,16 +188,12 @@ a.guide-card {
 }
 
 @media (forced-colors: active) {
-  :where(main:not([data-site-home]) h1, .site-symbol, a.card, .starting-grid > a, .method-card,
-    .guide-card, .nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
-    a.r-title, .list-row .numeral, .problems .pnum, .prob-grid .pnum,
-    .cond-grid .numeral)::before {
-    background: CanvasText;
-    forced-color-adjust: none;
-  }
+  :root { --forced-symbol-ink: CanvasText; }
+  .site-symbol, .identity-code { outline: 1px solid CanvasText; }
 }
 
 @media print {
   .catalog-jump { display: none; }
+  .site-symbol::before, .identity-link::before { print-color-adjust: exact; }
   main:not([data-site-home]) h1::before { display: none; }
 }

@@ -1,55 +1,95 @@
-<div class="theme-control" hidden>
-  <label for="site-theme" class="visually-hidden">Color theme</label>
-  <span class="theme-glyph" aria-hidden="true"></span>
-  <select id="site-theme">
-    <option value="system">System</option>
-    <option value="light">Light</option>
-    <option value="dark">Dark</option>
-  </select>
-</div>
+---
+import SiteSymbol from './SiteSymbol.astro';
+import type { SymbolName } from '../lib/site-identities';
+
+const modes = [
+  { value: 'system', label: 'System', symbol: 'monitor' },
+  { value: 'light', label: 'Light', symbol: 'sun' },
+  { value: 'dark', label: 'Dark', symbol: 'moon' },
+] as const satisfies ReadonlyArray<{ value: string; label: string; symbol: SymbolName }>;
+---
+
+<fieldset class="theme-control" id="site-theme" hidden>
+  <legend class="visually-hidden">Color theme</legend>
+  {modes.map(({ value, label, symbol }) => (
+    <label title={`Use ${label.toLowerCase()} theme`}>
+      <input class="visually-hidden" type="radio" name="site-theme" value={value} checked={value === 'system'} />
+      <span class="theme-option">
+        <SiteSymbol name={symbol} />
+        <span class="visually-hidden">{label}</span>
+      </span>
+    </label>
+  ))}
+</fieldset>
 
 <style>
   .theme-control {
-    position: relative;
-    color: var(--ink-2);
-  }
-
-  .theme-control:focus-within,
-  .theme-control:hover {
-    color: var(--ink);
-  }
-
-  select {
-    display: block;
-    min-height: 40px;
+    display: flex;
+    align-items: center;
+    flex: none;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 2px;
     border: 1px solid var(--rule);
-    border-radius: 9px;
-    padding: 0 0.4rem 0 1.65rem;
+    border-radius: 12px;
     background: var(--surface);
-    color: inherit;
-    font: 650 0.75rem var(--font-sans);
+  }
+
+  .theme-control[hidden] {
+    display: none;
+  }
+
+  label {
+    position: relative;
     cursor: pointer;
   }
 
-  .theme-glyph {
-    position: absolute;
-    inset-inline-start: 0.45rem;
-    top: 50%;
-    width: 0.9rem;
-    height: 0.9rem;
-    transform: translateY(-50%);
-    background: currentColor;
-    mask: var(--glyph-sun) center / contain no-repeat;
-    pointer-events: none;
+  .theme-option {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 36px;
+    border-radius: 9px;
+    color: var(--ink-2);
   }
 
-  :global(:root[data-theme='dark']) .theme-glyph {
-    mask-image: var(--glyph-moon);
+  .theme-option :global(.site-symbol) {
+    --symbol-tile: 1.15rem;
+    --symbol-size: 1.05rem;
+    color: inherit;
+    background: transparent;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme='light'])) .theme-glyph {
-      mask-image: var(--glyph-moon);
+  label:hover .theme-option {
+    background: var(--bg-2);
+    color: var(--ink);
+  }
+
+  input:checked + .theme-option {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  input:focus-visible + .theme-option {
+    outline: 2px solid var(--focus);
+    outline-offset: -2px;
+  }
+
+  @media (pointer: coarse) {
+    .theme-option {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    input:checked + .theme-option {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+    input:focus-visible + .theme-option {
+      outline: 2px dashed CanvasText;
+      outline-offset: -4px;
     }
   }
 </style>
@@ -57,10 +97,12 @@
 <script>
   const key = 'charitology.theme';
   const root = document.documentElement;
-  const field = document.querySelector<HTMLSelectElement>('#site-theme');
+  const field = document.querySelector<HTMLFieldSetElement>('#site-theme');
   const meta = document.querySelector<HTMLMetaElement>('#site-theme-color');
 
   if (field) {
+    const options = [...field.querySelectorAll('input')];
+
     function apply(value: string | null | undefined) {
       const mode = value === 'light' || value === 'dark' ? value : 'system';
       if (mode === 'system') {
@@ -71,20 +113,22 @@
         meta?.setAttribute('content', mode === 'dark' ? '#121110' : '#f6f3ec');
         meta?.setAttribute('media', 'all');
       }
-      return mode;
+      for (const option of options) option.checked = option.value === mode;
     }
 
-    field.value = apply(root.dataset.theme);
-    field.parentElement?.removeAttribute('hidden');
-    field.addEventListener('change', () => {
-      apply(field.value);
+    apply(root.dataset.theme);
+    field.hidden = false;
+    field.addEventListener('change', (event) => {
+      const option = event.target;
+      if (!(option instanceof HTMLInputElement) || !option.checked) return;
+      apply(option.value);
       try {
-        if (field.value === 'system') localStorage.removeItem(key);
-        else localStorage.setItem(key, field.value);
+        if (option.value === 'system') localStorage.removeItem(key);
+        else localStorage.setItem(key, option.value);
       } catch {}
     });
     window.addEventListener('storage', (event) => {
-      if (event.key === key || event.key === null) field.value = apply(event.newValue);
+      if (event.storageArea === localStorage && (event.key === key || event.key === null)) apply(event.newValue);
     });
   }
 </script>
