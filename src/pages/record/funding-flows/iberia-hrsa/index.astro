@@ -33,7 +33,7 @@ const sources = [
 <Entry title={title} eyebrow="The Record · Funding flows" summary="Follow four federal grants from the awarding agency’s records to three annual audit schedules from one Louisiana health center." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Iberia health center'}]} sources={sources}>
   <p>The Health Resources and Services Administration (HRSA) publishes grant awards by federal fiscal year. The audit reports for <strong>{data.organization.name}</strong> list program receipts and expenses by the center’s fiscal year. The same grant numbers connect the records, and the agency and audit submissions carry the same federal recipient ID.</p>
 
-  <h2>One grant across two reporting calendars</h2>
+  <h2 id="reporting-calendars">One grant across two reporting calendars</h2>
   <p>For <a href="#H8GCS48002">COVID-19 vaccination expansion</a>, HRSA lists <strong>USD {money(vaccination.awardedCents)}</strong> awarded in federal fiscal {vaccination.federalIssueYear}. The center’s schedules show expenses of <strong>USD {money(vaccinationExpenses[0].reportedExpensesCents)}</strong> in the fiscal year ending May 2023 and <strong>USD {money(vaccinationExpenses[1].reportedExpensesCents)}</strong> in the following fiscal year. Together those expenses equal the agency award amount. The audit schedules use accrual accounting. Payment dates, bank settlement and the number of people vaccinated require other records.</p>
 
   <nav class="catalog-jump" aria-label="Explore this case">
@@ -47,7 +47,7 @@ const sources = [
     <a class="btn btn-ghost btn-small" href={url(route + 'parish-coverage.csv')} download="iberia-parish-coverage.csv">Download parish estimates CSV</a>
   </div>
 
-  <h2>Totals from the center’s audit schedules</h2>
+  <h2 id="audit-totals">Totals from the center’s audit schedules</h2>
   <div class="table-wrap" role="region" aria-label="Audit schedule totals by fiscal period" tabindex="0">
     <table class="data">
       <thead><tr><th scope="col">Center’s fiscal period</th><th scope="col">Grant rows</th><th scope="col">Reported receipts (USD)</th><th scope="col">Reported expenses (USD)</th><th scope="col">Original schedule</th></tr></thead>
@@ -75,7 +75,7 @@ const sources = [
   </div>
   <p>The margins of error use a {coverage.confidenceLevelPercent}% confidence level. Census estimates use calendar years and overlap the center’s June-to-May reporting periods. They describe insurance coverage for the parish’s residents. The reports give no dollar breakdown for the parish or counts of uninsured patients reached by these grants. The comparison supplies context about access to care. <a href={coverage.fileLayout}>Census definitions and margins of error</a>.</p>
 
-  <h2>Source records by grant</h2>
+  <h2 id="grants">Source records by grant</h2>
   {grants.map(([grant, label]) => {
     const awards = data.agencyAwards.filter(row => row.grantNumber === grant);
     const schedules = data.audits.flatMap(audit => audit.grants.filter(row => row.grantNumber === grant).map(row => ({ audit, row })));
@@ -106,7 +106,7 @@ const sources = [
     </section>;
   })}
 
-  <h2>How to reproduce the comparison</h2>
+  <h2 id="reproduce">How to reproduce the comparison</h2>
   <ol>
     <li>Find the recipient’s public annual audit submissions by EIN <code>{data.organization.ein}</code> or federal Unique Entity Identifier <code>{data.organization.uei}</code>. Three selected FAC general-file editions each contain one matching nonprofit record. The JSON preserves the report identifiers, source records and accepted dates.</li>
     <li>Read the complete federal-award schedule in each of those three PDFs. Keep each grant number, Assistance Listing, printed program dates and both reported amounts. The grants add to the printed expenses for each fiscal period, and those totals agree with the corresponding FAC general records.</li>

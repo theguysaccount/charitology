@@ -9,10 +9,10 @@ const citations = await allCitations();
 const pages = new Set(citations.flatMap((c) => c.citedBy.map((b) => b.href))).size;
 ---
 
-<StudyRegister view="browse" />
+<div id="study-register"><StudyRegister view="browse" /></div>
 
 <section class="lib">
-  <h2>Published bibliography</h2>
+  <h2 id="bibliography">Published bibliography</h2>
   <p class="meta">{citations.length} sources, cited across {pages} pages.</p>
   <ol class="cites">
     {

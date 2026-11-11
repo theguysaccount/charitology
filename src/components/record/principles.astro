@@ -44,7 +44,7 @@ const chapters = (await getCollection("principles")).sort(
         >
           <>
             <span data-marker />
-            <a href={url(`/record/principles/${c.id}/`)}>{c.data.title}</a>
+            <a class="identity-link" href={url(`/record/principles/${c.id}/`)}>{c.data.title}</a>
             <p>{c.data.summary}</p>
           </>
         </li>

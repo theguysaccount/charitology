@@ -120,6 +120,12 @@ export const symbols = {
   lever: 'M3 10h18M8 20l4-8 4 8H8ZM5 6h.01m7-1h7',
   ruler: 'm3 16 13-13 5 5L8 21l-5-5Zm6-5 3 3m1-7 3 3m-11 5 3 3',
   rings: 'M10 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm4 0a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z',
+  bankOrder: 'M3 5h18v14H3zM6 9h4m-4 3h3m6 1h4m-2-2 2 2-2 2M6 16h4',
+  permit: 'M5 3h10l4 4v6m-4-10v5h4M5 3v18h8m-5-9h7m-7 4h4m5 2 2 2 3-4',
+  survey: 'M8 4H4v17h16V4h-4M8 2h8v5H8zM8 11h1m4 0h3m-8 5h1m4 0h3',
+  route: 'M6 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM6 9v4a4 4 0 0 0 4 4h5m-1-8h7m-2-2 2 2-2 2',
+  yearFile: 'M5 3h10l4 4v14H5zM15 3v5h4M8 12h8v6H8zm2-2v3m4-3v3m-4 2h4',
+  construction: 'M3 21h18M7 21V3m0 0h3l10 5H3l4-5Zm3 0v18M7 13l3 3m-3 1 3 3m7-12v7q0 2-2 2',
   pulse: 'M2 12h5l3-8 4 16 3-8h5',
 } as const;
 

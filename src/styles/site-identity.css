@@ -26,8 +26,8 @@
   .guide-card, .nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
   a.r-title:not(:has(> .identity-code)), .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
   a.identity-link, main :is(ul, ol) > li > :is(a:not([class]), a.ext):first-child:not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
-  .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
-  .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4))::before {
+  main :is(h2, h3)[id], .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
+  .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   content: "";
   display: inline-block;
   flex: none;
@@ -37,6 +37,13 @@
   forced-color-adjust: none;
   mask: var(--link-glyph, var(--site-symbol, var(--glyph-document))) center / contain no-repeat;
   vertical-align: -0.13em;
+}
+
+/* A named section repeats its jump-link mark at the destination. */
+:where(main :is(h2, h3)[id])::before {
+  display: var(--heading-mark, none);
+  mask-image: var(--heading-glyph);
+  margin-inline-end: 0.48em;
 }
 
 :where(main:not([data-site-home]) h1:not(:has(> .title-code)))::before {
@@ -58,7 +65,7 @@
 :where(.nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
   a.r-title:not(:has(> .identity-code)), a.identity-link, main :is(ul, ol) > li > :is(a:not([class]), a.ext):first-child:not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
   .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
-  .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4))::before {
+  .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   margin-inline-end: 0.48em;
 }
 
@@ -88,7 +95,7 @@
   margin-block-end: 0.23rem;
 }
 
-:where(.prose, main) ul:not([class]) > li:not(:has(> .identity-link:first-child))::marker {
+:where(.prose, main) ul:not([class], [role='list']) > li:not(:has(> .identity-link:first-child))::marker {
   content: "◇  ";
 }
 

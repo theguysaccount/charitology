@@ -1,6 +1,8 @@
 ---
+import PageSections from "../../components/PageSections.astro";
+import { pageSections } from "../../lib/section-navigation";
 import SiteSymbol from "../../components/SiteSymbol.astro";
-import { providerSymbols } from "../../lib/list-identities";
+import { osDiscussionSymbols, providerSymbols } from "../../lib/list-identities";
 import Base from "../../layouts/Base.astro";
 import Crumbs from "../../components/Crumbs.astro";
 import { Content as Plan } from "../../../docs/CHARITY_OS_PLAN.md";
@@ -39,6 +41,7 @@ const tags = [...new Set(needs.entries.flatMap((e) => e.tags))].sort();
     </div>
   </header>
   <section class="wrap section-tight" aria-labelledby="research-title">
+    <PageSections sections={pageSections("/for-charities/os-plan/") ?? []} />
     <h2 id="research-title">What we checked</h2><div class="grid">
       <article class="card">
         <h3>{providers.providers.length} existing systems</h3><p>
@@ -156,6 +159,7 @@ const tags = [...new Set(needs.entries.flatMap((e) => e.tags))].sort();
         needs.entries.map((n) => (
           <article
             class="card need"
+            id={n.id}
             data-tags={n.tags.join(" ")}
             data-search={[
               n.id,
@@ -170,8 +174,9 @@ const tags = [...new Set(needs.entries.flatMap((e) => e.tags))].sort();
               .toLowerCase()}
           >
             <>
-              <span class="eyebrow">
-                {n.id} · {n.venue}
+              <span class="eyebrow identity-label">
+                <SiteSymbol name={osDiscussionSymbols[n.id]} size="inline" />
+                <a href={`#${n.id}`} aria-label={`Link to discussion ${n.id}`}>{n.id}</a> · {n.venue}
               </span>
               <h3>
                 <a href={n.url}>{n.title}</a>

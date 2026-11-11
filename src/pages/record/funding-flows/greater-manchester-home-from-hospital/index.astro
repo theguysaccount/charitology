@@ -32,7 +32,7 @@ const sources = [
 ---
 
 <Entry title={title} eyebrow="The Record · Funding flows" summary="Trace awards for home-from-hospital support alongside the discharge pressure NHS England recorded in the same place and period." crumbs={[{label:'The Record',href:'/record/'},{label:'Gap Map',href:'/record/gap-map/'},{label:title}]} sources={sources}>
-  <h2>Who funded what</h2>
+  <h2 id="awards">Who funded what</h2>
   <p>10GM reports that it ran the fund with support from Greater Manchester NHS Integrated Care. Its workbook lists {data.awards.length} awards totaling <strong>{money.format(total)}</strong>, dated 27 September 2022, for projects delivered from December 2022 to March 2023. The upstream funding amount and the amounts transferred or spent by individual recipients are outside this record. The total counts each award ID once.</p>
   <div class="case-awards">
     {data.awards.map(award => {
@@ -48,17 +48,17 @@ const sources = [
       </details>;
     })}
   </div>
-  <h2>What the NHS recorded during delivery</h2>
+  <h2 id="nhs-records">What the NHS recorded during delivery</h2>
   <p>During those four months, Greater Manchester’s integrated care board reported an average of <strong>{oneDecimal.format(dailyAverage)}</strong> patients per day still in acute hospitals after they no longer met the criteria to stay. This is a count at each daily snapshot. A person can appear on more than one day. These board figures are unvalidated management information and exclude hospice discharges as described in the NHS workbook.</p>
   <StaticBars rows={months} label="Average daily patients remaining in hospital who no longer met the criteria to stay" />
   <ul>{data.need.map(month => {
     const source = data.sources[month.month as keyof typeof data.sources];
     return <li><a href={source.url}>{monthLabel.format(new Date(month.month + '-01T00:00:00Z'))} NHS workbook</a> · {month.sheet}, row {month.sourceRow}, board code QOP · {month.daily.length} daily observations.</li>;
   })}</ul>
-  <h2>What the sources can answer</h2>
+  <h2 id="scope">What the sources can answer</h2>
   <p>The award records show one community fund’s commitments. The NHS figures show system-wide pressure in Greater Manchester during delivery. They cover different groups of people and use different units, so the page reports them side by side. It does not divide awards by patients or infer how much need the fund met.</p>
   <p>10GM separately reports that the projects supported 594 people to be discharged and that 32 of them were readmitted within seven days. Those are program-reported results. The sources shown here do not establish what would have happened without the projects.</p>
-  <h2>What randomized trials measured</h2>
+  <h2 id="trials">What randomized trials measured</h2>
   <ul>
     <li>A <a href={practicalSupportTrial}>1988 trial of practical help at home</a> assigned 903 patients over age 75 to care-attendant support or standard aftercare. The three-month comparison of independence and morale was inconclusive. Over 18 months the trial reported fewer days in hospital in the support group.</li>
     <li>The <a href={patientInvolvementTrial}>2025 Your Care Needs You trial</a> studied an approach to involving patients in discharge preparation on NHS wards. The primary outcome was unplanned readmission within 30 days. The estimated odds ratio was 0.93, with a 95% confidence interval of 0.78 to 1.10. The interval spans lower and higher odds of readmission.</li>

@@ -1,5 +1,6 @@
 import { routes, symbols } from '../lib/site-identities';
 import { datasetSymbols, ecosystemSymbols, fragmentSymbols } from '../lib/list-identities';
+import { sectionNavigation } from '../lib/section-navigation';
 import { url } from '../lib/site';
 
 export function GET() {
@@ -29,12 +30,17 @@ export function GET() {
   const fragments = Object.entries(fragmentSymbols).flatMap(([path, entries]) =>
     Object.entries(entries).map(([id, symbol]) =>
       `a[href="${url(path)}#${id}"],main[data-site-path="${path}"] a[href="#${id}"]{--link-glyph:var(--glyph-${symbol})}`));
+  const sectionLinks = Object.entries(sectionNavigation).flatMap(([path, entries]) =>
+    entries.flatMap(([id, , symbol]) => [
+      `a[href="${url(path)}#${id}"],main[data-site-path="${path}"] a[href="#${id}"]{--link-glyph:var(--glyph-${symbol})}`,
+      `main[data-site-path="${path}"] :is(h2,h3)[id="${id}"]{--heading-glyph:var(--glyph-${symbol});--heading-mark:inline-block}`,
+    ]));
   const utilityLinks = [
     'a[href*="github.com/theguysaccount/charitology/issues/new"][href*="correction"]{--link-glyph:var(--glyph-checks)}',
     'a[href*="github.com/theguysaccount/charitology/issues/new"][href*="red-team"]{--link-glyph:var(--glyph-flag)}',
     `a[href="${url('/feed.xml')}"]{--link-glyph:var(--glyph-signal);--list-mark:inline-block}`,
   ];
-  return new Response([`:root{${assets.join(';')}}`, ...page, ...tones, ...links, ...datasetLinks, ...ecosystemLinks, ...fragments, ...utilityLinks].join('\n'), {
+  return new Response([`:root{${assets.join(';')}}`, ...page, ...tones, ...links, ...datasetLinks, ...ecosystemLinks, ...fragments, ...sectionLinks, ...utilityLinks].join('\n'), {
     headers: { 'Content-Type': 'text/css; charset=utf-8' },
   });
 }

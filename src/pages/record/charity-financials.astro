@@ -26,7 +26,7 @@ const sources = manifest.sources.map(source => ({
   </li>)}</ul>
   <p>Source: Australian Charities and Not-for-profits Commission. <a href={manifest.license}>Creative Commons Attribution 3.0 Australia</a>. Charitology selected columns, converted date formats and linked statements by exact ABN. Some records are withheld by the regulator. Check the <a href="https://www.acnc.gov.au/charity/charities">current ACNC register</a> for current status and corrected information.</p>
   <p><a href={url('/data/charity-financials/manifest.json')} download>Download the coverage and source manifest</a> · <a href={url(`/data/charity-financials/${manifest.asset.path}`)} download>Download the full snapshot as compressed JSON</a>. The manifest gives the field order and original file fingerprints. Import ABNs as text when opening an export in a spreadsheet.</p>
-  <h2>Reading the figures</h2>
+  <h2 id="reading-the-figures">Reading the figures</h2>
   <p>Grants and donations shown here are amounts the reporting organization reported making for use inside or outside Australia. The figures do not identify individual recipients or where services were delivered. Revenue from government is an incoming amount. An award, a transfer and a recorded expense can describe different stages of the same money.</p>
   <p>A consolidated statement may cover more than one entity. A blank consolidation field leaves that scope unknown. Avoid adding figures across organizations because groups can overlap. A financial report describes money and its accounting scope. Evidence about what happened to people or communities comes from other sources.</p>
 </Entry>

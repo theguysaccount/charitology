@@ -9,7 +9,7 @@ import { url, absolute } from "../../lib/site";
 <PublicationCurrent family="letter"/>
 
 <section>
-  <h2>Principles read aloud: Season 1</h2><p>
+  <h2 id="podcast-season">Principles read aloud: Season 1</h2><p>
     Six complete readings, about {
       Math.round(podcast.episodes.reduce((n, e) => n + e.seconds, 0) / 60)
     } minutes in total. The audio uses computer narration from the standard macOS
@@ -47,7 +47,7 @@ import { url, absolute } from "../../lib/site";
         </li>
       ))
     }
-  </ol><h2>The Charitology Letter</h2><p>
+  </ol><h2 id="charitology-letter">The Charitology Letter</h2><p>
     Read and subscribe without an account. The dedicated RSS feed publishes
     actual letters; the site-wide feed below also includes other pages.
   </p><a class="btn" href={url("/newsletter.xml")}

@@ -79,7 +79,7 @@ const sources = [
   </div>
   <p>For projects in Kenya, the expenditure table reports KES {amount(projectCosts.inKenyaKES)} billion. The same report’s <a href={pageLink(latest, 'sectorProjectTotal')}>sector table</a> gives a total of KES {amount(edition.expenditure.sectorTableProjectTotalInKenyaKES)} billion. Keep those figures tied to their respective tables. Connecting particular incoming funds to spending or measuring outcomes would require transaction or program records.</p>
 
-  <h2>Open the original report pages</h2>
+  <h2 id="original-reports">Open the original report pages</h2>
   <ul>{years.map(period => <li>
     <strong>{period.fiscalYear}</strong> · <a href={pageLink(period, 'register')}>Register</a> · <a href={pageLink(period, 'filed')}>Annual reports</a> · <a href={pageLink(period, 'audited')}>Audited accounts</a> · <a href={pageLink(period, 'receipts')}>Total receipts</a> · <a href={pageLink(period, 'origins')}>Source regions</a>
   </li>)}</ul>

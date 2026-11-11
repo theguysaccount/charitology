@@ -2,6 +2,8 @@
 // Due Diligence Checklist: about two dozen questions for checking one
 // organization, with answers saved per organization in this browser.
 // Items: src/data/due-diligence.json. Model and report: src/lib/client/diligence.ts.
+import SiteSymbol from '../SiteSymbol.astro';
+import { diligenceGroupSymbols, diligenceItemSymbols } from '../../lib/list-identities';
 import data from '../../data/due-diligence.json';
 import ecosystem from '../../data/ecosystem.json';
 import { STATUSES } from '../../lib/client/diligence';
@@ -73,7 +75,8 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
       {
         groups.map((g) => (
           <li>
-            <a class="chip" href={`#dd-g-${g.id}`}>
+            <a class="chip identity-label" href={`#dd-g-${g.id}`}>
+              <SiteSymbol name={diligenceGroupSymbols[g.id as keyof typeof diligenceGroupSymbols]} size="inline" />
               {g.name} <span class="dd-toc-count" data-group-count={g.id} />
             </a>
           </li>
@@ -87,12 +90,13 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
     {
       groups.map((g) => (
         <section class={g.flag ? 'dd-group dd-flags' : 'dd-group'} id={`dd-g-${g.id}`} aria-labelledby={`dd-gh-${g.id}`}>
-          <h3 id={`dd-gh-${g.id}`}>{g.name}</h3>
+          <h3 id={`dd-gh-${g.id}`}><SiteSymbol name={diligenceGroupSymbols[g.id as keyof typeof diligenceGroupSymbols]} size="inline" /> {g.name}</h3>
           <p class="note dd-intro">{g.intro}</p>
           {g.items.map((item) => (
             <div class="dd-item" id={`dd-i-${item.id}`}>
               <fieldset data-item={item.id}>
                 <legend>
+                  <SiteSymbol name={diligenceItemSymbols[item.id]} size="inline" />
                   <span class="dd-num">{item.number}.</span> {item.question}
                 </legend>
                 <p class="dd-why">
