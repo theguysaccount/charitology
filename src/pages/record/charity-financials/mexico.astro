@@ -1,0 +1,105 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import SiteSymbol from '../../../components/SiteSymbol.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-financials/mx/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Mexico charity financial reports and authorization directories';
+const base = '/data/charity-financials/mx/';
+const editions = Object.entries(manifest.financial);
+const count = (n: number) => n.toLocaleString('en-US');
+const pesos = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const sources = [
+  { title: 'SAT open data and reuse', publisher: manifest.publisher, url: manifest.openData },
+  { title: 'SAT annual reports and CSV downloads', publisher: manifest.publisher, url: manifest.reportCatalogue },
+  { title: 'SAT field definitions', publisher: manifest.publisher, url: manifest.dictionary.url },
+  { title: 'Authorized organizations by directory edition', publisher: manifest.publisher, url: manifest.directoryCatalogue },
+  { title: 'Annex 14, published January 9, 2026', publisher: manifest.publisher, url: manifest.officialGazette },
+  ...editions.map(([year, source]) => ({
+    title: `Finance ministry report for fiscal ${year}`, publisher: 'Secretaría de Hacienda y Crédito Público', url: source.report.url,
+  })),
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index"
+  summary="Search official records by organization name or tax identifier. Read reported donations, income and expenses for fiscal years 2023 through 2025."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Mexico'}]}
+  filePath="src/pages/record/charity-financials/mexico.astro" sources={sources}>
+  <p>Mexico’s tax administration, SAT, publishes financial reports for organizations and trusts authorized to receive tax-deductible gifts. This edition combines {count(manifest.coverage.financialPeriods)} organization-year records with two authorization directories. It connects them using the complete 12-character institutional tax identifier, or RFC. It keeps the names, classifications and locations recorded in each source.</p>
+
+  <section class="charity-financial-search" data-mx-financials data-asset={url(base + manifest.asset.path)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="mx-search-heading">
+    <h2 id="mx-search-heading">Find an organization</h2>
+    <p id="mx-search-help">Enter a name or full RFC, or choose a financial year. Names in all included periods and directories are searchable. The search runs in your browser.</p>
+    <form role="search" aria-label="Mexico charity financial reports" aria-describedby="mx-search-help">
+      <label for="mx-query">Organization name or full RFC</label>
+      <div class="finance-actions">
+        <input type="search" id="mx-query" maxlength="160" autocomplete="off" disabled />
+        <button type="submit" class="btn" disabled>Search records</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+      <label for="mx-year">Financial year</label>
+      <select id="mx-year" disabled>
+        <option value="">All years and directory entries</option>
+        {editions.map(([year]) => <option value={year}>{year}</option>)}
+      </select>
+    </form>
+    <p data-status role="status">Search when you’re ready to load the financial and directory snapshot.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-export="json" disabled>Export displayed records as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-export="financial" disabled>Export displayed financial periods as CSV</button>
+      <button type="button" class="btn btn-ghost btn-small" data-export="directory" disabled>Export displayed directory entries as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="building" data-results aria-label="Mexico organization results"></ol>
+    <noscript><p>The coverage tables, source reports and data downloads below are available without this search.</p></noscript>
+  </section>
+
+  <h2 id="coverage">Which organizations and years are covered</h2>
+  <p>{count(manifest.coverage.identities)} distinct RFCs appear across the five sources. {count(manifest.coverage.financialInstitutions)} have at least one financial period. {count(manifest.coverage.exactPeriodHistories['3'])} have all three. Directory-only entries remain searchable. An organization may appear in several directory rows for different authorized activities. The search displays one organization and preserves the worksheet coordinates for its activities.</p>
+  <div class="table-wrap" role="region" aria-label="Mexico financial report coverage" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Fiscal year</th><th scope="col" class="num">Financial records</th><th scope="col" class="num">Exact RFCs in the 2025 directory</th><th scope="col" class="num">Exact RFCs in the 2026 directory</th><th scope="col">Official report</th></tr></thead>
+      <tbody>{editions.map(([year, source]) => <tr>
+        <th scope="row">{year}</th><td class="num">{count(source.includedRows)}</td>
+        <td class="num">{count(source.directoryMatches['2025'])}</td><td class="num">{count(source.directoryMatches['2026'])}</td>
+        <td><a href={source.report.url}>Finance ministry PDF</a></td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>Both directory workbooks refer to the January 9, 2026 Gazette publication. Directory inclusion describes the labeled edition. The tax registration status is a separate field, and none of these snapshots establishes whether an organization can receive deductible gifts today. Check the <a href={manifest.directoryCatalogue}>current SAT directory and notices</a>.</p>
+
+  <h2 id="donations">Donations reported in each edition</h2>
+  <p>All amounts stay in Mexican pesos (MXN). The national donation columns in the finance ministry’s PDFs agree with the sums of the four corresponding CSV fields. The number and mix of reporting organizations can differ by year.</p>
+  <div class="table-wrap" role="region" aria-label="Reported donations by fiscal year and type in Mexican pesos" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Fiscal year</th><th scope="col" class="num">Domestic cash</th><th scope="col" class="num">Foreign cash</th><th scope="col" class="num">Domestic in-kind</th><th scope="col" class="num">Foreign in-kind</th></tr></thead>
+      <tbody>{editions.map(([year, source]) => <tr>
+        <th scope="row"><a href={source.report.url + '#page=' + source.report.nationalTotalPdfPage}>{year}</a></th>
+        {source.report.fourOriginalDonationColumnsInPesos.map(value => <td class="num">{pesos.format(value)}</td>)}
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>In-kind gifts are reported valuations. The expense fields describe selected amounts, including domestic and foreign operating expenses. They leave individual payments, recipient organizations, exact service locations and outcomes unresolved. Blank financial fields remain missing. Reported zeros remain zero.</p>
+
+  <h2>Sources and downloads</h2>
+  <div class="btn-row">
+    <a class="btn btn-ghost btn-small" href={url(base + 'manifest.json')} download="mexico-charity-financials-manifest.json"><SiteSymbol name="document" />Download source manifest</a>
+    <a class="btn btn-ghost btn-small" href={url(base + manifest.asset.path)} download="mexico-charity-financials.json.gz"><SiteSymbol name="download" />Download all selected records</a>
+  </div>
+  <p>The <a href={url(base + 'manifest.json')}>manifest</a> gives source dates, original fiscal-year columns, directory row numbers and file fingerprints. The downloadable snapshot uses cents for exact amounts and null for missing fields. It excludes contact details, addresses, representatives and role-level compensation. The report covers authorized entities in SAT’s publications. Other Mexican nonprofits may fall outside its scope.</p>
+  <p>Financial data comes from SAT’s <a href={manifest.reportCatalogue}>open reports</a> and the <a href={manifest.directoryCatalogue}>official directories</a>. The source manifest preserves the publisher’s original file addresses, including the two older CSVs served over HTTP. The finance ministry’s HTTPS PDFs provide a separately published cross-check.</p>
+</Entry>
+
+<style>
+  select { max-width: 100%; padding: .5rem; font: inherit; }
+  label:not(:first-child) { margin-top: .75rem; }
+  .table-wrap { margin-block: 1rem; }
+  .table-wrap table.data { display: table; min-width: 28rem; }
+  .table-wrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+
+<script>
+  import { mountMexicoFinancials } from '../../../lib/client/mx-charity-financials';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-mx-financials]')) mountMexicoFinancials(root);
+</script>

@@ -13,6 +13,7 @@ import registry from '../../../../public/data/irs-registry/manifest.json';
 import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
 import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
 import brazil from '../../../../public/data/charity-registry/brazil-osc/manifest.json';
+import mexico from '../../../../public/data/charity-financials/mx/manifest.json';
 import manchester from '../../../data/home-from-hospital.json';
 
 const title = 'Charity Index coverage';
@@ -50,6 +51,14 @@ const panels = [
     history: `${number(japan.counts.financialSummaries)} entries link to a dated organization-entered financial summary.`,
     boundary: 'The portal includes dissolution records. Corporate numbers can be repeated, and the reported financial figures cover only matched records.',
     manifest: '/data/charity-registry/japan-npo/manifest.json',
+  },
+  {
+    name: 'Mexico', flag: 'SAT financial reports and authorization directories', route: '/record/charity-financials/mexico/',
+    label: 'Search Mexico’s charity financial reports', date: mexico.capturedOn,
+    coverage: `${number(mexico.coverage.identities)} exact institutional RFCs across three financial reports and two directories.`,
+    history: `${number(mexico.coverage.financialPeriods)} fiscal-year records from 2023–2025. ${number(mexico.coverage.exactPeriodHistories['3'])} RFCs appear in all three.`,
+    boundary: 'Amounts stay in MXN. Financial periods and dated directory entries describe different observations. The edition covers SAT’s authorized-entity publications.',
+    manifest: '/data/charity-financials/mx/manifest.json',
   },
   {
     name: 'New Zealand', flag: 'Charities Services register and Tier 3 filings', route: '/record/charity-index/new-zealand/',

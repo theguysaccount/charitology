@@ -1,0 +1,617 @@
+{
+  "schemaVersion": 1,
+  "publisher": "Servicio de Administración Tributaria (SAT)",
+  "capturedOn": "2026-11-11",
+  "currency": "MXN",
+  "sourceCurrencyLabel": "Pesos",
+  "openData": "https://www.sat.gob.mx/minisitio/DatosAbiertos/index.html",
+  "reportCatalogue": "https://www.sat.gob.mx/minisitio/DatosAbiertos/informes.html",
+  "directoryCatalogue": "https://www.sat.gob.mx/minisitio/DonatariasAutorizadas/padron_directorio.html",
+  "officialGazette": "https://www.sat.gob.mx/minisitio/NormatividadRMFyRGCE/documentos2026/rmf/anexos/Anexo_14_RMF2026-09012026.pdf",
+  "dictionary": {
+    "file": "Diccionario_RDA_2008-2026.pdf",
+    "bytes": 353174,
+    "sha256": "b574a12477459177a6eaabd020f641779c9c5c6ee8e78571f91c9486b0dd2b8e",
+    "url": "https://www.sat.gob.mx/minisitio/DatosAbiertos/documentos/Diccionario_RDA_2008-2026.pdf"
+  },
+  "financial": {
+    "2023": {
+      "file": "reporte_donatarias_2024_datos_2023.csv",
+      "url": "http://omawww.sat.gob.mx/cifras_sat/Documents/reporte_donatarias_2024_datos_2023.csv",
+      "sha256": "185435257c2663abc412b049e13dd42f9727211f159b41bd58c355e4107469b4",
+      "bytes": 1738613,
+      "encoding": "cp1252",
+      "sourceRows": 11132,
+      "includedRows": 11132,
+      "directoryMatches": {
+        "2025": 9676,
+        "2026": 9392
+      },
+      "fieldCoverage": {
+        "dona_efe_ext": {
+          "missing": 4977,
+          "zero": 4861,
+          "positive": 1294,
+          "negative": 0
+        },
+        "dona_efe_nal": {
+          "missing": 775,
+          "zero": 2928,
+          "positive": 7429,
+          "negative": 0
+        },
+        "dona_esp_ext": {
+          "missing": 5909,
+          "zero": 5180,
+          "positive": 43,
+          "negative": 0
+        },
+        "dona_esp_nal": {
+          "missing": 4060,
+          "zero": 4060,
+          "positive": 3012,
+          "negative": 0
+        },
+        "eroga_aporta_sar": {
+          "missing": 3518,
+          "zero": 3253,
+          "positive": 4361,
+          "negative": 0
+        },
+        "eroga_cuotas_imss": {
+          "missing": 3437,
+          "zero": 3204,
+          "positive": 4491,
+          "negative": 0
+        },
+        "eroga_sys": {
+          "missing": 2510,
+          "zero": 3362,
+          "positive": 5260,
+          "negative": 0
+        },
+        "gas_admin_ext": {
+          "missing": 2752,
+          "zero": 8328,
+          "positive": 52,
+          "negative": 0
+        },
+        "gas_admin_nal": {
+          "missing": 2752,
+          "zero": 2845,
+          "positive": 5535,
+          "negative": 0
+        },
+        "gas_opera_ext": {
+          "missing": 2752,
+          "zero": 8133,
+          "positive": 247,
+          "negative": 0
+        },
+        "gas_opera_nal": {
+          "missing": 2752,
+          "zero": 690,
+          "positive": 7690,
+          "negative": 0
+        },
+        "ing_arrendamiento": {
+          "missing": 5885,
+          "zero": 4850,
+          "positive": 397,
+          "negative": 0
+        },
+        "ing_dividendos": {
+          "missing": 6082,
+          "zero": 5019,
+          "positive": 31,
+          "negative": 0
+        },
+        "ing_intereses": {
+          "missing": 4202,
+          "zero": 3948,
+          "positive": 2982,
+          "negative": 0
+        },
+        "ing_otros": {
+          "missing": 3159,
+          "zero": 3769,
+          "positive": 4204,
+          "negative": 0
+        },
+        "ing_regalias": {
+          "missing": 6125,
+          "zero": 4990,
+          "positive": 17,
+          "negative": 0
+        }
+      },
+      "report": {
+        "url": "https://www.finanzaspublicas.hacienda.gob.mx/work/models/Finanzas_Publicas/docs/congreso/infoanual/2024/rda_2024.pdf",
+        "sha256": "59b021d0c2a9208c3622335737da733a731398c0e8d9750dc930a895e9dd61b0",
+        "nationalTotalPdfPage": 6,
+        "nationalTotalsMatch": true,
+        "fourOriginalDonationColumnsInPesos": [
+          43784056013,
+          8013162174,
+          8117128051,
+          66660844
+        ],
+        "sourceIdsRecognizedInDetail": 11132,
+        "positiveDonationRows": 7852,
+        "positiveRowsWithAllNonzeroAmountsAndSubtotalsOnOneLine": 7666
+      }
+    },
+    "2024": {
+      "file": "reporte_donatarias_2025_datos_2024.csv",
+      "url": "http://omawww.sat.gob.mx/cifras_sat/Documents/reporte_donatarias_2025_datos_2024.csv",
+      "sha256": "dbeb3d982f682952fd22ab6726edab95d2f32de185500833bf4c089d8e895bdc",
+      "bytes": 1826767,
+      "encoding": "cp1252",
+      "sourceRows": 10923,
+      "includedRows": 10923,
+      "directoryMatches": {
+        "2025": 10119,
+        "2026": 9867
+      },
+      "fieldCoverage": {
+        "dona_efe_ext": {
+          "missing": 4650,
+          "zero": 4995,
+          "positive": 1278,
+          "negative": 0
+        },
+        "dona_efe_nal": {
+          "missing": 1273,
+          "zero": 2843,
+          "positive": 6807,
+          "negative": 0
+        },
+        "dona_esp_ext": {
+          "missing": 5417,
+          "zero": 5462,
+          "positive": 44,
+          "negative": 0
+        },
+        "dona_esp_nal": {
+          "missing": 3914,
+          "zero": 4233,
+          "positive": 2776,
+          "negative": 0
+        },
+        "eroga_aporta_sar": {
+          "missing": 3063,
+          "zero": 3476,
+          "positive": 4384,
+          "negative": 0
+        },
+        "eroga_cuotas_imss": {
+          "missing": 2987,
+          "zero": 3416,
+          "positive": 4520,
+          "negative": 0
+        },
+        "eroga_sys": {
+          "missing": 2184,
+          "zero": 3488,
+          "positive": 5251,
+          "negative": 0
+        },
+        "gas_admin_ext": {
+          "missing": 2379,
+          "zero": 8472,
+          "positive": 72,
+          "negative": 0
+        },
+        "gas_admin_nal": {
+          "missing": 2379,
+          "zero": 2971,
+          "positive": 5573,
+          "negative": 0
+        },
+        "gas_opera_ext": {
+          "missing": 2379,
+          "zero": 8262,
+          "positive": 282,
+          "negative": 0
+        },
+        "gas_opera_nal": {
+          "missing": 2379,
+          "zero": 658,
+          "positive": 7886,
+          "negative": 0
+        },
+        "ing_arrendamiento": {
+          "missing": 5338,
+          "zero": 5170,
+          "positive": 415,
+          "negative": 0
+        },
+        "ing_dividendos": {
+          "missing": 5501,
+          "zero": 5387,
+          "positive": 35,
+          "negative": 0
+        },
+        "ing_intereses": {
+          "missing": 4018,
+          "zero": 4047,
+          "positive": 2858,
+          "negative": 0
+        },
+        "ing_otros": {
+          "missing": 3307,
+          "zero": 3828,
+          "positive": 3788,
+          "negative": 0
+        },
+        "ing_regalias": {
+          "missing": 5565,
+          "zero": 5338,
+          "positive": 20,
+          "negative": 0
+        }
+      },
+      "report": {
+        "url": "https://www.finanzaspublicas.hacienda.gob.mx/work/models/Finanzas_Publicas/docs/congreso/infoanual/2025/rda_2025.pdf",
+        "sha256": "2ffacb319afe159295e547195986a1e2aa5f7e3fce3560d6c7032dbd2c6cf156",
+        "nationalTotalPdfPage": 6,
+        "nationalTotalsMatch": true,
+        "fourOriginalDonationColumnsInPesos": [
+          44812709428,
+          8118456134,
+          7263806819,
+          78120518
+        ],
+        "sourceIdsRecognizedInDetail": 10923,
+        "positiveDonationRows": 7210,
+        "positiveRowsWithAllNonzeroAmountsAndSubtotalsOnOneLine": 7099
+      }
+    },
+    "2025": {
+      "file": "reporte_donatarias_2026_datos_2025.csv",
+      "url": "https://www.sat.gob.mx/minisitio/DatosAbiertos/documentos/reporte_donatarias_2026_datos_2025.csv",
+      "sha256": "378708c5ccc6ac58af9587243ab15b6ec539a5aa012cb36ced7f2bdec97bec9b",
+      "bytes": 1659273,
+      "encoding": "cp1252",
+      "sourceRows": 10313,
+      "includedRows": 10313,
+      "directoryMatches": {
+        "2025": 10057,
+        "2026": 9821
+      },
+      "fieldCoverage": {
+        "dona_efe_ext": {
+          "missing": 4443,
+          "zero": 4550,
+          "positive": 1320,
+          "negative": 0
+        },
+        "dona_efe_nal": {
+          "missing": 1178,
+          "zero": 2471,
+          "positive": 6664,
+          "negative": 0
+        },
+        "dona_esp_ext": {
+          "missing": 5243,
+          "zero": 5014,
+          "positive": 56,
+          "negative": 0
+        },
+        "dona_esp_nal": {
+          "missing": 3719,
+          "zero": 3725,
+          "positive": 2869,
+          "negative": 0
+        },
+        "eroga_aporta_sar": {
+          "missing": 2898,
+          "zero": 3067,
+          "positive": 4348,
+          "negative": 0
+        },
+        "eroga_cuotas_imss": {
+          "missing": 2841,
+          "zero": 2986,
+          "positive": 4486,
+          "negative": 0
+        },
+        "eroga_sys": {
+          "missing": 2083,
+          "zero": 3023,
+          "positive": 5207,
+          "negative": 0
+        },
+        "gas_admin_ext": {
+          "missing": 1946,
+          "zero": 8306,
+          "positive": 61,
+          "negative": 0
+        },
+        "gas_admin_nal": {
+          "missing": 1946,
+          "zero": 2920,
+          "positive": 5447,
+          "negative": 0
+        },
+        "gas_opera_ext": {
+          "missing": 1946,
+          "zero": 8090,
+          "positive": 277,
+          "negative": 0
+        },
+        "gas_opera_nal": {
+          "missing": 1946,
+          "zero": 534,
+          "positive": 7833,
+          "negative": 0
+        },
+        "ing_arrendamiento": {
+          "missing": 5156,
+          "zero": 4710,
+          "positive": 447,
+          "negative": 0
+        },
+        "ing_dividendos": {
+          "missing": 5313,
+          "zero": 4969,
+          "positive": 31,
+          "negative": 0
+        },
+        "ing_intereses": {
+          "missing": 3717,
+          "zero": 3704,
+          "positive": 2892,
+          "negative": 0
+        },
+        "ing_otros": {
+          "missing": 3010,
+          "zero": 3505,
+          "positive": 3798,
+          "negative": 0
+        },
+        "ing_regalias": {
+          "missing": 5352,
+          "zero": 4943,
+          "positive": 18,
+          "negative": 0
+        }
+      },
+      "report": {
+        "url": "https://www.gob.mx/cms/uploads/attachment/file/1106295/RDA_2026.pdf",
+        "sha256": "aa7f6d0793320287daf8552ae033574dd22b42658f490911e2cad4fa035281d3",
+        "nationalTotalPdfPage": 6,
+        "nationalTotalsMatch": true,
+        "fourOriginalDonationColumnsInPesos": [
+          57937338720,
+          9455771047,
+          23288940783,
+          66107223
+        ],
+        "sourceIdsRecognizedInDetail": 10313,
+        "positiveDonationRows": 7044,
+        "positiveRowsWithAllNonzeroAmountsAndSubtotalsOnOneLine": 6904
+      }
+    }
+  },
+  "directories": {
+    "2025": {
+      "file": "Dir_2025_2.xlsx",
+      "url": "https://www.sat.gob.mx/minisitio/DonatariasAutorizadas/documentos/padron_donatarias/Dir_2025_2.xlsx",
+      "sha256": "8ae05e28dc0c3daac5afa05d85891cca1b0718cf39cce90aac6c098b576b79a0",
+      "bytes": 5887340,
+      "gazettePublicationDate": "2026-01-09",
+      "sheet": "Donatarias Autorizadas",
+      "headerRow": 28,
+      "institutionRows": 15925,
+      "distinctInstitutionalIds": 10361,
+      "repeatedActivityGroups": 5564,
+      "columns": {
+        "state": "A",
+        "activity": "C",
+        "rfc": "D",
+        "name": "E",
+        "taxRegistryState": "O"
+      }
+    },
+    "2026": {
+      "file": "Dir_2026.xlsx",
+      "url": "https://www.sat.gob.mx/minisitio/DonatariasAutorizadas/documentos/padron_donatarias/Dir_2026.xlsx",
+      "sha256": "c34a64b7bf4deb7ee567f061ecd04c7c66c741261d7039b2e545c3013b508e21",
+      "bytes": 5678898,
+      "gazettePublicationDate": "2026-01-09",
+      "sheet": "Donatarias Autorizadas",
+      "headerRow": 28,
+      "institutionRows": 15375,
+      "distinctInstitutionalIds": 10017,
+      "repeatedActivityGroups": 5358,
+      "columns": {
+        "state": "A",
+        "activity": "C",
+        "rfc": "D",
+        "name": "E",
+        "taxRegistryState": "O"
+      }
+    }
+  },
+  "coverage": {
+    "identities": 11916,
+    "financialPeriods": 32368,
+    "directoryObservations": 20378,
+    "directoryOnlyIds": 35,
+    "exactPeriodHistories": {
+      "1": 995,
+      "2": 1285,
+      "3": 9601
+    },
+    "financialInstitutions": 11881,
+    "financialOnlyIds": 1555
+  },
+  "asset": {
+    "path": "organizations.json.gz",
+    "bytes": 1518594,
+    "sha256": "6534d06b2877846b7de79af0df55d80c7531cd072b33679b7eb7be249ca5a05e",
+    "decodedBytes": 7323846,
+    "decodedSha256": "1d5d26740db3aec6e18ee08671a7c19b397a6e70594f66337df504359a941f3d"
+  },
+  "organizationFields": [
+    "rfc",
+    "periods",
+    "directories"
+  ],
+  "periodFields": [
+    "fiscalYear",
+    "sourceRecord",
+    "reportedName",
+    "reportedState",
+    "authorizedCategory",
+    "financialCents"
+  ],
+  "directoryFields": [
+    "editionYear",
+    "nameInDirectory",
+    "stateInDirectory",
+    "reportedTaxRegistrationState",
+    "activityRows"
+  ],
+  "financialFields": [
+    {
+      "field": "dona_efe_nal",
+      "label": "Domestic cash donations",
+      "group": "Donations"
+    },
+    {
+      "field": "dona_efe_ext",
+      "label": "Foreign cash donations",
+      "group": "Donations"
+    },
+    {
+      "field": "dona_esp_nal",
+      "label": "Domestic in-kind donations",
+      "group": "Donations"
+    },
+    {
+      "field": "dona_esp_ext",
+      "label": "Foreign in-kind donations",
+      "group": "Donations"
+    },
+    {
+      "field": "ing_arrendamiento",
+      "label": "Rental income",
+      "group": "Other income"
+    },
+    {
+      "field": "ing_dividendos",
+      "label": "Dividend income",
+      "group": "Other income"
+    },
+    {
+      "field": "ing_regalias",
+      "label": "Royalty income",
+      "group": "Other income"
+    },
+    {
+      "field": "ing_intereses",
+      "label": "Interest and foreign exchange gains",
+      "group": "Other income"
+    },
+    {
+      "field": "ing_otros",
+      "label": "Other income",
+      "group": "Other income"
+    },
+    {
+      "field": "eroga_sys",
+      "label": "Wages, salaries and related costs",
+      "group": "Expenditure"
+    },
+    {
+      "field": "eroga_aporta_sar",
+      "label": "Retirement and housing contributions and pensions",
+      "group": "Expenditure"
+    },
+    {
+      "field": "eroga_cuotas_imss",
+      "label": "Social security contributions",
+      "group": "Expenditure"
+    },
+    {
+      "field": "gas_admin_nal",
+      "label": "Domestic administrative expenses",
+      "group": "Expenditure"
+    },
+    {
+      "field": "gas_admin_ext",
+      "label": "Foreign administrative expenses",
+      "group": "Expenditure"
+    },
+    {
+      "field": "gas_opera_nal",
+      "label": "Domestic operating expenses",
+      "group": "Expenditure"
+    },
+    {
+      "field": "gas_opera_ext",
+      "label": "Foreign operating expenses",
+      "group": "Expenditure"
+    }
+  ],
+  "directoryActivityFields": [
+    "sourceSpreadsheetRow",
+    "authorizedActivity"
+  ],
+  "directoryActivityCodes": {
+    "A": {
+      "label": "Social assistance",
+      "definitionCell": "A11"
+    },
+    "B": {
+      "label": "Education",
+      "definitionCell": "A12"
+    },
+    "C": {
+      "label": "Scientific or technological research",
+      "definitionCell": "A13"
+    },
+    "D": {
+      "label": "Culture",
+      "definitionCell": "A14"
+    },
+    "E": {
+      "label": "Scholarships",
+      "definitionCell": "A15"
+    },
+    "F": {
+      "label": "Environmental work",
+      "definitionCell": "A16"
+    },
+    "G": {
+      "label": "Breeding protected and endangered species",
+      "definitionCell": "A17"
+    },
+    "H": {
+      "label": "Financial support for authorized organizations",
+      "definitionCell": "A18"
+    },
+    "I": {
+      "label": "Public works or services",
+      "definitionCell": "A19"
+    },
+    "J": {
+      "label": "Private libraries open to the public",
+      "definitionCell": "A20"
+    },
+    "K": {
+      "label": "Private museums open to the public",
+      "definitionCell": "A21"
+    },
+    "L": {
+      "label": "Social development",
+      "definitionCell": "A22"
+    },
+    "M": {
+      "label": "Authorization under the U.S.–Mexico tax treaty",
+      "definitionCell": "A23"
+    }
+  }
+}

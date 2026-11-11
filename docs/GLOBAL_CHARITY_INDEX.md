@@ -127,6 +127,22 @@ node scripts/check-brazil-cisterns.mjs
 
 The JSON carries the full case and citations. Four CSV exports keep bank orders, account payment aggregates, named-payee subsets and census measures distinct. A blank amount for an internal-transfer year with no rows preserves absence. Reported zero values stay present. Use the [coverage page](https://charitology.com/record/charity-index/coverage/) and its correction route for this edition.
 
+## Mexico financial reports and authorization directories
+
+The [Mexico financial edition](https://charitology.com/record/charity-financials/mexico/) includes 11,916 institutional RFCs across three SAT financial reports and two directory workbooks. 11,881 institutions have at least one financial record and 9,601 have all three. The 32,368 periods cover fiscal years 2023, 2024 and 2025. Each file contains at most one record per complete institutional RFC for its fiscal year. The financial report’s legal name, location and authorization category stay with the period. The directory has one row per authorized activity. The projection groups those activities by exact RFC and directory edition, preserving a worksheet row number with each activity. Both workbooks reference the January 9, 2026 Gazette publication.
+
+The selected financial columns keep Mexican pesos as exact cents, with blank and reported zero distinct. The four donation categories describe cash and in-kind amounts from domestic and foreign sources. Income and expenditure lines keep their source definitions. They cannot identify a particular payment, a municipality where a program operated or a program outcome. The projections exclude addresses, representative and contact data, and role-level compensation. [SAT open data and reuse](https://www.sat.gob.mx/minisitio/DatosAbiertos/index.html) · [Financial reports](https://www.sat.gob.mx/minisitio/DatosAbiertos/informes.html) · [Directories](https://www.sat.gob.mx/minisitio/DonatariasAutorizadas/padron_directorio.html).
+
+The [manifest](../public/data/charity-financials/mx/manifest.json) pins three CSVs, two XLSX workbooks and the field dictionary. It also lists the HTTPS finance ministry PDFs used to cross-check all 32,368 institution-year identifiers and each year’s national totals for the four donation fields. The 2023 and 2024 CSVs use the publisher’s listed HTTP addresses. Each source’s exact archived bytes are required. The original source file’s coordinate is a one-based CSV data record after the header, or the printed worksheet row for directory entries.
+
+```sh
+python3 scripts/build-mx-charity-financials.py /path/to/captures /path/to/organizations.json.gz
+npm run build
+node scripts/check-mx-charity-financials.mjs
+```
+
+Search works in the browser by institutional RFC or name from any selected year. The two CSV exports preserve separate financial periods and directory activity rows. The JSON includes the manifest and displayed records. For a current authorization decision, consult SAT’s directory and notices. The Index does not infer current eligibility from a historic financial or directory observation.
+
 ## United States Form 990 financial extracts
 
 The [U.S. financial filings page](https://charitology.com/record/charity-financials/united-states/) uses the IRS's processed extracts for the 2023 and 2024 filing calendar years. It includes 516,109 periods for 277,047 EINs with subsection code 03 on full Form 990. The periods end in 2022–2024. The source supplies the tax-period end month rather than a start date or day. The projected fields are revenue, functional expenses, program service revenue, grants to U.S. governments and organizations, and grants to organizations and individuals outside the U.S. Source record numbers count CSV records after the header.
