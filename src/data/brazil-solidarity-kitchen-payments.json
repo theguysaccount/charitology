@@ -1,0 +1,181 @@
+{
+  "edition": "2026-11-11",
+  "currency": "BRL",
+  "publisher": "Transferegov.br",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "case": {
+    "data": "/record/funding-flows/brazil-solidarity-kitchens/data.json",
+    "sha256": "cb8ee70e4fdefd2c786e11362c4c7551ca42396dde1f99ad16bc790c789d5ca9",
+    "signedAgreements": 21
+  },
+  "counts": {
+    "sourcePaymentRows": 7575512,
+    "agreementsWithPaymentRows": 20,
+    "selectedPaymentRows": 5398,
+    "partnerContributionArchive": {
+      "sourceRows": 349814,
+      "agreementsWithRows": 1,
+      "selectedRows": 1
+    },
+    "taxPaymentArchive": {
+      "sourceRows": 465153,
+      "agreementsWithRows": 4,
+      "selectedRows": 54
+    }
+  },
+  "sources": {
+    "pagamento": {
+      "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_pagamento.zip",
+      "file": "siconv_pagamento.zip",
+      "sha256": "3dd3211bb16116972e8ad84fc7c0da3e317120db09e11bedbd7299a723621965",
+      "fields": [
+        "NR_CONVENIO",
+        "NR_MOV_FIN",
+        "TP_MOV_FINANCEIRA",
+        "DESC_DL",
+        "DATA_PAG",
+        "VL_PAGO"
+      ]
+    },
+    "obtv_convenente": {
+      "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_obtv_convenente.zip",
+      "file": "siconv_obtv_convenente.zip",
+      "sha256": "91468433dab7b4964eae465667809ccadbce007009b5b434b9c9aba9ae3555f2",
+      "fields": [
+        "NR_MOV_FIN",
+        "VL_PAGO_OBTV_CONV"
+      ]
+    },
+    "ingresso_contrapartida": {
+      "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_ingresso_contrapartida.zip",
+      "file": "siconv_ingresso_contrapartida.zip",
+      "sha256": "b75be816a4780c93b7c9bec326216629716640af0ce5e6f9b287956456a7c626",
+      "fields": [
+        "NR_CONVENIO",
+        "DT_INGRESSO_CONTRAPARTIDA",
+        "VL_INGRESSO_CONTRAPARTIDA"
+      ]
+    },
+    "pagamento_tributo": {
+      "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_pagamento_tributo.zip",
+      "file": "siconv_pagamento_tributo.zip",
+      "sha256": "730f2ff653bcac1bfa805f4b8e465f16b30e1702d052a27d08801edd6d388ec1",
+      "fields": [
+        "NR_CONVENIO",
+        "DATA_TRIBUTO",
+        "VL_PAG_TRIBUTOS"
+      ]
+    }
+  },
+  "scope": "Reported agreement-account movements. Exact onward links use the financial movement ID. Other stages cannot be reconciled from these fields.",
+  "periods": [
+    {
+      "calendarYear": "2024",
+      "partialCalendarYear": false,
+      "otherAgreementAccountPayments": {
+        "rows": 157,
+        "cents": 87345564,
+        "firstRecordDate": "2024-11-08",
+        "lastRecordDate": "2024-12-27"
+      },
+      "internalTransfersToAgreementHolder": {
+        "rows": 0,
+        "cents": 0,
+        "firstRecordDate": null,
+        "lastRecordDate": null
+      },
+      "onwardRecordsByParentYear": {
+        "withOnwardRecord": 0,
+        "withoutOnwardRecord": 0,
+        "withMissingOnwardAmount": 0,
+        "withMatchingOnwardAmount": 0,
+        "withDifferentOnwardAmount": 0,
+        "matchingOnwardCents": 0
+      },
+      "reportedPartnerContributions": {
+        "rows": 0,
+        "cents": 0,
+        "firstRecordDate": null,
+        "lastRecordDate": null
+      },
+      "reportedTaxPayments": {
+        "rows": 1,
+        "cents": 378281,
+        "firstRecordDate": "2024-12-19",
+        "lastRecordDate": "2024-12-19"
+      }
+    },
+    {
+      "calendarYear": "2025",
+      "partialCalendarYear": false,
+      "otherAgreementAccountPayments": {
+        "rows": 3299,
+        "cents": 1879370676,
+        "firstRecordDate": "2025-01-02",
+        "lastRecordDate": "2025-12-29"
+      },
+      "internalTransfersToAgreementHolder": {
+        "rows": 24,
+        "cents": 30955426,
+        "firstRecordDate": "2025-07-02",
+        "lastRecordDate": "2025-12-29"
+      },
+      "onwardRecordsByParentYear": {
+        "withOnwardRecord": 24,
+        "withoutOnwardRecord": 0,
+        "withMissingOnwardAmount": 20,
+        "withMatchingOnwardAmount": 4,
+        "withDifferentOnwardAmount": 0,
+        "matchingOnwardCents": 742138
+      },
+      "reportedPartnerContributions": {
+        "rows": 0,
+        "cents": 0,
+        "firstRecordDate": null,
+        "lastRecordDate": null
+      },
+      "reportedTaxPayments": {
+        "rows": 27,
+        "cents": 7903527,
+        "firstRecordDate": "2025-01-17",
+        "lastRecordDate": "2025-12-03"
+      }
+    },
+    {
+      "calendarYear": "2026",
+      "partialCalendarYear": true,
+      "otherAgreementAccountPayments": {
+        "rows": 1867,
+        "cents": 1210732995,
+        "firstRecordDate": "2026-01-02",
+        "lastRecordDate": "2026-11-05"
+      },
+      "internalTransfersToAgreementHolder": {
+        "rows": 51,
+        "cents": 25348986,
+        "firstRecordDate": "2026-01-02",
+        "lastRecordDate": "2026-10-07"
+      },
+      "onwardRecordsByParentYear": {
+        "withOnwardRecord": 51,
+        "withoutOnwardRecord": 0,
+        "withMissingOnwardAmount": 28,
+        "withMatchingOnwardAmount": 23,
+        "withDifferentOnwardAmount": 0,
+        "matchingOnwardCents": 9779382
+      },
+      "reportedPartnerContributions": {
+        "rows": 1,
+        "cents": 2180720,
+        "firstRecordDate": "2026-10-02",
+        "lastRecordDate": "2026-10-02"
+      },
+      "reportedTaxPayments": {
+        "rows": 26,
+        "cents": 6579518,
+        "firstRecordDate": "2026-01-05",
+        "lastRecordDate": "2026-11-05"
+      }
+    }
+  ]
+}
