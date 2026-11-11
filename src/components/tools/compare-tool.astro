@@ -169,6 +169,11 @@ const slots = [
     display: block;
     color: var(--ink);
   }
+  .result :global(.ct-attribute-label) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
   .result :global(.ct-tag) {
     display: inline-block;
     margin-top: 0.3rem;
@@ -262,8 +267,9 @@ const slots = [
 
 <script>
   import { $, $$, clear, h, readJson } from '../../lib/client/dom';
+  import { comparisonSymbols } from '../../lib/list-identities';
   import { copy, flash } from '../../lib/client/files';
-  import { readHash, writeHash } from '../../lib/client/store';
+  import { readHash } from '../../lib/client/store';
   import { dollars } from '../../lib/client/models';
   import { depthBadge, depthInfo, gradeBadge, gradeInfo } from '../../lib/client/badges';
 
@@ -290,7 +296,7 @@ const slots = [
     conditions: { id: string; title: string; number: number }[];
   }
   interface Row {
-    key: string;
+    key: keyof typeof comparisonSymbols;
     label: string;
     hint: string;
     /** Rows with a fixed set of values get a Differs or Same flag; free text doesn't. */
@@ -368,7 +374,8 @@ const slots = [
       hint: 'The cause areas it serves.',
       compare: true,
       value: (x) => x.causes.map((c) => c.id).sort().join(','),
-      cell: (x) => h('ul', { class: 'chips ct-plain' }, x.causes.map((c) => h('li', {}, h('span', { class: 'chip' }, c.name)))),
+      cell: (x) => h('ul', { class: 'chips ct-plain', role: 'list' }, x.causes.map((c) =>
+        h('li', {}, h('a', { class: 'chip identity-link', href: link(`/record/cause-atlas/#${c.id}`) }, c.name)))),
     },
     {
       key: 'conditions',
@@ -380,8 +387,8 @@ const slots = [
         x.conditions.length
           ? h(
               'ul',
-              { class: 'ct-list' },
-              x.conditions.map((c) => h('li', {}, h('a', { href: link(`/diagnosis/${c.id}/`) }, c.number ? `C${String(c.number).padStart(2, '0')} ${c.title}` : c.title))),
+              { class: 'ct-list', role: 'list' },
+              x.conditions.map((c) => h('li', {}, h('a', { class: 'identity-link', href: link(`/diagnosis/${c.id}/`) }, c.number ? `C${String(c.number).padStart(2, '0')} ${c.title}` : c.title))),
             )
           : h('span', { class: 'ct-unknown' }, 'None listed'),
     },
@@ -392,6 +399,19 @@ const slots = [
     const out: string[] = [];
     for (const s of picks) if (s.value && byId.has(s.value) && !out.includes(s.value)) out.push(s.value);
     return out;
+  }
+
+  const isSectionAnchor = () => /^#[^=]+$/.test(location.hash);
+
+  function comparisonAddress(ids: string[]) {
+    const address = new URL(location.href);
+    const params = new URLSearchParams(isSectionAnchor() ? '' : address.hash.slice(1));
+    if (ids.length) params.set('v', ids.join(','));
+    else params.delete('v');
+    if (diffOnly.checked) params.set('d', '1');
+    else params.delete('d');
+    address.hash = params.toString();
+    return address.href;
   }
 
   /** Each intervention can sit in only one slot at a time. */
@@ -408,7 +428,13 @@ const slots = [
     return `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
   }
 
-  const nameLink = (x: Item) => h('a', { href: link(`/record/interventions/${x.id}/`) }, x.title);
+  const nameLink = (x: Item) => h('a', { class: 'identity-link', href: link(`/record/interventions/${x.id}/`) }, x.title);
+  const attributeLabel = (row: Row) => h(
+    'span',
+    { class: 'ct-attribute-label' },
+    h('span', { class: 'site-symbol identity-inline', 'data-site-symbol': comparisonSymbols[row.key], 'aria-hidden': 'true' }),
+    row.label,
+  );
 
   function tag(row: Row, differs: boolean, many: boolean) {
     if (!row.compare || !many) return null;
@@ -419,13 +445,7 @@ const slots = [
     syncOptions();
     const ids = selected();
     const chosen = ids.map((id) => byId.get(id)!);
-    if (writeURL) {
-      // This page also has a real organization-comparison section anchor.
-      // Initial/hash-driven rendering must not turn it into parameter syntax.
-      if (location.hash === '#organizations') history.replaceState(null, '', location.pathname + location.search);
-      writeHash('v', ids.length ? ids.join(',') : undefined);
-      writeHash('d', diffOnly.checked ? '1' : undefined);
-    }
+    if (writeURL) history.replaceState(null, '', comparisonAddress(ids));
     const tableBox = $('#ct-table');
     const stackBox = $('#ct-stack');
     const notes = $('#ct-notes');
@@ -470,7 +490,7 @@ const slots = [
           h(
             'tr',
             { class: flags.get(r.key) ? 'ct-differs' : null },
-            h('th', { scope: 'row' }, h('span', { class: 'ct-attr' }, r.label), tag(r, !!flags.get(r.key), many), h('span', { class: 'ct-hint' }, r.hint)),
+            h('th', { scope: 'row' }, h('span', { class: 'ct-attr' }, attributeLabel(r)), tag(r, !!flags.get(r.key), many), h('span', { class: 'ct-hint' }, r.hint)),
             chosen.map((x) => h('td', {}, r.cell(x))),
           ),
         ),
@@ -483,7 +503,7 @@ const slots = [
         h(
           'div',
           { class: flags.get(r.key) ? 'ct-block ct-differs' : 'ct-block' },
-          h('div', { class: 'ct-block-head' }, h('h3', {}, r.label), tag(r, !!flags.get(r.key), many)),
+          h('div', { class: 'ct-block-head' }, h('h3', {}, attributeLabel(r)), tag(r, !!flags.get(r.key), many)),
           h('span', { class: 'ct-hint' }, r.hint),
           h(
             'dl',
@@ -525,8 +545,10 @@ const slots = [
   }
 
   if (!fromLink()) fill(items.slice(0, 2).map((x) => x.id));
-  // A link pasted into the address bar of an open page changes only the hash.
+  // A jump to a heading can leave focus inside the existing comparison.
+  // Only rebuild it when the hash can describe comparison state.
   window.addEventListener('hashchange', () => {
+    if (isSectionAnchor()) return;
     fromLink();
     render();
   });
@@ -536,7 +558,7 @@ const slots = [
   diffOnly.addEventListener('change', () => render(true));
   $('#ct-share').addEventListener('click', async (e) => {
     const button = e.currentTarget as HTMLElement;
-    const ok = await copy(location.href);
+    const ok = await copy(isSectionAnchor() ? comparisonAddress(selected()) : location.href);
     flash(button, ok ? 'Link copied' : 'Copy failed');
   });
   render();

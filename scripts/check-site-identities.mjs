@@ -4,7 +4,7 @@ import { pageIdentity, routes, symbols } from '../src/lib/site-identities.ts';
 import { sectionNavigation } from '../src/lib/section-navigation.ts';
 import { sourceSymbol } from '../src/lib/source-symbol.ts';
 import {
-  causeSymbols, checklistSymbols, clubMeetingSymbols, datasetSymbols, depthSymbols, ecosystemSymbols,
+  causeSymbols, checklistSymbols, clubMeetingSymbols, comparisonSymbols, datasetSymbols, depthSymbols, disasterAdviceSymbols, ecosystemSymbols,
   diligenceGroupSymbols, diligenceItemSymbols, fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols, osDiscussionSymbols,
   providerSymbols, seminarSymbols, sourceSymbols, starterSymbols, teachingSymbols, worksheetSymbols,
 } from '../src/lib/list-identities.ts';
@@ -66,6 +66,8 @@ for (const [name, keys, mapping] of [
   ['Charity OS providers', ids(json('os-providers').providers), providerSymbols],
   ['teaching materials', ids(teachingMaterials), teachingSymbols],
   ['disaster hazards', HAZARDS, hazardSymbols],
+  ['disaster giving guidance', ids(json('disaster-guide').points).map(id => `dr-${id}`), disasterAdviceSymbols],
+  ['comparison attributes', Object.keys(comparisonSymbols), comparisonSymbols],
   ['country measures', ids(json('countries').indicators), needSymbols],
   ['editorial charity profiles', contentIds('charities'), fragmentSymbols['/record/charity-index/']],
   ['glossary terms', ids(json('lexicon')), fragmentSymbols['/record/lexicon/']],
@@ -155,6 +157,30 @@ for (const { path } of routes.filter(({ path }) => path.startsWith('/record/fund
 }
 assert.ok(fundingIndex.includes('aria-label="Browse funding flows"'));
 
+const disasterGuide = readFileSync('dist/tools/disaster-response-guide/index.html', 'utf8');
+for (const [id, mark] of Object.entries(disasterAdviceSymbols)) {
+  assert.match(disasterGuide, new RegExp(`href="#${id}"[^>]*><span[^>]*data-site-symbol="${mark}"`), id);
+  assert.match(disasterGuide, new RegExp(`id="${id}"[^>]*>\\s*<div[^>]*>\\s*<span[^>]*data-site-symbol="${mark}"`), id);
+}
+for (const { id, depth } of json('disaster-guide').planner.buckets) {
+  const mark = depthSymbols[depth];
+  assert.match(disasterGuide, new RegExp(`for="dr-s-${id}"[^>]*>\\s*<span[^>]*><span[^>]*data-site-symbol="${mark}"`), id);
+  assert.match(disasterGuide, new RegExp(`<li class="dr-bucket"[^>]*>\\s*<div[^>]*>\\s*<strong[^>]*><span[^>]*data-site-symbol="${mark}"`), id);
+}
+
+const coverage = readFileSync('dist/record/charity-index/coverage/index.html', 'utf8');
+const jurisdictionIndex = coverage.match(/<nav class="page-sections" aria-label="Jump to a jurisdiction"[^>]*>[\s\S]*?<\/nav>/)?.[0];
+assert.ok(jurisdictionIndex);
+const jurisdictions = [...jurisdictionIndex.matchAll(/href="#([^"]+)"[^>]*><span[^>]*data-site-symbol="([^"]+)"/g)];
+assert.equal(jurisdictions.length, 9);
+assert.equal(new Set(jurisdictions.map(([, , mark]) => mark)).size, jurisdictions.length);
+for (const [, id, mark] of jurisdictions) {
+  const card = coverage.match(new RegExp(`<li class="card" id="${id}"[^>]*>[\\s\\S]*?<\\/li>`))?.[0];
+  assert.ok(card?.includes(`data-site-symbol="${mark}"`), id);
+  const destination = card.match(/<a class="identity-link" href="([^"]+)"/)?.[1];
+  assert.ok(destination && pageIdentity(destination.slice(base.length)).symbol === mark, id);
+}
+
 const pages = globSync('**/*.html', { cwd: 'dist' });
 assert.ok(pages.length > 0);
 let outlines = 0;
@@ -205,5 +231,11 @@ for (const page of ['values-compass', 'due-diligence-checklist', 'giving-dashboa
   const html = readFileSync(`dist/tools/${page}/index.html`, 'utf8');
   const jump = html.indexOf('href="#working-tool"');
   assert.ok(jump >= 0 && jump < html.indexOf('id="working-tool"'), `Tool shortcut must precede the tool on ${page}`);
+}
+for (const [page, first] of [['disaster-response-guide', 'dr-guidance'], ['compare-tool', 'ct-title']]) {
+  const html = readFileSync(`dist/tools/${page}/index.html`, 'utf8');
+  const firstJump = html.match(/<nav class="page-sections"[^>]*>[\s\S]*?<a href="#([^"]+)"/)?.[1];
+  assert.equal(firstJump, first, page);
+  assert.ok(!html.includes('href="#working-tool"'), `Extra tool shortcut on ${page}`);
 }
 console.log(`Site identity and theme checked on ${pages.length} pages, including ${outlines} outlines and ${matchingHeadings} matching article headings, with distinct symbols in the catalogs, reference libraries and editorial lists.`);

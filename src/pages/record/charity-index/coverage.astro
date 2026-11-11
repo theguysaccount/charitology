@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import PageSections from '../../../components/PageSections.astro';
 import SiteSymbol from '../../../components/SiteSymbol.astro';
 import { pageIdentity } from '../../../lib/site-identities';
 import australia from '../../../../public/data/charity-financials/manifest.json';
@@ -21,7 +22,7 @@ const number = (value: number) => value.toLocaleString('en-US');
 const australianPeriods = australia.sources.reduce((sum, source) => sum + source.includedPeriods, 0);
 const panels = [
   {
-    name: 'Australia', flag: 'Annual Information Statements', route: '/record/charity-financials/',
+    id: 'australia', name: 'Australia', source: 'Annual Information Statements', route: '/record/charity-financials/',
     label: 'Search Australian filings', date: australia.date,
     coverage: `${number(australia.organizations)} ABNs and ${number(australianPeriods)} dated records in the selected extracts.`,
     history: `${number(australia.organizationsWithBothYears)} ABNs have dated reporting in both source years, 2023 and 2024.`,
@@ -29,7 +30,14 @@ const panels = [
     manifest: '/data/charity-financials/manifest.json',
   },
   {
-    name: 'Canada', flag: 'Canada Revenue Agency T3010', route: '/record/charity-financials/canada/',
+    id: 'brazil', name: 'Brazil', source: 'Ipea and Transferegov', route: '/record/charity-index/brazil/',
+    label: 'Compare Brazil registry and transfer records', date: brazil.source.accessedOn,
+    coverage: `The Brazil registry comparison finds one exact CNPJ match in Ipea for ${number(brazil.coverage.exact.identifiers)} of ${number(brazil.transfers.identifiers)} registration numbers in the federal transfer edition.`,
+    history: 'The August 2026 registry snapshot appears alongside separate 2024 and 2025 bank-order periods.',
+    manifest: '/data/charity-registry/brazil-osc/manifest.json',
+  },
+  {
+    id: 'canada', name: 'Canada', source: 'Canada Revenue Agency T3010', route: '/record/charity-financials/canada/',
     label: 'Search Canadian financial filings', date: canada.capturedOn,
     coverage: `${number(canada.accounts)} charity accounts with a dated financial record in the two extracts.`,
     history: `${number(canada.financialPeriods)} periods ending in 2023 or 2024. ${number(canada.multiYearAccounts)} accounts have records in both years.`,
@@ -37,7 +45,7 @@ const panels = [
     manifest: '/data/charity-financials/ca/manifest.json',
   },
   {
-    name: 'England and Wales', flag: 'Charity Commission annual returns', route: '/record/charity-financials/england-wales/',
+    id: 'england-wales', name: 'England and Wales', source: 'Charity Commission annual returns', route: '/record/charity-financials/england-wales/',
     label: 'Search England and Wales returns', date: englandWales.date,
     coverage: `${number(englandWales.organizations)} of ${number(englandWales.registeredMain)} main registered charities with eligible records.`,
     history: `${number(englandWales.counts.included)} received annual returns for periods ending in 2023–2025. ${number(englandWales.multiPeriod)} charities have multiple periods.`,
@@ -45,7 +53,7 @@ const panels = [
     manifest: '/data/charity-financials/ew/manifest.json',
   },
   {
-    name: 'Japan', flag: 'Cabinet Office NPO Portal', route: '/record/charity-index/japan/',
+    id: 'japan', name: 'Japan', source: 'Cabinet Office NPO Portal', route: '/record/charity-index/japan/',
     label: 'Search Japan NPO Portal records', date: japan.capturedOn,
     coverage: `${number(japan.counts.portalRows)} dated portal entries across ${number(japan.authorities.length)} supervising authorities.`,
     history: `${number(japan.counts.financialSummaries)} entries link to a dated organization-entered financial summary.`,
@@ -53,7 +61,13 @@ const panels = [
     manifest: '/data/charity-registry/japan-npo/manifest.json',
   },
   {
-    name: 'Mexico', flag: 'SAT financial reports and authorization directories', route: '/record/charity-financials/mexico/',
+    id: 'kenya', name: 'Kenya', source: 'Public Benefit Organizations Regulatory Authority', route: '/record/charity-financials/kenya/',
+    label: 'Compare Kenya’s sector reports',
+    coverage: 'The Kenya edition compares aggregate filing counts and receipts across three regulator reports, with a spending breakdown for the latest report year.',
+    boundary: 'The regulator’s live register supplies organization names and references.',
+  },
+  {
+    id: 'mexico', name: 'Mexico', source: 'SAT financial reports and authorization directories', route: '/record/charity-financials/mexico/',
     label: 'Search Mexico’s charity financial reports', date: mexico.capturedOn,
     coverage: `${number(mexico.coverage.identities)} exact institutional RFCs across three financial reports and two directories.`,
     history: `${number(mexico.coverage.financialPeriods)} fiscal-year records from 2023–2025. ${number(mexico.coverage.exactPeriodHistories['3'])} RFCs appear in all three.`,
@@ -61,7 +75,7 @@ const panels = [
     manifest: '/data/charity-financials/mx/manifest.json',
   },
   {
-    name: 'New Zealand', flag: 'Charities Services register and Tier 3 filings', route: '/record/charity-index/new-zealand/',
+    id: 'new-zealand', name: 'New Zealand', source: 'Charities Services register and Tier 3 filings', route: '/record/charity-index/new-zealand/',
     label: 'Search New Zealand charities and Tier 3 filings', date: newZealand.capturedAt.slice(0, 10),
     coverage: `${number(newZealand.registry.included)} searchable organization entries, including deregistered and removed entries.`,
     history: `${number(newZealand.registry.withBothYears)} entries have selected Tier 3 returns for periods ending in both 2024 and 2025.`,
@@ -69,14 +83,14 @@ const panels = [
     manifest: '/data/charity-registry/new-zealand/manifest.json',
   },
   {
-    name: 'United States', flag: 'IRS identity and Form 990 extracts', route: '/record/charity-financials/united-states/',
+    id: 'united-states', name: 'United States', source: 'IRS identity and Form 990 extracts', route: '/record/charity-financials/united-states/',
     label: 'Search U.S. Form 990 finances', date: usa.capturedOn,
     coverage: `${number(registry.recordCount)} dated federal registry identities. Separately, ${number(usa.counts.organizations)} EINs have a selected full Form 990 period.`,
     history: `${number(usa.counts.includedPeriods)} processed financial records for periods ending in 2022–2024. ${number(usa.counts.multiPeriod)} EINs have multiple periods.`,
     boundary: 'The full-form financial edition covers subsection 03. The other U.S. editions below use their own extract populations.',
     manifest: '/data/charity-financials/us/manifest.json',
   },
-];
+].map(panel => ({ ...panel, ...pageIdentity(panel.route) }));
 const sources = [
   { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
@@ -89,20 +103,21 @@ const sources = [
 <Entry title={title} eyebrow="The Record · Global Charity Index" summary="See which organizations, financial periods and funding stages each source covers." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Coverage'}]} sources={sources}>
   <p>The Index separates registry identities, reported financial periods and individual funding records. This page describes the current editions and where each one leaves questions open. Coverage counts describe the included source records. Organization identities, currencies and reporting rules differ across jurisdictions.</p>
   <h2 id="filings">Registry and financial editions</h2>
-  <div class="coverage-list" aria-labelledby="filings">
-    {panels.map(panel => <section class="card">
-      <p class="eyebrow identity-label"><SiteSymbol name={pageIdentity(panel.route).symbol} />{panel.flag}</p>
-      <h3>{panel.name}</h3>
+  <PageSections label="Jump to a jurisdiction" sections={panels.map(({ id, name, symbol }) => ({ slug: id, text: name, symbol }))} />
+  <ul class="coverage-list" aria-labelledby="filings" role="list">
+    {panels.map(panel => <li class="card" id={panel.id} data-site-tone={panel.tone}>
+      <h3 class="identity-label"><SiteSymbol name={panel.symbol} />{panel.name}</h3>
+      <p class="eyebrow">{panel.source}</p>
       <p><strong>{panel.coverage}</strong></p>
-      <p>{panel.history}</p>
-      <p>{panel.boundary}</p>
-      <p>Captured on <time datetime={panel.date}>{panel.date}</time>. <a href={url(panel.route)}>{panel.label}</a> · <a href={url(panel.manifest)}>Source and coverage manifest</a>.</p>
-    </section>)}
-  </div>
-  <h3>Brazil civil society registry links</h3>
-  <p>The <a href={url('/record/charity-index/brazil/')}>Brazil registry comparison</a> finds one exact CNPJ match in Ipea for {number(brazil.coverage.exact.identifiers)} of {number(brazil.transfers.identifiers)} registration numbers in the federal transfer edition. The comparison shows the August 2026 registry snapshot alongside separate 2024 and 2025 bank-order periods.</p>
-  <h3>Kenya sector report coverage</h3>
-  <p>The <a href={url('/record/charity-financials/kenya/')}>Kenya edition</a> compares aggregate filing counts and receipts across three regulator reports, with a spending breakdown for the latest report year. It links to the regulator’s live register for organization names and references.</p>
+      {panel.history && <p>{panel.history}</p>}
+      {panel.boundary && <p>{panel.boundary}</p>}
+      {panel.date && <p class="note">Captured on <time datetime={panel.date}>{panel.date}</time>.</p>}
+      <p class="coverage-links">
+        <a class="identity-link" href={url(panel.route)}>{panel.label}</a>
+        {panel.manifest && <a class="identity-link" data-source-symbol="document" href={url(panel.manifest)}>Source and coverage manifest</a>}
+      </p>
+    </li>)}
+  </ul>
   <h3>Additional United States financial editions</h3>
   <ul>
     {[usaShort, usaFoundation].map(manifest => <li>
@@ -137,6 +152,8 @@ const sources = [
 </Entry>
 
 <style>
-  .coverage-list { display: grid; gap: 1rem; }
+  .coverage-list { display: grid; gap: 1rem; list-style: none; padding-inline-start: 0; }
+  .coverage-list > .card { margin: 0; }
   .coverage-list h3 { margin-block-start: 0; }
+  .coverage-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.2rem; }
 </style>
