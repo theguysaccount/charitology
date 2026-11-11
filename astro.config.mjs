@@ -4,7 +4,7 @@ import { unified } from '@astrojs/markdown-remark';
 
 // SITE_URL and BASE_PATH are set by the deploy workflow from GitHub Pages
 // (https://<owner>.github.io + /charitology, or the custom domain + /).
-const site = process.env.SITE_URL || 'https://charitology.org';
+const site = process.env.SITE_URL || 'https://charitology.com';
 const base = process.env.BASE_PATH || '/';
 const prefix = base.replace(/\/$/, '');
 

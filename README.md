@@ -19,9 +19,9 @@ Giving USA estimates that [U.S. charitable giving reached $617.2 billion in 2025
 
 Every page follows [the Charitology Standard](STYLE.md): a source for every factual claim, honest evidence labels, unknowns left unknown, and no ratings of named charities until a rating method has survived public red-team review.
 
-**[All 31 formerly seeded/designed items now have implemented software or published editions](docs/IMPLEMENTATION_NOTES.md)**, including the self-paced course, research desks, 217 country/economy data profiles, reference workbenches and six actual narrated podcast episodes. The [full roadmap](https://charitology.org/roadmap/) preserves every original idea and its current boundaries.
+**[All 31 formerly seeded/designed items now have implemented software or published editions](docs/IMPLEMENTATION_NOTES.md)**, including the self-paced course, research desks, 217 country/economy data profiles, reference workbenches and six actual narrated podcast episodes. The [full roadmap](https://charitology.com/roadmap/) preserves every original idea and its current boundaries.
 
-**Edition 0 was drafted with AI assistance and is being reviewed in public.** Review labels require recorded independent human declarations bound to the exact source version; manuscript peer review has a separate gate. The [public research ledger](https://charitology.org/research-ledger/) preserves exact sources, revisions and qualification limits.
+**Edition 0 was drafted with AI assistance and is being reviewed in public.** Review labels require recorded independent human declarations bound to the exact source version; manuscript peer review has a separate gate. The [public research ledger](https://charitology.com/research-ledger/) preserves exact sources, revisions and qualification limits.
 
 ## Run it
 

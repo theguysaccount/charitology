@@ -22,7 +22,7 @@ import {
 const root = fileURLToPath(new URL("..", import.meta.url)),
   ext = join(root, "extension");
 const location = releaseSite(
-  process.env.SITE_URL || "https://charitology.org",
+  process.env.SITE_URL || "https://charitology.com",
   process.env.BASE_PATH || "/",
 );
 const walk = (dir) =>

@@ -54,7 +54,7 @@ assert.equal(opened.length, 0, 'Opening the popup must not send the search anywh
 elements.get('lookup').listeners.submit({preventDefault() {}});
 assert.equal(opened.length, 1);
 const destination = new URL(opened[0]);
-assert.equal(destination.origin, 'https://charitology.org');
+assert.equal(destination.origin, 'https://charitology.com');
 assert.equal(destination.pathname, '/tools/charity-lookup/');
 assert.equal(destination.search, '', 'Search text must be absent from the HTTP query');
 assert.equal(new URLSearchParams(destination.hash.slice(1)).get('q'), 'Aid & Care / 救援');

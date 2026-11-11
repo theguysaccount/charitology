@@ -30,7 +30,7 @@ import {
 const root = resolve(dirname(fileURLToPath(import.meta.url)), ".."),
   dist = join(root, "dist");
 const base = (process.env.BASE_PATH || "/").replace(/\/$/, ""),
-  site = process.env.SITE_URL || "https://charitology.org",
+  site = process.env.SITE_URL || "https://charitology.com",
   href = (p) => base + p;
 assert.ok(existsSync(dist), "Build dist/ before checking observation output.");
 const archive = loadObservations(),

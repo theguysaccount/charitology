@@ -20,7 +20,7 @@ export function url(path = '/'): string {
 
 /** Absolute URL for feeds, canonical links and the API. */
 export function absolute(path: string, site: URL | undefined): string {
-  return new URL(url(path), site ?? 'https://charitology.org').toString();
+  return new URL(url(path), site ?? 'https://charitology.com').toString();
 }
 
 /** Link that opens the GitHub editor for a content file. */

@@ -2,7 +2,7 @@
 // tab's title. activeTab means the extension sees the tab only when you click it.
 const SITE_SETTING = "__CHARITOLOGY_SITE__";
 const SITE = SITE_SETTING.startsWith("__")
-  ? "https://charitology.org"
+  ? "https://charitology.com"
   : SITE_SETTING;
 const api = globalThis.browser ?? globalThis.chrome;
 
