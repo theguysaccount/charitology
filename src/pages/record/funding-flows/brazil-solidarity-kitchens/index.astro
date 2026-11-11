@@ -36,6 +36,7 @@ const sources = [
     return <li><strong>{year}.</strong> {period.length} orders totaling {money.format(sum(period.map(order => Number(order[2]))) / 100)}.</li>;
   })}</ul>
   <p>The agreement contributions and bank-order amounts describe different stages of the same funding. Further records are needed to trace individual payments from the agreement account to kitchens and verify what they spent.</p>
+  <p><a href={url(route + 'account-payments/')}>Follow the reported agreement-account payments</a>. The follow-up shows which internal transfers have onward records with matching amounts.</p>
 
   <h2 id="plans-and-need">Where work was planned and where households reported food insecurity</h2>
   <p>The federal schedules name a state in a plan overlapping 2025 for {withState.length} of the {signed.length} signed terms. Some plan rows omit a state. The state in a plan is evidence of intended activity. To locate individual kitchens, use the <a href={officialMap}>official kitchens map</a>. Its coverage differs from the plans shown here.</p>
