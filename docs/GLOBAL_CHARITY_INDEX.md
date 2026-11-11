@@ -199,3 +199,19 @@ python3 scripts/build-ca-grant-geography.py /path/to/captures /path/to/new-ca-gr
 npm run build
 node scripts/check-ca-grant-geography.mjs
 ```
+
+## New Zealand register and Tier 3 filings
+
+The [New Zealand lookup](https://charitology.com/record/charity-index/new-zealand/) uses the dated public register to show 46,174 organization entries. It keeps the source organization ID, five-digit CC number, name, registry status and dates, and optional group ID. The regulator's source snapshot included 46,189 organizations across statuses. The projection excludes 15 rows outside the five-digit format. These counts describe the snapshot. [Charities Services open data](https://www.charities.govt.nz/charities-in-new-zealand/the-charities-register/open-data).
+
+The return selection links 20,068 Tier 3 records ending in 2024 and 2025 to the exact organization ID. It preserves each annual return ID and complete period-end date. It selects source status 10, the code observed in sampled register-matched submitted returns. Group returns and other status codes remain outside the selection. The two published amount fields are gross income and total expenditure. An organization can have an individual return and a separately reported group association. The lookup gives no combined sector total.
+
+The earlier and current Tier 3 standards both require presentation in New Zealand dollars. The projection preserves the source currency field and labels the basis for interpreting a blank field as NZD. It keeps explicit currency codes where present and the original signed whole amounts. Two sampled public register profiles matched both years by period and amounts. [Current standard, A24](https://standards.xrb.govt.nz/standards-navigator/tier-3-nfp-standard/) · [Earlier standard, A21](https://www.xrb.govt.nz/dmsdocument/658/) · [Register example CC48103](https://register.charities.govt.nz/Charity/CC48103) · [Register example CC48813](https://register.charities.govt.nz/Charity/CC48813).
+
+Rebuild from the five allowlisted OData captures identified by exact URL and SHA-256 in the [manifest](../public/data/charity-registry/new-zealand/manifest.json). Use the five filenames `organisations.json`, `tier3-2024.json`, `tier3-2025.json`, `tiers.json` and `currencies.json`. The source URLs are live queries and may return different bytes over time. The output keeps organization and annual return IDs and excludes officer records and contact details. Source data adapted under [CC BY 3.0 New Zealand](https://creativecommons.org/licenses/by/3.0/nz/).
+
+```sh
+python3 scripts/build-nz-tier3.py /path/to/captures /path/to/new-output-directory
+npm run build
+node scripts/check-nz-tier3.mjs
+```

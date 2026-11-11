@@ -130,7 +130,7 @@ export const sections: Section[] = [
   } },
   { path: '/record/', symbol: 'archive', tone: 'blue', entries: {
     'case-studies': 'folder', 'cause-atlas': 'atlas', 'charitology-100': 'badge', 'charity-index': 'fileSearch',
-    'charity-index/coverage': 'checks', 'charity-index/japan': 'flag',
+    'charity-index/coverage': 'checks', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'leaf',
     'charity-financials': 'coins', 'charity-financials/canada': 'leaf', 'charity-financials/united-states': 'columns',
     'charity-financials/england-wales': 'shield', 'charity-financials/kenya': 'chart',
     'countries': 'pin', 'country-profiles': 'globe', 'disagreements': 'dialogue', 'editions': 'document',

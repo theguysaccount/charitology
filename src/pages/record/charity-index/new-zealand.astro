@@ -1,0 +1,227 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/new-zealand/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'New Zealand charities and Tier 3 filings';
+const base = '/data/charity-registry/new-zealand/';
+const editions = Object.entries(manifest.editions);
+const totalReturns = editions.reduce((sum, [, edition]) => sum + edition.includedReturns, 0);
+const count = (value: number) => value.toLocaleString('en-US');
+const captured = manifest.capturedAt.slice(0, 10);
+const sources = [
+  { title: 'Charities Register open data and reuse terms', publisher: manifest.publisher, url: manifest.openData },
+  { title: 'Organization identity extract', publisher: manifest.publisher, url: manifest.sources.organisations.url },
+  { title: '2024 Tier 3 annual return extract', publisher: manifest.publisher, url: manifest.sources['tier3-2024'].url },
+  { title: '2025 Tier 3 annual return extract', publisher: manifest.publisher, url: manifest.sources['tier3-2025'].url },
+  { title: 'Current Tier 3 standard, paragraph A24', publisher: 'New Zealand External Reporting Board', url: manifest.standards.current },
+  { title: 'Earlier Tier 3 accrual standard, paragraph A21', publisher: 'New Zealand External Reporting Board', url: manifest.standards.previous },
+];
+const excluded = {
+  otherReturnStatus: 'Source return status other than code 10',
+  groupReturn: 'Group return', noSelectedOrganisation: 'No matching organization in the edition',
+  unresolvedCurrency: 'Unresolved explicit currency', repeatedPeriod: 'Repeated organization and period',
+};
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index"
+  summary="Search a dated New Zealand register snapshot and read selected Tier 3 annual return amounts."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'New Zealand'}]}
+  filePath="src/pages/record/charity-index/new-zealand.astro" sources={sources}>
+  <p>This edition includes {count(manifest.registry.included)} organization entries and {count(totalReturns)} individual Tier 3 returns for periods ending in 2024 or 2025. The dated register includes registered, deregistered and removed entries. Use the regulator’s register for current information.</p>
+  <section class="charity-financial-search" data-nz-registry data-asset={url(base + manifest.asset.path)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="nz-search-heading">
+    <h2 id="nz-search-heading">Look up a charity</h2>
+    <form>
+      <label for="nz-query">Organization name or registration number</label>
+      <input type="search" id="nz-query" maxlength="160" autocomplete="off" disabled />
+      <div class="finance-actions">
+        <label>Registry status
+          <select data-status-filter disabled><option value="">All statuses</option>
+            {Object.keys(manifest.registry.statuses).map(status => <option>{status}</option>)}
+          </select>
+        </label>
+        <label><input type="checkbox" data-finances-only disabled /> Has a Tier 3 return in this edition</label>
+      </div>
+      <div class="finance-actions">
+        <button type="submit" class="btn" disabled>Search records</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status></p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed records as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed records as CSV</button>
+    </div>
+    <ol class="finance-results" aria-label="New Zealand charity results" data-results></ol>
+    <noscript><p><a href={manifest.openData}>Use the official Charities Register and open data links</a> to look up a charity without this search.</p></noscript>
+  </section>
+  <h2 id="coverage">Coverage and original records</h2>
+  <p>The source contains {count(manifest.registry.sourceRows)} organizations. {count(manifest.registry.excluded.unusableRegistrationNumber)} have no registration number in the five-digit CC format used here. The lookup preserves the registry status, dates and group identifier from the snapshot. A group identifier can describe a relationship recorded after the end of a given filing period.</p>
+  <p>The registry and returns join on the regulator’s organization ID. This edition selects individual Tier 3 returns with source status code 10, the code observed on register-matched submitted returns. Group returns appear separately in the original data. Organization-level figures may overlap with group financial statements and should not be added to group totals.</p>
+  <div class="table-scroll" role="region" aria-label="Tier 3 return coverage by period end year" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Selection step</th>{editions.map(([year]) => <th scope="col">{year}</th>)}</tr></thead>
+      <tbody>
+        <tr><th scope="row">Source Tier 3 return rows</th>{editions.map(([, e]) => <td>{count(e.sourceReturns)}</td>)}</tr>
+        {Object.entries(excluded).map(([key, label]) => <tr><th scope="row">{label}</th>{editions.map(([, e]) => <td>{count(e.excluded[key as keyof typeof excluded])}</td>)}</tr>)}
+        <tr><th scope="row">Included organization returns</th>{editions.map(([, e]) => <td>{count(e.includedReturns)}</td>)}</tr>
+      </tbody>
+    </table>
+  </div>
+  <p>{count(manifest.registry.withFinancialHistory)} organization entries have at least one included return. {count(manifest.registry.withBothYears)} have returns in both years. The figures are the regulator’s gross income and expenditure fields. They describe reporting amounts. Tracing where money went or what changed for people needs other sources.</p>
+  <p>The current and previous Tier 3 standards require New Zealand dollars. For selected returns with a blank currency field, the lookup uses NZD under the standard and keeps the original field blank in the export. Explicit source currency takes precedence. Accounting choices within Tier 3 can still affect comparisons.</p>
+  <p>Contains information from Charities Services, New Zealand Department of Internal Affairs, adapted by Charitology under <a href={manifest.licence}>Creative Commons Attribution 3.0 New Zealand</a>. The <a href={url(base + 'manifest.json')} download="new-zealand-charity-manifest.json">downloadable source manifest</a> gives the {captured} capture time, URLs, field selection and fingerprints.</p>
+</Entry>
+
+<style>
+  .table-scroll { overflow-x: auto; margin-block: 1rem; }
+  .table-scroll table { display: table; min-width: 26rem; margin: 0; }
+  .finance-actions label { font-weight: normal; }
+  .finance-actions select { max-width: 100%; padding: .4rem; margin-inline-start: .3rem; font: inherit; }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { loadVerifiedJson } from '../../../lib/client/verified-json';
+
+  type Filing = [number, string, number, string | null, string, 'reported' | 'tier-3-standard', number, number];
+  type Organisation = [number, string, string, string | null, string | null, string | null, number | null, Filing[]];
+  type Manifest = typeof import('../../../../public/data/charity-registry/new-zealand/manifest.json');
+  const nameKey = (value: string) => value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().trim();
+  const fields = (names: string[], values: unknown[]) => Object.fromEntries(names.map((key, index) => [key, values[index]]));
+  const count = (value: number) => value.toLocaleString('en-US');
+  const safe = (name: string) => /^(?:\s*[=+\-@]|[\t\r\n])/.test(name) ? "'" + name : name;
+  const limit = 25;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-nz-registry]')) {
+    const manifest = JSON.parse(root.dataset.manifest!) as Manifest;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input[type=search]', form);
+    const statusFilter = $<HTMLSelectElement>('[data-status-filter]', form);
+    const finances = $<HTMLInputElement>('[data-finances-only]', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', form);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let cached: Promise<Organisation[]> | undefined;
+    let displayed: Organisation[] = [];
+    let total = 0;
+    let ticket = 0;
+
+    function load() {
+      cached ??= loadVerifiedJson(root.dataset.asset!, manifest.asset).then(value => {
+        if (!Array.isArray(value) || value.length !== manifest.registry.included) throw new Error('The snapshot does not match its manifest.');
+        return value as Organisation[];
+      }).catch(error => { cached = undefined; throw error; });
+      return cached;
+    }
+
+    const record = (number: string) => manifest.register + number;
+    const filingRecord = (id: number, periodEnd: string) => {
+      const edition = periodEnd.slice(0, 4) as '2024' | '2025';
+      const source = manifest.sources[`tier3-${edition}`];
+      const params = new URLSearchParams({ '$format': 'json', '$select': source.fields.join(',') });
+      return manifest.odata + `AnnualReturn(${id})?` + params;
+    };
+
+    function show([id, number, name, registrationStatus, registeredOn, deregisteredOn, groupId, filings]: Organisation) {
+      return h('li', { class: 'card' }, h('h3', {}, name),
+        h('p', {}, `${number} · ${registrationStatus ?? 'Status unavailable'}`),
+        h('p', { class: 'note' }, `Source organization ID ${id}`, registeredOn ? ` · Registered ${registeredOn}` : '',
+          deregisteredOn ? ` · Deregistration recorded ${deregisteredOn}` : '',
+          groupId ? ` · Registry group ID ${groupId}` : ''),
+        h('p', {}, h('a', { href: record(number) }, 'Official charity register profile')),
+        filings.length ? filings.map(([filingId, end, , , currency, basis, income, spending]) =>
+          h('section', { class: 'finance-period' }, h('h4', {}, `Tier 3 return for period ended ${end}`),
+            h('dl', { class: 'finance-amounts' },
+              h('div', {}, h('dt', {}, 'Gross income'), h('dd', {}, `${currency} ${count(income)}`)),
+              h('div', {}, h('dt', {}, 'Total expenditure'), h('dd', {}, `${currency} ${count(spending)}`))),
+            h('p', { class: 'note' }, basis === 'reported' ? 'Currency supplied in the source.' : 'Source currency blank. NZD under the Tier 3 standard.'),
+            h('p', { class: 'note' }, h('a', { href: filingRecord(filingId, end) }, `Source annual return ${filingId}`))))
+          : h('p', { class: 'note' }, 'No selected Tier 3 return in this edition.'));
+    }
+
+    function reset(message = '') {
+      displayed = [];
+      total = 0;
+      json.disabled = csv.disabled = true;
+      submit.disabled = false;
+      results.replaceChildren();
+      status.textContent = message;
+      ticket++;
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      reset();
+      const query = nameKey(input.value);
+      const number = query.replace(/\s/g, '').toUpperCase();
+      const requestedStatus = statusFilter.value;
+      const onlyFinances = finances.checked;
+      if (!query && !requestedStatus && !onlyFinances) {
+        status.textContent = 'Enter a name or registration number, or choose a filter.';
+        return;
+      }
+      const byNumber = /^CC[0-9]{5}$/.test(number);
+      const current = ticket;
+      status.textContent = 'Checking the public registry snapshot.';
+      submit.disabled = true;
+      try {
+        const matches = (await load()).filter(([, registration, name, status, , , , filings]) =>
+          (!requestedStatus || requestedStatus === status) && (!onlyFinances || filings.length > 0) &&
+          (byNumber ? registration === number : nameKey(name).includes(query)));
+        if (current !== ticket) return;
+        total = matches.length;
+        displayed = matches.slice(0, limit);
+        status.textContent = total ? `${count(total)} ${total === 1 ? 'match' : 'matches'}. Showing ${displayed.length}.` :
+          'No matching organization. Try a shorter name or a different filter.';
+        results.append(...displayed.map(show));
+        json.disabled = csv.disabled = !displayed.length;
+      } catch (error) {
+        if (current === ticket) status.textContent = error instanceof Error ? error.message : 'Lookup failed.';
+      } finally {
+        if (current === ticket) submit.disabled = false;
+      }
+    });
+
+    for (const field of [input, statusFilter, finances]) field.addEventListener('input', () => reset('Choose Search records to update the results.'));
+    clear.addEventListener('click', () => {
+      form.reset();
+      reset('Search cleared.');
+      input.focus();
+    });
+    input.disabled = statusFilter.disabled = finances.disabled = submit.disabled = clear.disabled = false;
+
+    const { format, capturedAt, publisher, licence, sources, standards } = manifest;
+    const metadata = { format, capturedAt, publisher, licence };
+    json.addEventListener('click', () => {
+      const entries = displayed.map(row => ({
+        ...fields(manifest.fields.slice(0, -1), row),
+        officialRegistry: record(row[1]),
+        returns: row[7].map(filing => ({ ...fields(manifest.returnFields, filing), originalReturn: filingRecord(filing[0], filing[1]) })),
+      }));
+      download('new-zealand-charity-search.json', JSON.stringify({ ...metadata, standards, sources, total, entries }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      const rows = displayed.flatMap(([id, registration, name, status, registeredOn, deregisteredOn, group, filings]) => {
+        const identity = fields(manifest.fields.slice(0, -1), [id, registration, safe(name), status, registeredOn, deregisteredOn, group]);
+        const base = { ...identity, ...metadata, officialRegistry: record(registration),
+          registrySource: sources.organisations.url, registrySha256: sources.organisations.sha256,
+          tierStandard: standards.current, priorTierStandard: standards.previous };
+        return (filings.length ? filings : [null]).map(filing => {
+          const year = filing?.[1].slice(0, 4) as '2024' | '2025' | undefined;
+          const source = year ? sources[`tier3-${year}`] : null;
+          return { ...base, ...fields(manifest.returnFields, filing ?? []),
+            originalReturn: filing ? filingRecord(filing[0], filing[1]) : null,
+            financialSource: source?.url, financialSha256: source?.sha256 };
+        });
+      });
+      download('new-zealand-charity-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>
