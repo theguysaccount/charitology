@@ -15,10 +15,10 @@ export function getStaticPaths() {
     } },
     { params: { form: '990-pf' }, props: {
       manifest: foundationReturn,
-      summary: 'Find private-foundation finances and see grants reported as paid alongside amounts approved for future payment.',
+      summary: 'Find private-foundation finances and compare reported grant book amounts with amounts approved for future payment.',
       labels: ['Total revenue per books', 'Total expenses per books', 'Contributions, gifts and grants paid per books',
         'Grants approved for future payment', 'Expenses for exempt purposes', 'Year-end asset fair market value'],
-      limits: 'The reported contributions, gifts and grants paid are a combined book amount. The future-payment field shows a separate commitment. The amounts cannot be added to calculate payments, and the extract cannot identify a recipient or confirm a transfer.',
+      limits: 'The future-payment field shows a separate commitment. The amounts cannot be added to calculate payments, and the extract cannot identify a recipient or confirm a transfer.',
     } },
   ];
 }
@@ -41,5 +41,6 @@ const sources = [{ title: 'Annual extract of tax-exempt organization financial d
     {' '}<a href={source.archive}>Original ZIP</a> · <a href={source.documentation}>IRS field definitions</a>.
   </li>)}</ul>
   <p>Amounts stay in U.S. dollars. The extract can report zero and a missing amount stays unavailable. {limits}</p>
+  {manifest.form === '990-PF' && <p>The reported contributions, gifts and grants paid are a combined book amount that can include amounts accrued for the year. See the <a href="https://www.irs.gov/pub/irs-prior/i990pf--2024.pdf">IRS instructions for Part I, line 25</a>.</p>}
   <p>Charitology selected and reformatted the public financial data from the Internal Revenue Service. <a href={url(base + 'manifest.json')} download={`irs-form-${Astro.params.form}-manifest.json`}>Download the source and coverage manifest</a>. EINs can begin with a zero, so import them as text.</p>
 </Entry>
