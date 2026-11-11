@@ -4,11 +4,41 @@
   "installCommand": "",
   "buildCommand": "",
   "outputDirectory": "public",
+  "headers": [
+    {
+      "source": "/:path(.*)",
+      "has": [
+        { "type": "host", "value": "charitology.org" },
+        { "type": "query", "key": "legacy", "value": "1" }
+      ],
+      "headers": [
+        { "key": "Set-Cookie", "value": "__Host-charitology-legacy=1; Path=/; Max-Age=3600; Secure; HttpOnly; SameSite=Lax" },
+        { "key": "Cache-Control", "value": "private, no-store" }
+      ]
+    }
+  ],
   "redirects": [
     {
       "source": "/:path(.*)",
-      "destination": "https://charitology.org/:path",
+      "has": [{ "type": "host", "value": "www\\.charitology\\.(com|org)" }],
+      "destination": "https://charitology.com/:path",
       "permanent": true
+    },
+    {
+      "source": "/:path(.*)",
+      "has": [{ "type": "host", "value": "charitology.org" }],
+      "missing": [
+        { "type": "query", "key": "legacy", "value": "1" },
+        { "type": "cookie", "key": "__Host-charitology-legacy", "value": "1" }
+      ],
+      "destination": "https://charitology.com/:path",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/:path(.*)",
+      "destination": "https://publish.charitology.com/:path"
     }
   ]
 }

@@ -5,7 +5,7 @@
 (() => {
   const SITE_SETTING = "__CHARITOLOGY_SITE__";
   const SITE = SITE_SETTING.startsWith("__")
-    ? "https://charitology.org"
+    ? "https://charitology.com"
     : SITE_SETTING;
   const api = globalThis.browser ?? globalThis.chrome;
   const KEY = `hidden:${location.hostname}`;

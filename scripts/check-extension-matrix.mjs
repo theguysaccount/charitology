@@ -143,7 +143,7 @@ assert.equal(f.calls.tabTitle, 1);
 assert.deepEqual(plain(f.calls.query), [{ active: true, currentWindow: true }]);
 await submit(f);
 let d = destination(f.calls.created[0].url);
-assert.equal(d.url.origin, "https://charitology.org");
+assert.equal(d.url.origin, "https://charitology.com");
 assert.equal(d.url.pathname, "/tools/charity-lookup/");
 assert.equal(d.query, 'Aid & Care / 救援 "A" % # ? 😀');
 assert.equal(f.calls.closed, 1);
@@ -355,7 +355,7 @@ assert.equal(
 );
 assert.equal(f.calls.created.length, 0);
 assert.deepEqual(f.calls.fetch, []);
-assert.equal(lookup(f).href, "https://charitology.org/tools/charity-lookup/");
+assert.equal(lookup(f).href, "https://charitology.com/tools/charity-lookup/");
 await lookup(f).dispatch("click");
 assert.equal(f.calls.title, 1);
 d = destination(lookup(f).href);

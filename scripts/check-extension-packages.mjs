@@ -220,7 +220,7 @@ function cli(dir, env = {}) {
     cwd: dir,
     env: {
       ...process.env,
-      SITE_URL: "https://charitology.org",
+      SITE_URL: "https://charitology.com",
       BASE_PATH: "/",
       ...env,
     },
@@ -326,7 +326,7 @@ try {
             const setting = settings[0];
             const expected =
               raw.slice(0, setting.index) +
-              'const SITE_SETTING = "https://charitology.org";' +
+              'const SITE_SETTING = "https://charitology.com";' +
               raw.slice(setting.index + setting[0].length);
             assert.equal(parsed.get(file).toString(), expected);
             assert.ok(!expected.includes("__CHARITOLOGY_SITE__"));
@@ -502,9 +502,9 @@ try {
     "Approved release origin/base normalization and invalid destination rejection",
     () => {
       assert.deepEqual(releaseSite(), {
-        origin: "https://charitology.org",
+        origin: "https://charitology.com",
         basePath: "",
-        site: "https://charitology.org",
+        site: "https://charitology.com",
       });
       assert.equal(
         releaseSite("https://theguysaccount.github.io", "/charitology/").site,

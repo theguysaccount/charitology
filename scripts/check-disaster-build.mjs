@@ -9,7 +9,7 @@ import { loadHumanitarianFunding } from "../src/lib/humanitarian-funding/public.
 import { readObservationWorkingFiles } from "../src/lib/observation-capture-io.mjs";
 import { validateObservationFiles } from "../src/lib/observation-model.mjs";
 import { planClusterObservationProjection } from "../src/lib/humanitarian-plan-cluster/public.mjs";
-const root = resolve("."), dist = join(root, "dist"), base = (process.env.BASE_PATH || "/").replace(/\/$/, ""), site = process.env.SITE_URL || "https://charitology.org";
+const root = resolve("."), dist = join(root, "dist"), base = (process.env.BASE_PATH || "/").replace(/\/$/, ""), site = process.env.SITE_URL || "https://charitology.com";
 const file = p => { assert.ok(p.startsWith("/") && !p.includes("..")); const f = resolve(dist, "." + p + (p.endsWith("/") ? "index.html" : "")); assert.ok(f.startsWith(dist + sep)); return f; };
 const bytes = p => readFileSync(file(p)), raw = p => bytes(p).toString("utf8"), json = p => JSON.parse(raw(p));
 const attr = (n, k) => n.attrs?.find(a => a.name === k)?.value;

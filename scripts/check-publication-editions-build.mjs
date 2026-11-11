@@ -28,7 +28,7 @@ import { renderPublicationMarkdown } from "../src/lib/publication-editions-view.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), ".."),
   dist = join(root, "dist");
 const base = (process.env.BASE_PATH || "/").replace(/\/$/, ""),
-  site = process.env.SITE_URL || "https://charitology.org",
+  site = process.env.SITE_URL || "https://charitology.com",
   href = (p) => base + p;
 const sha = (v) => createHash("sha256").update(v).digest("hex");
 const input = readPublicationRegistryDirectory(

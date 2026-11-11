@@ -295,7 +295,7 @@ export function toPng(el: HTMLCanvasElement): Promise<Blob> {
 
 /** "charitology.org/tools/x/" for the configured site and base path. */
 export function siteLabel(path: string): string {
-  const site = (import.meta.env.SITE as string | undefined) || 'https://charitology.org';
+  const site = (import.meta.env.SITE as string | undefined) || 'https://charitology.com';
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   try {
     const u = new URL(base + path, site);
@@ -307,11 +307,11 @@ export function siteLabel(path: string): string {
 
 /** The absolute URL of a page on the configured site. */
 export function siteUrl(path: string): string {
-  const site = (import.meta.env.SITE as string | undefined) || 'https://charitology.org';
+  const site = (import.meta.env.SITE as string | undefined) || 'https://charitology.com';
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   try {
     return new URL(base + path, site).toString();
   } catch {
-    return `https://charitology.org${path}`;
+    return `https://charitology.com${path}`;
   }
 }

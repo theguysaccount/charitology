@@ -32,7 +32,7 @@ export function crc32(bytes) {
   return (c ^ 0xffffffff) >>> 0;
 }
 export function releaseSite(
-  siteInput = "https://charitology.org",
+  siteInput = "https://charitology.com",
   baseInput = "/",
 ) {
   assert.equal(typeof siteInput, "string");
@@ -43,7 +43,7 @@ export function releaseSite(
   );
   const parsed = new URL(siteInput);
   assert.ok(
-    ["https://charitology.org", "https://theguysaccount.github.io"].includes(
+    ["https://charitology.com", "https://charitology.org", "https://theguysaccount.github.io"].includes(
       parsed.origin,
     ),
     "Release origin must be an approved Charitology HTTPS origin",
@@ -380,7 +380,7 @@ export function validateReleaseBaseline(metadata, registry) {
     );
     seen.add(release.extensionVersion);
     assert.match(release.sourceSha256, /^[a-f0-9]{64}$/);
-    assert.equal(release.productionSite, "https://charitology.org");
+    assert.ok(["https://charitology.com", "https://charitology.org"].includes(release.productionSite));
     assert.deepEqual(
       release.productionPackages.map((p) => p.path),
       PACKAGE_NAMES,
