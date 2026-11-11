@@ -21,6 +21,8 @@ The Index brings together distinct sources. A dated IRS identity snapshot suppor
 
 [Trace reported U.S. grants by filer or recipient EIN](/record/funding-flows/us-schedule-i/). Each included row points to the original Form 990 filing and distinguishes cash from noncash assistance.
 
+[Compare Kenya’s reporting coverage and finances](/record/charity-financials/kenya/). Read three years of regulator-reported filing counts and receipts, plus a breakdown of where reporting organizations spent funds.
+
 ## IRS snapshot coverage
 
 The four IRS EO BMF regional CSVs posted on **2026-10-13** contain **1,975,975 unique EINs**. The local search retains source spelling, city/state fields, subsection, status and deductibility codes. Missing fields remain unknown. Contact/street and financial fields are omitted. Each result links its original region file; exports retain its source hash, retrieval time and snapshot date. Data downloads only after an explicit search.

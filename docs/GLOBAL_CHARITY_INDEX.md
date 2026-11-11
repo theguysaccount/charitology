@@ -90,3 +90,17 @@ Cash grants and reported noncash valuations remain separate. Each row is an orga
 python3 scripts/build-us-schedule-i.py /path/to/2024_TEOS_XML_01A.zip public/data/irs-registry /path/to/new-output
 node scripts/check-us-schedule-i.mjs
 ```
+
+## Kenya sector reporting and finances
+
+The [Kenya coverage edition](https://charitology.com/record/charity-financials/kenya/) traces three report years of registration and filing counts, reported receipts and source regions to exact pages in the regulator's reports. It includes the 2024/25 expenditure breakdown for Kenya and other countries. Each edition retains published totals and source precision. The 2023/24 region breakdown differs from the published receipts total by KES 0.01. The 2024/25 sector and expenditure tables give different totals for projects in Kenya. Each figure keeps its own source location. Do not aggregate receipts with expenditures or treat the regulator's reported totals as a complete national measure.
+
+The regulator's live organization lookup supplies names and references. An authoritative old-to-new reference crosswalk and a qualified organization-level financial source are needed before adding a historical Kenya organization join. The public dataset is an aggregate projection of reported facts. Source report content retains its original terms.
+
+Rebuild from the three exact report PDFs named in `src/data/kenya-pbo-coverage.json`, using `pypdfium2==5.14.0`. Normal builds read the committed projection without fetching any report. The check compares the built JSON and CSV exports to the projection, including every amount and its source coordinates.
+
+```sh
+python3 scripts/build-kenya-pbo-coverage.py /path/to/captures /path/to/kenya-pbo-coverage.json
+npm run build
+python3 scripts/check-kenya-pbo-coverage.py
+```
