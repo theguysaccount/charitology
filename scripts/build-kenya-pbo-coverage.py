@@ -7,7 +7,7 @@ import argparse
 import json
 import re
 from decimal import Decimal
-from hashlib import file_digest
+from hashlib import sha256
 from pathlib import Path
 
 from pypdfium2 import PdfDocument
@@ -89,9 +89,12 @@ def build(captures):
     spending = None
     for year, name, title, url, sha, refs in SOURCES:
         path = captures / name
+        digest = sha256()
         with path.open('rb') as raw:
-            if file_digest(raw, 'sha256').hexdigest() != sha:
-                raise ValueError(f'Source bytes changed for {name}.')
+            for block in iter(lambda: raw.read(1_048_576), b''):
+                digest.update(block)
+        if digest.hexdigest() != sha:
+            raise ValueError(f'Source bytes changed for {name}.')
         with PdfDocument(path) as pdf:
             pages = {page: page_text(pdf, page) for page in sorted({row[0] for row in refs.values()})}
         texts = {key: pages[page] for key, (page, _, _) in refs.items()}
