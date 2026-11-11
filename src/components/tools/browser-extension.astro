@@ -47,7 +47,9 @@ import { SITE, url } from '../../lib/site';
   .ext-list {
     padding-left: 1.2rem;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.45rem;
+    overflow-wrap: anywhere;
     margin: 0 0 1rem;
   }
   .ext-actions {

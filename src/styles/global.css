@@ -1542,7 +1542,9 @@ a.chip:hover {
   margin: 0;
   padding-left: 1.4em;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.55rem;
+  overflow-wrap: anywhere;
 }
 
 .sources .src-meta {
