@@ -85,6 +85,20 @@ python3 scripts/build-brazil-transferegov.py /path/to/captures /path/to/new-braz
 node scripts/check-brazil-transferegov.mjs
 ```
 
+### Civil society registration links
+
+The [Brazil registry comparison](https://charitology.com/record/charity-index/brazil/) checks all 3,811 full CNPJs in the transfer edition against the August 2026 Mapa das OSCs CSV. It finds one exact record for 3,645 identifiers, covering 7,598 agreements and 11,651 bank orders. The remaining 166 identifiers cover 302 agreements and 407 orders. The full establishment number is the sole match key. The UI links each result to the separate agreements and orders and shows the amount reported made available by bank-order year in BRL. Registry dates, proposal locations and where services took place describe different observations.
+
+The [registry manifest](../public/data/charity-registry/brazil-osc/manifest.json) pins the original CSV, the variable dictionary and the separate Transferegov asset. The publication retains the full identifier, data-record number, administrative status, office type and state code. Addresses, people, contact details and coordinates are excluded. The registry projection and registry-only downloads retain the terms of Ipea’s Base de Dados das Organizações da Sociedade Civil, accessed November 11, 2026. [Ipea catalog](https://mapaosc.ipea.gov.br/base-dados) · [Ipea terms](https://mapaosc.ipea.gov.br/termosuso).
+
+Rebuild from the exact archived CSV without network access, or stream it from the official URL with `--fetch`. The builder verifies the entire raw file and retains only the projected fields. The checker independently re-totals the bank orders by year, counts each agreement once and checks the two-way site links.
+
+```sh
+python3 scripts/build-brazil-osc-registry.py --csv /path/to/20260806_MOSC_baseDivulgacao.csv /path/to/new-output
+npm run build
+node scripts/check-brazil-osc-registry.mjs
+```
+
 ### Solidarity kitchens account movements
 
 The [agreement-account payment trace](https://charitology.com/record/funding-flows/brazil-solidarity-kitchens/account-payments/) matches the signed terms in the solidarity kitchens case to 5,398 reported movements. The exact join uses the public agreement number. Internal transfers to the agreement holder have a separate onward-record file linked by the unique financial movement ID. The source leaves some onward amounts missing. Each stage keeps its own totals. The files carry no federal bank-order identifier linking a particular disbursement to a particular payment. Partner contributions and tax records use separate archives. The latest calendar year is partial. The public projection contains aggregates and source references.

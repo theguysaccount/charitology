@@ -1,0 +1,101 @@
+{
+  "format": "charitology-br-osc-registry-v1",
+  "source": {
+    "publisher": "Instituto de Pesquisa Econômica Aplicada (Ipea)",
+    "title": "Base de Dados das Organizações da Sociedade Civil",
+    "edition": "2026-08",
+    "accessedOn": "2026-11-11",
+    "catalog": "https://mapaosc.ipea.gov.br/base-dados",
+    "methodology": "https://mapaosc.ipea.gov.br/metodologia",
+    "terms": "https://mapaosc.ipea.gov.br/termosuso",
+    "dictionary": "https://mapaosc.ipea.gov.br/arquivos/subitems/4038-dicionario-de-dados-mapa-oscs.xlsx",
+    "dictionarySha256": "c52a109a3e498e180c2b0947804c1d76425a163a5f6e920823eb1b1c98e91c95",
+    "url": "https://mapaosc.ipea.gov.br/download/20260806_MOSC_baseDivulgacao.csv",
+    "sourceBytes": 343956497,
+    "sourceSha256": "77d4b622ae84df3cc97fb274662463b9112a8e2e93e655e1beb3316fad37193e",
+    "sourceRows": 1113949
+  },
+  "transfers": {
+    "capturedOn": "2026-11-10",
+    "manifest": "/data/funding-flows/brazil-transferegov/manifest.json",
+    "assetSha256": "e104204207990851b245721a8a6e22746e59ad7f4935da7ac41abf5e0dd01798",
+    "identifiers": 3811,
+    "agreements": 7900,
+    "orders": 12058
+  },
+  "coverage": {
+    "exact": {
+      "identifiers": 3645,
+      "agreements": 7598,
+      "orders": 11651,
+      "byBankOrderYear": {
+        "2024": {
+          "identifiers": 1655,
+          "orders": 4432,
+          "centsBRL": 447609389152
+        },
+        "2025": {
+          "identifiers": 2932,
+          "orders": 7219,
+          "centsBRL": 536866454235
+        }
+      }
+    },
+    "unmatched": {
+      "identifiers": 166,
+      "agreements": 302,
+      "orders": 407,
+      "byBankOrderYear": {
+        "2024": {
+          "identifiers": 65,
+          "orders": 135,
+          "centsBRL": 7366150690
+        },
+        "2025": {
+          "identifiers": 130,
+          "orders": 272,
+          "centsBRL": 18827259112
+        }
+      }
+    },
+    "ambiguous": {
+      "identifiers": 0,
+      "agreements": 0,
+      "orders": 0,
+      "byBankOrderYear": {}
+    }
+  },
+  "ambiguousCnpjs": [],
+  "registrationStatuses": {
+    "Ativa": 3612,
+    "Inapta": 26,
+    "Nula ou Baixada": 7
+  },
+  "officeTypes": {
+    "Filial": 157,
+    "Matriz": 3481,
+    "Não Identificado": 7
+  },
+  "fields": [
+    "cnpj",
+    "ipeaSourceRecord",
+    "registrationStatus",
+    "officeType",
+    "registeredState"
+  ],
+  "sourceColumns": {
+    "cnpj": "cnpj",
+    "ipeaSourceRecord": "one-based CSV data record after the header",
+    "registrationStatus": "situacao_cadastral",
+    "officeType": "matriz_filial",
+    "registeredState": "UF_Sigla"
+  },
+  "asset": {
+    "path": "registrations.json.gz",
+    "rows": 3645,
+    "bytes": 41381,
+    "sha256": "16bd82535931cda3903bcb1b8cc87a87c7992ae70d11cafd7fa4e5d554c02eb2",
+    "decodedBytes": 175427,
+    "decodedSha256": "3b4874425c87eb51160144412cc279d670bb1624c76e10e06557833eb0bdb92d"
+  }
+}
