@@ -57,6 +57,18 @@ python3 scripts/build-brazil-transferegov.py /path/to/captures /path/to/new-braz
 node scripts/check-brazil-transferegov.mjs
 ```
 
+### Solidarity kitchens account movements
+
+The [agreement-account payment trace](https://charitology.com/record/funding-flows/brazil-solidarity-kitchens/account-payments/) matches the signed terms in the solidarity kitchens case to 5,398 reported movements. The exact join uses the public agreement number. Internal transfers to the agreement holder have a separate onward-record file linked by the unique financial movement ID. The source leaves some onward amounts missing. Each stage keeps its own totals. The files carry no federal bank-order identifier linking a particular disbursement to a particular payment. Partner contributions and tax records use separate archives. The latest calendar year is partial. The public projection contains aggregates and source references.
+
+Rebuild from the four Transferegov archives named in `src/data/brazil-solidarity-kitchen-payments.json`. Use the exact captured bytes. The builder checks their hashes and the solidarity kitchens case hash before reading the rows. Ordinary site builds use the committed projection.
+
+```sh
+python3 scripts/build-brazil-kitchen-account-payments.py /path/to/captures /path/to/brazil-solidarity-kitchen-payments.json
+npm run build
+node scripts/check-brazil-kitchen-account-payments.mjs
+```
+
 ## United States Form 990 financial extracts
 
 The [U.S. financial filings page](https://charitology.com/record/charity-financials/united-states/) uses the IRS's processed extracts for the 2023 and 2024 filing calendar years. It includes 516,109 periods for 277,047 EINs with subsection code 03 on full Form 990. The periods end in 2022–2024. The source supplies the tax-period end month rather than a start date or day. The projected fields are revenue, functional expenses, program service revenue, grants to U.S. governments and organizations, and grants to organizations and individuals outside the U.S. Source record numbers count CSV records after the header.

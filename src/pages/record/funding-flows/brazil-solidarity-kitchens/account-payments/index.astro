@@ -1,0 +1,78 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import { url } from '../../../../../lib/site';
+import data from '../../../../../data/brazil-solidarity-kitchen-payments.json';
+
+const title = 'Payments from Brazil’s solidarity kitchen agreement accounts';
+const parent = '/record/funding-flows/brazil-solidarity-kitchens/';
+const route = parent + 'account-payments/';
+const number = new Intl.NumberFormat('en-US');
+const brl = new Intl.NumberFormat('en-US', { style: 'currency', currency: data.currency, currencyDisplay: 'code' });
+const money = (cents: number) => brl.format(cents / 100);
+const reported = (entry: { rows: number; cents: number }) => entry.rows ? `${money(entry.cents)} · ${number.format(entry.rows)} ${entry.rows === 1 ? 'row' : 'rows'}` : 'No rows matched';
+const matched = data.periods.reduce((sum, period) => sum + period.onwardRecordsByParentYear.withMatchingOnwardAmount, 0);
+const matchingCents = data.periods.reduce((sum, period) => sum + period.onwardRecordsByParentYear.matchingOnwardCents, 0);
+const internal = data.periods.reduce((sum, period) => sum + period.internalTransfersToAgreementHolder.rows, 0);
+const missing = data.periods.reduce((sum, period) => sum + period.onwardRecordsByParentYear.withMissingOnwardAmount, 0);
+const partialYear = data.periods.find(period => period.partialCalendarYear)!.calendarYear;
+const captured = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' }).format(new Date(data.edition));
+const sources = [
+  { title: 'Transferegov downloads and data model', publisher: data.publisher, url: 'https://www.gov.br/transferegov/pt-br/ferramentas-gestao/dados-abertos/download-dados' },
+  { title: 'Public download portal and database license', publisher: data.publisher, url: 'https://api-publica.transferegov.gestao.gov.br/' },
+  { title: 'How an agreement holder records onward payments', publisher: data.publisher, url: 'https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/11-tutorial_obtv-convenente_convenios_convenente.pdf' },
+  { title: 'Solidarity kitchens call and selection notices', publisher: 'Ministry of Development and Social Assistance, Family and Fight Against Hunger', url: 'https://www.gov.br/mds/pt-br/acoes-e-programas/acesso-a-alimentos-e-a-agua/programa-cozinha-solidaria/editais' },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Follow reported account payments and onward records for the solidarity kitchens program’s 2024 call." crumbs={[{label:'The Record',href:'/record/'},{label:'Brazil solidarity kitchens',href:parent},{label:'Account payments'}]} sources={sources} filePath="src/pages/record/funding-flows/brazil-solidarity-kitchens/account-payments/index.astro">
+  <p>The <a href={url(parent)}>solidarity kitchens case</a> identifies {data.case.signedAgreements} signed agreements. Transferegov’s payment file contains {number.format(data.counts.selectedPaymentRows)} selected movements for {data.counts.agreementsWithPaymentRows} of those agreements. Each selected payment joins to the agreement by its number. An individual federal bank order would require a separate link to the reported payments from that agreement’s account.</p>
+  <p>The calendar years below use the dates in each source. The {partialYear} figures cover the records available in the {captured} capture. The download gives the first and last selected dates for each source and year.</p>
+  <p><a class="btn btn-ghost btn-small" href={url(route + 'data.json')} download="brazil-solidarity-kitchen-payments.json">Download payment aggregates and source references</a></p>
+
+  <h2 id="account-payments">Reported movements from agreement accounts</h2>
+  <p>Transferegov marks certain movements as transfers to another account held by the agreement holder. The publisher has a separate file for onward payments associated with those movements. The table keeps the internal movements distinct from the other payments in the main file.</p>
+  <div class="table-wrap" role="region" aria-label="Agreement account movements by year" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Year</th><th scope="col">Other payments</th><th scope="col">Internal transfers</th></tr></thead>
+      <tbody>{data.periods.map(period => <tr>
+        <th scope="row">{period.calendarYear}</th>
+        <td>{reported(period.otherAgreementAccountPayments)}</td>
+        <td>{reported(period.internalTransfersToAgreementHolder)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="onward-records">Which internal transfers have matching onward amounts</h2>
+  <p>Each of the {internal} internal movement IDs appears once in the main file and has an onward record. For {matched}, the onward amounts sum to the parent transfer amount, covering {money(matchingCents)} of the reported internal transfers. The onward amount is missing for {missing} movements. The matched amounts describe the same money at a later reported stage. Settlement and use of the funds require further evidence.</p>
+  <div class="table-wrap" role="region" aria-label="Onward amount coverage by internal transfer year" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Transfer year</th><th scope="col" class="num">Onward records matched</th><th scope="col" class="num">Amounts match</th><th scope="col" class="num">Amount missing</th></tr></thead>
+      <tbody>{data.periods.map(period => <tr>
+        <th scope="row">{period.calendarYear}</th>
+        <td class="num">{period.onwardRecordsByParentYear.withOnwardRecord}</td>
+        <td class="num">{period.onwardRecordsByParentYear.withMatchingOnwardAmount}</td>
+        <td class="num">{period.onwardRecordsByParentYear.withMissingOnwardAmount}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="separate-sources">Partner contributions and tax records</h2>
+  <p>The separate files list a partner contribution to an agreement account and reported tax payments. The tax file has agreement, date and amount fields. Determining whether these records overlap the payment file would require a transaction link. Read the rows separately.</p>
+  <div class="table-wrap" role="region" aria-label="Separately reported partner contributions and taxes" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Year</th><th scope="col">Partner contributions</th><th scope="col">Tax payments</th></tr></thead>
+      <tbody>{data.periods.map(period => <tr>
+        <th scope="row">{period.calendarYear}</th>
+        <td>{reported(period.reportedPartnerContributions)}</td>
+        <td>{reported(period.reportedTaxPayments)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The download carries the source fields, archive fingerprints and the exact agreement selection. The source data is attributed to Transferegov.br under the <a href={data.license}>Open Database License</a>.</p>
+</Entry>
+
+<style>
+  .table-wrap { margin-block: 1rem; }
+  .table-wrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .table-wrap table.data { display: table; overflow: visible; }
+</style>
