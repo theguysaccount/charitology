@@ -12,6 +12,7 @@ assert.equal(config.framework, null);
 assert.equal(config.buildCommand, "");
 assert.equal(config.installCommand, "");
 assert.equal(config.outputDirectory, "public");
+assert.equal(config.trailingSlash, true);
 assert.deepEqual(config.rewrites, [{ source: path, destination: "https://publish.charitology.com/:path" }]);
 assert.deepEqual(config.redirects, [
   {
