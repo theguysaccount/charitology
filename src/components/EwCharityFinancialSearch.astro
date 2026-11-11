@@ -75,6 +75,8 @@ import '../styles/charity-financial-search.css';
     const csv = $<HTMLButtonElement>('[data-csv]', root);
     let result: Result | undefined;
     let sequence = 0;
+    const registration = new URLSearchParams(location.search).get('registration');
+    if (registration && /^[0-9]{6,8}$/.test(registration)) input.value = registration;
     input.disabled = submit.disabled = clear.disabled = false;
 
     function reset() {

@@ -2,11 +2,14 @@
 import Entry from '../../../../layouts/Entry.astro';
 import StaticBars from '../../../../components/StaticBars.astro';
 import CaseDataDownload from '../../../../components/CaseDataDownload.astro';
+import { url } from '../../../../lib/site';
 import data from '../../../../data/home-from-hospital.json';
 
 const title = 'From hospital discharge pressure to nine community grants';
 const program = 'https://10gm.org.uk/10gms-work/home-from-hospital-targeted-investment-fund/';
 const nhs = 'https://www.england.nhs.uk/statistics/statistical-work-areas/discharge-delays-acute-data/';
+const practicalSupportTrial = 'https://pubmed.ncbi.nlm.nih.gov/2844356/';
+const patientInvolvementTrial = 'https://pmc.ncbi.nlm.nih.gov/articles/PMC12123408/';
 const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
 const oneDecimal = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 1 });
 const monthLabel = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
@@ -23,6 +26,8 @@ const sources = [
   { title: 'Original 360Giving grant workbook', publisher: '10GM', url: data.sources.awards.url },
   { title: 'Discharge delays publication and definitions', publisher: 'NHS England', url: nhs },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
+  { title: 'Randomized trial of community discharge support', publisher: 'BMJ', url: practicalSupportTrial },
+  { title: 'Your Care Needs You randomized trial', publisher: 'Age and Ageing', url: patientInvolvementTrial },
 ];
 ---
 
@@ -30,14 +35,18 @@ const sources = [
   <h2>Who funded what</h2>
   <p>10GM reports that it ran the fund with support from Greater Manchester NHS Integrated Care. Its workbook lists {data.awards.length} awards totaling <strong>{money.format(total)}</strong>, dated 27 September 2022, for projects delivered from December 2022 to March 2023. The upstream funding amount and the amounts transferred or spent by individual recipients are outside this record. The total counts each award ID once.</p>
   <div class="case-awards">
-    {data.awards.map(award => <details>
-      <summary><strong>{award.recipient}</strong> · {money.format(award.amountGBP)}</summary>
-      <p>Published place for beneficiaries: {award.publishedLocation}. Recipient identifier: <code>{award.recipientId}</code>. Award identifier: <code>{award.id}</code>.</p>
-      {award.registerName
-        ? <p>Regulator name for the supplied registration number on 10 November 2026: {award.registerName}. The award name above comes from 10GM.</p>
-        : <p>{award.recipientId.startsWith('GB-CHC-') ? 'The supplied number did not match a main charity in the captured regulator extract.' : 'The award uses a company identifier. This capture checks charity registration numbers.'}</p>}
-      <p><a href={data.sources.awards.url}>Open the original workbook</a> and read row {award.sourceRow}.</p>
-    </details>)}
+    {data.awards.map(award => {
+      const registration = /^GB-CHC-([0-9]{6,8})$/.exec(award.recipientId)?.[1];
+      return <details>
+        <summary><strong>{award.recipient}</strong> · {money.format(award.amountGBP)}</summary>
+        <p>Published place for beneficiaries: {award.publishedLocation}. Recipient identifier: <code>{award.recipientId}</code>. Award identifier: <code>{award.id}</code>.</p>
+        {award.registerName
+          ? <p>Regulator name for the supplied registration number on 10 November 2026: {award.registerName}. The award name above comes from 10GM.</p>
+          : <p>{award.recipientId.startsWith('GB-CHC-') ? 'The supplied number did not match a main charity in the captured regulator extract.' : 'The award uses a company identifier. This capture checks charity registration numbers.'}</p>}
+        {award.registerName && registration && <p><a href={url('/record/charity-financials/england-wales/') + '?registration=' + registration + '#ew-finance-heading'}>Search annual returns for charity {registration}</a>. These returns describe the charity’s overall finances.</p>}
+        <p><a href={data.sources.awards.url}>Open the original workbook</a> and read row {award.sourceRow}.</p>
+      </details>;
+    })}
   </div>
   <h2>What the NHS recorded during delivery</h2>
   <p>During those four months, Greater Manchester’s integrated care board reported an average of <strong>{oneDecimal.format(dailyAverage)}</strong> patients per day still in acute hospitals after they no longer met the criteria to stay. This is a count at each daily snapshot. A person can appear on more than one day. These board figures are unvalidated management information and exclude hospice discharges as described in the NHS workbook.</p>
@@ -49,6 +58,12 @@ const sources = [
   <h2>What the sources can answer</h2>
   <p>The award records show one community fund’s commitments. The NHS figures show system-wide pressure in Greater Manchester during delivery. They cover different groups of people and use different units, so the page reports them side by side. It does not divide awards by patients or infer how much need the fund met.</p>
   <p>10GM separately reports that the projects supported 594 people to be discharged and that 32 of them were readmitted within seven days. Those are program-reported results. The sources shown here do not establish what would have happened without the projects.</p>
+  <h2>What randomized trials measured</h2>
+  <ul>
+    <li>A <a href={practicalSupportTrial}>1988 trial of practical help at home</a> assigned 903 patients over age 75 to care-attendant support or standard aftercare. The three-month comparison of independence and morale was inconclusive. Over 18 months the trial reported fewer days in hospital in the support group.</li>
+    <li>The <a href={patientInvolvementTrial}>2025 Your Care Needs You trial</a> studied an approach to involving patients in discharge preparation on NHS wards. The primary outcome was unplanned readmission within 30 days. The estimated odds ratio was 0.93, with a 95% confidence interval of 0.78 to 1.10. The interval spans lower and higher odds of readmission.</li>
+  </ul>
+  <p>The trials evaluated specific models and follow-up periods. Applying their findings to a Greater Manchester project would require evidence about the support delivered, the people served and comparable outcomes.</p>
   <CaseDataDownload path={route + 'data.json'} filename="greater-manchester-home-from-hospital.json" label="Save the award and daily-count records" />
   <p>The export retains source fingerprints, workbook coordinates and licences. The workbook data is attributed to 10GM under CC BY 4.0. The regulator and NHS figures use the Open Government Licence.</p>
 </Entry>
