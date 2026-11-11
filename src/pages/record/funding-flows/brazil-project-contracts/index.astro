@@ -1,0 +1,100 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import BrazilProjectContractsTable from '../../../../components/BrazilProjectContractsTable.astro';
+import { url } from '../../../../lib/site';
+import { count, infrastructureRoute, projectPath } from '../../../../lib/brazil-project-execution';
+import { archiveTitles, contractEdition, contractRoute } from '../../../../lib/brazil-project-contracts';
+
+const title = 'Contracts in Brazil’s civil society infrastructure records';
+const { contracts, coverage, sources } = contractEdition;
+const years = [...new Set(contracts.map(record => record.signedOn.slice(0, 4)))].sort().reverse();
+const sourceLinks = [
+  ...Object.entries(sources.archives).map(([key, source]) => ({
+    title: archiveTitles[key as keyof typeof archiveTitles], url: source.url, publisher: 'Transferegov.br',
+  })),
+  { title: 'CIPI works records and user manual', url: 'https://www.gov.br/transferegov/pt-br/manuais/obras/1-manual-do-usuario-cipi.pdf', publisher: 'Transferegov.br' },
+  { title: 'Works monitoring and procurement guidance', url: 'https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras', publisher: 'Transferegov.br' },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Find reported contract amounts and dates from three official archives. Follow the exact procurement and project references and see which portal references conflict."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazil infrastructure contracts'}]}
+  sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-project-contracts/index.astro">
+  <p>The <a class="identity-link" href={url(infrastructureRoute)}>infrastructure edition</a> links {count(coverage.projectEditionAgreements)} civil society agreements to public works projects. {count(coverage.agreementsWithContractRecords)} have a linked contract in the CIPI infrastructure archive. Those agreements supply {count(coverage.cipiSourceRows)} CIPI source rows and {count(coverage.pairedContractReferences)} distinct matches to the federal transfer system’s SICONV contract and procurement records.</p>
+  <p>The table reports the global amount written in each contract record, in BRL. A contract, a bank order, a payment and a signed acceptance each have their own source. The CIPI accumulated-amount field is blank in this edition. The table gives individual amounts and source rows.</p>
+
+  <h2 id="lookup">Find a contract record</h2>
+  <div data-contract-filter>
+    <form hidden role="search" aria-label="Filter infrastructure contract records">
+      <label for="contract-query">Agreement, project, registered municipality, organization or contract number</label>
+      <input id="contract-query" type="search" maxlength="160" autocomplete="off" />
+      <label for="contract-year">Signing year</label>
+      <select id="contract-year"><option value="">All years</option>{years.map(year => <option value={year}>{year}</option>)}</select>
+      <label for="contract-evidence">Archive detail</label>
+      <select id="contract-evidence">
+        <option value="">All records</option><option value="repeated">Repeated CIPI rows</option><option value="shared">Shared portal reference</option>
+      </select>
+      <button class="btn btn-ghost btn-small" type="reset">Clear filters</button>
+    </form>
+    <p role="status" data-count>{count(contracts.length)} paired contract records</p>
+    <BrazilProjectContractsTable rows={contracts} directory />
+    <p hidden data-no-results>No records match these filters. Try fewer terms or clear the filters.</p>
+  </div>
+
+  <h2 id="coverage">Coverage and ambiguous references</h2>
+  <p>Among the matches, {count(coverage.referencesWithRepeatedCipiRows)} have more than one CIPI source row. Of {count(coverage.portalReferences)} distinct portal references in the selected archive, {count(coverage.portalReferencesSharedByDifferentContracts)} are shared by different contracts. Those references affect {count(coverage.pairedReferencesWithSharedPortalReference)} paired records. The table retains the original row coordinates and shows shared references as source values.</p>
+  <p>The <a href={url(projectPath('895978') + '#contracts')}>São José dos Campos project</a> has six CIPI rows paired to two SICONV contract records. The <a href={url(projectPath('953157') + '#contracts')}>Joaçaba project</a> has four CIPI rows paired to two. The contract amounts and signing dates stay at contract scope. Use the project pages for work-plan locations, reported physical progress and the separate census context.</p>
+  <p>The join starts from the exact CIPI project ID. Within the same agreement, both contract archives agree on the contract number, signing date, reported value and institutional supplier identifier. The SICONV procurement archive links its original procurement ID to one agreement. The export leaves supplier names and identifiers out. Original CSV coordinates count data rows after the header.</p>
+
+  <h2 id="downloads">Download records and sources</h2>
+  <ul>
+    <li><a href={url(contractRoute + 'data.json')} download>Full comparison and source receipts (JSON)</a></li>
+    <li><a href={url(contractRoute + 'contracts.csv')} download>Paired contract references and global amounts (CSV)</a></li>
+    <li><a href={url(contractRoute + 'cipi-rows.csv')} download>Original CIPI row and portal references (CSV)</a></li>
+  </ul>
+  <p>The paired CSV contains one row per matched contract reference. The CIPI CSV contains one row per source occurrence with its archive coordinates. Amounts appear in the paired CSV as integer cents. Read the source files under the <a href={sources.license}>Open Database License</a>. The capture date was <time datetime={contractEdition.capturedOn}>{contractEdition.capturedOn}</time>.</p>
+</Entry>
+
+<style>
+  [data-contract-filter] form:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem .8rem; }
+  [data-contract-filter] :is(input, select, button) { min-height: 2.75rem; min-width: 0; }
+  [data-contract-filter] form button { justify-self: start; }
+  @media (max-width: 36rem) { [data-contract-filter] form:not([hidden]) { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+
+  const root = document.querySelector<HTMLElement>('[data-contract-filter]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('#contract-query')!;
+    const year = form.querySelector<HTMLSelectElement>('#contract-year')!;
+    const evidence = form.querySelector<HTMLSelectElement>('#contract-evidence')!;
+    const status = root.querySelector<HTMLElement>('[data-count]')!;
+    const empty = root.querySelector<HTMLElement>('[data-no-results]')!;
+    const rows = [...root.querySelectorAll<HTMLTableRowElement>('[data-contract-row]')];
+    function filter() {
+      const terms = normalizeBrazilName(query.value).split(' ').filter(Boolean);
+      let matches = 0;
+      for (const row of rows) {
+        const include = (!year.value || year.value === row.dataset.year)
+          && (evidence.value !== 'repeated' || row.dataset.repeated === 'true')
+          && (evidence.value !== 'shared' || row.dataset.sharedPortal === 'true')
+          && terms.every(term => row.dataset.search?.includes(term));
+        row.hidden = !include;
+        if (include) matches++;
+      }
+      status.textContent = `${matches} of ${rows.length} paired contract records`;
+      empty.hidden = matches > 0;
+    }
+    form.addEventListener('input', filter);
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    form.addEventListener('reset', () => requestAnimationFrame(() => { filter(); query.focus(); }));
+    const agreement = new URLSearchParams(location.search).get('agreement');
+    if (agreement && /^[0-9]{1,20}$/.test(agreement)) query.value = agreement;
+    form.hidden = false;
+    filter();
+  }
+</script>

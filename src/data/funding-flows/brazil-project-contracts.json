@@ -1,0 +1,1799 @@
+{
+  "format": "charitology-br-infrastructure-contracts-v1",
+  "capturedOn": "2026-11-11",
+  "currency": "BRL",
+  "sources": {
+    "projectEditionSha256": "a6a9ebd38da473a623bbcab293ff0047bf61ab19eace9a26659b64b3bc05b0c7",
+    "archives": {
+      "siconv_contrato_cipi": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_contrato_cipi.zip",
+        "bytes": 4275091,
+        "sha256": "6120b226e3185118dfdf703641493c2057a34786320a1689b97b83aac77f733c",
+        "dataRows": 39099
+      },
+      "siconv_licitacao": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_licitacao.zip",
+        "bytes": 27194887,
+        "sha256": "dc71781983b8b9175dbb76bfc967e279a01bbc69c09b4ec2495af3d0613b9480",
+        "dataRows": 991315
+      },
+      "siconv_contrato": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_contrato.zip",
+        "bytes": 75481522,
+        "sha256": "93217bada644822989ddc7f9ebc3271aec488febcb2e0714c36a2eb5cc55ae6d",
+        "dataRows": 757996
+      }
+    },
+    "license": "https://opendatacommons.org/licenses/odbl/1-0/"
+  },
+  "coverage": {
+    "projectEditionAgreements": 88,
+    "agreementsWithContractRecords": 63,
+    "cipiSourceRows": 84,
+    "pairedContractReferences": 65,
+    "referencesWithRepeatedCipiRows": 17,
+    "portalReferences": 77,
+    "portalReferencesSharedByDifferentContracts": 5,
+    "pairedReferencesWithSharedPortalReference": 4
+  },
+  "contracts": [
+    {
+      "agreement": "877955",
+      "project": "22765.35-30",
+      "contractNumber": "002/2022",
+      "signedOn": "2022-03-17",
+      "globalAmountCentsBRL": 104337262,
+      "procurementContract": {
+        "contractId": "877955",
+        "procurementId": "805493",
+        "sourceRow": 749752,
+        "publishedOn": "2022-03-17",
+        "startsOn": "2022-03-17",
+        "endsOn": "2023-12-30",
+        "procurementSourceRow": 827523
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 1737,
+          "portalReference": "7732",
+          "publishedOn": "2022-03-17",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "878366",
+      "project": "18886.23-70",
+      "contractNumber": "59326/2018",
+      "signedOn": "2018-12-06",
+      "globalAmountCentsBRL": 23154809,
+      "procurementContract": {
+        "contractId": "878366",
+        "procurementId": "750924",
+        "sourceRow": 733417,
+        "publishedOn": "2018-12-10",
+        "startsOn": "2018-12-06",
+        "endsOn": "2024-11-27",
+        "procurementSourceRow": 723456
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 29928,
+          "portalReference": "22786",
+          "publishedOn": "2018-12-10",
+          "archiveStatus": "Rascunho",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "878367",
+      "project": "18887.23-26",
+      "contractNumber": "59293/2018",
+      "signedOn": "2018-11-14",
+      "globalAmountCentsBRL": 32389671,
+      "procurementContract": {
+        "contractId": "878367",
+        "procurementId": "750922",
+        "sourceRow": 722556,
+        "publishedOn": "2018-11-28",
+        "startsOn": "2018-11-14",
+        "endsOn": "2024-11-07",
+        "procurementSourceRow": 833089
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 23437,
+          "portalReference": "22990",
+          "publishedOn": "2018-11-28",
+          "archiveStatus": "Rascunho",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "878547",
+      "project": "51800.25-09",
+      "contractNumber": "001/2022",
+      "signedOn": "2022-01-10",
+      "globalAmountCentsBRL": 71620800,
+      "procurementContract": {
+        "contractId": "878547",
+        "procurementId": "808677",
+        "sourceRow": 727634,
+        "publishedOn": "2022-01-11",
+        "startsOn": "2022-01-12",
+        "endsOn": "2025-11-18",
+        "procurementSourceRow": 84234
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 4365,
+          "portalReference": "12155",
+          "publishedOn": "2022-01-11",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "879093",
+      "project": "95664.32-80",
+      "contractNumber": "001/2023",
+      "signedOn": "2023-05-30",
+      "globalAmountCentsBRL": 252142356,
+      "procurementContract": {
+        "contractId": "879093",
+        "procurementId": "861140",
+        "sourceRow": 755542,
+        "publishedOn": "2023-05-30",
+        "startsOn": "2023-05-30",
+        "endsOn": "2024-05-30",
+        "procurementSourceRow": 717608
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 37287,
+          "portalReference": "16653",
+          "publishedOn": "2023-05-30",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "886237",
+      "project": "12046.35-65",
+      "contractNumber": "073/2021",
+      "signedOn": "2021-10-25",
+      "globalAmountCentsBRL": 199911363,
+      "procurementContract": {
+        "contractId": "886237",
+        "procurementId": "782002",
+        "sourceRow": 717754,
+        "publishedOn": "2021-11-03",
+        "startsOn": "2021-12-24",
+        "endsOn": "2023-06-24",
+        "procurementSourceRow": 59058
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 20262,
+          "portalReference": "2837",
+          "publishedOn": "2021-11-03",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "889850",
+      "project": "94144.32-05",
+      "contractNumber": "138/2023",
+      "signedOn": "2024-12-05",
+      "globalAmountCentsBRL": 203526040,
+      "procurementContract": {
+        "contractId": "889850",
+        "procurementId": "911955",
+        "sourceRow": 727957,
+        "publishedOn": "2024-12-26",
+        "startsOn": "2024-12-05",
+        "endsOn": "2025-12-04",
+        "procurementSourceRow": 434362
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 20144,
+          "portalReference": "24519",
+          "publishedOn": "2024-12-26",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "889894",
+      "project": "11501.33-47",
+      "contractNumber": "001/2023",
+      "signedOn": "2023-01-19",
+      "globalAmountCentsBRL": 53778485,
+      "procurementContract": {
+        "contractId": "889894",
+        "procurementId": "859525",
+        "sourceRow": 756910,
+        "publishedOn": "2023-01-24",
+        "startsOn": "2023-01-19",
+        "endsOn": "2024-03-31",
+        "procurementSourceRow": 129900
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 20241,
+          "portalReference": "12207",
+          "publishedOn": "2023-01-24",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 20242,
+          "portalReference": "18147",
+          "publishedOn": "2023-01-24",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "891046",
+      "project": "22766.35-97",
+      "contractNumber": "002/2022",
+      "signedOn": "2022-03-17",
+      "globalAmountCentsBRL": 247000955,
+      "procurementContract": {
+        "contractId": "891046",
+        "procurementId": "805488",
+        "sourceRow": 730327,
+        "publishedOn": "2022-03-17",
+        "startsOn": "2022-03-17",
+        "endsOn": "2023-12-30",
+        "procurementSourceRow": 740653
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 12007,
+          "portalReference": "7351",
+          "publishedOn": "2022-03-17",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "895959",
+      "project": "12050.35-04",
+      "contractNumber": "000001",
+      "signedOn": "2022-01-28",
+      "globalAmountCentsBRL": 525620381,
+      "procurementContract": {
+        "contractId": "895959",
+        "procurementId": "797913",
+        "sourceRow": 751319,
+        "publishedOn": "2022-03-03",
+        "startsOn": "2022-01-28",
+        "endsOn": "2024-07-28",
+        "procurementSourceRow": 344770
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 28168,
+          "portalReference": "5663",
+          "publishedOn": "2022-03-03",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "895978",
+      "project": "24628.35-30",
+      "contractNumber": "001/2021",
+      "signedOn": "2021-09-27",
+      "globalAmountCentsBRL": 34120000,
+      "procurementContract": {
+        "contractId": "895978",
+        "procurementId": "766925",
+        "sourceRow": 732008,
+        "publishedOn": "2021-09-27",
+        "startsOn": "2021-09-27",
+        "endsOn": "2023-12-31",
+        "procurementSourceRow": 45235
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 19138,
+          "portalReference": "14137",
+          "publishedOn": "2021-09-27",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": true
+        },
+        {
+          "sourceRow": 19139,
+          "portalReference": "1239",
+          "publishedOn": "2021-09-27",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": true
+        },
+        {
+          "sourceRow": 19141,
+          "portalReference": "2131",
+          "publishedOn": "2021-09-27",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": true
+        }
+      ]
+    },
+    {
+      "agreement": "895978",
+      "project": "24628.35-30",
+      "contractNumber": "001/2023",
+      "signedOn": "2023-04-10",
+      "globalAmountCentsBRL": 38928253,
+      "procurementContract": {
+        "contractId": "895978",
+        "procurementId": "881031",
+        "sourceRow": 727468,
+        "publishedOn": "2023-04-10",
+        "startsOn": "2023-05-08",
+        "endsOn": "2023-11-07",
+        "procurementSourceRow": 394744
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 19137,
+          "portalReference": "1239",
+          "publishedOn": "2023-04-10",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": true
+        },
+        {
+          "sourceRow": 19140,
+          "portalReference": "14137",
+          "publishedOn": "2023-04-10",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": true
+        },
+        {
+          "sourceRow": 19142,
+          "portalReference": "2131",
+          "publishedOn": "2023-04-10",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": true
+        }
+      ]
+    },
+    {
+      "agreement": "898992",
+      "project": "18761.35-10",
+      "contractNumber": "009595",
+      "signedOn": "2023-01-19",
+      "globalAmountCentsBRL": 68199484,
+      "procurementContract": {
+        "contractId": "898992",
+        "procurementId": "863211",
+        "sourceRow": 750102,
+        "publishedOn": "2023-03-10",
+        "startsOn": "2023-01-19",
+        "endsOn": "2024-11-12",
+        "procurementSourceRow": 76109
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 13952,
+          "portalReference": "14649",
+          "publishedOn": "2023-03-10",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "898993",
+      "project": "51801.35-00",
+      "contractNumber": "010102",
+      "signedOn": "2023-12-04",
+      "globalAmountCentsBRL": 66313159,
+      "procurementContract": {
+        "contractId": "898993",
+        "procurementId": "920460",
+        "sourceRow": 757034,
+        "publishedOn": "2024-03-01",
+        "startsOn": "2023-12-04",
+        "endsOn": "2024-11-12",
+        "procurementSourceRow": 557166
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 20380,
+          "portalReference": "23057",
+          "publishedOn": "2024-03-01",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "899507",
+      "project": "96931.25-90",
+      "contractNumber": "01/2022",
+      "signedOn": "2023-01-24",
+      "globalAmountCentsBRL": 39288315,
+      "procurementContract": {
+        "contractId": "899507",
+        "procurementId": "872097",
+        "sourceRow": 727122,
+        "publishedOn": "2023-01-24",
+        "startsOn": "2023-01-24",
+        "endsOn": "2026-06-23",
+        "procurementSourceRow": 250951
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 2433,
+          "portalReference": "20282",
+          "publishedOn": "2023-01-24",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "900892",
+      "project": "20217.35-08",
+      "contractNumber": "01/2023",
+      "signedOn": "2023-02-22",
+      "globalAmountCentsBRL": 53994347,
+      "procurementContract": {
+        "contractId": "900892",
+        "procurementId": "871105",
+        "sourceRow": 735385,
+        "publishedOn": "2023-03-06",
+        "startsOn": "2023-02-22",
+        "endsOn": "2024-02-22",
+        "procurementSourceRow": 300907
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 22438,
+          "portalReference": "14860",
+          "publishedOn": "2023-03-06",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "904643",
+      "project": "25151.27-90",
+      "contractNumber": "011/2022",
+      "signedOn": "2022-02-23",
+      "globalAmountCentsBRL": 649921639,
+      "procurementContract": {
+        "contractId": "904643",
+        "procurementId": "802943",
+        "sourceRow": 756645,
+        "publishedOn": "2022-02-23",
+        "startsOn": "2022-02-23",
+        "endsOn": "2023-12-28",
+        "procurementSourceRow": 660108
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 36780,
+          "portalReference": "6065",
+          "publishedOn": "2022-02-23",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "905274",
+      "project": "51405.35-23",
+      "contractNumber": "010164",
+      "signedOn": "2020-12-21",
+      "globalAmountCentsBRL": 41601389,
+      "procurementContract": {
+        "contractId": "905274",
+        "procurementId": "921800",
+        "sourceRow": 755909,
+        "publishedOn": "2023-12-18",
+        "startsOn": "2020-12-21",
+        "endsOn": "2025-06-21",
+        "procurementSourceRow": 731174
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 19653,
+          "portalReference": "25446",
+          "publishedOn": "2023-12-18",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 19654,
+          "portalReference": "25534",
+          "publishedOn": "2023-12-18",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "905339",
+      "project": "20302.35-37",
+      "contractNumber": "23/2023",
+      "signedOn": "2023-03-29",
+      "globalAmountCentsBRL": 50548869,
+      "procurementContract": {
+        "contractId": "905339",
+        "procurementId": "888970",
+        "sourceRow": 742430,
+        "publishedOn": "2023-04-05",
+        "startsOn": "2023-04-05",
+        "endsOn": "2024-11-23",
+        "procurementSourceRow": 330053
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 556,
+          "portalReference": "14672",
+          "publishedOn": "2023-04-05",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "907963",
+      "project": "22097.31-80",
+      "contractNumber": "01/2023 - TR 907963",
+      "signedOn": "2023-04-03",
+      "globalAmountCentsBRL": 149500000,
+      "procurementContract": {
+        "contractId": "907963",
+        "procurementId": "874911",
+        "sourceRow": 745620,
+        "publishedOn": "2023-04-20",
+        "startsOn": "2023-05-29",
+        "endsOn": "2025-04-30",
+        "procurementSourceRow": 249651
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 34965,
+          "portalReference": "14006",
+          "publishedOn": "2023-04-20",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "907973",
+      "project": "38903.41-72",
+      "contractNumber": "001/2023",
+      "signedOn": "2024-06-17",
+      "globalAmountCentsBRL": 33754651,
+      "procurementContract": {
+        "contractId": "907973",
+        "procurementId": "880956",
+        "sourceRow": 735469,
+        "publishedOn": "2024-06-17",
+        "startsOn": "2024-06-18",
+        "endsOn": "2025-06-17",
+        "procurementSourceRow": 166058
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 21011,
+          "portalReference": "21258",
+          "publishedOn": "2024-06-17",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "917589",
+      "project": "24678.35-57",
+      "contractNumber": "03/2023",
+      "signedOn": "2023-11-01",
+      "globalAmountCentsBRL": 60400000,
+      "procurementContract": {
+        "contractId": "917589",
+        "procurementId": "913609",
+        "sourceRow": 722770,
+        "publishedOn": "2023-11-17",
+        "startsOn": "2024-02-05",
+        "endsOn": "2025-02-05",
+        "procurementSourceRow": 947577
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 6930,
+          "portalReference": "18517",
+          "publishedOn": "2023-11-17",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "917591",
+      "project": "51878.26-15",
+      "contractNumber": "001/2025/HIPS",
+      "signedOn": "2025-04-22",
+      "globalAmountCentsBRL": 95461603,
+      "procurementContract": {
+        "contractId": "917591",
+        "procurementId": "1011875",
+        "sourceRow": 719383,
+        "publishedOn": "2025-04-29",
+        "startsOn": "2025-04-22",
+        "endsOn": "2026-02-22",
+        "procurementSourceRow": 203236
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 21471,
+          "portalReference": "25782",
+          "publishedOn": "2025-04-29",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "917602",
+      "project": "51685.35-88",
+      "contractNumber": "011084",
+      "signedOn": "2025-04-28",
+      "globalAmountCentsBRL": 138068645,
+      "procurementContract": {
+        "contractId": "917602",
+        "procurementId": "980933",
+        "sourceRow": 726455,
+        "publishedOn": "2025-05-23",
+        "startsOn": "2025-04-28",
+        "endsOn": "2025-10-27",
+        "procurementSourceRow": 816218
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 14866,
+          "portalReference": "27116",
+          "publishedOn": "2025-05-23",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "917658",
+      "project": "44202.35-75",
+      "contractNumber": "02/2025",
+      "signedOn": "2025-08-25",
+      "globalAmountCentsBRL": 101477334,
+      "procurementContract": {
+        "contractId": "917658",
+        "procurementId": "1101984",
+        "sourceRow": 746089,
+        "publishedOn": "2026-03-06",
+        "startsOn": "2026-03-06",
+        "endsOn": "2027-06-30",
+        "procurementSourceRow": 164699
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 36976,
+          "portalReference": "23387",
+          "publishedOn": "2026-03-06",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 36977,
+          "portalReference": "34135",
+          "publishedOn": "2026-03-06",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "919037",
+      "project": "36550.35-71",
+      "contractNumber": "001/2023",
+      "signedOn": "2023-12-15",
+      "globalAmountCentsBRL": 31055934,
+      "procurementContract": {
+        "contractId": "919037",
+        "procurementId": "919641",
+        "sourceRow": 747156,
+        "publishedOn": "2023-12-15",
+        "startsOn": "2023-12-15",
+        "endsOn": "2024-09-15",
+        "procurementSourceRow": 37325
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 14084,
+          "portalReference": "18958",
+          "publishedOn": "2023-12-15",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "919170",
+      "project": "35404.41-10",
+      "contractNumber": "919170",
+      "signedOn": "2025-09-16",
+      "globalAmountCentsBRL": 50655062,
+      "procurementContract": {
+        "contractId": "919170",
+        "procurementId": "1070982",
+        "sourceRow": 724299,
+        "publishedOn": "2025-09-16",
+        "startsOn": "2025-09-16",
+        "endsOn": "2026-03-16",
+        "procurementSourceRow": 934897
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 5361,
+          "portalReference": "20525",
+          "publishedOn": "2025-09-16",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 5362,
+          "portalReference": "28478",
+          "publishedOn": "2025-09-16",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "920442",
+      "project": "13705.35-46",
+      "contractNumber": "01/2024",
+      "signedOn": "2024-03-20",
+      "globalAmountCentsBRL": 36270040,
+      "procurementContract": {
+        "contractId": "920442",
+        "procurementId": "929976",
+        "sourceRow": 719654,
+        "publishedOn": "2024-07-30",
+        "startsOn": "2024-03-20",
+        "endsOn": "2025-09-30",
+        "procurementSourceRow": 529265
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 15855,
+          "portalReference": "23081",
+          "publishedOn": "2024-07-30",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "921640",
+      "project": "14878.52-90",
+      "contractNumber": "001/2023",
+      "signedOn": "2023-12-28",
+      "globalAmountCentsBRL": 327000030,
+      "procurementContract": {
+        "contractId": "921640",
+        "procurementId": "901884",
+        "sourceRow": 735117,
+        "publishedOn": "2023-12-28",
+        "startsOn": "2023-12-28",
+        "endsOn": "2024-12-28",
+        "procurementSourceRow": 715307
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 1952,
+          "portalReference": "18675",
+          "publishedOn": "2023-12-28",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "922695",
+      "project": "134425.28-18",
+      "contractNumber": "01/2024",
+      "signedOn": "2025-08-26",
+      "globalAmountCentsBRL": 107950000,
+      "procurementContract": {
+        "contractId": "922695",
+        "procurementId": "955809",
+        "sourceRow": 725700,
+        "publishedOn": "2025-08-26",
+        "startsOn": "2025-08-27",
+        "endsOn": "2027-08-26",
+        "procurementSourceRow": 295652
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 18136,
+          "portalReference": "23907",
+          "publishedOn": "2025-08-26",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "923544",
+      "project": "30372.35-78",
+      "contractNumber": "001/2024",
+      "signedOn": "2024-03-11",
+      "globalAmountCentsBRL": 34941475,
+      "procurementContract": {
+        "contractId": "923544",
+        "procurementId": "923723",
+        "sourceRow": 720500,
+        "publishedOn": "2024-03-18",
+        "startsOn": "2024-03-11",
+        "endsOn": "2024-09-11",
+        "procurementSourceRow": 359388
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 36043,
+          "portalReference": "19274",
+          "publishedOn": "2024-03-18",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "929373",
+      "project": "57669.25-18",
+      "contractNumber": "004/2025",
+      "signedOn": "2025-04-03",
+      "globalAmountCentsBRL": 40120888,
+      "procurementContract": {
+        "contractId": "929373",
+        "procurementId": "1028883",
+        "sourceRow": 734934,
+        "publishedOn": "2025-04-10",
+        "startsOn": "2025-04-03",
+        "endsOn": "2026-01-29",
+        "procurementSourceRow": 312113
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 3419,
+          "portalReference": "26315",
+          "publishedOn": "2025-04-10",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "929405",
+      "project": "51384.29-00",
+      "contractNumber": "02/2025",
+      "signedOn": "2025-03-10",
+      "globalAmountCentsBRL": 126504655,
+      "procurementContract": {
+        "contractId": "929405",
+        "procurementId": "1029767",
+        "sourceRow": 742067,
+        "publishedOn": "2025-03-10",
+        "startsOn": "2025-03-10",
+        "endsOn": "2025-12-11",
+        "procurementSourceRow": 544041
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 35766,
+          "portalReference": "27288",
+          "publishedOn": "2025-03-10",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "929406",
+      "project": "51687.35-90",
+      "contractNumber": "011085",
+      "signedOn": "2025-04-28",
+      "globalAmountCentsBRL": 99167433,
+      "procurementContract": {
+        "contractId": "929406",
+        "procurementId": "989693",
+        "sourceRow": 726950,
+        "publishedOn": "2025-05-23",
+        "startsOn": "2025-04-28",
+        "endsOn": "2026-06-26",
+        "procurementSourceRow": 171702
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 24984,
+          "portalReference": "27213",
+          "publishedOn": "2025-05-23",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "929836",
+      "project": "15482.35-39",
+      "contractNumber": "001/2025",
+      "signedOn": "2025-07-07",
+      "globalAmountCentsBRL": 295868076,
+      "procurementContract": {
+        "contractId": "929836",
+        "procurementId": "1017022",
+        "sourceRow": 734322,
+        "publishedOn": "2025-07-15",
+        "startsOn": "2025-07-07",
+        "endsOn": "2026-07-07",
+        "procurementSourceRow": 383453
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 17729,
+          "portalReference": "27278",
+          "publishedOn": "2025-07-15",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 17730,
+          "portalReference": "29655",
+          "publishedOn": "2025-07-15",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "934315",
+      "project": "11541.35-75",
+      "contractNumber": "01/2025",
+      "signedOn": "2025-04-04",
+      "globalAmountCentsBRL": 31731763,
+      "procurementContract": {
+        "contractId": "934315",
+        "procurementId": "1026087",
+        "sourceRow": 734512,
+        "publishedOn": "2025-04-05",
+        "startsOn": "2025-08-04",
+        "endsOn": "2026-08-04",
+        "procurementSourceRow": 513469
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 11050,
+          "portalReference": "26902",
+          "publishedOn": "2025-04-05",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "936178",
+      "project": "12007.35-62",
+      "contractNumber": "01/2025",
+      "signedOn": "2025-04-04",
+      "globalAmountCentsBRL": 168158090,
+      "procurementContract": {
+        "contractId": "936178",
+        "procurementId": "1019011",
+        "sourceRow": 746997,
+        "publishedOn": "2025-04-24",
+        "startsOn": "2025-08-18",
+        "endsOn": "2026-08-18",
+        "procurementSourceRow": 537705
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 8285,
+          "portalReference": "27249",
+          "publishedOn": "2025-04-24",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "936219",
+      "project": "13823.32-22",
+      "contractNumber": "012025",
+      "signedOn": "2025-12-23",
+      "globalAmountCentsBRL": 30549297,
+      "procurementContract": {
+        "contractId": "936219",
+        "procurementId": "1074797",
+        "sourceRow": 732396,
+        "publishedOn": "2025-12-23",
+        "startsOn": "2025-12-23",
+        "endsOn": "2026-10-30",
+        "procurementSourceRow": 131735
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 6312,
+          "portalReference": "20187",
+          "publishedOn": "2025-12-23",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 6313,
+          "portalReference": "31559",
+          "publishedOn": "2025-12-23",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "936402",
+      "project": "15451.25-45",
+      "contractNumber": "119/2023",
+      "signedOn": "2023-11-08",
+      "globalAmountCentsBRL": 134907180,
+      "procurementContract": {
+        "contractId": "936402",
+        "procurementId": "910324",
+        "sourceRow": 722821,
+        "publishedOn": "2023-11-09",
+        "startsOn": "2023-11-09",
+        "endsOn": "2025-04-01",
+        "procurementSourceRow": 682507
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 9520,
+          "portalReference": "17223",
+          "publishedOn": "2023-11-09",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "936909",
+      "project": "19180.28-06",
+      "contractNumber": "027/2025",
+      "signedOn": "2025-07-14",
+      "globalAmountCentsBRL": 25029427,
+      "procurementContract": {
+        "contractId": "936909",
+        "procurementId": "1035425",
+        "sourceRow": 739652,
+        "publishedOn": "2025-07-14",
+        "startsOn": "2025-08-25",
+        "endsOn": "2026-01-26",
+        "procurementSourceRow": 446864
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 5410,
+          "portalReference": "27707",
+          "publishedOn": "2025-07-14",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "944194",
+      "project": "27574.35-00",
+      "contractNumber": "002/2025",
+      "signedOn": "2025-01-22",
+      "globalAmountCentsBRL": 29254896,
+      "procurementContract": {
+        "contractId": "944194",
+        "procurementId": "993197",
+        "sourceRow": 756827,
+        "publishedOn": "2025-02-11",
+        "startsOn": "2025-01-22",
+        "endsOn": "2026-02-21",
+        "procurementSourceRow": 781070
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 9255,
+          "portalReference": "25146",
+          "publishedOn": "2025-02-11",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "944198",
+      "project": "30763.35-50",
+      "contractNumber": "1180432/2024",
+      "signedOn": "2025-03-07",
+      "globalAmountCentsBRL": 28500021,
+      "procurementContract": {
+        "contractId": "944198",
+        "procurementId": "979440",
+        "sourceRow": 735242,
+        "publishedOn": "2025-03-07",
+        "startsOn": "2025-03-07",
+        "endsOn": "2026-12-19",
+        "procurementSourceRow": 276693
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 1147,
+          "portalReference": "27302",
+          "publishedOn": "2025-03-07",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "944202",
+      "project": "25683.25-86",
+      "contractNumber": "01/2024",
+      "signedOn": "2024-03-13",
+      "globalAmountCentsBRL": 316261703,
+      "procurementContract": {
+        "contractId": "944202",
+        "procurementId": "929691",
+        "sourceRow": 731984,
+        "publishedOn": "2024-03-14",
+        "startsOn": "2024-03-13",
+        "endsOn": "2026-12-02",
+        "procurementSourceRow": 162589
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 14092,
+          "portalReference": "19273",
+          "publishedOn": "2024-03-14",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "945677",
+      "project": "29089.41-44",
+      "contractNumber": "004/2024",
+      "signedOn": "2024-06-28",
+      "globalAmountCentsBRL": 50054456,
+      "procurementContract": {
+        "contractId": "945677",
+        "procurementId": "1075776",
+        "sourceRow": 727923,
+        "publishedOn": "2024-06-28",
+        "startsOn": "2024-09-02",
+        "endsOn": "2026-06-26",
+        "procurementSourceRow": 312435
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 22931,
+          "portalReference": "22896",
+          "publishedOn": "2024-06-28",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 22932,
+          "portalReference": "28453",
+          "publishedOn": "2024-06-28",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "946285",
+      "project": "28643.35-10",
+      "contractNumber": "001/2025",
+      "signedOn": "2025-03-05",
+      "globalAmountCentsBRL": 29090087,
+      "procurementContract": {
+        "contractId": "946285",
+        "procurementId": "982449",
+        "sourceRow": 726648,
+        "publishedOn": "2025-03-05",
+        "startsOn": "2025-03-05",
+        "endsOn": "2026-05-04",
+        "procurementSourceRow": 166266
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 16086,
+          "portalReference": "25165",
+          "publishedOn": "2025-03-05",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "948419",
+      "project": "32155.35-24",
+      "contractNumber": "CW6708",
+      "signedOn": "2025-10-01",
+      "globalAmountCentsBRL": 5947822753,
+      "procurementContract": {
+        "contractId": "948419",
+        "procurementId": "1068937",
+        "sourceRow": 712683,
+        "publishedOn": "2025-10-01",
+        "startsOn": "2025-10-27",
+        "endsOn": "2027-07-27",
+        "procurementSourceRow": 303216
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 4079,
+          "portalReference": "29111",
+          "publishedOn": "2025-10-01",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 4080,
+          "portalReference": "30174",
+          "publishedOn": "2025-10-01",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "948420",
+      "project": "32162.35-22",
+      "contractNumber": "CW5115/2024",
+      "signedOn": "2025-02-03",
+      "globalAmountCentsBRL": 18112340632,
+      "procurementContract": {
+        "contractId": "948420",
+        "procurementId": "999031",
+        "sourceRow": 745984,
+        "publishedOn": "2025-02-06",
+        "startsOn": "2025-02-03",
+        "endsOn": "2028-02-03",
+        "procurementSourceRow": 436587
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 22452,
+          "portalReference": "25085",
+          "publishedOn": "2025-02-06",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "948515",
+      "project": "33243.31-63",
+      "contractNumber": "112024",
+      "signedOn": "2024-12-02",
+      "globalAmountCentsBRL": 96321004,
+      "procurementContract": {
+        "contractId": "948515",
+        "procurementId": "994987",
+        "sourceRow": 748110,
+        "publishedOn": "2024-12-10",
+        "startsOn": "2024-12-02",
+        "endsOn": "2026-12-27",
+        "procurementSourceRow": 766224
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 12891,
+          "portalReference": "24620",
+          "publishedOn": "2024-12-10",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "951784",
+      "project": "39241.35-93",
+      "contractNumber": "013/2024",
+      "signedOn": "2024-06-25",
+      "globalAmountCentsBRL": 173000000,
+      "procurementContract": {
+        "contractId": "951784",
+        "procurementId": "965624",
+        "sourceRow": 727067,
+        "publishedOn": "2024-06-25",
+        "startsOn": "2024-06-25",
+        "endsOn": "2025-06-05",
+        "procurementSourceRow": 505589
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 33530,
+          "portalReference": "22910",
+          "publishedOn": "2024-06-25",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "951855",
+      "project": "31532.35-44",
+      "contractNumber": "90/2025",
+      "signedOn": "2025-09-05",
+      "globalAmountCentsBRL": 33144269,
+      "procurementContract": {
+        "contractId": "951855",
+        "procurementId": "1091707",
+        "sourceRow": 721520,
+        "publishedOn": "2025-11-26",
+        "startsOn": "2025-09-05",
+        "endsOn": "2026-03-04",
+        "procurementSourceRow": 110387
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 306,
+          "portalReference": "29846",
+          "publishedOn": "2025-11-26",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "953157",
+      "project": "32208.42-87",
+      "contractNumber": "999994606/12/24/PJ",
+      "signedOn": "2024-12-20",
+      "globalAmountCentsBRL": 78713282,
+      "procurementContract": {
+        "contractId": "953157",
+        "procurementId": "987884",
+        "sourceRow": 752421,
+        "publishedOn": "2024-12-24",
+        "startsOn": "2025-03-24",
+        "endsOn": "2026-01-31",
+        "procurementSourceRow": 788873
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 19369,
+          "portalReference": "25327",
+          "publishedOn": "2024-12-24",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": true
+        },
+        {
+          "sourceRow": 19370,
+          "portalReference": "27684",
+          "publishedOn": "2024-12-24",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": true
+        }
+      ]
+    },
+    {
+      "agreement": "953157",
+      "project": "32208.42-87",
+      "contractNumber": "178/UNOESC/2025",
+      "signedOn": "2025-08-08",
+      "globalAmountCentsBRL": 30790433,
+      "procurementContract": {
+        "contractId": "953157",
+        "procurementId": "1061331",
+        "sourceRow": 734212,
+        "publishedOn": "2025-08-12",
+        "startsOn": "2025-09-01",
+        "endsOn": "2026-01-31",
+        "procurementSourceRow": 872497
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 19367,
+          "portalReference": "25327",
+          "publishedOn": "2025-08-12",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": true
+        },
+        {
+          "sourceRow": 19368,
+          "portalReference": "27684",
+          "publishedOn": "2025-08-12",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": true
+        }
+      ]
+    },
+    {
+      "agreement": "953189",
+      "project": "31402.41-81",
+      "contractNumber": "006/2025",
+      "signedOn": "2025-02-18",
+      "globalAmountCentsBRL": 34299010,
+      "procurementContract": {
+        "contractId": "953189",
+        "procurementId": "1007247",
+        "sourceRow": 716885,
+        "publishedOn": "2025-02-18",
+        "startsOn": "2025-02-18",
+        "endsOn": "2026-02-18",
+        "procurementSourceRow": 913611
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 35709,
+          "portalReference": "25303",
+          "publishedOn": "2025-02-18",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 35710,
+          "portalReference": "25303",
+          "publishedOn": "2025-02-18",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "953325",
+      "project": "31534.35-57",
+      "contractNumber": "91/2025",
+      "signedOn": "2025-09-05",
+      "globalAmountCentsBRL": 38545990,
+      "procurementContract": {
+        "contractId": "953325",
+        "procurementId": "1092079",
+        "sourceRow": 749916,
+        "publishedOn": "2025-11-25",
+        "startsOn": "2025-09-05",
+        "endsOn": "2026-03-14",
+        "procurementSourceRow": 707524
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 13703,
+          "portalReference": "30117",
+          "publishedOn": "2025-11-25",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 13704,
+          "portalReference": "30117",
+          "publishedOn": "2025-11-25",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "959442",
+      "project": "38503.41-80",
+      "contractNumber": "001/2025",
+      "signedOn": "2025-01-08",
+      "globalAmountCentsBRL": 95598731,
+      "procurementContract": {
+        "contractId": "959442",
+        "procurementId": "977999",
+        "sourceRow": 749747,
+        "publishedOn": "2025-01-08",
+        "startsOn": "2025-01-08",
+        "endsOn": "2026-01-08",
+        "procurementSourceRow": 423521
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 12504,
+          "portalReference": "24615",
+          "publishedOn": "2025-01-08",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "960397",
+      "project": "51166.33-70",
+      "contractNumber": "001/2025",
+      "signedOn": "2025-10-22",
+      "globalAmountCentsBRL": 128555270,
+      "procurementContract": {
+        "contractId": "960397",
+        "procurementId": "1085568",
+        "sourceRow": 714130,
+        "publishedOn": "2025-10-28",
+        "startsOn": "2025-11-25",
+        "endsOn": "2026-09-11",
+        "procurementSourceRow": 548182
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 33979,
+          "portalReference": "29831",
+          "publishedOn": "2025-10-28",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "964631",
+      "project": "51195.43-50",
+      "contractNumber": "000001",
+      "signedOn": "2025-05-05",
+      "globalAmountCentsBRL": 45494500,
+      "procurementContract": {
+        "contractId": "964631",
+        "procurementId": "1043170",
+        "sourceRow": 740184,
+        "publishedOn": "2025-09-08",
+        "startsOn": "2025-05-12",
+        "endsOn": "2026-05-12",
+        "procurementSourceRow": 813788
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 9627,
+          "portalReference": "28037",
+          "publishedOn": "2025-09-08",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "966852",
+      "project": "42304.33-19",
+      "contractNumber": "398/2025",
+      "signedOn": "2025-07-17",
+      "globalAmountCentsBRL": 20792284,
+      "procurementContract": {
+        "contractId": "966852",
+        "procurementId": "1044503",
+        "sourceRow": 733728,
+        "publishedOn": "2025-07-29",
+        "startsOn": "2025-07-17",
+        "endsOn": "2026-02-17",
+        "procurementSourceRow": 163278
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 19802,
+          "portalReference": "27350",
+          "publishedOn": "2025-07-29",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "968333",
+      "project": "50777.28-80",
+      "contractNumber": "000037",
+      "signedOn": "2025-08-05",
+      "globalAmountCentsBRL": 38000011,
+      "procurementContract": {
+        "contractId": "968333",
+        "procurementId": "1041054",
+        "sourceRow": 749799,
+        "publishedOn": "2025-09-12",
+        "startsOn": "2025-10-24",
+        "endsOn": "2026-01-22",
+        "procurementSourceRow": 727943
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 28279,
+          "portalReference": "27625",
+          "publishedOn": "2025-09-12",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 28280,
+          "portalReference": "28171",
+          "publishedOn": "2025-09-12",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "968706",
+      "project": "50388.41-40",
+      "contractNumber": "012026",
+      "signedOn": "2026-11-06",
+      "globalAmountCentsBRL": 48162651,
+      "procurementContract": {
+        "contractId": "968706",
+        "procurementId": "1234092",
+        "sourceRow": 749843,
+        "publishedOn": "2026-11-06",
+        "startsOn": "2026-11-09",
+        "endsOn": "2027-08-09",
+        "procurementSourceRow": 144488
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 35419,
+          "portalReference": "25578",
+          "publishedOn": "2026-11-06",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 35420,
+          "portalReference": "40517",
+          "publishedOn": "2026-11-06",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "969926",
+      "project": "50477.42-30",
+      "contractNumber": "005/2025",
+      "signedOn": "2025-11-05",
+      "globalAmountCentsBRL": 40914553,
+      "procurementContract": {
+        "contractId": "969926",
+        "procurementId": "1086388",
+        "sourceRow": 730934,
+        "publishedOn": "2025-11-05",
+        "startsOn": "2025-11-05",
+        "endsOn": "2026-05-31",
+        "procurementSourceRow": 523456
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 35802,
+          "portalReference": "32258",
+          "publishedOn": "2025-11-05",
+          "archiveStatus": "Outros",
+          "sharedPortalReference": false
+        },
+        {
+          "sourceRow": 35803,
+          "portalReference": "33269",
+          "publishedOn": "2025-11-05",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "971731",
+      "project": "51196.31-92",
+      "contractNumber": "001/2025",
+      "signedOn": "2025-09-29",
+      "globalAmountCentsBRL": 110734844,
+      "procurementContract": {
+        "contractId": "971731",
+        "procurementId": "1081801",
+        "sourceRow": 732360,
+        "publishedOn": "2025-09-29",
+        "startsOn": "2025-09-29",
+        "endsOn": "2026-11-27",
+        "procurementSourceRow": 989753
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 27677,
+          "portalReference": "29551",
+          "publishedOn": "2025-09-29",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "972546",
+      "project": "51200.42-47",
+      "contractNumber": "006/2025",
+      "signedOn": "2025-09-03",
+      "globalAmountCentsBRL": 129499998,
+      "procurementContract": {
+        "contractId": "972546",
+        "procurementId": "1059931",
+        "sourceRow": 734868,
+        "publishedOn": "2025-09-10",
+        "startsOn": "2025-09-03",
+        "endsOn": "2026-09-03",
+        "procurementSourceRow": 499007
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 8686,
+          "portalReference": "28788",
+          "publishedOn": "2025-09-10",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "973513",
+      "project": "51879.33-03",
+      "contractNumber": "691/2025",
+      "signedOn": "2025-11-10",
+      "globalAmountCentsBRL": 37354796,
+      "procurementContract": {
+        "contractId": "973513",
+        "procurementId": "1080204",
+        "sourceRow": 730004,
+        "publishedOn": "2025-11-27",
+        "startsOn": "2025-11-10",
+        "endsOn": "2026-04-10",
+        "procurementSourceRow": 379802
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 34902,
+          "portalReference": "29926",
+          "publishedOn": "2025-11-27",
+          "archiveStatus": "Concluído",
+          "sharedPortalReference": false
+        }
+      ]
+    },
+    {
+      "agreement": "981327",
+      "project": "101522.13-04",
+      "contractNumber": "000001",
+      "signedOn": "2026-02-02",
+      "globalAmountCentsBRL": 46000000,
+      "procurementContract": {
+        "contractId": "981327",
+        "procurementId": "1116243",
+        "sourceRow": 750273,
+        "publishedOn": "2026-02-02",
+        "startsOn": "2026-02-02",
+        "endsOn": "2026-09-15",
+        "procurementSourceRow": 959941
+      },
+      "cipiRows": [
+        {
+          "sourceRow": 6736,
+          "portalReference": "32054",
+          "publishedOn": "2026-02-02",
+          "archiveStatus": "Rascunho",
+          "sharedPortalReference": false
+        }
+      ]
+    }
+  ]
+}

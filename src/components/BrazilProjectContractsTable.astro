@@ -1,0 +1,62 @@
+---
+import { url } from '../lib/site';
+import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
+import { data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
+import { sharedPortalReference, type PairedContract } from '../lib/brazil-project-contracts';
+
+interface Props {
+  rows: readonly PairedContract[];
+  directory?: boolean;
+}
+const { rows, directory = false } = Astro.props;
+const projectsByAgreement = new Map(data.projects.map(project => [project.agreement, project]));
+---
+
+<div class="table-wrap contract-records" role="region" aria-label="Paired infrastructure contract records" tabindex="0">
+  <table class="data">
+    <thead><tr>
+      {directory && <th scope="col">Agreement and project</th>}
+      <th scope="col">Contract number</th><th scope="col">Signed</th><th scope="col">Reported global amount</th><th scope="col">Record coordinates</th>
+    </tr></thead>
+    <tbody>{rows.map(record => {
+      const { procurementContract: contract, cipiRows } = record;
+      const project = projectsByAgreement.get(record.agreement);
+      const name = project?.organization ?? '';
+      const places = project ? municipalities(project).map(place => place.no_municipio) : [];
+      const terms = normalizeBrazilName([
+        name, ...places, record.agreement, record.project, record.contractNumber, contract.contractId, contract.procurementId,
+      ].join(' '));
+      const shared = sharedPortalReference(record);
+      return <tr id={`contract-${contract.procurementId}-${contract.contractId}`}
+        data-contract-row data-search={directory ? terms : undefined} data-year={record.signedOn.slice(0, 4)}
+        data-shared-portal={String(shared)} data-repeated={String(cipiRows.length > 1)}>
+        {directory && <th scope="row"><a class="identity-link" href={url(projectPath(record.agreement) + '#contracts')}>{record.agreement} · {record.project}</a><small>{name}</small></th>}
+        {directory ? <td><code>{record.contractNumber}</code></td> : <th scope="row"><code>{record.contractNumber}</code></th>}
+        <td><time datetime={record.signedOn}>{record.signedOn}</time></td>
+        <td>{money(record.globalAmountCentsBRL)}</td>
+        <td>
+          <details>
+            <summary>{cipiRows.length} CIPI {cipiRows.length === 1 ? 'row' : 'rows'} and two SICONV records</summary>
+            <p>Contract ID <code>{contract.contractId}</code> · Contract archive row {contract.sourceRow}. Procurement ID <code>{contract.procurementId}</code> · Procurement archive row {contract.procurementSourceRow}.</p>
+            <p>SICONV publication {contract.publishedOn ?? 'unknown'}. Reported contract term {contract.startsOn ?? 'unknown'} to {contract.endsOn ?? 'unknown'}.</p>
+            <ul>
+              {cipiRows.map(row => <li>
+                CIPI row {row.sourceRow} · <span lang="pt-BR">{row.archiveStatus}</span> · publication {row.publishedOn ?? 'unknown'} · portal reference <code>{row.portalReference}</code>{row.sharedPortalReference ? ' (shared by different contracts)' : ''}.
+              </li>)}
+            </ul>
+          </details>
+          {shared && <small>Shared portal reference</small>}
+        </td>
+      </tr>;
+    })}</tbody>
+  </table>
+</div>
+
+<style>
+  .contract-records { margin-block: 1rem; }
+  .contract-records table { min-width: 40rem; }
+  .contract-records small { display: block; color: var(--ink-2); font-weight: normal; }
+  .contract-records :is(details, td, th) { overflow-wrap: anywhere; }
+  .contract-records summary { cursor: pointer; }
+  .contract-records details :is(p, ul) { margin-block: .4rem; }
+</style>

@@ -149,6 +149,20 @@ npm run build
 node scripts/check-brazil-project-execution.mjs
 ```
 
+### Contract records and conflicting portal references
+
+The [infrastructure contract lookup](https://charitology.com/record/funding-flows/brazil-project-contracts/) pairs 84 CIPI rows to 65 SICONV contract and procurement references across 63 of the 88 infrastructure agreements. First join the exact CIPI project ID. Then match contract number, signing date, global amount and a checksum-valid institutional CNPJ inside the same agreement. The procurement archive maps its original ID to one agreement in the complete file. Require a unique SICONV pair of procurement ID and contract ID in the complete contract archive. Those two fields stay together because the contract ID can repeat across procurements. Source dates keep their original signing, publication and term meanings.
+
+Seventeen matched references have repeated CIPI source rows. Five of the 77 distinct portal references appear under more than one contract. The affected rows preserve their source coordinates and reference numbers. In the two health cases the archived deep links loaded a page that asked for a proposal instead of displaying a contract. The numbers stay visible as archive references. Use the paired CSV for one row per match. The separate CIPI CSV keeps every original row and omits amounts to avoid duplicating the paired figures. A reported global contract amount describes contract scope. The accumulated amount field is blank on all selected CIPI rows. Payments, changes to contract value, signed acceptance and service results require separate sources.
+
+The builder pins the full prior project edition and the three official ZIPs. Save the captured files as `siconv_contrato_cipi.zip`, `siconv_contrato.zip` and `siconv_licitacao.zip`. The edition JSON gives original file hashes and row coordinates. The projection publishes institutional contract references, dates and amounts. It excludes supplier names, taxpayer IDs and free-text fields. [CIPI works manual](https://www.gov.br/transferegov/pt-br/manuais/obras/1-manual-do-usuario-cipi.pdf) · [Transferegov works guidance](https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras).
+
+```sh
+python3 scripts/build-brazil-project-contracts.py --inputs /path/to/captures /path/to/rebuilt-contracts.json
+npm run build
+node scripts/check-brazil-project-contracts.mjs
+```
+
 ## Brazil Cisternas agreement and water access
 
 The [Cisternas case](https://charitology.com/record/funding-flows/brazil-cisterns/) follows agreement 945310 and its exact proposal and organization IDs. Its eleven bank orders show BRL 31,499,882.76 made available in 2023–2026. The six pinned Transferegov archives identify the original agreement, amendment and reported movements from the agreement account. The 2026 records cover the November 11 capture. The current federal contribution, reported bank orders, account payments and internal transfers belong to different stages. The named-payee subset uses the full CNPJ and exact agreement number. It stays inside the other-payment total. All 190 selected internal transfers have an onward record with a missing amount.
