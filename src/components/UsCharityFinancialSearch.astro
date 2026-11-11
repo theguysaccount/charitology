@@ -15,7 +15,7 @@ const forms = [
 ];
 ---
 
-<section class="charity-financial-search" data-us-finance data-base={url(base)} data-registry={url('/record/charity-index/')} data-manifest={JSON.stringify(manifest)} data-labels={JSON.stringify(labels)} aria-labelledby="us-finance-heading">
+<section class="charity-financial-search" data-us-finance data-base={url(base)} data-registry={url('/record/charity-index/')} data-grants={url('/record/funding-flows/us-schedule-i/')} data-manifest={JSON.stringify(manifest)} data-labels={JSON.stringify(labels)} aria-labelledby="us-finance-heading">
   <h2 id="us-finance-heading">Search Form {manifest.form} extracts</h2>
   <nav aria-label="United States financial editions" class="finance-actions">
     {forms.map(item => item.name === manifest.form
@@ -137,6 +137,7 @@ const forms = [
           h('p', { class: 'note' }, registryMatch
             ? h('a', { href: root.dataset.registry! + '#q=' + number }, `Find this EIN in the ${manifest.registry.date} IRS identity snapshot`)
             : `No exact EIN match in the ${manifest.registry.date} IRS identity snapshot.`),
+          registryMatch && h('p', { class: 'note' }, h('a', { href: root.dataset.grants! + '#ein=' + number }, 'Look up this EIN in the Schedule I grant edition')),
           history.map(filing)));
         json.disabled = csv.disabled = false;
       } catch (error) {

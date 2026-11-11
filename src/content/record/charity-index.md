@@ -19,6 +19,8 @@ sources:
 
 The Index brings together distinct sources. A dated IRS identity snapshot supports local name-prefix or exact-EIN searches and source-preserving JSON/CSV exports. [Search Australian financial filings](/record/charity-financials/) by name or Australian Business Number to read two years of available revenue, expenses and grant-making figures. [Search England and Wales annual returns](/record/charity-financials/england-wales/) by registered name or number to read available gross income and expenditure for periods ending in 2023–2025. [Search U.S. financial extracts](/record/charity-financials/united-states/) by EIN across separate Form 990, Form 990-EZ and Form 990-PF editions. A small editorial collection describes *where the work sits on the chain from symptom to source*, with draft hypotheses that anyone can challenge. Coverage varies by source and jurisdiction.
 
+[Trace reported U.S. grants by filer or recipient EIN](/record/funding-flows/us-schedule-i/). Each included row points to the original Form 990 filing and distinguishes cash from noncash assistance.
+
 ## IRS snapshot coverage
 
 The four IRS EO BMF regional CSVs posted on **2026-10-13** contain **1,975,975 unique EINs**. The local search retains source spelling, city/state fields, subsection, status and deductibility codes. Missing fields remain unknown. Contact/street and financial fields are omitted. Each result links its original region file; exports retain its source hash, retrieval time and snapshot date. Data downloads only after an explicit search.
