@@ -385,7 +385,7 @@ hr {
 }
 
 /* Keep every header control reachable on narrow screens without shrinking targets. */
-@media (max-width: 459px) {
+@media (max-width: 489px) {
   :root { --header-h: 110px; }
   .site-header .bar {
     flex-wrap: wrap;
@@ -395,7 +395,7 @@ hr {
   .site-header .brand { flex-basis: 100%; }
 }
 
-@media (min-width: 1130px) {
+@media (min-width: 1180px) {
   .nav {
     display: flex;
   }

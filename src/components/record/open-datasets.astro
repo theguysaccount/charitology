@@ -1,7 +1,14 @@
 ---
-import { ENDPOINTS } from '../../lib/api';
+import { availableEndpoints } from '../../lib/api';
 import { url } from '../../lib/site';
 import ecosystem from '../../data/ecosystem.json';
+
+const endpoints = await availableEndpoints();
+const externalProjects = [
+  ...ecosystem.instruments,
+  ...ecosystem.registries.filter((registry) => !ecosystem.instruments.some((project) => project.url === registry.url)),
+  ...ecosystem.evaluators,
+];
 ---
 
 <section class="ds">
@@ -11,10 +18,10 @@ import ecosystem from '../../data/ecosystem.json';
       <thead><tr><th>Dataset</th><th>What it holds</th></tr></thead>
       <tbody>
         {
-          ENDPOINTS.map((e) => (
+          endpoints.map((e) => (
             <tr>
               <td>
-                <a class="identity-link" data-site-symbol="code" href={url(`/api/v1/${e.name}.json`)}><code>{e.name}.json</code></a>
+                <a class="identity-link" href={url(`/api/v1/${e.name}.json`)}><code>{e.name}.json</code></a>
               </td>
               <td>{e.description}</td>
             </tr>
@@ -27,7 +34,7 @@ import ecosystem from '../../data/ecosystem.json';
   <h2>Open data the field builds on</h2>
   <ul class="ext">
     {
-      [...ecosystem.instruments, ...ecosystem.registries, ...ecosystem.evaluators].map((x) => (
+      externalProjects.map((x) => (
         <li>
           <a class="identity-link" href={x.url}>{x.name}</a> · {x.summary}
         </li>

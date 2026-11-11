@@ -75,10 +75,90 @@ export const teachingSymbols: Record<string, SymbolName> = {
   'complete-pack': 'packet',
 };
 
+export const clubMeetingSymbols: Record<number, SymbolName> = {
+  1: 'network', 2: 'compare', 3: 'scale', 4: 'loop',
+};
+
+export const seminarSymbols: Record<number, SymbolName> = {
+  1: 'network', 2: 'layers', 3: 'compare', 4: 'scale', 5: 'hourglass',
+  6: 'speech', 7: 'loop', 8: 'shield',
+};
+
+export const worksheetSymbols: Record<string, SymbolName> = {
+  W1: 'network', W2: 'calculator', W3: 'eye', W4: 'compare',
+  W5: 'story', W6: 'scale', W7: 'loop', W8: 'doorway',
+};
+
+export const fundraisingSourceSymbols: Record<string, SymbolName> = {
+  'mr-email': 'mail', 'mr-advertising': 'target', 'mr-fundraising': 'chart', 'mr-mail': 'packet',
+  'mr-glossary': 'book', fep: 'signal', nextafter: 'flask', 'candid-planning': 'steps',
+  'candid-individual': 'person', nten: 'network', rogare: 'notes', acknowledgments: 'checks',
+  'corporate-sponsorship': 'building', 'donor-rights': 'shield',
+};
+
+export const lexiconSymbols: Record<string, SymbolName> = {
+  additionality: 'spark', beachhead: 'anchor', 'brier-score': 'calculator', calibration: 'dial',
+  charitologist: 'badge', charitology: 'compass', 'contract-failure': 'break',
+  'cost-effectiveness': 'ruler', counterfactual: 'compare', credence: 'question',
+  'discount-rate': 'hourglass', 'donor-advised-fund': 'wallet', 'expected-value': 'forecast',
+  'feedback-loop': 'loop', 'general-operating-support': 'building', 'identifiable-victim-effect': 'person',
+  impact: 'target', leverage: 'lever', 'moral-parliament': 'dialogue', 'moral-uncertainty': 'scale',
+  'mutual-aid': 'hands', neglectedness: 'hole', outcomes: 'signal', outputs: 'table',
+  'overhead-ratio': 'bars', 'participatory-grantmaking': 'people', 'payout-rate': 'coins',
+  prevention: 'umbrella', 'private-foundation': 'columns', protopia: 'seed',
+  'psychic-numbing': 'mute', 'pure-time-preference': 'clock', 'red-team': 'flag',
+  relief: 'medical', repair: 'stitch', replication: 'flaskCheck', 'restricted-funding': 'lock',
+  scale: 'chart', source: 'roots', 'source-depth': 'layers', 'starvation-cycle': 'drought',
+  structure: 'network', symptom: 'pulse', 'systemic-change': 'steps', 'theory-of-change': 'map',
+  tractability: 'fork', 'trust-based-philanthropy': 'rings', 'unrestricted-funding': 'unlock',
+  'warm-glow': 'sun',
+};
+
+const charityProfileSymbols: Record<string, SymbolName> = {
+  'against-malaria-foundation': 'net', 'center-for-effective-philanthropy': 'dial',
+  'doctors-without-borders': 'medical', 'feedback-labs': 'loop', 'feeding-america': 'food',
+  givedirectly: 'wallet', givewell: 'flask', 'habitat-for-humanity': 'house', 'helen-keller-intl': 'eye',
+  'lead-exposure-elimination-project': 'shield', 'malaria-consortium': 'calendar',
+  'new-incentives': 'target', 'our-world-in-data': 'globe', pratham: 'school',
+  'the-humane-league': 'paw', 'wikimedia-foundation': 'book',
+};
+
+export const datasetSymbols: Record<string, SymbolName> = {
+  index: 'compass', 'humanitarian-plan-cluster': 'split', 'humanitarian-funding': 'wallet',
+  'disaster-incidents': 'alert', 'disaster-incident-coverage': 'umbrella', observations: 'eye',
+  'observation-coverage': 'checks', 'publication-editions': 'archive', 'research-ledger': 'notes',
+  'research-progress': 'steps', 'os-providers': 'board', 'os-user-needs': 'speech',
+  conditions: 'lens', 'open-problems': 'question', programs: 'orbit', tools: 'tools',
+  record: 'folder', interventions: 'target', charities: 'building', encyclopedia: 'book',
+  cases: 'history', myths: 'break', disagreements: 'dialogue', traditions: 'candle',
+  principles: 'school', forecasts: 'forecast', journal: 'fileSearch', lexicon: 'bars',
+  causes: 'atlas', frameworks: 'scale', depth: 'layers', checklist: 'personCheck',
+  figures: 'chart', 'source-map': 'roots', roadmap: 'map', 'nonprofit-tools': 'calculator',
+  'nonprofit-benefits': 'gift', countries: 'globe', podcast: 'headphones',
+  newsletter: 'mail', sources: 'document',
+};
+
+export const ecosystemSymbols: Record<string, SymbolName> = {
+  'https://humanityschecklist.org/': 'roots',
+  'https://charities.systemicaltruism.com/': 'layers',
+  'https://theguysaccount.github.io/charity-impact-media/': 'chart',
+  'https://theguysaccount.github.io/whofunds-open-grant-graph/': 'network',
+  'https://projects.propublica.org/nonprofits/': 'fileSearch',
+  'https://apps.irs.gov/app/eos/': 'shield',
+  'https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf': 'building',
+  'https://990data.givingtuesday.org/': 'stack',
+  'https://www.givewell.org/': 'flask',
+  'https://www.givinggreen.earth/': 'leafPair',
+  'https://animalcharityevaluators.org/': 'paw',
+  'https://ourworldindata.org/': 'globe',
+};
+
 // Fragment destinations are shared across the site, including search and
 // Markdown links. Registry and report pages still have their own page mark.
 export const fragmentSymbols = {
   '/method/': methodSymbols,
   '/record/cause-atlas/': causeSymbols,
+  '/record/charity-index/': charityProfileSymbols,
+  '/record/lexicon/': lexiconSymbols,
   '/for-charities/start/': starterSymbols,
 } as const;

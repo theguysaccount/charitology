@@ -2,6 +2,8 @@
 import { fundraisingLearningFormUrl, fundraisingMethods } from '../data/fundraising.mjs';
 import type { FundraisingResult } from '../data/fundraising.mjs';
 import { url } from '../lib/site';
+import { pageIdentity } from '../lib/site-identities';
+import SiteSymbol from './SiteSymbol.astro';
 
 interface Props {
   results: readonly FundraisingResult[];
@@ -18,7 +20,7 @@ const { results, showMethodLinks = false } = Astro.props;
       const method = fundraisingMethods.find((item) => item.id === result.methodId);
       return <article class="result-card" id={`result-${result.id}`} aria-labelledby={`result-${result.id}-title`}>
         <p class="result-labels"><span class="badge">Editorial {result.review}</span> <span>{result.design}</span></p>
-        <h3 id={`result-${result.id}-title`}>{result.title}</h3>
+        <h3 id={`result-${result.id}-title`}><SiteSymbol name={pageIdentity(`/for-charities/fundraising/${result.methodId}/`).symbol} size="inline" /> {result.title}</h3>
         <p>{result.context}</p>
         <p><strong>Comparison.</strong> {result.comparison}</p>
         <p><strong>Observation window.</strong> {result.window}</p>

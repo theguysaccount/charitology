@@ -19,7 +19,7 @@ const endpoints = await availableEndpoints();
           endpoints.map((e) => (
             <tr>
               <td>
-                <a href={url(`/api/v1/${e.name}.json`)}>
+                <a class="identity-link" href={url(`/api/v1/${e.name}.json`)}>
                   <code>/api/v1/{e.name}.json</code>
                 </a>
               </td>

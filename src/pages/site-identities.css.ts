@@ -1,5 +1,5 @@
 import { routes, symbols } from '../lib/site-identities';
-import { fragmentSymbols } from '../lib/list-identities';
+import { datasetSymbols, ecosystemSymbols, fragmentSymbols } from '../lib/list-identities';
 import { url } from '../lib/site';
 
 export function GET() {
@@ -21,10 +21,14 @@ export function GET() {
     'a[href^="mailto:"]{--link-glyph:var(--glyph-mail)}',
     'a[download]{--link-glyph:var(--glyph-download)}',
   );
+  const datasetLinks = Object.entries(datasetSymbols).map(([name, symbol]) =>
+    `a[href="${url(`/api/v1/${name}.json`)}"]{--link-glyph:var(--glyph-${symbol});--list-mark:inline-block}`);
+  const ecosystemLinks = Object.entries(ecosystemSymbols).map(([href, symbol]) =>
+    `a[href^="${href}"]{--link-glyph:var(--glyph-${symbol});--list-mark:inline-block}`);
   const fragments = Object.entries(fragmentSymbols).flatMap(([path, entries]) =>
     Object.entries(entries).map(([id, symbol]) =>
       `a[href="${url(path)}#${id}"],main[data-site-path="${path}"] a[href="#${id}"]{--link-glyph:var(--glyph-${symbol})}`));
-  return new Response([`:root{${assets.join(';')}}`, ...page, ...tones, ...links, ...fragments].join('\n'), {
+  return new Response([`:root{${assets.join(';')}}`, ...page, ...tones, ...links, ...datasetLinks, ...ecosystemLinks, ...fragments].join('\n'), {
     headers: { 'Content-Type': 'text/css; charset=utf-8' },
   });
 }
