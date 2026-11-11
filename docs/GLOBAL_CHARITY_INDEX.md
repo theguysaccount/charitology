@@ -84,7 +84,21 @@ node scripts/check-us-charity-financials.mjs
 
 The [Schedule I lookup](https://charitology.com/record/funding-flows/us-schedule-i/) uses one official IRS monthly ZIP. It covers 5,916 selected recipient rows in 755 original filing objects and tax periods ending in 2022 or 2023. The [manifest](../public/data/funding-flows/us-schedule-i/manifest.json) retains source coordinates, fingerprints and the complete count of exclusions. The snapshot omits the filing's names, addresses and narrative fields. Each endpoint EIN must match the pinned IRS identity directory.
 
-Cash grants and reported noncash valuations remain separate. Each row is an organization pair and reporting period. A filer-period with competing returns or a recipient repeated in one return can overlap. The edition omits those candidates from search and reports their counts. It cannot resolve competing returns outside the capture. Links to financial filings match the EIN to a separate aggregate extract, which adds organization context without establishing receipt or expenditure of a particular grant. [Schedule I instructions](https://www.irs.gov/instructions/i990si).
+Cash grants and reported noncash valuations remain separate. Each row is an organization pair and reporting period. A filer-period with competing returns or a recipient repeated in one return can overlap. The archive projection omits those candidates within its source ZIP and reports their counts. The filing version context below covers other IRS ZIPs. Links to financial filings match the EIN to a separate aggregate extract. Establishing receipt or expenditure of a particular grant requires additional sources. [Schedule I instructions](https://www.irs.gov/instructions/i990si).
+
+### Schedule I filing versions
+
+The initial January 2024 archive stays downloadable. Default search excludes rows from any initial filing for which the 2022–2026 IRS indexes and original XML show another full Form 990 with the same EIN and exact tax-period dates. An explicit search option exposes those original rows and links the other filing objects. The option keeps the other objects as source references and does not include their amounts in the lookup. JSON exports report omitted rows and any linked versions. CSV records identify how many other objects were found for the filing. The data do not designate an authoritative version.
+
+For the version context, capture the 2022 through 2026 `index_YEAR.csv` files from the [IRS downloads page](https://www.irs.gov/charities-non-profits/form-990-series-downloads). The first command checks each initial filing against the index's EIN and tax-period month. The second reads the candidate XML from the official ZIPs using HTTP range requests and compares the exact tax-period dates and recorded Part II amounts and recipient identifiers. The third builds the public metadata without copying names, addresses or narrative fields. `filing-context.json` retains the index fingerprints, checked archives and the XML fingerprints of linked returns. Ordinary site builds are offline.
+
+```sh
+python3 scripts/qualify-us-schedule-i-indexes.py /path/to/indexes public/data/funding-flows/us-schedule-i/filings.json.gz > index-evidence.json
+python3 scripts/qualify-us-schedule-i-xml.py index-evidence.json /path/to/2024_TEOS_XML_01A.zip > xml-evidence.json
+python3 scripts/build-us-schedule-i-filing-context.py index-evidence.json xml-evidence.json public/data/funding-flows/us-schedule-i/filings.json.gz /path/to/filing-context.json
+```
+
+### Initial Schedule I archive reproduction
 
 ```sh
 python3 scripts/build-us-schedule-i.py /path/to/2024_TEOS_XML_01A.zip public/data/irs-registry /path/to/new-output

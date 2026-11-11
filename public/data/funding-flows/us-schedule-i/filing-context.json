@@ -1,0 +1,671 @@
+{
+  "capturedOn": "2026-11-11",
+  "scope": "Published full Form 990 objects indexed for 2022–2026 with the exact same EIN and tax-period dates as a filing in the January 2024 edition.",
+  "initialEditionSha256": "4e383cb3e5f664e6f77d9bb404b2711a0d024750f2eb9a3a13af9e58c2a5b2c6",
+  "indexes": {
+    "2022": {
+      "url": "https://apps.irs.gov/pub/epostcard/990/xml/2022/index_2022.csv",
+      "sha256": "5493bf8850e25dbd3d44acf53faa92faed4f50931600aadc5e4e425379b74631",
+      "sourceRows": 656503,
+      "fullForm990Rows": 325555
+    },
+    "2023": {
+      "url": "https://apps.irs.gov/pub/epostcard/990/xml/2023/index_2023.csv",
+      "sha256": "3906ff84e87285f3a3cf2ba328505b1ba348d9814f5dc95864fa7d1f9575a58e",
+      "sourceRows": 705156,
+      "fullForm990Rows": 347337,
+      "matchingRows": 26
+    },
+    "2024": {
+      "url": "https://apps.irs.gov/pub/epostcard/990/xml/2024/index_2024.csv",
+      "sha256": "c00051a33f65d408ea7f6d5fa008c7f82f9bc6223751f4a6e29d59f5e17f826d",
+      "sourceRows": 728719,
+      "fullForm990Rows": 363100,
+      "matchingRows": 760
+    },
+    "2025": {
+      "url": "https://apps.irs.gov/pub/epostcard/990/xml/2025/index_2025.csv",
+      "sha256": "e54ba6938d98b1746f2fd464a0f77e520efd956dc3da737d73843dc0013c6770",
+      "sourceRows": 748906,
+      "fullForm990Rows": 376920,
+      "matchingRows": 1
+    },
+    "2026": {
+      "url": "https://apps.irs.gov/pub/epostcard/990/xml/2026/index_2026.csv",
+      "sha256": "4e100f04b85fbaed4940581f8bbb7cd47eb33ee200a93334018b98542ae323e7",
+      "sourceRows": 472357,
+      "fullForm990Rows": 227597
+    }
+  },
+  "searchedArchives": {
+    "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_03A.zip": {
+      "bytes": 209335079,
+      "etag": "\"c7a3327-62facfd9717d0\"",
+      "lastModified": "Thu, 06 Mar 2025 14:04:55 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2025/2025_TEOS_XML_03A.zip": {
+      "bytes": 222596630,
+      "etag": "\"d448e16-632e4e35d9408\"",
+      "lastModified": "Wed, 16 Apr 2025 13:01:48 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_01A.zip": {
+      "bytes": 123052879,
+      "etag": "\"755a34f-62faf80637580\"",
+      "lastModified": "Thu, 06 Mar 2025 17:04:40 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_02A.zip": {
+      "bytes": 234617123,
+      "etag": "\"dfbf923-62faf8a47c6f0\"",
+      "lastModified": "Thu, 06 Mar 2025 17:07:26 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_03A.zip": {
+      "bytes": 197165153,
+      "etag": "\"bc08061-62faf864efa28\"",
+      "lastModified": "Thu, 06 Mar 2025 17:06:19 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_04A.zip": {
+      "bytes": 244491049,
+      "etag": "\"e92a329-62faf8c4d4380\"",
+      "lastModified": "Thu, 06 Mar 2025 17:07:59 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_05A.zip": {
+      "bytes": 990540072,
+      "etag": "\"3b0a7128-62fafd3cf1878\"",
+      "lastModified": "Thu, 06 Mar 2025 17:27:59 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_06A.zip": {
+      "bytes": 163716234,
+      "etag": "\"9c21c8a-62faf83b00c58\"",
+      "lastModified": "Thu, 06 Mar 2025 17:05:35 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_07A.zip": {
+      "bytes": 219928555,
+      "etag": "\"d1bd7eb-62faf89204e50\"",
+      "lastModified": "Thu, 06 Mar 2025 17:07:06 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_08A.zip": {
+      "bytes": 266247548,
+      "etag": "\"fde9d7c-62faf8db65ce8\"",
+      "lastModified": "Thu, 06 Mar 2025 17:08:23 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_09A.zip": {
+      "bytes": 200422523,
+      "etag": "\"bf2347b-62faf86f0d3c0\"",
+      "lastModified": "Thu, 06 Mar 2025 17:06:29 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_10A.zip": {
+      "bytes": 332505047,
+      "etag": "\"13d19fd7-62faf94c11cd0\"",
+      "lastModified": "Thu, 06 Mar 2025 17:10:21 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip": {
+      "bytes": 1200256933,
+      "etag": "\"478a77a5-62fafe55acf60\"",
+      "lastModified": "Thu, 06 Mar 2025 17:32:53 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_12A.zip": {
+      "bytes": 120729513,
+      "etag": "\"7322fa9-62faf8010d140\"",
+      "lastModified": "Thu, 06 Mar 2025 17:04:34 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_10A.zip": {
+      "bytes": 251614735,
+      "etag": "\"eff560f-62facfd954ec8\"",
+      "lastModified": "Thu, 06 Mar 2025 14:04:55 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_04A.zip": {
+      "bytes": 350268985,
+      "etag": "\"14e0ae39-62facfdf9c588\"",
+      "lastModified": "Thu, 06 Mar 2025 14:05:02 GMT"
+    },
+    "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_05A.zip": {
+      "bytes": 977460330,
+      "etag": "\"3a42dc6a-62fad0046c6b0\"",
+      "lastModified": "Thu, 06 Mar 2025 14:05:40 GMT"
+    }
+  },
+  "counts": {
+    "initialEditionFilings": 755,
+    "filingsWithAnotherVersion": 31,
+    "rowsFromFilingsWithAnotherVersion": 262,
+    "alternateFilingObjects": 32,
+    "alternateObjectsWithDifferentRecordedPartII": 7
+  },
+  "filings": [
+    {
+      "filingObjectId": "202303569349300700",
+      "filerEin": "363659998",
+      "taxPeriodStart": "2022-05-01",
+      "taxPeriodEnd": "2023-04-30",
+      "rowsInInitialEdition": 2,
+      "alternatives": [
+        {
+          "filingObjectId": "202401139349300305",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_04A.zip",
+          "member": "2024_TEOS_XML_04A/202401139349300305_public.xml",
+          "filingSha256": "30b01ced9c4283237d5e0c416b04c21d621e0b243905bc3125de939853dcc8db",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202333569349300623",
+      "filerEin": "364802935",
+      "taxPeriodStart": "2022-07-01",
+      "taxPeriodEnd": "2023-06-30",
+      "rowsInInitialEdition": 16,
+      "alternatives": [
+        {
+          "filingObjectId": "202303189349309935",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202303189349309935_public.xml",
+          "filingSha256": "98892f96117260698cc3eb638abc9ed7313aae0e3dc89e71af11227e967916a5",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202400169349300330",
+      "filerEin": "204127495",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 2,
+      "alternatives": [
+        {
+          "filingObjectId": "202402819349300120",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_10A.zip",
+          "member": "2024_TEOS_XML_10A/202402819349300120_public.xml",
+          "filingSha256": "aeec4c4a13bd05e7233c5cdaa6cdd19008307c51ae99c53508f821ca4ad81f5c",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": false
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202400179349301430",
+      "filerEin": "720540772",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 1,
+      "alternatives": [
+        {
+          "filingObjectId": "202313199349324156",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202313199349324156_public.xml",
+          "filingSha256": "475ffd256680dab859ad20083240c0c5eb50d8fd48bffa8fb09cd9557e675d7b",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202400199349301405",
+      "filerEin": "470757164",
+      "taxPeriodStart": "2021-07-01",
+      "taxPeriodEnd": "2022-06-30",
+      "rowsInInitialEdition": 4,
+      "alternatives": [
+        {
+          "filingObjectId": "202321259349301427",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_05A.zip",
+          "member": "2023_TEOS_XML_05A/202321259349301427_public.xml",
+          "filingSha256": "5c79d5a99f9c036f4f5732fe766b2c25ea242e77237baf07096c6dbe576c9e93",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202410169349302126",
+      "filerEin": "131919715",
+      "taxPeriodStart": "2022-04-01",
+      "taxPeriodEnd": "2023-03-31",
+      "rowsInInitialEdition": 6,
+      "alternatives": [
+        {
+          "filingObjectId": "202440589349300434",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_03A.zip",
+          "member": "2024_TEOS_XML_03A/202440589349300434_public.xml",
+          "filingSha256": "a558659c5be258d903b38c238b9cc4efdc52914dce88badf07159c58308936af",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        },
+        {
+          "filingObjectId": "202540769349300029",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2025/2025_TEOS_XML_03A.zip",
+          "member": "202540769349300029_public.xml",
+          "filingSha256": "28abe270f29c5cc08239b9f651ad537bb6b5047c869db0759e9b44e3d133e70b",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": false
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202410169349302771",
+      "filerEin": "454092094",
+      "taxPeriodStart": "2021-07-01",
+      "taxPeriodEnd": "2022-06-30",
+      "rowsInInitialEdition": 2,
+      "alternatives": [
+        {
+          "filingObjectId": "202321359349315232",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_05A.zip",
+          "member": "2023_TEOS_XML_05A/202321359349315232_public.xml",
+          "filingSha256": "30f4047b394490a93b09c2e967f88866d75ee2402c51e29b309df8c3d034cebb",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": false
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202410169349302956",
+      "filerEin": "831360900",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 8,
+      "alternatives": [
+        {
+          "filingObjectId": "202343179349312324",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202343179349312324_public.xml",
+          "filingSha256": "59a1063008055e90bdd86a94af163c2b7154f97e145aea76b8ae00d2ff782094",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202410259349301506",
+      "filerEin": "300544129",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 5,
+      "alternatives": [
+        {
+          "filingObjectId": "202310689349300626",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_03A.zip",
+          "member": "2023_TEOS_XML_03A/202310689349300626_public.xml",
+          "filingSha256": "519f1e3961494fdf356b0b3f7e149962fae6a8e4f28d0b8464a0a8b3da7b4925",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202420169349300192",
+      "filerEin": "811131698",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 1,
+      "alternatives": [
+        {
+          "filingObjectId": "202303059349302700",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202303059349302700_public.xml",
+          "filingSha256": "52c3e53c5f72ad1efd2d4a9369734f9db8f47526779efed6cb80152102bc634f",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202420169349303242",
+      "filerEin": "650460581",
+      "taxPeriodStart": "2021-12-01",
+      "taxPeriodEnd": "2022-11-30",
+      "rowsInInitialEdition": 1,
+      "alternatives": [
+        {
+          "filingObjectId": "202320469349303317",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_02A.zip",
+          "member": "2023_TEOS_XML_02A/202320469349303317_public.xml",
+          "filingSha256": "0611879e04248a1c67755c2eb85ab7a940006405bee0b65ccb3fdf324fee3afc",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": false
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202420209349300202",
+      "filerEin": "264731843",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 2,
+      "alternatives": [
+        {
+          "filingObjectId": "202322279349301822",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_08A.zip",
+          "member": "2023_TEOS_XML_08A/202322279349301822_public.xml",
+          "filingSha256": "4a88fc540cd3c3a99b8bb39b96c801f351317bf6b25f87ec1e2220203d40254f",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": false
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202420219349300252",
+      "filerEin": "263835257",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 6,
+      "alternatives": [
+        {
+          "filingObjectId": "202313249349300506",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202313249349300506_public.xml",
+          "filingSha256": "f8236af82975e43d9357a208385f6860796ddcc2e2de122f6656aefd0ad84f05",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202420239349300802",
+      "filerEin": "462504422",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 1,
+      "alternatives": [
+        {
+          "filingObjectId": "202342939349301339",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_10A.zip",
+          "member": "2023_TEOS_XML_10A/202342939349301339_public.xml",
+          "filingSha256": "5d00f276c2bee843af166b4e8027cd6cca620d3056f8a431cd804417c8a33d03",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202420259349300047",
+      "filerEin": "161634095",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 3,
+      "alternatives": [
+        {
+          "filingObjectId": "202323039349301272",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202323039349301272_public.xml",
+          "filingSha256": "86866509263203740a751f69800176e55d5cd09fb07c556f9205990db4fe6fd2",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202420259349301367",
+      "filerEin": "222527116",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 19,
+      "alternatives": [
+        {
+          "filingObjectId": "202322859349302252",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_10A.zip",
+          "member": "2023_TEOS_XML_10A/202322859349302252_public.xml",
+          "filingSha256": "0f63b9e8f8c17dfff56657a463e8fa4ec4b6b9df9ee6710d9424bc3de70f145d",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430169349301608",
+      "filerEin": "742257167",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 6,
+      "alternatives": [
+        {
+          "filingObjectId": "202313189349305061",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202313189349305061_public.xml",
+          "filingSha256": "0a3cb129c065d4f7d626b93a8165245b24dd4866dde2da95228176944916ec41",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430169349302703",
+      "filerEin": "582404112",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 11,
+      "alternatives": [
+        {
+          "filingObjectId": "202343199349321319",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202343199349321319_public.xml",
+          "filingSha256": "febb23e5523e202747e2447f5beda137376310be19f0dbc55dbf0fb0648d2e7e",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430169349302948",
+      "filerEin": "473739141",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 3,
+      "alternatives": [
+        {
+          "filingObjectId": "202313199349331761",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202313199349331761_public.xml",
+          "filingSha256": "b0e9b18621173f47f5d9d556d3c0b18a843e4fb805f75e185370018d373bc9ee",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430169349304638",
+      "filerEin": "237004865",
+      "taxPeriodStart": "2021-10-01",
+      "taxPeriodEnd": "2022-09-30",
+      "rowsInInitialEdition": 1,
+      "alternatives": [
+        {
+          "filingObjectId": "202310169349300136",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_01A.zip",
+          "member": "2023_TEOS_XML_01A/202310169349300136_public.xml",
+          "filingSha256": "64f40f365f4e032c174f3b16827863071bb05575b18f83fd080fa42f77905fb9",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430189349301363",
+      "filerEin": "611158841",
+      "taxPeriodStart": "2021-09-01",
+      "taxPeriodEnd": "2022-08-31",
+      "rowsInInitialEdition": 7,
+      "alternatives": [
+        {
+          "filingObjectId": "202310129349301201",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_01A.zip",
+          "member": "2023_TEOS_XML_01A/202310129349301201_public.xml",
+          "filingSha256": "d777fdc580ad8404a5176ad95f2c298b4d601132267489e2212ceb75eba0e404",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430209349300003",
+      "filerEin": "620729406",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 3,
+      "alternatives": [
+        {
+          "filingObjectId": "202341729349300004",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_06A.zip",
+          "member": "2023_TEOS_XML_06A/202341729349300004_public.xml",
+          "filingSha256": "8adc63074135c16f29a5d1ad5a329f7cfd430f7504b7c165a5c81006767a04fb",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": false
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430229349300813",
+      "filerEin": "421707837",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 14,
+      "alternatives": [
+        {
+          "filingObjectId": "202343179349309219",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202343179349309219_public.xml",
+          "filingSha256": "c44e787ccab95322a901c69450fed5fd66f374534ea94466b37dd88f6c295a2a",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430239349300433",
+      "filerEin": "630324707",
+      "taxPeriodStart": "2022-06-01",
+      "taxPeriodEnd": "2023-05-31",
+      "rowsInInitialEdition": 12,
+      "alternatives": [
+        {
+          "filingObjectId": "202421069349302527",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_04A.zip",
+          "member": "2024_TEOS_XML_04A/202421069349302527_public.xml",
+          "filingSha256": "74c421631ff838abd03c1c060c61fed9df656410a2b1cee88fb337e07271e3ac",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430249349301018",
+      "filerEin": "846011918",
+      "taxPeriodStart": "2021-07-01",
+      "taxPeriodEnd": "2022-06-30",
+      "rowsInInitialEdition": 22,
+      "alternatives": [
+        {
+          "filingObjectId": "202331319349301218",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_05A.zip",
+          "member": "2023_TEOS_XML_05A/202331319349301218_public.xml",
+          "filingSha256": "49e2700745c4084ab8b2fe3c7fef538cbe247b509a4adfe87de4a859d0f9bd85",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": false
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202430259349300848",
+      "filerEin": "581966822",
+      "taxPeriodStart": "2021-10-01",
+      "taxPeriodEnd": "2022-09-30",
+      "rowsInInitialEdition": 20,
+      "alternatives": [
+        {
+          "filingObjectId": "202322239349302017",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_08A.zip",
+          "member": "2023_TEOS_XML_08A/202322239349302017_public.xml",
+          "filingSha256": "242c0ee8723bc096546b8492ee3b72bb19709205a43524e2c2cc984d62f4a4d1",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202440169349301679",
+      "filerEin": "854388263",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 2,
+      "alternatives": [
+        {
+          "filingObjectId": "202323189349304632",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_11A.zip",
+          "member": "2023_TEOS_XML_11A/202323189349304632_public.xml",
+          "filingSha256": "2f06f7ea0295a72b460052a678400b678ccc0c36c1ea1636f796903dd6a9475e",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202440169349302324",
+      "filerEin": "455264332",
+      "taxPeriodStart": "2022-01-01",
+      "taxPeriodEnd": "2022-12-31",
+      "rowsInInitialEdition": 30,
+      "alternatives": [
+        {
+          "filingObjectId": "202332419349301303",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_09A.zip",
+          "member": "2023_TEOS_XML_09A/202332419349301303_public.xml",
+          "filingSha256": "5b38d873f753e951de3807abbda0f88d9fe2331d279abcd509aed60df76a283a",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202440169349304049",
+      "filerEin": "826009027",
+      "taxPeriodStart": "2021-07-01",
+      "taxPeriodEnd": "2022-06-30",
+      "rowsInInitialEdition": 1,
+      "alternatives": [
+        {
+          "filingObjectId": "202300169349300340",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_01A.zip",
+          "member": "2023_TEOS_XML_01A/202300169349300340_public.xml",
+          "filingSha256": "2c62ea9b83e9e22d41d0a8964b249dd6f1bff77a79f9a8f0e8f9880ee61b7dcc",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202440169349304214",
+      "filerEin": "262920798",
+      "taxPeriodStart": "2021-07-01",
+      "taxPeriodEnd": "2022-06-30",
+      "rowsInInitialEdition": 11,
+      "alternatives": [
+        {
+          "filingObjectId": "202341359349304389",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2023/2023_TEOS_XML_05A.zip",
+          "member": "2023_TEOS_XML_05A/202341359349304389_public.xml",
+          "filingSha256": "6278c2971d38c2ceb00f90fc5df4b37e3a0531171ab4326ae4a87a097830f11b",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    },
+    {
+      "filingObjectId": "202440199349300314",
+      "filerEin": "530242992",
+      "taxPeriodStart": "2022-07-01",
+      "taxPeriodEnd": "2023-06-30",
+      "rowsInInitialEdition": 40,
+      "alternatives": [
+        {
+          "filingObjectId": "202411359349313356",
+          "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_05A.zip",
+          "member": "2024_TEOS_XML_05A/202411359349313356_public.xml",
+          "filingSha256": "c4662fb0b281bb8be53d733b5fe05fa70d447d300012ba49a5a829ef869a1e8e",
+          "amendedFlagPresent": false,
+          "sameRecordedPartIIAmountsAndRecipientIdentifiers": true
+        }
+      ]
+    }
+  ]
+}
