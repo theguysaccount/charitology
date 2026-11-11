@@ -1,0 +1,56 @@
+---
+import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
+import { count, data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
+import type { ContractPayment, ProcurementPayment } from '../lib/brazil-infrastructure-procurement-payments';
+import { url } from '../lib/site';
+
+interface Props {
+  records: readonly (ProcurementPayment | ContractPayment)[];
+  stage: 'procurements' | 'contracts';
+}
+const { records, stage } = Astro.props;
+const contractView = stage === 'contracts';
+const projects = new Map(data.projects.map(project => [project.agreement, project]));
+---
+
+<div class="table-wrap procurement-table" role="region"
+  aria-label={contractView ? 'Reported payments with verified contracts' : 'Reported payments by procurement'} tabindex="0">
+  <table class="data">
+    <thead><tr>
+      <th scope="col">{contractView ? 'Procurement and contract IDs' : 'Procurement ID'}</th>
+      <th scope="col">Agreement and project</th>
+      <th scope="col">Expense documents and payments</th>
+      <th scope="col">Payment years</th>
+      <th scope="col">Reported payment amount</th>
+      <th scope="col">{contractView ? 'Contract archive row' : 'Contract reference coverage'}</th>
+    </tr></thead>
+    <tbody>{records.map(row => {
+      const project = projects.get(row.agreement);
+      const contract = 'contractId' in row ? row : null;
+      const places = project ? municipalities(project).map(place => place.no_municipio) : [];
+      const search = normalizeBrazilName([row.agreement, row.proposal, row.project, project?.organization,
+        row.procurementId, contract?.contractId, ...places].join(' '));
+      return <tr data-procurement-payment={stage} data-search={search}>
+        <th scope="row">
+          <span class="identity-code">{row.procurementId}</span>
+          {contract && <span class="identity-code">{contract.contractId}</span>}
+          <small>Procurement archive row {count(row.procurementSourceRow)}</small>
+        </th>
+        <td><a href={url(projectPath(row.agreement) + '#procurement-payments')}>{row.agreement} · {row.project}</a><small>{project?.organization}</small></td>
+        <td>{count(row.documents)} {row.documents === 1 ? 'document' : 'documents'}<small>{count(row.paymentRows)} payment rows</small></td>
+        <td>{row.firstPaymentYear === row.lastPaymentYear ? row.firstPaymentYear : `${row.firstPaymentYear}–${row.lastPaymentYear}`}</td>
+        <td>{money(row.reportedPaymentCentsBRL)}</td>
+        <td>{'contractStates' in row
+          ? `${count(row.contractStates.verified)} verified · ${count(row.contractStates.noReference)} without a contract ID · ${count(row.contractStates.unresolved)} unresolved`
+          : count(row.contractSourceRow)}</td>
+      </tr>;
+    })}</tbody>
+  </table>
+</div>
+
+<style>
+  .procurement-table { margin-block: 1rem; }
+  .procurement-table table { min-width: 46rem; }
+  .procurement-table :is(td, th) { overflow-wrap: anywhere; }
+  .procurement-table small { display: block; color: var(--ink-2); font-weight: normal; }
+</style>

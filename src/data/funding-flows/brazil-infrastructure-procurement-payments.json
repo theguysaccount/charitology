@@ -1,0 +1,6615 @@
+{
+  "format": "charitology-brazil-infrastructure-procurement-payments-v1",
+  "capturedOn": "2026-11-11",
+  "currency": "BRL",
+  "sources": {
+    "projectEditionSha256": "a6a9ebd38da473a623bbcab293ff0047bf61ab19eace9a26659b64b3bc05b0c7",
+    "accountEditionSha256": "f7891b348388f83d9d588ae7b44c376f6f2d311bb53f3de17d42b264c98e9dc4",
+    "invoiceEditionSha256": "69feade787bc633991fe2f71b93846a3c28d671b8a869a4d4887d9af6c5897a0",
+    "cipiContractEditionSha256": "850e1c79e330c554840ef8d5d6ce984147f30b805b8f600bee422d08569b241e",
+    "archives": {
+      "siconv_pagamento": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_pagamento.zip",
+        "bytes": 374662483,
+        "sha256": "36920c43e8efb80f9a1f9a7f0c55620f0dff2210bce012ac613fbbef77338c62",
+        "dataRows": 7575512
+      },
+      "siconv_dl": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_dl.zip",
+        "bytes": 216458339,
+        "sha256": "fbf12c69a4a1fd3381834018fae6b12b2afda43fa7ad88075b0bea35e459d906",
+        "dataRows": 7710768
+      },
+      "siconv_licitacao": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_licitacao.zip",
+        "bytes": 27194887,
+        "sha256": "dc71781983b8b9175dbb76bfc967e279a01bbc69c09b4ec2495af3d0613b9480",
+        "dataRows": 991315
+      },
+      "siconv_contrato": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_contrato.zip",
+        "bytes": 75481522,
+        "sha256": "93217bada644822989ddc7f9ebc3271aec488febcb2e0714c36a2eb5cc55ae6d",
+        "dataRows": 757996
+      }
+    },
+    "dataModel": {
+      "url": "https://www.gov.br/transferegov/pt-br/ferramentas-gestao/paineis-gerenciais/arquivos/modelo-dados-csvs-discricionarias-e-legais.zip/@@display-file/file",
+      "sha256": "558e962ec1854f001ad6a54ae406b6436847d02101233a96e5bff4427c0b7716",
+      "member": "modelo_dados_siconv.zip!/modelo_dados_sincov/bd_portal.public.xml"
+    },
+    "license": "https://opendatacommons.org/licenses/odbl/1-0/"
+  },
+  "coverage": {
+    "projectAgreements": 88,
+    "agreementsWithProcurements": 80,
+    "procurements": 334,
+    "documents": 1382,
+    "paymentRows": 1420,
+    "contractStates": {
+      "verified": 211,
+      "noReference": 1157,
+      "unresolved": 14
+    },
+    "unresolvedContractReasons": {
+      "missingPair": 14,
+      "repeatedPair": 0,
+      "supplierDiffers": 0
+    },
+    "verifiedContracts": 58,
+    "agreementsWithVerifiedContracts": 12,
+    "contractsAlsoInCipiEdition": 0
+  },
+  "procurements": [
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "procurementId": "579416",
+      "procurementSourceRow": 266939,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 56711818,
+      "firstPaymentYear": 2018,
+      "lastPaymentYear": 2021,
+      "contractStates": {
+        "verified": 10,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "procurementId": "883662",
+      "procurementSourceRow": 274121,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 68016411,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 6,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "877955",
+      "proposal": "1370577",
+      "project": "22765.35-30",
+      "procurementId": "805493",
+      "procurementSourceRow": 827523,
+      "documents": 19,
+      "paymentRows": 19,
+      "reportedPaymentCentsBRL": 91620110,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 19,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "878366",
+      "proposal": "1381520",
+      "project": "18886.23-70",
+      "procurementId": "750924",
+      "procurementSourceRow": 723456,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 17763801,
+      "firstPaymentYear": 2021,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 9,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "878367",
+      "proposal": "1381434",
+      "project": "18887.23-26",
+      "procurementId": "750922",
+      "procurementSourceRow": 833089,
+      "documents": 10,
+      "paymentRows": 11,
+      "reportedPaymentCentsBRL": 22852867,
+      "firstPaymentYear": 2021,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "878547",
+      "proposal": "1382947",
+      "project": "51800.25-09",
+      "procurementId": "808677",
+      "procurementSourceRow": 84234,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 64526133,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "879093",
+      "proposal": "1388858",
+      "project": "95664.32-80",
+      "procurementId": "861140",
+      "procurementSourceRow": 717608,
+      "documents": 13,
+      "paymentRows": 17,
+      "reportedPaymentCentsBRL": 218273072,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 13,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "879395",
+      "proposal": "1391229",
+      "project": "110344.41-40",
+      "procurementId": "745937",
+      "procurementSourceRow": 764407,
+      "documents": 12,
+      "paymentRows": 12,
+      "reportedPaymentCentsBRL": 352408623,
+      "firstPaymentYear": 2020,
+      "lastPaymentYear": 2021,
+      "contractStates": {
+        "verified": 9,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "879395",
+      "proposal": "1391229",
+      "project": "110344.41-40",
+      "procurementId": "753931",
+      "procurementSourceRow": 13633,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 46905805,
+      "firstPaymentYear": 2021,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 4,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "880752",
+      "proposal": "1397172",
+      "project": "14254.35-24",
+      "procurementId": "749610",
+      "procurementSourceRow": 245038,
+      "documents": 5,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 24094273,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 4,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "880752",
+      "proposal": "1397172",
+      "project": "14254.35-24",
+      "procurementId": "999076",
+      "procurementSourceRow": 955735,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 40395508,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 4,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "881364",
+      "proposal": "1397173",
+      "project": "14255.35-80",
+      "procurementId": "760913",
+      "procurementSourceRow": 861981,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 36086412,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 6,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1003808",
+      "procurementSourceRow": 570851,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 279000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1003833",
+      "procurementSourceRow": 549032,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 280000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1004667",
+      "procurementSourceRow": 943694,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 216000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1006604",
+      "procurementSourceRow": 614619,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 63532,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1009896",
+      "procurementSourceRow": 609842,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 1743565,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1013404",
+      "procurementSourceRow": 393374,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 119957,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1023191",
+      "procurementSourceRow": 670899,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 499000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1023839",
+      "procurementSourceRow": 851939,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 85000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1023853",
+      "procurementSourceRow": 800691,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 250000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1023870",
+      "procurementSourceRow": 109543,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 39000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1024003",
+      "procurementSourceRow": 752134,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 79000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1024019",
+      "procurementSourceRow": 94427,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 368919,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1027121",
+      "procurementSourceRow": 299113,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 138432,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1040594",
+      "procurementSourceRow": 664155,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 168000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1040840",
+      "procurementSourceRow": 265575,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1563757,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1049466",
+      "procurementSourceRow": 340574,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1376000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1049550",
+      "procurementSourceRow": 904,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 221000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1049954",
+      "procurementSourceRow": 445715,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 550000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1058811",
+      "procurementSourceRow": 445520,
+      "documents": 12,
+      "paymentRows": 12,
+      "reportedPaymentCentsBRL": 240034,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 12,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1062166",
+      "procurementSourceRow": 161024,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 751774,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1062243",
+      "procurementSourceRow": 952565,
+      "documents": 28,
+      "paymentRows": 28,
+      "reportedPaymentCentsBRL": 474793,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 28,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1062319",
+      "procurementSourceRow": 17365,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 615215,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 7,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1062321",
+      "procurementSourceRow": 285138,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 162091,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 8,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1064402",
+      "procurementSourceRow": 354478,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1787990,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1064403",
+      "procurementSourceRow": 409196,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 460197,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1066248",
+      "procurementSourceRow": 657471,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 290960,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1067244",
+      "procurementSourceRow": 472280,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 85500,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1068728",
+      "procurementSourceRow": 356329,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 308000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1078985",
+      "procurementSourceRow": 604992,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 70180,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1078988",
+      "procurementSourceRow": 692738,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 13164,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1079002",
+      "procurementSourceRow": 514129,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 394898,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 7,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1079003",
+      "procurementSourceRow": 502519,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 108559,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 9,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1079065",
+      "procurementSourceRow": 731850,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 308000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1083536",
+      "procurementSourceRow": 80602,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 10907830,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1083707",
+      "procurementSourceRow": 439309,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 229600,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1083714",
+      "procurementSourceRow": 579228,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 104430,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1083727",
+      "procurementSourceRow": 792539,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 300603,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1084848",
+      "procurementSourceRow": 906502,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 29970,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1085457",
+      "procurementSourceRow": 560902,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 404685,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 8,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1085609",
+      "procurementSourceRow": 45653,
+      "documents": 11,
+      "paymentRows": 11,
+      "reportedPaymentCentsBRL": 134782,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 11,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1089354",
+      "procurementSourceRow": 360031,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 28000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1090491",
+      "procurementSourceRow": 150322,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 166414,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1090799",
+      "procurementSourceRow": 821908,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 30600,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1093468",
+      "procurementSourceRow": 316838,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 5380000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1096319",
+      "procurementSourceRow": 814104,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 129484,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1097728",
+      "procurementSourceRow": 706427,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 107504,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1100035",
+      "procurementSourceRow": 29699,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 306900,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1100457",
+      "procurementSourceRow": 540318,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1041504,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1100689",
+      "procurementSourceRow": 74025,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 82600,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1100874",
+      "procurementSourceRow": 734837,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 19890,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1103279",
+      "procurementSourceRow": 698018,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1919100,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1103866",
+      "procurementSourceRow": 303028,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 91000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1106466",
+      "procurementSourceRow": 663724,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 4980,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1114246",
+      "procurementSourceRow": 837066,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 337700,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1115955",
+      "procurementSourceRow": 234499,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 141700,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1121349",
+      "procurementSourceRow": 872017,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 221850,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1126217",
+      "procurementSourceRow": 853580,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 1001195,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1128131",
+      "procurementSourceRow": 763141,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 310000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1128196",
+      "procurementSourceRow": 545533,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 177209,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1139249",
+      "procurementSourceRow": 512121,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 249000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1139946",
+      "procurementSourceRow": 686343,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 438800,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1164288",
+      "procurementSourceRow": 386966,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 258600,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1165616",
+      "procurementSourceRow": 583967,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2116800,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1174324",
+      "procurementSourceRow": 839316,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1203300,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1174383",
+      "procurementSourceRow": 303413,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 45000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1177942",
+      "procurementSourceRow": 381463,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2330000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1198014",
+      "procurementSourceRow": 635932,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 450000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "805334",
+      "procurementSourceRow": 568426,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 194000,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "813745",
+      "procurementSourceRow": 423374,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 263600,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "816128",
+      "procurementSourceRow": 790527,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 10779200,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "820251",
+      "procurementSourceRow": 385541,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 443000,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "833210",
+      "procurementSourceRow": 931823,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 254800,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "833548",
+      "procurementSourceRow": 68982,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2179722,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "843584",
+      "procurementSourceRow": 846821,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 318119,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "852048",
+      "procurementSourceRow": 103989,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 5038883,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "852073",
+      "procurementSourceRow": 751408,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 4549842,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "852520",
+      "procurementSourceRow": 736700,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 179400,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "853149",
+      "procurementSourceRow": 739176,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 73500,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "855037",
+      "procurementSourceRow": 125498,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 94176,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "864248",
+      "procurementSourceRow": 485452,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1960000,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "871107",
+      "procurementSourceRow": 618209,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 248500,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "880392",
+      "procurementSourceRow": 848219,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 43000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "880738",
+      "procurementSourceRow": 25203,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 720000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "889819",
+      "procurementSourceRow": 307263,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 594800,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "891107",
+      "procurementSourceRow": 216871,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 96500,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "891414",
+      "procurementSourceRow": 117385,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 300000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "893982",
+      "procurementSourceRow": 622915,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 273000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "912638",
+      "procurementSourceRow": 660838,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 280700,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "914302",
+      "procurementSourceRow": 209713,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 27149800,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "914878",
+      "procurementSourceRow": 985963,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 160000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "915773",
+      "procurementSourceRow": 967242,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 520281,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "916506",
+      "procurementSourceRow": 603232,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 270000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "916821",
+      "procurementSourceRow": 863238,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 350000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "916886",
+      "procurementSourceRow": 381362,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 89750,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "917578",
+      "procurementSourceRow": 343485,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 107450,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "917608",
+      "procurementSourceRow": 553461,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 416500,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "921715",
+      "procurementSourceRow": 378936,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 395000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "921907",
+      "procurementSourceRow": 866559,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 2082542,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 7,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "921997",
+      "procurementSourceRow": 333170,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 629000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "927712",
+      "procurementSourceRow": 754501,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 246713,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "929445",
+      "procurementSourceRow": 498727,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 35200,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "930078",
+      "procurementSourceRow": 109902,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 222800,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "932024",
+      "procurementSourceRow": 551419,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 500598,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "935268",
+      "procurementSourceRow": 769248,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 262500,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "936541",
+      "procurementSourceRow": 30439,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 568600,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "942240",
+      "procurementSourceRow": 982236,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 66700,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "946690",
+      "procurementSourceRow": 733406,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 30000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "946736",
+      "procurementSourceRow": 361560,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 159400,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "952271",
+      "procurementSourceRow": 343344,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 242962,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "957293",
+      "procurementSourceRow": 770934,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 259054,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "964090",
+      "procurementSourceRow": 581332,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 4457466,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "964105",
+      "procurementSourceRow": 943571,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 121781,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "964859",
+      "procurementSourceRow": 759380,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 640125,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "966079",
+      "procurementSourceRow": 719001,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1145000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "966517",
+      "procurementSourceRow": 173591,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 7300000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "966913",
+      "procurementSourceRow": 107140,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 93500,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "969687",
+      "procurementSourceRow": 433248,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 140950,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "972541",
+      "procurementSourceRow": 541641,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1311874,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "978560",
+      "procurementSourceRow": 414073,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 142800,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "981988",
+      "procurementSourceRow": 598958,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 615676,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "983935",
+      "procurementSourceRow": 635910,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 514400,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "983955",
+      "procurementSourceRow": 141969,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 12509,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "983961",
+      "procurementSourceRow": 779419,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 328049,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "984455",
+      "procurementSourceRow": 702592,
+      "documents": 53,
+      "paymentRows": 53,
+      "reportedPaymentCentsBRL": 1914923,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 53,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "984575",
+      "procurementSourceRow": 77126,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 49470,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "984580",
+      "procurementSourceRow": 563410,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 35902,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "984769",
+      "procurementSourceRow": 746247,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 1940000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "987816",
+      "procurementSourceRow": 8273,
+      "documents": 13,
+      "paymentRows": 13,
+      "reportedPaymentCentsBRL": 223135,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 13,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "989347",
+      "procurementSourceRow": 519300,
+      "documents": 31,
+      "paymentRows": 31,
+      "reportedPaymentCentsBRL": 842922,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 31,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "989394",
+      "procurementSourceRow": 695993,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 3289000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "989927",
+      "procurementSourceRow": 286416,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 150000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "990194",
+      "procurementSourceRow": 874699,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1130000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "995034",
+      "procurementSourceRow": 805411,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 461800,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "996748",
+      "procurementSourceRow": 804332,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 27558740,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 4,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "997626",
+      "procurementSourceRow": 5521,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 448080,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886237",
+      "proposal": "1497728",
+      "project": "12046.35-65",
+      "procurementId": "782002",
+      "procurementSourceRow": 59058,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 8886957,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886237",
+      "proposal": "1497728",
+      "project": "12046.35-65",
+      "procurementId": "871707",
+      "procurementSourceRow": 410944,
+      "documents": 37,
+      "paymentRows": 54,
+      "reportedPaymentCentsBRL": 201252019,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 37,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "1005061",
+      "procurementSourceRow": 253238,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 279396655,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "735363",
+      "procurementSourceRow": 902844,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2468200,
+      "firstPaymentYear": 2020,
+      "lastPaymentYear": 2020,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "740986",
+      "procurementSourceRow": 768570,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 154337,
+      "firstPaymentYear": 2020,
+      "lastPaymentYear": 2020,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "781337",
+      "procurementSourceRow": 134768,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2651028,
+      "firstPaymentYear": 2021,
+      "lastPaymentYear": 2021,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "785813",
+      "procurementSourceRow": 850750,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 649000,
+      "firstPaymentYear": 2021,
+      "lastPaymentYear": 2021,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "800041",
+      "procurementSourceRow": 50343,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 510965,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "800397",
+      "procurementSourceRow": 482794,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 559900,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "934235",
+      "procurementSourceRow": 80990,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 3350685,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "procurementId": "939675",
+      "procurementSourceRow": 841543,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 494000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "procurementId": "720092",
+      "procurementSourceRow": 12719,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 2890580,
+      "firstPaymentYear": 2020,
+      "lastPaymentYear": 2020,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 0,
+        "unresolved": 2
+      }
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "procurementId": "726521",
+      "procurementSourceRow": 209580,
+      "documents": 11,
+      "paymentRows": 11,
+      "reportedPaymentCentsBRL": 46487169,
+      "firstPaymentYear": 2020,
+      "lastPaymentYear": 2021,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 0,
+        "unresolved": 11
+      }
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "procurementId": "727243",
+      "procurementSourceRow": 386626,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 758158,
+      "firstPaymentYear": 2020,
+      "lastPaymentYear": 2020,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 0,
+        "unresolved": 1
+      }
+    },
+    {
+      "agreement": "889850",
+      "proposal": "1509556",
+      "project": "94144.32-05",
+      "procurementId": "911955",
+      "procurementSourceRow": 434362,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 166470289,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "889894",
+      "proposal": "1511560",
+      "project": "11501.33-47",
+      "procurementId": "1034924",
+      "procurementSourceRow": 901536,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 33492020,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "889894",
+      "proposal": "1511560",
+      "project": "11501.33-47",
+      "procurementId": "859525",
+      "procurementSourceRow": 129900,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 6115899,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "891046",
+      "proposal": "1514840",
+      "project": "22766.35-97",
+      "procurementId": "805488",
+      "procurementSourceRow": 740653,
+      "documents": 22,
+      "paymentRows": 22,
+      "reportedPaymentCentsBRL": 205408210,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 22,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "892665",
+      "proposal": "1519025",
+      "project": "22956.41-73",
+      "procurementId": "927978",
+      "procurementSourceRow": 803652,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 42395,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "892665",
+      "proposal": "1519025",
+      "project": "22956.41-73",
+      "procurementId": "987032",
+      "procurementSourceRow": 387087,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 127100,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "895959",
+      "proposal": "1517858",
+      "project": "12050.35-04",
+      "procurementId": "797913",
+      "procurementSourceRow": 344770,
+      "documents": 45,
+      "paymentRows": 57,
+      "reportedPaymentCentsBRL": 444732072,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 45,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "895978",
+      "proposal": "1517861",
+      "project": "24628.35-30",
+      "procurementId": "881031",
+      "procurementSourceRow": 394744,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 13746618,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "898993",
+      "proposal": "1554363",
+      "project": "51801.35-00",
+      "procurementId": "920460",
+      "procurementSourceRow": 557166,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 63394161,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "899507",
+      "proposal": "1555830",
+      "project": "96931.25-90",
+      "procurementId": "872097",
+      "procurementSourceRow": 250951,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 29315531,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "900892",
+      "proposal": "1555826",
+      "project": "20217.35-08",
+      "procurementId": "871105",
+      "procurementSourceRow": 300907,
+      "documents": 11,
+      "paymentRows": 12,
+      "reportedPaymentCentsBRL": 45425384,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 11,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "904643",
+      "proposal": "1593380",
+      "project": "25151.27-90",
+      "procurementId": "802943",
+      "procurementSourceRow": 660108,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 141498270,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "904643",
+      "proposal": "1593380",
+      "project": "25151.27-90",
+      "procurementId": "865202",
+      "procurementSourceRow": 785126,
+      "documents": 20,
+      "paymentRows": 20,
+      "reportedPaymentCentsBRL": 614748330,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 20,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "905274",
+      "proposal": "1593409",
+      "project": "51405.35-23",
+      "procurementId": "921800",
+      "procurementSourceRow": 731174,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 27811891,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "905339",
+      "proposal": "1592796",
+      "project": "20302.35-37",
+      "procurementId": "888970",
+      "procurementSourceRow": 330053,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 47869778,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "907963",
+      "proposal": "1612909",
+      "project": "22097.31-80",
+      "procurementId": "874911",
+      "procurementSourceRow": 249651,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 147822325,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 8,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "907973",
+      "proposal": "1614357",
+      "project": "38903.41-72",
+      "procurementId": "880956",
+      "procurementSourceRow": 166058,
+      "documents": 6,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 33449869,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "917589",
+      "proposal": "1707633",
+      "project": "24678.35-57",
+      "procurementId": "913609",
+      "procurementSourceRow": 947577,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 54058002,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "917591",
+      "proposal": "1707640",
+      "project": "51878.26-15",
+      "procurementId": "1011875",
+      "procurementSourceRow": 203236,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 64400932,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "917602",
+      "proposal": "1707663",
+      "project": "51685.35-88",
+      "procurementId": "980933",
+      "procurementSourceRow": 816218,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 77101278,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "917658",
+      "proposal": "1708914",
+      "project": "44202.35-75",
+      "procurementId": "1101984",
+      "procurementSourceRow": 164699,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 936473,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "919037",
+      "proposal": "1718309",
+      "project": "36550.35-71",
+      "procurementId": "919641",
+      "procurementSourceRow": 37325,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 30998886,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "919170",
+      "proposal": "1719927",
+      "project": "35404.41-10",
+      "procurementId": "1070982",
+      "procurementSourceRow": 934897,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 48118510,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 9,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "procurementId": "893404",
+      "procurementSourceRow": 953135,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 62375064,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 5,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "procurementId": "975419",
+      "procurementSourceRow": 696706,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 40446522,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 9,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "920442",
+      "proposal": "1724181",
+      "project": "13705.35-46",
+      "procurementId": "929976",
+      "procurementSourceRow": 529265,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 34677517,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "920487",
+      "proposal": "1724216",
+      "project": "14303.26-19",
+      "procurementId": "1029256",
+      "procurementSourceRow": 219027,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 8107553,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "920487",
+      "proposal": "1724216",
+      "project": "14303.26-19",
+      "procurementId": "1092349",
+      "procurementSourceRow": 782183,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 800000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "920487",
+      "proposal": "1724216",
+      "project": "14303.26-19",
+      "procurementId": "1125188",
+      "procurementSourceRow": 916381,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 2687095,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "920487",
+      "proposal": "1724216",
+      "project": "14303.26-19",
+      "procurementId": "1206292",
+      "procurementSourceRow": 59325,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2600000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "920487",
+      "proposal": "1724216",
+      "project": "14303.26-19",
+      "procurementId": "954084",
+      "procurementSourceRow": 805538,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1091615,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "921640",
+      "proposal": "1728034",
+      "project": "14878.52-90",
+      "procurementId": "901884",
+      "procurementSourceRow": 715307,
+      "documents": 12,
+      "paymentRows": 12,
+      "reportedPaymentCentsBRL": 327000030,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 12,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "922695",
+      "proposal": "1731096",
+      "project": "134425.28-18",
+      "procurementId": "955809",
+      "procurementSourceRow": 295652,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 5155506,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "923544",
+      "proposal": "1732268",
+      "project": "30372.35-78",
+      "procurementId": "923723",
+      "procurementSourceRow": 359388,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 33839458,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "929373",
+      "proposal": "1769320",
+      "project": "57669.25-18",
+      "procurementId": "1028883",
+      "procurementSourceRow": 312113,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 16448819,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "929405",
+      "proposal": "1769513",
+      "project": "51384.29-00",
+      "procurementId": "1029767",
+      "procurementSourceRow": 544041,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 26206318,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "929405",
+      "proposal": "1769513",
+      "project": "51384.29-00",
+      "procurementId": "1206944",
+      "procurementSourceRow": 436570,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 69676508,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "929406",
+      "proposal": "1769514",
+      "project": "51687.35-90",
+      "procurementId": "989693",
+      "procurementSourceRow": 171702,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 14313971,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "929830",
+      "proposal": "1750053",
+      "project": "14252.33-42",
+      "procurementId": "953120",
+      "procurementSourceRow": 580995,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 1080000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 6,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "929830",
+      "proposal": "1750053",
+      "project": "14252.33-42",
+      "procurementId": "953123",
+      "procurementSourceRow": 879958,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 4400000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "929830",
+      "proposal": "1750053",
+      "project": "14252.33-42",
+      "procurementId": "998956",
+      "procurementSourceRow": 635675,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 31334700,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "929836",
+      "proposal": "1772400",
+      "project": "15482.35-39",
+      "procurementId": "1017022",
+      "procurementSourceRow": 383453,
+      "documents": 6,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 60359694,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "934315",
+      "proposal": "1796312",
+      "project": "11541.35-75",
+      "procurementId": "1026087",
+      "procurementSourceRow": 513469,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 11016100,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "936178",
+      "proposal": "1807951",
+      "project": "12007.35-62",
+      "procurementId": "1019011",
+      "procurementSourceRow": 537705,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 71213262,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 9,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "936219",
+      "proposal": "1808423",
+      "project": "13823.32-22",
+      "procurementId": "1074797",
+      "procurementSourceRow": 131735,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 27341622,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "936402",
+      "proposal": "1811744",
+      "project": "15451.25-45",
+      "procurementId": "910324",
+      "procurementSourceRow": 682507,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 134907180,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "936606",
+      "proposal": "1813123",
+      "project": "16009.41-09",
+      "procurementId": "917454",
+      "procurementSourceRow": 434846,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 57410363,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "936909",
+      "proposal": "1820245",
+      "project": "19180.28-06",
+      "procurementId": "1035425",
+      "procurementSourceRow": 446864,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 19253130,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "procurementId": "953133",
+      "procurementSourceRow": 389620,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 16893000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 7,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "procurementId": "953173",
+      "procurementSourceRow": 738762,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 34000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 4,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "procurementId": "953184",
+      "procurementSourceRow": 107067,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 33977700,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 4,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "procurementId": "953200",
+      "procurementSourceRow": 312596,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 34000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 4,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "1007778",
+      "procurementSourceRow": 988274,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 750000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "914147",
+      "procurementSourceRow": 357689,
+      "documents": 20,
+      "paymentRows": 20,
+      "reportedPaymentCentsBRL": 9000000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 20,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "915519",
+      "procurementSourceRow": 888531,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 31877000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 7,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "916593",
+      "procurementSourceRow": 511050,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 4000000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 9,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "920932",
+      "procurementSourceRow": 132472,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 3547530,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "921934",
+      "procurementSourceRow": 353819,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 5000000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "930503",
+      "procurementSourceRow": 763343,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 3000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "930511",
+      "procurementSourceRow": 431767,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 1750000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 3,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "954938",
+      "procurementSourceRow": 328315,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 1000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "968467",
+      "procurementSourceRow": 21825,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 3282409,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "977616",
+      "procurementSourceRow": 659204,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "978507",
+      "procurementSourceRow": 225603,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 6000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "984859",
+      "procurementSourceRow": 653911,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 9000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "986654",
+      "procurementSourceRow": 432690,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 8940000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "988724",
+      "procurementSourceRow": 65642,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 441646,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "996053",
+      "procurementSourceRow": 134579,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 3000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "996475",
+      "procurementSourceRow": 724012,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1498500,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "996846",
+      "procurementSourceRow": 812553,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2250000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "944194",
+      "proposal": "1913302",
+      "project": "27574.35-00",
+      "procurementId": "993197",
+      "procurementSourceRow": 781070,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 27803568,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 8,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "944198",
+      "proposal": "1913309",
+      "project": "30763.35-50",
+      "procurementId": "979440",
+      "procurementSourceRow": 276693,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 21775981,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "944202",
+      "proposal": "1913324",
+      "project": "25683.25-86",
+      "procurementId": "929691",
+      "procurementSourceRow": 162589,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 282131580,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "945677",
+      "proposal": "1921143",
+      "project": "29089.41-44",
+      "procurementId": "1075776",
+      "procurementSourceRow": 312435,
+      "documents": 11,
+      "paymentRows": 11,
+      "reportedPaymentCentsBRL": 47551735,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 11,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "946285",
+      "proposal": "1925272",
+      "project": "28643.35-10",
+      "procurementId": "982449",
+      "procurementSourceRow": 166266,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 28127743,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "1044034",
+      "procurementSourceRow": 146488,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 812370,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "1069494",
+      "procurementSourceRow": 285659,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 7793720,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "924066",
+      "procurementSourceRow": 811969,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 1193025,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 8,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "924216",
+      "procurementSourceRow": 89123,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 16938635,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "924227",
+      "procurementSourceRow": 548353,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 35310188,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 7,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "938902",
+      "procurementSourceRow": 171409,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 812400,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "948419",
+      "proposal": "1933290",
+      "project": "32155.35-24",
+      "procurementId": "1068937",
+      "procurementSourceRow": 303216,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 486666368,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "948420",
+      "proposal": "1933291",
+      "project": "32162.35-22",
+      "procurementId": "999031",
+      "procurementSourceRow": 436587,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 3438749690,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "948515",
+      "proposal": "1933914",
+      "project": "33243.31-63",
+      "procurementId": "994987",
+      "procurementSourceRow": 766224,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 86207300,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1074969",
+      "procurementSourceRow": 328423,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 7920000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1085910",
+      "procurementSourceRow": 718828,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 1270000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 2,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1100422",
+      "procurementSourceRow": 42689,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 15480000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 3,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1163738",
+      "procurementSourceRow": 869895,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 400000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1197901",
+      "procurementSourceRow": 335331,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1550000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1206696",
+      "procurementSourceRow": 740381,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 500000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1206727",
+      "procurementSourceRow": 697498,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 500000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1207000",
+      "procurementSourceRow": 408347,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 500000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1210474",
+      "procurementSourceRow": 778118,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 500000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1217912",
+      "procurementSourceRow": 893127,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 500000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "953571",
+      "procurementSourceRow": 756700,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 4000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 8,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "961817",
+      "procurementSourceRow": 123027,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 10515967,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 3,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "975577",
+      "procurementSourceRow": 187725,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 6361500,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986167",
+      "procurementSourceRow": 903816,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 24618990,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 4,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986176",
+      "procurementSourceRow": 224971,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1847579,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986412",
+      "procurementSourceRow": 324134,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 27557596,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 5,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986413",
+      "procurementSourceRow": 93636,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 23699680,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 3,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986414",
+      "procurementSourceRow": 693696,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 2151964,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 1,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "951784",
+      "proposal": "1943499",
+      "project": "39241.35-93",
+      "procurementId": "965624",
+      "procurementSourceRow": 505589,
+      "documents": 14,
+      "paymentRows": 14,
+      "reportedPaymentCentsBRL": 179422618,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 14,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "951855",
+      "proposal": "1945989",
+      "project": "31532.35-44",
+      "procurementId": "1091707",
+      "procurementSourceRow": 110387,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 5680142,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "953157",
+      "proposal": "1949848",
+      "project": "32208.42-87",
+      "procurementId": "1061331",
+      "procurementSourceRow": 872497,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 29319876,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "953157",
+      "proposal": "1949848",
+      "project": "32208.42-87",
+      "procurementId": "987884",
+      "procurementSourceRow": 788873,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 76287055,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "953189",
+      "proposal": "1949916",
+      "project": "31402.41-81",
+      "procurementId": "1007247",
+      "procurementSourceRow": 913611,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 33327610,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "953325",
+      "proposal": "1950015",
+      "project": "31534.35-57",
+      "procurementId": "1092079",
+      "procurementSourceRow": 707524,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 26240495,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "954009",
+      "proposal": "1950546",
+      "project": "33250.24-20",
+      "procurementId": "980846",
+      "procurementSourceRow": 624628,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 57456166,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "956450",
+      "proposal": "1971473",
+      "project": "51423.28-03",
+      "procurementId": "1172619",
+      "procurementSourceRow": 249550,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 60593723,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 6,
+        "noReference": 0,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "959442",
+      "proposal": "1984339",
+      "project": "38503.41-80",
+      "procurementId": "977999",
+      "procurementSourceRow": 423521,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 91400204,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "960397",
+      "proposal": "1988999",
+      "project": "51166.33-70",
+      "procurementId": "1085568",
+      "procurementSourceRow": 548182,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 94499211,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "964631",
+      "proposal": "1998764",
+      "project": "51195.43-50",
+      "procurementId": "1043170",
+      "procurementSourceRow": 813788,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 44941685,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "964879",
+      "proposal": "1995735",
+      "project": "41885.33-65",
+      "procurementId": "1040792",
+      "procurementSourceRow": 611138,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 25606121,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1004908",
+      "procurementSourceRow": 101936,
+      "documents": 15,
+      "paymentRows": 15,
+      "reportedPaymentCentsBRL": 10125000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 15,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1026814",
+      "procurementSourceRow": 651968,
+      "documents": 125,
+      "paymentRows": 125,
+      "reportedPaymentCentsBRL": 46739710,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 125,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1039107",
+      "procurementSourceRow": 127613,
+      "documents": 13,
+      "paymentRows": 13,
+      "reportedPaymentCentsBRL": 6726300,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 13,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1042461",
+      "procurementSourceRow": 416394,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 200000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1042533",
+      "procurementSourceRow": 213960,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 19697435,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1043037",
+      "procurementSourceRow": 905555,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 138088,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1044503",
+      "procurementSourceRow": 163278,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 19752670,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1044504",
+      "procurementSourceRow": 293240,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 52896,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1045188",
+      "procurementSourceRow": 227072,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1495000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1054216",
+      "procurementSourceRow": 406090,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 253100,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1054573",
+      "procurementSourceRow": 316668,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 800000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1055951",
+      "procurementSourceRow": 394579,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 203660,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1055983",
+      "procurementSourceRow": 666858,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 580000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1055989",
+      "procurementSourceRow": 580850,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2975287,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1066703",
+      "procurementSourceRow": 460955,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2000000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1071133",
+      "procurementSourceRow": 987936,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 168950,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1071666",
+      "procurementSourceRow": 711098,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 353650,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1077172",
+      "procurementSourceRow": 836232,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1991367,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1079004",
+      "procurementSourceRow": 893211,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 14708640,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1080183",
+      "procurementSourceRow": 417281,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 7899024,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1082002",
+      "procurementSourceRow": 539704,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 3500000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1086295",
+      "procurementSourceRow": 935902,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 604000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1088445",
+      "procurementSourceRow": 407422,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 5880595,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1088450",
+      "procurementSourceRow": 308061,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 32683259,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 7,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1095936",
+      "procurementSourceRow": 912141,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 279790,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1096789",
+      "procurementSourceRow": 76234,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 3658496,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1099917",
+      "procurementSourceRow": 727254,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 239135,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1102089",
+      "procurementSourceRow": 954078,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 343860,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1102681",
+      "procurementSourceRow": 969679,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 826514,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1108776",
+      "procurementSourceRow": 923950,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 25339500,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1112931",
+      "procurementSourceRow": 700356,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 4500000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1115272",
+      "procurementSourceRow": 249235,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 10486790,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1117061",
+      "procurementSourceRow": 605276,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 998638,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1118660",
+      "procurementSourceRow": 38752,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 670000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1123718",
+      "procurementSourceRow": 239201,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 3545000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1123944",
+      "procurementSourceRow": 800399,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 10140009,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1130682",
+      "procurementSourceRow": 752010,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 5000000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1130833",
+      "procurementSourceRow": 84956,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 428000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1130889",
+      "procurementSourceRow": 479433,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 21000000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1145779",
+      "procurementSourceRow": 730325,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 496000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1145827",
+      "procurementSourceRow": 569970,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 19400000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1162204",
+      "procurementSourceRow": 410764,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 2949855,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1170372",
+      "procurementSourceRow": 171371,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 366805,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1177664",
+      "procurementSourceRow": 247313,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 1712450,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1181162",
+      "procurementSourceRow": 471446,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 6324082,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1181253",
+      "procurementSourceRow": 139737,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 7379659,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1181371",
+      "procurementSourceRow": 756104,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 628000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1181431",
+      "procurementSourceRow": 102381,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 283300,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1182135",
+      "procurementSourceRow": 433997,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 27129000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1182181",
+      "procurementSourceRow": 128249,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 85772,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1182497",
+      "procurementSourceRow": 168705,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 121155,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1189813",
+      "procurementSourceRow": 832378,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 480000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1203121",
+      "procurementSourceRow": 288789,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 40000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "968333",
+      "proposal": "2020431",
+      "project": "50777.28-80",
+      "procurementId": "1041054",
+      "procurementSourceRow": 727943,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 31752452,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "969926",
+      "proposal": "2032558",
+      "project": "50477.42-30",
+      "procurementId": "1086388",
+      "procurementSourceRow": 523456,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 24639961,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "971731",
+      "proposal": "2038402",
+      "project": "51196.31-92",
+      "procurementId": "1081801",
+      "procurementSourceRow": 989753,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 92165593,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "972546",
+      "proposal": "2039879",
+      "project": "51200.42-47",
+      "procurementId": "1059931",
+      "procurementSourceRow": 499007,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 43519667,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "973513",
+      "proposal": "2041133",
+      "project": "51879.33-03",
+      "procurementId": "1080204",
+      "procurementSourceRow": 379802,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 35580444,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      }
+    },
+    {
+      "agreement": "981327",
+      "proposal": "2134397",
+      "project": "101522.13-04",
+      "procurementId": "1116243",
+      "procurementSourceRow": 959941,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 48262013,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "procurementId": "579416",
+      "procurementSourceRow": 266939,
+      "contractId": "434206",
+      "contractSourceRow": 46567,
+      "alsoInCipiContractEdition": false,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 56711818,
+      "firstPaymentYear": 2018,
+      "lastPaymentYear": 2021
+    },
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "procurementId": "883662",
+      "procurementSourceRow": 274121,
+      "contractId": "645948",
+      "contractSourceRow": 81634,
+      "alsoInCipiContractEdition": false,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 68016411,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "879395",
+      "proposal": "1391229",
+      "project": "110344.41-40",
+      "procurementId": "745937",
+      "procurementSourceRow": 764407,
+      "contractId": "561927",
+      "contractSourceRow": 448818,
+      "alsoInCipiContractEdition": false,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 278280143,
+      "firstPaymentYear": 2020,
+      "lastPaymentYear": 2021
+    },
+    {
+      "agreement": "879395",
+      "proposal": "1391229",
+      "project": "110344.41-40",
+      "procurementId": "753931",
+      "procurementSourceRow": 13633,
+      "contractId": "567323",
+      "contractSourceRow": 516176,
+      "alsoInCipiContractEdition": false,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 27717165,
+      "firstPaymentYear": 2021,
+      "lastPaymentYear": 2022
+    },
+    {
+      "agreement": "880752",
+      "proposal": "1397172",
+      "project": "14254.35-24",
+      "procurementId": "749610",
+      "procurementSourceRow": 245038,
+      "contractId": "567873",
+      "contractSourceRow": 138655,
+      "alsoInCipiContractEdition": false,
+      "documents": 4,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 21043686,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2023
+    },
+    {
+      "agreement": "880752",
+      "proposal": "1397172",
+      "project": "14254.35-24",
+      "procurementId": "999076",
+      "procurementSourceRow": 955735,
+      "contractId": "728409",
+      "contractSourceRow": 145395,
+      "alsoInCipiContractEdition": false,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 40395508,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "881364",
+      "proposal": "1397173",
+      "project": "14255.35-80",
+      "procurementId": "760913",
+      "procurementSourceRow": 861981,
+      "contractId": "613739",
+      "contractSourceRow": 335925,
+      "alsoInCipiContractEdition": false,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 36086412,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2023
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1040840",
+      "procurementSourceRow": 265575,
+      "contractId": "751145",
+      "contractSourceRow": 369871,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1563757,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1100457",
+      "procurementSourceRow": 540318,
+      "contractId": "794783",
+      "contractSourceRow": 607566,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1041504,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1165616",
+      "procurementSourceRow": 583967,
+      "contractId": "837247",
+      "contractSourceRow": 394328,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2116800,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "1174324",
+      "procurementSourceRow": 839316,
+      "contractId": "842509",
+      "contractSourceRow": 354052,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1203300,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "966517",
+      "procurementSourceRow": 173591,
+      "contractId": "700764",
+      "contractSourceRow": 439704,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 7300000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "972541",
+      "procurementSourceRow": 541641,
+      "contractId": "705090",
+      "contractSourceRow": 447161,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1311874,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "984580",
+      "procurementSourceRow": 563410,
+      "contractId": "766247",
+      "contractSourceRow": 447160,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 14856,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "procurementId": "996748",
+      "procurementSourceRow": 804332,
+      "contractId": "721403",
+      "contractSourceRow": 361077,
+      "alsoInCipiContractEdition": false,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 27558740,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "procurementId": "893404",
+      "procurementSourceRow": 953135,
+      "contractId": "652380",
+      "contractSourceRow": 565983,
+      "alsoInCipiContractEdition": false,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 62375064,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "procurementId": "975419",
+      "procurementSourceRow": 696706,
+      "contractId": "707323",
+      "contractSourceRow": 565984,
+      "alsoInCipiContractEdition": false,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 40446522,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "929830",
+      "proposal": "1750053",
+      "project": "14252.33-42",
+      "procurementId": "953120",
+      "procurementSourceRow": 580995,
+      "contractId": "691102",
+      "contractSourceRow": 508894,
+      "alsoInCipiContractEdition": false,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 1080000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "929830",
+      "proposal": "1750053",
+      "project": "14252.33-42",
+      "procurementId": "953123",
+      "procurementSourceRow": 879958,
+      "contractId": "691104",
+      "contractSourceRow": 527083,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 4400000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "929830",
+      "proposal": "1750053",
+      "project": "14252.33-42",
+      "procurementId": "998956",
+      "procurementSourceRow": 635675,
+      "contractId": "723509",
+      "contractSourceRow": 476972,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 31334700,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "procurementId": "953133",
+      "procurementSourceRow": 389620,
+      "contractId": "691114",
+      "contractSourceRow": 257239,
+      "alsoInCipiContractEdition": false,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 16893000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "procurementId": "953173",
+      "procurementSourceRow": 738762,
+      "contractId": "691129",
+      "contractSourceRow": 466290,
+      "alsoInCipiContractEdition": false,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 34000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "procurementId": "953184",
+      "procurementSourceRow": 107067,
+      "contractId": "691133",
+      "contractSourceRow": 466289,
+      "alsoInCipiContractEdition": false,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 33977700,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "procurementId": "953200",
+      "procurementSourceRow": 312596,
+      "contractId": "691142",
+      "contractSourceRow": 241273,
+      "alsoInCipiContractEdition": false,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 34000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "914147",
+      "procurementSourceRow": 357689,
+      "contractId": "665879",
+      "contractSourceRow": 595344,
+      "alsoInCipiContractEdition": false,
+      "documents": 11,
+      "paymentRows": 11,
+      "reportedPaymentCentsBRL": 5000000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "914147",
+      "procurementSourceRow": 357689,
+      "contractId": "665880",
+      "contractSourceRow": 595345,
+      "alsoInCipiContractEdition": false,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 4000000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "915519",
+      "procurementSourceRow": 888531,
+      "contractId": "666505",
+      "contractSourceRow": 551851,
+      "alsoInCipiContractEdition": false,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 28000000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "916593",
+      "procurementSourceRow": 511050,
+      "contractId": "667214",
+      "contractSourceRow": 599090,
+      "alsoInCipiContractEdition": false,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 4000000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "920932",
+      "procurementSourceRow": 132472,
+      "contractId": "670788",
+      "contractSourceRow": 592022,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 3547530,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "921934",
+      "procurementSourceRow": 353819,
+      "contractId": "671100",
+      "contractSourceRow": 565169,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2500000,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "930503",
+      "procurementSourceRow": 763343,
+      "contractId": "676862",
+      "contractSourceRow": 600846,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1500000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "930511",
+      "procurementSourceRow": 431767,
+      "contractId": "676667",
+      "contractSourceRow": 597508,
+      "alsoInCipiContractEdition": false,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 1750000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "954938",
+      "procurementSourceRow": 328315,
+      "contractId": "692386",
+      "contractSourceRow": 645371,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 1000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "968467",
+      "procurementSourceRow": 21825,
+      "contractId": "702170",
+      "contractSourceRow": 596176,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 3282409,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "977616",
+      "procurementSourceRow": 659204,
+      "contractId": "709082",
+      "contractSourceRow": 595347,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "978507",
+      "procurementSourceRow": 225603,
+      "contractId": "709524",
+      "contractSourceRow": 602231,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 6000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "984859",
+      "procurementSourceRow": 653911,
+      "contractId": "714111",
+      "contractSourceRow": 684078,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 3750000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "986654",
+      "procurementSourceRow": 432690,
+      "contractId": "716311",
+      "contractSourceRow": 615374,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 4470000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "procurementId": "996053",
+      "procurementSourceRow": 134579,
+      "contractId": "721110",
+      "contractSourceRow": 602229,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 3000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "1069494",
+      "procurementSourceRow": 285659,
+      "contractId": "772370",
+      "contractSourceRow": 591152,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 7793720,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "924066",
+      "procurementSourceRow": 811969,
+      "contractId": "673821",
+      "contractSourceRow": 542600,
+      "alsoInCipiContractEdition": false,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 1193025,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "924216",
+      "procurementSourceRow": 89123,
+      "contractId": "685924",
+      "contractSourceRow": 555447,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 16938635,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "procurementId": "924227",
+      "procurementSourceRow": 548353,
+      "contractId": "693998",
+      "contractSourceRow": 555446,
+      "alsoInCipiContractEdition": false,
+      "documents": 7,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 35310188,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1074969",
+      "procurementSourceRow": 328423,
+      "contractId": "775577",
+      "contractSourceRow": 113894,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 7920000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1085910",
+      "procurementSourceRow": 718828,
+      "contractId": "783841",
+      "contractSourceRow": 98947,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 1270000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1100422",
+      "procurementSourceRow": 42689,
+      "contractId": "795366",
+      "contractSourceRow": 135745,
+      "alsoInCipiContractEdition": false,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 15480000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1163738",
+      "procurementSourceRow": 869895,
+      "contractId": "835805",
+      "contractSourceRow": 87778,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 400000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "1197901",
+      "procurementSourceRow": 335331,
+      "contractId": "863221",
+      "contractSourceRow": 113314,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1550000,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "953571",
+      "procurementSourceRow": 756700,
+      "contractId": "692845",
+      "contractSourceRow": 135744,
+      "alsoInCipiContractEdition": false,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 4000000,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "961817",
+      "procurementSourceRow": 123027,
+      "contractId": "699516",
+      "contractSourceRow": 87777,
+      "alsoInCipiContractEdition": false,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 10515967,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "975577",
+      "procurementSourceRow": 187725,
+      "contractId": "716304",
+      "contractSourceRow": 267230,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2851500,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986167",
+      "procurementSourceRow": 903816,
+      "contractId": "733886",
+      "contractSourceRow": 267228,
+      "alsoInCipiContractEdition": false,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 24618990,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986176",
+      "procurementSourceRow": 224971,
+      "contractId": "733807",
+      "contractSourceRow": 87775,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 1847579,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986412",
+      "procurementSourceRow": 324134,
+      "contractId": "733814",
+      "contractSourceRow": 267229,
+      "alsoInCipiContractEdition": false,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 16090626,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986413",
+      "procurementSourceRow": 93636,
+      "contractId": "733893",
+      "contractSourceRow": 113895,
+      "alsoInCipiContractEdition": false,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 12190808,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986413",
+      "procurementSourceRow": 93636,
+      "contractId": "733895",
+      "contractSourceRow": 113896,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 2049000,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "procurementId": "986414",
+      "procurementSourceRow": 693696,
+      "contractId": "733803",
+      "contractSourceRow": 87776,
+      "alsoInCipiContractEdition": false,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 860788,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025
+    },
+    {
+      "agreement": "956450",
+      "proposal": "1971473",
+      "project": "51423.28-03",
+      "procurementId": "1172619",
+      "procurementSourceRow": 249550,
+      "contractId": "869570",
+      "contractSourceRow": 131732,
+      "alsoInCipiContractEdition": false,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 60593723,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026
+    }
+  ]
+}

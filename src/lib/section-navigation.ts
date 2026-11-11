@@ -247,6 +247,18 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Coverage and what remains unknown', 'compare'],
     ['downloads', 'Download records and sources', 'download'],
   ],
+  '/record/funding-flows/brazil-infrastructure-invoice-items/': [
+    ['lookup', 'Find invoice item comparisons', 'lens'],
+    ['reading-differences', 'Read the amount differences', 'compare'],
+    ['coverage', 'Coverage and record boundaries', 'archive'],
+    ['downloads', 'Download the comparison and receipts', 'download'],
+  ],
+  '/record/funding-flows/brazil-infrastructure-procurement-payments/': [
+    ['procurements', 'Find reported payments by procurement', 'lens'],
+    ['contracts', 'Inspect payments with verified contracts', 'match'],
+    ['coverage', 'Coverage and what the source records', 'archive'],
+    ['downloads', 'Download records and source receipts', 'download'],
+  ],
   '/record/funding-flows/brazil-cisterns/': [
     ['agreement', 'Federal agreement', 'permit'],
     ['payments', 'Reported account payments', 'bankOrder'],

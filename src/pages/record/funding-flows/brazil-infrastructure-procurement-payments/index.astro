@@ -1,0 +1,106 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import BrazilInfrastructureProcurementPayments from '../../../../components/BrazilInfrastructureProcurementPayments.astro';
+import { invoiceItemsRoute } from '../../../../lib/brazil-infrastructure-invoice-items';
+import { count, projectPath } from '../../../../lib/brazil-project-execution';
+import { procurementPaymentEdition, procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
+import { url } from '../../../../lib/site';
+
+const title = 'Procurements and payments for Brazilian civil society infrastructure';
+const { coverage, procurements, contracts, sources } = procurementPaymentEdition;
+const catalogue = 'https://api-publica.transferegov.gestao.gov.br/downloads';
+const names = {
+  siconv_pagamento: 'Reported recipient payments',
+  siconv_dl: 'Expense document headers',
+  siconv_licitacao: 'Procurement records',
+  siconv_contrato: 'Contract records',
+} as const;
+const sourceLinks = [
+  ...Object.entries(sources.archives).map(([key, source]) => ({
+    title: names[key as keyof typeof names], publisher: 'Transferegov.br', url: source.url,
+  })),
+  { title: 'Public download catalogue', publisher: 'Transferegov.br', url: catalogue },
+  { title: 'How expense documents are linked to procurement and contracts', publisher: 'Transferegov.br',
+    url: 'https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/8-tutorial_documento-de-liquidacao_convenios_convenente.pdf' },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Follow reported institutional payments through their expense documents to the original procurement. Inspect the subset with a verified contract reference."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazil infrastructure procurements and payments'}]}
+  sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-infrastructure-procurement-payments/index.astro">
+  <p>The public expense document archive records the original proposal and procurement ID. It connects {count(coverage.documents)} expense documents and {count(coverage.paymentRows)} payments to {count(coverage.procurements)} procurements in {count(coverage.agreementsWithProcurements)} of the {count(coverage.projectAgreements)} infrastructure agreements. Each selected procurement ID matches one record for the same agreement in the complete source. <a href={catalogue}>Transferegov download catalogue</a>.</p>
+
+  <div data-procurement-filter>
+    <h2 id="procurements">Find reported payments by procurement</h2>
+    <form hidden role="search" aria-label="Filter procurements and contracts">
+      <label for="procurement-query">Agreement, procurement, contract, project, municipality or organization</label>
+      <input id="procurement-query" type="search" maxlength="160" autocomplete="off" />
+      <button class="btn btn-ghost btn-small" type="reset">Clear filters</button>
+    </form>
+    <p role="status" data-procurement-count>{count(procurements.length)} procurements</p>
+    <BrazilInfrastructureProcurementPayments records={procurements} stage="procurements" />
+    <p hidden data-procurement-empty>No procurements match the search.</p>
+
+    <h2 id="contracts">Inspect payments with verified contracts</h2>
+    <p>The document names both a procurement ID and a contract ID. The pair must identify one source record, and its supplier identifier must match the institutional payment recipient. These {count(coverage.contractStates.verified)} documents link to {count(coverage.verifiedContracts)} verified contracts across {count(coverage.agreementsWithVerifiedContracts)} agreements. Each contract payment here also appears in the procurement table above. Use the procurement table when totaling reported payments.</p>
+    <p role="status" data-contract-count>{count(contracts.length)} verified contracts</p>
+    <BrazilInfrastructureProcurementPayments records={contracts} stage="contracts" />
+    <p hidden data-contract-empty>No verified contracts match the search.</p>
+  </div>
+
+  <h2 id="coverage">Coverage and what the source records</h2>
+  <p>The captured expense documents have {count(coverage.contractStates.noReference)} entries without a contract ID and {count(coverage.contractStates.unresolved)} with a contract ID whose pair could not be verified. The procurement connection still holds for these documents. The <a href={url(projectPath('895978') + '#procurement-payments')}>São José dos Campos</a> and <a href={url(projectPath('953157') + '#procurement-payments')}>Joaçaba</a> documents connect to procurements and have no supplied contract ID in the expense archive.</p>
+  <p>The <a href={url(invoiceItemsRoute)}>invoice comparison</a> groups these same payments by document issue year. The <a href={url('/record/funding-flows/brazil-project-contracts/')}>CIPI contract comparison</a> follows a separate set of reported works contracts. This payment lookup verifies procurement and contract references at their recorded scope. A payment assigned to an individual work site requires a record that names that site. The last capture year is partial.</p>
+
+  <h2 id="downloads">Download records and source receipts</h2>
+  <ul>
+    <li><a href={url(procurementPaymentsRoute + 'data.json')} download>Full procurement and contract payment edition (JSON)</a></li>
+    <li><a href={url(procurementPaymentsRoute + 'procurements.csv')} download>Payments by procurement (CSV)</a></li>
+    <li><a href={url(procurementPaymentsRoute + 'contracts.csv')} download>Subset with verified contracts (CSV)</a></li>
+  </ul>
+  <p>Exports use integer BRL cents. They contain procurement and contract IDs, source row coordinates, payment years and aggregate figures. The JSON gives the four archive fingerprints and upstream edition hashes. Source data carry the <a href={sources.license}>Open Database License</a>.</p>
+</Entry>
+
+<style>
+  [data-procurement-filter] form:not([hidden]) { display: grid; gap: .45rem; max-inline-size: 34rem; }
+  [data-procurement-filter] :is(input, button) { min-height: 2.75rem; min-width: 0; }
+  [data-procurement-filter] form button { justify-self: start; }
+</style>
+
+<script>
+  import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+
+  const root = document.querySelector<HTMLElement>('[data-procurement-filter]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('#procurement-query')!;
+    const groups = [
+      { stage: 'procurements', count: '[data-procurement-count]', empty: '[data-procurement-empty]', label: 'procurements' },
+      { stage: 'contracts', count: '[data-contract-count]', empty: '[data-contract-empty]', label: 'verified contracts' },
+    ].map(({ stage, count, empty, label }) => ({
+      rows: [...root.querySelectorAll<HTMLTableRowElement>(`[data-procurement-payment="${stage}"]`)],
+      count: root.querySelector<HTMLElement>(count)!, empty: root.querySelector<HTMLElement>(empty)!, label,
+    }));
+
+    function filter() {
+      const terms = normalizeBrazilName(query.value).split(' ').filter(Boolean);
+      for (const { rows, count, empty, label } of groups) {
+        let visible = 0;
+        for (const row of rows) {
+          row.hidden = !terms.every(term => row.dataset.search?.includes(term));
+          if (!row.hidden) visible++;
+        }
+        count.textContent = `${visible} of ${rows.length} ${label}`;
+        empty.hidden = visible > 0;
+      }
+    }
+    form.addEventListener('input', filter);
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    form.addEventListener('reset', () => requestAnimationFrame(() => { filter(); query.focus(); }));
+    const agreement = new URLSearchParams(location.search).get('agreement');
+    if (agreement && /^[0-9]{1,20}$/.test(agreement)) query.value = agreement;
+    form.hidden = false;
+    filter();
+  }
+</script>

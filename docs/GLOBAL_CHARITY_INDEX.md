@@ -187,12 +187,42 @@ The payment totals cover 1,420 invoice or CNPJ receipt rows with checksum-valid 
 
 The onward file shares the financial movement ID. Each selected holder transfer has a unique parent in the complete payment archive. The 1,114 onward rows match the amount for 188 parent transfers and leave at least one amount unknown for 452. Count the parent transfer once. Onward reconciliation is a separate count table and adds no amount to the payment view. In Joaçaba, nine invoice-labeled institutional payments fall in 2025 and five in the captured part of 2026. São José dos Campos has four institutional payments in 2023 and three holder transfers across 2023 and 2024 with equal recorded onward amounts.
 
-Rebuild with `siconv_pagamento.zip` and `siconv_obtv_convenente.zip` at the exact fingerprints in the JSON. The builder checks the full upstream project edition as well as the complete source row counts. The next link to qualify is a published record that names both the payment document and procurement or work-site reference. [Transferegov data catalogue](https://www.gov.br/transferegov/pt-br/ferramentas-gestao/dados-abertos/download-dados) · [Official transfer guide](https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/11-tutorial_obtv-convenente_convenios_convenente.pdf).
+Rebuild with `siconv_pagamento.zip` and `siconv_obtv_convenente.zip` at the exact fingerprints in the JSON. The builder checks the full upstream project edition as well as the complete source row counts. The invoice-item edition below follows the document ID to gross item amounts. A joint expense and work-site or procurement reference remains a separate source requirement. [Transferegov data catalogue](https://www.gov.br/transferegov/pt-br/ferramentas-gestao/dados-abertos/download-dados) · [Official transfer guide](https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/11-tutorial_obtv-convenente_convenios_convenente.pdf).
 
 ```sh
 python3 scripts/build-brazil-infrastructure-account-movements.py --inputs /path/to/captures /path/to/rebuilt-account-movements.json
 npm run build
 node scripts/check-brazil-infrastructure-account-movements.mjs
+```
+
+### Institutional payments and invoice items
+
+The [infrastructure invoice item lookup](https://charitology.com/record/funding-flows/brazil-infrastructure-invoice-items/) matches the published expense document ID, `ID_DL`, between `siconv_pagamento` and `siconv_itens_dl`. The builder reproduces the earlier account edition's institutional payment counts and cents for every agreement and payment year. It then checks all references to each matched document across the full payment archive. Payments sharing a document must belong to one agreement and agree on institutional recipient, document type and issue day. These checks leave 1,420 payment rows on 1,382 documents in 80 of the 88 infrastructure agreements.
+
+The item archive contains 1,675 linked source rows. It repeats 38 rows across 32 documents. An item ID counts once when its full parsed row repeats exactly. A conflicting item ID or an unknown item amount leaves the document unresolved. The 1,637 distinct items and all captured payments compare at document scope. Gross item amounts equal the payments for 877 documents and exceed them for 505. The [official document guide](https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/8-tutorial_documento-de-liquidacao_convenios_convenente.pdf) describes gross item totals, taxes, deductions and net payment as separate fields. The [public tax archive](https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_pagamento_tributo.zip) has agreement, date and amount fields. Resolving a specific difference requires a document-level source.
+
+The 175 comparison rows group documents by original issue year. The payment date range shows when the captured money moved. Six documents have payment records spanning more than one year. The 2026 issue-year group is partial. For Joaçaba, 11 documents issued in 2025 have BRL 958,415.40 in gross item amounts and BRL 926,975.87 in captured payments across 2025 and 2026. The account and invoice views repeat the same payments on different calendar bases. Keep the document, payment, bank order, contract and works scopes separate.
+
+The projection publishes agreement-year counts and amounts in exact BRL cents. Individual dates, document and item IDs, supplier fields and free text stay outside the exports. The edition pins the two source ZIPs and both upstream Charitology editions. The [official release history](https://repositorio.dados.gov.br/seges/detru/historico_de_versoes.pdf) identifies the expense document and procurement item archives as separate source tables. The procurement item header uses a distinct item ID, and the invoice item header carries no contract or work-site ID. The document headers in the next section link the payments to procurement and the subset with verified contracts. A primary record linking a payment to a procurement line item or named work site remains the next gap. [Transferegov open data and license](https://api-publica.transferegov.gestao.gov.br/).
+
+```sh
+python3 scripts/build-brazil-infrastructure-invoice-items.py --inputs /path/to/captures /path/to/rebuilt-invoice-items.json
+npm run build
+node scripts/check-brazil-infrastructure-invoice-items.mjs
+```
+
+### Procurement and verified contract payments
+
+The [procurement payment lookup](https://charitology.com/record/funding-flows/brazil-infrastructure-procurement-payments/) follows the same 1,420 institutional payments through 1,382 expense documents to 334 procurement records in 80 agreements. The public `siconv_dl` document header links the original proposal and procurement ID. The build requires one header for the document, the same proposal, normalized issue date and document type, and one official procurement record for the original agreement. It checks the payment scope against the full payment archive and reproduces the exact invoice cohort counts and cents.
+
+In the contract subset, 211 documents name a procurement and contract pair that appears once in the complete SICONV contract archive. The supplier's institutional identifier matches the payment recipient. Those documents cover 58 contracts in 12 agreements. The other coverage states are 1,157 documents with no supplied contract ID and 14 with a pair absent from the captured contract archive. The procurement reference remains supported in all these cases. The verified pairs differ from those in the separate CIPI-linked works contract edition.
+
+Each procurement row gives captured payment dates as calendar-year bounds. The contract rows repeat a subset of the procurement payments. The invoice and account editions repeat those movements on different grouping bases. The projection publishes source coordinates for procurement and contract records, with aggregate exact BRL cents. Contract amounts, expense-document amounts, tax deductions, work-site allocation and verified delivery belong to separate records. [Official public catalogue](https://api-publica.transferegov.gestao.gov.br/downloads) · [Official document guide](https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/8-tutorial_documento-de-liquidacao_convenios_convenente.pdf).
+
+```sh
+python3 scripts/build-brazil-infrastructure-procurement-payments.py --inputs /path/to/captures /path/to/rebuilt-procurement-payments.json
+npm run build
+node scripts/check-brazil-infrastructure-procurement-payments.mjs
 ```
 
 ## Brazil Cisternas agreement and water access

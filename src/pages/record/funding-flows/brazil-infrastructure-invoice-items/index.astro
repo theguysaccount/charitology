@@ -1,0 +1,106 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import BrazilInfrastructureInvoiceItems from '../../../../components/BrazilInfrastructureInvoiceItems.astro';
+import { procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
+import { accountMovementsRoute } from '../../../../lib/brazil-infrastructure-account-movements';
+import { comparedDocuments, invoiceEdition, invoiceItemsRoute } from '../../../../lib/brazil-infrastructure-invoice-items';
+import { count, infrastructureRoute, money, projectPath } from '../../../../lib/brazil-project-execution';
+import { url } from '../../../../lib/site';
+
+const title = 'Invoice items for Brazilian civil society infrastructure';
+const { periods, coverage, sources } = invoiceEdition;
+const yearOptions = [...new Set(periods.map(row => row.issueYear))].sort((a, b) => (b ?? 0) - (a ?? 0));
+const comparisonCount = comparedDocuments(coverage.statuses);
+const sao = periods.find(row => row.agreement === '895978' && row.issueYear === 2023)!;
+const joacaba = periods.find(row => row.agreement === '953157' && row.issueYear === 2025)!;
+const downloadGuide = 'https://www.gov.br/transferegov/pt-br/ferramentas-gestao/dados-abertos/download-dados';
+const invoiceGuide = 'https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/8-tutorial_documento-de-liquidacao_convenios_convenente.pdf';
+const changes = 'https://repositorio.dados.gov.br/seges/detru/historico_de_versoes.pdf';
+const sourceLinks = [
+  { title: 'Reported payments to recipients', publisher: 'Transferegov.br', url: sources.archives.siconv_pagamento.url },
+  { title: 'Liquidation document items', publisher: 'Transferegov.br', url: sources.archives.siconv_itens_dl.url },
+  { title: 'Public source fields and file catalogue', publisher: 'Transferegov.br', url: downloadGuide },
+  { title: 'Public archive changes and invoice item release', publisher: 'Transferegov.br', url: changes },
+  { title: 'How Transferegov records item amounts and deductions', publisher: 'Transferegov.br', url: invoiceGuide },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Connect institutional payments to the expense documents that support them. Compare gross line-item amounts with the reported payments for the same documents."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazil infrastructure invoice items'}]}
+  sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-infrastructure-invoice-items/index.astro">
+  <p>The <a href={url(infrastructureRoute)}>infrastructure project edition</a> covers {count(coverage.projectAgreements)} agreements. In {count(coverage.agreementsWithInstitutionalPayments)} of them, {count(coverage.institutionalPayments)} payments carry an invoice or institutional receipt label and a checksum-valid institutional identifier. The publisher’s document ID connects these payments to {count(coverage.documents)} distinct expense documents in the official item archive. <a href={downloadGuide}>Transferegov download catalogue</a>.</p>
+
+  <div data-invoice-filter>
+    <h2 id="lookup">Find invoice item comparisons</h2>
+    <form hidden role="search" aria-label="Filter invoice item comparisons">
+      <label for="invoice-query">Agreement, proposal, project, municipality or organization</label>
+      <input id="invoice-query" type="search" maxlength="160" autocomplete="off" />
+      <label for="invoice-year">Document issue year</label>
+      <select id="invoice-year">
+        <option value="">All years</option>
+        {yearOptions.map(year => <option value={year ?? 'unknown'}>{year ?? 'Unknown'}</option>)}
+      </select>
+      <button class="btn btn-ghost btn-small" type="reset">Clear filters</button>
+    </form>
+    <p>Each row groups documents by their original issue year. Payments for a document can fall in later years. The payment column shows the years of the included payments. The archive captures part of {invoiceEdition.capturedOn.slice(0, 4)}.</p>
+    <p role="status" data-invoice-count>{count(periods.length)} agreement and issue-year groups</p>
+    <BrazilInfrastructureInvoiceItems cohorts={periods} directory />
+    <p hidden data-invoice-empty>No groups match these filters.</p>
+  </div>
+
+  <h2 id="reading-differences">Read the amount differences</h2>
+  <p>Across {count(comparisonCount)} comparable documents, {count(coverage.statuses.equal)} item totals equal the reported payments for their documents, and {count(coverage.statuses.grossHigher)} item totals are higher. The government’s guide treats gross item values, taxes, other deductions and net payment as distinct fields. Identifying which deductions explain a difference requires a record tied to the same document. The published tax-payment archive identifies the agreement and date. <a href={invoiceGuide}>Official document guide</a> · <a href="https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_pagamento_tributo.zip">Tax-payment archive</a>.</p>
+  <p>Four documents issued in 2023 for the <a href={url(projectPath('895978') + '#invoice-items')}>São José dos Campos agreement</a> record {money(sao.grossItemCentsBRL)} in gross items and {money(sao.reportedPaymentCentsBRL)} in payments. For <a href={url(projectPath('953157') + '#invoice-items')}>Joaçaba</a>, the {count(joacaba.documents)} documents issued in 2025 record {money(joacaba.grossItemCentsBRL)} in gross items and {money(joacaba.reportedPaymentCentsBRL)} in payments across the recorded payment years. Use the <a href={url(accountMovementsRoute)}>account lookup</a> for totals grouped by the year money moved. Its institutional payments and the payments in this comparison refer to the same movements.</p>
+
+  <h2 id="coverage">Coverage and record boundaries</h2>
+  <p>The source supplies {count(coverage.lineRows)} item rows for these documents. The comparison counts {count(coverage.comparedUniqueItems)} distinct item IDs after removing exact repeated rows. A different row for the same item ID would leave its document unresolved. For a document with multiple payments, the comparison groups its captured payments before comparing the two amounts. {count(coverage.multiYearDocuments)} documents have captured payments across more than one year.</p>
+  <p>The item archive connects line items to expense documents. The <a href={url(procurementPaymentsRoute)}>procurement payment lookup</a> uses a separate expense document header to follow the same payments to procurements and verified contracts. Assigning one amount to a particular procurement line item or work site requires a source with both references. The published projection gives aggregate counts and amounts by agreement and issue year. <a href={changes}>Official archive history</a>.</p>
+
+  <h2 id="downloads">Download the comparison and receipts</h2>
+  <ul>
+    <li><a href={url(invoiceItemsRoute + 'data.json')} download>Full invoice comparison and source receipts (JSON)</a></li>
+    <li><a href={url(invoiceItemsRoute + 'cohorts.csv')} download>Invoice comparisons by agreement and issue year (CSV)</a></li>
+  </ul>
+  <p>Amounts in the exports use exact integer BRL cents. The two upstream archive fingerprints and both upstream Charitology edition hashes are in the JSON. Source data carry the <a href={sources.license}>Open Database License</a>.</p>
+</Entry>
+
+<style>
+  [data-invoice-filter] form:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem .8rem; }
+  [data-invoice-filter] :is(input, select, button) { min-height: 2.75rem; min-width: 0; }
+  [data-invoice-filter] form button { justify-self: start; }
+  @media (max-width: 36rem) { [data-invoice-filter] form:not([hidden]) { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+
+  const root = document.querySelector<HTMLElement>('[data-invoice-filter]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('#invoice-query')!;
+    const year = form.querySelector<HTMLSelectElement>('#invoice-year')!;
+    const cohorts = [...root.querySelectorAll<HTMLTableRowElement>('[data-invoice-cohort]')];
+    const status = root.querySelector<HTMLElement>('[data-invoice-count]')!;
+    const empty = root.querySelector<HTMLElement>('[data-invoice-empty]')!;
+
+    function filter() {
+      const terms = normalizeBrazilName(query.value).split(' ').filter(Boolean);
+      let visible = 0;
+      for (const row of cohorts) {
+        row.hidden = !((!year.value || year.value === row.dataset.issueYear)
+          && terms.every(term => row.dataset.search?.includes(term)));
+        if (!row.hidden) visible++;
+      }
+      status.textContent = `${visible} of ${cohorts.length} agreement and issue-year groups`;
+      empty.hidden = visible > 0;
+    }
+    form.addEventListener('input', filter);
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    form.addEventListener('reset', () => requestAnimationFrame(() => { filter(); query.focus(); }));
+    const agreement = new URLSearchParams(location.search).get('agreement');
+    if (agreement && /^[0-9]{1,20}$/.test(agreement)) query.value = agreement;
+    form.hidden = false;
+    filter();
+  }
+</script>
