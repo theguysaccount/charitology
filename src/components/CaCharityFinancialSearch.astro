@@ -4,7 +4,7 @@ import { url } from '../lib/site';
 import '../styles/charity-financial-search.css';
 ---
 
-<section class="charity-financial-search" data-ca-finance data-base={url('/data/charity-financials/ca/')} data-manifest={JSON.stringify(manifest)} aria-labelledby="ca-finance-heading">
+<section class="charity-financial-search" data-ca-finance data-base={url('/data/charity-financials/ca/')} data-gifts={url('/record/funding-flows/canada-qualified-donees/')} data-manifest={JSON.stringify(manifest)} aria-labelledby="ca-finance-heading">
   <h2 id="ca-finance-heading">Search registered charity filings</h2>
   <p id="ca-finance-hint">Enter the start of the legal name or the full charity account number, including RR and the four digits after it. The search runs in your browser.</p>
   <form aria-describedby="ca-finance-hint">
@@ -28,6 +28,7 @@ import '../styles/charity-financial-search.css';
   import { $, h } from '../lib/client/dom';
   import { download, toCsv } from '../lib/client/files';
   import { loadVerifiedJson, type VerifiedJsonAsset } from '../lib/client/verified-json';
+  import { charityAccountPattern, formatCad, normalizeCharityAccount } from '../lib/ca-charity-account';
 
   type Cad = string | null;
   type Period = [string, string, 'D' | '6', 'A' | 'C' | null, number, number, Cad, Cad, Cad, Cad, Cad, Cad];
@@ -45,16 +46,7 @@ import '../styles/charity-financial-search.css';
   const labels = ['Total revenue', 'Total expenditures', 'Charitable program expenditures',
     'Received from registered charities', 'Gifts to qualified donees', 'Grants to other grantees'];
   const normalizeName = (name: string) => name.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-  const accountNumber = (value: string) => value.toUpperCase().replace(/[\s-]/g, '');
-  const completeAccount = /^[0-9]{9}RR[0-9]{4}$/;
   const count = (value: number) => value.toLocaleString('en-CA');
-
-  function amount(value: Cad) {
-    if (value === null) return 'Not supplied';
-    const [whole, fraction] = value.split('.');
-    const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return `CAD ${grouped}${fraction ? '.' + fraction : ''}`;
-  }
 
   function shardLoader<Row>(base: string, assets: Record<string, Asset>) {
     let cached: { key: string; rows: Promise<Row[]> } | undefined;
@@ -87,8 +79,8 @@ import '../styles/charity-financial-search.css';
     const csv = $<HTMLButtonElement>('[data-csv]', root);
     function prefillAccount() {
       const value = new URLSearchParams(location.hash.slice(1)).get('bn');
-      const registration = accountNumber(value ?? '');
-      if (completeAccount.test(registration)) input.value = registration;
+      const registration = normalizeCharityAccount(value ?? '');
+      if (charityAccountPattern.test(registration)) input.value = registration;
     }
     prefillAccount();
     window.addEventListener('hashchange', prefillAccount);
@@ -104,15 +96,15 @@ import '../styles/charity-financial-search.css';
         h('h4', {}, `Period ending ${end}`),
         h('p', { class: 'note' }, `Form version ${version} · ${sectionLabel} · ${basisLabel}`),
         h('dl', { class: 'finance-amounts' }, labels.map((label, i) =>
-          h('div', {}, h('dt', {}, label), h('dd', {}, amount(amounts[i]))))),
+          h('div', {}, h('dt', {}, label), h('dd', {}, formatCad(amounts[i]))))),
         h('p', { class: 'note' },
           h('a', { href: edition.finance.url }, 'Finance CSV'), ` record ${financeRecord} · `,
           h('a', { href: edition.identification.url }, 'Identification CSV'), ` record ${identityRecord}. Record counts begin after the header.`));
     }
 
     async function search(value: string): Promise<Results> {
-      const registration = accountNumber(value);
-      if (completeAccount.test(registration)) {
+      const registration = normalizeCharityAccount(value);
+      if (charityAccountPattern.test(registration)) {
         const pointer = (await loadIds(registration.slice(7, 9))).find(([id]) => id === registration);
         if (!pointer) return { total: 0, charities: [] };
         const match = (await loadNames(pointer[1])).find(([id]) => id === registration);
@@ -149,7 +141,11 @@ import '../styles/charity-financial-search.css';
           ? `${count(found.total)} ${found.total === 1 ? 'match' : 'matches'}. Showing ${found.charities.length}.`
           : 'No matching filing in these editions. Try a shorter name or check the CRA’s register.';
         for (const [id, name, periods] of found.charities) {
-          results.append(h('li', { class: 'card' }, h('h3', {}, name), h('p', { class: 'note' }, id), periods.map(renderPeriod)));
+          const gifts = root.dataset.gifts! + '#bn=' + id;
+          results.append(h('li', { class: 'card' }, h('h3', {}, name), h('p', { class: 'note' }, id),
+            h('p', { class: 'note' }, h('a', { href: gifts + '&direction=given' }, 'Follow reported gifts given'),
+              ' · ', h('a', { href: gifts + '&direction=received' }, 'Follow reported gifts received')),
+            periods.map(renderPeriod)));
         }
         json.disabled = csv.disabled = !found.charities.length;
       } catch (error) {

@@ -1,0 +1,67 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import CaQualifiedDoneeSearch from '../../../components/CaQualifiedDoneeSearch.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/funding-flows/ca-qualified-donees/manifest.json';
+
+const title = 'Gifts reported by Canadian charities';
+const base = '/data/funding-flows/ca-qualified-donees/';
+const worksheet = 'https://www.canada.ca/en/revenue-agency/services/forms-publications/forms/t1236.html';
+const count = (value: number) => value.toLocaleString('en-CA');
+const editions = Object.entries(manifest.editions);
+const exclusionLabels = {
+  noMatchedFilerReturn: 'Filer account, period and form version did not match a financial return',
+  recipientOutsideIdentityExtract: 'Recipient did not match the edition’s charity accounts',
+  sameAccount: 'Filer and recipient had the same account',
+  repeatedPairRows: 'Filer and recipient pair occurred more than once in the period',
+  nonpositiveOrUnavailableTotal: 'Total was zero, negative or unavailable',
+  unusableNoncashComponent: 'Noncash figure was outside the reported total or could not be read',
+  unusableWorksheetSequence: 'Worksheet sequence could not be read',
+};
+const sources = [
+  { title: 'T1236 Qualified Donees Worksheet', publisher: manifest.publisher, url: worksheet },
+  ...editions.map(([year, edition]) => ({ title: `${year} Qualified donees source CSV`, publisher: manifest.publisher, url: edition.sources.gifts.url })),
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Trace reported gifts between Canadian charity accounts using original CRA worksheet records." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Gifts reported by Canadian charities'}]} sources={sources}>
+  <p>Search {count(manifest.includedRows)} donor-reported gift records for fiscal periods ending in 2023 or 2024. You can look up the charity that reported a gift or the charity it named as the recipient.</p>
+  <CaQualifiedDoneeSearch />
+  <h2 id="coverage">Coverage and original records</h2>
+  <p>A <a href={worksheet}>T1236 worksheet</a> reports the amount a filer says it gave to a recipient during a fiscal period. The total includes gifts in kind when applicable. Each record gives the filer’s period end and source record numbers. Payment dates, settlement, how the recipient used the gift and what happened after it received the gift require separate evidence.</p>
+  <p>Both accounts must match the CRA identity extract for that edition. The donor’s worksheet must also match a unique financial return by exact account, period end and form version. Qualified donees can include other kinds of organization beyond the charity accounts in this search. The listed legal names come from the corresponding identification extract.</p>
+  <div class="table-scroll" role="region" aria-label="Gift record coverage by fiscal period end year" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Selection step</th>{editions.map(([year]) => <th scope="col">{year}</th>)}</tr></thead>
+      <tbody>
+        <tr><th scope="row">All worksheet rows</th>{editions.map(([, edition]) => <td>{count(edition.counts.sourceRows)}</td>)}</tr>
+        {Object.entries(exclusionLabels).map(([key, label]) => <tr><th scope="row">{label}</th>{editions.map(([, edition]) => <td>{count(edition.counts.excluded[key as keyof typeof exclusionLabels])}</td>)}</tr>)}
+        <tr><th scope="row">Included rows</th>{editions.map(([, edition]) => <td>{count(edition.counts.includedRows)}</td>)}</tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Each excluded row is counted at its first applicable step. Both lookup directions show the same source records. Use the worksheet edition and data record number to identify a row if you combine exports.</p>
+  <h2 id="worksheet-comparison">How worksheet totals compare with annual returns</h2>
+  <p>This check sums the original worksheet rows for each matched filer and period, including rows left out of the search. It compares that sum with line 5050 of the same financial return. A comparison requires a distinct worksheet sequence for every row, all worksheet amounts and a reported line 5050 value. The dictionaries and filing guides describe differences in scope. An equal sum compares two fields the donor filed and gives no independent confirmation of receipt. <a href={url('/record/charity-financials/canada/#coverage')}>Read the Canadian filing notes</a>.</p>
+  <div class="table-scroll" role="region" aria-label="Worksheet sums compared with financial return line 5050" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Filer periods</th>{editions.map(([year]) => <th scope="col">{year}</th>)}</tr></thead>
+      <tbody>
+        <tr><th scope="row">Matched a worksheet to a return</th>{editions.map(([, { worksheetComparison: c }]) => <td>{count(c.returnsWithMatchedWorksheetRows)}</td>)}</tr>
+        <tr><th scope="row">Could compare both totals</th>{editions.map(([, { worksheetComparison: c }]) => <td>{count(c.equal + c.worksheetBelow + c.worksheetAbove)}</td>)}</tr>
+        <tr><th scope="row">Both totals equal</th>{editions.map(([, { worksheetComparison: c }]) => <td>{count(c.equal)}</td>)}</tr>
+        <tr><th scope="row">Worksheet sum lower</th>{editions.map(([, { worksheetComparison: c }]) => <td>{count(c.worksheetBelow)}</td>)}</tr>
+        <tr><th scope="row">Worksheet sum higher</th>{editions.map(([, { worksheetComparison: c }]) => <td>{count(c.worksheetAbove)}</td>)}</tr>
+        <tr><th scope="row">Comparison unavailable</th>{editions.map(([, { worksheetComparison: c }]) => <td>{count(c.sequenceUnavailable + c.worksheetAmountUnavailable + c.line5050Unavailable)}</td>)}</tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Contains information from the Canada Revenue Agency under the <a href={manifest.licence}>Open Government Licence – Canada</a>. Charitology linked and selected fields from the <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time> captures. The <a href={url(base + 'manifest.json')} download="canada-qualified-donees-manifest.json">downloadable source manifest</a> gives the original links, record counts, field order, reasons for exclusions and shard fingerprints.</p>
+</Entry>
+
+<style>
+  .table-scroll { overflow-x: auto; margin-block: 1rem; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border-bottom: 1px solid var(--line); padding: .5rem; text-align: left; }
+  td { font-variant-numeric: tabular-nums; }
+</style>

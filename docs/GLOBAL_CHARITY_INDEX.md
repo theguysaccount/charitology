@@ -31,6 +31,21 @@ python3 scripts/build-ca-charity-financials.py /path/to/captured-inputs /path/to
 node scripts/check-ca-charity-financials.mjs
 ```
 
+### Donor-reported gifts
+
+The [Canadian gift trace](https://charitology.com/record/funding-flows/canada-qualified-donees/) uses 535,482 distinct T1236 worksheet records from 2023 and 2024. A row links a filer and named recipient during the filer's fiscal period. Both full charity accounts must match the edition's identification extract. The filer also matches a dated T3010 by full account, exact period end and form version. The projection removes unresolved endpoints, self-links, repeated pairs within the same filer period, unusable sequences and inconsistent amounts. Every published gift has a positive total in CAD. Reported gifts in kind are an optional component of that total. [CRA T1236 worksheet](https://www.canada.ca/en/revenue-agency/services/forms-publications/forms/t1236.html).
+
+Both query directions use the same worksheet record, with each view partitioned for bounded browser requests. Use edition and one-based worksheet record number to identify a unique row if you combine exports. Financial links provide independent source coordinates for the matching filer return. Both views describe what the donor reported. The recipient's settlement or expenditure requires separate evidence.
+
+The coverage page compares each complete original worksheet sum with its matching donor's line 5050. The comparison includes worksheet rows outside the gift lookup. Of 52,248 matched filer periods with both figures available, 41,734 have exact equality. The rest are shown as lower or higher on the worksheet. An equal sum compares two amounts the same filer reported. The page links both versions of the regulator's guidance on scope.
+
+Rebuild from all six source captures listed in the [gift manifest](../public/data/funding-flows/ca-qualified-donees/manifest.json). The captured names and amounts were independently checked against both original CSVs and their source coordinates. The manifest gives exact source and shard fingerprints plus year-specific exclusions. Contains information from the Canada Revenue Agency under the [Open Government Licence – Canada](https://open.canada.ca/en/open-government-licence-canada).
+
+```sh
+python3 scripts/build-ca-qualified-donees.py /path/to/captured-inputs /path/to/new-rebuild
+node scripts/check-ca-qualified-donees.mjs
+```
+
 ## Choose the next improvement
 
 GlobalGiving already offers international registry lookup. Candid and ProPublica already offer financial histories or original filings. IATI supplies activity-linked funding flows from its publishers. The opportunity to test is whether primary-source joins, accounting boundaries and coverage disclosures make questions about need and spending easier to answer across sources. [GlobalGiving Atlas](https://icl.globalgiving.org/atlas/) · [Candid Financials](https://candid.org/candid-search/features/financials/) · [ProPublica](https://projects.propublica.org/nonprofits/api) · [IATI d-portal](https://d-portal.iatistandard.org/spa/faq.html)
