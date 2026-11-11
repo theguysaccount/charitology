@@ -2,12 +2,14 @@ import assert from 'node:assert/strict';
 import { globSync, readdirSync, readFileSync } from 'node:fs';
 import { pageIdentity, routes, symbols } from '../src/lib/site-identities.ts';
 import {
-  causeSymbols, checklistSymbols, depthSymbols, fragmentSymbols, hazardSymbols, lensSymbols,
-  needSymbols, networkSymbols, providerSymbols, sourceSymbols, starterSymbols, teachingSymbols,
+  causeSymbols, checklistSymbols, clubMeetingSymbols, datasetSymbols, depthSymbols, ecosystemSymbols,
+  fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols,
+  providerSymbols, seminarSymbols, sourceSymbols, starterSymbols, teachingSymbols, worksheetSymbols,
 } from '../src/lib/list-identities.ts';
 import { charityNetworks } from '../src/data/charity-networks.mjs';
 import { charityStartJobs } from '../src/data/charity-start.mjs';
-import { teachingMaterials } from '../src/data/education-kit.mjs';
+import { beginnerMeetings, seminarSessions, teachingMaterials, worksheet } from '../src/data/education-kit.mjs';
+import { fundraisingSources } from '../src/data/fundraising.mjs';
 import { HAZARDS } from '../src/lib/disaster-incidents/interpretations/v1/limits.mjs';
 
 const base = (process.env.BASE_PATH || '/').replace(/\/$/, '');
@@ -25,7 +27,7 @@ for (const [collection, prefix] of [
   ['conditions', 'diagnosis'], ['problems', 'open-problems'],
   ['encyclopedia', 'record/encyclopedia'], ['interventions', 'record/interventions'], ['cases', 'record/case-studies'],
   ['myths', 'record/myths'], ['disagreements', 'record/disagreements'], ['traditions', 'record/traditions'],
-  ['principles', 'record/principles'], ['journal', 'record/journal'],
+  ['principles', 'record/principles'], ['journal', 'record/journal'], ['forecasts', 'forecasts'],
 ]) {
   const slugs = readdirSync(`src/content/${collection}`)
     .filter((file) => /\.mdx?$/.test(file))
@@ -41,6 +43,11 @@ for (const [collection, prefix] of [
 
 const json = (name) => JSON.parse(readFileSync(`src/data/${name}.json`, 'utf8'));
 const ids = (items) => items.map(({ id }) => id);
+const contentIds = (name) => readdirSync(`src/content/${name}`)
+  .filter((file) => /\.mdx?$/.test(file)).map((file) => file.replace(/\.mdx?$/, ''));
+const ecosystemUrls = [...new Set(Object.values(json('ecosystem')).flatMap((items) => items.map((item) => item.url)))];
+const api = JSON.parse(readFileSync('dist/api/v1/index.json', 'utf8'));
+const datasetNames = ['index', ...api.endpoints.map(({ name }) => name)];
 for (const [name, keys, mapping] of [
   ['cause areas', ids(json('causes').causes), causeSymbols],
   ['moral lenses', ids(json('frameworks').frameworks), lensSymbols],
@@ -53,10 +60,24 @@ for (const [name, keys, mapping] of [
   ['teaching materials', ids(teachingMaterials), teachingSymbols],
   ['disaster hazards', HAZARDS, hazardSymbols],
   ['country measures', ids(json('countries').indicators), needSymbols],
+  ['editorial charity profiles', contentIds('charities'), fragmentSymbols['/record/charity-index/']],
+  ['glossary terms', ids(json('lexicon')), fragmentSymbols['/record/lexicon/']],
+  ['API datasets', datasetNames, datasetSymbols],
+  ['external projects', ecosystemUrls, ecosystemSymbols],
+  ['beginner meetings', beginnerMeetings.map(({ number }) => number), clubMeetingSymbols],
+  ['university seminars', seminarSessions.map(({ number }) => number), seminarSymbols],
+  ['student worksheet', ids(worksheet), worksheetSymbols],
+  ['fundraising sources', ids(fundraisingSources), fundraisingSourceSymbols],
 ]) {
   const marks = keys.map((key) => mapping[key]);
   assert.ok(marks.every((mark) => Object.hasOwn(symbols, mark)), `Missing symbol in ${name}`);
   assert.equal(new Set(marks).size, keys.length, `Duplicate symbols in ${name}`);
+}
+for (const name of datasetNames) {
+  assert.ok(sheet.includes(`a[href="${base}/api/v1/${name}.json"]{--link-glyph:var(--glyph-${datasetSymbols[name]});--list-mark:inline-block}`), name);
+}
+for (const href of ecosystemUrls) {
+  assert.ok(sheet.includes(`a[href^="${href}"]{--link-glyph:var(--glyph-${ecosystemSymbols[href]});--list-mark:inline-block}`), href);
 }
 for (const [path, entries] of Object.entries(fragmentSymbols)) {
   for (const [id, symbol] of Object.entries(entries)) {
@@ -80,6 +101,8 @@ for (const page of pages) {
   assert.equal(theme?.length, 1, page);
   assert.deepEqual([...theme[0].matchAll(/type="radio" name="site-theme" value="([^"]+)"/g)].map(([, mode]) => mode),
     ['system', 'light', 'dark'], page);
+  assert.deepEqual([...theme[0].matchAll(/<span[^>]*>(System|Light|Dark)<\/span>/g)].map(([, label]) => label),
+    ['System', 'Light', 'Dark'], page);
   assert.ok(!html.includes('data-site-symbol=""'), page);
   assert.equal(html.match(/<h1(?:\s|>)/g)?.length, 1, `Expected one page title in ${page}`);
 }

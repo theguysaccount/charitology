@@ -110,7 +110,15 @@ export const symbols = {
   candle: 'M8 21h8M9 21V11h6v10m-3-11c-5-2 0-5 0-8 1 2 5 6 0 8Z',
   leafPair: 'M12 21v-8M12 16C5 16 3 11 3 6c6 0 9 4 9 10Zm0-3c0-6 4-9 9-9 0 6-4 9-9 9Z',
   personCheck: 'M10 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM3 21v-2a7 7 0 0 1 10-6m2 4 2 2 4-5',
-
+  fern: 'M4 21C12 18 15 11 19 3m-8 14C5 16 5 12 4 10c4 1 7 3 7 7Zm3-4c3 1 7-2 8-5-4 0-6 2-8 5Zm2-4c-3-1-4-4-3-7 2 1 4 4 3 7Z',
+  maple: 'm12 2 2 5 3-2v5l4-1-1 4 2 1-7 4 1 3-4-1-4 1 1-3-7-4 2-1-1-4 4 1V5l3 2 2-5Zm0 17v3',
+  bridge: 'M2 18h20M4 18V6m16 12V6M4 7c5 9 11 9 16 0M8 12v6m4-5v5m4-6v6',
+  anchor: 'M12 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 0v15M8 9h8M3 15c1 4 4 6 9 6s8-2 9-6m-18 3v-3h3m12 0h3v3',
+  fork: 'M12 21v-8m0 0L6 7V3m0 0L3 6m3-3 3 3m3 7 6-6V3m0 0-3 3m3-3 3 3',
+  lever: 'M3 10h18M8 20l4-8 4 8H8ZM5 6h.01m7-1h7',
+  ruler: 'm3 16 13-13 5 5L8 21l-5-5Zm6-5 3 3m1-7 3 3m-11 5 3 3',
+  rings: 'M10 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm4 0a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z',
+  pulse: 'M2 12h5l3-8 4 16 3-8h5',
 } as const;
 
 export type SymbolName = keyof typeof symbols;
@@ -151,8 +159,8 @@ export const sections: Section[] = [
   } },
   { path: '/record/', symbol: 'archive', tone: 'blue', entries: {
     'case-studies': 'folder', 'cause-atlas': 'atlas', 'charitology-100': 'badge', 'charity-index': 'fileSearch',
-    'charity-index/coverage': 'checks', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'leaf',
-    'charity-financials': 'coins', 'charity-financials/canada': 'leaf', 'charity-financials/united-states': 'columns',
+    'charity-index/coverage': 'checks', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'fern',
+    'charity-financials': 'coins', 'charity-financials/canada': 'maple', 'charity-financials/united-states': 'columns',
     'charity-financials/united-states/990-ez': 'notes', 'charity-financials/united-states/990-pf': 'building',
     'charity-financials/england-wales': 'shield', 'charity-financials/kenya': 'chart',
     'countries': 'pin', 'country-profiles': 'globe', 'disagreements': 'dialogue', 'editions': 'document',
@@ -196,7 +204,11 @@ export const sections: Section[] = [
   { path: '/disasters/', symbol: 'alert', tone: 'wine', entries: { 'incidents': 'pin', 'editions': 'archive', 'sources': 'document' } },
   { path: '/observations/', symbol: 'eye', tone: 'teal', entries: { 'editions': 'archive', 'sources': 'document', 'files': 'download' } },
   { path: '/research-ledger/', symbol: 'notes', tone: 'blue', entries: { 'editions': 'archive', 'sources': 'document' } },
-  { path: '/forecasts/', symbol: 'forecast', tone: 'violet' },
+  { path: '/forecasts/', symbol: 'forecast', tone: 'violet', entries: {
+    'daf-assets-2026-above-380b': 'wallet', 'first-open-problem-progress-by-2028': 'steps',
+    'five-published-failures-by-2027': 'break', 'polio-wpv1-certified-by-2030': 'shield',
+    'us-giving-2026-above-640b': 'gift',
+  } },
   { path: '/newsletter/', symbol: 'mail', tone: 'wine', entries: { 'privacy': 'lock' } },
   { path: '/contribute/', symbol: 'people', tone: 'green', entries: { 'review': 'checks' } },
   { path: '/roadmap/', symbol: 'map', tone: 'amber' },

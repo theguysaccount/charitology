@@ -8,6 +8,8 @@ import checklist from '../../data/checklist.json';
 import ecosystem from '../../data/ecosystem.json';
 import { url } from '../../lib/site';
 import RegistrySearch from '../RegistrySearch.astro';
+import SiteSymbol from '../SiteSymbol.astro';
+import { checklistSymbols } from '../../lib/list-identities';
 
 const causeName = new Map(causesData.causes.map((c) => [c.id, c.name]));
 const index = (await getCollection('charities'))
@@ -114,7 +116,7 @@ const count = index.length;
         registries.map((r) => (
           <li class="cl-reg">
             <a
-              class="btn btn-ghost cl-reg-btn"
+              class="btn btn-ghost cl-reg-btn identity-link"
               href={r.url}
               data-registry
               data-base={r.url}
@@ -150,7 +152,7 @@ const count = index.length;
     <h3>Before you give</h3>
     <p class="note">Ten questions from the Giver’s Checklist. None has one right answer for everyone.</p>
     <ol class="cl-before">
-      {checklist.map((c) => <li>{c.question}</li>)}
+      {checklist.map((c) => <li><SiteSymbol name={checklistSymbols[c.id as keyof typeof checklistSymbols]} size="inline" /> {c.question}</li>)}
     </ol>
     <a class="btn btn-ghost btn-small" href={url('/method/#checklist')}>Read the Giver’s Checklist</a>
   </div>
@@ -301,7 +303,7 @@ const count = index.length;
     return h(
       'li',
       { class: 'card cl-match' },
-      h('h4', {}, h('a', { href: link(`/record/charity-index/#${e.id}`) }, e.name)),
+      h('h4', {}, h('a', { class: 'identity-link', href: link(`/record/charity-index/#${e.id}`) }, e.name)),
       h('p', {}, e.summary),
       h(
         'div',
