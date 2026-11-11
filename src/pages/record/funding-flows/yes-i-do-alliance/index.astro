@@ -18,10 +18,10 @@ const dateAndValue = (row: {date: string; valueDate: string; amount: string}) =>
 
 <Entry title={title} eyebrow="The Record · Funding flows" summary="Compare what a government funder, international charities and country partners published about the movement of money through one program." crumbs={[{label:'The Record',href:'/record/'},{label:'Gap Map',href:'/record/gap-map/'},{label:title}]} sources={sources}>
   <p>Six publishers describe activities in the Yes I Do Alliance, which worked on child marriage, early pregnancy, and female genital mutilation and cutting. The source files connect the Dutch Ministry of Foreign Affairs to Plan International Netherlands, Plan to Amref Flying Doctors Netherlands, and Amref Netherlands to partners in Ethiopia, Kenya and Malawi. This case follows the public records along those routes.</p>
-  <h2>Two views of a transfer</h2>
+  <h2 id="transfer-views">Two views of a transfer</h2>
   <p>Plan reported a <strong>€321,108 disbursement</strong> to Amref on April 7, 2020. Amref reported the same amount and date as incoming funds and named Plan’s exact activity as the source. The two records are candidate views of one transfer. Adding both amounts would double count the candidate.</p>
   <p>Across all five routes, {exact} pairs have the same reported date and amount. A further {near} have the same amount with dates up to {data.candidateDateWindowDays} days apart. No shared transaction identifier was established across publishers. These comparisons preserve both reporting dates and any records left unmatched.</p>
-  <h2>Reported records by route</h2>
+  <h2 id="routes">Reported records by route</h2>
   <div class="flow-routes">
     {data.routes.map(item => {
       const sender = source(item.from);
@@ -54,7 +54,7 @@ const dateAndValue = (row: {date: string; valueDate: string; amount: string}) =>
       </details>;
     })}
   </div>
-  <h2>How the comparison works</h2>
+  <h2 id="comparison">How the comparison works</h2>
   <p>The comparison uses published IATI activity and organization identifiers. Within each route, it first pairs unique same-day records with the same signed euro amount. It then pairs remaining same-amount records only when each has one counterpart within {data.candidateDateWindowDays} days. The chosen date window is a Charitology rule for this case. Different amounts and ambiguous candidates stay separate.</p>
   <p>The records describe disbursements and incoming funds. They do not identify which particular upstream euro paid for a later disbursement or what reached the people the program aimed to serve. Adding stages would count some of the same money again. The case excludes spending, commitments, other alliance partners and results indicators.</p>
   <CaseDataDownload path={route + 'data.json'} filename="yes-i-do-alliance-funding-flows.json" label="Save the records and matching decisions" />

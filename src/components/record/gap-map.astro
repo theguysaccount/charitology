@@ -39,7 +39,7 @@ const allSources = [
   <p><a href={url("/record/funding-flows/iberia-hrsa/#parish")}>Read Iberia Parish’s health insurance estimates alongside a local health center’s federal grant records</a>. The case links the patient geography named in the audit notes to independent Census estimates.</p>
   <p><a href={url("/record/funding-flows/brazil-cisterns/#need")}>Compare plans for rainwater systems in Pará with an independent census baseline</a>. The case shows where the tender planned work and how residents in those municipalities reported getting water.</p>
   <section class="gap-panel">
-    <h2>Who gives</h2>
+    <h2 id="giving-sources">Who gives</h2>
     <p class="note">
       U.S. charitable giving by source, {figures.bySource.year}. Total ${
         figures.usGiving.billions
@@ -49,7 +49,7 @@ const allSources = [
   </section>
 
   <section class="gap-panel">
-    <h2>What kind of organization receives</h2>
+    <h2 id="giving-recipients">What kind of organization receives</h2>
     <p class="note">
       Recipient categories, {figures.byRecipient.year}. {
         figures.byRecipient.note
@@ -62,7 +62,7 @@ const allSources = [
   </section>
 
   <section class="gap-panel">
-    <h2>Money waiting in donor-advised funds</h2>
+    <h2 id="donor-advised-funds">Money waiting in donor-advised funds</h2>
     <div class="kpis">
       <div class="kpi">
         <div class="k-label">Held, {figures.dafs.year}</div>
@@ -84,7 +84,7 @@ const allSources = [
   </section>
 
   <section class="gap-panel gap-missing">
-    <h2>The missing axis: depth</h2>
+    <h2 id="depth-gap">The missing axis: depth</h2>
     <p>
       How much of this money acts at each depth? <strong
         >Charitology has not measured it.</strong

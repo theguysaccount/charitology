@@ -105,6 +105,8 @@ const modes = [
 
   if (field) {
     const options = [...field.querySelectorAll('input')];
+    let preferences: Storage | undefined;
+    try { preferences = window.localStorage; } catch {}
 
     function apply(value: string | null | undefined) {
       const mode = value === 'light' || value === 'dark' ? value : 'system';
@@ -126,12 +128,12 @@ const modes = [
       if (!(option instanceof HTMLInputElement) || !option.checked) return;
       apply(option.value);
       try {
-        if (option.value === 'system') localStorage.removeItem(key);
-        else localStorage.setItem(key, option.value);
+        if (option.value === 'system') preferences?.removeItem(key);
+        else preferences?.setItem(key, option.value);
       } catch {}
     });
     window.addEventListener('storage', (event) => {
-      if (event.storageArea === localStorage && (event.key === key || event.key === null)) apply(event.newValue);
+      if (preferences && event.storageArea === preferences && (event.key === key || event.key === null)) apply(event.newValue);
     });
   }
 </script>

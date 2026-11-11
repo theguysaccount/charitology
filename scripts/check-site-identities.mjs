@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { globSync, readdirSync, readFileSync } from 'node:fs';
 import { pageIdentity, routes, symbols } from '../src/lib/site-identities.ts';
+import { sectionNavigation } from '../src/lib/section-navigation.ts';
 import { sourceSymbol } from '../src/lib/source-symbol.ts';
 import {
   causeSymbols, checklistSymbols, clubMeetingSymbols, datasetSymbols, depthSymbols, ecosystemSymbols,
-  fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols,
+  diligenceGroupSymbols, diligenceItemSymbols, fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols, osDiscussionSymbols,
   providerSymbols, seminarSymbols, sourceSymbols, starterSymbols, teachingSymbols, worksheetSymbols,
 } from '../src/lib/list-identities.ts';
 import { charityNetworks } from '../src/data/charity-networks.mjs';
@@ -50,6 +51,9 @@ const ecosystemUrls = [...new Set(Object.values(json('ecosystem')).flatMap((item
 const api = JSON.parse(readFileSync('dist/api/v1/index.json', 'utf8'));
 const datasetNames = ['index', ...api.endpoints.map(({ name }) => name)];
 for (const [name, keys, mapping] of [
+  ['due diligence groups', ids(json('due-diligence').groups), diligenceGroupSymbols],
+  ['due diligence checks', ids(json('due-diligence').groups.flatMap(group => group.items)), diligenceItemSymbols],
+  ['OS research discussions', ids(json('os-user-needs').entries), osDiscussionSymbols],
   ['cause areas', ids(json('causes').causes), causeSymbols],
   ['moral lenses', ids(json('frameworks').frameworks), lensSymbols],
   ['upstream sources', ids(json('sources-map').sources), sourceSymbols],
@@ -96,6 +100,40 @@ for (const [href, mark] of [
   ['/audio/example.mp3', 'headphones'],
 ]) {
   assert.equal(sourceSymbol(href), mark, href);
+}
+
+for (const [route, entries] of Object.entries(sectionNavigation)) {
+  const html = readFileSync(`dist${route}index.html`, 'utf8');
+  const outline = html.match(/<nav class="page-sections"[^>]*>[\s\S]*?<\/nav>/)?.[0];
+  assert.ok(outline, `Missing section shortcuts in ${route}`);
+  assert.equal(new Set(entries.map(([, , mark]) => mark)).size, entries.length, route);
+  for (const [id, , mark] of entries) {
+    assert.equal([...html.matchAll(new RegExp(` id="${id}"`, 'g'))].length, 1, `Expected one ${route}#${id}`);
+    assert.ok(outline.includes(`href="#${id}"`), `Missing link to ${route}#${id}`);
+    assert.ok(outline.includes(`data-site-symbol="${mark}"`), `Missing ${mark} in ${route}`);
+    assert.ok(sheet.includes(`a[href="${base + route}#${id}"]`), `Missing fragment rule for ${route}#${id}`);
+  }
+}
+
+const diligence = readFileSync('dist/tools/due-diligence-checklist/index.html', 'utf8');
+for (const group of json('due-diligence').groups) {
+  const symbol = diligenceGroupSymbols[group.id];
+  assert.ok(new RegExp(`href="#dd-g-${group.id}"[^>]*>\\s*<span[^>]*data-site-symbol="${symbol}"`).test(diligence), group.id);
+  for (const item of group.items) {
+    assert.ok(new RegExp(`data-item="${item.id}"[^>]*>\\s*<legend[^>]*>\\s*<span[^>]*data-site-symbol="${diligenceItemSymbols[item.id]}"`).test(diligence), item.id);
+  }
+}
+
+const osPlan = readFileSync('dist/for-charities/os-plan/index.html', 'utf8');
+for (const id of ids(json('os-user-needs').entries)) {
+  assert.ok(new RegExp(` id="${id}"[^>]*>[\\s\\S]*?data-site-symbol="${osDiscussionSymbols[id]}"[^>]*></span>\\s*<a href="#${id}"`).test(osPlan), id);
+}
+
+for (const kind of ['tools', 'benefits']) {
+  const html = readFileSync(`dist/for-charities/${kind}/index.html`, 'utf8');
+  const cardIds = [...html.matchAll(/<article id="([^"]+)" class="directory-card"/g)].map(([, id]) => id);
+  assert.ok(cardIds.length > 0, kind);
+  for (const id of cardIds) assert.ok(html.includes(`href="#${id}"`), `Missing listing link for ${id}`);
 }
 
 const fundingIndex = readFileSync('dist/record/funding-flows/index.html', 'utf8');

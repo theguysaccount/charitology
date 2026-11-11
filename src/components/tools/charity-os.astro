@@ -1,5 +1,11 @@
 ---
+import type { SymbolName } from '../../lib/site-identities';
 import { url } from '../../lib/site';
+const workspaceSections = [
+  ['projects', 'Programs', 'orbit'], ['grants', 'Grant pipeline', 'wallet'],
+  ['tasks', 'Tasks', 'checks'], ['outcomes', 'Evidence log', 'flask'],
+] as const satisfies ReadonlyArray<readonly [string, string, SymbolName]>;
+const [projects, grants, tasks, outcomes] = workspaceSections;
 ---
 <section class="tool os-tool" aria-labelledby="os-title">
   <div class="callout"><p><strong>Work with a team.</strong> <a href="https://os.charitology.org">Open the shared Charity OS</a> for accounts, linked records, invitations, independent approvals, documents and frozen reports across 26 modules.</p><p>This smaller workspace saves in your browser. To move its records, export JSON below, then preview that file in an empty shared organization. <a href={url('/for-charities/os-plan/')}>Read the research and implementation plan.</a></p></div>
@@ -35,7 +41,11 @@ import { url } from '../../lib/site';
   <p class="note os-budget" id="os-budget">No program budgets entered.</p>
   <div class="os-due"><h3>Next grant deadlines</h3><ul id="os-deadlines"></ul></div>
 
-  <nav class="os-nav" aria-label="Workspace sections"><a href="#os-projects">Programs</a><a href="#os-grants">Grant pipeline</a><a href="#os-tasks">Tasks</a><a href="#os-outcomes">Evidence log</a></nav>
+  <nav class="os-nav" aria-label="Workspace sections">
+    {workspaceSections.map(([id, label, mark]) => (
+      <a class="identity-label" href={`#os-${id}`}><span class="site-symbol identity-inline" data-site-symbol={mark} aria-hidden="true"></span>{label}</a>
+    ))}
+  </nav>
   <div class="os-filterbar">
     <div class="field"><label for="os-search">Search records</label><input type="search" id="os-search" placeholder="Name, owner, funder, notes…" /></div>
     <div class="field"><label for="os-project-filter">Project</label><select id="os-project-filter"><option value="all">All projects</option></select></div>
@@ -44,27 +54,27 @@ import { url } from '../../lib/site';
   <p class="note">Filters affect the lists below. Totals and exports always include the whole workspace.</p>
 
   <section class="os-section" id="os-projects" aria-labelledby="os-projects-title">
-    <div class="os-section-head"><h3 id="os-projects-title">Programs and projects</h3><button class="btn btn-small" type="button" data-add="projects">Add project</button></div>
+    <div class="os-section-head"><h3 id="os-projects-title"><span class="site-symbol identity-inline" data-site-symbol={projects[2]} aria-hidden="true"></span> Programs and projects</h3><button class="btn btn-small" type="button" data-add="projects">Add project</button></div>
     <div class="field os-status-filter"><label for="os-project-status">Project status</label><select id="os-project-status" data-filter="projects"><option value="all">All statuses</option><option value="planned">Planned</option><option value="active">Active</option><option value="paused">Paused</option><option value="complete">Complete</option></select></div>
-    <div id="os-project-list" class="os-cards"></div>
+    <div id="os-project-list" class="os-cards" data-site-symbol={projects[2]}></div>
   </section>
   <section class="os-section" id="os-grants" aria-labelledby="os-grants-title">
-    <div class="os-section-head"><h3 id="os-grants-title">Grant pipeline</h3><button class="btn btn-small" type="button" data-add="grants">Add grant</button></div>
+    <div class="os-section-head"><h3 id="os-grants-title"><span class="site-symbol identity-inline" data-site-symbol={grants[2]} aria-hidden="true"></span> Grant pipeline</h3><button class="btn btn-small" type="button" data-add="grants">Add grant</button></div>
     <p class="note">Track real opportunities and your next step. Amounts record your plans and records; no money moves here.</p>
     <div id="os-pipeline" class="os-pipeline" aria-label="Grants by stage"></div>
     <div class="field os-status-filter"><label for="os-grant-status">Grant stage</label><select id="os-grant-status" data-filter="grants"><option value="all">All stages</option><option value="prospect">Prospect</option><option value="drafting">Drafting</option><option value="submitted">Submitted</option><option value="awarded">Awarded</option><option value="declined">Declined</option><option value="closed">Closed</option></select></div>
-    <div id="os-grant-list" class="os-cards"></div>
+    <div id="os-grant-list" class="os-cards" data-site-symbol={grants[2]}></div>
   </section>
   <section class="os-section" id="os-tasks" aria-labelledby="os-tasks-title">
-    <div class="os-section-head"><h3 id="os-tasks-title">Tasks</h3><button class="btn btn-small" type="button" data-add="tasks">Add task</button></div>
+    <div class="os-section-head"><h3 id="os-tasks-title"><span class="site-symbol identity-inline" data-site-symbol={tasks[2]} aria-hidden="true"></span> Tasks</h3><button class="btn btn-small" type="button" data-add="tasks">Add task</button></div>
     <div class="field os-status-filter"><label for="os-task-status">Task status</label><select id="os-task-status" data-filter="tasks"><option value="all">All statuses</option><option value="todo">To do</option><option value="in-progress">In progress</option><option value="done">Done</option></select></div>
-    <div id="os-task-list" class="os-cards"></div>
+    <div id="os-task-list" class="os-cards" data-site-symbol={tasks[2]}></div>
   </section>
   <section class="os-section" id="os-outcomes" aria-labelledby="os-outcomes-title">
-    <div class="os-section-head"><h3 id="os-outcomes-title">Evidence and outcomes log</h3><button class="btn btn-small" type="button" data-add="outcomes">Add observation</button></div>
+    <div class="os-section-head"><h3 id="os-outcomes-title"><span class="site-symbol identity-inline" data-site-symbol={outcomes[2]} aria-hidden="true"></span> Evidence and outcomes log</h3><button class="btn btn-small" type="button" data-add="outcomes">Add observation</button></div>
     <p class="note">Record outputs, outcomes, null results and harms, with units and an honest evidence label. A recorded change does not show what caused it. Unknown values can stay blank.</p>
     <div class="field os-status-filter"><label for="os-outcome-status">Evidence status</label><select id="os-outcome-status" data-filter="outcomes"><option value="all">All evidence</option><option value="unknown">Unknown</option><option value="self-reported">Self-reported</option><option value="documented">Documented observation</option><option value="independent">Independently checked</option></select></div>
-    <div id="os-outcome-list" class="os-cards"></div>
+    <div id="os-outcome-list" class="os-cards" data-site-symbol={outcomes[2]}></div>
   </section>
 
   <div class="os-files">

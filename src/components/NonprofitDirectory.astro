@@ -59,7 +59,7 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
     {entries.map((entry) => (
       <article id={entry.id} class="directory-card" data-listing data-category={entry.category} data-cost={entry.costType} data-search={`${entry.name} ${entry.category} ${entry.summary} ${entry.cost} ${entry.delivery} ${entry.fit} ${entry.eligibility} ${entry.limits}`.toLowerCase()}>
         <div class="directory-card-top"><span class="identity-label"><SiteSymbol name={listingSymbols[entry.id] ?? 'external'} /><span class="directory-category">{entry.category}</span></span><span class="directory-cost-type">{entry.costType}</span></div>
-        <h2>{entry.name}</h2>
+        <h2>{entry.name} <a class="listing-permalink" href={`#${entry.id}`} aria-label={`Link to ${entry.name}`}><SiteSymbol name="chain" size="inline" /></a></h2>
         <p class="directory-summary">{entry.summary}</p>
         <p class="directory-offer">{entry.cost}</p>
         <dl>
@@ -123,6 +123,8 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
   .directory-category { color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; }
   .directory-cost-type { color: var(--accent); text-align: right; }
   .directory-card h2 { font-size: 1.75rem; line-height: 1.15; margin: .85rem 0 .65rem; letter-spacing: -.025em; }
+  .listing-permalink { display: inline-flex; vertical-align: middle; padding: 0.38rem; border-radius: var(--radius-sm); }
+  .directory-card:target { border-color: var(--site-tone); }
   .directory-summary { margin: 0 0 .8rem; font-size: 1rem; line-height: 1.55; }
   .directory-offer { padding: .8rem 1rem; margin: 0 0 1rem; border-left: 2px solid var(--accent); background: var(--accent-wash); font-size: .95rem; line-height: 1.5; }
   .directory-card dl { margin: 0 0 1rem; }

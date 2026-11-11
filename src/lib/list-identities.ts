@@ -69,6 +69,27 @@ export const publicationSymbols: Record<string, SymbolName> = {
   'state-of-charity': 'chart', 'progress-report': 'steps', principles: 'book', journal: 'notes', letter: 'mail',
 };
 
+export const diligenceGroupSymbols = {
+  legitimacy: 'permit', money: 'coins', results: 'target',
+  learning: 'loop', system: 'network', 'red-flags': 'alert',
+} as const satisfies Record<string, SymbolName>;
+
+export const diligenceItemSymbols: Record<string, SymbolName> = {
+  'irs-status': 'shield', filing: 'yearFile', state: 'flag', governance: 'columns',
+  spending: 'wallet', invest: 'seed', audit: 'fileSearch', funders: 'route', pay: 'scale',
+  outcomes: 'target', evidence: 'flask', cost: 'calculator', failure: 'break',
+  changed: 'loop', 'stop-rule': 'filter', feedback: 'dialogue', depth: 'layers',
+  counterfactual: 'compare', coordination: 'network', voice: 'speech', rush: 'clock',
+  payment: 'bankOrder', soundalike: 'match', vague: 'hole', prize: 'trophy',
+};
+
+export const osDiscussionSymbols: Record<string, SymbolName> = {
+  U01: 'people', U02: 'calendar', U03: 'clock', U04: 'personCheck', U05: 'split',
+  U06: 'document', U07: 'chart', U08: 'route', U09: 'notes', U10: 'doorway',
+  U11: 'compare', U12: 'calculator', U13: 'board', U14: 'steps', U15: 'wallet',
+  U16: 'stack', U17: 'badge', U18: 'tools', U19: 'seed', U20: 'hands',
+};
+
 export const teachingSymbols: Record<string, SymbolName> = {
   'start-here': 'compass', 'facilitator-guide': 'people', 'student-worksheet': 'notes',
   'university-syllabus': 'columns', 'club-starter': 'flag', 'school-pack': 'school',

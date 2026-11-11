@@ -28,7 +28,7 @@ const sources = [
 ---
 
 <Entry title={title} eyebrow="The Record · Funding flows" summary="Trace the 2024 solidarity kitchens call from official selection to bank orders and read its 2025 plans alongside household food insecurity estimates." crumbs={[{label:'The Record',href:'/record/'},{label:'Gap Map',href:'/record/gap-map/'},{label:'Brazil solidarity kitchens'}]} sources={sources}>
-  <h2>From selection to bank orders</h2>
+  <h2 id="selection-and-orders">From selection to bank orders</h2>
   <p>Brazil’s Ministry of Development and Social Assistance selected civil society organizations to support free meals through solidarity kitchens. The August and October 2024 notices identify {data.selected.length} proposals. The proposal number and organization’s CNPJ matched Transferegov’s records for each. The agreements file records {signed.length} as signed.</p>
   <p>The captured agreement records show <strong>{money.format(totalContribution / 100)}</strong> in federal contributions across the signed terms. Transferegov separately lists {orders.length} bank orders in the following years. Each order records federal money made available to the agreement account.</p>
   <ul>{['2024', '2025'].map(year => {
@@ -55,7 +55,7 @@ const sources = [
     </table>
   </div>
 
-  <h2>What the government reported delivering</h2>
+  <h2 id="delivery">What the government reported delivering</h2>
   <p>The <a href={report}>2026 report to Congress</a> says that 384 kitchens received support in 2025 and offered about 13 million meals over twelve months. That is a program-reported output. The agreement and survey records cannot verify which kitchens delivered the meals, how many distinct people received them or how access to food changed.</p>
 
   <h2 id="agreement-records">Open the original records</h2>
