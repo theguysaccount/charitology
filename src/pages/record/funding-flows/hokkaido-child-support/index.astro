@@ -1,0 +1,79 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import data from '../../../../data/hokkaido-child-support.json';
+
+const title = 'Child-support awards and food hardship in Hokkaido';
+const { fundArchive: archive, prefecturalActivity: activity, fundProject: project } = data.contextSources;
+const registry = url('/record/charity-index/japan/');
+const base = '/record/funding-flows/hokkaido-child-support/';
+const years = ['2022', '2023'] as const;
+const source = data.sources;
+const awardsFile = { '2022': source.awards2022.url, '2023': source.awards2023.url };
+const selectionFile = { '2022': source.selection2022.url, '2023': source.selection2023.url };
+const categories = ['Learning support', 'Places to go and advice', 'Help with daily needs', 'Employment support',
+  'Care leavers, foster and adoptive families', 'Other work addressing cycles of poverty'];
+const householdLabels = ['Mother and children', 'Mother, children and grandparents',
+  'Father and children', 'Father, children and grandparents'];
+const money = (thousands: number) => (thousands * 1000).toLocaleString('en-US');
+const sources = [
+  { title: 'Children’s Future Support Fund awards and activity archive', publisher: 'Children and Families Agency, Japan', url: archive },
+  { title: '2022 Hokkaido single-parent household survey', publisher: 'Hokkaido Prefecture', url: source.need2022.url },
+  { title: 'Yumemiru’s Noboribetsu activities', publisher: 'Hokkaido Prefecture', url: activity },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Follow two years of published award amounts and see what a separate survey measured about food affordability." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Hokkaido child support'}]} sources={sources}>
+  <p>The Children’s Future Support Fund listed {data.funding['2022'].awards.length} Hokkaido awards for fiscal 2022 and {data.funding['2023'].awards.length} for fiscal 2023. Both annual reports define their figures as <strong>amounts at selection</strong>. Payment dates, receipts and final spending require separate records.</p>
+  <p><a href="#awards-2022">2022 awards</a> · <a href="#awards-2023">2023 awards</a> · <a href="#need">Food hardship survey</a> · <a href={url(base + 'data.json')} download="hokkaido-child-support.json">Download data and sources</a> · <a href={url(base + 'awards.csv')} download="hokkaido-child-support-awards.csv">Download award CSV</a>.</p>
+
+  {years.map(year => {
+    const edition = data.funding[year];
+    const total = edition.awards.reduce((sum, row) => sum + row.awardAtSelectionJPYThousands, 0);
+    return <section aria-labelledby={'awards-' + year}>
+      <h2 id={'awards-' + year}>Fiscal {year} awards</h2>
+      <p><time datetime={edition.periodStart}>{edition.periodStart}</time> to <time datetime={edition.periodEnd}>{edition.periodEnd}</time>. The rows listed for Hokkaido total <strong>JPY {money(total)}</strong> at selection. <a href={awardsFile[year] + '#page=' + edition.awards[0].awardTablePdfPage}>Open the annual report table</a>.</p>
+      <div class="table-scroll" role="region" aria-label={`Hokkaido awards for fiscal ${year}`} tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Organization</th><th scope="col">Funding category</th><th scope="col">Award at selection (JPY)</th><th scope="col">Original selection</th></tr></thead>
+          <tbody>{edition.awards.map(row => <tr>
+            <th scope="row" lang="ja">{row.recipientLabel}</th>
+            <td>{categories[row.category - 1]}</td>
+            <td>{money(row.awardAtSelectionJPYThousands)}</td>
+            <td>{row.selection ? <>
+              <a href={selectionFile[year] + '#page=' + row.selection.page}>{row.selection.number ? `Selection row ${row.selection.number}` : 'Selection list'}</a>
+              {row.selection.corporateNumber && row.recipientLabel.startsWith('NPO法人') && <>
+                {' · '}<a href={registry + '?corporate=' + row.selection.corporateNumber}>Japan NPO record</a>
+              </>}
+            </> : 'No exact name match'}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+    </section>;
+  })}
+  <p>The reports group recipients by listed prefecture. Individual project locations require separate evidence. Six of the seven fiscal 2022 award-table names match the selection list. The seventh keeps its award-table source. All nine fiscal 2023 names match a selection row. Five of those rows supply a corporate number with an exact match in the <a href={registry}>Japan NPO registry</a>.</p>
+
+  <h2 id="need">What households reported about food affordability</h2>
+  <p>Hokkaido’s August 2022 survey mailed {data.need.mailedQuestionnaires.toLocaleString('en-US')} questionnaires and received {data.need.receivedQuestionnaires.toLocaleString('en-US')}, a {data.need.responseRatePercent}% response rate. It sampled single-parent households receiving the Child Rearing Allowance across Hokkaido outside Sapporo. Respondents were asked whether cost had kept them from buying food their family needed in the previous year. <a href={source.need2022.url + '#page=' + data.need.methodPdfPage}>Survey methods</a> · <a href={source.need2022.url + '#page=' + data.need.observationsPdfPage}>Source table {data.need.printedTable}</a>.</p>
+  <div class="table-scroll" role="region" aria-label="Food affordability responses by household type" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Household</th><th scope="col">Respondents</th><th scope="col">Often</th><th scope="col">Sometimes</th><th scope="col">Rarely</th><th scope="col">Never</th><th scope="col">No answer</th></tr></thead>
+      <tbody>{data.need.rows.map((row, index) => <tr>
+        <th scope="row">{householdLabels[index]}</th><td>{row.sampleSize.toLocaleString('en-US')}</td>
+        <td>{row.oftenPercent}%</td><td>{row.sometimesPercent}%</td><td>{row.rarelyPercent}%</td>
+        <td>{row.neverPercent}%</td><td>{row.missingPercent}%</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>These four rows use the source’s sample sizes and rounded percentages for the surveyed households. A city-level estimate would need local survey data.</p>
+  <h2>One funded organization in the survey’s geography</h2>
+  <p>Hokkaido Prefecture identifies <span lang="ja">ゆめみ～る</span> (Yumemiru) in Noboribetsu and describes its work connecting children’s meals with learning support. The Fund lists the project in both years. Its fiscal 2023 profile also describes a food bank serving families, including single-parent households. Noboribetsu lies within the survey’s region. The 2022 survey overlaps the first award period and asks about hardship in the preceding year. Measuring participant reach or changes in food affordability requires separate evidence. <a href={activity}>Prefectural activity profile</a> · <a href={project}>Fund project profile</a>.</p>
+  <p>See other documented comparisons in the <a href={url('/record/gap-map/')}>Gap Map</a>.</p>
+</Entry>
+
+<style>
+  .table-scroll { overflow-x: auto; margin-block: 1rem; }
+  table { width: 100%; min-width: 36rem; border-collapse: collapse; }
+  th, td { border-bottom: 1px solid var(--line); padding: .6rem; text-align: left; }
+  td { font-variant-numeric: tabular-nums; }
+</style>

@@ -1,0 +1,291 @@
+{
+  "format": "charitology-hokkaido-child-support-v1",
+  "currency": "JPY",
+  "awardStage": "amount-at-selection",
+  "sources": {
+    "selection2022": {
+      "file": "selection-2022.pdf",
+      "url": "https://kodomonomiraiouen.cfa.go.jp/assets/contents/wp-content/uploads/2022/03/net_kekka6.pdf",
+      "sha256": "50a6d244b9865727fa354a778ced127c829b6b731d1b0fcb1b52c2bfebb17f91"
+    },
+    "awards2022": {
+      "file": "support-2022.pdf",
+      "url": "https://kodomonomiraiouen.cfa.go.jp/assets/contents/wp-content/uploads/2024/04/r4_6_kikin_report.pdf",
+      "sha256": "7ae4476797810fee49165dff3edac6c1cb633334d3a9d9b2a7128ecbd1c9c2bd"
+    },
+    "selection2023": {
+      "file": "selection-2023.pdf",
+      "url": "https://www.wam.go.jp/hp/wp-content/uploads/miraiouen_r5_saitaku.pdf",
+      "sha256": "1921124371b48411a9d79a8d2596f22b47a255dff43afd932cfef2ce7c8a6b60"
+    },
+    "awards2023": {
+      "file": "support-2023.pdf",
+      "url": "https://kodomonomiraiouen.cfa.go.jp/assets/contents/wp-content/uploads/2025/04/kikin_r5report_web.pdf",
+      "sha256": "3b27d968321d6389972a436e2f0c355a54ae32a36d68a927074856321dfde546"
+    },
+    "need2022": {
+      "file": "survey-2022.pdf",
+      "url": "https://www.pref.hokkaido.lg.jp/fs/8/8/6/7/3/5/5/_/2022_hitorioya_houkokusyo.pdf",
+      "sha256": "cc175a245cf6b50d1ee9c8d5a4a40107e5c21ea6d3cad3aa2f72c965f968849e"
+    }
+  },
+  "contextSources": {
+    "fundArchive": "https://kodomonomiraiouen.cfa.go.jp/support/network/archive",
+    "prefecturalActivity": "https://www.pref.hokkaido.lg.jp/hf/kms/st/182714.html",
+    "fundProject": "https://kodomonomiraiouen.cfa.go.jp/support/various_places/1-yumemiru-7"
+  },
+  "funding": {
+    "2022": {
+      "periodStart": "2022-04-01",
+      "periodEnd": "2023-03-31",
+      "selectionRowsListed": 7,
+      "awards": [
+        {
+          "rowWithinHokkaido": 1,
+          "recipientLabel": "ゆめみ～る",
+          "category": 1,
+          "awardAtSelectionJPYThousands": 2752,
+          "awardTablePdfPage": 14,
+          "selection": {
+            "page": 6,
+            "number": null,
+            "corporateNumber": null
+          }
+        },
+        {
+          "rowWithinHokkaido": 2,
+          "recipientLabel": "麻生キッチンりあん",
+          "category": 1,
+          "awardAtSelectionJPYThousands": 2949,
+          "awardTablePdfPage": 14,
+          "selection": {
+            "page": 6,
+            "number": null,
+            "corporateNumber": null
+          }
+        },
+        {
+          "rowWithinHokkaido": 3,
+          "recipientLabel": "さっぽろ青少年女性活動協会",
+          "category": 2,
+          "awardAtSelectionJPYThousands": 2953,
+          "awardTablePdfPage": 14,
+          "selection": {
+            "page": 6,
+            "number": null,
+            "corporateNumber": null
+          }
+        },
+        {
+          "rowWithinHokkaido": 4,
+          "recipientLabel": "陽だまりの家",
+          "category": 2,
+          "awardAtSelectionJPYThousands": 3000,
+          "awardTablePdfPage": 14,
+          "selection": {
+            "page": 6,
+            "number": null,
+            "corporateNumber": null
+          }
+        },
+        {
+          "rowWithinHokkaido": 5,
+          "recipientLabel": "とかちイベンター協会",
+          "category": 1,
+          "awardAtSelectionJPYThousands": 300,
+          "awardTablePdfPage": 14,
+          "selection": null
+        },
+        {
+          "rowWithinHokkaido": 6,
+          "recipientLabel": "NPOボラギャング",
+          "category": 2,
+          "awardAtSelectionJPYThousands": 1000,
+          "awardTablePdfPage": 14,
+          "selection": {
+            "page": 7,
+            "number": null,
+            "corporateNumber": null
+          }
+        },
+        {
+          "rowWithinHokkaido": 7,
+          "recipientLabel": "わたわた食堂",
+          "category": 3,
+          "awardAtSelectionJPYThousands": 1000,
+          "awardTablePdfPage": 14,
+          "selection": {
+            "page": 7,
+            "number": null,
+            "corporateNumber": null
+          }
+        }
+      ]
+    },
+    "2023": {
+      "periodStart": "2023-04-01",
+      "periodEnd": "2024-03-31",
+      "selectionRowsListed": 9,
+      "awards": [
+        {
+          "rowWithinHokkaido": 1,
+          "recipientLabel": "NPO法人　ゆめみ～る",
+          "category": 1,
+          "awardAtSelectionJPYThousands": 2998,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 1,
+            "number": 2,
+            "corporateNumber": "1430005010272"
+          }
+        },
+        {
+          "rowWithinHokkaido": 2,
+          "recipientLabel": "公益財団法人　さっぽろ青少年女性活動協会",
+          "category": 2,
+          "awardAtSelectionJPYThousands": 2977,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 1,
+            "number": 1,
+            "corporateNumber": "3430005001286"
+          }
+        },
+        {
+          "rowWithinHokkaido": 3,
+          "recipientLabel": "NPO法人　陽だまりの家",
+          "category": 2,
+          "awardAtSelectionJPYThousands": 3000,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 1,
+            "number": 3,
+            "corporateNumber": "9430005013053"
+          }
+        },
+        {
+          "rowWithinHokkaido": 4,
+          "recipientLabel": "ＮＰＯボラギャング",
+          "category": 3,
+          "awardAtSelectionJPYThousands": 3000,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 1,
+            "number": 5,
+            "corporateNumber": null
+          }
+        },
+        {
+          "rowWithinHokkaido": 5,
+          "recipientLabel": "NPO法人　麻生キッチンりあん",
+          "category": 6,
+          "awardAtSelectionJPYThousands": 3000,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 1,
+            "number": 4,
+            "corporateNumber": "8430005013806"
+          }
+        },
+        {
+          "rowWithinHokkaido": 6,
+          "recipientLabel": "かでるの会",
+          "category": 2,
+          "awardAtSelectionJPYThousands": 1000,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 3,
+            "number": 63,
+            "corporateNumber": null
+          }
+        },
+        {
+          "rowWithinHokkaido": 7,
+          "recipientLabel": "NPO法人　くるくるネット",
+          "category": 2,
+          "awardAtSelectionJPYThousands": 1000,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 3,
+            "number": 65,
+            "corporateNumber": "1430005010207"
+          }
+        },
+        {
+          "rowWithinHokkaido": 8,
+          "recipientLabel": "NPO法人　子どもの未来・にじ色プレイス",
+          "category": 2,
+          "awardAtSelectionJPYThousands": 300,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 3,
+            "number": 66,
+            "corporateNumber": "4430005013149"
+          }
+        },
+        {
+          "rowWithinHokkaido": 9,
+          "recipientLabel": "わたわた食堂",
+          "category": 3,
+          "awardAtSelectionJPYThousands": 1000,
+          "awardTablePdfPage": 18,
+          "selection": {
+            "page": 3,
+            "number": 64,
+            "corporateNumber": null
+          }
+        }
+      ]
+    }
+  },
+  "need": {
+    "surveyStart": "2022-08-01",
+    "surveyEnd": "2022-08-31",
+    "geography": "Hokkaido excluding Sapporo",
+    "mailedQuestionnaires": 4347,
+    "receivedQuestionnaires": 1856,
+    "responseRatePercent": "42.7",
+    "methodPdfPage": 7,
+    "responseRatePdfPage": 8,
+    "observationsPdfPage": 32,
+    "printedTable": "3-2",
+    "rows": [
+      {
+        "householdLabel": "母子世帯",
+        "sampleSize": 1441,
+        "oftenPercent": "6.2",
+        "sometimesPercent": "12.5",
+        "rarelyPercent": "18.8",
+        "neverPercent": "60.7",
+        "missingPercent": "1.7"
+      },
+      {
+        "householdLabel": "母子+祖父母世帯",
+        "sampleSize": 218,
+        "oftenPercent": "5.0",
+        "sometimesPercent": "9.2",
+        "rarelyPercent": "11.9",
+        "neverPercent": "72.0",
+        "missingPercent": "1.8"
+      },
+      {
+        "householdLabel": "父子世帯",
+        "sampleSize": 120,
+        "oftenPercent": "6.7",
+        "sometimesPercent": "11.7",
+        "rarelyPercent": "21.7",
+        "neverPercent": "59.2",
+        "missingPercent": "0.8"
+      },
+      {
+        "householdLabel": "父子+祖父母世帯",
+        "sampleSize": 29,
+        "oftenPercent": "3.4",
+        "sometimesPercent": "13.8",
+        "rarelyPercent": "10.3",
+        "neverPercent": "65.5",
+        "missingPercent": "6.9"
+      }
+    ]
+  }
+}
