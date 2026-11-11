@@ -1,6 +1,8 @@
 ---
 // Portfolio Builder: split a budget across causes under moral uncertainty,
 // two ways, and show how much the methods agree. Math in src/lib/compass.ts.
+import SiteSymbol from '../SiteSymbol.astro';
+import { lensSymbols } from '../../lib/list-identities';
 import frameworksData from '../../data/frameworks.json';
 import { url } from '../../lib/site';
 const frameworks = frameworksData.frameworks;
@@ -21,7 +23,7 @@ const frameworks = frameworksData.frameworks;
           frameworks.map((f) => (
             <div class="field pb-frame">
               <label for={`pb-${f.id}`}>
-                {f.name} <output id={`pb-${f.id}-out`} class="pb-out" />
+                <SiteSymbol name={lensSymbols[f.id]} size="inline" /> {f.name} <output id={`pb-${f.id}-out`} class="pb-out" />
               </label>
               <span class="hint">{f.question}</span>
               <input type="range" id={`pb-${f.id}`} data-framework={f.id} min="0" max="100" step="5" value="50" />
@@ -106,6 +108,7 @@ const frameworks = frameworksData.frameworks;
   import { CAUSES, FRAMEWORKS, allocateBest, allocateShares, normalize, overlap, sourceLean, tiltToSources } from '../../lib/compass';
   import type { Allocation, Weights } from '../../lib/compass';
   import { $, $$ } from '../../lib/client/dom';
+  import { causeSymbols } from '../../lib/list-identities';
   import { renderBars } from '../../lib/client/bars';
   import { copy, download, flash, toCsv } from '../../lib/client/files';
   import { money, pct } from '../../lib/client/format';
@@ -140,6 +143,7 @@ const frameworks = frameworksData.frameworks;
       .sort((x, y) => a[y.id] - a[x.id])
       .map((c) => ({
         label: c.name,
+        symbol: causeSymbols[c.id],
         value: a[c.id],
         display: `${pct(a[c.id])} · ${money(a[c.id] * budget)}`,
         note: c.summary,

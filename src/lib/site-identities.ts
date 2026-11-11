@@ -93,6 +93,24 @@ export const symbols = {
   paw: 'M4 9a2 2.5 0 1 0 4 0 2 2.5 0 1 0-4 0Zm5-4a2 2.5 0 1 0 4 0 2 2.5 0 1 0-4 0Zm5 0a2 2.5 0 1 0 4 0 2 2.5 0 1 0-4 0Zm4 5a2 2.5 0 1 0 4 0 2 2.5 0 1 0-4 0ZM6 18q0-3 4-5 2-3 4 0 4 2 4 5t-5 2h-2q-5 1-5-2Z',
   food: 'M3 11h18c-1 5-4 8-9 8s-8-3-9-8Zm5 9h8M8 8c-2-2 2-3 0-5m5 5c-2-2 2-3 0-5',
   leaf: 'M5 19C1 8 10 4 20 3c0 11-4 20-15 16Zm0 0 11-11',
+  monitor: 'M3 4h18v13H3zm6 17h6m-3-4v4',
+  umbrella: 'M3 12a9 9 0 0 1 18 0H3Zm9-9V2m0 10v7a2 2 0 0 0 4 0',
+  stitch: 'M4 20 20 4m-9 0 9 9m-14-4 9 9M7 13l4 4m2-10 4 4',
+  roots: 'M12 3v10m0-4c-4 0-6-2-6-5 4 0 6 2 6 5Zm0 0c4 0 6-2 6-5-4 0-6 2-6 5Zm0 4-5 4-3 4m8-8 5 4 3 4m-8-8v8',
+  music: 'M9 18V5l12-2v13M9 8l12-2M9 18a3 2 0 1 1-6 0 3 2 0 1 1 6 0Zm12-2a3 2 0 1 1-6 0 3 2 0 1 1 6 0Z',
+  dove: 'M3 16c4 1 7 0 8-2C7 12 5 8 5 4c3 3 6 5 10 5l2-2h3l2 2-3 1c-1 6-5 9-12 9H3l2-2',
+  cloud: 'M6 15a4 4 0 0 1 0-8h1a5 5 0 0 1 10 1h1a3.5 3.5 0 0 1 0 7H6Zm0 3h9m-6 3h9',
+  flame: 'M12 2c1 4-5 5-5 10 0 1 1 2 2 2 0-4 3-5 5-6 4 4 5 6 5 8a7 7 0 0 1-14 0c0-5 4-10 7-14Z',
+  quake: 'M2 8h7l3 4 3-4h7M2 16h6l4-4 4 4h6m-10-4-1 9',
+  flood: 'M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 20c2-2 4-2 6 0s4 2 6 0 4-2 6 0M5 11l7-6 7 6m-12-2v3m10-3v3',
+  drought: 'M3 14h18M5 21l4-7 4 3 2-3m-2 3 2 4m2-4 3 4M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z',
+  brain: 'M12 6C11 2 6 3 6 6c-4 0-5 5-2 7-2 3 0 6 3 6 1 3 5 2 5-1V6Zm0 0c1-4 6-3 6 0 4 0 5 5 2 7 2 3 0 6-3 6-1 3-5 2-5-1M6 6v3m12-3v3M4 13h4m12 0h-4',
+  ballot: 'M4 12h16v9H4zM8 12l-2-4 9-5 4 7-4 2M8 16h8',
+  water: 'M12 3C9 8 5 11 5 15a7 7 0 0 0 14 0c0-4-4-7-7-12Zm-6 13c3-3 9 3 12 0',
+  candle: 'M8 21h8M9 21V11h6v10m-3-11c-5-2 0-5 0-8 1 2 5 6 0 8Z',
+  leafPair: 'M12 21v-8M12 16C5 16 3 11 3 6c6 0 9 4 9 10Zm0-3c0-6 4-9 9-9 0 6-4 9-9 9Z',
+  personCheck: 'M10 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM3 21v-2a7 7 0 0 1 10-6m2 4 2 2 4-5',
+
 } as const;
 
 export type SymbolName = keyof typeof symbols;
@@ -100,6 +118,7 @@ type Tone = 'wine' | 'blue' | 'teal' | 'violet' | 'amber' | 'green' | 'slate';
 type Section = { path: string; symbol: SymbolName; tone: Tone; entries?: Record<string, SymbolName> };
 
 export const sections: Section[] = [
+  { path: '/', symbol: 'compass', tone: 'slate' },
   { path: '/diagnosis/', symbol: 'lens', tone: 'wine', entries: {
     'fragmentation': 'break', 'measurement-gap': 'hole', 'missing-feedback-loop': 'loop',
     'missing-profession': 'badge', 'missing-voice': 'mute', 'overhead-myth': 'calculator',
@@ -127,11 +146,14 @@ export const sections: Section[] = [
     'giving-dashboard': 'chart', 'grant-evaluator': 'scale', 'impact-calculator': 'calculator',
     'impact-measurement-toolkit': 'dial', 'legacy-planner': 'document', 'model-bundles': 'packet',
     'one-click-split': 'split', 'portfolio-builder': 'layers', 'public-api': 'code', 'values-compass': 'compass',
+    'browser-extension/compatibility': 'checks', 'browser-extension/privacy': 'lock',
+    'giving-dashboard/estimate': 'calculator',
   } },
   { path: '/record/', symbol: 'archive', tone: 'blue', entries: {
     'case-studies': 'folder', 'cause-atlas': 'atlas', 'charitology-100': 'badge', 'charity-index': 'fileSearch',
     'charity-index/coverage': 'checks', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'leaf',
     'charity-financials': 'coins', 'charity-financials/canada': 'leaf', 'charity-financials/united-states': 'columns',
+    'charity-financials/united-states/990-ez': 'notes', 'charity-financials/united-states/990-pf': 'building',
     'charity-financials/england-wales': 'shield', 'charity-financials/kenya': 'chart',
     'countries': 'pin', 'country-profiles': 'globe', 'disagreements': 'dialogue', 'editions': 'document',
     'editions/compare': 'compare', 'encyclopedia': 'book', 'evidence-library': 'stack',
@@ -142,8 +164,10 @@ export const sections: Section[] = [
     'funding-flows/us-schedule-i': 'table', 'funding-flows/ile-de-france-paid-grants': 'pin',
     'funding-flows/greater-manchester-home-from-hospital': 'heart', 'funding-flows/hokkaido-child-support': 'seed',
     'funding-flows/yes-i-do-alliance': 'network', 'gap-map': 'map', 'interventions': 'target',
-    'journal': 'notes', 'lexicon': 'bars', 'methodology': 'checks', 'myths': 'eye', 'newsletter': 'mail',
+    'journal': 'notes', 'lexicon': 'bars', 'methodology': 'checks', 'myths': 'eye', 'newsletter': 'mail', 'newsletter/edition-1': 'story',
     'open-datasets': 'table', 'podcast': 'headphones', 'podcast-and-newsletter': 'signal',
+    'podcast/principles-1': 'network', 'podcast/principles-2': 'layers', 'podcast/principles-3': 'fileSearch',
+    'podcast/principles-4': 'compare', 'podcast/principles-5': 'scale', 'podcast/principles-6': 'speech',
     'principles': 'layers', 'principles/read': 'book', 'progress-report': 'steps', 'state-of-charity': 'chart', 'traditions': 'history',
   } },
   { path: '/for-charities/', symbol: 'hands', tone: 'green', entries: {
@@ -170,8 +194,8 @@ export const sections: Section[] = [
     'the-status-flip': 'star', 'when-charity-harms': 'alert',
   } },
   { path: '/disasters/', symbol: 'alert', tone: 'wine', entries: { 'incidents': 'pin', 'editions': 'archive', 'sources': 'document' } },
-  { path: '/observations/', symbol: 'eye', tone: 'teal', entries: { 'editions': 'archive', 'sources': 'document' } },
-  { path: '/research-ledger/', symbol: 'notes', tone: 'blue', entries: { 'editions': 'archive' } },
+  { path: '/observations/', symbol: 'eye', tone: 'teal', entries: { 'editions': 'archive', 'sources': 'document', 'files': 'download' } },
+  { path: '/research-ledger/', symbol: 'notes', tone: 'blue', entries: { 'editions': 'archive', 'sources': 'document' } },
   { path: '/forecasts/', symbol: 'forecast', tone: 'violet' },
   { path: '/newsletter/', symbol: 'mail', tone: 'wine', entries: { 'privacy': 'lock' } },
   { path: '/contribute/', symbol: 'people', tone: 'green', entries: { 'review': 'checks' } },
@@ -180,6 +204,7 @@ export const sections: Section[] = [
   { path: '/about/', symbol: 'compass', tone: 'slate' },
   { path: '/browser-data/', symbol: 'download', tone: 'slate' },
   { path: '/search/', symbol: 'lens', tone: 'slate' },
+  { path: '/404/', symbol: 'break', tone: 'slate' },
 ];
 
 const referenceEntries: Record<string, Record<string, SymbolName>> = {

@@ -1,6 +1,8 @@
 ---
 import type { ObservationProjection, ObservationRecord } from "../lib/observation-types";
 import { observationFact } from "../lib/observation-view";
+import SiteSymbol from "./SiteSymbol.astro";
+import { needSymbols } from "../lib/list-identities";
 import ObservationRefs from "./ObservationRefs.astro";
 import { observationSourceHref } from "../lib/observations";
 import { url } from "../lib/site";
@@ -9,7 +11,7 @@ const { projection, observation, showEntity = true } = Astro.props;
 const f = observationFact(projection, observation);
 ---
 <article class="ob-fact" id={`fact-${observation.id}`} data-observation-id={observation.id} data-observation-version={observation.version} data-observation-hash={observation.hash} data-edition-id={projection.edition.id} data-edition-hash={projection.edition.hash}>
-  <h3>{f.measure.label}</h3>
+  <h3><SiteSymbol name={needSymbols[f.measure.producerCode ?? ""] ?? "signal"} size="inline" /> {f.measure.label}</h3>
   {showEntity && <p>{f.entity.label} · {f.scope.label}</p>}
   <p class="ob-value"><strong>{f.valueText}</strong> {f.unitText}</p>
   <p>{f.periodText}</p>

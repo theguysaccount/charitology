@@ -3,8 +3,9 @@ import type { SymbolName } from '../lib/site-identities';
 
 interface Props {
   name: SymbolName;
+  size?: 'inline' | 'tile';
 }
-const { name } = Astro.props;
+const { name, size = 'tile' } = Astro.props;
 ---
 
-<span class="site-symbol" data-site-symbol={name} aria-hidden="true"></span>
+<span class:list={['site-symbol', size === 'inline' && 'identity-inline']} data-site-symbol={name} aria-hidden="true"></span>

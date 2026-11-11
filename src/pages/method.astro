@@ -1,4 +1,6 @@
 ---
+import SiteSymbol from '../components/SiteSymbol.astro';
+import { depthSymbols, lensSymbols, methodSymbols } from '../lib/list-identities';
 import Base from '../layouts/Base.astro';
 import Crumbs from '../components/Crumbs.astro';
 import SystemMap from '../components/SystemMap.astro';
@@ -17,7 +19,7 @@ const SECTIONS = [
   ['feedback', 'Close the loop'],
   ['checklist', 'The Giver’s Checklist'],
   ['honesty', 'The honesty rules'],
-];
+] as const;
 ---
 
 <Base
@@ -42,8 +44,8 @@ const SECTIONS = [
         {
           SECTIONS.map(([id, label], i) => (
             <li>
-              <a href={`#${id}`}>
-                <span class="numeral">{i + 1}</span> {label}
+              <a class="identity-link" href={`#${id}`}>
+                <span class="numeral">{i + 1}</span><span>{label}</span>
               </a>
             </li>
           ))
@@ -53,7 +55,7 @@ const SECTIONS = [
 
     <div class="method-body">
       <section id="system" class="m-section">
-        <span class="eyebrow">Instrument 1</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.system} size="inline" />Instrument 1</span>
         <h2>See the system</h2>
         <p>
           Start by placing any gift in the system it moves through: who gives, what signals they see, which channel holds
@@ -65,7 +67,7 @@ const SECTIONS = [
       </section>
 
       <section id="depth" class="m-section">
-        <span class="eyebrow">Instrument 2</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.depth} size="inline" />Instrument 2</span>
         <h2>Measure depth</h2>
         <p>
           Every piece of work acts somewhere on the chain from <a href={url('/record/encyclopedia/symptoms-and-sources/')}
@@ -83,7 +85,7 @@ const SECTIONS = [
                 DEPTH.map((d) => (
                   <tr>
                     <td>
-                      <span class={`swatch d${d.level}`} aria-hidden="true" />
+                      <SiteSymbol name={depthSymbols[d.level]} size="inline" />
                       <strong>
                         {d.level} · {d.name}
                       </strong>
@@ -109,7 +111,7 @@ const SECTIONS = [
       </section>
 
       <section id="evidence" class="m-section">
-        <span class="eyebrow">Instrument 3</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.evidence} size="inline" />Instrument 3</span>
         <h2>Grade the evidence</h2>
         <p>Every claim carries a label. There are two systems, one for claims about the charity system and one for interventions.</p>
         <div class="two">
@@ -150,7 +152,7 @@ const SECTIONS = [
       </section>
 
       <section id="counterfactual" class="m-section">
-        <span class="eyebrow">Instrument 4</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.counterfactual} size="inline" />Instrument 4</span>
         <h2>Ask what would happen anyway</h2>
         <p>
           The real effect of a gift is the difference between the world with it and the world without it. If the work would
@@ -163,7 +165,7 @@ const SECTIONS = [
       </section>
 
       <section id="frameworks" class="m-section">
-        <span class="eyebrow">Instrument 5</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.frameworks} size="inline" />Instrument 5</span>
         <h2>Look through every lens</h2>
         <p>
           Every moral framework makes some kinds of good easy to see and others invisible. Charitology looks through all of
@@ -173,7 +175,7 @@ const SECTIONS = [
           {
             frameworksData.frameworks.map((f) => (
               <div class="frame">
-                <h3>{f.name}</h3>
+                <h3><SiteSymbol name={lensSymbols[f.id]} size="inline" /> {f.name}</h3>
                 <p class="frame-q">{f.question}</p>
                 <p class="note">{f.thinkers.join(', ')}</p>
               </div>
@@ -189,7 +191,7 @@ const SECTIONS = [
       </section>
 
       <section id="time" class="m-section">
-        <span class="eyebrow">Instrument 6</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.time} size="inline" />Instrument 6</span>
         <h2>Mind the horizon</h2>
         <p>
           Ask how long the good lasts and who it reaches across time. Some good ends when the money stops. Some compounds for
@@ -200,7 +202,7 @@ const SECTIONS = [
       </section>
 
       <section id="feedback" class="m-section">
-        <span class="eyebrow">Instrument 7</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.feedback} size="inline" />Instrument 7</span>
         <h2>Close the loop</h2>
         <p>
           A donor may be paying for work whose results they cannot observe directly. Ask how anyone would find out if the work stopped working, and
@@ -211,7 +213,7 @@ const SECTIONS = [
       </section>
 
       <section id="checklist" class="m-section">
-        <span class="eyebrow">Instrument 8</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.checklist} size="inline" />Instrument 8</span>
         <h2>The Giver’s Checklist</h2>
         <p>
           Ten questions to ask of any gift, large or small. Tick them off as you go. Nothing is saved or sent. The <a
@@ -222,7 +224,7 @@ const SECTIONS = [
       </section>
 
       <section id="honesty" class="m-section">
-        <span class="eyebrow">Instrument 9</span>
+        <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.honesty} size="inline" />Instrument 9</span>
         <h2>The honesty rules</h2>
         <ol class="rules">
           <li><strong>Unknown stays unknown.</strong> Say what has not been measured here, without assuming nobody else has studied it.</li>
@@ -269,19 +271,23 @@ const SECTIONS = [
     font-size: 0.9rem;
   }
   .toc a {
-    display: block;
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
     padding: 0.4rem 0.6rem;
     border-radius: 7px;
     text-decoration: none;
     color: var(--ink-2);
+  }
+  .toc a::before {
+    margin-inline-end: 0;
   }
   .toc a:hover {
     background: var(--bg-2);
     color: var(--ink);
   }
   .toc .numeral {
-    display: inline-block;
-    width: 1.4rem;
+    flex: 0 0 1.15rem;
   }
   .method-body {
     min-width: 0;

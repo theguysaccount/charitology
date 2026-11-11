@@ -2,7 +2,10 @@
 import Base from "../../../layouts/Base.astro";
 import { getCollection, render } from "astro:content";
 import { url } from "../../../lib/site";
+import SiteSymbol from "../../../components/SiteSymbol.astro";
+import { pageIdentity } from "../../../lib/site-identities";
 import SourceList from "../../../components/SourceList.astro";
+const chapterMark = (id: string) => pageIdentity(`/record/principles/${id}/`).symbol;
 const chapters = await Promise.all(
   (await getCollection("principles"))
     .sort((a, b) => a.data.chapter - b.data.chapter)
@@ -14,7 +17,7 @@ const chapters = await Promise.all(
   title="Principles of Charitology · complete reading edition"
   description="The complete ten-chapter open textbook in one printable reading edition."
 >
-  <main class="wrap book">
+  <div class="wrap book">
     <p class="eyebrow">Open textbook · Edition 0 · editorial draft</p><h1>
       Principles of Charitology
     </h1><p>
@@ -26,7 +29,7 @@ const chapters = await Promise.all(
         {
           chapters.map((c) => (
             <li>
-              <a href={`#${c.id}`}>{c.data.title}</a>
+              <a href={`#${c.id}`}><SiteSymbol name={chapterMark(c.id)} size="inline" /> {c.data.title}</a>
             </li>
           ))
         }
@@ -39,7 +42,7 @@ const chapters = await Promise.all(
         <section class="book-chapter prose" id={c.id}>
           <>
             <h2>
-              Chapter {c.data.chapter}: {c.data.title}
+              <SiteSymbol name={chapterMark(c.id)} /> Chapter {c.data.chapter}: {c.data.title}
             </h2>
             <p class="lede">{c.data.summary}</p>
             <c.Content />
@@ -53,7 +56,7 @@ const chapters = await Promise.all(
         </section>
       ))
     }
-  </main>
+  </div>
 </Base>
 <script>
   document

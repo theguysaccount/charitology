@@ -14,7 +14,7 @@ import ecosystem from '../../data/ecosystem.json';
           ENDPOINTS.map((e) => (
             <tr>
               <td>
-                <a href={url(`/api/v1/${e.name}.json`)}><code>{e.name}.json</code></a>
+                <a class="identity-link" data-site-symbol="code" href={url(`/api/v1/${e.name}.json`)}><code>{e.name}.json</code></a>
               </td>
               <td>{e.description}</td>
             </tr>
@@ -29,7 +29,7 @@ import ecosystem from '../../data/ecosystem.json';
     {
       [...ecosystem.instruments, ...ecosystem.registries, ...ecosystem.evaluators].map((x) => (
         <li>
-          <a href={x.url}>{x.name}</a> · {x.summary}
+          <a class="identity-link" href={x.url}>{x.name}</a> · {x.summary}
         </li>
       ))
     }

@@ -18,7 +18,7 @@ const items = refs.length ? (await getEntries(refs)).sort((a, b) => a.data.numbe
       <ul>
         {items.map((c) => (
           <li>
-            <a href={url(`/diagnosis/${c.id}/`)}>
+            <a class="identity-link" href={url(`/diagnosis/${c.id}/`)}>
               <span class="numeral">C{pad(c.data.number)}</span> {c.data.title}
             </a>
           </li>

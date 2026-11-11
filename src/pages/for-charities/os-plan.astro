@@ -1,4 +1,6 @@
 ---
+import SiteSymbol from "../../components/SiteSymbol.astro";
+import { providerSymbols } from "../../lib/list-identities";
 import Base from "../../layouts/Base.astro";
 import Crumbs from "../../components/Crumbs.astro";
 import { Content as Plan } from "../../../docs/CHARITY_OS_PLAN.md";
@@ -79,7 +81,7 @@ const tags = [...new Set(needs.entries.flatMap((e) => e.tags))].sort();
             <>
               <summary>
                 <>
-                  <strong>{p.name}</strong>
+                  <strong><SiteSymbol name={providerSymbols[p.id]} size="inline" /> {p.name}</strong>
                   <span>{p.category}</span>
                 </>
               </summary>

@@ -1,6 +1,8 @@
 ---
 // The Giver's Checklist: ten questions to ask of any gift. Ticking a box is
 // for your own reflection; nothing is stored or sent.
+import SiteSymbol from './SiteSymbol.astro';
+import { checklistSymbols } from '../lib/list-identities';
 import checklist from '../data/checklist.json';
 import { url } from '../lib/site';
 ---
@@ -12,7 +14,7 @@ import { url } from '../lib/site';
         <li class="gc-item">
           <label class="gc-label">
             <input type="checkbox" class="gc-box" />
-            <span class="gc-num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="gc-num"><SiteSymbol name={checklistSymbols[item.id as keyof typeof checklistSymbols]} size="inline" /><span class="visually-hidden">Question {i + 1}</span></span>
             <span class="gc-q">{item.question}</span>
           </label>
           <p class="gc-detail">
@@ -67,7 +69,7 @@ import { url } from '../lib/site';
     text-decoration-thickness: 1px;
   }
   .gc-detail {
-    margin: 0.3rem 0 0 calc(1.15rem + 0.8rem + 1.6rem + 0.8rem);
+    margin: 0.3rem 0 0 calc(1.15rem + 0.8rem + 1.55rem + 0.8rem);
     color: var(--ink-2);
     font-size: 0.98rem;
   }

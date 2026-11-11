@@ -1,4 +1,6 @@
 ---
+import SiteSymbol from '../components/SiteSymbol.astro';
+import { depthSymbols } from '../lib/list-identities';
 import Base from '../layouts/Base.astro';
 import Seal from '../components/Seal.astro';
 import SystemMap from '../components/SystemMap.astro';
@@ -132,7 +134,7 @@ const giving = figures.usGiving;
           DEPTH.map((d) => (
             <li>
               <span class={`depth-bar d${d.level}`} aria-hidden="true" />
-              <span class="depth-level">{d.level}</span>
+              <span class="identity-label"><SiteSymbol name={depthSymbols[d.level]} /><span class="depth-level">{d.level}</span></span>
               <strong>{d.name}</strong>
               <span class="depth-verb">{d.verb}</span>
               <span class="depth-ex">{d.example}</span>

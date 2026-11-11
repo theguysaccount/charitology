@@ -3,9 +3,11 @@
 // (--series-N for identity, --depth-N for source depth), never from text.
 
 import { clear, h } from './dom';
+import type { SymbolName } from '../site-identities';
 
 export interface BarRow {
   label: string;
+  symbol?: SymbolName;
   value: number;
   display?: string;
   color?: string;
@@ -28,7 +30,7 @@ export function renderBars(container: HTMLElement, rows: BarRow[], opts: { max?:
     const el = h(
       'div',
       { class: 'bar-row', role: 'listitem', tabindex: 0, 'aria-label': `${row.label}: ${row.display ?? row.value}` },
-      h('span', { class: 'bar-label', title: row.label }, row.label),
+      h('span', { class: 'bar-label', title: row.label, 'data-site-symbol': row.symbol }, row.label),
       h('div', { class: 'bar-track' }, fill),
       h('span', { class: 'bar-value' }, row.display ?? String(row.value)),
     );

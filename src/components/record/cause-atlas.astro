@@ -1,4 +1,6 @@
 ---
+import SiteSymbol from "../SiteSymbol.astro";
+import { causeSymbols, sourceSymbols } from "../../lib/list-identities";
 import causesData from "../../data/causes.json";
 import sourceMap from "../../data/sources-map.json";
 import compass from "../../data/compass.json";
@@ -49,7 +51,7 @@ const problemLabel = (id: string) =>
           data-problems={c.problems.join(" ")}
           data-upstream={c.upstream.join(" ")}
         >
-          <h3>{c.name}</h3>
+          <h3><SiteSymbol name={causeSymbols[c.id]} /> {c.name}</h3>
           <>
             <p>{c.summary}</p>
             {c.id === 'education' && (
@@ -68,7 +70,7 @@ const problemLabel = (id: string) =>
                 .filter((i) => i.data.causes.includes(c.id as any))
                 .map((i) => (
                   <li>
-                    <a href={url(`/record/interventions/${i.id}/`)}>
+                    <a class="identity-link" href={url(`/record/interventions/${i.id}/`)}>
                       {i.data.title}
                     </a>{" "}
                     · {i.data.evidence} evidence
@@ -126,7 +128,7 @@ const problemLabel = (id: string) =>
       <thead>
         <tr>
           <th scope="col">Problem</th>
-          {sourceMap.sources.map((s) => <th scope="col">{s.label}</th>)}
+          {sourceMap.sources.map((s) => <th scope="col"><SiteSymbol name={sourceSymbols[s.id]} size="inline" /> {s.label}</th>)}
         </tr>
       </thead>
       <tbody>
