@@ -1,0 +1,93 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import edition from '../../../../data/kenya-pbo-coverage.json';
+
+type Period = typeof edition.periods[number];
+type Reference = keyof Period['source']['references'];
+const route = '/record/charity-financials/kenya/';
+const title = 'Kenya’s charity reporting and finances';
+const officialRegister = 'https://pbora.go.ke/pbos';
+const transition = 'https://pbora.go.ke/authority-rolls-out-transition-process-ngos-under-pbo-act';
+const years = edition.periods;
+const latest = years[years.length - 1];
+const expenseRows = edition.expenditure.rows;
+const projectCosts = expenseRows.find(row => row.category === 'project-cost')!;
+const totals = expenseRows.find(row => row.category === 'all-expenditure')!;
+const regions = Object.keys(latest.receiptOriginsKES) as (keyof Period['receiptOriginsKES'])[];
+const labels: Record<string, string> = {
+  'project-cost': 'Project costs', 'local-office-staff': 'Local office staff', assets: 'Tangible assets',
+  'international-office-staff': 'International office staff', administration: 'Administration',
+  'other-running-cost': 'Other running costs', 'local-program-staff': 'Local program staff',
+  'international-program-staff': 'International program staff', 'all-expenditure': 'All reported expenditure',
+};
+const count = new Intl.NumberFormat('en-US');
+const billions = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const amount = (value: string | null) => value === null ? '—' : billions.format(Number(value) / 1_000_000_000);
+function pageLink(period: Period, key: Reference) {
+  return `${period.source.url}#page=${period.source.references[key]!.pdfPage}`;
+}
+const sources = [
+  ...years.map(period => ({ title: period.source.title, publisher: edition.publisher, url: period.source.url })),
+  { title: 'Public register of organization names and references', publisher: 'PBORA', url: officialRegister },
+  { title: 'Transition to the public benefit organization register', publisher: 'PBORA', url: transition },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary="Compare three years of Kenya’s regulator-reported filing coverage and receipts. See where the latest report records spending." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Kenya'}]} sources={sources} filePath="src/pages/record/charity-financials/kenya/index.astro">
+  <p>Kenya’s Public Benefit Organizations Regulatory Authority (PBORA) and its predecessor publish annual sector reports. The financial amounts here come from those reports. Tables display billions of Kenyan shillings (KES) rounded to two decimals. The downloads retain the reported amounts and source pages.</p>
+  <div class="btn-row">
+    <a class="btn btn-ghost btn-small" href={url(route + 'data.json')} download="kenya-pbo-coverage.json">Download JSON</a>
+    <a class="btn btn-ghost btn-small" href={url(route + 'data.csv')} download="kenya-pbo-coverage.csv">Download CSV</a>
+  </div>
+
+  <h2 id="filing-coverage">Who is counted in the reports</h2>
+  <p>The regulator’s cumulative and active registration counts describe the register at each report’s cutoff. Filing counts describe the period’s submissions. The reports draw their receipt figures from reported finances. The composition of that reporting group can change across years.</p>
+  <div class="table-wrap" role="region" aria-label="Register and filing coverage by year" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Report year</th><th scope="col" class="num">Registrations since inception</th><th scope="col" class="num">Active at cutoff</th><th scope="col" class="num">Annual reports</th><th scope="col" class="num">Audited accounts</th></tr></thead>
+      <tbody>{years.map(period => <tr>
+        <th scope="row">{period.fiscalYear}</th><td class="num">{count.format(period.cumulativeRegistrations)}</td>
+        <td class="num">{count.format(period.activeAtReportCutoff)}</td><td class="num">{count.format(period.annualReportsSubmitted)}</td>
+        <td class="num">{count.format(period.auditedAccountsSubmitted)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p><a href={officialRegister}>Search Kenya’s official organization register</a> by name or reference. PBORA’s transition advisory says an organization can receive a new reference while retaining its earlier one. The figures below describe groups of filers. Linking an amount to a specific organization requires its own public financial records.</p>
+
+  <h2 id="receipts">Where reported receipts came from</h2>
+  <p>The geographic categories describe the reported sources of funds. Add the geographic rows only within a year and use the report total once. The 2023/24 geographic rows sum to KES 0.01 less than the published total. The download keeps that difference visible.</p>
+  <div class="table-wrap" role="region" aria-label="Reported receipts by source region and year in KES billions" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Source region</th>{years.map(period => <th scope="col" class="num">{period.fiscalYear}</th>)}</tr></thead>
+      <tbody>{regions.map(region => <tr><th scope="row">{region}</th>{years.map(period => <td class="num">{amount(period.receiptOriginsKES[region])}</td>)}</tr>)}</tbody>
+      <tfoot><tr><th scope="row">Published total</th>{years.map(period => <td class="num"><strong>{amount(period.receiptsKES)}</strong></td>)}</tr></tfoot>
+    </table>
+  </div>
+
+  <h2 id="expenditure">Where reporting organizations spent funds</h2>
+  <p>For {latest.fiscalYear}, the report’s <a href={pageLink(latest, 'expenditure')}>expenditure table</a> records KES {amount(totals.totalKES)} billion across all categories. It assigns KES {amount(totals.inKenyaKES)} billion to Kenya and KES {amount(totals.outsideKenyaKES)} billion to other countries.</p>
+  <div class="table-wrap" role="region" aria-label="Reported expenditure by line and location in KES billions" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Expense line</th><th scope="col" class="num">Kenya</th><th scope="col" class="num">Other countries</th><th scope="col" class="num">Total</th></tr></thead>
+      <tbody>{expenseRows.slice(0, -1).map(row => <tr>
+        <th scope="row">{labels[row.category]}</th><td class="num">{amount(row.inKenyaKES)}</td>
+        <td class="num">{row.outsideKenyaKES === null ? <span aria-label="No separate amount supplied">—</span> : amount(row.outsideKenyaKES)}</td><td class="num">{amount(row.totalKES)}</td>
+      </tr>)}</tbody>
+      <tfoot><tr><th scope="row">{labels[totals.category]}</th><td class="num"><strong>{amount(totals.inKenyaKES)}</strong></td><td class="num"><strong>{amount(totals.outsideKenyaKES)}</strong></td><td class="num"><strong>{amount(totals.totalKES)}</strong></td></tr></tfoot>
+    </table>
+  </div>
+  <p>For projects in Kenya, the expenditure table reports KES {amount(projectCosts.inKenyaKES)} billion. The same report’s <a href={pageLink(latest, 'sectorProjectTotal')}>sector table</a> gives a total of KES {amount(edition.expenditure.sectorTableProjectTotalInKenyaKES)} billion. Keep those figures tied to their respective tables. Connecting particular incoming funds to spending or measuring outcomes would require transaction or program records.</p>
+
+  <h2>Open the original report pages</h2>
+  <ul>{years.map(period => <li>
+    <strong>{period.fiscalYear}</strong> · <a href={pageLink(period, 'register')}>Register</a> · <a href={pageLink(period, 'filed')}>Annual reports</a> · <a href={pageLink(period, 'audited')}>Audited accounts</a> · <a href={pageLink(period, 'receipts')}>Total receipts</a> · <a href={pageLink(period, 'origins')}>Source regions</a>
+  </li>)}</ul>
+</Entry>
+
+<style>
+  .table-wrap { margin-block: 1rem; }
+  .table-wrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .table-wrap table.data { display: table; overflow: visible; }
+  table.data .num { white-space: nowrap; }
+</style>
