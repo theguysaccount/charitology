@@ -8,6 +8,8 @@ A reader who opens a page on the .org apex with `?legacy=1` can use its export c
 
 Keep building the public site through GitHub. Routine content changes flow from Pages to the public site. Use the isolated Vercel project only for changes to this routing configuration. Link this service directory to the project with the authenticated Vercel CLI. Use a protected preview and verify the origin before promoting. The Vercel project serves the existing GitHub Pages content through a fixed external rewrite.
 
+Keep `public/` empty apart from its Git placeholder. A local homepage would take precedence over the Pages homepage at `/`.
+
 ```sh
 node scripts/check-domain-redirect.mjs
 ```

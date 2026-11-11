@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 
 const directory = new URL("../services/domain-redirect/", import.meta.url);
 const config = JSON.parse(await readFile(new URL("vercel.json", directory), "utf8"));
@@ -39,7 +39,5 @@ assert.deepEqual(config.headers, [
     ],
   },
 ]);
-const html = await readFile(new URL("public/index.html", directory), "utf8");
-assert.match(html, /href="https:\/\/charitology\.com\/"/);
-assert.doesNotMatch(html, /<script|http-equiv|<iframe/i);
+assert.deepEqual(await readdir(new URL("public/", directory)), [".gitkeep"]);
 console.log("Domain routing: fixed Pages origin, canonical redirects and legacy export access passed.");
