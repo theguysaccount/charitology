@@ -4,6 +4,8 @@ import BrazilProjectContractsTable from '../../../../components/BrazilProjectCon
 import { contractRoute, contractsByAgreement } from '../../../../lib/brazil-project-contracts';
 import BrazilWorksMeasurements from '../../../../components/BrazilWorksMeasurements.astro';
 import { worksRoute, monitoringByAgreement, measurementItemsByAgreement } from '../../../../lib/brazil-works-measurements';
+import BrazilInfrastructureAccountMovements from '../../../../components/BrazilInfrastructureAccountMovements.astro';
+import { accountMovementsRoute, movementPeriodsByAgreement } from '../../../../lib/brazil-infrastructure-account-movements';
 import SiteSymbol from '../../../../components/SiteSymbol.astro';
 import { url } from '../../../../lib/site';
 import type { SymbolName } from '../../../../lib/site-identities';
@@ -23,6 +25,7 @@ const { agreement, proposal, cnpj, organization, api, bankOrders, commitments, p
 const relatedContracts = contractsByAgreement.get(agreement) ?? [];
 const monitoring = monitoringByAgreement.get(agreement) ?? [];
 const measuredItems = measurementItemsByAgreement.get(agreement) ?? [];
+const accountPeriods = movementPeriodsByAgreement.get(agreement) ?? [];
 const caseStudy = cases[agreement];
 const census = caseStudy ? data.census.values[caseStudy.municipality as keyof typeof data.census.values] : undefined;
 const registry = api['projeto-investimento'].rows[0];
@@ -51,6 +54,7 @@ const sections: { slug: string; text: string; symbol: SymbolName }[] = [
   { slug: 'commitments', text: 'Paired budget commitments', symbol: 'permit' },
   { slug: 'contracts', text: 'Reported contracts', symbol: 'yearFile' },
   { slug: 'bank-orders', text: 'Agreement bank orders', symbol: 'bankOrder' },
+  { slug: 'account-movements', text: 'Account movements', symbol: 'coins' },
 ];
 if (census) sections.push({ slug: 'municipal-context', text: 'Municipal census context', symbol: 'people' });
 const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
@@ -142,6 +146,18 @@ const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
       <tbody>{bankOrders.map(([id, day, amount, row]) => <tr><th scope="row"><code>{id}</code></th><td>{day}</td><td>{money(amount as number)}</td><td>{row}</td></tr>)}</tbody>
     </table>
   </div>
+
+  <h2 id="account-movements"><SiteSymbol name="coins" size="inline" /> Account movements</h2>
+  {accountPeriods.length > 0 ? <>
+    <p>The payment archive has {count(accountPeriods.length)} calendar {accountPeriods.length === 1 ? 'year' : 'years'} with account movements for this agreement. Institutional invoice and receipt amounts and transfers to the agreement holder appear in separate columns. Linking a payment to this specific work site or procurement contract requires another source.</p>
+    <BrazilInfrastructureAccountMovements variant="accounts" periods={accountPeriods} />
+    {accountPeriods.some(period => period.holderTransfers.rows > 0) && <>
+      <h3>Onward records for transfers to the agreement holder</h3>
+      <p>These counts compare onward records with the same transfer. An equal amount means the available onward figures sum to the parent amount. Count the amount once in the holder-transfer column.</p>
+      <BrazilInfrastructureAccountMovements variant="onward" periods={accountPeriods} />
+    </>}
+    <p><a class="identity-link" href={url(accountMovementsRoute + `?agreement=${agreement}#accounts`)}>Open this agreement in the account movement lookup</a>.</p>
+  </> : <p>The captured payment archive has no movement rows for this agreement. The <a class="identity-link" href={url(accountMovementsRoute)}>account movement lookup</a> describes the published coverage.</p>}
 
   {census && <section aria-labelledby="municipal-context">
     <h2 id="municipal-context"><SiteSymbol name="people" size="inline" /> Municipal census context</h2>

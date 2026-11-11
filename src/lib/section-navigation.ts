@@ -241,6 +241,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Coverage and record boundaries', 'compare'],
     ['downloads', 'Download records and sources', 'download'],
   ],
+  '/record/funding-flows/brazil-infrastructure-account-movements/': [
+    ['accounts', 'Find account movements', 'lens'],
+    ['onward', 'Reconcile onward records', 'route'],
+    ['coverage', 'Coverage and what remains unknown', 'compare'],
+    ['downloads', 'Download records and sources', 'download'],
+  ],
   '/record/funding-flows/brazil-cisterns/': [
     ['agreement', 'Federal agreement', 'permit'],
     ['payments', 'Reported account payments', 'bankOrder'],

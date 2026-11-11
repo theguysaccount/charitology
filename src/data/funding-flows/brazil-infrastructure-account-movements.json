@@ -1,0 +1,5698 @@
+{
+  "format": "charitology-br-infrastructure-account-movements-v1",
+  "capturedOn": "2026-11-11",
+  "currency": "BRL",
+  "sources": {
+    "projectEditionSha256": "a6a9ebd38da473a623bbcab293ff0047bf61ab19eace9a26659b64b3bc05b0c7",
+    "archives": {
+      "siconv_pagamento": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_pagamento.zip",
+        "bytes": 374662483,
+        "sha256": "36920c43e8efb80f9a1f9a7f0c55620f0dff2210bce012ac613fbbef77338c62",
+        "dataRows": 7575512
+      },
+      "siconv_obtv_convenente": {
+        "url": "https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov/siconv_obtv_convenente.zip",
+        "bytes": 58726469,
+        "sha256": "5312063de10c902ea02f9a50fd2980c2c4a0466fe937bf9929a57d751fbe7d88",
+        "dataRows": 3113841
+      }
+    },
+    "dataModel": {
+      "url": "https://www.gov.br/transferegov/pt-br/ferramentas-gestao/paineis-gerenciais/arquivos/modelo-dados-csvs-discricionarias-e-legais.zip/@@display-file/file",
+      "sha256": "558e962ec1854f001ad6a54ae406b6436847d02101233a96e5bff4427c0b7716",
+      "member": "modelo_dados_siconv.zip!/modelo_dados_sincov/bd_portal.public.xml"
+    },
+    "license": "https://opendatacommons.org/licenses/odbl/1-0/"
+  },
+  "bankOrderYears": [
+    2024,
+    2025
+  ],
+  "coverage": {
+    "projectAgreements": 88,
+    "agreementsWithMovements": 84,
+    "agreementYears": 205,
+    "firstMovementDate": "2018-08-08",
+    "lastMovementDate": "2026-11-06",
+    "movementRows": 2504,
+    "zeroAmountRows": 8,
+    "institutionalPaymentRows": 1420,
+    "otherNonHolderRowsWithoutAmounts": 444,
+    "holderTransferRows": 640,
+    "holderIdMatchedRows": 640,
+    "onwardRows": 1114,
+    "onwardParentStates": {
+      "equalAmountParents": 188,
+      "unknownAmountParents": 452,
+      "differentAmountParents": 0,
+      "noOnwardRecordParents": 0
+    },
+    "categories": [
+      {
+        "sourceLabel": "DIÁRIAS",
+        "rows": 60,
+        "publishedAmountRows": 0
+      },
+      {
+        "sourceLabel": "FOLHA DE PAGAMENTO",
+        "rows": 378,
+        "publishedAmountRows": 0
+      },
+      {
+        "sourceLabel": "NOTA FISCAL",
+        "rows": 1418,
+        "publishedAmountRows": 1418
+      },
+      {
+        "sourceLabel": "OBTV PARA O CONVENENTE",
+        "rows": 640,
+        "publishedAmountRows": 640
+      },
+      {
+        "sourceLabel": "RECIBO DE PAGAMENTO A AUTONOMO",
+        "rows": 6,
+        "publishedAmountRows": 0
+      },
+      {
+        "sourceLabel": "RECIBO-CNPJ",
+        "rows": 2,
+        "publishedAmountRows": 2
+      }
+    ]
+  },
+  "periods": [
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "calendarYear": 2018,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 9881900
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "calendarYear": 2019,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 7874263
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "calendarYear": 2020,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 17305381
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "calendarYear": 2021,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 21650274
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 31042603
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 1453875
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 4,
+        "amountCentsBRL": 1776000
+      }
+    },
+    {
+      "agreement": "825120",
+      "proposal": "1019009",
+      "project": "124350.17-45",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 35519933
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 4,
+        "amountCentsBRL": 33588000
+      }
+    },
+    {
+      "agreement": "877955",
+      "proposal": "1370577",
+      "project": "22765.35-30",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 18582191
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "877955",
+      "proposal": "1370577",
+      "project": "22765.35-30",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 8037058
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "877955",
+      "proposal": "1370577",
+      "project": "22765.35-30",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 1421920
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 952500
+      }
+    },
+    {
+      "agreement": "877955",
+      "proposal": "1370577",
+      "project": "22765.35-30",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 36268260
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 4,
+        "amountCentsBRL": 53707500
+      }
+    },
+    {
+      "agreement": "877955",
+      "proposal": "1370577",
+      "project": "22765.35-30",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 27310681
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "878366",
+      "proposal": "1381520",
+      "project": "18886.23-70",
+      "calendarYear": 2021,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 2158780
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "878366",
+      "proposal": "1381520",
+      "project": "18886.23-70",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 2387461
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "878366",
+      "proposal": "1381520",
+      "project": "18886.23-70",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 3400996
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "878366",
+      "proposal": "1381520",
+      "project": "18886.23-70",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 4740232
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 1502500
+      }
+    },
+    {
+      "agreement": "878366",
+      "proposal": "1381520",
+      "project": "18886.23-70",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 5076332
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 10515000
+      }
+    },
+    {
+      "agreement": "878367",
+      "proposal": "1381434",
+      "project": "18887.23-26",
+      "calendarYear": 2021,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 2390907
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "878367",
+      "proposal": "1381434",
+      "project": "18887.23-26",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 5352519
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "878367",
+      "proposal": "1381434",
+      "project": "18887.23-26",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 5941441
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "878367",
+      "proposal": "1381434",
+      "project": "18887.23-26",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 3694152
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 4352400
+      }
+    },
+    {
+      "agreement": "878367",
+      "proposal": "1381434",
+      "project": "18887.23-26",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 5473848
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 15577200
+      }
+    },
+    {
+      "agreement": "878547",
+      "proposal": "1382947",
+      "project": "51800.25-09",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 31175759
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "878547",
+      "proposal": "1382947",
+      "project": "51800.25-09",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 17076887
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "878547",
+      "proposal": "1382947",
+      "project": "51800.25-09",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 16273487
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 3362400
+      }
+    },
+    {
+      "agreement": "879093",
+      "proposal": "1388858",
+      "project": "95664.32-80",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 10,
+      "institutionalPayments": {
+        "rows": 10,
+        "amountCentsBRL": 134740884
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 5,
+        "amountCentsBRL": 76899936
+      }
+    },
+    {
+      "agreement": "879093",
+      "proposal": "1388858",
+      "project": "95664.32-80",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 83532188
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 4,
+        "amountCentsBRL": 70453234
+      }
+    },
+    {
+      "agreement": "879395",
+      "proposal": "1391229",
+      "project": "110344.41-40",
+      "calendarYear": 2019,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 4,
+        "holderIdMatchedRows": 4,
+        "amountCentsBRL": 11400177
+      },
+      "onward": {
+        "rows": 4,
+        "equalAmountParents": 4,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "879395",
+      "proposal": "1391229",
+      "project": "110344.41-40",
+      "calendarYear": 2020,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 42644201
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "879395",
+      "proposal": "1391229",
+      "project": "110344.41-40",
+      "calendarYear": 2021,
+      "partialYear": false,
+      "movementRows": 18,
+      "institutionalPayments": {
+        "rows": 15,
+        "amountCentsBRL": 335845520
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 3,
+        "holderIdMatchedRows": 3,
+        "amountCentsBRL": 59633589
+      },
+      "onward": {
+        "rows": 4,
+        "equalAmountParents": 3,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "879395",
+      "proposal": "1391229",
+      "project": "110344.41-40",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 20824707
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "880752",
+      "proposal": "1397172",
+      "project": "14254.35-24",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 9701628
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "880752",
+      "proposal": "1397172",
+      "project": "14254.35-24",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 14392645
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "880752",
+      "proposal": "1397172",
+      "project": "14254.35-24",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 40395508
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 20653678
+      }
+    },
+    {
+      "agreement": "881364",
+      "proposal": "1397173",
+      "project": "14255.35-80",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 9698334
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "881364",
+      "proposal": "1397173",
+      "project": "14255.35-80",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 26388078
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "calendarYear": 2020,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 1,
+        "holderIdMatchedRows": 1,
+        "amountCentsBRL": 3338237
+      },
+      "onward": {
+        "rows": 1,
+        "equalAmountParents": 1,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "calendarYear": 2021,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 4,
+        "holderIdMatchedRows": 4,
+        "amountCentsBRL": 7134658
+      },
+      "onward": {
+        "rows": 4,
+        "equalAmountParents": 4,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 28,
+      "institutionalPayments": {
+        "rows": 16,
+        "amountCentsBRL": 26250582
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 12,
+        "holderIdMatchedRows": 12,
+        "amountCentsBRL": 7903666
+      },
+      "onward": {
+        "rows": 15,
+        "equalAmountParents": 12,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 31,
+      "institutionalPayments": {
+        "rows": 17,
+        "amountCentsBRL": 31598781
+      },
+      "otherNonHolderRowsWithoutAmounts": 1,
+      "holderTransfers": {
+        "rows": 13,
+        "holderIdMatchedRows": 13,
+        "amountCentsBRL": 4888732
+      },
+      "onward": {
+        "rows": 13,
+        "equalAmountParents": 13,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 68,
+      "institutionalPayments": {
+        "rows": 57,
+        "amountCentsBRL": 34082770
+      },
+      "otherNonHolderRowsWithoutAmounts": 1,
+      "holderTransfers": {
+        "rows": 10,
+        "holderIdMatchedRows": 10,
+        "amountCentsBRL": 7085862
+      },
+      "onward": {
+        "rows": 10,
+        "equalAmountParents": 9,
+        "unknownAmountParents": 1,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 67093710
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 291,
+      "institutionalPayments": {
+        "rows": 272,
+        "amountCentsBRL": 61063731
+      },
+      "otherNonHolderRowsWithoutAmounts": 2,
+      "holderTransfers": {
+        "rows": 17,
+        "holderIdMatchedRows": 17,
+        "amountCentsBRL": 7426664
+      },
+      "onward": {
+        "rows": 18,
+        "equalAmountParents": 15,
+        "unknownAmountParents": 2,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 168983900
+      }
+    },
+    {
+      "agreement": "886053",
+      "proposal": "1493004",
+      "project": "115031.41-27",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 37,
+      "institutionalPayments": {
+        "rows": 29,
+        "amountCentsBRL": 10334377
+      },
+      "otherNonHolderRowsWithoutAmounts": 1,
+      "holderTransfers": {
+        "rows": 7,
+        "holderIdMatchedRows": 7,
+        "amountCentsBRL": 717754
+      },
+      "onward": {
+        "rows": 9,
+        "equalAmountParents": 6,
+        "unknownAmountParents": 1,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886237",
+      "proposal": "1497728",
+      "project": "12046.35-65",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 8886957
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886237",
+      "proposal": "1497728",
+      "project": "12046.35-65",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 16,
+      "institutionalPayments": {
+        "rows": 16,
+        "amountCentsBRL": 64818440
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886237",
+      "proposal": "1497728",
+      "project": "12046.35-65",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 18,
+      "institutionalPayments": {
+        "rows": 18,
+        "amountCentsBRL": 40014732
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 7,
+        "amountCentsBRL": 23960840
+      }
+    },
+    {
+      "agreement": "886237",
+      "proposal": "1497728",
+      "project": "12046.35-65",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 14,
+      "institutionalPayments": {
+        "rows": 14,
+        "amountCentsBRL": 71995509
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 91067562
+      }
+    },
+    {
+      "agreement": "886237",
+      "proposal": "1497728",
+      "project": "12046.35-65",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 24423338
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "calendarYear": 2020,
+      "partialYear": false,
+      "movementRows": 32,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 2622537
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 30,
+        "holderIdMatchedRows": 30,
+        "amountCentsBRL": 14760077
+      },
+      "onward": {
+        "rows": 177,
+        "equalAmountParents": 30,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "calendarYear": 2021,
+      "partialYear": false,
+      "movementRows": 27,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 3300028
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 25,
+        "holderIdMatchedRows": 25,
+        "amountCentsBRL": 9466628
+      },
+      "onward": {
+        "rows": 117,
+        "equalAmountParents": 25,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 1070865
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 1,
+        "holderIdMatchedRows": 1,
+        "amountCentsBRL": 465
+      },
+      "onward": {
+        "rows": 1,
+        "equalAmountParents": 1,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 6,
+        "holderIdMatchedRows": 6,
+        "amountCentsBRL": 6925236
+      },
+      "onward": {
+        "rows": 84,
+        "equalAmountParents": 6,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 14,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 3844685
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 9,
+        "holderIdMatchedRows": 9,
+        "amountCentsBRL": 23196484
+      },
+      "onward": {
+        "rows": 105,
+        "equalAmountParents": 9,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 6,
+        "amountCentsBRL": 329670823
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 12,
+      "institutionalPayments": {
+        "rows": 8,
+        "amountCentsBRL": 248249648
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 4,
+        "holderIdMatchedRows": 4,
+        "amountCentsBRL": 15262776
+      },
+      "onward": {
+        "rows": 49,
+        "equalAmountParents": 4,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "886536",
+      "proposal": "1500852",
+      "project": "115044.41-10",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 31147007
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 7,
+        "holderIdMatchedRows": 7,
+        "amountCentsBRL": 17070807
+      },
+      "onward": {
+        "rows": 12,
+        "equalAmountParents": 4,
+        "unknownAmountParents": 3,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "calendarYear": 2020,
+      "partialYear": false,
+      "movementRows": 11,
+      "institutionalPayments": {
+        "rows": 10,
+        "amountCentsBRL": 29338918
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 1,
+        "holderIdMatchedRows": 1,
+        "amountCentsBRL": 112500000
+      },
+      "onward": {
+        "rows": 1,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 1,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "calendarYear": 2021,
+      "partialYear": false,
+      "movementRows": 10,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 20796989
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 6,
+        "holderIdMatchedRows": 6,
+        "amountCentsBRL": 8992814
+      },
+      "onward": {
+        "rows": 6,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 6,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 44,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 44,
+        "holderIdMatchedRows": 44,
+        "amountCentsBRL": 1012394969
+      },
+      "onward": {
+        "rows": 44,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 44,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 9,
+        "holderIdMatchedRows": 9,
+        "amountCentsBRL": 379213308
+      },
+      "onward": {
+        "rows": 9,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 9,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 54,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 54,
+        "holderIdMatchedRows": 54,
+        "amountCentsBRL": 932220244
+      },
+      "onward": {
+        "rows": 54,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 54,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 276349100
+      }
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 13,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 13,
+        "holderIdMatchedRows": 13,
+        "amountCentsBRL": 30880889
+      },
+      "onward": {
+        "rows": 13,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 13,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "887109",
+      "proposal": "1502399",
+      "project": "14271.33-10",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 14,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 14,
+        "holderIdMatchedRows": 14,
+        "amountCentsBRL": 61099882
+      },
+      "onward": {
+        "rows": 14,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 14,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "888157",
+      "proposal": "1508596",
+      "project": "46006.33-33",
+      "calendarYear": 2020,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 1,
+        "holderIdMatchedRows": 1,
+        "amountCentsBRL": 90000000
+      },
+      "onward": {
+        "rows": 1,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 1,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "888157",
+      "proposal": "1508596",
+      "project": "46006.33-33",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 8,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 8,
+        "holderIdMatchedRows": 8,
+        "amountCentsBRL": 77288879
+      },
+      "onward": {
+        "rows": 8,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 8,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "888157",
+      "proposal": "1508596",
+      "project": "46006.33-33",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 18,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 18,
+        "holderIdMatchedRows": 18,
+        "amountCentsBRL": 232841604
+      },
+      "onward": {
+        "rows": 18,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 18,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "888157",
+      "proposal": "1508596",
+      "project": "46006.33-33",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 31,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 31,
+        "holderIdMatchedRows": 31,
+        "amountCentsBRL": 1111048895
+      },
+      "onward": {
+        "rows": 31,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 31,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 832961237
+      }
+    },
+    {
+      "agreement": "888157",
+      "proposal": "1508596",
+      "project": "46006.33-33",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 61,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 61,
+        "holderIdMatchedRows": 61,
+        "amountCentsBRL": 510406966
+      },
+      "onward": {
+        "rows": 61,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 61,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 818323550
+      }
+    },
+    {
+      "agreement": "888157",
+      "proposal": "1508596",
+      "project": "46006.33-33",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 45,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 45,
+        "holderIdMatchedRows": 45,
+        "amountCentsBRL": 850624806
+      },
+      "onward": {
+        "rows": 45,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 45,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "889850",
+      "proposal": "1509556",
+      "project": "94144.32-05",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 87634622
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 79977000
+      }
+    },
+    {
+      "agreement": "889850",
+      "proposal": "1509556",
+      "project": "94144.32-05",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 78835667
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "889894",
+      "proposal": "1511560",
+      "project": "11501.33-47",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 6115899
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "889894",
+      "proposal": "1511560",
+      "project": "11501.33-47",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 8231002
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 46791000
+      }
+    },
+    {
+      "agreement": "889894",
+      "proposal": "1511560",
+      "project": "11501.33-47",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 25261018
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "891046",
+      "proposal": "1514840",
+      "project": "22766.35-97",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 36556575
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "891046",
+      "proposal": "1514840",
+      "project": "22766.35-97",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 32820341
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "891046",
+      "proposal": "1514840",
+      "project": "22766.35-97",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 35492489
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 38953031
+      }
+    },
+    {
+      "agreement": "891046",
+      "proposal": "1514840",
+      "project": "22766.35-97",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 57610506
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 136086229
+      }
+    },
+    {
+      "agreement": "891046",
+      "proposal": "1514840",
+      "project": "22766.35-97",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 42928299
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "892665",
+      "proposal": "1519025",
+      "project": "22956.41-73",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 169495
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 7,
+        "holderIdMatchedRows": 7,
+        "amountCentsBRL": 1737440
+      },
+      "onward": {
+        "rows": 7,
+        "equalAmountParents": 7,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 729900
+      }
+    },
+    {
+      "agreement": "892665",
+      "proposal": "1519025",
+      "project": "22956.41-73",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 1,
+        "holderIdMatchedRows": 1,
+        "amountCentsBRL": 196565
+      },
+      "onward": {
+        "rows": 1,
+        "equalAmountParents": 1,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "895959",
+      "proposal": "1517858",
+      "project": "12050.35-04",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 108745760
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "895959",
+      "proposal": "1517858",
+      "project": "12050.35-04",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 15,
+      "institutionalPayments": {
+        "rows": 15,
+        "amountCentsBRL": 137896553
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "895959",
+      "proposal": "1517858",
+      "project": "12050.35-04",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 16,
+      "institutionalPayments": {
+        "rows": 16,
+        "amountCentsBRL": 128820417
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 34,
+        "amountCentsBRL": 152654638
+      }
+    },
+    {
+      "agreement": "895959",
+      "proposal": "1517858",
+      "project": "12050.35-04",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 20654217
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 9,
+        "amountCentsBRL": 20942255
+      }
+    },
+    {
+      "agreement": "895959",
+      "proposal": "1517858",
+      "project": "12050.35-04",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 12,
+      "institutionalPayments": {
+        "rows": 12,
+        "amountCentsBRL": 48615125
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "895978",
+      "proposal": "1517861",
+      "project": "24628.35-30",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 13746618
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 1,
+        "holderIdMatchedRows": 1,
+        "amountCentsBRL": 5150900
+      },
+      "onward": {
+        "rows": 1,
+        "equalAmountParents": 1,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "895978",
+      "proposal": "1517861",
+      "project": "24628.35-30",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 2,
+        "holderIdMatchedRows": 2,
+        "amountCentsBRL": 53048253
+      },
+      "onward": {
+        "rows": 6,
+        "equalAmountParents": 2,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 54245800
+      }
+    },
+    {
+      "agreement": "898993",
+      "proposal": "1554363",
+      "project": "51801.35-00",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 63394161
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "899507",
+      "proposal": "1555830",
+      "project": "96931.25-90",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 10321617
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 39975000
+      }
+    },
+    {
+      "agreement": "899507",
+      "proposal": "1555830",
+      "project": "96931.25-90",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 18993914
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "900892",
+      "proposal": "1555826",
+      "project": "20217.35-08",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 9517275
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "900892",
+      "proposal": "1555826",
+      "project": "20217.35-08",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 26431884
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 40000000
+      }
+    },
+    {
+      "agreement": "900892",
+      "proposal": "1555826",
+      "project": "20217.35-08",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 9476225
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "900911",
+      "proposal": "1566506",
+      "project": "15155.33-12",
+      "calendarYear": 2021,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 3,
+        "holderIdMatchedRows": 3,
+        "amountCentsBRL": 8003439
+      },
+      "onward": {
+        "rows": 3,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 3,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "900911",
+      "proposal": "1566506",
+      "project": "15155.33-12",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 10,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 10,
+        "holderIdMatchedRows": 10,
+        "amountCentsBRL": 67848391
+      },
+      "onward": {
+        "rows": 10,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 10,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "900911",
+      "proposal": "1566506",
+      "project": "15155.33-12",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 4,
+        "holderIdMatchedRows": 4,
+        "amountCentsBRL": 7017893
+      },
+      "onward": {
+        "rows": 4,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 4,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "900911",
+      "proposal": "1566506",
+      "project": "15155.33-12",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 15,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 15,
+        "holderIdMatchedRows": 15,
+        "amountCentsBRL": 74114822
+      },
+      "onward": {
+        "rows": 15,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 15,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 90172600
+      }
+    },
+    {
+      "agreement": "900911",
+      "proposal": "1566506",
+      "project": "15155.33-12",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 11,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 11,
+        "holderIdMatchedRows": 11,
+        "amountCentsBRL": 96133111
+      },
+      "onward": {
+        "rows": 11,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 11,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "900911",
+      "proposal": "1566506",
+      "project": "15155.33-12",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 19,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 19,
+        "holderIdMatchedRows": 19,
+        "amountCentsBRL": 211974604
+      },
+      "onward": {
+        "rows": 19,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 19,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "904643",
+      "proposal": "1593380",
+      "project": "25151.27-90",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 141498270
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "904643",
+      "proposal": "1593380",
+      "project": "25151.27-90",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 9,
+        "amountCentsBRL": 287778472
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "904643",
+      "proposal": "1593380",
+      "project": "25151.27-90",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 8,
+      "institutionalPayments": {
+        "rows": 8,
+        "amountCentsBRL": 294201919
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 139270608
+      }
+    },
+    {
+      "agreement": "904643",
+      "proposal": "1593380",
+      "project": "25151.27-90",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 32767939
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 6269416
+      }
+    },
+    {
+      "agreement": "905274",
+      "proposal": "1593409",
+      "project": "51405.35-23",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 27811891
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "905339",
+      "proposal": "1592796",
+      "project": "20302.35-37",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 36667459
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 38719600
+      }
+    },
+    {
+      "agreement": "905339",
+      "proposal": "1592796",
+      "project": "20302.35-37",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 11202319
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "907963",
+      "proposal": "1612909",
+      "project": "22097.31-80",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 130922741
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 149730000
+      }
+    },
+    {
+      "agreement": "907963",
+      "proposal": "1612909",
+      "project": "22097.31-80",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 16899584
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "907973",
+      "proposal": "1614357",
+      "project": "38903.41-72",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 30670688
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "907973",
+      "proposal": "1614357",
+      "project": "38903.41-72",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 2779181
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "917055",
+      "proposal": "1703912",
+      "project": "15647.33-29",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 2,
+        "holderIdMatchedRows": 2,
+        "amountCentsBRL": 1085740
+      },
+      "onward": {
+        "rows": 2,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 2,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "917055",
+      "proposal": "1703912",
+      "project": "15647.33-29",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 5,
+        "holderIdMatchedRows": 5,
+        "amountCentsBRL": 7154260
+      },
+      "onward": {
+        "rows": 5,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 5,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "917055",
+      "proposal": "1703912",
+      "project": "15647.33-29",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 2,
+        "holderIdMatchedRows": 2,
+        "amountCentsBRL": 3692350
+      },
+      "onward": {
+        "rows": 2,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 2,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "917589",
+      "proposal": "1707633",
+      "project": "24678.35-57",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 54058002
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 59945000
+      }
+    },
+    {
+      "agreement": "917591",
+      "proposal": "1707640",
+      "project": "51878.26-15",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 26394702
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 100000000
+      }
+    },
+    {
+      "agreement": "917591",
+      "proposal": "1707640",
+      "project": "51878.26-15",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 38006230
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "917602",
+      "proposal": "1707663",
+      "project": "51685.35-88",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 77101278
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "917658",
+      "proposal": "1708914",
+      "project": "44202.35-75",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 936473
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "919037",
+      "proposal": "1718309",
+      "project": "36550.35-71",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 30998886
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 30000000
+      }
+    },
+    {
+      "agreement": "919170",
+      "proposal": "1719927",
+      "project": "35404.41-10",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 8054836
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 49999800
+      }
+    },
+    {
+      "agreement": "919170",
+      "proposal": "1719927",
+      "project": "35404.41-10",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 40063674
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "calendarYear": 2022,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 2,
+      "holderTransfers": {
+        "rows": 1,
+        "holderIdMatchedRows": 1,
+        "amountCentsBRL": 7500000
+      },
+      "onward": {
+        "rows": 1,
+        "equalAmountParents": 1,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 62375064
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 2,
+        "holderIdMatchedRows": 2,
+        "amountCentsBRL": 605848
+      },
+      "onward": {
+        "rows": 2,
+        "equalAmountParents": 2,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 12,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 34237965
+      },
+      "otherNonHolderRowsWithoutAmounts": 3,
+      "holderTransfers": {
+        "rows": 2,
+        "holderIdMatchedRows": 2,
+        "amountCentsBRL": 3720000
+      },
+      "onward": {
+        "rows": 2,
+        "equalAmountParents": 2,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 35400000
+      }
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 6208557
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "919303",
+      "proposal": "1720827",
+      "project": "119014.33-66",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 1,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "920442",
+      "proposal": "1724181",
+      "project": "13705.35-46",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 30743034
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 39814500
+      }
+    },
+    {
+      "agreement": "920442",
+      "proposal": "1724181",
+      "project": "13705.35-46",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 3934483
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "920487",
+      "proposal": "1724216",
+      "project": "14303.26-19",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 1091615
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 12900000
+      }
+    },
+    {
+      "agreement": "920487",
+      "proposal": "1724216",
+      "project": "14303.26-19",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 8907553
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "920487",
+      "proposal": "1724216",
+      "project": "14303.26-19",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 5287095
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "921640",
+      "proposal": "1728034",
+      "project": "14878.52-90",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 187627352
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 195515407
+      }
+    },
+    {
+      "agreement": "921640",
+      "proposal": "1728034",
+      "project": "14878.52-90",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 139372678
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 4,
+        "amountCentsBRL": 145222493
+      }
+    },
+    {
+      "agreement": "922695",
+      "proposal": "1731096",
+      "project": "134425.28-18",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 5155506
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "923544",
+      "proposal": "1732268",
+      "project": "30372.35-78",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 20743903
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 35000000
+      }
+    },
+    {
+      "agreement": "923544",
+      "proposal": "1732268",
+      "project": "30372.35-78",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 13095555
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "929373",
+      "proposal": "1769320",
+      "project": "57669.25-18",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 12164022
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 53640000
+      }
+    },
+    {
+      "agreement": "929373",
+      "proposal": "1769320",
+      "project": "57669.25-18",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 4284797
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "929405",
+      "proposal": "1769513",
+      "project": "51384.29-00",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 6510836
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 86193900
+      }
+    },
+    {
+      "agreement": "929405",
+      "proposal": "1769513",
+      "project": "51384.29-00",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 89371990
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "929406",
+      "proposal": "1769514",
+      "project": "51687.35-90",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 14313971
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "929830",
+      "proposal": "1750053",
+      "project": "14252.33-42",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 4760000
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "929830",
+      "proposal": "1750053",
+      "project": "14252.33-42",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 32054700
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 73300000
+      }
+    },
+    {
+      "agreement": "929836",
+      "proposal": "1772400",
+      "project": "15482.35-39",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 13241840
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 59353800
+      }
+    },
+    {
+      "agreement": "929836",
+      "proposal": "1772400",
+      "project": "15482.35-39",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 47117854
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "934315",
+      "proposal": "1796312",
+      "project": "11541.35-75",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 11016100
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "936178",
+      "proposal": "1807951",
+      "project": "12007.35-62",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 9,
+        "amountCentsBRL": 71213262
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "936219",
+      "proposal": "1808423",
+      "project": "13823.32-22",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 27341622
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "936402",
+      "proposal": "1811744",
+      "project": "15451.25-45",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 36067800
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 36067800
+      }
+    },
+    {
+      "agreement": "936402",
+      "proposal": "1811744",
+      "project": "15451.25-45",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 98839380
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 144271600
+      }
+    },
+    {
+      "agreement": "936606",
+      "proposal": "1813123",
+      "project": "16009.41-09",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 28939532
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "936606",
+      "proposal": "1813123",
+      "project": "16009.41-09",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 23044623
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 1,
+        "holderIdMatchedRows": 1,
+        "amountCentsBRL": 7209266
+      },
+      "onward": {
+        "rows": 1,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 1,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 14271211
+      }
+    },
+    {
+      "agreement": "936606",
+      "proposal": "1813123",
+      "project": "16009.41-09",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 5426208
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "936909",
+      "proposal": "1820245",
+      "project": "19180.28-06",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 7475130
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 25000000
+      }
+    },
+    {
+      "agreement": "936909",
+      "proposal": "1820245",
+      "project": "19180.28-06",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 11778000
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "940987",
+      "proposal": "1854293",
+      "project": "21331.33-82",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 19,
+      "institutionalPayments": {
+        "rows": 19,
+        "amountCentsBRL": 118870700
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 120000000
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "calendarYear": 2023,
+      "partialYear": false,
+      "movementRows": 8,
+      "institutionalPayments": {
+        "rows": 8,
+        "amountCentsBRL": 12800000
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 53,
+      "institutionalPayments": {
+        "rows": 53,
+        "amountCentsBRL": 76161585
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 57200000
+      }
+    },
+    {
+      "agreement": "941042",
+      "proposal": "1856744",
+      "project": "24569.33-09",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 6375500
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "944194",
+      "proposal": "1913302",
+      "project": "27574.35-00",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 9309109
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 28815600
+      }
+    },
+    {
+      "agreement": "944194",
+      "proposal": "1913302",
+      "project": "27574.35-00",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 18494459
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "944198",
+      "proposal": "1913309",
+      "project": "30763.35-50",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 21775981
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "944202",
+      "proposal": "1913324",
+      "project": "25683.25-86",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 122384700
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 122384700
+      }
+    },
+    {
+      "agreement": "944202",
+      "proposal": "1913324",
+      "project": "25683.25-86",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 44925169
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 193877003
+      }
+    },
+    {
+      "agreement": "944202",
+      "proposal": "1913324",
+      "project": "25683.25-86",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 114821711
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "945677",
+      "proposal": "1921143",
+      "project": "29089.41-44",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 4,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 23046249
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 48183800
+      }
+    },
+    {
+      "agreement": "945677",
+      "proposal": "1921143",
+      "project": "29089.41-44",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 7,
+        "amountCentsBRL": 24505486
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "946285",
+      "proposal": "1925272",
+      "project": "28643.35-10",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 28127743
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 28785000
+      }
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 9,
+        "amountCentsBRL": 22250804
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 6,
+        "amountCentsBRL": 66292000
+      }
+    },
+    {
+      "agreement": "946958",
+      "proposal": "1910381",
+      "project": "27599.33-38",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 12,
+      "institutionalPayments": {
+        "rows": 12,
+        "amountCentsBRL": 40609534
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "948419",
+      "proposal": "1933290",
+      "project": "32155.35-24",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 11,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 486666368
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 9,
+        "holderIdMatchedRows": 9,
+        "amountCentsBRL": 3153681965
+      },
+      "onward": {
+        "rows": 9,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 9,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "948420",
+      "proposal": "1933291",
+      "project": "32162.35-22",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 8,
+      "institutionalPayments": {
+        "rows": 8,
+        "amountCentsBRL": 1407442734
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 12,
+        "amountCentsBRL": 1484903287
+      }
+    },
+    {
+      "agreement": "948420",
+      "proposal": "1933291",
+      "project": "32162.35-22",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 11,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 2031306956
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 9,
+        "holderIdMatchedRows": 9,
+        "amountCentsBRL": 8853338069
+      },
+      "onward": {
+        "rows": 9,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 9,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "948515",
+      "proposal": "1933914",
+      "project": "33243.31-63",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 61080869
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 96136800
+      }
+    },
+    {
+      "agreement": "948515",
+      "proposal": "1933914",
+      "project": "33243.31-63",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 25126431
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 9,
+        "amountCentsBRL": 13515967
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 2,
+        "amountCentsBRL": 114967311
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 27,
+      "institutionalPayments": {
+        "rows": 27,
+        "amountCentsBRL": 97561309
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 9000000
+      }
+    },
+    {
+      "agreement": "949898",
+      "proposal": "1911072",
+      "project": "28567.32-88",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 10,
+      "institutionalPayments": {
+        "rows": 10,
+        "amountCentsBRL": 18796000
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "951784",
+      "proposal": "1943499",
+      "project": "39241.35-93",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 93011893
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 173000000
+      }
+    },
+    {
+      "agreement": "951784",
+      "proposal": "1943499",
+      "project": "39241.35-93",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 9,
+        "amountCentsBRL": 86410725
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 27855339
+      }
+    },
+    {
+      "agreement": "951855",
+      "proposal": "1945989",
+      "project": "31532.35-44",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 5680142
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "953157",
+      "proposal": "1949848",
+      "project": "32208.42-87",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 9,
+      "institutionalPayments": {
+        "rows": 9,
+        "amountCentsBRL": 70902488
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 144300000
+      }
+    },
+    {
+      "agreement": "953157",
+      "proposal": "1949848",
+      "project": "32208.42-87",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 34704443
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "953189",
+      "proposal": "1949916",
+      "project": "31402.41-81",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 33327610
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 36595200
+      }
+    },
+    {
+      "agreement": "953325",
+      "proposal": "1950015",
+      "project": "31534.35-57",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 26240495
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "954009",
+      "proposal": "1950546",
+      "project": "33250.24-20",
+      "calendarYear": 2024,
+      "partialYear": false,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 44671169
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 71822315
+      }
+    },
+    {
+      "agreement": "954009",
+      "proposal": "1950546",
+      "project": "33250.24-20",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 12784997
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "956450",
+      "proposal": "1971473",
+      "project": "51423.28-03",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 60593723
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "959442",
+      "proposal": "1984339",
+      "project": "38503.41-80",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 6,
+      "institutionalPayments": {
+        "rows": 6,
+        "amountCentsBRL": 91400204
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 96093900
+      }
+    },
+    {
+      "agreement": "960397",
+      "proposal": "1988999",
+      "project": "51166.33-70",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 94499211
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "964631",
+      "proposal": "1998764",
+      "project": "51195.43-50",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 2,
+      "institutionalPayments": {
+        "rows": 2,
+        "amountCentsBRL": 44941685
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "964879",
+      "proposal": "1995735",
+      "project": "41885.33-65",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 10672477
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 0,
+        "amountCentsBRL": null
+      }
+    },
+    {
+      "agreement": "964879",
+      "proposal": "1995735",
+      "project": "41885.33-65",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 14933644
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 360,
+      "institutionalPayments": {
+        "rows": 70,
+        "amountCentsBRL": 93544285
+      },
+      "otherNonHolderRowsWithoutAmounts": 269,
+      "holderTransfers": {
+        "rows": 21,
+        "holderIdMatchedRows": 21,
+        "amountCentsBRL": 127757758
+      },
+      "onward": {
+        "rows": 21,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 21,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 1127202200
+      }
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 299,
+      "institutionalPayments": {
+        "rows": 166,
+        "amountCentsBRL": 240836156
+      },
+      "otherNonHolderRowsWithoutAmounts": 116,
+      "holderTransfers": {
+        "rows": 17,
+        "holderIdMatchedRows": 17,
+        "amountCentsBRL": 177122738
+      },
+      "onward": {
+        "rows": 17,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 17,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "968188",
+      "proposal": "2019587",
+      "project": "51876.35-13",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 8,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 8,
+        "holderIdMatchedRows": 8,
+        "amountCentsBRL": 1956541
+      },
+      "onward": {
+        "rows": 8,
+        "equalAmountParents": 8,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 895474609
+      }
+    },
+    {
+      "agreement": "968188",
+      "proposal": "2019587",
+      "project": "51876.35-13",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 19,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 19,
+        "holderIdMatchedRows": 19,
+        "amountCentsBRL": 6240559
+      },
+      "onward": {
+        "rows": 19,
+        "equalAmountParents": 18,
+        "unknownAmountParents": 1,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "968333",
+      "proposal": "2020431",
+      "project": "50777.28-80",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 1,
+      "institutionalPayments": {
+        "rows": 1,
+        "amountCentsBRL": 4305894
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 1,
+        "amountCentsBRL": 44737200
+      }
+    },
+    {
+      "agreement": "968333",
+      "proposal": "2020431",
+      "project": "50777.28-80",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 3,
+      "institutionalPayments": {
+        "rows": 3,
+        "amountCentsBRL": 27446558
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "969926",
+      "proposal": "2032558",
+      "project": "50477.42-30",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 24639961
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "971731",
+      "proposal": "2038402",
+      "project": "51196.31-92",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 92165593
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "972546",
+      "proposal": "2039879",
+      "project": "51200.42-47",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 5,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 43519667
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 0,
+        "holderIdMatchedRows": 0,
+        "amountCentsBRL": null
+      },
+      "onward": {
+        "rows": 0,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 0,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "973513",
+      "proposal": "2041133",
+      "project": "51879.33-03",
+      "calendarYear": 2025,
+      "partialYear": false,
+      "movementRows": 50,
+      "institutionalPayments": {
+        "rows": 0,
+        "amountCentsBRL": null
+      },
+      "otherNonHolderRowsWithoutAmounts": 48,
+      "holderTransfers": {
+        "rows": 2,
+        "holderIdMatchedRows": 2,
+        "amountCentsBRL": 13449926
+      },
+      "onward": {
+        "rows": 2,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 2,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": {
+        "rows": 3,
+        "amountCentsBRL": 134500000
+      }
+    },
+    {
+      "agreement": "973513",
+      "proposal": "2041133",
+      "project": "51879.33-03",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 11,
+      "institutionalPayments": {
+        "rows": 4,
+        "amountCentsBRL": 35580444
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 7,
+        "holderIdMatchedRows": 7,
+        "amountCentsBRL": 22865000
+      },
+      "onward": {
+        "rows": 7,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 7,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    },
+    {
+      "agreement": "981327",
+      "proposal": "2134397",
+      "project": "101522.13-04",
+      "calendarYear": 2026,
+      "partialYear": true,
+      "movementRows": 7,
+      "institutionalPayments": {
+        "rows": 5,
+        "amountCentsBRL": 48262013
+      },
+      "otherNonHolderRowsWithoutAmounts": 0,
+      "holderTransfers": {
+        "rows": 2,
+        "holderIdMatchedRows": 2,
+        "amountCentsBRL": 4000000
+      },
+      "onward": {
+        "rows": 2,
+        "equalAmountParents": 0,
+        "unknownAmountParents": 2,
+        "differentAmountParents": 0,
+        "noOnwardRecordParents": 0
+      },
+      "sameYearBankOrders": null
+    }
+  ]
+}

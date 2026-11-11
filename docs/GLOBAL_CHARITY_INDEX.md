@@ -179,6 +179,22 @@ npm run build
 node scripts/check-brazil-works-measurements.mjs
 ```
 
+### Agreement-account movements and onward reconciliation
+
+The [infrastructure account lookup](https://charitology.com/record/funding-flows/brazil-infrastructure-account-movements/) links 2,504 movement rows across 84 of the 88 infrastructure agreements by the original agreement number. The 205 agreement-year aggregates span 2018–2026. The 2026 capture is partial. The annual figures come from the payment archive. When a displayed account year falls in 2024 or 2025, the separate bank-order column uses only the original project edition. Each bank order records funds made available to the agreement account. The account file ends at payment documents and agreement references. Linking a specific bank order to a payment, or a payment to a procurement contract or work site, requires another source.
+
+The payment totals cover 1,420 invoice or CNPJ receipt rows with checksum-valid institutional identifiers. The counts preserve 444 other outward rows whose amounts stay outside the projection. The 640 holder-transfer amounts require an exact match to the original agreement holder CNPJ. The build retains no payee identifiers, names, payment dates or individual amounts. Published amounts stay in integer BRL cents. Observed zero amounts stay zero. Cells with no qualified source rows have a null amount.
+
+The onward file shares the financial movement ID. Each selected holder transfer has a unique parent in the complete payment archive. The 1,114 onward rows match the amount for 188 parent transfers and leave at least one amount unknown for 452. Count the parent transfer once. Onward reconciliation is a separate count table and adds no amount to the payment view. In Joaçaba, nine invoice-labeled institutional payments fall in 2025 and five in the captured part of 2026. São José dos Campos has four institutional payments in 2023 and three holder transfers across 2023 and 2024 with equal recorded onward amounts.
+
+Rebuild with `siconv_pagamento.zip` and `siconv_obtv_convenente.zip` at the exact fingerprints in the JSON. The builder checks the full upstream project edition as well as the complete source row counts. The next link to qualify is a published record that names both the payment document and procurement or work-site reference. [Transferegov data catalogue](https://www.gov.br/transferegov/pt-br/ferramentas-gestao/dados-abertos/download-dados) · [Official transfer guide](https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/11-tutorial_obtv-convenente_convenios_convenente.pdf).
+
+```sh
+python3 scripts/build-brazil-infrastructure-account-movements.py --inputs /path/to/captures /path/to/rebuilt-account-movements.json
+npm run build
+node scripts/check-brazil-infrastructure-account-movements.mjs
+```
+
 ## Brazil Cisternas agreement and water access
 
 The [Cisternas case](https://charitology.com/record/funding-flows/brazil-cisterns/) follows agreement 945310 and its exact proposal and organization IDs. Its eleven bank orders show BRL 31,499,882.76 made available in 2023–2026. The six pinned Transferegov archives identify the original agreement, amendment and reported movements from the agreement account. The 2026 records cover the November 11 capture. The current federal contribution, reported bank orders, account payments and internal transfers belong to different stages. The named-payee subset uses the full CNPJ and exact agreement number. It stays inside the other-payment total. All 190 selected internal transfers have an onward record with a missing amount.

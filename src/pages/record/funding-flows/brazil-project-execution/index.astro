@@ -2,6 +2,7 @@
 import Entry from '../../../../layouts/Entry.astro';
 import { contractRoute } from '../../../../lib/brazil-project-contracts';
 import { worksRoute } from '../../../../lib/brazil-works-measurements';
+import { accountMovementsRoute } from '../../../../lib/brazil-infrastructure-account-movements';
 import { url } from '../../../../lib/site';
 import { count, data, fiscalGuide, geographyLabels, infrastructureRoute, municipalities, percent, projectPath, statusLabels, workPlanRoute, worksGuide } from '../../../../lib/brazil-project-execution';
 
@@ -35,6 +36,8 @@ const downloads = [
   <p><a class="identity-link" href={url(contractRoute)}>Trace reported contract records for these projects</a>. The contract lookup preserves signing dates, global amounts and ambiguous portal references.</p>
 
   <p><a class="identity-link" href={url(worksRoute)}>Read works measurements linked to the original proposals</a>. Find the recorded dates and status and the separate accumulated work-item amounts.</p>
+
+  <p><a class="identity-link" href={url(accountMovementsRoute)}>Follow reported account movements by agreement and year</a>. Find institutional payment amounts, holder transfers and onward coverage.</p>
 
   <h2 id="lookup">Find a project</h2>
   <div data-infrastructure-filter>

@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../../layouts/Entry.astro';
 import BrazilWorksMeasurements from '../../../../components/BrazilWorksMeasurements.astro';
+import { accountMovementsRoute } from '../../../../lib/brazil-infrastructure-account-movements';
 import { url } from '../../../../lib/site';
 import { count, infrastructureRoute, projectPath } from '../../../../lib/brazil-project-execution';
 import { measurementStatusLabels, worksArchives, worksEdition, worksRoute } from '../../../../lib/brazil-works-measurements';
@@ -23,6 +24,8 @@ const sourceLinks = [
   sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-works-measurements/index.astro">
   <p>The <a class="identity-link" href={url(infrastructureRoute)}>Brazil infrastructure edition</a> links {count(coverage.projectProposals)} proposals to agreements and registered projects. Transferegov’s works monitoring archive supplies {count(coverage.monitoringRows)} rows for {count(coverage.proposalsWithMonitoringRows)} of those proposals. {count(coverage.identifiedMeasurements)} rows identify a dated measurement, covering {count(coverage.proposalsWithMeasurements)} proposals. The remaining rows leave the measurement fields blank.</p>
   <p>Each monitoring record preserves its period and archive status. An accepted measurement is a report status. Final acceptance of the site and actual payments require separate records. The amounts below show accumulated work in Brazilian reais. Their archive does not give a measurement period for each amount.</p>
+
+  <p><a class="identity-link" href={url(accountMovementsRoute)}>Read the account movement edition</a>. Its payment and transfer figures stay at agreement and calendar-year scope.</p>
 
   <div data-works-filter>
     <h2 id="monitoring">Find monitoring records</h2>
