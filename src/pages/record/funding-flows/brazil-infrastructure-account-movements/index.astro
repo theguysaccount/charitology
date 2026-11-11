@@ -1,0 +1,110 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import BrazilInfrastructureAccountMovements from '../../../../components/BrazilInfrastructureAccountMovements.astro';
+import { accountMovementsRoute, movementArchives, movementEdition } from '../../../../lib/brazil-infrastructure-account-movements';
+import { count, infrastructureRoute, projectPath } from '../../../../lib/brazil-project-execution';
+import { url } from '../../../../lib/site';
+
+const title = 'Account movements for Brazilian civil society infrastructure';
+const { coverage, periods, sources } = movementEdition;
+const years = [...new Set(periods.map(period => period.calendarYear))].sort((a, b) => b - a);
+const onwardPeriods = periods.filter(period => period.holderTransfers.rows > 0).length;
+const sourceLinks = [
+  ...Object.entries(sources.archives).map(([key, source]) => ({
+    title: movementArchives[key as keyof typeof movementArchives], url: source.url, publisher: 'Transferegov.br',
+  })),
+  { title: 'Public data model and movement identifier definitions', url: sources.dataModel.url, publisher: 'Transferegov.br' },
+  { title: 'Guide to transfers to the agreement holder', url: 'https://www.gov.br/transferegov/pt-br/manuais/transferegov/discricionarias/execucao/11-tutorial_obtv-convenente_convenios_convenente.pdf', publisher: 'Transferegov.br' },
+  { title: 'Financial review guide for federal health agreements', url: 'https://portalfns.saude.gov.br/wp-content/uploads/2021/08/Orientacoes_Para_Analise_Financeira_De_Convenios_FNS2021-2.pdf', publisher: 'Fundo Nacional de Saúde' },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Follow institutional payments and transfers to the agreement holder by calendar year. Check where the onward records account for the reported transfer amount."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazil infrastructure account movements'}]}
+  sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-infrastructure-account-movements/index.astro">
+  <p>The <a class="identity-link" href={url(infrastructureRoute)}>Brazil infrastructure edition</a> contains {count(coverage.projectAgreements)} agreements. The Transferegov payment archive records {count(coverage.movementRows)} account movements for {count(coverage.agreementsWithMovements)} of them. The recorded dates range from <time datetime={coverage.firstMovementDate}>{coverage.firstMovementDate}</time> to <time datetime={coverage.lastMovementDate}>{coverage.lastMovementDate}</time>. The {movementEdition.capturedOn.slice(0, 4)} calendar year is partial.</p>
+  <p>The lookup preserves {count(coverage.institutionalPaymentRows)} invoice and CNPJ receipt payments with a valid institutional identifier checksum. It counts {count(coverage.otherNonHolderRowsWithoutAmounts)} other outward rows and omits their amounts. The separate holder-transfer column includes {count(coverage.holderIdMatchedRows)} rows whose recipient identifier matches the agreement holder. Every amount is in Brazilian reais.</p>
+
+  <div data-account-movement-filter>
+    <h2 id="accounts">Find account movements</h2>
+    <form hidden role="search" aria-label="Filter account movements and onward records">
+      <label for="account-movement-query">Agreement, proposal, project, municipality or organization</label>
+      <input id="account-movement-query" type="search" maxlength="160" autocomplete="off" />
+      <label for="account-movement-year">Calendar year</label>
+      <select id="account-movement-year">
+        <option value="">All years</option>
+        {years.map(year => <option value={year}>{year}</option>)}
+      </select>
+      <button class="btn btn-ghost btn-small" type="reset">Clear filters</button>
+    </form>
+    <p role="status" data-account-count>{count(periods.length)} agreement-year rows</p>
+    <BrazilInfrastructureAccountMovements variant="accounts" periods={periods} directory />
+    <p hidden data-no-account-rows>No agreement-year rows match these filters.</p>
+    <p>The lookup shows bank orders from the {movementEdition.bankOrderYears[0]}–{movementEdition.bankOrderYears[1]} edition when they fall in a displayed account year. Bank orders record funds made available to the agreement account. The account archive records reported payments and holder transfers by agreement and date. Read the figures at their respective stages. Linking a particular bank order to a payment requires another record.</p>
+
+    <h2 id="onward">Reconcile onward records</h2>
+    <p>In a transfer labeled <span lang="pt-BR">OBTV para o convenente</span>, funds move from the agreement account to an account held by the agreement holder. For each of the {count(coverage.holderTransferRows)} transfers, the complete payment archive identifies one parent movement ID. The onward archive supplies {count(coverage.onwardRows)} child records with those IDs.</p>
+    <p>Onward values sum to the recorded parent amount for {count(coverage.onwardParentStates.equalAmountParents)} transfers. {count(coverage.onwardParentStates.unknownAmountParents)} transfers have a missing onward amount. Reconciliation compares records for the same transfer. Count the transfer amount once, in its own column. An independent payment audit requires separate evidence.</p>
+    <p role="status" data-onward-count>{count(onwardPeriods)} agreement-year rows with holder transfers</p>
+    <BrazilInfrastructureAccountMovements variant="onward" periods={periods} directory />
+    <p hidden data-no-onward-rows>No holder-transfer rows match these filters.</p>
+  </div>
+
+  <h2 id="coverage">Coverage and what remains unknown</h2>
+  <p>Compare the <a href={url(projectPath('895978') + '#account-movements')}>São José dos Campos agreement</a>, with both payment and holder-transfer records, and the <a href={url(projectPath('953157') + '#account-movements')}>Joaçaba agreement</a>, with institutional invoice payments in 2025 and the captured part of 2026. Their project pages keep the works measurements, contract amounts and census figures separate from the account records.</p>
+  <p>The invoice and CNPJ receipt figures cover only payments with checksum-valid Brazilian institutional identifiers. The remaining rows include payroll, daily allowances and independent-contractor receipts. The projection leaves payee names, identifiers and individual amounts outside its tables and exports. A blank amount means the edition supplies no amount for that cell. A recorded zero stays zero.</p>
+  <p>Every join starts from the original agreement number. The account archive carries a payment document number and ends at the agreement level. Linking amounts to a contract, installation or service result requires a source that records that link.</p>
+
+  <h2 id="downloads">Download records and sources</h2>
+  <ul>
+    <li><a href={url(accountMovementsRoute + 'data.json')} download>Full account edition and source receipts (JSON)</a></li>
+    <li><a href={url(accountMovementsRoute + 'agreement-years.csv')} download>Account movement amounts by agreement and year (CSV)</a></li>
+    <li><a href={url(accountMovementsRoute + 'onward-coverage.csv')} download>Onward reconciliation counts (CSV)</a></li>
+  </ul>
+  <p>Exports use exact integer BRL cents for amounts. The edition was captured on <time datetime={movementEdition.capturedOn}>{movementEdition.capturedOn}</time>. The official source data are available under the <a href={sources.license}>Open Database License</a>.</p>
+</Entry>
+
+<style>
+  [data-account-movement-filter] form:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem .8rem; }
+  [data-account-movement-filter] :is(input, select, button) { min-height: 2.75rem; min-width: 0; }
+  [data-account-movement-filter] form button { justify-self: start; }
+  @media (max-width: 36rem) { [data-account-movement-filter] form:not([hidden]) { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+
+  const root = document.querySelector<HTMLElement>('[data-account-movement-filter]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('#account-movement-query')!;
+    const year = form.querySelector<HTMLSelectElement>('#account-movement-year')!;
+    const accounts = [...root.querySelectorAll<HTMLTableRowElement>('[data-movement-period="accounts"]')];
+    const onward = [...root.querySelectorAll<HTMLTableRowElement>('[data-movement-period="onward"]')];
+    const accountCount = root.querySelector<HTMLElement>('[data-account-count]')!;
+    const onwardCount = root.querySelector<HTMLElement>('[data-onward-count]')!;
+    const accountEmpty = root.querySelector<HTMLElement>('[data-no-account-rows]')!;
+    const onwardEmpty = root.querySelector<HTMLElement>('[data-no-onward-rows]')!;
+
+    function filter() {
+      const terms = normalizeBrazilName(query.value).split(' ').filter(Boolean);
+      const visible = (row: HTMLTableRowElement) => (!year.value || year.value === row.dataset.year)
+        && terms.every(term => row.dataset.search?.includes(term));
+      for (const row of [...accounts, ...onward]) row.hidden = !visible(row);
+      const accountsShown = accounts.filter(row => !row.hidden).length;
+      const onwardShown = onward.filter(row => !row.hidden).length;
+      accountCount.textContent = `${accountsShown} of ${accounts.length} agreement-year rows`;
+      onwardCount.textContent = `${onwardShown} of ${onward.length} agreement-year rows with holder transfers`;
+      accountEmpty.hidden = accountsShown > 0;
+      onwardEmpty.hidden = onwardShown > 0;
+    }
+    form.addEventListener('input', filter);
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    form.addEventListener('reset', () => requestAnimationFrame(() => { filter(); query.focus(); }));
+    const agreement = new URLSearchParams(location.search).get('agreement');
+    if (agreement && /^[0-9]{1,20}$/.test(agreement)) query.value = agreement;
+    form.hidden = false;
+    filter();
+  }
+</script>

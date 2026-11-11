@@ -1,0 +1,80 @@
+---
+import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
+import { count, data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
+import type { MovementPeriod } from '../lib/brazil-infrastructure-account-movements';
+import { url } from '../lib/site';
+
+interface Props {
+  variant: 'accounts' | 'onward';
+  periods: readonly MovementPeriod[];
+  directory?: boolean;
+}
+const { variant, periods, directory = false } = Astro.props;
+const projects = new Map(data.projects.map(project => [project.agreement, project]));
+const onwardOnly = variant === 'onward';
+const rows = onwardOnly ? periods.filter(period => period.holderTransfers.rows > 0) : periods;
+
+function projectDescription(period: MovementPeriod) {
+  const project = projects.get(period.agreement);
+  const organization = project?.organization ?? '';
+  const places = project ? municipalities(project).map(place => place.no_municipio) : [];
+  return {
+    organization,
+    search: normalizeBrazilName([period.agreement, period.proposal, period.project, organization, ...places].join(' ')),
+  };
+}
+---
+
+<div class="table-wrap movement-table" role="region" aria-label={onwardOnly ? 'Onward reconciliation by agreement and year' : 'Account movement amounts by agreement and year'} tabindex="0">
+  <table class="data">
+    <thead><tr>
+      {directory && <th scope="col">Agreement and project</th>}
+      <th scope="col">Calendar year</th>
+      {onwardOnly ? <>
+        <th scope="col">Transfers to holder</th><th scope="col">Onward rows</th>
+        <th scope="col">Equal recorded amount</th><th scope="col">Unknown onward amount</th>
+        <th scope="col">Different amount</th><th scope="col">No onward row</th>
+      </> : <>
+        <th scope="col">Account movement rows</th><th scope="col">Institutional invoice and receipt payments</th>
+        <th scope="col">Transfers to agreement holder</th><th scope="col">Federal bank orders in this year</th>
+      </>}
+    </tr></thead>
+    <tbody>{rows.map(period => {
+      const { organization, search } = projectDescription(period);
+      const { sameYearBankOrders: orders, institutionalPayments, holderTransfers, onward } = period;
+      return <tr data-movement-period={variant} data-year={period.calendarYear} data-search={directory ? search : undefined}>
+        {directory && <td>
+          <a class="identity-link" href={url(projectPath(period.agreement) + '#account-movements')}>{period.agreement} · {period.project}</a>
+          <small>{organization}</small>
+        </td>}
+        <th scope="row">{period.calendarYear}{period.partialYear && <small>Partial year</small>}</th>
+        {onwardOnly ? <>
+          <td>{count(holderTransfers.rows)}</td><td>{count(onward.rows)}</td>
+          <td>{count(onward.equalAmountParents)}</td><td>{count(onward.unknownAmountParents)}</td>
+          <td>{count(onward.differentAmountParents)}</td><td>{count(onward.noOnwardRecordParents)}</td>
+        </> : <>
+          <td>{count(period.movementRows)}
+            {period.otherNonHolderRowsWithoutAmounts > 0 && <small>{count(period.otherNonHolderRowsWithoutAmounts)} other outward rows with amounts outside this edition</small>}
+          </td>
+          <td>{institutionalPayments.rows > 0 ? <>
+            {money(institutionalPayments.amountCentsBRL)}<small>{count(institutionalPayments.rows)} qualifying rows</small>
+          </> : 'No qualifying rows'}</td>
+          <td>{holderTransfers.rows > 0 ? <>
+            {money(holderTransfers.amountCentsBRL)}<small>{count(holderTransfers.rows)} transfer {holderTransfers.rows === 1 ? 'row' : 'rows'}</small>
+            {holderTransfers.holderIdMatchedRows !== holderTransfers.rows && <small>Amount covers {count(holderTransfers.holderIdMatchedRows)} rows with the agreement holder ID</small>}
+          </> : 'No holder-transfer rows'}</td>
+          <td>{orders ? (orders.rows > 0 ? <>
+            {money(orders.amountCentsBRL)}<small>{count(orders.rows)} order {orders.rows === 1 ? 'row' : 'rows'}</small>
+          </> : 'No order rows in this edition') : 'Outside the bank-order edition'}</td>
+        </>}
+      </tr>;
+    })}</tbody>
+  </table>
+</div>
+
+<style>
+  .movement-table { margin-block: 1rem; }
+  .movement-table table { min-width: 46rem; }
+  .movement-table :is(td, th) { overflow-wrap: anywhere; }
+  .movement-table small { display: block; color: var(--ink-2); font-weight: normal; }
+</style>

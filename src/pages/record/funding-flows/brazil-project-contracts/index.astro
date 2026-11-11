@@ -2,6 +2,7 @@
 import Entry from '../../../../layouts/Entry.astro';
 import BrazilProjectContractsTable from '../../../../components/BrazilProjectContractsTable.astro';
 import { worksRoute } from '../../../../lib/brazil-works-measurements';
+import { accountMovementsRoute } from '../../../../lib/brazil-infrastructure-account-movements';
 import { url } from '../../../../lib/site';
 import { count, infrastructureRoute, projectPath } from '../../../../lib/brazil-project-execution';
 import { archiveTitles, contractEdition, contractRoute } from '../../../../lib/brazil-project-contracts';
@@ -26,6 +27,8 @@ const sourceLinks = [
   <p>The table reports the global amount written in each contract record, in BRL. A contract, a bank order, a payment and a signed acceptance each have their own source. The CIPI accumulated-amount field is blank in this edition. The table gives individual amounts and source rows.</p>
 
   <p><a class="identity-link" href={url(worksRoute)}>Read the separate works monitoring edition</a>. It uses proposal and monitoring identifiers for dated measurements and accumulated work-item amounts.</p>
+
+  <p><a class="identity-link" href={url(accountMovementsRoute)}>Read account movements by agreement</a>. The separate payment archive records amounts at agreement scope.</p>
 
   <h2 id="lookup">Find a contract record</h2>
   <div data-contract-filter>
