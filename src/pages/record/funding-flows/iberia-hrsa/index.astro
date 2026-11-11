@@ -1,0 +1,112 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import type { SymbolName } from '../../../../lib/site-identities';
+import { url } from '../../../../lib/site';
+import data from '../../../../data/funding-flows/iberia-hrsa.json';
+
+const title = 'Federal grants and audited spending at an Iberia health center';
+const route = '/record/funding-flows/iberia-hrsa/';
+const grants = Object.entries(data.programLabels) as [keyof typeof data.programLabels, string][];
+const marks = {
+  H80CS00697: 'medical', H8FCS41483: 'bolt', H8GCS48002: 'shield', C8ECS44572: 'building',
+} as const satisfies Record<keyof typeof data.programLabels, SymbolName>;
+const format = new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const money = (value: number) => format.format(value / 100);
+const count = (value: number) => format.format(value);
+const pdfPage = (audit: typeof data.audits[number]) => audit.scheduleSource.url + '#page=' + audit.scheduleSource.pdfPage;
+const finances = url('/record/charity-financials/united-states/#ein=' + data.organization.ein);
+const vaccination = data.agencyAwards.find(row => row.grantNumber === 'H8GCS48002')!;
+const vaccinationExpenses = data.audits.flatMap(audit => audit.grants.filter(row => row.grantNumber === 'H8GCS48002'));
+const sources = [
+  { title: 'Awarded Grants CSV (91 MB)', publisher: data.agencySource.publisher, url: data.agencySource.url },
+  { title: 'Awarded Grants field definitions (Excel)', publisher: data.agencySource.publisher, url: data.agencySource.dictionary.url },
+  { title: 'Selected grant-year records in the agency map service', publisher: data.agencySource.publisher, url: data.agencySource.crossCheck.url },
+  ...data.audits.map(audit => ({
+    title: `Single Audit summary for fiscal year ended ${audit.fiscalPeriodEnd}`, publisher: 'Federal Audit Clearinghouse', url: audit.summaryUrl,
+  })),
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Follow four federal grants from the awarding agency’s records to three annual audit schedules from one Louisiana health center." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Iberia health center'}]} sources={sources}>
+  <p>The Health Resources and Services Administration (HRSA) publishes grant awards by federal fiscal year. The audit reports for <strong>{data.organization.name}</strong> list program receipts and expenses by the center’s fiscal year. The same grant numbers connect the records, and the agency and audit submissions carry the same federal recipient ID.</p>
+
+  <h2>One grant across two reporting calendars</h2>
+  <p>For <a href="#H8GCS48002">COVID-19 vaccination expansion</a>, HRSA lists <strong>USD {money(vaccination.awardedCents)}</strong> awarded in federal fiscal {vaccination.federalIssueYear}. The center’s schedules show expenses of <strong>USD {money(vaccinationExpenses[0].reportedExpensesCents)}</strong> in the fiscal year ending May 2023 and <strong>USD {money(vaccinationExpenses[1].reportedExpensesCents)}</strong> in the following fiscal year. Together those expenses equal the agency award amount. The audit schedules use accrual accounting. Payment dates, bank settlement and the number of people vaccinated require other records.</p>
+
+  <nav class="catalog-jump" aria-label="Jump to a grant">
+    {grants.map(([grant, label]) => <a href={'#' + grant}><SiteSymbol name={marks[grant]} />{label}</a>)}
+  </nav>
+  <div class="btn-row">
+    <a class="btn btn-ghost btn-small" href={url(route + 'data.json')} download="iberia-hrsa.json">Download case JSON</a>
+    <a class="btn btn-ghost btn-small" href={url(route + 'agency-awards.csv')} download="iberia-hrsa-agency-awards.csv">Download agency CSV</a>
+    <a class="btn btn-ghost btn-small" href={url(route + 'audit-schedules.csv')} download="iberia-hrsa-audit-schedules.csv">Download audit CSV</a>
+  </div>
+
+  <h2>Totals from the center’s audit schedules</h2>
+  <div class="table-wrap" role="region" aria-label="Audit schedule totals by fiscal period" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Center’s fiscal period</th><th scope="col">Grant rows</th><th scope="col">Reported receipts (USD)</th><th scope="col">Reported expenses (USD)</th><th scope="col">Original schedule</th></tr></thead>
+      <tbody>{data.audits.map(audit => <tr>
+        <th scope="row">{audit.fiscalPeriodStart} to {audit.fiscalPeriodEnd}</th>
+        <td>{audit.grants.length}</td><td>{money(audit.reportedReceiptsCents)}</td><td>{money(audit.reportedExpensesCents)}</td>
+        <td><a href={pdfPage(audit)}>PDF page {audit.scheduleSource.pdfPage}</a> · <a href={audit.summaryUrl}>Submission</a></td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>Each schedule reports the two columns on an accrual basis, which records financial activity in the period it is recognized. Adding receipts to expenses would count the same grant activity at two stages.</p>
+
+  <h2>Source records by grant</h2>
+  {grants.map(([grant, label]) => {
+    const awards = data.agencyAwards.filter(row => row.grantNumber === grant);
+    const schedules = data.audits.flatMap(audit => audit.grants.filter(row => row.grantNumber === grant).map(row => ({ audit, row })));
+    return <section class="grant" id={grant} aria-labelledby={grant + '-title'}>
+      <h3 id={grant + '-title'}><SiteSymbol name={marks[grant]} size="inline" /> {label}</h3>
+      <p class="note">Grant <code>{grant}</code> · Assistance Listing {schedules[0].row.assistanceListing} in the audit schedule</p>
+      <h4>Agency awards</h4>
+      <div class="table-wrap" role="region" aria-label={label + ' agency awards'} tabindex="0">
+        <table class="data">
+          <thead><tr><th scope="col">Federal issue year</th><th scope="col">Award amount (USD)</th><th scope="col">Agency project period</th><th scope="col">CSV record</th></tr></thead>
+          <tbody>{awards.map(row => <tr>
+            <th scope="row">{row.federalIssueYear}</th><td>{money(row.awardedCents)}</td>
+            <td>{row.projectPeriodStart} to {row.projectPeriodEnd}</td><td>{count(row.sourceRecord)}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+      <h4>Center’s audit schedules</h4>
+      <div class="table-wrap" role="region" aria-label={label + ' audit schedules'} tabindex="0">
+        <table class="data">
+          <thead><tr><th scope="col">Center’s fiscal year end</th><th scope="col">Program dates on the schedule</th><th scope="col">Reported receipts (USD)</th><th scope="col">Reported expenses (USD)</th><th scope="col">Original schedule</th></tr></thead>
+          <tbody>{schedules.map(({ audit, row }) => <tr>
+            <th scope="row">{audit.fiscalPeriodEnd}</th><td>{row.programPeriodStart} to {row.programPeriodEnd}</td>
+            <td>{money(row.reportedReceiptsCents)}</td><td>{money(row.reportedExpensesCents)}</td>
+            <td><a href={pdfPage(audit)}>PDF page {audit.scheduleSource.pdfPage}</a></td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+    </section>;
+  })}
+
+  <h2>How to reproduce the comparison</h2>
+  <ol>
+    <li>Find the recipient’s public annual audit submissions by EIN <code>{data.organization.ein}</code> or federal Unique Entity Identifier <code>{data.organization.uei}</code>. Three selected FAC general-file editions each contain one matching nonprofit record. The JSON preserves the report identifiers, source records and accepted dates.</li>
+    <li>Read the complete federal-award schedule in each of those three PDFs. Keep each grant number, Assistance Listing, printed program dates and both reported amounts. The grants add to the printed expenses for each fiscal period, and those totals agree with the corresponding FAC general records.</li>
+    <li>Read the HRSA Awarded Grants file captured on <time datetime={data.capturedOn}>{data.capturedOn}</time>. All {data.agencyAwards.length} rows for the four grant numbers carry the same recipient identifier. The federal issue years run from 2016 to 2026 in this capture. The agency map extract agrees on those grant-year amounts and project dates.</li>
+  </ol>
+  <p>The HRSA file groups awarded dollars by grant and federal fiscal year. The organization reports June-to-May fiscal periods. A grant can run for several years and have multiple federal award rows. Match the grant and recipient identifiers across sources. Repeated amounts and overlapping dates alone cannot identify the same payment. The JSON contains source fingerprints, while the two CSVs keep agency awards and audit schedules in separate files.</p>
+  <p>This case covers one organization and three audited fiscal years. Agency project periods can start before the file’s award-year coverage. Expenses before or after the selected audit periods remain outside the case. The agency lists the grantee’s mailing location. Spending by clinic, patient needs and service outcomes require separate evidence. The <a href={finances}>Form 990 financial lookup for this EIN</a> gives organization-wide IRS figures for periods ending May 2022 and May 2023.</p>
+</Entry>
+
+<style>
+  .grant {
+    margin-block: 2.5rem;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--rule);
+  }
+  .data {
+    min-width: 30rem;
+  }
+  .data td {
+    font-variant-numeric: tabular-nums;
+  }
+</style>

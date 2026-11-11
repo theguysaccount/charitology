@@ -1,0 +1,372 @@
+{
+  "format": "charitology-iberia-hrsa-v1",
+  "capturedOn": "2026-11-11",
+  "currency": "USD",
+  "review": "draft",
+  "organization": {
+    "name": "Iberia Comprehensive Community Health Center, Inc.",
+    "ein": "582164455",
+    "uei": "CQM4LLQ6GDU8",
+    "granteeState": "LA"
+  },
+  "programLabels": {
+    "H80CS00697": "Health Center Program",
+    "H8FCS41483": "American Rescue Plan operations",
+    "H8GCS48002": "COVID-19 vaccination expansion",
+    "C8ECS44572": "Health center capital improvements"
+  },
+  "agencySource": {
+    "url": "https://data.hrsa.gov/DataDownload/DD_Files/FS_EHB_AWARD_GRANT_FA_AGR_MVX.csv",
+    "bytes": 91184623,
+    "sha256": "18312da738bdd862595675b3a4a1e4c66cda543ec044bfdc29aae670124cb710",
+    "sourceRows": 75859,
+    "selectedRows": 15,
+    "publisher": "Health Resources and Services Administration",
+    "catalogUrl": "https://catalog.data.gov/dataset/grants",
+    "dictionary": {
+      "url": "https://data.hrsa.gov/DataDownload/DD_Files/Awarded_Grants_Data_Download_Metadata.xlsx",
+      "bytes": 17020,
+      "sha256": "c452682cb6487b486474ae00b381dafce61ae22be901e6176125dc9786272108"
+    },
+    "crossCheck": {
+      "url": "https://gisportal.hrsa.gov/server/rest/services/Grants/Grants/MapServer/1/query?where=GRANT_NUM+IN+%28%27C8ECS44572%27%2C%27H80CS00697%27%2C%27H8FCS41483%27%2C%27H8GCS48002%27%29+AND+AWARD_YR+%3E%3D+%272016%27&outFields=OBJECTID%2CGRANT_NUM%2CAWARD_YR%2CFA%2CGRANT_PROJ_PERIOD_START_DT_TXT%2CGRANT_PROJ_PERIOD_END_DT_TXT&returnGeometry=false&orderByFields=GRANT_NUM%2CAWARD_YR%2COBJECTID&f=json",
+      "bytes": 3527,
+      "sha256": "d7c7e52ef019d6b1b31f0108e2b4c1045da3e3cf0cccea6e333d82c2380639ad",
+      "matchedRows": 15
+    },
+    "amountField": "Financial Assistance",
+    "periodField": "Award Year"
+  },
+  "agencyAwards": [
+    {
+      "grantNumber": "C8ECS44572",
+      "federalIssueYear": 2021,
+      "awardedCents": 80159800,
+      "projectPeriodStart": "2021-09-15",
+      "projectPeriodEnd": "2024-09-14",
+      "agencyGranteeLabel": "IBERIA COMPRHESIVE COM HEALTH CNTR, INC.",
+      "agencyProgramLabel": "Health Center Infrastructure Support (C8E)",
+      "sourceRefreshedOn": "2021-11-29",
+      "sourceRecord": 4938,
+      "agencyMapObjectId": 48946
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2016,
+      "awardedCents": 369823900,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2018-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHESIVE COM HEALTH CNTR, INC.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2017-07-01",
+      "sourceRecord": 34951,
+      "agencyMapObjectId": 22984
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2017,
+      "awardedCents": 391332500,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2018-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHESIVE COM HEALTH CNTR, INC.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2018-02-13",
+      "sourceRecord": 34950,
+      "agencyMapObjectId": 22101
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2018,
+      "awardedCents": 407090000,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2021-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHESIVE COM HEALTH CNTR, INC.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2018-11-30",
+      "sourceRecord": 34953,
+      "agencyMapObjectId": 811
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2019,
+      "awardedCents": 407923400,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2021-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHESIVE COM HEALTH CNTR, INC.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2019-10-23",
+      "sourceRecord": 34952,
+      "agencyMapObjectId": 8395
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2020,
+      "awardedCents": 405959600,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2022-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHESIVE COM HEALTH CNTR, INC.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2021-03-09",
+      "sourceRecord": 34949,
+      "agencyMapObjectId": 39158
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2021,
+      "awardedCents": 422003300,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2022-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHESIVE COM HEALTH CNTR, INC.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2021-11-29",
+      "sourceRecord": 34948,
+      "agencyMapObjectId": 53467
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2022,
+      "awardedCents": 397015200,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2025-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHNSV COMM HEALTH CENTER",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2023-01-10",
+      "sourceRecord": 34946,
+      "agencyMapObjectId": 57104
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2023,
+      "awardedCents": 397015200,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2025-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHNSV COMM HEALTH CENTER",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2023-10-13",
+      "sourceRecord": 34947,
+      "agencyMapObjectId": 72607
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2024,
+      "awardedCents": 401383000,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2025-05-31",
+      "agencyGranteeLabel": "IBERIA COMPRHNSV COMM HEALTH CENTER, INC.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2024-10-07",
+      "sourceRecord": 34945,
+      "agencyMapObjectId": 79985
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2025,
+      "awardedCents": 397015200,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2028-05-31",
+      "agencyGranteeLabel": "Iberia Comprehensive Community Health Center, Inc.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2025-10-02",
+      "sourceRecord": 34944,
+      "agencyMapObjectId": 83398
+    },
+    {
+      "grantNumber": "H80CS00697",
+      "federalIssueYear": 2026,
+      "awardedCents": 397015200,
+      "projectPeriodStart": "2002-06-01",
+      "projectPeriodEnd": "2029-05-31",
+      "agencyGranteeLabel": "Iberia Comprehensive Community Health Center, Inc.",
+      "agencyProgramLabel": "Health Center Program (H80)",
+      "sourceRefreshedOn": "2026-11-10",
+      "sourceRecord": 75023,
+      "agencyMapObjectId": 87949
+    },
+    {
+      "grantNumber": "H8FCS41483",
+      "federalIssueYear": 2021,
+      "awardedCents": 460425000,
+      "projectPeriodStart": "2021-04-01",
+      "projectPeriodEnd": "2023-03-31",
+      "agencyGranteeLabel": "IBERIA COMPRHESIVE COM HEALTH CNTR, INC.",
+      "agencyProgramLabel": "American Rescue Plan Act Funding for Health Centers (H8F)",
+      "sourceRefreshedOn": "2021-11-29",
+      "sourceRecord": 49753,
+      "agencyMapObjectId": 54663
+    },
+    {
+      "grantNumber": "H8FCS41483",
+      "federalIssueYear": 2022,
+      "awardedCents": 6550000,
+      "projectPeriodStart": "2021-04-01",
+      "projectPeriodEnd": "2023-03-31",
+      "agencyGranteeLabel": "IBERIA COMPRHNSV COMM HEALTH CENTER",
+      "agencyProgramLabel": "American Rescue Plan Act Funding for Health Centers (H8F)",
+      "sourceRefreshedOn": "2023-01-10",
+      "sourceRecord": 49755,
+      "agencyMapObjectId": 58969
+    },
+    {
+      "grantNumber": "H8GCS48002",
+      "federalIssueYear": 2023,
+      "awardedCents": 32304600,
+      "projectPeriodStart": "2022-12-01",
+      "projectPeriodEnd": "2023-12-31",
+      "agencyGranteeLabel": "IBERIA COMPRHNSV COMM HEALTH CENTER",
+      "agencyProgramLabel": "FY 2023 Expanding COVID-19 Vaccination (H8G)",
+      "sourceRefreshedOn": "2023-10-13",
+      "sourceRecord": 13546,
+      "agencyMapObjectId": 64562
+    }
+  ],
+  "audits": [
+    {
+      "fiscalPeriodStart": "2022-06-01",
+      "fiscalPeriodEnd": "2023-05-31",
+      "acceptedOn": "2024-01-02",
+      "reportId": "2023-05-GSAFAC-0000016138",
+      "submissionVersion": 1,
+      "summaryUrl": "https://app.fac.gov/dissemination/summary/2023-05-GSAFAC-0000016138",
+      "generalSource": {
+        "url": "https://app.fac.gov/dissemination/public-data/gsa/audit-year/2024-ay-general.csv",
+        "bytes": 31902424,
+        "sha256": "66e993c661a12ac5c4f5e07a6c90fd1921ec305482df69f902274869314eedc0",
+        "record": 5154,
+        "sourceRows": 50619,
+        "selectedRows": 1
+      },
+      "scheduleSource": {
+        "url": "https://app.fac.gov/dissemination/report/pdf/2023-05-GSAFAC-0000016138",
+        "bytes": 676409,
+        "sha256": "87388b9351366818578e04a58c3773998aa7adb93ebe37727b7a050c754cb462",
+        "pdfPage": 20,
+        "printedPage": 18
+      },
+      "accountingBasis": "accrual",
+      "reportedReceiptsCents": 642463100,
+      "reportedExpensesCents": 642463100,
+      "grants": [
+        {
+          "grantNumber": "H80CS00697",
+          "assistanceListing": "93.224",
+          "programPeriodStart": "2022-06-01",
+          "programPeriodEnd": "2023-05-31",
+          "reportedReceiptsCents": 397015200,
+          "reportedExpensesCents": 397015200
+        },
+        {
+          "grantNumber": "H8FCS41483",
+          "assistanceListing": "93.224",
+          "programPeriodStart": "2021-04-01",
+          "programPeriodEnd": "2023-03-31",
+          "reportedReceiptsCents": 198393300,
+          "reportedExpensesCents": 198393300
+        },
+        {
+          "grantNumber": "H8GCS48002",
+          "assistanceListing": "93.527",
+          "programPeriodStart": "2022-12-01",
+          "programPeriodEnd": "2023-05-31",
+          "reportedReceiptsCents": 29554600,
+          "reportedExpensesCents": 29554600
+        },
+        {
+          "grantNumber": "C8ECS44572",
+          "assistanceListing": "93.526",
+          "programPeriodStart": "2021-09-15",
+          "programPeriodEnd": "2024-09-14",
+          "reportedReceiptsCents": 17500000,
+          "reportedExpensesCents": 17500000
+        }
+      ]
+    },
+    {
+      "fiscalPeriodStart": "2023-06-01",
+      "fiscalPeriodEnd": "2024-05-31",
+      "acceptedOn": "2025-03-26",
+      "reportId": "2024-05-GSAFAC-0000360811",
+      "submissionVersion": 1,
+      "summaryUrl": "https://app.fac.gov/dissemination/summary/2024-05-GSAFAC-0000360811",
+      "generalSource": {
+        "url": "https://app.fac.gov/dissemination/public-data/gsa/audit-year/2025-ay-general.csv",
+        "bytes": 27468452,
+        "sha256": "80531bfabae091c219b4036e05e1a5151ae26c1772a7137148c64caa519ccff2",
+        "record": 23775,
+        "sourceRows": 43535,
+        "selectedRows": 1
+      },
+      "scheduleSource": {
+        "url": "https://app.fac.gov/dissemination/report/pdf/2024-05-GSAFAC-0000360811",
+        "bytes": 1029426,
+        "sha256": "8e42b366f502808fd07817cab9b7643656926f873e8efa6b8d9f9f86ca68020f",
+        "pdfPage": 20,
+        "printedPage": 18
+      },
+      "accountingBasis": "accrual",
+      "reportedReceiptsCents": 403765200,
+      "reportedExpensesCents": 403765200,
+      "grants": [
+        {
+          "grantNumber": "H80CS00697",
+          "assistanceListing": "93.224",
+          "programPeriodStart": "2023-06-01",
+          "programPeriodEnd": "2024-05-31",
+          "reportedReceiptsCents": 397015200,
+          "reportedExpensesCents": 397015200
+        },
+        {
+          "grantNumber": "H8GCS48002",
+          "assistanceListing": "93.527",
+          "programPeriodStart": "2023-06-01",
+          "programPeriodEnd": "2024-05-31",
+          "reportedReceiptsCents": 2750000,
+          "reportedExpensesCents": 2750000
+        },
+        {
+          "grantNumber": "C8ECS44572",
+          "assistanceListing": "93.526",
+          "programPeriodStart": "2021-09-15",
+          "programPeriodEnd": "2024-09-14",
+          "reportedReceiptsCents": 4000000,
+          "reportedExpensesCents": 4000000
+        }
+      ]
+    },
+    {
+      "fiscalPeriodStart": "2024-06-01",
+      "fiscalPeriodEnd": "2025-05-31",
+      "acceptedOn": "2026-02-27",
+      "reportId": "2025-05-GSAFAC-0000405641",
+      "submissionVersion": 1,
+      "summaryUrl": "https://app.fac.gov/dissemination/summary/2025-05-GSAFAC-0000405641",
+      "generalSource": {
+        "url": "https://app.fac.gov/dissemination/public-data/gsa/audit-year/2026-ay-general.csv",
+        "bytes": 24047833,
+        "sha256": "23d432ff3d09c59b535ba6211e16a994f048845229b8cc2ec120c6d87e172eab",
+        "record": 18704,
+        "sourceRows": 38194,
+        "selectedRows": 1
+      },
+      "scheduleSource": {
+        "url": "https://app.fac.gov/dissemination/report/pdf/2025-05-GSAFAC-0000405641",
+        "bytes": 520426,
+        "sha256": "9958ce0001f8f1210b97d8906c23cf3f407824688282495b3cb1ed7fad884548",
+        "pdfPage": 24,
+        "printedPage": 22
+      },
+      "accountingBasis": "accrual",
+      "reportedReceiptsCents": 397015200,
+      "reportedExpensesCents": 397015200,
+      "grants": [
+        {
+          "grantNumber": "H80CS00697",
+          "assistanceListing": "93.224",
+          "programPeriodStart": "2024-06-01",
+          "programPeriodEnd": "2025-05-31",
+          "reportedReceiptsCents": 397015200,
+          "reportedExpensesCents": 397015200
+        }
+      ]
+    }
+  ]
+}
