@@ -163,6 +163,22 @@ npm run build
 node scripts/check-brazil-project-contracts.mjs
 ```
 
+### Proposal-level works monitoring and accumulated amounts
+
+The [works monitoring lookup](https://charitology.com/record/funding-flows/brazil-works-measurements/) joins the complete Transferegov monitoring archive to the pinned infrastructure proposals by the original proposal ID. It finds 60 monitoring rows for 58 of 88 proposals. Fifty-eight distinct measurements have complete reported periods across 56 proposals. Two additional monitoring records leave measurement ID, status and period blank. The source labels 21 measurements accepted and 26 attested. The status applies to the measurement. Signed acceptance of the work site and actual expenditure require distinct records.
+
+The separate accumulated amounts archive yields 19 work-item rows on 18 monitoring contract IDs. Each ID identifies one proposal in the full monitoring archive. The publisher's data model assigns the work-item ID to its measurement subgoal table. The procurement subgoal uses a different source table. The lookup therefore connects accumulated amounts to proposals and keeps the original work-item reference. It assigns no procurement contract, named work item or location to those amounts.
+
+All 19 rows report a total, eight report a grantor figure and 18 each report recipient and company figures. These are reported accumulated work values in reais. The item archive gives no measurement period. In one São José dos Campos row the four fields repeat BRL 341,200.00. Adding the columns would count the same reported figure more than once. The Joaçaba proposal has two accepted measurement records and no accumulated item row in this capture. The CSVs preserve nulls and keep the amounts out of the dated measurement table. Each published item carries the source row and its original monitoring and work-item IDs.
+
+Rebuild with the two pinned `siconv_acomp_obras_*.zip` sources named in the edition JSON. The builder also checks the exact upstream project edition hash. It excludes supplier IDs, names and free-text fields from the projection. [Transferegov data model](https://www.gov.br/transferegov/pt-br/ferramentas-gestao/paineis-gerenciais/arquivos/modelo-dados-csvs-discricionarias-e-legais.zip/@@display-file/file) · [Works monitoring and grantor review](https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras/obras/8-tutorial_acompanhamento-de-obra-concedente.pdf).
+
+```sh
+python3 scripts/build-brazil-works-measurements.py --inputs /path/to/captures /path/to/rebuilt-works.json
+npm run build
+node scripts/check-brazil-works-measurements.mjs
+```
+
 ## Brazil Cisternas agreement and water access
 
 The [Cisternas case](https://charitology.com/record/funding-flows/brazil-cisterns/) follows agreement 945310 and its exact proposal and organization IDs. Its eleven bank orders show BRL 31,499,882.76 made available in 2023–2026. The six pinned Transferegov archives identify the original agreement, amendment and reported movements from the agreement account. The 2026 records cover the November 11 capture. The current federal contribution, reported bank orders, account payments and internal transfers belong to different stages. The named-payee subset uses the full CNPJ and exact agreement number. It stays inside the other-payment total. All 190 selected internal transfers have an onward record with a missing amount.

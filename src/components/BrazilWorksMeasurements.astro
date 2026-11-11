@@ -1,0 +1,91 @@
+---
+import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
+import { data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
+import { measurementStatusLabels, type MeasurementItem, type MonitoringRecord } from '../lib/brazil-works-measurements';
+import { url } from '../lib/site';
+
+type Props = { directory?: boolean } & (
+  { variant: 'monitoring'; rows: readonly MonitoringRecord[] } |
+  { variant: 'items'; rows: readonly MeasurementItem[] }
+);
+const props: Props = Astro.props;
+const projects = new Map(data.projects.map(project => [project.agreement, project]));
+
+function description(record: MonitoringRecord | MeasurementItem) {
+  const project = projects.get(record.agreement);
+  const organization = project?.organization ?? '';
+  const places = project ? municipalities(project).map(place => place.no_municipio) : [];
+  const recordId = 'measurementId' in record ? record.measurementId : record.measurementItemId;
+  const search = normalizeBrazilName([
+    record.agreement, record.proposal, record.project, record.monitoringContractId, recordId, organization, ...places,
+  ].join(' '));
+  return { organization, search };
+}
+---
+
+{props.variant === 'monitoring' ? (
+  <div class="table-wrap measurements" role="region" aria-label="Works monitoring records" tabindex="0">
+    <table class="data">
+      <thead><tr>
+        {props.directory && <th scope="col">Agreement and project</th>}
+        <th scope="col">Measurement reference</th><th scope="col">Reported period</th>
+        <th scope="col">Status</th><th scope="col">Source row</th>
+      </tr></thead>
+      <tbody>{props.rows.map(record => {
+        const { organization, search } = description(record);
+        return <tr data-monitoring-row data-search={props.directory ? search : undefined} data-status={record.measurementStatus ?? 'unknown'}>
+          {props.directory && <td>
+            <a class="identity-link" href={url(projectPath(record.agreement) + '#works-measurements')}>{record.agreement} · {record.project}</a>
+            <small>{organization}</small>
+          </td>}
+          <th scope="row">
+            <span>Monitoring contract <code>{record.monitoringContractId}</code></span>
+            <small>Measurement {record.measurementId ?? 'ID unknown'}{record.measurementNumber && ` · Report number ${record.measurementNumber}`}</small>
+            {record.worksStartOn && <small>Work start in this record <time datetime={record.worksStartOn}>{record.worksStartOn}</time></small>}
+          </th>
+          <td>{record.periodStart && record.periodEnd ? <>
+            <time datetime={record.periodStart}>{record.periodStart}</time> to <time datetime={record.periodEnd}>{record.periodEnd}</time>
+          </> : 'Unknown'}</td>
+          <td>
+            {measurementStatusLabels[record.measurementStatus ?? 'unknown']}
+            {record.measurementStatus && <small lang="pt-BR">{record.measurementStatus}</small>}
+          </td>
+          <td>{record.sourceRow}</td>
+        </tr>;
+      })}</tbody>
+    </table>
+  </div>
+) : (
+  <div class="table-wrap measurements" role="region" aria-label="Accumulated work-item amounts" tabindex="0">
+    <table class="data">
+      <thead><tr>
+        {props.directory && <th scope="col">Agreement and project</th>}
+        <th scope="col">Monitoring reference</th>
+        <th scope="col">Reported total</th><th scope="col">Grantor figure</th>
+        <th scope="col">Recipient figure</th><th scope="col">Company figure</th><th scope="col">Source row</th>
+      </tr></thead>
+      <tbody>{props.rows.map(record => {
+        const { organization, search } = description(record);
+        return <tr data-measurement-item data-search={props.directory ? search : undefined}>
+          {props.directory && <td>
+            <a class="identity-link" href={url(projectPath(record.agreement) + '#works-measurements')}>{record.agreement} · {record.project}</a>
+            <small>{organization}</small>
+          </td>}
+          <th scope="row">Contract <code>{record.monitoringContractId}</code><small>Work item {record.measurementItemId}</small></th>
+          <td>{money(record.amountCentsBRL.total)}</td>
+          <td>{money(record.amountCentsBRL.grantor)}</td>
+          <td>{money(record.amountCentsBRL.recipient)}</td>
+          <td>{money(record.amountCentsBRL.company)}</td>
+          <td>{record.sourceRow}</td>
+        </tr>;
+      })}</tbody>
+    </table>
+  </div>
+)}
+
+<style>
+  .measurements { margin-block: 1rem; }
+  .measurements table { min-width: 43rem; }
+  .measurements :is(th, td) { overflow-wrap: anywhere; }
+  .measurements small { display: block; color: var(--ink-2); font-weight: normal; }
+</style>
