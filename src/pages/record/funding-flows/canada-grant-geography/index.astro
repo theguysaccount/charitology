@@ -1,0 +1,147 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import data from '../../../../data/ca-grant-geography.json';
+
+const title = 'Where Canadian charities reported grant activities';
+const base = '/record/funding-flows/canada-grant-geography/';
+const years = ['2023', '2024'] as const;
+const components = ['cash', 'noncash'] as const;
+const label = { cash: 'Cash', noncash: 'Noncash' };
+const count = (value: number) => value.toLocaleString('en-CA');
+const cents = (value: string | null) => value === null ? 0n : BigInt(value.replace('.', ''));
+const formatCad = (value: bigint) => {
+  const absolute = value < 0n ? -value : value;
+  return (value < 0n ? '−' : '') + (absolute / 100n).toLocaleString('en-CA') + '.' + String(absolute % 100n).padStart(2, '0');
+};
+const cad = (value: string | null) => value === null ? 'Unavailable' : formatCad(cents(value));
+const cash = years.reduce((sum, year) => sum + cents(data.editions[year].amounts.cash.reported.amountCAD), 0n);
+const unallocatedCash = years.reduce((sum, year) => sum + cents(data.editions[year].amounts.cash.unallocated.amountCAD), 0n);
+const coverageLabels = {
+  country: 'One documented country', multiple: 'Multiple documented places',
+  region: 'Region without a specific country', blank: 'Blank country field',
+  unresolved: 'Country field could not be matched',
+};
+const exclusionLabels = {
+  unmatchedReturn: 'No matching annual return', invalidSequence: 'Missing or invalid worksheet sequence',
+  repeatedSequence: 'Repeated worksheet sequence within the filing period',
+};
+const sources = [
+  { title: 'Form T1441 and filing instructions', publisher: data.publisher, url: 'https://www.canada.ca/en/revenue-agency/services/forms-publications/forms/t1441.html' },
+  ...data.countryGuides.map((guide, i) => ({
+    title: ['Filing guide and English country codes', '2023 filing guide and country codes', 'French filing guide and country codes'][i],
+    publisher: data.publisher, url: guide.url,
+  })),
+  ...years.flatMap(year => [
+    { title: `${year} grants source CSV`, publisher: data.publisher, url: data.editions[year].sources.grants.url },
+    { title: `${year} annual return source CSV`, publisher: data.publisher, url: data.editions[year].sources.finance.url },
+  ]),
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Look up reported Canadian grant disbursements by country and see how much of the source remains unallocated."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Canadian grant geography'}]}
+  filePath="src/pages/record/funding-flows/canada-grant-geography/index.astro" sources={sources}>
+  <p>This edition summarizes Form T1441 records linked to {count(years.reduce((sum, year) => sum + data.editions[year].filerPeriods, 0))} annual filing periods ending in 2023 or 2024. The form covers grants by registered charities to other grantees. It asks for individual grants where the charity gave that grantee more than CAD 5,000 in total during the fiscal period. The same filer supplies both the grants form and the annual return.</p>
+  <p>Across the two editions, <strong>CAD {formatCad(cash - unallocatedCash)}</strong> of <strong>CAD {formatCad(cash)}</strong> in reported cash is shown by country. The coverage table below shows why the rest stays unallocated.</p>
+  <p>The country field describes where the filer says grant activities took place. The figures are filer-reported disbursements. Recipient receipts, final spending, participant reach and outcomes each require separate evidence.</p>
+  <p><a href="#country-lookup">Look up countries</a> · <a href="#coverage">See coverage</a> · <a href={url(base + 'data.json')} download="canada-grant-geography.json">Download data and source pins</a> · <a href={url(base + 'amounts.csv')} download="canada-grant-geography.csv">Download amounts CSV</a>.</p>
+
+  <h2 id="country-lookup">Country lookup</h2>
+  <p>A country amount appears when at least {data.minimumNonzeroReportingAccounts} distinct charity accounts reported nonzero amounts of that type for that country and year. Both years have published cash amounts by country. Noncash amounts appear in the totals below.</p>
+  <div data-geography-lookup>
+    <form data-filters class="geography-filters" hidden role="search" aria-label="Filter reported country amounts">
+      <label class="field">Country or code<input name="country" type="search" autocomplete="off" placeholder="For example, Kenya or KE" /></label>
+      <label class="field">Fiscal period end year<select name="year"><option value="">Both years</option>{years.map(year => <option value={year}>{year}</option>)}</select></label>
+      <button type="button" class="btn btn-ghost" data-clear>Clear filters</button>
+    </form>
+    <p data-count role="status" aria-live="polite" hidden></p>
+    <div class="table-scroll" role="region" aria-label="Published cash amounts by country and fiscal year" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Country or territory</th><th scope="col">Year</th><th scope="col">Amount (CAD)</th><th scope="col">Rows with amounts</th><th scope="col">Reporting charity accounts</th></tr></thead>
+        <tbody>
+          {years.flatMap(year => data.editions[year].amounts.cash.countries.map(row => (
+            <tr data-country={row.name} data-code={row.code} data-year={year}>
+              <th scope="row">{row.name} <span class="note">{row.code}</span></th>
+              <td>{year}</td><td>{cad(row.amountCAD)}</td><td>{count(row.amountRows)}</td><td>{count(row.reportingAccounts)}</td>
+            </tr>
+          )))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2 id="totals">Reported and unallocated amounts</h2>
+  <p>Country totals and the unallocated amount partition the reported total within each year and amount type. The unallocated amount includes blank or unmatched country fields, regional or multi-place entries, and countries below the publication threshold. A blank field leaves the country unknown. Noncash amounts use the filer’s reported fair market value. Blank amount fields are excluded from sums and counted separately. Reported zeros and negative amounts are retained.</p>
+  <div class="table-scroll" role="region" aria-label="Cash and noncash totals, with unallocated amounts" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Fiscal period end year</th><th scope="col">Type</th><th scope="col">Reported total (CAD)</th><th scope="col">Unallocated (CAD)</th><th scope="col">Rows with an amount</th><th scope="col">Rows without an amount</th></tr></thead>
+      <tbody>
+        {years.flatMap(year => components.map(component => {
+          const scope = data.editions[year].amounts[component];
+          return <tr><th scope="row">{year}</th><td>{label[component]}</td><td>{cad(scope.reported.amountCAD)}</td><td>{cad(scope.unallocated.amountCAD)}</td><td>{count(scope.reported.amountRows)}</td><td>{count(scope.unavailableRows)}</td></tr>;
+        }))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="coverage">What the source covers</h2>
+  <p>Each worksheet row must match a unique annual return by exact charity account, fiscal period end and form version. The worksheet sequence must be a distinct positive number within that period and form. Country names and codes match the published English or French code list. Multi-place records stay together, and regional codes remain outside country totals.</p>
+  <div class="table-scroll" role="region" aria-label="Source selection and geography coverage" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Selection or geography</th>{years.map(year => <th scope="col">{year}</th>)}</tr></thead>
+      <tbody>
+        <tr><th scope="row">Source rows</th>{years.map(year => <td>{count(data.editions[year].sourceRows)}</td>)}</tr>
+        {Object.entries(exclusionLabels).map(([key, name]) => <tr><th scope="row">{name}</th>{years.map(year => <td>{count(data.editions[year].excluded[key as keyof typeof exclusionLabels])}</td>)}</tr>)}
+        <tr><th scope="row">Included rows</th>{years.map(year => <td>{count(data.editions[year].includedRows)}</td>)}</tr>
+        {Object.entries(coverageLabels).map(([key, name]) => <tr><th scope="row">{name}</th>{years.map(year => <td>{count(data.editions[year].geography[key as keyof typeof coverageLabels])}</td>)}</tr>)}
+      </tbody>
+    </table>
+  </div>
+  <p>The source leaves many locations unknown. The lookup covers selected grant records and cannot establish all Canadian charity funding by country. See the <a href={url('/record/charity-financials/canada/')}>annual filing lookup</a> for line 5045 totals and the <a href={url('/record/funding-flows/canada-qualified-donees/')}>separate gifts worksheet</a> for reported gifts to other registered charity accounts.</p>
+  <p>Contains information from the Canada Revenue Agency under the <a href={data.licence}>Open Government Licence – Canada</a>. Charitology aggregated and selected fields from the <time datetime={data.capturedOn}>{data.capturedOn}</time> captures. The published files contain geographic totals and source metadata.</p>
+</Entry>
+
+<script>
+  const lookup = document.querySelector<HTMLElement>('[data-geography-lookup]');
+  const form = lookup?.querySelector<HTMLFormElement>('[data-filters]');
+  const count = lookup?.querySelector<HTMLElement>('[data-count]');
+  const input = form?.querySelector<HTMLInputElement>('[name="country"]');
+  const year = form?.querySelector<HTMLSelectElement>('[name="year"]');
+  const clear = form?.querySelector<HTMLButtonElement>('[data-clear]');
+  const rows = [...(lookup?.querySelectorAll<HTMLTableRowElement>('tr[data-country]') ?? [])];
+  const fold = (value: string) => value.normalize('NFKD').replace(/\p{M}/gu, '').trim().toLowerCase();
+
+  if (form && count && input && year && clear) {
+    const update = () => {
+      const query = fold(input.value);
+      let shown = 0;
+      for (const row of rows) {
+        const matches = (!year.value || year.value === row.dataset.year) &&
+          (fold(row.dataset.country ?? '').includes(query) || fold(row.dataset.code ?? '') === query);
+        row.hidden = !matches;
+        shown += Number(matches);
+      }
+      count.textContent = shown ? `Showing ${shown} of ${rows.length} published country amounts.` :
+        'No published amounts match these filters. Try another country or year.';
+    };
+    form.addEventListener('input', update);
+    clear.addEventListener('click', () => {
+      form.reset();
+      update();
+      input.focus();
+    });
+    form.addEventListener('submit', event => { event.preventDefault(); update(); });
+    update();
+    form.hidden = count.hidden = false;
+  }
+</script>
+
+<style>
+  .table-scroll { overflow-x: auto; margin-block: 1rem; }
+  .table-scroll table { min-width: 37rem; display: table; margin: 0; }
+  .table-scroll td { font-variant-numeric: tabular-nums; }
+  .geography-filters:not([hidden]) { display: flex; gap: .65rem; flex-wrap: wrap; align-items: end; }
+  .geography-filters .field { flex: 1 1 13rem; min-width: 0; }
+</style>

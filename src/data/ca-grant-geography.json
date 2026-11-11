@@ -1,0 +1,491 @@
+{
+  "format": "charitology-ca-t1441-geography-v1",
+  "publisher": "Canada Revenue Agency",
+  "capturedOn": "2026-11-11",
+  "currency": "CAD",
+  "licence": "https://open.canada.ca/en/open-government-licence-canada",
+  "stage": "filer-reported-disbursement",
+  "minimumNonzeroReportingAccounts": 5,
+  "countryGuides": [
+    {
+      "file": "cra-guide-en.html",
+      "url": "https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/t4033/t4033-completing-registered-charity-information-return.html",
+      "countryTableSha256": "bbe362a089b23895580a1fb21d2b9604333adf753e460f80c4ea2e56013166d4"
+    },
+    {
+      "file": "cra-guide-en-2023.html",
+      "url": "https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/t4033/t4033-completing-registered-charity-information-return-23.html",
+      "countryTableSha256": "bbe362a089b23895580a1fb21d2b9604333adf753e460f80c4ea2e56013166d4"
+    },
+    {
+      "file": "cra-guide-fr.html",
+      "url": "https://www.canada.ca/fr/agence-revenu/services/formulaires-publications/publications/t4033/t4033-comment-remplir-declaration-renseignements-organismes-bienfaisance-enregistres.html",
+      "countryTableSha256": "b7a7e49c47fc7548ecc0c66cd65c1daecd703ecddd81204572b831fa969f65ff"
+    }
+  ],
+  "editions": {
+    "2023": {
+      "sources": {
+        "finance": {
+          "url": "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6/resource/0b9b4b01-5cb6-4981-b007-ae88f48cc799/download/financial_d_and_schedule_6_2023_updated.csv",
+          "file": "financial_d_and_schedule_6_2023_updated.csv",
+          "sha256": "65c6321c4d58de4012d1011e0b39378ae5ebffaf76a231c295e7c1b3d9d3d974"
+        },
+        "grants": {
+          "url": "https://open.canada.ca/data/dataset/05b3abd0-e70f-4b3b-a9c5-acc436bd15b6/resource/d205c11b-9803-4d3a-8ac8-ab7b648d145b/download/non_qualified_donees_2023_updated.csv",
+          "file": "non_qualified_donees_2023_updated.csv",
+          "sha256": "6abc1abb33eb5bd00675a8f5a25cacc9a5cf31c69300f434a9ed1b314f39bee6"
+        }
+      },
+      "sourceRows": 13209,
+      "includedRows": 13206,
+      "filerPeriods": 823,
+      "excluded": {
+        "unmatchedReturn": 3,
+        "invalidSequence": 0,
+        "repeatedSequence": 0
+      },
+      "geography": {
+        "country": 731,
+        "multiple": 0,
+        "region": 52,
+        "blank": 11113,
+        "unresolved": 1310
+      },
+      "amounts": {
+        "cash": {
+          "reported": {
+            "amountCAD": "774944039.00",
+            "amountRows": 11152,
+            "reportingAccounts": 764
+          },
+          "unavailableRows": 2054,
+          "unallocated": {
+            "amountCAD": "703254371.00",
+            "amountRows": 10729,
+            "reportingAccounts": 689
+          },
+          "countries": [
+            {
+              "code": "CN",
+              "name": "China",
+              "amountCAD": "209528.00",
+              "amountRows": 8,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "CO",
+              "name": "Colombia",
+              "amountCAD": "575369.00",
+              "amountRows": 15,
+              "reportingAccounts": 7
+            },
+            {
+              "code": "CU",
+              "name": "Cuba",
+              "amountCAD": "324075.00",
+              "amountRows": 11,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "ET",
+              "name": "Ethiopia",
+              "amountCAD": "9686019.00",
+              "amountRows": 11,
+              "reportingAccounts": 7
+            },
+            {
+              "code": "GH",
+              "name": "Ghana",
+              "amountCAD": "3385676.00",
+              "amountRows": 21,
+              "reportingAccounts": 8
+            },
+            {
+              "code": "HT",
+              "name": "Haiti",
+              "amountCAD": "739877.00",
+              "amountRows": 19,
+              "reportingAccounts": 11
+            },
+            {
+              "code": "HN",
+              "name": "Honduras",
+              "amountCAD": "318014.00",
+              "amountRows": 7,
+              "reportingAccounts": 7
+            },
+            {
+              "code": "IN",
+              "name": "India",
+              "amountCAD": "5180374.00",
+              "amountRows": 54,
+              "reportingAccounts": 20
+            },
+            {
+              "code": "IL",
+              "name": "Israel",
+              "amountCAD": "22107778.00",
+              "amountRows": 22,
+              "reportingAccounts": 10
+            },
+            {
+              "code": "KE",
+              "name": "Kenya",
+              "amountCAD": "4585219.00",
+              "amountRows": 43,
+              "reportingAccounts": 11
+            },
+            {
+              "code": "MX",
+              "name": "Mexico",
+              "amountCAD": "258130.00",
+              "amountRows": 11,
+              "reportingAccounts": 8
+            },
+            {
+              "code": "PK",
+              "name": "Pakistan",
+              "amountCAD": "3194535.00",
+              "amountRows": 9,
+              "reportingAccounts": 6
+            },
+            {
+              "code": "PH",
+              "name": "Philippines",
+              "amountCAD": "1200293.00",
+              "amountRows": 27,
+              "reportingAccounts": 9
+            },
+            {
+              "code": "PL",
+              "name": "Poland",
+              "amountCAD": "474539.00",
+              "amountRows": 6,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "LK",
+              "name": "Sri Lanka",
+              "amountCAD": "328410.00",
+              "amountRows": 15,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "UG",
+              "name": "Uganda",
+              "amountCAD": "9753539.00",
+              "amountRows": 25,
+              "reportingAccounts": 13
+            },
+            {
+              "code": "UA",
+              "name": "Ukraine",
+              "amountCAD": "3304021.00",
+              "amountRows": 30,
+              "reportingAccounts": 12
+            },
+            {
+              "code": "GB",
+              "name": "United Kingdom",
+              "amountCAD": "298805.00",
+              "amountRows": 7,
+              "reportingAccounts": 6
+            },
+            {
+              "code": "US",
+              "name": "United States of America",
+              "amountCAD": "5448752.00",
+              "amountRows": 67,
+              "reportingAccounts": 41
+            },
+            {
+              "code": "ZM",
+              "name": "Zambia",
+              "amountCAD": "316715.00",
+              "amountRows": 15,
+              "reportingAccounts": 5
+            }
+          ]
+        },
+        "noncash": {
+          "reported": {
+            "amountCAD": "61822862.00",
+            "amountRows": 2200,
+            "reportingAccounts": 122
+          },
+          "unavailableRows": 11006,
+          "unallocated": {
+            "amountCAD": "61822862.00",
+            "amountRows": 2200,
+            "reportingAccounts": 122
+          },
+          "countries": []
+        }
+      }
+    },
+    "2024": {
+      "sources": {
+        "finance": {
+          "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/e545170c-3689-4833-b2a8-e9e83100ab59/download/financial_d_and_schedule_6_2024_updated.csv",
+          "file": "financial_d_and_schedule_6_2024_updated.csv",
+          "sha256": "221ab68ea499a51bb9ecf84ae189cd48fe7919f1d7cc21abe4ad5f13aa891165"
+        },
+        "grants": {
+          "url": "https://open.canada.ca/data/dataset/80c00cdb-1358-415c-bb8b-0de7f12675b8/resource/f4eb196a-d0c1-45b0-bc48-e9b48c06cbce/download/non_qualified_donees_2024_updated.csv",
+          "file": "non_qualified_donees_2024_updated.csv",
+          "sha256": "373b2f8fc8576041cbb89d69793270f52efd5008c3e00ebbcc2b124e373b5417"
+        }
+      },
+      "sourceRows": 14108,
+      "includedRows": 14106,
+      "filerPeriods": 1113,
+      "excluded": {
+        "unmatchedReturn": 2,
+        "invalidSequence": 0,
+        "repeatedSequence": 0
+      },
+      "geography": {
+        "country": 1254,
+        "multiple": 0,
+        "region": 53,
+        "blank": 12121,
+        "unresolved": 678
+      },
+      "amounts": {
+        "cash": {
+          "reported": {
+            "amountCAD": "1219913509.00",
+            "amountRows": 13752,
+            "reportingAccounts": 1082
+          },
+          "unavailableRows": 354,
+          "unallocated": {
+            "amountCAD": "1006263998.00",
+            "amountRows": 12689,
+            "reportingAccounts": 951
+          },
+          "countries": [
+            {
+              "code": "BR",
+              "name": "Brazil",
+              "amountCAD": "245254.00",
+              "amountRows": 9,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "CO",
+              "name": "Colombia",
+              "amountCAD": "724719.00",
+              "amountRows": 22,
+              "reportingAccounts": 11
+            },
+            {
+              "code": "CR",
+              "name": "Costa Rica",
+              "amountCAD": "313355.00",
+              "amountRows": 10,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "CU",
+              "name": "Cuba",
+              "amountCAD": "260871.00",
+              "amountRows": 8,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "CD",
+              "name": "Democratic Republic of Congo",
+              "amountCAD": "1069089.00",
+              "amountRows": 20,
+              "reportingAccounts": 7
+            },
+            {
+              "code": "ET",
+              "name": "Ethiopia",
+              "amountCAD": "65691229.00",
+              "amountRows": 28,
+              "reportingAccounts": 8
+            },
+            {
+              "code": "FR",
+              "name": "France",
+              "amountCAD": "279249.00",
+              "amountRows": 5,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "GH",
+              "name": "Ghana",
+              "amountCAD": "33430515.00",
+              "amountRows": 30,
+              "reportingAccounts": 9
+            },
+            {
+              "code": "GT",
+              "name": "Guatemala",
+              "amountCAD": "493209.00",
+              "amountRows": 11,
+              "reportingAccounts": 7
+            },
+            {
+              "code": "HT",
+              "name": "Haiti",
+              "amountCAD": "2313510.00",
+              "amountRows": 24,
+              "reportingAccounts": 7
+            },
+            {
+              "code": "HN",
+              "name": "Honduras",
+              "amountCAD": "886011.00",
+              "amountRows": 15,
+              "reportingAccounts": 9
+            },
+            {
+              "code": "IN",
+              "name": "India",
+              "amountCAD": "11046905.00",
+              "amountRows": 135,
+              "reportingAccounts": 22
+            },
+            {
+              "code": "IL",
+              "name": "Israel",
+              "amountCAD": "16172666.00",
+              "amountRows": 144,
+              "reportingAccounts": 25
+            },
+            {
+              "code": "KE",
+              "name": "Kenya",
+              "amountCAD": "1969429.00",
+              "amountRows": 56,
+              "reportingAccounts": 16
+            },
+            {
+              "code": "LR",
+              "name": "Liberia",
+              "amountCAD": "579365.00",
+              "amountRows": 7,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "MX",
+              "name": "Mexico",
+              "amountCAD": "1277423.00",
+              "amountRows": 24,
+              "reportingAccounts": 9
+            },
+            {
+              "code": "NG",
+              "name": "Nigeria",
+              "amountCAD": "80177.00",
+              "amountRows": 9,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "PK",
+              "name": "Pakistan",
+              "amountCAD": "5679608.00",
+              "amountRows": 19,
+              "reportingAccounts": 10
+            },
+            {
+              "code": "PE",
+              "name": "Peru",
+              "amountCAD": "1614508.00",
+              "amountRows": 23,
+              "reportingAccounts": 10
+            },
+            {
+              "code": "PH",
+              "name": "Philippines",
+              "amountCAD": "1388106.00",
+              "amountRows": 42,
+              "reportingAccounts": 13
+            },
+            {
+              "code": "PL",
+              "name": "Poland",
+              "amountCAD": "126154.00",
+              "amountRows": 6,
+              "reportingAccounts": 5
+            },
+            {
+              "code": "RW",
+              "name": "Rwanda",
+              "amountCAD": "16626704.00",
+              "amountRows": 10,
+              "reportingAccounts": 7
+            },
+            {
+              "code": "LK",
+              "name": "Sri Lanka",
+              "amountCAD": "449920.00",
+              "amountRows": 17,
+              "reportingAccounts": 6
+            },
+            {
+              "code": "UG",
+              "name": "Uganda",
+              "amountCAD": "9469362.00",
+              "amountRows": 28,
+              "reportingAccounts": 14
+            },
+            {
+              "code": "UA",
+              "name": "Ukraine",
+              "amountCAD": "7892430.00",
+              "amountRows": 49,
+              "reportingAccounts": 12
+            },
+            {
+              "code": "GB",
+              "name": "United Kingdom",
+              "amountCAD": "3773082.00",
+              "amountRows": 27,
+              "reportingAccounts": 16
+            },
+            {
+              "code": "TZ",
+              "name": "United Republic of Tanzania",
+              "amountCAD": "817411.00",
+              "amountRows": 12,
+              "reportingAccounts": 7
+            },
+            {
+              "code": "US",
+              "name": "United States of America",
+              "amountCAD": "28576221.00",
+              "amountRows": 255,
+              "reportingAccounts": 77
+            },
+            {
+              "code": "ZM",
+              "name": "Zambia",
+              "amountCAD": "403029.00",
+              "amountRows": 18,
+              "reportingAccounts": 5
+            }
+          ]
+        },
+        "noncash": {
+          "reported": {
+            "amountCAD": "14351312.00",
+            "amountRows": 994,
+            "reportingAccounts": 104
+          },
+          "unavailableRows": 13112,
+          "unallocated": {
+            "amountCAD": "14351312.00",
+            "amountRows": 994,
+            "reportingAccounts": 104
+          },
+          "countries": []
+        }
+      }
+    }
+  }
+}

@@ -136,6 +136,7 @@ export const sections: Section[] = [
     'countries': 'pin', 'country-profiles': 'globe', 'disagreements': 'dialogue', 'editions': 'document',
     'editions/compare': 'compare', 'encyclopedia': 'book', 'evidence-library': 'stack',
     'failure-archive': 'break', 'funding-flows': 'split', 'funding-flows/canada-qualified-donees': 'chain',
+    'funding-flows/canada-grant-geography': 'globe',
     'funding-flows/brazil-transferegov': 'wallet', 'funding-flows/brazil-solidarity-kitchens': 'hands',
     'funding-flows/brazil-solidarity-kitchens/account-payments': 'coins',
     'funding-flows/us-schedule-i': 'table', 'funding-flows/ile-de-france-paid-grants': 'pin',

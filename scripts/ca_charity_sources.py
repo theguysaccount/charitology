@@ -13,6 +13,11 @@ CAPTURED_ON = '2026-11-11'
 PUBLISHER = 'Canada Revenue Agency'
 CAPTURES = {
     '2023': {
+        'disbursements': (
+            'd205c11b-9803-4d3a-8ac8-ab7b648d145b',
+            'non_qualified_donees_2023_updated.csv',
+            '6abc1abb33eb5bd00675a8f5a25cacc9a5cf31c69300f434a9ed1b314f39bee6',
+        ),
         'gifts': (
             'c603fe1f-cc4c-480e-b1cd-7fd949c42487',
             'qualified_donees_2023_updated.csv',
@@ -31,6 +36,11 @@ CAPTURES = {
         ),
     },
     '2024': {
+        'disbursements': (
+            'f4eb196a-d0c1-45b0-bc48-e9b48c06cbce',
+            'non_qualified_donees_2024_updated.csv',
+            '373b2f8fc8576041cbb89d69793270f52efd5008c3e00ebbcc2b124e373b5417',
+        ),
         'gifts': (
             '8195b2cb-ce2d-4cd2-b829-6d07f4959f49',
             'qualified_donees_2024_updated.csv',
