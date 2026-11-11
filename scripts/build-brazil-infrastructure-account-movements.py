@@ -4,13 +4,12 @@
 import argparse
 from collections import Counter, defaultdict
 from datetime import datetime
-from decimal import Decimal
 from hashlib import sha256
 import json
 from pathlib import Path
 import re
 
-from brazil_transferegov_archives import ARCHIVE_BASE, verified_rows
+from brazil_transferegov_archives import ARCHIVE_BASE, cnpj, exact_cents, verified_rows
 
 DATA = Path(__file__).resolve().parent.parent / 'src/data/funding-flows'
 PROJECT_HASH = 'a6a9ebd38da473a623bbcab293ff0047bf61ab19eace9a26659b64b3bc05b0c7'
@@ -30,33 +29,6 @@ TO_HOLDER = 'OBTV PARA O CONVENENTE'
 INVOICE_CATEGORIES = frozenset(('NOTA FISCAL', 'RECIBO-CNPJ'))
 OTHER_CATEGORIES = frozenset(('DIÁRIAS', 'FOLHA DE PAGAMENTO', 'RECIBO DE PAGAMENTO A AUTONOMO'))
 ONWARD_STATES = ('equalAmountParents', 'unknownAmountParents', 'differentAmountParents', 'noOnwardRecordParents')
-
-
-def cnpj(value):
-    if not re.fullmatch(r'[0-9./-]+', value):
-        return None
-    digits = re.sub(r'[^0-9]', '', value)
-    if len(digits) != 14 or len(set(digits)) == 1:
-        return None
-    for offset, weights in (
-        (12, (5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)),
-        (13, (6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)),
-    ):
-        remainder = sum(int(digit) * weight for digit, weight in zip(digits, weights)) % 11
-        if int(digits[offset]) != (0 if remainder < 2 else 11 - remainder):
-            return None
-    return digits
-
-
-def exact_cents(value):
-    if value in ('', '-', 'NA'):
-        return None
-    if not re.fullmatch(r'[0-9]+(?:,[0-9]{1,2}0*)?', value):
-        raise ValueError('Unexpected BRL token in the selected source rows.')
-    amount = Decimal(value.replace(',', '.')) * 100
-    if amount != amount.to_integral_value() or amount > 2**53 - 1:
-        raise ValueError('Amount cannot be represented as exact browser cents.')
-    return int(amount)
 
 
 def exact_sum(values):

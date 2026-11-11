@@ -1,0 +1,51 @@
+---
+import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
+import { count, data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
+import { comparedDocuments, paymentYears, type InvoiceCohort } from '../lib/brazil-infrastructure-invoice-items';
+import { url } from '../lib/site';
+
+interface Props { cohorts: readonly InvoiceCohort[]; directory?: boolean; }
+const { cohorts, directory = false } = Astro.props;
+const projects = new Map(data.projects.map(project => [project.agreement, project]));
+---
+
+<div class="table-wrap invoice-table" role="region" aria-label="Invoice items and reported payments" tabindex="0">
+  <table class="data">
+    <thead><tr>
+      {directory && <th scope="col">Agreement and project</th>}
+      <th scope="col">Document issue year</th>
+      <th scope="col">Documents and item rows</th>
+      <th scope="col">Gross item amounts</th>
+      <th scope="col">Reported payments for those documents</th>
+      <th scope="col">Document comparisons</th>
+    </tr></thead>
+    <tbody>{cohorts.map(cohort => {
+      const project = projects.get(cohort.agreement);
+      const organization = project?.organization ?? '';
+      const placeNames = project ? municipalities(project).map(place => place.no_municipio) : [];
+      const search = normalizeBrazilName([cohort.agreement, cohort.proposal, cohort.project, organization, ...placeNames].join(' '));
+      const compared = comparedDocuments(cohort.statuses);
+      return <tr data-invoice-cohort data-issue-year={cohort.issueYear ?? 'unknown'} data-search={directory ? search : undefined}>
+        {directory && <td><a href={url(projectPath(cohort.agreement) + '#invoice-items')}><span class="identity-code">{cohort.agreement}</span> {cohort.project}</a><small>{organization}</small></td>}
+        <th scope="row">{cohort.issueYear ?? 'Unknown'}{cohort.partialYear && <small>Partial year</small>}</th>
+        <td>{count(cohort.documents)} {cohort.documents === 1 ? 'document' : 'documents'}<small>{count(cohort.lineRows)} source item rows</small>
+          {cohort.lineRows !== cohort.comparedUniqueItems && <small>{count(cohort.comparedUniqueItems)} distinct items in comparisons</small>}</td>
+        <td>{money(cohort.grossItemCentsBRL)}</td>
+        <td>{money(cohort.reportedPaymentCentsBRL)}
+          <small>{count(cohort.comparablePaymentRows)} payment rows · {paymentYears(cohort)}</small>
+          {cohort.multiYearDocuments > 0 && <small>{count(cohort.multiYearDocuments)} with payments across years</small>}
+        </td>
+        <td>{count(cohort.statuses.equal)} equal · {count(cohort.statuses.grossHigher)} gross higher · {count(cohort.statuses.paymentHigher)} payment higher
+          {compared < cohort.documents && <small>{count(cohort.documents - compared)} unresolved</small>}
+        </td>
+      </tr>;
+    })}</tbody>
+  </table>
+</div>
+
+<style>
+  .invoice-table { margin-block: 1rem; }
+  .invoice-table table { min-width: 47rem; }
+  .invoice-table :is(td, th) { overflow-wrap: anywhere; }
+  .invoice-table small { display: block; color: var(--ink-2); font-weight: normal; }
+</style>

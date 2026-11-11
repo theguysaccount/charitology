@@ -1,6 +1,7 @@
 ---
 import Entry from '../../../../layouts/Entry.astro';
 import BrazilInfrastructureAccountMovements from '../../../../components/BrazilInfrastructureAccountMovements.astro';
+import { invoiceItemsRoute } from '../../../../lib/brazil-infrastructure-invoice-items';
 import { accountMovementsRoute, movementArchives, movementEdition } from '../../../../lib/brazil-infrastructure-account-movements';
 import { count, infrastructureRoute, projectPath } from '../../../../lib/brazil-project-execution';
 import { url } from '../../../../lib/site';
@@ -55,6 +56,8 @@ const sourceLinks = [
   <p>Compare the <a href={url(projectPath('895978') + '#account-movements')}>São José dos Campos agreement</a>, with both payment and holder-transfer records, and the <a href={url(projectPath('953157') + '#account-movements')}>Joaçaba agreement</a>, with institutional invoice payments in 2025 and the captured part of 2026. Their project pages keep the works measurements, contract amounts and census figures separate from the account records.</p>
   <p>The invoice and CNPJ receipt figures cover only payments with checksum-valid Brazilian institutional identifiers. The remaining rows include payroll, daily allowances and independent-contractor receipts. The projection leaves payee names, identifiers and individual amounts outside its tables and exports. A blank amount means the edition supplies no amount for that cell. A recorded zero stays zero.</p>
   <p>Every join starts from the original agreement number. The account archive carries a payment document number and ends at the agreement level. Linking amounts to a contract, installation or service result requires a source that records that link.</p>
+
+  <p>The <a class="identity-link" href={url(invoiceItemsRoute)}>invoice item comparison</a> uses the institutional payments from this edition. It follows the expense document ID to reported gross item amounts and groups the documents by issue year.</p>
 
   <h2 id="downloads">Download records and sources</h2>
   <ul>

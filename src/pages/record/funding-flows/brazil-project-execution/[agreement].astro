@@ -5,6 +5,9 @@ import { contractRoute, contractsByAgreement } from '../../../../lib/brazil-proj
 import BrazilWorksMeasurements from '../../../../components/BrazilWorksMeasurements.astro';
 import { worksRoute, monitoringByAgreement, measurementItemsByAgreement } from '../../../../lib/brazil-works-measurements';
 import BrazilInfrastructureAccountMovements from '../../../../components/BrazilInfrastructureAccountMovements.astro';
+import BrazilInfrastructureInvoiceItems from '../../../../components/BrazilInfrastructureInvoiceItems.astro';
+import { invoiceItemsRoute, invoicesByAgreement } from '../../../../lib/brazil-infrastructure-invoice-items';
+import { contractPaymentsByAgreement, procurementPaymentsByAgreement, procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
 import { accountMovementsRoute, movementPeriodsByAgreement } from '../../../../lib/brazil-infrastructure-account-movements';
 import SiteSymbol from '../../../../components/SiteSymbol.astro';
 import { url } from '../../../../lib/site';
@@ -26,6 +29,9 @@ const relatedContracts = contractsByAgreement.get(agreement) ?? [];
 const monitoring = monitoringByAgreement.get(agreement) ?? [];
 const measuredItems = measurementItemsByAgreement.get(agreement) ?? [];
 const accountPeriods = movementPeriodsByAgreement.get(agreement) ?? [];
+const invoiceCohorts = invoicesByAgreement.get(agreement) ?? [];
+const procurementPayments = procurementPaymentsByAgreement.get(agreement) ?? [];
+const contractPayments = contractPaymentsByAgreement.get(agreement) ?? [];
 const caseStudy = cases[agreement];
 const census = caseStudy ? data.census.values[caseStudy.municipality as keyof typeof data.census.values] : undefined;
 const registry = api['projeto-investimento'].rows[0];
@@ -55,6 +61,8 @@ const sections: { slug: string; text: string; symbol: SymbolName }[] = [
   { slug: 'contracts', text: 'Reported contracts', symbol: 'yearFile' },
   { slug: 'bank-orders', text: 'Agreement bank orders', symbol: 'bankOrder' },
   { slug: 'account-movements', text: 'Account movements', symbol: 'coins' },
+  { slug: 'invoice-items', text: 'Invoice items', symbol: 'calculator' },
+  { slug: 'procurement-payments', text: 'Procurement payments', symbol: 'match' },
 ];
 if (census) sections.push({ slug: 'municipal-context', text: 'Municipal census context', symbol: 'people' });
 const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
@@ -158,6 +166,23 @@ const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
     </>}
     <p><a class="identity-link" href={url(accountMovementsRoute + `?agreement=${agreement}#accounts`)}>Open this agreement in the account movement lookup</a>.</p>
   </> : <p>The captured payment archive has no movement rows for this agreement. The <a class="identity-link" href={url(accountMovementsRoute)}>account movement lookup</a> describes the published coverage.</p>}
+
+  <h2 id="invoice-items"><SiteSymbol name="calculator" size="inline" /> Invoice items</h2>
+  {invoiceCohorts.length > 0 ? <>
+    <p>The expense document ID links institutional payments to gross line-item amounts. The rows group documents by issue year and include the captured payments for those documents. The payments also appear in the account movement view, where they are grouped by the year the money moved.</p>
+    <BrazilInfrastructureInvoiceItems cohorts={invoiceCohorts} />
+    <p><a class="identity-link" href={url(invoiceItemsRoute + `?agreement=${agreement}#lookup`)}>Open this agreement in the invoice item lookup</a>.</p>
+  </> : <p>The captured account edition provides no qualified institutional invoice or receipt payments for this agreement. See the <a class="identity-link" href={url(invoiceItemsRoute)}>invoice comparison coverage</a>.</p>}
+
+  <h2 id="procurement-payments"><SiteSymbol name="match" size="inline" /> Procurement payments</h2>
+  {procurementPayments.length > 0 ? <>
+    <p>The expense documents connect the captured institutional payments to {count(procurementPayments.length)} {procurementPayments.length === 1 ? 'procurement' : 'procurements'}.
+      {contractPayments.length > 0
+        ? ` The linked records verify ${count(contractPayments.length)} ${contractPayments.length === 1 ? 'contract' : 'contracts'} for a subset of those payments.`
+        : ' The captured documents yield no verified contract for those payments.'}
+    </p>
+    <p><a class="identity-link" href={url(procurementPaymentsRoute + `?agreement=${agreement}#procurements`)}>Open this agreement in the procurement payment lookup</a>.</p>
+  </> : <p>The captured source provides no qualifying institutional payment records to link. See the <a class="identity-link" href={url(procurementPaymentsRoute)}>procurement payment coverage</a>.</p>}
 
   {census && <section aria-labelledby="municipal-context">
     <h2 id="municipal-context"><SiteSymbol name="people" size="inline" /> Municipal census context</h2>

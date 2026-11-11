@@ -2,14 +2,43 @@
 
 from contextlib import contextmanager
 from csv import DictReader, field_size_limit
+from decimal import Decimal
 from hashlib import sha256
 from io import TextIOWrapper
+import re
 from tempfile import TemporaryFile
 from urllib.request import Request, urlopen
 from zipfile import ZipFile
 
 ARCHIVE_BASE = 'https://api-publica.transferegov.gestao.gov.br/downloads/dadosgov'
 field_size_limit(1_000_000)
+
+
+def cnpj(value):
+    if not re.fullmatch(r'[0-9./-]+', value):
+        return None
+    digits = re.sub(r'[^0-9]', '', value)
+    if len(digits) != 14 or len(set(digits)) == 1:
+        return None
+    for offset, weights in (
+        (12, (5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)),
+        (13, (6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)),
+    ):
+        remainder = sum(int(digit) * weight for digit, weight in zip(digits, weights)) % 11
+        if int(digits[offset]) != (0 if remainder < 2 else 11 - remainder):
+            return None
+    return digits
+
+
+def exact_cents(value):
+    if value in ('', '-', 'NA'):
+        return None
+    if not re.fullmatch(r'[0-9]+(?:,[0-9]{1,2}0*)?', value):
+        raise ValueError('Unexpected BRL token in the selected source rows.')
+    amount = Decimal(value.replace(',', '.')) * 100
+    if amount != amount.to_integral_value() or amount > 2**53 - 1:
+        raise ValueError('Amount cannot be represented as exact browser cents.')
+    return int(amount)
 
 
 @contextmanager
