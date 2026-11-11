@@ -1,0 +1,90 @@
+<div class="theme-control" hidden>
+  <label for="site-theme" class="visually-hidden">Color theme</label>
+  <span class="theme-glyph" aria-hidden="true"></span>
+  <select id="site-theme">
+    <option value="system">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+</div>
+
+<style>
+  .theme-control {
+    position: relative;
+    color: var(--ink-2);
+  }
+
+  .theme-control:focus-within,
+  .theme-control:hover {
+    color: var(--ink);
+  }
+
+  select {
+    display: block;
+    min-height: 40px;
+    border: 1px solid var(--rule);
+    border-radius: 9px;
+    padding: 0 0.4rem 0 1.65rem;
+    background: var(--surface);
+    color: inherit;
+    font: 650 0.75rem var(--font-sans);
+    cursor: pointer;
+  }
+
+  .theme-glyph {
+    position: absolute;
+    inset-inline-start: 0.45rem;
+    top: 50%;
+    width: 0.9rem;
+    height: 0.9rem;
+    transform: translateY(-50%);
+    background: currentColor;
+    mask: var(--glyph-sun) center / contain no-repeat;
+    pointer-events: none;
+  }
+
+  :global(:root[data-theme='dark']) .theme-glyph {
+    mask-image: var(--glyph-moon);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .theme-glyph {
+      mask-image: var(--glyph-moon);
+    }
+  }
+</style>
+
+<script>
+  const key = 'charitology.theme';
+  const root = document.documentElement;
+  const field = document.querySelector<HTMLSelectElement>('#site-theme');
+  const meta = document.querySelector<HTMLMetaElement>('#site-theme-color');
+
+  if (field) {
+    function apply(value: string | null | undefined) {
+      const mode = value === 'light' || value === 'dark' ? value : 'system';
+      if (mode === 'system') {
+        delete root.dataset.theme;
+        meta?.setAttribute('media', 'not all');
+      } else {
+        root.dataset.theme = mode;
+        meta?.setAttribute('content', mode === 'dark' ? '#121110' : '#f6f3ec');
+        meta?.setAttribute('media', 'all');
+      }
+      return mode;
+    }
+
+    field.value = apply(root.dataset.theme);
+    field.parentElement?.removeAttribute('hidden');
+    field.addEventListener('change', () => {
+      apply(field.value);
+      try {
+        if (field.value === 'system') localStorage.removeItem(key);
+        else localStorage.setItem(key, field.value);
+      } catch {}
+    });
+    window.addEventListener('storage', (event) => {
+      if (event.key === key || event.key === null) field.value = apply(event.newValue);
+    });
+  }
+</script>

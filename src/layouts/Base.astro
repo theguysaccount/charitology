@@ -3,9 +3,11 @@ import '@fontsource-variable/fraunces/opsz.css';
 import '@fontsource-variable/source-serif-4/opsz.css';
 import '@fontsource-variable/source-serif-4/opsz-italic.css';
 import '../styles/global.css';
+import '../styles/site-identity.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE, url } from '../lib/site';
+import { pageIdentity } from '../lib/site-identities';
 
 interface Props {
   title?: string;
@@ -18,6 +20,7 @@ interface Props {
 const { title, description = SITE.description, noindex = false, nosearch = false } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name}: ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const identity = pageIdentity(Astro.url.pathname.slice(url('/').length - 1));
 const ogImage = new URL(url('/og.jpg'), Astro.site);
 const ogImageAlt = 'Charitology: the science of doing the most good. A compass points through an open C, beside a diagram of charity as a system and its five depths: relief, repair, prevention, structure and source.';
 // The brand introduction complements the home page; articles keep their own title and description.
@@ -65,20 +68,27 @@ const ogVideo = Astro.url.pathname === url('/')
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
+    <meta id="site-theme-color" name="theme-color" content="#f6f3ec" media="not all" />
     <meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)" />
     {noindex && <meta name="robots" content="noindex" />}
     <script is:inline>
       try {
-        var t = localStorage.getItem('charitology.theme');
-        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
-      } catch (e) {}
+        const theme = localStorage.getItem('charitology.theme');
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.dataset.theme = theme;
+          const color = document.getElementById('site-theme-color');
+          color.setAttribute('content', theme === 'dark' ? '#121110' : '#f6f3ec');
+          color.setAttribute('media', 'all');
+        }
+      } catch {}
     </script>
+    <link rel="stylesheet" href={url('/site-identities.css')} />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <Header />
-    <main id="main" data-pagefind-body={nosearch || noindex ? undefined : ''}>
+    <main id="main" data-site-home={Astro.url.pathname === url('/') ? '' : undefined} data-site-symbol={identity.symbol} data-site-tone={identity.tone} data-pagefind-body={nosearch || noindex ? undefined : ''}>
       <slot />
     </main>
     <Footer />

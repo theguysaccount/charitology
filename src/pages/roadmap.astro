@@ -43,9 +43,9 @@ const counts = entries.reduce((out, entry) => ({ ...out, [entry.data.status]: ou
     </form>
     <p id="roadmap-count" role="status" aria-live="polite">Showing all {entries.length} original items.</p>
     <div class="roadmap-items">
-      {entries.map((entry, index) => (
-        <article class="card roadmap-item" data-section={entry.collection} data-status={entry.data.status} data-search={`${entry.originalTitle} ${entry.originalBrief} ${entry.adaptation} ${entry.group}`.toLowerCase()}>
-          <div class="roadmap-item-head"><span class="eyebrow">{String(index + 1).padStart(2, '0')} · {entry.collection === 'record' ? 'Info bases' : entry.collection} · {entry.group}</span><Badges status={entry.data.status} /></div>
+      {entries.map((entry) => (
+        <article class="card roadmap-item" id={`item-${entry.collection}-${entry.id}`} data-section={entry.collection} data-status={entry.data.status} data-search={`${entry.originalTitle} ${entry.originalBrief} ${entry.adaptation} ${entry.group}`.toLowerCase()}>
+          <div class="roadmap-item-head"><span class="eyebrow">{entry.collection === 'record' ? 'Info bases' : entry.collection} · {entry.group}</span><Badges status={entry.data.status} /></div>
           <h2><a href={url(entry.path)}>{entry.originalTitle}</a></h2>
           <p>{entry.data.summary}</p>
           <p class="note"><strong>Scope:</strong> {entry.adaptation}</p>
