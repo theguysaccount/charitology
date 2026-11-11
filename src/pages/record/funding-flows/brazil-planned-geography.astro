@@ -68,6 +68,7 @@ const sources = [
     <noscript><p>The source files, coverage and complete download remain available below.</p></noscript>
   </section>
 
+  <p><a class="identity-link" href={url('/record/funding-flows/brazil-project-execution/')}>Compare selected plans with registered infrastructure locations</a>. Each project page shows the original link and the reported physical progress.</p>
   <h2 id="coverage">What the locations cover</h2>
   <p>Of {count(selection.agreements)} agreements, {count(agreementCoverage.allGoalsResolved)} have a municipality match for every goal, {count(agreementCoverage.someGoalsResolved)} have matches for some goals and {count(agreementCoverage.noGoalsResolved)} have none. {count(agreementCoverage.multipleMunicipalities)} agreements name more than one linked municipality. In {count(agreementCoverage.plannedStateDiffersFromProponent)} agreements, at least one linked goal is in a different state from the one recorded for the proponent.</p>
   <p>{count(goalStatuses['missing-state-or-municipality'])} goals have a missing state or municipality field. Another {count(goalStatuses['unresolved-municipality'])} have both fields but no unique match. We match the reported state and an exact IBGE code or a unique municipality name after folding accents, case and spaces. A municipality search only returns linked goals. Searching by agreement can show its unresolved goals too.</p>

@@ -1,0 +1,125 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import { count, data, fiscalGuide, geographyLabels, infrastructureRoute, municipalities, percent, projectPath, statusLabels, workPlanRoute, worksGuide } from '../../../../lib/brazil-project-execution';
+
+const title = 'Brazilian civil society infrastructure projects';
+const { coverage, projects, sources } = data;
+const sourceLinks = [
+  { title: 'Transferegov open data and archive catalogue', publisher: 'Transferegov.br', url: 'https://api-publica.transferegov.gestao.gov.br/downloads' },
+  { title: 'Obrasgov public API documentation', publisher: 'Obrasgov.br', url: 'https://api-publica.obrasgov.gestao.gov.br/obras/docs' },
+  { title: 'How Obrasgov records physical progress', publisher: 'Obrasgov.br', url: worksGuide },
+  { title: 'Stages of public spending', publisher: 'Portal da Transparência', url: fiscalGuide },
+  ...Object.entries(sources.archives).map(([name, record]) => ({ title: name, publisher: 'Transferegov.br', url: record.url })),
+];
+const geographyOptions = Object.entries(geographyLabels).filter(([value]) => projects.some(project => project.geographyComparison === value));
+const downloads = [
+  ['data.json', 'Full evidence and source receipts (JSON)'],
+  ['projects.csv', 'Project status and coverage (CSV)'],
+  ['commitments.csv', 'Paired commitment records (CSV)'],
+  ['bank-orders.csv', 'Agreement bank orders (CSV)'],
+  ['registered-municipalities.csv', 'Registered municipalities (CSV)'],
+  ['physical-history.csv', 'Bulk physical history (CSV)'],
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Trace federal commitments from civil society agreements to public infrastructure records. Compare planned locations, registered locations and reported physical progress."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazilian infrastructure'}]}
+  sources={sourceLinks} filePath="src/pages/record/funding-flows/brazil-project-execution/index.astro">
+  <p>The two Transferegov commitment archives share an issuing unit and commitment number. Following those exact identifiers links <strong>{count(coverage.selectedProjects)} of {count(coverage.transferAgreements)} agreements</strong> in our 2024–2025 bank-order edition to distinct Obrasgov infrastructure projects. Each project page shows both commitment records and the agreement’s bank orders. A budget commitment, money made available to the agreement account and a reported physical percentage describe different stages.</p>
+  <p>Compare the <a href={url(projectPath('953157'))}>outpatient clinic renovation in Joaçaba</a> with the <a href={url(projectPath('895978'))}>specialized health unit renovation in São José dos Campos</a>. Both have a physical record at 100%. The project registry labels the first in progress and the second completed. Each page also shows the independent 2022 Census estimate for its municipality.</p>
+
+  <h2 id="lookup">Find a project</h2>
+  <div data-infrastructure-filter>
+    <form hidden aria-label="Filter linked projects">
+      <label for="infrastructure-query">Municipality, organization, agreement, CNPJ or project ID</label>
+      <input id="infrastructure-query" type="search" maxlength="160" autocomplete="off" />
+      <label for="infrastructure-status">Project status</label>
+      <select id="infrastructure-status">
+        <option value="">All statuses</option>
+        {Object.entries(statusLabels).map(([value, label]) => <option value={value}>{label}</option>)}
+      </select>
+      <label for="infrastructure-geography">Plan and register locations</label>
+      <select id="infrastructure-geography">
+        <option value="">All comparisons</option>
+        {geographyOptions.map(([value, label]) => <option value={value}>{label}</option>)}
+      </select>
+      <button class="btn btn-ghost btn-small" type="button" data-reset>Clear filters</button>
+    </form>
+    <p role="status" data-count>{count(projects.length)} linked projects</p>
+    <div class="table-wrap execution-table" role="region" aria-label="Linked Brazilian infrastructure projects" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Agreement and project</th><th scope="col">Registered municipalities</th><th scope="col">Project status</th><th scope="col">Physical progress</th><th scope="col">Plan comparison</th></tr></thead>
+        <tbody>{projects.map(project => {
+          const places = municipalities(project);
+          const state = project.api['projeto-investimento'].rows[0].situacao;
+          const current = project.api['execucao-fisica'].rows[0];
+          const terms = [project.organization, project.cnpj, project.agreement, project.project,
+            ...places.flatMap(row => [row.no_municipio, row.sg_uf, row.cod_ibge]),
+            ...project.plannedMunicipalities.flatMap(row => [row.name, row.code])].join(' ');
+          return <tr data-execution-row data-search={terms} data-status={state} data-comparison={project.geographyComparison}>
+            <th scope="row"><a class="identity-link" href={url(projectPath(project.agreement))}>{project.agreement} · {project.project}</a><small>{project.organization}</small></th>
+            <td>{places.map(place => place.no_municipio + ' (' + place.sg_uf + ')').join(', ')}</td>
+            <td>{statusLabels[state] ?? state}</td>
+            <td>{current ? percent(current.percentual_execucao_fisica) : 'No current record'}</td>
+            <td>{geographyLabels[project.geographyComparison]}</td>
+          </tr>;
+        })}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2 id="coverage">What the sources cover</h2>
+  <p>Obrasgov returned a project and registered municipality records for every linked project in this edition. {count(coverage.same)} have the same linked municipality sets as their work plans. {count(coverage.partial)} share a municipality and have additional places in one source. {count(coverage.different)} have no municipality in common. {count(coverage['unknown-plan'])} agreements have no linked planned municipality. The comparison uses distinct IBGE codes. A project can have several registered locations and a plan can leave some goals unresolved.</p>
+  <p>There are current Obrasgov physical records for {count(coverage.currentPhysical)} projects and separate CIPI archive records for {count(coverage.historicalPhysical)}. {count(coverage.current100OtherStatus)} projects report 100% physical progress while still marked in progress. The bulk history retains the original status codes and row coordinates. Read physical reports alongside their dates and current register status. Site-level completion and changes in service access require separate evidence.</p>
+  <p>The work-plan comparison uses the <a href={url(workPlanRoute)}>pinned municipality edition</a>. The agreement and project links require one agreement and one project for the issuing-unit and commitment-number pair in the full source files. The selection starts from civil society agreements with bank orders in 2024 or 2025. Commitments can be older than that window, and the projects may cover a different period. All published amounts retain BRL.</p>
+
+  <h2 id="downloads">Downloads and source records</h2>
+  <ul>{downloads.map(([file,label]) => <li><a href={url(infrastructureRoute + file)} download>{label}</a></li>)}</ul>
+  <p>The JSON gives every API request and response fingerprint, the archive fingerprints and the original record coordinates. The CSV files keep stages in separate tables. The paired commitment CSV represents the same budget reference in two systems. Keep its amount columns separate and use the issuing unit plus commitment number as the reference. The bank-order file keeps each selected agreement order once.</p>
+  <p>Transferegov and Obrasgov data are available under the <a href={sources.licence}>Open Database License</a>. Charitology joined and selected fields from the <time datetime={data.capturedOn}>{data.capturedOn}</time> sources. The census values are attributed to IBGE. Consult the original sources for changes after capture.</p>
+</Entry>
+
+<style>
+  [data-infrastructure-filter] form:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem .8rem; }
+  [data-infrastructure-filter] form :is(input, select, button) { min-height: 2.75rem; }
+  [data-infrastructure-filter] form button { justify-self: start; }
+  .execution-table table { min-width: 44rem; }
+  .execution-table small { display: block; font-weight: normal; color: var(--ink-2); }
+  @media (max-width: 36rem) { [data-infrastructure-filter] form:not([hidden]) { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<script>
+  import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+  const root = document.querySelector<HTMLElement>('[data-infrastructure-filter]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('input')!;
+    const [status, geography] = [...form.querySelectorAll('select')];
+    const label = root.querySelector<HTMLElement>('[data-count]')!;
+    const entries = [...root.querySelectorAll<HTMLElement>('[data-execution-row]')].map(row => ({
+      row, search: normalizeBrazilName(row.dataset.search ?? ''),
+    }));
+    function filter() {
+      const raw = query.value.trim();
+      const cnpj = raw.replace(/[.\/-]/g, '');
+      const text = normalizeBrazilName(/^\d{14}$/.test(cnpj) ? cnpj : raw);
+      let matches = 0;
+      for (const { row, search } of entries) {
+        const include = search.includes(text) && (!status.value || row.dataset.status === status.value)
+          && (!geography.value || row.dataset.comparison === geography.value);
+        row.hidden = !include;
+        if (include) matches++;
+      }
+      label.textContent = `${matches} of ${entries.length} linked projects`;
+    }
+    form.addEventListener('input', filter);
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    form.querySelector('[data-reset]')!.addEventListener('click', () => { form.reset(); filter(); query.focus(); });
+    const initial = new URLSearchParams(location.search).get('agreement');
+    if (initial && /^\d{1,20}$/.test(initial)) query.value = initial;
+    form.hidden = false;
+    filter();
+  }
+</script>

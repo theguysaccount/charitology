@@ -116,6 +116,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Location coverage', 'map'],
     ['sources-and-data', 'Download data and sources', 'download'],
   ],
+  '/record/funding-flows/brazil-project-execution/': [
+    ['lookup', 'Find a project', 'fileSearch'],
+    ['coverage', 'What the sources cover', 'table'],
+    ['downloads', 'Downloads and source records', 'download'],
+  ],
   '/record/funding-flows/brazil-cisterns/': [
     ['agreement', 'Federal agreement', 'permit'],
     ['payments', 'Reported account payments', 'bankOrder'],
