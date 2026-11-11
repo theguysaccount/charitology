@@ -3,6 +3,7 @@ import Entry from '../../../../layouts/Entry.astro';
 import BrazilInfrastructureProcurementPayments from '../../../../components/BrazilInfrastructureProcurementPayments.astro';
 import { invoiceItemsRoute } from '../../../../lib/brazil-infrastructure-invoice-items';
 import { count, projectPath } from '../../../../lib/brazil-project-execution';
+import { procurementLotsRoute } from '../../../../lib/brazil-infrastructure-procurement-lots';
 import { procurementPaymentEdition, procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
 import { url } from '../../../../lib/site';
 
@@ -52,6 +53,7 @@ const sourceLinks = [
   <h2 id="coverage">Coverage and what the source records</h2>
   <p>The captured expense documents have {count(coverage.contractStates.noReference)} entries without a contract ID and {count(coverage.contractStates.unresolved)} with a contract ID whose pair could not be verified. The procurement connection still holds for these documents. The <a href={url(projectPath('895978') + '#procurement-payments')}>São José dos Campos</a> and <a href={url(projectPath('953157') + '#procurement-payments')}>Joaçaba</a> documents connect to procurements and have no supplied contract ID in the expense archive.</p>
   <p>The <a href={url(invoiceItemsRoute)}>invoice comparison</a> groups these same payments by document issue year. The <a href={url('/record/funding-flows/brazil-project-contracts/')}>CIPI contract comparison</a> follows a separate set of reported works contracts. This payment lookup verifies procurement and contract references at their recorded scope. A payment assigned to an individual work site requires a record that names that site. The last capture year is partial.</p>
+  <p><a class="identity-link" href={url(procurementLotsRoute)}>Find works-lot references for matched procurements</a>. The joined record keeps the original payment amounts at procurement level.</p>
 
   <h2 id="downloads">Download records and source receipts</h2>
   <ul>
@@ -98,8 +100,9 @@ const sourceLinks = [
     form.addEventListener('input', filter);
     form.addEventListener('submit', event => { event.preventDefault(); filter(); });
     form.addEventListener('reset', () => requestAnimationFrame(() => { filter(); query.focus(); }));
-    const agreement = new URLSearchParams(location.search).get('agreement');
-    if (agreement && /^[0-9]{1,20}$/.test(agreement)) query.value = agreement;
+    const params = new URLSearchParams(location.search);
+    query.value = ['agreement', 'procurement'].map(key => params.get(key) ?? '')
+      .filter(value => /^[0-9]{1,20}$/.test(value)).join(' ');
     form.hidden = false;
     filter();
   }

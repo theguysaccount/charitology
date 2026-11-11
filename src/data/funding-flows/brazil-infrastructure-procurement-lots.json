@@ -1,0 +1,1442 @@
+{
+  "format": "charitology-br-infrastructure-procurement-lots-v1",
+  "capturedOn": "2026-11-11",
+  "currency": "BRL",
+  "license": "https://opendatacommons.org/licenses/odbl/1-0/",
+  "upstreamEditionSha256": {
+    "brazil-infrastructure-procurement-payments.json": "7df2978953b130f398faaa9aec21217206250f90cff78f796dcf2e4f7aea02ff",
+    "brazil-infrastructure-work-lots.json": "55f8f695bd15fced26163011a4a29227f37cd1ca19447eaf0ab8a6962cea77ac"
+  },
+  "coverage": {
+    "paymentEdition": {
+      "procurements": 334,
+      "agreements": 80,
+      "expenseDocuments": 1382,
+      "paymentRows": 1420,
+      "reportedPaymentCentsBRL": 11275351818
+    },
+    "linked": {
+      "procurements": 53,
+      "agreements": 52,
+      "expenseDocuments": 332,
+      "paymentRows": 340,
+      "reportedPaymentCentsBRL": 7370484441
+    },
+    "oneLot": {
+      "procurements": 51,
+      "agreements": 50,
+      "expenseDocuments": 326,
+      "paymentRows": 334,
+      "reportedPaymentCentsBRL": 7310916336
+    },
+    "multipleLots": {
+      "procurements": 2,
+      "agreements": 2,
+      "expenseDocuments": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 59568105
+    },
+    "noLotMatch": {
+      "procurements": 281,
+      "agreements": 33,
+      "expenseDocuments": 1050,
+      "paymentRows": 1080,
+      "reportedPaymentCentsBRL": 3904867377
+    },
+    "linkedLotReferences": 55
+  },
+  "procurements": [
+    {
+      "agreement": "877955",
+      "proposal": "1370577",
+      "project": "22765.35-30",
+      "procurementId": "805493",
+      "procurementSourceRow": 827523,
+      "documents": 19,
+      "paymentRows": 19,
+      "reportedPaymentCentsBRL": 91620110,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 19,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "6359",
+          "worksContractId": "7732",
+          "lotId": "7890",
+          "lotNumber": "1",
+          "lotSourceRow": 15390
+        }
+      ]
+    },
+    {
+      "agreement": "878366",
+      "proposal": "1381520",
+      "project": "18886.23-70",
+      "procurementId": "750924",
+      "procurementSourceRow": 723456,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 17763801,
+      "firstPaymentYear": 2021,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 9,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "2887",
+          "worksContractId": "22786",
+          "lotId": "3465",
+          "lotNumber": "1",
+          "lotSourceRow": 20915
+        }
+      ]
+    },
+    {
+      "agreement": "878367",
+      "proposal": "1381434",
+      "project": "18887.23-26",
+      "procurementId": "750922",
+      "procurementSourceRow": 833089,
+      "documents": 10,
+      "paymentRows": 11,
+      "reportedPaymentCentsBRL": 22852867,
+      "firstPaymentYear": 2021,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "3777",
+          "worksContractId": "22990",
+          "lotId": "4523",
+          "lotNumber": "2",
+          "lotSourceRow": 29155
+        }
+      ]
+    },
+    {
+      "agreement": "878547",
+      "proposal": "1382947",
+      "project": "51800.25-09",
+      "procurementId": "808677",
+      "procurementSourceRow": 84234,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 64526133,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "7819",
+          "worksContractId": "12155",
+          "lotId": "12243",
+          "lotNumber": "1",
+          "lotSourceRow": 23182
+        }
+      ]
+    },
+    {
+      "agreement": "879093",
+      "proposal": "1388858",
+      "project": "95664.32-80",
+      "procurementId": "861140",
+      "procurementSourceRow": 717608,
+      "documents": 13,
+      "paymentRows": 17,
+      "reportedPaymentCentsBRL": 218273072,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 13,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "13568",
+          "worksContractId": "16653",
+          "lotId": "16765",
+          "lotNumber": "1",
+          "lotSourceRow": 7757
+        }
+      ]
+    },
+    {
+      "agreement": "886237",
+      "proposal": "1497728",
+      "project": "12046.35-65",
+      "procurementId": "782002",
+      "procurementSourceRow": 59058,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 8886957,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "2536",
+          "worksContractId": "2837",
+          "lotId": "3043",
+          "lotNumber": "1",
+          "lotSourceRow": 11452
+        }
+      ]
+    },
+    {
+      "agreement": "889850",
+      "proposal": "1509556",
+      "project": "94144.32-05",
+      "procurementId": "911955",
+      "procurementSourceRow": 434362,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 166470289,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20084",
+          "worksContractId": "24519",
+          "lotId": "24607",
+          "lotNumber": "1",
+          "lotSourceRow": 22792
+        }
+      ]
+    },
+    {
+      "agreement": "889894",
+      "proposal": "1511560",
+      "project": "11501.33-47",
+      "procurementId": "859525",
+      "procurementSourceRow": 129900,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 6115899,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "9545",
+          "worksContractId": "18147",
+          "lotId": "18254",
+          "lotNumber": "1",
+          "lotSourceRow": 10100
+        }
+      ]
+    },
+    {
+      "agreement": "891046",
+      "proposal": "1514840",
+      "project": "22766.35-97",
+      "procurementId": "805488",
+      "procurementSourceRow": 740653,
+      "documents": 22,
+      "paymentRows": 22,
+      "reportedPaymentCentsBRL": 205408210,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 22,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "5863",
+          "worksContractId": "7351",
+          "lotId": "7249",
+          "lotNumber": "1",
+          "lotSourceRow": 15177
+        }
+      ]
+    },
+    {
+      "agreement": "895978",
+      "proposal": "1517861",
+      "project": "24628.35-30",
+      "procurementId": "881031",
+      "procurementSourceRow": 394744,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 13746618,
+      "firstPaymentYear": 2023,
+      "lastPaymentYear": 2023,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "1087",
+          "worksContractId": "14137",
+          "lotId": "14196",
+          "lotNumber": "1",
+          "lotSourceRow": 4223
+        }
+      ]
+    },
+    {
+      "agreement": "899507",
+      "proposal": "1555830",
+      "project": "96931.25-90",
+      "procurementId": "872097",
+      "procurementSourceRow": 250951,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 29315531,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "15985",
+          "worksContractId": "20282",
+          "lotId": "19713",
+          "lotNumber": "1",
+          "lotSourceRow": 26124
+        }
+      ]
+    },
+    {
+      "agreement": "900892",
+      "proposal": "1555826",
+      "project": "20217.35-08",
+      "procurementId": "871105",
+      "procurementSourceRow": 300907,
+      "documents": 11,
+      "paymentRows": 12,
+      "reportedPaymentCentsBRL": 45425384,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 11,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "12090",
+          "worksContractId": "14860",
+          "lotId": "14978",
+          "lotNumber": "1",
+          "lotSourceRow": 4446
+        }
+      ]
+    },
+    {
+      "agreement": "904643",
+      "proposal": "1593380",
+      "project": "25151.27-90",
+      "procurementId": "802943",
+      "procurementSourceRow": 660108,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 141498270,
+      "firstPaymentYear": 2022,
+      "lastPaymentYear": 2022,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "4154",
+          "worksContractId": "6065",
+          "lotId": "6256",
+          "lotNumber": "1",
+          "lotSourceRow": 14139
+        }
+      ]
+    },
+    {
+      "agreement": "905339",
+      "proposal": "1592796",
+      "project": "20302.35-37",
+      "procurementId": "888970",
+      "procurementSourceRow": 330053,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 47869778,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "11936",
+          "worksContractId": "14672",
+          "lotId": "14799",
+          "lotNumber": "1",
+          "lotSourceRow": 19465
+        }
+      ]
+    },
+    {
+      "agreement": "907963",
+      "proposal": "1612909",
+      "project": "22097.31-80",
+      "procurementId": "874911",
+      "procurementSourceRow": 249651,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 147822325,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 8,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "11368",
+          "worksContractId": "14006",
+          "lotId": "14124",
+          "lotNumber": "1",
+          "lotSourceRow": 13133
+        }
+      ]
+    },
+    {
+      "agreement": "907973",
+      "proposal": "1614357",
+      "project": "38903.41-72",
+      "procurementId": "880956",
+      "procurementSourceRow": 166058,
+      "documents": 6,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 33449869,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "15660",
+          "worksContractId": "21258",
+          "lotId": "19338",
+          "lotNumber": "1",
+          "lotSourceRow": 2265
+        }
+      ]
+    },
+    {
+      "agreement": "917589",
+      "proposal": "1707633",
+      "project": "24678.35-57",
+      "procurementId": "913609",
+      "procurementSourceRow": 947577,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 54058002,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "15079",
+          "worksContractId": "18517",
+          "lotId": "18632",
+          "lotNumber": "1",
+          "lotSourceRow": 5162
+        }
+      ]
+    },
+    {
+      "agreement": "917591",
+      "proposal": "1707640",
+      "project": "51878.26-15",
+      "procurementId": "1011875",
+      "procurementSourceRow": 203236,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 64400932,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "21089",
+          "worksContractId": "25782",
+          "lotId": "25864",
+          "lotNumber": "1",
+          "lotSourceRow": 14172
+        }
+      ]
+    },
+    {
+      "agreement": "917658",
+      "proposal": "1708914",
+      "project": "44202.35-75",
+      "procurementId": "1101984",
+      "procurementSourceRow": 164699,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 936473,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "19088",
+          "worksContractId": "34135",
+          "lotId": "34143",
+          "lotNumber": "1",
+          "lotSourceRow": 37555
+        }
+      ]
+    },
+    {
+      "agreement": "919037",
+      "proposal": "1718309",
+      "project": "36550.35-71",
+      "procurementId": "919641",
+      "procurementSourceRow": 37325,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 30998886,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2024,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "15132",
+          "worksContractId": "18958",
+          "lotId": "18702",
+          "lotNumber": "1",
+          "lotSourceRow": 18491
+        }
+      ]
+    },
+    {
+      "agreement": "919170",
+      "proposal": "1719927",
+      "project": "35404.41-10",
+      "procurementId": "1070982",
+      "procurementSourceRow": 934897,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 48118510,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 9,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "16729",
+          "worksContractId": "28478",
+          "lotId": "28623",
+          "lotNumber": "1",
+          "lotSourceRow": 25785
+        }
+      ]
+    },
+    {
+      "agreement": "920442",
+      "proposal": "1724181",
+      "project": "13705.35-46",
+      "procurementId": "929976",
+      "procurementSourceRow": 529265,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 34677517,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "18805",
+          "worksContractId": "23081",
+          "lotId": "23097",
+          "lotNumber": "1",
+          "lotSourceRow": 18409
+        }
+      ]
+    },
+    {
+      "agreement": "921640",
+      "proposal": "1728034",
+      "project": "14878.52-90",
+      "procurementId": "901884",
+      "procurementSourceRow": 715307,
+      "documents": 12,
+      "paymentRows": 12,
+      "reportedPaymentCentsBRL": 327000030,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 12,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "15173",
+          "worksContractId": "18675",
+          "lotId": "18752",
+          "lotNumber": "1",
+          "lotSourceRow": 16355
+        }
+      ]
+    },
+    {
+      "agreement": "922695",
+      "proposal": "1731096",
+      "project": "134425.28-18",
+      "procurementId": "955809",
+      "procurementSourceRow": 295652,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 5155506,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "19541",
+          "worksContractId": "23907",
+          "lotId": "23971",
+          "lotNumber": "1",
+          "lotSourceRow": 37498
+        }
+      ]
+    },
+    {
+      "agreement": "923544",
+      "proposal": "1732268",
+      "project": "30372.35-78",
+      "procurementId": "923723",
+      "procurementSourceRow": 359388,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 33839458,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "15587",
+          "worksContractId": "19274",
+          "lotId": "19247",
+          "lotNumber": "1",
+          "lotSourceRow": 18284
+        }
+      ]
+    },
+    {
+      "agreement": "929373",
+      "proposal": "1769320",
+      "project": "57669.25-18",
+      "procurementId": "1028883",
+      "procurementSourceRow": 312113,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 16448819,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "21585",
+          "worksContractId": "26315",
+          "lotId": "26472",
+          "lotNumber": "1",
+          "lotSourceRow": 27116
+        }
+      ]
+    },
+    {
+      "agreement": "929405",
+      "proposal": "1769513",
+      "project": "51384.29-00",
+      "procurementId": "1029767",
+      "procurementSourceRow": 544041,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 26206318,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "22366",
+          "worksContractId": "27288",
+          "lotId": "27396",
+          "lotNumber": "1",
+          "lotSourceRow": 25553
+        }
+      ]
+    },
+    {
+      "agreement": "929836",
+      "proposal": "1772400",
+      "project": "15482.35-39",
+      "procurementId": "1017022",
+      "procurementSourceRow": 383453,
+      "documents": 6,
+      "paymentRows": 7,
+      "reportedPaymentCentsBRL": 60359694,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "22425",
+          "worksContractId": "29655",
+          "lotId": "29848",
+          "lotNumber": "0",
+          "lotSourceRow": 28755
+        }
+      ]
+    },
+    {
+      "agreement": "934315",
+      "proposal": "1796312",
+      "project": "11541.35-75",
+      "procurementId": "1026087",
+      "procurementSourceRow": 513469,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 11016100,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "22065",
+          "worksContractId": "26902",
+          "lotId": "27037",
+          "lotNumber": "1",
+          "lotSourceRow": 25221
+        }
+      ]
+    },
+    {
+      "agreement": "936178",
+      "proposal": "1807951",
+      "project": "12007.35-62",
+      "procurementId": "1019011",
+      "procurementSourceRow": 537705,
+      "documents": 9,
+      "paymentRows": 9,
+      "reportedPaymentCentsBRL": 71213262,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 9,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "22221",
+          "worksContractId": "27249",
+          "lotId": "27234",
+          "lotNumber": "1",
+          "lotSourceRow": 19731
+        }
+      ]
+    },
+    {
+      "agreement": "936402",
+      "proposal": "1811744",
+      "project": "15451.25-45",
+      "procurementId": "910324",
+      "procurementSourceRow": 682507,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 134907180,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "14042",
+          "worksContractId": "17223",
+          "lotId": "17363",
+          "lotNumber": "1",
+          "lotSourceRow": 23568
+        }
+      ]
+    },
+    {
+      "agreement": "936909",
+      "proposal": "1820245",
+      "project": "19180.28-06",
+      "procurementId": "1035425",
+      "procurementSourceRow": 446864,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 19253130,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "22421",
+          "worksContractId": "27707",
+          "lotId": "27457",
+          "lotNumber": "1",
+          "lotSourceRow": 26343
+        }
+      ]
+    },
+    {
+      "agreement": "944194",
+      "proposal": "1913302",
+      "project": "27574.35-00",
+      "procurementId": "993197",
+      "procurementSourceRow": 781070,
+      "documents": 8,
+      "paymentRows": 8,
+      "reportedPaymentCentsBRL": 27803568,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 8,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20624",
+          "worksContractId": "25146",
+          "lotId": "25256",
+          "lotNumber": "1",
+          "lotSourceRow": 23227
+        }
+      ]
+    },
+    {
+      "agreement": "944198",
+      "proposal": "1913309",
+      "project": "30763.35-50",
+      "procurementId": "979440",
+      "procurementSourceRow": 276693,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 21775981,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20559",
+          "worksContractId": "27302",
+          "lotId": "25184",
+          "lotNumber": "1",
+          "lotSourceRow": 25554
+        }
+      ]
+    },
+    {
+      "agreement": "944202",
+      "proposal": "1913324",
+      "project": "25683.25-86",
+      "procurementId": "929691",
+      "procurementSourceRow": 162589,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 282131580,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "15694",
+          "worksContractId": "19273",
+          "lotId": "19373",
+          "lotNumber": "1",
+          "lotSourceRow": 31754
+        }
+      ]
+    },
+    {
+      "agreement": "945677",
+      "proposal": "1921143",
+      "project": "29089.41-44",
+      "procurementId": "1075776",
+      "procurementSourceRow": 312435,
+      "documents": 11,
+      "paymentRows": 11,
+      "reportedPaymentCentsBRL": 47551735,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 11,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "18574",
+          "worksContractId": "28453",
+          "lotId": "28599",
+          "lotNumber": "1",
+          "lotSourceRow": 25648
+        }
+      ]
+    },
+    {
+      "agreement": "946285",
+      "proposal": "1925272",
+      "project": "28643.35-10",
+      "procurementId": "982449",
+      "procurementSourceRow": 166266,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 28127743,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20567",
+          "worksContractId": "25165",
+          "lotId": "25194",
+          "lotNumber": "1",
+          "lotSourceRow": 23548
+        }
+      ]
+    },
+    {
+      "agreement": "948419",
+      "proposal": "1933290",
+      "project": "32155.35-24",
+      "procurementId": "1068937",
+      "procurementSourceRow": 303216,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 486666368,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "23919",
+          "worksContractId": "30174",
+          "lotId": "30367",
+          "lotNumber": "1",
+          "lotSourceRow": 27695
+        }
+      ]
+    },
+    {
+      "agreement": "948420",
+      "proposal": "1933291",
+      "project": "32162.35-22",
+      "procurementId": "999031",
+      "procurementSourceRow": 436587,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 3438749690,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20474",
+          "worksContractId": "25085",
+          "lotId": "25077",
+          "lotNumber": "1",
+          "lotSourceRow": 22702
+        }
+      ]
+    },
+    {
+      "agreement": "948515",
+      "proposal": "1933914",
+      "project": "33243.31-63",
+      "procurementId": "994987",
+      "procurementSourceRow": 766224,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 86207300,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20182",
+          "worksContractId": "24620",
+          "lotId": "24712",
+          "lotNumber": "0",
+          "lotSourceRow": 23291
+        }
+      ]
+    },
+    {
+      "agreement": "951784",
+      "proposal": "1943499",
+      "project": "39241.35-93",
+      "procurementId": "965624",
+      "procurementSourceRow": 505589,
+      "documents": 14,
+      "paymentRows": 14,
+      "reportedPaymentCentsBRL": 179422618,
+      "firstPaymentYear": 2024,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 14,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "18654",
+          "worksContractId": "22910",
+          "lotId": "22908",
+          "lotNumber": "1",
+          "lotSourceRow": 23945
+        }
+      ]
+    },
+    {
+      "agreement": "951855",
+      "proposal": "1945989",
+      "project": "31532.35-44",
+      "procurementId": "1091707",
+      "procurementSourceRow": 110387,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 5680142,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "24600",
+          "worksContractId": "29846",
+          "lotId": "30028",
+          "lotNumber": "1",
+          "lotSourceRow": 29090
+        }
+      ]
+    },
+    {
+      "agreement": "953157",
+      "proposal": "1949848",
+      "project": "32208.42-87",
+      "procurementId": "1061331",
+      "procurementSourceRow": 872497,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 29319876,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20010",
+          "worksContractId": "27684",
+          "lotId": "27845",
+          "lotNumber": "2",
+          "lotSourceRow": 26301
+        }
+      ]
+    },
+    {
+      "agreement": "953157",
+      "proposal": "1949848",
+      "project": "32208.42-87",
+      "procurementId": "987884",
+      "procurementSourceRow": 788873,
+      "documents": 10,
+      "paymentRows": 10,
+      "reportedPaymentCentsBRL": 76287055,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 10,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20010",
+          "worksContractId": "25327",
+          "lotId": "24522",
+          "lotNumber": "1",
+          "lotSourceRow": 28574
+        }
+      ]
+    },
+    {
+      "agreement": "953189",
+      "proposal": "1949916",
+      "project": "31402.41-81",
+      "procurementId": "1007247",
+      "procurementSourceRow": 913611,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 33327610,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20742",
+          "worksContractId": "25303",
+          "lotId": "25427",
+          "lotNumber": "2",
+          "lotSourceRow": 1959
+        },
+        {
+          "worksInstrumentId": "20742",
+          "worksContractId": "25303",
+          "lotId": "25428",
+          "lotNumber": "1",
+          "lotSourceRow": 1960
+        }
+      ]
+    },
+    {
+      "agreement": "953325",
+      "proposal": "1950015",
+      "project": "31534.35-57",
+      "procurementId": "1092079",
+      "procurementSourceRow": 707524,
+      "documents": 1,
+      "paymentRows": 1,
+      "reportedPaymentCentsBRL": 26240495,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 1,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "24842",
+          "worksContractId": "30117",
+          "lotId": "30309",
+          "lotNumber": "2",
+          "lotSourceRow": 27270
+        },
+        {
+          "worksInstrumentId": "24842",
+          "worksContractId": "30117",
+          "lotId": "30310",
+          "lotNumber": "1",
+          "lotSourceRow": 27271
+        }
+      ]
+    },
+    {
+      "agreement": "959442",
+      "proposal": "1984339",
+      "project": "38503.41-80",
+      "procurementId": "977999",
+      "procurementSourceRow": 423521,
+      "documents": 6,
+      "paymentRows": 6,
+      "reportedPaymentCentsBRL": 91400204,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 6,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "20178",
+          "worksContractId": "24615",
+          "lotId": "24708",
+          "lotNumber": "1",
+          "lotSourceRow": 23239
+        }
+      ]
+    },
+    {
+      "agreement": "960397",
+      "proposal": "1988999",
+      "project": "51166.33-70",
+      "procurementId": "1085568",
+      "procurementSourceRow": 548182,
+      "documents": 3,
+      "paymentRows": 3,
+      "reportedPaymentCentsBRL": 94499211,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 3,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "24311",
+          "worksContractId": "29831",
+          "lotId": "29688",
+          "lotNumber": "1",
+          "lotSourceRow": 37685
+        }
+      ]
+    },
+    {
+      "agreement": "966852",
+      "proposal": "2005707",
+      "project": "42304.33-19",
+      "procurementId": "1044503",
+      "procurementSourceRow": 163278,
+      "documents": 2,
+      "paymentRows": 2,
+      "reportedPaymentCentsBRL": 19752670,
+      "firstPaymentYear": 2025,
+      "lastPaymentYear": 2025,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 2,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "22186",
+          "worksContractId": "27350",
+          "lotId": "27192",
+          "lotNumber": "2",
+          "lotSourceRow": 26621
+        }
+      ]
+    },
+    {
+      "agreement": "969926",
+      "proposal": "2032558",
+      "project": "50477.42-30",
+      "procurementId": "1086388",
+      "procurementSourceRow": 523456,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 24639961,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "26473",
+          "worksContractId": "33269",
+          "lotId": "33445",
+          "lotNumber": "2",
+          "lotSourceRow": 31880
+        }
+      ]
+    },
+    {
+      "agreement": "971731",
+      "proposal": "2038402",
+      "project": "51196.31-92",
+      "procurementId": "1081801",
+      "procurementSourceRow": 989753,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 92165593,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "24355",
+          "worksContractId": "29551",
+          "lotId": "29739",
+          "lotNumber": "1",
+          "lotSourceRow": 38104
+        }
+      ]
+    },
+    {
+      "agreement": "972546",
+      "proposal": "2039879",
+      "project": "51200.42-47",
+      "procurementId": "1059931",
+      "procurementSourceRow": 499007,
+      "documents": 5,
+      "paymentRows": 5,
+      "reportedPaymentCentsBRL": 43519667,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 5,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "23666",
+          "worksContractId": "28788",
+          "lotId": "28936",
+          "lotNumber": "1",
+          "lotSourceRow": 5724
+        }
+      ]
+    },
+    {
+      "agreement": "973513",
+      "proposal": "2041133",
+      "project": "51879.33-03",
+      "procurementId": "1080204",
+      "procurementSourceRow": 379802,
+      "documents": 4,
+      "paymentRows": 4,
+      "reportedPaymentCentsBRL": 35580444,
+      "firstPaymentYear": 2026,
+      "lastPaymentYear": 2026,
+      "contractStates": {
+        "verified": 0,
+        "noReference": 4,
+        "unresolved": 0
+      },
+      "lots": [
+        {
+          "worksInstrumentId": "24258",
+          "worksContractId": "29926",
+          "lotId": "29628",
+          "lotNumber": "2",
+          "lotSourceRow": 29354
+        }
+      ]
+    }
+  ]
+}

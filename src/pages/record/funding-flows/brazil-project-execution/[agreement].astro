@@ -8,6 +8,7 @@ import BrazilInfrastructureAccountMovements from '../../../../components/BrazilI
 import BrazilInfrastructureInvoiceItems from '../../../../components/BrazilInfrastructureInvoiceItems.astro';
 import { invoiceItemsRoute, invoicesByAgreement } from '../../../../lib/brazil-infrastructure-invoice-items';
 import { contractPaymentsByAgreement, procurementPaymentsByAgreement, procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
+import { procurementLotsByAgreement, procurementLotsRoute } from '../../../../lib/brazil-infrastructure-procurement-lots';
 import { accountMovementsRoute, movementPeriodsByAgreement } from '../../../../lib/brazil-infrastructure-account-movements';
 import { workLotsByAgreement, workLotsRoute } from '../../../../lib/brazil-infrastructure-work-lots';
 import SiteSymbol from '../../../../components/SiteSymbol.astro';
@@ -196,11 +197,15 @@ const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
     </p>
     <p><a class="identity-link" href={url(procurementPaymentsRoute + `?agreement=${agreement}#procurements`)}>Open this agreement in the procurement payment lookup</a>.</p>
   </> : <p>The captured source provides no qualifying institutional payment records to link. See the <a class="identity-link" href={url(procurementPaymentsRoute)}>procurement payment coverage</a>.</p>}
+  {procurementLotsByAgreement.has(agreement) && <p><a class="identity-link" href={url(procurementLotsRoute + `?agreement=${agreement}#lookup`)}>Find the agreement’s procurements with works-lot references</a>.</p>}
 
   {census && <section aria-labelledby="municipal-context">
     <h2 id="municipal-context"><SiteSymbol name="people" size="inline" /> Municipal census context</h2>
     <p>The preliminary 2022 Census sample estimates that <strong>{count(Number(census.variables['12785'].value))} of {count(Number(census.variables['11852'].value))} residents aged two or older</strong> had a disability in {census.municipality}. IBGE reports {percent(census.variables['13403'].value)} for all ages within that population and all sexes. <a href={data.census.source.url}>Open the municipal records in table 10125</a>.</p>
-    <p>The estimate covers residents within the municipal boundary. Identifying the facility’s catchment, who uses it and whether access improved requires separate sources.</p>
+    <p>The estimate covers residents within the municipal boundary. {agreement === '953157'
+      ? <><a class="identity-link" href={url(procurementLotsRoute + '#joacaba')}>Read the Joaçaba clinic case and its wider referral area</a>. Who uses the clinic and whether access improved require separate sources.</>
+      : <>Identifying the facility’s catchment, who uses it and whether access improved requires separate sources.</>}
+    </p>
   </section>}
 
   <p><a class="identity-link" href={url(infrastructureRoute)}>Return to the project directory</a> · <a href={url(infrastructureRoute + 'data.json')} download>Download the edition and source receipts</a>.</p>
