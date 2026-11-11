@@ -14,11 +14,12 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const View = views[`../../components/record/${entry.id}.astro`]?.default;
 ---
 
 <Entry
+  sections={headings}
   title={entry.data.title}
   eyebrow={`The Record · ${entry.data.group}`}
   summary={entry.data.summary}

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { globSync, readdirSync, readFileSync } from 'node:fs';
 import { pageIdentity, routes, symbols } from '../src/lib/site-identities.ts';
+import { sourceSymbol } from '../src/lib/source-symbol.ts';
 import {
   causeSymbols, checklistSymbols, clubMeetingSymbols, datasetSymbols, depthSymbols, ecosystemSymbols,
   fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols,
@@ -86,8 +87,26 @@ for (const [path, entries] of Object.entries(fragmentSymbols)) {
   }
 }
 
+for (const [href, mark] of [
+  ['https://archive.example/REPORT.PDF?edition=2', 'document'],
+  ['https://www.gov.br/charities.csv', 'table'],
+  ['https://www.data.gouv.fr/fr/', 'columns'],
+  ['https://doi.org/10.0000/example', 'flask'],
+  ['/data/example.json.gz', 'packet'],
+  ['/audio/example.mp3', 'headphones'],
+]) {
+  assert.equal(sourceSymbol(href), mark, href);
+}
+
+const fundingIndex = readFileSync('dist/record/funding-flows/index.html', 'utf8');
+for (const { path } of routes.filter(({ path }) => path.startsWith('/record/funding-flows/') && path !== '/record/funding-flows/')) {
+  assert.ok(fundingIndex.includes(`href="${base + path}"`), `Missing funding directory entry for ${path}`);
+}
+assert.ok(fundingIndex.includes('aria-label="Browse funding flows"'));
+
 const pages = globSync('**/*.html', { cwd: 'dist' });
 assert.ok(pages.length > 0);
+let outlines = 0;
 for (const page of pages) {
   const route = '/' + page.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
   const html = readFileSync(`dist/${page}`, 'utf8');
@@ -104,6 +123,21 @@ for (const page of pages) {
   assert.deepEqual([...theme[0].matchAll(/<span[^>]*>(System|Light|Dark)<\/span>/g)].map(([, label]) => label),
     ['System', 'Light', 'Dark'], page);
   assert.ok(!html.includes('data-site-symbol=""'), page);
+  const outline = html.match(/<nav class="page-sections"[^>]*>[\s\S]*?<\/nav>/)?.[0];
+  if (outline) {
+    outlines++;
+    const links = [...outline.matchAll(/<a href="#([^"]+)"/g)].map(([, id]) => id);
+    assert.ok(links.length >= 2, page);
+    assert.equal(new Set(links).size, links.length, `Duplicate outline destination in ${page}`);
+    for (const id of links) assert.ok(html.includes(` id="${id}"`), `Missing ${id} in ${page}`);
+    assert.equal([...outline.matchAll(/data-site-symbol="[^"]+"/g)].length, links.length, page);
+  }
+  const country = page.match(/^record\/countries\/([a-z]{3})\/index\.html$/);
+  if (country) {
+    assert.ok(outline, `Missing country outline in ${page}`);
+    assert.match(html, new RegExp(`class="identity-code title-code"[^>]*>${country[1].toUpperCase()}</span>`), page);
+  }
   assert.equal(html.match(/<h1(?:\s|>)/g)?.length, 1, `Expected one page title in ${page}`);
 }
-console.log(`Site identity and theme checked on ${pages.length} pages, with distinct symbols in the catalogs, reference libraries and editorial lists.`);
+assert.ok(outlines >= 200, "Page outlines should cover country profiles and article templates");
+console.log(`Site identity and theme checked on ${pages.length} pages, including ${outlines} outlines, with distinct symbols in the catalogs, reference libraries and editorial lists.`);

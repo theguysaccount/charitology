@@ -16,10 +16,11 @@ export function GET() {
     return `a[href${match}"${url(path)}"]{--link-glyph:var(--glyph-${symbol});--link-tone:var(--tone-${tone});--list-mark:inline-block}`;
   });
   links.unshift(
-    'a[href^="https://"]{--link-glyph:var(--glyph-external)}',
+    'a:is([href^="https://"],[href^="http://"]){--link-glyph:var(--glyph-external);--list-mark:inline-block}',
     'a[href="https://os.charitology.org"],a[href^="https://os.charitology.org/"]{--link-glyph:var(--glyph-board);--link-tone:var(--tone-green)}',
-    'a[href^="mailto:"]{--link-glyph:var(--glyph-mail)}',
-    'a[download]{--link-glyph:var(--glyph-download)}',
+    'a[href^="mailto:"]{--link-glyph:var(--glyph-mail);--list-mark:inline-block}',
+    'a[download]{--link-glyph:var(--glyph-download);--list-mark:inline-block}',
+    'a[href^="#"]{--link-glyph:var(--glyph-bookmark);--list-mark:inline-block}',
   );
   const datasetLinks = Object.entries(datasetSymbols).map(([name, symbol]) =>
     `a[href="${url(`/api/v1/${name}.json`)}"]{--link-glyph:var(--glyph-${symbol});--list-mark:inline-block}`);
@@ -28,7 +29,12 @@ export function GET() {
   const fragments = Object.entries(fragmentSymbols).flatMap(([path, entries]) =>
     Object.entries(entries).map(([id, symbol]) =>
       `a[href="${url(path)}#${id}"],main[data-site-path="${path}"] a[href="#${id}"]{--link-glyph:var(--glyph-${symbol})}`));
-  return new Response([`:root{${assets.join(';')}}`, ...page, ...tones, ...links, ...datasetLinks, ...ecosystemLinks, ...fragments].join('\n'), {
+  const utilityLinks = [
+    'a[href*="github.com/theguysaccount/charitology/issues/new"][href*="correction"]{--link-glyph:var(--glyph-checks)}',
+    'a[href*="github.com/theguysaccount/charitology/issues/new"][href*="red-team"]{--link-glyph:var(--glyph-flag)}',
+    `a[href="${url('/feed.xml')}"]{--link-glyph:var(--glyph-signal);--list-mark:inline-block}`,
+  ];
+  return new Response([`:root{${assets.join(';')}}`, ...page, ...tones, ...links, ...datasetLinks, ...ecosystemLinks, ...fragments, ...utilityLinks].join('\n'), {
     headers: { 'Content-Type': 'text/css; charset=utf-8' },
   });
 }

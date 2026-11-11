@@ -23,7 +23,13 @@ const missing = countryMissingFacts(projection,country.id);
 
 <Entry
   title={`${country.name}: country data`}
-  eyebrow={`Country data profiles · ${country.id}`}
+  eyebrow="Country data profiles"
+  identityCode={country.id}
+  sections={[
+    { slug: "snapshot", text: "What the snapshot records", symbol: "chart" },
+    { slug: "local-profile", text: "Build an accountable local profile", symbol: "people" },
+    { slug: "depth", text: "Where work may act", symbol: "layers" },
+  ]}
   summary={`${country.region} · World Bank statistical snapshot. Local interpretation remains open for coauthors.`}
   crumbs={[
     { label: "Record", href: "/record/" },
@@ -41,7 +47,7 @@ const missing = countryMissingFacts(projection,country.id);
     charity, estimate the impact of a gift or speak for people living here. A
     locally authored narrative profile has not been published.
   </p>
-  <h2>What the snapshot records</h2>
+  <h2 id="snapshot">What the snapshot records</h2>
   <div class="ob-grid">
     {
       countries.indicators.map((i) => {
@@ -61,7 +67,7 @@ const missing = countryMissingFacts(projection,country.id);
     These figures do not measure charitable funding or unmet need.
   </p>
   <p><a href={url(observationEditionHref(projection.edition.id))}>Fixed observation edition {projection.edition.sequence}</a> · captured {projection.capturedAt}. The source/reuse detail belongs to each source; no blanket license or independent local review is implied.</p>
-  <h2>Build an accountable local profile</h2><ol>
+  <h2 id="local-profile">Build an accountable local profile</h2><ol>
     <li>
       Invite local coauthors to define priorities and correct the framing.
     </li><li>
@@ -82,7 +88,7 @@ const missing = countryMissingFacts(projection,country.id);
     <a class="btn" href={url(`/record/country-profiles/#country=${country.id}`)}
       >Compare data and write a research brief</a>
   </p>
-  <h2>Where work may act</h2><p>
+  <h2 id="depth">Where work may act</h2><p>
     For a water question, for example, emergency supply can provide relief;
     infrastructure repairs can restore service; maintenance and treatment can
     prevent interruptions; utility rules and accountability can change

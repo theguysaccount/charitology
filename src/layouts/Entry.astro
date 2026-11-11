@@ -7,6 +7,8 @@ import Base from './Base.astro';
 import Crumbs from '../components/Crumbs.astro';
 import ReviewNote from '../components/ReviewNote.astro';
 import SourceList from '../components/SourceList.astro';
+import PageSections from '../components/PageSections.astro';
+import type { SymbolName } from '../lib/site-identities';
 
 interface Props {
   title: string;
@@ -16,10 +18,12 @@ interface Props {
   crumbs?: { label: string; href?: string }[];
   filePath?: string;
   review?: 'draft' | 'reviewed';
+  identityCode?: string;
+  sections?: readonly { slug: string; text: string; depth?: number; symbol?: SymbolName }[];
   sources?: { title: string; url: string; publisher?: string; year?: string | number; note?: string }[];
 }
 
-const { title, description, eyebrow, summary, crumbs, filePath, review = 'draft', sources = [] } = Astro.props;
+const { title, description, eyebrow, summary, crumbs, filePath, review = 'draft', sources = [], identityCode, sections } = Astro.props;
 const hasAside = Astro.slots.has('aside');
 ---
 
@@ -28,7 +32,7 @@ const hasAside = Astro.slots.has('aside');
     <div class="wrap">
       {crumbs && <Crumbs items={crumbs} />}
       {eyebrow && <span class="eyebrow">{eyebrow}</span>}
-      <h1>{title}</h1>
+      <h1>{identityCode && <span class="identity-code title-code">{identityCode}</span>}{title}</h1>
       {summary && <p class="lede">{summary}</p>}
       {Astro.slots.has('badges') && <div class="badges"><slot name="badges" /></div>}
     </div>
@@ -43,6 +47,7 @@ const hasAside = Astro.slots.has('aside');
   <div class="wrap section-tight">
     <div class={hasAside ? 'split' : ''}>
       <article>
+        {sections && <PageSections sections={sections} />}
         <div class="prose">
           <slot />
         </div>

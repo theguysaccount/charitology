@@ -11,10 +11,11 @@ export function getStaticPaths() {
 }
 const { episode } = Astro.props;
 const chapter = (await getEntry("principles", episode.chapter))!;
-const { Content } = await render(chapter);
+const { Content, headings } = await render(chapter);
 ---
 
 <Entry
+  sections={headings}
   title={episode.title}
   eyebrow={`Principles read aloud · Episode ${episode.number}`}
   summary={episode.description}

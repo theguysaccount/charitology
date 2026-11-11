@@ -1,0 +1,86 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ReviewNote from '../../../components/ReviewNote.astro';
+import Crumbs from '../../../components/Crumbs.astro';
+import SiteSymbol from '../../../components/SiteSymbol.astro';
+import { url } from '../../../lib/site';
+import type { SymbolName } from '../../../lib/site-identities';
+
+const groups: {
+  id: string;
+  title: string;
+  symbol: SymbolName;
+  items: readonly { slug: string; title: string; scope: string; summary: string }[];
+}[] = [
+  {
+    id: 'lookups', title: 'Search original records', symbol: 'fileSearch', items: [
+      { slug: 'brazil-transferegov', title: 'Federal transfers', scope: 'Brazil', summary: 'Find agreements and the bank orders that made federal money available.' },
+      { slug: 'canada-qualified-donees', title: 'Reported gifts', scope: 'Canada', summary: 'Look up a filer or recipient and open the corresponding CRA worksheet entries.' },
+      { slug: 'canada-grant-geography', title: 'Grant activities by country', scope: 'Canada', summary: 'See the countries named in charity grant reporting and the amounts left unallocated.' },
+      { slug: 'ile-de-france-paid-grants', title: 'Regional grant payments', scope: 'Île-de-France, France', summary: 'Find reported payments by association name or official organization identifier.' },
+      { slug: 'us-schedule-i', title: 'Schedule I grants', scope: 'United States', summary: 'Trace grants and noncash assistance between filer and recipient EINs in one IRS archive.' },
+    ],
+  },
+  {
+    id: 'cases', title: 'Follow a funding case', symbol: 'split', items: [
+      { slug: 'brazil-cisterns', title: 'Rainwater systems in Pará', scope: 'Brazil', summary: 'Connect a federal agreement, account payments and tender locations. Read the separate census baseline.' },
+      { slug: 'brazil-solidarity-kitchens', title: 'Solidarity kitchens', scope: 'Brazil', summary: 'Follow a federal call from selection to bank orders and see what published plans cover.' },
+      { slug: 'brazil-solidarity-kitchens/account-payments', title: 'Solidarity kitchens account payments', scope: 'Brazil', summary: 'Follow movements from agreement accounts and see which onward amounts are missing.' },
+      { slug: 'greater-manchester-home-from-hospital', title: 'Home-from-hospital support', scope: 'England', summary: 'Read local awards and delivery periods alongside the NHS discharge figures for the same area.' },
+      { slug: 'hokkaido-child-support', title: 'Child-support awards in Hokkaido', scope: 'Japan', summary: 'Connect two award years to organization identifiers and read the separate food affordability survey.' },
+      { slug: 'iberia-hrsa', title: 'Federal grants to an Iberia health center', scope: 'United States', summary: 'Match federal awards to annual audit schedules and read independent health insurance estimates.' },
+      { slug: 'yes-i-do-alliance', title: 'Yes I Do Alliance', scope: 'Multiple countries', summary: 'Compare the funder’s reported disbursements with the receipts and activities partners published.' },
+    ],
+  },
+];
+---
+
+<Base title="Funding flows" description="Follow reported awards, transfers and spending through original records and published case studies.">
+  <header class="page-head">
+    <div class="wrap">
+      <Crumbs items={[{ label: 'Record', href: '/record/' }, { label: 'Funding flows' }]} />
+      <h1>Funding flows</h1>
+      <p class="lede">Find a grant or follow money from one reported stage to the next. Read what each source records, where records connect and where the trail ends.</p>
+      <nav class="catalog-jump" aria-label="Browse funding flows">
+        {groups.map(group => <a href={`#${group.id}`}><SiteSymbol name={group.symbol} />{group.title}</a>)}
+      </nav>
+    </div>
+  </header>
+
+  {groups.map(group => (
+    <section class="wrap section-tight" aria-labelledby={group.id}>
+      <h2 id={group.id} class="identity-label"><SiteSymbol name={group.symbol} />{group.title}</h2>
+      <ul class="grid funding-links" role="list">
+        {group.items.map(item => (
+          <li><a class="card" href={url(`/record/funding-flows/${item.slug}/`)}>
+            <span class="eyebrow">{item.scope}</span>
+            <h3>{item.title}</h3>
+            <p>{item.summary}</p>
+          </a></li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <section class="wrap section-tight prose">
+    <h2>See the rest of the Index</h2>
+    <ul>
+      <li><a href={url('/record/charity-index/coverage/')}>Registry and financial coverage by jurisdiction</a></li>
+      <li><a href={url('/record/gap-map/')}>Compare funding and independently measured need in the Gap Map</a></li>
+    </ul>
+    <ReviewNote title="Funding flows" filePath="src/pages/record/funding-flows/index.astro" />
+  </section>
+</Base>
+
+<style>
+  .funding-links {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+  }
+
+  .funding-links .card {
+    display: block;
+    height: 100%;
+  }
+</style>

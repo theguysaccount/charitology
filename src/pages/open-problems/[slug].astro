@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const d = entry.data;
 const all = await problemsInOrder();
 const i = all.findIndex((p) => p.id === entry.id);
@@ -26,6 +26,7 @@ const workUrl = `${SITE.repo}/issues/new?${new URLSearchParams({
 ---
 
 <Entry
+  sections={headings}
   title={d.title}
   eyebrow={`Open Problem ${pad(d.number)}`}
   summary={d.statement}

@@ -58,6 +58,9 @@ import { url } from '../lib/site';
     text-transform: uppercase;
     color: var(--accent);
   }
+  .results :global(a.r-section) {
+    text-underline-offset: 0.22em;
+  }
   .results :global(a.r-title) {
     display: block;
     font-family: var(--font-display);
@@ -87,23 +90,29 @@ import { url } from '../lib/site';
   const list = $('#results');
   const status = $('#search-status');
 
+  let request = 0;
   async function run(q: string) {
+    const current = ++request;
     clear(list);
     if (!q.trim()) {
       status.textContent = '';
       return;
     }
     status.textContent = 'Searching…';
-    const hits = await searchSite(q, 20);
+    const hits = await searchSite(q, 20).catch(() => null);
+    if (current !== request) return;
     if (hits === null) {
-      status.textContent = 'Search runs on the built site. Run npm run build, then npm run preview.';
+      status.textContent = 'Search is unavailable right now. You can browse the site from the menu.';
       return;
     }
     status.textContent = hits.length ? `${hits.length} result${hits.length === 1 ? '' : 's'} for “${q}”` : `Nothing yet for “${q}”.`;
     for (const hit of hits) {
       const excerpt = h('p', { class: 'r-excerpt' });
       excerpt.innerHTML = hit.excerpt;
-      list.append(h('li', {}, h('span', { class: 'r-section' }, hit.section), h('a', { class: 'r-title', href: hit.url }, hit.title), excerpt));
+      const title = h('a', { class: 'r-title', href: hit.url });
+      if (hit.code) title.append(h('span', { class: 'identity-code' }, hit.code));
+      title.append(hit.title);
+      list.append(h('li', {}, h('a', { class: 'r-section', href: hit.sectionHref }, hit.section), title, excerpt));
     }
   }
 

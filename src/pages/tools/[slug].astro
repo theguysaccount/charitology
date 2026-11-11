@@ -16,11 +16,12 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const Tool = tools[`../../components/tools/${entry.id}.astro`]?.default;
 ---
 
 <Entry
+  sections={headings}
   title={entry.data.title}
   eyebrow={`Tool · ${entry.data.group}`}
   summary={entry.data.summary}

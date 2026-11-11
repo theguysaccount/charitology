@@ -45,7 +45,7 @@ const { entry, collection } = Astro.props as {
   entry: any;
   collection: RecordSectionCollection;
 };
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const d = entry.data;
 const section = RECORD_SECTIONS[collection];
 const sectionLabel = LABELS[collection];
@@ -90,6 +90,7 @@ if (collection === "journal") {
 ---
 
 <Entry
+  sections={headings}
   title={title}
   eyebrow={eyebrow}
   summary={d.summary}

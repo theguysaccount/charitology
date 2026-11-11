@@ -1,0 +1,88 @@
+---
+import SiteSymbol from './SiteSymbol.astro';
+import type { SymbolName } from '../lib/site-identities';
+
+interface Props {
+  sections: readonly { slug: string; text: string; depth?: number; symbol?: SymbolName }[];
+  label?: string;
+}
+const { sections, label = 'On this page' } = Astro.props;
+const labels: [RegExp, SymbolName][] = [
+  [/^(?:what (?:it is|the claim is)|overview|background)/, 'document'],
+  [/^(?:where to start|what to ask|how to help|next steps|use )/, 'steps'],
+  [/^(?:how |the method|what it looks like)/, 'tools'],
+  [/^(?:the debate|where .*stands|why it’s debated)/, 'dialogue'],
+  [/^(?:why |where .*system|through the source lens)/, 'network'],
+  [/^(?:where .*depth|the five levels)/, 'layers'],
+  [/^(?:what .*evidence|sources|what trials|what’s true)/, 'flask'],
+  [/^(?:what .*success|what success|what would close)/, 'target'],
+  [/^(?:what we don’t know|open questions|what remains)/, 'question'],
+  [/^(?:risks|limits|watch for|coverage|what it can’t|what it isn’t)/, 'shield'],
+  [/^(?:what happened|where it came from)/, 'history'],
+];
+const links = sections.filter(({ depth }) => depth === undefined || depth === 2);
+---
+
+{links.length >= 2 && (
+  <nav class="page-sections" aria-label={label} data-pagefind-ignore>
+    <p>{label}</p>
+    <ul role="list">
+      {links.map(({ slug, text, symbol }) => (
+        <li><a href={`#${slug}`}><SiteSymbol name={symbol ?? labels.find(([pattern]) => pattern.test(text.toLowerCase()))?.[1] ?? 'bookmark'} size="inline" />{text}</a></li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .page-sections {
+    max-inline-size: 72ch;
+    margin-block: 1.25rem 2rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--rule);
+    border-inline-start: 3px solid var(--site-tone);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font: 580 0.9rem/1.4 var(--font-sans);
+  }
+
+  .page-sections p {
+    margin: 0 0 0.2rem;
+    font-weight: 730;
+  }
+
+  .page-sections ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 0 0.6rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .page-sections li {
+    min-inline-size: 0;
+  }
+
+  .page-sections a {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-block-size: 2.75rem;
+    padding: 0.18rem 0.35rem;
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  .page-sections a:hover {
+    background: var(--bg-2);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  @media print {
+    .page-sections { display: none; }
+  }
+</style>
