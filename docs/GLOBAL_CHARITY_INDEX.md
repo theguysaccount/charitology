@@ -130,3 +130,16 @@ python3 scripts/build-kenya-pbo-coverage.py /path/to/captures /path/to/kenya-pbo
 npm run build
 python3 scripts/check-kenya-pbo-coverage.py
 ```
+
+## Japan NPO Portal and reported finances
+
+The [Japan NPO edition](https://charitology.com/record/charity-index/japan/) projects 60,062 records across 67 supervising authorities from the Cabinet Office's November 10, 2026 national NPO Portal files. Each record retains its exact portal ID and administrative CSV data record. The search accepts the Japanese name or reading, portal ID or corporate number. Administrative location describes the supervising authority. The portal includes records at different stages of registration and dissolution. Use the Cabinet Office's separately dated counts for the certified population. [National bulk download](https://www.npo-homepage.go.jp/npoportal/download/all) · [Coverage and reuse FAQ](https://www.npo-homepage.go.jp/npoportal/faq/common) · [Official certification statistics](https://www.npo-homepage.go.jp/about/toukei-info/ninshou-zyuri).
+
+The corporate number keeps its original digits when it passes the National Tax Agency's published checksum. Repeated valid numbers retain every portal entry. The organization-entered CSV has the same sequence of names as the administrative CSV but supplies no corporate number. A financial summary requires a unique name in both extracts, an explicit year label and at least one valid selected amount. The 1,221 linked summaries preserve the original financial data record and four original JPY amounts. These summaries are entered by the organizations and do not establish where services took place or how grants were spent. The projection excludes names of representatives, contact information, addresses, narrative text and personal records. [Corporate-number formula](https://www.houjin-bangou.nta.go.jp/documents/houjinbangounokousei.pdf) · [Organization-entered field definitions](https://www.npo-homepage.go.jp/about/houjin-info/npohoujin-touroku) · [Activity statement in yen](https://www.npo-homepage.go.jp/uploads/report28_11_shiryo_1.pdf).
+
+Source data from the Cabinet Office NPO Portal, adapted by Charitology under [Japan's Public Data License 1.0](https://www.cao.go.jp/notice/rule.html). The [manifest](../public/data/charity-registry/japan-npo/manifest.json) pins both raw ZIPs and the projected data. Use `gyousei_000.zip` and `houjin_000.zip` with the exact recorded fingerprints. The service updates the same download URLs. The offline checker verifies the committed projection, identifier uniqueness, the selected financial scope and the artifact fingerprints.
+
+```sh
+python3 scripts/build-japan-npo.py /path/to/captures /path/to/new-rebuild
+node scripts/check-japan-npo.mjs
+```

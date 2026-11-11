@@ -1,0 +1,29 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import JapanNpoSearch from '../../../components/JapanNpoSearch.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/japan-npo/manifest.json';
+
+const title = 'Japan NPO registry and reported finances';
+const count = (number: number) => number.toLocaleString('en-US');
+const sources = [
+  { title: 'NPO Portal national bulk downloads', publisher: manifest.publisher, url: manifest.portal + 'download/all' },
+  { title: 'NPO Portal coverage and reuse', publisher: manifest.publisher, url: manifest.portal + 'faq/common' },
+  { title: 'Organization-entered financial fields', publisher: manifest.publisher, url: 'https://www.npo-homepage.go.jp/about/houjin-info/npohoujin-touroku' },
+  { title: 'Example activity statement in yen', publisher: manifest.publisher, url: 'https://www.npo-homepage.go.jp/uploads/report28_11_shiryo_1.pdf' },
+  { title: 'Corporate number and check digit', publisher: 'National Tax Agency, Japan', url: 'https://www.houjin-bangou.nta.go.jp/documents/houjinbangounokousei.pdf' },
+];
+const base = '/data/charity-registry/japan-npo/';
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary="Search Japan’s NPO Portal by Japanese name, name reading or number. Read dated financial summaries where the files support a link." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Japan'}]} sources={sources}>
+  <p>Search {count(manifest.counts.portalRows)} entries from {count(manifest.authorities.length)} supervising authorities in the Cabinet Office’s <time datetime={manifest.asOf}>{manifest.asOf}</time> NPO Portal snapshot. {count(manifest.counts.financialSummaries)} entries have a dated financial summary that can be matched to the administrative record. The search uses the original Japanese names.</p>
+  <JapanNpoSearch />
+  <h2 id="coverage">What the portal covers</h2>
+  <p>These files describe specified nonprofit corporations under Japan’s NPO law. The portal includes entries before registration and can retain dissolution records. {count(manifest.counts.withDissolutionInformation)} entries have dissolution information in the administrative file. Check the official entry and the supervising authority for current status. The Cabinet Office publishes its certified-organization count separately. <a href="https://www.npo-homepage.go.jp/about/toukei-info/ninshou-zyuri">See the official count and dates</a>.</p>
+  <p>The administrative source lists a corporate number on {count(manifest.counts.validCorporateNumberRows)} rows that pass the National Tax Agency’s check digit. {count(manifest.counts.missingCorporateNumberRows)} rows have no number and {count(manifest.counts.invalidCorporateNumberRows)} rows supplied a number that failed validation. {count(manifest.counts.repeatedCorporateNumbers)} valid numbers occur on more than one portal row. Exact number search returns all matching entries with their original portal identifiers. The supervising authority describes where the record is administered.</p>
+  <h2 id="finance">How to read the financial summaries</h2>
+  <p>The administrative and organization-entered CSVs have identical names in the same order for this snapshot. The organization-entered file lacks a corporate number. A financial summary appears only when the name occurs once in both files and the source supplies a year and at least one selected amount. {count(manifest.counts.organizationRowsWithSelectedAmounts)} source rows had a selected amount. Of those, {count(manifest.counts.financeExcludedRepeatedName)} had a repeated name and {count(manifest.counts.financeExcludedWithoutUsableYear)} lacked a usable year. The portal’s organization-entered data are supplied by the organization itself.</p>
+  <p>The year is the organization’s latest settlement label in this capture. Amounts remain in yen. Donations and grants received are income categories within the activity statement. The four figures describe reported finances. Individual grants, service locations and outcomes require their own records.</p>
+  <p>Source data from the Cabinet Office NPO Portal, adapted by Charitology under <a href={manifest.licence}>Japan’s Public Data License 1.0</a>. <a href={manifest.sources.administrative.url}>Administrative ZIP</a> · <a href={manifest.sources.organization.url}>Organization-entered ZIP</a> · <a href={url(base + 'manifest.json')} download="japan-npo-manifest.json">Download source and coverage manifest</a> · <a href={url(base + manifest.asset.path)} download="japan-npo-registry.json.gz">Download the selected snapshot</a>.</p>
+</Entry>

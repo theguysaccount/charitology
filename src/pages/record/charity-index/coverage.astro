@@ -7,6 +7,7 @@ import usa from '../../../../public/data/charity-financials/us/manifest.json';
 import usaShort from '../../../../public/data/charity-financials/us-990-ez/manifest.json';
 import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/manifest.json';
 import registry from '../../../../public/data/irs-registry/manifest.json';
+import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
 import manchester from '../../../data/home-from-hospital.json';
 
 const title = 'Charity Index coverage';
@@ -30,6 +31,14 @@ const panels = [
     manifest: '/data/charity-financials/ew/manifest.json',
   },
   {
+    name: 'Japan', flag: 'Cabinet Office NPO Portal', route: '/record/charity-index/japan/',
+    label: 'Search Japan NPO Portal records', date: japan.capturedOn,
+    coverage: `${number(japan.counts.portalRows)} dated portal entries across ${number(japan.authorities.length)} supervising authorities.`,
+    history: `${number(japan.counts.financialSummaries)} entries link to a dated organization-entered financial summary.`,
+    boundary: 'The portal includes dissolution records. Corporate numbers can be repeated, and the reported financial figures cover only matched records.',
+    manifest: '/data/charity-registry/japan-npo/manifest.json',
+  },
+  {
     name: 'United States', flag: 'IRS identity and Form 990 extracts', route: '/record/charity-financials/united-states/',
     label: 'Search U.S. Form 990 finances', date: usa.capturedOn,
     coverage: `${number(registry.recordCount)} dated federal registry identities. Separately, ${number(usa.counts.organizations)} EINs have a selected full Form 990 period.`,
@@ -41,6 +50,7 @@ const panels = [
 const sources = [
   { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
+  { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
 ];
 ---
