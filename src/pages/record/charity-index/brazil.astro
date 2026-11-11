@@ -1,0 +1,88 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import registry from '../../../../public/data/charity-registry/brazil-osc/manifest.json';
+import transfers from '../../../../public/data/funding-flows/brazil-transferegov/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Brazil civil society registry links';
+const root = '/data/charity-registry/brazil-osc/';
+const transferPage = '/record/funding-flows/brazil-transferegov/';
+const { source, coverage } = registry;
+const count = (n: number) => n.toLocaleString('en-US');
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'BRL', currencyDisplay: 'code' });
+const groups = [['exact', 'One exact registry record'], ['unmatched', 'No exact registry record'], ['ambiguous', 'Repeated registry number']] as const;
+const sources = [
+  { title: source.title, publisher: source.publisher, url: source.catalog, note: 'August 2026 edition. Accessed November 11, 2026.' },
+  { title: 'How Mapa das OSCs defines civil society organizations', publisher: source.publisher, url: source.methodology },
+  { title: 'Transferegov public downloads', publisher: transfers.source.publisher, url: transfers.source.dataset },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary="Check whether Brazilian federal transfer records link to a civil society registration by its full CNPJ." crumbs={[{ label:'The Record', href:'/record/' }, { label:'Global Charity Index', href:'/record/charity-index/' }, { label:'Brazil registry links' }]} sources={sources}>
+  <p>We compared all {count(registry.transfers.identifiers)} distinct registration numbers in the selected <a href={url(transferPage)}>Brazilian federal transfer edition</a> with the August 2026 Mapa das OSCs extract. One exact registry record exists for {count(coverage.exact.identifiers)} of those numbers. Their agreements account for {count(coverage.exact.orders)} of {count(registry.transfers.orders)} bank orders in the edition.</p>
+  <p>CNPJ is the registration number Brazil uses for legal entities and their establishments. The comparison uses all 14 positions, including leading zeros and the part that identifies a head office or branch. It uses a later registry snapshot to check identity. The displayed registration status and location belong to August 2026. Status at the time of a bank order and where the work took place remain unknown here.</p>
+  <section id="lookup" class="charity-financial-search" aria-labelledby="registry-search-title" data-brazil-registry
+    data-registry={JSON.stringify(registry)} data-asset={url(root + registry.asset.path)}
+    data-transfers={JSON.stringify(transfers)} data-transfer-asset={url('/data/funding-flows/brazil-transferegov/' + transfers.asset.path)}
+    data-transfer-page={url(transferPage)}>
+    <h2 id="registry-search-title">Find a registration and its transfer records</h2>
+    <p id="registry-search-help">Search the start of a name used in the proposals or enter a full CNPJ. Leave the search blank to browse by match. Search terms stay in this browser.</p>
+    <form role="search" aria-label="Brazil civil society registry links" aria-describedby="registry-search-help">
+      <label for="br-registry-query">Organization name or full CNPJ</label>
+      <div class="finance-actions">
+        <input id="br-registry-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <button class="btn" type="submit" disabled>Search registry links</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+      <label for="br-registry-match">Match in the Ipea edition</label>
+      <select id="br-registry-match" disabled>
+        <option value="">All match types</option>
+        {groups.filter(([kind]) => coverage[kind].identifiers > 0).map(([kind, label]) => <option value={kind}>{label}</option>)}
+      </select>
+    </form>
+    <p data-status role="status">Search when you’re ready to load the two public snapshots.</p>
+    <div class="finance-actions">
+      <button class="btn btn-ghost btn-small" type="button" data-export="json" disabled>Export registry matches as JSON</button>
+      <button class="btn btn-ghost btn-small" type="button" data-export="csv" disabled>Export registry matches as CSV</button>
+    </div>
+    <p class="note">Exports preserve match status and source references. Open the transfer lookup for the financial records and their separate exports.</p>
+    <ol class="finance-results" data-site-symbol="building" aria-label="Civil society registration results" data-results></ol>
+    <noscript><p>The coverage tables, selected registry data and original downloads are available below.</p></noscript>
+  </section>
+  <h2 id="coverage">How much of the transfer edition links?</h2>
+  <div class="table-wrap" role="region" aria-label="Registration match coverage table" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Match in Ipea</th><th scope="col" class="num">CNPJs</th><th scope="col" class="num">Agreements</th><th scope="col" class="num">Bank orders</th></tr></thead>
+      <tbody>{groups.map(([kind, label]) => <tr><th scope="row">{label}</th><td class="num">{count(coverage[kind].identifiers)}</td><td class="num">{count(coverage[kind].agreements)}</td><td class="num">{count(coverage[kind].orders)}</td></tr>)}</tbody>
+    </table>
+  </div>
+  <div class="table-wrap" role="region" aria-label="Bank-order amounts by match and year" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Match in Ipea</th><th scope="col">Bank-order year</th><th scope="col" class="num">Orders</th><th scope="col" class="num">Made available</th></tr></thead>
+      <tbody>{groups.flatMap(([kind, label]) => Object.entries(coverage[kind].byBankOrderYear).map(([year, period]) => (
+        <tr><th scope="row">{label}</th><td>{year}</td><td class="num">{count(period.orders)}</td><td class="num">{money.format(period.centsBRL / 100)}</td></tr>
+      )))}</tbody>
+    </table>
+  </div>
+  <p>Amounts come from distinct bank orders and stay in Brazilian reais (BRL). They describe what Transferegov reports as made available to agreement accounts. The agreement contributions and any onward payments or recipient expenses belong to separate stages. A missing exact match shows a gap between these two selections. It leaves the organization’s registration, eligibility and work unresolved.</p>
+  <p>Mapa das OSCs applies its own civil society definition. This selection starts from the transfer edition, so the search covers its proponents. The full Ipea download also includes other organizations and older registrations. A legal registration status describes a dated administrative record. Delivery and outcomes require separate evidence.</p>
+  <h2>Sources and reuse</h2>
+  <p>{source.title}, August 2026. Instituto de Pesquisa Econômica Aplicada (Ipea), Mapa das Organizações da Sociedade Civil. Accessed <time datetime={source.accessedOn}>November 11, 2026</time>. The <a href={source.terms}>Mapa terms</a> permit attributed republication of public material and restrict commercial use. The registry projection retains those terms. Transferegov’s separate edition uses the <a href={transfers.source.license}>Open Database License</a>.</p>
+  <ul>
+    <li><a href={source.url}>Original Ipea CSV</a> ({count(source.sourceRows)} records) and <a href={source.dictionary}>Ipea data dictionary</a>. Record numbers count CSV data records after the header.</li>
+    <li><a href={url(root + 'manifest.json')}>Source fingerprints, field order and match coverage</a> and <a href={url(root + registry.asset.path)}>Selected registry records as compressed JSON</a>.</li>
+    <li><a href={url(registry.transfers.manifest)}>Transferegov source and coverage manifest</a> and <a href={url(transferPage)}>search and export the separate agreements and bank orders</a>.</li>
+  </ul>
+  <p>For evidence on planned service locations and independent measures of need, see the <a href={url('/record/funding-flows/brazil-solidarity-kitchens/')}>solidarity kitchens case</a>.</p>
+</Entry>
+
+<style>
+  select { max-width: 100%; padding: .5rem; font: inherit; }
+  label:not(:first-child) { margin-top: .75rem; }
+</style>
+
+<script>
+  import { mountBrazilRegistry } from '../../../lib/client/brazil-osc-registry';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-brazil-registry]')) mountBrazilRegistry(root);
+</script>

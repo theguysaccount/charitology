@@ -12,6 +12,7 @@ import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/
 import registry from '../../../../public/data/irs-registry/manifest.json';
 import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
 import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
+import brazil from '../../../../public/data/charity-registry/brazil-osc/manifest.json';
 import manchester from '../../../data/home-from-hospital.json';
 
 const title = 'Charity Index coverage';
@@ -89,6 +90,8 @@ const sources = [
       <p>Captured on <time datetime={panel.date}>{panel.date}</time>. <a href={url(panel.route)}>{panel.label}</a> · <a href={url(panel.manifest)}>Source and coverage manifest</a>.</p>
     </section>)}
   </div>
+  <h3>Brazil civil society registry links</h3>
+  <p>The <a href={url('/record/charity-index/brazil/')}>Brazil registry comparison</a> finds one exact CNPJ match in Ipea for {number(brazil.coverage.exact.identifiers)} of {number(brazil.transfers.identifiers)} registration numbers in the federal transfer edition. The comparison shows the August 2026 registry snapshot alongside separate 2024 and 2025 bank-order periods.</p>
   <h3>Kenya sector report coverage</h3>
   <p>The <a href={url('/record/charity-financials/kenya/')}>Kenya edition</a> compares aggregate filing counts and receipts across three regulator reports, with a spending breakdown for the latest report year. It links to the regulator’s live register for organization names and references.</p>
   <h3>Additional United States financial editions</h3>
