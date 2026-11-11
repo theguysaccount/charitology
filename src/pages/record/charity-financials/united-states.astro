@@ -2,6 +2,7 @@
 import Entry from '../../../layouts/Entry.astro';
 import UsCharityFinancialSearch from '../../../components/UsCharityFinancialSearch.astro';
 import { url } from '../../../lib/site';
+import iberia from '../../../data/funding-flows/iberia-hrsa.json';
 import manifest from '../../../../public/data/charity-financials/us/manifest.json';
 
 const title = 'United States charity Form 990 finances';
@@ -11,6 +12,7 @@ const sources = [{ title: 'Annual extract of tax-exempt organization financial d
 
 <Entry title={title} eyebrow="The Record · Global Charity Index" summary="Search U.S. charity revenue, functional expenses and grant amounts in selected IRS Form 990 extracts." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Financial filings',href:'/record/charity-financials/'},{label:'United States'}]} sources={sources}>
   <p>This edition covers {count(manifest.counts.organizations)} EINs associated with {count(manifest.counts.includedPeriods)} dated Form 990 records. {count(manifest.counts.multiPeriod)} EINs have more than one period. The calendar years of filing are 2023 and 2024. The selected tax periods end in 2022, 2023 or 2024.</p>
+  <p id={'ein=' + iberia.organization.ein}>Follow an example of grant-level reporting in the <a href={url('/record/funding-flows/iberia-hrsa/')}>Iberia health center’s federal award and audit records</a>.</p>
   <UsCharityFinancialSearch />
   <h2 id="coverage">Coverage and original data</h2>
   <p>The IRS publishes financial extracts by the year a return was filed. The month in each result is the end of the tax period. The extracts do not give the exact start or end day here. The IRS describes adjustments and transcription effects that can make an extract value differ from the original return.</p>

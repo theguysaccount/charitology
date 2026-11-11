@@ -215,3 +215,23 @@ python3 scripts/build-nz-tier3.py /path/to/captures /path/to/new-output-director
 npm run build
 node scripts/check-nz-tier3.mjs
 ```
+
+## Iberia health center grants and audit schedules
+
+The [Iberia case](https://charitology.com/record/funding-flows/iberia-hrsa/) connects four federal grant numbers and one exact federal recipient ID across HRSA and the Federal Audit Clearinghouse. The case includes 15 agency award-year records and all eight grant lines in three annual audit schedules ending in May 2023, 2024 and 2025. The IRS edition links the same EIN to organization-wide filings ending May 2022 and May 2023. Use those filings for a separate view of the whole organization. [HRSA’s data catalog](https://catalog.data.gov/dataset/grants) · [Federal Audit Clearinghouse data](https://www.fac.gov/data/)
+
+The agency’s financial-assistance field is aggregated by grant and federal issue year in the Awarded Grants file. The audit PDFs show the center’s accrual-basis program receipts and expenses. The exports preserve each stage’s period and source coordinates. For H8GCS48002, the expenses reported in the two selected audit years total USD 323,046, which equals the federal FY 2023 award amount. Use the identifiers to connect the records. Transaction-level disbursements, bank receipts and outcomes remain unobserved here. A repeated H80 award amount in multiple federal years cannot identify an individual payment.
+
+The capture scanned all 75,859 HRSA CSV records and three FAC general files. The FAC URLs labeled 2024, 2025 and 2026 each contained one qualifying public annual nonprofit record for the organization, ending in May 2023, 2024 and 2025 respectively. Use the dates and report IDs in the rows. The public JSON retains exact file fingerprints and PDF page locations. HRSA’s map query agrees with the 15 award-year amounts and project periods. The released projections exclude addresses and contact fields.
+
+Each audit also identifies Iberia Parish as the location of most of the center’s patients. Three independent Census estimates describe insurance coverage among parish residents under age 65 in calendar years 2022–2024. The parish table preserves the denominator, uninsured counts and rates, and 90% margins of error. These periods overlap the audits. Parish-level spending and grant participant counts remain unknown. [Census source and methodology](https://www.census.gov/data/datasets/time-series/demo/sahie/estimates-acs.html)
+
+```sh
+npm run build
+node scripts/check-iberia-hrsa.mjs
+python3 scripts/check-iberia-hrsa-sources.py --fetch
+```
+
+The Python verifier streams the official CSV files and checks the award projection, public report selection, control totals and original PDF fingerprints. To verify retained source files offline, use `--source-dir DIRECTORY` with the original CSV and Excel file names, the three audit PDFs named by report ID, the original Census ZIP file names and `hrsa-award-map.json` for the recorded map response. The source sites may refresh the files. Reproducing this edition requires their exact fingerprints. The per-grant receipts and expenses can be read at the PDF pages in the export.
+
+The next expansion should sample a second grantee with multiple linked audits, then test whether Treasury account-level disbursements can be matched with exact dates and award identifiers. Look for dated service-site records and grant-specific allocations. The parish location in these audits gives no share of each award attributable to that parish.
