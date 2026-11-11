@@ -117,6 +117,12 @@ export const fundraisingSourceSymbols: Record<string, SymbolName> = {
   'corporate-sponsorship': 'building', 'donor-rights': 'shield',
 };
 
+export const fundraisingModuleSymbols: Record<string, SymbolName> = {
+  fundraising: 'gift', projects: 'calendar', communications: 'dialogue', events: 'people',
+  'grant-seeking': 'fileSearch', 'grant-delivery': 'route', evaluation: 'flaskCheck',
+  outcomes: 'signal', documents: 'document',
+};
+
 export const lexiconSymbols: Record<string, SymbolName> = {
   additionality: 'spark', beachhead: 'anchor', 'brier-score': 'calculator', calibration: 'dial',
   charitologist: 'badge', charitology: 'compass', 'contract-failure': 'break',

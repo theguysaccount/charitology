@@ -21,7 +21,9 @@ assert.equal(byPath.size, routes.length);
 for (const { path, symbol, tone } of routes) {
   assert.ok(symbols[symbol], path);
   const match = path === '/' ? '=' : '^=';
-  assert.ok(sheet.includes(`a[href${match}"${base + path}"]{--link-glyph:var(--glyph-${symbol});--link-tone:var(--tone-${tone});--list-mark:inline-block}`), path);
+  const selector = `a[href${match}"${base + path}"]`;
+  const encoded = path.includes(':') ? `,a[href${match}"${base + path.replace(':', '%3A')}" i]` : '';
+  assert.ok(sheet.includes(`${selector}${encoded}{--link-glyph:var(--glyph-${symbol});--link-tone:var(--tone-${tone});--list-mark:inline-block}`), path);
 }
 
 for (const [collection, prefix] of [

@@ -1,7 +1,7 @@
 ---
-import type { SymbolName } from "../lib/site-identities";
+import { pageIdentity, type SymbolName } from "../lib/site-identities";
 import { ledgerHref, projectResearchLedger } from "../lib/research-ledger-model.mjs";
-import { ledgerEditionHref, ledgerEditionJsonHref, ledgerEditionCsvHref, ledgerSourceHref } from "../lib/research-ledger";
+import { ledgerEditionHref, ledgerEditionJsonHref, ledgerEditionCsvHref, ledgerSourceHref, ledgerVersionTitle as title } from "../lib/research-ledger";
 import { url } from "../lib/site";
 import "../styles/research-ledger.css";
 
@@ -25,12 +25,7 @@ const viewMap = new Map(views.map((v) => [v.id, v]));
 const selected = selectedRecordId === null ? null : viewMap.get(selectedRecordId);
 if (selectedRecordId !== null && !selected) throw Error("The selected research-ledger record is not pinned in this edition.");
 const current = (view) => graph.versions.find((v) => v.recordId === view.id && v.version === view.currentVersion.version);
-const title = (version) => version?.subject.type === "entry" ? version.subject.frontmatter.title : version?.subject.title ?? version?.recordId ?? "Unknown subject";
 const kindNames = { problem: "Research problem", manuscript: "Manuscript", case: "Source-derived case", method: "Method", concept: "Encyclopedia entry", claim: "Bounded claim", artifact: "Artifact", challenge: "Challenge", decision: "Disposition decision" };
-const kindSymbols = {
-  problem: 'question', manuscript: 'notes', case: 'folder', method: 'layers', concept: 'book',
-  claim: 'speech', artifact: 'packet', challenge: 'flag', decision: 'scale',
-} as const satisfies Record<keyof typeof kindNames, SymbolName>;
 const eventSymbols = {
   baseline: 'pin', 'version-recorded': 'document', 'artifact-recorded': 'packet', response: 'dialogue',
   'challenge-disposition': 'scale', 'review-recorded': 'checks', 'review-withdrawn': 'break',
@@ -57,7 +52,7 @@ const scientificLabel = "Qualification follows the exact recorded public declara
 <section class="research-ledger" data-research-ledger aria-label="Public research ledger">
   <header class="rl-panel">
     <p class="rl-kicker">{isCurrent ? "Current published edition" : "Historical edition"}</p>
-    <h2>{selected && <><span class="site-symbol" data-site-symbol={kindSymbols[selected.kind]} aria-hidden="true"></span> </>}{selected ? title(current(selected)) : "What is recorded, and what remains unreviewed"}</h2>
+    <h2>{selected ? "Record and edition" : "What is recorded, and what remains unreviewed"}</h2>
     <p>As recorded by <time datetime={edition.capturedAt}>{edition.capturedAt}</time>. This is a dated public record of drafts, changes, sources and review declarations. A page, checksum or merged pull request does not establish a scientific result or independent review.</p>
     {!isCurrent && <p class="rl-warning">This edition retains only the evidence pinned at its capture. Later corrections and withdrawals are shown in the <a href={url("/research-ledger/")}>current ledger</a>.</p>}
     <dl class="rl-definitions">
@@ -110,8 +105,8 @@ const scientificLabel = "Qualification follows the exact recorded public declara
     {page(views).map((batch, index) => <details class="rl-batch" open={index === 0}>
       <summary>Records {index * 20 + 1}–{Math.min((index + 1) * 20, views.length)} of {views.length}</summary>
       <table class="rl-table"><thead><tr><th scope="col">Record</th><th scope="col">Type and state</th><th scope="col">Review qualification</th></tr></thead><tbody>
-        {batch.map((view) => { const v = current(view); const problem = problemStates.find((p) => p.recordId === view.id); return <tr class="rl-item" data-ledger-kind={view.kind} data-ledger-state={problem?.effectiveStatus ?? view.qualification.sourceReview} data-ledger-search={`${title(v)} ${view.id} ${view.kind}`}>
-          <td><span class="site-symbol identity-inline" data-site-symbol={kindSymbols[view.kind]} aria-hidden="true"></span> <a href={recordLink(view.id)}>{title(v)}</a><p class="rl-meta"><code>{view.id}</code> · version {view.currentVersion.version}</p></td>
+        {batch.map((view) => { const v = current(view); const identity = pageIdentity(ledgerHref(view.id)); const problem = problemStates.find((p) => p.recordId === view.id); return <tr class="rl-item" data-ledger-kind={view.kind} data-ledger-state={problem?.effectiveStatus ?? view.qualification.sourceReview} data-ledger-search={`${title(v)} ${view.id} ${view.kind}`}>
+          <td><a href={recordLink(view.id)} data-site-tone={identity.tone}><span class="site-symbol identity-inline" data-site-symbol={identity.symbol} aria-hidden="true"></span> {title(v)}</a><p class="rl-meta"><code>{view.id}</code> · version {view.currentVersion.version}</p></td>
           <td data-label="Type and state">{kindNames[view.kind]}{problem && <p>Effective problem state: <strong>{problem.effectiveStatus}</strong></p>}{v?.subject.type === "artifact" && <p>{artifactNames[v.subject.kind]}</p>}</td>
           <td data-label="Review">Source review: <strong>{view.qualification.sourceReview}</strong>{view.qualification.peerReview !== "not-applicable" && <p>Peer review: {view.qualification.peerReview}</p>}</td>
         </tr>; })}
@@ -120,8 +115,8 @@ const scientificLabel = "Qualification follows the exact recorded public declara
     <noscript><p class="rl-note">All records are readable in the expandable batches above. Optional filters need JavaScript.</p></noscript>
   </section>}
 
-  {bodyViews.map((view) => { const v = current(view); const problem = problemStates.find((p) => p.recordId === view.id); const recordVersions = view.versionIds.map((id) => versions.get(id)).sort((a, b) => a.version === view.currentVersion.version ? -1 : b.version === view.currentVersion.version ? 1 : b.version - a.version); const recordEvents = view.eventIds.map((id) => eventMap.get(id)); const recordReviews = graph.reviews.filter((r) => r.subject.recordId === view.id); return <details class="rl-record rl-archive" id={recordAnchor(view.id)} open={Boolean(selected)}>
-    <summary><span class="site-symbol identity-inline" data-site-symbol={kindSymbols[view.kind]} aria-hidden="true"></span> {title(v)} · {kindNames[view.kind]} · version {view.currentVersion.version}</summary>
+  {bodyViews.map((view) => { const v = current(view); const identity = pageIdentity(ledgerHref(view.id)); const problem = problemStates.find((p) => p.recordId === view.id); const recordVersions = view.versionIds.map((id) => versions.get(id)).sort((a, b) => a.version === view.currentVersion.version ? -1 : b.version === view.currentVersion.version ? 1 : b.version - a.version); const recordEvents = view.eventIds.map((id) => eventMap.get(id)); const recordReviews = graph.reviews.filter((r) => r.subject.recordId === view.id); return <details class="rl-record rl-archive" id={recordAnchor(view.id)} open={Boolean(selected)}>
+    <summary data-site-tone={identity.tone}><span class="site-symbol identity-inline" data-site-symbol={identity.symbol} aria-hidden="true"></span> {title(v)} · {kindNames[view.kind]} · version {view.currentVersion.version}</summary>
     <div class="rl-badges"><span class="rl-badge">Source review: {view.qualification.sourceReview}</span>{view.qualification.peerReview !== "not-applicable" && <span class="rl-badge">Peer review: {view.qualification.peerReview}</span>}{problem && <span class="rl-badge">Problem: {problem.effectiveStatus}</span>}</div>
     <p><code>{view.id}</code></p>
     <ul class="rl-links">{view.qualification.reasons.map((reason) => <li>{reason}</li>)}</ul>

@@ -18,7 +18,10 @@ export function GET() {
   // Shorter route prefixes come first. A specific link overrides its section.
   const links = routes.map(({ path, symbol, tone }) => {
     const match = path === '/' ? '=' : '^=';
-    return `a[href${match}"${url(path)}"]{--link-glyph:var(--glyph-${symbol});--link-tone:var(--tone-${tone});--list-mark:inline-block}`;
+    const href = url(path);
+    const selector = `a[href${match}"${href}"]`;
+    const encoded = href.includes(':') ? `,a[href${match}"${href.replace(':', '%3A')}" i]` : '';
+    return `${selector}${encoded}{--link-glyph:var(--glyph-${symbol});--link-tone:var(--tone-${tone});--list-mark:inline-block}`;
   });
   links.unshift(
     'a:is([href^="https://"],[href^="http://"]){--link-glyph:var(--glyph-external);--list-mark:inline-block}',

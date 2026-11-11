@@ -7,6 +7,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse as parseHtml } from "parse5";
 import { readLedgerInput } from "../src/lib/research-ledger-data.mjs";
+import { pageIdentity } from "../src/lib/site-identities.ts";
 import { seedOptions } from "./capture-research-ledger.mjs";
 import { readPublicationRegistryDirectory } from "../src/lib/publication-editions-capture.mjs";
 import {
@@ -289,8 +290,29 @@ check(
       (node) => node.tagName === "tr" && hasClass(node, "rl-item"),
     );
     assert.equal(rows.length, current.views.length);
-    for (const view of current.views)
-      assert.ok(links(recordList).includes(href(ledgerHref(view.id))));
+    const byRecordId = new Map(input.manifest.currentSources.map(binding => [binding.recordId, binding.href]));
+    const marks = new Set();
+    for (const view of current.views) {
+      const path = ledgerHref(view.id);
+      const { symbol, tone } = pageIdentity(path);
+      const rowLink = find(recordList, (node) => attr(node, "href") === href(path));
+      const entry = byRecordId.get(view.id);
+      if (entry) assert.equal(symbol, pageIdentity(entry).symbol, view.id);
+      const identity = `${symbol}:${tone}`;
+      assert.ok(!marks.has(identity), `Duplicate record identity ${identity} for ${view.id}`);
+      marks.add(identity);
+      assert.equal(attr(rowLink, "data-site-tone"), tone, path);
+      const rowMark = find(rowLink, (node) => attr(node, "data-site-symbol") === symbol);
+      assert.equal(attr(rowMark, "aria-hidden"), "true", path);
+
+      const detail = htmlAt(path);
+      const heading = find(detail, (node) => node.tagName === "h1");
+      assert.equal(tidy(text(heading)), tidy(text(rowLink)), path);
+      const main = find(detail, (node) => node.tagName === "main");
+      assert.equal(attr(main, "data-site-symbol"), symbol, path);
+      assert.equal(attr(main, "data-site-tone"), tone, path);
+      assert.ok(find(detail, (node) => node.tagName === "summary" && attr(node, "data-site-tone") === tone && find(node, (child) => attr(child, "data-site-symbol") === symbol)), path);
+    }
     for (const field of [
       "reviews",
       "qualifiedSourceReviews",

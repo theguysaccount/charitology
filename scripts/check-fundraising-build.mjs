@@ -4,6 +4,8 @@ import { join } from 'node:path';
 import { parse } from 'parse5';
 import yaml from 'js-yaml';
 import { fundraisingLearningFormUrl, fundraisingMethods, fundraisingResults, fundraisingSources } from '../src/data/fundraising.mjs';
+import { fundraisingModuleSymbols, fundraisingSourceSymbols } from '../src/lib/list-identities.ts';
+import { pageIdentity } from '../src/lib/site-identities.ts';
 import { MODULE_MAP } from '../services/charity-os/lib/modules.mjs';
 
 const expected = ['email-appeals', 'paid-ads', 'fundraising-events', 'recurring-giving', 'peer-to-peer', 'major-gifts', 'grants', 'direct-mail', 'corporate-partnerships', 'donor-follow-up'];
@@ -26,6 +28,7 @@ for (const method of fundraisingMethods) {
 function nodes(document) { const result = []; const visit = node => { result.push(node); for (const child of node.childNodes ?? []) visit(child); }; visit(document); return result; }
 const attr = (node, name) => node.attrs?.find(item => item.name === name)?.value;
 const text = node => node.nodeName === '#text' ? node.value : (node.childNodes ?? []).map(text).join('');
+const symbol = node => nodes(node).map(child => attr(child, 'data-site-symbol')).find(Boolean);
 const expectedRows = {
   'thank-you-calls': [
     ['Assigned a call', '439,510', '27.97%'],
@@ -95,14 +98,37 @@ for (const control of controls) {
   assert.ok(disabled, 'Editable controls and actions start effectively disabled.');
 }
 assert.ok(nodes(planner[0]).some(node => node.tagName === 'noscript'));
+const methodMarks = new Set();
 for (const method of fundraisingMethods) {
   const page = nodes(parse(await readFile(join('dist/for-charities/fundraising', method.id, 'index.html'), 'utf8')));
   checkResults(page, fundraisingResults.filter(result => result.methodId === method.id));
   assert.equal(page.filter(node => node.tagName === 'h1').length, 1);
   assert.ok(page.some(node => node.tagName === 'h1' && text(node) === method.title));
   for (const id of ['fit', 'costs', 'preflight', 'steps', 'measure', 'experiment', 'followup', 'pitfalls', 'sources', 'workspace']) assert.equal(page.filter(node => attr(node, 'id') === id).length, 1);
-  for (const id of method.osModules) assert.ok(page.some(node => attr(node, 'href') === 'https://os.charitology.org/#module/' + id));
-  for (const id of method.sourceIds) assert.ok(page.some(node => attr(node, 'href') === fundraisingSources.find(source => source.id === id).url));
+  const path = `/for-charities/fundraising/${method.id}/`;
+  const mark = pageIdentity(path).symbol;
+  assert.ok(all.some(node => attr(node, 'href')?.endsWith(path) && attr(node, 'class') === 'method-card'), path);
+  assert.equal(attr(page.find(node => node.tagName === 'main'), 'data-site-symbol'), mark, path);
+  assert.ok(!methodMarks.has(mark), path);
+  methodMarks.add(mark);
+  const contents = page.find(node => attr(node, 'class')?.split(' ').includes('method-contents'));
+  const jumpLinks = nodes(contents).filter(node => attr(node, 'href')?.startsWith('#'));
+  assert.ok(jumpLinks.length >= 10, path);
+  assert.equal(new Set(jumpLinks.map(symbol)).size, jumpLinks.length, path);
+  for (const link of jumpLinks) {
+    const section = page.find(node => attr(node, 'id') === attr(link, 'href').slice(1));
+    const heading = nodes(section).find(node => node.tagName === 'h2');
+    assert.equal(attr(heading, 'data-section-symbol'), symbol(link), attr(link, 'href'));
+  }
+  for (const id of method.osModules) {
+    const link = page.find(node => attr(node, 'href') === 'https://os.charitology.org/#module/' + id);
+    assert.equal(symbol(link), fundraisingModuleSymbols[id], id);
+  }
+  for (const id of method.sourceIds) {
+    const source = page.find(node => attr(node, 'data-fundraising-source') === id);
+    const link = nodes(source).find(node => attr(node, 'href') === fundraisingSources.find(item => item.id === id).url);
+    assert.equal(symbol(link), fundraisingSourceSymbols[id], id);
+  }
   assert.match(text(page[0]), /Untested proposal/);
 }
 const form = yaml.load(await readFile('.github/ISSUE_TEMPLATE/fundraising-learning.yml', 'utf8'));

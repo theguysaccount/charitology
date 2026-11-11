@@ -1,8 +1,8 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import SiteSymbol from '../../../components/SiteSymbol.astro';
-import { fundraisingSourceSymbols } from '../../../lib/list-identities';
-import type { SymbolName } from '../../../lib/site-identities';
+import PageSections from '../../../components/PageSections.astro';
+import { fundraisingModuleSymbols, fundraisingSourceSymbols } from '../../../lib/list-identities';
 import Crumbs from '../../../components/Crumbs.astro';
 import FundraisingPlanner from '../../../components/FundraisingPlanner.astro';
 import FundraisingResults from '../../../components/FundraisingResults.astro';
@@ -15,11 +15,11 @@ const steps = [
   ['loop', 'Learn', 'Keep the costs, limitations and disappointing results too.'],
 ] as const;
 const workflows = [
-  { id: 'fundraising', symbol: 'gift', title: 'Campaigns and gift references', text: 'Keep a campaign plan, pledges, externally confirmed gifts and acknowledgment records distinct.' },
-  { id: 'projects', symbol: 'calendar', title: 'Owners and due dates', text: 'Create a task for each follow-up, assign its owner and review completion. Recurring successors are generated deliberately.' },
-  { id: 'communications', symbol: 'dialogue', title: 'Templates and communication choices', text: 'Review message text and purpose-specific consent. Keep provider suppression and delivery references beside the work.' },
-  { id: 'evaluation', symbol: 'flaskCheck', title: 'Evidence and learning', text: 'Write the question and method, record the findings and decide what the next campaign should change.' },
-] satisfies { id: string; symbol: SymbolName; title: string; text: string }[];
+  { id: 'fundraising', title: 'Campaigns and gift references', text: 'Keep a campaign plan, pledges, externally confirmed gifts and acknowledgment records distinct.' },
+  { id: 'projects', title: 'Owners and due dates', text: 'Create a task for each follow-up, assign its owner and review completion. Recurring successors are generated deliberately.' },
+  { id: 'communications', title: 'Templates and communication choices', text: 'Review message text and purpose-specific consent. Keep provider suppression and delivery references beside the work.' },
+  { id: 'evaluation', title: 'Evidence and learning', text: 'Write the question and method, record the findings and decide what the next campaign should change.' },
+];
 ---
 <Base title="Fundraising knowledge and practice" description="Fundraising playbooks, sourced field results and a private campaign cost and follow-up planner. Connect the work to Charity OS.">
   <header class="page-head"><div class="wrap">
@@ -27,7 +27,7 @@ const workflows = [
     <p class="eyebrow">A shared body of practice · Editorial draft</p>
     <h1>Make generosity<br />easier to sustain.</h1>
     <p class="lede">Ads, events and appeals are only part of fundraising. Connect the ask to the acknowledgment, the relationship and the next thing your team learns.</p>
-    <nav class="hub-actions" aria-label="Start with fundraising"><a class="btn" href="#methods">Explore the methods</a><a class="btn btn-ghost" href="#planner">Plan costs and follow-up</a><a href="#results">Read field results</a><a href="#resources">Find research and peers</a></nav>
+    <PageSections label="Start with fundraising" />
   </div></header>
   <div class="wrap">
     <ol class="practice-loop" aria-label="A proposed fundraising learning cycle">{steps.map(([symbol, title, text]) => <li><SiteSymbol name={symbol} /><h2>{title}</h2><p>{text}</p></li>)}</ol>
@@ -37,7 +37,7 @@ const workflows = [
       <p>A benchmark describes its participants. An experiment tests an approach in a particular setting. Neither establishes the best method for every charity. The playbooks here are untested editorial starting points; adapt them and keep a record of what you find.</p>
     </section>
     <section class="section-tight" id="methods" aria-labelledby="methods-title">
-      <div class="section-heading"><div><p class="eyebrow">Choose the job</p><h2 id="methods-title">Ten methods. One learning habit.</h2></div><p>Each guide covers preparation, full costs, measures, follow-up and an idea to test.</p></div>
+      <div class="section-heading"><div><p class="eyebrow">Choose the job</p><h2 id="methods-title" data-section-symbol="compass">Ten methods. One learning habit.</h2></div><p>Each guide covers preparation, full costs, measures, follow-up and an idea to test.</p></div>
       <div class="method-grid">{fundraisingMethods.map(method => <a class="method-card" href={url(`/for-charities/fundraising/${method.id}/`)}><h3>{method.title}</h3><p>{method.summary}</p><span class="method-link">Read the playbook <span aria-hidden="true">↗</span></span></a>)}</div>
     </section>
     <section class="section-tight" id="planner" aria-labelledby="planner-title">
@@ -46,14 +46,14 @@ const workflows = [
       <FundraisingPlanner />
     </section>
     <section class="section-tight os-section" id="os" aria-labelledby="os-title">
-      <div class="os-heading"><div><p class="eyebrow">Carry the work into Charity OS</p><h2 id="os-title">A task needs an owner.</h2><p>Use the shared workspace when several people need to keep the same commitments visible.</p></div><a class="btn" href="https://os.charitology.org">Open Charity OS <span aria-hidden="true">↗</span></a></div>
-      <div class="workflow-grid">{workflows.map(workflow => <article><h3><a href={`https://os.charitology.org/#module/${workflow.id}`}><SiteSymbol name={workflow.symbol} size="inline" /> {workflow.title}</a></h3><p>{workflow.text}</p></article>)}</div>
+      <div class="os-heading"><div><p class="eyebrow">Carry the work into Charity OS</p><h2 id="os-title" data-section-symbol="board">A task needs an owner.</h2><p>Use the shared workspace when several people need to keep the same commitments visible.</p></div><a class="btn" href="https://os.charitology.org">Open Charity OS <span aria-hidden="true">↗</span></a></div>
+      <div class="workflow-grid">{workflows.map(workflow => <article><h3><a href={`https://os.charitology.org/#module/${workflow.id}`}><SiteSymbol name={fundraisingModuleSymbols[workflow.id]} size="inline" /> {workflow.title}</a></h3><p>{workflow.text}</p></article>)}</div>
       <p class="os-limit">Sign in and choose an organization to use these records. The planner does not import a campaign, create OS tasks or send donor emails. Record a delivery only after checking your sending provider. The OS’s reviewed templates and consent records do not themselves send a campaign.</p>
       <p><a href={url('/for-charities/os-plan/')}>Read the OS capabilities and implementation plan</a> · <a href={url('/for-charities/tools/')}>Compare external tools</a> · <a href={url('/for-charities/benefits/')}>Find nonprofit benefits</a></p>
     </section>
     <FundraisingResults results={fundraisingResults} showMethodLinks />
     <section class="section-tight" id="resources" aria-labelledby="resources-title">
-      <div class="section-heading"><div><p class="eyebrow">Research, guidance and peers</p><h2 id="resources-title">Start from the original source.</h2></div><p>Source pages checked October 28, 2026 UTC. These summaries remain editorial drafts; access and programs can change.</p></div>
+      <div class="section-heading"><div><p class="eyebrow">Research, guidance and peers</p><h2 id="resources-title" data-section-symbol="book">Start from the original source.</h2></div><p>Source pages checked October 28, 2026 UTC. These summaries remain editorial drafts; access and programs can change.</p></div>
       <div class="resource-grid">{fundraisingSources.map(source => <article class="resource-card" id={`source-${source.id}`}><p class="eyebrow identity-label"><SiteSymbol name={fundraisingSourceSymbols[source.id]} size="inline" />{source.kind}</p><h3><a href={source.url}>{source.title} <span aria-hidden="true">↗</span></a></h3><p>{source.summary}</p><p class="resource-limit"><strong>Read with care.</strong> {source.limits}</p></article>)}</div>
     </section>
     <section class="section-tight learning-note prose" id="share">
@@ -66,5 +66,5 @@ const workflows = [
   </div>
 </Base>
 <style>
-  h1{max-width:15ch}.hub-actions{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:1.6rem}.practice-loop{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:0;margin:0 0 1rem;border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;background:var(--surface)}.practice-loop li{padding:1.4rem;border-right:1px solid var(--rule);min-width:0}.practice-loop li:last-child{border-right:0}.practice-loop h2{font-size:1.5rem;margin:.4rem 0}.practice-loop p{font-size:1rem;color:var(--ink-2);margin:0}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:1.4rem}.section-heading h2{margin-bottom:0}.section-heading>p{max-width:33ch;color:var(--ink-2);margin:0}.method-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.method-card{padding:1.5rem;background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius);text-decoration:none;color:var(--ink);display:flex;flex-direction:column;min-width:0}.method-card:hover{border-color:var(--accent)}.method-card h3{font-size:1.5rem;margin:.5rem 0}.method-card p{color:var(--ink-2);margin:0 0 1rem}.method-link{font-family:var(--font-sans);font-size:.9rem;color:var(--accent);margin-top:auto}.planner-intro{max-width:70ch}.os-section{border-block:1px solid var(--rule);padding-block:2.5rem}.os-heading{display:flex;justify-content:space-between;align-items:center;gap:2rem}.os-heading p{max-width:60ch}.os-heading h2{margin-bottom:.7rem}.workflow-grid,.resource-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem}.workflow-grid article{padding-block:.6rem}.workflow-grid h3{font-size:1.2rem}.workflow-grid p,.os-limit{color:var(--ink-2)}.os-limit{font-size:.95rem;max-width:85ch}.resource-card{border-top:2px solid var(--rule);padding:1.4rem 0;min-width:0}.resource-card h3{font-size:1.3rem}.resource-limit{font-size:.95rem;color:var(--ink-2)}.learning-note{border-block:1px solid var(--rule);padding-block:2rem}section,aside{scroll-margin-top:5rem}a{overflow-wrap:anywhere}@media(max-width:700px){.practice-loop{grid-template-columns:repeat(2,minmax(0,1fr))}.practice-loop li:nth-child(2){border-right:0}.practice-loop li:nth-child(-n+2){border-bottom:1px solid var(--rule)}.section-heading,.os-heading{display:block}.section-heading>p{max-width:none;margin-top:1rem}.method-grid,.resource-grid,.workflow-grid{grid-template-columns:1fr}.hub-actions{align-items:flex-start}.os-heading>.btn{margin-bottom:1rem}}@media print{.hub-actions{display:none}.method-grid,.resource-grid,.workflow-grid{display:block}.method-card,.resource-card{break-inside:avoid}}
+  h1{max-width:15ch}.practice-loop{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:0;margin:0 0 1rem;border:1px solid var(--rule);border-radius:var(--radius);overflow:hidden;background:var(--surface)}.practice-loop li{padding:1.4rem;border-right:1px solid var(--rule);min-width:0}.practice-loop li:last-child{border-right:0}.practice-loop h2{font-size:1.5rem;margin:.4rem 0}.practice-loop p{font-size:1rem;color:var(--ink-2);margin:0}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:1.4rem}.section-heading h2{margin-bottom:0}.section-heading>p{max-width:33ch;color:var(--ink-2);margin:0}.method-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.method-card{padding:1.5rem;background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius);text-decoration:none;color:var(--ink);display:flex;flex-direction:column;min-width:0}.method-card:hover{border-color:var(--accent)}.method-card h3{font-size:1.5rem;margin:.5rem 0}.method-card p{color:var(--ink-2);margin:0 0 1rem}.method-link{font-family:var(--font-sans);font-size:.9rem;color:var(--accent);margin-top:auto}.planner-intro{max-width:70ch}.os-section{border-block:1px solid var(--rule);padding-block:2.5rem}.os-heading{display:flex;justify-content:space-between;align-items:center;gap:2rem}.os-heading p{max-width:60ch}.os-heading h2{margin-bottom:.7rem}.workflow-grid,.resource-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem}.workflow-grid article{padding-block:.6rem}.workflow-grid h3{font-size:1.2rem}.workflow-grid p,.os-limit{color:var(--ink-2)}.os-limit{font-size:.95rem;max-width:85ch}.resource-card{border-top:2px solid var(--rule);padding:1.4rem 0;min-width:0}.resource-card h3{font-size:1.3rem}.resource-limit{font-size:.95rem;color:var(--ink-2)}.learning-note{border-block:1px solid var(--rule);padding-block:2rem}section,aside{scroll-margin-top:5rem}a{overflow-wrap:anywhere}@media(max-width:700px){.practice-loop{grid-template-columns:repeat(2,minmax(0,1fr))}.practice-loop li:nth-child(2){border-right:0}.practice-loop li:nth-child(-n+2){border-bottom:1px solid var(--rule)}.section-heading,.os-heading{display:block}.section-heading>p{max-width:none;margin-top:1rem}.method-grid,.resource-grid,.workflow-grid{grid-template-columns:1fr}.os-heading>.btn{margin-bottom:1rem}}@media print{.method-grid,.resource-grid,.workflow-grid{display:block}.method-card,.resource-card{break-inside:avoid}}
 </style>
