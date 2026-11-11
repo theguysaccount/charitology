@@ -3,6 +3,7 @@ import { allCitations } from '../../lib/sources';
 import { url } from '../../lib/site';
 import StudyRegister from '../StudyRegister.astro';
 import SiteSymbol from '../SiteSymbol.astro';
+import { sourceSymbol } from '../../lib/source-symbol';
 
 const citations = await allCitations();
 const pages = new Set(citations.flatMap((c) => c.citedBy.map((b) => b.href))).size;
@@ -18,7 +19,7 @@ const pages = new Set(citations.flatMap((c) => c.citedBy.map((b) => b.href))).si
       citations.map((c) => (
         <li>
           <a href={c.url} rel="noopener" class="cite-title">
-            <SiteSymbol name="document" size="inline" /> {c.title}
+            <SiteSymbol name={sourceSymbol(c.url)} size="inline" /> {c.title}
           </a>
           {(c.publisher || c.year) && <span class="meta"> · {[c.publisher, c.year].filter(Boolean).join(', ')}</span>}
           <div class="cited-by">

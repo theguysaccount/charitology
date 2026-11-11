@@ -9,6 +9,8 @@ export interface Hit {
   title: string;
   excerpt: string;
   section: string;
+  sectionHref: string;
+  code?: string;
 }
 
 let loaded: Promise<any | null> | undefined;
@@ -26,12 +28,17 @@ function load(): Promise<any | null> {
   return loaded;
 }
 
-const SECTIONS: [string, string][] = [
+const SECTIONS: [string, string, string?][] = [
   ['/diagnosis/', 'Diagnosis'],
   ['/open-problems/', 'Open Problems'],
   ['/programs/', 'Programs'],
   ['/tools/', 'Tools'],
   ['/forecasts/', 'Forecasts'],
+  ['/record/funding-flows/', 'Funding flows'],
+  ['/record/charity-index/', 'Global Charity Index'],
+  ['/record/charity-financials/', 'Charity financial filings'],
+  ['/record/countries/', 'Country profiles', '/record/country-profiles/'],
+  ['/record/country-profiles/', 'Country profiles'],
   ['/record/interventions/', 'Intervention Database'],
   ['/record/case-studies/', 'Case Studies'],
   ['/record/encyclopedia/', 'Encyclopedia'],
@@ -40,13 +47,23 @@ const SECTIONS: [string, string][] = [
   ['/record/disagreements/', 'Disagreements'],
   ['/record/traditions/', 'Traditions'],
   ['/record/', 'Record'],
+  ['/for-charities/fundraising/', 'Fundraising'],
+  ['/for-charities/networks/', 'Charity networks'],
+  ['/for-charities/', 'For charities'],
+  ['/learn/', 'Teach and learn'],
+  ['/observations/', 'Sourced observations'],
+  ['/disasters/', 'Disaster Desk'],
+  ['/research-ledger/', 'Research Ledger'],
   ['/method/', 'Method'],
   ['/manifesto/', 'Manifesto'],
 ];
 
-export function sectionOf(url: string): string {
+function resultIdentity(url: string) {
   const path = url.startsWith(BASE) ? url.slice(BASE.length) : url;
-  return SECTIONS.find(([prefix]) => path.startsWith(prefix))?.[1] ?? 'Charitology';
+  const [prefix, section, href = prefix] = SECTIONS.find(([prefix]) => path.startsWith(prefix))
+    ?? ['/', 'Charitology'];
+  const country = path.match(/^\/record\/countries\/([a-z]{3})\//);
+  return { section, sectionHref: BASE + href, code: country?.[1].toUpperCase() };
 }
 
 /** Returns null when the search index isn't available (for example in dev mode). */
@@ -59,6 +76,6 @@ export async function searchSite(query: string, limit = 12): Promise<Hit[] | nul
     url: d.url,
     title: d.meta?.title ?? d.url,
     excerpt: d.excerpt ?? '',
-    section: sectionOf(d.url),
+    ...resultIdentity(d.url),
   }));
 }

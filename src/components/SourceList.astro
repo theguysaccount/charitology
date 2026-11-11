@@ -1,4 +1,7 @@
 ---
+import SiteSymbol from './SiteSymbol.astro';
+import { sourceSymbol } from '../lib/source-symbol';
+
 interface Source {
   title: string;
   url: string;
@@ -21,7 +24,7 @@ const { sources, heading = 'Sources' } = Astro.props;
         {sources.map((s) => (
           <li>
             <a href={s.url} rel="noopener">
-              {s.title}
+              <SiteSymbol name={sourceSymbol(s.url)} size="inline" /> {s.title}
             </a>
             {(s.publisher || s.year) && (
               <span class="src-meta">

@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const d = entry.data;
 const s = summarize(entry);
 const latest = latestByForecaster(entry).sort((a, b) => b.date.getTime() - a.date.getTime());
@@ -21,6 +21,7 @@ const status = s.status;
 ---
 
 <Entry
+  sections={headings}
   title={d.title}
   eyebrow="Forecast question"
   summary={d.question}

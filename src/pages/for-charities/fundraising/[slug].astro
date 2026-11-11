@@ -1,6 +1,8 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Crumbs from '../../../components/Crumbs.astro';
+import SiteSymbol from '../../../components/SiteSymbol.astro';
+import type { SymbolName } from '../../../lib/site-identities';
 import FundraisingResults from '../../../components/FundraisingResults.astro';
 import ReviewNote from '../../../components/ReviewNote.astro';
 import { fundraisingMethods, fundraisingResults, fundraisingSources } from '../../../data/fundraising.mjs';
@@ -24,6 +26,19 @@ const moduleLabels: Record<string, string> = {
   'grant-seeking': 'Grant seeking', 'grant-delivery': 'Grant delivery',
   evaluation: 'Evaluation and learning', outcomes: 'Outcome records', documents: 'Documents',
 };
+const sections: [string, string, SymbolName][] = [
+  ['fit', 'Goal and fit', 'target'],
+  ['costs', 'Full costs', 'calculator'],
+  ['preflight', 'Before you start', 'shield'],
+  ['steps', 'A proposed workflow', 'steps'],
+  ['measure', 'What to measure', 'dial'],
+  ['experiment', 'A bounded experiment', 'flask'],
+  ['followup', 'Follow through', 'loop'],
+  ['pitfalls', 'Watch for', 'alert'],
+  ['results', 'Results from practice', 'chart'],
+  ['sources', 'Sources and limits', 'book'],
+  ['workspace', 'Keep a working record', 'board'],
+];
 const index = fundraisingMethods.findIndex((item) => item.id === method.id);
 const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
 ---
@@ -41,17 +56,9 @@ const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
     <nav class="method-contents" aria-label="On this page">
       <p class="eyebrow">Work through the decision</p>
       <ol>
-        <li><a href="#fit">Goal and fit</a></li>
-        <li><a href="#costs">Full costs</a></li>
-        <li><a href="#preflight">Before you start</a></li>
-        <li><a href="#steps">A proposed workflow</a></li>
-        <li><a href="#measure">What to measure</a></li>
-        <li><a href="#experiment">A bounded experiment</a></li>
-        <li><a href="#followup">Follow through</a></li>
-        <li><a href="#pitfalls">Watch for</a></li>
-        {results.length > 0 && <li><a href="#results">Results from practice</a></li>}
-        <li><a href="#sources">Sources and limits</a></li>
-        <li><a href="#workspace">Keep a working record</a></li>
+        {sections.filter(([id]) => id !== 'results' || results.length > 0).map(([id, label, symbol]) => (
+          <li><a href={`#${id}`}><SiteSymbol name={symbol} size="inline" /> {label}</a></li>
+        ))}
       </ol>
       <a class="planner-link" href={url('/for-charities/fundraising/#planner')}>Draft your own fundraising plan →</a>
     </nav>

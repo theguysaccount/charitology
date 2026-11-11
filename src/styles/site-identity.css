@@ -22,11 +22,11 @@
 
 /* Icons sit beside the item label. Headings and standalone tiles use the
    item's own mark. Links can pick up a destination mark from the site map. */
-:where(main:not([data-site-home]) h1, .site-symbol, a.card, .starting-grid > a, .method-card,
+:where(main:not([data-site-home]) h1:not(:has(> .title-code)), .site-symbol, a.card, .starting-grid > a, .method-card,
   .guide-card, .nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
-  a.r-title, .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
-  a.identity-link, main :is(ul, ol) > li > a:first-child:not([class], [href^="#"], :has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
-  .sources li > a:first-child, .bar-label[data-site-symbol],
+  a.r-title:not(:has(> .identity-code)), .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
+  a.identity-link, main :is(ul, ol) > li > :is(a:not([class]), a.ext):first-child:not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
+  .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
   .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4))::before {
   content: "";
   display: inline-block;
@@ -39,7 +39,7 @@
   vertical-align: -0.13em;
 }
 
-:where(main:not([data-site-home]) h1)::before {
+:where(main:not([data-site-home]) h1:not(:has(> .title-code)))::before {
   --symbol-size: clamp(1.65rem, 4vw, 2.65rem);
   display: block;
   margin-block-end: 0.45rem;
@@ -56,13 +56,13 @@
 }
 
 :where(.nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
-  a.r-title, a.identity-link, main :is(ul, ol) > li > a:first-child:not([class], [href^="#"], :has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
-  .sources li > a:first-child, .bar-label[data-site-symbol],
+  a.r-title:not(:has(> .identity-code)), a.identity-link, main :is(ul, ol) > li > :is(a:not([class]), a.ext):first-child:not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
+  .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
   .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4))::before {
   margin-inline-end: 0.48em;
 }
 
-:where(main :is(ul, ol) > li > a:first-child:not([class], [href^="#"], :has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num)))):not(:where(.sources li > a:first-child))::before {
+:where(main :is(ul, ol) > li > :is(a:not([class]), a.ext):first-child:not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num)))):not(:where(.sources li > a:first-child))::before {
   display: var(--list-mark, none);
 }
 
@@ -71,7 +71,7 @@
   margin-inline-end: 0.32em;
 }
 
-.menu-panel > a {
+.menu-panel > a[href] {
   position: relative;
   padding-inline-start: 2.35rem;
 }
@@ -79,7 +79,7 @@
 .menu-panel > a::before {
   position: absolute;
   inset-inline-start: 0.8rem;
-  top: 0.9rem;
+  inset-block-start: 0.9rem;
 }
 
 :where(.list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral)::before {
@@ -147,6 +147,13 @@ main ul > li:has(> .identity-link:first-child)::marker {
   vertical-align: 0.06em;
 }
 
+.title-code {
+  display: block;
+  width: fit-content;
+  margin-block-end: 0.6rem;
+  font-size: 0.38em;
+}
+
 .identity-label {
   display: inline-flex;
   align-items: center;
@@ -189,11 +196,11 @@ a.guide-card {
 
 @media (forced-colors: active) {
   :root { --forced-symbol-ink: CanvasText; }
-  .site-symbol, .identity-code { outline: 1px solid CanvasText; }
+  .site-symbol, .identity-code { outline: 1px solid var(--forced-symbol-ink); }
 }
 
 @media print {
   .catalog-jump { display: none; }
   .site-symbol::before, .identity-link::before { print-color-adjust: exact; }
-  main:not([data-site-home]) h1::before { display: none; }
+  main:not([data-site-home]) h1:not(:has(> .title-code))::before { display: none; }
 }

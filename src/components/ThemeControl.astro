@@ -64,7 +64,7 @@ const modes = [
     background: transparent;
   }
 
-  label:hover .theme-option {
+  label:hover input:not(:checked) + .theme-option {
     background: var(--bg-2);
     color: var(--ink);
   }
@@ -81,11 +81,17 @@ const modes = [
 
   @media (forced-colors: active) {
     input:checked + .theme-option {
+      forced-color-adjust: none;
+      background: Highlight;
+      color: HighlightText;
       outline: 2px solid Highlight;
       outline-offset: -2px;
     }
+    input:checked + .theme-option :global(.site-symbol) {
+      --forced-symbol-ink: HighlightText;
+    }
     input:focus-visible + .theme-option {
-      outline: 2px dashed CanvasText;
+      outline: 2px dashed currentColor;
       outline-offset: -4px;
     }
   }

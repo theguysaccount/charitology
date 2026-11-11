@@ -17,6 +17,7 @@ export const symbols = {
   dial: 'M3 17a9 9 0 0 1 18 0H3Zm9-1 4-6M7 13l1 1m4-6v2m6 4 1-.5',
   clock: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4v5l4 2',
   history: 'M3 11a9 9 0 1 1 3 8M3 5v6h6m3-5v6l4 2',
+  bookmark: 'M6 3h12v18l-6-4-6 4V3Zm3 5h6m-6 4h6',
   document: 'M5 3h10l4 4v14H5zM15 3v5h4M8 12h8m-8 4h8',
   notes: 'M6 3h13v18H6zM3 7h5m-5 5h5m-5 5h5m3-9h5m-5 4h5',
   checks: 'M6 5H4v16h16V5h-2M8 3h8v4H8zM7 12l1.5 1.5L11 11m2 2h4m-10 4 1.5 1.5L11 16m2 2h4',

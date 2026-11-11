@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const d = entry.data;
 const all = await conditionsInOrder();
 const i = all.findIndex((c) => c.id === entry.id);
@@ -25,6 +25,7 @@ const KIND = { programs: 'Program', tools: 'Tool', record: 'Record' } as const;
 ---
 
 <Entry
+  sections={headings}
   title={d.title}
   eyebrow={`Condition C${pad(d.number)} · ${NODES[d.node].label}`}
   summary={d.summary}
