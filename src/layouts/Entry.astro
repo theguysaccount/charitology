@@ -27,10 +27,11 @@ interface Props {
 
 const { title, description, eyebrow, summary, crumbs, filePath, review = 'draft', sources = [], identityCode, sections } = Astro.props;
 const destinations = pageSections(Astro.url.pathname.slice(url('/').length - 1)) ?? [];
-const outline = [...(sections ?? []).filter(({ slug }) => !destinations.some((entry) => entry.slug === slug)), ...destinations];
 const hasAside = Astro.slots.has('aside');
 const hasTool = Astro.slots.has('top');
-if (hasTool) outline.unshift({ slug: 'working-tool', text: 'Open the tool', symbol: 'bolt' });
+const articleSections = (sections ?? []).filter(({ slug }) => !destinations.some((entry) => entry.slug === slug));
+const outline = hasTool ? [...destinations, ...articleSections] : [...articleSections, ...destinations];
+if (hasTool && destinations.length === 0) outline.unshift({ slug: 'working-tool', text: 'Open the tool', symbol: 'bolt' });
 ---
 
 <Base title={title} description={description ?? summary}>

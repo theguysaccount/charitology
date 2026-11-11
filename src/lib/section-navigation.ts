@@ -93,6 +93,15 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['unsubscribe', 'Unsubscribe and requests', 'lock'],
     ['read-online', 'Read without subscribing', 'book'],
   ],
+  '/tools/compare-tool/': [
+    ['ct-title', 'Compare interventions', 'compare'],
+    ['organizations', 'Compare organization finances', 'coins'],
+  ],
+  '/tools/disaster-response-guide/': [
+    ['dr-guidance', 'Giving guidance', 'book'],
+    ['dr-planner-title', 'Plan your gift', 'split'],
+    ['dr-remind-title', 'Set a recovery reminder', 'calendar'],
+  ],
   '/tools/browser-extension/compatibility/': [
     ['supported-pages', 'Supported pages', 'window'],
     ['toolbar-and-privacy', 'Toolbar and privacy', 'lock'],
