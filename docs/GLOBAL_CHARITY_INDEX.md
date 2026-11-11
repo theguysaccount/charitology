@@ -133,6 +133,22 @@ npm run build
 node scripts/check-brazil-kitchen-account-payments.mjs
 ```
 
+## Brazil infrastructure projects and physical progress
+
+The [project directory](https://charitology.com/record/funding-flows/brazil-project-execution/) links 88 of the 7,900 agreements in the 2024–2025 bank-order edition to 88 Obrasgov projects. The pair of issuing unit and commitment number must identify one agreement in the full SICONV archive and one project in the full CIPI archive. The selected scope contains 216 pairs, each with one row from each archive, and 234 orders from the pinned transfer edition. Keep the two versions of each commitment and the agreement bank orders in separate stages. A bank order makes funds available to the agreement. Project-level expenditure requires its own source.
+
+Obrasgov returned 95 registered location records for the 88 projects. Comparing distinct IBGE codes with the pinned work plans yields 72 exact municipality sets, three partial overlaps, seven different sets and six without a linked planned municipality. Current physical records cover 64 projects. The separate bulk archive contributes 63 rows across 61 projects. The archive preserves its raw status codes and duplicate-valued rows with different coordinates. Five projects report 100% physical progress in the current API while their project status reads in progress. The record distinguishes that status, the dated physical report and site acceptance.
+
+The two health renovation cases use official notices tied to agreements 895978 and 953157. The 2022 IBGE Census preliminary sample provides separate municipal population and disability estimates for São José dos Campos and Joaçaba. The municipal population, clinic users and project effects require distinct evidence. The next research step is a signed site acceptance record or a published facility activity series with matching identifiers and dates. [Transferegov downloads](https://api-publica.transferegov.gestao.gov.br/downloads) · [Obrasgov API](https://api-publica.obrasgov.gestao.gov.br/obras/docs) · [IBGE table 10125](https://apisidra.ibge.gov.br/values/t/10125/n6/4209003,3549904/v/all/p/2022).
+
+The edition JSON pins three bulk archives, the two linked Charitology projections, the Obrasgov version and each API response, and the exact IBGE query. Save the exact source ZIPs as `siconv_empenho.zip`, `siconv_empenho_cipi.zip` and `siconv_execucao_fisica_cipi.zip`. Save the project, geography and physical responses under `obrasgov/<project>-<endpoint>.json`, the publisher version at `obrasgov/version.json`, and the census response as `ibge-10125.json`. Use the request URLs in the edition JSON. Fetching after the pinned publisher version changes requires a new edition. The build emits JSON and five CSVs with source coordinates, coverage and period or date fields where available. The Obrasgov/Transferegov data carry the Open Database License. The selected census values retain IBGE attribution. Published fields exclude addresses, precise coordinates and records about individuals.
+
+```sh
+python3 scripts/build-brazil-project-execution.py --inputs /path/to/captures /path/to/rebuilt-execution.json
+npm run build
+node scripts/check-brazil-project-execution.mjs
+```
+
 ## Brazil Cisternas agreement and water access
 
 The [Cisternas case](https://charitology.com/record/funding-flows/brazil-cisterns/) follows agreement 945310 and its exact proposal and organization IDs. Its eleven bank orders show BRL 31,499,882.76 made available in 2023–2026. The six pinned Transferegov archives identify the original agreement, amendment and reported movements from the agreement account. The 2026 records cover the November 11 capture. The current federal contribution, reported bank orders, account payments and internal transfers belong to different stages. The named-payee subset uses the full CNPJ and exact agreement number. It stays inside the other-payment total. All 190 selected internal transfers have an onward record with a missing amount.

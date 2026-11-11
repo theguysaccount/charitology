@@ -1,0 +1,129 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import { url } from '../../../../lib/site';
+import type { SymbolName } from '../../../../lib/site-identities';
+import {
+  cases, count, data, fiscalGuide, geographyLabels, infrastructureRoute, money, percent,
+  statusLabels, transferRoute, workPlanRoute, worksGuide,
+  type InfrastructureProject,
+} from '../../../../lib/brazil-project-execution';
+
+export function getStaticPaths() {
+  return data.projects.map((project) => ({ params: { agreement: project.agreement }, props: { project } }));
+}
+
+interface Props { project: InfrastructureProject }
+const { project } = Astro.props;
+const { agreement, proposal, cnpj, organization, api, bankOrders, commitments, physicalHistory } = project;
+const caseStudy = cases[agreement];
+const census = caseStudy ? data.census.values[caseStudy.municipality as keyof typeof data.census.values] : undefined;
+const registry = api['projeto-investimento'].rows[0];
+const physical = api['execucao-fisica'].rows[0];
+const places = api.geometria.rows;
+const status = statusLabels[registry.situacao] ?? registry.situacao;
+const title = caseStudy?.label ?? `Infrastructure agreement ${agreement}`;
+const sources = [
+  { title: 'Obrasgov project record', publisher: 'Obrasgov.br', url: api['projeto-investimento'].source.url },
+  { title: 'Obrasgov registered locations', publisher: 'Obrasgov.br', url: api.geometria.source.url },
+  { title: 'Obrasgov current physical record', publisher: 'Obrasgov.br', url: api['execucao-fisica'].source.url },
+  { title: 'Public works reporting guide', publisher: 'Obrasgov.br', url: worksGuide },
+  { title: 'Public spending stages', publisher: 'Portal da Transparência', url: fiscalGuide },
+  ...Object.entries(data.sources.archives).map(([name, record]) => ({ title: name, publisher: 'Transferegov.br', url: record.url })),
+  ...(caseStudy ? [
+    { title: 'Official renovation notice', publisher: 'Diário Oficial da União', url: caseStudy.document },
+    { title: '2022 Census disability estimates, table 10125', publisher: 'IBGE', url: data.census.source.url },
+    { title: '2022 Census sample results and methodology', publisher: 'IBGE', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html?edicao=43453' },
+  ] : []),
+  ...(caseStudy?.qualification ? [{ title: 'Federal outpatient facility designation', publisher: 'Ministério da Saúde', url: caseStudy.qualification }] : []),
+];
+const sections: { slug: string; text: string; symbol: SymbolName }[] = [
+  { slug: 'status', text: 'Status and physical progress', symbol: 'signal' },
+  { slug: 'locations', text: 'Planned and registered locations', symbol: 'map' },
+  { slug: 'commitments', text: 'Paired budget commitments', symbol: 'permit' },
+  { slug: 'bank-orders', text: 'Agreement bank orders', symbol: 'bankOrder' },
+];
+if (census) sections.push({ slug: 'municipal-context', text: 'Municipal census context', symbol: 'people' });
+const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
+---
+
+<Entry title={title} eyebrow="The Record · Brazil infrastructure"
+  summary={`Read the Obrasgov project records and federal agreement references for ${organization}.`}
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazilian infrastructure',href:infrastructureRoute},{label:agreement}]}
+  identityCode={agreement} sections={sections} sources={sources}
+  filePath="src/pages/record/funding-flows/brazil-project-execution/[agreement].astro">
+  <p>Transferegov identifies the organization as <strong>{organization}</strong> (CNPJ <code>{cnpj}</code>), agreement <code>{agreement}</code>, proposal <code>{proposal}</code>. The exact paired commitment references below connect it to Obrasgov project <code>{project.project}</code>.</p>
+  {caseStudy && <p>{caseStudy.description} <a class="identity-link" href={caseStudy.document}>Read the official notice</a>. {caseStudy.qualification && <a href={caseStudy.qualification}>Read the separate federal facility designation</a>}</p>}
+
+  <h2 id="status"><SiteSymbol name="signal" size="inline" /> Status and physical progress</h2>
+  <dl>
+    <dt>Project registry status</dt><dd>{status} (<span lang="pt-BR">{registry.situacao}</span>)</dd>
+    <dt>Actual start date field in the registry</dt><dd>{reportDate(registry.dt_inicial_efetiva)}</dd>
+    <dt>Actual end date field in the registry</dt><dd>{reportDate(registry.dt_final_efetiva)}</dd>
+    <dt>Current physical report</dt><dd>{physical ? percent(physical.percentual_execucao_fisica) : 'No current report returned'}</dd>
+    {physical && <>
+      <dt>Physical record created</dt><dd>{reportDate(physical.dt_cadastro_execucao)}</dd>
+      <dt>Physical record updated</dt><dd>{reportDate(physical.dt_atualizacao_execucao)}</dd>
+      <dt>Start and end fields in the physical report</dt><dd>{reportDate(physical.dt_inicial_execucao)} / {reportDate(physical.dt_final_execucao)}</dd>
+    </>}
+  </dl>
+  <p>The registry and the physical report record different facts. A percentage describes the published physical record. Signed acceptance, actual service delivery and changes for the people using the facility require separate evidence.</p>
+  <h3>Archived physical reports</h3>
+  {physicalHistory.length ? <>
+    <p>Each line below is one record in the bulk CIPI physical archive. Status codes are shown as published. Several lines can describe the same project and date.</p>
+    <div class="table-wrap" role="region" aria-label="Archived physical reports" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Archive row</th><th scope="col">Report status date</th><th scope="col">Status code</th><th scope="col">Physical progress</th></tr></thead>
+        <tbody>{physicalHistory.map((row) => <tr><th scope="row">{row.row}</th><td>{reportDate(row.statusDate)}</td><td>{row.statusCode ?? 'Unknown'}</td><td>{percent(row.percent)}</td></tr>)}</tbody>
+      </table>
+    </div>
+  </> : <p>This project has no matching physical report in the captured bulk archive.</p>}
+
+  <h2 id="locations"><SiteSymbol name="map" size="inline" /> Planned and registered locations</h2>
+  <p><strong>{geographyLabels[project.geographyComparison]}</strong>. The location comparison uses distinct IBGE municipality codes. Multiple Obrasgov records can point to the same municipality.</p>
+  <h3>Transferegov work-plan goals</h3>
+  <p>{count(project.goals)} goals in the work-plan edition, including {count(project.unresolvedGoals)} without a linked municipality.</p>
+  {project.plannedMunicipalities.length > 0 && <ul>{project.plannedMunicipalities.map((place) => <li><SiteSymbol name="pin" size="inline" /> {place.name} (IBGE <code>{place.code}</code>)</li>)}</ul>}
+  <p><a class="identity-link" href={url(workPlanRoute + `?agreement=${agreement}#lookup`)}>Open the linked work-plan goals</a>.</p>
+  <h3>Obrasgov location records</h3>
+  <div class="table-wrap" role="region" aria-label="Registered locations" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Geometry record</th><th scope="col">Municipality</th><th scope="col">IBGE code</th><th scope="col">Location source label</th></tr></thead>
+      <tbody>{places.map(place => <tr><th scope="row">{place.id_geometria}</th><td>{place.no_municipio} ({place.sg_uf})</td><td><code>{place.cod_ibge}</code></td><td lang="pt-BR">{place.origem_geometria}</td></tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="commitments"><SiteSymbol name="permit" size="inline" /> Paired budget commitments</h2>
+  <p>The issuing unit and commitment number identify the same budget reference in two archives. The two amounts and dates below are each as reported by their own source. Use the issuing unit plus number to locate the original records.</p>
+  <div class="table-wrap stages" role="region" aria-label="Paired budget commitments" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Issuing unit and number</th><th scope="col">Agreement amount</th><th scope="col">Agreement issue date and archive row</th><th scope="col">Project amount</th><th scope="col">Project issue date and archive row</th></tr></thead>
+      <tbody>{commitments.map(record => <tr>
+        <th scope="row"><code>{record.issuingUnit} / {record.commitmentNumber}</code></th>
+        <td>{money(record.siconv.amountCentsBRL)}</td><td>{reportDate(record.siconv.issueDate)} · Row {record.siconv.row}</td>
+        <td>{money(record.cipi.amountCentsBRL)}</td><td>{reportDate(record.cipi.issueDate)} · Row {record.cipi.row}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="bank-orders"><SiteSymbol name="bankOrder" size="inline" /> Agreement bank orders</h2>
+  <p>These bank orders belong to the agreement in the 2024–2025 Transferegov edition. They record funds made available to the agreement. Separate account and final expense records would be needed to trace purchases or money spent at this work site. <a class="identity-link" href={url(transferRoute + `?agreement=${agreement}#brazil-transfer-heading`)}>Open the agreement in the bank-order lookup</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Agreement bank orders" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Bank-order ID</th><th scope="col">Reported date</th><th scope="col">Amount</th><th scope="col">Archive row</th></tr></thead>
+      <tbody>{bankOrders.map(([id, day, amount, row]) => <tr><th scope="row"><code>{id}</code></th><td>{day}</td><td>{money(amount as number)}</td><td>{row}</td></tr>)}</tbody>
+    </table>
+  </div>
+
+  {census && <section aria-labelledby="municipal-context">
+    <h2 id="municipal-context"><SiteSymbol name="people" size="inline" /> Municipal census context</h2>
+    <p>The preliminary 2022 Census sample estimates that <strong>{count(Number(census.variables['12785'].value))} of {count(Number(census.variables['11852'].value))} residents aged two or older</strong> had a disability in {census.municipality}. IBGE reports {percent(census.variables['13403'].value)} for all ages within that population and all sexes. <a href={data.census.source.url}>Open the municipal records in table 10125</a>.</p>
+    <p>The estimate covers residents within the municipal boundary. Identifying the facility’s catchment, who uses it and whether access improved requires separate sources.</p>
+  </section>}
+
+  <p><a class="identity-link" href={url(infrastructureRoute)}>Return to the project directory</a> · <a href={url(infrastructureRoute + 'data.json')} download>Download the edition and source receipts</a>.</p>
+</Entry>
+
+<style>
+  .stages table { min-width: 40rem; }
+</style>
