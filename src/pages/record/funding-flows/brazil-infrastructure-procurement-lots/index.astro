@@ -11,10 +11,15 @@ import { url } from '../../../../lib/site';
 
 const title = 'Brazilian infrastructure payments and works lots';
 const { procurements, coverage, license } = procurementLotsEdition;
-const { agreement, facility, contracts, documents, services, catchment, laterSelection, startAuthorization } = caseStudy;
+const { agreement, facility, contracts, documents, services, catchment, laterSelection, startAuthorization, operations } = caseStudy;
+const { fundTransfers, municipalContract, hearingCommitments } = operations;
+const { exactOrdinanceOrder, reconciliationExample } = fundTransfers;
+const monthName = new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' });
+const latestMonth = (month: number) => monthName.format(Date.UTC(2000, month - 1, 1));
 const catalogue = 'https://api-publica.transferegov.gestao.gov.br/downloads';
 const sources = [
   { title: 'Original Transferegov archives', publisher: 'Transferegov.br', url: catalogue },
+  { title: 'National Health Fund detailed payments', publisher: 'Fundo Nacional de Saúde', url: 'https://consultafns.saude.gov.br/#/detalhada' },
   ...Object.values(documents).map(source => ({ title: source.label, publisher: source.publisher, url: source.url, note: source.coordinate })),
 ];
 const projectNames = new Map(data.projects.map(project => [project.agreement, project.organization]));
@@ -100,12 +105,35 @@ const difference = contracts[1].cipiAmountCentsBRL - contracts[1].signedAmountCe
   <p>The <a href={documents.statePlan.url + '#page=249'}>state plan</a> describes referrals from {count(catchment.municipalities)} municipalities. Summing the <a href={catchment.source.url}>2022 census sample estimates</a> gives {count(catchment.totals.peopleAge2AndOlder)} residents aged two or older, of whom {count(catchment.totals.peopleAge2AndOlderWithDisability)} were estimated to have a disability. The census describes residents before the renovation. Patient counts, service eligibility, waiting times and health outcomes require separate sources.</p>
   <p>The <a href={documents.operatorOpening.url}>operator reports</a> that the clinic began services gradually in October 2024 and formally opened in March 2025. The <a href={documents.designation.url}>federal designation</a> authorizes {money(services.authorizedAnnualOperatingCentsBRL)} annually for the municipal operating budget. This operating authorization has a different scope from the construction records. Work acceptance and the renovation’s effect on care remain unknown.</p>
 
+  <h2 id="operations">Operating funds for the Joaçaba clinic</h2>
+  <p>The National Health Fund lists <a href={exactOrdinanceOrder.filteredSource.url}>bank order {exactOrdinanceOrder.siafiOrderNumber}</a> for {money(exactOrdinanceOrder.netCentsBRL)} to the Joaçaba Municipal Health Fund. It was recorded on <time datetime={exactOrdinanceOrder.recordedOn}>October 22, 2024</time>, under ordinance code <code>{exactOrdinanceOrder.ordinancePrinted}</code>, the code for the clinic’s federal designation.</p>
+  <p>Under <a href={documents.municipalOperatingContract.url}>signed contract {municipalContract.reference}</a>, the health fund agreed to fund the clinic operator, {facility.operator}, at {money(municipalContract.monthlyCentsBRL)} per month for {municipalContract.termMonths} months, subject to federal transfers. The contract requires monthly outpatient reporting. The <a href={documents.operatingAmendment.url}>November amendment</a> requires invoices to identify the health fund, budget commitment and procurement. The onward payment to the operator remains unverified.</p>
+
+  <h3>Federal transfers to the municipal health fund</h3>
+  <p>The figures cover the wider outpatient and hospital funding category for the Joaçaba fund. The clinic’s {money(exactOrdinanceOrder.netCentsBRL)} order is already included in the 2024 figures. The 2026 records are partial. Each row links to the summary and the bank-order listing.</p>
+  <div class="table-wrap operations-table" role="region" aria-label="National Health Fund net transfers to the Joaçaba Municipal Health Fund" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Year and latest listed month</th><th scope="col">Net in summary</th><th scope="col">Net in bank orders</th><th scope="col">Detail minus summary</th></tr></thead>
+      <tbody>{fundTransfers.yearly.map(row => <tr>
+        <th scope="row">{row.year}<small>Through {latestMonth(row.latestListedMonth)}{row.year === 2026 && ' · partial year'}</small></th>
+        <td><a href={row.sources.summary.url}>{money(row.summaryNetCentsBRL)}</a></td>
+        <td><a href={row.sources.detail.url}>{money(row.detailNetCentsBRL)}</a><small>{count(row.detailOrders)} bank orders</small></td>
+        <td>{money(row.differenceCentsBRL)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The 2025 bank orders total {money(reconciliationExample.eachNetCentsBRL)} more than the 2025 summary. Two orders for that amount have different IDs and recording dates. The records leave the difference unresolved.</p>
+
+  <h3>Hearing-device commitments and service targets</h3>
+  <p>Santa Catarina’s <a href={documents.initialHearingAllocation.url}>{hearingCommitments.initialStateDecision}</a> allocated {money(hearingCommitments.initialMonthlyCentsBRL)} per month from November 2024 for hearing devices and FM systems. The <a href={documents.hearingAward.url}>municipal award {hearingCommitments.municipalAward}</a> cites the same allocation and is worth {money(hearingCommitments.awardCentsBRL)}, equal to twelve months at the state rate. The state’s <a href={documents.hearingExpansion.url}>{hearingCommitments.expansionStateDecision}</a> records a {money(hearingCommitments.expansionMonthlyCentsBRL)} expansion for the May 2026 reference period.</p>
+  <p>The <a href={documents.hearingTargets.url + '#page=3'}>signed service annex</a> sets a shared monthly target of {count(hearingCommitments.sharedMonthlyTargets.initialAssessmentsAndHearingAidReplacements)} initial assessments and hearing-aid replacements, and {count(hearingCommitments.sharedMonthlyTargets.followUps)} follow-ups across the {count(hearingCommitments.sharedMonthlyTargets.referralRegions)} referral regions. State cash disbursements and actual services delivered remain unverified.</p>
+
   <h2 id="downloads">Download the joined records and case evidence</h2>
   <ul>
     <li><a href={url(procurementLotsRoute + 'data.json')} data-source-symbol="packet" download>Joined edition and upstream fingerprints (JSON)</a></li>
     <li><a href={url(procurementLotsRoute + 'procurements.csv')} data-source-symbol="match" download>One row per paid procurement (CSV)</a></li>
     <li><a href={url(procurementLotsRoute + 'lot-references.csv')} data-source-symbol="layers" download>One row per works-lot reference (CSV)</a></li>
-    <li><a href={url(procurementLotsRoute + 'case.json')} data-source-symbol="medical" download>Joaçaba source receipts and census estimates (JSON)</a></li>
+    <li><a href={url(procurementLotsRoute + 'case.json')} data-source-symbol="medical" download>Joaçaba case records, census estimates and source receipts (JSON)</a></li>
   </ul>
   <p>Amounts in the files use integer BRL cents. Procurement and lot source coordinates point to rows in the upstream editions. The lot-reference export contains identifiers only. <a href={url(procurementPaymentsRoute)}>Procurement and payment edition</a> · <a href={url(workLotsRoute)}>Works-lot edition</a> · <a href={license}>Open Database License</a>.</p>
 </Entry>
@@ -118,6 +146,8 @@ const difference = contracts[1].cipiAmountCentsBRL - contracts[1].signedAmountCe
   .trace-table table { min-width: 43rem; }
   .trace-table :is(td, th) { overflow-wrap: anywhere; }
   .trace-table small { display: block; color: var(--ink-2); font-weight: normal; }
+  .operations-table table { min-width: 34rem; }
+  .operations-table small { display: block; color: var(--ink-2); font-weight: normal; }
   .lot-refs { list-style: none; margin: 0; padding: 0; }
 </style>
 

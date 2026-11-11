@@ -79,6 +79,54 @@
       "url": "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2025/DTB_2025.zip",
       "bytes": 1635600,
       "sha256": "d077a0e48c36cf18bcc96268b4a436200c014c6b8522c1a62d894acaf39dad27"
+    },
+    "municipalOperatingContract": {
+      "label": "Signed municipal operating contract 23/2024/FMS",
+      "publisher": "Municipality of Joaçaba",
+      "coordinate": "Clauses 1–5 and 7.1(d), and signature page",
+      "url": "https://joacaba.sc.gov.br/uploads/sites/89/2024/10/CONTRATO-N-23-2024-24.10.2024-REPASSE-FUNOESC-assinado-2.pdf",
+      "bytes": 650068,
+      "sha256": "e1a98cc8b5f5142cea36a70bbae4a6bb6b27f2224f173fc9e014ceaba65d1d46"
+    },
+    "operatingAmendment": {
+      "label": "November amendment to contract 23/2024/FMS",
+      "publisher": "Unoesc",
+      "coordinate": "Added clause 4.4 for invoices",
+      "url": "https://www.unoesc.edu.br/wp-content/uploads/2024/10/TA_Contrato-de-prestacao-de-Servico-no-23-2024-FMS.pdf",
+      "bytes": 192742,
+      "sha256": "fdb85080175f63d06ebacc9fd49df472b2843e153463f98ce05ef68b1dea7b46"
+    },
+    "initialHearingAllocation": {
+      "label": "State hearing-device allocation, CIB 386/2024",
+      "publisher": "Santa Catarina State Health Secretariat",
+      "coordinate": "Allocation for the CER III in Joaçaba",
+      "url": "https://saude.sc.gov.br/index.php/pt/legislacao/legislacao-geral/deliberacoes/deliberacoes-2024/386-10-10-cer-ii-saude-auditiva-joacaba/download",
+      "bytes": 845099,
+      "sha256": "32f49456ef9d2eea186ea20a611a873f24d62d26ec9516581ffc3937b8b44eee"
+    },
+    "hearingTargets": {
+      "label": "Signed clinic service-target annex",
+      "publisher": "Unoesc",
+      "coordinate": "PDF page 1 and sections 5.1–5.2, including shared quotas on PDF page 3",
+      "url": "https://www.unoesc.edu.br/wp-content/uploads/2024/10/Anexo-I-_-Termo-TCGA-assinado.pdf",
+      "bytes": 1121660,
+      "sha256": "2bffb191b12f77b3ab76e5d218e9f00c03288a1b0b9ebac4e2ea512a78141262"
+    },
+    "hearingAward": {
+      "label": "Municipal hearing-device award 12/2025",
+      "publisher": "Municipality of Joaçaba",
+      "coordinate": "Page 1, award and corresponding budget commitments",
+      "url": "https://joacaba.sc.gov.br/uploads/sites/89/2025/02/Termo-de-Homologacao-e-Adjudicacao-unificado-assinado.pdf",
+      "bytes": 1925968,
+      "sha256": "fcf53fdd034f9ad973a6a7bc6d56c47fa98502a4e4cab3830c72bf49acaf6c51"
+    },
+    "hearingExpansion": {
+      "label": "State hearing-device expansion, CIB 338/2026",
+      "publisher": "Santa Catarina State Health Secretariat",
+      "coordinate": "Article 2(I) refers to CIB 227/2026 and the May 2026 reference period",
+      "url": "https://www.saude.sc.gov.br/index.php/pt/legislacao/legislacao-geral/deliberacoes/deliberacoes-2026/338-07-05-ppi/download",
+      "bytes": 1115656,
+      "sha256": "c68497784a4bc1159401862cdbd5414a816e23c1f4ba05ed8a3b12133d3270d1"
     }
   },
   "contracts": [
@@ -721,6 +769,162 @@
         "peopleAge2AndOlder": 3602,
         "peopleAge2AndOlderWithDisability": 385
       }
+    ]
+  },
+  "operations": {
+    "fundTransfers": {
+      "format": "charitology-joacaba-fund-transfers-v1",
+      "capturedOn": "2026-11-11",
+      "fundCnpj": "10594533000100",
+      "municipalityCodeSixDigit": "420900",
+      "actionId": 61659,
+      "actionName": "ATENÇÃO À SAÚDE DA POPULAÇÃO PARA PROCEDIMENTOS NO MAC",
+      "yearly": [
+        {
+          "year": 2024,
+          "latestListedMonth": 12,
+          "summarySourceRow": 8,
+          "detailOrders": 13,
+          "summaryNetCentsBRL": 772029528,
+          "detailNetCentsBRL": 772029528,
+          "differenceCentsBRL": 0,
+          "sources": {
+            "entity": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/entidades?ano=2024&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&page=1&count=10",
+              "bytes": 401,
+              "sha256": "54f4e5111cd0ef022dcbb201afa664223fc060bf255047a5804ac52dba38d6cd"
+            },
+            "summary": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/detalhe-acao?ano=2024&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&page=1&count=100",
+              "bytes": 16843,
+              "sha256": "9c0d210d37737334a51d090238fd24f1e0233383da62acf6b3b132341ad7fbbb"
+            },
+            "detail": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/detalhe-pagamento?ano=2024&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&acoes=61659&page=1&count=100",
+              "bytes": 13506,
+              "sha256": "0364370ace95d5d43ad23bffe539be883ee0977dcb837c6a720b2898200a07d9"
+            }
+          }
+        },
+        {
+          "year": 2025,
+          "latestListedMonth": 12,
+          "summarySourceRow": 11,
+          "detailOrders": 14,
+          "summaryNetCentsBRL": 1091332335,
+          "detailNetCentsBRL": 1092469638,
+          "differenceCentsBRL": 1137303,
+          "sources": {
+            "entity": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/entidades?ano=2025&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&page=1&count=10",
+              "bytes": 401,
+              "sha256": "54f4e5111cd0ef022dcbb201afa664223fc060bf255047a5804ac52dba38d6cd"
+            },
+            "summary": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/detalhe-acao?ano=2025&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&page=1&count=100",
+              "bytes": 16440,
+              "sha256": "26437029c4feb023b726d61cdb82265297129fcb919bb89e14cf35dde19ec952"
+            },
+            "detail": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/detalhe-pagamento?ano=2025&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&acoes=61659&page=1&count=100",
+              "bytes": 14650,
+              "sha256": "c18fccd3eb125739df9805c7c680b09ae3c73091375e0d4df4f56e344227ca56"
+            }
+          }
+        },
+        {
+          "year": 2026,
+          "latestListedMonth": 11,
+          "summarySourceRow": 9,
+          "detailOrders": 13,
+          "summaryNetCentsBRL": 987001167,
+          "detailNetCentsBRL": 987001167,
+          "differenceCentsBRL": 0,
+          "sources": {
+            "entity": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/entidades?ano=2026&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&page=1&count=10",
+              "bytes": 401,
+              "sha256": "54f4e5111cd0ef022dcbb201afa664223fc060bf255047a5804ac52dba38d6cd"
+            },
+            "summary": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/detalhe-acao?ano=2026&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&page=1&count=100",
+              "bytes": 14283,
+              "sha256": "793ad36aa97c3e1e3d7556a72dcefb3e45178f839a2ea54255883eb543eaab6e"
+            },
+            "detail": {
+              "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/detalhe-pagamento?ano=2026&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&acoes=61659&page=1&count=100",
+              "bytes": 13492,
+              "sha256": "f07c44497531d6fc1f7a174d20e7a963682a3ef1d9067d0a9251a043fdbc7709"
+            }
+          }
+        }
+      ],
+      "exactOrdinanceOrder": {
+        "year": 2024,
+        "sourceRow": 11,
+        "siafiOrderNumber": "029513",
+        "recordedOn": "2024-10-22",
+        "ordinancePrinted": "05402",
+        "competence": "10/12 em 2024",
+        "fnsProcess": "25000.157105/2024-46",
+        "grossCentsBRL": 27000000,
+        "netCentsBRL": 27000000,
+        "filteredSource": {
+          "url": "https://consultafns.saude.gov.br/recursos/consulta-detalhada/detalhe-pagamento?ano=2024&estado=SC&municipio=420900&cpfCnpjUg=10594533000100&tipoConsulta=2&acoes=61659&portaria=05402&page=1&count=100",
+          "bytes": 1097,
+          "sha256": "f4d94550f68c296a6a640d89a1c9f538b40164d1c7268e8de5dff287254e96c0"
+        }
+      },
+      "reconciliationExample": {
+        "year": 2025,
+        "eachNetCentsBRL": 1137303,
+        "orders": [
+          {
+            "sourceRow": 6,
+            "siafiOrderNumber": "016472",
+            "recordedOn": "2025-06-02"
+          },
+          {
+            "sourceRow": 8,
+            "siafiOrderNumber": "018828",
+            "recordedOn": "2025-06-12"
+          }
+        ]
+      }
+    },
+    "municipalContract": {
+      "reference": "23/2024/FMS",
+      "recordDatedOn": "2024-10-24",
+      "operatorSignedOn": "2024-10-25",
+      "amendmentDatedOn": "2024-11-12",
+      "termMonths": 12,
+      "monthlyCentsBRL": 27000000,
+      "annualCentsBRL": 324000000,
+      "conditionalOnFederalTransfers": true
+    },
+    "hearingCommitments": {
+      "initialStateDecision": "CIB 386/2024",
+      "initialFromMonth": "2024-11",
+      "initialMonthlyCentsBRL": 7420000,
+      "municipalAward": "12/2025",
+      "procurement": "2/2025",
+      "awardedOn": "2025-02-18",
+      "awardCentsBRL": 89040000,
+      "expansionStateDecision": "CIB 338/2026",
+      "expansionFromMonth": "2026-05",
+      "expansionMonthlyCentsBRL": 7420000,
+      "sharedMonthlyTargets": {
+        "referralRegions": 3,
+        "initialAssessmentsAndHearingAidReplacements": 50,
+        "followUps": 100
+      }
+    },
+    "unverified": [
+      "municipal payments to clinic operator",
+      "state cash disbursements for hearing devices",
+      "work acceptance",
+      "observed service counts",
+      "health outcomes"
     ]
   }
 }

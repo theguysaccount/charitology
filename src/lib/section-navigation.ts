@@ -287,6 +287,7 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['lookup', 'Find paid procurements and works lots', 'lens'],
     ['coverage', 'What the join covers', 'archive'],
     ['joacaba', 'Joaçaba rehabilitation clinic', 'medical'],
+    ['operations', 'Clinic operating funds', 'bankOrder'],
     ['downloads', 'Download records and case evidence', 'download'],
   ],
   '/record/funding-flows/brazil-cisterns/': [
