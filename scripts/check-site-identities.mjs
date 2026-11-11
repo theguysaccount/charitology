@@ -80,5 +80,6 @@ for (const page of pages) {
   assert.deepEqual([...theme[0].matchAll(/type="radio" name="site-theme" value="([^"]+)"/g)].map(([, mode]) => mode),
     ['system', 'light', 'dark'], page);
   assert.ok(!html.includes('data-site-symbol=""'), page);
+  assert.equal(html.match(/<h1(?:\s|>)/g)?.length, 1, `Expected one page title in ${page}`);
 }
 console.log(`Site identity and theme checked on ${pages.length} pages, with distinct symbols in the catalogs, reference libraries and editorial lists.`);

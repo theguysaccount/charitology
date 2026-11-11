@@ -13,11 +13,18 @@ const prefix = base.replace(/\/$/, '');
  * content never has to know where the site is deployed. This prefixes them
  * with the base path and marks external links.
  */
-function rehypeLinks() {
-  /** @param {any} tree */
-  return (tree) => {
+function rehypePublicMarkdown() {
+  /** @param {any} tree @param {{ path?: string }} file */
+  return (tree, file) => {
+    // This standalone GitHub document sits under the public OS plan page's
+    // own title. Preserve its heading order and anchors inside that section.
+    const embeddedPlan = file.path?.endsWith('/docs/CHARITY_OS_PLAN.md');
+
     /** @param {any} node */
     const walk = (node) => {
+      if (embeddedPlan && node.type === 'element' && /^h[1-5]$/.test(node.tagName)) {
+        node.tagName = `h${Number(node.tagName[1]) + 1}`;
+      }
       if (node.type === 'element' && node.tagName === 'a') {
         const href = node.properties?.href;
         if (typeof href === 'string') {
@@ -50,7 +57,7 @@ export default defineConfig({
   },
   markdown: {
     processor: unified({
-      rehypePlugins: [rehypeLinks],
+      rehypePlugins: [rehypePublicMarkdown],
       smartypants: true,
     }),
   },
