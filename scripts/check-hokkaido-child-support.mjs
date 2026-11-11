@@ -39,6 +39,6 @@ for (const [year, edition] of Object.entries(funding)) {
   }
 }
 const page = read(built + 'index.html');
-for (const award of joined) assert.ok(page.includes('#corporate=' + award.selection.corporateNumber));
+for (const award of joined) assert.ok(page.includes('?corporate=' + award.selection.corporateNumber));
 assert.ok(page.includes('Report an error'));
 console.log('Hokkaido: 16 award rows, five registry joins, four independent need observations and exact JSON/CSV passed.');

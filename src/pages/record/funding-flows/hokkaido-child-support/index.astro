@@ -43,7 +43,7 @@ const sources = [
             <td>{row.selection ? <>
               <a href={selectionFile[year] + '#page=' + row.selection.page}>{row.selection.number ? `Selection row ${row.selection.number}` : 'Selection list'}</a>
               {row.selection.corporateNumber && row.recipientLabel.startsWith('NPO法人') && <>
-                {' · '}<a href={registry + '#corporate=' + row.selection.corporateNumber}>Japan NPO record</a>
+                {' · '}<a href={registry + '?corporate=' + row.selection.corporateNumber}>Japan NPO record</a>
               </>}
             </> : 'No exact name match'}</td>
           </tr>)}</tbody>
