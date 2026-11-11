@@ -70,6 +70,7 @@ assert.ok(pages.length > 0);
 for (const page of pages) {
   const route = '/' + page.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
   const html = readFileSync(`dist/${page}`, 'utf8');
+  assert.equal(html.match(/<main(?:\s|>)/g)?.length, 1, `Expected one main landmark in ${page}`);
   const main = html.match(/<main id="main"[^>]*>/)?.[0];
   const { symbol, tone } = pageIdentity(route);
   assert.ok(main?.includes(`data-site-symbol="${symbol}"`), page);

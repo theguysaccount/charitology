@@ -61,8 +61,12 @@ export const starterSymbols: Record<string, SymbolName> = {
 
 export const providerSymbols: Record<string, SymbolName> = {
   civicrm: 'person', 'erpnext-frappe': 'table', tendenci: 'badge', 'odoo-oca': 'stack',
-  openproject: 'board', kobotoolbox: 'pin', oscar: 'heart', caselight: 'notes',
-  givebutter: 'gift', 'salesforce-nonprofit': 'people',
+  openproject: 'board', kobotoolbox: 'pin', oscar: 'shield', caselight: 'notes',
+  givebutter: 'heart', 'salesforce-nonprofit': 'people',
+};
+
+export const publicationSymbols: Record<string, SymbolName> = {
+  'state-of-charity': 'chart', 'progress-report': 'steps', principles: 'book', journal: 'notes', letter: 'mail',
 };
 
 export const teachingSymbols: Record<string, SymbolName> = {
