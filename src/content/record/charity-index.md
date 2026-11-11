@@ -46,3 +46,5 @@ Filter by cause area, depth hypothesis or review status. Inspect the cited descr
 The editorial reading-list collection is small and the IRS snapshot covers one federal registry. Selecting an editorial profile adds it to a research reading list. Neither action recommends a donation, compares an organization’s worth with another or validates a depth hypothesis. ProPublica and other filing tools remain deliberate external handoffs; no third-party API is silently proxied.
 
 [Search Brazilian federal transfers](/record/funding-flows/brazil-transferegov/) by organization name, CNPJ registration number or agreement number. Follow the source links from a proposal to its agreement and bank orders.
+
+[Trace solidarity kitchen funding and household food insecurity in Brazil](/record/funding-flows/brazil-solidarity-kitchens/). Follow an official call from selection to bank orders and compare the documented plans with household survey estimates.

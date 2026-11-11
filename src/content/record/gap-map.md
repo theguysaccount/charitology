@@ -20,6 +20,8 @@ Use the published U.S. financial baseline alongside a local depth-census workspa
 
 [Trace Brazilian federal transfers to civil society](/record/funding-flows/brazil-transferegov/). Search agreement contributions and reported bank orders as separate amounts.
 
+[Compare Brazil’s solidarity kitchen plans with household food insecurity](/record/funding-flows/brazil-solidarity-kitchens/). Trace the signed agreements and see what the records say about the places the program aimed to serve.
+
 [Look up paid grants in Île-de-France](/record/funding-flows/ile-de-france-paid-grants/). Search regional payments by recipient name or official establishment and legal-unit identifiers.
 
 [Look up grants reported on U.S. Form 990](/record/funding-flows/us-schedule-i/). Follow reported cash and noncash amounts from a filer EIN to a recipient EIN in one IRS archive.

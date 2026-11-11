@@ -21,7 +21,7 @@ const sources = [
   <p>Transferegov reports the amount made available to an agreement account on each bank order. The agreement record also shows the federal contribution recorded when the agreement was made, as listed in the captured file. Keep the two amounts separate. Recipient spending and outcomes require further records.</p>
   <section class="charity-financial-search" data-brazil-transfers data-manifest={JSON.stringify(manifest)} data-file={url(base + manifest.asset.path)} aria-labelledby="brazil-transfer-heading">
     <h2 id="brazil-transfer-heading">Find agreements and bank orders</h2>
-    <p id="brazil-transfer-hint">Enter the start of the organization name, its full CNPJ registration number or the agreement number. The lookup loads the public snapshot after your first search. Your query stays in this browser.</p>
+    <p id="brazil-transfer-hint">Enter the start of the organization name, its full CNPJ registration number or the agreement number. The lookup loads the public snapshot after your first search. Search terms you type here stay in this browser.</p>
     <form aria-describedby="brazil-transfer-hint">
       <label for="brazil-transfer-query">Organization name, CNPJ or agreement number</label>
       <div class="finance-actions">
@@ -50,6 +50,7 @@ const sources = [
     {entry.duplicateOrderRows > 0 && ` ${count(entry.duplicateOrderRows)} orders had repeated source IDs.`}
   </li>)}</ul>
   <p>Each result links the proposal to its agreement and to individual bank-order records. The state in a result describes the proponent in the proposal. Where the work took place requires separate records. Ipea's Mapa das OSCs provides an independent place to check organization identity.</p>
+  <p><a href={url('/record/funding-flows/brazil-solidarity-kitchens/')}>Follow the solidarity kitchens funding case</a> for an example that compares recorded plans with a household survey.</p>
   <p>Transferegov.br published the source data under the <a href={manifest.source.license}>Open Database License</a>. Charitology selected and reformatted the fields. The derived snapshot is available under the same license.</p>
   <p><a href={manifest.source.archives.proposta.url}>Original proposals</a> · <a href={manifest.source.archives.convenio.url}>Original agreements</a> · <a href={manifest.source.archives.desembolso.url}>Original bank orders</a> · <a href={url(base + 'manifest.json')}>Source and coverage manifest</a> · <a href={url(base + manifest.asset.path)}>Full snapshot as compressed JSON</a>. Keep identifiers as text when opening CSV exports.</p>
 </Entry>
@@ -94,6 +95,9 @@ const sources = [
     let snapshot: Promise<Agreement[]> | undefined;
     let matches: Agreement[] = [];
     let sequence = 0;
+    const linkedAgreement = new URLSearchParams(location.search).get('agreement');
+    const agreementFormat = /^(?:[0-9]{1,20}|[0-9][A-Z]{5})$/i;
+    if (linkedAgreement && agreementFormat.test(linkedAgreement)) query.value = linkedAgreement.toUpperCase();
     query.disabled = year.disabled = submit.disabled = clear.disabled = false;
 
     async function load() {
@@ -126,7 +130,7 @@ const sources = [
       const value = query.value.trim();
       const compact = value.replace(/[./-]/g, '').toUpperCase();
       const cnpj = isCnpj(compact) ? compact : null;
-      const agreement = !cnpj && /^(?:[0-9]{1,20}|[0-9][A-Z]{5})$/i.test(value) ? value.toUpperCase() : null;
+      const agreement = !cnpj && agreementFormat.test(value) ? value.toUpperCase() : null;
       const name = normalizedName(value);
       const selectedYear = year.value;
       if (!cnpj && !agreement && name.length < 3) {

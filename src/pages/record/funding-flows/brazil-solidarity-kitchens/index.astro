@@ -1,0 +1,83 @@
+---
+import CaseDataDownload from '../../../../components/CaseDataDownload.astro';
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import data from '../../../../data/brazil-solidarity-kitchens.json';
+
+const title = 'Solidarity kitchen funding and food insecurity in Brazil';
+const route = '/record/funding-flows/brazil-solidarity-kitchens/';
+const transfers = '/record/funding-flows/brazil-transferegov/';
+const officialMap = 'https://cozinhasolidaria.digital/mapa';
+const report = 'https://www.gov.br/casacivil/pt-br/.arquivos/mensagem-ao-congresso-nacional-2026.pdf/@@download/file';
+const signed = data.selected.flatMap(row => 'orders' in row && row.orders ? [row] : []);
+const withState = signed.filter(term => Object.keys(term.plannedStates).length > 0);
+const stateRows = Object.entries(data.foodInsecurity2024).sort((a, b) => a[1].stateName.localeCompare(b[1].stateName, 'pt-BR'));
+const stateName = (state: string) => stateRows.find(([code]) => code === state)?.[1].stateName ?? state;
+const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: data.currency, currencyDisplay: 'code' });
+const sum = (cents: number[]) => cents.reduce((total, value) => total + value, 0);
+const totalContribution = sum(signed.map(term => term.contributionCents));
+const orders = signed.flatMap(term => term.orders);
+const sources = [
+  { title: '2024 call, selection and additional invitations', publisher: 'Ministry of Development and Social Assistance, Family and Fight Against Hunger', url: 'https://www.gov.br/mds/pt-br/acoes-e-programas/acesso-a-alimentos-e-a-agua/programa-cozinha-solidaria/editais' },
+  { title: 'Brazilian federal agreements, bank orders and physical schedules', publisher: 'Transferegov', url: 'https://api-publica.transferegov.gestao.gov.br/downloads' },
+  { title: '2024 household food insecurity survey and methods', publisher: 'IBGE', url: 'https://www.ibge.gov.br/estatisticas/sociais/populacao/17270-pnad-continua.html?edicao=44654' },
+  { title: 'Household estimates by state in SIDRA table 9552', publisher: 'IBGE', url: data.sources['pnad-food-classes-2024.json'].url },
+  { title: '2026 government report to Congress', publisher: 'Presidency of Brazil', url: report },
+  { title: 'Official solidarity kitchens map', publisher: 'Programa Cozinha Solidária', url: officialMap },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Trace the 2024 solidarity kitchens call from official selection to bank orders and read its 2025 plans alongside household food insecurity estimates." crumbs={[{label:'The Record',href:'/record/'},{label:'Gap Map',href:'/record/gap-map/'},{label:'Brazil solidarity kitchens'}]} sources={sources}>
+  <h2>From selection to bank orders</h2>
+  <p>Brazil’s Ministry of Development and Social Assistance selected civil society organizations to support free meals through solidarity kitchens. The August and October 2024 notices identify {data.selected.length} proposals. The proposal number and organization’s CNPJ matched Transferegov’s records for each. The agreements file records {signed.length} as signed.</p>
+  <p>The captured agreement records show <strong>{money.format(totalContribution / 100)}</strong> in federal contributions across the signed terms. Transferegov separately lists {orders.length} bank orders in the following years. Each order records federal money made available to the agreement account.</p>
+  <ul>{['2024', '2025'].map(year => {
+    const period = orders.filter(order => String(order[1]).startsWith(year));
+    return <li><strong>{year}.</strong> {period.length} orders totaling {money.format(sum(period.map(order => Number(order[2]))) / 100)}.</li>;
+  })}</ul>
+  <p>The agreement contributions and bank-order amounts describe different stages of the same funding. Further records are needed to trace individual payments from the agreement account to kitchens and verify what they spent.</p>
+
+  <h2 id="plans-and-need">Where work was planned and where households reported food insecurity</h2>
+  <p>The federal schedules name a state in a plan overlapping 2025 for {withState.length} of the {signed.length} signed terms. Some plan rows omit a state. The state in a plan is evidence of intended activity. To locate individual kitchens, use the <a href={officialMap}>official kitchens map</a>. Its coverage differs from the plans shown here.</p>
+  <p>IBGE asked households in the fourth quarter of 2024 about access to food over the preceding three months. The estimates cover permanent private households. The survey does not capture people without a household, whom the program also aims to reach. IBGE produced the survey module in partnership with the ministry. The download includes the estimates’ coefficients of variation.</p>
+  <p>A zero in the plans column means no state match in the selected schedules. Each term is counted at most once per state. The comparison uses the 2024 survey as context for the 2025 plans. Statewide household estimates and planned activity cannot establish how much need any kitchen met.</p>
+  <div class="state-table" role="region" aria-label="State comparisons, scroll for all columns" tabindex="0">
+    <table>
+      <caption>2025 plans and fourth-quarter 2024 household estimates</caption>
+      <thead><tr><th scope="col">State or Federal District</th><th scope="col">Terms with a plan</th><th scope="col">Any food insecurity</th><th scope="col">Severe food insecurity</th></tr></thead>
+      <tbody>{stateRows.map(([state, need]) => <tr>
+        <th scope="row">{need.stateName}</th>
+        <td>{signed.filter(term => Object.hasOwn(term.plannedStates, state)).length}</td>
+        <td>{need.any.sharePercent}%</td>
+        <td>{need.severe.sharePercent}%</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2>What the government reported delivering</h2>
+  <p>The <a href={report}>2026 report to Congress</a> says that 384 kitchens received support in 2025 and offered about 13 million meals over twelve months. That is a program-reported output. The agreement and survey records cannot verify which kitchens delivered the meals, how many distinct people received them or how access to food changed.</p>
+
+  <h2 id="agreement-records">Open the original records</h2>
+  <div class="term-list">{signed.map(term => {
+    const states = Object.keys(term.plannedStates);
+    return <details>
+      <summary><strong>{term.organizationName}</strong> · {term.agreementId}</summary>
+      <p>Signed {term.signed}. Official proposal {term.proposalNumber}. CNPJ {term.cnpj}. Federal agreement contribution {money.format(term.contributionCents / 100)}.</p>
+      <p>{states.length ? `States named in plans overlapping 2025: ${states.map(stateName).join(', ')}.` : 'No state matched in plans overlapping 2025.'} {('missingState' in term.geographyGaps && term.geographyGaps.missingState) ? `Plan rows missing a state: ${term.geographyGaps.missingState}.` : ''}</p>
+      <p><a href={url(transfers) + '?agreement=' + term.agreementId + '#brazil-transfer-heading'}>Find agreement {term.agreementId} and its bank orders</a>.</p>
+    </details>;
+  })}</div>
+  <CaseDataDownload path={route + 'data.json'} filename="brazil-solidarity-kitchens.json" label="Save agreements, plans and household estimates" />
+  <p>The download includes the 23 proposal matches, the records behind the signed terms and bank orders, and the selected survey estimates. It retains source links, record numbers and file fingerprints. Transferegov data is attributed under the <a href={data.transferEdition.license}>Open Database License</a>. Household estimates are attributed to IBGE.</p>
+</Entry>
+
+<style>
+  .state-table { overflow-x: auto; margin-block: 1rem; }
+  .state-table table { border-collapse: collapse; width: 100%; text-align: left; }
+  .state-table caption { text-align: left; margin-bottom: .5rem; }
+  .state-table th, .state-table td { padding: .55rem .65rem; border-bottom: 1px solid var(--line); }
+  .state-table td { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .term-list { display: grid; gap: .5rem; }
+  .term-list details { border: 1px solid var(--line); border-radius: .5rem; padding: .7rem .9rem; overflow-wrap: anywhere; }
+  .term-list summary { cursor: pointer; min-height: 2.75rem; align-content: center; }
+</style>
