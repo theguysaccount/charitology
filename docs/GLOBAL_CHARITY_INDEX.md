@@ -185,3 +185,17 @@ python3 scripts/build-hokkaido-child-support.py /path/to/captures /path/to/new-c
 npm run build
 node scripts/check-hokkaido-child-support.mjs
 ```
+
+## Canada grant activities by country
+
+The [Canadian grant geography lookup](https://charitology.com/record/funding-flows/canada-grant-geography/) summarizes T1441 disbursements for 27,312 worksheet rows linked to annual filings ending in 2023 or 2024. Exact joins require the charity account, fiscal period end and form version. Repeated worksheet sequences within the same filing cannot contribute twice. The form reports the geography of grant activities as given by the filer. A separate source would be needed for a recipient's receipt, final spending or the outcomes of the grant. [T1441 form and instructions](https://www.canada.ca/en/revenue-agency/services/forms-publications/forms/t1441.html).
+
+The build recognizes complete country codes or labels in the CRA's English and French guides. It retains separate counts for unknown, unresolved, regional and multi-place rows. The two English tables match exactly in the current and 2023 guides. Blank geography stays unknown. Cash and noncash have separate reported totals, missing-amount counts and publication decisions. A country amount requires nonzero reported values from five or more distinct filer accounts in the same year and amount type. All remaining amounts stay together in an unallocated group. The data contain no grantee or filer identities, row-level grants or free-text purposes. [Current filing guide](https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/t4033/t4033-completing-registered-charity-information-return.html) · [French guide](https://www.canada.ca/fr/agence-revenu/services/formulaires-publications/publications/t4033/t4033-comment-remplir-declaration-renseignements-organismes-bienfaisance-enregistres.html).
+
+Rebuild from the four source CSVs and three guide files named in `src/data/ca-grant-geography.json`. The command verifies exact CSV bytes and the normalized country-code tables. The JSON export preserves source URLs and fingerprints, exclusions, coverage and the separate geographic and amount totals. A country row and the unallocated row are part of the corresponding reported total. Do not add the reported-total row again. Contains information from the Canada Revenue Agency under the [Open Government Licence – Canada](https://open.canada.ca/en/open-government-licence-canada).
+
+```sh
+python3 scripts/build-ca-grant-geography.py /path/to/captures /path/to/new-ca-grant-geography.json
+npm run build
+node scripts/check-ca-grant-geography.mjs
+```

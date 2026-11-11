@@ -26,6 +26,7 @@ const sources = [
 
 <Entry title={title} eyebrow="The Record · Funding flows" summary="Trace reported gifts between Canadian charity accounts using original CRA worksheet records." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Gifts reported by Canadian charities'}]} sources={sources}>
   <p>Search {count(manifest.includedRows)} donor-reported gift records for fiscal periods ending in 2023 or 2024. You can look up the charity that reported a gift or the charity it named as the recipient.</p>
+  <p><a href={url('/record/funding-flows/canada-grant-geography/')}>Explore reported Canadian grant activities by country</a> in the separate T1441 grant form.</p>
   <CaQualifiedDoneeSearch />
   <h2 id="coverage">Coverage and original records</h2>
   <p>A <a href={worksheet}>T1236 worksheet</a> reports the amount a filer says it gave to a recipient during a fiscal period. The total includes gifts in kind when applicable. Each record gives the filer’s period end and source record numbers. Payment dates, settlement, how the recipient used the gift and what happened after it received the gift require separate evidence.</p>
