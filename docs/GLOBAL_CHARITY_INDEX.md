@@ -44,6 +44,19 @@ python3 scripts/build-ew-charity-financials.py /path/to/captured-inputs /path/to
 node scripts/check-ew-charity-financials.mjs
 ```
 
+## Brazil federal transfers to civil society
+
+The [Brazil federal transfer edition](https://charitology.com/record/funding-flows/brazil-transferegov/) joins proposal, agreement and disbursement files in the [Transferegov public downloads](https://api-publica.transferegov.gestao.gov.br/downloads). It uses exact proposal IDs and agreement numbers and requires a valid CNPJ on a proposal that Transferegov classifies as a civil society organization. The two calendar years include 12,058 bank-order rows in 7,900 agreements for 3,811 organization identifiers. The published [manifest](../public/data/funding-flows/brazil-transferegov/manifest.json) records the three archive fingerprints, field definitions, coverage and the dataset's ODbL 1.0 license.
+
+The detail amount is federal money made available to the agreement account. The date comes from the bank order. The agreement amount is the federal contribution as listed at capture and appears once per agreement in JSON. The bank-order CSV excludes the agreement amount. The projection leaves out personal, address, contact, banking and narrative fields. The proponent state requires independent service-location evidence before any comparison with local need.
+
+Rebuild from the exact three archive captures and the field model saved as `modelo-dados-real.zip`. The manifest links the original files. Live publisher downloads can change, so retain each dated capture used for an edition.
+
+```sh
+python3 scripts/build-brazil-transferegov.py /path/to/captures /path/to/new-brazil-output
+node scripts/check-brazil-transferegov.mjs
+```
+
 ## United States Form 990 financial extracts
 
 The [U.S. financial filings page](https://charitology.org/record/charity-financials/united-states/) uses the IRS's processed extracts for the 2023 and 2024 filing calendar years. It includes 516,109 periods for 277,047 EINs with subsection code 03 on full Form 990. The periods end in 2022–2024. The source supplies the tax-period end month rather than a start date or day. The projected fields are revenue, functional expenses, program service revenue, grants to U.S. governments and organizations, and grants to organizations and individuals outside the U.S. Source record numbers count CSV records after the header.

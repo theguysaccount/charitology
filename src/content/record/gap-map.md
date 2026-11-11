@@ -18,4 +18,6 @@ Use the published U.S. financial baseline alongside a local depth-census workspa
 
 [Trace a Greater Manchester funding example](/record/funding-flows/greater-manchester-home-from-hospital/). Read nine community grants alongside independent NHS discharge figures from the same delivery period.
 
+[Trace Brazilian federal transfers to civil society](/record/funding-flows/brazil-transferegov/). Search agreement contributions and reported bank orders as separate amounts.
+
 [Look up paid grants in Île-de-France](/record/funding-flows/ile-de-france-paid-grants/). Search regional payments by recipient name or official establishment and legal-unit identifiers.
