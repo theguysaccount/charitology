@@ -1,0 +1,50 @@
+{
+  "format": "charitology-us-schedule-i-v1",
+  "capturedOn": "2026-11-10",
+  "currency": "USD",
+  "source": {
+    "publisher": "Internal Revenue Service",
+    "archive": "https://apps.irs.gov/pub/epostcard/990/xml/2024/2024_TEOS_XML_01A.zip",
+    "sha256": "40b0aab9a3ae153a1d5945d9bd23e7414bdcf3b6b66819fd64819665701191d1",
+    "publicationBatch": "2024_TEOS_XML_01A",
+    "scope": "Form 990 Schedule I, Part II"
+  },
+  "registry": {
+    "date": "2026-10-13",
+    "manifestSha256": "85daef9189479e24a7892cc7b055913f6e7b3cf393feb029ce67235f1e045ec5"
+  },
+  "counts": {
+    "competingFilingRows": 26,
+    "filerOrPeriodOutOfScope": 360,
+    "form990": 9682,
+    "includedFilings": 755,
+    "includedRecipientEINs": 5572,
+    "includedRows": 5916,
+    "noPositiveAmountRows": 9,
+    "partIIOrganizationRows": 9573,
+    "repeatedRecipientRows": 362,
+    "unresolvedOrSelfRecipient": 2900,
+    "xmlMembers": 17246
+  },
+  "filingFields": [
+    "filerEin",
+    "taxPeriodStart",
+    "taxPeriodEnd",
+    "filingObjectId",
+    "grants"
+  ],
+  "grantFields": [
+    "recipientEin",
+    "partIIRow",
+    "cashGrantUSD",
+    "nonCashAssistanceUSD"
+  ],
+  "asset": {
+    "path": "filings.json.gz",
+    "rows": 755,
+    "bytes": 97799,
+    "decodedBytes": 265376,
+    "sha256": "4e383cb3e5f664e6f77d9bb404b2711a0d024750f2eb9a3a13af9e58c2a5b2c6",
+    "decodedSha256": "968a477419a26610d94d0338c9078bd73c3973c44e832b7c174dbb88a24eb6ec"
+  }
+}
