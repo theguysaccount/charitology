@@ -23,6 +23,8 @@ The Index brings together distinct sources. A dated IRS identity snapshot suppor
 
 [Compare Kenya’s reporting coverage and finances](/record/charity-financials/kenya/). Read three years of regulator-reported filing counts and receipts, plus a breakdown of where reporting organizations spent funds.
 
+[Search Canadian charity filings](/record/charity-financials/canada/) by name or full account number. Read reported revenue, expenditure, gifts and grants for periods ending in 2023 or 2024.
+
 ## IRS snapshot coverage
 
 The four IRS EO BMF regional CSVs posted on **2026-10-13** contain **1,975,975 unique EINs**. The local search retains source spelling, city/state fields, subsection, status and deductibility codes. Missing fields remain unknown. Contact/street and financial fields are omitted. Each result links its original region file; exports retain its source hash, retrieval time and snapshot date. Data downloads only after an explicit search.

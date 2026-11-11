@@ -2,6 +2,7 @@
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
 import australia from '../../../../public/data/charity-financials/manifest.json';
+import canada from '../../../../public/data/charity-financials/ca/manifest.json';
 import englandWales from '../../../../public/data/charity-financials/ew/manifest.json';
 import usa from '../../../../public/data/charity-financials/us/manifest.json';
 import usaShort from '../../../../public/data/charity-financials/us-990-ez/manifest.json';
@@ -22,6 +23,14 @@ const panels = [
     manifest: '/data/charity-financials/manifest.json',
   },
   {
+    name: 'Canada', flag: 'Canada Revenue Agency T3010', route: '/record/charity-financials/canada/',
+    label: 'Search Canadian financial filings', date: canada.capturedOn,
+    coverage: `${number(canada.accounts)} charity accounts with a dated financial record in the two extracts.`,
+    history: `${number(canada.financialPeriods)} periods ending in 2023 or 2024. ${number(canada.multiYearAccounts)} accounts have records in both years.`,
+    boundary: 'Income, expenditure, gifts and grants are reported in CAD. Returns keep their accounting basis, fiscal period and original records.',
+    manifest: '/data/charity-financials/ca/manifest.json',
+  },
+  {
     name: 'England and Wales', flag: 'Charity Commission annual returns', route: '/record/charity-financials/england-wales/',
     label: 'Search England and Wales returns', date: englandWales.date,
     coverage: `${number(englandWales.organizations)} of ${number(englandWales.registeredMain)} main registered charities with eligible records.`,
@@ -40,6 +49,7 @@ const panels = [
 ];
 const sources = [
   { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
+  { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
 ];
