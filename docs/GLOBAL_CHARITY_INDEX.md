@@ -590,3 +590,24 @@ diff -r public/data/funding-flows/chile-residential-care /path/to/rebuilt
 npm run build
 node scripts/check-chile-residential-care.mjs
 ```
+
+## Chile award and payment ledger comparison
+
+The [residential care payment lookup](https://charitology.com/record/funding-flows/chile-residential-payments/) transcribes all 37 award rows in SENADIS resolution 763/2025. They total CLP 15,762,384,000 for 19 institutional RUTs. Each amount and folio retains its PDF page and source row. The award directs payments to assignment 24.03.004. Use the RUT, issuer and assignment to compare with Presupuesto Abierto. Confirming a particular residence payment requires a document that links the ledger number to the award folio.
+
+The source returns 169 ledger rows booked in 2025 on this assignment. The 19 exact award recipients account for 156 of those rows, and records for the other five RUTs appear in aggregate. The two captured views have 119 program rows and 100 award-recipient rows booked in 2026 through September. This is year-to-date ledger coverage. The 2026 view does not establish renewals of individual awards.
+
+For Fundación Rostros Nuevos, the 2024 records with document numbers 1245, 12452 and 12452024 sum to CLP 650,260,000, matching its five published award amounts. The 2025 documents 19992025, 199920252 and 199920253 sum to CLP 409,596,000, matching its three published awards. Those groups have the same 40%, 30%, and 30% arithmetic split as the 2024 program rules. An additional 2025 accrual has a recorded paid value of zero and no payment date. The third matched 2025 document carries a payment date of January 2, 2026. Keep the booked year, original document number and last payment date visible. A documented payment date may represent the last installment for a ledger row, and a dated row can show a recorded paid value of zero. The exact allocation of these records to individual residences remains unknown. The portal's scoped grouped summaries independently agree with the underlying accrual totals, which differ from the sum of the raw paid-amount fields.
+
+The four exports use a one-based JSON source position as the ledger row key. Document labels can repeat. The source carries CLP amounts without a currency conversion for these selected records. The projection retains institutional fields and removes personal fields and source rows outside the award recipients from the detailed downloads. Presupuesto Abierto data and the derived downloads use CC BY-SA 4.0 with the publisher's attribution. [Reuse terms](https://api.presupuestoabierto.gob.cl/about-data).
+
+Rebuild with the six pinned ledger responses, four grouped comparison responses, and award resolution PDF named in the edition. The award table is an editorial transcription, and the generator also checks the exact predecessor case.
+
+```sh
+python3 scripts/build-chile-residential-payments.py /path/to/captured-inputs /path/to/new-rebuild
+diff -r public/data/funding-flows/chile-residential-payments /path/to/new-rebuild
+npm run build
+node scripts/check-chile-residential-payments.mjs
+```
+
+To extend the trace, look for a stable link from ledger document numbers to signed agreement folios and separately reported service locations. Use original payment-event records before allocating a ledger document’s amount across payment dates. For more Chile institutions, qualify the award source’s official RUTs before exposing transaction detail.

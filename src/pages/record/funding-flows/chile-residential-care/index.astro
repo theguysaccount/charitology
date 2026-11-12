@@ -59,6 +59,7 @@ const downloads = [
   <p>Register-derived records are credited to the Chile Ministry of Finance under <a href={sources.transferRegister.license}>CC BY 3.0 Chile</a>. <a href={sources.transferTerms.url}>Read the register’s terms</a>.</p>
 
   <h2 id="residence-awards">Compare residence awards</h2>
+  <p>The public budget ledger gives payment records for the foundation on the same program line. <a class="identity-link" href={url('/record/funding-flows/chile-residential-payments/#rostros')}>Follow those payments and the full award round</a>.</p>
   <p>The National Disability Service approved {awardsFor(2024).length} named residences in Metropolitana de Santiago in 2024, totaling CLP {number(total(awardsFor(2024)))}. The 2025 award schedule lists {awardsFor(2025).length} projects with the foundation’s exact tax identifier, totaling CLP {number(total(awardsFor(2025)))}. Three residence names correspond across the two resolutions. The 2024 table provides names and regions. The 2025 table provides application folios and numbers listed for regular care. <a href={pdf(sources.awards2024, 5)}>Read the 2024 table</a>. <a href={pdf(sources.awards2025, 2)}>Read the 2025 table</a>.</p>
   <div class="table-wrap" role="region" aria-label="Residence approvals and awards" tabindex="0">
     <table class="data">

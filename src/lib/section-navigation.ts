@@ -216,6 +216,13 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['care-context', 'Read the care measures', 'survey'],
     ['downloads', 'Download records and sources', 'download'],
   ],
+  '/record/funding-flows/chile-residential-payments/': [
+    ['scope', 'Check ledger coverage', 'archive'],
+    ['compare', 'Compare recipient totals', 'compare'],
+    ['rostros', 'Follow Fundación Rostros Nuevos', 'house'],
+    ['records', 'Inspect awards and ledger records', 'fileSearch'],
+    ['downloads', 'Download source-linked records', 'download'],
+  ],
   '/record/funding-flows/taiwan-new-resident-fund/': [
     ['approval-and-execution', 'When one award appears in two reports', 'match'],
     ['projects', 'Find a project', 'lens'],
