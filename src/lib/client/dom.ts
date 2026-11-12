@@ -1,6 +1,8 @@
 // Tiny DOM helpers shared by the tools. No framework: each tool is plain
 // TypeScript in an Astro <script>, bundled and served as a static file.
 
+import type { SymbolName } from '../site-symbols';
+
 type Attrs = Record<string, string | number | boolean | null | undefined | EventListener>;
 type Child = Node | string | number | null | undefined | false | Child[];
 
@@ -17,6 +19,10 @@ export function h<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Attrs = 
   }
   append(el, children);
   return el;
+}
+
+export function siteSymbol(name: SymbolName): HTMLSpanElement {
+  return h('span', { class: 'site-symbol identity-inline', 'data-site-symbol': name, 'aria-hidden': 'true' });
 }
 
 function append(el: Element, children: Child[]): void {

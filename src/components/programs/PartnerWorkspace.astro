@@ -66,6 +66,7 @@ const config = programWorkspaces[program];
       placeholder="Search names, sources, status or notes"
     />
   </div><p id="pw-filter-count" class="hint"></p>
+  <nav class="catalog-jump" aria-label="Record collections" data-workspace-contents hidden></nav>
   <div id="pw-collections"></div>
   <h3>3. Prepare a usable draft</h3><p>
     Preview the generated kit below. It includes the context, every saved
@@ -247,8 +248,9 @@ const config = programWorkspaces[program];
   }
 </style>
 <script>
-  import { $, $$, clear, h } from "../../lib/client/dom";
+  import { $, $$, clear, h, siteSymbol } from "../../lib/client/dom";
   import { url } from "../../lib/site";
+  import { workspaceCollectionSymbols } from "../../lib/list-identities";
   import {
     programWorkspaces,
     type ProgramField,
@@ -593,7 +595,13 @@ const config = programWorkspaces[program];
     clear(target);
     collectionEditors.clear();
     config.collections.forEach((c) => {
-      const heading = h("h3", {}, c.label);
+      const heading = h(
+        "h3",
+        { id: `collection-${c.key}`, tabindex: -1 },
+        siteSymbol(workspaceCollectionSymbols[c.key] ?? "notes"),
+        " ",
+        c.label,
+      );
       const title = h("summary", {}, `Add ${c.singular}`);
       const fields = h("div", { class: "tool-grid" });
       const form = h("form", {});
@@ -915,7 +923,7 @@ const config = programWorkspaces[program];
           h(
             "article",
             { class: "pw-card" },
-            h("h4", {}, v.title || c.singular),
+            h("h4", {}, siteSymbol(workspaceCollectionSymbols[c.key] ?? "notes"), " ", v.title || c.singular),
             facts,
             analysis.length
               ? h(
@@ -1212,6 +1220,18 @@ const config = programWorkspaces[program];
   document.addEventListener("astro:before-swap", dispose);
   renderContext();
   buildCollections();
+  const contents = document.querySelector<HTMLElement>("[data-workspace-contents]");
+  if (contents) {
+    for (const { key, label } of config.collections) {
+      contents.append(h(
+        "a",
+        { href: `#collection-${key}` },
+        siteSymbol(workspaceCollectionSymbols[key] ?? "notes"),
+        label,
+      ));
+    }
+    contents.hidden = false;
+  }
   render();
   refreshStatus();
   let initialView = view.capture();

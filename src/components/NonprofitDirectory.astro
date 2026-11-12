@@ -1,4 +1,5 @@
 ---
+import { sourceSymbol } from "../lib/source-symbol";
 import { url } from '../lib/site';
 import SiteSymbol from './SiteSymbol.astro';
 import type { SymbolName } from '../lib/site-identities';
@@ -79,7 +80,7 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
         </dl>
         <div class="directory-card-bottom">
           <a class="directory-provider" href={entry.url} rel="noopener">{kind === 'tools' ? 'Explore the tool' : 'Check offer and apply'} <span aria-hidden="true">↗</span></a>
-          <details class="directory-sources"><summary>Provider sources <span>({entry.sources.length})</span></summary><ul>{entry.sources.map((source) => <li><a href={source.url} rel="noopener">{source.label}</a></li>)}</ul></details>
+          <details class="directory-sources"><summary>Provider sources <span>({entry.sources.length})</span></summary><ul>{entry.sources.map((source) => <li><a href={source.url} data-source-symbol={sourceSymbol(source.url)} rel="noopener">{source.label}</a></li>)}</ul></details>
           <p class="directory-checked">Source checked {entry.checked === null ? 'Unknown' : checked(entry.checked)} · {entry.review === 'reviewed' ? 'Editorially reviewed' : 'Editorial review pending'}</p>
           <a class="directory-copy" href={`https://os.charitology.org/#directory/${kind}/${entry.id}/${captureId}/${entryHashes[entry.id]}`}>Review in Charity OS</a>
           <p class="directory-checked">Inspect this frozen listing, choose an organization, then preview a Resource copy. Eligibility and organization review stay unknown until your team records them.</p>

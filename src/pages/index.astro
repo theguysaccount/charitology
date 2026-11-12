@@ -256,12 +256,12 @@ const giving = figures.usGiving;
           <a class="btn btn-ghost" href={SITE.repo}>See the source on GitHub</a>
         </div>
       </div>
-      <ul class="roles">
-        <li><strong>Researchers</strong> take on an open problem.</li>
-        <li><strong>Builders</strong> ship a designed tool or program.</li>
-        <li><strong>Writers</strong> grow the Record, with sources.</li>
-        <li><strong>Critics</strong> red-team any claim on the site.</li>
-        <li><strong>Givers</strong> try the tools and tell us what broke.</li>
+      <ul class="roles" role="list">
+        <li><SiteSymbol name="flask" size="inline" /><span><strong>Researchers</strong> take on an open problem.</span></li>
+        <li><SiteSymbol name="tools" size="inline" /><span><strong>Builders</strong> ship a designed tool or program.</span></li>
+        <li><SiteSymbol name="notes" size="inline" /><span><strong>Writers</strong> grow the Record, with sources.</span></li>
+        <li><SiteSymbol name="flag" size="inline" /><span><strong>Critics</strong> red-team any claim on the site.</span></li>
+        <li><SiteSymbol name="gift" size="inline" /><span><strong>Givers</strong> try the tools and tell us what broke.</span></li>
       </ul>
     </div>
   </section>
@@ -546,6 +546,9 @@ const giving = figures.usGiving;
     font-size: 1.02rem;
   }
   .roles li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
     padding: 0.75rem 1rem;
     border: 1px solid var(--rule);
     border-radius: var(--radius-sm);

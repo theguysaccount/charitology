@@ -1,4 +1,5 @@
 ---
+import { sourceSymbol } from "../../lib/source-symbol";
 import type { ReferenceLibrary } from "../../lib/record-library";
 import { absolute, url, issueUrl } from "../../lib/site";
 interface Props {
@@ -174,7 +175,7 @@ const data = JSON.stringify({ ...library, page }).replace(/</g, "\\u003c");
               <ol class="rl-sources">
                 {entry.sources.map((source) => (
                   <li>
-                    <a href={source.url} rel="noopener">
+                    <a href={source.url} data-source-symbol={sourceSymbol(source.url)} rel="noopener">
                       {source.title}
                     </a>
                     {(source.publisher || source.year) && (

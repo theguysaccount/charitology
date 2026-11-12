@@ -9,6 +9,11 @@ import { url } from "../lib/site";
 interface Props { projection: ObservationProjection; observation: ObservationRecord; showEntity?: boolean; }
 const { projection, observation, showEntity = true } = Astro.props;
 const f = observationFact(projection, observation);
+const limitations = [
+  { label: 'Scope', notes: f.scope.limitations, mark: 'map' },
+  { label: 'Measure', notes: f.measure.limitations, mark: 'ruler' },
+  { label: 'Observation', notes: observation.limitations, mark: 'eye' },
+] as const;
 ---
 <article class="ob-fact" id={`fact-${observation.id}`} data-observation-id={observation.id} data-observation-version={observation.version} data-observation-hash={observation.hash} data-edition-id={projection.edition.id} data-edition-hash={projection.edition.hash}>
   <h3><SiteSymbol name={observationMeasureSymbols[f.measure.id] ?? "signal"} size="inline" /> {f.measure.label}</h3>
@@ -25,9 +30,30 @@ const f = observationFact(projection, observation);
     {observation.producerDecimal !== null && <p>Producer display metadata: {observation.producerDecimal}. This is not measured precision.</p>}
     {observation.annotations.map(a => <p>{a.verbatim}</p>)}
     <p>Price basis is unknown. No inflation or currency conversion is made.</p>
-    <ul>{[...f.scope.limitations, ...f.measure.limitations, ...observation.limitations].map(l => <li>{l}</li>)}</ul>
+    {limitations.some(({ notes }) => notes.length > 0) && (
+      <ul class="ob-limitations" role="list">
+        {limitations.filter(({ notes }) => notes.length > 0).map(({ label, notes, mark }) => (
+          <li>
+            <strong class="identity-label"><SiteSymbol name={mark} size="inline" />{label}</strong>
+            <ul>{notes.map(note => <li>{note}</li>)}</ul>
+          </li>
+        ))}
+      </ul>
+    )}
     <ObservationRefs projection={projection} refs={[observation.reported.valueRef, ...observation.sourceRefs]} />
     <p class="ob-hash">Observation {observation.id} v{observation.version} · {observation.hash}</p>
     <p class="ob-hash">Edition {projection.edition.id} · {projection.edition.hash}</p>
   </details>
 </article>
+
+<style>
+  .ob-limitations {
+    list-style: none;
+    display: grid;
+    gap: 0.65rem;
+    padding: 0;
+  }
+  .ob-limitations ul {
+    padding-inline-start: 1.6rem;
+  }
+</style>
