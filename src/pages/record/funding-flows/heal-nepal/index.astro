@@ -1,0 +1,119 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import data from '../../../../data/heal-nepal-trace.json';
+
+const title = 'Following Heal Nepal funding from the UK to Nepal';
+const route = '/record/funding-flows/heal-nepal/';
+const { manager, uk, nepal } = data.captures;
+const { need, totals } = data;
+const project = 'https://www.leprosymission.org/our-work/project/heal-nepal/';
+const register = 'https://register-of-charities.charitycommission.gov.uk/en/charity-search/-/charity-details/1050327';
+const rules = 'https://www.ukaidmatch.org/wp-content/uploads/2018/10/IATI_guidebook.pdf#page=9';
+const needPage = need.source.url + '#page=' + need.source.pdfPage;
+const sources = [
+  ...Object.values(data.captures).map(source => ({ title: source.title + ' · ' + source.delivery, url: source.url, publisher: source.publisher })),
+  { title: 'Heal Nepal project description', url: project, publisher: 'The Leprosy Mission International' },
+  { title: 'The Leprosy Mission Great Britain, charity 1050327', url: register, publisher: 'Charity Commission for England and Wales' },
+  { title: 'UK Aid Match instructions for incoming funds', url: rules, publisher: 'UK Aid Match' },
+  { title: need.source.title, url: needPage, publisher: need.source.publisher },
+];
+const money = (currency: string, amount: string) => {
+  const [whole, fraction = ''] = amount.split('.');
+  return currency + ' ' + whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + fraction.padEnd(2, '0');
+};
+function transaction(publisher: keyof typeof data.captures, row: number) {
+  const item = data.captures[publisher].transactions.find(item => item.row === row);
+  if (!item) throw new Error('Missing ' + publisher + ' transaction ' + row);
+  return item;
+}
+const upstream = data.upstreamPairs.map(pair => ({
+  ...pair, sent: transaction('manager', pair.managerRow), received: transaction('uk', pair.ukRow),
+}));
+const onward = data.onward.groups.map(group => ({
+  ...group, sent: transaction('uk', group.ukRow), receipts: group.nepalRows.map(row => transaction('nepal', row)),
+}));
+const tests = data.onward.nepalTestReceipts.map(row => transaction('nepal', row));
+const labels: Record<string, string> = {
+  candidate: 'Possible counterpart', 'two-receipts': 'Two possible receipts',
+  'partial-period': 'Only part of the period agrees', unresolved: 'Unresolved',
+};
+const sameDates = upstream.filter(pair => pair.sameDate).length;
+const exactAmounts = upstream.filter(pair => pair.managerLessUk === '0.00').length;
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Compare three publishers’ reports for a leprosy project, including a one-penny difference and onward records in pounds and Nepalese rupees." crumbs={[{ label: 'Record', href: '/record/' }, { label: 'Funding flows', href: '/record/funding-flows/' }, { label: 'Heal Nepal' }]} sources={sources} filePath="src/pages/record/funding-flows/heal-nepal/index.astro">
+  <p>Heal Nepal supported leprosy and lymphatic filariasis diagnosis, treatment and prevention across 11 districts. Both charity files give the same actual start date, <time datetime={data.actualStart}>October 22, 2019</time>. The project combined repair through treatment and prevention through earlier case detection. <a href={project}>Read the project description</a>.</p>
+
+  <h2 id="organizations">Which organizations and activities connect</h2>
+  <p>The UK Aid Match manager, Mannion Daniels, reports outgoing funds under <code>{manager.activityId}</code>. The manager’s records name the UK charity and give its full project identifier <code>{uk.activityId}</code>. The <a href={register}>Charity Commission’s register</a> now lists charity 1050327 as The Leprosy Mission Great Britain. The project file uses its England and Wales name. <a href={url('/record/charity-financials/england-wales/') + '?registration=1050327'}>Open the UK charity’s filing history</a>.</p>
+  <p>The UK project names the Nepal partner by its organization reference, <code>{nepal.reportingOrg}</code>, and uses a shorter activity reference, <code>NP-Heal-19</code>. The Nepal publisher’s full project identifier is <code>{nepal.activityId}</code>. Its project file identifies the UK charity as the funding party. The downloads retain the literal organization and activity fields for each record.</p>
+
+  <h2 id="manager-to-uk">From the grant manager to the UK charity</h2>
+  <p>The fund manager reports <strong>{money('GBP', totals.managerDisbursedGbp)}</strong> in {upstream.length} outgoing rows. The UK charity reports <strong>{money('GBP', totals.ukReceivedGbp)}</strong> in {upstream.length} incoming rows. {exactAmounts} amounts agree and {sameDates} pairs share the same transaction date.</p>
+  <p>The first pair refers to the same quarter. The fund manager reports <strong>GBP 49,479.89</strong>, and the charity reports <strong>GBP 49,479.88</strong>. The UK file also puts an extra space in 12 provider activity references. See the raw fields in the downloads and <a href={rules}>UK Aid Match’s guidance on reporting incoming funds</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Fund manager and UK charity records" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Grant manager</th><th scope="col">UK charity</th><th scope="col">Comparison</th></tr></thead>
+      <tbody>{upstream.map(pair => <tr>
+        <th scope="row"><time datetime={pair.sent.date}>{pair.sent.date}</time><br /><strong>{money(pair.sent.currency, pair.sent.amount)}</strong><br /><small>{pair.sent.ref}</small></th>
+        <td><time datetime={pair.received.date}>{pair.received.date}</time><br /><strong>{money(pair.received.currency, pair.received.amount)}</strong><br /><small>{pair.received.ref}</small></td>
+        <td>{pair.managerLessUk !== '0.00' ? 'Same reported quarter. The manager reports one penny more.' : pair.sameDate ? 'Amount and date agree.' : 'Amount agrees. The dates differ.'}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="uk-to-nepal">From the UK charity to the Nepal partner</h2>
+  <p>The UK file reports {onward.length} onward disbursements totaling <strong>{money('GBP', totals.ukDisbursedGbp)}</strong>. The Nepal file reports {nepal.transactions.filter(row => row.type === '1').length} incoming rows totaling <strong>{money('NPR', totals.nepalReceivedNpr)}</strong>. The table uses dates and the periods described by the publishers to suggest where the reports may correspond. An exact conversion or settlement would require transfer records.</p>
+  <div class="table-wrap" role="region" aria-label="UK disbursements and possible Nepal receipts" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">UK disbursement</th><th scope="col">Nepal receipt candidates</th><th scope="col">What connects them</th></tr></thead>
+      <tbody>{onward.map(group => <tr>
+        <th scope="row"><time datetime={group.sent.date}>{group.sent.date}</time><br /><strong>{money(group.sent.currency, group.sent.amount)}</strong><br /><small>{group.sent.ref}</small></th>
+        <td>{group.receipts.map(receipt => <div class="receipt"><time datetime={receipt.date}>{receipt.date}</time><br /><strong>{money(receipt.currency, receipt.amount)}</strong><br /><small>{receipt.ref}</small></div>)}</td>
+        <td><strong>{labels[group.comparison]}</strong><br />{group.basis}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>Two Nepal receipt descriptions identify test transfers. The published UK rows have no clear counterpart for them.</p>
+  <ul>
+    {tests.map(row => <li><time datetime={row.date}>{row.date}</time> · {money(row.currency, row.amount)} · <code>{row.ref}</code></li>)}
+  </ul>
+
+  <h2 id="budget-and-expenses">Budgets and reported expenditure</h2>
+  <p>Both charity files report the same four budget periods, ending October 21, 2022. The amounts are in the publishers’ own currencies. Each budget is a revised, committed estimate. The project activity fields give no actual end date.</p>
+  <details>
+    <summary>Read the four budget periods</summary>
+    <div class="table-wrap" role="region" aria-label="Reported budget periods" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Period</th><th scope="col">UK charity</th><th scope="col">Nepal partner</th></tr></thead>
+        <tbody>{uk.budgets.map((budget, index) => <tr>
+          <th scope="row"><time datetime={budget.start}>{budget.start}</time> to <time datetime={budget.end}>{budget.end}</time></th>
+          <td>{money(budget.currency, budget.amount)}</td>
+          <td>{money(nepal.budgets[index].currency, nepal.budgets[index].amount)}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </details>
+  <p>The UK charity separately reports <strong>{money('GBP', totals.ukExpensesGbp)}</strong> in expenditure. The Nepal partner reports <strong>{money('NPR', totals.nepalExpensesNpr)}</strong>. These sums reflect eight IATI code 4 rows per charity. A project-wide cost would require the underlying accounts to resolve coverage and overlaps.</p>
+
+  <h2 id="need">Leprosy detection before the project</h2>
+  <p>Nepal’s public health roadmap records <strong>{need.detectedCases.toLocaleString('en-US')} newly detected cases</strong> nationwide in fiscal year {need.fiscalYear}, or {need.detectionRatePer100000} per 100,000 residents. This is a surveillance count from before the project. The financial records give no amount for individual districts. The national figure alone cannot answer how much need the project reached. <a href={needPage}>Read the roadmap, page {need.source.pdfPage}</a>.</p>
+
+  <h2 id="downloads">Download records and sources</h2>
+  <ul>
+    <li><a href={url(route + 'data.json')} download="heal-nepal-funding.json">Comparisons, budgets and source receipts (JSON)</a></li>
+    <li><a href={url(route + 'transactions.csv')} download="heal-nepal-transactions.csv">All 59 selected transaction rows (CSV)</a></li>
+  </ul>
+  <p>For a correction, give the activity identifier and transaction reference. <a href={url('/record/funding-flows/kenya-nutrition/')}>Compare how a separate UK Aid Match project appears in three publisher files</a>.</p>
+</Entry>
+
+<style>
+  .table-wrap { overflow: auto; max-width: 100%; margin-block: 1.25rem; }
+  .table-wrap:focus-visible { outline-offset: 3px; }
+  table { width: 100%; min-width: 35rem; border-collapse: collapse; text-align: start; }
+  th, td { text-align: start; vertical-align: top; padding: .65rem .8rem; border-bottom: 1px solid var(--line); }
+  tbody th { font-weight: 400; }
+  .receipt + .receipt { margin-top: .8rem; }
+  code { overflow-wrap: anywhere; }
+</style>

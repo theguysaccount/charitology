@@ -340,6 +340,14 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['scope', 'What the accounts can establish', 'shield'],
     ['downloads', 'Download the annual records', 'download'],
   ],
+  '/record/funding-flows/heal-nepal/': [
+    ['organizations', 'Organizations and projects', 'chain'],
+    ['manager-to-uk', 'Grant manager to UK charity', 'bankOrder'],
+    ['uk-to-nepal', 'UK charity to Nepal partner', 'route'],
+    ['budget-and-expenses', 'Budgets and expenditure', 'coins'],
+    ['need', 'Leprosy detection before the project', 'capsule'],
+    ['downloads', 'Download records and sources', 'download'],
+  ],
   '/record/funding-flows/kenya-nutrition/': [
     ['identity', 'Organizations and projects', 'chain'],
     ['budget', 'UK budget', 'table'],
