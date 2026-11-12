@@ -82,7 +82,7 @@ import { url } from '../../lib/site';
     <p id="lp-status" class="note lp-status" role="status"></p>
     <div id="lp-checks-wrap" class="lp-checks" hidden>
       <p><strong>Before you print</strong></p>
-      <ul id="lp-checks"></ul>
+      <ul id="lp-checks" role="list"></ul>
     </div>
 
     <p class="visually-hidden" id="lp-live" aria-live="polite"></p>
@@ -120,13 +120,13 @@ import { url } from '../../lib/site';
         <p class="lp-s-empty" id="lp-s-sample-empty">Name a charity above to see sample wording.</p>
       </section>
       <h5>To bring to the meeting</h5>
-      <ul class="lp-s-list">
-        <li>
+      <ul class="lp-s-list" role="list">
+        <li data-list-symbol="badge">
           Each charity’s full legal name, address and EIN. For U.S. charities, the IRS Tax Exempt Organization Search
           (apps.irs.gov/app/eos) can confirm the legal name and EIN.
         </li>
-        <li>A plan for what should happen if a charity no longer exists.</li>
-        <li>Your questions about how gifts to charity are taxed where you live.</li>
+        <li data-list-symbol="fork">A plan for what should happen if a charity no longer exists.</li>
+        <li data-list-symbol="calculator">Your questions about how gifts to charity are taxed where you live.</li>
       </ul>
     </div>
   </div>
@@ -402,6 +402,7 @@ import { url } from '../../lib/site';
 
   const str = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '');
   const isType = (v: unknown): v is BequestType => typeof v === 'string' && v in TYPES;
+  const bequestSymbols = { specific: 'coins', percent: 'chart', residue: 'layers', contingent: 'fork' } as const;
 
   function blank(): Bequest {
     return { id: newId(), charity: '', legal: '', ein: '', type: 'specific', amount: '', percent: '', condition: '', purpose: 'unrestricted', purposeText: '' };
@@ -614,14 +615,14 @@ import { url } from '../../lib/site';
     clear(sample);
     const named = plan.gifts.filter((g) => g.charity.trim() || g.legal.trim());
     for (const g of named) {
-      sample.append(h('li', {}, [bequestSentence(g), plan.flexible ? flexibilitySentence(g) : ''].filter(Boolean).join(' ')));
+      sample.append(h('li', { 'data-list-symbol': bequestSymbols[g.type] }, [bequestSentence(g), plan.flexible ? flexibilitySentence(g) : ''].filter(Boolean).join(' ')));
     }
     $('#lp-s-sample-empty').hidden = named.length > 0;
 
     const checks = planChecks(plan);
     const list = $('#lp-checks');
     clear(list);
-    checks.forEach((c) => list.append(h('li', {}, c)));
+    checks.forEach((c) => list.append(h('li', { 'data-list-symbol': 'alert' }, c)));
     $('#lp-checks-wrap').hidden = checks.length === 0;
     announce(named.length, checks.length);
   }

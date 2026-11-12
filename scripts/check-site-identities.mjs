@@ -4,10 +4,11 @@ import { pageIdentity, routes, symbols } from '../src/lib/site-identities.ts';
 import { sectionNavigation } from '../src/lib/section-navigation.ts';
 import { observationSourceSymbol, sourceSymbol } from '../src/lib/source-symbol.ts';
 import { editorialListSymbol } from '../src/lib/editorial-list-symbol.ts';
+import { markPublicLists } from '../src/lib/public-list-marks.ts';
 import {
   causeSymbols, checklistSymbols, clubMeetingSymbols, compassDimensionSymbols, comparisonSymbols, datasetSymbols, depthSymbols, disasterAdviceSymbols, ecosystemSymbols,
   diligenceGroupSymbols, diligenceItemSymbols, fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols,
-  observationEditionSymbols, observationMeasureSymbols, osDiscussionSymbols, publicationSymbols,
+  observationEditionSymbols, observationMeasureSymbols, observationReasonSymbols, osDiscussionSymbols, publicationSymbols,
   clubHandoverSymbols, fundraisingModuleSymbols, lessonGlossarySymbols, lessonLimitSymbols, lessonOutcomeSymbols,
   providerSymbols, seminarSymbols, sourceSymbols, starterReviewSymbols, starterStepSymbols, starterSymbols, teachingSymbols, worksheetSymbols,
 } from '../src/lib/list-identities.ts';
@@ -80,6 +81,7 @@ for (const [name, keys, mapping] of [
   ['disaster giving guidance', ids(json('disaster-guide').points).map(id => `dr-${id}`), disasterAdviceSymbols],
   ['comparison attributes', Object.keys(comparisonSymbols), comparisonSymbols],
   ['country measures', ids(json('countries').indicators), needSymbols],
+  ['financial comparison reasons', Object.keys(observationReasonSymbols), observationReasonSymbols],
   ['editorial charity profiles', contentIds('charities'), fragmentSymbols['/record/charity-index/']],
   ['glossary terms', ids(json('lexicon')), fragmentSymbols['/record/lexicon/']],
   ['API datasets', datasetNames, datasetSymbols],
@@ -119,6 +121,12 @@ for (const job of charityStartJobs) {
 }
 assert.equal(editorialListSymbol('Compare expenses with the budget.'), 'compare');
 assert.equal(editorialListSymbol('2025: A new published edition'), 'calendar');
+const untouchedListMarkup = '<header><ul><li>Search</li></ul></header>';
+const pinnedListMarkup = '<li data-list-symbol="fileSearch">Source page</li>';
+const listFixture = `${untouchedListMarkup}<main data-site-path="/"><ol start="2"><li>Verify <code>x &amp; y</code></li>${pinnedListMarkup}</ol><ul><li><p><a href="/tools/">Tools</a></p></li></ul><script>const text = "<li>Save";</script></main>`;
+assert.equal(markPublicLists(listFixture), listFixture
+  .replace('<li>Verify', '<li data-list-symbol="checks">Verify')
+  .replace('<ul><li><p>', '<ul role="list"><li data-list-link=""><p>'));
 const course = readFileSync('dist/programs/principles-course/index.html', 'utf8');
 for (const [lead, mark] of [['A reading', 'book'], ['An exercise', 'tools'], ['A problem set', 'checks']]) {
   assert.ok(new RegExp(`<li data-list-symbol="${mark}">\\s*<strong>${lead}</strong>`).test(course), lead);
@@ -355,6 +363,7 @@ let markedListItems = 0;
 for (const page of pages) {
   const route = '/' + page.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
   const html = readFileSync(`dist/${page}`, 'utf8');
+  assert.ok(markPublicLists(html) === html, `Unmarked text or destination in ${page}`);
   assert.equal(html.match(/<main(?:\s|>)/g)?.length, 1, `Expected one main landmark in ${page}`);
   const main = html.match(/<main id="main"[^>]*>/)?.[0];
   const { symbol, tone } = pageIdentity(route);

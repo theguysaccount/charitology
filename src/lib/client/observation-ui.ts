@@ -79,6 +79,7 @@ export function mountOrganizationComparisons(
       choices: { id: string; label: string; scopeId: string | null }[];
       comparisons: Record<string, { rows: { reasons: string[] }[] }>;
       reasons: Record<string, string>;
+      reasonMarks?: Record<string, string>;
       first: string;
       second: string;
     };
@@ -129,6 +130,7 @@ export function mountOrganizationComparisons(
           ];
       for (const reason of reasons) {
         const li = document.createElement("li");
+        li.setAttribute("data-list-symbol", data.reasonMarks?.[reason] ?? "question");
         li.textContent =
           data.reasons[reason] ??
           "Read the source-specific comparison limitation.";

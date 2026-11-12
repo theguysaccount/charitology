@@ -1,6 +1,7 @@
 // Editorial marks describe what an item is. IDs are shared by links and the
 // items they point to, so filtering or reordering a list never changes its mark.
 import type { SymbolName } from './site-symbols';
+import type { ObservationCompatibilityReason } from './observation-types';
 
 export const depthSymbols = ['medical', 'stitch', 'umbrella', 'columns', 'roots'] as const;
 export const stageSymbols = {
@@ -59,6 +60,20 @@ export const observationEditionSymbols: Readonly<Record<string, SymbolName>> = {
   'observations-2026-10-27': 'globe',
   'observations-2026-11-08-education-plan': 'school',
 };
+
+export const observationReasonSymbols = {
+  'not-collected': 'hole',
+  'different-stock-day': 'calendar',
+  'different-interval': 'clock',
+  'literal-interval-start-unknown': 'hourglass',
+  'different-measure-definition': 'book',
+  'different-unit-or-denominator': 'scale',
+  'different-price-basis': 'wallet',
+  'different-consolidation-boundary': 'network',
+  'different-reporting-quantum': 'ruler',
+  'uncertainty-unknown': 'question',
+  'service-geography-unknown': 'map',
+} as const satisfies Record<ObservationCompatibilityReason, SymbolName>;
 
 export const hazardSymbols: Record<string, SymbolName> = {
   wildfire: 'flame', earthquake: 'quake', flood: 'flood', storm: 'cloud',

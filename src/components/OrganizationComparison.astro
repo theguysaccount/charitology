@@ -4,6 +4,7 @@ import { loadObservations, observationEditionHref, observationGroupSelections } 
 import { compareOrganizations } from "../lib/observation-model.mjs";
 import type { ObservationComparison, ObservationSelection } from "../lib/observation-types";
 import { observationReasonText, financialScopesForProfile } from "../lib/observation-view";
+import { observationReasonSymbols } from "../lib/list-identities";
 import ObservationFact from "./ObservationFact.astro";
 import { url } from "../lib/site";
 import "../styles/observations.css";
@@ -20,14 +21,14 @@ const comparisons: Record<string,ObservationComparison>={};
 for(const left of choices)for(const right of choices)if(left.id!==right.id&&(left.scopeId||right.scopeId))comparisons[`${left.id}|${right.id}`]=compareOrganizations(p,[left.selection,right.selection],families);
 const first=scopes[0]?.id??choices[0]?.id??"",second=scopes[1]?.id??"";
 const downloads=observationGroupSelections(p);
-const json=JSON.stringify({choices:choices.map(({selection,...c})=>c),comparisons,reasons:observationReasonText,first,second}).replace(/</g,"\\u003c");
+const json=JSON.stringify({choices:choices.map(({selection,...c})=>c),comparisons,reasons:observationReasonText,reasonMarks:observationReasonSymbols,first,second}).replace(/</g,"\\u003c");
 ---
 <section id="organizations" class="observations" data-organization-comparison>
   <h2>Compare recorded organization finances</h2>
   <p>These selected historical audit rows cover two consolidated reporting groups. They describe accounts, not effectiveness, donation recommendations or the additional effect of a gift. Different dates, definitions and group boundaries remain different. Every transcription is a draft.</p>
   <form class="ob-controls" data-org-form><label>First organization or reporting group<select data-org-a>{choices.map(c=><option value={c.id} selected={c.id===first}>{c.label}</option>)}</select></label><label>Second organization or reporting group<select data-org-b>{choices.map(c=><option value={c.id} selected={c.id===second}>{c.label}</option>)}</select></label><button type="button" class="btn btn-ghost" data-org-share>Copy comparison link</button></form>
   <p role="status" data-org-status>No overall score, arithmetic difference, ratio or ranking is calculated.</p>
-  <div class="callout"><h3>What prevents a like-for-like total?</h3><ul data-org-reasons>{(comparisons[`${first}|${second}`]?.rows.flatMap(r=>r.reasons).filter((r,i,a)=>a.indexOf(r)===i)??[]).map(r=><li>{observationReasonText[r]}</li>)}</ul></div>
+  <div class="callout"><h3>What prevents a like-for-like total?</h3><ul data-org-reasons role="list">{(comparisons[`${first}|${second}`]?.rows.flatMap(r=>r.reasons).filter((r,i,a)=>a.indexOf(r)===i)??[]).map(r=><li data-list-symbol={observationReasonSymbols[r]}>{observationReasonText[r]}</li>)}</ul></div>
   <div class="ob-grid"><section data-org-left aria-label="First selected financial panel"></section><section data-org-right aria-label="Second selected financial panel"></section></div>
   <div data-org-panels>{scopes.map(s=><section data-org-panel={s.id} class="ob-card"><h3>{s.label}</h3><p>{s.consolidation.replaceAll("-"," ")}.</p><p>Included legal entities: {s.includedEntities.map(pin=>p.entities.find(e=>e.id===pin.id&&e.version===pin.version)!.label).join("; ")}.</p><ul>{[...s.exclusions,...s.limitations].map(l=><li>{l}</li>)}</ul><div class="ob-rows">{p.observations.filter(o=>o.scope.id===s.id).map(o=><ObservationFact projection={p} observation={o} showEntity={false}/>)}</div><p><a href={url(`${observationEditionHref(p.edition.id)}groups/${s.id}/observations.json`)}>This group's selected JSON</a> · <a href={url(`${observationEditionHref(p.edition.id)}groups/${s.id}/observations.csv`)}>This group's selected CSV</a></p></section>)}</div>
   <p data-org-uncovered hidden>No financial observations were collected for this selection. A missing panel is not zero revenue, zero spending, a poor rating or proof that no accounts exist elsewhere.</p>

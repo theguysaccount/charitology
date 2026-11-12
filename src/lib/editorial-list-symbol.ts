@@ -24,6 +24,15 @@ const actions: readonly [RegExp, SymbolName][] = [
   [/^(?:an? |the )?(?:assumption|uncertainty|open question)\b/, 'question'],
   [/^(?:an? |the )?(?:sample|participants?|community)\b/, 'people'],
   [/^(?:an? |the )?(?:method|protocol|test)\b/, 'flask'],
+  [/^(?:cipi row|contract record)\b/, 'agreement'],
+  [/^(?:identifier|registration|legal name)\b/, 'badge'],
+  [/^(?:incoming funds|cash received|revenue)\b/, 'wallet'],
+  [/^(?:disbursement|outgoing payment|bank order)\b/, 'bankOrder'],
+  [/^(?:added|new record)\b/, 'spark'],
+  [/^(?:amended|corrected|revised|superseded)\b/, 'loop'],
+  [/^(?:draft|publisher self-report|attributed)\b/, 'speech'],
+  [/^(?:only|scope|national indicator scope)\b/, 'layers'],
+  [/^(?:no |unknown |uncollected|unreported)/, 'question'],
   [/^\d{4}\b/, 'calendar'],
 ];
 
