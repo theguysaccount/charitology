@@ -180,7 +180,8 @@ a {
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
   text-decoration-color: color-mix(in srgb, currentColor 38%, transparent);
-  transition: color 0.15s, text-decoration-color 0.15s;
+  /* Link text needs the new foreground as soon as the theme background changes. */
+  transition: text-decoration-color 0.15s;
 }
 
 a:hover {
@@ -945,7 +946,7 @@ a.list-row:hover h3 {
   color: var(--bg);
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s;
 }
 
 .btn:hover {

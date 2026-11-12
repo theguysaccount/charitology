@@ -409,6 +409,21 @@ npm run build
 node scripts/check-ripple-effect-kenya-accounts.mjs /path/to/captures
 ```
 
+### Heal Nepal funding and two currencies
+
+The [Heal Nepal case](https://charitology.com/record/funding-flows/heal-nepal/) selects 13 grant manager disbursements by the exact UK activity and organization. Twelve amounts pair one to one with UK receipts. The first pair refers to the same reported quarter and differs by GBP 0.01. The UK file names the Nepal organization and uses a shorter activity identifier. The publishers use the same project title and actual start date. Preserve the published strings in the exports.
+
+The onward comparison groups seven UK disbursements and eight Nepal receipts by the dates and periods the publishers describe. One proposed counterpart is unresolved. Two additional Nepal receipts are recorded as test transfers. The UK reports pounds, and Nepal reports rupees. No exchange rate, settlement or cost is inferred from pairing the records. Both publishers separately report revised committed budgets and expenditure. The public health roadmap supplies a national baseline of new detections from before the project. It has no project-level denominators or outcome comparisons.
+
+The [JSON export](https://charitology.com/record/funding-flows/heal-nepal/data.json) records the source and fingerprint of each input. Use the original publisher file cached by IATI for the fund manager and the two original charity files. The manager endpoint’s TLS certificate was expired at capture. The [official IATI dataset index](https://bulk-data.iatistandard.org/datasets-minimal) identified the original URL and the validated cache. The 13 selected manager rows match the D-Portal version on reference, date, currency and amount. The data projection keeps only institutional financial fields. The national detections and rate are a visual transcription from PDF page 4. The publisher URLs can move to newer snapshots.
+
+```sh
+python3 scripts/build-heal-nepal-trace.py /path/to/captures /path/to/rebuilt.json
+cmp /path/to/rebuilt.json src/data/heal-nepal-trace.json
+npm run build
+node scripts/check-heal-nepal-trace.mjs
+```
+
 ## Japan NPO Portal and reported finances
 
 The [Japan NPO edition](https://charitology.com/record/charity-index/japan/) projects 60,062 records across 67 supervising authorities from the Cabinet Office's November 10, 2026 national NPO Portal files. Each record retains its exact portal ID and administrative CSV data record. The search accepts the Japanese name or reading, portal ID or corporate number. Administrative location describes the supervising authority. The portal includes records at different stages of registration and dissolution. Use the Cabinet Office's separately dated counts for the certified population. [National bulk download](https://www.npo-homepage.go.jp/npoportal/download/all) · [Coverage and reuse FAQ](https://www.npo-homepage.go.jp/npoportal/faq/common) · [Official certification statistics](https://www.npo-homepage.go.jp/about/toukei-info/ninshou-zyuri).
