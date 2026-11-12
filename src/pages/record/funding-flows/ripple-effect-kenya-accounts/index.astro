@@ -1,0 +1,90 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import { accountsSource, rows } from '../../../../lib/ripple-effect-kenya-accounts';
+import data from '../../../../data/ripple-effect-kenya-accounts.json';
+
+const title = 'Ripple Effect’s annual grant and expenditure records in Kenya';
+const route = '/record/funding-flows/ripple-effect-kenya-accounts/';
+const { parent, directory, comparisons2021 } = data;
+const [affiliate, hub] = data.entities;
+const sources = [
+  ...data.sources.map(source => ({ title: source.title, url: source.url, publisher: source.publisher })),
+  { title: 'Charity registration 299717', url: parent.registerUrl, publisher: 'Charity Commission for England and Wales' },
+  { title: 'Company registration 02290024', url: parent.companyUrl, publisher: 'Companies House' },
+  { title: 'Public organization directory', url: directory.url, publisher: 'Public Benefit Organizations Regulatory Authority, Kenya' },
+];
+const pound = (amount: number | null) => amount === null ? '—' : amount.toLocaleString('en-GB');
+const gbp = (amount: number) => `GBP ${pound(amount)}`;
+const spend = (amount: number) => amount < 0 ? `(${pound(-amount)})` : pound(amount);
+const sourcePage = (source: string, note: 'parentNote' | 'entityNote') => {
+  const report = accountsSource(source);
+  return report.url + '#page=' + report[note].pdfPage;
+};
+const year2021 = rows.find(row => row.periodEnd === '2021-06-30')!;
+const policy = accountsSource(data.consolidationSource.source).url + '#page=' + data.consolidationSource.pdfPage;
+const balance = (row: (typeof rows)[number]) => row.yearEndBalance.direction === 'nil'
+  ? 'Nil'
+  : `${pound(row.yearEndBalance.amountGbp)} ${row.yearEndBalance.direction === 'to-parent' ? 'to UK parent' : 'to subsidiary'}`;
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Read the same grant relationship from the parent and subsidiary notes. Keep each Kenyan entity, fiscal period and expense total in its own scope." crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Ripple Effect’s Kenya accounts'}]} sources={sources} filePath="src/pages/record/funding-flows/ripple-effect-kenya-accounts/index.astro">
+  <p>In its UK financial statements, Ripple Effect International reports grants it made to two related Kenyan organizations. The same reports summarize the two subsidiaries’ annual accounts and show grants receivable from the UK parent. This edition transcribes both notes in GBP as printed. It begins with the Kenyan affiliate’s first three months and reaches the year ended June 30, 2025.</p>
+
+  <h2 id="identities">Which organization is which</h2>
+  <ul>
+    <li><strong>{parent.name}</strong>, previously Send a Cow, is charity <code>{parent.charityRegistration}</code> in England and Wales and UK company <code>{parent.companyNumber}</code>. <a href={parent.registerUrl}>Charity register</a> · <a href={parent.companyUrl}>Companies House</a> · <a href={url('/record/charity-financials/england-wales/') + '?registration=' + parent.charityRegistration}>Search its Commission filings in the Index</a>.</li>
+    <li><strong>{affiliate.name}</strong>, previously {affiliate.historicalName}, has full Kenyan NGO registration <code>{affiliate.localRegistration}</code> in the accounts, effective April 1, 2019. The digits agree with the <a href={url('/record/funding-flows/kenya-nutrition/#identity')}>IATI organization reference in the nutrition case</a>.</li>
+    <li><strong>{hub.name}</strong> has a different full Kenyan NGO registration, <code>{hub.localRegistration}</code>, effective June 9, 2022. The two organizations have separate columns in the subsidiary note. <a href={sourcePage('fy2025','entityNote')}>Read the legal registrations in Note 15</a>.</li>
+  </ul>
+  <p>The <a href={directory.url}>public Kenya directory</a> entry that names Ripple Effect Kenya displays <code>{directory.affiliateNameEntry}</code>. The nearby <code>{directory.sameDigitsShortEntry}</code> entry names a different organization. The hub’s name entry displays <code>{directory.hubNameEntry}</code>. The published short references leave the mapping unresolved. This edition uses the full registration printed in the accounts for the two entities.</p>
+
+  {data.entities.map(entity => <section aria-labelledby={entity.id}>
+    <h2 id={entity.id}>{entity.name}</h2>
+    {entity.id === affiliate.id ? <p>The first row covers April through June 2019, as identified in the 2020 comparative notes. Later periods each cover twelve months to June 30. FY2021 retains both published grant amounts.</p>
+      : <p>The selected subsidiary expense and income figures begin in FY2024. Earlier years are outside this table’s numeric coverage.</p>}
+    <div class="table-wrap" role="region" aria-label={`Grant and subsidiary figures for ${entity.name} in GBP`} tabindex="0">
+      <table class="amounts">
+        <thead><tr><th scope="col">Reporting period</th><th scope="col">Grant made<br />Note 12</th><th scope="col">Grant receivable<br />Note 15</th><th scope="col">Parent reimbursement outside project delivery</th><th scope="col">Balance at June 30</th><th scope="col">Subsidiary income</th><th scope="col">Subsidiary expenditure as printed</th><th scope="col">Source pages</th></tr></thead>
+        <tbody>{rows.filter(row => row.entity === entity.id).map(row => <tr>
+          <th scope="row">{row.periodScope === 'three-month-subsidiary-period' ? 'Apr–Jun 2019' : `FY${row.periodEnd.slice(0, 4)}`}</th>
+          <td>{pound(row.grantMadeGbp)}</td>
+          <td>{pound(row.grantReceivableGbp)}</td>
+          <td>{pound(row.parentReimbursementGbp)}</td>
+          <td>{balance(row)}</td>
+          <td>{pound(row.totalIncomeGbp)}</td>
+          <td>{spend(row.expenditureAsPrintedGbp)}</td>
+          <td><a href={sourcePage(row.source,'parentNote')}>Parent note</a><br /><a href={sourcePage(row.source,'entityNote')}>Subsidiary note</a></td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </section>)}
+
+  <h2 id="differences">Where the notes disagree</h2>
+  <p>For FY2021, Note 12 reports <strong>{gbp(year2021.grantMadeGbp)}</strong> made by the parent. The Kenyan column in Note 15 shows <strong>{gbp(year2021.grantReceivableGbp)}</strong> from the parent. The difference is <strong>{gbp(year2021.grantMadeLessReceivableGbp)}</strong>. The next year’s comparison columns repeat both grant amounts. The FY2021 subsidiary note’s introduction refers to the prior year. This edition uses the table’s explicit 2021 and 2020 column labels. <a href={sourcePage(year2021.source,'parentNote')}>FY2021 parent note</a> · <a href={sourcePage(year2021.source,'entityNote')}>FY2021 subsidiary note</a>.</p>
+  <p>The FY2021 report also gives a balance due to the UK parent of <strong>{gbp(year2021.yearEndBalance.amountGbp)}</strong>. The FY2022 comparative note prints <strong>{gbp(comparisons2021.yearEndBalanceToParentGbp)}</strong> for that balance. The FY2021 subsidiary note reports investment income of <strong>{gbp(year2021.investmentIncomeGbp!)}</strong>. The FY2022 comparative column prints a dash. The published notes leave the reason for these differences open. <a href={sourcePage(comparisons2021.source,'parentNote')}>FY2022 parent comparison</a> · <a href={sourcePage(comparisons2021.source,'entityNote')}>FY2022 subsidiary comparison</a>.</p>
+  <p>The 2019 subsidiary note also prints a separate <strong>{gbp(rows[0].grantOnTransferGbp!)}</strong> grant on transfer in its income breakdown. The downloads retain that field alongside the ordinary grant receivable. <a href={sourcePage('fy2020','entityNote')}>2019 comparative column</a>.</p>
+
+  <h2 id="scope">What each amount can establish</h2>
+  <ul>
+    <li>The two notes are part of the same published accounts. An equal grant made and receivable can describe the same accounting relationship. A cash transfer date needs a payment record.</li>
+    <li>The parent notes identify reimbursed costs outside project delivery. A June 30 balance describes what was due on that date. The JSON records separately stated recharges in the other direction.</li>
+    <li>The subsidiaries prepare accounts in Kenyan shillings. The parent reports these notes in GBP. The figures preserve the report currency and the change in how expenditure appears. The later notes show expense deductions in parentheses.</li>
+    <li>The consolidated accounts eliminate intercompany transactions and balances. Use consolidated figures once when looking at group-wide income or spending. <a href={policy}>Read the consolidation policy</a>.</li>
+    <li>These annual records cover each organization’s activities. The <a href={url('/record/funding-flows/kenya-nutrition/')}>separate western Kenya nutrition case</a> follows one project’s IATI reports and county context. Allocating annual grants to that project would require a grant-level reconciliation.</li>
+  </ul>
+
+  <h2 id="downloads">Download the annual records</h2>
+  <p>Amounts use GBP throughout. The downloads distinguish a dash from an unstated amount. Explicit nils appear as zero. The JSON also keeps the comparative discrepancies, source fingerprints and directory identifiers.</p>
+  <ul>
+    <li><a href={url(route + 'data.json')} download="ripple-effect-kenya-accounts.json">Annual records, comparisons and sources (JSON)</a></li>
+    <li><a href={url(route + 'annual-notes.csv')} download="ripple-effect-kenya-annual-notes.csv">Nine entity and period rows (CSV)</a></li>
+  </ul>
+  <p>See <a href={url('/record/charity-financials/kenya/')}>Kenya’s regulator-reported financial coverage</a> for the national reporting context. Report a correction below with the entity registration, year and account note.</p>
+</Entry>
+
+<style>
+  .amounts { min-width: 63rem; }
+  td { font-variant-numeric: tabular-nums; }
+  code { overflow-wrap: anywhere; }
+</style>
