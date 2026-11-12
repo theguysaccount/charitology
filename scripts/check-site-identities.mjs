@@ -252,7 +252,7 @@ const reviewHeadings = [...reviewHtml.matchAll(/<h2 data-section-symbol="([^"]+)
   .map(([, mark, slug]) => [slug, mark]);
 if (reviewHeadings.length >= 2) {
   assert.deepEqual(
-    outlineMarks(reviewHtml, 'Jump to a draft collection').map(([, slug, mark]) => [slug, mark]),
+    outlineMarks(reviewHtml, 'On this page').map(([, slug, mark]) => [slug, mark]),
     reviewHeadings,
   );
 }
