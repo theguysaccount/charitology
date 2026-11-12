@@ -1,3 +1,5 @@
+import publicationRegistry from '../data/publication-editions/registry.json' with { type: 'json' };
+import { observationEditionSymbols, publicationSymbols } from './list-identities.ts';
 import ledgerManifest from '../data/research-ledger/manifest.json' with { type: 'json' };
 
 // Original line symbols for the public site. Reuse a symbol when two links
@@ -129,6 +131,10 @@ export const symbols = {
   route: 'M6 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM6 9v4a4 4 0 0 0 4 4h5m-1-8h7m-2-2 2 2-2 2',
   yearFile: 'M5 3h10l4 4v14H5zM15 3v5h4M8 12h8v6H8zm2-2v3m4-3v3m-4 2h4',
   construction: 'M3 21h18M7 21V3m0 0h3l10 5H3l4-5Zm3 0v18M7 13l3 3m-3 1 3 3m7-12v7q0 2-2 2',
+  individualShare: 'M9 4a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM3 20v-2a6 6 0 0 1 12 0v2M18 11l4-6m-4 1h.01m4 4h.01',
+  foundationShare: 'M2 8l7-4 7 4H2Zm1 12h12M5 11v6m4-6v6m4-6v6m5-6 4-6m-4 1h.01m4 4h.01',
+  bequestShare: 'M3 4h8l4 4v12H3zM11 4v5h4M6 13h6m-6 4h4m8-6 4-6m-4 1h.01m4 4h.01',
+  companyShare: 'M3 20V8h12v12H3Zm3-8h.01m5 0h.01m-5 4h.01m5 0h.01m7-5 4-6m-4 1h.01m4 4h.01',
   pulse: 'M2 12h5l3-8 4 16 3-8h5',
 } as const;
 
@@ -291,6 +297,11 @@ const referenceEntries: Record<string, Record<string, SymbolName>> = {
   journal: { 'depth-without-a-ladder': 'layers', 'ten-dollars': 'coins', 'the-feedback-contract': 'loop' },
 };
 
+export function chapterSymbol(chapter: number): SymbolName {
+  const prefix = String(chapter).padStart(2, '0') + '-';
+  return Object.entries(referenceEntries.principles).find(([slug]) => slug.startsWith(prefix))?.[1] ?? 'book';
+}
+
 const articleRoutes = sections.flatMap(({ path, symbol, tone, entries = {} }) => [
   { path, symbol, tone },
   ...Object.entries(entries).map(([slug, symbol]) => ({ path: path + slug + '/', symbol, tone })),
@@ -324,8 +335,17 @@ const ledgerRecords = [...ledgerArticles].map(([id, href]) => {
   return ledgerRecordRoute(id, symbol);
 });
 
+const observationEditions = Object.entries(observationEditionSymbols).map(([id, symbol]) => ({
+  path: `/observations/editions/${id}/`, symbol, tone: 'teal' as const,
+}));
+const publicationEditions = Object.entries(publicationRegistry.current).map(([family, id]) => ({
+  path: `/record/editions/${id}/`, symbol: publicationSymbols[family], tone: 'blue' as const,
+}));
+
 export const routes = [
   ...articleRoutes,
+  ...observationEditions,
+  ...publicationEditions,
   ...Object.entries(ledgerKinds).map(([kind, [symbol, tone]]) => ({ path: `${ledgerPath}${kind}:`, symbol, tone })),
   ...Object.entries(standaloneLedgerSymbols).map(([id, symbol]) => ledgerRecordRoute(id, symbol)),
   ...ledgerRecords,

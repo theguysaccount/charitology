@@ -5,7 +5,8 @@ import { sectionNavigation } from '../src/lib/section-navigation.ts';
 import { sourceSymbol } from '../src/lib/source-symbol.ts';
 import {
   causeSymbols, checklistSymbols, clubMeetingSymbols, comparisonSymbols, datasetSymbols, depthSymbols, disasterAdviceSymbols, ecosystemSymbols,
-  diligenceGroupSymbols, diligenceItemSymbols, fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols, osDiscussionSymbols,
+  diligenceGroupSymbols, diligenceItemSymbols, fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols,
+  observationEditionSymbols, observationMeasureSymbols, osDiscussionSymbols, publicationSymbols,
   providerSymbols, seminarSymbols, sourceSymbols, starterSymbols, teachingSymbols, worksheetSymbols,
 } from '../src/lib/list-identities.ts';
 import { charityNetworks } from '../src/data/charity-networks.mjs';
@@ -43,6 +44,13 @@ for (const [collection, prefix] of [
     return route.symbol;
   });
   assert.equal(new Set(identities).size, slugs.length, `Duplicate symbols in ${collection}`);
+  if (['programs', 'tools', 'record'].includes(collection)) {
+    const html = readFileSync(`dist/${prefix}/index.html`, 'utf8');
+    const cards = new Map([...html.matchAll(/<a class="card" id="item-([^"]+)"[^>]*>\s*<span[^>]*data-site-symbol="([^"]+)"/g)]
+      .map(([, slug, mark]) => [slug, mark]));
+    assert.equal(cards.size, slugs.length, `Missing catalog card marks in ${collection}`);
+    for (const slug of slugs) assert.equal(cards.get(slug), byPath.get(`/${prefix}/${slug}/`).symbol, slug);
+  }
 }
 
 const json = (name) => JSON.parse(readFileSync(`src/data/${name}.json`, 'utf8'));
@@ -180,6 +188,64 @@ for (const [, id, mark] of jurisdictions) {
   const destination = card.match(/<a class="identity-link" href="([^"]+)"/)?.[1];
   assert.ok(destination && pageIdentity(destination.slice(base.length)).symbol === mark, id);
 }
+
+function outlineMarks(html, label) {
+  const outline = html.match(new RegExp(`<nav class="page-sections" aria-label="${label}"[^>]*>[\\s\\S]*?</nav>`))?.[0];
+  assert.ok(outline, label);
+  return [...outline.matchAll(/href="#([^"]+)"[^>]*><span[^>]*data-site-symbol="([^"]+)"/g)];
+}
+
+const publicationRegistry = JSON.parse(readFileSync('src/data/publication-editions/registry.json', 'utf8'));
+const publicationIndex = readFileSync('dist/record/editions/index.html', 'utf8');
+assert.deepEqual(
+  new Map(outlineMarks(publicationIndex, 'Browse by publication').map(([, id, mark]) => [id, mark])),
+  new Map(Object.entries(publicationSymbols).map(([family, mark]) => [`captures-${family}`, mark])),
+);
+assert.match(publicationIndex, /href="#proposal-desk"/);
+assert.match(publicationIndex, /id="proposal-desk"/);
+for (const { id } of publicationRegistry.editionPins) {
+  const { core } = JSON.parse(readFileSync(`src/data/publication-editions/editions/${id}.json`, 'utf8'));
+  const html = readFileSync(`dist/record/editions/${id}/index.html`, 'utf8');
+  const marks = new Map(outlineMarks(html, 'In this capture').map(([, slug, mark]) => [slug, mark]));
+  assert.equal(marks.size, core.members.length + 1, id);
+  assert.equal(new Set(marks.values()).size, marks.size, id);
+  assert.equal(marks.get('capture-sources'), 'archive', id);
+  for (const member of core.members) {
+    const slug = `member-${member.id}`;
+    const body = html.match(new RegExp(`id="${slug}"[^>]*>[\\s\\S]*?<h3[^>]*>[\\s\\S]*?</h3>`))?.[0];
+    const mark = marks.get(slug);
+    assert.ok(mark && body?.includes(`data-site-symbol="${mark}"`), `${id}#${slug}`);
+  }
+}
+
+const observationIndex = readFileSync('dist/observations/index.html', 'utf8');
+const observationRegistry = JSON.parse(readFileSync('src/data/observations/registry.json', 'utf8'));
+const editionMarks = observationRegistry.editions.map(({ id }) => {
+  const symbol = observationEditionSymbols[id];
+  assert.ok(symbol && Object.hasOwn(symbols, symbol), id);
+  assert.match(observationIndex, new RegExp(`href="${base}/observations/editions/${id}/"[^>]*>[\\s\\S]*?<span[^>]*data-site-symbol="${symbol}"`));
+  const edition = readFileSync(`dist/observations/editions/${id}/index.html`, 'utf8');
+  assert.ok(edition.match(/<main id="main"[^>]*>/)?.[0].includes(`data-site-symbol="${symbol}"`), id);
+  assert.deepEqual(outlineMarks(edition, 'On this page').map(([, slug]) => slug), ['observed-facts', 'source-editions', 'coverage']);
+  return symbol;
+});
+assert.equal(new Set(editionMarks).size, editionMarks.length);
+const observationMeasureIds = readdirSync('src/data/observations/measures')
+  .filter(file => file.endsWith('.json'))
+  .map(file => JSON.parse(readFileSync(`src/data/observations/measures/${file}`, 'utf8')).id);
+const observationMeasures = observationMeasureIds.map(id => observationMeasureSymbols[id]);
+assert.ok(observationMeasures.every(mark => Object.hasOwn(symbols, mark)));
+assert.equal(new Set(observationMeasures).size, new Set(observationMeasureIds).size);
+const renderedMeasures = new Set();
+for (const [, id, mark] of observationIndex.matchAll(/<tr [^>]*data-measure="([^"]+)"[^>]*>\s*<th[^>]*>[^<]*<\/th><td class="ob-measure" data-site-symbol="([^"]+)"/g)) {
+  assert.equal(mark, observationMeasureSymbols[id], id);
+  renderedMeasures.add(id);
+}
+assert.deepEqual(renderedMeasures, new Set(observationMeasureIds));
+
+const disasterIndex = readFileSync('dist/disasters/index.html', 'utf8');
+assert.deepEqual(outlineMarks(disasterIndex, 'On this page').map(([, slug]) => slug),
+  ['dd-coverage', 'dd-incidents', 'dd-sources', 'dd-changes', 'dd-history']);
 
 const pages = globSync('**/*.html', { cwd: 'dist' });
 assert.ok(pages.length > 0);

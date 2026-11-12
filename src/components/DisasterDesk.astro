@@ -1,7 +1,9 @@
 ---
 import type { Packet, Incident, Claim, Source, SourceNote, Edition, Ref, Pin, ReportedTime, Locator, FreshnessView } from '../lib/disaster-incidents/types';
+import PageSections from './PageSections.astro';
 import SiteSymbol from './SiteSymbol.astro';
-import { hazardSymbols } from '../lib/list-identities';
+import { disasterClaimSymbols, hazardSymbols } from '../lib/list-identities';
+import { sourceSymbol } from '../lib/source-symbol';
 import { url } from '../lib/site';
 import '../styles/disaster-desk.css';
 
@@ -53,6 +55,15 @@ const filters = {
   sectors: ['shelter', 'water-sanitation', 'food', 'health', 'livelihoods', 'protection', 'infrastructure', 'other', 'unclassified'],
 };
 const exportedBase = incidentId ? `${editionHref(editionId)}incidents/${incidentId}/` : editionHref(editionId);
+const sections = [
+  ...(!sourceView ? [
+    { slug: 'dd-coverage', text: 'Coverage and omissions', symbol: 'shield' },
+    { slug: 'dd-incidents', text: incidentId ? 'Incident record' : 'Incidents in this capture', symbol: 'pin' },
+  ] as const : []),
+  { slug: 'dd-sources', text: 'Retained source evidence', symbol: 'document' },
+  ...(!sourceView ? [{ slug: 'dd-changes', text: 'Changes in this edition', symbol: 'loop' } as const] : []),
+  { slug: 'dd-history', text: 'Edition history', symbol: 'history' },
+] as const;
 const deviceIncidents = incidents.map(v => ({ id: v.incident.id, checkedAt: v.incident.checkedAt, recheckAfter: v.incident.recheckAfter }));
 ---
 
@@ -75,10 +86,11 @@ const deviceIncidents = incidents.map(v => ({ id: v.incident.id, checkedAt: v.in
     {!sourceView && <p class="dd-note">{incidentId ? 'Selected incident exports preserve the exact edition header and explicitly mark omitted members and historical boundaries. They are incomplete history, not restore files.' : 'Edition exports preserve this capture’s factual closure. They are not complete history or a live feed.'} Original publisher bodies are external-only.</p>}
     {!sourceView && <p class="dd-note">Normalized CSV is a reversible record table. Every data cell uses <code>j:</code> followed by a JSON string, then RFC 4180 CSV quoting. Decode those layers to recover the exact strings and explicit null values; do not treat them as cleaned spreadsheet numbers. Edition and selected packets are not history restore files.</p>}
   </header>
+  <PageSections sections={sections} />
 
   {!sourceView && <>
-    <details class="dd-coverage" open>
-      <summary>What this capture covers and leaves out</summary>
+    <details class="dd-coverage" id="dd-coverage" open>
+      <summary><span class="identity-label"><SiteSymbol name="shield" size="inline" />What this capture covers and leaves out</span></summary>
       <dl class="dd-facts"><dt>Geography covered</dt><dd>{projection.coverage.geography.join(' · ') || 'None reported'}</dd><dt>Hazards covered</dt><dd>{projection.coverage.hazards.join(' · ') || 'None reported'}</dd><dt>Sectors covered</dt><dd>{projection.coverage.sectors.join(' · ') || 'None reported'}</dd><dt>Worldwide current coverage</dt><dd>Not established</dd><dt>Current needs verification</dt><dd>Not established</dd></dl>
       <h3>Omissions and limitations</h3><ul>{projection.coverage.omitted.map(v => <li>{v}</li>)}{packet.edition.limitations.map(v => <li>{v}</li>)}{packet.limitations.map(v => <li>{v}</li>)}</ul>
       {projection.coverage.accessibilityChecks.length > 0 && <><h3>Source access checks retained</h3><ul>{projection.coverage.accessibilityChecks.map(p => <li><a href={sourceHref(p.id, p.version)}>{pinText(p)}</a></li>)}</ul></>}
@@ -103,7 +115,7 @@ const deviceIncidents = incidents.map(v => ({ id: v.incident.id, checkedAt: v.in
       <p data-dd-device-status role="status" aria-live="polite"></p>
     </div>
 
-    <div class="dd-incidents" data-dd-incidents>
+    <div class="dd-incidents" id="dd-incidents" data-dd-incidents>
       {incidents.map(({ incident, freshness, claims }) => <article class="dd-incident" data-dd-incident data-hazard={incident.hazard} data-sectors={[...new Set(claims.map(c => c.sector.editorial))].join(' ')} data-placement={incident.editorial.placement} data-review={freshness.atCapture} data-search={[incident.name, geographyText(incident.geography), ...claims.map(c => c.attributedSummary)].join(' ').toLowerCase()}>
         <header><p class="dd-kicker identity-label"><SiteSymbol name={hazardSymbols[incident.hazard]} size="inline" />{incident.hazard} · editorial draft</p><h3><a href={incidentHref(incident.id)}>{incident.name}</a></h3><p>{geographyText(incident.geography)}</p><p class="dd-note">{incident.geography.note}</p></header>
         <dl class="dd-facts"><dt>Incident lifecycle</dt><dd><strong>{incident.lifecycle.value}</strong> · {incident.lifecycle.value === 'unknown' ? 'not established by this capture' : 'source-reported incident scope'}<p>{incident.lifecycle.uncertainty}</p></dd><dt>Editorial placement</dt><dd><strong>{incident.editorial.placement}</strong> · decided <time datetime={incident.editorial.decidedAt}>{incident.editorial.decidedAt}</time><p>{incident.editorial.reason}</p></dd><dt>Review as of this capture</dt><dd><strong>{freshness.atCapture === 'review-overdue-at-capture' ? 'Review overdue at capture' : 'Review not due at capture'}</strong><p>Checked <time datetime={incident.checkedAt}>{incident.checkedAt}</time>; recheck after <time datetime={incident.recheckAfter}>{incident.recheckAfter}</time>. {incident.reviewRationale}</p></dd><dt>Incident period</dt><dd>Start: {timeText(incident.period.start)}<br />End: {timeText(incident.period.end)}{incident.period.literal !== null && <p>Source period text: {incident.period.literal}</p>}</dd></dl>
@@ -112,7 +124,7 @@ const deviceIncidents = incidents.map(v => ({ id: v.incident.id, checkedAt: v.in
         <ul>{incident.limitations.map(v => <li>{v}</li>)}</ul>
         <details><summary>Incident identity and history</summary><p><code>{incident.id}</code> · version {incident.version}</p><p class="dd-hash">SHA-256: <code>{incident.hash}</code></p><p>{incident.previous === null ? 'First retained version.' : <>Previous exact pin: {pinHref(incident.previous) ? <a href={pinHref(incident.previous)}>{pinText(incident.previous)}</a> : <code>{pinText(incident.previous)}</code>}.</>}</p></details>
         <div class="dd-claims"><h4>Attributed statements</h4>{claims.length === 0 && <p>No claim is included for this incident in this capture. That is not zero need.</p>}{claims.map(c => <section class="dd-claim" id={`dd-claim-${c.id}-v${c.version}`}>
-          <h5>{targetText(c)}</h5><p class="dd-labels">{c.content.kind} · standing: <strong>{c.standing.value}</strong> · publisher self-report · editorial draft</p>
+          <h5 class="identity-label"><SiteSymbol name={disasterClaimSymbols[c.content.kind]} size="inline" />{targetText(c)}</h5><p class="dd-labels">{c.content.kind} · standing: <strong>{c.standing.value}</strong> · publisher self-report · editorial draft</p>
           {c.target.kind !== 'incident' && <p><a href={c.target.originalUrl} rel="noopener">Original {c.target.kind === 'appeal' ? 'appeal' : 'operation'} link</a>. This status and period do not establish the incident’s end.</p>}
           <p>{c.attributedSummary}</p><p>Standing reason: {c.standing.reason}</p>
           {c.content.kind === 'status' && <p><strong>{hasStatusRef(c) ? 'Reported ' : ''}{c.target.kind === 'incident' ? 'incident lifecycle' : c.target.kind === 'appeal' ? 'appeal status' : 'operation status'}: {c.content.value}{c.content.value === 'unknown' && !hasStatusRef(c) ? ' (not collected in this capture)' : ''}</strong></p>}
@@ -131,10 +143,10 @@ const deviceIncidents = incidents.map(v => ({ id: v.incident.id, checkedAt: v.in
     </div>
   </>}
 
-  <section class="dd-sources" aria-label="Retained source evidence"><h3>{sourceView ? 'This exact source version' : 'Sources and authored locator notes'}</h3>{sources.map(s => {
+  <section class="dd-sources" id="dd-sources" aria-label="Retained source evidence"><h3 data-section-symbol="document">{sourceView ? 'This exact source version' : 'Sources and authored locator notes'}</h3>{sources.map(s => {
     const note = noteFor(s);
     return <article class="dd-source" id={`dd-source-${s.id}-v${s.version}`}>
-      <h4><a href={sourceHref(s.id, s.version)}>{s.title}</a></h4><p>{s.publisher} · source version {s.version} · publisher self-report · editorial draft</p>
+      <h4><a class="identity-label" href={sourceHref(s.id, s.version)}><SiteSymbol name={sourceSymbol(s.finalUrl)} size="inline" />{s.title}</a></h4><p>{s.publisher} · source version {s.version} · publisher self-report · editorial draft</p>
       <p>Access attempt: <strong>{s.access.outcome}</strong>; HTTP status: {s.access.httpStatus ?? 'unknown'}; retrieved/attempted at <time datetime={s.retrievedAt}>{s.retrievedAt}</time>.</p>
       {s.access.outcome === 'unavailable' && <p class="dd-warning">This source body was unavailable for this attempt. It supplies no new factual statement or zero-needs conclusion. Earlier retrieved versions retain their own exact pins.</p>}
       <dl class="dd-facts"><dt>Requested original</dt><dd><a href={s.requestedUrl} rel="noopener">{s.requestedUrl}</a></dd><dt>Observed final URL</dt><dd><a href={s.finalUrl} rel="noopener">{s.finalUrl}</a></dd><dt>Published</dt><dd>{timeText(s.published)}</dd><dt>Publisher source update</dt><dd>{timeText(s.sourceUpdated)}</dd><dt>Document created metadata</dt><dd>{timeText(s.documentCreated)}</dd><dt>Document modified metadata</dt><dd>{timeText(s.documentModified)}</dd><dt>Date discrepancy</dt><dd>{s.dateDiscrepancy ?? 'None recorded; unknown dates remain unknown.'}</dd><dt>Original body evidence</dt><dd>{s.original === null ? 'No body retained for this attempt.' : <>{s.original.bytes} bytes; detected kind: {s.original.mediaType}; exact HTTP Content-Type: {s.original.responseContentType ?? 'unknown'}<br /><span class="dd-hash">SHA-256: <code>{s.original.sha256}</code></span></>}</dd></dl>
@@ -145,8 +157,8 @@ const deviceIncidents = incidents.map(v => ({ id: v.incident.id, checkedAt: v.in
     </article>;
   })}</section>
 
-  {!sourceView && <section class="dd-changes"><h3>Changes recorded in this edition</h3>{packet.edition.changes.length === 0 ? <p>No change entry is recorded.</p> : <ol>{packet.edition.changes.map(change => <li><strong>{change.kind}</strong>: {change.reason}<p>Before: {change.before === null ? 'None' : pinHref(change.before) ? <a href={pinHref(change.before)}>{pinText(change.before)}</a> : <code>{pinText(change.before)}</code>}<br />After: {change.after === null ? 'None' : pinHref(change.after) ? <a href={pinHref(change.after)}>{pinText(change.after)}</a> : <code>{pinText(change.after)}</code>}</p></li>)}</ol>}{packet.boundaryPins.length > 0 && <details><summary>Explicit packet boundaries · incomplete history</summary><ul>{packet.boundaryPins.map(b => <li>{b.reason}: <code>{pinText(b.pin)}</code></li>)}</ul><p>Boundary pins are provenance links, not substitute evidence or an importable history.</p></details>}</section>}
-  <details class="dd-history"><summary>Retained edition history and interpretation</summary><p>Edition navigation preserves exact capture IDs. Source dates, retrieval dates and editorial checks have different meanings.</p><ol>{editions.map(e => <li><a href={editionHref(e.id)}>{e.id}</a> · as of <time datetime={e.asOf}>{e.asOf}</time>; captured <time datetime={e.capturedAt}>{e.capturedAt}</time> · editorial draft</li>)}</ol>{!sourceView && <><p class="dd-hash">Edition SHA-256: <code>{packet.edition.hash}</code></p><p>Interpretation: <code>{packet.method.id}</code> version {packet.method.version}; source commit <code>{packet.method.sourceCommit}</code>.</p><ul>{packet.method.rules.map(rule => <li>{rule}</li>)}</ul></>}</details>
+  {!sourceView && <section class="dd-changes" id="dd-changes"><h3 id="dd-changes-title" data-section-symbol="loop">Changes recorded in this edition</h3>{packet.edition.changes.length === 0 ? <p>No change entry is recorded.</p> : <ol>{packet.edition.changes.map(change => <li><strong>{change.kind}</strong>: {change.reason}<p>Before: {change.before === null ? 'None' : pinHref(change.before) ? <a href={pinHref(change.before)}>{pinText(change.before)}</a> : <code>{pinText(change.before)}</code>}<br />After: {change.after === null ? 'None' : pinHref(change.after) ? <a href={pinHref(change.after)}>{pinText(change.after)}</a> : <code>{pinText(change.after)}</code>}</p></li>)}</ol>}{packet.boundaryPins.length > 0 && <details><summary>Explicit packet boundaries · incomplete history</summary><ul>{packet.boundaryPins.map(b => <li>{b.reason}: <code>{pinText(b.pin)}</code></li>)}</ul><p>Boundary pins are provenance links, not substitute evidence or an importable history.</p></details>}</section>}
+  <details class="dd-history" id="dd-history"><summary><span class="identity-label"><SiteSymbol name="history" size="inline" />Retained edition history and interpretation</span></summary><p>Edition navigation preserves exact capture IDs. Source dates, retrieval dates and editorial checks have different meanings.</p><ol>{editions.map(e => <li><a href={editionHref(e.id)}>{e.id}</a> · as of <time datetime={e.asOf}>{e.asOf}</time>; captured <time datetime={e.capturedAt}>{e.capturedAt}</time> · editorial draft</li>)}</ol>{!sourceView && <><p class="dd-hash">Edition SHA-256: <code>{packet.edition.hash}</code></p><p>Interpretation: <code>{packet.method.id}</code> version {packet.method.version}; source commit <code>{packet.method.sourceCommit}</code>.</p><ul>{packet.method.rules.map(rule => <li>{rule}</li>)}</ul></>}</details>
 </section>
 
 <script>

@@ -23,10 +23,10 @@
 /* Icons sit beside the item label. Headings and standalone tiles use the
    item's own mark. Links can pick up a destination mark from the site map. */
 :where(main:not([data-site-home]) h1:not(:has(> .title-code)), .site-symbol, a.card, .starting-grid > a, .method-card,
-  .guide-card, .nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
+  .guide-card, .nav > a, .menu-panel > a, .crumbs > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
   a.r-title:not(:has(> .identity-code)), .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
   a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
-  main :is(h2, h3):not(:has(> .site-symbol)):is([id], [data-section-symbol], section[id] > h2, aside[id] > h2, div[id] > h2), .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
+  main :is(h2, h3):not(:has(> .site-symbol)):is([id], [data-section-symbol], section[id] > h2, aside[id] > h2, div[id] > h2), .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol], .ob-measure[data-site-symbol],
   .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   content: "";
   display: inline-block;
@@ -52,6 +52,16 @@
   margin-block-end: 0.45rem;
 }
 
+a.card:has(> .site-symbol)::before {
+  display: none;
+}
+
+a.card > .site-symbol {
+  --symbol-tile: 2.65rem;
+  --symbol-size: 1.6rem;
+  color: var(--link-tone, var(--site-tone, var(--accent)));
+}
+
 :where(a.card, .starting-grid > a, .method-card, .guide-card)::before {
   --symbol-size: 1.95rem;
   display: block;
@@ -62,9 +72,9 @@
   --link-glyph: var(--site-symbol, var(--glyph-external));
 }
 
-:where(.nav > a, .menu-panel > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
+:where(.nav > a, .menu-panel > a, .crumbs > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
   a.r-title:not(:has(> .identity-code)), a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
-  .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol],
+  .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol], .ob-measure[data-site-symbol],
   .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   margin-inline-end: 0.48em;
 }

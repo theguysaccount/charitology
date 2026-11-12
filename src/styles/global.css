@@ -365,6 +365,7 @@ hr {
 }
 
 .nav a {
+  white-space: nowrap;
   padding: 0.45rem 0.65rem;
   border-radius: 7px;
   text-decoration: none;
@@ -385,7 +386,7 @@ hr {
 }
 
 /* Keep every header control reachable on narrow screens without shrinking targets. */
-@media (max-width: 489px) {
+@media (max-width: 439px) {
   :root { --header-h: 110px; }
   .site-header .bar {
     flex-wrap: wrap;
@@ -395,15 +396,12 @@ hr {
   .site-header .brand { flex-basis: 100%; }
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 1280px) {
   .nav {
     display: flex;
   }
   .header-tools {
     margin-left: 0.5rem;
-  }
-  .menu {
-    display: none;
   }
 }
 
