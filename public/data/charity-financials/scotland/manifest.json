@@ -1,0 +1,466 @@
+{
+  "format": "charitology-scotland-returns-v1",
+  "date": "2026-11-12",
+  "currency": "GBP",
+  "jurisdiction": "Scotland",
+  "catalogue": "https://www.oscr.org.uk/about-charities/search-the-register/download-the-scottish-charity-register/",
+  "fieldNotes": "https://www.oscr.org.uk/media/uixby3ex/2023-03-22-description-of-charity-register-download-fields.pdf",
+  "license": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+  "attribution": "© Crown Copyright and database right 2026. Contains information from the Scottish Charity Register supplied by the Office of the Scottish Charity Regulator and licensed under the Open Government Licence v.3.0.",
+  "identities": 24994,
+  "withReturns": 22532,
+  "multiPeriod": 21496,
+  "firstYearEnd": "2010-03-31",
+  "lastYearEnd": "2026-10-31",
+  "counts": {
+    "input": 107905,
+    "missingReceipt": 7380,
+    "missingReceiptWithYearEnd": 6209,
+    "included": 100514,
+    "withIncomeDetail": 9932,
+    "withSpendingDetail": 9923,
+    "conflictingRows": 4,
+    "receiptBeforeEnd": 7
+  },
+  "withheld": {
+    "receiptBeforeEnd": [
+      [
+        "SC040253",
+        "2022-06-30",
+        "2022-04-29",
+        61492
+      ],
+      [
+        "SC042065",
+        "2022-12-31",
+        "2022-12-15",
+        66374
+      ],
+      [
+        "SC042065",
+        "2021-12-31",
+        "2021-11-16",
+        66375
+      ],
+      [
+        "SC042321",
+        "2023-07-04",
+        "2023-07-03",
+        67132
+      ],
+      [
+        "SC050674",
+        "2024-06-30",
+        "2024-06-22",
+        96837
+      ],
+      [
+        "SC051081",
+        "2022-09-30",
+        "2022-08-24",
+        98539
+      ],
+      [
+        "SC052892",
+        "2025-06-30",
+        "2025-06-11",
+        104229
+      ]
+    ],
+    "conflictingYearEnds": [
+      [
+        "SC048417",
+        "2023-05-31",
+        [
+          87685,
+          87688
+        ]
+      ],
+      [
+        "SC049290",
+        "2024-12-31",
+        [
+          91125,
+          91126
+        ]
+      ]
+    ]
+  },
+  "organizationFields": [
+    "number",
+    "name",
+    "status",
+    "regulatoryType",
+    "mainOperatingLocation",
+    "geographicalSpread",
+    "registryRecord",
+    "filings"
+  ],
+  "periodFields": [
+    "end",
+    "annualReturnReceived",
+    "grossIncomeGBP",
+    "grossExpenditureGBP",
+    "sourceRecord",
+    "incomeDetail",
+    "spendingDetail"
+  ],
+  "incomeDetailFields": [
+    "donationsAndLegaciesGBP",
+    "charitableActivitiesIncomeGBP",
+    "otherTradingIncomeGBP",
+    "investmentsIncomeGBP",
+    "otherIncomeGBP"
+  ],
+  "spendingDetailFields": [
+    "raisingFundsGBP",
+    "charitableActivitiesSpendingGBP",
+    "otherSpendingGBP"
+  ],
+  "sources": {
+    "register": {
+      "publisher": "Office of the Scottish Charity Regulator",
+      "url": "https://www.oscr.org.uk/download/charity-register",
+      "member": "CharityExport-12-Nov-2026.csv",
+      "sha256": "3cd98e1d462ea52e9d3f414b5269b7addc3da911b3e90e62f39f46c72d5550b2"
+    },
+    "returns": {
+      "publisher": "Office of the Scottish Charity Regulator",
+      "url": "https://www.oscr.org.uk/download/5-years-charity-register",
+      "member": "CharityExport-5Years-12-Nov-2026.csv",
+      "sha256": "fd0712d90956c95dd8162abfc1157e5f93f947c1656637075acc5e4a72379c48"
+    }
+  },
+  "names": {
+    "1": {
+      "path": "names/1.json.gz",
+      "rows": 1028,
+      "bytes": 76158,
+      "decodedBytes": 402282,
+      "sha256": "ac0b296e50f53480abe2f6e1bd805379738f93c6b13b57e02528b276c8dd81eb",
+      "decodedSha256": "4ff5a2c2b094d5e7c24cfe88440b2b6c44c162f6bb0b5d070cb1807728be1fba"
+    },
+    "2": {
+      "path": "names/2.json.gz",
+      "rows": 450,
+      "bytes": 34211,
+      "decodedBytes": 175074,
+      "sha256": "e08f3871f9a685ae164eb885d29f91de04655fa4a436e6ff1650ee6ed8bdb319",
+      "decodedSha256": "dfb19730654c3f26bd8f086dd9bed29626248ecdd928b137145dd5997adceb1c"
+    },
+    "3": {
+      "path": "names/3.json.gz",
+      "rows": 233,
+      "bytes": 18129,
+      "decodedBytes": 90530,
+      "sha256": "6b781a8417d870fa95f6dbd9c73ccbc6e775babfb9736a4fc62babfb4cd3d2ee",
+      "decodedSha256": "e5cbc7b8b126025b828dfaddb6502303bdbd17c0026e2cb828cb95a88d4b2924"
+    },
+    "4": {
+      "path": "names/4.json.gz",
+      "rows": 139,
+      "bytes": 11583,
+      "decodedBytes": 54902,
+      "sha256": "a34180c474e0a459edf49d7b7ca8e2b6d1db069bb87343a2a1b34d78a4b62e06",
+      "decodedSha256": "7bd055350a9cd7aa5491ded3d2122aa2d648fe03377aee407cd2bd9150233b55"
+    },
+    "5": {
+      "path": "names/5.json.gz",
+      "rows": 94,
+      "bytes": 8060,
+      "decodedBytes": 37087,
+      "sha256": "2ea5f3ca3e03397097ae0a4d0cea1e58db4e513baf85a084175a869a7b9164b6",
+      "decodedSha256": "93242ecdc22408d9927bc6150b05d80dba951b8d6d030d5b6004df6d445a59a5"
+    },
+    "6": {
+      "path": "names/6.json.gz",
+      "rows": 67,
+      "bytes": 6007,
+      "decodedBytes": 26709,
+      "sha256": "066ba1ca13e75b2f6f3fc76cf5c1b0727a4ae2cb4f7233735d1beabd8bfd8ee7",
+      "decodedSha256": "ab9f7d0accc7cd8bd7f1828d1f0e0d4ddfcf5d93f7d5efff0319fa7aa200e5b8"
+    },
+    "7": {
+      "path": "names/7.json.gz",
+      "rows": 58,
+      "bytes": 5292,
+      "decodedBytes": 23346,
+      "sha256": "3ba3b87919d6230b4142e0d4d3d922b45bb4fcbc8dd2f07e4665c1c67e9b95d1",
+      "decodedSha256": "7ba487209452a57ebc26a56936465499ad8ee2bba18c10bacade4269b378adf4"
+    },
+    "8": {
+      "path": "names/8.json.gz",
+      "rows": 30,
+      "bytes": 3149,
+      "decodedBytes": 12333,
+      "sha256": "cb3a3cc0e509b515c9136d4c8c36395bc66a86578b20a2f4a1c558e3a313b9c0",
+      "decodedSha256": "786e0d1013dd7b9bf419eb1b14e4d5ab6484f32464f11306b32a94d51a8d214e"
+    },
+    "9": {
+      "path": "names/9.json.gz",
+      "rows": 48,
+      "bytes": 4407,
+      "decodedBytes": 19434,
+      "sha256": "b2e9650c0ced9be5f47a71db02da98e348b167365c96adbdce5b076405886d90",
+      "decodedSha256": "df787827c50af8b992aca2e99f23245ee2f7cdd6623497433145c3b7244fa0d5"
+    },
+    "a": {
+      "path": "names/a.json.gz",
+      "rows": 1558,
+      "bytes": 146391,
+      "decodedBytes": 620263,
+      "sha256": "0568276f31dd18ca1144fb53fd9eb48f957cddeb0b84511df940ee28c2ea9d36",
+      "decodedSha256": "a9441eed02f6bd1e1234d81cd707b3ded1e324efcf78b81c0ca10ebc19b9de0c"
+    },
+    "b": {
+      "path": "names/b.json.gz",
+      "rows": 1256,
+      "bytes": 116262,
+      "decodedBytes": 495856,
+      "sha256": "afbc75d2d6efcb8661e775be23bf7228c09b81fc1d3e6c6ffd4df7419989f4c9",
+      "decodedSha256": "6349fbe05a854b6486310a31a4c6641037823bd6916e52c95897bb28306b0f8c"
+    },
+    "c": {
+      "path": "names/c.json.gz",
+      "rows": 1972,
+      "bytes": 190758,
+      "decodedBytes": 797688,
+      "sha256": "6a9d25bee228a2290a68dbef74ef865b4483550fd0badee4f1f9da9803608bf4",
+      "decodedSha256": "8b4cb43bde1ebc949416a09d70b4463e9a0321cb0c4dbdc9d6b70e020303fb93"
+    },
+    "d": {
+      "path": "names/d.json.gz",
+      "rows": 1016,
+      "bytes": 92566,
+      "decodedBytes": 394603,
+      "sha256": "8f038aa15effcffdcb095a2293d676997c38c9bbd7b7ddfe2dd0edb9475a3ca2",
+      "decodedSha256": "c972bc47179a544d794985695d84ef93e03da8a7ceb9068fa9095c8d44c7720b"
+    },
+    "e": {
+      "path": "names/e.json.gz",
+      "rows": 849,
+      "bytes": 83987,
+      "decodedBytes": 345648,
+      "sha256": "0f23a50e57586dfe93416a127ce7e7abec3c1d4342eac22ad53e73f51bbeaeff",
+      "decodedSha256": "90a8bfbfd52fcac452a4296dae077d4552039b7492e1c9fcdeacbe26f82448df"
+    },
+    "f": {
+      "path": "names/f.json.gz",
+      "rows": 1121,
+      "bytes": 100612,
+      "decodedBytes": 428911,
+      "sha256": "85bbe1a57d37e76c896cee635dc4dcbd13aa1f69885a1273ffff4a9442a5ef23",
+      "decodedSha256": "e6450a89706e909b9210f3317d742e7ea4ff54e754d02943e20b4ad29c414ef3"
+    },
+    "g": {
+      "path": "names/g.json.gz",
+      "rows": 1137,
+      "bytes": 108772,
+      "decodedBytes": 456202,
+      "sha256": "e4b04a1365df8390d134040a3f309696a287893e870a0290d9fa32a6b93439dc",
+      "decodedSha256": "5aadc31457e0b493e21e803a47f6daaa2f84d059ba66a05bf3fc3bbf12454378"
+    },
+    "h": {
+      "path": "names/h.json.gz",
+      "rows": 798,
+      "bytes": 74438,
+      "decodedBytes": 309514,
+      "sha256": "295a1e23aac1efb0bd3a80daa936a8de6e41342dfa184777777130057662c081",
+      "decodedSha256": "354144f24dd42c04b385d2940c9294421114810978744a1355977d29cbd2d429"
+    },
+    "i": {
+      "path": "names/i.json.gz",
+      "rows": 540,
+      "bytes": 50337,
+      "decodedBytes": 208709,
+      "sha256": "82172854812b578122a0de35192fc80a3bb08d6694dfbbfacce01edb0d2f79a2",
+      "decodedSha256": "62b7385e1cb4aebae625138700bcb7420148338fe97e214f0e87147e01d789ab"
+    },
+    "j": {
+      "path": "names/j.json.gz",
+      "rows": 266,
+      "bytes": 24626,
+      "decodedBytes": 102341,
+      "sha256": "2d6098364f135d44c5297548b9699e2f30ccb88cf98d411e23e544be2c19dc8c",
+      "decodedSha256": "b37f3740653582a708143a38342bd6a1ea76733b72e5a5b44b635c3b385e79e9"
+    },
+    "k": {
+      "path": "names/k.json.gz",
+      "rows": 737,
+      "bytes": 64902,
+      "decodedBytes": 281609,
+      "sha256": "14a7498917f9da1e5f1a92086040d9303845cbdcd6a307454ea8041eeb3292fd",
+      "decodedSha256": "56785c7fc011508509db5eaed54974f30fabcb59bf3a09560976d12b30845d73"
+    },
+    "l": {
+      "path": "names/l.json.gz",
+      "rows": 1020,
+      "bytes": 90788,
+      "decodedBytes": 390392,
+      "sha256": "b4cf86362a70b1efd38f4ee9019917ee26cc40de015e859b2490b3b811ce1fe9",
+      "decodedSha256": "1bd9b83d49a552cba485d0eb7a51885827831c4245e6171157feadf44b7b5ab2"
+    },
+    "m": {
+      "path": "names/m.json.gz",
+      "rows": 1166,
+      "bytes": 108297,
+      "decodedBytes": 454529,
+      "sha256": "6381c562c80fd3807b2e662108d8739d821b874e127a13fb2a0337e724c41dee",
+      "decodedSha256": "69e761cf1d666d708f734db25468b76145a7978f9d84ec27107d70a6ac389e74"
+    },
+    "n": {
+      "path": "names/n.json.gz",
+      "rows": 637,
+      "bytes": 59280,
+      "decodedBytes": 248226,
+      "sha256": "8be2d11bf52ee811edb32ba61244eb4e52d7b8dd071814817b1837d712db5072",
+      "decodedSha256": "84a289b960459106260bc210660805c9fd088d5f404248c64e143e6ed4375c22"
+    },
+    "o": {
+      "path": "names/o.json.gz",
+      "rows": 312,
+      "bytes": 28842,
+      "decodedBytes": 118044,
+      "sha256": "51adc2478f5de8bbbfc5123906dc5912c8a02d19794be219be225ae84ea62e61",
+      "decodedSha256": "79b37d0a95d6cfa2696c58ab6effd70eadf18e22628cd90d670c12ff49375222"
+    },
+    "p": {
+      "path": "names/p.json.gz",
+      "rows": 860,
+      "bytes": 82683,
+      "decodedBytes": 343568,
+      "sha256": "b439b510921ced6be4c4428ff562d8db8684c79331757c43bee80070f838e4bc",
+      "decodedSha256": "cf527f7157d137a19fe92e7436dede7adab788344b3b7f806ff7f2f573b3ec31"
+    },
+    "q": {
+      "path": "names/q.json.gz",
+      "rows": 50,
+      "bytes": 6072,
+      "decodedBytes": 20421,
+      "sha256": "2f551edfe4639ead3cf2194994ae8b410e05a380b379945e9273288a58a28592",
+      "decodedSha256": "5e1e27a53aaf0b2c3e9673bc69fc48a7ba6adec7f6afc0fcdd83421bc1d29fcd"
+    },
+    "r": {
+      "path": "names/r.json.gz",
+      "rows": 1004,
+      "bytes": 95973,
+      "decodedBytes": 406275,
+      "sha256": "067ce55ebaad273e7feebf82a5887b3dc61763955e2c353787e7a700d45027ec",
+      "decodedSha256": "f4609ff08882f383b5e57377e121bd5985d93d5410f6cb26c2e8b8690d43e740"
+    },
+    "s": {
+      "path": "names/s.json.gz",
+      "rows": 2521,
+      "bytes": 240973,
+      "decodedBytes": 1019136,
+      "sha256": "2d4e999a044f042d7a4666174080aa31a9fe6a4a9840025df7e4597b977d15d0",
+      "decodedSha256": "e49ad87bfbb21d37042a589b74ffa5f72402a61451f539bcedeb7350aedc1e85"
+    },
+    "t": {
+      "path": "names/t.json.gz",
+      "rows": 2895,
+      "bytes": 267939,
+      "decodedBytes": 1119212,
+      "sha256": "48c65e2dd39c6ad0c81141999b471cf5d22fac820bf0588635c56bfdf9408ca5",
+      "decodedSha256": "2c0a49c1e22eef2faa85425129712896d52c634386be70a7f65ef3f83968f949"
+    },
+    "u": {
+      "path": "names/u.json.gz",
+      "rows": 233,
+      "bytes": 24760,
+      "decodedBytes": 96337,
+      "sha256": "cc9a34822aa8f106cc86a3af30bd5988c0b913b9188a38a0be9e191068e96522",
+      "decodedSha256": "d3730767e9f52319430ebec91b56506faa7aed94f2666669563f3bd046b437ad"
+    },
+    "v": {
+      "path": "names/v.json.gz",
+      "rows": 156,
+      "bytes": 16544,
+      "decodedBytes": 63671,
+      "sha256": "c81cc1d40a8fb6e201bc01e567d43f282420055e055823647777e25ef654aa2c",
+      "decodedSha256": "a2695576822e8fcee5a4ad4a3e4daf27755e006fc5bce792474678c5f9711c33"
+    },
+    "w": {
+      "path": "names/w.json.gz",
+      "rows": 620,
+      "bytes": 59782,
+      "decodedBytes": 249883,
+      "sha256": "0582af9710cc0ab8c3d86ad5c9031fe21d934cf050b18cd02690f7d2856a1364",
+      "decodedSha256": "bb3bda8f918954875fe0047efa6605f8989ed55a18f0bb75abe4620d678ed24c"
+    },
+    "x": {
+      "path": "names/x.json.gz",
+      "rows": 4,
+      "bytes": 518,
+      "decodedBytes": 1009,
+      "sha256": "1410da188cdd55467b9204f82728e5e35e9fe1c23174dd7ee8147e773c289d83",
+      "decodedSha256": "90dbb3cadc1b0d57457d0e0ed8047ca221b7ab5c7b5fb2e908dd55152f340558"
+    },
+    "y": {
+      "path": "names/y.json.gz",
+      "rows": 96,
+      "bytes": 9715,
+      "decodedBytes": 37086,
+      "sha256": "edfd473c77f28781c6aa3cbd5877dc12d97b47dea715376eee8e5532362a6147",
+      "decodedSha256": "9ee1e226d5705e1beb9489483f509af970d00debd4465a280e2162f11f3559ff"
+    },
+    "z": {
+      "path": "names/z.json.gz",
+      "rows": 23,
+      "bytes": 2278,
+      "decodedBytes": 7268,
+      "sha256": "fc6fbd947735e6bd92b9789d6feeba65cb92d146d0f1fe7aa3af530278311e56",
+      "decodedSha256": "e26de1133602bc74136b4ad0c51360d20d61909180248152c22541ae6b234a7f"
+    }
+  },
+  "ids": {
+    "SC00": {
+      "path": "ids/SC00.json.gz",
+      "rows": 2811,
+      "bytes": 9596,
+      "decodedBytes": 47789,
+      "sha256": "4fd766ccd224db0c0ebd4c2a2f252099e00a8716bd47bb098051741c90f58500",
+      "decodedSha256": "68f8a4c0ee2e09d683a2f9a2d5ffe59a93e4dfdc200317b87b724c4e76bb9e99"
+    },
+    "SC01": {
+      "path": "ids/SC01.json.gz",
+      "rows": 2468,
+      "bytes": 8483,
+      "decodedBytes": 41958,
+      "sha256": "7604c3681d8876086f0b94dd4ffa0bd22671b36168d05af71a44ec194bb777c9",
+      "decodedSha256": "9f5ae50de07f5a62ac53e7378f84505c602b14c38342eacf0f1fdf8de6d07c75"
+    },
+    "SC02": {
+      "path": "ids/SC02.json.gz",
+      "rows": 2659,
+      "bytes": 8981,
+      "decodedBytes": 45205,
+      "sha256": "8cb992d81224375a4274eb4f0062f25cd95ec7d464e2352289a299ca8a35b9bc",
+      "decodedSha256": "06349a4a13a2751fbff1d048c5ac4cea10e0d0af02e7bcbbcba28cd991e2d3d4"
+    },
+    "SC03": {
+      "path": "ids/SC03.json.gz",
+      "rows": 4466,
+      "bytes": 14879,
+      "decodedBytes": 75924,
+      "sha256": "76e7328ea4367186585703c46198fb39187b3363d39bba2f1169a3d6a65c4935",
+      "decodedSha256": "8b399e72c63cd1b9c037be5bfde70468988e88efc43a6f5bd46496c6f3d03336"
+    },
+    "SC04": {
+      "path": "ids/SC04.json.gz",
+      "rows": 7106,
+      "bytes": 23002,
+      "decodedBytes": 120804,
+      "sha256": "7165a7b2a2b8feb136d25f218fd00a2fd03480fc89572aede98bcffab46fe9d4",
+      "decodedSha256": "c2c640b49420b325240b73add7fc360a8a0abd05b4d32cc4b3f033cec4704def"
+    },
+    "SC05": {
+      "path": "ids/SC05.json.gz",
+      "rows": 5484,
+      "bytes": 17597,
+      "decodedBytes": 93230,
+      "sha256": "40dd0fa68278b0c4503c99b73457ea31953ab1f693c8c7bb93f1dc54e51308cf",
+      "decodedSha256": "ab147a47f93512f23edd3205faf8fe697b0ec856c688a7036df6bde0fa6673a2"
+    }
+  }
+}

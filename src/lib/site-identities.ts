@@ -138,6 +138,7 @@ export const symbols = {
   pulse: 'M2 12h5l3-8 4 16 3-8h5',
   agreement: 'M4 3h11l4 4v14H4zM15 3v5h4M7 11h9m-9 4h3m1 3 2-3 2 2 2-2',
   sourceCopy: 'M7 3h9l4 4v11H7zM16 3v5h4M4 7v14h13M10 11h7m-7 3h7',
+  thistle: 'M12 13v9m0-4c-4 0-7-2-8-6 4 0 7 2 8 4m0 3c4 0 7-2 8-6-4 0-7 2-8 4M7 8l1-3 2 1 2-4 2 4 2-1 1 3c0 3-2 5-5 5s-5-2-5-5Z',
 } as const;
 
 export type SymbolName = keyof typeof symbols;
@@ -182,7 +183,7 @@ export const sections: Section[] = [
     'charity-index/coverage': 'checks', 'charity-index/brazil': 'bridge', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'fern',
     'charity-financials': 'coins', 'charity-financials/canada': 'maple', 'charity-financials/united-states': 'columns',
     'charity-financials/united-states/990-ez': 'notes', 'charity-financials/united-states/990-pf': 'building',
-    'charity-financials/england-wales': 'shield', 'charity-financials/kenya': 'chart', 'charity-financials/mexico': 'agave',
+    'charity-financials/england-wales': 'shield', 'charity-financials/scotland': 'thistle', 'charity-financials/kenya': 'chart', 'charity-financials/mexico': 'agave',
     'countries': 'pin', 'country-profiles': 'globe', 'disagreements': 'dialogue', 'editions': 'document',
     'editions/compare': 'compare', 'encyclopedia': 'book', 'evidence-library': 'stack',
     'failure-archive': 'break', 'funding-flows': 'split', 'funding-flows/canada-qualified-donees': 'chain',

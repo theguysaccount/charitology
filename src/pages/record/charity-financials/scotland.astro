@@ -1,0 +1,81 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import ScotlandCharityFinancialSearch from '../../../components/ScotlandCharityFinancialSearch.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-financials/scotland/manifest.json';
+import comparison from '../../../../public/data/charity-financials/scotland/cross-register.json';
+
+const title = 'Scottish charity registrations and financial filings';
+const count = (value: number) => value.toLocaleString('en-GB');
+const pounds = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
+const money = (value: string | number) => pounds.format(Number(value));
+const dataPath = '/data/charity-financials/scotland/';
+const searchPath = '/record/charity-financials/scotland/';
+const ewPath = '/record/charity-financials/england-wales/';
+const official = 'https://www.oscr.org.uk/about-charities/search-the-register/';
+const periods = comparison.pairs.flatMap(pair => pair.periods);
+const amountMatches = periods.filter(({ englandAndWalesMinusScotlandGBP: diff }) => !diff.income && !diff.expenditure).length;
+const receiptMatches = periods.filter(({ scotland, englandAndWales }) => scotland.received === englandAndWales.received).length;
+const sources = [
+  { title: 'Download the Scottish Charity Register and five-year returns', publisher: manifest.sources.register.publisher, url: manifest.catalogue },
+  { title: 'Description of Charity Register download fields', publisher: manifest.sources.register.publisher, url: manifest.fieldNotes },
+  { title: 'Reporting for cross-border charities', publisher: manifest.sources.register.publisher, url: 'https://www.oscr.org.uk/managing-a-charity/charity-accounting/external-scrutiny/independent-examination-a-guide-for-independent-examiners/8-cross-border-charities/' },
+  { title: 'Full register and annual return history', publisher: comparison.englandAndWales.sources.returns.publisher, url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
+  { title: 'Open Government Licence v3.0', publisher: 'The National Archives', url: manifest.license },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index" summary="Search the Scottish regulator’s dated public snapshot. Read reported income and spending, and compare selected charities filed with two regulators." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Financial filings',href:'/record/charity-financials/'},{label:'Scotland'}]} sources={sources}>
+  <p>This edition includes {count(manifest.identities)} Scottish registration numbers. {count(manifest.withReturns)} have at least one included annual return, and {count(manifest.multiPeriod)} have more than one. The {count(manifest.counts.included)} included returns have year-ends from {manifest.firstYearEnd} through {manifest.lastYearEnd}. These dates come from the records in the regulator’s five-year download.</p>
+  <ScotlandCharityFinancialSearch />
+
+  <h2 id="cross-register">Compare records across two regulators</h2>
+  <p>Some charities appear in both Scotland and <a href={url(ewPath)}>England and Wales</a>. These three examples have public evidence linking both registration numbers. For each charity, the table pairs three identical year-ends across the two regulator extracts. {count(amountMatches)} of the {count(periods.length)} paired rows agree on both headline amounts. {count(receiptMatches)} have the same receipt date.</p>
+  <p>Use each matched charity once when counting organizations. Adding both published figures would risk counting the same income or spending twice. The Scottish export supplies the year-end. The England and Wales file also supplies the period start. Exact consolidation scope requires the original accounts.</p>
+  {comparison.pairs.map(pair => <section>
+    <h3>{pair.name}</h3>
+    <p>
+      <a class="identity-link" href={url(searchPath + '?registration=' + pair.scotlandNumber)}>Scotland {pair.scotlandNumber}</a> ·
+      {' '}<a class="identity-link" href={url(ewPath + '?registration=' + pair.englandAndWalesNumber)}>England and Wales {pair.englandAndWalesNumber}</a> ·
+      {' '}<a href={pair.identitySource}>Source confirming both registrations</a>
+    </p>
+    <div class="table-wrap cross-register-table" role="region" aria-label={pair.name + ' regulator comparison'} tabindex="0">
+      <table class="data">
+        <caption>{pair.name} · regulator figures in GBP</caption>
+        <thead><tr><th scope="col">Year ended</th><th scope="col">Scotland</th><th scope="col">England and Wales</th><th scope="col">Difference in headline figures</th></tr></thead>
+        <tbody>{pair.periods.map(({ end, scotland, englandAndWales, englandAndWalesMinusScotlandGBP: diff }) => <tr>
+          <th scope="row">{end}</th>
+          <td>Income {money(scotland.incomeGBP)}<br />Expenditure {money(scotland.expenditureGBP)}<br /><small>Received {scotland.received} · record {scotland.sourceRecord}</small></td>
+          <td>Income {money(englandAndWales.incomeGBP)}<br />Expenditure {money(englandAndWales.expenditureGBP)}<br /><small>Period start {englandAndWales.start}<br />Received {englandAndWales.received} · record {englandAndWales.sourceRecord}</small></td>
+          <td>{diff.income || diff.expenditure ? <>
+            {diff.income !== 0 && <p>Income is {money(Math.abs(diff.income))} higher in {diff.income > 0 ? 'England and Wales' : 'Scotland'}.</p>}
+            {diff.expenditure !== 0 ? <p>Expenditure is {money(Math.abs(diff.expenditure))} higher in {diff.expenditure > 0 ? 'England and Wales' : 'Scotland'}.</p> : <p>Expenditure agrees.</p>}
+          </> : 'Income and expenditure agree.'}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </section>)}
+  <p>The <a href={comparison.pairs[2].identitySource}>Oxfam GB consolidated accounts</a> give 2024–25 income as £339.4 million. The England and Wales figure rounds to that amount at the precision shown. The Scotland figure rounds to £339.3 million. The accounts give spending as £362.6 million, which both exports match at that precision. The reason for the exact income difference remains unknown.</p>
+  <p>Record numbers count from the first data record after the header. Use the <a href={manifest.sources.returns.url}>Scottish return export</a> and the <a href={comparison.englandAndWales.sources.returns.url}>England and Wales history export</a> to check them. <a class="identity-link" href={url(dataPath + 'cross-register.json')} download>Download the exact paired rows and source fingerprints</a>.</p>
+
+  <h2 id="coverage">Coverage, gaps and original files</h2>
+  <p>The two Scottish downloads are dated <time datetime={manifest.date}>{manifest.date}</time>. The registry supplies the legal name, the regulator’s status and classification, and the published geography fields. The main location describes a head office or main operating location. The spread is a broad reported category. Spending by location and the places where services were delivered require other sources.</p>
+  <ul>
+    <li>{count(manifest.counts.missingReceipt)} of {count(manifest.counts.input)} return-export records lacked a receipt date. {count(manifest.counts.missingReceiptWithYearEnd)} of those supplied a year-end.</li>
+    <li>{count(manifest.counts.receiptBeforeEnd)} records had a receipt date before the year-end.</li>
+    <li>{count(manifest.counts.conflictingRows)} records gave competing submissions for {count(manifest.withheld.conflictingYearEnds.length)} registration and year-end pairs. The export supplied no basis for choosing between them.</li>
+  </ul>
+  <p>Those records are outside the financial history shown here. The manifest gives the exact record numbers for chronological errors and conflicts. All registration numbers remain searchable.</p>
+  <p>Amounts stay in pounds sterling. Included headline amounts of zero or less are shown as reported. The optional breakdowns show Standard returns where the respective income or spending field group contains a nonzero figure. Entirely zero groups remain unavailable because this extract does not distinguish a reported all-zero breakdown from an unfilled one. {count(manifest.counts.withIncomeDetail)} included returns show an income breakdown and {count(manifest.counts.withSpendingDetail)} show a spending breakdown. Their scope and any difference from the headline figures should be checked in the accounts.</p>
+  <p>{manifest.attribution} See the <a href={manifest.catalogue}>source and use terms</a>, including the limit on direct marketing. Charitology selected the public registration and financial fields, reformatted dates and linked them by exact registration number. Check the <a href={official}>current regulator lookup</a> for amendments, registration status and original accounts.</p>
+  <ul>
+    <li><a class="identity-link" data-source-symbol="packet" href={manifest.sources.register.url}>Original registry ZIP</a></li>
+    <li><a class="identity-link" data-source-symbol="archive" href={manifest.sources.returns.url}>Original five-year returns ZIP</a></li>
+    <li><a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download the coverage and source manifest</a></li>
+  </ul>
+</Entry>
+<style>
+  .cross-register-table { overflow-x: auto; }
+  .cross-register-table table { min-inline-size: 42rem; }
+  .cross-register-table caption { text-align: start; font-weight: 650; padding-block: 0.4rem; }
+</style>

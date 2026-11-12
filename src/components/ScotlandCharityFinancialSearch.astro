@@ -1,0 +1,200 @@
+---
+import manifest from '../../public/data/charity-financials/scotland/manifest.json';
+import { url } from '../lib/site';
+import '../styles/charity-financial-search.css';
+---
+
+<section class="charity-financial-search" data-scotland-finance data-base={url('/data/charity-financials/scotland/')} data-manifest={JSON.stringify(manifest)} aria-labelledby="scotland-finance-heading">
+  <h2 id="scotland-finance-heading">Search Scottish registrations and returns</h2>
+  <p id="scotland-finance-hint">Enter the start of the registered name or an exact number such as SC039042. Search downloads part of the snapshot and runs in your browser.</p>
+  <form aria-describedby="scotland-finance-hint">
+    <label for="scotland-finance-query">Registered name or Scottish charity number</label>
+    <div class="finance-actions">
+      <input id="scotland-finance-query" name="q" type="search" maxlength="250" autocomplete="off" disabled />
+      <button class="btn" type="submit" disabled>Search</button>
+      <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+    </div>
+  </form>
+  <p role="status" data-status>Search when you’re ready to load the snapshot.</p>
+  <div class="finance-actions">
+    <button class="btn btn-ghost btn-small" type="button" data-json disabled>Export displayed results as JSON</button>
+    <button class="btn btn-ghost btn-small" type="button" data-csv disabled>Export displayed results as CSV</button>
+  </div>
+  <ol data-results class="finance-results" data-site-symbol="yearFile" aria-label="Scottish charity registrations and returns"></ol>
+  <noscript><p>Use the regulator’s live lookup or original downloads in the coverage section to search without JavaScript.</p></noscript>
+</section>
+
+<script>
+  import { $, h } from '../lib/client/dom';
+  import { download, toCsv } from '../lib/client/files';
+  import { financialCsvName, financialShardLoader, normalizeFinancialName, type FinancialShard } from '../lib/client/financial-directory';
+
+  type Filing = [string, string, string, string, number, string[] | null, string[] | null];
+  type Identity = [string, string, string, string, string | null, string | null, number];
+  type Organization = [...Identity, Filing[]];
+  type DirectoryEntry = [string, string];
+  type Source = { publisher: string; url: string; sha256: string; member: string };
+  type Manifest = {
+    date: string; currency: string; jurisdiction: string; license: string; attribution: string;
+    incomeDetailFields: string[]; spendingDetailFields: string[];
+    sources: { register: Source; returns: Source }; names: Record<string, FinancialShard>; ids: Record<string, FinancialShard>;
+  };
+  type Result = { total: number; organizations: Organization[] };
+
+  const currency = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
+  const amount = (value: string) => currency.format(Number(value));
+  const registration = /^(?:GB-SC-)?(SC[0-9]{6})$/i;
+  const limit = 25;
+  const incomeLabels = ['Donations and legacies', 'Charitable activities', 'Other trading activities', 'Investments', 'Other income'];
+  const spendingLabels = ['Raising funds', 'Charitable activities', 'Other spending'];
+  const pairs = (labels: string[], values: string[]) => Object.fromEntries(labels.map((label, i) => [label, values[i]]));
+
+  function details(labels: string[], values: string[] | null) {
+    return values ? h('dl', { class: 'finance-amounts' }, labels.map((label, i) =>
+      h('div', {}, h('dt', {}, label), h('dd', {}, amount(values[i]))))) : h('p', { class: 'note' }, 'Breakdown unavailable in this edition.');
+  }
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-scotland-finance]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const loadNames = financialShardLoader<Organization>(base, manifest.names);
+    const loadIds = financialShardLoader<DirectoryEntry>(base, manifest.ids);
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let result: Result | undefined;
+    let sequence = 0;
+    input.disabled = submit.disabled = clear.disabled = false;
+
+    function reset() {
+      result = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function filing([end, received, income, expenditure, record, incomeDetail, spendingDetail]: Filing) {
+      return h('section', { class: 'finance-period' },
+        h('h4', {}, `Year ended ${end}`),
+        h('p', { class: 'note' }, `Annual return received ${received}.`),
+        h('dl', { class: 'finance-amounts' },
+          h('div', {}, h('dt', {}, 'Gross income'), h('dd', {}, amount(income))),
+          h('div', {}, h('dt', {}, 'Gross expenditure'), h('dd', {}, amount(expenditure)))),
+        (incomeDetail || spendingDetail) && h('details', {}, h('summary', {}, 'Reported income and spending breakdowns'),
+          h('h5', {}, 'Income'), details(incomeLabels, incomeDetail),
+          h('h5', {}, 'Spending'), details(spendingLabels, spendingDetail)),
+        h('p', { class: 'note' }, h('a', { href: manifest.sources.returns.url }, 'OSCR annual return export'),
+          ` · data record ${record} after the header.`));
+    }
+
+    function card([number, name, state, kind, location, spread, record, history]: Organization) {
+      const official = 'https://www.oscr.org.uk/about-charities/search-the-register/charity-details?number=' + number;
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, number), ' ', name),
+        h('p', {}, state, ' · ', kind),
+        h('p', { class: 'note' }, `Registered main location: ${location ?? 'Not supplied'}. Reported geographical spread: ${spread ?? 'Not supplied'}.`),
+        h('p', { class: 'note' }, h('a', { href: official }, 'Current regulator record'), ' · ',
+          h('a', { href: manifest.sources.register.url }, 'OSCR register export'), ` · data record ${record} after the header.`),
+        history.length ? history.map(filing) : h('p', {}, 'No usable dated annual return in this edition.'));
+    }
+
+    async function search(value: string): Promise<Result> {
+      const id = registration.exec(value.trim())?.[1].toUpperCase();
+      if (id) {
+        const entry = (await loadIds(id.slice(0, 4))).find(([number]) => number === id);
+        if (!entry) return { total: 0, organizations: [] };
+        const organization = (await loadNames(entry[1])).find(([number]) => number === id);
+        if (!organization) throw new Error('The registration number could not be matched to the snapshot.');
+        return { total: 1, organizations: [organization] };
+      }
+
+      const query = normalizeFinancialName(value);
+      if ([...query].length < 2) throw new Error('Enter at least two characters of the name or use an exact Scottish charity number.');
+      const bucket = /^[a-z0-9]/.test(query) ? query[0] : '_';
+      const organizations: Organization[] = [];
+      let total = 0;
+      for (const row of await loadNames(bucket)) {
+        if (!normalizeFinancialName(row[1]).startsWith(query)) continue;
+        total++;
+        if (organizations.length < limit) organizations.push(row);
+      }
+      return { total, organizations };
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      status.textContent = 'Checking the public snapshot.';
+      try {
+        const found = await search(input.value);
+        if (ticket !== sequence) return;
+        result = found;
+        status.textContent = found.total
+          ? `${found.total.toLocaleString('en-GB')} ${found.total === 1 ? 'match' : 'matches'}. Showing ${found.organizations.length}.`
+          : 'No matching registration in this snapshot. Try a shorter name or check the live register.';
+        results.append(...found.organizations.map(card));
+        json.disabled = csv.disabled = !found.organizations.length;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The financial search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    form.addEventListener('submit', event => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { date, currency: currencyCode, jurisdiction, license, attribution, sources } = manifest;
+    const identity = ([number, name, status, regulatoryType, mainOperatingLocation, geographicalSpread, registryRecord]: Organization) => ({
+      number, name, status, regulatoryType, mainOperatingLocation, geographicalSpread, registryRecord,
+    });
+    function period(filing: Filing) {
+      const [end, annualReturnReceived, grossIncomeGBP, grossExpenditureGBP, sourceRecord, income, spending] = filing;
+      return {
+        start: null, end, annualReturnReceived, grossIncomeGBP, grossExpenditureGBP, sourceRecord,
+        incomeDetail: income && pairs(manifest.incomeDetailFields, income),
+        spendingDetail: spending && pairs(manifest.spendingDetailFields, spending),
+      };
+    }
+    json.addEventListener('click', () => {
+      if (!result) return;
+      const organizations = result.organizations.map(row => ({ ...identity(row), filings: row[7].map(period) }));
+      download('scotland-annual-return-search.json', JSON.stringify({
+        date, currency: currencyCode, jurisdiction, license, attribution, sources, total: result.total, organizations,
+      }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!result) return;
+      const rows = result.organizations.flatMap(row => {
+        const organization = identity(row);
+        return (row[7].length ? row[7].map(period) : [null]).map(filing => ({
+          ...organization, name: financialCsvName(organization.name), recordType: filing ? 'annual return' : 'registration only',
+          start: filing?.start, end: filing?.end, annualReturnReceived: filing?.annualReturnReceived,
+          grossIncomeGBP: filing?.grossIncomeGBP, grossExpenditureGBP: filing?.grossExpenditureGBP, sourceRecord: filing?.sourceRecord,
+          ...Object.fromEntries(manifest.incomeDetailFields.map(field => [field, filing?.incomeDetail?.[field]])),
+          ...Object.fromEntries(manifest.spendingDetailFields.map(field => [field, filing?.spendingDetail?.[field]])),
+          currency: currencyCode, jurisdiction, capturedOn: date, publisher: sources.returns.publisher, license, attribution,
+          source: sources.returns.url, sourceSha256: sources.returns.sha256, sourceMember: sources.returns.member,
+          registerSource: sources.register.url, registerSha256: sources.register.sha256, registerMember: sources.register.member,
+        }));
+      });
+      download('scotland-annual-return-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const initial = new URLSearchParams(location.search).get('registration');
+    if (initial && registration.test(initial)) {
+      input.value = initial;
+      void runSearch();
+    }
+  }
+</script>

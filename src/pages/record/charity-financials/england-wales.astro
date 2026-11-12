@@ -15,6 +15,7 @@ const sources = [
 
 <Entry title={title} eyebrow="The Record · Global Charity Index" summary="Look up gross income and expenditure reported to the Charity Commission for England and Wales." crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Financial filings',href:'/record/charity-financials/'},{label:'England and Wales'}]} sources={sources}>
   <p>This edition contains {count(manifest.counts.included)} received annual returns for {count(manifest.organizations)} of the {count(manifest.registeredMain)} main charities shown as registered in the Commission’s extract. {count(manifest.multiPeriod)} have more than one included financial period. The periods end in 2023, 2024 or 2025.</p>
+  <p>Some charities file with both regulators. <a href={url('/record/charity-financials/scotland/#cross-register')}>Compare three confirmed pairs of Scottish and England and Wales registrations</a> before counting the same organization across registers.</p>
   <EwCharityFinancialSearch />
   <h2 id="coverage">Coverage and original data</h2>
   <p>The Commission’s register and return history extracts are dated <time datetime={manifest.date}>{manifest.date}</time>. This edition links the Commission’s internal organization identifier and checks the public registration number on both extracts. The displayed name comes from the register extract.</p>
