@@ -1,15 +1,29 @@
 """Verify the Kenya edition's public aggregates, coordinates and export contract."""
 import csv
 import json
+import os
 import re
 from decimal import Decimal
 from pathlib import Path
 
 
 root = Path(__file__).resolve().parents[1]
-route = root / 'dist/record/charity-financials/kenya'
+route = Path(os.environ.get('CHARITOLOGY_DIST', root / 'dist')) / 'record/charity-financials/kenya'
+base = os.environ.get('BASE_PATH', '/').rstrip('/')
 data = json.loads((root / 'src/data/kenya-pbo-coverage.json').read_text(encoding='utf-8'))
 assert json.loads((route / 'data.json').read_text(encoding='utf-8')) == data
+directory = (root / 'src/data/kenya-pbo-directory-coverage.json').read_bytes()
+assert (route / 'directory.json').read_bytes() == directory
+directory = json.loads(directory)
+assert directory['directoryRows'] == directory['distinctNonblankReferenceStrings'] == 15292
+assert directory['printedReferenceShapes'] == {'ngoHyphenAlphanumeric': 1132, 'numeric218051': 14139, 'otherPrintedShape': 21}
+assert sum(directory['printedReferenceShapes'].values()) == directory['directoryRows']
+assert directory['normalizedNameStringsWithMultipleReferences'] == 69
+assert directory['normalizedNamesWithBothMajorReferenceShapes'] == 1
+assert len({source['sha256'] for source in directory['captures']}) == 2
+html = (route / 'index.html').read_text(encoding='utf-8')
+assert 'id="public-directory"' in html and 'href="#public-directory"' in html
+assert f'href="{base}/record/charity-financials/kenya/directory.json"' in html
 with (route / 'data.csv').open(encoding='utf-8', newline='') as stream:
     exports = list(csv.DictReader(stream))
 assert len(exports) == 67
@@ -61,4 +75,4 @@ for line in expenditure['rows']:
         verify(year, line['category'], geography, line[key], 'KES', 'expenditure')
 verify(year, 'project-cost-sector-table-total', 'Kenya', expenditure['sectorTableProjectTotalInKenyaKES'], 'KES', 'sectorProjectTotal')
 assert not rows
-print('Kenya coverage: three reporting periods, separate source geographies and expenditure, and 67 exact CSV observations verified.')
+print('Kenya coverage: three reporting periods, 67 exact financial CSV observations and 15,292 public directory rows verified.')

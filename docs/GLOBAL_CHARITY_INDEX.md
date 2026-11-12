@@ -365,7 +365,7 @@ node scripts/check-us-schedule-i.mjs
 
 The [Kenya coverage edition](https://charitology.com/record/charity-financials/kenya/) traces three report years of registration and filing counts, reported receipts and source regions to exact pages in the regulator's reports. It includes the 2024/25 expenditure breakdown for Kenya and other countries. Each edition retains published totals and source precision. The 2023/24 region breakdown differs from the published receipts total by KES 0.01. The 2024/25 sector and expenditure tables give different totals for projects in Kenya. Each figure keeps its own source location. Do not aggregate receipts with expenditures or treat the regulator's reported totals as a complete national measure.
 
-The regulator's live organization lookup supplies names and references. An authoritative old-to-new reference crosswalk and a qualified organization-level financial source are needed before adding a historical Kenya organization join. The public dataset is an aggregate projection of reported facts. Source report content retains its original terms.
+The regulator’s organization directory lists 15,292 rows in the November 11, 2026 capture, with 15,292 distinct printed references. Two official responses with different HTML fingerprints yield the same directory counts. The reference formats describe displayed strings. Of the normalized names, 69 appear with more than one reference. The regulator’s advisory says updated certificates carry the original date and number alongside the new number. Use an authoritative crosswalk or those certificates for historical joins and a qualified filing source for organization-level finances. The [directory export](https://charitology.com/record/charity-financials/kenya/directory.json) retains only counts and source receipts. [Public directory](https://pbora.go.ke/pbos) · [Transition advisory](https://pbora.go.ke/authority-rolls-out-transition-process-ngos-under-pbo-act).
 
 Rebuild from the three exact report PDFs named in `src/data/kenya-pbo-coverage.json`, using `pypdfium2==5.14.0`. Normal builds read the committed projection without fetching any report. The check compares the built JSON and CSV exports to the projection, including every amount and its source coordinates.
 
@@ -373,6 +373,12 @@ Rebuild from the three exact report PDFs named in `src/data/kenya-pbo-coverage.j
 python3 scripts/build-kenya-pbo-coverage.py /path/to/captures /path/to/kenya-pbo-coverage.json
 npm run build
 python3 scripts/check-kenya-pbo-coverage.py
+```
+
+To reproduce the directory measurements, save the two official responses from the links in the directory JSON and run the command below. The script requires equal measurements across both responses. Live responses can change. Compare the export’s fingerprints for a replay of the original capture.
+
+```sh
+python3 scripts/build-kenya-pbo-directory-coverage.py 2026-11-11 /path/to/pbora.html /path/to/pbora-www.html /path/to/new-directory.json
 ```
 
 ## Japan NPO Portal and reported finances

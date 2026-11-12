@@ -229,6 +229,7 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
   ],
   '/record/charity-financials/kenya/': [
     ['filing-coverage', 'Filing coverage', 'yearFile'],
+    ['public-directory', 'Public organization directory', 'fileSearch'],
     ['receipts', 'Reported receipts', 'wallet'],
     ['expenditure', 'Reported spending', 'coins'],
     ['original-reports', 'Original report pages', 'document'],
