@@ -61,6 +61,8 @@ Each improvement should be independently verifiable. Publish the source versions
 
 Extend the verified UK cross-register examples when an original filing or public institutional record explicitly supplies both registration numbers. Preserve the filing scope, period, receipt date and unresolved amount differences. For a new jurisdiction, check the [Irish Charities Regulator catalogue](https://data.gov.ie/dataset/register-of-charities-in-ireland) for accessible, licensed versions of its register and reports. The regulator download links checked for this cycle returned HTTP 403. The [Tainan fundraising disclosures](https://data.gov.tw/dataset/148500) are a candidate for campaign-level tracing. Compare approvals and reported amounts only after establishing the campaign stage and how the source uses blank and zero fields.
 
+For the Taiwan Fund, the [grant disclosure filed with the Legislative Yuan](https://ppg.ly.gov.tw/ppg/download/agenda1/02/agendaAnnex/11/03/09/1103091551.pdf) identifies recipient jurisdictions for the six paired projects. The direct file returned HTTP 403 during this cycle. Pin a permitted copy before adding those fields to the reproducible edition. Distinguish recipient registration from service sites, then check geographic and program coverage before comparing independently measured need.
+
 ## England and Wales annual returns
 
 The [England and Wales financial filings page](https://charitology.com/record/charity-financials/england-wales/) uses a separate Commission edition under the Open Government Licence v3.0. It covers 157,367 of 171,945 main registered charities in the November 10, 2026 register extract, with 452,394 received returns for financial periods ending in 2023, 2024 or 2025. The date of receipt is distinct from the period end. Data record coordinates refer to one-based tab-delimited source records after the header. All money figures remain in GBP.
@@ -89,6 +91,25 @@ python3 scripts/build-scotland-charity-financials.py /path/to/captured-inputs pu
 diff -r public/data/charity-financials/scotland /path/to/new-rebuild
 npm run build
 node scripts/check-scotland-charity-financials.mjs
+```
+
+## Taiwan institutional registrations and grant execution
+
+The [Taiwan institutional lookup](https://charitology.com/record/charity-index/taiwan/) uses a Ministry of Finance withholding-unit snapshot covering education, culture, public benefit and charity institutions. The November 12, 2026 file has 99,914 data records. One lacks an identifier. The remaining 99,913 have distinct eight-digit identifiers. Eleven last-change tokens have unknown Gregorian normalization and 80 records have no registered city or county. The lookup preserves the original date tokens, change codes and published place labels, including historical labels. The current legal status and the areas where an institution provides services require separate records. [Official register catalogue](https://data.gov.tw/dataset/34147)
+
+Exact lookups load a two-digit identifier shard and the corresponding name shard. Chinese name searches load one shard keyed by the first normalized letter or number’s Unicode code point modulo 64. The [manifest](../public/data/charity-registry/taiwan/manifest.json) pins the original bytes, the field order and the compressed and decoded fingerprints. The projection publishes selected institutional fields and a one-based data record coordinate. The free-text reason field is excluded. Results and CSV or JSON exports use the displayed selection.
+
+The [New Resident Development Fund lookup](https://charitology.com/record/funding-flows/taiwan-new-resident-fund/) covers all 117 populated institutional rows in the 2024 and 2025 Fund execution CSVs, grouped under 111 distinct project IDs. The later CSV has 451 entirely blank records and extra empty columns. The offline builder checks the padding before leaving it out. The [Fund catalogue](https://data.gov.tw/dataset/86169) supplies additional issuer files outside this selection.
+
+The six IDs recurring in both reports link to six checked rows in the 2024 official approval PDF. Their approved amounts agree across all three sources. Execution figures differ between the two reports. Project 1132D350 moves from the earlier issuer status of payment pending to a reported date of June 6, 2025. The report years, source positions, execution figures, reported disbursement fields and returned-balance fields remain distinct. A project ID counts an approval once. Provider expenses, individual transfer amounts and outcomes require other records. For registry links, name equality after width normalization and trimming supplies a candidate. The issuer files provide no tax identifiers for recipients. No city is inferred from a name or routing agency. [Official approval archive](https://www.immigration.gov.tw/5382/5385/7445/7451/7508/7523/?Page=1&PageSize=50&alias=&type=)
+
+The [original source pins](../src/data/taiwan-index-sources.tsv) list the four required input filenames, URLs, sizes and SHA-256 fingerprints. Rebuild offline with the exact captures and a new output directory. The Taiwan open data projections identify the original publishers and the [Open Government Data License 1.0](https://data.gov.tw/license).
+
+```sh
+python3 scripts/build-taiwan-charity-index.py /path/to/captures /path/to/new-rebuild
+diff -r public/data/charity-registry/taiwan /path/to/new-rebuild
+npm run build
+node scripts/check-taiwan-charity-index.mjs
 ```
 
 ## Brazil federal transfers to civil society

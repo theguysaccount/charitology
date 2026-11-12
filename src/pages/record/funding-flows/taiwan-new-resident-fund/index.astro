@@ -1,0 +1,164 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import { url } from '../../../../lib/site';
+import fund from '../../../../../public/data/charity-registry/taiwan/fund-comparison.json';
+
+const title = 'Taiwan New Resident Development Fund grant reports';
+const registryPath = '/record/charity-index/taiwan/';
+const dataPath = '/data/charity-registry/taiwan/';
+const count = (value: number) => value.toLocaleString('en-US');
+const money = (value: number | null) => value === null ? 'Unknown' : 'NT$' + count(value);
+const publishedDate = (date: string | null, raw: string | null) => date ?? (raw === '尚未撥款' ? 'Not yet disbursed, as reported' : 'Date unknown');
+const approvalPdf = fund.sources['approvals-2024.pdf'].url;
+const reports = fund.coverageByReport;
+const periods = ['2024', '2025'] as const;
+const total = periods.reduce((sum, year) => sum + reports[year].projectRecords, 0);
+const projects = [...fund.projects].sort((a, b) =>
+  b.executionReports.length - a.executionReports.length || a.projectId.localeCompare(b.projectId));
+const example = projects.find(project => project.projectId === '1132D350')!;
+const [earlier, later] = example.executionReports;
+const sources = [
+  { title: 'Grant execution reports and field descriptions', publisher: fund.publisher, url: fund.catalogue },
+  { title: '2024 Fund execution CSV', publisher: fund.publisher, url: fund.sources['new-resident-fund-2024.csv'].url },
+  { title: '2025 Fund execution CSV', publisher: fund.publisher, url: fund.sources['new-resident-fund-2025.csv'].url },
+  { title: '2024 approved grants PDF', publisher: fund.publisher, url: approvalPdf },
+  { title: 'Taiwan Open Government Data License 1.0', publisher: 'Taiwan Ministry of Digital Affairs', url: fund.license },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Follow approvals, reported execution amounts and disbursement fields across two fund reports. Use the project ID to see where the same grant reappears."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Taiwan New Resident Development Fund'}]}
+  filePath="src/pages/record/funding-flows/taiwan-new-resident-fund/index.astro" sources={sources}>
+  <p>These two Taiwan National Immigration Agency files contain {count(total)} institutional grant report rows. They cover {count(fund.uniqueProjects)} distinct project IDs in the 2024 and 2025 Fund reports. {count(fund.repeatedProjects)} IDs occur in both reports. The tables keep each report’s amounts and dates next to its original record number.</p>
+
+  <h2 id="approval-and-execution">When one award appears in two reports</h2>
+  <p>For <a href="#project-1132D350">{example.projectId}</a>, the <a href={approvalPdf + '#page=' + example.approval!.pdfPage}>approval table on page {example.approval!.pdfPage}</a> records {money(example.approval!.requestedTWD)} requested and {money(example.approval!.approvedTWD)} approved. The 2024 report lists an execution amount of {money(earlier.executionTWD)} and says the money had yet to be disbursed. The 2025 report lists {money(later.executionTWD)} in the execution field and gives {later.reportedDisbursementDate} as the disbursement date.</p>
+  <p>The other repeated IDs also keep the same approved amount and show different execution figures in the two reports. Their execution figures and disbursement fields are separate disclosures. Use the project ID to count each recurring approval once. Amounts for individual transactions, onward payments, expenses incurred by recipients and outcomes require separate evidence.</p>
+
+  <h2 id="projects">Find a project</h2>
+  <div class="finance-actions fund-downloads">
+    <a class="btn btn-ghost" href={url(dataPath + 'fund-comparison.csv')} download>Download project report rows as CSV</a>
+    <a class="btn btn-ghost" href={url(dataPath + 'fund-comparison.json')} download>Download project records as JSON</a>
+  </div>
+  <p class="note">The CSV has one row per report and project ID. For recurring projects, the approval appears on both report rows. Use the project ID when counting approvals.</p>
+
+  <section aria-label="Find a Fund project" data-taiwan-fund>
+    <form hidden>
+      <label for="taiwan-project-query">Project ID, title or reported recipient name</label>
+      <div class="finance-actions">
+        <input id="taiwan-project-query" type="search" maxlength="160" autocomplete="off" />
+        <button class="btn" type="submit">Find projects</button>
+        <button class="btn btn-ghost" type="button" data-clear>Clear</button>
+      </div>
+      <label class="fund-checkbox"><input type="checkbox" data-repeated /> Show projects that appear in both reports</label>
+    </form>
+    <p role="status" data-project-count>{count(fund.uniqueProjects)} project records.</p>
+    <div class="fund-list" data-projects>
+      {projects.map(project => <details class="card" id={'project-' + project.projectId}
+        data-project={project.projectId} data-query={[project.projectId, project.reportedRecipient, ...project.executionReports.map(report => report.projectTitle)].join(' ')}
+        data-repeated={project.executionReports.length > 1 ? '' : undefined}>
+        <summary>
+          <span class="identity-label"><SiteSymbol name={project.approval ? 'match' : 'yearFile'} size="inline" />
+            <span class="identity-code">{project.projectId}</span>
+          </span>
+          <span lang="zh-Hant">{project.title}</span>
+          {project.executionReports.length > 1 && <span class="note"> · Appears in both reports</span>}
+        </summary>
+        <p>Reported recipient <strong lang="zh-Hant">{project.reportedRecipient}</strong>.</p>
+        {project.approval && <p>The <a href={approvalPdf + '#page=' + project.approval.pdfPage}>2024 approval PDF, page {project.approval.pdfPage}</a>, shows {money(project.approval.requestedTWD)} requested and {money(project.approval.approvedTWD)} approved.</p>}
+        {project.exactNameCandidateIds.length > 0
+          ? <p class="note">Possible registration matches based on name
+            {' '}{project.exactNameCandidateIds.map((id, i) => <>{i > 0 ? ' · ' : ''}<a href={url(registryPath + '?registration=' + id)}>{id}</a></>)}.
+            {' '}The Fund reports do not give a registration number.
+          </p>
+          : <p class="note">No exact name match in the institutional snapshot. The recipient’s identifier remains unknown.</p>}
+        <div class="table-wrap fund-table" role="region" aria-label={'Reports for ' + project.projectId} tabindex="0">
+          <table class="data">
+            <thead><tr><th scope="col">Source report</th><th scope="col">Approved</th><th scope="col">Reported execution</th><th scope="col">Disbursement field</th><th scope="col">Reported returned balance</th></tr></thead>
+            <tbody>{project.executionReports.map(report => {
+              const source = report.reportYear === 2024 ? fund.sources['new-resident-fund-2024.csv'] : fund.sources['new-resident-fund-2025.csv'];
+              return <tr>
+                <th scope="row"><a href={source.url}>{report.reportYear} Fund CSV</a><br /><small>Record {report.sourceRecord}</small></th>
+                <td>{money(report.approvedTWD)}<br /><small>Approval date {publishedDate(report.reportedApprovalDate, report.approvalDateLiteral)}</small></td>
+                <td>{money(report.executionTWD)}</td>
+                <td>{publishedDate(report.reportedDisbursementDate, report.disbursementFieldLiteral)}
+                  {report.disbursementFieldLiteral && <><br /><small lang="zh-Hant">{report.disbursementFieldLiteral}</small></>}
+                </td>
+                <td>{money(report.returnedBalanceTWD)}
+                  {report.returnedBalanceFieldLiteral && <><br /><small lang="zh-Hant">{report.returnedBalanceFieldLiteral}</small></>}
+                  {report.reportedBalanceReturnDate && <><br /><small>Return date {report.reportedBalanceReturnDate}</small></>}
+                </td>
+              </tr>;
+            })}</tbody>
+          </table>
+        </div>
+      </details>)}
+    </div>
+    <noscript><p>Open the project records above or search the downloaded CSV.</p></noscript>
+  </section>
+
+  <h2 id="coverage">Coverage and original files</h2>
+  <p>The scope is the two selected Fund files, captured on <time datetime={fund.capturedOn}>{fund.capturedOn}</time>. The 2024 file has {count(reports['2024'].projectRecords)} rows. The 2025 file has {count(reports['2025'].projectRecords)} populated rows and {count(reports['2025'].blankRecords)} blank rows. Each included row has the source classification for institutional grants. Other files on the catalogue page have their own scopes.</p>
+  <p>All amounts are in New Taiwan dollars (TWD). Each report keeps its year label and exact data record after the header. A reported date may fall outside that report’s year. Blank amounts or settlement status text stay unknown. The JSON keeps original date tokens, calendar dates where parseable and the issuer’s completion markers. The markers describe the issuer’s reporting, and project outcomes require separate measures.</p>
+  <p>The <a href={url(registryPath)}>Taiwan institutional snapshot</a> supplies possible registration matches only when the published recipient name matches after width normalization and trimming. The candidate links leave identifiers unconfirmed. If a name includes a routing agency, the original wording stays visible. Locations served require additional sources.</p>
+  <p>The two Fund CSV projections use information from the Taiwan National Immigration Agency under the <a href={fund.license}>Open Government Data License 1.0</a>. The exports give original URLs and fingerprints. The approval PDF is linked at the original source.</p>
+</Entry>
+
+<style>
+  .fund-downloads, .finance-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .fund-checkbox { display: block; margin-top: .8rem; }
+  input[type="search"] { min-width: 0; flex: 1 1 14rem; padding: .6rem; font: inherit; }
+  .fund-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: .6rem; }
+  .fund-list details { display: block; min-inline-size: 0; margin: 0; overflow-wrap: anywhere; }
+  .fund-list details[hidden] { display: none; }
+  .fund-list summary { cursor: pointer; }
+  .fund-table { overflow-x: auto; }
+  .fund-table table { min-inline-size: 40rem; }
+</style>
+
+<script>
+  import { $ } from '../../../../lib/client/dom';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-taiwan-fund]')) {
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input[type=search]', form);
+    const repeated = $<HTMLInputElement>('[data-repeated]', form);
+    const status = $('[data-project-count]', root);
+    const projects = [...root.querySelectorAll<HTMLDetailsElement>('[data-project]')];
+
+    function filter() {
+      const query = input.value.normalize('NFKC').toLowerCase().trim();
+      let matches = 0;
+      for (const project of projects) {
+        project.hidden = !(project.dataset.query!.normalize('NFKC').toLowerCase().includes(query) &&
+          (!repeated.checked || project.hasAttribute('data-repeated')));
+        if (!project.hidden) matches++;
+      }
+      status.textContent = matches ? `${matches} ${matches === 1 ? 'project' : 'projects'} found.` : 'No matching projects.';
+    }
+
+    function openLinkedProject() {
+      const id = /^#project-([0-9]{4}[A-Z][0-9]{3})$/.exec(location.hash)?.[1];
+      const project = id && projects.find(item => item.dataset.project === id);
+      if (!project) return;
+      input.value = '';
+      repeated.checked = false;
+      filter();
+      project.open = true;
+      project.scrollIntoView({ block: 'start' });
+    }
+
+    form.hidden = false;
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    repeated.addEventListener('change', filter);
+    $('[data-clear]', form).addEventListener('click', () => {
+      input.value = '';
+      repeated.checked = false;
+      filter();
+      input.focus();
+    });
+    window.addEventListener('hashchange', openLinkedProject);
+    openLinkedProject();
+  }
+</script>

@@ -180,7 +180,7 @@ const coverage = readFileSync('dist/record/charity-index/coverage/index.html', '
 const jurisdictionIndex = coverage.match(/<nav class="page-sections" aria-label="Jump to a jurisdiction"[^>]*>[\s\S]*?<\/nav>/)?.[0];
 assert.ok(jurisdictionIndex);
 const jurisdictions = [...jurisdictionIndex.matchAll(/href="#([^"]+)"[^>]*><span[^>]*data-site-symbol="([^"]+)"/g)];
-assert.equal(jurisdictions.length, 10);
+assert.equal(jurisdictions.length, 11);
 assert.equal(new Set(jurisdictions.map(([, , mark]) => mark)).size, jurisdictions.length);
 for (const [, id, mark] of jurisdictions) {
   const card = coverage.match(new RegExp(`<li class="card" id="${id}"[^>]*>[\\s\\S]*?<\\/li>`))?.[0];

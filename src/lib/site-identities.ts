@@ -139,6 +139,8 @@ export const symbols = {
   agreement: 'M4 3h11l4 4v14H4zM15 3v5h4M7 11h9m-9 4h3m1 3 2-3 2 2 2-2',
   sourceCopy: 'M7 3h9l4 4v11H7zM16 3v5h4M4 7v14h13M10 11h7m-7 3h7',
   thistle: 'M12 13v9m0-4c-4 0-7-2-8-6 4 0 7 2 8 4m0 3c4 0 7-2 8-6-4 0-7 2-8 4M7 8l1-3 2 1 2-4 2 4 2-1 1 3c0 3-2 5-5 5s-5-2-5-5Z',
+  orchid: 'M12 15c-2-5-9-3-9-7 0-4 5-4 7-1-1-4 1-6 2-6s3 2 2 6c2-3 7-3 7 1 0 4-7 2-9 7Zm0 0v7m0-3 4-2',
+  grantSchedule: 'M4 3h12l4 4v14H4zM16 3v5h4M7 10h10m-10 4h3m4 0h3m-10 4h3m4 0h3',
 } as const;
 
 export type SymbolName = keyof typeof symbols;
@@ -181,6 +183,7 @@ export const sections: Section[] = [
   { path: '/record/', symbol: 'archive', tone: 'blue', entries: {
     'case-studies': 'folder', 'cause-atlas': 'atlas', 'charitology-100': 'badge', 'charity-index': 'fileSearch',
     'charity-index/coverage': 'checks', 'charity-index/brazil': 'bridge', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'fern',
+    'charity-index/taiwan': 'orchid',
     'charity-financials': 'coins', 'charity-financials/canada': 'maple', 'charity-financials/united-states': 'columns',
     'charity-financials/united-states/990-ez': 'notes', 'charity-financials/united-states/990-pf': 'building',
     'charity-financials/england-wales': 'shield', 'charity-financials/scotland': 'thistle', 'charity-financials/kenya': 'chart', 'charity-financials/mexico': 'agave',
@@ -205,6 +208,7 @@ export const sections: Section[] = [
     'funding-flows/heal-nepal': 'capsule',
     'funding-flows/kenya-nutrition': 'food',
     'funding-flows/ripple-effect-kenya-accounts': 'balance',
+    'funding-flows/taiwan-new-resident-fund': 'grantSchedule',
     'funding-flows/yes-i-do-alliance': 'network', 'gap-map': 'map', 'interventions': 'target',
     'journal': 'notes', 'lexicon': 'bars', 'methodology': 'checks', 'myths': 'eye', 'newsletter': 'mail', 'newsletter/edition-1': 'story',
     'open-datasets': 'table', 'podcast': 'headphones', 'podcast-and-newsletter': 'signal',

@@ -196,6 +196,16 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['nz-search-heading', 'Look up a charity', 'lens'],
     ['coverage', 'Coverage and original records', 'permit'],
   ],
+  '/record/charity-index/taiwan/': [
+    ['taiwan-search-heading', 'Search institutional registrations', 'lens'],
+    ['funding', 'Follow New Resident Development Fund grants', 'grantSchedule'],
+    ['coverage', 'Coverage and original records', 'archive'],
+  ],
+  '/record/funding-flows/taiwan-new-resident-fund/': [
+    ['approval-and-execution', 'When one award appears in two reports', 'match'],
+    ['projects', 'Find a project', 'lens'],
+    ['coverage', 'Coverage and original files', 'archive'],
+  ],
   '/record/charity-financials/': [
     ['au-financial-search', 'Search Australian filings', 'lens'],
     ['coverage', 'Coverage and original data', 'yearFile'],
