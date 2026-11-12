@@ -1,0 +1,115 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import { stages, expenditure } from '../../../../lib/kenya-nutrition-trace';
+import data from '../../../../data/kenya-nutrition-trace.json';
+
+const title = 'Following nutrition funding from the UK to western Kenya';
+const route = '/record/funding-flows/kenya-nutrition/';
+const { manager, uk, kenya } = data.captures;
+const survey = data.survey.source;
+const registration = data.kenyaRegistrationSource;
+const registrationPage = registration.url + '#page=' + registration.pdfPage;
+const gov = 'https://devtracker.fcdo.gov.uk/programme/GB-COH-04105827-AIDMATCHII/summary';
+const companies = 'https://find-and-update.company-information.service.gov.uk/company/02290024';
+const iatiCodes = 'https://iatistandard.org/en/iati-standard/203/codelists/transactiontype/';
+const budgetStatus = 'https://iatistandard.org/en/iati-standard/203/codelists/budgetstatus/';
+const sources = [
+  ...Object.values(data.captures).map(source => ({ title: source.activityTitle, url: source.url, publisher: source.publisher })),
+  { title: 'UK Aid Match II fund record', url: gov, publisher: 'FCDO Development Tracker, from Mannion Daniels IATI data' },
+  { title: 'Ripple Effect International company registration and prior names', url: companies, publisher: 'Companies House' },
+  { title: 'Improving nutrition for women and children in Kenya', url: data.projectGeographySource.url, publisher: 'Ripple Effect International' },
+  { title: registration.title + ' · Note 15', url: registrationPage, publisher: registration.publisher },
+  { title: survey.title, url: survey.url + '#page=' + survey.pdfPage, publisher: survey.publisher },
+  { title: 'IATI transaction types', url: iatiCodes, publisher: 'International Aid Transparency Initiative' },
+];
+const names = { manager: 'Mannion Daniels', uk: 'Send a Cow UK', kenya: 'Send a Cow Kenya' };
+const typeLabels: Record<string, string> = { '1': 'Incoming funds', '3': 'Disbursement', '4': 'Expenditure' };
+const gbp = (value: string) => 'GBP ' + Number(value).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const sameIncomingDates = data.managerToUkPairs.filter(pair => pair.sameDate).length;
+const comparableKenya = data.ukToKenyaPairs.filter(pair => pair.ukLessKenyaGbp === '0.00').length;
+const totals = data.totalsGbp;
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Compare what the grant manager, UK charity and Kenyan implementer each reported for one nutrition project in Busia and Bungoma." crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Western Kenya nutrition'}]} sources={sources} filePath="src/pages/record/funding-flows/kenya-nutrition/index.astro">
+  <p>Three publishers recorded the funding trail for a UK Aid Match nutrition project. The UK and Kenyan activities report an actual start of <time datetime={data.period.actualStart}>May 1, 2018</time> and a planned end of <time datetime={data.period.plannedEnd}>April 30, 2021</time>. Ripple Effect identifies Busia and Bungoma as the project counties. <a href={data.projectGeographySource.url}>Read the project account</a>.</p>
+
+  <h2 id="identity">Which organizations and activities connect</h2>
+  <ol>
+    <li><a href={gov}>UK Aid Match II</a> identifies the UK government as the funder and Mannion Daniels as the grant manager. The manager’s outgoing rows name the UK charity and exact project <code>{uk.activityId}</code>. The project rows carry two grant references, <code>203559-201</code> and <code>205210-201</code>.</li>
+    <li>The UK charity reports under <code>{uk.reportingOrg}</code>. This is Ripple Effect International, formerly Send a Cow, in the <a href={companies}>Companies House record</a>. Open the Index’s <a href={url('/record/charity-financials/england-wales/') + '?registration=' + data.charityRegistrationEnglandWales}>filing history for charity {data.charityRegistrationEnglandWales}</a>.</li>
+    <li>Both project activities name <code>{kenya.reportingOrg}</code> as the Kenyan implementer. Its project file names the UK charity as the funding party. The two files cover the same project dates and country. Some individual records use incomplete or misspelled references. The exact publisher files and literal transaction fields are in the download.</li>
+  </ol>
+  <p>The later UK accounts identify the Kenyan subsidiary as <strong>{registration.legalName}</strong> and print its full NGO registration <code>{registration.registrationNumber}</code>. Removing the separators gives the digits in its IATI organization reference. A verified crosswalk to the shortened public-directory references requires separate registry evidence. <a href={registrationPage}>Read the registration in Note 15</a>.</p>
+
+  <h2 id="budget">What the UK charity budgeted</h2>
+  <p>The UK publisher reports four original budget periods totaling <strong>{gbp(totals.ukBudget)}</strong>. All four carry IATI budget status 2, <a href={budgetStatus}>committed</a>. The budget rows keep their own period dates. The transactions below describe later reported events.</p>
+  <details>
+    <summary>Read all four budget periods</summary>
+    <div class="table-wrap" role="region" aria-label="UK charity reported budget periods" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Budget period</th><th scope="col">Reported original budget</th></tr></thead>
+        <tbody>{data.ukBudgets.map(row => <tr>
+          <th scope="row"><time datetime={row.periodStart}>{row.periodStart}</time> to <time datetime={row.periodEnd}>{row.periodEnd}</time></th>
+          <td>{gbp(row.amount)}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </details>
+
+  {stages.map(stage => <section aria-labelledby={stage.id}>
+    <h2 id={stage.id}>{stage.id === 'manager-to-uk' ? 'From the grant manager to the UK charity' : 'From the UK charity to the Kenyan implementer'}</h2>
+    {stage.id === 'manager-to-uk' ? <>
+      <p>The manager reports <strong>{gbp(totals.managerDisbursements)}</strong> in {stage.rows.length} outgoing rows. All {stage.rows.length} amounts have a unique counterpart in the UK charity’s incoming rows for this project. Only {sameIncomingDates} pair also shares the same reported transaction date. The match uses the exact recipient activity on the manager side, then a unique amount and currency within the UK activity.</p>
+      <p>For example, the manager dates its last row <time datetime="2021-05-14">May 14, 2021</time>. The UK record gives <time datetime="2021-04-30">April 30, 2021</time> and a malformed Aid Match III reference. Both report <strong>{gbp('48761.24')}</strong>. Keep both dates and the original references when checking this pair.</p>
+    </> : <>
+      <p>The UK file reports <strong>{gbp(totals.ukOnward)}</strong> in {stage.rows.length} onward disbursements. The Kenyan file has a counterpart for each reported quarter and date. {comparableKenya} amounts agree, and Q12 differs by <strong>{gbp('0.11')}</strong>. The Kenyan counterpart total is <strong>{gbp(totals.kenyaCounterpart)}</strong> with Q10 included.</p>
+      <p>The Kenya file calls Q10 income in the reference field and uses code 3, disbursement, in the transaction-type field. The UK row also uses code 3. The Kenyan source keeps its original code. Some Kenyan rows leave one or both party references blank. The quarter, date and the two activity records support the comparison.</p>
+    </>}
+    <div class="table-wrap" role="region" aria-label={`Reported rows from ${names[stage.left]} and ${names[stage.right]}`} tabindex="0">
+      <table class="counterparts">
+        <thead><tr><th scope="col">Reference</th><th scope="col">{names[stage.left]}<br />Date and amount</th><th scope="col">{names[stage.right]}<br />Date and amount</th><th scope="col">Comparison</th></tr></thead>
+        <tbody>{stage.rows.map(pair => <tr>
+          <th scope="row">{pair.quarter ? `Q${pair.quarter}` : pair.left.ref}</th>
+          <td><time datetime={pair.left.date}>{pair.left.date}</time><br /><strong>{gbp(pair.left.amount)}</strong><br /><small>Code {pair.left.type} · XML row {pair.left.row}</small></td>
+          <td><time datetime={pair.right.date}>{pair.right.date}</time><br /><strong>{gbp(pair.right.amount)}</strong><br /><small>Code {pair.right.type} · XML row {pair.right.row}</small></td>
+          <td>{pair.difference !== '0.00' ? `${gbp(pair.difference)} higher in the UK file`
+            : pair.quarter === 10 ? 'Amount agrees. Kenya code conflicts with its income reference.'
+            : pair.sameDate ? 'Amount and date agree' : 'Amount agrees. Dates differ.'}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </section>)}
+
+  <h2 id="expenses">What each publisher recorded as expenditure</h2>
+  <ul>
+    <li>Send a Cow Kenya reports <strong>{gbp(totals.kenyaExpenditure)}</strong> across {expenditure.filter(row => row.activityId === kenya.activityId).length} code 4 rows, including staff, administration and project activities.</li>
+    <li>Send a Cow UK reports <strong>{gbp(totals.ukExpenditure)}</strong> across {expenditure.filter(row => row.activityId === uk.activityId).length} code 4 rows, including staff, administration, monitoring and evaluation.</li>
+  </ul>
+  <p>These are separate publisher expense records. Both sides of each transfer pair represent a single stage in the trail. Calculating project-wide cost would require resolving overlaps across the publishers, while proving payment or final use would require the underlying financial records.</p>
+
+  <h2 id="need">Food poverty before the project</h2>
+  <p>Kenya’s statistics bureau measured the share of individuals below its food poverty line in 2015/16. The measure uses food consumption expenditure and predates the project. The two project counties had different estimated rates. The source covers the county populations and gives the national figure for context.</p>
+  <div class="table-wrap" role="region" aria-label="2015/16 food poverty estimates" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Survey area</th><th scope="col">Individuals below the food poverty line</th><th scope="col">Standard error (percentage points)</th></tr></thead>
+      <tbody>{data.survey.estimates.map(row => <tr><th scope="row">{row.geography}</th><td>{row.percent}%</td><td>{row.standardErrorPercentagePoints}</td></tr>)}</tbody>
+    </table>
+  </div>
+  <p>County amounts and participant outcomes require separate records. The three IATI activities supply no county allocation for the published project amounts. <a href={survey.url + '#page=' + survey.pdfPage}>Open KNBS Annex Table B1</a> · <a href={url('/record/gap-map/')}>See other funding and need comparisons</a>.</p>
+
+  <h2 id="downloads">Download the records and sources</h2>
+  <p>The JSON preserves the original currency, row coordinates, dates, transaction types and literal identifiers. The paired CSV keeps both reported sides in separate columns. The expenditure CSV contains only code 4 rows. <a href={iatiCodes}>See the IATI transaction codes</a>{' '}({Object.entries(typeLabels).map(([code, label]) => `${code} ${label.toLowerCase()}`).join(', ')}).</p>
+  <ul>
+    <li><a href={url(route + 'data.json')} download="kenya-nutrition-trace.json">Full comparison and source receipts (JSON)</a></li>
+    <li><a href={url(route + 'counterparts.csv')} download="kenya-nutrition-counterparts.csv">25 paired reports (CSV)</a></li>
+    <li><a href={url(route + 'expenditure.csv')} download="kenya-nutrition-expenditure.csv">87 separate expenditure records (CSV)</a></li>
+  </ul>
+  <p>See the <a href={url('/record/charity-financials/kenya/')}>Kenya registration and filing coverage</a> for the scope of the national directory. Report a correction below with the activity identifier and XML transaction reference.</p>
+</Entry>
+
+<style>
+  .counterparts { min-width: 35rem; }
+  td { font-variant-numeric: tabular-nums; }
+  code { overflow-wrap: anywhere; }
+</style>
