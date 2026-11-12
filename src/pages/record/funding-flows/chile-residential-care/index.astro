@@ -1,0 +1,108 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import { url } from '../../../../lib/site';
+import edition from '../../../../../public/data/funding-flows/chile-residential-care/edition.json';
+
+const title = 'Donations and residential care funding in Chile';
+const dataPath = '/data/funding-flows/chile-residential-care/';
+const { accounts, awards, donationDisclosures, governmentRegisterTransfers, householdSurvey, institution, monitoring, register, sources } = edition;
+const number = (value: number) => value.toLocaleString('en-US');
+const date = new Intl.DateTimeFormat('en-US', { dateStyle:'medium', timeZone:'UTC' });
+const awardsFor = (year: number) => awards.filter(award => award.year === year);
+const total = (items: typeof awards) => items.reduce((sum, award) => sum + award.amount, 0);
+const rows = donationDisclosures.workbooks.reduce((sum, book) => sum + book.rowCount, 0);
+const pdf = (source: { url: string }, page: number) => source.url + '#page=' + page;
+const downloads = [
+  ['edition.json', 'Complete edition and source notes (JSON)', 'packet'],
+  ['donation-disclosures.csv', 'Foundation donation disclosures (CSV)', 'gift'],
+  ['government-register-transfers.csv', 'Municipal register records (CSV)', 'building'],
+  ['residence-awards.csv', 'Residence award records (CSV)', 'grantSchedule'],
+  ['consolidated-accounts.csv', 'Selected lines from the audited accounts (CSV)', 'balance'],
+] as const;
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" identityCode={institution.rut}
+  summary="Follow one foundation through Chile’s donation disclosures, municipal transfer records, residence awards and audited accounts."
+  crumbs={[{ label:'The Record', href:'/record/' }, { label:'Funding flows', href:'/record/funding-flows/' }, { label:'Chile residential care' }]}
+  filePath="src/pages/record/funding-flows/chile-residential-care/index.astro" sources={Object.values(sources)}>
+  <p><strong>{institution.name}</strong> appears under tax identifier {institution.rut} in the public donee register, the Central Register of State Collaborators and the 2025 award schedule. The donee register also assigns it registration number {institution.rpd}. Start from these identifiers when a publisher uses a different spelling of the name. <a href={sources.doneeDetail.url}>Open the public donee record</a>.</p>
+
+  <h2 id="donations">Read what recipients reported</h2>
+  <p>Chile’s Law 21.440 donee list contained {number(register.snapshotEntries)} entries on November 12, 2026. The publisher marked {number(register.registered)} as registered and {number(register.removed)} as removed. This list covers one donation regime. The broader Civil Registry publishes a separate dashboard for nonprofit legal persons. <a href={sources.doneeRegister.url}>Open the donee list</a>. <a href={sources.civilRegistry.url}>Open the Civil Registry catalog</a>.</p>
+  <p>The four annual workbooks contain {number(rows)} rows for {number(donationDisclosures.distinctRecipients)} distinct recipient tax identifiers. The amounts are nominal Chilean pesos, or CLP. The reporting guide allows valuations of gifts in kind. These are recipient reports and may be revised. The workbooks have no donor IDs or unique gift IDs. <a href={sources.disclosures.url}>Read the Ministry’s explanation</a>. <a href={pdf(sources.guide, 25)}>Check the reporting guide</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Law 21.440 disclosure coverage and foundation totals" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Workbook</th><th scope="col">Rows</th><th scope="col">Recipient IDs</th><th scope="col">Published total (CLP)</th><th scope="col">Foundation total (CLP)</th></tr></thead>
+      <tbody>{donationDisclosures.workbooks.map((book, index) => {
+        const foundation = donationDisclosures.institution[index];
+        return <tr><th scope="row"><a href={book.workbook}>{book.workbookYear}</a></th><td>{number(book.rowCount)}</td>
+          <td>{number(book.recipientCount)}</td><td>{number(book.publishedValueNominalClp)}</td>
+          <td>{foundation.totalNominalClp === null ? 'No matching row' : <>{number(foundation.totalNominalClp)}<br /><small>{foundation.rows.length === 1 ? '1 row' : number(foundation.rows.length) + ' rows'}</small></>}</td></tr>;
+      })}</tbody>
+    </table>
+  </div>
+  <p>The foundation has no matching row in the 2025 workbook. The source gives no 2025 amount for this tax identifier. The export retains the original worksheet row numbers for all five matching disclosures.</p>
+
+  <h2 id="transfers">Find the municipal transfer records</h2>
+  <p>The state collaborators register publishes a different set of records. Its exports for 2021 through 2023 each show one subsidy for this foundation, with a decree date, register entry date and the commune named on the record. The institution’s received-transfer menu did not offer 2024 or 2025 when checked. These fields give the register’s record of a transfer. Bank dates and any later expenses require other sources. <a href={sources.transferRegister.url}>Open the institution’s transfer register</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Municipal transfer register records" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Folio</th><th scope="col">Commune in register</th><th scope="col">Decree date</th><th scope="col">Register entry</th><th scope="col">Recorded amount (CLP)</th></tr></thead>
+      <tbody>{governmentRegisterTransfers.map(transfer => <tr id={'transfer-' + transfer.folio} tabindex="-1">
+        <th scope="row"><a href={transfer.record}>{transfer.folio}</a></th><td>{transfer.reportedCommune}</td>
+        <td>{date.format(new Date(transfer.decreeDate))}</td><td>{date.format(new Date(transfer.entryDate))}</td>
+        <td>{number(transfer.nominalClp)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>Register-derived records are credited to the Chile Ministry of Finance under <a href={sources.transferRegister.license}>CC BY 3.0 Chile</a>. <a href={sources.transferTerms.url}>Read the register’s terms</a>.</p>
+
+  <h2 id="residence-awards">Compare residence awards</h2>
+  <p>The National Disability Service approved {awardsFor(2024).length} named residences in Metropolitana de Santiago in 2024, totaling CLP {number(total(awardsFor(2024)))}. The 2025 award schedule lists {awardsFor(2025).length} projects with the foundation’s exact tax identifier, totaling CLP {number(total(awardsFor(2025)))}. Three residence names correspond across the two resolutions. The 2024 table provides names and regions. The 2025 table provides application folios and numbers listed for regular care. <a href={pdf(sources.awards2024, 5)}>Read the 2024 table</a>. <a href={pdf(sources.awards2025, 2)}>Read the 2025 table</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Residence approvals and awards" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Resolution year</th><th scope="col">Residence</th><th scope="col">Region in this table</th><th scope="col">People listed for regular care</th><th scope="col">Approved amount (CLP)</th><th scope="col">Application folio</th></tr></thead>
+      <tbody>{awards.map(award => <tr id={'award-' + award.record} tabindex="-1">
+        <td>{award.year}</td><th scope="row">{award.name}</th><td>{award.region ?? 'Unreported'}</td>
+        <td>{award.regularCare === null ? 'Unreported' : number(award.regularCare)}</td>
+        <td>{number(award.amount)}</td>
+        <td>{award.year === 2025
+          ? <a href={pdf(sources.awards2025, award.sourcePage)}>{award.record}</a>
+          : award.correspondingAward ? <a href={'#award-' + award.correspondingAward}>{award.correspondingAward} in 2025</a> : 'Unreported'}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The 2025 award resolution calls for later agreements. The program’s clarification describes separately evaluated annual renewals. A listed care count describes the award record. Signed agreements, bank payments and counts of people who received care remain unverified for these three folios. <a href={pdf(sources.awards2025, 4)}>Read the award resolution</a>. <a href={sources.awardTerms.url}>Read the call clarifications</a>.</p>
+
+  <h2 id="accounts">Read the consolidated accounts</h2>
+  <p>The foundation and its subsidiary publish audited consolidated statements. These figures are in <strong>thousands of CLP</strong>, as printed. The 2024 figures shown here agree in both statements. The state agreement note groups recognized income by program and funding category. It gives no award folios or exact ties to the donations workbook. The other records on this page cover different scopes and accounting stages. Combining these sources could count the same money twice. <a href={pdf(sources.accounts2025, 36)}>Read the state agreement note</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Audited consolidated accounts in thousands of Chilean pesos" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Calendar year</th><th scope="col">Donations income</th><th scope="col">Government agreement income</th><th scope="col">Social care expenses</th><th scope="col">Source</th></tr></thead>
+      <tbody>{accounts.map(account => <tr><th scope="row">{account.year}</th>
+        <td>{number(account.donationsIncome)}</td><td>{number(account.governmentAgreementIncome)}</td>
+        <td>{number(account.socialCareExpenses)}</td><td><a href={pdf(account.report === 2024 ? sources.accounts2024 : sources.accounts2025, account.page)}>Statement for {account.report}</a></td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="care-context">Read the separate care measures</h2>
+  <p>The {householdSurvey.year} Casen household survey found that {householdSurvey.noCaregiverPercent}% of people with severe dependence in its survey group had no caregiver. Another {householdSurvey.onlyHouseholdCaregiverPercent}% had only a caregiver from their own household. This is a national survey result in the same year as the 2024 approvals. It cannot identify who qualified for residential care, what the local need was or how much need the awards met. <a href={pdf(sources.householdSurvey, householdSurvey.page)}>Read Figure {householdSurvey.figure}</a>.</p>
+  <p>The government’s separate {monitoring.year} program report records {number(monitoring.nationalBeneficiaries)} beneficiaries nationwide, including {number(monitoring.metropolitanBeneficiaries)} in Metropolitana de Santiago. Those figures cover the whole program. For 2024, the monitoring report lists {number(monitoring.priorYearBeneficiaries)} beneficiaries and SENADIS’s management report lists {number(monitoring.priorYearManagementReportBeneficiaries)}. The difference remains unresolved. <a href={sources.monitoring.url}>Read the program monitoring report</a>. <a href={pdf(sources.management, 7)}>Read the 2024 management report</a>.</p>
+
+  <h2 id="downloads">Download the records and sources</h2>
+  <ul class="download-list" role="list">
+    {downloads.map(([file, label, symbol]) => <li><a class="identity-label" href={url(dataPath + file)} download>
+      <SiteSymbol name={symbol} size="inline" />{label}
+    </a></li>)}
+  </ul>
+  <p>The JSON lists source locations and fingerprints. The files preserve the years, reporting stages, original record IDs and different units. <a href={url('/record/charity-index/coverage/')}>See other Charity Index sources</a>.</p>
+</Entry>
+
+<style>
+  tr:is(:focus-visible, :target) { outline: 2px solid var(--focus); outline-offset: -2px; }
+  :is(th, td) { overflow-wrap: anywhere; }
+  .data { min-width: 35rem; }
+  .download-list { list-style: none; padding-inline-start: 0; }
+</style>

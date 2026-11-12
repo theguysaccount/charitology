@@ -575,3 +575,18 @@ python3 scripts/check-iberia-hrsa-sources.py --fetch
 The Python verifier streams the official CSV files and checks the award projection, public report selection, control totals and original PDF fingerprints. To verify retained source files offline, use `--source-dir DIRECTORY` with the original CSV and Excel file names, the three audit PDFs named by report ID, the original Census ZIP file names and `hrsa-award-map.json` for the recorded map response. The source sites may refresh the files. Reproducing this edition requires their exact fingerprints. The per-grant receipts and expenses can be read at the PDF pages in the export.
 
 The next expansion should sample a second grantee with multiple linked audits, then test whether Treasury account-level disbursements can be matched with exact dates and award identifiers. Look for dated service-site records and grant-specific allocations. The parish location in these audits gives no share of each award attributable to that parish.
+
+## Chile donation and residential care case
+
+The [Chile case](https://charitology.com/record/funding-flows/chile-residential-care/) connects Fundación Rostros Nuevos to a public donee entry and transfer register by the same tax identifier. The 2025 residence awards carry that identifier. The 2024 resolution lists the foundation and five named residences, and three residence names correspond to the 2025 awards. The coverage figures come from the observed Law 21.440 donee register and four annual receipt workbooks. The broader Civil Registry catalog links to a dashboard, so this edition makes no claim to cover Chile's whole legal-person register.
+
+The edition keeps five recipient-reported disclosures, three municipal register records, eight awards and three periods of consolidated accounts. The public awards and municipal entries describe different stages, and the annual accounts consolidate a subsidiary. The case presents the Casen 2024 national household result beside the 2024 awards as context. The survey populations and service geographies differ. It does not establish utilization at individual residences. The government program monitoring and management sources publish different 2024 counts, which remain separately sourced.
+
+Rebuild the five data files from the exact original workbooks, three scoped transfer CSVs, public register HTML and evidence captures named in the edition. The capture source links may serve newer bytes. The generator checks the inputs and computes counts, values and row locators from the workbook and register originals. The case's award, financial statement and survey rows are editorial transcriptions with source page locators. Public downloads contain selected institutional fields and no donor, beneficiary or representative records.
+
+```sh
+python3 scripts/build-chile-residential-care.py /path/to/captures /path/to/rebuilt
+diff -r public/data/funding-flows/chile-residential-care /path/to/rebuilt
+npm run build
+node scripts/check-chile-residential-care.mjs
+```
