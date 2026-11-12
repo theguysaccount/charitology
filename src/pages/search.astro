@@ -110,7 +110,9 @@ import { url } from '../lib/site';
     for (const hit of hits) {
       const excerpt = h('p', { class: 'r-excerpt' });
       excerpt.innerHTML = hit.excerpt;
-      const title = h('a', { class: 'r-title', href: hit.url });
+      const title = h('a', {
+        class: 'r-title', href: hit.url, 'data-site-symbol': hit.symbol, 'data-site-tone': hit.tone,
+      });
       if (hit.code) title.append(h('span', { class: 'identity-code' }, hit.code));
       title.append(hit.title);
       list.append(h('li', {}, h('a', { class: 'r-section', href: hit.sectionHref }, hit.section), title, excerpt));

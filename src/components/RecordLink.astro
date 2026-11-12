@@ -1,0 +1,13 @@
+---
+import type { SymbolName } from '../lib/site-identities';
+
+interface Props {
+  href: string;
+  code: string;
+  label: string;
+  symbol?: SymbolName;
+}
+const { href, code, label, symbol } = Astro.props;
+---
+
+<a class="identity-link" href={href} data-source-symbol={symbol}><span class="identity-code">{code}</span>{label}</a>

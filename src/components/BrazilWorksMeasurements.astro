@@ -1,4 +1,5 @@
 ---
+import RecordLink from './RecordLink.astro';
 import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
 import { data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
 import { measurementStatusLabels, type MeasurementItem, type MonitoringRecord } from '../lib/brazil-works-measurements';
@@ -35,7 +36,7 @@ function description(record: MonitoringRecord | MeasurementItem) {
         const { organization, search } = description(record);
         return <tr data-monitoring-row data-search={props.directory ? search : undefined} data-status={record.measurementStatus ?? 'unknown'}>
           {props.directory && <td>
-            <a class="identity-link" href={url(projectPath(record.agreement) + '#works-measurements')}>{record.agreement} · {record.project}</a>
+            <RecordLink href={url(projectPath(record.agreement) + '#works-measurements')} code={record.agreement} label={record.project} symbol="agreement" />
             <small>{organization}</small>
           </td>}
           <th scope="row">
@@ -68,7 +69,7 @@ function description(record: MonitoringRecord | MeasurementItem) {
         const { organization, search } = description(record);
         return <tr data-measurement-item data-search={props.directory ? search : undefined}>
           {props.directory && <td>
-            <a class="identity-link" href={url(projectPath(record.agreement) + '#works-measurements')}>{record.agreement} · {record.project}</a>
+            <RecordLink href={url(projectPath(record.agreement) + '#works-measurements')} code={record.agreement} label={record.project} symbol="agreement" />
             <small>{organization}</small>
           </td>}
           <th scope="row">Contract <code>{record.monitoringContractId}</code><small>Work item {record.measurementItemId}</small></th>

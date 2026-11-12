@@ -1,4 +1,5 @@
 ---
+import RecordLink from './RecordLink.astro';
 import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
 import { count, data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
 import type { MovementPeriod } from '../lib/brazil-infrastructure-account-movements';
@@ -44,7 +45,7 @@ function projectDescription(period: MovementPeriod) {
       const { sameYearBankOrders: orders, institutionalPayments, holderTransfers, onward } = period;
       return <tr data-movement-period={variant} data-year={period.calendarYear} data-search={directory ? search : undefined}>
         {directory && <td>
-          <a class="identity-link" href={url(projectPath(period.agreement) + '#account-movements')}>{period.agreement} · {period.project}</a>
+          <RecordLink href={url(projectPath(period.agreement) + '#account-movements')} code={period.agreement} label={period.project} symbol="agreement" />
           <small>{organization}</small>
         </td>}
         <th scope="row">{period.calendarYear}{period.partialYear && <small>Partial year</small>}</th>

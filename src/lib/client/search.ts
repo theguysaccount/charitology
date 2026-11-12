@@ -11,6 +11,8 @@ export interface Hit {
   section: string;
   sectionHref: string;
   code?: string;
+  symbol?: string;
+  tone?: string;
 }
 
 let loaded: Promise<any | null> | undefined;
@@ -62,9 +64,7 @@ function resultIdentity(url: string) {
   const path = url.startsWith(BASE) ? url.slice(BASE.length) : url;
   const [prefix, section, href = prefix] = SECTIONS.find(([prefix]) => path.startsWith(prefix))
     ?? ['/', 'Charitology'];
-  const country = path.match(/^\/record\/countries\/([a-z]{3})\//);
-  const agreement = path.match(/^\/record\/funding-flows\/brazil-project-execution\/(\d+)\//);
-  return { section, sectionHref: BASE + href, code: country?.[1].toUpperCase() ?? agreement?.[1] };
+  return { section, sectionHref: BASE + href };
 }
 
 /** Returns null when the search index isn't available (for example in dev mode). */
@@ -77,6 +77,9 @@ export async function searchSite(query: string, limit = 12): Promise<Hit[] | nul
     url: d.url,
     title: d.meta?.title ?? d.url,
     excerpt: d.excerpt ?? '',
+    code: d.meta?.record_code,
+    symbol: d.meta?.record_symbol,
+    tone: d.meta?.record_tone,
     ...resultIdentity(d.url),
   }));
 }

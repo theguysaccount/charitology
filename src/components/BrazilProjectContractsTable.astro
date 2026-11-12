@@ -1,4 +1,5 @@
 ---
+import RecordLink from './RecordLink.astro';
 import { url } from '../lib/site';
 import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
 import { data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
@@ -30,7 +31,7 @@ const projectsByAgreement = new Map(data.projects.map(project => [project.agreem
       return <tr id={`contract-${contract.procurementId}-${contract.contractId}`}
         data-contract-row data-search={directory ? terms : undefined} data-year={record.signedOn.slice(0, 4)}
         data-shared-portal={String(shared)} data-repeated={String(cipiRows.length > 1)}>
-        {directory && <th scope="row"><a class="identity-link" href={url(projectPath(record.agreement) + '#contracts')}>{record.agreement} · {record.project}</a><small>{name}</small></th>}
+        {directory && <th scope="row"><RecordLink href={url(projectPath(record.agreement) + '#contracts')} code={record.agreement} label={record.project} symbol="agreement" /><small>{name}</small></th>}
         {directory ? <td><code>{record.contractNumber}</code></td> : <th scope="row"><code>{record.contractNumber}</code></th>}
         <td><time datetime={record.signedOn}>{record.signedOn}</time></td>
         <td>{money(record.globalAmountCentsBRL)}</td>

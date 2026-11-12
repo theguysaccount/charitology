@@ -7,7 +7,7 @@ import '../styles/site-identity.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE, url } from '../lib/site';
-import { pageIdentity } from '../lib/site-identities';
+import { pageIdentity, type SymbolName } from '../lib/site-identities';
 
 interface Props {
   title?: string;
@@ -15,9 +15,10 @@ interface Props {
   noindex?: boolean;
   /** Exclude this page from site search (search results page, 404). */
   nosearch?: boolean;
+  identitySymbol?: SymbolName;
 }
 
-const { title, description = SITE.description, noindex = false, nosearch = false } = Astro.props;
+const { title, description = SITE.description, noindex = false, nosearch = false, identitySymbol } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.name}` : `${SITE.name}: ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const sitePath = Astro.url.pathname.slice(url('/').length - 1);
@@ -89,7 +90,7 @@ const ogVideo = Astro.url.pathname === url('/')
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <Header />
-    <main id="main" data-site-home={Astro.url.pathname === url('/') ? '' : undefined} data-site-path={sitePath} data-site-symbol={identity.symbol} data-site-tone={identity.tone} data-pagefind-body={nosearch || noindex ? undefined : ''}>
+    <main id="main" data-site-home={Astro.url.pathname === url('/') ? '' : undefined} data-site-path={sitePath} data-site-symbol={identitySymbol ?? identity.symbol} data-site-tone={identity.tone} data-pagefind-meta="record_symbol[data-site-symbol], record_tone[data-site-tone]" data-pagefind-body={nosearch || noindex ? undefined : ''}>
       <slot />
     </main>
     <Footer />
