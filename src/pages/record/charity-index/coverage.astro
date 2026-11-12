@@ -8,6 +8,7 @@ import australia from '../../../../public/data/charity-financials/manifest.json'
 import canada from '../../../../public/data/charity-financials/ca/manifest.json';
 import englandWales from '../../../../public/data/charity-financials/ew/manifest.json';
 import scotland from '../../../../public/data/charity-financials/scotland/manifest.json';
+import france from '../../../../public/data/charity-financials/fr-dila/manifest.json';
 import usa from '../../../../public/data/charity-financials/us/manifest.json';
 import usaShort from '../../../../public/data/charity-financials/us-990-ez/manifest.json';
 import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/manifest.json';
@@ -53,6 +54,14 @@ const panels = [
     history: `${number(englandWales.counts.included)} received annual returns for periods ending in 2023–2025. ${number(englandWales.multiPeriod)} charities have multiple periods.`,
     boundary: 'The figures are gross income and expenditure in GBP. Linked, suppressed and unreceived records are outside the included scope.',
     manifest: '/data/charity-financials/ew/manifest.json',
+  },
+  {
+    id: 'france', name: 'France', source: 'DILA published annual account notices', route: '/record/charity-financials/france/',
+    label: 'Search French annual account notices', date: france.capturedOn,
+    coverage: `${number(france.counts.notices)} notices for fiscal closings from 2022 to 2025. ${number(france.counts.candidateSirens)} distinct identifiers pass the format checks.`,
+    history: `${number(france.counts.multiPeriodCandidateSirens)} candidate identifiers have filings for more than one fiscal closing date.`,
+    boundary: 'Originals and corrected versions remain searchable. The capture covers published filing notices. It cannot measure the size of the association sector.',
+    manifest: '/data/charity-financials/fr-dila/manifest.json',
   },
   {
     id: 'japan', name: 'Japan', source: 'Cabinet Office NPO Portal', route: '/record/charity-index/japan/',
@@ -114,6 +123,7 @@ const sources = [
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
+  { title: 'French association accounts dataset', publisher: france.source.publisher, url: france.source.dataset },
   { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },

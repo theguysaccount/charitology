@@ -650,3 +650,18 @@ node scripts/build-france-emmaus.mjs --check
 ```
 
 Next qualify a dated DILA filing index with revision coverage and a matching SIREN population from the official register. Measure which institutions and fiscal periods can be joined, and preserve missing or ambiguous RNA identifiers. For money movement, prioritize a second exact grant trace and signed expenditure or disbursement records that carry a dossier ID. Keep approval, payments, accounting recognition, delivery and independently measured need distinct.
+
+### Search original French filing notices
+
+The [French filing lookup](https://charitology.com/record/charity-financials/france/) selects 55,968 DILA account notices for 2022–25 fiscal closings, including corrections. It derives 19,079 distinct candidate SIRENs and 14,692 with more than one closing date from the actual exported rows. The lookup retains 1,355 notices outside the candidate rule and 16 notices whose revision field and filename suffix differ. Those records remain searchable. The capture date and source-specific publication rules bound these figures. Missing notices do not measure inactivity or accountability.
+
+The [manifest](../public/data/charity-financials/fr-dila/manifest.json) pins the four exact API exports and the regional snapshot. The lookup links the same number across 860 candidate SIRENs and the retained Île-de-France payments. It does not infer which payments are recognized in annual accounts. SIREN candidates use a check digit and exclude the 999 series from joins. The RNA label appears only where DILA gives the standard W-plus-nine-digit format. There are no addresses, contacts or extracted document contents in the public payload.
+
+```sh
+node scripts/build-france-dila.mjs --write /path/to/captured-inputs /path/to/rebuild
+diff -r public/data/charity-financials/fr-dila /path/to/rebuild
+npm run build
+node scripts/build-france-dila.mjs --check
+```
+
+To extend the edition, check the [DILA dataset discussion](https://www.data.gouv.fr/datasets/comptes-associations) for publisher correction notices. Qualify an official registry join where needed, preserve distinct filing periods and revisions, and prioritize disbursement references and amount-level transcription for independently reproducible cases. The original Île-de-France 2019–23 payment annex lacks an organization or dossier ID, so its names are insufficient to extend an exact transaction match.

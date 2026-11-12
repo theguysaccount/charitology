@@ -270,6 +270,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['ew-finance-heading', 'Search annual returns', 'lens'],
     ['coverage', 'Coverage and original data', 'yearFile'],
   ],
+  '/record/charity-financials/france/': [
+    ['dila-search-heading', 'Find a filed account', 'lens'],
+    ['coverage', 'See what the capture covers', 'archive'],
+    ['identifiers', 'Read the identifiers and revisions', 'recordVersion'],
+  ],
   '/record/charity-financials/scotland/': [
     ['scotland-finance-heading', 'Search Scottish registrations and returns', 'lens'],
     ['cross-register', 'Compare records across two regulators', 'compare'],

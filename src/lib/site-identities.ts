@@ -48,6 +48,7 @@ export const sections: Section[] = [
     'charity-financials': 'coins', 'charity-financials/canada': 'maple', 'charity-financials/united-states': 'columns',
     'charity-financials/united-states/990-ez': 'notes', 'charity-financials/united-states/990-pf': 'building',
     'charity-financials/england-wales': 'shield', 'charity-financials/scotland': 'thistle', 'charity-financials/kenya': 'chart', 'charity-financials/mexico': 'agave',
+    'charity-financials/france': 'filingStack',
     'countries': 'pin', 'country-profiles': 'globe', 'disagreements': 'dialogue', 'editions': 'document',
     'editions/compare': 'compare', 'encyclopedia': 'book', 'evidence-library': 'stack',
     'failure-archive': 'break', 'funding-flows': 'split', 'funding-flows/canada-qualified-donees': 'chain',

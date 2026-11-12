@@ -1,0 +1,208 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-financials/fr-dila/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'French association and foundation filings';
+const asset = '/data/charity-financials/fr-dila/';
+const count = (value: number) => value.toLocaleString('en-US');
+const emmaus = '/record/funding-flows/france-emmaus-solidarite/';
+const regional = '/record/funding-flows/ile-de-france-paid-grants/';
+const sources = [
+  { title: 'Association accounts dataset and publisher correction notices', url: manifest.source.dataset },
+  { title: 'Scope, fields and terms of the association accounts API', url: manifest.source.documentation },
+  { title: 'SIREN identifier definition', url: 'https://www.insee.fr/fr/metadonnees/definition/c2047' },
+  { title: 'Association registration and RNA identifier', url: 'https://www.service-public.gouv.fr/particuliers/vosdroits/F1926' },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index · France"
+  summary="Find annual account notices, compare filing versions and open the published documents. Search by name, SIREN, RNA or exact notice ID."
+  filePath="src/pages/record/charity-financials/france.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Charity financial filings',href:'/record/charity-financials/'},{label:'France'}]}
+  sources={sources}>
+  <p>This edition contains <strong>{count(manifest.counts.notices)} filing notices</strong> for fiscal periods ending in 2022 through 2025. There are {count(manifest.counts.candidateSirens)} distinct SIREN candidates that pass the identifier checks below. Of those, {count(manifest.counts.multiPeriodCandidateSirens)} have more than one closing date in this capture. A notice gives access to an original filing. It carries no transcribed financial amounts here.</p>
+  <p><a class="identity-link" href={url(emmaus)}>Read Emmaüs Solidarité’s four annual accounts alongside its regional grant records</a>.</p>
+  <section class="charity-financial-search" id="q=317236248" data-dila-search data-manifest={JSON.stringify(manifest)}
+    data-file={url(asset + manifest.asset.path)} data-regional={url(regional)} aria-labelledby="dila-search-heading">
+    <h2 id="dila-search-heading">Find a filed account</h2>
+    <p id="dila-hint">Enter the beginning of a published name or an exact identifier. Search loads about {(manifest.asset.bytes / 1_000_000).toFixed(1)} MB of public records. The search runs in this browser. Older captured versions stay in the results.</p>
+    <form aria-describedby="dila-hint">
+      <label for="dila-query">Name, SIREN, RNA or notice ID</label>
+      <div class="finance-actions">
+        <input id="dila-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <label for="dila-year">Fiscal closing year</label>
+        <select id="dila-year" disabled>
+          <option value="">All captured years</option>
+          {manifest.byYear.map(({year}) => <option value={year}>{year}</option>)}
+        </select>
+        <button class="btn" type="submit" disabled>Search filings</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the filing index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed notices as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed notices as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="yearFile" aria-label="Filing notice results" data-results></ol>
+    <noscript><p>For search without JavaScript, open the <a href={manifest.source.dataset}>official DILA index</a> or use the source exports below.</p></noscript>
+  </section>
+
+  <h2 id="coverage">See what the capture covers</h2>
+  <div class="table-wrap" role="region" aria-label="Coverage by fiscal closing year" tabindex="0">
+    <table class="data coverage-table">
+      <caption>Exact counts of the retained filing notices</caption>
+      <thead><tr><th scope="col">Closing year</th><th scope="col">Notices</th><th scope="col">SIREN candidates</th><th scope="col">No standard-format RNA</th><th scope="col">Notices with revision above zero</th><th scope="col">Source</th></tr></thead>
+      <tbody>{manifest.byYear.map((row, i) => <tr data-closure-year={row.year}>
+        <th scope="row">{row.year}</th><td>{count(row.notices)}</td><td>{count(row.candidateSirens)}</td>
+        <td>{count(row.noStandardRna)}</td><td>{count(row.positiveRevision)}</td>
+        <td><a href={manifest.archive[i].url}>Official {row.year} API export</a></td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>DILA publishes accounts under filing rules that depend on the organization and its funding. A missing record may reflect the filing rules or the date of this capture. Use the fiscal closing date for the reporting period and the notice date for publication. Counts for recent fiscal years may still change. The edition keeps institutional titles and filing metadata and leaves out addresses, contacts and document contents.</p>
+  <p>Source: {manifest.source.publisher}, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>. The projection is adapted under <a href={manifest.source.license}>France’s Open Licence 2.0</a>. The manifest records the original query and byte fingerprints.</p>
+  <p><a class="identity-link" href={url(asset + 'manifest.json')} download>Download the source and coverage manifest</a> · <a class="identity-link" href={url(asset + manifest.asset.path)} download>Download the selected filing index (compressed JSON)</a>.</p>
+
+  <h2 id="identifiers">Read the identifiers and revisions</h2>
+  <p>The SIREN candidate comes from the number printed by DILA when it has nine digits, passes the check digit and does not start with 999. The check digit does not verify a legal unit’s identity. The <strong>{count(manifest.counts.unusableCandidateSiren)}</strong> other notices remain searchable by name and exact published number. A blank RNA means DILA supplied no identifier in the standard W-plus-nine-digit form used here.</p>
+  <p>Each notice has its own publication date, validation timestamp, published revision field and record ID. Where the revision field differs from the number in the filename, both are visible. That happens on <strong>{count(manifest.counts.revisionLabelDisagreement)}</strong> captured notices. This lookup does not choose which document governs an accounting question.</p>
+  <p>The regional payment snapshot contains candidate matches for <strong>{count(manifest.counts.regionalPaymentCandidates)}</strong> of the filing identifiers. The link uses the same nine-digit number in the filing and the first nine digits of the payment’s SIRET. The link lets readers inspect both sources. It does not connect a payment to a filing line, reconcile accounting periods or establish where work occurred. <a class="identity-link" href={url(regional)}>Search regional payments directly</a>.</p>
+  <p>To suggest a correction, include the publisher’s notice ID and the filing date. <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
+</Entry>
+
+<style>
+  .coverage-table { min-inline-size: 39rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { loadVerifiedJson } from '../../../lib/client/verified-json';
+
+  type Row = [string, string, string, string, string, string, number, string | null, string | null, boolean];
+  type Manifest = typeof import('../../../../public/data/charity-financials/fr-dila/manifest.json');
+  const normalize = (value: string) => value.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const safeCsv = (value: unknown) => typeof value === 'string' && /^(?:\s*[=+\-@]|[\t\r\n])/.test(value) ? "'" + value : value;
+  const fileLink = (id: string, end: string) => {
+    const year = end.slice(0, 4);
+    const dayMonth = end.slice(8) + end.slice(5, 7);
+    return 'https://www.journal-officiel.gouv.fr/telechargements/ASSOCIATIONS/DCA/PDF/' + year + '/' + dayMonth + '/' + id + '.pdf';
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-dila-search]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('[type=search]', form);
+    const year = $<HTMLSelectElement>('select', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    let snapshot: Promise<Row[]> | undefined;
+    let displayed: Row[] = [];
+    let sequence = 0;
+    input.disabled = year.disabled = submit.disabled = clear.disabled = false;
+
+    async function load() {
+      const rows = await loadVerifiedJson(root.dataset.file!, manifest.asset);
+      if (!Array.isArray(rows) || rows.length !== manifest.asset.rows) throw new Error('The filing index has an unexpected row count.');
+      return rows as Row[];
+    }
+
+    function reset() {
+      displayed = [];
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function filing([id, number, name, end, published, validated, revision, rna, siren, regionalLink]: Row) {
+      const fileRevision = Number(/_rectif([1-9]\d*)$/.exec(id)?.[1] ?? 0);
+      return h('li', {class:'card'}, h('h3', {}, name),
+        h('p', {}, 'Fiscal closing date ' + end + ' · Published ' + published),
+        h('p', {class:'note'}, (siren ? 'SIREN candidate ' + siren : 'Published number ' + number + ' · identity unverified') +
+          (rna ? ' · RNA as published ' + rna : ' · No standard-format RNA shown')),
+        h('p', {class:'note'}, 'Notice ' + id + ' · Publisher revision ' + revision + ' · Validated ' + validated),
+        fileRevision !== revision && h('p', {class:'note'}, 'The filename revision (' + fileRevision + ') and the publisher field (' + revision + ') differ.'),
+        h('p', {}, h('a', {href:fileLink(id, end)}, 'Open this original filing (PDF)'),
+          regionalLink && h('span', {}, ' · ', h('a', {href:root.dataset.regional! + '#q=' + siren}, 'Inspect regional payments for this identifier'))));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const identifier = raw.replace(/\s/g, '').toUpperCase();
+      const name = normalize(raw);
+      const closingYear = year.value;
+      try {
+        if (name.length < 2) throw new Error('Enter at least two characters or a complete identifier.');
+        submit.disabled = true;
+        status.textContent = 'Checking the public filing index.';
+        snapshot ??= load().catch(error => { snapshot = undefined; throw error; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        const found = rows.filter(([id, number, title, end, , , , rna]) => {
+          if (closingYear && !end.startsWith(closingYear)) return false;
+          if (/^\d{9}$/.test(identifier)) return number === identifier;
+          if (/^W\d{9}$/.test(identifier)) return rna === identifier;
+          if (/^\d{9}_\d{8}(?:_RECTIF[1-9]\d*)?$/.test(identifier)) return id.toUpperCase() === identifier;
+          return normalize(title).startsWith(name);
+        });
+        found.sort((a, b) => b[3].localeCompare(a[3]) || b[4].localeCompare(a[4]) || b[6] - a[6] || a[0].localeCompare(b[0]));
+        displayed = found.slice(0, 60);
+        status.textContent = found.length ? found.length.toLocaleString('en-US') + ' ' +
+          (found.length === 1 ? 'notice' : 'notices') + '. Showing ' + displayed.length + '.' :
+          'No matching filing notices in this edition.';
+        results.append(...displayed.map(filing));
+        json.disabled = csv.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The search failed.';
+      } finally {
+        if (ticket === sequence) submit.disabled = false;
+      }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      input.value = year.value = '';
+      submit.disabled = false;
+      status.textContent = 'Search cleared.';
+      if (/^#q=\d{9}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#dila-search-heading');
+      }
+      input.focus();
+    });
+
+    const exported = () => displayed.map(row => ({
+      ...Object.fromEntries(manifest.fields.map((field, i) => [field, row[i]])),
+      original: fileLink(row[0], row[3]),
+    }));
+    json.addEventListener('click', () => {
+      if (displayed.length) download('france-filing-notices.json',
+        JSON.stringify({capturedOn:manifest.capturedOn, source:manifest.source, archive:manifest.archive, notices:exported()}, null, 2) + '\n',
+        'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!displayed.length) return;
+      const rows = exported().map(row => {
+        const source = manifest.archive.find(item => String(item.year) === String(row.fiscalEnd).slice(0, 4))!;
+        return Object.fromEntries(Object.entries({...row, capturedOn:manifest.capturedOn, publisher:manifest.source.publisher,
+          source:source.url, sourceSha256:source.sha256, license:manifest.source.license}).map(([key, value]) => [key, safeCsv(value)]));
+      });
+      download('france-filing-notices.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const linkedId = /^#q=(\d{9})$/.exec(location.hash)?.[1];
+    if (linkedId) {
+      input.value = linkedId;
+      form.requestSubmit();
+    }
+  }
+</script>
