@@ -1,4 +1,6 @@
 ---
+import SiteSymbol from './SiteSymbol.astro';
+import { pageIdentity } from '../lib/site-identities';
 import Badges from './Badges.astro';
 import { url } from '../lib/site';
 import type { CatalogEntry } from '../lib/content';
@@ -8,9 +10,11 @@ interface Props {
   base: string;
 }
 const { entry, base } = Astro.props;
+const path = `${base}${entry.id}/`;
 ---
 
-<a class="card" id={`item-${entry.id}`} href={url(`${base}${entry.id}/`)}>
+<a class="card" id={`item-${entry.id}`} href={url(path)}>
+  <SiteSymbol name={pageIdentity(path).symbol} />
   <h3>{entry.data.title}</h3>
   <p>{entry.data.summary}</p>
   <div class="card-meta">

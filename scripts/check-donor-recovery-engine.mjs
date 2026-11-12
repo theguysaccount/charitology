@@ -94,8 +94,12 @@ await check(
       r.find((x) => x.status === "rejected").reason.code,
       "external_change",
     );
-    assert.equal(JSON.parse(s.values.get(full("wrapped"))).year, "2025");
-    assert.equal(b.session.snapshot().value.year, "2024");
+    // Either asynchronous save can reach the shared lock first.
+    const [winner, loser] = r[0].status === "fulfilled" ? [a, b] : [b, a];
+    const winningYear = winner === a ? "2025" : "2026";
+    assert.equal(JSON.parse(s.values.get(full("wrapped"))).year, winningYear);
+    assert.equal(winner.session.snapshot().value.year, winningYear);
+    assert.equal(loser.session.snapshot().value.year, "2024");
   },
 );
 await check(

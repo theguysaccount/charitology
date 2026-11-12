@@ -40,10 +40,38 @@ export const needSymbols: Record<string, SymbolName> = {
   'EG.ELC.ACCS.ZS': 'bolt', 'SH.H2O.BASW.ZS': 'water',
 };
 
+export const observationMeasureSymbols: Readonly<Record<string, SymbolName>> = {
+  'country-basic-water-access': needSymbols['SH.H2O.BASW.ZS'],
+  'country-electricity-access': needSymbols['EG.ELC.ACCS.ZS'],
+  'country-life-expectancy': needSymbols['SP.DYN.LE00.IN'],
+  'country-population': needSymbols['SP.POP.TOTL'],
+  'country-under-five-mortality': needSymbols['SH.DYN.MORT'],
+  'financial-assets': 'wallet',
+  'financial-liabilities': 'scale',
+  'financial-net-assets': 'balance',
+  'financial-givewell-expenses': 'route',
+  'financial-wikimedia-expenses': 'table',
+  'afg-education-2024-requirements': 'school',
+  'afg-education-2024-funding': 'coins',
+};
+
+export const observationEditionSymbols: Readonly<Record<string, SymbolName>> = {
+  'observations-2026-10-27': 'globe',
+  'observations-2026-11-08-education-plan': 'school',
+};
+
 export const hazardSymbols: Record<string, SymbolName> = {
   wildfire: 'flame', earthquake: 'quake', flood: 'flood', storm: 'cloud',
   drought: 'drought', other: 'alert', unclassified: 'question',
 };
+
+export const disasterClaimSymbols = {
+  'reported-need': 'alert',
+  'response-activity': 'hands',
+  'appeal-request': 'megaphone',
+  status: 'signal',
+  correction: 'loop',
+} as const satisfies Record<string, SymbolName>;
 
 export const disasterAdviceSymbols: Record<string, SymbolName> = {
   'dr-cash': 'wallet', 'dr-local': 'hands', 'dr-recovery': 'hourglass',
