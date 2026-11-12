@@ -1,0 +1,259 @@
+{
+  "format": "charitology-cross-register-returns-v1",
+  "currency": "GBP",
+  "matchingRule": "Public confirmation of both registration numbers, then equal financial year end.",
+  "scotland": {
+    "date": "2026-11-12",
+    "sources": {
+      "register": {
+        "publisher": "Office of the Scottish Charity Regulator",
+        "url": "https://www.oscr.org.uk/download/charity-register",
+        "member": "CharityExport-12-Nov-2026.csv",
+        "sha256": "3cd98e1d462ea52e9d3f414b5269b7addc3da911b3e90e62f39f46c72d5550b2"
+      },
+      "returns": {
+        "publisher": "Office of the Scottish Charity Regulator",
+        "url": "https://www.oscr.org.uk/download/5-years-charity-register",
+        "member": "CharityExport-5Years-12-Nov-2026.csv",
+        "sha256": "fd0712d90956c95dd8162abfc1157e5f93f947c1656637075acc5e4a72379c48"
+      }
+    },
+    "license": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "attribution": "© Crown Copyright and database right 2026. Contains information from the Scottish Charity Register supplied by the Office of the Scottish Charity Regulator and licensed under the Open Government Licence v.3.0."
+  },
+  "englandAndWales": {
+    "date": "2026-11-10",
+    "sources": {
+      "register": {
+        "publisher": "Charity Commission for England and Wales",
+        "url": "https://ccewuksprdoneregsadata1.blob.core.windows.net/data/txt/publicextract.charity.zip",
+        "sha256": "9457e2d45addfbeac7e3689c8cb5999edb1fa77c672b3bf0eef1459da86a0c24"
+      },
+      "returns": {
+        "publisher": "Charity Commission for England and Wales",
+        "url": "https://ccewuksprdoneregsadata1.blob.core.windows.net/data/txt/publicextract.charity_annual_return_history.zip",
+        "sha256": "d251fdea46a3603cf363b2bad83487bb8dcf44772c59ad282a9521379974aa56"
+      }
+    },
+    "license": "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+    "manifestSha256": "ab5ed15e344c79ff197f6c10e03ca1eef929c80adb614d9212249fe872102056"
+  },
+  "pairs": [
+    {
+      "name": "Save the Children Fund",
+      "identitySource": "https://www.savethechildren.org.uk/about-us/charity-ratings",
+      "scotlandNumber": "SC039570",
+      "englandAndWalesNumber": "213890",
+      "englandAndWalesOrganizationId": "213890",
+      "periods": [
+        {
+          "end": "2025-12-31",
+          "scotland": {
+            "start": null,
+            "received": "2026-07-24",
+            "incomeGBP": "262508000",
+            "expenditureGBP": "275822000",
+            "sourceRecord": 59661
+          },
+          "englandAndWales": {
+            "start": "2025-01-01",
+            "received": "2026-07-24",
+            "incomeGBP": "262508000",
+            "expenditureGBP": "275822000",
+            "sourceRecord": 29933
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 0,
+            "expenditure": 0
+          }
+        },
+        {
+          "end": "2024-12-31",
+          "scotland": {
+            "start": null,
+            "received": "2025-08-26",
+            "incomeGBP": "304834000",
+            "expenditureGBP": "308810973",
+            "sourceRecord": 59662
+          },
+          "englandAndWales": {
+            "start": "2024-01-01",
+            "received": "2025-08-26",
+            "incomeGBP": "304834000",
+            "expenditureGBP": "308810973",
+            "sourceRecord": 29932
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 0,
+            "expenditure": 0
+          }
+        },
+        {
+          "end": "2023-12-31",
+          "scotland": {
+            "start": null,
+            "received": "2024-08-21",
+            "incomeGBP": "296015000",
+            "expenditureGBP": "295425000",
+            "sourceRecord": 59663
+          },
+          "englandAndWales": {
+            "start": "2023-01-01",
+            "received": "2024-08-21",
+            "incomeGBP": "296015000",
+            "expenditureGBP": "295425000",
+            "sourceRecord": 29931
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 0,
+            "expenditure": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "British Red Cross Society",
+      "identitySource": "https://www.redcross.org.uk/terms-and-conditions",
+      "scotlandNumber": "SC037738",
+      "englandAndWalesNumber": "220949",
+      "englandAndWalesOrganizationId": "220949",
+      "periods": [
+        {
+          "end": "2025-12-31",
+          "scotland": {
+            "start": null,
+            "received": "2026-07-21",
+            "incomeGBP": "293500000",
+            "expenditureGBP": "304700000",
+            "sourceRecord": 54760
+          },
+          "englandAndWales": {
+            "start": "2025-01-01",
+            "received": "2026-09-11",
+            "incomeGBP": "293500000",
+            "expenditureGBP": "304700000",
+            "sourceRecord": 43701
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 0,
+            "expenditure": 0
+          }
+        },
+        {
+          "end": "2024-12-31",
+          "scotland": {
+            "start": null,
+            "received": "2025-07-21",
+            "incomeGBP": "287100000",
+            "expenditureGBP": "310300000",
+            "sourceRecord": 54761
+          },
+          "englandAndWales": {
+            "start": "2024-01-01",
+            "received": "2025-09-08",
+            "incomeGBP": "287100000",
+            "expenditureGBP": "310300000",
+            "sourceRecord": 43700
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 0,
+            "expenditure": 0
+          }
+        },
+        {
+          "end": "2023-12-31",
+          "scotland": {
+            "start": null,
+            "received": "2024-07-23",
+            "incomeGBP": "330600000",
+            "expenditureGBP": "322700000",
+            "sourceRecord": 54762
+          },
+          "englandAndWales": {
+            "start": "2023-01-01",
+            "received": "2024-08-29",
+            "incomeGBP": "330600000",
+            "expenditureGBP": "322700000",
+            "sourceRecord": 43699
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 0,
+            "expenditure": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "Oxfam GB",
+      "identitySource": "https://www.oxfam.org.uk/documents/1077/Oxfam__GB_Annual_Report_2024-2025.pdf",
+      "scotlandNumber": "SC039042",
+      "englandAndWalesNumber": "202918",
+      "englandAndWalesOrganizationId": "202918",
+      "periods": [
+        {
+          "end": "2025-03-31",
+          "scotland": {
+            "start": null,
+            "received": "2025-12-16",
+            "incomeGBP": "339336903",
+            "expenditureGBP": "362636196",
+            "sourceRecord": 58200
+          },
+          "englandAndWales": {
+            "start": "2024-04-01",
+            "received": "2025-12-18",
+            "incomeGBP": "339366903",
+            "expenditureGBP": "362636196",
+            "sourceRecord": 6584
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 30000,
+            "expenditure": 0
+          }
+        },
+        {
+          "end": "2024-03-31",
+          "scotland": {
+            "start": null,
+            "received": "2024-12-18",
+            "incomeGBP": "368000000",
+            "expenditureGBP": "396400000",
+            "sourceRecord": 58201
+          },
+          "englandAndWales": {
+            "start": "2023-04-01",
+            "received": "2025-01-30",
+            "incomeGBP": "368000000",
+            "expenditureGBP": "396400000",
+            "sourceRecord": 6583
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 0,
+            "expenditure": 0
+          }
+        },
+        {
+          "end": "2023-03-31",
+          "scotland": {
+            "start": null,
+            "received": "2023-12-19",
+            "incomeGBP": "400600000",
+            "expenditureGBP": "360400000",
+            "sourceRecord": 58202
+          },
+          "englandAndWales": {
+            "start": "2022-04-01",
+            "received": "2024-01-29",
+            "incomeGBP": "400600000",
+            "expenditureGBP": "360400000",
+            "sourceRecord": 6582
+          },
+          "englandAndWalesMinusScotlandGBP": {
+            "income": 0,
+            "expenditure": 0
+          }
+        }
+      ]
+    }
+  ]
+}

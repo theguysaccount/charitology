@@ -209,6 +209,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['ew-finance-heading', 'Search annual returns', 'lens'],
     ['coverage', 'Coverage and original data', 'yearFile'],
   ],
+  '/record/charity-financials/scotland/': [
+    ['scotland-finance-heading', 'Search Scottish registrations and returns', 'lens'],
+    ['cross-register', 'Compare records across two regulators', 'compare'],
+    ['coverage', 'Coverage, gaps and original files', 'yearFile'],
+  ],
   '/record/charity-financials/united-states/': [
     ['us-finance-heading', 'Search Form 990 extracts', 'lens'],
     ['coverage', 'Coverage and original data', 'yearFile'],

@@ -27,44 +27,25 @@ import '../styles/charity-financial-search.css';
 <script>
   import { $, h } from '../lib/client/dom';
   import { download, toCsv } from '../lib/client/files';
-  import { loadVerifiedJson, type VerifiedJsonAsset } from '../lib/client/verified-json';
+  import { financialCsvName, financialShardLoader, normalizeFinancialName, type FinancialShard } from '../lib/client/financial-directory';
 
   type Filing = [string, string, string, string | null, string | null, number];
   type Organization = [string, string, string, Filing[]];
   type DirectoryEntry = [string, string];
-  type Asset = VerifiedJsonAsset & { path: string; rows: number };
   type Source = { publisher: string; url: string; sha256: string };
   type Manifest = { date: string; currency: string; jurisdiction: string; license: string; periodFields: string[];
-    sources: { register: Source; returns: Source }; names: Record<string, Asset>; ids: Record<string, Asset> };
+    sources: { register: Source; returns: Source }; names: Record<string, FinancialShard>; ids: Record<string, FinancialShard> };
   type Result = { total: number; organizations: Organization[] };
 
   const limit = 25;
   const currency = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 2 });
-  const normalize = (value: string) => value.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
   const amount = (value: string | null) => value === null ? 'Not supplied' : currency.format(Number(value));
-  const csvName = (name: string) => /^(?:\s*[=+\-@]|[\t\r\n])/.test(name) ? `'${name}` : name;
-
-  function shardLoader<Row>(base: string, assets: Record<string, Asset>) {
-    let cached: { key: string; rows: Promise<Row[]> } | undefined;
-    return (key: string) => {
-      const asset = Object.hasOwn(assets, key) ? assets[key] : undefined;
-      if (!asset) return Promise.resolve([] as Row[]);
-      if (cached?.key === key) return cached.rows;
-      const rows = loadVerifiedJson(base + asset.path, asset).then(value => {
-        if (!Array.isArray(value) || value.length !== asset.rows) throw new Error('The snapshot has an unexpected row count.');
-        return value as Row[];
-      });
-      cached = { key, rows };
-      void rows.catch(() => { if (cached?.rows === rows) cached = undefined; });
-      return rows;
-    };
-  }
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-ew-finance]')) {
     const manifest: Manifest = JSON.parse(root.dataset.manifest!);
     const base = root.dataset.base!;
-    const loadNames = shardLoader<Organization>(base, manifest.names);
-    const loadIds = shardLoader<DirectoryEntry>(base, manifest.ids);
+    const loadNames = financialShardLoader<Organization>(base, manifest.names);
+    const loadIds = financialShardLoader<DirectoryEntry>(base, manifest.ids);
     const form = $<HTMLFormElement>('form', root);
     const input = $<HTMLInputElement>('input', form);
     const submit = $<HTMLButtonElement>('button[type=submit]', form);
@@ -105,13 +86,13 @@ import '../styles/charity-financial-search.css';
         return { total: 1, organizations: [organization] };
       }
 
-      const query = normalize(value);
+      const query = normalizeFinancialName(value);
       if ([...query].length < 2) throw new Error('Enter at least two characters of the name or use an exact registration number.');
       const bucket = /^[a-z0-9]/.test(query) ? query[0] : '_';
       const organizations: Organization[] = [];
       let total = 0;
       for (const row of await loadNames(bucket)) {
-        if (!normalize(row[1]).startsWith(query)) continue;
+        if (!normalizeFinancialName(row[1]).startsWith(query)) continue;
         total++;
         if (organizations.length < limit) organizations.push(row);
       }
@@ -160,7 +141,7 @@ import '../styles/charity-financial-search.css';
     csv.addEventListener('click', () => {
       if (!result) return;
       const rows = result.organizations.flatMap(([number, name, regulatorId, filings]) => filings.map(([start, end, annualReturnReceived, grossIncomeGBP, grossExpenditureGBP, sourceRecord]) => ({
-        number, name: csvName(name), regulatorId, start, end, annualReturnReceived, grossIncomeGBP, grossExpenditureGBP, sourceRecord,
+        number, name: financialCsvName(name), regulatorId, start, end, annualReturnReceived, grossIncomeGBP, grossExpenditureGBP, sourceRecord,
         currency: currencyCode, jurisdiction, capturedOn: date, publisher: sources.returns.publisher, license,
         source: sources.returns.url, sourceSha256: sources.returns.sha256, registerSource: sources.register.url, registerSha256: sources.register.sha256,
       })));

@@ -7,6 +7,7 @@ import { pageIdentity } from '../../../lib/site-identities';
 import australia from '../../../../public/data/charity-financials/manifest.json';
 import canada from '../../../../public/data/charity-financials/ca/manifest.json';
 import englandWales from '../../../../public/data/charity-financials/ew/manifest.json';
+import scotland from '../../../../public/data/charity-financials/scotland/manifest.json';
 import usa from '../../../../public/data/charity-financials/us/manifest.json';
 import usaShort from '../../../../public/data/charity-financials/us-990-ez/manifest.json';
 import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/manifest.json';
@@ -83,6 +84,14 @@ const panels = [
     manifest: '/data/charity-registry/new-zealand/manifest.json',
   },
   {
+    id: 'scotland', name: 'Scotland', source: 'Scottish Charity Regulator register and annual returns', route: '/record/charity-financials/scotland/',
+    label: 'Search Scottish registrations and returns', date: scotland.date,
+    coverage: `${number(scotland.identities)} searchable registration numbers, including ${number(scotland.withReturns)} with an included return.`,
+    history: `${number(scotland.counts.included)} dated returns in GBP. ${number(scotland.multiPeriod)} registrations have multiple periods.`,
+    boundary: 'The period start is unavailable. Three confirmed cross-register matches show where the regulators agree and where their figures or receipt dates differ.',
+    manifest: '/data/charity-financials/scotland/manifest.json',
+  },
+  {
     id: 'united-states', name: 'United States', source: 'IRS identity and Form 990 extracts', route: '/record/charity-financials/united-states/',
     label: 'Search U.S. Form 990 finances', date: usa.capturedOn,
     coverage: `${number(registry.recordCount)} dated federal registry identities. Separately, ${number(usa.counts.organizations)} EINs have a selected full Form 990 period.`,
@@ -95,6 +104,7 @@ const sources = [
   { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
+  { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
 ];

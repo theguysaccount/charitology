@@ -59,6 +59,8 @@ GlobalGiving already offers international registry lookup. Candid and ProPublica
 
 Each improvement should be independently verifiable. Publish the source versions, included and excluded populations, and what a reader can infer before adding another source or geography.
 
+Extend the verified UK cross-register examples when an original filing or public institutional record explicitly supplies both registration numbers. Preserve the filing scope, period, receipt date and unresolved amount differences. For a new jurisdiction, check the [Irish Charities Regulator catalogue](https://data.gov.ie/dataset/register-of-charities-in-ireland) for accessible, licensed versions of its register and reports. The regulator download links checked for this cycle returned HTTP 403. The [Tainan fundraising disclosures](https://data.gov.tw/dataset/148500) are a candidate for campaign-level tracing. Compare approvals and reported amounts only after establishing the campaign stage and how the source uses blank and zero fields.
+
 ## England and Wales annual returns
 
 The [England and Wales financial filings page](https://charitology.com/record/charity-financials/england-wales/) uses a separate Commission edition under the Open Government Licence v3.0. It covers 157,367 of 171,945 main registered charities in the November 10, 2026 register extract, with 452,394 received returns for financial periods ending in 2023, 2024 or 2025. The date of receipt is distinct from the period end. Data record coordinates refer to one-based tab-delimited source records after the header. All money figures remain in GBP.
@@ -70,6 +72,23 @@ Rebuild offline from the exact `charity-register.zip` and `annual-return-history
 ```sh
 python3 scripts/build-ew-charity-financials.py /path/to/captured-inputs /path/to/new-rebuild
 node scripts/check-ew-charity-financials.mjs
+```
+
+## Scottish charity registrations and annual returns
+
+The [Scottish financial filings page](https://charitology.com/record/charity-financials/scotland/) covers 24,994 exact Scottish charity numbers in the November 12, 2026 register export. Of those, 22,532 have at least one included return and 21,496 have multiple returns. The 100,514 retained returns show year-ends from March 31, 2010 through October 31, 2026. The OSCR five-year download contains some older records. It supplies no period start. Retained gross income and expenditure stay in GBP. The broad registered location and spread fields describe the organization. Matching that location to a service area or allocating spending geographically requires separate evidence. [OSCR data and reuse terms](https://www.oscr.org.uk/about-charities/search-the-register/download-the-scottish-charity-register/)
+
+The [manifest](../public/data/charity-financials/scotland/manifest.json) records both ZIP hashes, member names, field order and every shard fingerprint. It accounts for 107,905 input return records. 7,380 lacked a receipt date, seven had a receipt date before the year-end and four were competing records for two registration and year-end pairs. The two contested pairs are held out of the published history. Registration lookup retains all identities, including those with no usable return. Breakdown fields use Standard returns with at least one nonzero amount in the corresponding exported field group. In an available group, individual zeroes are preserved. This rule leaves entirely zero groups unavailable. Only the allowlisted institutional identity, geography and financial fields are published.
+
+The [cross-register comparison](https://charitology.com/record/charity-financials/scotland/#cross-register) follows three publicly confirmed registration pairs over nine year-ends. Eight pairs of returns agree on both headline amounts and three agree on the date of receipt. Oxfam GB’s two 2024–25 gross income figures differ by £30,000. Both exports remain in the [comparison download](../public/data/charity-financials/scotland/cross-register.json), with source record numbers, exact values, dates and the verified England and Wales edition fingerprint. The consolidated accounts give income to £0.1 million precision. The reason for the exact difference remains unknown. The sample tests duplicate handling and disclosure differences. It provides no estimate of cross-register coverage. [Oxfam GB annual report and accounts](https://www.oxfam.org.uk/documents/1077/Oxfam__GB_Annual_Report_2024-2025.pdf)
+
+Rebuild offline from the November 12 regulator captures named `scotland-register.zip` and `scotland-returns.zip`. The current download URLs can serve newer bytes. The command uses the checked-in England and Wales edition for the paired rows and requires a new output directory.
+
+```sh
+python3 scripts/build-scotland-charity-financials.py /path/to/captured-inputs public/data/charity-financials/ew /path/to/new-rebuild
+diff -r public/data/charity-financials/scotland /path/to/new-rebuild
+npm run build
+node scripts/check-scotland-charity-financials.mjs
 ```
 
 ## Brazil federal transfers to civil society
