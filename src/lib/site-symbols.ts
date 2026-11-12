@@ -144,6 +144,7 @@ export const symbols = {
   orchid: 'M12 15c-2-5-9-3-9-7 0-4 5-4 7-1-1-4 1-6 2-6s3 2 2 6c2-3 7-3 7 1 0 4-7 2-9 7Zm0 0v7m0-3 4-2',
   grantSchedule: 'M4 3h12l4 4v14H4zM16 3v5h4M7 10h10m-10 4h3m4 0h3m-10 4h3m4 0h3',
   winterCoat: 'M9 3h6l1 3 4 2 2 10-4 1-1-6v8H7v-8l-1 6-4-1L4 8l4-2 1-3Zm0 0 3 5 3-5m-3 5v13m-3-6h1m4 0h1',
+  filingStack: 'M6 2h10l4 4v7M16 2v5h4M6 2v17h6M3 6v16h9M9 7h4m-4 4h7m-7 4h2m6-2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2 5 3 3',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

@@ -1,0 +1,126 @@
+{
+  "format": "charitology-france-dila-filing-index-v1",
+  "capturedOn": "2026-11-12",
+  "source": {
+    "publisher": "Direction de l’information légale et administrative (DILA)",
+    "dataset": "https://www.data.gouv.fr/datasets/comptes-associations",
+    "documentation": "https://www.data.gouv.fr/dataservices/api-annonces-officielles-et-comptes-annuels-des-associations",
+    "license": "https://www.data.gouv.fr/pages/legal/licences/etalab-2-0"
+  },
+  "archive": [
+    {
+      "year": 2022,
+      "rows": 14434,
+      "sha256": "31131f72df0a6f7dc5790bf2612e1d3ca14bb5e7fe58305bdc1e0f23ee3e3c93",
+      "file": "dila-closures-2022.json",
+      "url": "https://journal-officiel-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/jo_associations/exports/json?select=id%2Csource%2Cdca_siren%2Cdca_datecloture%2Cdca_datevalidation%2Cdca_rectificatif_version%2Cnumero_rna%2Cdateparution%2Ctitre%2Cnumrnf&where=dca_datecloture+%3E%3D+%222022-01-01%22+AND+dca_datecloture+%3C+%222023-01-01%22&order_by=dca_datecloture+ASC%2C+dca_siren+ASC%2C+dca_rectificatif_version+ASC%2C+id+ASC"
+    },
+    {
+      "year": 2023,
+      "rows": 14838,
+      "sha256": "a55bd31021a16519aa7e27d0f02e82f01efab4456b44089daac1dd2f41617115",
+      "file": "dila-closures-2023.json",
+      "url": "https://journal-officiel-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/jo_associations/exports/json?select=id%2Csource%2Cdca_siren%2Cdca_datecloture%2Cdca_datevalidation%2Cdca_rectificatif_version%2Cnumero_rna%2Cdateparution%2Ctitre%2Cnumrnf&where=dca_datecloture+%3E%3D+%222023-01-01%22+AND+dca_datecloture+%3C+%222024-01-01%22&order_by=dca_datecloture+ASC%2C+dca_siren+ASC%2C+dca_rectificatif_version+ASC%2C+id+ASC"
+    },
+    {
+      "year": 2024,
+      "rows": 14783,
+      "sha256": "e39144d07b266b1c602d3ef5362e2da45c2ea5c2335bb6d3da76a5daa5138d83",
+      "file": "dila-closures-2024.json",
+      "url": "https://journal-officiel-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/jo_associations/exports/json?select=id%2Csource%2Cdca_siren%2Cdca_datecloture%2Cdca_datevalidation%2Cdca_rectificatif_version%2Cnumero_rna%2Cdateparution%2Ctitre%2Cnumrnf&where=dca_datecloture+%3E%3D+%222024-01-01%22+AND+dca_datecloture+%3C+%222025-01-01%22&order_by=dca_datecloture+ASC%2C+dca_siren+ASC%2C+dca_rectificatif_version+ASC%2C+id+ASC"
+    },
+    {
+      "year": 2025,
+      "rows": 11913,
+      "sha256": "76cbfa04bc80967702a1ce6522be67bcb9850d1b52cd09fa54687258c9325abf",
+      "file": "dila-closures-2025.json",
+      "url": "https://journal-officiel-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/jo_associations/exports/json?select=id%2Csource%2Cdca_siren%2Cdca_datecloture%2Cdca_datevalidation%2Cdca_rectificatif_version%2Cnumero_rna%2Cdateparution%2Ctitre%2Cnumrnf&where=dca_datecloture+%3E%3D+%222025-01-01%22+AND+dca_datecloture+%3C+%222026-01-01%22&order_by=dca_datecloture+ASC%2C+dca_siren+ASC%2C+dca_rectificatif_version+ASC%2C+id+ASC"
+    }
+  ],
+  "fields": [
+    "noticeId",
+    "publishedNumber",
+    "title",
+    "fiscalEnd",
+    "publishedOn",
+    "validatedAt",
+    "revision",
+    "rna",
+    "candidateSiren",
+    "regionalPaymentLink"
+  ],
+  "counts": {
+    "notices": 55968,
+    "candidateSirens": 19079,
+    "distinctClosingDatesForCandidateSirens": 52699,
+    "multiPeriodCandidateSirens": 14692,
+    "unusableCandidateSiren": 1355,
+    "noStandardRna": 19874,
+    "positiveRevision": 2050,
+    "revisionLabelDisagreement": 16,
+    "regionalPaymentCandidates": 860
+  },
+  "byYear": [
+    {
+      "year": 2022,
+      "notices": 14434,
+      "candidateSirens": 13720,
+      "distinctClosingDatesForCandidateSirens": 13784,
+      "multiPeriodCandidateSirens": 63,
+      "unusableCandidateSiren": 146,
+      "noStandardRna": 5557,
+      "positiveRevision": 518,
+      "revisionLabelDisagreement": 14,
+      "regionalPaymentCandidates": 674
+    },
+    {
+      "year": 2023,
+      "notices": 14838,
+      "candidateSirens": 13819,
+      "distinctClosingDatesForCandidateSirens": 13950,
+      "multiPeriodCandidateSirens": 131,
+      "unusableCandidateSiren": 331,
+      "noStandardRna": 5203,
+      "positiveRevision": 600,
+      "revisionLabelDisagreement": 0,
+      "regionalPaymentCandidates": 693
+    },
+    {
+      "year": 2024,
+      "notices": 14783,
+      "candidateSirens": 13677,
+      "distinctClosingDatesForCandidateSirens": 13774,
+      "multiPeriodCandidateSirens": 97,
+      "unusableCandidateSiren": 469,
+      "noStandardRna": 5061,
+      "positiveRevision": 590,
+      "revisionLabelDisagreement": 2,
+      "regionalPaymentCandidates": 683
+    },
+    {
+      "year": 2025,
+      "notices": 11913,
+      "candidateSirens": 11138,
+      "distinctClosingDatesForCandidateSirens": 11191,
+      "multiPeriodCandidateSirens": 53,
+      "unusableCandidateSiren": 409,
+      "noStandardRna": 4053,
+      "positiveRevision": 342,
+      "revisionLabelDisagreement": 0,
+      "regionalPaymentCandidates": 526
+    }
+  ],
+  "regionalPayments": {
+    "capturedOn": "2026-11-10",
+    "snapshotSha256": "9c0fd29b46ac7b8a2fa08389f9b6ca143689ce7ef819ac35bdf30d95650237f5",
+    "legalUnits": 2850
+  },
+  "asset": {
+    "path": "notices.json.gz",
+    "rows": 55968,
+    "bytes": 1971221,
+    "decodedBytes": 8692682,
+    "sha256": "333802339ddd1df4dffddc2896050887cb897f683ba15f1c4db4b43633733ef3",
+    "decodedSha256": "8e52fc24e1eb2cd899db4c89ae602203814f68ee315bb39f5b7c824edd647e95"
+  }
+}
