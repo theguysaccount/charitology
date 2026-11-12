@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 const root = 'public/data/funding-flows/chile-residential-payments/';
 const read = name => readFileSync(root + name, 'utf8');
 const edition = JSON.parse(read('edition.json'));
-const { awards, coverage, ledger, recipients, rostrosReconciliation } = edition;
+const { awards, coverage, ledger, recipients, rostrosReconciliation, monitoring } = edition;
 const sum = (records, key) => records.reduce((total, row) => total + row[key], 0);
 const key = row => row.source + ':' + row.sourceRow;
 assert.equal(edition.currency, 'CLP');
@@ -33,6 +33,28 @@ for (const period of coverage) {
   assert.equal(sum(rows, 'accruedClp'), period.awardRecipientTotals.accruedClp);
 }
 assert.equal(coverage.find(row => row.period === 2025).awardRecipientTotals.paidByLastRecordedPaymentYearClp['2026'], 5_441_242_691);
+const program2025 = coverage.find(row => row.period === 2025).sourceTotals;
+assert.deepEqual([monitoring.year, monitoring.componentsClpThousands, monitoring.administrationClpThousands, monitoring.servedPeople],
+  [2025, 19_111_340, 2_229_346, 1189]);
+assert.equal(monitoring.ledgerAccruedMinusComponentsClp, 890);
+assert.equal(program2025.accruedClp - monitoring.componentsClpThousands * 1000, monitoring.ledgerAccruedMinusComponentsClp);
+assert.equal(monitoring.regions.length, 16);
+assert.deepEqual([...monitoring.regions.map(row => row.cut)].sort(), Array.from({ length: 16 }, (_, i) => String(i + 1).padStart(2, '0')));
+assert.equal(sum(monitoring.regions, 'servedPeople') + monitoring.servedPeopleRegionUnknown, monitoring.servedPeople);
+assert.equal(sum(monitoring.regions, 'componentsClpThousands') + monitoring.centralComponentsClpThousands, monitoring.componentsClpThousands);
+assert.equal(sum(monitoring.regions, 'ledgerRows') + monitoring.ledgerWithoutRegion.rows, program2025.rows);
+assert.equal(sum(monitoring.regions, 'ledgerAccruedClp') + monitoring.ledgerWithoutRegion.accruedClp, program2025.accruedClp);
+assert.equal(sum(monitoring.regions, 'ledgerPaidClp') + monitoring.ledgerWithoutRegion.paidClp, program2025.paidClp);
+assert.deepEqual(monitoring.regions
+  .map(row => [row.cut, row.ledgerAccruedClp - 1000 * row.componentsClpThousands])
+  .filter(([, delta]) => delta !== 0), [['13', 870], ['16', 190], ['10', 930]]);
+assert.deepEqual([monitoring.regionalNeed.surveyYear, monitoring.regionalNeed.minimumAge, monitoring.regionalNeed.table], [2022, 18, 13]);
+const nuble = monitoring.regions.find(row => row.cut === '16');
+assert.deepEqual([nuble.servedPeople, nuble.prevalencePct, nuble.absoluteErrorPp, nuble.relativeErrorPct, nuble.endideSourceRow], [1, 13.1, 2.5, 18.8, 12]);
+assert.deepEqual(monitoring.outcomes, {
+  improvedQualityOfLifeScore: { numerator: 153, denominator: 267 },
+  individualizedCareReported: { numerator: 1117, denominator: 1189, residencesSubmittingTechnicalReport: 38 },
+});
 assert.equal(edition.sources.find(row => row.id === 'program-2026').lastBookMonthWithRows, 9);
 for (const recipient of recipients) {
   const awardRows = awards.filter(row => row.rut === recipient.rut);
@@ -54,7 +76,7 @@ assert.deepEqual(edition.rostrosGroupedApiCheck.map(row => [row.period, row.sour
 ]);
 const extra = ledger.find(row => row.period === 2025 && row.rut === '53226150-3' && row.document === '3535202');
 assert.deepEqual([extra.accruedClp, extra.paidClp, extra.reportedPaymentDate], [17_250_000, 0, null]);
-for (const [name, rows] of [['awards.csv', 37], ['ledger.csv', 285], ['recipient-comparison.csv', 19]]) {
+for (const [name, rows] of [['awards.csv', 37], ['ledger.csv', 285], ['recipient-comparison.csv', 19], ['regional-comparison.csv', 16]]) {
   assert.equal(read(name).trimEnd().split('\n').length, rows + 1, name);
   assert.equal(read(name), readFileSync('dist/data/funding-flows/chile-residential-payments/' + name, 'utf8'));
 }
@@ -65,5 +87,8 @@ for (const recipient of recipients) {
   assert.ok(page.includes('href="#recipient-' + recipient.rut + '"'));
 }
 assert.equal((page.match(/<tr data-recipient-row(?:\s|>)/g) ?? []).length, recipients.length);
+assert.equal((page.match(/<tr data-region-cut="\d\d"/g) ?? []).length, monitoring.regions.length);
+assert.match(page, /13\.1% ± 2\.5 pp/);
+assert.match(page, /153 of 267/);
 assert.match(page, /Last recorded payment date/);
-console.log('Chile payments: 37 award folios, 19 recipient joins, 285 ledger records, four exact files, both foundation totals and carryover checked.');
+console.log('Chile payments: 37 award folios, 19 recipient joins, 285 ledger records, 16 regional comparisons, two monitoring indicators and five exact downloads checked.');

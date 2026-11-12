@@ -238,6 +238,8 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
   ],
   '/record/funding-flows/chile-residential-payments/': [
     ['scope', 'Check ledger coverage', 'archive'],
+    ['geography', 'Compare regional funding, reach and need', 'atlas'],
+    ['outcomes', 'Read reported care and outcomes', 'medical'],
     ['compare', 'Compare recipient totals', 'compare'],
     ['rostros', 'Follow Fundación Rostros Nuevos', 'house'],
     ['records', 'Inspect awards and ledger records', 'fileSearch'],

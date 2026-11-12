@@ -52,7 +52,9 @@
     "dictionary": "https://api.presupuestoabierto.gob.cl/files/Integracion_Portal_Ciudadano_2.5.pdf#page=5",
     "publisher": "Dirección de Presupuestos (2019). Presupuesto Abierto. Santiago de Chile Dirección de Presupuestos.",
     "awards": "https://www.senadis.gob.cl/descarga/i/7820",
-    "rules2024": "https://www.senadis.gob.cl/descarga/i/7453#page=21"
+    "rules2024": "https://www.senadis.gob.cl/descarga/i/7453#page=21",
+    "regionCodes": "https://www.bcn.cl/leychile/navegar?i=1123248",
+    "communityLivingReview": "https://doi.org/10.1136/bmjopen-2018-025735"
   },
   "coverage": [
     {
@@ -5252,5 +5254,315 @@
       "sourceGroupedSumClp": 452952000,
       "sumOfPaidFieldsClp": 181180800
     }
-  ]
+  ],
+  "monitoring": {
+    "year": 2025,
+    "source": {
+      "file": "bips-70148-monitoring-2025.html",
+      "sha256": "600569308b889f0f0a135f5f3a1b1a36faf383f7f35e655e43ac9497ac6aa7d6",
+      "url": "https://bips.ministeriodesarrollosocial.gob.cl/docs/informes/2026/70148%20-%20Modelos%20residenciales%20para%20adultos%20en%20situaci%C3%B3n%20de%20discapacidad.html"
+    },
+    "unitGuide": {
+      "file": "bips-monitoring-guide-2025.pdf",
+      "sha256": "b1022d64f6b42faac25e710d8d38cc496f0bae140c7f9782785ee75df5602885",
+      "url": "https://bips.ministeriodesarrollosocial.gob.cl/docs/informes/instructivos/2025/Instructivo_Proceso_de_Monitoreo_de_Programas_P%C3%BAblicos_2025.pdf#page=61"
+    },
+    "componentsClpThousands": 19111340,
+    "administrationClpThousands": 2229346,
+    "ledgerAccruedMinusComponentsClp": 890,
+    "servedPeople": 1189,
+    "servedPeopleRegionUnknown": 0,
+    "centralComponentsClpThousands": 1663655,
+    "ledgerWithoutRegion": {
+      "rows": 31,
+      "recipientCount": 19,
+      "accruedClp": 1663653900,
+      "paidClp": 1017884491,
+      "rowsWithZeroPaid": 17,
+      "rowsWithoutPaymentDate": 17,
+      "paidByLastRecordedPaymentYearClp": {
+        "2025": 346861900,
+        "2026": 671022591
+      }
+    },
+    "outcomes": {
+      "improvedQualityOfLifeScore": {
+        "numerator": 153,
+        "denominator": 267
+      },
+      "individualizedCareReported": {
+        "numerator": 1117,
+        "denominator": 1189,
+        "residencesSubmittingTechnicalReport": 38
+      }
+    },
+    "regionalNeed": {
+      "surveyYear": 2022,
+      "minimumAge": 18,
+      "table": 13,
+      "source": {
+        "file": "endide-2022-methodology.pdf",
+        "sha256": "e7f9a73eb7207bc59730442c804a6ebadd64cd09a85b3b69144b59f8795d7392",
+        "url": "https://observatorio.ministeriodesarrollosocial.gob.cl/storage/docs/endide/Documento_Metodologico_ENDIDE_Diseno_Muestral_y_Medicion_Discapacidad.pdf#page=26"
+      }
+    },
+    "regions": [
+      {
+        "cut": "15",
+        "bipsRegion": "Arica y Parinacota",
+        "endideRegion": "Arica y Parinacota",
+        "prevalencePct": 7.7,
+        "absoluteErrorPp": 1.7,
+        "relativeErrorPct": 22.4,
+        "endideSourceRow": 3,
+        "servedPeople": 0,
+        "bipsPeopleSourceRow": 1,
+        "componentsClpThousands": 0,
+        "bipsSpendingSourceRow": 1,
+        "ledgerRows": 0,
+        "ledgerAccruedClp": 0,
+        "ledgerPaidClp": 0
+      },
+      {
+        "cut": "01",
+        "bipsRegion": "Tarapacá",
+        "endideRegion": "Tarapacá",
+        "prevalencePct": 6.2,
+        "absoluteErrorPp": 1.7,
+        "relativeErrorPct": 26.9,
+        "endideSourceRow": 4,
+        "servedPeople": 2,
+        "bipsPeopleSourceRow": 2,
+        "componentsClpThousands": 32096,
+        "bipsSpendingSourceRow": 2,
+        "ledgerRows": 4,
+        "ledgerAccruedClp": 32096000,
+        "ledgerPaidClp": 32096000
+      },
+      {
+        "cut": "02",
+        "bipsRegion": "Antofagasta",
+        "endideRegion": "Antofagasta",
+        "prevalencePct": 4.5,
+        "absoluteErrorPp": 1.0,
+        "relativeErrorPct": 23.1,
+        "endideSourceRow": 5,
+        "servedPeople": 22,
+        "bipsPeopleSourceRow": 3,
+        "componentsClpThousands": 282480,
+        "bipsSpendingSourceRow": 3,
+        "ledgerRows": 3,
+        "ledgerAccruedClp": 282480000,
+        "ledgerPaidClp": 197736000
+      },
+      {
+        "cut": "03",
+        "bipsRegion": "Atacama",
+        "endideRegion": "Atacama",
+        "prevalencePct": 9.7,
+        "absoluteErrorPp": 1.9,
+        "relativeErrorPct": 19.6,
+        "endideSourceRow": 6,
+        "servedPeople": 0,
+        "bipsPeopleSourceRow": 4,
+        "componentsClpThousands": 0,
+        "bipsSpendingSourceRow": 4,
+        "ledgerRows": 0,
+        "ledgerAccruedClp": 0,
+        "ledgerPaidClp": 0
+      },
+      {
+        "cut": "04",
+        "bipsRegion": "Coquimbo",
+        "endideRegion": "Coquimbo",
+        "prevalencePct": 5.9,
+        "absoluteErrorPp": 1.2,
+        "relativeErrorPct": 21.1,
+        "endideSourceRow": 7,
+        "servedPeople": 21,
+        "bipsPeopleSourceRow": 5,
+        "componentsClpThousands": 282480,
+        "bipsSpendingSourceRow": 5,
+        "ledgerRows": 3,
+        "ledgerAccruedClp": 282480000,
+        "ledgerPaidClp": 197736000
+      },
+      {
+        "cut": "05",
+        "bipsRegion": "Valparaíso",
+        "endideRegion": "Valparaíso",
+        "prevalencePct": 9.0,
+        "absoluteErrorPp": 1.2,
+        "relativeErrorPct": 13.2,
+        "endideSourceRow": 8,
+        "servedPeople": 92,
+        "bipsPeopleSourceRow": 6,
+        "componentsClpThousands": 1214664,
+        "bipsSpendingSourceRow": 6,
+        "ledgerRows": 9,
+        "ledgerAccruedClp": 1214664000,
+        "ledgerPaidClp": 1214664000
+      },
+      {
+        "cut": "13",
+        "bipsRegion": "Metropolitana de Santiago",
+        "endideRegion": "Metropolitana",
+        "prevalencePct": 11.0,
+        "absoluteErrorPp": 0.8,
+        "relativeErrorPct": 7.3,
+        "endideSourceRow": 9,
+        "servedPeople": 811,
+        "bipsPeopleSourceRow": 16,
+        "componentsClpThousands": 12500626,
+        "bipsSpendingSourceRow": 16,
+        "ledgerRows": 86,
+        "ledgerAccruedClp": 12500626870,
+        "ledgerPaidClp": 12410232685
+      },
+      {
+        "cut": "06",
+        "bipsRegion": "Libertador General Bernardo OHiggins",
+        "endideRegion": "O'Higgins",
+        "prevalencePct": 9.4,
+        "absoluteErrorPp": 1.5,
+        "relativeErrorPct": 15.4,
+        "endideSourceRow": 10,
+        "servedPeople": 143,
+        "bipsPeopleSourceRow": 7,
+        "componentsClpThousands": 1949112,
+        "bipsSpendingSourceRow": 7,
+        "ledgerRows": 3,
+        "ledgerAccruedClp": 1949112000,
+        "ledgerPaidClp": 1949112000
+      },
+      {
+        "cut": "07",
+        "bipsRegion": "Maule",
+        "endideRegion": "Maule",
+        "prevalencePct": 7.3,
+        "absoluteErrorPp": 1.2,
+        "relativeErrorPct": 16.2,
+        "endideSourceRow": 11,
+        "servedPeople": 33,
+        "bipsPeopleSourceRow": 8,
+        "componentsClpThousands": 454322,
+        "bipsSpendingSourceRow": 8,
+        "ledgerRows": 8,
+        "ledgerAccruedClp": 454322000,
+        "ledgerPaidClp": 454322000
+      },
+      {
+        "cut": "16",
+        "bipsRegion": "Ñuble",
+        "endideRegion": "Ñuble",
+        "prevalencePct": 13.1,
+        "absoluteErrorPp": 2.5,
+        "relativeErrorPct": 18.8,
+        "endideSourceRow": 12,
+        "servedPeople": 1,
+        "bipsPeopleSourceRow": 10,
+        "componentsClpThousands": 20223,
+        "bipsSpendingSourceRow": 10,
+        "ledgerRows": 2,
+        "ledgerAccruedClp": 20223190,
+        "ledgerPaidClp": 20223190
+      },
+      {
+        "cut": "08",
+        "bipsRegion": "Bío Bío",
+        "endideRegion": "Biobío",
+        "prevalencePct": 9.9,
+        "absoluteErrorPp": 1.1,
+        "relativeErrorPct": 11.3,
+        "endideSourceRow": 13,
+        "servedPeople": 11,
+        "bipsPeopleSourceRow": 9,
+        "componentsClpThousands": 155364,
+        "bipsSpendingSourceRow": 9,
+        "ledgerRows": 3,
+        "ledgerAccruedClp": 155364000,
+        "ledgerPaidClp": 155364000
+      },
+      {
+        "cut": "09",
+        "bipsRegion": "La Araucanía",
+        "endideRegion": "La Araucanía",
+        "prevalencePct": 11.5,
+        "absoluteErrorPp": 1.5,
+        "relativeErrorPct": 12.7,
+        "endideSourceRow": 14,
+        "servedPeople": 16,
+        "bipsPeopleSourceRow": 11,
+        "componentsClpThousands": 155364,
+        "bipsSpendingSourceRow": 11,
+        "ledgerRows": 2,
+        "ledgerAccruedClp": 155364000,
+        "ledgerPaidClp": 155364000
+      },
+      {
+        "cut": "14",
+        "bipsRegion": "Los Ríos",
+        "endideRegion": "Los Ríos",
+        "prevalencePct": 11.6,
+        "absoluteErrorPp": 2.3,
+        "relativeErrorPct": 19.5,
+        "endideSourceRow": 15,
+        "servedPeople": 0,
+        "bipsPeopleSourceRow": 12,
+        "componentsClpThousands": 0,
+        "bipsSpendingSourceRow": 12,
+        "ledgerRows": 0,
+        "ledgerAccruedClp": 0,
+        "ledgerPaidClp": 0
+      },
+      {
+        "cut": "10",
+        "bipsRegion": "Los Lagos",
+        "endideRegion": "Los Lagos",
+        "prevalencePct": 9.8,
+        "absoluteErrorPp": 1.5,
+        "relativeErrorPct": 15.4,
+        "endideSourceRow": 16,
+        "servedPeople": 27,
+        "bipsPeopleSourceRow": 13,
+        "componentsClpThousands": 259714,
+        "bipsSpendingSourceRow": 13,
+        "ledgerRows": 12,
+        "ledgerAccruedClp": 259714930,
+        "ledgerPaidClp": 259714930
+      },
+      {
+        "cut": "11",
+        "bipsRegion": "Aysén del General Carlos Ibáñez del Campo",
+        "endideRegion": "Aysén",
+        "prevalencePct": 10.3,
+        "absoluteErrorPp": 2.3,
+        "relativeErrorPct": 22.7,
+        "endideSourceRow": 17,
+        "servedPeople": 0,
+        "bipsPeopleSourceRow": 14,
+        "componentsClpThousands": 0,
+        "bipsSpendingSourceRow": 14,
+        "ledgerRows": 0,
+        "ledgerAccruedClp": 0,
+        "ledgerPaidClp": 0
+      },
+      {
+        "cut": "12",
+        "bipsRegion": "Magallanes y Antártica Chilena",
+        "endideRegion": "Magallanes",
+        "prevalencePct": 4.6,
+        "absoluteErrorPp": 1.2,
+        "relativeErrorPct": 26.8,
+        "endideSourceRow": 18,
+        "servedPeople": 10,
+        "bipsPeopleSourceRow": 15,
+        "componentsClpThousands": 141240,
+        "bipsSpendingSourceRow": 15,
+        "ledgerRows": 3,
+        "ledgerAccruedClp": 141240000,
+        "ledgerPaidClp": 141240000
+      }
+    ]
+  }
 }

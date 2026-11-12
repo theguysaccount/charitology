@@ -7,7 +7,7 @@ import edition from '../../../../../public/data/funding-flows/chile-residential-
 const title = 'From residential care awards to reported payments in Chile';
 const dataPath = '/data/funding-flows/chile-residential-payments/';
 const earlier = '/record/funding-flows/chile-residential-care/';
-const { awards, recipients, ledger, coverage, citations, rostrosReconciliation } = edition;
+const { awards, recipients, ledger, coverage, citations, rostrosReconciliation, monitoring } = edition;
 const unlinked = ledger.find(row => row.period === 2025 && row.rut === '53226150-3' && row.document === '3535202')!;
 const totals2025 = coverage.find(row => row.period === 2025)!;
 const totals2026 = coverage.find(row => row.period === 2026)!;
@@ -15,6 +15,9 @@ const awardTotal = awards.reduce((sum, award) => sum + award.awardClp, 0);
 const equal = recipients.filter(row => row.awardClp === row.paidClp).length;
 const lower = recipients.filter(row => row.paidClp < row.awardClp).length;
 const higher = recipients.length - equal - lower;
+const { improvedQualityOfLifeScore, individualizedCareReported } = monitoring.outcomes;
+const regionalDifference = Math.max(...monitoring.regions.map(row =>
+  Math.abs(row.ledgerAccruedClp - 1000 * row.componentsClpThousands)));
 const number = (value: number) => value.toLocaleString('en-US');
 const officialProvider = (rut: string) => citations.portal + 'institutions/providers/' + rut;
 const sourceOf = (id: string) => edition.sources.find(source => source.id === id)!;
@@ -23,11 +26,17 @@ const sources = [
   {title:'Residential care rules for 2024, section 10.2', url:citations.rules2024, publisher:'Chile National Disability Service'},
   {title:'Presupuesto Abierto release and reuse terms', url:citations.dataTerms, publisher:'Chile Budget Directorate'},
   {title:'Presupuesto Abierto field dictionary, payment date and amount', url:citations.dictionary, publisher:'Chile Budget Directorate'},
+  {title:'2025 residential care monitoring, program 70148', url:monitoring.source.url, publisher:'Chile Ministry of Social Development and Family'},
+  {title:'2025 monitoring guide, units for component spending', url:monitoring.unitGuide.url, publisher:'Chile Ministry of Social Development and Family and Budget Directorate'},
+  {title:'Territorial code decree 1115, article 2', url:citations.regionCodes, publisher:'Library of the National Congress of Chile'},
+  {title:'2022 ENDIDE regional dependence estimates, table 13', url:monitoring.regionalNeed.source.url, publisher:'Chile Ministry of Social Development and Family'},
+  {title:'McCarron and colleagues, review of quality of life after moving to community settings', url:citations.communityLivingReview, publisher:'BMJ Open', year:2019},
 ];
 const downloads = [
   ['awards.csv','All 37 award rows (CSV)','grantSchedule'],
   ['ledger.csv','Selected institutional ledger records (CSV)','bankOrder'],
   ['recipient-comparison.csv','2025 comparison by tax ID (CSV)','compare'],
+  ['regional-comparison.csv','Regional spending, reach and survey context (CSV)','atlas'],
   ['edition.json','Complete edition and source fingerprints (JSON)','packet'],
 ] as const;
 const awardsFor = (rut: string) => awards.filter(award => award.rut === rut);
@@ -61,6 +70,27 @@ const ledgerFor = (rut: string) => ledger.filter(row => row.rut === rut)
     </table>
   </div>
   <p>The 2026 source is partial. The latest month with booked rows is September. Establishing a renewal for a particular residence requires a renewal record. Other recipient records appear here in aggregate. The amounts on the budget line can include obligations beyond the selected award round. Award, accrual and payment amounts can describe the same money at different stages.</p>
+
+  <h2 id="geography">Compare funding, service reach and need by region</h2>
+  <p>The 2025 program monitoring report gives component spending of <strong>{number(monitoring.componentsClpThousands)} thousand CLP</strong>. Converting that published unit to pesos leaves a difference of CLP {number(Math.abs(monitoring.ledgerAccruedMinusComponentsClp))} from the full budget line’s accrued amount. The report lists administrative spending separately at {number(monitoring.administrationClpThousands)} thousand CLP. The ledger’s reported paid amount for the line is CLP {number(totals2025.sourceTotals.paidClp)}. <a href={monitoring.source.url}>Read the monitoring report, section 10</a>. <a href={monitoring.unitGuide.url}>Check the spending units</a>.</p>
+  <p>Each named region’s component spending and ledger accrual differ by at most CLP {number(regionalDifference)} after the unit conversion. The comparison uses the official region codes and the location field in the budget ledger. The report lists {number(monitoring.centralComponentsClpThousands)} thousand CLP at central level. The ledger has {number(monitoring.ledgerWithoutRegion.rows)} entries coded 00 without a named budget region, with CLP {number(monitoring.ledgerWithoutRegion.accruedClp)} accrued and CLP {number(monitoring.ledgerWithoutRegion.paidClp)} reported paid. The sources provide separate labels for those amounts. <a href={citations.regionCodes}>Check the region codes</a>.</p>
+  <p>Section 6 of the monitoring report counts people served. The separate 2022 ENDIDE household survey estimates dependence among adults aged 18 and older. The table gives the survey’s published absolute error in percentage points. The survey includes adults outside the program’s referral routes and age range. Program reach and household prevalence describe different populations and years. Estimating unmet demand for these residences would require a count of people eligible for the program. <a href={monitoring.regionalNeed.source.url}>Read survey table 13</a>. <a href={url(earlier + '#care-context')}>Read the separate Casen household results</a>.</p>
+  <div class="table-wrap regional-table" role="region" aria-label="Regional spending, service counts and survey context" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Region</th><th scope="col">People served, 2025 program report</th><th scope="col">Adult dependence, 2022 survey</th><th scope="col">2025 component spending (thousand CLP)</th><th scope="col">2025 ledger accrual (CLP)</th><th scope="col">2025 ledger reported paid (CLP)</th></tr></thead>
+      <tbody>{monitoring.regions.map(region => <tr data-region-cut={region.cut}>
+        <th scope="row">{region.bipsRegion} <small>({region.cut})</small></th>
+        <td>{number(region.servedPeople)}</td>
+        <td>{region.prevalencePct.toFixed(1)}% ± {region.absoluteErrorPp.toFixed(1)} pp</td>
+        <td>{number(region.componentsClpThousands)}</td><td>{number(region.ledgerAccruedClp)}</td><td>{number(region.ledgerPaidClp)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="outcomes">Read the reported care and outcomes</h2>
+  <p>The program reported serving {number(monitoring.servedPeople)} people in 2025. Its records show individualized care for {number(individualizedCareReported.numerator)} of {number(individualizedCareReported.denominator)} people, using reports from {individualizedCareReported.residencesSubmittingTechnicalReport} residences that filed the second technical progress report. That measure describes the care reported by providers. <a href={monitoring.source.url}>Read section 12, first complementary indicator</a>.</p>
+  <p>The program found improved quality-of-life scores for {improvedQualityOfLifeScore.numerator} of {improvedQualityOfLifeScore.denominator} people in its assessment sample. It compared each person’s score with their previous available score, using one of two scales according to support needs. This is a before-and-after measure for the assessed sample. Estimating a program effect would require a comparison that accounts for other changes. The report supplies no outcome link to a specific award or ledger document. <a href={monitoring.source.url}>Read section 11, first purpose indicator</a>.</p>
+  <p>A review by McCarron and colleagues found that adults with intellectual disabilities generally reported or showed improved quality of life after moving from institutions to community settings. The studies examined that specific move, and the Chilean report describes a residential support program with its own participants and care arrangements. The review helps explain why setting matters. The Chilean program’s effect remains unmeasured by that evidence. <a href={citations.communityLivingReview}>Read the systematic review</a>.</p>
 
   <h2 id="compare">Compare the 2025 amounts by recipient</h2>
   <p>The total reported paid for a recipient across rows booked in 2025 equals its award-round total for {equal} recipients. It is lower for {lower} and higher for {higher}. The differences give readers records to check. The totals alone cannot distinguish carryover, changes in an agreement, or payments still outside the capture.</p>
@@ -126,7 +156,7 @@ const ledgerFor = (rut: string) => ledger.filter(row => row.rut === rut)
   <ul class="download-list" role="list">{downloads.map(([file,label,symbol]) => <li>
     <a class="identity-label" href={url(dataPath + file)} download><SiteSymbol name={symbol} size="inline" />{label}</a>
   </li>)}</ul>
-  <p>The ledger projection and related data downloads are available under <a href={citations.license}>CC BY-SA 4.0</a>. Credit to {citations.publisher} <a href={citations.portal}>Presupuesto Abierto</a>. <a href={citations.dataTerms}>Read the data terms</a>.</p>
+  <p>The Presupuesto Abierto data and this adaptation of those data use <a href={citations.license}>CC BY-SA 4.0</a>. Credit to {citations.publisher} <a href={citations.portal}>Presupuesto Abierto</a>. The award, program and survey figures link to their own sources. <a href={citations.dataTerms}>Read the ledger data terms</a>.</p>
 </Entry>
 
 <script>
@@ -163,6 +193,7 @@ const ledgerFor = (rut: string) => ledger.filter(row => row.rut === rut)
 
 <style>
   .data { min-width: 35rem; }
+  .regional-table .data { min-width: 47rem; }
   :is(th, td) { overflow-wrap: anywhere; }
   .recipient-search { margin-block: 1rem; }
   .recipient-search div { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .35rem; }
