@@ -1,0 +1,182 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/taiwan/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Taiwan nonprofit and institutional registrations';
+const dataPath = '/data/charity-registry/taiwan/';
+const fundPath = '/record/funding-flows/taiwan-new-resident-fund/';
+const count = (value: number) => value.toLocaleString('en-US');
+const sources = [
+  { title: 'Nonprofit institution and organization dataset', publisher: manifest.publisher, url: manifest.catalogue },
+  { title: 'Original institutional registration CSV', publisher: manifest.publisher, url: manifest.source.url },
+  { title: 'Open Government Data License 1.0', publisher: 'Taiwan Ministry of Digital Affairs', url: manifest.license },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index"
+  summary="Find public institutional identifiers by Chinese name or eight-digit number. Read the original register scope and follow selected grant disclosures."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Taiwan'}]}
+  filePath="src/pages/record/charity-index/taiwan.astro" sources={sources}>
+  <p>This edition covers {count(manifest.counts.includedIdentities)} distinct registration numbers in the Ministry of Finance file captured on <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>. The source records tax withholding-unit registrations for education, culture, public benefit and charity institutions. Consult the relevant registering authority for the organization’s current status.</p>
+
+  <section class="charity-financial-search" data-taiwan-registry data-base={url(dataPath)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="taiwan-search-heading">
+    <h2 id="taiwan-search-heading">Search institutional registrations</h2>
+    <p id="taiwan-search-hint">Enter the beginning of a published name in Chinese or an exact eight-digit number. Search loads only the relevant part of this snapshot and runs in your browser.</p>
+    <form aria-describedby="taiwan-search-hint">
+      <label for="taiwan-query">Institution name or registration number <span lang="zh-Hant">（單位名稱或統一編號）</span></label>
+      <div class="finance-actions">
+        <input type="search" id="taiwan-query" maxlength="160" autocomplete="off" disabled />
+        <button type="submit" class="btn" disabled>Search registrations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you’re ready to load the snapshot.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="permit" aria-label="Taiwan institutional registration results" data-results></ol>
+    <noscript><p>Without JavaScript, use the <a href={manifest.catalogue}>official dataset</a> and download its CSV.</p></noscript>
+  </section>
+
+  <h2 id="funding">Follow New Resident Development Fund grants</h2>
+  <p>The Fund’s disclosure files identify funded projects and report the named recipient, approvals, execution figures and some disbursement and return information. <a class="identity-link" href={url(fundPath)}>Read the grant reports and compare recurring project IDs</a>. The fund reports omit the eight-digit tax identifiers. Names that match an institution in this snapshot are leads for verification.</p>
+
+  <h2 id="coverage">Coverage and original records</h2>
+  <p>The source CSV has {count(manifest.counts.inputRecords)} data records. One record lacks the eight-digit identifier used in this lookup. The edition retains all {count(manifest.counts.includedIdentities)} valid identifiers. {count(manifest.counts.repeatedNormalizedNames)} names are shared by multiple identifiers after normalizing width and trimming spaces.</p>
+  <p>The place field is the source’s registered city or county. The snapshot preserves the older Taipei County label when present. {count(manifest.counts.unknownLocation)} records have no location. Project locations and places served require separate evidence.</p>
+  <p>The record shows the source’s last-change date and code. The last change may describe a registration update. Its meaning and the institution’s current status require other records. Standard seven-digit Republic of China dates with a valid calendar day are also shown as Gregorian dates. For {count(manifest.counts.unknownChangeDate)} records the displayed calendar date remains unknown, with the raw token retained.</p>
+  <p>Contains information from the Financial Information Center, Taiwan Ministry of Finance, adapted under Taiwan’s <a href={manifest.license}>Open Government Data License 1.0</a>. The <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>source manifest</a> identifies the exact snapshot, columns, counts and file fingerprints. Source record numbers start at the first data record after the header. Import eight-digit identifiers as text to preserve any leading zeroes.</p>
+</Entry>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName, financialShardLoader, normalizeFinancialName, type FinancialShard } from '../../../lib/client/financial-directory';
+
+  type Organization = [string, string, string | null, string, string | null, string, number];
+  type DirectoryEntry = [string, string];
+  type Manifest = {
+    format: string; capturedOn: string; publisher: string; catalogue: string; license: string;
+    source: { url: string; sha256: string; bytes: number };
+    names: Record<string, FinancialShard>; ids: Record<string, FinancialShard>;
+  };
+  type Result = { total: number; organizations: Organization[] };
+
+  const registrationNumber = (value: string) => /^[0-9]{8}$/.test(value.normalize('NFKC').trim());
+  const bucketFor = (key: string) => ((key.codePointAt(0) ?? 0) % 64).toString(16).padStart(2, '0');
+  const limit = 25;
+  const toObject = ([number, name, registeredLocation, lastChangeLiteral, lastChangeDate, lastChangeCode, sourceRecord]: Organization) => ({
+    number, name, registeredLocation, lastChangeLiteral, lastChangeDate, lastChangeCode, sourceRecord,
+  });
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-taiwan-registry]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const loadNames = financialShardLoader<Organization>(base, manifest.names);
+    const loadIds = financialShardLoader<DirectoryEntry>(base, manifest.ids);
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let found: Result | undefined;
+    let sequence = 0;
+    input.disabled = submit.disabled = clear.disabled = false;
+
+    function reset() {
+      found = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function card([number, name, location, raw, date, code, record]: Organization) {
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, number), ' ', h('span', { lang: 'zh-Hant' }, name)),
+        h('p', {}, 'Registered place: ', location ? h('span', { lang: 'zh-Hant' }, location) : 'Not supplied'),
+        h('p', { class: 'note' }, `Last change: ${date ?? 'Calendar date unknown'} · original date token ${raw} · change code ${code}`),
+        h('p', { class: 'note' }, h('a', { href: manifest.source.url }, 'Official registration export'),
+          ` · data record ${record} after the header.`));
+    }
+
+    async function search(value: string): Promise<Result> {
+      if (registrationNumber(value)) {
+        const id = value.normalize('NFKC').trim();
+        const entry = (await loadIds(id.slice(0, 2))).find(([number]) => number === id);
+        if (!entry) return { total: 0, organizations: [] };
+        const organization = (await loadNames(entry[1])).find(([number]) => number === id);
+        if (!organization) throw new Error('The registration number could not be matched to the snapshot.');
+        return { total: 1, organizations: [organization] };
+      }
+
+      const query = normalizeFinancialName(value);
+      if (!query) throw new Error('Enter part of the institution’s name or an exact eight-digit number.');
+      const organizations: Organization[] = [];
+      let total = 0;
+      for (const row of await loadNames(bucketFor(query))) {
+        if (!normalizeFinancialName(row[1]).startsWith(query)) continue;
+        total++;
+        if (organizations.length < limit) organizations.push(row);
+      }
+      return { total, organizations };
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      status.textContent = 'Checking the public snapshot.';
+      try {
+        const matches = await search(input.value);
+        if (ticket !== sequence) return;
+        found = matches;
+        status.textContent = matches.total
+          ? `${matches.total.toLocaleString('en-US')} ${matches.total === 1 ? 'match' : 'matches'}. Showing ${matches.organizations.length}.`
+          : 'No matching registration in this snapshot. Try the published name or exact number.';
+        results.append(...matches.organizations.map(card));
+        json.disabled = csv.disabled = !matches.organizations.length;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The registration search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    form.addEventListener('submit', event => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher, catalogue, license, source } = manifest;
+    json.addEventListener('click', () => {
+      if (!found) return;
+      const { total, organizations } = found;
+      download('taiwan-institution-search.json', JSON.stringify({
+        format, capturedOn, publisher, catalogue, license, source, total, organizations: organizations.map(toObject),
+      }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!found) return;
+      const rows = found.organizations.map(row => ({
+        ...toObject(row), name: financialCsvName(row[1]), capturedOn, publisher, catalogue, license,
+        sourceUrl: source.url, sourceSha256: source.sha256,
+      }));
+      download('taiwan-institution-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const initial = new URLSearchParams(location.search).get('registration');
+    if (initial && registrationNumber(initial)) {
+      input.value = initial;
+      void runSearch();
+    }
+  }
+</script>

@@ -14,6 +14,7 @@ import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/
 import registry from '../../../../public/data/irs-registry/manifest.json';
 import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
 import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
+import taiwan from '../../../../public/data/charity-registry/taiwan/manifest.json';
 import brazil from '../../../../public/data/charity-registry/brazil-osc/manifest.json';
 import mexico from '../../../../public/data/charity-financials/mx/manifest.json';
 import manchester from '../../../data/home-from-hospital.json';
@@ -92,6 +93,14 @@ const panels = [
     manifest: '/data/charity-financials/scotland/manifest.json',
   },
   {
+    id: 'taiwan', name: 'Taiwan', source: 'Ministry of Finance institutional registrations', route: '/record/charity-index/taiwan/',
+    label: 'Search Taiwan institutional registrations', date: taiwan.capturedOn,
+    coverage: `${number(taiwan.counts.includedIdentities)} exact institutional withholding-unit numbers with published names.`,
+    history: 'A separate Fund edition follows reported execution for projects across two reporting years.',
+    boundary: 'Registration location and a tax change code describe the filed identity. Active charity status and where services happened require other evidence.',
+    manifest: '/data/charity-registry/taiwan/manifest.json',
+  },
+  {
     id: 'united-states', name: 'United States', source: 'IRS identity and Form 990 extracts', route: '/record/charity-financials/united-states/',
     label: 'Search U.S. Form 990 finances', date: usa.capturedOn,
     coverage: `${number(registry.recordCount)} dated federal registry identities. Separately, ${number(usa.counts.organizations)} EINs have a selected full Form 990 period.`,
@@ -105,6 +114,7 @@ const sources = [
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
+  { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
 ];
@@ -156,6 +166,7 @@ const sources = [
   <p>The <a href={url('/record/funding-flows/greater-manchester-home-from-hospital/')}>Greater Manchester discharge-support case</a> connects {manchester.awards.length} reported awards to a delivery period and shows independent NHS discharge figures from the same place. The source does not establish a matching payment or expense for each award. Follow the <a href={url('/record/gap-map/')}>Gap Map</a> for more comparisons between funding and need.</p>
   <p>The <a href={url('/record/funding-flows/yes-i-do-alliance/')}>Yes I Do Alliance trace</a> compares reported disbursements and receipts across six publisher activities. The same reported amount can appear at more than one stage. Candidate matches and unresolved rows are shown separately.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/western-cape-transfers/')}>Follow nonprofit funding in Western Cape, South Africa</a>. Two provincial editions show separate transfer and reported spending columns, including discrepancies in the earlier published totals.</p>
+  <p><a class="identity-link" href={url('/record/funding-flows/taiwan-new-resident-fund/')}>Compare Taiwan New Resident Development Fund reports</a>. Use the project ID to follow recurring approvals and see where the reports differ on execution figures or dates.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/heal-nepal/')}>Compare Heal Nepal funding in the UK and Nepal</a>. The case keeps pounds and rupees in their original records and shows where a single disbursement may correspond to two receipts.</p>
   <p><a href={url('/record/funding-flows/kenya-nutrition/')}>Follow nutrition funding from the UK to western Kenya</a>. The case links a UK charity registration to two reporting activities and a grant manager’s exact project reference. County food poverty comes from a separate survey.</p>
   <p><a href={url('/record/funding-flows/ripple-effect-kenya-accounts/')}>Read Ripple Effect’s annual grant and expenditure records in Kenya</a>. Nine disclosed entity periods preserve the different full NGO identifiers, an initial three-month period and the two grant figures printed for FY2021.</p>
