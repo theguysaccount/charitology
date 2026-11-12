@@ -27,7 +27,7 @@
   a.r-title, .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
   a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
   main :is(h2, h3):not(:has(> .site-symbol)):is([id], [data-section-symbol], section[id] > h2, aside[id] > h2, div[id] > h2), .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol], .ob-measure[data-site-symbol],
-  .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
+  dt[data-site-symbol], .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   content: "";
   display: inline-block;
   flex: none;
@@ -75,7 +75,7 @@ a.card > .site-symbol {
 :where(.nav > a, .menu-panel > a, .crumbs > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
   a.r-title, a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
   .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol], .ob-measure[data-site-symbol],
-  .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
+  dt[data-site-symbol], .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   margin-inline-end: 0.48em;
 }
 
@@ -115,6 +115,24 @@ main ul > li:has(> :is(.identity-link, .site-symbol):first-child)::marker {
 
 :where(main) :where(ol, ul) > li::marker {
   color: var(--site-tone, var(--accent));
+}
+
+/* Text-led lists keep their native list structure and ordered steps keep
+   their numbers. Link-led lists continue to use the destination's mark. */
+main ul > li:is([data-list-symbol], [data-list-link])::marker {
+  content: "";
+}
+
+:where(main) :where(li[data-list-symbol]:not(:has(> p:first-child)), li[data-list-symbol] > p:first-child)::before {
+  content: "";
+  display: inline-block;
+  width: 1.05em;
+  height: 1.05em;
+  margin-inline-end: 0.38em;
+  background: var(--forced-symbol-ink, var(--site-tone, var(--accent)));
+  forced-color-adjust: none;
+  mask: var(--item-glyph, var(--glyph-bookmark)) center / contain no-repeat;
+  vertical-align: -0.15em;
 }
 
 .site-symbol {

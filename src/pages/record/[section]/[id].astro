@@ -8,6 +8,8 @@ import { getCollection, render } from "astro:content";
 import Entry from "../../../layouts/Entry.astro";
 import Badges from "../../../components/Badges.astro";
 import ConditionLinks from "../../../components/ConditionLinks.astro";
+import MarkedList from "../../../components/MarkedList.astro";
+import { editorialListSymbol } from "../../../lib/editorial-list-symbol";
 import SiteSymbol from "../../../components/SiteSymbol.astro";
 import { comparisonSymbols, referenceFieldSymbols } from "../../../lib/list-identities";
 import {
@@ -165,11 +167,7 @@ if (collection === "journal") {
       <>
         <h2>The cruxes</h2>
         <p>What would have to be true for each side to change its mind:</p>
-        <ul>
-          {d.cruxes.map((c: string) => (
-            <li>{c}</li>
-          ))}
-        </ul>
+        <MarkedList items={d.cruxes.map((item: string) => [item, editorialListSymbol(item)] as const)} />
       </>
     )
   }
@@ -178,11 +176,7 @@ if (collection === "journal") {
     collection === "cases" && (
       <>
         <h2>Lessons for the system</h2>
-        <ol>
-          {d.lessons.map((l: string) => (
-            <li>{l}</li>
-          ))}
-        </ol>
+        <MarkedList ordered items={d.lessons.map((item: string) => [item, editorialListSymbol(item)] as const)} />
       </>
     )
   }

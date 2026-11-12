@@ -10,14 +10,14 @@ const modes = [
 ---
 
 <details class="theme-control" data-header-menu hidden>
-  <summary class="icon-btn">
+  <summary class="icon-btn" title="Choose a color theme">
     {modes.map(({ value, label, symbol }) => (
       <span class="theme-current" data-theme-mode={value}>
         <SiteSymbol name={symbol} size="inline" />
         <span class="visually-hidden">Color theme: {label}</span>
-        <span aria-hidden="true" class="theme-caption">{label}</span>
       </span>
     ))}
+    <span aria-hidden="true" class="theme-caption">Theme</span>
   </summary>
   <fieldset class="theme-options" id="site-theme">
     <legend class="visually-hidden">Color theme</legend>
@@ -67,14 +67,19 @@ const modes = [
     display: none;
   }
 
-  @media (min-width: 650px) {
+  @media (min-width: 360px) {
     summary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
       width: auto;
-      padding-inline: 0.55rem;
+      padding-inline: 0.45rem;
     }
 
     .theme-caption {
       display: inline;
+      font: 650 0.78rem/1 var(--font-sans);
     }
   }
 

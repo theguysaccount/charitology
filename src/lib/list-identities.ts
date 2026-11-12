@@ -118,6 +118,24 @@ export const starterSymbols: Record<string, SymbolName> = {
   'team-handovers': 'people', 'evidence-feedback': 'loop', 'resources-benefits': 'gift',
 };
 
+export const starterStepSymbols: Readonly<Record<string, readonly SymbolName[]>> = {
+  'donor-follow-up': ['mail', 'shield', 'personCheck', 'loop'],
+  'fundraising-costs': ['calendar', 'split', 'calculator', 'scale'],
+  'grant-deadlines': ['fileSearch', 'checks', 'calendar', 'mailSend'],
+  'team-handovers': ['route', 'notes', 'personCheck', 'loop'],
+  'evidence-feedback': ['target', 'compare', 'dialogue', 'loop'],
+  'resources-benefits': ['tools', 'compare', 'shield', 'flask'],
+};
+
+export const starterReviewSymbols: Readonly<Record<string, readonly SymbolName[]>> = {
+  'donor-follow-up': ['checks', 'eye', 'loop'],
+  'fundraising-costs': ['wallet', 'compass', 'flask'],
+  'grant-deadlines': ['calendar', 'personCheck', 'mailSend'],
+  'team-handovers': ['personCheck', 'speech', 'loop'],
+  'evidence-feedback': ['eye', 'dialogue', 'flask'],
+  'resources-benefits': ['tools', 'coins', 'download'],
+};
+
 export const providerSymbols: Record<string, SymbolName> = {
   civicrm: 'person', 'erpnext-frappe': 'table', tendenci: 'badge', 'odoo-oca': 'stack',
   openproject: 'board', kobotoolbox: 'pin', oscar: 'shield', caselight: 'notes',
@@ -169,6 +187,21 @@ export const worksheetSymbols: Record<string, SymbolName> = {
   W5: 'story', W6: 'scale', W7: 'loop', W8: 'doorway',
 };
 
+export const lessonGlossarySymbols: Readonly<Record<string, SymbolName>> = {
+  Input: 'wallet', Activity: 'tools', Output: 'table', Outcome: 'signal',
+  Counterfactual: 'compare', 'Impact claim': 'target', Proxy: 'lens',
+  'Percentage point': 'calculator', 'Moral lens': 'scale', Depth: 'layers',
+  'Six-source hypothesis': 'roots',
+};
+
+export const lessonOutcomeSymbols = ['network', 'calculator', 'dialogue'] as const;
+export const lessonLimitSymbols = ['clock', 'compare', 'ruler', 'target', 'doorway', 'lock'] as const;
+
+export const clubHandoverSymbols = [
+  'target', 'recordVersion', 'people', 'doorway', 'scale',
+  'question', 'calendar', 'wallet', 'columns', 'lock',
+] as const;
+
 export const fundraisingSourceSymbols: Record<string, SymbolName> = {
   'mr-email': 'mail', 'mr-advertising': 'target', 'mr-fundraising': 'chart', 'mr-mail': 'packet',
   'mr-glossary': 'book', fep: 'signal', nextafter: 'flask', 'candid-planning': 'steps',
@@ -179,7 +212,7 @@ export const fundraisingSourceSymbols: Record<string, SymbolName> = {
 export const fundraisingModuleSymbols: Record<string, SymbolName> = {
   fundraising: 'gift', projects: 'calendar', communications: 'dialogue', events: 'people',
   'grant-seeking': 'fileSearch', 'grant-delivery': 'route', evaluation: 'flaskCheck',
-  outcomes: 'signal', documents: 'document',
+  outcomes: 'signal', documents: 'document', volunteers: 'personCheck', resources: 'tools',
 };
 
 export const lexiconSymbols: Record<string, SymbolName> = {

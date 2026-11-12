@@ -2,6 +2,7 @@
 import { defineConfig, passthroughImageService } from 'astro/config';
 import { unified } from '@astrojs/markdown-remark';
 import { headingSymbol } from './src/lib/heading-symbol.ts';
+import { editorialListSymbol } from './src/lib/editorial-list-symbol.ts';
 import { sourceSymbol } from './src/lib/source-symbol.ts';
 
 // SITE_URL and BASE_PATH are set by the deploy workflow from GitHub Pages
@@ -25,12 +26,28 @@ function rehypePublicMarkdown() {
     /** @param {any} node @returns {string} */
     const text = (node) => node.type === 'text' ? node.value : (node.children ?? []).map(text).join('');
     /** @param {any} node */
+    const first = (node) => node.children?.find((child) =>
+      child.type === 'element' || (child.type === 'text' && child.value.trim()));
+    /** @param {any} node */
     const walk = (node) => {
       if (embeddedPlan && node.type === 'element' && /^h[1-5]$/.test(node.tagName)) {
         node.tagName = `h${Number(node.tagName[1]) + 1}`;
       }
       if (node.type === 'element' && node.tagName === 'h2') {
         node.properties.dataSectionSymbol = headingSymbol(text(node));
+      }
+      if (node.type === 'element' && node.tagName === 'li') {
+        const start = first(node);
+        const lead = start?.tagName === 'p' ? first(start) : start;
+        // A leading link already carries its destination or source mark.
+        if (lead?.tagName === 'a') {
+          node.properties.dataListLink = '';
+        } else if (lead) {
+          node.properties.dataListSymbol = editorialListSymbol(text(lead));
+        }
+      }
+      if (node.type === 'element' && node.tagName === 'ul') {
+        node.properties.role = 'list';
       }
       if (node.type === 'element' && node.tagName === 'a') {
         const href = node.properties?.href;
