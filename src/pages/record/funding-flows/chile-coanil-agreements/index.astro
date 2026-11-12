@@ -1,0 +1,129 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import { url } from '../../../../lib/site';
+import edition from '../../../../../public/data/funding-flows/chile-coanil-agreements/edition.json';
+
+const title = 'How COANIL’s residence agreements appear in Chile’s ledger';
+const dataPath = '/data/funding-flows/chile-coanil-agreements/';
+const lookup = '/record/funding-flows/chile-residential-payments/';
+const source = (file: keyof typeof edition.sources, page?: number) =>
+  edition.sources[file].url + (page === undefined ? '' : '#page=' + page);
+const fmt = (value: number) => value.toLocaleString('en-US');
+const { institution, agreements, residences, accounts, donations } = edition;
+const totals = [2025, 2026].map(year => {
+  const period = agreements.filter(row => row.year === year);
+  return {
+    year,
+    accrued: period.reduce((sum, row) => sum + row.ledgerAccruedClp, 0),
+    paid: period.reduce((sum, row) => sum + row.ledgerPaidClp, 0),
+  };
+});
+const original = agreements.find(row => row.id === 'original-2025')!;
+const communes = [...new Set(residences.map(row => row.commune))].sort((a,b) => a.localeCompare(b, 'es'));
+const files = [
+  ['installments.csv', 'Agreement installments and reported amounts (CSV)', 'bankOrder'],
+  ['residences.csv', 'Residence awards and approved places (CSV)', 'house'],
+  ['financial-disclosures.csv', 'Annual accounts and donation disclosures (CSV)', 'balance'],
+  ['edition.json', 'Complete edition and source fingerprints (JSON)', 'packet'],
+] as const;
+const sources = [
+  {title:'COANIL agreement archive', url:'https://coanil.cl/transparencia/transparencia-fundacion-coanil/otros-documentos/'},
+  {title:'Public donee register, entry 812', url:source('donee-rpd812.html'), publisher:'Chile Ministry of Finance'},
+  {title:'COANIL audited separate accounts for 2025 and 2024', url:source('audited-2025-2024.pdf'), publisher:'Fundación COANIL'},
+  {title:'Official ledger view by institutional tax ID', url:edition.ledgerPortal + 'institutions/providers/' + institution.rut, publisher:'Chile Budget Directorate'},
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" identityCode={institution.rut}
+  summary="Follow ten residence awards through a signed agreement, an amendment, a separate grant, a renewal and two sources that report payment differently."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'COANIL residence agreements'}]}
+  filePath="src/pages/record/funding-flows/chile-coanil-agreements/index.astro" sources={sources}>
+  <p>Chile’s <a href={source('donee-rpd812.html')}>public donee register</a> identifies {institution.name} by RUT {institution.rut} and registration {institution.registration}. The same institutional tax ID appears on the <a href={url(lookup + '#recipient-70267000-4')}>2025 award and government ledger records</a>. The signed documents explain the scope of three funding amounts on the same budget assignment.</p>
+
+  <h2 id="agreements">Reconcile the award, amendment and separate grant</h2>
+  <p>The original agreement approved in resolution 1996-2025 names ten residences and cites the 2025 award resolution. Its CLP {fmt(original.approvedClp)} matches the ten award amounts. A later amendment added CLP 182,850,000 for adaptations. The signed Glosa 7 grant, a separate allocation under a budget provision, accounts for another CLP 1,089,000,000. Together they account for the CLP {fmt(totals[0].paid)} that the government ledger reports as paid across COANIL records booked in 2025. <a href={source('rex-1996-2025.pdf', 3)}>Read the signed agreement</a>. <a href={source('rex-3588-2025.pdf', 4)}>Check the amendment</a>. <a href={source('glosa-2025.pdf', 1)}>Read the separate grant</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Approved, accrued and reported paid amounts by agreement" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Booked year</th><th scope="col">Agreement or amendment</th><th scope="col">Approved (CLP)</th><th scope="col">Ledger accrued (CLP)</th><th scope="col">Ledger reported paid (CLP)</th></tr></thead>
+      <tbody>{agreements.map(row => <tr>
+        <td>{row.year}</td><th scope="row"><a href={source(row.source as keyof typeof edition.sources, row.page)}>{row.title}</a><br />
+          <small>{row.reference ? 'Approval ' + row.reference : 'Signed annex and matching ledger amounts'}</small></th>
+        <td>{fmt(row.approvedClp)}</td><td>{fmt(row.ledgerAccruedClp)}</td><td>{fmt(row.ledgerPaidClp)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The amendment raises the original agreement to CLP 4,533,042,000. The approved total already includes the original award amount and amendment. The ledger rows for the last original installment and the adaptation record carry January 2026 payment dates. <a href={source('program-budget-2025.pdf')}>Read the amended budget by residence</a>.</p>
+  <p>The signed renewal provides CLP 5,099,904,000 from April 2026 through March 2027. The ledger amounts under the 636 document group match the three scheduled installments. The available annex supplies no approval number for that ledger group, so this is an amount comparison. Across the renewal and separate grant, the 2026 ledger shows CLP {fmt(totals[1].accrued)} accrued and CLP {fmt(totals[1].paid)} reported paid through the September booking period. <a href={source('annex-2026.pdf', 2)}>Read the signed renewal</a>.</p>
+
+  <h2 id="payment-reports">Compare the two payment reports</h2>
+  <p>The government records the last payment date for each ledger row. COANIL’s dated summaries report amounts and, in some rows, a payment date. The July 31, 2026 summary places all three renewal installments in its paid column. The later government capture shows zero paid and no payment date on the third installment. For the first installment, COANIL gives April 30 and the ledger gives May 8. Matching individual payment events would require a shared deposit or transaction reference. <a href={source('program-receipts-2026-07-31.pdf')}>Check the recipient summary</a>. <a href={url(lookup + '#recipient-70267000-4')}>Inspect the government rows</a>.</p>
+  <div class="table-wrap wide-table" role="region" aria-label="Government ledger and recipient report comparison" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Agreement and installment</th><th scope="col">Ledger document labels</th><th scope="col">Ledger paid (CLP)</th><th scope="col">Last ledger date</th><th scope="col">Recipient report as of</th><th scope="col">Recipient paid column (CLP)</th><th scope="col">Recipient date</th></tr></thead>
+      <tbody>{agreements.flatMap(group => group.installments.map(row => {
+        const report = 'recipientReported' in row ? row.recipientReported : undefined;
+        return <tr data-installment={group.id + '-' + row.number}>
+          <th scope="row">{group.year} · {group.title}<br /><small>Installment {row.number}</small></th>
+          <td>{row.documents.join(', ')}</td><td>{fmt(row.ledgerPaidClp)}</td><td>{row.ledgerDate ?? 'Unreported'}</td>
+          <td>{report ? <a href={source(report.source as keyof typeof edition.sources)}>{report.asOf}</a> : '—'}</td>
+          <td>{report ? fmt(report.paidClp) : '—'}</td><td>{report?.date ?? 'Unreported'}</td>
+        </tr>;
+      }))}</tbody>
+    </table>
+  </div>
+
+  <h2 id="places">Find the approved residences and places</h2>
+  <p>The original agreement lists 308 regular places. The renewal lists 304 for the same ten residences. These are approved places. The agreements specify the service communes, while the government’s budget location field groups ledger records. For all three original 2025 installments, the seven commune subtotals equal the scheduled shares for those places. Identical amounts within the same commune leave some individual residence allocations unresolved. The first 2026 ledger installment uses Colina on both rows, while the annex still names seven communes. <a href={source('rex-1996-2025.pdf', 7)}>Check the 2025 residence schedule</a>. <a href={source('annex-2026.pdf', 3)}>Check the renewal schedule</a>.</p>
+  <div class="table-wrap wide-table" role="region" aria-label="Residence awards and planned places" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Residence</th><th scope="col">Commune and region code</th><th scope="col">2025 award folio</th><th scope="col">2025 places</th><th scope="col">Original 2025 award (CLP)</th><th scope="col">Adaptation added (CLP)</th><th scope="col">Renewal places</th><th scope="col">Renewal amount (CLP)</th></tr></thead>
+      <tbody>{residences.map(row => <tr data-folio={row.folio}>
+        <th scope="row">{row.residence}</th><td>{row.commune} · {row.cut}</td>
+        <td><a href={edition.awardSource + '#page=' + row.awardPage}>{row.folio}</a></td>
+        <td>{row.places2025}</td><td><a href={source('rex-1996-2025.pdf',row.agreement2025Page)}>{fmt(row.approved2025)}</a></td>
+        <td><a href={source('rex-3588-2025.pdf',4)}>{fmt(row.adaptationClp)}</a></td>
+        <td>{row.places2026}</td><td><a href={source('annex-2026.pdf',row.annex2026Page)}>{fmt(row.approved2026)}</a></td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <details>
+    <summary>Inspect all seven matching 2025 commune totals per installment</summary>
+    <div class="table-wrap" role="region" aria-label="Matched commune amounts for 2025 original installments" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Commune</th><th scope="col">First, 40% (CLP)</th><th scope="col">Second, 30% (CLP)</th><th scope="col">Third, 30% (CLP)</th></tr></thead>
+        <tbody>{communes.map(commune => <tr><th scope="row">{commune}</th>{original.installments.map(row =>
+          <td>{fmt((row.matchingCommuneTotals as Record<string, number>)[commune])}</td>)}</tr>)}</tbody>
+      </table>
+    </div>
+  </details>
+  <p>To compare broader reported service reach and independent estimates of household dependence, <a href={url(lookup + '#geography')}>read the 16-region comparison</a>. The survey covers a broader group than this residential program.</p>
+
+  <h2 id="accounts">Check the audited accounts and donation disclosures</h2>
+  <p>The foundation’s separate audited accounts use thousands of pesos. They record SENADIS subsidy income, other contributions and year-end deferred amounts. The policy recognizes subsidy income in the periods when the corresponding expenses are recognized. Keep the deferred balance and the two income lines separate from government payment records and approved budgets. The 2024 column comes from the latest audited comparison. <a href={source('audited-2025-2024.pdf', 24)}>Read the accounting policy</a>. <a href={source('audited-2025-2024.pdf', 44)}>Check note 15</a>. <a href={source('audited-2025-2024.pdf', 46)}>Check note 17</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Audited institutional accounts and Law 21.440 donation disclosures" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Calendar year</th><th scope="col">SENADIS subsidies (thousand CLP)</th><th scope="col">Other SENADIS contributions (thousand CLP)</th><th scope="col">Deferred SENADIS balance (thousand CLP)</th><th scope="col">Donation income (thousand CLP)</th><th scope="col">Law 21.440 disclosures (CLP)</th></tr></thead>
+      <tbody>{accounts.map(row => {
+        const disclosure = donations.find(donation => donation.year === row.year)!;
+        return <tr><th scope="row">{row.year}</th><td>{fmt(row.senadisSubsidyClpThousands)}</td><td>{fmt(row.otherSenadisContributionClpThousands)}</td>
+          <td>{fmt(row.deferredSenadisClpThousands)}</td><td>{fmt(row.donationsClpThousands)}</td>
+          <td><a href={disclosure.source}>{fmt(disclosure.reportedClp!)}</a><br /><small>{disclosure.rowCount} workbook rows</small></td></tr>;
+      })}</tbody>
+    </table>
+  </div>
+  <p>The workbooks cover gifts reported under one tax regime. The two earlier workbooks contain no matching RUT rows. A missing row leaves the reported value unknown. The audited donation line has a wider reporting scope.</p>
+
+  <h2 id="downloads">Download the source-linked case</h2>
+  <ul class="download-list" role="list">{files.map(([filename,label,symbol]) => <li>
+    <a class="identity-label" href={url(dataPath + filename)} download><SiteSymbol name={symbol} size="inline" />{label}</a>
+  </li>)}</ul>
+  <p>The ledger data and adaptation use <a href={edition.ledgerLicense}>CC BY-SA 4.0</a>. Credit to {edition.ledgerAttribution} <a href={edition.ledgerPortal}>Presupuesto Abierto</a>. The edition gives the source document locations, one-based ledger positions and the exact predecessor edition.</p>
+</Entry>
+
+<style>
+  .data { min-width: 39rem; }
+  .wide-table .data { min-width: 54rem; }
+  :is(th, td) { overflow-wrap: anywhere; }
+  .download-list { list-style: none; padding-inline-start: 0; }
+</style>

@@ -245,6 +245,13 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['records', 'Inspect awards and ledger records', 'fileSearch'],
     ['downloads', 'Download source-linked records', 'download'],
   ],
+  '/record/funding-flows/chile-coanil-agreements/': [
+    ['agreements', 'Compare the agreements', 'agreement'],
+    ['payment-reports', 'Compare the payment reports', 'bankOrder'],
+    ['places', 'Find approved places', 'house'],
+    ['accounts', 'Check audited accounts', 'balance'],
+    ['downloads', 'Download source-linked records', 'download'],
+  ],
   '/record/funding-flows/taiwan-new-resident-fund/': [
     ['approval-and-execution', 'When one award appears in two reports', 'match'],
     ['projects', 'Find a project', 'lens'],
