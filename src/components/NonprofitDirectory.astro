@@ -101,12 +101,17 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
     const index = directory.querySelector<HTMLDetailsElement>('[data-listing-index]')!;
     const shortcuts = new Map([...index.querySelectorAll<HTMLElement>('[data-listing-shortcut]')]
       .map((item) => [item.dataset.listingShortcut, item]));
+    const filters = [query, category, cost];
+    let appliedValues: string[] = [];
+    let handledHash: string | undefined;
     const update = () => {
-      const words = query.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      appliedValues = filters.map((filter) => filter.value);
+      const [text, selectedCategory, selectedCost] = appliedValues;
+      const words = text.trim().toLowerCase().split(/\s+/).filter(Boolean);
       let count = 0;
       cards.forEach((card) => {
-        const show = (!category.value || card.dataset.category === category.value)
-          && (!cost.value || card.dataset.cost === cost.value)
+        const show = (!selectedCategory || card.dataset.category === selectedCategory)
+          && (!selectedCost || card.dataset.cost === selectedCost)
           && words.every((word) => card.dataset.search?.includes(word));
         card.hidden = !show;
         const shortcut = shortcuts.get(card.id);
@@ -118,13 +123,22 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
       directory.querySelector<HTMLElement>('[data-empty]')!.hidden = count !== 0;
       index.hidden = count === 0;
     };
+    const updateFromForm = () => {
+      if (!filters.some((filter, position) => filter.value !== appliedValues[position])) return;
+      // Preserve edits made after a jump whose hashchange is still queued.
+      handledHash = location.hash;
+      update();
+    };
     form.addEventListener('submit', (event) => event.preventDefault());
-    form.addEventListener('input', update);
-    form.addEventListener('change', update);
+    form.addEventListener('input', updateFromForm);
+    form.addEventListener('change', updateFromForm);
     form.addEventListener('reset', () => requestAnimationFrame(update));
 
     function revealDestination() {
-      const card = cards.find((item) => '#' + item.id === location.hash);
+      const hash = location.hash;
+      if (hash === handledHash) return;
+      handledHash = hash;
+      const card = cards.find((item) => '#' + item.id === hash);
       if (!card?.hidden) return;
       form.reset();
       update();
