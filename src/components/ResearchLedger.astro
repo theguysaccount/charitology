@@ -1,4 +1,5 @@
 ---
+import { sourceSymbol } from "../lib/source-symbol";
 import { pageIdentity, type SymbolName } from "../lib/site-identities";
 import { ledgerHref, projectResearchLedger } from "../lib/research-ledger-model.mjs";
 import { ledgerEditionHref, ledgerEditionJsonHref, ledgerEditionCsvHref, ledgerSourceHref, ledgerVersionTitle as title } from "../lib/research-ledger";
@@ -72,15 +73,25 @@ const scientificLabel = "Qualification follows the exact recorded public declara
 
   <section aria-label="Model-derived edition counts">
     <h3>Recorded activity and qualification</h3>
-    <ul class="rl-stats">
-      {[
-        ["Stable records", counters.records], ["Subject versions", counters.versions], ["Recorded events", counters.events],
-        ["Review declarations", counters.reviews], ["Subjects with qualifying source review", counters.qualifiedSourceReviews],
-        ["Peer-reviewed manuscripts", counters.peerReviewedManuscripts], ["Qualifying research results", counters.qualifyingResearchResults],
-        ["Editorial correction artifacts", counters.correctionArtifacts], ["Changed claim subjects", counters.changedClaims],
-        ["Open problems", counters.open], ["Partially resolved problems", counters.partial], ["Solved problems", counters.solved],
-        ["Problems under review", counters.underReview], ["Unresolved challenges", counters.unresolvedChallenges],
-      ].map(([label, count]) => <li class="rl-stat"><strong>{count}</strong>{label}</li>)}
+    <ul class="rl-stats" role="list">
+      {([
+        ["Stable records", counters.records, "archive"],
+        ["Subject versions", counters.versions, "recordVersion"],
+        ["Recorded events", counters.events, "history"],
+        ["Review declarations", counters.reviews, "reviewDeclaration"],
+        ["Subjects with qualifying source review", counters.qualifiedSourceReviews, "fileSearch"],
+        ["Peer-reviewed manuscripts", counters.peerReviewedManuscripts, "personCheck"],
+        ["Qualifying research results", counters.qualifyingResearchResults, "researchResult"],
+        ["Editorial correction artifacts", counters.correctionArtifacts, "notes"],
+        ["Changed claim subjects", counters.changedClaims, "loop"],
+        ["Open problems", counters.open, "question"],
+        ["Partially resolved problems", counters.partial, "split"],
+        ["Solved problems", counters.solved, "target"],
+        ["Problems under review", counters.underReview, "lens"],
+        ["Unresolved challenges", counters.unresolvedChallenges, "flag"],
+      ] as const).map(([label, count, mark]) => (
+        <li class="rl-stat"><div class="identity-label"><span class="site-symbol identity-inline" data-site-symbol={mark} aria-hidden="true"></span><strong>{count}</strong></div><span>{label}</span></li>
+      ))}
     </ul>
     <p class="rl-note">{scientificLabel} Editorial corrections, proposed methods and software checks are separate from qualifying research results.</p>
   </section>
@@ -136,7 +147,7 @@ const scientificLabel = "Qualification follows the exact recorded public declara
           {subject.type === "artifact" && <><p><strong>{artifactNames[subject.kind]}</strong> · finding: {subject.finding}</p><p>{subject.summary}</p><h5>Limitations</h5><p>{subject.limitations}</p><dl class="rl-definitions"><dt>Funding disclosure</dt><dd>{subject.funding.state}{subject.funding.note && `: ${subject.funding.note}`}</dd><dt>Conflict disclosure</dt><dd>{subject.conflicts.state}{subject.conflicts.note && `: ${subject.conflicts.note}`}</dd></dl><ul class="rl-links">{subject.targets.map((target) => <li><a href={recordLink(target.recordId, target.version)}>{title(resolveRef(target))} · version {target.version}</a></li>)}</ul></>}
           {subject.type === "challenge" && <><p>{subject.argument}</p><h5>What would settle it</h5><p>{subject.crux}</p><p>Targets <a href={recordLink(subject.target.recordId, subject.target.version)}>{title(resolveRef(subject.target))} · version {subject.target.version}</a>.</p></>}
           {subject.type === "decision" && <><p>Proposed change from <strong>{subject.from}</strong> to <strong>{subject.to}</strong>. Effective status is shown separately above.</p><h5>Exact progress criterion</h5><p>{subject.criterion}</p><h5>Recorded reason</h5><p>{subject.reason}</p><h5>Limitations</h5><p>{subject.limitations}</p><ul class="rl-links">{[subject.problem, ...subject.results].map((target) => <li><a href={recordLink(target.recordId, target.version)}>{title(resolveRef(target))} · version {target.version}</a></li>)}</ul></>}
-          {subjectSources.length > 0 && <><h5>Cited evidence</h5><ul class="rl-links">{subjectSources.map((source) => <li><a href={source.url}>{source.title}</a>{source.locator && ` · ${source.locator}`}{source.note && ` · ${source.note}`}{source.publisher && ` · ${source.publisher}`}{source.year && ` · ${source.year}`}</li>)}</ul></>}
+          {subjectSources.length > 0 && <><h5>Cited evidence</h5><ul class="rl-links">{subjectSources.map((source) => <li><a href={source.url} data-source-symbol={sourceSymbol(source.url)}>{source.title}</a>{source.locator && ` · ${source.locator}`}{source.note && ` · ${source.note}`}{source.publisher && ` · ${source.publisher}`}{source.year && ` · ${source.year}`}</li>)}</ul></>}
           <h5>Pinned source capture</h5>
           {version.sources.length === 0 ? <p>No repository source capture is attached to this version. Its public evidence references remain separate.</p> : <ul class="rl-links">{version.sources.map((binding) => { const source = sourceMap.get(binding.sourceId); return <li><a href={url(ledgerSourceHref(binding.sourceId))}>{source.path}</a> · {binding.selector.kind === "entry" ? "whole entry" : `selected claim (${binding.selector.adapter})`}<br /><code>{source.sha256}</code> · {source.byteLength} UTF-8 bytes · commit <code>{source.commit}</code></li>; })}</ul>}
           <details><summary>Exact version fields and declaration references</summary><pre>{JSON.stringify(version, null, 2)}</pre></details>
@@ -162,16 +173,16 @@ const scientificLabel = "Qualification follows the exact recorded public declara
           {event.type === "review-withdrawn" && <p><a href={reviewLink(event.reviewId)}>This review declaration</a> was withdrawn. {event.replacementReviewId ? <a href={reviewLink(event.replacementReviewId)}>Replacement declaration</a> : "No replacement is recorded."}</p>}
           {event.type === "artifact-withdrawn" && <p><a href={recordLink(event.artifact.recordId, event.artifact.version)}>Artifact version {event.artifact.version}</a> withdrawn. {event.replacement ? <a href={recordLink(event.replacement.recordId, event.replacement.version)}>Replacement version {event.replacement.version}</a> : "No replacement is recorded."}</p>}
           {event.type === "problem-disposition" && <><p><a href={recordLink(event.decision.recordId, event.decision.version)}>Exact disposition decision</a>. Historical recording and present support remain separate.</p><ul class="rl-links">{[...event.researchReviewIds, ...event.decisionReviewIds].map((id) => <li><a href={reviewLink(id)}>{id}</a></li>)}</ul></>}
-          <ul class="rl-links">{event.refs.map((ref) => <li><a href={ref.url}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}{event.observationIds.map((id) => <li><a href={encodeAnchor(`observation-${id}`)}>Dated public metadata observation: {id}</a></li>)}</ul>
+          <ul class="rl-links">{event.refs.map((ref) => <li><a href={ref.url} data-source-symbol={sourceSymbol(ref.url)}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}{event.observationIds.map((id) => <li><a href={encodeAnchor(`observation-${id}`)}>Dated public metadata observation: {id}</a></li>)}</ul>
           <details><summary>Exact event fields</summary><pre>{JSON.stringify(event, null, 2)}</pre></details>
         </article>)}
       </details>)}
     </section>
-    <section aria-label="Recorded reviews for this record"><h3>Review declarations</h3>{recordReviews.length === 0 ? <p>No public review declaration is recorded for this subject in this edition.</p> : recordReviews.map((review) => <article class="rl-panel" id={`review-${review.id}`}><h4>{review.scope} · {review.disposition}</h4><p>Recorded public declaration by {actorMap.get(review.reviewerId)?.publicName ?? review.reviewerId}; target version {review.subject.version}. {view.qualification.reviewIds.includes(review.id) ? "Included in this edition’s current eligible declaration set." : "Historical or not currently qualifying; retained for inspection."}</p><p>{review.statement}</p><dl class="rl-definitions"><dt>Public statement time</dt><dd>{review.occurredAt ?? "Unknown / undated"}</dd><dt>Independence declaration</dt><dd>{review.independence}</dd><dt>Conflict disclosure</dt><dd>{review.conflicts.state}{review.conflicts.note && `: ${review.conflicts.note}`}</dd><dt>Recorded inspection</dt><dd>{review.inspection.decision} · {review.inspection.at}<br />{review.inspection.reason}</dd></dl><h5>Public statements and checked sources</h5><ul class="rl-links">{[...review.statementRefs, ...review.sourcesChecked, ...review.inspection.refs].map((ref) => <li><a href={ref.url}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}</ul><details><summary>Exact review declaration</summary><pre>{JSON.stringify(review, null, 2)}</pre></details></article>)}</section>
+    <section aria-label="Recorded reviews for this record"><h3>Review declarations</h3>{recordReviews.length === 0 ? <p>No public review declaration is recorded for this subject in this edition.</p> : recordReviews.map((review) => <article class="rl-panel" id={`review-${review.id}`}><h4>{review.scope} · {review.disposition}</h4><p>Recorded public declaration by {actorMap.get(review.reviewerId)?.publicName ?? review.reviewerId}; target version {review.subject.version}. {view.qualification.reviewIds.includes(review.id) ? "Included in this edition’s current eligible declaration set." : "Historical or not currently qualifying; retained for inspection."}</p><p>{review.statement}</p><dl class="rl-definitions"><dt>Public statement time</dt><dd>{review.occurredAt ?? "Unknown / undated"}</dd><dt>Independence declaration</dt><dd>{review.independence}</dd><dt>Conflict disclosure</dt><dd>{review.conflicts.state}{review.conflicts.note && `: ${review.conflicts.note}`}</dd><dt>Recorded inspection</dt><dd>{review.inspection.decision} · {review.inspection.at}<br />{review.inspection.reason}</dd></dl><h5>Public statements and checked sources</h5><ul class="rl-links">{[...review.statementRefs, ...review.sourcesChecked, ...review.inspection.refs].map((ref) => <li><a href={ref.url} data-source-symbol={sourceSymbol(ref.url)}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}</ul><details><summary>Exact review declaration</summary><pre>{JSON.stringify(review, null, 2)}</pre></details></article>)}</section>
   </details>; })}
 
   {graph.observations.length > 0 && <section class="rl-panel"><h3>Dated public metadata observations</h3><p class="rl-note">These observations record only the displayed metadata at inspection. A merge, closed issue or empty review list does not establish research or independent review.</p>{graph.observations.map((observation) => <details id={`observation-${observation.id}`}><summary>{observation.kind} · {observation.observedAt}</summary><p><a href={observation.url}>Observed public object</a></p><pre>{JSON.stringify(observation.facts, null, 2)}</pre><p class="rl-meta"><code>{observation.hash}</code></p></details>)}</section>}
-  {graph.actors.length > 0 && <section class="rl-panel"><h3>Public contributor declarations</h3><p class="rl-note">Recorded declarations do not verify identity or prove independent human work.</p>{graph.actors.map((actor) => <details id={`actor-${actor.id}`}><summary>{actor.publicName} · {actor.kind}</summary><p>Human work declaration: {actor.humanWork}.</p><ul class="rl-links">{actor.profileUrls.map((href) => <li><a href={href}>{href}</a></li>)}{actor.declarationRefs.map((ref) => <li><a href={ref.url}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}</ul><details><summary>Exact declaration, including aliases</summary><pre>{JSON.stringify(actor, null, 2)}</pre></details></details>)}</section>}
+  {graph.actors.length > 0 && <section class="rl-panel"><h3>Public contributor declarations</h3><p class="rl-note">Recorded declarations do not verify identity or prove independent human work.</p>{graph.actors.map((actor) => <details id={`actor-${actor.id}`}><summary>{actor.publicName} · {actor.kind}</summary><p>Human work declaration: {actor.humanWork}.</p><ul class="rl-links">{actor.profileUrls.map((href) => <li><a href={href}>{href}</a></li>)}{actor.declarationRefs.map((ref) => <li><a href={ref.url} data-source-symbol={sourceSymbol(ref.url)}>{ref.title}</a>{ref.locator && ` · ${ref.locator}`}</li>)}</ul><details><summary>Exact declaration, including aliases</summary><pre>{JSON.stringify(actor, null, 2)}</pre></details></details>)}</section>}
   <footer class="rl-panel"><h3>Corrections stay public</h3><p>This ledger reads checked-in public evidence. It does not read private browser registers, publish a local result, assign reviewers or rate charities. New evidence and corrections enter through the repository’s public contribution process.</p><a href={url("/contribute/")}>How to contribute or challenge a claim</a></footer>
 </section>
 

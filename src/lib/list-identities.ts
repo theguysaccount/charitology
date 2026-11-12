@@ -1,6 +1,6 @@
 // Editorial marks describe what an item is. IDs are shared by links and the
 // items they point to, so filtering or reordering a list never changes its mark.
-import type { SymbolName } from './site-identities';
+import type { SymbolName } from './site-symbols';
 
 export const depthSymbols = ['medical', 'stitch', 'umbrella', 'columns', 'roots'] as const;
 export const stageSymbols = {
@@ -229,3 +229,33 @@ export const fragmentSymbols = {
   '/for-charities/start/': starterSymbols,
   '/tools/disaster-response-guide/': disasterAdviceSymbols,
 } as const;
+
+export const researchGroupSymbols: Readonly<Record<string, SymbolName>> = {
+  'Research record': 'notes',
+  Scope: 'lens',
+  Protocol: 'planSheet',
+  'Shared comparison': 'compare',
+  Approach: 'route',
+  'Assumption ranges': 'chart',
+  'Evidence and limits': 'shield',
+  'Claim and scope': 'lens',
+  Design: 'planSheet',
+  Analysis: 'calculator',
+  'Delivery and review': 'reviewDeclaration',
+  'Version record': 'recordVersion',
+  'Search and selection': 'filter',
+  'Study extraction': 'sourceCopy',
+  'Critical appraisal': 'checks',
+  Synthesis: 'layers',
+  Evidence: 'fileSearch',
+  Estimate: 'calculator',
+  Comparison: 'compare',
+  Interpretation: 'speech',
+  Decision: 'scale',
+  'Deliberation record': 'dialogue',
+  'Your weights': 'dial',
+  'What happened': 'history',
+  'What was tried': 'flask',
+  'What was learned': 'book',
+  'Follow-up': 'loop',
+};

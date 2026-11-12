@@ -101,9 +101,9 @@ try {
         html = await render(p);
       assert.match(html, /Current published edition/);
       assert.match(html, /Unknown before the recorded capture/);
-      assert.match(html, /<strong>0<\/strong>Qualifying research results/);
-      assert.match(html, /<strong>0<\/strong>Peer-reviewed manuscripts/);
-      assert.match(html, /<strong>0<\/strong>Review declarations/);
+      assert.match(html, /<strong>0<\/strong><\/div><span>Qualifying research results<\/span>/);
+      assert.match(html, /<strong>0<\/strong><\/div><span>Peer-reviewed manuscripts<\/span>/);
+      assert.match(html, /<strong>0<\/strong><\/div><span>Review declarations<\/span>/);
       assert.match(html, /data-ledger-noun="records"/);
       assert.match(html, /<details class="rl-batch" open/);
       assert.match(html, /class="rl-controls" hidden/);
@@ -160,8 +160,8 @@ try {
       assert.match(html, /<strong>After<\/strong>/);
       assert.match(html, /Fictional earlier scope claim\./);
       assert.match(html, /Fictional later scope claim\./);
-      assert.match(html, /<strong>1<\/strong>Editorial correction artifacts/);
-      assert.match(html, /<strong>0<\/strong>Qualifying research results/);
+      assert.match(html, /<strong>1<\/strong><\/div><span>Editorial correction artifacts<\/span>/);
+      assert.match(html, /<strong>0<\/strong><\/div><span>Qualifying research results<\/span>/);
     },
   );
   await check(

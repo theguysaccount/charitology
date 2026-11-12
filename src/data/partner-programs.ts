@@ -20,6 +20,7 @@ export const programWorkspaces: Record<string, PartnerWorkspace> =
             ...config.collections,
             {
               key: "readiness",
+              symbol: "shield",
               label: "Institutional readiness and outside authorization",
               singular: "readiness check",
               description:

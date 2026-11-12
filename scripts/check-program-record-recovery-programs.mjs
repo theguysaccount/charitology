@@ -226,6 +226,17 @@ for (const p of programs)
         first = config.context[0].key;
       before.context[first] = "  FICTIONAL retained " + p + "  ";
       const d = await start(p, before);
+      const nav = d.$("[data-workspace-contents]");
+      assert.equal(nav.hidden, false);
+      const links = [...nav.querySelectorAll("a")];
+      assert.equal(links.length, config.collections.length);
+      assert.equal(new Set(config.collections.map(c => c.symbol)).size, links.length);
+      for (const [index, { key, symbol }] of config.collections.entries()) {
+        const destination = `#collection-${key}`;
+        assert.equal(links[index].getAttribute("href"), destination);
+        assert.equal(links[index].querySelector("span").getAttribute("data-site-symbol"), symbol);
+        assert.equal(d.$(destination).querySelector("span").getAttribute("data-site-symbol"), symbol);
+      }
       assert.equal(hasWrite(d), false);
       assert.equal(d.get("#pw-context-" + first), before.context[first]);
       assert.ok(d.$("#pw-kpis").textContent.length);

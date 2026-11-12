@@ -63,6 +63,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "proposals",
+        symbol: "planSheet",
         label: "Grant proposals",
         singular: "proposal",
         description:
@@ -164,6 +165,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "conflicts",
+        symbol: "flag",
         label: "Conflicts and recusals",
         singular: "conflict disclosure",
         description:
@@ -229,6 +231,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "allocations",
+        symbol: "split",
         label: "Conditional allocation decisions",
         singular: "allocation",
         description:
@@ -310,6 +313,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "ledger",
+        symbol: "archive",
         label: "Nonpayment authorization ledger",
         singular: "ledger entry",
         description:
@@ -464,6 +468,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "gaps",
+        symbol: "hole",
         label: "Gap and existing-work checks",
         singular: "gap check",
         description:
@@ -538,6 +543,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "projects",
+        symbol: "seed",
         label: "Cohort projects and stages",
         singular: "project",
         description:
@@ -614,6 +620,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "experiments",
+        symbol: "flask",
         label: "Experiments and learning",
         singular: "experiment",
         description:
@@ -695,6 +702,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "milestones",
+        symbol: "steps",
         label: "Milestones and hand-off",
         singular: "milestone",
         description:
@@ -850,6 +858,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "specifications",
+        symbol: "question",
         label: "Question specifications",
         singular: "specification",
         description:
@@ -941,6 +950,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "pledges",
+        symbol: "wallet",
         label: "Unverified conditional pledges",
         singular: "pledge record",
         description:
@@ -1012,6 +1022,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "claims",
+        symbol: "speech",
         label: "Evidence submissions and claims",
         singular: "claim",
         description:
@@ -1079,6 +1090,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "decisions",
+        symbol: "scale",
         label: "Review and conditional awards",
         singular: "decision packet",
         description:
@@ -1245,6 +1257,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "criteria",
+        symbol: "ruler",
         label: "Categories and criteria",
         singular: "criterion",
         description:
@@ -1304,6 +1317,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "nominations",
+        symbol: "star",
         label: "Public work nominations",
         singular: "nomination",
         description:
@@ -1379,6 +1393,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "conflicts",
+        symbol: "flag",
         label: "Jury interests and recusals",
         singular: "recusal record",
         description: "Use roles and public connections, not personal profiles.",
@@ -1442,6 +1457,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "deliberations",
+        symbol: "dialogue",
         label: "Jury deliberation packets",
         singular: "deliberation",
         description:
@@ -1599,6 +1615,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "projects",
+        symbol: "seed",
         label: "Project proposals and scope",
         singular: "project proposal",
         description:
@@ -1675,6 +1692,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "curriculum",
+        symbol: "school",
         label: "Curriculum and facilitated sessions",
         singular: "learning session",
         description:
@@ -1747,6 +1765,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "milestones",
+        symbol: "steps",
         label: "Project milestones and supervision",
         singular: "milestone",
         description:
@@ -1812,6 +1831,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "reviews",
+        symbol: "personCheck",
         label: "Public-project review and fairness notes",
         singular: "review note",
         description:
@@ -1978,6 +1998,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "sessions",
+        symbol: "calendar",
         label: "Provisional sessions and agenda",
         singular: "session",
         description:
@@ -2059,6 +2080,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "roles",
+        symbol: "people",
         label: "Speaker and facilitation role placeholders",
         singular: "role requirement",
         description:
@@ -2116,6 +2138,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "production",
+        symbol: "tools",
         label: "Access and production checks",
         singular: "production check",
         description:
@@ -2171,6 +2194,7 @@ export const fundingWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "followup",
+        symbol: "loop",
         label: "Working outputs and follow-up",
         singular: "follow-up record",
         description:

@@ -176,6 +176,18 @@ for (const { id, depth } of json('disaster-guide').planner.buckets) {
   assert.match(disasterGuide, new RegExp(`<li class="dr-bucket"[^>]*>\\s*<div[^>]*>\\s*<strong[^>]*><span[^>]*data-site-symbol="${mark}"`), id);
 }
 
+for (const slug of ['cause-census', 'moral-frameworks-program', 'evidence-reviews', 'failure-lab', 'history-of-charity', 'methods-lab', 'replication-program']) {
+  const html = readFileSync(`dist/programs/${slug}/index.html`, 'utf8');
+  const marks = [...html.matchAll(/<legend[^>]*><span[^>]*data-site-symbol="([^"]+)"[^>]*><\/span>/g)].map(([, mark]) => mark);
+  assert.ok(marks.length >= 2, `Missing research field-group marks for ${slug}`);
+  assert.equal(new Set(marks).size, marks.length, `Repeated research field-group marks for ${slug}`);
+}
+
+const ledger = readFileSync('dist/research-ledger/index.html', 'utf8');
+const ledgerMarks = [...ledger.matchAll(/class="rl-stat"[^>]*><div[^>]*><span[^>]*data-site-symbol="([^"]+)"/g)].map(([, mark]) => mark);
+assert.equal(ledgerMarks.length, 14);
+assert.equal(new Set(ledgerMarks).size, ledgerMarks.length, 'Ledger summary measures have distinct identities');
+
 const coverage = readFileSync('dist/record/charity-index/coverage/index.html', 'utf8');
 const jurisdictionIndex = coverage.match(/<nav class="page-sections" aria-label="Jump to a jurisdiction"[^>]*>[\s\S]*?<\/nav>/)?.[0];
 assert.ok(jurisdictionIndex);

@@ -69,6 +69,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "questions",
+        symbol: "question",
         label: "Intake and unresolved choices",
         singular: "intake question",
         description:
@@ -107,6 +108,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "options",
+        symbol: "split",
         label: "Alternative giving scenarios",
         singular: "scenario",
         description:
@@ -172,6 +174,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "evidence",
+        symbol: "fileSearch",
         label: "Evidence and due-diligence questions",
         singular: "evidence note",
         description:
@@ -207,6 +210,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "followup",
+        symbol: "loop",
         label: "Decisions and follow-up",
         singular: "decision checkpoint",
         description:
@@ -330,6 +334,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "diagnostics",
+        symbol: "lens",
         label: "Diagnostic questions",
         singular: "diagnostic note",
         description:
@@ -369,6 +374,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "evidence",
+        symbol: "fileSearch",
         label: "Evidence and full-cost notebook",
         singular: "evidence note",
         description:
@@ -414,6 +420,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "actions",
+        symbol: "route",
         label: "Proportionate action plan",
         singular: "action",
         description:
@@ -457,6 +464,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "learning",
+        symbol: "book",
         label: "Learning and adaptation checkpoints",
         singular: "learning checkpoint",
         description:
@@ -595,6 +603,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
     collections: [
       {
         key: "checks",
+        symbol: "checks",
         label: "Claim and evidence checklist",
         singular: "planned check",
         description:
@@ -642,6 +651,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "findings",
+        symbol: "notes",
         label: "Findings and uncertainty log",
         singular: "finding note",
         description:
@@ -695,6 +705,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "safeguards",
+        symbol: "lock",
         label: "Safeguards and unresolved permissions",
         singular: "safeguard",
         description:
@@ -738,6 +749,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "responses",
+        symbol: "dialogue",
         label: "Response and correction log",
         singular: "response note",
         description:
@@ -788,6 +800,7 @@ export const advisoryWorkspaces: Record<string, PartnerWorkspace> = {
       },
       {
         key: "actions",
+        symbol: "route",
         label: "Corrective actions and rechecks",
         singular: "action",
         description:

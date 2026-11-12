@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import PageSections from '../components/PageSections.astro';
 import Crumbs from '../components/Crumbs.astro';
 import Badges from '../components/Badges.astro';
+import SiteSymbol from '../components/SiteSymbol.astro';
 import { SITE, url } from '../lib/site';
 
 const designed = (
@@ -22,13 +23,13 @@ const drafts = (
 ).reduce((a, b) => a + b, 0);
 
 const ROLES = [
-  ['Researchers', 'Take on one of the Open Problems. Publish an approach, a dataset or a partial result as an issue.', '/open-problems/'],
-  ['Builders', 'Ship a designed program or tool. Each one has a charter with a first milestone.', '#designed'],
-  ['Writers', 'Grow the Record: an encyclopedia entry, a case, a myth, a tradition. Sources first.', '/record/'],
-  ['Reviewers', `Check a draft’s sources and contribute a public review. ${drafts} pages are waiting.`, '/contribute/review/'],
-  ['Critics', 'Red-team any claim. Every page links to a prefilled challenge.', '/programs/red-team/'],
-  ['Forecasters', 'Put a number on what will happen and get scored when it does.', '/tools/forecasting-platform/'],
-];
+  ['Researchers', 'Take on one of the Open Problems. Publish an approach, a dataset or a partial result as an issue.', '/open-problems/', 'flask'],
+  ['Builders', 'Ship a designed program or tool. Each one has a charter with a first milestone.', '#designed', 'tools'],
+  ['Writers', 'Grow the Record: an encyclopedia entry, a case, a myth, a tradition. Sources first.', '/record/', 'notes'],
+  ['Reviewers', `Check a draft’s sources and contribute a public review. ${drafts} pages are waiting.`, '/contribute/review/', 'reviewDeclaration'],
+  ['Critics', 'Red-team any claim. Every page links to a prefilled challenge.', '/programs/red-team/', 'flag'],
+  ['Forecasters', 'Put a number on what will happen and get scored when it does.', '/tools/forecasting-platform/', 'forecast'],
+] as const;
 ---
 
 <Base title="Become a charitologist" description="How to contribute to Charitology: research, build, write, review, red-team and forecast. Everything is open on GitHub.">
@@ -53,8 +54,9 @@ const ROLES = [
     <h2 id="roles">Pick a role</h2>
     <div class="grid">
       {
-        ROLES.map(([title, text, href]) => (
+        ROLES.map(([title, text, href, symbol]) => (
           <a class="card" href={href.startsWith('#') ? href : url(href)}>
+            <SiteSymbol name={symbol} />
             <h3>{title}</h3>
             <p>{text}</p>
           </a>

@@ -1,4 +1,5 @@
 ---
+import { sourceSymbol } from "../../../lib/source-symbol";
 import SiteSymbol from '../../../components/SiteSymbol.astro';
 import { networkSymbols } from '../../../lib/list-identities';
 import Base from '../../../layouts/Base.astro';
@@ -25,7 +26,7 @@ const title = `${entries.length} ${guide.title.charAt(0).toLowerCase()}${guide.t
         <p><strong>Access and engagement.</strong> {entry.access}</p>
         <p class="entry-limit"><strong>Check the limits.</strong> {entry.limits}</p>
         <div class="entry-actions"><a class="btn btn-small" href={entry.engagement.url}>{entry.engagement.label} ↗</a><a href={entry.officialUrl}>Official website</a></div>
-        <details class="entry-sources"><summary>Official sources and check date</summary><p>Editorial source note · Draft · Checked <time datetime={entry.checkedAt}>{entry.checkedAt.slice(0,10)} UTC</time>. Conditions may change; confirm them before acting.</p><ul>{entry.sources.map(source => <li><a href={source.url}>{source.title}</a>{source.readStatus === 'limited' && <strong> · Limited access</strong>}<p>{source.supports}</p></li>)}</ul></details>
+        <details class="entry-sources"><summary>Official sources and check date</summary><p>Editorial source note · Draft · Checked <time datetime={entry.checkedAt}>{entry.checkedAt.slice(0,10)} UTC</time>. Conditions may change; confirm them before acting.</p><ul>{entry.sources.map(source => <li><a href={source.url} data-source-symbol={sourceSymbol(source.url)}>{source.title}</a>{source.readStatus === 'limited' && <strong> · Limited access</strong>}<p>{source.supports}</p></li>)}</ul></details>
       </li>)}</ol>
       <aside class="prose keep-working"><h2>Make the connection useful.</h2><p>{guide.closing}</p><p>Our <a href={url('/for-charities/fundraising/')}>fundraising guides</a> connect an appeal to its acknowledgment and learning. For shared work, <a href="https://os.charitology.org/#module/projects">Charity OS Projects and tasks</a> can keep owners and due dates visible. <a href="https://os.charitology.org/#module/resources">Resources</a> can hold your manually entered reference. Opening a link creates no record, membership or message.</p><p><a href={url('/for-charities/collaborate/')}>Help shape Charitology with your experience</a>, or <a href="https://github.com/theguysaccount/charitology/issues/new?template=charity-network.yml">suggest an organization or correction</a>.</p></aside>
       <ReviewNote filePath="src/data/charity-networks.mjs" title={title} />

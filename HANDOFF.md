@@ -4,6 +4,12 @@ Read this first, then `STYLE.md`. The full original brief is preserved; do not r
 
 The [Global Charity Index release plan](docs/GLOBAL_CHARITY_INDEX.md) records the Australian financial edition, reproducibility commands and the next jurisdiction, funding flow and funding-versus-need milestones.
 
+## Public navigation and themes
+
+Use the shared [site symbols](src/lib/site-symbols.ts) and [route identities](src/lib/site-identities.ts) for new pages and directories. Keep labels visible and repeat the symbol at a shortcut’s destination. In program workspaces, define the symbol on the collection so its jump link, heading and saved records stay consistent. Keep official record codes visible where the source supplies one.
+
+The public header offers System, Light and Dark. Check new controls in both themes and at narrow widths. Run the built-site identity check with `node scripts/check-site-identities.mjs` after `npm run build`.
+
 ## Updating the live Charity OS
 
 [Charity OS](https://os.charitology.org/app) runs from [`services/charity-os/`](services/charity-os/) in the Vercel project `charitology-os`, under `jacksonjezio-7345s-projects`. Vercel's GitHub integration builds previews for pull requests and uses `main` for production. The public website deploys separately through GitHub Pages.

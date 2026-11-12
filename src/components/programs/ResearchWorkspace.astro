@@ -1,4 +1,5 @@
 ---
+import { researchGroupSymbols } from "../../lib/list-identities";
 import type { ResearchField } from "../../lib/client/research-programs";
 interface Props {
   id: string;
@@ -48,7 +49,7 @@ const config = { id, title, fields, freeze };
       groups.map((group) => (
         <fieldset>
           <>
-            <legend>{group}</legend>
+            <legend><span class="site-symbol identity-inline" data-site-symbol={researchGroupSymbols[group] ?? "notes"} aria-hidden="true"></span> {group}</legend>
             <div class="rp-fields">
               {fields
                 .filter((field) => (field.group || "Research record") === group)
@@ -139,7 +140,7 @@ const config = { id, title, fields, freeze };
   </div>
   <p data-draft-preview class="note"></p>
   <div data-record-recovery></div>
-  <h3>Saved records (<span data-count>0</span>)</h3><div data-records></div>
+  <h3><span class="site-symbol identity-inline" data-site-symbol="archive" aria-hidden="true"></span> Saved records (<span data-count>0</span>)</h3><div data-records></div>
   <noscript
     ><p>
       This workspace needs JavaScript for local editing and export. The program
@@ -221,7 +222,7 @@ const config = { id, title, fields, freeze };
   }
 </style>
 <script>
-import { clear, h } from "../../lib/client/dom";
+import { clear, h, siteSymbol } from "../../lib/client/dom";
 import { download } from "../../lib/client/files";
 import {
   fieldError,
@@ -478,7 +479,7 @@ async function mount(root: HTMLElement) {
       const detail = h(
         "details",
         { class: "rp-record" },
-        h("summary", {}, row.values.title || "Untitled record"),
+        h("summary", {}, siteSymbol("notes"), " ", row.values.title || "Untitled record"),
       );
       detail.append(
         h(
