@@ -230,12 +230,13 @@ for (const p of programs)
       assert.equal(nav.hidden, false);
       const links = [...nav.querySelectorAll("a")];
       assert.equal(links.length, config.collections.length);
-      assert.equal(new Set(config.collections.map(c => c.symbol)).size, links.length);
-      for (const [index, { key, symbol }] of config.collections.entries()) {
+      const marks = links.map(link => link.querySelector("span").getAttribute("data-site-symbol"));
+      assert.equal(new Set(marks).size, links.length);
+      for (const [index, { key }] of config.collections.entries()) {
         const destination = `#collection-${key}`;
         assert.equal(links[index].getAttribute("href"), destination);
-        assert.equal(links[index].querySelector("span").getAttribute("data-site-symbol"), symbol);
-        assert.equal(d.$(destination).querySelector("span").getAttribute("data-site-symbol"), symbol);
+        assert.ok(marks[index] && (marks[index] !== "notes" || key === "findings"), destination);
+        assert.equal(d.$(destination).querySelector("span").getAttribute("data-site-symbol"), marks[index]);
       }
       assert.equal(hasWrite(d), false);
       assert.equal(d.get("#pw-context-" + first), before.context[first]);

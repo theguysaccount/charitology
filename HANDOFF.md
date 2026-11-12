@@ -6,7 +6,7 @@ The [Global Charity Index release plan](docs/GLOBAL_CHARITY_INDEX.md) records th
 
 ## Public navigation and themes
 
-Use the shared [site symbols](src/lib/site-symbols.ts) and [route identities](src/lib/site-identities.ts) for new pages and directories. Keep labels visible and repeat the symbol at a shortcut’s destination. In program workspaces, define the symbol on the collection so its jump link, heading and saved records stay consistent. Keep official record codes visible where the source supplies one.
+Use the shared [site symbols](src/lib/site-symbols.ts) and [route identities](src/lib/site-identities.ts) for new pages and directories. Keep labels visible and repeat the symbol at a shortcut’s destination. In program workspaces, match the collection key in [list identities](src/lib/list-identities.ts) so its jump link, heading and saved records stay consistent. Keep official record codes visible where the source supplies one.
 
 The public header offers System, Light and Dark. Check new controls in both themes and at narrow widths. Run the built-site identity check with `node scripts/check-site-identities.mjs` after `npm run build`.
 

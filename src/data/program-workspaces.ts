@@ -1,5 +1,3 @@
-import type { SymbolName } from '../lib/site-symbols';
-
 export type ProgramField = {
   key: string;
   label: string;
@@ -13,7 +11,6 @@ export type ProgramField = {
 };
 export type ProgramCollection = {
   key: string;
-  symbol: SymbolName;
   label: string;
   singular: string;
   description: string;
@@ -171,7 +168,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
     collections: [
       {
         key: "sessions",
-        symbol: "calendar",
         label: "Term sessions",
         singular: "session",
         description:
@@ -191,7 +187,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "roles",
-        symbol: "people",
         label: "Responsibilities",
         singular: "role",
         description: "Use role names. Store private contact details elsewhere.",
@@ -222,7 +217,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "tasks",
-        symbol: "checks",
         label: "Launch and handover tasks",
         singular: "task",
         description: "Track the actual steps from a draft kit to a meeting.",
@@ -279,7 +273,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
     collections: [
       {
         key: "needs",
-        symbol: "lens",
         label: "Needs and evidence",
         singular: "need",
         description:
@@ -311,7 +304,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "activities",
-        symbol: "pin",
         label: "Public activities",
         singular: "activity",
         description:
@@ -331,7 +323,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "questions",
-        symbol: "question",
         label: "Gaps and listening plan",
         singular: "question",
         description:
@@ -413,7 +404,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
     collections: [
       {
         key: "roles",
-        symbol: "people",
         label: "Volunteer opportunities",
         singular: "opportunity",
         description:
@@ -476,7 +466,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "logs",
-        symbol: "clock",
         label: "Hours and learning log",
         singular: "log entry",
         description:
@@ -533,7 +522,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
     collections: [
       {
         key: "scenarios",
-        symbol: "match",
         label: "Matching scenarios",
         singular: "scenario",
         description:
@@ -583,7 +571,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "tasks",
-        symbol: "checks",
         label: "Policy review checklist",
         singular: "review task",
         description:
@@ -652,7 +639,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
     collections: [
       {
         key: "options",
-        symbol: "split",
         label: "Options and monetary scenarios",
         singular: "option",
         description:
@@ -693,7 +679,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "evidence",
-        symbol: "fileSearch",
         label: "Evidence and rival explanations",
         singular: "evidence claim",
         description:
@@ -717,7 +702,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "equity",
-        symbol: "balance",
         label: "Equity and participation",
         singular: "equity question",
         description:
@@ -736,7 +720,6 @@ export const programWorkspaces: Record<string, ProgramWorkspace> = {
       },
       {
         key: "tasks",
-        symbol: "checks",
         label: "Review and evaluation plan",
         singular: "review task",
         description: "Make the next evidence check and follow-up explicit.",

@@ -250,6 +250,7 @@ const config = programWorkspaces[program];
 <script>
   import { $, $$, clear, h, siteSymbol } from "../../lib/client/dom";
   import { url } from "../../lib/site";
+  import { workspaceCollectionSymbols } from "../../lib/list-identities";
   import {
     programWorkspaces,
     type ProgramField,
@@ -597,7 +598,7 @@ const config = programWorkspaces[program];
       const heading = h(
         "h3",
         { id: `collection-${c.key}`, tabindex: -1 },
-        siteSymbol(c.symbol),
+        siteSymbol(workspaceCollectionSymbols[c.key] ?? "notes"),
         " ",
         c.label,
       );
@@ -922,7 +923,7 @@ const config = programWorkspaces[program];
           h(
             "article",
             { class: "pw-card" },
-            h("h4", {}, siteSymbol(c.symbol), " ", v.title || c.singular),
+            h("h4", {}, siteSymbol(workspaceCollectionSymbols[c.key] ?? "notes"), " ", v.title || c.singular),
             facts,
             analysis.length
               ? h(
@@ -1221,8 +1222,13 @@ const config = programWorkspaces[program];
   buildCollections();
   const contents = document.querySelector<HTMLElement>("[data-workspace-contents]");
   if (contents) {
-    for (const { key, label, symbol } of config.collections) {
-      contents.append(h("a", { href: `#collection-${key}` }, siteSymbol(symbol), label));
+    for (const { key, label } of config.collections) {
+      contents.append(h(
+        "a",
+        { href: `#collection-${key}` },
+        siteSymbol(workspaceCollectionSymbols[key] ?? "notes"),
+        label,
+      ));
     }
     contents.hidden = false;
   }
