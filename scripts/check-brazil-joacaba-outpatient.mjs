@@ -74,7 +74,7 @@ const html = output('index.html').toString();
 for (const section of ['outpatient', 'hearing-care', 'annex', 'downloads']) {
   assert.ok(html.includes(`id="${section}"`) && html.includes(`href="#${section}"`), section);
 }
-for (const path of [parent, '/record/charity-index/coverage/', `/record/funding-flows/brazil-project-execution/${infrastructureAgreement}/`]) {
+for (const path of [parent, '/record/funding-flows/', '/record/charity-index/coverage/', `/record/funding-flows/brazil-project-execution/${infrastructureAgreement}/`]) {
   assert.ok(output('index.html', path).toString().includes(`href="${base + route}"`), path);
 }
 assert.ok(html.includes('August 2026') && html.includes('>Unknown</td>'));

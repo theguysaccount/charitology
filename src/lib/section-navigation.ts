@@ -292,7 +292,7 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
   ],
   '/record/funding-flows/brazil-infrastructure-procurement-lots/joacaba-outpatient/': [
     ['outpatient', 'Whole-facility outpatient counts', 'calendar'],
-    ['hearing-care', 'Hearing-care processing months', 'medical'],
+    ['hearing-care', 'Hearing-care processing months', 'signal'],
     ['annex', 'Match codes to the signed annex', 'match'],
     ['downloads', 'Download counts and sources', 'download'],
   ],
