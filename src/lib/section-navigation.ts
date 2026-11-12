@@ -340,6 +340,13 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['scope', 'What the accounts can establish', 'shield'],
     ['downloads', 'Download the annual records', 'download'],
   ],
+  '/record/funding-flows/western-cape-transfers/': [
+    ['transfers', 'Transfer and spending totals', 'bankOrder'],
+    ['programs', 'Amounts by program', 'table'],
+    ['differences', 'Where printed totals differ', 'compare'],
+    ['older-persons', 'One home-care project', 'heart'],
+    ['downloads', 'Download the comparison', 'download'],
+  ],
   '/record/funding-flows/heal-nepal/': [
     ['organizations', 'Organizations and projects', 'chain'],
     ['manager-to-uk', 'Grant manager to UK charity', 'bankOrder'],

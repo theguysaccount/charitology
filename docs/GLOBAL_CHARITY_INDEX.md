@@ -413,7 +413,7 @@ node scripts/check-ripple-effect-kenya-accounts.mjs /path/to/captures
 
 The [Heal Nepal case](https://charitology.com/record/funding-flows/heal-nepal/) selects 13 grant manager disbursements by the exact UK activity and organization. Twelve amounts pair one to one with UK receipts. The first pair refers to the same reported quarter and differs by GBP 0.01. The UK file names the Nepal organization and uses a shorter activity identifier. The publishers use the same project title and actual start date. Preserve the published strings in the exports.
 
-The onward comparison groups seven UK disbursements and eight Nepal receipts by the dates and periods the publishers describe. One proposed counterpart is unresolved. Two additional Nepal receipts are recorded as test transfers. The UK reports pounds, and Nepal reports rupees. No exchange rate, settlement or cost is inferred from pairing the records. Both publishers separately report revised committed budgets and expenditure. The public health roadmap supplies a national baseline of new detections from before the project. It has no project-level denominators or outcome comparisons.
+The onward comparison groups seven UK disbursements and eight Nepal receipts by the dates and periods the publishers describe. One proposed counterpart is unresolved. Two additional Nepal receipts are recorded as test transfers. The UK reports pounds, and Nepal reports rupees. Exchange rates, settlement and project costs require underlying transfer or accounting records. Both publishers separately report revised committed budgets and expenditure. The public health roadmap supplies a national baseline of new detections from before the project. It has no project-level denominators or outcome comparisons.
 
 The [JSON export](https://charitology.com/record/funding-flows/heal-nepal/data.json) records the source and fingerprint of each input. Use the original publisher file cached by IATI for the fund manager and the two original charity files. The manager endpoint’s TLS certificate was expired at capture. The [official IATI dataset index](https://bulk-data.iatistandard.org/datasets-minimal) identified the original URL and the validated cache. The 13 selected manager rows match the D-Portal version on reference, date, currency and amount. The data projection keeps only institutional financial fields. The national detections and rate are a visual transcription from PDF page 4. The publisher URLs can move to newer snapshots.
 
@@ -422,6 +422,24 @@ python3 scripts/build-heal-nepal-trace.py /path/to/captures /path/to/rebuilt.jso
 cmp /path/to/rebuilt.json src/data/heal-nepal-trace.json
 npm run build
 node scripts/check-heal-nepal-trace.mjs
+```
+
+### Western Cape nonprofit transfers and reported spending
+
+The [Western Cape case](https://charitology.com/record/funding-flows/western-cape-transfers/) reconciles the 2024/25 and 2025/26 Annexure A tables from the provincial Department of Social Development. It preserves separate transfer and reported-spending amounts and excludes each annex’s separate table of budgeted but partially unpaid transfers. The earlier table has 1,092 detail rows and the later one has 1,104. Two independent parsers recover the same page, program, transfer and spending sequence. Grid coordinates locate the selected rows, including ones whose labels and explanations wrap.
+
+The 2024/25 Disabilities and Child and Youth Care program subtotals account for both grand-total differences. All twelve 2025/26 program subtotals reconcile. The annual statement presents nonprofit transfers in thousands of rand. The annex presents amounts in whole rand. The same department publishes both series. Keep program subtotals, grand totals and detail rows from being summed together.
+
+The Umelwane example links two project-labeled transfer rows to the trust name and institutional number in a historical official directory and current financial statements. The recipient’s February year-end grant aggregate has a different period and wider scope than the provincial March year-end project rows. Statistics South Africa’s 2022 provincial population is contextual. Project-wide costs and the eligible population require additional records.
+
+The [JSON](https://charitology.com/record/funding-flows/western-cape-transfers/data.json) records exact URLs, digests and page coordinates for the two annexes, two full reports and the selected recipient statements. The program export covers 25 fiscal-year rows. The projection publishes summaries and one named project comparison. The other transferee labels and explanations stay in the original PDFs. Observe the [Western Cape Government copyright and reuse terms](https://www.westerncape.gov.za/terms-of-use) for the originals.
+
+```sh
+python3 -m pip install pypdf==6.21.4 pdfplumber==0.11.9
+python3 scripts/build-western-cape-transfers.py /path/to/captures /path/to/rebuilt.json
+cmp /path/to/rebuilt.json src/data/western-cape-transfers.json
+npm run build
+node scripts/check-western-cape-transfers.mjs
 ```
 
 ## Japan NPO Portal and reported finances
