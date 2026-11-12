@@ -283,6 +283,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Coverage and evidence boundaries', 'archive'],
     ['downloads', 'Download records and source receipts', 'download'],
   ],
+  '/record/funding-flows/brazil-infrastructure-procurement-lots/': [
+    ['lookup', 'Find paid procurements and works lots', 'lens'],
+    ['coverage', 'What the join covers', 'archive'],
+    ['joacaba', 'Joaçaba rehabilitation clinic', 'medical'],
+    ['downloads', 'Download records and case evidence', 'download'],
+  ],
   '/record/funding-flows/brazil-cisterns/': [
     ['agreement', 'Federal agreement', 'permit'],
     ['payments', 'Reported account payments', 'bankOrder'],

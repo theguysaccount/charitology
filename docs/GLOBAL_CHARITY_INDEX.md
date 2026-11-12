@@ -229,12 +229,24 @@ node scripts/check-brazil-infrastructure-procurement-payments.mjs
 
 The [works lot lookup](https://charitology.com/record/funding-flows/brazil-infrastructure-work-lots/) links 55 of 65 CIPI-backed contracts to 57 lots in 53 agreements. It requires the same proposal, a checksum-valid institutional supplier identifier, the printed contract number and signing day. It checks the signature across the full contract archive before linking the unique works contract and its lots. The 58 contracts verified in the payment cohort have no exact works match in this capture.
 
-The works files link 73 planned subgoals by instrument and lot. Each published row retains its tendered amount, planned start, budget reference date and locality code. A budget locality code describes the budget record. Assigning work to a site requires a location reference at the lot or subgoal level. The authorization archive has 53 instrument records, including 51 with a recorded issue date. A recorded authorization, the actual start, the amount paid and the work measured are separate observations. The next source search is for a record that names both a payment or monitoring item and its works lot. [Official download catalogue](https://api-publica.transferegov.gestao.gov.br/downloads) · [Official works process](https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras).
+The works files link 73 planned subgoals by instrument and lot. Each published row retains its tendered amount, planned start, budget reference date and locality code. A budget locality code describes the budget record. Assigning work to a site requires a location reference at the lot or subgoal level. The authorization archive has 53 instrument records, including 51 with a recorded issue date. A recorded authorization, the actual start, the amount paid and the work measured are separate observations. [Official download catalogue](https://api-publica.transferegov.gestao.gov.br/downloads) · [Official works process](https://www.gov.br/transferegov/pt-br/manuais/transferegov/obras).
 
 ```sh
 python3 scripts/build-brazil-infrastructure-work-lots.py --inputs /path/to/captures /path/to/rebuilt-work-lots.json
 npm run build
 node scripts/check-brazil-infrastructure-work-lots.mjs
+```
+
+### Paid procurements and works-lot references
+
+The [procurement and works-lot comparison](https://charitology.com/record/funding-flows/brazil-infrastructure-procurement-lots/) joins the exact agreement, proposal, project and procurement IDs in the two pinned editions. It finds 53 of 334 paid procurements with 55 observed works-lot references. The 53 procurements record 340 payment rows and BRL 73,704,844.41. Their 332 expense documents supply no payment-side contract IDs. Count the payment amount once per procurement, including the two procurements with multiple works-lot references. Use the lot-reference CSV to inspect work identifiers.
+
+The Joaçaba case uses the two signed documents to identify the clinic and work packages. It retains the signed and CIPI amounts separately, including the BRL 23.24 difference on lot 2. The independent referral comparison uses PDF pages 234 and 249 of the state plan and the published CNES designation. The exact query in the case JSON covers both census variables for all 53 municipalities. The work acceptance record, allocation of procurement payments by lot and measured service changes remain open. [State plan](https://www.saude.sc.gov.br/index.php/pt/legislacao/legislacao-geral/deliberacoes/deliberacoes-2025/017-06-02-par-atualizacao-da-rede-de-cuidados-a-saude-da-pessoa-com-deficiencia/download) · [IBGE table 10125](https://sidra.ibge.gov.br/tabela/10125).
+
+```sh
+node scripts/build-brazil-infrastructure-procurement-lots.mjs /path/to/rebuilt-procurement-lots.json
+npm run build
+node scripts/check-brazil-infrastructure-procurement-lots.mjs
 ```
 
 ## Brazil Cisternas agreement and water access

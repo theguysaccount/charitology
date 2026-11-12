@@ -1,0 +1,160 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import caseStudy from '../../../../data/funding-flows/brazil-joacaba-rehabilitation.json';
+import { procurementLotsEdition, procurementLotsRoute } from '../../../../lib/brazil-infrastructure-procurement-lots';
+import { procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
+import { count, data, money, projectPath } from '../../../../lib/brazil-project-execution';
+import { workLotsRoute } from '../../../../lib/brazil-infrastructure-work-lots';
+import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+import { url } from '../../../../lib/site';
+
+const title = 'Brazilian infrastructure payments and works lots';
+const { procurements, coverage, license } = procurementLotsEdition;
+const { agreement, facility, contracts, documents, services, catchment, laterSelection, startAuthorization } = caseStudy;
+const catalogue = 'https://api-publica.transferegov.gestao.gov.br/downloads';
+const sources = [
+  { title: 'Original Transferegov archives', publisher: 'Transferegov.br', url: catalogue },
+  ...Object.values(documents).map(source => ({ title: source.label, publisher: source.publisher, url: source.url, note: source.coordinate })),
+];
+const projectNames = new Map(data.projects.map(project => [project.agreement, project.organization]));
+const search = (row: typeof procurements[number]) => normalizeBrazilName([
+  row.agreement, row.proposal, row.project, row.procurementId, projectNames.get(row.agreement),
+  ...row.lots.flatMap(lot => [lot.lotId, lot.worksInstrumentId, lot.worksContractId]),
+].join(' '));
+const coverageRows = [
+  { label: 'Payment edition', values: coverage.paymentEdition },
+  { label: 'Exact procurement match', values: coverage.linked },
+  { label: 'One observed lot', values: coverage.oneLot },
+  { label: 'Multiple observed lots', values: coverage.multipleLots },
+  { label: 'No exact lot match', values: coverage.noLotMatch },
+];
+const casePayments = new Map(procurements.filter(row => row.agreement === agreement).map(row => [row.procurementId, row]));
+const difference = contracts[1].cipiAmountCentsBRL - contracts[1].signedAmountCentsBRL;
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Follow paid procurements to the work packages named in separate official records. Inspect the two contracts for a rehabilitation clinic in Joaçaba."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Payments and works lots'}]}
+  sources={sources} filePath="src/pages/record/funding-flows/brazil-infrastructure-procurement-lots/index.astro">
+  <p>Of {count(coverage.paymentEdition.procurements)} procurements with reported payments, {count(coverage.linked.procurements)} have the same agreement, proposal, project and procurement ID in the <a href={url(workLotsRoute)}>works-lot edition</a>. These procurements link to {count(coverage.linkedLotReferences)} lots. A lot is a package of work under a contract.</p>
+  <p>The <a href={url(procurementPaymentsRoute)}>payment edition</a> reports {money(coverage.linked.reportedPaymentCentsBRL)} across the matched procurements. The {count(coverage.linked.expenseDocuments)} linked expense documents have no recorded payment-side contract ID. The payments below stay at procurement level, including when only one lot appears in the capture.</p>
+
+  <section data-procurement-lot-filter aria-labelledby="lookup">
+    <h2 id="lookup">Find paid procurements and works lots</h2>
+    <form hidden role="search" aria-label="Find matched procurements">
+      <label for="procurement-lot-query">Agreement, proposal, project, procurement, lot or organization</label>
+      <input id="procurement-lot-query" type="search" maxlength="160" autocomplete="off" />
+      <label for="procurement-lot-count">Observed lots</label>
+      <select id="procurement-lot-count">
+        <option value="">Any number of lots</option><option value="one">One lot</option><option value="multiple">Multiple lots</option>
+      </select>
+      <button class="btn btn-ghost btn-small" type="reset">Clear filters</button>
+    </form>
+    <p role="status" data-procurement-lot-count>{count(procurements.length)} matched procurements</p>
+    <div class="table-wrap trace-table" role="region" aria-label="Matched procurements and works-lot identifiers" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Procurement</th><th scope="col">Agreement and project</th><th scope="col">Expense documents and payment rows</th><th scope="col">Reported procurement payments</th><th scope="col">Works lot references</th></tr></thead>
+        <tbody>{procurements.map(row => <tr data-procurement-row data-agreement={row.agreement} data-lot-count={row.lots.length === 1 ? 'one' : 'multiple'} data-search={search(row)}>
+          <th scope="row"><a class="identity-label" href={url(procurementPaymentsRoute + `?agreement=${row.agreement}&procurement=${row.procurementId}#procurements`)}><SiteSymbol name="match" size="inline" /><code>{row.procurementId}</code></a></th>
+          <td><a href={url(projectPath(row.agreement))}>{row.agreement} · {row.project}</a><small>{projectNames.get(row.agreement)}</small></td>
+          <td>{count(row.documents)} documents<small>{count(row.paymentRows)} payment rows</small></td>
+          <td>{money(row.reportedPaymentCentsBRL)}<small>{row.firstPaymentYear === row.lastPaymentYear ? row.firstPaymentYear : `${row.firstPaymentYear}–${row.lastPaymentYear}`}</small></td>
+          <td><ul class="lot-refs" role="list">{row.lots.map(lot => <li>
+            <a class="identity-label" href={url(workLotsRoute + `?agreement=${row.agreement}#lots`)}><SiteSymbol name="layers" size="inline" />Lot {lot.lotNumber} · <code>{lot.lotId}</code></a>
+          </li>)}</ul></td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+    <p hidden data-procurement-lot-empty>No matched procurements fit these filters.</p>
+  </section>
+
+  <h2 id="coverage">What the join covers</h2>
+  <div class="table-wrap trace-table" role="region" aria-label="Procurement match coverage" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Group</th><th scope="col">Procurements</th><th scope="col">Agreements</th><th scope="col">Documents</th><th scope="col">Payment rows</th><th scope="col">Reported payments</th></tr></thead>
+      <tbody>{coverageRows.map(({ label, values }) => <tr>
+        <th scope="row">{label}</th><td>{count(values.procurements)}</td><td>{count(values.agreements)}</td>
+        <td>{count(values.expenseDocuments)}</td><td>{count(values.paymentRows)}</td><td>{money(values.reportedPaymentCentsBRL)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The one-lot and multiple-lot rows break down the exact matches. One agreement can contain procurements in different groups, so use the payment-edition total when counting distinct agreements. The two editions cover selected public records. More records could change the observed number of lots.</p>
+
+  <h2 id="joacaba">Two work packages at the Joaçaba rehabilitation clinic</h2>
+  <p>The signed works contracts identify the AMU clinic and its renovation packages. The <a href={documents.designation.url}>federal designation</a> and the <a href={documents.cnes.url}>CNES facility record</a> identify the specialized rehabilitation center in Joaçaba, facility <code>{facility.cnes}</code>. The facility’s institutional registration matches the holder in <a href={url(projectPath(agreement))}>agreement {agreement}</a>.</p>
+  <div class="table-wrap trace-table" role="region" aria-label="Joaçaba contracts and separate procurement payment amounts" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Work package and signed source</th><th scope="col">Procurement</th><th scope="col">Signed contract</th><th scope="col">CIPI contract</th><th scope="col">Reported procurement payments</th></tr></thead>
+      <tbody>{contracts.map(contract => <tr>
+        <th scope="row"><a class="identity-label" href={documents[contract.document as 'contract1' | 'contract2'].url}><SiteSymbol name="document" size="inline" />Lot {contract.lotNumber}</a></th>
+        <td><a href={url(procurementLotsRoute + `?agreement=${agreement}#lookup`)}>{contract.procurementId}</a></td>
+        <td>{money(contract.signedAmountCentsBRL)}</td><td>{money(contract.cipiAmountCentsBRL)}</td>
+        <td>{money(casePayments.get(contract.procurementId)?.reportedPaymentCentsBRL ?? null)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>For lot 2, the signed document and CIPI differ by {money(difference)}. The available records leave the reason open. The works instrument records start authorization <code>{startAuthorization.id}</code> on <time datetime={startAuthorization.issuedOn}>March 19, 2025</time>. The authorization applies to the instrument. The <a href={documents.selection.url}>separate September 2026 selection</a> records {money(laterSelection.selectedAmountCentsBRL)} for {laterSelection.reference}. A corresponding contract and payment remain unverified.</p>
+
+  <h3>Who lives in the referral area</h3>
+  <p>The <a href={documents.statePlan.url + '#page=249'}>state plan</a> describes referrals from {count(catchment.municipalities)} municipalities. Summing the <a href={catchment.source.url}>2022 census sample estimates</a> gives {count(catchment.totals.peopleAge2AndOlder)} residents aged two or older, of whom {count(catchment.totals.peopleAge2AndOlderWithDisability)} were estimated to have a disability. The census describes residents before the renovation. Patient counts, service eligibility, waiting times and health outcomes require separate sources.</p>
+  <p>The <a href={documents.operatorOpening.url}>operator reports</a> that the clinic began services gradually in October 2024 and formally opened in March 2025. The <a href={documents.designation.url}>federal designation</a> authorizes {money(services.authorizedAnnualOperatingCentsBRL)} annually for the municipal operating budget. This operating authorization has a different scope from the construction records. Work acceptance and the renovation’s effect on care remain unknown.</p>
+
+  <h2 id="downloads">Download the joined records and case evidence</h2>
+  <ul>
+    <li><a href={url(procurementLotsRoute + 'data.json')} data-source-symbol="packet" download>Joined edition and upstream fingerprints (JSON)</a></li>
+    <li><a href={url(procurementLotsRoute + 'procurements.csv')} data-source-symbol="match" download>One row per paid procurement (CSV)</a></li>
+    <li><a href={url(procurementLotsRoute + 'lot-references.csv')} data-source-symbol="layers" download>One row per works-lot reference (CSV)</a></li>
+    <li><a href={url(procurementLotsRoute + 'case.json')} data-source-symbol="medical" download>Joaçaba source receipts and census estimates (JSON)</a></li>
+  </ul>
+  <p>Amounts in the files use integer BRL cents. Procurement and lot source coordinates point to rows in the upstream editions. The lot-reference export contains identifiers only. <a href={url(procurementPaymentsRoute)}>Procurement and payment edition</a> · <a href={url(workLotsRoute)}>Works-lot edition</a> · <a href={license}>Open Database License</a>.</p>
+</Entry>
+
+<style>
+  [data-procurement-lot-filter] form:not([hidden]) { display: grid; gap: .45rem; max-inline-size: 38rem; }
+  [data-procurement-lot-filter] :is(input, select, button) { min-height: 2.75rem; min-width: 0; }
+  [data-procurement-lot-filter] form button { justify-self: start; }
+  .trace-table { margin-block: 1rem; }
+  .trace-table table { min-width: 43rem; }
+  .trace-table :is(td, th) { overflow-wrap: anywhere; }
+  .trace-table small { display: block; color: var(--ink-2); font-weight: normal; }
+  .lot-refs { list-style: none; margin: 0; padding: 0; }
+</style>
+
+<script>
+  import { normalizeBrazilName } from '../../../../lib/client/brazil-transferegov';
+  const root = document.querySelector<HTMLElement>('[data-procurement-lot-filter]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('form')!;
+    const query = form.querySelector<HTMLInputElement>('#procurement-lot-query')!;
+    const lots = form.querySelector<HTMLSelectElement>('#procurement-lot-count')!;
+    const status = root.querySelector<HTMLElement>('[data-procurement-lot-count]')!;
+    const empty = root.querySelector<HTMLElement>('[data-procurement-lot-empty]')!;
+    const rows = [...root.querySelectorAll<HTMLTableRowElement>('[data-procurement-row]')];
+    const agreement = new URLSearchParams(location.search).get('agreement');
+    let exactAgreement = agreement && /^[0-9]{1,20}$/.test(agreement) ? agreement : null;
+    query.value = exactAgreement ?? '';
+
+    function filter() {
+      const terms = normalizeBrazilName(query.value).split(' ').filter(Boolean);
+      let visible = 0;
+      for (const row of rows) {
+        const agreementMatches = exactAgreement ? row.dataset.agreement === exactAgreement : terms.every(term => row.dataset.search!.includes(term));
+        row.hidden = !agreementMatches || Boolean(lots.value && row.dataset.lotCount !== lots.value);
+        if (!row.hidden) visible++;
+      }
+      status.textContent = `${visible} matched ${visible === 1 ? 'procurement' : 'procurements'}`;
+      empty.hidden = visible !== 0;
+    }
+
+    form.addEventListener('submit', event => event.preventDefault());
+    query.addEventListener('input', () => { exactAgreement = null; filter(); });
+    lots.addEventListener('change', filter);
+    form.addEventListener('reset', () => {
+      exactAgreement = null;
+      requestAnimationFrame(() => { filter(); query.focus(); });
+    });
+    form.hidden = false;
+    filter();
+  }
+</script>

@@ -2,6 +2,7 @@
 import Entry from '../../../../layouts/Entry.astro';
 import { contractRoute } from '../../../../lib/brazil-project-contracts';
 import { procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
+import { procurementLotsRoute } from '../../../../lib/brazil-infrastructure-procurement-lots';
 import { count, data, money, municipalities, projectPath } from '../../../../lib/brazil-project-execution';
 import { workLotEdition, workLotsRoute } from '../../../../lib/brazil-infrastructure-work-lots';
 import { worksRoute } from '../../../../lib/brazil-works-measurements';
@@ -118,6 +119,7 @@ const labelFor = (status: string) => status === 'Emitida' ? 'Issued' : 'Not issu
   <h2 id="coverage">Coverage and evidence boundaries</h2>
   <p>The contract match requires the same proposal, a checksum-valid institutional supplier identifier, the printed contract number and the signing day. The build checks that the signature points to a single SICONV contract and a single works contract for the selected proposal. {count(coverage.cipiContractLinkStatuses.noExactWorksMatch)} CIPI-linked contracts have no exact works match in this capture.</p>
   <p>The {count(coverage.paymentContracts)} contracts verified in the <a href={url(procurementPaymentsRoute)}>procurement payment edition</a> have no exact works-lot match under those rules. The <a href={url(worksRoute)}>monitoring edition</a> supplies separate measurement records for the proposals. Connecting an individual payment or a measurement item to one lot requires a source that carries both references.</p>
+  <p><a class="identity-link" href={url(procurementLotsRoute)}>Find procurements that link both editions</a>. That comparison connects payments and works-lot references at procurement level.</p>
   <p>The subgoal status column preserves the source codes AAI and ACT. Tendered amounts describe planned subgoals. Contract totals, money paid and verified delivery each have their own source records. Keep those figures separate.</p>
 
   <h2 id="downloads">Download the records and source receipts</h2>
