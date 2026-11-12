@@ -282,7 +282,9 @@ for (const page of pages) {
       assert.equal(mark, headingMark, `Outline and heading marks differ for ${page}#${id}`);
       matchingHeadings++;
     }
-    assert.equal([...outline.matchAll(/data-site-symbol="[^"]+"/g)].length, links.length, page);
+    const marks = [...outline.matchAll(/data-site-symbol="([^"]+)"/g)].map(([, mark]) => mark);
+    assert.equal(marks.length, links.length, page);
+    assert.equal(new Set(marks).size, marks.length, `Repeated outline symbol in ${page}`);
   }
   const country = page.match(/^record\/countries\/([a-z]{3})\/index\.html$/);
   if (country) {
