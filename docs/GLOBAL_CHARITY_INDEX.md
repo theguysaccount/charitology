@@ -249,6 +249,23 @@ npm run build
 node scripts/check-brazil-infrastructure-procurement-lots.mjs
 ```
 
+The [clinic operating funds](https://charitology.com/record/funding-flows/brazil-infrastructure-procurement-lots/#operations) trace FNS bank order 029513 to the Joaçaba municipal health fund by fund CNPJ, program and ordinance code `05402`. The `case.json` projection keeps the order within the wider 2024 outpatient and hospital funding category. The 2025 detail exceeds its summary by BRL 11,373.03. Two orders of that amount have distinct numbers and dates. The 2026 capture runs through November.
+
+The signed municipal contract records the conditional funding commitment to the clinic operator. The state hearing allocation, related municipal award, later state expansion and shared service targets have separate source coordinates. Next, seek municipal ledger entries and invoices tied to contract 23/2024/FMS and award 12/2025, then match verified aggregate service records to CNES 2964511 and their reporting months. Work acceptance and observed outcomes require their own records. [FNS public payment portal](https://consultafns.saude.gov.br/#/detalhada) · [Unoesc legal publication](https://www.unoesc.edu.br/blog/publicacoes-legais/contrato-23-2024-fundo-municipal-de-saude-de-joacaba/).
+
+To replay the transfer projection, save the exact responses in `operations.fundTransfers` under the file names listed below. Replace `YY` with `24`, `25` or `26`. The builder checks captured bytes before projecting only institutional and transaction fields. The live source may change after the capture date.
+
+| Source receipt | Capture filename |
+| --- | --- |
+| `yearly[].sources.entity` | `fns-entity-YY.json` |
+| `yearly[].sources.summary` | `fns-actions-YY.json` |
+| `yearly[].sources.detail` | `fns-MAC-YY.json` |
+| `exactOrdinanceOrder.filteredSource` | `fns-05402-24.json` |
+
+```sh
+node scripts/build-brazil-joacaba-fund-transfers.mjs /path/to/captures /path/to/new-projection.json
+```
+
 ## Brazil Cisternas agreement and water access
 
 The [Cisternas case](https://charitology.com/record/funding-flows/brazil-cisterns/) follows agreement 945310 and its exact proposal and organization IDs. Its eleven bank orders show BRL 31,499,882.76 made available in 2023–2026. The six pinned Transferegov archives identify the original agreement, amendment and reported movements from the agreement account. The 2026 records cover the November 11 capture. The current federal contribution, reported bank orders, account payments and internal transfers belong to different stages. The named-payee subset uses the full CNPJ and exact agreement number. It stays inside the other-payment total. All 190 selected internal transfers have an onward record with a missing amount.
