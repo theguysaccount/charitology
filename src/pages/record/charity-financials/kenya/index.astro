@@ -2,12 +2,13 @@
 import Entry from '../../../../layouts/Entry.astro';
 import { url } from '../../../../lib/site';
 import edition from '../../../../data/kenya-pbo-coverage.json';
+import directory from '../../../../data/kenya-pbo-directory-coverage.json';
 
 type Period = typeof edition.periods[number];
 type Reference = keyof Period['source']['references'];
 const route = '/record/charity-financials/kenya/';
 const title = 'Kenya’s charity reporting and finances';
-const officialRegister = 'https://pbora.go.ke/pbos';
+const officialRegister = directory.captures[0].url;
 const transition = 'https://pbora.go.ke/authority-rolls-out-transition-process-ngos-under-pbo-act';
 const years = edition.periods;
 const latest = years[years.length - 1];
@@ -22,6 +23,11 @@ const labels: Record<string, string> = {
   'international-program-staff': 'International program staff', 'all-expenditure': 'All reported expenditure',
 };
 const count = new Intl.NumberFormat('en-US');
+const referenceShapes = [
+  { label: 'Starts with 218/051 or a punctuation variant', rows: directory.printedReferenceShapes.numeric218051 },
+  { label: 'NGO- followed by letters or digits', rows: directory.printedReferenceShapes.ngoHyphenAlphanumeric },
+  { label: 'Other printed formats', rows: directory.printedReferenceShapes.otherPrintedShape },
+];
 const billions = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const amount = (value: string | null) => value === null ? '—' : billions.format(Number(value) / 1_000_000_000);
 function pageLink(period: Period, key: Reference) {
@@ -53,7 +59,18 @@ const sources = [
       </tr>)}</tbody>
     </table>
   </div>
-  <p><a href={officialRegister}>Search Kenya’s official organization register</a> by name or reference. PBORA’s transition advisory says an organization can receive a new reference while retaining its earlier one. The figures below describe groups of filers. Linking an amount to a specific organization requires its own public financial records.</p>
+  <p>The financial figures below describe groups of filers. Linking an amount to a specific organization requires its own public financial records.</p>
+
+  <h2 id="public-directory">Public organization directory</h2>
+  <p>On <time datetime={directory.capturedOn}>{directory.capturedOn}</time>, the <a href={officialRegister}>regulator’s public directory</a> showed {count.format(directory.directoryRows)} rows and {count.format(directory.distinctNonblankReferenceStrings)} distinct printed reference strings. The directory shows a name and a reference. Use the report table above for each year’s active and filing counts.</p>
+  <div class="table-wrap" role="region" aria-label="Printed reference formats in the Kenya directory" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Reference format</th><th scope="col" class="num">Rows</th></tr></thead>
+      <tbody>{referenceShapes.map(row => <tr><th scope="row">{row.label}</th><td class="num">{count.format(row.rows)}</td></tr>)}</tbody>
+    </table>
+  </div>
+  <p>We found {count.format(directory.normalizedNameStringsWithMultipleReferences)} names with multiple references after normalizing spacing, case and equivalent Unicode characters. PBORA’s <a href={transition}>transition advisory</a> says updated certificates carry the new registration number and the original number and date. Use those published identifiers to establish a match across versions.</p>
+  <p><a href={url(route + 'directory.json')} data-source-symbol="packet" download="kenya-pbo-directory-coverage.json">Download the directory counts and source receipts (JSON)</a>.</p>
 
   <h2 id="receipts">Where reported receipts came from</h2>
   <p>The geographic categories describe the reported sources of funds. Add the geographic rows only within a year and use the report total once. The 2023/24 geographic rows sum to KES 0.01 less than the published total. The download keeps that difference visible.</p>
