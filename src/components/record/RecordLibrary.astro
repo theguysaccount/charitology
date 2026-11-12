@@ -1,4 +1,6 @@
 ---
+import SiteSymbol from "../SiteSymbol.astro";
+import { referenceFieldSymbols } from "../../lib/list-identities";
 import { sourceSymbol } from "../../lib/source-symbol";
 import type { ReferenceLibrary } from "../../lib/record-library";
 import { absolute, url, issueUrl } from "../../lib/site";
@@ -137,7 +139,7 @@ const data = JSON.stringify({ ...library, page }).replace(/</g, "\\u003c");
           <dl class="rl-fields">
             {entry.fields.slice(0, 2).map((field) => (
               <>
-                <dt>{field.label}</dt>
+                <dt class="identity-label"><SiteSymbol name={referenceFieldSymbols[field.label]} size="inline" /> {field.label}</dt>
                 <dd>
                   {field.values.length
                     ? field.values.join(" · ")
@@ -152,7 +154,7 @@ const data = JSON.stringify({ ...library, page }).replace(/</g, "\\u003c");
               <dl class="rl-fields">
                 {entry.fields.slice(2).map((field) => (
                   <>
-                    <dt>{field.label}</dt>
+                    <dt class="identity-label"><SiteSymbol name={referenceFieldSymbols[field.label]} size="inline" /> {field.label}</dt>
                     <dd>
                       {field.values.length > 1 ? (
                         <ul>

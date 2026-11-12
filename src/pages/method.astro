@@ -227,17 +227,19 @@ const SECTIONS = [
         <span class="eyebrow identity-label"><SiteSymbol name={methodSymbols.honesty} size="inline" />Instrument 9</span>
         <h2>The honesty rules</h2>
         <ol class="rules">
-          <li><strong>Unknown stays unknown.</strong> Say what has not been measured here, without assuming nobody else has studied it.</li>
+          <li><SiteSymbol name="question" size="inline" /> <strong>Unknown stays unknown.</strong> Say what has not been measured here, without assuming nobody else has studied it.</li>
           <li>
+            <SiteSymbol name="flask" size="inline" />
             <strong>Charitology’s own claims are hypotheses</strong> until tested, and the Diagnosis labels them that way.
           </li>
           <li>
+            <SiteSymbol name="flag" size="inline" />
             <strong>No ratings of named charities</strong> until the method has passed public <a href={url('/programs/red-team/')}
               >red-team</a
             > review. Depth classifications are descriptions, open to challenge.
           </li>
-          <li><strong>Every claim has a source</strong>, and every page links to a public correction.</li>
-          <li><strong>Failures are published.</strong> Including Charitology’s own.</li>
+          <li><SiteSymbol name="fileSearch" size="inline" /> <strong>Every claim has a source</strong>, and every page links to a public correction.</li>
+          <li><SiteSymbol name="archive" size="inline" /> <strong>Failures are published.</strong> Including Charitology’s own.</li>
         </ol>
         <p>The full standard is in <a href={url('/record/methodology/')}>the Methodology Handbook</a>.</p>
       </section>
