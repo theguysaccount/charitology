@@ -332,6 +332,15 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['scope', 'What the sources can answer', 'fileSearch'],
     ['trials', 'What randomized trials measured', 'flask'],
   ],
+  '/record/funding-flows/kenya-nutrition/': [
+    ['identity', 'Organizations and projects', 'chain'],
+    ['budget', 'UK budget', 'table'],
+    ['manager-to-uk', 'Grant manager to UK charity', 'bankOrder'],
+    ['uk-to-kenya', 'UK charity to Kenyan implementer', 'route'],
+    ['expenses', 'Reported expenditure', 'coins'],
+    ['need', 'Food poverty before the project', 'food'],
+    ['downloads', 'Download the records and sources', 'download'],
+  ],
   '/record/funding-flows/hokkaido-child-support/': [
     ['awards-2022', 'Fiscal 2022 awards', 'yearFile'],
     ['awards-2023', 'Fiscal 2023 awards', 'calendar'],

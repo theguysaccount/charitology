@@ -381,6 +381,21 @@ To reproduce the directory measurements, save the two official responses from th
 python3 scripts/build-kenya-pbo-directory-coverage.py 2026-11-11 /path/to/pbora.html /path/to/pbora-www.html /path/to/new-directory.json
 ```
 
+### Cross-border nutrition project in western Kenya
+
+The [western Kenya nutrition case](https://charitology.com/record/funding-flows/kenya-nutrition/) follows project `GB-CHC-299717-KY0002` from the grant manager to the UK charity and the Kenyan activity. An exact recipient organization and activity selects 12 manager rows from UK Aid Match II. Their original GBP amounts pair one to one with incoming funds in the UK file. One pair also shares a transaction date. The two charity files share the project period and participating organization references. The full Kenyan NGO number printed in Note 15 of the UK charity’s 2024 accounts gives the digits in the IATI organization reference. A link to a shortened PBORA directory number still needs a registry crosswalk. Their onward records align by reported quarter and date. Twelve amounts agree and one differs by GBP 0.11. Preserve the Kenyan record for Q10 under its literal code 3 despite the income wording in its reference.
+
+The project’s reported original committed budget, the two payment stages and each publisher’s expenditure are separate series. The 2015/16 food poverty estimates for Busia and Bungoma predate the project. They come from KNBS Annex Table B1 and supply geographic context for the project description. The files supply neither a county spending allocation nor a causal estimate. To extend the trace, seek payment settlement references, a county cost breakdown or a documented independent evaluation. The later Kenya affiliate and Africa Hub annual accounting notes should form a separate history with explicit local identifiers and no duplication of the consolidated group’s expenses.
+
+Rebuild the fixed edition from the published fingerprints and exact URLs in the [data export](https://charitology.com/record/funding-flows/kenya-nutrition/data.json). Name the captures `manager.xml`, `uk.xml`, `kenya.xml`, `survey.pdf`, `FY24.pdf` and `project-page.html`. The manager capture is IATI’s D-Portal XML export of the publisher’s activity. The two charity XML files come directly from the publishers. The rebuild pins all six inputs and preserves activity-relative transaction positions. The three survey rates and standard errors are a visual transcription from PDF page 87 (printed page 85). The original files remain subject to their publisher terms. The projection excludes narrative, contact and personal fields.
+
+```sh
+python3 scripts/build-kenya-nutrition-trace.py /path/to/captures /path/to/rebuilt.json
+cmp /path/to/rebuilt.json src/data/kenya-nutrition-trace.json
+npm run build
+node scripts/check-kenya-nutrition-trace.mjs
+```
+
 ## Japan NPO Portal and reported finances
 
 The [Japan NPO edition](https://charitology.com/record/charity-index/japan/) projects 60,062 records across 67 supervising authorities from the Cabinet Office's November 10, 2026 national NPO Portal files. Each record retains its exact portal ID and administrative CSV data record. The search accepts the Japanese name or reading, portal ID or corporate number. Administrative location describes the supervising authority. The portal includes records at different stages of registration and dissolution. Use the Cabinet Office's separately dated counts for the certified population. [National bulk download](https://www.npo-homepage.go.jp/npoportal/download/all) · [Coverage and reuse FAQ](https://www.npo-homepage.go.jp/npoportal/faq/common) · [Official certification statistics](https://www.npo-homepage.go.jp/about/toukei-info/ninshou-zyuri).
