@@ -44,10 +44,10 @@ const request = `${SITE.repo}/issues/new?${new URLSearchParams({title:'Source re
     <section class="prose">
       <h2 data-section-symbol="checks" id="review-instructions">What a review needs</h2>
       <ol>
-        <li>Open the page and read every cited source. Check the particular claim, denominator, date and uncertainty.</li>
-        <li>Check the framing: study the system, show credible disagreements and keep depth descriptive.</li>
-        <li>Fix unsupported claims or leave a public challenge with evidence. A link that loads is not proof of a claim.</li>
-        <li>Submit a pull request saying exactly what you read and whether AI helped. A second human contributor can provide the public review statement. Maintainers then bind it to the exact source version in the <a href={url('/research-ledger/')}>research ledger</a> before changing <code>review: draft</code> to <code>review: reviewed</code>. New collections need a registered source adapter first; changing the label alone fails the build.</li>
+        <li data-list-symbol="fileSearch">Open the page and read every cited source. Check the particular claim, denominator, date and uncertainty.</li>
+        <li data-list-symbol="scale">Check the framing: study the system, show credible disagreements and keep depth descriptive.</li>
+        <li data-list-symbol="flag">Fix unsupported claims or leave a public challenge with evidence. A link that loads is not proof of a claim.</li>
+        <li data-list-symbol="recordVersion">Submit a pull request saying exactly what you read and whether AI helped. A second human contributor can provide the public review statement. Maintainers then bind it to the exact source version in the <a href={url('/research-ledger/')}>research ledger</a> before changing <code>review: draft</code> to <code>review: reviewed</code>. New collections need a registered source adapter first; changing the label alone fails the build.</li>
       </ol>
       <p>AI-assisted checks and the audit ledgers in the repository can help you find issues. They do not replace the human review listed here. Program charters and tool documentation also remain open to corrections through their page links.</p>
     </section>
