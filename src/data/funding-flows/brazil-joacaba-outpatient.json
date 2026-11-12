@@ -1,0 +1,604 @@
+{
+  "format": "charitology-joacaba-outpatient-v1",
+  "cnes": "2964511",
+  "municipalityCode": "4209003",
+  "infrastructureAgreement": "953157",
+  "outpatient": {
+    "capturedOn": "2026-11-11",
+    "snapshot": {
+      "filename": "outpatient-elasticnes.json",
+      "bytes": 7797,
+      "sha256": "e0bc1e157b2fd9f23975a38086a69d3b23754a94880f78e0aaac2c118c4df993"
+    },
+    "dashboard": "https://elasticnes.saude.gov.br/kibana/app/dashboards#/view/97f47220-c4bf-11ec-9902-89205d8e072b",
+    "endpoint": "https://elasticnes.saude.gov.br/kibana/internal/bsearch",
+    "index": "cgsi-cnesprod-c1*",
+    "facility": "2964511",
+    "quantityField": "SIA - QUANTIDADE APROVADA",
+    "queries": {
+      "monthly": {
+        "size": 0,
+        "_source": false,
+        "query": {
+          "bool": {
+            "filter": [
+              {
+                "match_phrase": {
+                  "CNES.keyword": "2964511"
+                }
+              },
+              {
+                "range": {
+                  "COMPETÊNCIA": {
+                    "format": "strict_date_optional_time",
+                    "gte": "2024-01-01T00:00:00Z",
+                    "lt": "2026-09-01T00:00:00Z"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "aggs": {
+          "periods": {
+            "terms": {
+              "field": "index_comp.keyword",
+              "order": {
+                "_key": "asc"
+              },
+              "size": 36
+            },
+            "aggs": {
+              "units": {
+                "sum": {
+                  "field": "SIA - QUANTIDADE APROVADA"
+                }
+              },
+              "observations": {
+                "value_count": {
+                  "field": "SIA - QUANTIDADE APROVADA"
+                }
+              },
+              "presentedQuantity": {
+                "sum": {
+                  "field": "SIA - QUANTIDADE APRESENTADA"
+                }
+              },
+              "presentedQuantityCount": {
+                "value_count": {
+                  "field": "SIA - QUANTIDADE APRESENTADA"
+                }
+              },
+              "approvedValue": {
+                "sum": {
+                  "field": "SIA - VALOR APROVADO"
+                }
+              },
+              "approvedValueCount": {
+                "value_count": {
+                  "field": "SIA - VALOR APROVADO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "yearly": {
+        "size": 0,
+        "_source": false,
+        "query": {
+          "bool": {
+            "filter": [
+              {
+                "match_phrase": {
+                  "CNES.keyword": "2964511"
+                }
+              },
+              {
+                "range": {
+                  "COMPETÊNCIA": {
+                    "format": "strict_date_optional_time",
+                    "gte": "2024-01-01T00:00:00Z",
+                    "lt": "2026-09-01T00:00:00Z"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "aggs": {
+          "periods": {
+            "date_histogram": {
+              "field": "COMPETÊNCIA",
+              "calendar_interval": "year",
+              "format": "yyyy",
+              "min_doc_count": 1
+            },
+            "aggs": {
+              "units": {
+                "sum": {
+                  "field": "SIA - QUANTIDADE APROVADA"
+                }
+              },
+              "observations": {
+                "value_count": {
+                  "field": "SIA - QUANTIDADE APROVADA"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "months": [
+      {
+        "month": "2024-01",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 511
+      },
+      {
+        "month": "2024-02",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 664
+      },
+      {
+        "month": "2024-03",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 685
+      },
+      {
+        "month": "2024-04",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 944
+      },
+      {
+        "month": "2024-05",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 946
+      },
+      {
+        "month": "2024-06",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 1113
+      },
+      {
+        "month": "2024-07",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 983
+      },
+      {
+        "month": "2024-08",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 997
+      },
+      {
+        "month": "2024-09",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 983
+      },
+      {
+        "month": "2024-10",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 1101
+      },
+      {
+        "month": "2024-11",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 733
+      },
+      {
+        "month": "2024-12",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 1028
+      },
+      {
+        "month": "2025-01",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 1053
+      },
+      {
+        "month": "2025-02",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 2549
+      },
+      {
+        "month": "2025-03",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 3651
+      },
+      {
+        "month": "2025-04",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 5493
+      },
+      {
+        "month": "2025-05",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 6418
+      },
+      {
+        "month": "2025-06",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 6273
+      },
+      {
+        "month": "2025-07",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 6401
+      },
+      {
+        "month": "2025-08",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 5749
+      },
+      {
+        "month": "2025-09",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 7114
+      },
+      {
+        "month": "2025-10",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 6871
+      },
+      {
+        "month": "2025-11",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 5639
+      },
+      {
+        "month": "2025-12",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 4809
+      },
+      {
+        "month": "2026-01",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 3966
+      },
+      {
+        "month": "2026-02",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 4303
+      },
+      {
+        "month": "2026-03",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 6056
+      },
+      {
+        "month": "2026-04",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 4239
+      },
+      {
+        "month": "2026-05",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 5295
+      },
+      {
+        "month": "2026-06",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 5969
+      },
+      {
+        "month": "2026-07",
+        "institutionalRecords": 1,
+        "observations": 1,
+        "approvedProcedureUnits": 4995
+      },
+      {
+        "month": "2026-08",
+        "institutionalRecords": 1,
+        "observations": 0,
+        "approvedProcedureUnits": null
+      }
+    ],
+    "years": [
+      {
+        "year": 2024,
+        "institutionalRecords": 12,
+        "observations": 12,
+        "approvedProcedureUnits": 10688
+      },
+      {
+        "year": 2025,
+        "institutionalRecords": 12,
+        "observations": 12,
+        "approvedProcedureUnits": 62020
+      },
+      {
+        "year": 2026,
+        "institutionalRecords": 8,
+        "observations": 7,
+        "approvedProcedureUnits": 34823
+      }
+    ],
+    "questionableFieldMatches": 31
+  },
+  "hearing": {
+    "edition": "https://data.mendeley.com/datasets/3frvgfn47t/1",
+    "doi": "10.17632/3frvgfn47t.1",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "author": "Henrique Saraiva",
+    "publishedOn": "2026-11-01",
+    "facilitySummarySourceRow": 60,
+    "reportingBasis": "SIA processing month (PA_MVM)",
+    "captures": {
+      "counts": {
+        "filename": "producao_auditiva_sia_2025-08_2026-07.csv",
+        "url": "https://data.mendeley.com/public-files/datasets/3frvgfn47t/files/6c3d4f76-d299-455b-ae58-e7d7f6e5a83c/file_downloaded",
+        "bytes": 15407950,
+        "sha256": "0a5b608b21f498cb21ae6373c85e83fb4c0f30f01998f8fde369dac25dcd4263"
+      },
+      "facility": {
+        "filename": "unidades.csv",
+        "url": "https://data.mendeley.com/public-files/datasets/3frvgfn47t/files/d2638962-f102-428d-921c-7af51c5512cd/file_downloaded",
+        "bytes": 38281,
+        "sha256": "e8743b91bf29c1c44ef629dfa3f07759864b73b97b867b7be5b4f078d7595894"
+      },
+      "codes": {
+        "filename": "procedimentos_sigtap.csv",
+        "url": "https://data.mendeley.com/public-files/datasets/3frvgfn47t/files/15d7c4da-a35d-4bf0-8bd0-0a88bbaa8735/file_downloaded",
+        "bytes": 3099,
+        "sha256": "bff3d78c4f2d7bc6ddc2e49badc799a3569a6b05d7bd8daed3516bcda8d88347"
+      },
+      "method": {
+        "filename": "README.md",
+        "url": "https://data.mendeley.com/public-files/datasets/3frvgfn47t/files/ab489984-4d82-4c76-9c1e-bb654999819c/file_downloaded",
+        "bytes": 5712,
+        "sha256": "95da3598214c78ee3565439e465b4799d88950ddd20d17935d3db3830133e9d2"
+      }
+    },
+    "detailedRecordsForFacility": 951,
+    "months": [
+      {
+        "month": "2025-08",
+        "aasi": 70,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 40,
+        "audiometria": 130,
+        "selecao_adaptacao_aasi": 1,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2025-09",
+        "aasi": 104,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 47,
+        "audiometria": 175,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2025-10",
+        "aasi": 60,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 35,
+        "audiometria": 152,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2025-11",
+        "aasi": 80,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 26,
+        "audiometria": 131,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2025-12",
+        "aasi": 124,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 37,
+        "audiometria": 142,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2026-01",
+        "aasi": 34,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 36,
+        "audiometria": 108,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2026-02",
+        "aasi": 121,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 37,
+        "audiometria": 108,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2026-03",
+        "aasi": 135,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 80,
+        "audiometria": 106,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2026-04",
+        "aasi": 81,
+        "reposicao_aasi": 3,
+        "diagnostico_auditivo": 34,
+        "audiometria": 60,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2026-05",
+        "aasi": 139,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 67,
+        "audiometria": 102,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2026-06",
+        "aasi": 197,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 85,
+        "audiometria": 123,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      },
+      {
+        "month": "2026-07",
+        "aasi": 114,
+        "reposicao_aasi": 0,
+        "diagnostico_auditivo": 85,
+        "audiometria": 119,
+        "selecao_adaptacao_aasi": 0,
+        "molde_auricular": 0,
+        "manutencao_aasi": 0,
+        "sistema_fm": 0
+      }
+    ],
+    "totals": {
+      "aasi": 1259,
+      "reposicao_aasi": 3,
+      "diagnostico_auditivo": 609,
+      "audiometria": 1456,
+      "selecao_adaptacao_aasi": 1,
+      "molde_auricular": 0,
+      "manutencao_aasi": 0,
+      "sistema_fm": 0
+    },
+    "hearingAidsByTechnology": {
+      "A": 0,
+      "B": 922,
+      "C": 337
+    },
+    "annexComparison": {
+      "source": {
+        "label": "Signed clinic service-target annex",
+        "publisher": "Unoesc",
+        "coordinate": "PDF page 1 and sections 5.1–5.2, including shared quotas on PDF page 3",
+        "url": "https://www.unoesc.edu.br/wp-content/uploads/2024/10/Anexo-I-_-Termo-TCGA-assinado.pdf",
+        "bytes": 1121660,
+        "sha256": "2bffb191b12f77b3ab76e5d218e9f00c03288a1b0b9ebac4e2ea512a78141262"
+      },
+      "positiveCodes": [
+        {
+          "code": "0211070041",
+          "group": "audiometria",
+          "approvedUnits": 1456,
+          "printedInAnnex": true
+        },
+        {
+          "code": "0211070092",
+          "group": "diagnostico_auditivo",
+          "approvedUnits": 607,
+          "printedInAnnex": true
+        },
+        {
+          "code": "0211070106",
+          "group": "diagnostico_auditivo",
+          "approvedUnits": 2,
+          "printedInAnnex": true
+        },
+        {
+          "code": "0211070319",
+          "group": "selecao_adaptacao_aasi",
+          "approvedUnits": 1,
+          "printedInAnnex": true
+        },
+        {
+          "code": "0701030089",
+          "group": "aasi",
+          "approvedUnits": 2,
+          "printedInAnnex": true
+        },
+        {
+          "code": "0701030135",
+          "group": "aasi",
+          "approvedUnits": 922,
+          "printedInAnnex": true
+        },
+        {
+          "code": "0701030143",
+          "group": "aasi",
+          "approvedUnits": 335,
+          "printedInAnnex": true
+        },
+        {
+          "code": "0701030283",
+          "group": "reposicao_aasi",
+          "approvedUnits": 2,
+          "printedInAnnex": true
+        },
+        {
+          "code": "0701030291",
+          "group": "reposicao_aasi",
+          "approvedUnits": 1,
+          "printedInAnnex": false
+        }
+      ],
+      "followUpCodesOutsideResearchScope": [
+        "0301070032",
+        "0301070253"
+      ]
+    }
+  }
+}

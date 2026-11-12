@@ -251,7 +251,7 @@ node scripts/check-brazil-infrastructure-procurement-lots.mjs
 
 The [clinic operating funds](https://charitology.com/record/funding-flows/brazil-infrastructure-procurement-lots/#operations) trace FNS bank order 029513 to the Joaçaba municipal health fund by fund CNPJ, program and ordinance code `05402`. The `case.json` projection keeps the order within the wider 2024 outpatient and hospital funding category. The 2025 detail exceeds its summary by BRL 11,373.03. Two orders of that amount have distinct numbers and dates. The 2026 capture runs through November.
 
-The signed municipal contract records the conditional funding commitment to the clinic operator. The state hearing allocation, related municipal award, later state expansion and shared service targets have separate source coordinates. Next, seek municipal ledger entries and invoices tied to contract 23/2024/FMS and award 12/2025, then match verified aggregate service records to CNES 2964511 and their reporting months. Work acceptance and observed outcomes require their own records. [FNS public payment portal](https://consultafns.saude.gov.br/#/detalhada) · [Unoesc legal publication](https://www.unoesc.edu.br/blog/publicacoes-legais/contrato-23-2024-fundo-municipal-de-saude-de-joacaba/).
+The signed municipal contract records the conditional funding commitment to the clinic operator. The state hearing allocation, related municipal award, later state expansion and shared service targets have separate source coordinates. Next, seek municipal ledger entries and invoices tied to contract 23/2024/FMS and award 12/2025. Work acceptance and observed outcomes require their own records. [FNS public payment portal](https://consultafns.saude.gov.br/#/detalhada) · [Unoesc legal publication](https://www.unoesc.edu.br/blog/publicacoes-legais/contrato-23-2024-fundo-municipal-de-saude-de-joacaba/).
 
 To replay the transfer projection, save the exact responses in `operations.fundTransfers` under the file names listed below. Replace `YY` with `24`, `25` or `26`. The builder checks captured bytes before projecting only institutional and transaction fields. The live source may change after the capture date.
 
@@ -264,6 +264,21 @@ To replay the transfer projection, save the exact responses in `operations.fundT
 
 ```sh
 node scripts/build-brazil-joacaba-fund-transfers.mjs /path/to/captures /path/to/new-projection.json
+```
+
+### Joaçaba outpatient and hearing-care reporting
+
+The [outpatient case](https://charitology.com/record/funding-flows/brazil-infrastructure-procurement-lots/joacaba-outpatient/) joins CNES 2964511 to two aggregate reporting sources. The official ElastiCNES approved-unit field yields 31 observed months and an unknown count for August 2026. A second query to the same dashboard groups by year and agrees with the summed months. The field labeled submitted quantity repeats the approved monetary value in all 31 observed months and is excluded from quantity comparisons. [ElastiCNES documentation](https://wiki.datasus.gov.br/cnes/index.php/Pain%C3%A9is_ElastiCNES).
+
+The hearing-care data adapt Henrique Saraiva’s CC BY 4.0 edition. The replay reads 951 aggregate rows for the facility and reconciles eight groups to its publisher’s facility summary. It verifies positive codes against the printed annex by exact identifier. There are nine positive codes, eight printed in the annex. The published projection omits residential geography. The hearing-care series groups by processing month. It overlaps the wider outpatient system, so keep the two series separate when counting approved units. Two follow-up codes printed in the annex are outside the hearing extraction. Assessing target attainment would require service-date counts for the same activities and eligible population. [Research edition](https://data.mendeley.com/datasets/3frvgfn47t/1) · [Signed annex](https://www.unoesc.edu.br/wp-content/uploads/2024/10/Anexo-I-_-Termo-TCGA-assinado.pdf#page=2).
+
+Save the four research files under the names in `hearing.captures` and the signed annex as `annex.pdf`. The dashboard capture sends only aggregate queries for the selected facility and date range. The builder checks the exact fingerprints, so a changed live response needs a new review. For an offline replay, reconstruct `outpatient-elasticnes.json` from the published JSON's `outpatient` object, removing `capturedOn` and `snapshot` and writing the remainder with two-space indentation and a terminal newline. The checker verifies that reconstruction. [Committed projection](../src/data/funding-flows/brazil-joacaba-outpatient.json).
+
+```sh
+node scripts/capture-brazil-joacaba-outpatient.mjs /path/to/captures/outpatient-elasticnes.json
+python3 scripts/build-brazil-joacaba-outpatient.py /path/to/captures /path/to/new-projection.json
+npm run build
+node scripts/check-brazil-joacaba-outpatient.mjs
 ```
 
 ## Brazil Cisternas agreement and water access

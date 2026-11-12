@@ -290,6 +290,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['operations', 'Clinic operating funds', 'bankOrder'],
     ['downloads', 'Download records and case evidence', 'download'],
   ],
+  '/record/funding-flows/brazil-infrastructure-procurement-lots/joacaba-outpatient/': [
+    ['outpatient', 'Whole-facility outpatient counts', 'calendar'],
+    ['hearing-care', 'Hearing-care processing months', 'medical'],
+    ['annex', 'Match codes to the signed annex', 'match'],
+    ['downloads', 'Download counts and sources', 'download'],
+  ],
   '/record/funding-flows/brazil-cisterns/': [
     ['agreement', 'Federal agreement', 'permit'],
     ['payments', 'Reported account payments', 'bankOrder'],

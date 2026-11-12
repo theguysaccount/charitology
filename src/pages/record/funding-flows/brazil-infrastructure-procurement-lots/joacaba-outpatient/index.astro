@@ -1,0 +1,117 @@
+---
+import Entry from '../../../../../layouts/Entry.astro';
+import caseStudy from '../../../../../data/funding-flows/brazil-joacaba-rehabilitation.json';
+import { hearingGroupKeys, hearingGroups, joacabaOutpatient, joacabaOutpatientRoute } from '../../../../../lib/brazil-joacaba-outpatient';
+import { procurementLotsRoute } from '../../../../../lib/brazil-infrastructure-procurement-lots';
+import { count } from '../../../../../lib/brazil-project-execution';
+import { url } from '../../../../../lib/site';
+
+const title = 'Joaçaba outpatient and hearing-care records';
+const { cnes, outpatient, hearing } = joacabaOutpatient;
+const { annexComparison } = hearing;
+const dashboardGuide = 'https://wiki.datasus.gov.br/cnes/index.php/Pain%C3%A9is_ElastiCNES';
+const siaGuide = 'https://wiki.saude.gov.br/sia/index.php/P%C3%A1gina_principal';
+const sources = [
+  { title: 'CNES facility record', publisher: 'Brazil Ministry of Health', url: caseStudy.documents.cnes.url },
+  { title: 'ElastiCNES outpatient reporting dashboard', publisher: 'Brazil Ministry of Health', url: outpatient.dashboard },
+  { title: 'ElastiCNES dashboard guide', publisher: 'Brazil Ministry of Health', url: dashboardGuide },
+  { title: 'Outpatient reporting system guide', publisher: 'Brazil Ministry of Health', url: siaGuide },
+  { title: 'Hearing-care dataset and methods, version 1', publisher: hearing.author, url: hearing.edition },
+  { title: 'Signed state hearing-care annex, PDF pages 2–3', publisher: 'Santa Catarina State Health Secretariat', url: annexComparison.source.url + '#page=2' },
+];
+const monthFormat = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const monthLabel = (month: string) => monthFormat.format(new Date(month + '-01T00:00:00Z'));
+const yearlyCoverage = outpatient.years.map(row => {
+  const observed = outpatient.months.filter(month => month.month.startsWith(String(row.year)) && month.observations > 0);
+  const last = observed.at(-1)!;
+  return { ...row, coverage: row.observations === 12 ? 'January–December' : `January through ${monthLabel(last.month)}` };
+});
+const positiveGroups = hearingGroupKeys.filter(group => hearing.totals[group] > 0);
+const zeroGroups = hearingGroupKeys.filter(group => hearing.totals[group] === 0);
+const matchingCodes = annexComparison.positiveCodes.filter(row => row.printedInAnnex).length;
+const groupName = (key: string) => hearingGroups[key as keyof typeof hearingGroups];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Compare reported outpatient procedure units with the hearing-care codes in the clinic’s signed service annex."
+  crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Joaçaba clinic',href:procurementLotsRoute + '#joacaba'},{label:'Outpatient records'}]}
+  sources={sources} filePath="src/pages/record/funding-flows/brazil-infrastructure-procurement-lots/joacaba-outpatient/index.astro">
+  <p>The two series use <a href={caseStudy.documents.cnes.url}>facility ID <code>{cnes}</code></a> in Joaçaba, Santa Catarina. Brazil’s outpatient reporting system, SIA, records approved procedure units. A person can account for several units. The <a href={url(procurementLotsRoute + '#operations')}>clinic funding case</a> traces the transfer and contractual commitments separately. The <a href={url(procurementLotsRoute + '#joacaba')}>referral-area census estimates</a> describe residents.</p>
+
+  <h2 id="outpatient">Approved units for the whole facility</h2>
+  <p>The Ministry of Health’s <a href={outpatient.dashboard}>ElastiCNES dashboard</a> reports outpatient activity for the facility, including activity before the <a href={caseStudy.documents.operatorOpening.url}>operator’s reported March 2025 opening</a>. The published count field is <code>{outpatient.quantityField}</code>. The capture includes August 2026 as an institutional record with no approved outpatient count.</p>
+  <div class="table-wrap" role="region" aria-label="Yearly approved outpatient procedure units" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Year</th><th scope="col">Months with a count</th><th scope="col">Approved units</th></tr></thead>
+      <tbody>{yearlyCoverage.map(row => <tr>
+        <th scope="row">{row.year}</th><td>{row.coverage}</td><td>{count(row.approvedProcedureUnits)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <details>
+    <summary>Inspect all {count(outpatient.months.length)} outpatient months</summary>
+    <div class="table-wrap" role="region" aria-label="Monthly approved outpatient procedure units" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Reporting month</th><th scope="col">Approved units</th></tr></thead>
+        <tbody>{outpatient.months.map(row => <tr>
+          <th scope="row"><time datetime={row.month}>{monthLabel(row.month)}</time></th>
+          <td>{row.approvedProcedureUnits === null ? 'Unknown' : count(row.approvedProcedureUnits)}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </details>
+  <p>Monthly counts sum to the same figures as a separate yearly query of the dashboard. For {count(outpatient.questionableFieldMatches)} months, the field labeled submitted quantity repeats the approved monetary value. Use the approved-unit field for the counts above. An approval rate would require a verified submitted count.</p>
+
+  <h2 id="hearing-care">Hearing-care records by processing month</h2>
+  <p><a href={hearing.edition}>{hearing.author}’s published extraction</a> covers selected hearing-care codes from Brazil’s outpatient files. It groups records by the month they were processed, from {monthLabel(hearing.months[0].month)} to {monthLabel(hearing.months.at(-1)!.month)}. Count these records on their own reporting basis. Adding them to the whole-facility series would risk counting the same procedure twice.</p>
+  <div class="table-wrap" role="region" aria-label="Approved hearing-care units by procedure group" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Procedure group</th><th scope="col">Approved units</th></tr></thead>
+      <tbody>{hearingGroupKeys.map(group => <tr>
+        <th scope="row">{hearingGroups[group]}</th><td>{count(hearing.totals[group])}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <details>
+    <summary>Inspect all {count(hearing.months.length)} hearing-care months</summary>
+    <div class="table-wrap hearing-table" role="region" aria-label="Monthly approved hearing-care units for groups with recorded approvals" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Processing month</th>{positiveGroups.map(group => <th scope="col">{hearingGroups[group]}</th>)}</tr></thead>
+        <tbody>{hearing.months.map(row => <tr>
+          <th scope="row"><time datetime={row.month}>{monthLabel(row.month)}</time></th>
+          {positiveGroups.map(group => <td>{count(row[group])}</td>)}
+        </tr>)}</tbody>
+      </table>
+    </div>
+    <p>Recorded approved units for {new Intl.ListFormat('en-US').format(zeroGroups.map(group => hearingGroups[group].toLowerCase()))} were zero in every month of this extraction.</p>
+  </details>
+
+  <h2 id="annex">Match approved codes to the signed annex</h2>
+  <p>Of the {count(annexComparison.positiveCodes.length)} codes with approved units in this hearing-care extraction, {count(matchingCodes)} appear on <a href={annexComparison.source.url + '#page=2'}>PDF page 2 of the annex</a>. The code matches include every hearing-aid unit and two replacement units. The printed table omits the type C code <code>0701030291</code>, which covers the third replacement in the extraction.</p>
+  <div class="table-wrap code-table" role="region" aria-label="Hearing-care codes with recorded approvals and whether the signed annex lists them" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Code</th><th scope="col">Procedure group</th><th scope="col">Approved units</th><th scope="col">Printed in the annex</th></tr></thead>
+      <tbody>{annexComparison.positiveCodes.map(row => <tr>
+        <th scope="row"><code>{row.code}</code></th><td>{groupName(row.group)}</td>
+        <td>{count(row.approvedUnits)}</td><td>{row.printedInAnnex ? 'Yes' : 'Absent'}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The annex lists hearing-aid follow-up <code>{annexComparison.followUpCodesOutsideResearchScope[0]}</code> and remote follow-up <code>{annexComparison.followUpCodesOutsideResearchScope[1]}</code>. Both fall outside this extraction’s code list. Checking the annex targets requires service-date records for the same activities and eligible population. Device handoffs, payments to the clinic and health outcomes require separate evidence.</p>
+
+  <h2 id="downloads">Download the counts and sources</h2>
+  <ul>
+    <li><a href={url(joacabaOutpatientRoute + 'data.json')} data-source-symbol="packet" download>Facility counts, code comparison and source receipts (JSON)</a></li>
+    <li><a href={url(joacabaOutpatientRoute + 'outpatient.csv')} data-source-symbol="calendar" download>Whole-facility outpatient reporting months (CSV)</a></li>
+    <li><a href={url(joacabaOutpatientRoute + 'hearing-care.csv')} data-source-symbol="medical" download>Hearing-care processing months (CSV)</a></li>
+  </ul>
+  <p>An empty approved count in the outpatient CSV means unknown. The hearing-care projection combines {count(hearing.detailedRecordsForFacility)} source rows into institution-level counts. It adapts <a href={hearing.edition}>{hearing.author}’s version 1 dataset</a> under <a href={hearing.license}>CC BY 4.0</a>. The JSON gives the exact queries, file fingerprints and original code identifiers.</p>
+</Entry>
+
+<style>
+  details { margin-block: 1rem; }
+  summary { cursor: pointer; padding-block: .45rem; }
+  .table-wrap { margin-block: 1rem; }
+  .hearing-table table { min-inline-size: 44rem; }
+  .code-table table { min-inline-size: 33rem; }
+</style>

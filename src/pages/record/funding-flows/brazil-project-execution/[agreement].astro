@@ -9,6 +9,7 @@ import BrazilInfrastructureInvoiceItems from '../../../../components/BrazilInfra
 import { invoiceItemsRoute, invoicesByAgreement } from '../../../../lib/brazil-infrastructure-invoice-items';
 import { contractPaymentsByAgreement, procurementPaymentsByAgreement, procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
 import { procurementLotsByAgreement, procurementLotsRoute } from '../../../../lib/brazil-infrastructure-procurement-lots';
+import { joacabaOutpatient, joacabaOutpatientRoute } from '../../../../lib/brazil-joacaba-outpatient';
 import { accountMovementsRoute, movementPeriodsByAgreement } from '../../../../lib/brazil-infrastructure-account-movements';
 import { workLotsByAgreement, workLotsRoute } from '../../../../lib/brazil-infrastructure-work-lots';
 import SiteSymbol from '../../../../components/SiteSymbol.astro';
@@ -207,6 +208,7 @@ const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
       : <>Identifying the facility’s catchment, who uses it and whether access improved requires separate sources.</>}
     </p>
   </section>}
+  {agreement === joacabaOutpatient.infrastructureAgreement && <p><a class="identity-link" href={url(joacabaOutpatientRoute)}>Inspect approved outpatient and hearing-care records for the Joaçaba facility</a>.</p>}
 
   <p><a class="identity-link" href={url(infrastructureRoute)}>Return to the project directory</a> · <a href={url(infrastructureRoute + 'data.json')} download>Download the edition and source receipts</a>.</p>
 </Entry>
