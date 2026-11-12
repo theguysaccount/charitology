@@ -45,6 +45,8 @@ const sources = [
   <h2 id="funding">Follow New Resident Development Fund grants</h2>
   <p>The Fund’s disclosure files identify funded projects and report the named recipient, approvals, execution figures and some disbursement and return information. <a class="identity-link" href={url(fundPath)}>Read the grant reports and compare recurring project IDs</a>. The fund reports omit the eight-digit tax identifiers. Names that match an institution in this snapshot are leads for verification.</p>
 
+  <p><a class="identity-link" href={url('/record/funding-flows/taiwan-municipal-assistance/')}>Compare municipal assistance grants and access barriers</a> for a separate set of municipal recipient records.</p>
+
   <h2 id="coverage">Coverage and original records</h2>
   <p>The source CSV has {count(manifest.counts.inputRecords)} data records. One record lacks the eight-digit identifier used in this lookup. The edition retains all {count(manifest.counts.includedIdentities)} valid identifiers. {count(manifest.counts.repeatedNormalizedNames)} names are shared by multiple identifiers after normalizing width and trimming spaces.</p>
   <p>The place field is the source’s registered city or county. The snapshot preserves the older Taipei County label when present. {count(manifest.counts.unknownLocation)} records have no location. Project locations and places served require separate evidence.</p>

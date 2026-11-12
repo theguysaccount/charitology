@@ -112,6 +112,23 @@ npm run build
 node scripts/check-taiwan-charity-index.mjs
 ```
 
+### Municipal assistance and reported access barriers
+
+The [municipal assistance case](https://charitology.com/record/funding-flows/taiwan-municipal-assistance/) follows 87 special-circumstances grant rows published for municipal recipients from 2020 through the second quarter of 2026. The source selection checks the municipal grant titles for both pre-registration and special-circumstances wording. It leaves separately titled general social assistance, emergency medical transport and personal safety projects outside this edition. The project year follows the disclosure period, with the approval date preserved separately. Records without a published ID retain the original filename and row. The later disclosures can report cumulative grant figures. Use one cumulative file per year, rather than adding successive quarters. For 2020 the original four quarterly files are distinct. [Grant catalogue and license](https://data.gov.tw/dataset/86171)
+
+Every numeric municipality-year approval in the audit reconciles to the corresponding disclosure rows. The first-quarter 2020 grants total NT$2,864,104. The fourth quarter discloses an additional NT$157,913 for Yunlin, bringing the selected disclosure total to NT$3,022,017. The earlier audited execution stays scoped to its own table. The 2021 Nantou approval links two project IDs. Blank execution fields stay blank. The draft national report's subsidy total agrees with the disclosures for 2020–24. In 2025 the two sources both count 13 records and show totals of NT$3,286,067 and NT$2,411,383 respectively. Project-level adjustments in the draft are unknown. None of these tables identifies household payments. [National Audit Office table 1](https://auditreport.audit.gov.tw/ServerFile/Get/638573190397480977e28dae24a83a4309b820c26a9b5af944) [Government draft appendix 9-5](https://crc.sfaa.gov.tw/Uploadfile/Document/34_20260421151924_1572129.pdf#page=186)
+
+The 2023 survey gives weighted estimates of difficulties respondents attributed to lacking a national ID. New Taipei, Taoyuan and Kaohsiung share city and year labels with the grant files. Survey respondents and the program’s eligible population use different definitions. There is no coverage ratio or outcome estimate. A separate administrative audit identified 16 people who received family assistance in later records and did not appear in the earlier Fund list. Follow-up requires comparable recent execution records, a program eligibility denominator and aggregate service or outcome data. [Survey table 5-10](https://www.immigration.gov.tw/media/107730/112%E5%B9%B4%E6%96%B0%E4%BD%8F%E6%B0%91%E7%94%9F%E6%B4%BB%E9%9C%80%E6%B1%82%E8%AA%BF%E6%9F%A5%E5%A0%B1%E5%91%8A.pdf#page=158) [Audit finding](https://auditreport.audit.gov.tw/ServerFile/Get/638573194013968900e647369a31824f6da45db49a671b041a)
+
+The [CSV pins](../src/data/taiwan-assistance-inputs.tsv) give original URLs, sizes, SHA-256, encodings and selection counts. The [editorial transcription](../src/data/taiwan-assistance-evidence.json) records the audit, survey and government draft table coordinates and the two captured PDF fingerprints. The official audit is directly inspectable in a browser. Its separate direct binary request returned a challenge page, so no binary fingerprint is supplied for the audit. Download the ten CSVs and the two pinned PDFs under the recorded filenames before rebuilding.
+
+```sh
+python3 scripts/build-taiwan-assistance.py --input-dir /path/to/captures --out-dir /path/to/new-rebuild
+diff -r public/data/funding-flows/taiwan-municipal-assistance /path/to/new-rebuild
+npm run build
+node scripts/check-taiwan-assistance.mjs
+```
+
 ## Brazil federal transfers to civil society
 
 The [Brazil federal transfer edition](https://charitology.com/record/funding-flows/brazil-transferegov/) joins proposal, agreement and disbursement files in the [Transferegov public downloads](https://api-publica.transferegov.gestao.gov.br/downloads). It uses exact proposal IDs and agreement numbers and requires a valid CNPJ on a proposal that Transferegov classifies as a civil society organization. The two calendar years include 12,058 bank-order rows in 7,900 agreements for 3,811 organization identifiers. The published [manifest](../public/data/funding-flows/brazil-transferegov/manifest.json) records the three archive fingerprints, field definitions, coverage and the dataset's ODbL 1.0 license.
