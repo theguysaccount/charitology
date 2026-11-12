@@ -4,6 +4,11 @@ type Destination = readonly [slug: string, text: string, symbol: SymbolName];
 
 // Short labels for stable anchors. Use the same mark in links and at the destination.
 export const sectionNavigation: Record<string, readonly Destination[]> = {
+  '/diagnosis/': [
+    ['system-map', 'Follow the system map', 'network'],
+    ['reading-principles', 'How to read the diagnosis', 'book'],
+    ['all-conditions', 'All fifteen conditions', 'lens'],
+  ],
   '/about/': [
     ['what-it-is', 'What Charitology is', 'compass'],
     ['why-now', 'Why now', 'clock'],
@@ -172,6 +177,21 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
   '/record/evidence-library/': [
     ['study-register', 'Study register', 'flask'],
     ['bibliography', 'Published bibliography', 'book'],
+  ],
+  '/record/journal/': [
+    ['current-publication', 'Read the fixed source capture', 'archive'],
+    ['journal-articles', 'Browse articles and review history', 'notes'],
+    ['journal-desk', 'Prepare a submission', 'fileSearch'],
+  ],
+  '/record/principles/': [
+    ['current-publication', 'Read the fixed source capture', 'archive'],
+    ['book-index', 'Find and read a chapter', 'book'],
+  ],
+  '/record/newsletter/edition-1/': [
+    ['the-brief', 'The public brief', 'map'],
+    ['try-the-tools', 'Try one piece of work', 'tools'],
+    ['what-would-help', 'What would make this useful?', 'speech'],
+    ['next-meeting', 'A question for your next meeting', 'question'],
   ],
   '/record/podcast-and-newsletter/': [
     ['podcast-season', 'Season 1 readings', 'headphones'],

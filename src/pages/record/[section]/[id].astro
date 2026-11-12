@@ -8,6 +8,8 @@ import { getCollection, render } from "astro:content";
 import Entry from "../../../layouts/Entry.astro";
 import Badges from "../../../components/Badges.astro";
 import ConditionLinks from "../../../components/ConditionLinks.astro";
+import SiteSymbol from "../../../components/SiteSymbol.astro";
+import { comparisonSymbols, referenceFieldSymbols } from "../../../lib/list-identities";
 import {
   RECORD_SECTIONS,
   titleForPath,
@@ -217,15 +219,15 @@ if (collection === "journal") {
           <div>
             <h2>Profile</h2>
             <dl class="facts">
-              <dt>Causes</dt>
+              <dt class="identity-label"><SiteSymbol name={comparisonSymbols.causes} size="inline" /> Causes</dt>
               <dd>{d.causes.map(causeName).join(", ")}</dd>
-              <dt>Time to effect</dt>
+              <dt class="identity-label"><SiteSymbol name={comparisonSymbols.timeToEffect} size="inline" /> Time to effect</dt>
               <dd>{d.timeToEffect}</dd>
-              <dt>Durability</dt>
+              <dt class="identity-label"><SiteSymbol name={comparisonSymbols.durability} size="inline" /> Durability</dt>
               <dd>{d.durability}</dd>
-              <dt>Feedback</dt>
+              <dt class="identity-label"><SiteSymbol name={comparisonSymbols.feedback} size="inline" /> Feedback</dt>
               <dd>{d.feedback}</dd>
-              <dt>Who steers</dt>
+              <dt class="identity-label"><SiteSymbol name={comparisonSymbols.agency} size="inline" /> Who steers</dt>
               <dd>{d.agency}</dd>
             </dl>
           </div>
@@ -256,11 +258,11 @@ if (collection === "journal") {
         <div>
           <h2>Case</h2>
           <dl class="facts">
-            <dt>When</dt>
+            <dt class="identity-label"><SiteSymbol name={referenceFieldSymbols.Period} size="inline" /> When</dt>
             <dd>{d.era}</dd>
-            <dt>Where</dt>
+            <dt class="identity-label"><SiteSymbol name={referenceFieldSymbols.Place} size="inline" /> Where</dt>
             <dd>{d.place}</dd>
-            <dt>Result</dt>
+            <dt class="identity-label"><SiteSymbol name={referenceFieldSymbols['Recorded result']} size="inline" /> Result</dt>
             <dd>{CASE_KIND[d.kind as keyof typeof CASE_KIND]}</dd>
           </dl>
         </div>
@@ -271,9 +273,9 @@ if (collection === "journal") {
         <div>
           <h2>Tradition</h2>
           <dl class="facts">
-            <dt>Origin</dt>
+            <dt class="identity-label"><SiteSymbol name={referenceFieldSymbols['Origin described']} size="inline" /> Origin</dt>
             <dd>{d.origin}</dd>
-            <dt>Practice</dt>
+            <dt class="identity-label"><SiteSymbol name={referenceFieldSymbols['Practice described']} size="inline" /> Practice</dt>
             <dd>{d.practice}</dd>
           </dl>
           <div class="aside-box lens">

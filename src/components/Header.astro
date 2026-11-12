@@ -38,7 +38,7 @@ const current = (href: string) => {
         </svg>
       </a>
       <ThemeControl />
-      <details class="menu" data-site-menu>
+      <details class="menu" data-header-menu>
         <summary class="icon-btn" aria-label="Menu">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
             <path d="M4 7h16M4 12h16M4 17h16"></path>
@@ -64,13 +64,27 @@ const current = (href: string) => {
 </header>
 
 <script>
-  const menu = document.querySelector<HTMLDetailsElement>('[data-site-menu]');
+  const menus = [...document.querySelectorAll<HTMLDetailsElement>('[data-header-menu]')];
+
   document.addEventListener('pointerdown', (event) => {
-    if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    if (!(event.target instanceof Node)) return;
+    for (const menu of menus) {
+      if (menu.open && !menu.contains(event.target)) menu.open = false;
+    }
   });
-  menu?.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || !menu.open) return;
-    menu.open = false;
-    menu.querySelector('summary')?.focus();
-  });
+
+  for (const menu of menus) {
+    menu.addEventListener('toggle', () => {
+      if (!menu.open) return;
+      for (const peer of menus) {
+        if (peer !== menu) peer.open = false;
+      }
+    });
+    menu.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !menu.open) return;
+      event.preventDefault();
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    });
+  }
 </script>

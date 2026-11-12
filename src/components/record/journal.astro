@@ -28,11 +28,14 @@ const items = issues.map((j) => ({
 
 <PublicationCurrent family="journal"/>
 
-<EntryList items={items} layout="cards" />
-<details>
-  <summary>Source versions and peer-review history</summary>
-  <ul>{issues.map((j) => <li><a href={url(ledgerHref(journalView(j.id).binding.recordId))}>{j.data.title}: exact versions and recorded declarations</a></li>)}</ul>
-</details>
+<section aria-labelledby="journal-articles">
+  <h2 id="journal-articles">Journal articles</h2>
+  <EntryList items={items} layout="cards" />
+  <details>
+    <summary>Source versions and peer-review history</summary>
+    <ul>{issues.map((j) => <li><a href={url(ledgerHref(journalView(j.id).binding.recordId))}>{j.data.title}: exact versions and recorded declarations</a></li>)}</ul>
+  </details>
+</section>
 <section id="journal-desk">
   <h2>Prepare a submission</h2><p>
     This browser desk produces a manuscript and review checklist. Nothing is

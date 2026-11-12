@@ -4,7 +4,7 @@ import { pageIdentity, routes, symbols } from '../src/lib/site-identities.ts';
 import { sectionNavigation } from '../src/lib/section-navigation.ts';
 import { observationSourceSymbol, sourceSymbol } from '../src/lib/source-symbol.ts';
 import {
-  causeSymbols, checklistSymbols, clubMeetingSymbols, comparisonSymbols, datasetSymbols, depthSymbols, disasterAdviceSymbols, ecosystemSymbols,
+  causeSymbols, checklistSymbols, clubMeetingSymbols, compassDimensionSymbols, comparisonSymbols, datasetSymbols, depthSymbols, disasterAdviceSymbols, ecosystemSymbols,
   diligenceGroupSymbols, diligenceItemSymbols, fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols,
   observationEditionSymbols, observationMeasureSymbols, osDiscussionSymbols, publicationSymbols,
   providerSymbols, seminarSymbols, sourceSymbols, starterSymbols, teachingSymbols, worksheetSymbols,
@@ -65,6 +65,7 @@ for (const [name, keys, mapping] of [
   ['due diligence checks', ids(json('due-diligence').groups.flatMap(group => group.items)), diligenceItemSymbols],
   ['OS research discussions', ids(json('os-user-needs').entries), osDiscussionSymbols],
   ['cause areas', ids(json('causes').causes), causeSymbols],
+  ['compass dimensions', ids(json('compass').dimensions), compassDimensionSymbols],
   ['moral lenses', ids(json('frameworks').frameworks), lensSymbols],
   ['upstream sources', ids(json('sources-map').sources), sourceSymbols],
   ['depth levels', json('depth').map(({ level }) => String(level)), depthSymbols],
@@ -164,6 +165,14 @@ for (const { path } of routes.filter(({ path }) => path.startsWith('/record/fund
   assert.ok(fundingIndex.includes(`href="${base + path}"`), `Missing funding directory entry for ${path}`);
 }
 assert.ok(fundingIndex.includes('aria-label="Browse funding flows"'));
+
+const charityHub = readFileSync('dist/for-charities/index.html', 'utf8');
+const charityCards = [...charityHub.matchAll(/<a class="card" href="([^"]+)"[^>]*>\s*<span[^>]*data-site-symbol="([^"]+)"/g)];
+assert.equal(charityCards.length, 14);
+assert.equal(new Set(charityCards.map(([, , mark]) => mark)).size, charityCards.length);
+for (const [, href, mark] of charityCards) {
+  assert.equal(mark, href === 'https://os.charitology.org' ? 'teamBoard' : pageIdentity(href.slice(base.length)).symbol, href);
+}
 
 const disasterGuide = readFileSync('dist/tools/disaster-response-guide/index.html', 'utf8');
 for (const [id, mark] of Object.entries(disasterAdviceSymbols)) {
@@ -331,7 +340,12 @@ for (const page of pages) {
     ['system', 'light', 'dark'], page);
   assert.deepEqual([...theme[0].matchAll(/<span[^>]*>(System|Light|Dark)<\/span>/g)].map(([, label]) => label),
     ['System', 'Light', 'Dark'], page);
-  assert.ok(!html.includes('data-site-symbol=""'), page);
+  assert.equal([...html.matchAll(/data-theme-mode="([^"]+)"/g)].map(([, mode]) => mode).join(' '), 'system light dark', page);
+  for (const [tag] of html.matchAll(/<span class="site-symbol\b[^>]*>/g)) {
+    const symbol = tag.match(/data-site-symbol="([^"]+)"/)?.[1];
+    assert.ok(symbol && Object.hasOwn(symbols, symbol), `Missing or invalid visible mark in ${page}`);
+    assert.ok(tag.includes('aria-hidden="true"'), page);
+  }
   const outline = html.match(/<nav class="page-sections"[^>]*>[\s\S]*?<\/nav>/)?.[0];
   if (outline) {
     outlines++;

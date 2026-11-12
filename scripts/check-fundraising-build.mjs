@@ -5,13 +5,14 @@ import { parse } from 'parse5';
 import yaml from 'js-yaml';
 import { fundraisingLearningFormUrl, fundraisingMethods, fundraisingResults, fundraisingSources } from '../src/data/fundraising.mjs';
 import { fundraisingModuleSymbols, fundraisingSourceSymbols } from '../src/lib/list-identities.ts';
-import { pageIdentity } from '../src/lib/site-identities.ts';
+import { pageIdentity, symbols } from '../src/lib/site-identities.ts';
 import { MODULE_MAP } from '../services/charity-os/lib/modules.mjs';
 
 const expected = ['email-appeals', 'paid-ads', 'fundraising-events', 'recurring-giving', 'peer-to-peer', 'major-gifts', 'grants', 'direct-mail', 'corporate-partnerships', 'donor-follow-up'];
 assert.deepEqual(fundraisingMethods.map(method => method.id), expected);
 assert.equal(new Set(fundraisingSources.map(source => source.id)).size, fundraisingSources.length);
 const sourceIds = new Set(fundraisingSources.map(source => source.id));
+const noteGroups = ['costs', 'preflight', 'steps', 'measure', 'followup', 'pitfalls'];
 for (const source of fundraisingSources) {
   assert.equal(source.review, 'draft');
   assert.equal(new URL(source.url).protocol, 'https:');
@@ -21,7 +22,12 @@ for (const source of fundraisingSources) {
 for (const method of fundraisingMethods) {
   assert.equal(method.review, 'draft');
   for (const field of ['title', 'summary', 'goal', 'fit', 'experiment']) assert.ok(typeof method[field] === 'string' && method[field].trim());
-  for (const field of ['costs', 'preflight', 'steps', 'measure', 'followup', 'pitfalls']) assert.ok(Array.isArray(method[field]) && method[field].length && method[field].every(item => typeof item === 'string' && item.trim()));
+  for (const field of noteGroups) {
+    const items = method[field];
+    assert.ok(Array.isArray(items) && items.length);
+    assert.ok(items.every(([copy, mark]) => typeof copy === 'string' && copy.trim() && Object.hasOwn(symbols, mark)));
+    assert.equal(new Set(items.map(([, mark]) => mark)).size, items.length, `${method.id} ${field}`);
+  }
   assert.ok(method.sourceIds.length && method.sourceIds.every(id => sourceIds.has(id)));
   assert.ok(method.osModules.length && method.osModules.every(id => Object.hasOwn(MODULE_MAP, id)));
 }
@@ -119,6 +125,13 @@ for (const method of fundraisingMethods) {
     const section = page.find(node => attr(node, 'id') === attr(link, 'href').slice(1));
     const heading = nodes(section).find(node => node.tagName === 'h2');
     assert.equal(attr(heading, 'data-section-symbol'), symbol(link), attr(link, 'href'));
+  }
+  for (const field of noteGroups) {
+    const section = page.find(node => attr(node, 'id') === field);
+    const list = nodes(section).find(node => attr(node, 'class')?.split(' ').includes('marked-list'));
+    assert.equal(list?.tagName, field === 'steps' ? 'ol' : 'ul', `${path}#${field}`);
+    const items = list.childNodes.filter(node => node.tagName === 'li');
+    assert.deepEqual(items.map(item => [text(item).trim(), symbol(item)]), method[field], `${path}#${field}`);
   }
   for (const id of method.osModules) {
     const link = page.find(node => attr(node, 'href') === 'https://os.charitology.org/#module/' + id);

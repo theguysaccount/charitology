@@ -9,34 +9,90 @@ const modes = [
 ] as const satisfies ReadonlyArray<{ value: string; label: string; symbol: SymbolName }>;
 ---
 
-<fieldset class="theme-control" id="site-theme" hidden>
-  <legend class="visually-hidden">Color theme</legend>
-  {modes.map(({ value, label, symbol }) => (
-    <label>
-      <input class="visually-hidden" type="radio" name="site-theme" value={value} autocomplete="off" checked={value === 'system'} />
-      <span class="theme-option">
-        <SiteSymbol name={symbol} />
-        <span>{label}</span>
+<details class="theme-control" data-header-menu hidden>
+  <summary class="icon-btn">
+    {modes.map(({ value, label, symbol }) => (
+      <span class="theme-current" data-theme-mode={value}>
+        <SiteSymbol name={symbol} size="inline" />
+        <span class="visually-hidden">Color theme: {label}</span>
+        <span aria-hidden="true" class="theme-caption">{label}</span>
       </span>
-    </label>
-  ))}
-</fieldset>
+    ))}
+  </summary>
+  <fieldset class="theme-options" id="site-theme">
+    <legend class="visually-hidden">Color theme</legend>
+    {modes.map(({ value, label, symbol }) => (
+      <label>
+        <input class="visually-hidden" type="radio" name="site-theme" value={value} autocomplete="off" checked={value === 'system'} />
+        <span class="theme-option">
+          <SiteSymbol name={symbol} size="inline" />
+          <span>{label}</span>
+        </span>
+      </label>
+    ))}
+  </fieldset>
+</details>
 
 <style>
   .theme-control {
-    display: flex;
-    align-items: center;
+    position: relative;
     flex: none;
-    min-inline-size: 0;
-    margin: 0;
-    padding: 2px;
-    border: 1px solid var(--rule);
-    border-radius: 12px;
-    background: var(--surface);
   }
 
-  .theme-control[hidden] {
+  summary {
+    width: 44px;
+    height: 44px;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
     display: none;
+  }
+
+  .theme-current {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    font: 650 0.78rem/1 var(--font-sans);
+  }
+
+  :global(:root:not([data-theme])) [data-theme-mode="system"],
+  :global(:root[data-theme="light"]) [data-theme-mode="light"],
+  :global(:root[data-theme="dark"]) [data-theme-mode="dark"] {
+    display: flex;
+  }
+
+  .theme-caption {
+    display: none;
+  }
+
+  @media (min-width: 650px) {
+    summary {
+      width: auto;
+      padding-inline: 0.55rem;
+    }
+
+    .theme-caption {
+      display: inline;
+    }
+  }
+
+  .theme-options {
+    position: absolute;
+    z-index: 1;
+    inset-inline-end: 0;
+    top: calc(100% + 0.5rem);
+    display: grid;
+    gap: 0.15rem;
+    width: max-content;
+    min-inline-size: 8rem;
+    margin: 0;
+    padding: 0.3rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    box-shadow: var(--shadow);
   }
 
   label {
@@ -46,35 +102,29 @@ const modes = [
 
   .theme-option {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 0.12rem;
-    width: 44px;
+    gap: 0.45rem;
     min-height: 44px;
-    border-radius: 9px;
-    color: var(--ink-2);
-    font: 650 0.68rem/1.1 var(--font-sans);
+    padding-inline: 0.55rem;
+    border-radius: 6px;
+    color: var(--ink);
+    font: 650 0.85rem/1.1 var(--font-sans);
   }
 
-  .theme-option :global(.site-symbol) {
-    --symbol-tile: 1.15rem;
-    --symbol-size: 1.05rem;
+  .theme-control :global(.site-symbol) {
+    --symbol-tile: 1.3rem;
+    --symbol-size: 1.15rem;
     color: inherit;
     background: transparent;
   }
 
   label:hover input:not(:checked) + .theme-option {
     background: var(--bg-2);
-    color: var(--ink);
   }
 
   input:checked + .theme-option {
     background: var(--accent);
     color: var(--on-accent);
-  }
-
-  input:checked + .theme-option > span:last-child {
     text-decoration: underline;
     text-underline-offset: 0.18em;
   }
@@ -92,9 +142,11 @@ const modes = [
       outline: 2px solid Highlight;
       outline-offset: -2px;
     }
+
     input:checked + .theme-option :global(.site-symbol) {
       --forced-symbol-ink: HighlightText;
     }
+
     input:focus-visible + .theme-option {
       outline: 2px dashed currentColor;
       outline-offset: -4px;
@@ -106,9 +158,10 @@ const modes = [
   const key = 'charitology.theme';
   const root = document.documentElement;
   const field = document.querySelector<HTMLFieldSetElement>('#site-theme');
+  const disclosure = field?.closest('details');
   const meta = document.querySelector<HTMLMetaElement>('#site-theme-color');
 
-  if (field) {
+  if (field && disclosure) {
     const options = [...field.querySelectorAll('input')];
     let preferences: Storage | undefined;
     try { preferences = window.localStorage; } catch {}
@@ -127,7 +180,7 @@ const modes = [
     }
 
     apply(root.dataset.theme);
-    field.hidden = false;
+    disclosure.hidden = false;
     field.addEventListener('change', (event) => {
       const option = event.target;
       if (!(option instanceof HTMLInputElement) || !option.checked) return;

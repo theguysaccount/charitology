@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import Crumbs from '../../../components/Crumbs.astro';
 import SiteSymbol from '../../../components/SiteSymbol.astro';
+import MarkedList from '../../../components/MarkedList.astro';
 import type { SymbolName } from '../../../lib/site-identities';
 import { fundraisingModuleSymbols, fundraisingSourceSymbols } from '../../../lib/list-identities';
 import FundraisingResults from '../../../components/FundraisingResults.astro';
@@ -73,19 +74,19 @@ const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
       </section>
       <section class="prose" id="costs" aria-labelledby="costs-title">
         <h2 id="costs-title" data-section-symbol={sections.costs[1]}>Count the full costs</h2>
-        <ul>{method.costs.map((item) => <li>{item}</li>)}</ul>
+        <MarkedList items={method.costs} />
       </section>
       <section class="prose" id="preflight" aria-labelledby="preflight-title">
         <h2 id="preflight-title" data-section-symbol={sections.preflight[1]}>Before you start</h2>
-        <ul>{method.preflight.map((item) => <li>{item}</li>)}</ul>
+        <MarkedList items={method.preflight} />
       </section>
       <section class="prose" id="steps" aria-labelledby="steps-title">
         <h2 id="steps-title" data-section-symbol={sections.steps[1]}>A proposed workflow</h2>
-        <ol class="workflow">{method.steps.map((item) => <li>{item}</li>)}</ol>
+        <MarkedList items={method.steps} ordered />
       </section>
       <section class="prose" id="measure" aria-labelledby="measure-title">
         <h2 id="measure-title" data-section-symbol={sections.measure[1]}>What to measure</h2>
-        <ul>{method.measure.map((item) => <li>{item}</li>)}</ul>
+        <MarkedList items={method.measure} />
       </section>
       <section class="experiment prose" id="experiment" aria-labelledby="experiment-title">
         <p class="eyebrow">Keep the uncertainty visible</p>
@@ -95,11 +96,11 @@ const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
       </section>
       <section class="prose" id="followup" aria-labelledby="followup-title">
         <h2 id="followup-title" data-section-symbol={sections.followup[1]}>Follow through</h2>
-        <ul>{method.followup.map((item) => <li>{item}</li>)}</ul>
+        <MarkedList items={method.followup} />
       </section>
       <section class="prose" id="pitfalls" aria-labelledby="pitfalls-title">
         <h2 id="pitfalls-title" data-section-symbol={sections.pitfalls[1]}>Watch for</h2>
-        <ul>{method.pitfalls.map((item) => <li>{item}</li>)}</ul>
+        <MarkedList items={method.pitfalls} />
       </section>
       {results.length > 0 && <FundraisingResults results={results} />}
       <section id="sources" aria-labelledby="sources-title">
@@ -139,7 +140,6 @@ const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
   .method-reading>section,.method-reading>aside{margin-top:2.5rem}
   .proposal-note{border-left:3px solid var(--accent);padding:.15rem 0 .15rem 1rem;color:var(--ink-2)}
   .proposal-note p{margin:0}
-  .workflow li{padding-left:.25rem}.workflow li+li{margin-top:.85rem}
   .experiment,.workspace{padding:1.3rem;background:var(--bg-2);border:1px solid var(--rule);border-radius:var(--radius-sm)}
   .experiment h2,.workspace h2{margin-top:.35rem}
   .method-sources{display:grid;gap:1rem;margin-top:1rem}
