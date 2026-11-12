@@ -69,6 +69,7 @@ export const sections: Section[] = [
     'funding-flows/heal-nepal': 'capsule',
     'funding-flows/kenya-nutrition': 'food',
     'funding-flows/ripple-effect-kenya-accounts': 'balance',
+    'funding-flows/taiwan-municipal-assistance': 'umbrella',
     'funding-flows/taiwan-new-resident-fund': 'grantSchedule',
     'funding-flows/yes-i-do-alliance': 'network', 'gap-map': 'map', 'interventions': 'target',
     'journal': 'notes', 'lexicon': 'bars', 'methodology': 'checks', 'myths': 'eye', 'newsletter': 'mail', 'newsletter/edition-1': 'story',

@@ -201,6 +201,13 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Follow New Resident Development Fund grants', 'grantSchedule'],
     ['coverage', 'Coverage and original records', 'archive'],
   ],
+  '/record/funding-flows/taiwan-municipal-assistance/': [
+    ['annual-funding', 'Compare funding records', 'coins'],
+    ['survey-comparison', 'Read the access survey', 'survey'],
+    ['projects', 'Find municipal grants', 'lens'],
+    ['audit-detail', 'Check the audit trail', 'match'],
+    ['sources-and-data', 'Download sources and data', 'download'],
+  ],
   '/record/funding-flows/taiwan-new-resident-fund/': [
     ['approval-and-execution', 'When one award appears in two reports', 'match'],
     ['projects', 'Find a project', 'lens'],

@@ -1,0 +1,222 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import { url } from '../../../../lib/site';
+import edition from '../../../../../public/data/funding-flows/taiwan-municipal-assistance/edition.json';
+
+const title = 'Municipal assistance for new residents in Taiwan';
+const dataPath = '/data/funding-flows/taiwan-municipal-assistance/';
+const institutionalPath = '/record/funding-flows/taiwan-new-resident-fund/';
+const { audit, governmentDraft, survey } = edition;
+const number = (value: number) => value.toLocaleString('en-US');
+const money = (value: number | null) => value === null ? 'Unreported' : 'NT$' + number(value);
+const yearLabel = (year: number) => year === 2026 ? '2026 through Q2' : String(year);
+const auditPdf = audit.url + '#page=' + audit.pdfPage;
+const surveyPdf = survey.url + '#page=' + survey.pdfPage;
+const draftPdf = governmentDraft.url + '#page=' + governmentDraft.pdfPage;
+const municipalities = [...new Set(edition.awards.map(award => award.municipality))].sort();
+const auditTotals = audit.rows.filter(row => row.municipality === 'Total');
+const examples = survey.rows.map(row => {
+  const awards = edition.awards.filter(award => award.year === survey.year &&
+    (row.municipality === 'Total' || row.municipality === award.municipality));
+  return { ...row, awards, grantTwd: awards.reduce((sum, award) => sum + award.grantTwd, 0) };
+});
+const later = edition.comparison.find(row => row.year === 2025)!;
+const supplement = edition.awards.find(award => award.key === '2020q4-2')!;
+const awardsByKey = new Map(edition.awards.map(award => [award.key, award]));
+const downloads = [
+  ['edition.json', 'Complete edition and sources (JSON)'],
+  ['awards.csv', 'Municipal grant records (CSV)'],
+  ['municipal-audit.csv', 'Audit table and project links (CSV)'],
+  ['survey.csv', 'Selected survey estimates (CSV)'],
+  ['government-draft.csv', 'Government draft totals (CSV)'],
+];
+const sources = [
+  { title: 'Quarterly grant disclosures and reporting scope', publisher: edition.grantPublisher, url: edition.catalogue },
+  { title: 'FY2023 audit of the New Resident Development Fund, table 1', publisher: audit.publisher, url: auditPdf },
+  { title: 'FY2024 audit follow-up, section 6', publisher: audit.publisher, url: audit.followUpUrl },
+  { title: '2023 New Resident Living Needs Survey, table 5-10', publisher: survey.publisher, url: surveyPdf },
+  { title: 'Third national report on the Rights of the Child, second draft, appendix 9-5', publisher: governmentDraft.publisher, url: draftPdf },
+  { title: 'Taiwan Open Government Data License 1.0', publisher: 'Taiwan Ministry of Digital Affairs', url: edition.license },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Follow municipal grant disclosures through the audit record. Compare 2023 grants with a separate survey of barriers linked to lacking a national ID."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Taiwan municipal assistance'}]}
+  filePath="src/pages/record/funding-flows/taiwan-municipal-assistance/index.astro" sources={sources}>
+  <p>The audit describes how the New Resident Development Fund financed municipal assistance for residents facing hardship before household registration. The program had income, asset and hardship criteria. This edition follows the special-circumstances welfare grant titles in the municipal disclosures. It covers {number(edition.awards.length)} grant rows, with links to the original records. <a href={audit.opinionUrl}>Read the audit’s description of the program</a>.</p>
+
+  <h2 id="annual-funding">Compare the funding records</h2>
+  <div class="table-wrap" role="region" aria-label="Annual municipal grants and reported execution" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Reporting year</th><th scope="col">Municipal grant disclosures</th><th scope="col">Approved in the audit</th><th scope="col">Execution in the audit</th><th scope="col">Government draft subsidy total</th></tr></thead>
+      <tbody>{edition.comparison.map(row => {
+        const audited = auditTotals.find(record => record.year === row.year);
+        return <tr data-annual-year={row.year}>
+          <th scope="row">{yearLabel(row.year)}</th>
+          <td>{money(row.disclosedGrantTwd)}<br /><small>{number(row.disclosedGrantRecords)} disclosure rows</small></td>
+          <td>{money(audited?.approvedTwd ?? null)}</td>
+          <td>{money(audited?.executionTwd ?? null)}{audited && <><br /><small>{audited.executionPercent}% of the audited approval</small></>}</td>
+          <td>{money(row.draftSubsidyTwd)}</td>
+        </tr>;
+      })}</tbody>
+    </table>
+  </div>
+  <p>The <a href={auditPdf}>audit</a> records approvals and budget execution through 2022. The <a href={edition.catalogue}>municipal disclosures</a> give project-level amounts. Their later files label the amount as a grant figure that can include a cumulative amount. The <a href={draftPdf}>government’s draft appendix</a> gives a separate annual subsidy total. These are different reporting views of the program and should never be added together. Individual payments, household expenses and outcomes require separate records.</p>
+  <p>In 2020 the first-quarter grants reconcile to the audit’s approved amount. The fourth-quarter file adds <a href={'#award-' + supplement.key}>a Yunlin County supplementary grant of {money(supplement.grantTwd)}</a>. That accounts for the difference between the two published totals. The audit does not establish how much of that supplementary grant was used.</p>
+  <p>In 2025 the selected disclosures total {money(later.disclosedGrantTwd)}. The later draft appendix lists {money(later.draftSubsidyTwd)}, with the same count of {number(later.disclosedGrantRecords)}. The {money(later.differenceTwd)} difference remains unresolved. The appendix gives no project IDs or adjustments that would explain it. The 2026 figure covers the source available through the second quarter.</p>
+
+  <h2 id="survey-comparison">Read the 2023 access survey alongside the grants</h2>
+  <p>New Taipei, Taoyuan and Kaohsiung appear as separate cities in both the 2023 municipal grants and the 2023 survey. The survey asks new residents who lack a Taiwan national ID about difficulties they attribute to lacking that ID. It reports weighted counts and percentages. <a href={surveyPdf}>Read the original survey table</a>.</p>
+  <div class="table-wrap" role="region" aria-label="2023 grant disclosures and national-ID barriers" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Area</th><th scope="col">Disclosed grants in 2023</th><th scope="col">Weighted survey count without an ID</th><th scope="col">Reported a difficulty without an ID</th></tr></thead>
+      <tbody>{examples.map(row => <tr data-survey-area={row.municipality}>
+        <th scope="row">{row.municipality === 'Total' ? 'All areas in each source' : row.municipality}</th>
+        <td>{money(row.grantTwd)}
+          {row.municipality !== 'Total' && <><br /><small>{row.awards.map((award, i) =>
+            <>{i > 0 && ' · '}<a href={'#award-' + award.key}>{award.projectId ?? award.key}</a></>)}</small></>}
+        </td>
+        <td>{number(row.weightedCount)}</td><td>{row.anyDifficultyPercent}%</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The survey measures a wider range of difficulties than the program covers, including finding work, obtaining credit and handling finances. The survey count is weighted to the December 2022 population structure and is not a count of eligible people or of people served. Even where the city and year align, these sources do not estimate unmet assistance, spending per person or the program’s effect. The full survey combines some municipalities into larger regions. The city comparison uses only directly corresponding labels.</p>
+
+  <h2 id="projects">Find municipal grant records</h2>
+  <section aria-label="Find municipal grant records" data-assistance-projects>
+    <form hidden class="assistance-filter">
+      <label for="assistance-query">Project ID, title, recipient or city</label>
+      <input id="assistance-query" type="search" maxlength="160" autocomplete="off" />
+      <div class="assistance-controls">
+        <div><label for="assistance-city">Municipality</label>
+          <select id="assistance-city"><option value="">All municipalities</option>{municipalities.map(name => <option>{name}</option>)}</select>
+        </div>
+        <div><label for="assistance-year">Reporting year</label>
+          <select id="assistance-year"><option value="">All years</option>{edition.comparison.map(row => <option value={row.year}>{yearLabel(row.year)}</option>)}</select>
+        </div>
+        <button class="btn" type="submit">Find records</button>
+        <button class="btn btn-ghost" type="button" data-clear>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-result-count>{number(edition.awards.length)} grant records.</p>
+    <div class="assistance-awards">
+      {edition.awards.map(award => <details class="card" id={'award-' + award.key} data-key={award.key}
+        data-year={award.year} data-city={award.municipality}
+        data-query={[award.projectId, award.municipality, award.municipalityLiteral, award.recipient, award.title].join(' ')}>
+        <summary>
+          <span class="identity-label"><SiteSymbol name="grantSchedule" size="inline" />
+            <span class="identity-code">{award.projectId ?? 'Record ' + award.sourceRecord}</span>
+          </span>
+          <span>{award.municipality} · {award.year} · {money(award.grantTwd)}</span>
+        </summary>
+        <p lang="zh-Hant">{award.title}</p>
+        <dl>
+          <dt>Named municipal recipient</dt><dd lang="zh-Hant">{award.recipient}</dd>
+          <dt>Approval date</dt><dd><time datetime={award.approvalDate}>{award.approvalDate}</time> · <span lang="zh-Hant">{award.approvalDateLiteral}</span></dd>
+          <dt>Original disclosure</dt><dd><a href={award.sourceUrl}>{award.year} Q{award.quarter} CSV</a>, data record {award.sourceRecord}</dd>
+          <dt>Original amount field</dt><dd lang="zh-Hant">{award.amountField}</dd>
+        </dl>
+        {!award.projectId && <p class="note">The source row has no project code. Its file and record position identify the disclosure.</p>}
+        <p class="note"><a href={'#award-' + award.key}>Link to this grant record</a></p>
+      </details>)}
+    </div>
+    <noscript><p>Open any grant above or search the downloaded CSV.</p></noscript>
+  </section>
+
+  <h2 id="audit-detail">Check the audit against original grants</h2>
+  <p>The listed grant rows reconcile to every numeric municipality approval in the audit. Nantou’s 2021 approval connects to two disclosed projects. The table keeps missing execution separate from zero. Budget execution is reported for the municipality and year. It cannot be allocated to individual grant rows when the source combines them.</p>
+  <details class="assistance-audit">
+    <summary>Show all {number(audit.rows.length - auditTotals.length)} municipality and year entries</summary>
+    <div class="table-wrap" role="region" aria-label="Municipal audit records and project links" tabindex="0">
+      <table class="data">
+        <thead><tr><th scope="col">Municipality</th><th scope="col">Year</th><th scope="col">Approved</th><th scope="col">Reported execution</th><th scope="col">Matching approvals</th></tr></thead>
+        <tbody>{audit.rows.filter(row => row.municipality !== 'Total').map(row => <tr>
+          <th scope="row">{row.municipality}</th><td>{row.year}</td><td>{money(row.approvedTwd)}</td>
+          <td>{money(row.executionTwd)}{row.executionPercent !== null && <><br /><small>{row.executionPercent}% of approved</small></>}</td>
+          <td>{row.matchingAwardKeys.length ? row.matchingAwardKeys.map((key, i) =>
+            <>{i > 0 && ' · '}<a href={'#award-' + key}>{awardsByKey.get(key)?.projectId ?? key}</a></>) : 'Unreported'}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </details>
+  <p>The auditors compared separate family assistance records from 2022 through September 2023 with immigration status and Fund assistance records. They identified {audit.crossCheck.count} people in the separate program who had been new residents before registration during 2020–22 and were absent from the earlier Fund list. The audit raises the question of whether eligible households were found in time. It does not show who qualified earlier, who received help from another source or what happened because of the assistance. <a href={audit.opinionUrl}>Read the audit finding</a> and <a href={audit.followUpUrl}>its follow-up</a>.</p>
+
+  <h2 id="sources-and-data">Sources, coverage and downloads</h2>
+  <p>The <a href={edition.catalogue}>official catalogue</a> explains that an earlier approval can appear in the file for the year its budget covers. The 2020 edition uses four separate files. Later editions use one cumulative disclosure per year. Title selection covers special-circumstances welfare grants before registration. The exports leave separately titled general social assistance, emergency medical transport and personal safety grants out of this comparison. A municipality label names the grant recipient’s jurisdiction. It does not locate individual services.</p>
+  <ul class="assistance-downloads">
+    {downloads.map(([filename, label]) => <li><a class="identity-link" href={url(dataPath + filename)} download>{label}</a></li>)}
+  </ul>
+  <p>Data record positions start after the CSV header. Blank audit cells stay blank in CSV and null in JSON. The edition gives source URLs and fingerprints for the captured files, along with the page and table for each manual transcription. Municipal grant data are adapted from the Taiwan National Immigration Agency under the <a href={edition.license}>Open Government Data License 1.0</a>.</p>
+  <p><a class="identity-link" href={url(institutionalPath)}>Search the Fund’s separate institutional grant reports</a> or <a class="identity-link" href={url('/record/charity-index/coverage/')}>check the Global Charity Index coverage</a>.</p>
+</Entry>
+
+<style>
+  .table-wrap { overflow-x: auto; }
+  .data { min-inline-size: 37rem; }
+  .assistance-filter label { display: block; margin-block: .35rem; }
+  .assistance-filter :is(input, select) { max-inline-size: 100%; font: inherit; }
+  .assistance-filter input { inline-size: min(100%, 26rem); }
+  .assistance-controls { display: flex; flex-wrap: wrap; align-items: end; gap: .6rem; margin-block: .65rem; }
+  .assistance-awards { display: grid; grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+  .assistance-awards details { display: block; min-inline-size: 0; overflow-wrap: anywhere; margin: 0; }
+  .assistance-awards details[hidden] { display: none; }
+  .assistance-awards summary, .assistance-audit summary { cursor: pointer; }
+  .assistance-awards dt { font-weight: 650; }
+  .assistance-awards dd { margin: 0 0 .6rem; }
+</style>
+
+<script>
+  import { $ } from '../../../../lib/client/dom';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-assistance-projects]')) {
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('input', form);
+    const year = $<HTMLSelectElement>('#assistance-year', form);
+    const city = $<HTMLSelectElement>('#assistance-city', form);
+    const count = $('[data-result-count]', root);
+    const normalize = (value: string) => value.normalize('NFKC').toLowerCase().trim();
+    const cards = [...root.querySelectorAll<HTMLDetailsElement>('[data-key]')].map(card => ({
+      card, query: normalize(card.dataset.query!),
+    }));
+
+    function filter() {
+      const query = normalize(input.value);
+      let matches = 0;
+      for (const { card, query: searchable } of cards) {
+        card.hidden = !searchable.includes(query) || (year.value !== '' && year.value !== card.dataset.year)
+          || (city.value !== '' && city.value !== card.dataset.city);
+        if (!card.hidden) matches++;
+      }
+      count.textContent = matches ? `${matches} ${matches === 1 ? 'record' : 'records'} found.` : 'No matching records.';
+    }
+
+    function openLinkedRecord() {
+      const key = location.hash.slice('#award-'.length);
+      const match = location.hash.startsWith('#award-') && cards.find(({ card }) => card.dataset.key === key);
+      if (!match) return;
+      form.reset();
+      filter();
+      match.card.open = true;
+      match.card.scrollIntoView({ block: 'start' });
+    }
+
+    form.hidden = false;
+    form.addEventListener('submit', event => { event.preventDefault(); filter(); });
+    city.addEventListener('change', filter);
+    year.addEventListener('change', filter);
+    $('[data-clear]', form).addEventListener('click', () => {
+      form.reset();
+      filter();
+      input.focus();
+    });
+    root.closest('main')?.addEventListener('click', event => {
+      if (!(event instanceof MouseEvent) || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target instanceof Element && event.target.closest('a');
+      if (link && link.getAttribute('href') === location.hash) openLinkedRecord();
+    });
+    window.addEventListener('hashchange', openLinkedRecord);
+    openLinkedRecord();
+  }
+</script>
