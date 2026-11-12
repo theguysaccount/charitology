@@ -1,6 +1,6 @@
 ---
 import SiteSymbol from "../SiteSymbol.astro";
-import { causeSymbols, sourceSymbols } from "../../lib/list-identities";
+import { causeSymbols, compassDimensionSymbols, sourceSymbols } from "../../lib/list-identities";
 import causesData from "../../data/causes.json";
 import sourceMap from "../../data/sources-map.json";
 import compass from "../../data/compass.json";
@@ -81,7 +81,7 @@ const problemLabel = (id: string) =>
           <dl class="dims">
             {compass.dimensions.map((d) => (
               <>
-                <dt>{d.prompt}</dt>
+                <dt class="identity-label"><SiteSymbol name={compassDimensionSymbols[d.id]} size="inline" /> {d.prompt}</dt>
                 <dd>
                   <span
                     class="track"

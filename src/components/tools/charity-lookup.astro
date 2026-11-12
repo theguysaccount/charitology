@@ -9,7 +9,7 @@ import ecosystem from '../../data/ecosystem.json';
 import { url } from '../../lib/site';
 import RegistrySearch from '../RegistrySearch.astro';
 import SiteSymbol from '../SiteSymbol.astro';
-import { checklistSymbols } from '../../lib/list-identities';
+import { checklistSymbols, ecosystemSymbols } from '../../lib/list-identities';
 
 const causeName = new Map(causesData.causes.map((c) => [c.id, c.name]));
 const index = (await getCollection('charities'))
@@ -116,7 +116,7 @@ const count = index.length;
         registries.map((r) => (
           <li class="cl-reg">
             <a
-              class="btn btn-ghost cl-reg-btn identity-link"
+              class="btn btn-ghost cl-reg-btn"
               href={r.url}
               data-registry
               data-base={r.url}
@@ -124,6 +124,7 @@ const count = index.length;
               target="_blank"
               rel="noopener noreferrer"
             >
+              <SiteSymbol name={ecosystemSymbols[r.url]} size="inline" />
               {r.label}
               <span class="visually-hidden"> (opens in a new tab)</span>
             </a>

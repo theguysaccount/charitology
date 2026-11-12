@@ -1,4 +1,5 @@
 ---
+import SiteSymbol from '../SiteSymbol.astro';
 import { SITE, url } from '../../lib/site';
 ---
 
@@ -10,10 +11,10 @@ import { SITE, url } from '../../lib/site';
   <div class="tool-grid">
     <div>
       <h3>What it does</h3>
-      <ul class="ext-list">
-        <li>On selected URLs from GoFundMe, JustGiving and Every.org, it shows a small card with three questions and a “Look it up” button.</li>
-        <li>Its icon opens the full ten-question <a href={url('/method/#checklist')}>Giver’s Checklist</a> and an editable lookup, with a title suggestion when access is available.</li>
-        <li>It has no analytics or background data transmission. Search text stays in the browser until you choose an external registry.</li>
+      <ul class="ext-list" role="list">
+        <li><SiteSymbol name="window" size="inline" /> On selected URLs from GoFundMe, JustGiving and Every.org, it shows a small card with three questions and a “Look it up” button.</li>
+        <li><SiteSymbol name="checks" size="inline" /> Its icon opens the full ten-question <a href={url('/method/#checklist')}>Giver’s Checklist</a> and an editable lookup, with a title suggestion when access is available.</li>
+        <li><SiteSymbol name="lock" size="inline" /> It has no analytics or background data transmission. Search text stays in the browser until you choose an external registry.</li>
       </ul>
       <div class="btn-row ext-actions">
         <a class="btn" href={url('/downloads/charitology-extension.zip')} download>Download the extension (.zip)</a>
@@ -22,9 +23,9 @@ import { SITE, url } from '../../lib/site';
       <p class="note"><a href={url('/tools/browser-extension/privacy/')}>Privacy notice</a> · <a href={url('/tools/browser-extension/compatibility/')}>Version, supported URLs and checksums</a> · <a href={url('/downloads/charitology-chrome.zip')} download>Chrome package</a> · <a href={url('/downloads/charitology-firefox.zip')} download>Firefox package</a></p>
       <h3>Install it</h3>
       <ol class="ext-list">
-        <li>Unzip the download.</li>
-        <li><strong>Chrome or Edge:</strong> open <code>chrome://extensions</code>, turn on Developer mode, choose <em>Load unpacked</em> and select the unzipped folder.</li>
-        <li><strong>Firefox:</strong> open <code>about:debugging#/runtime/this-firefox</code>, choose <em>Load Temporary Add-on</em> and pick <code>manifest.json</code>.</li>
+        <li><SiteSymbol name="packet" size="inline" /> Unzip the download.</li>
+        <li><SiteSymbol name="folder" size="inline" /> <strong>Chrome or Edge:</strong> open <code>chrome://extensions</code>, turn on Developer mode, choose <em>Load unpacked</em> and select the unzipped folder.</li>
+        <li><SiteSymbol name="document" size="inline" /> <strong>Firefox:</strong> open <code>about:debugging#/runtime/this-firefox</code>, choose <em>Load Temporary Add-on</em> and pick <code>manifest.json</code>.</li>
       </ol>
       <p class="note">Store packages and listing materials are prepared. Submission and store approval are still pending; use a developer install for now. Firefox requires version 140 or later.</p>
     </div>
@@ -52,6 +53,7 @@ import { SITE, url } from '../../lib/site';
     overflow-wrap: anywhere;
     margin: 0 0 1rem;
   }
+  ul.ext-list { list-style: none; padding-inline-start: 0; }
   .ext-actions {
     margin: 0.5rem 0 1.5rem;
   }

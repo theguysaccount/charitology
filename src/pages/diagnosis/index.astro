@@ -3,6 +3,8 @@ import Base from '../../layouts/Base.astro';
 import Crumbs from '../../components/Crumbs.astro';
 import SystemMap from '../../components/SystemMap.astro';
 import Badges from '../../components/Badges.astro';
+import PageSections from '../../components/PageSections.astro';
+import SiteSymbol from '../../components/SiteSymbol.astro';
 import { conditionsInOrder } from '../../lib/content';
 import { EVIDENCE, NODES } from '../../lib/labels';
 import { pad, url } from '../../lib/site';
@@ -29,21 +31,25 @@ const byEvidence = Object.fromEntries(
     </div>
   </header>
 
-  <section class="wrap section-tight">
+  <div class="wrap"><PageSections /></div>
+
+  <section class="wrap section-tight" aria-labelledby="system-map">
+    <h2 id="system-map">Follow the charity system</h2>
     <SystemMap />
   </section>
 
-  <section class="wrap section-tight">
+  <section class="wrap section-tight" aria-labelledby="reading-principles">
+    <h2 id="reading-principles">How to read the diagnosis</h2>
     <div class="principles">
       <div>
-        <h2>No judgment of the good being done</h2>
+        <h3><SiteSymbol name="hands" size="inline" /> No judgment of the good being done</h3>
         <p>
           Every food bank, clinic and volunteer on Earth is doing real good. Charitology doesn’t grade anyone’s heart. It
           studies the system that decides where their generosity lands.
         </p>
       </div>
       <div>
-        <h2>The system is the subject</h2>
+        <h3><SiteSymbol name="network" size="inline" /> The system is the subject</h3>
         <p>
           “Every system is perfectly designed to get the results it gets,” goes a line from improvement science, usually
           credited to <a href="https://www.ihi.org/insights/magic-every-system-perfectly-designed">Paul Batalden</a>. If
@@ -51,7 +57,7 @@ const byEvidence = Object.fromEntries(
         </p>
       </div>
       <div>
-        <h2>Unknown stays unknown</h2>
+        <h3><SiteSymbol name="question" size="inline" /> Unknown stays unknown</h3>
         <p>
           A science says what it doesn’t know. Of the fifteen conditions, {byEvidence.established} are established, {
             byEvidence.documented
@@ -63,7 +69,7 @@ const byEvidence = Object.fromEntries(
   </section>
 
   <section class="wrap section-tight" aria-labelledby="all-conditions">
-    <h2 id="all-conditions" class="visually-hidden">All fifteen conditions</h2>
+    <h2 id="all-conditions">All fifteen conditions</h2>
     <div class="list-rows">
       {
         conditions.map((c) => (
@@ -91,7 +97,7 @@ const byEvidence = Object.fromEntries(
     padding-block: 1rem;
     border-block: 1px solid var(--rule);
   }
-  .principles h2 {
+  .principles h3 {
     font-size: 1.2rem;
     margin: 0.75rem 0 0.4rem;
   }
