@@ -8,6 +8,7 @@ import Crumbs from '../components/Crumbs.astro';
 import ReviewNote from '../components/ReviewNote.astro';
 import SourceList from '../components/SourceList.astro';
 import PageSections from '../components/PageSections.astro';
+import PageTitle from '../components/PageTitle.astro';
 import type { SymbolName } from '../lib/site-identities';
 import { pageSections } from '../lib/section-navigation';
 import { url } from '../lib/site';
@@ -21,11 +22,12 @@ interface Props {
   filePath?: string;
   review?: 'draft' | 'reviewed';
   identityCode?: string;
+  identitySymbol?: SymbolName;
   sections?: readonly { slug: string; text: string; depth?: number; symbol?: SymbolName }[];
   sources?: { title: string; url: string; publisher?: string; year?: string | number; note?: string }[];
 }
 
-const { title, description, eyebrow, summary, crumbs, filePath, review = 'draft', sources = [], identityCode, sections } = Astro.props;
+const { title, description, eyebrow, summary, crumbs, filePath, review = 'draft', sources = [], identityCode, identitySymbol, sections } = Astro.props;
 const destinations = pageSections(Astro.url.pathname.slice(url('/').length - 1)) ?? [];
 const hasAside = Astro.slots.has('aside');
 const hasTool = Astro.slots.has('top');
@@ -34,12 +36,12 @@ const outline = hasTool ? [...destinations, ...articleSections] : [...articleSec
 if (hasTool && destinations.length === 0) outline.unshift({ slug: 'working-tool', text: 'Open the tool', symbol: 'bolt' });
 ---
 
-<Base title={title} description={description ?? summary}>
+<Base title={title} description={description ?? summary} identitySymbol={identitySymbol}>
   <header class="page-head">
     <div class="wrap">
       {crumbs && <Crumbs items={crumbs} />}
       {eyebrow && <span class="eyebrow">{eyebrow}</span>}
-      <h1>{identityCode && <span class="identity-code title-code">{identityCode}</span>}{title}</h1>
+      <PageTitle title={title} code={identityCode} />
       {summary && <p class="lede">{summary}</p>}
       {Astro.slots.has('badges') && <div class="badges"><slot name="badges" /></div>}
     </div>

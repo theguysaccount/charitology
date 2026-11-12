@@ -22,9 +22,9 @@
 
 /* Icons sit beside the item label. Headings and standalone tiles use the
    item's own mark. Links can pick up a destination mark from the site map. */
-:where(main:not([data-site-home]) h1:not(:has(> .title-code)), .site-symbol, a.card, .starting-grid > a, .method-card,
+:where(main:not([data-site-home]) h1:not(.title-code + h1), .title-code, .site-symbol, a.card, .starting-grid > a, .method-card,
   .guide-card, .nav > a, .menu-panel > a, .crumbs > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
-  a.r-title:not(:has(> .identity-code)), .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
+  a.r-title, .list-row .numeral, .problems .pnum, .prob-grid .pnum, .cond-grid .numeral,
   a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
   main :is(h2, h3):not(:has(> .site-symbol)):is([id], [data-section-symbol], section[id] > h2, aside[id] > h2, div[id] > h2), .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol], .ob-measure[data-site-symbol],
   .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
@@ -46,7 +46,7 @@
   margin-inline-end: 0.48em;
 }
 
-:where(main:not([data-site-home]) h1:not(:has(> .title-code)))::before {
+:where(main:not([data-site-home]) h1:not(.title-code + h1))::before {
   --symbol-size: clamp(1.65rem, 4vw, 2.65rem);
   display: block;
   margin-block-end: 0.45rem;
@@ -73,7 +73,7 @@ a.card > .site-symbol {
 }
 
 :where(.nav > a, .menu-panel > a, .crumbs > a, .education-nav > a, .footer-grid a, .roadmap-item h2 > a, .rl-card h3 > a,
-  a.r-title:not(:has(> .identity-code)), a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
+  a.r-title, a.identity-link, main :is(li > a:first-child, li > p:first-child > a:first-child):is(a:not([class]), a.ext):not(:has(> :is(.site-symbol, .identity-code, .pnum, .numeral, .pin-num))),
   .sources li > a:first-child:not(:has(> .site-symbol)), .bar-label[data-site-symbol], .ob-measure[data-site-symbol],
   .finance-results > li > :is(h3, h4), .registry-results > li > :is(h3, h4), .os-cards[data-site-symbol] .os-card > h4)::before {
   margin-inline-end: 0.48em;
@@ -145,6 +145,7 @@ main ul > li:has(> :is(.identity-link, .site-symbol):first-child)::marker {
 }
 
 .identity-link,
+.r-title,
 .sources a,
 .finance-results > li > :is(h3, h4) {
   overflow-wrap: anywhere;
@@ -165,16 +166,31 @@ main ul > li:has(> :is(.identity-link, .site-symbol):first-child)::marker {
 }
 
 .title-code {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
   width: fit-content;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
   margin-block-end: 0.6rem;
-  font-size: 0.38em;
+  font-size: clamp(0.85rem, 1.2vw, 1.2rem);
+}
+
+.title-code::before {
+  align-self: center;
+}
+
+a.r-title[data-site-symbol]::before {
+  --link-glyph: var(--site-symbol);
+  --symbol-ink: var(--site-tone);
 }
 
 .identity-label {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
 }
 
 a.card,

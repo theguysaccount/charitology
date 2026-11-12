@@ -1,0 +1,10 @@
+---
+interface Props {
+  title: string;
+  code?: string;
+}
+const { title, code } = Astro.props;
+---
+
+{code && <span class="identity-code title-code" data-pagefind-meta="record_code">{code}</span>}
+<h1 data-pagefind-meta="title">{title}</h1>

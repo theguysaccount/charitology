@@ -136,6 +136,8 @@ export const symbols = {
   bequestShare: 'M3 4h8l4 4v12H3zM11 4v5h4M6 13h6m-6 4h4m8-6 4-6m-4 1h.01m4 4h.01',
   companyShare: 'M3 20V8h12v12H3Zm3-8h.01m5 0h.01m-5 4h.01m5 0h.01m7-5 4-6m-4 1h.01m4 4h.01',
   pulse: 'M2 12h5l3-8 4 16 3-8h5',
+  agreement: 'M4 3h11l4 4v14H4zM15 3v5h4M7 11h9m-9 4h3m1 3 2-3 2 2 2-2',
+  sourceCopy: 'M7 3h9l4 4v11H7zM16 3v5h4M4 7v14h13M10 11h7m-7 3h7',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

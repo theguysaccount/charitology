@@ -5,6 +5,7 @@ import ObservationRefs from "../../../../components/ObservationRefs.astro";
 import { loadObservations, observationEditionHref } from "../../../../lib/observations";
 import { observationProjection } from "../../../../lib/observation-model.mjs";
 import { url } from "../../../../lib/site";
+import { observationSourceSymbol } from "../../../../lib/source-symbol";
 import "../../../../styles/observations.css";
 export function getStaticPaths() { return loadObservations().input.registry.records.filter(r=>r.kind==="source").map(s=>({params:{id:s.id,version:`v${s.version}`}})); }
 const { input, file } = loadObservations();
@@ -25,7 +26,7 @@ const sections: {slug: string; text: string; symbol: SymbolName}[] = [
 ];
 const rawFilename=planCsv ? new URL(s.url).pathname.split('/').at(-1) : undefined;
 ---
-<Entry sections={sections} title={s.title} eyebrow={`Retained source · version ${s.version} · draft`} summary="Inspect retrieval, exact locations, source scope and source-specific reuse terms." crumbs={[{label:"Record",href:"/record/"},{label:"Observations",href:"/observations/"},{label:"Source detail"}]}>
+<Entry sections={sections} title={s.title} identityCode={`${s.id} v${s.version}`} identitySymbol={observationSourceSymbol(s)} eyebrow="Retained source · draft" summary="Inspect retrieval, exact locations, source scope and source-specific reuse terms." crumbs={[{label:"Record",href:"/record/"},{label:"Observations",href:"/observations/"},{label:"Source detail"}]}>
   <p><a href={s.url} rel="noopener">Open the publisher's source</a>. Publisher: {s.publisher}. {planCsv||jsonExcerpt ? 'Recorded client response completion: ' : 'Retrieved '}<time datetime={s.retrievedAt}>{s.retrievedAt}</time>. The external page can change; the identity below records the retrieved bytes.</p>
   <dl><dt>Source update day</dt><dd>{s.sourceUpdatedDay??"Unknown / not supplied"}</dd><dt>Report day</dt><dd>{s.reportDay??"Unknown / not applicable"}</dd><dt>Publication day or instant</dt><dd>{s.publishedAt ? s.publishedAt.kind==="day"?s.publishedAt.day:s.publishedAt.instant : "Unknown / not established by the retrieval or audit report day"}</dd></dl>
   <h2 id="rights" data-section-symbol="permit">Rights and attribution</h2><p>{s.rights.attribution}</p><p>{s.rights.originalProducerCredit}</p><p>Returned license field: {s.rights.returnedLicense??"null — no literal license field returned"}.</p>

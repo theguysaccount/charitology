@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { globSync, readdirSync, readFileSync } from 'node:fs';
 import { pageIdentity, routes, symbols } from '../src/lib/site-identities.ts';
 import { sectionNavigation } from '../src/lib/section-navigation.ts';
-import { sourceSymbol } from '../src/lib/source-symbol.ts';
+import { observationSourceSymbol, sourceSymbol } from '../src/lib/source-symbol.ts';
 import {
   causeSymbols, checklistSymbols, clubMeetingSymbols, comparisonSymbols, datasetSymbols, depthSymbols, disasterAdviceSymbols, ecosystemSymbols,
   diligenceGroupSymbols, diligenceItemSymbols, fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols,
@@ -247,6 +247,53 @@ const disasterIndex = readFileSync('dist/disasters/index.html', 'utf8');
 assert.deepEqual(outlineMarks(disasterIndex, 'On this page').map(([, slug]) => slug),
   ['dd-coverage', 'dd-incidents', 'dd-sources', 'dd-changes', 'dd-history']);
 
+const reviewHtml = readFileSync('dist/contribute/review/index.html', 'utf8');
+const reviewHeadings = [...reviewHtml.matchAll(/<h2 data-section-symbol="([^"]+)" id="(review-[^"]+)"/g)]
+  .map(([, mark, slug]) => [slug, mark]);
+if (reviewHeadings.length >= 2) {
+  assert.deepEqual(
+    outlineMarks(reviewHtml, 'On this page').map(([, slug, mark]) => [slug, mark]),
+    reviewHeadings,
+  );
+}
+
+const archivedIdentities = new Map();
+for (const pin of observationRegistry.records.filter(({ kind }) => kind === 'source')) {
+  const source = json(`observations/sources/${pin.id}.v${pin.version}`);
+  const path = `/observations/sources/${pin.id}/v${pin.version}/`;
+  archivedIdentities.set(path, [observationSourceSymbol(source), `${pin.id} v${pin.version}`]);
+}
+for (const { id } of observationRegistry.editions) {
+  archivedIdentities.set(`/observations/editions/${id}/`, [observationEditionSymbols[id], id]);
+}
+for (const { id } of publicationRegistry.editionPins) {
+  const { core } = json(`publication-editions/editions/${id}`);
+  archivedIdentities.set(`/record/editions/${id}/`, [publicationSymbols[core.family], id]);
+}
+const disasterRegistry = json('disaster-incidents/registry');
+for (const { edition: { id } } of disasterRegistry.editions) {
+  const { incidents, sources } = json(`disaster-incidents/editions/${id}`);
+  archivedIdentities.set(`/disasters/editions/${id}/`, ['archive', id]);
+  for (const pin of incidents) {
+    const incident = json(`disaster-incidents/records/incident/${pin.id}/v${pin.version}`);
+    const mark = hazardSymbols[incident.hazard];
+    archivedIdentities.set(`/disasters/editions/${id}/incidents/${pin.id}/`, [mark, `${pin.id} v${pin.version}`]);
+    if (id === disasterRegistry.selected.id) archivedIdentities.set(`/disasters/incidents/${pin.id}/`, [mark, pin.id]);
+  }
+  for (const pin of sources) {
+    const source = json(`disaster-incidents/records/source/${pin.id}/v${pin.version}`);
+    archivedIdentities.set(`/disasters/sources/${pin.id}/${pin.version}/`, [sourceSymbol(source.finalUrl), `${pin.id} v${pin.version}`]);
+  }
+}
+
+const execution = readFileSync('dist/record/funding-flows/brazil-project-execution/index.html', 'utf8');
+const projectLinks = [...execution.matchAll(/href="([^"]+)" data-source-symbol="agreement"><span class="identity-code">([0-9]+)<\/span>/g)];
+assert.ok(projectLinks.length > 80);
+assert.equal(new Set(projectLinks.map(([, , code]) => code)).size, projectLinks.length);
+for (const [, href, code] of projectLinks) {
+  archivedIdentities.set(href.slice(base.length), ['agreement', code]);
+}
+
 const pages = globSync('**/*.html', { cwd: 'dist' });
 assert.ok(pages.length > 0);
 let outlines = 0;
@@ -257,8 +304,14 @@ for (const page of pages) {
   assert.equal(html.match(/<main(?:\s|>)/g)?.length, 1, `Expected one main landmark in ${page}`);
   const main = html.match(/<main id="main"[^>]*>/)?.[0];
   const { symbol, tone } = pageIdentity(route);
-  assert.ok(main?.includes(`data-site-symbol="${symbol}"`), page);
+  const [recordSymbol, code] = archivedIdentities.get(route) ?? [];
+  assert.ok(main?.includes(`data-site-symbol="${recordSymbol ?? symbol}"`), page);
   assert.ok(main.includes(`data-site-tone="${tone}"`), page);
+  assert.ok(main.includes('data-pagefind-meta="record_symbol[data-site-symbol], record_tone[data-site-tone]"'), page);
+  if (code) {
+    assert.ok(html.includes(`class="identity-code title-code" data-pagefind-meta="record_code">${code}</span>`), page);
+    assert.ok(html.includes('<h1 data-pagefind-meta="title">'), page);
+  }
   assert.ok(html.includes(`rel="stylesheet" href="${base}/site-identities.css"`), page);
   const theme = html.match(/<fieldset [^>]*id="site-theme"[^>]*>[\s\S]*?<\/fieldset>/g);
   assert.equal(theme?.length, 1, page);

@@ -1,4 +1,5 @@
 ---
+import RecordLink from './RecordLink.astro';
 import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
 import { count, data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
 import type { ContractPayment, ProcurementPayment } from '../lib/brazil-infrastructure-procurement-payments';
@@ -36,7 +37,7 @@ const projects = new Map(data.projects.map(project => [project.agreement, projec
           {contract && <span class="identity-code">{contract.contractId}</span>}
           <small>Procurement archive row {count(row.procurementSourceRow)}</small>
         </th>
-        <td><a href={url(projectPath(row.agreement) + '#procurement-payments')}>{row.agreement} · {row.project}</a><small>{project?.organization}</small></td>
+        <td><RecordLink href={url(projectPath(row.agreement) + '#procurement-payments')} code={row.agreement} label={row.project} symbol="agreement" /><small>{project?.organization}</small></td>
         <td>{count(row.documents)} {row.documents === 1 ? 'document' : 'documents'}<small>{count(row.paymentRows)} payment rows</small></td>
         <td>{row.firstPaymentYear === row.lastPaymentYear ? row.firstPaymentYear : `${row.firstPaymentYear}–${row.lastPaymentYear}`}</td>
         <td>{money(row.reportedPaymentCentsBRL)}</td>

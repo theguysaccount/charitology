@@ -1,4 +1,5 @@
 ---
+import RecordLink from '../../../../components/RecordLink.astro';
 import Entry from '../../../../layouts/Entry.astro';
 import { contractRoute } from '../../../../lib/brazil-project-contracts';
 import { worksRoute } from '../../../../lib/brazil-works-measurements';
@@ -68,7 +69,7 @@ const downloads = [
             ...places.flatMap(row => [row.no_municipio, row.sg_uf, row.cod_ibge]),
             ...project.plannedMunicipalities.flatMap(row => [row.name, row.code])].join(' ');
           return <tr data-execution-row data-search={terms} data-status={state} data-comparison={project.geographyComparison}>
-            <th scope="row"><a class="identity-link" href={url(projectPath(project.agreement))}>{project.agreement} · {project.project}</a><small>{project.organization}</small></th>
+            <th scope="row"><RecordLink href={url(projectPath(project.agreement))} code={project.agreement} label={project.project} symbol="agreement" /><small>{project.organization}</small></th>
             <td>{places.map(place => place.no_municipio + ' (' + place.sg_uf + ')').join(', ')}</td>
             <td>{statusLabels[state] ?? state}</td>
             <td>{current ? percent(current.percentual_execucao_fisica) : 'No current record'}</td>

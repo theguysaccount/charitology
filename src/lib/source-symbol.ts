@@ -1,4 +1,16 @@
 import type { SymbolName } from './site-identities';
+import type { ObservationSourceRecord } from './observation-types';
+
+export function observationSourceSymbol({ payload, url }: ObservationSourceRecord): SymbolName {
+  if (payload.kind === 'public-csv') return 'table';
+  if (payload.kind === 'public-text-evidence') return 'sourceCopy';
+  if (payload.kind === 'external-document') {
+    if (payload.mediaType === 'application/pdf') return 'document';
+    if (payload.mediaType === 'application/json') return 'code';
+    return sourceSymbol(url);
+  }
+  return 'code';
+}
 
 // Identify the kind of source that will open, independent of its evidence grade.
 export function sourceSymbol(href: string): SymbolName {

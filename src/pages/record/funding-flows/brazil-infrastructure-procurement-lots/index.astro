@@ -1,4 +1,5 @@
 ---
+import RecordLink from '../../../../components/RecordLink.astro';
 import Entry from '../../../../layouts/Entry.astro';
 import SiteSymbol from '../../../../components/SiteSymbol.astro';
 import caseStudy from '../../../../data/funding-flows/brazil-joacaba-rehabilitation.json';
@@ -63,7 +64,7 @@ const difference = contracts[1].cipiAmountCentsBRL - contracts[1].signedAmountCe
         <thead><tr><th scope="col">Procurement</th><th scope="col">Agreement and project</th><th scope="col">Expense documents and payment rows</th><th scope="col">Reported procurement payments</th><th scope="col">Works lot references</th></tr></thead>
         <tbody>{procurements.map(row => <tr data-procurement-row data-agreement={row.agreement} data-lot-count={row.lots.length === 1 ? 'one' : 'multiple'} data-search={search(row)}>
           <th scope="row"><a class="identity-label" href={url(procurementPaymentsRoute + `?agreement=${row.agreement}&procurement=${row.procurementId}#procurements`)}><SiteSymbol name="match" size="inline" /><code>{row.procurementId}</code></a></th>
-          <td><a href={url(projectPath(row.agreement))}>{row.agreement} · {row.project}</a><small>{projectNames.get(row.agreement)}</small></td>
+          <td><RecordLink href={url(projectPath(row.agreement))} code={row.agreement} label={row.project} symbol="agreement" /><small>{projectNames.get(row.agreement)}</small></td>
           <td>{count(row.documents)} documents<small>{count(row.paymentRows)} payment rows</small></td>
           <td>{money(row.reportedPaymentCentsBRL)}<small>{row.firstPaymentYear === row.lastPaymentYear ? row.firstPaymentYear : `${row.firstPaymentYear}–${row.lastPaymentYear}`}</small></td>
           <td><ul class="lot-refs" role="list">{row.lots.map(lot => <li>

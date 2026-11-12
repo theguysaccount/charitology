@@ -1,4 +1,5 @@
 ---
+import RecordLink from './RecordLink.astro';
 import { normalizeBrazilName } from '../lib/client/brazil-transferegov';
 import { count, data, money, municipalities, projectPath } from '../lib/brazil-project-execution';
 import { comparedDocuments, paymentYears, type InvoiceCohort } from '../lib/brazil-infrastructure-invoice-items';
@@ -26,7 +27,7 @@ const projects = new Map(data.projects.map(project => [project.agreement, projec
       const search = normalizeBrazilName([cohort.agreement, cohort.proposal, cohort.project, organization, ...placeNames].join(' '));
       const compared = comparedDocuments(cohort.statuses);
       return <tr data-invoice-cohort data-issue-year={cohort.issueYear ?? 'unknown'} data-search={directory ? search : undefined}>
-        {directory && <td><a href={url(projectPath(cohort.agreement) + '#invoice-items')}><span class="identity-code">{cohort.agreement}</span> {cohort.project}</a><small>{organization}</small></td>}
+        {directory && <td><RecordLink href={url(projectPath(cohort.agreement) + '#invoice-items')} code={cohort.agreement} label={cohort.project} symbol="agreement" /><small>{organization}</small></td>}
         <th scope="row">{cohort.issueYear ?? 'Unknown'}{cohort.partialYear && <small>Partial year</small>}</th>
         <td>{count(cohort.documents)} {cohort.documents === 1 ? 'document' : 'documents'}<small>{count(cohort.lineRows)} source item rows</small>
           {cohort.lineRows !== cohort.comparedUniqueItems && <small>{count(cohort.comparedUniqueItems)} distinct items in comparisons</small>}</td>

@@ -74,6 +74,11 @@ const modes = [
     color: var(--on-accent);
   }
 
+  input:checked + .theme-option > span:last-child {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
   input:focus-visible + .theme-option {
     outline: 2px solid var(--focus);
     outline-offset: -2px;

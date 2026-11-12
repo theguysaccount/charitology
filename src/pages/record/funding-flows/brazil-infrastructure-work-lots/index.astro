@@ -1,4 +1,5 @@
 ---
+import RecordLink from '../../../../components/RecordLink.astro';
 import Entry from '../../../../layouts/Entry.astro';
 import { contractRoute } from '../../../../lib/brazil-project-contracts';
 import { procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
@@ -69,7 +70,7 @@ const labelFor = (status: string) => status === 'Emitida' ? 'Issued' : 'Not issu
         <tbody>{lots.map(row => <tr data-work-lot-row="lots" data-agreement={row.agreement} data-authorization={statusFor(row.worksInstrumentId)}
           data-search={projectSearch(row.agreement, row.proposal, row.project, row.lotId, row.worksInstrumentId, row.contractNumber, row.worksContractId)}>
           <th scope="row"><span class="identity-code">{row.lotId}</span><small>Lot {row.lotNumber}</small></th>
-          <td><a href={url(projectPath(row.agreement) + '#work-lots')}>{row.agreement} · {row.project}</a><small>{projects.get(row.agreement)?.organization}</small></td>
+          <td><RecordLink href={url(projectPath(row.agreement) + '#work-lots')} code={row.agreement} label={row.project} symbol="agreement" /><small>{projects.get(row.agreement)?.organization}</small></td>
           <td><a href={url(contractRoute + `?agreement=${row.agreement}#lookup`)}>{row.contractNumber}</a><small>Signed {row.signedOn}</small></td>
           <td><code>{row.worksInstrumentId}</code> / <code>{row.worksContractId}</code></td>
           <td>{count(row.lotSourceRow)}</td>
@@ -106,7 +107,7 @@ const labelFor = (status: string) => status === 'Emitida' ? 'Issued' : 'Not issu
         <tbody>{authorizations.map(row => <tr data-work-lot-row="authorizations" data-agreement={row.agreement} data-authorization={statusFor(row.worksInstrumentId)}
           data-search={projectSearch(row.agreement, row.proposal, row.project, row.worksInstrumentId, row.authorizationId, ...(lotsByInstrument.get(row.worksInstrumentId) ?? []).map(lot => lot.lotId))}>
           <th scope="row"><span class="identity-code">{row.worksInstrumentId}</span></th>
-          <td><a href={url(projectPath(row.agreement) + '#work-lots')}>{row.agreement} · {row.project}</a></td>
+          <td><RecordLink href={url(projectPath(row.agreement) + '#work-lots')} code={row.agreement} label={row.project} symbol="agreement" /></td>
           <td>{labelFor(row.authorizationStatus)}</td>
           <td>{row.authorizationId ?? 'No recorded ID'}<small>{row.issuedOn ?? 'No recorded issue date'}</small></td>
           <td>{count(row.authorizationSourceRow)}</td>

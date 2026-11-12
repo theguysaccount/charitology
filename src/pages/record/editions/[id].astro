@@ -1,6 +1,7 @@
 ---
 import { publicationSymbols } from "../../../lib/list-identities";
 import Crumbs from "../../../components/Crumbs.astro";
+import PageTitle from "../../../components/PageTitle.astro";
 import Base from "../../../layouts/Base.astro";
 import PublicationEdition from "../../../components/PublicationEdition.astro";
 import { loadPublicationEditions } from "../../../lib/publication-editions";
@@ -9,10 +10,10 @@ export function getStaticPaths() {
 }
 const { edition } = Astro.props;
 ---
-<Base title={`${edition.core.title} · fixed publication capture`} description="Read an immutable, source-linked publication capture with its dates, limitations and complete download files.">
+<Base title={`${edition.core.title} · fixed publication capture`} identitySymbol={publicationSymbols[edition.core.family]} description="Read an immutable, source-linked publication capture with its dates, limitations and complete download files.">
   <div class="wrap publication-editions">
     <Crumbs items={[{ label: "Record", href: "/record/" }, { label: "Fixed captures", href: "/record/editions/" }, { label: edition.core.title }]} />
-    <h1 data-site-symbol={publicationSymbols[edition.core.family]}>{edition.core.title}</h1>
+    <PageTitle title={edition.core.title} code={edition.core.id} />
     <PublicationEdition editionId={edition.core.id} />
   </div>
 </Base>

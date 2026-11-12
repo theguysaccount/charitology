@@ -76,7 +76,7 @@ const reportDate = (value?: string | null) => value?.slice(0, 10) ?? 'Unknown';
 <Entry title={title} eyebrow="The Record · Brazil infrastructure"
   summary={`Read the Obrasgov project records and federal agreement references for ${organization}.`}
   crumbs={[{label:'Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Brazilian infrastructure',href:infrastructureRoute},{label:agreement}]}
-  identityCode={agreement} sections={sections} sources={sources}
+  identityCode={agreement} identitySymbol="agreement" sections={sections} sources={sources}
   filePath="src/pages/record/funding-flows/brazil-project-execution/[agreement].astro">
   <p>Transferegov identifies the organization as <strong>{organization}</strong> (CNPJ <code>{cnpj}</code>), agreement <code>{agreement}</code>, proposal <code>{proposal}</code>. The exact paired commitment references below connect it to Obrasgov project <code>{project.project}</code>.</p>
   {caseStudy && <p>{caseStudy.description} <a class="identity-link" href={caseStudy.document}>Read the official notice</a>. {caseStudy.qualification && <a href={caseStudy.qualification}>Read the separate federal facility designation</a>}</p>}
