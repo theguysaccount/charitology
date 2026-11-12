@@ -5,12 +5,18 @@
 // Guidance and planner defaults live in src/data/disaster-guide.json.
 import guide from '../../data/disaster-guide.json';
 import { DEPTH } from '../../lib/labels';
+import { depthSymbols, disasterAdviceSymbols } from '../../lib/list-identities';
 import { url } from '../../lib/site';
 import DisasterDesk from '../DisasterDesk.astro';
+import PageSections from '../PageSections.astro';
+import SiteSymbol from '../SiteSymbol.astro';
 import { loadDisasters } from '../../lib/disaster-incidents/public.mjs';
 
 type See = { label: string; path: string };
-const points = guide.points.map((p) => ({ ...p, see: ((p as { see?: See[] }).see ?? []) as See[] }));
+const points = guide.points.map((p) => {
+  const anchor = `dr-${p.id}`;
+  return { ...p, anchor, symbol: disasterAdviceSymbols[anchor], see: ((p as { see?: See[] }).see ?? []) as See[] };
+});
 const { buckets, defaults } = guide.planner;
 const depthName = (level: number) => DEPTH.find((d) => d.level === level)?.name ?? '';
 const disasterData = loadDisasters();
@@ -22,15 +28,14 @@ const disasterData = loadDisasters();
     <span class="note">Six things to know, a gift planner and a recovery reminder.</span>
   </div>
 
-  <h3>What responders and researchers advise</h3>
-  <ol class="dr-points">
+  <h3 id="dr-guidance">What responders and researchers advise</h3>
+  <PageSections label="Giving guidance" sections={points.map(({ anchor, title, symbol }) => ({ slug: anchor, text: title, symbol }))} />
+  <ul class="dr-points" role="list">
     {
-      points.map((p, i) => (
-        <li class="dr-point" id={`dr-${p.id}`}>
+      points.map((p) => (
+        <li class="dr-point" id={p.anchor}>
           <div class="dr-point-head">
-            <span class="dr-n" aria-hidden="true">
-              {i + 1}
-            </span>
+            <SiteSymbol name={p.symbol} />
             <h4>{p.title}</h4>
           </div>
           <p>{p.body}</p>
@@ -39,10 +44,10 @@ const disasterData = loadDisasters();
         </li>
       ))
     }
-  </ol>
+  </ul>
 
   <div class="result" id="dr-planner">
-    <h3>Plan your gift</h3>
+    <h3 id="dr-planner-title">Plan your gift</h3>
     <p class="note">
       Split one amount across the three phases of a disaster. Moving one slider rebalances the other two so the total stays at
       100%. The defaults are a starting point, not a rule: they put more toward recovery than disaster giving does today and keep a
@@ -58,7 +63,8 @@ const disasterData = loadDisasters();
           buckets.map((b) => (
             <div class="field dr-slider">
               <label for={`dr-s-${b.id}`}>
-                <span>{b.name}</span> <output id={`dr-s-${b.id}-out`} for={`dr-s-${b.id}`} class="dr-out" />
+                <span class="identity-label"><SiteSymbol name={depthSymbols[b.depth]} size="inline" />{b.name}</span>
+                <output id={`dr-s-${b.id}-out`} for={`dr-s-${b.id}`} class="dr-out" />
               </label>
               <input
                 type="range"
@@ -83,13 +89,13 @@ const disasterData = loadDisasters();
           {buckets.map((b) => <span class={`dr-seg d${b.depth}`} data-seg={b.id} />)}
         </div>
         <p class="dr-summary" id="dr-summary" role="status" aria-live="polite"></p>
-        <ul class="dr-buckets">
+        <ul class="dr-buckets" role="list">
           {
             buckets.map((b) => (
               <li class="dr-bucket">
                 <div class="dr-bucket-head">
+                  <strong class="identity-label"><SiteSymbol name={depthSymbols[b.depth]} size="inline" />{b.name}</strong>
                   <span class={`dr-swatch d${b.depth}`} aria-hidden="true" />
-                  <strong>{b.name}</strong>
                   <span class="dr-amt" data-amount={b.id} />
                 </div>
                 <p class="note">{b.where}</p>
@@ -102,7 +108,7 @@ const disasterData = loadDisasters();
   </div>
 
   <div class="result" id="dr-remind">
-    <h3>Remind me to give to recovery</h3>
+    <h3 id="dr-remind-title">Remind me to give to recovery</h3>
     <p class="note">
       Recovery needs money long after the news moves on. Choose a date and download a calendar file. It is made in your browser,
       and opening it adds the reminder to your calendar app.
@@ -145,16 +151,8 @@ const disasterData = loadDisasters();
   .dr-point-head {
     display: flex;
     gap: 0.6rem;
-    align-items: baseline;
+    align-items: center;
     margin-bottom: 0.45rem;
-  }
-  .dr-n {
-    flex: none;
-    font-family: var(--font-display);
-    font-size: 1.3rem;
-    line-height: 1;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
   }
   .dr-point h4 {
     font-size: 1.05rem;
@@ -170,6 +168,7 @@ const disasterData = loadDisasters();
   }
   .dr-slider label {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
   }

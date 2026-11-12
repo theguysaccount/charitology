@@ -45,6 +45,17 @@ export const hazardSymbols: Record<string, SymbolName> = {
   drought: 'drought', other: 'alert', unclassified: 'question',
 };
 
+export const disasterAdviceSymbols: Record<string, SymbolName> = {
+  'dr-cash': 'wallet', 'dr-local': 'hands', 'dr-recovery': 'hourglass',
+  'dr-scams': 'shield', 'dr-prepare': 'umbrella', 'dr-strings': 'unlock',
+};
+
+export const comparisonSymbols = {
+  depth: 'layers', evidence: 'flask', mechanism: 'network', timeToEffect: 'clock',
+  durability: 'anchor', feedback: 'loop', agency: 'speech', cost: 'calculator',
+  causes: 'atlas', conditions: 'lens',
+} as const satisfies Record<string, SymbolName>;
+
 export const networkSymbols: Record<string, SymbolName> = {
   'ambitious-impact': 'compass', 'd-prize': 'trophy', 'echoing-green': 'seed', 'fast-forward': 'bolt',
   'school-for-social-entrepreneurs': 'school', unltd: 'spark', acevo: 'personCheck',
@@ -188,4 +199,5 @@ export const fragmentSymbols = {
   '/record/charity-index/': charityProfileSymbols,
   '/record/lexicon/': lexiconSymbols,
   '/for-charities/start/': starterSymbols,
+  '/tools/disaster-response-guide/': disasterAdviceSymbols,
 } as const;
