@@ -1,12 +1,14 @@
 ---
 import Entry from '../../../layouts/Entry.astro';
 import { url } from '../../../lib/site';
+import emmaus from '../../../data/france-emmaus.json';
 import manifest from '../../../../public/data/funding-flows/ile-de-france/manifest.json';
 import '../../../styles/charity-financial-search.css';
 
 const title = 'Paid grants to associations in Île-de-France';
 const count = (value: number) => value.toLocaleString('en-US');
 const official = 'https://www.insee.fr/fr/metadonnees/definition/c1841';
+const emmausCase = '/record/funding-flows/france-emmaus-solidarite/';
 const sources = [
   { title: 'Regional grant payments and data definitions', publisher: manifest.source.publisher, url: manifest.source.dataset },
   { title: 'SIRET establishment identifier', publisher: 'Insee', url: official },
@@ -15,7 +17,8 @@ const sources = [
 
 <Entry title={title} eyebrow="The Record · Funding flows" summary="Search reported regional grant payments by association name or French establishment and legal-unit identifiers." crumbs={[{label:'The Record',href:'/record/'},{label:'Gap Map',href:'/record/gap-map/'},{label:title}]} sources={sources}>
   <p>This edition includes {count(manifest.asset.rows)} reported payment rows for {count(manifest.establishments)} establishments. The region published the figures for its 2024 and 2025 budget years. Each result shows the budget year and actual payment date as separate fields.</p>
-  <section class="charity-financial-search" data-idf-search data-manifest={JSON.stringify(manifest)} data-file={url('/data/funding-flows/ile-de-france/payments.json.gz')} aria-labelledby="idf-search-heading">
+  <p><a class="identity-link" href={url(emmausCase)}>Follow the original decisions and annual accounts for Emmaüs Solidarité</a>.</p>
+  <section id={'q=' + emmaus.institution.siren} class="charity-financial-search" data-idf-search data-manifest={JSON.stringify(manifest)} data-file={url('/data/funding-flows/ile-de-france/payments.json.gz')} aria-labelledby="idf-search-heading">
     <h2 id="idf-search-heading">Find paid grants</h2>
     <p id="idf-hint">Enter the beginning of the published recipient name, a 14-digit SIRET establishment number or a nine-digit SIREN legal-unit number. Search downloads about 284 KB of public data. Your query stays in this browser.</p>
     <form aria-describedby="idf-hint">
@@ -66,6 +69,8 @@ const sources = [
     const results = $('[data-results]', root);
     const json = $<HTMLButtonElement>('[data-json]', root);
     const csv = $<HTMLButtonElement>('[data-csv]', root);
+    // Keep a linked public identifier in the browser rather than the request URL.
+    const linkedId = /^#q=(\d{9}|\d{14})$/.exec(location.hash)?.[1];
     let snapshot: Promise<Row[]> | undefined;
     let displayed: Row[] = [];
     let sequence = 0;
@@ -125,6 +130,9 @@ const sources = [
       input.value = '';
       submit.disabled = false;
       status.textContent = 'Search cleared.';
+      if (linkedId && location.hash === '#q=' + linkedId) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#idf-search-heading');
+      }
       input.focus();
     });
 
@@ -145,5 +153,10 @@ const sources = [
       }).map(([key, value]) => [key, safeCsv(value)])));
       download('ile-de-france-paid-grants.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
     });
+
+    if (linkedId) {
+      input.value = linkedId;
+      form.requestSubmit();
+    }
   }
 </script>
