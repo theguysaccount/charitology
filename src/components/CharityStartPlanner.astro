@@ -1,5 +1,7 @@
 ---
 import {charityStartJobs,CHARITY_START_LIMITS} from '../data/charity-start.mjs';
+import SiteSymbol from './SiteSymbol.astro';
+import { starterStepSymbols, starterSymbols } from '../lib/list-identities';
 ---
 <section class="tool charity-start-planner" id="planner" aria-labelledby="charity-start-planner-title" data-charity-start>
   <p class="eyebrow">One job · page only</p><h2 id="charity-start-planner-title">Make a plan you can inspect.</h2>
@@ -13,7 +15,19 @@ import {charityStartJobs,CHARITY_START_LIMITS} from '../data/charity-start.mjs';
     </div>
     <p class="note" id="start-role-note">Use roles and nonpersonal examples. Keep names, email addresses and private donor, staff or participant records out of the plan.</p>
     <p class="note" id="start-date-note">Blank means unknown. This date is your own review point, not a grant deadline, automatic reminder or evidence-based schedule.</p>
-    {charityStartJobs.map(job=><fieldset data-start-steps={job.id} hidden disabled><legend>{job.title} · your own step marks</legend><p class="note">Check only steps you have completed. These marks are self-reported, not independently verified.</p>{job.steps.map((step,index)=><label class="start-check"><input type="checkbox" data-start-step={index} /><span>{step}</span></label>)}</fieldset>)}
+    {charityStartJobs.map(job => (
+      <fieldset data-start-steps={job.id} hidden disabled>
+        <legend><SiteSymbol name={starterSymbols[job.id]} size="inline" /> {job.title}</legend>
+        <p class="note">Check only steps you have completed. These marks are self-reported, not independently verified.</p>
+        {job.steps.map((step, index) => (
+          <label class="start-check">
+            <input type="checkbox" data-start-step={index} />
+            <SiteSymbol name={starterStepSymbols[job.id][index]} size="inline" />
+            <span>{step}</span>
+          </label>
+        ))}
+      </fieldset>
+    ))}
     <button class="btn" type="button" data-start-review>Review plan</button>
   </fieldset>
   <noscript><p>The planner needs JavaScript. Its unnamed controls stay disabled and send nothing. All six complete checklists below remain readable.</p></noscript>

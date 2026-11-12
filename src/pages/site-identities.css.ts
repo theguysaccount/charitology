@@ -11,6 +11,7 @@ export function GET() {
   const page = Object.keys(symbols).map((name) => `[data-site-symbol="${name}"]{--site-symbol:var(--glyph-${name})}`);
   const contentMarks = Object.keys(symbols).flatMap((name) => [
     `[data-section-symbol="${name}"]{--heading-glyph:var(--glyph-${name});--heading-mark:inline-block}`,
+    `li[data-list-symbol="${name}"]{--item-glyph:var(--glyph-${name})}`,
     `a[data-source-symbol="${name}"]{--link-glyph:var(--glyph-${name})}`,
   ]);
   const tones = [...new Set(routes.map(({ tone }) => tone))].map((tone) =>
@@ -24,6 +25,8 @@ export function GET() {
     return `${selector}${encoded}{--link-glyph:var(--glyph-${symbol});--link-tone:var(--tone-${tone});--list-mark:inline-block}`;
   });
   links.unshift(
+    'a[href^="/"]{--link-glyph:var(--glyph-doorway);--list-mark:inline-block}',
+    `a[href^="${url('/data/')}"]{--link-glyph:var(--glyph-table);--list-mark:inline-block}`,
     'a:is([href^="https://"],[href^="http://"]){--link-glyph:var(--glyph-external);--list-mark:inline-block}',
     'a[href="https://os.charitology.org"],a[href^="https://os.charitology.org/"]{--link-glyph:var(--glyph-personCheck);--link-tone:var(--tone-green)}',
     'a[href^="mailto:"]{--link-glyph:var(--glyph-mail);--list-mark:inline-block}',

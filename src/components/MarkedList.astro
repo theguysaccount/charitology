@@ -12,7 +12,7 @@ const Tag = ordered ? 'ol' : 'ul';
 
 <Tag class:list={['marked-list', ordered && 'marked-steps']} role={ordered ? undefined : 'list'}>
   {items.map(([text, symbol]) => (
-    <li><SiteSymbol name={symbol} size="inline" /> <span>{text}</span></li>
+    <li><span class="marked-line"><SiteSymbol name={symbol} size="inline" /> <span>{text}</span></span></li>
   ))}
 </Tag>
 
@@ -21,15 +21,16 @@ const Tag = ordered ? 'ol' : 'ul';
     list-style: none;
     padding-inline-start: 0;
   }
-  .marked-list > li {
+  .marked-line {
+    display: inline-grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 0.45rem;
+    vertical-align: top;
     overflow-wrap: anywhere;
   }
   .marked-list > li + li {
     margin-block-start: 0.6rem;
-  }
-  .marked-list > li > :global(.site-symbol) {
-    vertical-align: -0.28em;
-    margin-inline-end: 0.22rem;
   }
   .marked-steps > li::marker {
     font-variant-numeric: tabular-nums;

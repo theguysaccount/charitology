@@ -75,8 +75,8 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
         <p class="directory-summary">{entry.summary}</p>
         <p class="directory-offer">{entry.cost}</p>
         <dl>
-          {kind === 'tools' ? <><dt>Possible use</dt><dd>{entry.fit}</dd><dt>How it runs</dt><dd>{entry.delivery}</dd></> : <><dt>Who can apply</dt><dd>{entry.eligibility}</dd></>}
-          <dt>{kind === 'tools' ? 'Before choosing it' : 'Limits and costs'}</dt><dd>{entry.limits}</dd>
+          {kind === 'tools' ? <><dt data-site-symbol="tools">Possible use</dt><dd>{entry.fit}</dd><dt data-site-symbol="route">How it runs</dt><dd>{entry.delivery}</dd></> : <><dt data-site-symbol="personCheck">Who can apply</dt><dd>{entry.eligibility}</dd></>}
+          <dt data-site-symbol={kind === 'tools' ? 'checks' : 'wallet'}>{kind === 'tools' ? 'Before choosing it' : 'Limits and costs'}</dt><dd>{entry.limits}</dd>
         </dl>
         <div class="directory-card-bottom">
           <a class="directory-provider" href={entry.url} rel="noopener">{kind === 'tools' ? 'Explore the tool' : 'Check offer and apply'} <span aria-hidden="true">↗</span></a>

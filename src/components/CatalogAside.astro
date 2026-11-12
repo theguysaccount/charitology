@@ -1,5 +1,7 @@
 ---
 import ConditionLinks from './ConditionLinks.astro';
+import MarkedList from './MarkedList.astro';
+import { editorialListSymbol } from '../lib/editorial-list-symbol';
 import { STATUS } from '../lib/labels';
 import { editUrl, url } from '../lib/site';
 import { titleForPath, type CatalogEntry } from '../lib/content';
@@ -31,11 +33,7 @@ const related = await Promise.all(
   d.help.length > 0 && (
     <div>
       <h2>How to help</h2>
-      <ul class="help">
-        {d.help.map((h) => (
-          <li>{h}</li>
-        ))}
-      </ul>
+      <MarkedList items={d.help.map((help) => [help, editorialListSymbol(help)] as const)} />
     </div>
   )
 }
@@ -56,16 +54,3 @@ const related = await Promise.all(
 <div>
   <a class="btn btn-ghost btn-small" href={editUrl(entry.filePath)}>Edit this page on GitHub</a>
 </div>
-
-<style>
-  .help li {
-    padding-left: 1rem;
-    position: relative;
-  }
-  .help li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--ink-3);
-  }
-</style>

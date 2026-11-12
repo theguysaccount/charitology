@@ -10,6 +10,8 @@ Use the shared [site symbols](src/lib/site-symbols.ts) and [route identities](sr
 
 The public header’s theme control offers System, Light and Dark and remembers the choice on this domain. Keep names visible next to symbols in directories and in the theme menu. Use an explicit symbol beside each action in a curated workflow, as in the fundraising playbooks. Keep source identifiers for registry and financial rows. Check new controls in both themes and at narrow widths. Run the built-site identity check with `node scripts/check-site-identities.mjs` after `npm run build`.
 
+Use [MarkedList](src/components/MarkedList.astro) for curated checklists and steps. Match the marks when the same list appears in an interactive tool and a written guide. Markdown text-led lists pick up [marks from their lead labels](src/lib/editorial-list-symbol.ts). Link-led lists use destination or source marks. Ordered steps keep their numbers.
+
 ## Updating the live Charity OS
 
 [Charity OS](https://os.charitology.org/app) runs from [`services/charity-os/`](services/charity-os/) in the Vercel project `charitology-os`, under `jacksonjezio-7345s-projects`. Vercel's GitHub integration builds previews for pull requests and uses `main` for production. The public website deploys separately through GitHub Pages.

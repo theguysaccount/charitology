@@ -3,6 +3,7 @@
 // scored 0 to 4 or left unknown. Unknowns stay unknown: the weighted result is a
 // missing-data range. Rubric, math and memo in src/lib/client/rubric.ts.
 import { DEFAULT_WEIGHT, DIMENSIONS, MAX_WEIGHT, UNKNOWN_GUIDE } from '../../lib/client/rubric';
+import { depthSymbols } from '../../lib/list-identities';
 import { url } from '../../lib/site';
 
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
@@ -61,8 +62,8 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
               <details class="ge-all">
                 <summary>Guide for every score</summary>
                 <ol start="0">
-                  {d.guides.map((g) => (
-                    <li>{g}</li>
+                  {d.guides.map((g, index) => (
+                    <li data-list-symbol={d.id === 'depth' ? depthSymbols[index] : undefined}>{g}</li>
                   ))}
                 </ol>
               </details>

@@ -3,15 +3,17 @@ import { globSync, readdirSync, readFileSync } from 'node:fs';
 import { pageIdentity, routes, symbols } from '../src/lib/site-identities.ts';
 import { sectionNavigation } from '../src/lib/section-navigation.ts';
 import { observationSourceSymbol, sourceSymbol } from '../src/lib/source-symbol.ts';
+import { editorialListSymbol } from '../src/lib/editorial-list-symbol.ts';
 import {
   causeSymbols, checklistSymbols, clubMeetingSymbols, compassDimensionSymbols, comparisonSymbols, datasetSymbols, depthSymbols, disasterAdviceSymbols, ecosystemSymbols,
   diligenceGroupSymbols, diligenceItemSymbols, fragmentSymbols, fundraisingSourceSymbols, hazardSymbols, lensSymbols, needSymbols, networkSymbols,
   observationEditionSymbols, observationMeasureSymbols, osDiscussionSymbols, publicationSymbols,
-  providerSymbols, seminarSymbols, sourceSymbols, starterSymbols, teachingSymbols, worksheetSymbols,
+  clubHandoverSymbols, fundraisingModuleSymbols, lessonGlossarySymbols, lessonLimitSymbols, lessonOutcomeSymbols,
+  providerSymbols, seminarSymbols, sourceSymbols, starterReviewSymbols, starterStepSymbols, starterSymbols, teachingSymbols, worksheetSymbols,
 } from '../src/lib/list-identities.ts';
 import { charityNetworks } from '../src/data/charity-networks.mjs';
 import { charityStartJobs } from '../src/data/charity-start.mjs';
-import { beginnerMeetings, seminarSessions, teachingMaterials, worksheet } from '../src/data/education-kit.mjs';
+import { beginnerMeetings, clubHandover, glossary, learningOutcomes, lessonCase, seminarSessions, teachingMaterials, worksheet } from '../src/data/education-kit.mjs';
 import { fundraisingSources } from '../src/data/fundraising.mjs';
 import { HAZARDS } from '../src/lib/disaster-incidents/interpretations/v1/limits.mjs';
 
@@ -85,11 +87,41 @@ for (const [name, keys, mapping] of [
   ['beginner meetings', beginnerMeetings.map(({ number }) => number), clubMeetingSymbols],
   ['university seminars', seminarSessions.map(({ number }) => number), seminarSymbols],
   ['student worksheet', ids(worksheet), worksheetSymbols],
+  ['lesson glossary', glossary.map(({ term }) => term), lessonGlossarySymbols],
   ['fundraising sources', ids(fundraisingSources), fundraisingSourceSymbols],
 ]) {
   const marks = keys.map((key) => mapping[key]);
   assert.ok(marks.every((mark) => Object.hasOwn(symbols, mark)), `Missing symbol in ${name}`);
   assert.equal(new Set(marks).size, keys.length, `Duplicate symbols in ${name}`);
+}
+
+for (const [items, marks] of [
+  [learningOutcomes, lessonOutcomeSymbols], [lessonCase.limitations, lessonLimitSymbols], [clubHandover, clubHandoverSymbols],
+  ...charityStartJobs.flatMap(job => [
+    [job.steps, starterStepSymbols[job.id]], [job.questions, starterReviewSymbols[job.id]],
+  ]),
+]) {
+  assert.equal(marks.length, items.length);
+  assert.equal(new Set(marks).size, items.length);
+  assert.ok(marks.every(mark => Object.hasOwn(symbols, mark)));
+}
+
+const startPage = readFileSync('dist/for-charities/start/index.html', 'utf8');
+const visibleMarks = (html) => [...html.matchAll(/data-site-symbol="([^"]+)"/g)].map(([, mark]) => mark);
+for (const job of charityStartJobs) {
+  const checklist = startPage.match(new RegExp(`<article class="start-job" id="${job.id}"[^>]*>([\\s\\S]*?)</article>`))?.[1];
+  const planner = startPage.match(new RegExp(`<fieldset data-start-steps="${job.id}"[^>]*>([\\s\\S]*?)</fieldset>`))?.[1];
+  assert.ok(checklist && planner, job.id);
+  const steps = [starterSymbols[job.id], ...starterStepSymbols[job.id]];
+  assert.deepEqual(visibleMarks(checklist), [...steps, ...starterReviewSymbols[job.id]], job.id);
+  assert.deepEqual(visibleMarks(planner), steps, job.id);
+  for (const { id } of job.os) assert.ok(checklist.includes(`data-source-symbol="${fundraisingModuleSymbols[id]}"`), id);
+}
+assert.equal(editorialListSymbol('Compare expenses with the budget.'), 'compare');
+assert.equal(editorialListSymbol('2025: A new published edition'), 'calendar');
+const course = readFileSync('dist/programs/principles-course/index.html', 'utf8');
+for (const [lead, mark] of [['A reading', 'book'], ['An exercise', 'tools'], ['A problem set', 'checks']]) {
+  assert.ok(new RegExp(`<li data-list-symbol="${mark}">\\s*<strong>${lead}</strong>`).test(course), lead);
 }
 for (const name of datasetNames) {
   assert.ok(sheet.includes(`a[href="${base}/api/v1/${name}.json"]{--link-glyph:var(--glyph-${datasetSymbols[name]});--list-mark:inline-block}`), name);
@@ -319,6 +351,7 @@ const pages = globSync('**/*.html', { cwd: 'dist' });
 assert.ok(pages.length > 0);
 let outlines = 0;
 let matchingHeadings = 0;
+let markedListItems = 0;
 for (const page of pages) {
   const route = '/' + page.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
   const html = readFileSync(`dist/${page}`, 'utf8');
@@ -341,6 +374,15 @@ for (const page of pages) {
   assert.deepEqual([...theme[0].matchAll(/<span[^>]*>(System|Light|Dark)<\/span>/g)].map(([, label]) => label),
     ['System', 'Light', 'Dark'], page);
   assert.equal([...html.matchAll(/data-theme-mode="([^"]+)"/g)].map(([, mode]) => mode).join(' '), 'system light dark', page);
+  assert.ok(/class="theme-caption"[^>]*>Theme<\/span>/.test(html), `Missing visible theme label in ${page}`);
+  for (const [, mark] of html.matchAll(/<li[^>]*data-list-symbol="([^"]+)"/g)) {
+    markedListItems++;
+    assert.ok(Object.hasOwn(symbols, mark), `Missing list symbol in ${page}`);
+    assert.ok(sheet.includes(`li[data-list-symbol="${mark}"]{--item-glyph:var(--glyph-${mark})}`), mark);
+  }
+  for (const [, mark] of html.matchAll(/<dt[^>]*data-site-symbol="([^"]+)"/g)) {
+    assert.ok(Object.hasOwn(symbols, mark), `Missing definition symbol in ${page}`);
+  }
   for (const [tag] of html.matchAll(/<span class="site-symbol\b[^>]*>/g)) {
     const symbol = tag.match(/data-site-symbol="([^"]+)"/)?.[1];
     assert.ok(symbol && Object.hasOwn(symbols, symbol), `Missing or invalid visible mark in ${page}`);
@@ -374,6 +416,7 @@ for (const page of pages) {
 }
 assert.ok(outlines >= 200, "Page outlines should cover country profiles and article templates");
 assert.ok(matchingHeadings >= 100, 'Article shortcut marks should match their heading marks');
+assert.ok(markedListItems >= 200, 'Markdown lists should receive marks during the build');
 for (const page of ['values-compass', 'due-diligence-checklist', 'giving-dashboard', 'charity-os']) {
   const html = readFileSync(`dist/tools/${page}/index.html`, 'utf8');
   const jump = html.indexOf('href="#working-tool"');
@@ -385,4 +428,4 @@ for (const [page, first] of [['disaster-response-guide', 'dr-guidance'], ['compa
   assert.equal(firstJump, first, page);
   assert.ok(!html.includes('href="#working-tool"'), `Extra tool shortcut on ${page}`);
 }
-console.log(`Site identity and theme checked on ${pages.length} pages, including ${outlines} outlines and ${matchingHeadings} matching article headings, with distinct symbols in the catalogs, reference libraries and editorial lists.`);
+console.log(`Site identity and theme checked on ${pages.length} pages, including ${outlines} outlines, ${matchingHeadings} matching article headings and ${markedListItems} text-led list marks.`);
