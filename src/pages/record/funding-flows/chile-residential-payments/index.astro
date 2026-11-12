@@ -1,0 +1,205 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import { url } from '../../../../lib/site';
+import edition from '../../../../../public/data/funding-flows/chile-residential-payments/edition.json';
+
+const title = 'From residential care awards to reported payments in Chile';
+const dataPath = '/data/funding-flows/chile-residential-payments/';
+const earlier = '/record/funding-flows/chile-residential-care/';
+const { awards, recipients, ledger, coverage, citations, rostrosReconciliation, monitoring } = edition;
+const unlinked = ledger.find(row => row.period === 2025 && row.rut === '53226150-3' && row.document === '3535202')!;
+const totals2025 = coverage.find(row => row.period === 2025)!;
+const totals2026 = coverage.find(row => row.period === 2026)!;
+const awardTotal = awards.reduce((sum, award) => sum + award.awardClp, 0);
+const equal = recipients.filter(row => row.awardClp === row.paidClp).length;
+const lower = recipients.filter(row => row.paidClp < row.awardClp).length;
+const higher = recipients.length - equal - lower;
+const { improvedQualityOfLifeScore, individualizedCareReported } = monitoring.outcomes;
+const regionalDifference = Math.max(...monitoring.regions.map(row =>
+  Math.abs(row.ledgerAccruedClp - 1000 * row.componentsClpThousands)));
+const number = (value: number) => value.toLocaleString('en-US');
+const officialProvider = (rut: string) => citations.portal + 'institutions/providers/' + rut;
+const sourceOf = (id: string) => edition.sources.find(source => source.id === id)!;
+const sources = [
+  {title:'Resolution 763/2025, award schedule and budget code', url:citations.awards, publisher:'Chile National Disability Service'},
+  {title:'Residential care rules for 2024, section 10.2', url:citations.rules2024, publisher:'Chile National Disability Service'},
+  {title:'Presupuesto Abierto release and reuse terms', url:citations.dataTerms, publisher:'Chile Budget Directorate'},
+  {title:'Presupuesto Abierto field dictionary, payment date and amount', url:citations.dictionary, publisher:'Chile Budget Directorate'},
+  {title:'2025 residential care monitoring, program 70148', url:monitoring.source.url, publisher:'Chile Ministry of Social Development and Family'},
+  {title:'2025 monitoring guide, units for component spending', url:monitoring.unitGuide.url, publisher:'Chile Ministry of Social Development and Family and Budget Directorate'},
+  {title:'Territorial code decree 1115, article 2', url:citations.regionCodes, publisher:'Library of the National Congress of Chile'},
+  {title:'2022 ENDIDE regional dependence estimates, table 13', url:monitoring.regionalNeed.source.url, publisher:'Chile Ministry of Social Development and Family'},
+  {title:'McCarron and colleagues, review of quality of life after moving to community settings', url:citations.communityLivingReview, publisher:'BMJ Open', year:2019},
+];
+const downloads = [
+  ['awards.csv','All 37 award rows (CSV)','grantSchedule'],
+  ['ledger.csv','Selected institutional ledger records (CSV)','bankOrder'],
+  ['recipient-comparison.csv','2025 comparison by tax ID (CSV)','compare'],
+  ['regional-comparison.csv','Regional spending, reach and survey context (CSV)','atlas'],
+  ['edition.json','Complete edition and source fingerprints (JSON)','packet'],
+] as const;
+const awardsFor = (rut: string) => awards.filter(award => award.rut === rut);
+const ledgerFor = (rut: string) => ledger.filter(row => row.rut === rut)
+  .sort((a,b) => a.period - b.period || a.bookMonth - b.bookMonth || a.sourceRow - b.sourceRow);
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows"
+  summary="Look up all 19 recipients in one award round. Compare the awards with the government ledger for the same budget line and institutional tax IDs."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Chile residential care payments'}]}
+  filePath="src/pages/record/funding-flows/chile-residential-payments/index.astro" sources={sources}>
+  <p>Chile’s National Disability Service, SENADIS, approved {awards.length} residence proposals for {recipients.length} recipients in resolution 763/2025. The awards sum to <strong>CLP {number(awardTotal)}</strong>. The resolution gives the application folios, recipient tax IDs (RUTs) and the budget assignment <strong>24.03.004</strong>. <a href={citations.awards + '#page=2'}>Read the award table</a>. <a href={citations.awards + '#page=4'}>Check the budget assignment</a>.</p>
+  <p>The public budget ledger contains records under all {recipients.length} exact recipient RUTs on that assignment for accounting year 2025. These links identify the same organization and funding line. The ledger’s document numbers and the award folios belong to separate systems. Confirming the payment for a particular residence requires a record that connects both numbers. <a href={sourceOf('program-2025').url}>Open the 2025 ledger response</a>.</p>
+
+  <h2 id="scope">Check the ledger’s coverage</h2>
+  <p>The source responses were captured November 12, 2026. Each row has its own booked year and month, a government-recognized obligation and the amount the portal reports as paid. The portal uses the last recorded payment date when a document has multiple payments. A date and a zero amount can appear together. Missing dates remain blank in the exports.</p>
+  <div class="table-wrap" role="region" aria-label="Residential care budget line coverage" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Booked year and scope</th><th scope="col">Ledger rows</th><th scope="col">Recipient IDs</th><th scope="col">Accrued (CLP)</th><th scope="col">Reported paid (CLP)</th></tr></thead>
+      <tbody>
+      {[totals2025, totals2026].map(period => <>
+        <tr><th scope="row"><a href={sourceOf(period.source).url}>{period.period} budget line{period.period === 2026 ? ' through September' : ''}</a></th>
+          <td>{number(period.sourceTotals.rows)}</td><td>{number(period.sourceTotals.recipientCount)}</td>
+          <td>{number(period.sourceTotals.accruedClp)}</td><td>{number(period.sourceTotals.paidClp)}</td></tr>
+        <tr><th scope="row">Recipients named in the 2025 round</th><td>{number(period.awardRecipientTotals.rows)}</td><td>{number(period.awardRecipientTotals.recipientCount)}</td>
+          <td>{number(period.awardRecipientTotals.accruedClp)}</td><td>{number(period.awardRecipientTotals.paidClp)}</td></tr>
+        <tr><th scope="row">Other recipients on the line</th><td>{number(period.otherTotals.rows)}</td><td>{number(period.otherTotals.recipientCount)}</td>
+          <td>{number(period.otherTotals.accruedClp)}</td><td>{number(period.otherTotals.paidClp)}</td></tr>
+      </>)}
+      </tbody>
+    </table>
+  </div>
+  <p>The 2026 source is partial. The latest month with booked rows is September. Establishing a renewal for a particular residence requires a renewal record. Other recipient records appear here in aggregate. The amounts on the budget line can include obligations beyond the selected award round. Award, accrual and payment amounts can describe the same money at different stages.</p>
+
+  <h2 id="geography">Compare funding, service reach and need by region</h2>
+  <p>The 2025 program monitoring report gives component spending of <strong>{number(monitoring.componentsClpThousands)} thousand CLP</strong>. Converting that published unit to pesos leaves a difference of CLP {number(Math.abs(monitoring.ledgerAccruedMinusComponentsClp))} from the full budget line’s accrued amount. The report lists administrative spending separately at {number(monitoring.administrationClpThousands)} thousand CLP. The ledger’s reported paid amount for the line is CLP {number(totals2025.sourceTotals.paidClp)}. <a href={monitoring.source.url}>Read the monitoring report, section 10</a>. <a href={monitoring.unitGuide.url}>Check the spending units</a>.</p>
+  <p>Each named region’s component spending and ledger accrual differ by at most CLP {number(regionalDifference)} after the unit conversion. The comparison uses the official region codes and the location field in the budget ledger. The report lists {number(monitoring.centralComponentsClpThousands)} thousand CLP at central level. The ledger has {number(monitoring.ledgerWithoutRegion.rows)} entries coded 00 without a named budget region, with CLP {number(monitoring.ledgerWithoutRegion.accruedClp)} accrued and CLP {number(monitoring.ledgerWithoutRegion.paidClp)} reported paid. The sources provide separate labels for those amounts. <a href={citations.regionCodes}>Check the region codes</a>.</p>
+  <p>Section 6 of the monitoring report counts people served. The separate 2022 ENDIDE household survey estimates dependence among adults aged 18 and older. The table gives the survey’s published absolute error in percentage points. The survey includes adults outside the program’s referral routes and age range. Program reach and household prevalence describe different populations and years. Estimating unmet demand for these residences would require a count of people eligible for the program. <a href={monitoring.regionalNeed.source.url}>Read survey table 13</a>. <a href={url(earlier + '#care-context')}>Read the separate Casen household results</a>.</p>
+  <div class="table-wrap regional-table" role="region" aria-label="Regional spending, service counts and survey context" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Region</th><th scope="col">People served, 2025 program report</th><th scope="col">Adult dependence, 2022 survey</th><th scope="col">2025 component spending (thousand CLP)</th><th scope="col">2025 ledger accrual (CLP)</th><th scope="col">2025 ledger reported paid (CLP)</th></tr></thead>
+      <tbody>{monitoring.regions.map(region => <tr data-region-cut={region.cut}>
+        <th scope="row">{region.bipsRegion} <small>({region.cut})</small></th>
+        <td>{number(region.servedPeople)}</td>
+        <td>{region.prevalencePct.toFixed(1)}% ± {region.absoluteErrorPp.toFixed(1)} pp</td>
+        <td>{number(region.componentsClpThousands)}</td><td>{number(region.ledgerAccruedClp)}</td><td>{number(region.ledgerPaidClp)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="outcomes">Read the reported care and outcomes</h2>
+  <p>The program reported serving {number(monitoring.servedPeople)} people in 2025. Its records show individualized care for {number(individualizedCareReported.numerator)} of {number(individualizedCareReported.denominator)} people, using reports from {individualizedCareReported.residencesSubmittingTechnicalReport} residences that filed the second technical progress report. That measure describes the care reported by providers. <a href={monitoring.source.url}>Read section 12, first complementary indicator</a>.</p>
+  <p>The program found improved quality-of-life scores for {improvedQualityOfLifeScore.numerator} of {improvedQualityOfLifeScore.denominator} people in its assessment sample. It compared each person’s score with their previous available score, using one of two scales according to support needs. This is a before-and-after measure for the assessed sample. Estimating a program effect would require a comparison that accounts for other changes. The report supplies no outcome link to a specific award or ledger document. <a href={monitoring.source.url}>Read section 11, first purpose indicator</a>.</p>
+  <p>A review by McCarron and colleagues found that adults with intellectual disabilities generally reported or showed improved quality of life after moving from institutions to community settings. The studies examined that specific move, and the Chilean report describes a residential support program with its own participants and care arrangements. The review helps explain why setting matters. The Chilean program’s effect remains unmeasured by that evidence. <a href={citations.communityLivingReview}>Read the systematic review</a>.</p>
+
+  <h2 id="compare">Compare the 2025 amounts by recipient</h2>
+  <p>The total reported paid for a recipient across rows booked in 2025 equals its award-round total for {equal} recipients. It is lower for {lower} and higher for {higher}. The differences give readers records to check. The totals alone cannot distinguish carryover, changes in an agreement, or payments still outside the capture.</p>
+  <p>Among rows for these recipients booked in 2025, CLP {number(totals2025.awardRecipientTotals.paidByLastRecordedPaymentYearClp['2026'])} in reported paid amounts is attached to a last recorded payment date in 2026. The original payment records would be needed to date individual installments within each document.</p>
+  <form role="search" class="recipient-search" aria-label="Find an award recipient" data-recipient-search hidden>
+    <label for="recipient-query">Search by recipient name or tax ID</label>
+    <div><input id="recipient-query" type="search" autocomplete="off" maxlength="120" />
+      <button class="btn btn-ghost" type="reset">Clear</button></div>
+  </form>
+  <p data-recipient-status role="status">{recipients.length} recipients.</p>
+  <div class="table-wrap" role="region" aria-label="2025 totals by award recipient" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Recipient</th><th scope="col">Award rows</th><th scope="col">Award total (CLP)</th><th scope="col">2025 accruals (CLP)</th><th scope="col">2025 ledger reported paid (CLP)</th></tr></thead>
+      <tbody>{recipients.map(row => <tr data-recipient-row data-query={row.entity + ' ' + row.rut}>
+        <th scope="row"><a href={'#recipient-' + row.rut}>{row.entity}</a><br /><small>{row.rut}</small></th>
+        <td>{number(row.awardCount)}</td><td>{number(row.awardClp)}</td>
+        <td>{number(row.accruedClp)}</td><td>{number(row.paidClp)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="rostros">Follow Fundación Rostros Nuevos</h2>
+  <p>The source uses RUT <strong>53226150-3</strong> on the 2025 awards and the ledger. In both 2024 and 2025, three groups of ledger records equal 40%, 30%, and 30% of the foundation’s award total for that year. The 2024 award rules specify that split. The 2025 ledger gives the three recorded document numbers and payment dates. Those amounts reconcile at foundation level and leave the allocation to each residence unknown. <a href={citations.rules2024}>Check the 2024 terms</a>. <a href={officialProvider('53226150-3')}>Open the foundation’s official ledger page</a>.</p>
+  <div class="table-wrap" role="region" aria-label="Foundation award totals and selected ledger document groups" tabindex="0">
+    <table class="data">
+      <thead><tr><th scope="col">Award year</th><th scope="col">Award total (CLP)</th><th scope="col">Ledger document</th><th scope="col">Ledger rows</th><th scope="col">Last recorded payment date</th><th scope="col">Reported paid (CLP)</th></tr></thead>
+      {rostrosReconciliation.map(year => <tbody>{year.recordGroups.map((group, index) => <tr>
+        {index === 0 && <><th scope="rowgroup" rowspan={year.recordGroups.length}>{year.period}</th>
+          <td rowspan={year.recordGroups.length}>{number(year.awardClp)}</td></>}
+        <th scope="row">{group.document}</th><td>{number(group.rows)}</td>
+        <td>{group.reportedPaymentDate}</td><td>{number(group.paidClp)}</td>
+      </tr>)}</tbody>)}
+    </table>
+  </div>
+  <p>In the 2025 foundation ledger, a separate document, <strong>{unlinked.document}</strong>, has a CLP {number(unlinked.accruedClp)} accrual, a reported paid amount of zero, and no payment date. Its connection to the award round remains unknown. The foundation’s accounts and the separate household care survey provide different views of finances and need. <a href={url(earlier)}>Read the foundation case and survey</a>.</p>
+
+  <h2 id="records">Inspect awards and ledger records</h2>
+  <p>The award rows open the source PDF at the page with the original folio. Ledger row numbers refer to positions in the pinned JSON response, starting at one. Document numbers can repeat. A budget location is the place recorded on the ledger, so service locations require other sources.</p>
+  <div class="recipient-records">
+    {recipients.map(recipient => <details class="card" id={'recipient-' + recipient.rut}>
+      <summary><span class="identity-label"><SiteSymbol name="building" size="inline" />{recipient.entity}</span> <span class="identity-code">{recipient.rut}</span></summary>
+      <div class="table-wrap" role="region" aria-label={'Award rows for ' + recipient.entity} tabindex="0">
+        <table class="data">
+          <thead><tr><th scope="col">2025 award folio</th><th scope="col">Residence in award</th><th scope="col">Awarded (CLP)</th></tr></thead>
+          <tbody>{awardsFor(recipient.rut).map(award => <tr><th scope="row"><a href={citations.awards + '#page=' + award.pdfPage}>{award.folio}</a></th><td>{award.residence}</td><td>{number(award.awardClp)}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <div class="table-wrap" role="region" aria-label={'Ledger rows for ' + recipient.entity} tabindex="0">
+        <table class="data">
+          <thead><tr><th scope="col">Booked period</th><th scope="col">Document</th><th scope="col">Document date</th><th scope="col">Last recorded payment date</th><th scope="col">Accrued (CLP)</th><th scope="col">Reported paid (CLP)</th><th scope="col">Budget location</th><th scope="col">Source row</th></tr></thead>
+          <tbody>{ledgerFor(recipient.rut).map(record => <tr><th scope="row">{record.period}-{String(record.bookMonth).padStart(2, '0')}</th>
+            <td>{record.document}</td><td>{record.documentDate}</td><td>{record.reportedPaymentDate ?? 'Unreported'}</td>
+            <td>{number(record.accruedClp)}</td><td>{number(record.paidClp)}</td>
+            <td>{record.budgetLocation ?? 'Unreported'}</td><td><a href={sourceOf(record.source).url}>{record.sourceRow}</a></td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+      <p><a href={officialProvider(recipient.rut)}>Open this recipient in the official ledger</a></p>
+    </details>)}
+  </div>
+
+  <h2 id="downloads">Download the source-linked records</h2>
+  <ul class="download-list" role="list">{downloads.map(([file,label,symbol]) => <li>
+    <a class="identity-label" href={url(dataPath + file)} download><SiteSymbol name={symbol} size="inline" />{label}</a>
+  </li>)}</ul>
+  <p>The Presupuesto Abierto data and this adaptation of those data use <a href={citations.license}>CC BY-SA 4.0</a>. Credit to {citations.publisher} <a href={citations.portal}>Presupuesto Abierto</a>. The award, program and survey figures link to their own sources. <a href={citations.dataTerms}>Read the ledger data terms</a>.</p>
+</Entry>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-recipient-search]');
+  const status = document.querySelector('[data-recipient-status]');
+  const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>('[data-recipient-row]'));
+  const normalize = (value: string) => value.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, '');
+  const input = document.querySelector<HTMLInputElement>('#recipient-query');
+  if (form && input && status) {
+    const update = () => {
+      const query = normalize(input.value);
+      let count = 0;
+      for (const row of rows) {
+        row.hidden = !normalize(row.dataset.query ?? '').includes(query);
+        if (!row.hidden) count++;
+      }
+      status.textContent = count === 0 ? 'No matching recipients.' : `${count} ${count === 1 ? 'recipient' : 'recipients'}.`;
+    };
+    form.addEventListener('input', update);
+    form.addEventListener('submit', event => event.preventDefault());
+    form.addEventListener('reset', () => requestAnimationFrame(update));
+    update();
+    form.hidden = false;
+  }
+  function revealRecipient() {
+    const id = window.location.hash.slice(1);
+    if (!id.startsWith('recipient-')) return;
+    const destination = document.getElementById(id);
+    if (destination instanceof HTMLDetailsElement) destination.open = true;
+  }
+  window.addEventListener('hashchange', revealRecipient);
+  revealRecipient();
+</script>
+
+<style>
+  .data { min-width: 35rem; }
+  .regional-table .data { min-width: 47rem; }
+  :is(th, td) { overflow-wrap: anywhere; }
+  .recipient-search { margin-block: 1rem; }
+  .recipient-search div { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .35rem; }
+  .recipient-search input { flex: 1 1 13rem; max-width: 24rem; min-width: 0; }
+  .recipient-records { display: grid; gap: .65rem; }
+  .recipient-records summary { cursor: pointer; }
+  .recipient-records details:target { outline: 2px solid var(--focus); }
+  .download-list { list-style: none; padding-inline-start: 0; }
+</style>
