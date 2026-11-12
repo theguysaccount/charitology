@@ -385,7 +385,7 @@ python3 scripts/build-kenya-pbo-directory-coverage.py 2026-11-11 /path/to/pbora.
 
 The [western Kenya nutrition case](https://charitology.com/record/funding-flows/kenya-nutrition/) follows project `GB-CHC-299717-KY0002` from the grant manager to the UK charity and the Kenyan activity. An exact recipient organization and activity selects 12 manager rows from UK Aid Match II. Their original GBP amounts pair one to one with incoming funds in the UK file. One pair also shares a transaction date. The two charity files share the project period and participating organization references. The full Kenyan NGO number printed in Note 15 of the UK charity’s 2024 accounts gives the digits in the IATI organization reference. A link to a shortened PBORA directory number still needs a registry crosswalk. Their onward records align by reported quarter and date. Twelve amounts agree and one differs by GBP 0.11. Preserve the Kenyan record for Q10 under its literal code 3 despite the income wording in its reference.
 
-The project’s reported original committed budget, the two payment stages and each publisher’s expenditure are separate series. The 2015/16 food poverty estimates for Busia and Bungoma predate the project. They come from KNBS Annex Table B1 and supply geographic context for the project description. The files supply neither a county spending allocation nor a causal estimate. To extend the trace, seek payment settlement references, a county cost breakdown or a documented independent evaluation. The later Kenya affiliate and Africa Hub annual accounting notes should form a separate history with explicit local identifiers and no duplication of the consolidated group’s expenses.
+The project’s reported original committed budget, the two payment stages and each publisher’s expenditure are separate series. The 2015/16 food poverty estimates for Busia and Bungoma predate the project. They come from KNBS Annex Table B1 and supply geographic context for the project description. The files supply neither a county spending allocation nor a causal estimate. To extend the trace, seek payment settlement references, a county cost breakdown or a documented independent evaluation. The related annual accounting case preserves the broader time and reporting scope separately.
 
 Rebuild the fixed edition from the published fingerprints and exact URLs in the [data export](https://charitology.com/record/funding-flows/kenya-nutrition/data.json). Name the captures `manager.xml`, `uk.xml`, `kenya.xml`, `survey.pdf`, `FY24.pdf` and `project-page.html`. The manager capture is IATI’s D-Portal XML export of the publisher’s activity. The two charity XML files come directly from the publishers. The rebuild pins all six inputs and preserves activity-relative transaction positions. The three survey rates and standard errors are a visual transcription from PDF page 87 (printed page 85). The original files remain subject to their publisher terms. The projection excludes narrative, contact and personal fields.
 
@@ -394,6 +394,19 @@ python3 scripts/build-kenya-nutrition-trace.py /path/to/captures /path/to/rebuil
 cmp /path/to/rebuilt.json src/data/kenya-nutrition-trace.json
 npm run build
 node scripts/check-kenya-nutrition-trace.mjs
+```
+
+### Annual parent and subsidiary disclosures
+
+The [Ripple Effect Kenya accounts trace](https://charitology.com/record/funding-flows/ripple-effect-kenya-accounts/) transcribes related-party and subsidiary notes from six publisher PDFs for the UK parent, charity 299717. The locally registered Kenya affiliate has one three-month period in 2019 and six full years through June 2025. The separate Africa Hub has two full selected years. The parent’s grant, the subsidiary’s receivable, reimbursements outside project delivery, year-end balances, income and expenditure retain separate fields. They use GBP as printed in the UK report. The Kenya entities prepare accounts in Kenyan shillings. Preserve expense signs as printed and keep these entity values apart from consolidated group totals.
+
+The FY2021 grant values differ by GBP 40,045, with both amounts repeated in the FY2022 comparison. The balance and investment-income comparative also differ from the earlier report. The published notes leave the explanation open. The full Kenyan registration on the accounts supports the IATI identity link. The shortened PBORA references require a separate crosswalk. The notes cannot assign annual expenditure to the 2018–2021 project, a county or a participant. Project-level grants and expenditures remain in the separately bounded nutrition case.
+
+The [JSON export](https://charitology.com/record/funding-flows/ripple-effect-kenya-accounts/data.json) lists the exact publisher PDF, file hash, printed page and PDF page for each of the two notes. Recheck the transcription against those pages, then run the build and optional capture check with the six `FY20.pdf` through `FY25.pdf` files and `kenya-directory.html` using the pinned fingerprints. Source documents retain publisher terms. The projection contains only selected institutional facts.
+
+```sh
+npm run build
+node scripts/check-ripple-effect-kenya-accounts.mjs /path/to/captures
 ```
 
 ## Japan NPO Portal and reported finances

@@ -332,6 +332,14 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['scope', 'What the sources can answer', 'fileSearch'],
     ['trials', 'What randomized trials measured', 'flask'],
   ],
+  '/record/funding-flows/ripple-effect-kenya-accounts/': [
+    ['identities', 'Identify the organizations', 'chain'],
+    ['kenya-affiliate', 'Ripple Effect Kenya', 'seed'],
+    ['africa-hub', 'Ripple Effect Africa Hub', 'pin'],
+    ['differences', 'Where the notes disagree', 'compare'],
+    ['scope', 'What the accounts can establish', 'shield'],
+    ['downloads', 'Download the annual records', 'download'],
+  ],
   '/record/funding-flows/kenya-nutrition/': [
     ['identity', 'Organizations and projects', 'chain'],
     ['budget', 'UK budget', 'table'],

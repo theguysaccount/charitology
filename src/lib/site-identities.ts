@@ -199,6 +199,7 @@ export const sections: Section[] = [
     'funding-flows/us-schedule-i': 'table', 'funding-flows/iberia-hrsa': 'medical', 'funding-flows/ile-de-france-paid-grants': 'pin',
     'funding-flows/greater-manchester-home-from-hospital': 'heart', 'funding-flows/hokkaido-child-support': 'seed',
     'funding-flows/kenya-nutrition': 'food',
+    'funding-flows/ripple-effect-kenya-accounts': 'balance',
     'funding-flows/yes-i-do-alliance': 'network', 'gap-map': 'map', 'interventions': 'target',
     'journal': 'notes', 'lexicon': 'bars', 'methodology': 'checks', 'myths': 'eye', 'newsletter': 'mail', 'newsletter/edition-1': 'story',
     'open-datasets': 'table', 'podcast': 'headphones', 'podcast-and-newsletter': 'signal',
