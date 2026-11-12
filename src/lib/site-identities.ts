@@ -73,6 +73,7 @@ export const sections: Section[] = [
     'funding-flows/taiwan-new-resident-fund': 'grantSchedule',
     'funding-flows/chile-residential-care': 'house',
     'funding-flows/chile-residential-payments': 'bankOrder',
+    'funding-flows/chile-coanil-agreements': 'agreement',
     'funding-flows/yes-i-do-alliance': 'network', 'gap-map': 'map', 'interventions': 'target',
     'journal': 'notes', 'lexicon': 'bars', 'methodology': 'checks', 'myths': 'eye', 'newsletter': 'mail', 'newsletter/edition-1': 'story',
     'open-datasets': 'table', 'podcast': 'headphones', 'podcast-and-newsletter': 'signal',

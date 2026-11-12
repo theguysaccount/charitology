@@ -615,3 +615,20 @@ node scripts/check-chile-residential-payments.mjs
 ```
 
 To extend the trace, prioritize a stable link from ledger document numbers to signed agreement folios and actual residence locations. Use original payment-event records before allocating a ledger document’s amount across payment dates. A defensible program coverage rate also needs a current count of eligible people, beyond the broader household prevalence measure. For more Chile institutions, qualify the award source’s official RUTs before exposing transaction detail.
+
+### COANIL agreement reconciliation
+
+The [COANIL case](https://charitology.com/record/funding-flows/chile-coanil-agreements/) matches public donee registration 812 and RUT 70.267.000-4 to ten named awards. Resolution 1996-2025 and the later adaptation amendment match CLP 4,350,192,000 and CLP 182,850,000. The separate Glosa 7 agreement matches CLP 1,089,000,000. The three stages explain the CLP 5,622,042,000 of reported paid amounts across all 45 COANIL ledger rows booked in 2025. The seven budget commune subtotals match the original agreement’s installment allocations. The signed agreements establish approved sites and capacity.
+
+The 2026 renewal and separate Glosa grant have 31 ledger rows through September. The signed annex amounts correspond to the 636 document group. The approving resolution for that group remains a source gap. The third installment’s paid field differs across the recipient summary and government ledger. The case retains both clocks and does not claim a particular bank transaction. The recipient also publishes separate audited 2024–25 accounts. The donation workbook values cover one reporting regime and remain separate from audited donation income. [Agreement archive](https://coanil.cl/transparencia/transparencia-fundacion-coanil/otros-documentos/).
+
+The four downloads use the exact predecessor payment edition, the pinned agreement and financial captures, and the same pinned disclosure workbooks as the first Chile case. Signed agreement figures, statutory grants, receipt reports and account figures are editorial transcriptions with original source locations. The builder verifies source fingerprints, the ten award matches, three commune-level installment reconciliations and one-time use of each ledger row. It derives institutional donation totals from the original workbooks. Public records exclude individual details and street addresses.
+
+```sh
+python3 scripts/build-chile-coanil-agreements.py /path/to/coanil-captures /path/to/chile-workbooks /path/to/rebuilt
+diff -r public/data/funding-flows/chile-coanil-agreements /path/to/rebuilt
+npm run build
+node scripts/check-chile-coanil-agreements.mjs
+```
+
+Next, verify the signed 2026 approval and the original payment-event record that could resolve the date and paid-amount differences. Repeat agreement-backed joins for other recipients whose ledger totals differ from awards. Keep crosswalks and unallocated amounts reviewable.

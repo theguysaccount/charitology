@@ -95,6 +95,7 @@ const ledgerFor = (rut: string) => ledger.filter(row => row.rut === rut)
   <h2 id="compare">Compare the 2025 amounts by recipient</h2>
   <p>The total reported paid for a recipient across rows booked in 2025 equals its award-round total for {equal} recipients. It is lower for {lower} and higher for {higher}. The differences give readers records to check. The totals alone cannot distinguish carryover, changes in an agreement, or payments still outside the capture.</p>
   <p>Among rows for these recipients booked in 2025, CLP {number(totals2025.awardRecipientTotals.paidByLastRecordedPaymentYearClp['2026'])} in reported paid amounts is attached to a last recorded payment date in 2026. The original payment records would be needed to date individual installments within each document.</p>
+  <p><a class="identity-link" href={url('/record/funding-flows/chile-coanil-agreements/')}>Follow the signed COANIL agreements</a>. A documented amendment and separate grant explain the difference for this recipient.</p>
   <form role="search" class="recipient-search" aria-label="Find an award recipient" data-recipient-search hidden>
     <label for="recipient-query">Search by recipient name or tax ID</label>
     <div><input id="recipient-query" type="search" autocomplete="off" maxlength="120" />
