@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import https from "node:https";
 import { randomUUID } from "node:crypto";
-import { OBSERVATION_LIMITS, observationClone as clone, observationFreeze as freeze, observationObjectHash as hash,
+import { observationClone as clone, observationFreeze as freeze, observationObjectHash as hash,
   observationRawHash as sha, observationPrettyJson as pretty, strictObservationJson as json,
   canonicalObservationJson as canonical } from "../observation-canonical.mjs";
 import { PLAN_CLUSTER_DEFINITION as D, validatePlanClusterSourceDescriptor, parsePlanClusterCsv } from "./model.mjs";
@@ -19,9 +19,6 @@ const need=(ok,phase,reason)=>{if(!ok)throw failure(phase,reason);};
 const phases=Object.freeze(["metadata-before","hdx-resource-redirect","csv","metadata-after"]);
 const urls=Object.freeze([PLAN_CLUSTER_METADATA_URL,D.source.resourceUrl,PLAN_CLUSTER_S3_URL,PLAN_CLUSTER_METADATA_URL]);
 const caps=Object.freeze([524288,16384,1048576,524288]);
-const deadlineMilliseconds = OBSERVATION_LIMITS.requestDeadlineMs;
-const nanosecondsPerMillisecond = 1_000_000;
-const deadlineNanoseconds = deadlineMilliseconds * nanosecondsPerMillisecond;
 function plainDirectory(p){const s=fs.lstatSync(p);need(s.isDirectory()&&!s.isSymbolicLink(),"preflight","DIRECTORY");}
 function parents(p){let current=path.parse(p).root;for(const part of p.slice(current.length).split(path.sep).filter(Boolean)){current=path.join(current,part);plainDirectory(current);}}
 function exists(p){try{fs.lstatSync(p);return true;}catch(e){if(e.code==="ENOENT")return false;throw e;}}
@@ -93,17 +90,7 @@ function requestOnce(actualUrl,ordinal) {
       const body=Buffer.concat(chunks);chunks=[];
       resolve({bytes:body,target,fact:{phase,url:urls[ordinal],status:res.statusCode,mediaType:type,declaredLength,bytes,sha256:sha(body),startedAt,completedAt,elapsedNanoseconds,httpDate,etag,lastModified,settled:true}});
     };
-    const deadline = start + BigInt(deadlineNanoseconds);
-    const checkDeadline = () => {
-      const remaining = deadline - process.hrtime.bigint();
-      if (remaining <= 0n) {
-        refuse("DEADLINE");
-        return;
-      }
-      // A timer callback may arrive before the monotonic deadline.
-      timer = setTimeout(checkDeadline, Math.ceil(Number(remaining) / nanosecondsPerMillisecond));
-    };
-    timer = setTimeout(checkDeadline, deadlineMilliseconds);
+    timer=setTimeout(()=>refuse("DEADLINE"),45000);
     try {
       req=https.request(actualUrl,{method:"GET",agent:false,maxHeaderSize:16384,headers:{Accept:ordinal===2?"text/csv":ordinal===1?"*/*":"application/json","Accept-Encoding":"identity","User-Agent":"Charitology fixed observation capture/1"}},response=>{
         res=response;
@@ -111,7 +98,7 @@ function requestOnce(actualUrl,ordinal) {
         res.on("data",chunk=>{bytes+=chunk.byteLength;if(bytes>caps[ordinal]){refuse("BODY_CAP");return;}chunks.push(Buffer.from(chunk));});
         res.once("end",()=>{
           bodyEnded=true;completedAt=new Date().toISOString();elapsedNanoseconds=Number(process.hrtime.bigint()-start);
-          if(Date.parse(completedAt)<Date.parse(startedAt)||Date.parse(completedAt)-Date.parse(startedAt)>deadlineMilliseconds||elapsedNanoseconds>deadlineNanoseconds)refuse("CLOCK_OR_DEADLINE");
+          if(Date.parse(completedAt)<Date.parse(startedAt)||Date.parse(completedAt)-Date.parse(startedAt)>45000||elapsedNanoseconds>45000000000)refuse("CLOCK_OR_DEADLINE");
           if(declaredLength!==null&&declaredLength!==bytes)refuse("LENGTH");finish();
         });
         try {
