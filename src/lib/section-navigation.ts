@@ -447,6 +447,13 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['idf-search-heading', 'Find paid grants', 'lens'],
     ['coverage', 'Coverage and original data', 'archive'],
   ],
+  '/record/funding-flows/france-emmaus-solidarite/': [
+    ['identity', 'Association and filing history', 'chain'],
+    ['regional-grants', 'Regional awards and payments', 'bankOrder'],
+    ['annual-accounts', 'Four years of accounts', 'table'],
+    ['geography-and-need', 'Planned work and independent counts', 'pin'],
+    ['downloads', 'Download the linked records', 'download'],
+  ],
   '/record/funding-flows/us-schedule-i/': [
     ['us-grants-heading', 'Find grants by EIN', 'lens'],
     ['coverage', 'Coverage and original records', 'archive'],

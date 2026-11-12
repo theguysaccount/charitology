@@ -143,6 +143,7 @@ export const symbols = {
   thistle: 'M12 13v9m0-4c-4 0-7-2-8-6 4 0 7 2 8 4m0 3c4 0 7-2 8-6-4 0-7 2-8 4M7 8l1-3 2 1 2-4 2 4 2-1 1 3c0 3-2 5-5 5s-5-2-5-5Z',
   orchid: 'M12 15c-2-5-9-3-9-7 0-4 5-4 7-1-1-4 1-6 2-6s3 2 2 6c2-3 7-3 7 1 0 4-7 2-9 7Zm0 0v7m0-3 4-2',
   grantSchedule: 'M4 3h12l4 4v14H4zM16 3v5h4M7 10h10m-10 4h3m4 0h3m-10 4h3m4 0h3',
+  winterCoat: 'M9 3h6l1 3 4 2 2 10-4 1-1-6v8H7v-8l-1 6-4-1L4 8l4-2 1-3Zm0 0 3 5 3-5m-3 5v13m-3-6h1m4 0h1',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

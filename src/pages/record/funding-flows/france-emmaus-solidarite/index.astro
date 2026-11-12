@@ -1,0 +1,108 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import { url } from '../../../../lib/site';
+import edition from '../../../../../public/data/funding-flows/france-emmaus/edition.json';
+
+const title = 'Follow regional grants to Emmaüs Solidarité';
+const lookup = '/record/funding-flows/ile-de-france-paid-grants/';
+const dataPath = '/data/funding-flows/france-emmaus/';
+const { institution, matchTotals, matches, accounts, accountDiscrepancies, activity, need } = edition;
+const sourcesByFile: Record<string, { url: string }> = edition.sources;
+const source = (file: string, page?: number) => sourcesByFile[file].url + (page === undefined ? '' : '#page=' + page);
+const euros = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
+const count = (amount: number) => amount.toLocaleString('en-US');
+const reportSources = [
+  { title: 'Emmaüs Solidarité in the official enterprise directory', url: source('registry-directory') },
+  { title: 'Scope and licensing of the French association accounts API', url: source('publications-index') },
+  { title: 'Regional payment records and data definitions', url: edition.paymentSource.dataset },
+  { title: 'Original regional decisions', url: 'https://data.iledefrance.fr/explore/dataset/actes-administratifs/' },
+];
+const files = [
+  { name: 'edition.json', label: 'All records, source fingerprints and limits (JSON)', symbol: 'code' },
+  { name: 'regional-awards-and-payments.csv', label: 'Regional awards and reported payments (CSV)', symbol: 'bankOrder' },
+  { name: 'annual-accounts.csv', label: 'Annual account measures and filing pages (CSV)', symbol: 'table' },
+  { name: 'reported-activity-and-need.csv', label: 'Reported activity and independent counts (CSV)', symbol: 'survey' },
+] as const;
+---
+
+<Entry title={title}
+  eyebrow="The Record · Funding flows · France"
+  summary="Follow five award decisions to reported regional payments. Read four years of filed accounts and compare the plans with separately reported service activity and independent counts in Paris."
+  identityCode={institution.siren}
+  filePath="src/pages/record/funding-flows/france-emmaus-solidarite/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:title}]}
+  sources={reportSources}>
+  <h2 id="identity">Check the association and its filing history</h2>
+  <p>The official directory lists {institution.name} as a declared association. Its legal-unit SIREN is <strong>{institution.siren}</strong>, its headquarters SIRET is <strong>{institution.headquartersSiret}</strong>, and its association register number is <strong>{institution.rna}</strong>. The payment edition names the headquarters SIRET. The national filing index uses the SIREN and the association register number. The two identifiers connect the institutional records. The work locations come from the project plans. <a href={source('registry-directory')}>Open the official directory</a> · <a href={source('idf-four-siren-dca.json')}>Check the captured filing query</a></p>
+  <p>France’s filing index covers organizations required to publish accounts under its filing rules. This case follows one association. It does not estimate the coverage of the national association register. <a href={source('publications-index')}>Read the filing scope</a></p>
+
+  <h2 id="regional-grants">Match award decisions to reported payments</h2>
+  <p>All {matches.length} rows for this SIREN in the retained regional edition match an original decision and dossier. The five approved maximums total <strong>{euros.format(matchTotals.awardCents / 100)}</strong>. The five reported payments total <strong>{euros.format(matchTotals.paidCents / 100)}</strong>. The payment file covers the 2024 and 2025 budget years. The difference between these totals does not establish how much is still due.</p>
+  <p><a class="identity-link" href={url(lookup) + '#q=' + institution.siren}>Search the original payment edition for {institution.siren}</a></p>
+  <div class="table-wrap" role="region" aria-label="Matched regional award decisions and payments" tabindex="0">
+    <table class="data wide-records">
+      <caption>Five awards and the five corresponding rows in the retained payment edition</caption>
+      <thead><tr><th scope="col">Dossier and project</th><th scope="col">Approved maximum</th><th scope="col">Reported payment</th><th scope="col">Work in the approved plan</th></tr></thead>
+      <tbody>{matches.map(row => <tr id={row.dossier} data-dossier={row.dossier}>
+        <th scope="row"><a href={source(row.awardFile, row.awardPage)}>{row.dossier} · {row.decision}</a><br />{row.project}</th>
+        <td>{euros.format(row.awardCents / 100)}</td>
+        <td>{euros.format(row.paidCents / 100)}<br /><time datetime={row.paymentDate}>{row.paymentDate}</time><br />Budget year {row.budgetYear}<br />Source record {row.sourceRecord}</td>
+        <td>{row.plannedGeography}<br />{row.plannedStart} to {row.plannedEnd}<br />{row.plannedWork}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The match uses the original decision number and the exact EX dossier token. The regional payment label for <a href="#EX072597">EX072597</a> contains extra text. The download retains the full label. The grants cover different services and periods, and the payment records do not establish actual project spending, delivery or the final amount paid under each decision.</p>
+
+  <h2 id="annual-accounts">Read four years of filed accounts</h2>
+  <p>Each year uses its own annual filing. The totals below are in nominal euros. Public support and operating grants are an association-wide income line. The annual filings do not link that line to individual regional payment rows.</p>
+  <div class="table-wrap" role="region" aria-label="Four years of filed annual accounts" tabindex="0">
+    <table class="data wide-records">
+      <caption>Association-wide account figures (EUR)</caption>
+      <thead><tr><th scope="col">Fiscal year and filing</th><th scope="col">Total assets</th><th scope="col">Total income</th><th scope="col">Total expenses</th><th scope="col">Public support and operating grants</th><th scope="col">Reported surplus</th></tr></thead>
+      <tbody>{accounts.map(row => <tr data-financial-period={row.periodEnd}>
+        <th scope="row">{row.year}<br /><a href={source(row.file, row.totalsPage)}>Published {row.published}</a></th>
+        <td><a href={source(row.file, row.assetsPage)}>{count(row.assets)}</a></td><td>{count(row.totalIncome)}</td><td>{count(row.totalExpenses)}</td>
+        <td><a href={source(row.file, row.operationsPage)}>{count(row.publicSupport)}</a></td><td>{count(row.reportedSurplus)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>The 2025 accounting note says the new presentation moves a share of investment grants from exceptional income into public support and operating grants. Read that change before comparing the operating line across years. The exports keep in-kind contributions and their volunteer component separate from income and expenses. <a href={source('317236248_31122025.pdf', 15)}>Read the accounting note</a></p>
+  <details>
+    <summary>See where the printed account figures differ</summary>
+    <p>Subtracting total expenses from total income gives one euro more than the printed surplus in 2023 and 2024. The table keeps the published surplus.</p>
+    <ul role="list">
+      {accountDiscrepancies.map(row => <li data-list-symbol="compare">
+        <strong>{row.periodEnd.slice(0, 4)} current result before tax.</strong>
+        {row.observations.map(item => <span> <a href={source(item.file, item.page)}>{count(item.printedEur)} EUR in the {item.file.slice(-8, -4)} filing</a>.</span>)}
+        {'computedFromPrintedOperatingAndFinancialResultsEur' in row && <span> The displayed operating and financial results add to {count(row.computedFromPrintedOperatingAndFinancialResultsEur)} EUR.</span>}
+      </li>)}
+    </ul>
+    <p>The comparison leaves those subtotals unresolved. They are separate from the published surplus and its arithmetic check.</p>
+  </details>
+
+  <h2 id="geography-and-need">Compare planned work with independently counted need</h2>
+  <p>The two cold-weather decisions identify Paris as their main area and also name Hauts-de-Seine, Seine-Saint-Denis, Val-de-Marne and Essonne. The Paris counts in January 2025 and January 2026 each fall within one of the two planned periods. The January 2024 count predates both. Each count covers people found without accommodation on one night. The Paris counts exclude people already in shelter, including emergency cold-weather placements. The metropolitan counts cover different sets of participating municipalities. None of these figures measures how many people received supplies. <a href={source('apur-paris-2025.pdf', 6)}>Read the 2025 count method</a> · <a href={source('apur-paris-2026.pdf', 8)}>Read the 2026 coverage</a></p>
+  <div class="table-wrap" role="region" aria-label="Independent counts by night and geography" tabindex="0">
+    <table class="data">
+      <caption>People found without accommodation during the separate one-night counts</caption>
+      <thead><tr><th scope="col">Night</th><th scope="col">Count area</th><th scope="col">People counted</th></tr></thead>
+      <tbody>{need.map(row => <tr data-need-date={row.nightStart}>
+        <th scope="row">{row.nightStart} to {row.nightEnd}</th><td>{row.geography}</td>
+        <td><a href={source(row.file, row.page)}>{count(row.peopleCounted)}</a></td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>Emmaüs Solidarité reports that its selected shelter, supported housing and skills-center services supported <a href={source(activity[0].file, activity[0].page)}>{count(activity[0].peopleSupportedDaily)} people daily in 2024</a> and <a href={source(activity[1].file, activity[1].page)}>{count(activity[1].peopleSupportedDaily)} in 2025</a>. These are association-reported activity measures. Service labels differ across the two editions. They do not identify services funded by these five grants or measure changes in housing. The planned work and the one-night counts provide geographic context with separate denominators.</p>
+
+  <h2 id="downloads">Download the linked records</h2>
+  <p>The download identifies the publisher and source version for each row. The regional payment data is adapted from Région Île-de-France under <a href={edition.paymentSource.license}>France’s Open Licence 2.0</a>. The case uses selected institutional figures from the original filings and reports. Open those originals to inspect the surrounding context.</p>
+  <ul role="list">
+    {files.map(file => <li><a href={url(dataPath + file.name)} download><SiteSymbol name={file.symbol} size="inline" /> {file.label}</a></li>)}
+  </ul>
+  <p>To suggest a correction, include the filing page, dossier or source row and explain which figure should change. <a href={url('/record/charity-index/coverage/')}>Check the Index coverage</a>.</p>
+</Entry>
+
+<style>
+  .wide-records { min-inline-size: 42rem; }
+</style>

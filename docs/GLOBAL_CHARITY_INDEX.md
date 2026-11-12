@@ -632,3 +632,21 @@ node scripts/check-chile-coanil-agreements.mjs
 ```
 
 Next, verify the signed 2026 approval and the original payment-event record that could resolve the date and paid-amount differences. Repeat agreement-backed joins for other recipients whose ledger totals differ from awards. Keep crosswalks and unallocated amounts reviewable.
+
+## France filing and regional grant trace
+
+The [Emmaüs Solidarité case](https://charitology.com/record/funding-flows/france-emmaus-solidarite/) connects SIREN 317236248, headquarters SIRET 31723624800017 and RNA W751033362. It retains the 2022–25 annual filings, including each filing date, revision and exact PDF page. The 2025 filing changed the presentation of investment grants. Two printed values for a 2024 pretax subtotal are shown separately. This is one institutional trace, with no national coverage claim.
+
+The case includes every payment row for this SIREN in the retained regional edition. Five decision-and-dossier matches cover EUR 182,750.00 in approved maximums and EUR 72,732.48 in reported payments in the 2024 and 2025 budget years. The paid total is limited to the captured rows. Each decision supplies planned geography. Separate APUR counts cover individual winter nights in Paris and different sets of participating metropolitan municipalities. Those figures do not measure delivery or an effect of a grant. Two activity figures come from the association’s annual reports and are labeled separately.
+
+The [edition](../public/data/funding-flows/france-emmaus/edition.json) lists exact source fingerprints and publisher URLs. The accounts, decisions and reports use editorial transcriptions from their original pages. The five payment rows are selected from the pinned regional snapshot by legal unit, decision, dossier token and original record position. The verifier checks the source captures and independently matches the registry and filing API identifiers. It does not OCR the PDFs. Keep the originals outside the repository and verify the rendered tables before changing a transcription.
+
+```sh
+node scripts/build-france-emmaus.mjs --verify-captures /path/to/captured-inputs
+node scripts/build-france-emmaus.mjs --write /path/to/rebuild
+diff -r public/data/funding-flows/france-emmaus /path/to/rebuild
+npm run build
+node scripts/build-france-emmaus.mjs --check
+```
+
+Next qualify a dated DILA filing index with revision coverage and a matching SIREN population from the official register. Measure which institutions and fiscal periods can be joined, and preserve missing or ambiguous RNA identifiers. For money movement, prioritize a second exact grant trace and signed expenditure or disbursement records that carry a dossier ID. Keep approval, payments, accounting recognition, delivery and independently measured need distinct.
