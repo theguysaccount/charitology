@@ -1,3 +1,5 @@
+import type { SymbolName } from '../lib/site-symbols';
+
 export interface FundraisingSource {
   review: 'draft';
   id: string;
@@ -8,6 +10,8 @@ export interface FundraisingSource {
   summary: string;
   limits: string;
 }
+export type FundraisingNote = readonly [text: string, symbol: SymbolName];
+
 export interface FundraisingMethod {
   review: 'draft';
   id: string;
@@ -15,13 +19,13 @@ export interface FundraisingMethod {
   summary: string;
   goal: string;
   fit: string;
-  costs: readonly string[];
-  preflight: readonly string[];
-  steps: readonly string[];
-  measure: readonly string[];
+  costs: readonly FundraisingNote[];
+  preflight: readonly FundraisingNote[];
+  steps: readonly FundraisingNote[];
+  measure: readonly FundraisingNote[];
   experiment: string;
-  followup: readonly string[];
-  pitfalls: readonly string[];
+  followup: readonly FundraisingNote[];
+  pitfalls: readonly FundraisingNote[];
   sourceIds: readonly string[];
   osModules: readonly string[];
 }

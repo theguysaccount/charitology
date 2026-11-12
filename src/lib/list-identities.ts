@@ -84,6 +84,26 @@ export const comparisonSymbols = {
   causes: 'atlas', conditions: 'lens',
 } as const satisfies Record<string, SymbolName>;
 
+export const compassDimensionSymbols: Record<string, SymbolName> = {
+  horizon: 'hourglass', circle: 'leafPair', reach: 'pin', certainty: 'flask', depth: 'layers',
+};
+
+// These are presentation identities for field labels. They stay out of exports and source records.
+export const referenceFieldSymbols: Readonly<Record<string, SymbolName>> = {
+  'Also called': 'dialogue', 'System conditions': 'lens', 'Depth hypothesis': 'layers',
+  'Cause areas': comparisonSymbols.causes, 'Classification note': 'notes',
+  'Financial observation coverage': 'survey',
+  Depth: comparisonSymbols.depth, 'Evidence grade': comparisonSymbols.evidence,
+  Mechanism: comparisonSymbols.mechanism, 'Time to effect': comparisonSymbols.timeToEffect,
+  Durability: comparisonSymbols.durability, Feedback: comparisonSymbols.feedback,
+  Agency: comparisonSymbols.agency, 'Cost estimate': comparisonSymbols.cost, 'Estimate context': 'notes',
+  'Recorded result': 'target', Place: 'pin', Period: 'calendar', 'Lessons stated in the entry': 'book',
+  'Debate status': 'signal', 'Positions covered': 'people', 'Positions in this entry': 'dialogue',
+  'Cruxes that could change minds': 'fork', 'Tradition covered': 'candle', 'Origin described': 'history',
+  'Practice described': 'hands', 'Interpretive lens': 'eye', 'Editorial verdict': 'scale',
+  'Related system conditions': 'lens',
+};
+
 export const networkSymbols: Record<string, SymbolName> = {
   'ambitious-impact': 'compass', 'd-prize': 'trophy', 'echoing-green': 'seed', 'fast-forward': 'bolt',
   'school-for-social-entrepreneurs': 'school', unltd: 'spark', acevo: 'personCheck',
