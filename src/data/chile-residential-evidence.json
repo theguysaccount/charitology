@@ -1,0 +1,242 @@
+{
+  "checkedAt": "2026-11-12",
+  "currency": "CLP",
+  "institution": {
+    "name": "Fundación Rostros Nuevos",
+    "rpd": "137",
+    "rut": "53226150-3"
+  },
+  "register": {
+    "snapshotEntries": 1441,
+    "registered": 1282,
+    "removed": 159
+  },
+  "awards": [
+    {
+      "year": 2024,
+      "sourcePage": 5,
+      "record": "11-1",
+      "name": "Centro de Acogida Residencial San Francisco",
+      "region": "Metropolitana de Santiago",
+      "amount": 262626000,
+      "regularCare": null,
+      "correspondingAward": null
+    },
+    {
+      "year": 2024,
+      "sourcePage": 5,
+      "record": "11-2",
+      "name": "Residencia Protegida Padre Tadeo",
+      "region": "Metropolitana de Santiago",
+      "amount": 12506000,
+      "regularCare": null,
+      "correspondingAward": "110083"
+    },
+    {
+      "year": 2024,
+      "sourcePage": 5,
+      "record": "11-3",
+      "name": "Centro de Acogida Residencial Estación Central",
+      "region": "Metropolitana de Santiago",
+      "amount": 37518000,
+      "regularCare": null,
+      "correspondingAward": null
+    },
+    {
+      "year": 2024,
+      "sourcePage": 5,
+      "record": "11-4",
+      "name": "Centro Protegida El Salto",
+      "region": "Metropolitana de Santiago",
+      "amount": 25012000,
+      "regularCare": null,
+      "correspondingAward": "110066"
+    },
+    {
+      "year": 2024,
+      "sourcePage": 5,
+      "record": "11-5",
+      "name": "Centro de Acogida Residencial San Luis Gonzaga",
+      "region": "Metropolitana de Santiago",
+      "amount": 312598000,
+      "regularCare": null,
+      "correspondingAward": "110084"
+    },
+    {
+      "year": 2025,
+      "sourcePage": 2,
+      "record": "110066",
+      "name": "Residencia Protegida El Salto",
+      "region": null,
+      "amount": 28248000,
+      "regularCare": 2,
+      "correspondingAward": null
+    },
+    {
+      "year": 2025,
+      "sourcePage": 2,
+      "record": "110083",
+      "name": "Residencia Protegida Padre Tadeo",
+      "region": null,
+      "amount": 28248000,
+      "regularCare": 2,
+      "correspondingAward": null
+    },
+    {
+      "year": 2025,
+      "sourcePage": 2,
+      "record": "110084",
+      "name": "Residencia San Luis Gonzaga",
+      "region": null,
+      "amount": 353100000,
+      "regularCare": 25,
+      "correspondingAward": null
+    }
+  ],
+  "accounts": [
+    {
+      "year": 2023,
+      "donationsIncome": 6640,
+      "governmentAgreementIncome": 1888854,
+      "socialCareExpenses": -4243482,
+      "report": 2024,
+      "page": 7
+    },
+    {
+      "year": 2024,
+      "donationsIncome": 3270,
+      "governmentAgreementIncome": 2194613,
+      "socialCareExpenses": -4656948,
+      "report": 2024,
+      "page": 7,
+      "confirmedIn": 2025
+    },
+    {
+      "year": 2025,
+      "donationsIncome": 1692,
+      "governmentAgreementIncome": 2143707,
+      "socialCareExpenses": -4277254,
+      "report": 2025,
+      "page": 7
+    }
+  ],
+  "householdSurvey": {
+    "year": 2024,
+    "page": 25,
+    "figure": 11,
+    "area": "Chile",
+    "group": "People with severe dependence in surveyed households",
+    "noCaregiverPercent": 5.3,
+    "onlyHouseholdCaregiverPercent": 58.6
+  },
+  "monitoring": {
+    "year": 2025,
+    "programId": "70148",
+    "nationalBeneficiaries": 1189,
+    "metropolitanBeneficiaries": 811,
+    "publishedTarget": 1147,
+    "targetSourceYear": 2018,
+    "priorYearBeneficiaries": 1166,
+    "priorYearManagementReportBeneficiaries": 1121
+  },
+  "sources": {
+    "doneeRegister": {
+      "title": "Law 21.440 public donee register",
+      "publisher": "Chile Ministry of Finance",
+      "url": "https://donacionesley21440.gob.cl/registro-publico",
+      "file": "public-donee-register.html",
+      "sha256": "5c05da4f84600d6ae6b360b1f18445d5bd2474c66391acc9a35df0d9a66440be"
+    },
+    "doneeDetail": {
+      "title": "Fundación Rostros Nuevos, registration 137",
+      "publisher": "Chile Ministry of Finance",
+      "url": "https://donacionesley21440.gob.cl/registro-publico?n=137"
+    },
+    "civilRegistry": {
+      "title": "Civil Registry nonprofit legal persons catalog",
+      "publisher": "Chile Civil Registry",
+      "url": "https://datos.gob.cl/dataset/personas-juridicas-sin-fines-de-lucro"
+    },
+    "disclosures": {
+      "title": "Annual recipient donation disclosures",
+      "publisher": "Chile Ministry of Finance",
+      "url": "https://donacionesley21440.gob.cl/donaciones"
+    },
+    "guide": {
+      "title": "Annual reporting guide, pp. 4 and 25",
+      "publisher": "Chile Ministry of Finance",
+      "url": "https://donacionesley21440.gob.cl/guias/guia-reporte-anual",
+      "file": "annual-reporting-guide.pdf",
+      "sha256": "2e3631ae936728bef17149f0f70124c9626437b9b7e2619f1d571273aef74d8f"
+    },
+    "transferRegister": {
+      "title": "Central Register of State Collaborators, RUT 53.226.150-3",
+      "publisher": "Chile Ministry of Finance",
+      "url": "https://registros19862.gob.cl/institucion/53226150/transferencias",
+      "license": "https://creativecommons.org/licenses/by/3.0/cl/"
+    },
+    "transferTerms": {
+      "title": "Transfer register conditions of use",
+      "publisher": "Chile Ministry of Finance",
+      "url": "https://registros19862.gob.cl/informacion-de-apoyo/condiciones-de-uso"
+    },
+    "awards2024": {
+      "title": "SENADIS resolution 291/2024",
+      "publisher": "Chile National Disability Service",
+      "url": "https://www.senadis.gob.cl/descarga/i/7479",
+      "file": "senadis-291-2024.pdf",
+      "sha256": "46b8d3bf098cb640755707dacd82fa723befc54d9cacdadeb06b305d4cf1a4f9"
+    },
+    "awards2025": {
+      "title": "SENADIS resolution 763/2025",
+      "publisher": "Chile National Disability Service",
+      "url": "https://www.senadis.gob.cl/descarga/i/7820",
+      "file": "senadis-763-2025.pdf",
+      "sha256": "e07f94f90da008bff8024c6cec54094e048e3496ca0b28fe88ee497930a9918e"
+    },
+    "awardTerms": {
+      "title": "Residential program call clarifications",
+      "publisher": "Chile National Disability Service",
+      "url": "https://www.senadis.gob.cl/descarga/i/7763"
+    },
+    "accounts2024": {
+      "title": "2024 and 2023 consolidated financial statements",
+      "publisher": "Fundación Rostros Nuevos y Filial",
+      "url": "https://www.hogardecristo.cl/wp-content/uploads/2025/03/Fundacion-Rostros-Nuevos-y-Filial-emision.pdf",
+      "file": "rostros-nuevos-2024.pdf",
+      "sha256": "d40982fc907bff69ef3acf25ddf16ef34416ed98e8916edc633a95986d7eaea9"
+    },
+    "accounts2025": {
+      "title": "2025 and 2024 consolidated financial statements",
+      "publisher": "Fundación Rostros Nuevos y Filial",
+      "url": "https://www.hogardecristo.cl/wp-content/uploads/2026/05/Fundacion-Rostros-Nuevos-y-Filial-emision.pdf",
+      "file": "rostros-nuevos-2025.pdf",
+      "sha256": "d4ca027cb94c8bc09789593e31d6209491d143bfb15585ec0646525c6940d0c9"
+    },
+    "householdSurvey": {
+      "title": "Casen 2024 dependence and care report",
+      "publisher": "Chile Ministry of Social Development and Family",
+      "url": "https://observatorio.ministeriodesarrollosocial.gob.cl/storage/docs/casen/2024/Dependencia_y_Cuidados_Casen2024.pdf",
+      "file": "casen-2024-dependence.pdf",
+      "sha256": "30ffaaee44c69081bde8a8fa1fc11c7acfe4c8a6b3ba120f387a10c654c4194e"
+    },
+    "monitoring": {
+      "title": "2025 program monitoring report, BIPS 70148",
+      "publisher": "Chile Ministry of Social Development and Family",
+      "url": "https://bips.ministeriodesarrollosocial.gob.cl/docs/informes/2026/70148%20-%20Modelos%20residenciales%20para%20adultos%20en%20situaci%C3%B3n%20de%20discapacidad.html",
+      "file": "bips-70148-monitoring-2025.html",
+      "sha256": "600569308b889f0f0a135f5f3a1b1a36faf383f7f35e655e43ac9497ac6aa7d6"
+    },
+    "management": {
+      "title": "SENADIS 2024 management report",
+      "publisher": "Chile National Disability Service",
+      "url": "https://www.senadis.gob.cl/descarga/i/8084",
+      "file": "senadis-2024-management-report.pdf",
+      "sha256": "7ddec3451366771e6cb12075f90f681fcb05ecc352e17d61016923b3a9cc9d63"
+    }
+  },
+  "awardRecordLocators": {
+    "2024": "Case keys use the source entity row 11 and the residence position within that group.",
+    "2025": "The source application folio is the record key."
+  }
+}

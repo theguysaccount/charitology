@@ -208,6 +208,14 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['audit-detail', 'Check the audit trail', 'match'],
     ['sources-and-data', 'Download sources and data', 'download'],
   ],
+  '/record/funding-flows/chile-residential-care/': [
+    ['donations', 'Read recipient reports', 'gift'],
+    ['transfers', 'Find municipal transfers', 'building'],
+    ['residence-awards', 'Compare residence awards', 'grantSchedule'],
+    ['accounts', 'Read consolidated accounts', 'balance'],
+    ['care-context', 'Read the care measures', 'survey'],
+    ['downloads', 'Download records and sources', 'download'],
+  ],
   '/record/funding-flows/taiwan-new-resident-fund/': [
     ['approval-and-execution', 'When one award appears in two reports', 'match'],
     ['projects', 'Find a project', 'lens'],
