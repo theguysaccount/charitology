@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import data from '../src/data/western-cape-transfers.json' with { type: 'json' };
+
+const [prior, later] = data.editions;
+const publicDir = new URL('../dist/record/funding-flows/western-cape-transfers/', import.meta.url);
+const sum = (rows, field) => [0, 1].map(index => rows.reduce((total, row) => total + row[field][index], 0));
+for (const edition of data.editions) {
+  const programs = Object.values(edition.programs);
+  assert.equal(programs.reduce((total, row) => total + row.rowCount, 0), edition.totalRows);
+  assert.equal(edition.gridCrossCheck.orderedRowsMatched, edition.totalRows);
+  assert.deepEqual(sum(programs, 'detailSums'), edition.detailSums);
+  assert.deepEqual(sum(programs, 'printedAmounts'), edition.printedGrandTotal);
+  assert.equal(edition.lastPaidPage + 1, edition.year === '2024/25' ? 15 : 16);
+  assert.equal(edition.selectedProject.category, '2.2');
+  assert.equal(edition.selectedProject.page, 1);
+}
+assert.deepEqual(data.editions.map(edition => edition.totalRows), [1092, 1104]);
+assert.deepEqual(prior.detailSums, [1031122569, 1031118569]);
+assert.deepEqual(prior.printedGrandTotal, [1031122567, 1031122567]);
+assert.deepEqual(later.detailSums, [1161881036, 1161879194]);
+assert.deepEqual(later.printedGrandTotal, later.detailSums);
+assert.deepEqual(prior.programs['2.3'].detailSums, [152325835, 152321835]);
+assert.deepEqual(prior.programs['3.5'].detailSums, [123514001, 123514001]);
+assert.equal(Object.keys(later.programs).length, 12);
+assert.equal('5.3' in later.programs, false);
+assert.deepEqual(data.editions.map(edition => edition.selectedProject.amounts), [[573340, 573340], [602007, 602007]]);
+assert.equal(data.recipient.npoRegistration, '082-581');
+assert.equal(data.census.population, 818398);
+assert.deepEqual(JSON.parse(readFileSync(new URL('data.json', publicDir), 'utf8')), data);
+const csv = readFileSync(new URL('programs.csv', publicDir), 'utf8');
+assert.equal(csv.trimEnd().split('\n').length, 26);
+assert.match(csv, /123514001,123514001,123513999,123513999,12,/);
+assert.match(csv, /133946842,133945000,133946842,133945000,13,/);
+const html = readFileSync(new URL('index.html', publicDir), 'utf8');
+assert.match(html, /data-site-symbol="building"/);
+assert.match(html, /ZAR 1,031,118,569/);
+assert.match(html, /ZAR 602,007/);
+assert.match(html, /818,398 Western Cape residents/);
+console.log('Western Cape: 2,196 detail rows reconciled to 25 program summaries, two separate editions and both exports.');

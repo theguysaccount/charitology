@@ -1,0 +1,100 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import SiteSymbol from '../../../../components/SiteSymbol.astro';
+import type { SymbolName } from '../../../../lib/site-identities';
+import { url } from '../../../../lib/site';
+import data from '../../../../data/western-cape-transfers.json';
+
+const title = 'Western Cape nonprofit transfers and reported spending';
+const route = '/record/funding-flows/western-cape-transfers/';
+const { editions, recipient, census, publisher } = data;
+const sources = [
+  ...editions.flatMap(edition => [
+    { title: edition.annex.title, url: edition.annex.url, publisher },
+    { title: edition.annual.title + ' · Statement of transfers', url: edition.annual.url + '#page=' + edition.annual.page, publisher },
+  ]),
+  { title: recipient.annual.title + ' · Note 8', url: recipient.annual.url + '#page=' + recipient.annual.page, publisher: recipient.name },
+  { title: 'Western Cape Children’s Services Directory · NPO 082-581', url: recipient.historicIdentitySource, publisher: 'South Africa Department of Social Development' },
+  { title: 'Umelwane home-based care', url: recipient.projectSource, publisher: recipient.name },
+  { title: census.title + ' · ' + census.locator, url: census.url, publisher: census.publisher },
+];
+const amount = (value: number) => 'ZAR ' + value.toLocaleString('en-US');
+const moneyColumns = ['Transferred', 'Reported spent'];
+const programSymbols: Record<string, SymbolName> = {
+  '2.2': 'heart', '2.3': 'medical', '2.5': 'hands', '3.2': 'house', '3.3': 'shield',
+  '3.4': 'book', '3.5': 'people', '4.2': 'target', '4.3': 'dialogue', '4.4': 'capsule',
+  '5.3': 'tools', '5.4': 'seed', '5.6': 'steps',
+};
+const disagreements = editions.flatMap(edition => Object.entries(edition.programs)
+  .filter(([, program]) => program.detailSums.some((value, index) => value !== program.printedAmounts[index]))
+  .map(([code, program]) => ({ year: edition.year, code, program, source: edition.annex.url + '#page=' + program.page })));
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows" summary="Compare what the province reported transferring and what it reported nonprofits spent across two fiscal years. Follow one home-care project to its source records." crumbs={[{ label: 'Record', href: '/record/' }, { label: 'Funding flows', href: '/record/funding-flows/' }, { label: 'Western Cape transfers' }]} sources={sources} filePath="src/pages/record/funding-flows/western-cape-transfers/index.astro">
+  <p>The Western Cape Department of Social Development publishes a list of nonprofit funding for each fiscal year. Its annex separates the amount transferred from the amount reported spent by the recipient. The same department publishes both columns. The following comparisons cover that department’s published lists from April 2024 through March 2026.</p>
+
+  <h2 id="transfers">What the department reported</h2>
+  <p>The first table in each annex lists transfers made within the fiscal year. A separate final table covers transfers budgeted for, some of which were unpaid. The row counts and sums here use the first table. One row in 2024/25 records zero, which stays in the count.</p>
+  <div class="table-wrap" role="region" aria-label="Western Cape transfers and spending totals" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Fiscal year</th><th scope="col">Rows in the paid table</th><th scope="col">Sum of transfer rows</th><th scope="col">Sum of reported spending rows</th><th scope="col">Printed annex grand totals</th></tr></thead>
+      <tbody>{editions.map(edition => <tr>
+        <th scope="row"><a href={edition.annex.url}>{edition.year}</a></th>
+        <td>{edition.totalRows.toLocaleString('en-US')}</td>
+        {edition.detailSums.map(value => <td>{amount(value)}</td>)}
+        <td>{edition.printedGrandTotal.map((value, index) => <span class="amount-line">{moneyColumns[index]} {amount(value)}</span>)}</td>
+      </tr>)}</tbody>
+    </table>
+  </div>
+  <p>Two extraction methods agreed on the page, program and amount columns for all 2,196 detail rows. A transferee label can repeat across programs and periods. Counts of names in the downloads describe the text in the annex, and legal-entity matches require registration evidence.</p>
+
+  <h2 id="programs">Transfers by program</h2>
+  {editions.map(edition => <details>
+    <summary>{edition.year} programs ({Object.keys(edition.programs).length})</summary>
+    <div class="table-wrap" role="region" aria-label={'Program amounts in ' + edition.year} tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Program</th><th scope="col">Rows</th><th scope="col">Transferred</th><th scope="col">Reported spent</th><th scope="col">Printed subtotal</th></tr></thead>
+        <tbody>{Object.entries(edition.programs).map(([code, program]) => <tr>
+          <th scope="row"><span class="program-name"><SiteSymbol name={programSymbols[code]} />{code} {program.label}</span></th>
+          <td>{program.rowCount}</td>
+          {program.detailSums.map(value => <td>{amount(value)}</td>)}
+          <td><a href={edition.annex.url + '#page=' + program.page}>PDF page {program.page}</a></td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </details>)}
+
+  <h2 id="differences">Where printed totals differ</h2>
+  <p>All 12 program subtotals in 2025/26 agree with their detail rows. Two programs account for the differences in 2024/25.</p>
+  <ul>
+    {disagreements.map(({ year, code, program, source }) => <li><a href={source}>{year}, {code} {program.label}</a> · {program.detailSums.map((value, index) => value !== program.printedAmounts[index] &&
+      <span class="amount-line">{moneyColumns[index]} rows sum to {amount(value)}. The annex prints {amount(program.printedAmounts[index])}.</span>)}</li>)}
+  </ul>
+  <p>The 2024/25 annex gives a separate adjustment note on <a href={editions[0].annex.url + '#page=5'}>page 5</a> and records recovery the following April. The 2025/26 annex’s total spending is lower than transfers by ZAR 1,842, with an April 2026 return recorded on <a href={editions[1].annex.url + '#page=12'}>page 12</a>. Both transactions stay in the reported fiscal period.</p>
+  <p>The department’s annual financial statements use thousands of rand. They print total actual nonprofit transfers of <a href={editions[0].annual.url + '#page=' + editions[0].annual.page}>1,031,123 thousand rand for 2024/25</a> and <a href={editions[1].annual.url + '#page=' + editions[1].annual.page}>1,161,880 thousand rand for 2025/26</a>. The annex amounts retain their original whole-rand units. The two reports leave a small difference between the 2025/26 annex total and the audited statement’s displayed amount.</p>
+
+  <h2 id="older-persons">One home-care project for older people</h2>
+  <p>Each annex has a line for the <a href={recipient.projectSource}>Umelwane Project</a> under the Older Persons program. Ikamva Labantu describes its home-based support for older people in Cape Town. Its audited statements and the <a href={recipient.historicIdentitySource}>historical national directory</a> both give the trust name and registration <code>{recipient.npoRegistration}</code>.</p>
+  <ul>
+    {editions.map(edition => <li><a href={edition.annex.url + '#page=' + edition.selectedProject.page}>{edition.year} Umelwane line</a> · {amount(edition.selectedProject.amounts[0])} transferred, {amount(edition.selectedProject.amounts[1])} reported spent.</li>)}
+  </ul>
+  <p>Note 8 of the <a href={recipient.annual.url + '#page=' + recipient.annual.page}>trust’s audited accounts</a> reports all designated local grants together, at {amount(recipient.localDesignatedGrants[0].amountZar)} for the year ending February 2025 and {amount(recipient.localDesignatedGrants[1].amountZar)} for the year ending February 2026. The annex uses March year-ends and a project line. Confirming this payment in the trust’s records would require grant-level entries for the matching period.</p>
+  <p><a href={census.url}>Statistics South Africa’s {census.locator}</a> counts {census.population.toLocaleString('en-US')} Western Cape residents aged 60 or older in Census 2022. That figure describes the whole province. The funded project serves part of Cape Town and the sources give no count of eligible residents across its catchment.</p>
+
+  <h2 id="downloads">Download the comparison</h2>
+  <ul>
+    <li><a href={url(route + 'data.json')} download="western-cape-transfers.json">Reconciliation, project records and sources (JSON)</a></li>
+    <li><a href={url(route + 'programs.csv')} download="western-cape-program-transfers.csv">25 fiscal-year program summaries (CSV)</a></li>
+  </ul>
+  <p>Original annexes and accounts remain available at the source links. Data from the Western Cape Department of Social Development, with summaries and source coordinates by Charitology. <a href={data.sourceTerms}>Western Cape Government copyright and reuse terms</a>.</p>
+</Entry>
+
+<style>
+  .table-wrap { overflow: auto; max-width: 100%; margin-block: 1.25rem; }
+  .table-wrap:focus-visible { outline-offset: 3px; }
+  table { width: 100%; min-width: 39rem; border-collapse: collapse; text-align: start; }
+  th, td { text-align: start; vertical-align: top; padding: .65rem .8rem; border-bottom: 1px solid var(--rule); }
+  .program-name { display: flex; align-items: start; gap: .45rem; }
+  .amount-line { display: block; }
+  details + details { margin-top: .8rem; }
+</style>
