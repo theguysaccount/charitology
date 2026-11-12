@@ -10,4 +10,4 @@ interface Props {
 const { href, code, label, symbol } = Astro.props;
 ---
 
-<a class="identity-link" href={href} data-source-symbol={symbol}><span class="identity-code">{code}</span>{label}</a>
+<a class="identity-link" href={href} data-source-symbol={symbol}><span class="identity-code">{code}</span>{' '}{label}</a>

@@ -113,7 +113,7 @@ import { url } from '../lib/site';
       const title = h('a', {
         class: 'r-title', href: hit.url, 'data-site-symbol': hit.symbol, 'data-site-tone': hit.tone,
       });
-      if (hit.code) title.append(h('span', { class: 'identity-code' }, hit.code));
+      if (hit.code) title.append(h('span', { class: 'identity-code' }, hit.code), ' ');
       title.append(hit.title);
       list.append(h('li', {}, h('a', { class: 'r-section', href: hit.sectionHref }, hit.section), title, excerpt));
     }
