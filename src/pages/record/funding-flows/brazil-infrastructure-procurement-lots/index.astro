@@ -3,6 +3,7 @@ import Entry from '../../../../layouts/Entry.astro';
 import SiteSymbol from '../../../../components/SiteSymbol.astro';
 import caseStudy from '../../../../data/funding-flows/brazil-joacaba-rehabilitation.json';
 import { procurementLotsEdition, procurementLotsRoute } from '../../../../lib/brazil-infrastructure-procurement-lots';
+import { joacabaOutpatientRoute } from '../../../../lib/brazil-joacaba-outpatient';
 import { procurementPaymentsRoute } from '../../../../lib/brazil-infrastructure-procurement-payments';
 import { count, data, money, projectPath } from '../../../../lib/brazil-project-execution';
 import { workLotsRoute } from '../../../../lib/brazil-infrastructure-work-lots';
@@ -127,6 +128,7 @@ const difference = contracts[1].cipiAmountCentsBRL - contracts[1].signedAmountCe
   <h3>Hearing-device commitments and service targets</h3>
   <p>Santa Catarina’s <a href={documents.initialHearingAllocation.url}>{hearingCommitments.initialStateDecision}</a> allocated {money(hearingCommitments.initialMonthlyCentsBRL)} per month from November 2024 for hearing devices and FM systems. The <a href={documents.hearingAward.url}>municipal award {hearingCommitments.municipalAward}</a> cites the same allocation and is worth {money(hearingCommitments.awardCentsBRL)}, equal to twelve months at the state rate. The state’s <a href={documents.hearingExpansion.url}>{hearingCommitments.expansionStateDecision}</a> records a {money(hearingCommitments.expansionMonthlyCentsBRL)} expansion for the May 2026 reference period.</p>
   <p>The <a href={documents.hearingTargets.url + '#page=3'}>signed service annex</a> sets a shared monthly target of {count(hearingCommitments.sharedMonthlyTargets.initialAssessmentsAndHearingAidReplacements)} initial assessments and hearing-aid replacements, and {count(hearingCommitments.sharedMonthlyTargets.followUps)} follow-ups across the {count(hearingCommitments.sharedMonthlyTargets.referralRegions)} referral regions. State cash disbursements and actual services delivered remain unverified.</p>
+  <p><a class="identity-link" href={url(joacabaOutpatientRoute)}>Explore approved outpatient and hearing-care records</a> for the same facility and see which reported procedure codes match the annex.</p>
 
   <h2 id="downloads">Download the joined records and case evidence</h2>
   <ul>
