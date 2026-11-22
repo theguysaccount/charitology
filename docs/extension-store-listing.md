@@ -1,16 +1,16 @@
 # Before You Give: store publication kit
 
-Updated October 27, 2026 for candidate 0.1.2 with AI assistance. This is submission material, not a claim that either store has accepted or listed the extension.
+Updated November 22, 2026 for candidate 0.1.3 (`https://charitology.com`) with AI assistance. This is submission material, not a claim that either store has accepted or listed the extension.
 
 ## Packages
 
 Run `npm ci`, then `npm run extension:zip` and `npm run check:extension`.
 
-- Chrome Web Store: `public/downloads/charitology-chrome.zip`. The Chrome manifest omits Firefox-specific settings.
-- Firefox Add-ons: `public/downloads/charitology-firefox.zip`. Firefox 140 or later; the manifest declares no data collection.
-- Developer install: `public/downloads/charitology-extension.zip`.
+- Chrome Web Store: `public/downloads/charitology-chrome.zip` (`30,902` bytes, SHA-256 `aa506c4570d7310f46692536a7252837cff99471550c2ffa3198c732decfdb3b`). The Chrome manifest omits Firefox-specific settings.
+- Firefox Add-ons: `public/downloads/charitology-firefox.zip` (`31,207` bytes, SHA-256 `3fccfcb1daafc463856b6986b16c2a9f030659f1f322d7ee93e77fcf7cc93391`). Firefox 140 or later; the manifest declares no data collection.
+- Developer install: `public/downloads/charitology-extension.zip` (`31,207` bytes, SHA-256 `3fccfcb1daafc463856b6986b16c2a9f030659f1f322d7ee93e77fcf7cc93391`).
 
-The [0.1.2 compatibility record](EXTENSION_COMPATIBILITY.md) and generated `public/downloads/extension-release.json` contain exact current source/package hashes and test limits. Python 3 standard-library ZIP checks are included.
+The [compatibility record](EXTENSION_COMPATIBILITY.md), `scripts/lib/extension-release-baselines.json` and generated `public/downloads/extension-release.json` contain exact current source/package hashes and test limits (`installedBrowserAcceptance: "unverified"`). Python 3 standard-library ZIP checks are included.
 
 The source is plain JavaScript, HTML, CSS and JSON. There is no bundling, minification, remote executable code or separate source build to reproduce. The package script copies the checklist, bakes the site address into the scripts and creates reproducible ZIP archives. `npm run check:extension` validates all three archives and tests that the popup passes the suggested name in a URL fragment, outside the HTTP request.
 
@@ -36,9 +36,9 @@ Detailed description:
 >
 > Charitology studies charity as a system. Depth describes where work acts; it never grades the good being done.
 
-Homepage: https://charitology.org/tools/browser-extension/
+Homepage: https://charitology.com/tools/browser-extension/
 
-Privacy: https://charitology.org/tools/browser-extension/privacy/
+Privacy: https://charitology.com/tools/browser-extension/privacy/
 
 Support: https://github.com/theguysaccount/charitology/issues/new?labels=extension
 
