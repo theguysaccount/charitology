@@ -17,7 +17,7 @@ The API is a set of JSON files generated with the site. There are no application
 
 ## License
 
-Charitology's schema and editorial material use [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Cite them as “Charitology (charitology.org)”. External data and documents retain their own source-specific terms, attribution and exceptions. Each response states its scope; the observations endpoints also retain individual source rights. This notice does not grant new rights in a publisher's data or financial document.
+Charitology's schema and editorial material use [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/). Cite them as “Charitology (charitology.com)”. External data and documents retain their own source-specific terms, attribution and exceptions. Each response states its scope; the observations endpoints also retain individual source rights. This notice does not grant new rights in a publisher's data or financial document.
 
 ## Why an API
 
