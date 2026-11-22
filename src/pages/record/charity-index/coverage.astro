@@ -18,6 +18,7 @@ import israel from '../../../../public/data/charity-registry/israel/manifest.jso
 import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
 import netherlands from '../../../../public/data/charity-registry/netherlands/manifest.json';
 import norway from '../../../../public/data/charity-registry/norway/manifest.json';
+import poland from '../../../../public/data/charity-registry/poland/manifest.json';
 import taiwan from '../../../../public/data/charity-registry/taiwan/manifest.json';
 import brazil from '../../../../public/data/charity-registry/brazil-osc/manifest.json';
 import mexico from '../../../../public/data/charity-financials/mx/manifest.json';
@@ -121,6 +122,14 @@ const panels = [
     manifest: '/data/charity-registry/norway/manifest.json',
   },
   {
+    id: 'poland', name: 'Poland', source: 'NIW-CRSO Public Benefit Organizations (OPP) and Ministry of Finance 1.5% PIT', route: '/record/charity-index/poland/',
+    label: 'Search Polish public benefit organizations', date: poland.capturedOn,
+    coverage: `${number(poland.counts.includedOrganizations)} distinct 10-digit KRS organizations across 2023–2025 NIW eligibility registers (${number(poland.counts.eligible2025)} eligible for 2025/2026; ${number(poland.counts.withValidatedNip)} with mod-11 validated NIPs).`,
+    history: 'A paired funding-flows edition covers four years of 1.5% PIT tax designations (2022–2025, paid 2023–2026) totaling PLN 8.32 billion across 10,395 funded OPPs with disclosed taxpayer counts.',
+    boundary: 'OPP status covers statutory 1.5%-eligible charities rather than all Polish associations. Top-10 concentration (45.69% in 2025) reflects sub-account (cel szczegółowy) intermediaries; taxpayer counts omit OPPs below 0.1k taxpayers.',
+    manifest: '/data/charity-registry/poland/manifest.json',
+  },
+  {
     id: 'scotland', name: 'Scotland', source: 'Scottish Charity Regulator register and annual returns', route: '/record/charity-financials/scotland/',
     label: 'Search Scottish registrations and returns', date: scotland.date,
     coverage: `${number(scotland.identities)} searchable registration numbers, including ${number(scotland.withReturns)} with an included return.`,
@@ -154,6 +163,7 @@ const sources = [
   { title: 'Registry of Associations and Public Benefit Companies (moj-amutot)', publisher: israel.publisher, url: israel.catalogue },
   { title: 'Open data — Algemeen Nut Beogende Instellingen (ANBI)', publisher: netherlands.publisher, url: netherlands.catalogue },
   { title: 'Frivillighetsregisteret dataset listing', publisher: norway.publisher, url: norway.catalogue },
+  { title: 'Wykaz OPP uprawnionych do 1,5% PIT za 2025 r.', publisher: 'NIW-CRSO (dane.gov.pl)', url: poland.catalogues.niw2025 },
   { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
@@ -214,6 +224,7 @@ const sources = [
   <p><a class="identity-link" href={url('/record/funding-flows/israel-foreign-state-donations/')}>Search Israel’s 2012–2026 foreign-state entity donation disclosures</a>. Follow 516 recipients across 13,436 quarterly disclosures totaling ILS 7.53 billion net, joined by exact nine-digit ID to the Amutot/PBC registry with published source anomalies kept transparent.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/netherlands-rijksfinancien/')}>Search Netherlands central-government nonprofit subsidies (2020–2024)</a>. Follow 17,868 KvK-identified foundations, associations and religious bodies across 16 budget chapters totaling EUR 15,540,383k net, with conservative ANBI name-candidate links kept distinct from statutory ID joins.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/norway-momskompensasjon/')}>Search Norway’s 2023–2025 VAT compensation grants (Momskompensasjon)</a>. Follow 28,011 distinct voluntary organizations, 264 central umbrella intermediaries and a krone-level reconciliation between 2025 approvals and two-tranche payouts.</p>
+  <p><a class="identity-link" href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Search Poland’s 2022–2025 1.5% personal income tax designations</a>. Follow 10,395 funded public benefit organizations totaling PLN 8.32 billion, inspect disclosed taxpayer counts and sub-account concentration, and reconcile NIW eligibility lists against Ministry of Finance disbursements.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/taiwan-new-resident-fund/')}>Compare Taiwan New Resident Development Fund reports</a>. Use the project ID to follow recurring approvals and see where the reports differ on execution figures or dates.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/heal-nepal/')}>Compare Heal Nepal funding in the UK and Nepal</a>. The case keeps pounds and rupees in their original records and shows where a single disbursement may correspond to two receipts.</p>
   <p><a href={url('/record/funding-flows/kenya-nutrition/')}>Follow nutrition funding from the UK to western Kenya</a>. The case links a UK charity registration to two reporting activities and a grant manager’s exact project reference. County food poverty comes from a separate survey.</p>

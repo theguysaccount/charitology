@@ -1,0 +1,476 @@
+{
+  "format": "charitology.poland-pit-1-5-percent.v1",
+  "capturedOn": "2026-11-22",
+  "publisher": "Ministerstwo Finansów & NIW-CRSO (Poland) via dane.gov.pl",
+  "catalogue": "https://dane.gov.pl/pl/dataset/171",
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "licenseName": "CC0 1.0 Universal (Public Domain Dedication)",
+  "sources": {
+    "niw2025": {
+      "filename": "niw-opp-eligible-2025-in-2026.xlsx",
+      "publisher": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/20137",
+      "url": "https://api.dane.gov.pl/media/resources/20261117/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2025_rok_w_2026_roku_11_2026.xlsx",
+      "bytes": 782406,
+      "sha256": "9eca10a1ab371acecd002a827b180a648bd00b043eab1e117c9b4df180fb4171"
+    },
+    "niw2024": {
+      "filename": "niw-opp-eligible-2024-in-2025.xlsx",
+      "publisher": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/4628",
+      "url": "https://api.dane.gov.pl/media/resources/20251210/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2024_rok_w_2025_roku_12_2025.xlsx",
+      "bytes": 758198,
+      "sha256": "6400ad7ba2d7bd276932d970db2e2807dc64e8ea3007d5bcb3274a2d113f03ea"
+    },
+    "niw2023": {
+      "filename": "niw-opp-eligible-2023-in-2024.xlsx",
+      "publisher": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/3564",
+      "url": "https://api.dane.gov.pl/media/resources/20241212/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2023_rok_w_2024_roku_12_2024_II.xlsx",
+      "bytes": 746809,
+      "sha256": "49ad58e26fbeed3947dec2ff96ccaf18916eebb7a3d7b548cff254e49801bbe7"
+    },
+    "mfAmt2025": {
+      "filename": "mf-pit15-amounts-2025-in-2026.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20260930/Wykaz_OPP_kt%C3%B3re_w_2026_r._otrzyma%C5%82y_15_nale%C5%BCnego_podatku_za_2025_r._L1Wdahu.xlsx",
+      "bytes": 555890,
+      "sha256": "c70eafd1aeab3caea3daf1376cefb03849455119f5ff339bd61d4b879649c919"
+    },
+    "mfTax2025": {
+      "filename": "mf-pit15-taxpayers-2025-in-2026.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20260930/Liczba_podatnik%C3%B3w_kt%C3%B3rzy_w_2026_r._przekazali_15_nale%C5%BCnego_podatku_za_2025_r._na_rzecz_poszczeg%C3%B3lnych_OPP.xlsx",
+      "bytes": 276467,
+      "sha256": "0165aa6b10f3c8230a952caa72966de1aa972a5e2b980c7b37290bffe307f0a2"
+    },
+    "mfAmt2024": {
+      "filename": "mf-pit15-amounts-2024-in-2025.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20250929/Za%C5%82%C4%85cznik_nr_2_-_wykaz_OPP.xlsx",
+      "bytes": 539608,
+      "sha256": "ecbb75979c1d58eda248b7d0f5a799fd125d577c6d0c7f1fbb5e7679adcaa471"
+    },
+    "mfTax2024": {
+      "filename": "mf-pit15-taxpayers-2024-in-2025.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20250929/Za%C5%82%C4%85cznik_nr_1_-_liczba_podatnik%C3%B3w_OPP.xlsx",
+      "bytes": 243996,
+      "sha256": "a70374bae52a67c45a311da847acf2c5d93a1c8ee5303cc3f9429d7a26b9829a"
+    },
+    "mfAmt2023": {
+      "filename": "mf-pit15-amounts-2023-in-2024.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20241003/Wykaz_zasilonych_OPP_za_2023.xlsx",
+      "bytes": 503224,
+      "sha256": "47d5f98c3b669feb3b959b76b0a073a5eb6bbbef5ef735a0d5d0b05c2e9caeac"
+    },
+    "mfTax2023": {
+      "filename": "mf-pit15-taxpayers-2023-in-2024.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20241003/Liczba_podatnik%C3%B3w_na_OPP_za_2023.xlsx",
+      "bytes": 236077,
+      "sha256": "dc72ee1824239e90bab9ec530abc230072fac86d8e57f7d44a1ee842d056a56f"
+    },
+    "mfAmt2022": {
+      "filename": "mf-pit15-amounts-2022-in-2023.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20231002/wykaz_opp_za_2022.xlsx",
+      "bytes": 433049,
+      "sha256": "5ef16bc71b4ed6890c4f5f21d58e312173661474111b82166a0663dfee097818"
+    },
+    "mfTax2022": {
+      "filename": "mf-pit15-taxpayers-2022-in-2023.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20231002/liczba_podatnik%C3%B3w_za_2022.xlsx",
+      "bytes": 216318,
+      "sha256": "8d6957dc7a7ef07a10706619227b871702df42d525e0c904c8ffc0a2cdc443bf"
+    }
+  },
+  "counts": {
+    "distinctFundedRecipients": 10395,
+    "fundedAllFourYears": 7645,
+    "total4yrGrosze": 831680100668,
+    "total2025Grosze": 260739886661,
+    "funded2025Orgs": 9450,
+    "eligible2025Orgs": 9591,
+    "eligible2025PaidZero": 167,
+    "paid2025NotInFinalNiw": 26,
+    "unmappedVoivodeship2025Grosze": 0,
+    "unmappedVoivodeship2025Orgs": 0
+  },
+  "byYear": [
+    {
+      "taxYear": 2022,
+      "payoutYear": 2023,
+      "eligibleNiwCount": null,
+      "niwUpdatedNote": null,
+      "fundedOrgCount": 9009,
+      "eligiblePaidZeroCount": null,
+      "paidNotInFinalNiwCount": null,
+      "totalGrosze": 153043029558,
+      "taxpayerSheetOrgCount": 4922,
+      "belowTaxpayerThresholdOrgCount": 4087,
+      "disclosedTaxpayersTenthsK": 126025,
+      "top10SharePct": 44.08,
+      "top100SharePct": 71.85
+    },
+    {
+      "taxYear": 2023,
+      "payoutYear": 2024,
+      "eligibleNiwCount": 9182,
+      "niwUpdatedNote": "zaktualizowany 12 grudnia 2024 roku",
+      "fundedOrgCount": 9072,
+      "eligiblePaidZeroCount": 149,
+      "paidNotInFinalNiwCount": 39,
+      "totalGrosze": 190024007391,
+      "taxpayerSheetOrgCount": 5271,
+      "belowTaxpayerThresholdOrgCount": 3801,
+      "disclosedTaxpayersTenthsK": 147496,
+      "top10SharePct": 44.56,
+      "top100SharePct": 72.32
+    },
+    {
+      "taxYear": 2024,
+      "payoutYear": 2025,
+      "eligibleNiwCount": 9316,
+      "niwUpdatedNote": "zaktualizowany 10 grudnia 2025 roku",
+      "fundedOrgCount": 9213,
+      "eligiblePaidZeroCount": 143,
+      "paidNotInFinalNiwCount": 40,
+      "totalGrosze": 227873177058,
+      "taxpayerSheetOrgCount": 5569,
+      "belowTaxpayerThresholdOrgCount": 3644,
+      "disclosedTaxpayersTenthsK": 162089,
+      "top10SharePct": 45.01,
+      "top100SharePct": 72.35
+    },
+    {
+      "taxYear": 2025,
+      "payoutYear": 2026,
+      "eligibleNiwCount": 9591,
+      "niwUpdatedNote": "zaktualizowany 16 listopada 2026 roku",
+      "fundedOrgCount": 9450,
+      "eligiblePaidZeroCount": 167,
+      "paidNotInFinalNiwCount": 26,
+      "totalGrosze": 260739886661,
+      "taxpayerSheetOrgCount": 5761,
+      "belowTaxpayerThresholdOrgCount": 3689,
+      "disclosedTaxpayersTenthsK": 171800,
+      "top10SharePct": 45.69,
+      "top100SharePct": 73.03
+    }
+  ],
+  "topRecipients2025": [
+    {
+      "krs": "0000037904",
+      "name": "FUNDACJA DZIECIOM \"ZDĄŻYĆ Z POMOCĄ\"",
+      "voivCode": "MZ",
+      "grosze2025": 40657790479,
+      "share2025Pct": 15.59,
+      "taxpayers2025TenthsK": 25145,
+      "avgPlnPerTaxpayer2025": 161.69,
+      "grosze2022": 28865281463,
+      "total4yrGrosze": 140488041821
+    },
+    {
+      "krs": "0000396361",
+      "name": "FUNDACJA SIEPOMAGA",
+      "voivCode": "WP",
+      "grosze2025": 25464670196,
+      "share2025Pct": 9.77,
+      "taxpayers2025TenthsK": 15614,
+      "avgPlnPerTaxpayer2025": 163.09,
+      "grosze2022": 9355891856,
+      "total4yrGrosze": 68364747739
+    },
+    {
+      "krs": "0000270809",
+      "name": "AVALON - BEZPOŚREDNIA POMOC NIEPEŁNOSPRAWNYM",
+      "voivCode": "MZ",
+      "grosze2025": 12136903306,
+      "share2025Pct": 4.65,
+      "taxpayers2025TenthsK": 7154,
+      "avgPlnPerTaxpayer2025": 169.65,
+      "grosze2022": 7979724539,
+      "total4yrGrosze": 40474418834
+    },
+    {
+      "krs": "0000387207",
+      "name": "FUNDACJA \"SERCA DLA MALUSZKA\"",
+      "voivCode": "SL",
+      "grosze2025": 11553571900,
+      "share2025Pct": 4.43,
+      "taxpayers2025TenthsK": 7743,
+      "avgPlnPerTaxpayer2025": 149.21,
+      "grosze2022": 5001558463,
+      "total4yrGrosze": 33176614521
+    },
+    {
+      "krs": "0000186434",
+      "name": "FUNDACJA POMOCY OSOBOM NIEPEŁNOSPRAWNYM \"SŁONECZKO\"",
+      "voivCode": "WP",
+      "grosze2025": 9421167660,
+      "share2025Pct": 3.61,
+      "taxpayers2025TenthsK": 6136,
+      "avgPlnPerTaxpayer2025": 153.54,
+      "grosze2022": 6595677832,
+      "total4yrGrosze": 32857436016
+    },
+    {
+      "krs": "0000270261",
+      "name": "FUNDACJA STUDENCKA \"MŁODZI - MŁODYM\"",
+      "voivCode": "SL",
+      "grosze2025": 7815632150,
+      "share2025Pct": 3.0,
+      "taxpayers2025TenthsK": 4226,
+      "avgPlnPerTaxpayer2025": 184.94,
+      "grosze2022": 1981171169,
+      "total4yrGrosze": 19261540699
+    },
+    {
+      "krs": "0000030897",
+      "name": "FUNDACJA WIELKA ORKIESTRA ŚWIĄTECZNEJ POMOCY",
+      "voivCode": "MZ",
+      "grosze2025": 3259521910,
+      "share2025Pct": 1.25,
+      "taxpayers2025TenthsK": 1640,
+      "avgPlnPerTaxpayer2025": 198.75,
+      "grosze2022": 2598457613,
+      "total4yrGrosze": 12323190526
+    },
+    {
+      "krs": "0000285433",
+      "name": "FUNDACJA DZIECIOM \"POMAGAJ\"",
+      "voivCode": "WP",
+      "grosze2025": 3007008810,
+      "share2025Pct": 1.15,
+      "taxpayers2025TenthsK": 4154,
+      "avgPlnPerTaxpayer2025": 72.39,
+      "grosze2022": 1625330282,
+      "total4yrGrosze": 8416056342
+    },
+    {
+      "krs": "0000338878",
+      "name": "DOBRO POWRACA - FUNDACJA NA RZECZ CHORYCH NA STWARDNIENIE ROZSIANE I INNE CHOROBY PRZEWLEKŁE",
+      "voivCode": "DS",
+      "grosze2025": 2970506390,
+      "share2025Pct": 1.14,
+      "taxpayers2025TenthsK": 1711,
+      "avgPlnPerTaxpayer2025": 173.61,
+      "grosze2022": 1459277794,
+      "total4yrGrosze": 8864367543
+    },
+    {
+      "krs": "0000382243",
+      "name": "FUNDACJA POMOCY DZIECIOM I OSOBOM CHORYM \"KAWAŁEK NIEBA\"",
+      "voivCode": "PM",
+      "grosze2025": 2845418495,
+      "share2025Pct": 1.09,
+      "taxpayers2025TenthsK": 1837,
+      "avgPlnPerTaxpayer2025": 154.89,
+      "grosze2022": 1874263114,
+      "total4yrGrosze": 9169661744
+    },
+    {
+      "krs": "0000581036",
+      "name": "\"CANCER FIGHTERS\"",
+      "voivCode": "LB",
+      "grosze2025": 2578293214,
+      "share2025Pct": 0.99,
+      "taxpayers2025TenthsK": 1389,
+      "avgPlnPerTaxpayer2025": 185.62,
+      "grosze2022": 119638516,
+      "total4yrGrosze": 3758158240
+    },
+    {
+      "krs": "0000116212",
+      "name": "ZWIĄZEK OCHOTNICZYCH STRAŻY POŻARNYCH RZECZYPOSPOLITEJ POLSKIEJ",
+      "voivCode": "MZ",
+      "grosze2025": 2228447600,
+      "share2025Pct": 0.85,
+      "taxpayers2025TenthsK": 1676,
+      "avgPlnPerTaxpayer2025": 132.96,
+      "grosze2022": 1104171963,
+      "total4yrGrosze": 6472969693
+    },
+    {
+      "krs": "0000266644",
+      "name": "FUNDACJA SERCE DZIECKA",
+      "voivCode": "MZ",
+      "grosze2025": 2112882140,
+      "share2025Pct": 0.81,
+      "taxpayers2025TenthsK": 1632,
+      "avgPlnPerTaxpayer2025": 129.47,
+      "grosze2022": 1586080186,
+      "total4yrGrosze": 7808385732
+    },
+    {
+      "krs": "0000564708",
+      "name": "FUNDACJA SENSORIA",
+      "voivCode": "DS",
+      "grosze2025": 2000925420,
+      "share2025Pct": 0.77,
+      "taxpayers2025TenthsK": 2365,
+      "avgPlnPerTaxpayer2025": 84.61,
+      "grosze2022": 1324577112,
+      "total4yrGrosze": 7153796060
+    },
+    {
+      "krs": "0000127075",
+      "name": "FUNDACJA JIM",
+      "voivCode": "LD",
+      "grosze2025": 1998219580,
+      "share2025Pct": 0.77,
+      "taxpayers2025TenthsK": 1237,
+      "avgPlnPerTaxpayer2025": 161.54,
+      "grosze2022": 1256358090,
+      "total4yrGrosze": 6625013580
+    }
+  ],
+  "voivodeships": {
+    "DS": {
+      "pl": "Dolnośląskie",
+      "en": "Lower Silesian",
+      "orgs": 940,
+      "funded2025": 844,
+      "grosze2025": 20387660819
+    },
+    "KP": {
+      "pl": "Kujawsko-Pomorskie",
+      "en": "Kuyavian-Pomeranian",
+      "orgs": 416,
+      "funded2025": 387,
+      "grosze2025": 2685445290
+    },
+    "LB": {
+      "pl": "Lubuskie",
+      "en": "Lubusz",
+      "orgs": 309,
+      "funded2025": 272,
+      "grosze2025": 4058306804
+    },
+    "LD": {
+      "pl": "Łódzkie",
+      "en": "Łódź",
+      "orgs": 483,
+      "funded2025": 454,
+      "grosze2025": 8407871060
+    },
+    "LU": {
+      "pl": "Lubelskie",
+      "en": "Lublin",
+      "orgs": 492,
+      "funded2025": 458,
+      "grosze2025": 3719863830
+    },
+    "MA": {
+      "pl": "Małopolskie",
+      "en": "Lesser Poland",
+      "orgs": 919,
+      "funded2025": 851,
+      "grosze2025": 12994864354
+    },
+    "MZ": {
+      "pl": "Mazowieckie",
+      "en": "Masovian",
+      "orgs": 1684,
+      "funded2025": 1558,
+      "grosze2025": 103742819617
+    },
+    "OP": {
+      "pl": "Opolskie",
+      "en": "Opole",
+      "orgs": 331,
+      "funded2025": 299,
+      "grosze2025": 2149053570
+    },
+    "PD": {
+      "pl": "Podlaskie",
+      "en": "Podlaskie",
+      "orgs": 314,
+      "funded2025": 295,
+      "grosze2025": 2019884131
+    },
+    "PK": {
+      "pl": "Podkarpackie",
+      "en": "Subcarpathian",
+      "orgs": 615,
+      "funded2025": 563,
+      "grosze2025": 3783244900
+    },
+    "PM": {
+      "pl": "Pomorskie",
+      "en": "Pomeranian",
+      "orgs": 781,
+      "funded2025": 724,
+      "grosze2025": 10004124275
+    },
+    "SK": {
+      "pl": "Świętokrzyskie",
+      "en": "Świętokrzyskie",
+      "orgs": 254,
+      "funded2025": 234,
+      "grosze2025": 1496263510
+    },
+    "SL": {
+      "pl": "Śląskie",
+      "en": "Silesian",
+      "orgs": 1192,
+      "funded2025": 1114,
+      "grosze2025": 30884983229
+    },
+    "WN": {
+      "pl": "Warmińsko-Mazurskie",
+      "en": "Warmian-Masurian",
+      "orgs": 348,
+      "funded2025": 331,
+      "grosze2025": 1852763882
+    },
+    "WP": {
+      "pl": "Wielkopolskie",
+      "en": "Greater Poland",
+      "orgs": 795,
+      "funded2025": 742,
+      "grosze2025": 50122918916
+    },
+    "ZP": {
+      "pl": "Zachodniopomorskie",
+      "en": "West Pomeranian",
+      "orgs": 356,
+      "funded2025": 324,
+      "grosze2025": 2429818474
+    }
+  },
+  "fields": [
+    "krs",
+    "name",
+    "voivCode",
+    "eligMask",
+    "total4yrGrosze",
+    "g2022",
+    "g2023",
+    "g2024",
+    "g2025",
+    "t2022TenthsK",
+    "t2023TenthsK",
+    "t2024TenthsK",
+    "t2025TenthsK"
+  ],
+  "asset": {
+    "path": "recipients.json.gz",
+    "rows": 10395,
+    "bytes": 427589,
+    "decodedBytes": 1266779,
+    "sha256": "b1b29aba584c114c8f7c68d7e94b39f34d4d3c073eb9dd2608a541c3845ec7d5",
+    "decodedSha256": "f64506acd08bc7a112625d2b77318f289f2de21a949d36e376ddc7512b24e770"
+  }
+}

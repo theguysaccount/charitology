@@ -1,0 +1,273 @@
+{
+  "format": "charitology.poland-opp-registry.v1",
+  "capturedOn": "2026-11-22",
+  "publisher": "NIW-CRSO & Ministerstwo Finansów (Poland) via dane.gov.pl",
+  "catalogues": {
+    "niw2025": "https://dane.gov.pl/pl/dataset/20137",
+    "niw2024": "https://dane.gov.pl/pl/dataset/4628",
+    "niw2023": "https://dane.gov.pl/pl/dataset/3564",
+    "mfPit15": "https://dane.gov.pl/pl/dataset/171"
+  },
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "licenseName": "CC0 1.0 Universal (Public Domain Dedication)",
+  "sources": {
+    "niw2025": {
+      "filename": "niw-opp-eligible-2025-in-2026.xlsx",
+      "publisher": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/20137",
+      "url": "https://api.dane.gov.pl/media/resources/20261117/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2025_rok_w_2026_roku_11_2026.xlsx",
+      "bytes": 782406,
+      "sha256": "9eca10a1ab371acecd002a827b180a648bd00b043eab1e117c9b4df180fb4171"
+    },
+    "niw2024": {
+      "filename": "niw-opp-eligible-2024-in-2025.xlsx",
+      "publisher": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/4628",
+      "url": "https://api.dane.gov.pl/media/resources/20251210/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2024_rok_w_2025_roku_12_2025.xlsx",
+      "bytes": 758198,
+      "sha256": "6400ad7ba2d7bd276932d970db2e2807dc64e8ea3007d5bcb3274a2d113f03ea"
+    },
+    "niw2023": {
+      "filename": "niw-opp-eligible-2023-in-2024.xlsx",
+      "publisher": "Narodowy Instytut Wolności – Centrum Rozwoju Społeczeństwa Obywatelskiego (NIW-CRSO)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/3564",
+      "url": "https://api.dane.gov.pl/media/resources/20241212/wykaz_OPP_uprawnionych_do_otrzymania_1_5_proc__podatku_za_2023_rok_w_2024_roku_12_2024_II.xlsx",
+      "bytes": 746809,
+      "sha256": "49ad58e26fbeed3947dec2ff96ccaf18916eebb7a3d7b548cff254e49801bbe7"
+    },
+    "mfAmt2025": {
+      "filename": "mf-pit15-amounts-2025-in-2026.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20260930/Wykaz_OPP_kt%C3%B3re_w_2026_r._otrzyma%C5%82y_15_nale%C5%BCnego_podatku_za_2025_r._L1Wdahu.xlsx",
+      "bytes": 555890,
+      "sha256": "c70eafd1aeab3caea3daf1376cefb03849455119f5ff339bd61d4b879649c919"
+    },
+    "mfTax2025": {
+      "filename": "mf-pit15-taxpayers-2025-in-2026.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20260930/Liczba_podatnik%C3%B3w_kt%C3%B3rzy_w_2026_r._przekazali_15_nale%C5%BCnego_podatku_za_2025_r._na_rzecz_poszczeg%C3%B3lnych_OPP.xlsx",
+      "bytes": 276467,
+      "sha256": "0165aa6b10f3c8230a952caa72966de1aa972a5e2b980c7b37290bffe307f0a2"
+    },
+    "mfAmt2024": {
+      "filename": "mf-pit15-amounts-2024-in-2025.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20250929/Za%C5%82%C4%85cznik_nr_2_-_wykaz_OPP.xlsx",
+      "bytes": 539608,
+      "sha256": "ecbb75979c1d58eda248b7d0f5a799fd125d577c6d0c7f1fbb5e7679adcaa471"
+    },
+    "mfTax2024": {
+      "filename": "mf-pit15-taxpayers-2024-in-2025.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20250929/Za%C5%82%C4%85cznik_nr_1_-_liczba_podatnik%C3%B3w_OPP.xlsx",
+      "bytes": 243996,
+      "sha256": "a70374bae52a67c45a311da847acf2c5d93a1c8ee5303cc3f9429d7a26b9829a"
+    },
+    "mfAmt2023": {
+      "filename": "mf-pit15-amounts-2023-in-2024.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20241003/Wykaz_zasilonych_OPP_za_2023.xlsx",
+      "bytes": 503224,
+      "sha256": "47d5f98c3b669feb3b959b76b0a073a5eb6bbbef5ef735a0d5d0b05c2e9caeac"
+    },
+    "mfTax2023": {
+      "filename": "mf-pit15-taxpayers-2023-in-2024.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20241003/Liczba_podatnik%C3%B3w_na_OPP_za_2023.xlsx",
+      "bytes": 236077,
+      "sha256": "dc72ee1824239e90bab9ec530abc230072fac86d8e57f7d44a1ee842d056a56f"
+    },
+    "mfAmt2022": {
+      "filename": "mf-pit15-amounts-2022-in-2023.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20231002/wykaz_opp_za_2022.xlsx",
+      "bytes": 433049,
+      "sha256": "5ef16bc71b4ed6890c4f5f21d58e312173661474111b82166a0663dfee097818"
+    },
+    "mfTax2022": {
+      "filename": "mf-pit15-taxpayers-2022-in-2023.xlsx",
+      "publisher": "Ministerstwo Finansów (Ministry of Finance, Poland)",
+      "datasetUrl": "https://dane.gov.pl/pl/dataset/171",
+      "url": "https://api.dane.gov.pl/media/resources/20231002/liczba_podatnik%C3%B3w_za_2022.xlsx",
+      "bytes": 216318,
+      "sha256": "8d6957dc7a7ef07a10706619227b871702df42d525e0c904c8ffc0a2cdc443bf"
+    }
+  },
+  "counts": {
+    "includedOrganizations": 10484,
+    "eligible2025": 9591,
+    "eligible2024": 9316,
+    "eligible2023": 9182,
+    "eligibleAllThreeYears": 8339,
+    "eligible2025OnlyNew": 379,
+    "notEligibleInFinal2025List": 893,
+    "withValidatedNip": 10020,
+    "fundedAnyYear2022to2025": 10395,
+    "zeroTransferAllFourYears": 89,
+    "total4yrPit15Grosze": 831680100668
+  },
+  "voivodeships": {
+    "DS": {
+      "pl": "Dolnośląskie",
+      "en": "Lower Silesian",
+      "orgs": 940,
+      "funded2025": 844,
+      "grosze2025": 20387660819
+    },
+    "KP": {
+      "pl": "Kujawsko-Pomorskie",
+      "en": "Kuyavian-Pomeranian",
+      "orgs": 416,
+      "funded2025": 387,
+      "grosze2025": 2685445290
+    },
+    "LB": {
+      "pl": "Lubuskie",
+      "en": "Lubusz",
+      "orgs": 309,
+      "funded2025": 272,
+      "grosze2025": 4058306804
+    },
+    "LD": {
+      "pl": "Łódzkie",
+      "en": "Łódź",
+      "orgs": 483,
+      "funded2025": 454,
+      "grosze2025": 8407871060
+    },
+    "LU": {
+      "pl": "Lubelskie",
+      "en": "Lublin",
+      "orgs": 492,
+      "funded2025": 458,
+      "grosze2025": 3719863830
+    },
+    "MA": {
+      "pl": "Małopolskie",
+      "en": "Lesser Poland",
+      "orgs": 919,
+      "funded2025": 851,
+      "grosze2025": 12994864354
+    },
+    "MZ": {
+      "pl": "Mazowieckie",
+      "en": "Masovian",
+      "orgs": 1684,
+      "funded2025": 1558,
+      "grosze2025": 103742819617
+    },
+    "OP": {
+      "pl": "Opolskie",
+      "en": "Opole",
+      "orgs": 331,
+      "funded2025": 299,
+      "grosze2025": 2149053570
+    },
+    "PD": {
+      "pl": "Podlaskie",
+      "en": "Podlaskie",
+      "orgs": 314,
+      "funded2025": 295,
+      "grosze2025": 2019884131
+    },
+    "PK": {
+      "pl": "Podkarpackie",
+      "en": "Subcarpathian",
+      "orgs": 615,
+      "funded2025": 563,
+      "grosze2025": 3783244900
+    },
+    "PM": {
+      "pl": "Pomorskie",
+      "en": "Pomeranian",
+      "orgs": 781,
+      "funded2025": 724,
+      "grosze2025": 10004124275
+    },
+    "SK": {
+      "pl": "Świętokrzyskie",
+      "en": "Świętokrzyskie",
+      "orgs": 254,
+      "funded2025": 234,
+      "grosze2025": 1496263510
+    },
+    "SL": {
+      "pl": "Śląskie",
+      "en": "Silesian",
+      "orgs": 1192,
+      "funded2025": 1114,
+      "grosze2025": 30884983229
+    },
+    "WN": {
+      "pl": "Warmińsko-Mazurskie",
+      "en": "Warmian-Masurian",
+      "orgs": 348,
+      "funded2025": 331,
+      "grosze2025": 1852763882
+    },
+    "WP": {
+      "pl": "Wielkopolskie",
+      "en": "Greater Poland",
+      "orgs": 795,
+      "funded2025": 742,
+      "grosze2025": 50122918916
+    },
+    "ZP": {
+      "pl": "Zachodniopomorskie",
+      "en": "West Pomeranian",
+      "orgs": 356,
+      "funded2025": 324,
+      "grosze2025": 2429818474
+    }
+  },
+  "sourceNormalizations": {
+    "voivodeshipTypoFixes": [
+      {
+        "file": "niw-opp-eligible-2024-in-2025.xlsx",
+        "row": "5263",
+        "krs": "0000285850",
+        "name": "FUNDACJA ŚWIĘTEGO BENEDYKTA",
+        "rawVoivodeship": "MAŁOPOLSKA",
+        "canonicalVoivodeship": "MAŁOPOLSKIE"
+      },
+      {
+        "file": "niw-opp-eligible-2025-in-2026.xlsx",
+        "row": "5302",
+        "krs": "0000285850",
+        "name": "FUNDACJA ŚWIĘTEGO BENEDYKTA",
+        "rawVoivodeship": "MAŁOPOLSKA",
+        "canonicalVoivodeship": "MAŁOPOLSKIE"
+      }
+    ],
+    "krsZeroPadding": "NIW workbooks store KRS as unpadded integers; all KRS values are canonicalized to 10 digits with leading zeros to match Ministry of Finance and KRS court identifiers.",
+    "nipValidation": "Every non-blank 10-digit NIP passes Poland's official weighted mod-11 check digit.",
+    "privacyProjection": "Street addresses and postal codes are excluded; voivodeship and city (miejscowość) only are retained."
+  },
+  "fields": [
+    "krs",
+    "nip",
+    "name",
+    "voivCode",
+    "city",
+    "eligMask",
+    "total4yrGrosze",
+    "latestYr",
+    "latestGrosze",
+    "latestTaxpayersTenthsK"
+  ],
+  "asset": {
+    "path": "organizations.json.gz",
+    "rows": 10484,
+    "bytes": 417337,
+    "decodedBytes": 1258385,
+    "sha256": "799e9e738e4b2ca9a273c979bd83ab6995e0187730a9ffb92bea37b80f3ddf47",
+    "decodedSha256": "04276d9469ced7d7a39388b1e2f1d1b1d292af5b5314ff308b8d924bbcf7b410"
+  }
+}

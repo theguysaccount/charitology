@@ -1,0 +1,887 @@
+{
+  "capturedOn": "2026-11-22",
+  "reportingThresholdNote": "Ministry of Finance publishes exact PLN to the grosz (minimum PLN 0.60 in 2025) for all funded OPPs, while its companion taxpayer-count workbook reports counts in thousands rounded to 0.1k (100 taxpayers) and omits OPPs below 0.1k (~50 taxpayers). Zero KRS identifiers appear in any taxpayer sheet without appearing in the corresponding amounts sheet.",
+  "voivodeshipSpellingFixes": [
+    {
+      "file": "niw-opp-eligible-2024-in-2025.xlsx",
+      "row": "5263",
+      "krs": "0000285850",
+      "name": "FUNDACJA ŚWIĘTEGO BENEDYKTA",
+      "rawVoivodeship": "MAŁOPOLSKA",
+      "canonicalVoivodeship": "MAŁOPOLSKIE"
+    },
+    {
+      "file": "niw-opp-eligible-2025-in-2026.xlsx",
+      "row": "5302",
+      "krs": "0000285850",
+      "name": "FUNDACJA ŚWIĘTEGO BENEDYKTA",
+      "rawVoivodeship": "MAŁOPOLSKA",
+      "canonicalVoivodeship": "MAŁOPOLSKIE"
+    }
+  ],
+  "paidNotInFinalNiwSummary": {
+    "2023": {
+      "count": 39,
+      "totalGrosze": 50358100,
+      "inOtherNiwYearCount": 0
+    },
+    "2024": {
+      "count": 40,
+      "totalGrosze": 51485410,
+      "inOtherNiwYearCount": 36
+    },
+    "2025": {
+      "count": 26,
+      "totalGrosze": 30741710,
+      "inOtherNiwYearCount": 26
+    }
+  },
+  "paidNotInFinalNiwByTaxYear": {
+    "2023": [
+      {
+        "krs": "0000221902",
+        "name": "FUNDACJA \"\"ŻYĆ Z CHOROBĄ PARKINSONA\" IM. JERZEGO ŁUKASIEWICZA",
+        "grosze": 18411610,
+        "pln": "184116.10",
+        "taxpayersTenthsK": 14,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000347949",
+        "name": "FUNDACJA \"WSPÓLNYM KROKIEM\"",
+        "grosze": 5366450,
+        "pln": "53664.50",
+        "taxpayersTenthsK": 3,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000218931",
+        "name": "STOWARZYSZENIE \"DOBRA DROGA\"",
+        "grosze": 5127870,
+        "pln": "51278.70",
+        "taxpayersTenthsK": 4,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000347294",
+        "name": "FUNDACJA RZECZNIK PRAW RODZICÓW",
+        "grosze": 3895320,
+        "pln": "38953.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000229812",
+        "name": "STOWARZYSZENIE NA RZECZ WSPIERANIA DOLNOŚLĄSKIEJ NEFROLOGII, DIALIZOTERAPII I TRANSPLANTOLOGII \"PRO RENIS\"",
+        "grosze": 2153660,
+        "pln": "21536.60",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000348387",
+        "name": "FUNDACJA PRO OMNIS",
+        "grosze": 1907700,
+        "pln": "19077.00",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000181540",
+        "name": "FUNDACJA PRZYJACIÓŁ SANKTUARIUM MATKI BOŻEJ GIETRZWAŁDZKIEJ",
+        "grosze": 1567810,
+        "pln": "15678.10",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000853072",
+        "name": "ELEOS - PRAWOSŁAWNY OŚRODEK MIŁOSIERDZIA DIECEZJI ŁÓDZKO - POZNAŃSKIEJ",
+        "grosze": 1421600,
+        "pln": "14216.00",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000167894",
+        "name": "PULS ŚLĄSKA",
+        "grosze": 1298140,
+        "pln": "12981.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000311216",
+        "name": "STOWARZYSZENIE ISKIERKA NADZIEI IM. EDMUNDA BOJANOWSKIEGO",
+        "grosze": 1095820,
+        "pln": "10958.20",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000054325",
+        "name": "FUNDACJA DIALIZA",
+        "grosze": 870170,
+        "pln": "8701.70",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000246550",
+        "name": "STOWARZYSZENIE KOLOROWY WIATR",
+        "grosze": 680810,
+        "pln": "6808.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000138075",
+        "name": "STOWARZYSZENIE NA RZECZ ROZWOJU POLSKIEJ WSI \"RAZEM LEPIEJ\"",
+        "grosze": 671700,
+        "pln": "6717.00",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000464042",
+        "name": "STOWARZYSZENIE EDUKACJI EKOLOGICZNEJ I ŁOWIECKIEJ \"DĄB\"",
+        "grosze": 551320,
+        "pln": "5513.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000215117",
+        "name": "\"STOWARZYSZENIE KU POKRZEPIENIU SERC PRZY OŚRODKU REHABILITACJI KARDIOLOGICZNEJ POPIOŁY\"",
+        "grosze": 505690,
+        "pln": "5056.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000060843",
+        "name": "ELBLĄSKIE STOWARZYSZENIE POMOCY OSOBOM Z CHOROBĄ ALZHEIMERA I INNYMI ZABURZENIAMI PSYCHICZNYMI",
+        "grosze": 480060,
+        "pln": "4800.60",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000254079",
+        "name": "CHRZEŚCIJAŃSKIE STOWARZYSZENIE EDUKACYJNE",
+        "grosze": 468680,
+        "pln": "4686.80",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000360795",
+        "name": "\"FUNDACJA \"PLATFORMA RÓWNYCH SZANS\"",
+        "grosze": 439110,
+        "pln": "4391.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000705418",
+        "name": "STOWARZYSZENIE PRZYJACIÓŁ I SYMPATYKÓW SZKOŁY PODSTAWOWEJ W GŁOBINIE",
+        "grosze": 438520,
+        "pln": "4385.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000787522",
+        "name": "FUNDACJA ATYPOWA",
+        "grosze": 414490,
+        "pln": "4144.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000163833",
+        "name": "FUNDACJA \"MIŁOSIERDZIE I KULTURA\"",
+        "grosze": 384270,
+        "pln": "3842.70",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000414386",
+        "name": "CHRZEŚCIJAŃSKA SŁUŻBA CHARYTATYWNA ODDZIAŁ POMORSKI",
+        "grosze": 381040,
+        "pln": "3810.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000021452",
+        "name": "KOCIEWSKIE STOWARZYSZENIE POMOCY DZIECKU I RODZINIE",
+        "grosze": 329650,
+        "pln": "3296.50",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000455369",
+        "name": "ŚLĄSKIE STOWARZYSZENIE POMOCY OSOBOM NIEPEŁNOSPRAWNYM",
+        "grosze": 306520,
+        "pln": "3065.20",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000238395",
+        "name": "ŚREMSKIE STOWARZYSZENIE ŚPIEWACKIE IM. STANISŁAWA MONIUSZKI",
+        "grosze": 245570,
+        "pln": "2455.70",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000788499",
+        "name": "POLSKA FUNDACJA OCHRONY I PROMOCJI ZDROWIA",
+        "grosze": 188880,
+        "pln": "1888.80",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000117141",
+        "name": "FUNDACJA POSZANOWANIA ENERGII",
+        "grosze": 152520,
+        "pln": "1525.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000499487",
+        "name": "EKOGIM10",
+        "grosze": 125720,
+        "pln": "1257.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000634452",
+        "name": "STOWARZYSZENIE PRZYJACIÓŁ MIEJSKIEGO MŁODZIEŻOWEGO CHÓRU LOGOS Z MIEJSKIEGO DOMU KULTURY W ŚWINOUJŚCIU",
+        "grosze": 116460,
+        "pln": "1164.60",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000028755",
+        "name": "NARODOWY FUNDUSZ OCHRONY ZDROWIA KOMITET ODDZIAŁU W KIELCACH",
+        "grosze": 107160,
+        "pln": "1071.60",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000440707",
+        "name": "CHRZEŚCIJAŃSKA SŁUŻBA CHARYTATYWNA ODDZIAŁ PODKARPACKI",
+        "grosze": 74320,
+        "pln": "743.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000294888",
+        "name": "EUROPEJSKA FUNDACJA LUDZI DOBREJ WOLI \"SERDECZNA POMOC\"",
+        "grosze": 51890,
+        "pln": "518.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000105207",
+        "name": "FUNDACJA WYCHOWAWCÓW I MŁODZIEŻY \"PROM\"",
+        "grosze": 36710,
+        "pln": "367.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000685252",
+        "name": "FUNDACJA ALBERTA SCHWEITZERA",
+        "grosze": 19910,
+        "pln": "199.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000362164",
+        "name": "UCZNIOWSKI KLUB SPORTOWY IM. \"POLSKIEGO TOWARZYSTWA GIMNASTYCZNEGO SOKÓŁ\"",
+        "grosze": 18540,
+        "pln": "185.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000257037",
+        "name": "FUNDACJA RODZINY ROZENBLAT",
+        "grosze": 17650,
+        "pln": "176.50",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000293750",
+        "name": "MAŁOPOLSKIE STOWARZYSZENIE PRACOWNIKÓW SOCJALNYCH",
+        "grosze": 15060,
+        "pln": "150.60",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000279625",
+        "name": "STOWARZYSZENIE \"INTEGRACJA DLA WAŁBRZYCHA\"",
+        "grosze": 15010,
+        "pln": "150.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000306564",
+        "name": "WROCŁAWSKIE CENTRUM MEDIACJI",
+        "grosze": 4690,
+        "pln": "46.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      }
+    ],
+    "2024": [
+      {
+        "krs": "0000253695",
+        "name": "JESTEM NA PTAK!",
+        "grosze": 16556110,
+        "pln": "165561.10",
+        "taxpayersTenthsK": 9,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000310631",
+        "name": "OLKUSKIE STOWARZYSZENIE PRZYJACIÓŁ ZWIERZĄT",
+        "grosze": 8122890,
+        "pln": "81228.90",
+        "taxpayersTenthsK": 5,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000023104",
+        "name": "STOWARZYSZENIE POMOCY DZIECIOM PO LECZENIU ONKOLOGICZNYM",
+        "grosze": 5167250,
+        "pln": "51672.50",
+        "taxpayersTenthsK": 4,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000110672",
+        "name": "STOWARZYSZENIE POMOCY OSOBOM NIEPEŁNOSPRAWNYM",
+        "grosze": 2794570,
+        "pln": "27945.70",
+        "taxpayersTenthsK": 2,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000286552",
+        "name": "STOWARZYSZENIE PRZYJACIÓŁ MISJI FRANCISZKAŃSKICH IM. O. DOMINIKA KIESCHA",
+        "grosze": 2351410,
+        "pln": "23514.10",
+        "taxpayersTenthsK": 2,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000241235",
+        "name": "FUNDACJA POMOCNA DŁOŃ",
+        "grosze": 1914870,
+        "pln": "19148.70",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000159490",
+        "name": "\"POMOCNA DŁOŃ\"",
+        "grosze": 1634270,
+        "pln": "16342.70",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000312378",
+        "name": "\"EDUKACYJNA SZANSA DLA WSZYSTKICH\"",
+        "grosze": 1455340,
+        "pln": "14553.40",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000288772",
+        "name": "FUNDACJA \"DOBRO CZYNIĆ\"",
+        "grosze": 1330360,
+        "pln": "13303.60",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0001033311",
+        "name": "STOWARZYSZENIE CANTORES CARVATIANI",
+        "grosze": 1077620,
+        "pln": "10776.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000037538",
+        "name": "FUNDACJA OCHRONY ZDROWIA SZPITALA MIEJSKIEGO W SOSNOWCU \"ZDROWIE\"",
+        "grosze": 911530,
+        "pln": "9115.30",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000039749",
+        "name": "SUWALSKIE STOWARZYSZENIE RODZIN I PRZYJACIÓŁ OSÓB CHORYCH PSYCHICZNIE \"NADZIEJA\"",
+        "grosze": 911380,
+        "pln": "9113.80",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000267831",
+        "name": "STOWARZYSZENIE KULTURALNE \"GLORIA\" W PRZEWORSKU",
+        "grosze": 877350,
+        "pln": "8773.50",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000232491",
+        "name": "UCZNIOWSKI KLUB SPORTOWY PRZY ZESPOLE SZKÓŁ W TŁUSZCZU",
+        "grosze": 800200,
+        "pln": "8002.00",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000939170",
+        "name": "FUNDACJA KOBIECA PRZYSTAŃ",
+        "grosze": 669530,
+        "pln": "6695.30",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000078510",
+        "name": "WRZESIŃSKIE TOWARZYSTWO KULTURALNE",
+        "grosze": 607480,
+        "pln": "6074.80",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000294642",
+        "name": "STOWARZYSZENIE GRUPA WSPARCIA DLA OSÓB Z PROBLEMAMI PAMIĘCI \"NIEZAPOMINAJKA\"",
+        "grosze": 591270,
+        "pln": "5912.70",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000276860",
+        "name": "\"CHEŁMSKIE STOWARZYSZENIE ROZWOJU SPOŁECZNO-GOSPODARCZEGO - CIVIS\"",
+        "grosze": 480870,
+        "pln": "4808.70",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000721808",
+        "name": "STOWARZYSZENIE SŁYSZEĆ BEZ GRANIC",
+        "grosze": 430060,
+        "pln": "4300.60",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000208222",
+        "name": "FUNDACJA HARCEREK",
+        "grosze": 364950,
+        "pln": "3649.50",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000164539",
+        "name": "STOWARZYSZENIE NA RZECZ DZIECI I MŁODZIEŻY Z NIEPEŁNOSPRAWNOŚCIĄ PSYCHOFIZYCZNĄ \"POMÓŻ ŻYĆ\"",
+        "grosze": 307890,
+        "pln": "3078.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000291481",
+        "name": "BANK ŻYWNOŚCI W GORZOWIE WLKP.",
+        "grosze": 277920,
+        "pln": "2779.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000396810",
+        "name": "FUNDACJA \"MARKO\" NA RZECZ OSÓB CHORYCH I NIEPEŁNOSPRAWNYCH",
+        "grosze": 259080,
+        "pln": "2590.80",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000787184",
+        "name": "\"ECO-TRANSMARINE\" FUNDACJA NA RZECZ ROZWOJU TRANSPORTU WODNEGO",
+        "grosze": 235210,
+        "pln": "2352.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000654881",
+        "name": "AKADEMIA PIŁKARSKA BRYCHCZY SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+        "grosze": 195710,
+        "pln": "1957.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000657844",
+        "name": "STOWARZYSZENIE \"POMIECHOWSKIE BEZDOMNIAKI\"",
+        "grosze": 158360,
+        "pln": "1583.60",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000474319",
+        "name": "FUNDACJA HORACY",
+        "grosze": 158010,
+        "pln": "1580.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000225039",
+        "name": "STOWARZYSZENIE \"SZYBKI SZPIL\"",
+        "grosze": 149530,
+        "pln": "1495.30",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000102528",
+        "name": "POZNAŃSKIE STOWARZYSZENIE PROMOCJI SZTUKI",
+        "grosze": 95960,
+        "pln": "959.60",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000288346",
+        "name": "STOWARZYSZENIE \"EDUKACJA DLA POKOJU\"",
+        "grosze": 89440,
+        "pln": "894.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000056217",
+        "name": "FUNDACJA EDUKACJA I TECHNIKA RATOWNICTWA",
+        "grosze": 81120,
+        "pln": "811.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000499952",
+        "name": "FUNDACJA \"PEGAZ\" HIPOTERAPIA",
+        "grosze": 73640,
+        "pln": "736.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      },
+      {
+        "krs": "0000130031",
+        "name": "KRAJOWY KOMITET WYCHOWANIA RESOCJALIZUJĄCEGO",
+        "grosze": 73230,
+        "pln": "732.30",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000418315",
+        "name": "\"STOWARZYSZENIE MIGAJ SERCEM\"",
+        "grosze": 64040,
+        "pln": "640.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000052433",
+        "name": "FUNDACJA \"MŁODZIEŻ DLA CHRYSTUSA-POLSKA\"",
+        "grosze": 54230,
+        "pln": "542.30",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000512589",
+        "name": "KOMANDORIA ZAGŁĘBIOWSKA STOWARZYSZENIA DAM I KAWALERÓW ORDERU ŚW. STANISŁAWA W BĘDZINIE",
+        "grosze": 51480,
+        "pln": "514.80",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000184209",
+        "name": "FUNDACJA VIVE SERCE DZIECIOM",
+        "grosze": 43180,
+        "pln": "431.80",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000505487",
+        "name": "FUNDACJA ENEA",
+        "grosze": 31550,
+        "pln": "315.50",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000465515",
+        "name": "STOWARZYSZENIE ROZWOJU SOŁECTWA WIELOPOLE",
+        "grosze": 18890,
+        "pln": "188.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000308048",
+        "name": "STOWARZYSZENIE SYMPATYKÓW SZKOŁY PODSTAWOWEJ NR 4 IM. PROF. ROMANA PODOSKIEGO W OLEŚNICY",
+        "grosze": 17630,
+        "pln": "176.30",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": false
+      }
+    ],
+    "2025": [
+      {
+        "krs": "0000025683",
+        "name": "KATOLICKIE STOWARZYSZENIE PRZYJACIÓŁ NIEPEŁNOSPRAWNYCH RUCHOWO \"CYRENEJCZYK\"",
+        "grosze": 9664470,
+        "pln": "96644.70",
+        "taxpayersTenthsK": 8,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000155524",
+        "name": "STOWARZYSZENIE FUNDUSZ STYPENDIALNY DLA MŁODZIEŻY WIEJSKIEJ IM.ALEKSANDRY BĄKOWSKIEJ",
+        "grosze": 7489060,
+        "pln": "74890.60",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000327166",
+        "name": "STOWARZYSZENIE BEZPIECZNA MŁODOŚĆ IM.\"GRZEGORZA\"",
+        "grosze": 2696250,
+        "pln": "26962.50",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000417618",
+        "name": "STOWARZYSZENIE PRZYJACIÓŁ DOMU DZIECKA KU PRZYSZŁOŚCI",
+        "grosze": 2336440,
+        "pln": "23364.40",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000226640",
+        "name": "POLSKIE STOWARZYSZENIE DIABETYKÓW ODDZIAŁ WOJEWÓDZKI",
+        "grosze": 1116880,
+        "pln": "11168.80",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000070913",
+        "name": "STOWARZYSZENIE OSÓB ZE STWARDNIENIEM ROZSIANYM W ZAMOŚCIU",
+        "grosze": 898180,
+        "pln": "8981.80",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000035760",
+        "name": "STOWARZYSZENIE \"RODZINA KATYŃSKA\" W OPOLU",
+        "grosze": 848240,
+        "pln": "8482.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000428533",
+        "name": "KLUB SPORTOWY COPACABANA KONIN",
+        "grosze": 832140,
+        "pln": "8321.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000533766",
+        "name": "STOWARZYSZENIE NA RZECZ WSPARCIA DZIECKA I RODZINY \"EMMANUEL\"",
+        "grosze": 743510,
+        "pln": "7435.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000521182",
+        "name": "GREEN REV INSTITUTE",
+        "grosze": 732370,
+        "pln": "7323.70",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000228049",
+        "name": "TOWARZYSTWO OGNISK I SZKÓŁ ARTYSTYCZNYCH W RZESZOWIE",
+        "grosze": 660720,
+        "pln": "6607.20",
+        "taxpayersTenthsK": 1,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000528873",
+        "name": "FUNDACJA RODZINY WOŚKO",
+        "grosze": 385640,
+        "pln": "3856.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000062381",
+        "name": "STOWARZYSZENIE \"POMOCNA DŁOŃ\"",
+        "grosze": 363090,
+        "pln": "3630.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000113239",
+        "name": "STOWARZYSZENIE POMOCY RODZINIE \"ARKA W MIEŚCIE\"",
+        "grosze": 332840,
+        "pln": "3328.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000424570",
+        "name": "FUNDACJA ARTYSTYCZNA CANTITO",
+        "grosze": 317930,
+        "pln": "3179.30",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000297161",
+        "name": "OCHOTNICZA STRAŻ POŻARNA W BUDZISKACH",
+        "grosze": 281580,
+        "pln": "2815.80",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000346435",
+        "name": "STOWARZYSZENIE POWSTANIA ŚLĄSKIE 90",
+        "grosze": 268130,
+        "pln": "2681.30",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000322135",
+        "name": "FUNDACJA ZAWSZE PRZY TOBIE",
+        "grosze": 197090,
+        "pln": "1970.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000010195",
+        "name": "STOWARZYSZENIE \"IDOKAN POLSKA\"",
+        "grosze": 195700,
+        "pln": "1957.00",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000003038",
+        "name": "TOWARZYSTWO MIŁOŚNIKÓW ZIEMI JASTRZĘBSKIEJ",
+        "grosze": 164930,
+        "pln": "1649.30",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000358241",
+        "name": "TORUŃSKIE STOWARZYSZENIE SYMPATYKÓW ZABYTKOWYCH SZYBOWCÓW",
+        "grosze": 66510,
+        "pln": "665.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000718818",
+        "name": "INNOWACYJNE NIEZALEŻNE TOWARZYSTWO ENTUZJASTÓW GRACJA",
+        "grosze": 64990,
+        "pln": "649.90",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000585080",
+        "name": "FUNDACJA METROPOLIA DZIECI",
+        "grosze": 38940,
+        "pln": "389.40",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000004836",
+        "name": "STOWARZYSZENIE PROFILAKTYCZNO- WYCHOWAWCZE \"FENIX\"",
+        "grosze": 33150,
+        "pln": "331.50",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000235808",
+        "name": "STOWARZYSZENIE \"CENTRUM WOLONTARIATU\"",
+        "grosze": 10220,
+        "pln": "102.20",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      },
+      {
+        "krs": "0000046239",
+        "name": "IŁAWSKIE STOWARZYSZENIE NA RZECZ POMOCY DZIECIOM Z WADAMI SŁUCHU",
+        "grosze": 2710,
+        "pln": "27.10",
+        "taxpayersTenthsK": null,
+        "inOtherNiwYear": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,384 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/poland-pit-1-5-percent/manifest.json';
+import reconciliation from '../../../../../public/data/funding-flows/poland-pit-1-5-percent/reconciliation.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Poland 1.5% personal income tax designations (2022–2025)';
+const asset = '/data/funding-flows/poland-pit-1-5-percent/';
+const registryRoute = '/record/charity-index/poland/';
+const count = (value: number) => value.toLocaleString('en-US');
+const pln = (grosze: number) =>
+  `PLN ${(grosze / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const plnM = (grosze: number) =>
+  `PLN ${(grosze / 100_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}M`;
+const sources = [
+  { title: 'Wykaz OPP, które otrzymały część należnego PIT (dataset 171)', publisher: 'Ministerstwo Finansów (dane.gov.pl)', url: manifest.catalogue },
+  { title: 'Wykaz OPP uprawnionych do 1,5% PIT za 2025 r. (dataset 20137)', publisher: 'NIW-CRSO (dane.gov.pl)', url: 'https://dane.gov.pl/pl/dataset/20137' },
+  { title: 'CC0 1.0 Universal Public Domain Dedication', publisher: 'Creative Commons', url: manifest.license },
+];
+const y2025 = manifest.byYear[manifest.byYear.length - 1];
+const y2022 = manifest.byYear[0];
+const growthPct = (((y2025.totalGrosze - y2022.totalGrosze) / y2022.totalGrosze) * 100).toFixed(1);
+const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].grosze2025 - a[1].grosze2025);
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Poland"
+  summary="Search 10,395 Polish public benefit organizations across four years of 1.5% PIT tax designations (2022–2025, paid 2023–2026; PLN 8.32B total), with disclosed taxpayer counts and NIW eligibility reconciliation."
+  filePath="src/pages/record/funding-flows/poland-pit-1-5-percent/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Poland 1.5% PIT designations'}]}
+  sources={sources}>
+  <p>Across the first four years of Poland’s <strong>1.5% PIT</strong> tax-designation system (tax years <strong>2022–2025</strong>, disbursed in <strong>2023–2026</strong> after Poland raised the statutory rate from 1% to 1.5%), individual taxpayers directed <strong>{pln(manifest.counts.total4yrGrosze)}</strong> across <strong>{count(manifest.counts.distinctFundedRecipients)} distinct KRS organizations</strong> (<strong>{count(manifest.counts.fundedAllFourYears)}</strong> funded in all four years). Annual disbursements grew <strong>+{growthPct}%</strong> in nominal terms, from {pln(y2022.totalGrosze)} ({count(y2022.fundedOrgCount)} OPPs) for 2022 to <strong>{pln(y2025.totalGrosze)}</strong> ({count(y2025.fundedOrgCount)} OPPs) for 2025 (paid in 2026, published September 30, 2026 under <a href={manifest.license}>CC0 1.0</a>).</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search Poland’s full 2023–2025 OPP eligibility register ({count(10484)} distinct KRS organizations)</a>.</p>
+
+  <section class="charity-financial-search" data-pl-pit
+    data-file={url(asset + manifest.asset.path)} data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="pl-pit-heading">
+    <h2 id="pl-pit-heading">Search 1.5% PIT recipients (2022–2025)</h2>
+    <p id="pl-pit-hint">Enter an organization name (diacritic-insensitive, e.g., <code>siepomaga</code> or <code>caritas</code>) or a KRS number (e.g., <code>0000037904</code> or <code>30897</code>). Search loads {(manifest.asset.bytes / 1_000).toFixed(0)} KB of compressed Ministry of Finance records locally in your browser.</p>
+    <form aria-describedby="pl-pit-hint">
+      <label for="pl-pit-query">Recipient name or KRS number</label>
+      <div class="finance-actions">
+        <input id="pl-pit-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="pl-pit-voiv">Voivodeship</label>
+          <select id="pl-pit-voiv" disabled>
+            <option value="">All voivodeships</option>
+            {voivEntries.map(([code, info]) => (
+              <option value={code}>{info.pl} / {info.en}</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="pl-pit-recon">Reconciliation</label>
+          <select id="pl-pit-recon" disabled>
+            <option value="">All funded recipients</option>
+            <option value="all4">Funded all 4 years (2022–2025)</option>
+            <option value="outside2025">Paid in 2025, absent from final Nov 2026 NIW list ({count(manifest.counts.paid2025NotInFinalNiw)})</option>
+          </select>
+        </span>
+        <label class="inline-check"><input type="checkbox" id="pl-pit-taxpayers" disabled /> Disclosed &ge;0.1k taxpayers in 2025</label>
+        <button class="btn" type="submit" disabled>Search recipients</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the 2022–2025 1.5% PIT index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed recipients as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed recipients as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="taxSlice" aria-label="Poland 1.5% PIT recipient results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'yearly-2022-2025.csv')} download>yearly 2022–2025 summary CSV</a> or inspect <a href={manifest.catalogue}>dane.gov.pl dataset 171</a>.</p></noscript>
+  </section>
+
+  <h2 id="intermediaries">Concentration and the sub-account (<em>cel szczegółowy</em>) intermediary model</h2>
+  <p>In 2025 (paid 2026), the <strong>top 10 OPPs received {y2025.top10SharePct}%</strong> of the national pool and the <strong>top 100 OPPs received {y2025.top100SharePct}%</strong>, leaving {(100 - y2025.top100SharePct).toFixed(2)}% divided across the remaining {count(y2025.fundedOrgCount - 100)} funded organizations. Headline concentration must be interpreted through Poland’s statutory <strong><em>cel szczegółowy</em> (specific purpose)</strong> line on PIT returns: several of the largest recipients—such as <em>Fundacja Dzieciom “Zdążyć z Pomocą”</em> (<code>0000037904</code>, {y2025.taxpayerSheetOrgCount ? '2.51M' : ''} taxpayers), <em>Fundacja Siepomaga</em> (<code>0000396361</code>) and <em>Fundacja Avalon</em> (<code>0000270809</code>)—operate as sub-account fundraising intermediaries where individual taxpayers earmark funds for tens of thousands of named children, patients or disability beneficiaries. Public Ministry of Finance workbooks report organization-level KRS totals only; sub-account allocations, administrative fees and final beneficiary spending require separate annual OPP reports.</p>
+
+  <div class="table-wrap" role="region" aria-label="Top 15 recipients of Poland 1.5% PIT for tax year 2025" tabindex="0">
+    <table class="data pl-table">
+      <caption>Top 15 recipients of Poland’s 1.5% PIT for tax year 2025 (disbursed in 2026)</caption>
+      <thead>
+        <tr>
+          <th scope="col">KRS</th>
+          <th scope="col">Organization</th>
+          <th scope="col">2025 payout (PLN)</th>
+          <th scope="col">Share</th>
+          <th scope="col">Taxpayers (k)</th>
+          <th scope="col">Avg PLN / taxpayer</th>
+          <th scope="col">4-yr total (2022–2025)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topRecipients2025.map(item => (
+          <tr data-krs={item.krs}>
+            <td><a href={url(`${registryRoute}?krs=${item.krs}`)}><code>{item.krs}</code></a></td>
+            <th scope="row">{item.name}</th>
+            <td>{pln(item.grosze2025)}</td>
+            <td>{item.share2025Pct.toFixed(2)}%</td>
+            <td>{item.taxpayers2025TenthsK !== null ? `${(item.taxpayers2025TenthsK / 10).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}k` : '<0.1k'}</td>
+            <td>{item.avgPlnPerTaxpayer2025 !== null ? `PLN ${item.avgPlnPerTaxpayer2025.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—'}</td>
+            <td>{pln(item.total4yrGrosze)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="reconciliation">Cross-register reconciliation and reporting thresholds</h2>
+  <ul>
+    <li><strong>Eligible OPPs receiving PLN 0:</strong> Joining NIW-CRSO’s statutory eligibility register against Ministry of Finance payouts by exact 10-digit KRS shows <strong>{count(y2025.eligiblePaidZeroCount ?? 0)} eligible OPPs received PLN 0</strong> in 2025 (<code>143</code> in 2024; <code>149</code> in 2023).</li>
+    <li><strong>Paid despite absence from the final updated NIW list:</strong> <strong>{count(manifest.counts.paid2025NotInFinalNiw)} OPPs</strong> received 2025 1.5% payouts totaling <strong>{pln(reconciliation.paidNotInFinalNiwSummary['2025'].totalGrosze)}</strong> (<code>40</code> in 2024; <code>39</code> in 2023) even though they are absent from the final updated NIW eligibility workbook for that year (typically organizations eligible during the Jan–Apr filing season before subsequent deregistration or removal). Every row is preserved in <a href={url(asset + 'reconciliation.json')} download><code>reconciliation.json</code></a>.</li>
+    <li><strong>Taxpayer-count reporting threshold (<code>&ge;0.1k</code>):</strong> The Ministry of Finance amounts workbooks report exact grosze down to <code>PLN 0.60</code> across all {count(y2025.fundedOrgCount)} funded OPPs in 2025, whereas the companion taxpayer-count workbooks report counts in thousands rounded to <code>0.1k</code> (100 taxpayers) and omit <strong>{count(y2025.belowTaxpayerThresholdOrgCount)} smaller funded OPPs</strong> below the <code>0.1k</code> threshold. Zero KRS numbers appear in any taxpayer workbook without appearing in the corresponding amounts workbook.</li>
+  </ul>
+
+  <div class="table-wrap" role="region" aria-label="Yearly Poland 1.5% PIT totals 2022 to 2025" tabindex="0">
+    <table class="data pl-table">
+      <caption>Yearly 1.5% PIT disbursements, eligibility reconciliation and concentration (2022–2025)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Tax year (paid)</th>
+          <th scope="col">Eligible NIW</th>
+          <th scope="col">Funded OPPs</th>
+          <th scope="col">Eligible PLN 0</th>
+          <th scope="col">Paid outside final NIW</th>
+          <th scope="col">Total PLN</th>
+          <th scope="col">Taxpayers (&ge;0.1k OPPs)</th>
+          <th scope="col">Top 10 / Top 100</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.byYear.map(y => (
+          <tr data-year={y.taxYear}>
+            <th scope="row">{y.taxYear} ({y.payoutYear})</th>
+            <td>{y.eligibleNiwCount !== null ? count(y.eligibleNiwCount) : 'n/a'}</td>
+            <td>{count(y.fundedOrgCount)}</td>
+            <td>{y.eligiblePaidZeroCount !== null ? count(y.eligiblePaidZeroCount) : 'n/a'}</td>
+            <td>{y.paidNotInFinalNiwCount !== null ? count(y.paidNotInFinalNiwCount) : 'n/a'}</td>
+            <td>{pln(y.totalGrosze)}</td>
+            <td>{(y.disclosedTaxpayersTenthsK / 10).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}k ({count(y.taxpayerSheetOrgCount)})</td>
+            <td>{y.top10SharePct.toFixed(2)}% / {y.top100SharePct.toFixed(2)}%</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Poland 2025 1.5% PIT totals by voivodeship" tabindex="0">
+    <table class="data pl-table">
+      <caption>Tax year 2025 (paid 2026) disbursements by registered OPP voivodeship (registration location, not service site)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Voivodeship</th>
+          <th scope="col">Funded OPPs (2025)</th>
+          <th scope="col">2025 total (PLN)</th>
+          <th scope="col">Share of national total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {voivEntries.map(([code, info]) => (
+          <tr data-voiv={code}>
+            <th scope="row">{info.pl} ({info.en})</th>
+            <td>{count(info.funded2025)}</td>
+            <td>{plnM(info.grosze2025)}</td>
+            <td>{((info.grosze2025 * 100) / y2025.totalGrosze).toFixed(2)}%</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads and provenance</h2>
+  <p>Source: Ministerstwo Finansów (dataset 171) and NIW-CRSO (datasets 3564, 4628, 20137) via <code>dane.gov.pl</code>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, under <a href={manifest.license}>CC0 1.0 Universal</a>. Registered voivodeship reflects each organization’s headquarters in NIW records, not where services or sub-account beneficiaries live.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.asset.path)} download>Download all {count(manifest.counts.distinctFundedRecipients)} funded recipients (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'yearly-2022-2025.csv')} download>Download yearly 2022–2025 totals (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="compare" href={url(asset + 'reconciliation.json')} download>Download cross-register reconciliation log (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .pl-table { min-inline-size: 44rem; }
+  .inline-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+  }
+  .inline-field label {
+    margin: 0;
+    white-space: nowrap;
+  }
+  .inline-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    margin: 0;
+  }
+  .inline-check input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+
+  type FlowRow = [
+    string, string, string | null, number, number,
+    number, number, number, number,
+    number | null, number | null, number | null, number | null,
+  ];
+  type Manifest = typeof import('../../../../../public/data/funding-flows/poland-pit-1-5-percent/manifest.json');
+
+  const foldPolish = (value: string) =>
+    value
+      .replace(/[łŁ]/g, 'l')
+      .normalize('NFKD')
+      .toLowerCase()
+      .replace(/\p{M}/gu, '')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .trim();
+
+  const fmtPln = (grosze: number) =>
+    `PLN ${(grosze / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-pl-pit]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const registryBase = root.dataset.registry!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#pl-pit-query', form);
+    const voivSelect = $<HTMLSelectElement>('#pl-pit-voiv', form);
+    const reconSelect = $<HTMLSelectElement>('#pl-pit-recon', form);
+    const taxCheck = $<HTMLInputElement>('#pl-pit-taxpayers', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+
+    let snapshot: Promise<FlowRow[]> | undefined;
+    let displayed: FlowRow[] = [];
+    let sequence = 0;
+    const limit = 40;
+    input.disabled = voivSelect.disabled = reconSelect.disabled = taxCheck.disabled = submit.disabled = clear.disabled = false;
+
+    const load = () =>
+      loadVerifiedJson(root.dataset.file!, manifest.asset).then(rows => {
+        if (!Array.isArray(rows) || rows.length !== manifest.asset.rows) {
+          throw new Error('The Poland 1.5% PIT index has an unexpected row count.');
+        }
+        return rows as FlowRow[];
+      });
+
+    const reset = () => {
+      displayed = [];
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    const toObject = ([krs, name, voivCode, eligMask, total4yr, g22, g23, g24, g25, t22, t23, t24, t25]: FlowRow) => ({
+      krs,
+      name,
+      voivodeship: voivCode ? (manifest.voivodeships[voivCode as keyof typeof manifest.voivodeships]?.pl ?? voivCode) : '',
+      eligibleInFinal2025Niw: Boolean(eligMask & 4),
+      total4yrPln: (total4yr / 100).toFixed(2),
+      pln2022: (g22 / 100).toFixed(2),
+      pln2023: (g23 / 100).toFixed(2),
+      pln2024: (g24 / 100).toFixed(2),
+      pln2025: (g25 / 100).toFixed(2),
+      taxpayers2022k: t22 !== null ? (t22 / 10).toFixed(1) : '',
+      taxpayers2023k: t23 !== null ? (t23 / 10).toFixed(1) : '',
+      taxpayers2024k: t24 !== null ? (t24 / 10).toFixed(1) : '',
+      taxpayers2025k: t25 !== null ? (t25 / 10).toFixed(1) : '',
+    });
+
+    function card(row: FlowRow) {
+      const [krs, name, voivCode, eligMask, total4yr, g22, g23, g24, g25, , , , t25] = row;
+      const voivInfo = voivCode ? manifest.voivodeships[voivCode as keyof typeof manifest.voivodeships] : undefined;
+      const taxText = t25 !== null
+        ? `${(t25 / 10).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}k taxpayers in 2025 (~PLN ${((g25 / 100) / (t25 * 100)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/taxpayer)`
+        : (g25 > 0 ? '<0.1k taxpayers threshold in 2025' : 'No 2025 transfer');
+      const paidOutside2025 = g25 > 0 && !(eligMask & 4);
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, krs), ' ', name),
+        h('p', {}, `4-year total (2022–2025): ${fmtPln(total4yr)} · ${taxText}`),
+        h('p', { class: 'note' }, `By tax year: 2022 ${fmtPln(g22)} · 2023 ${fmtPln(g23)} · 2024 ${fmtPln(g24)} · 2025 ${fmtPln(g25)}`),
+        h('p', { class: 'note' },
+          voivInfo ? `${voivInfo.pl} (${voivInfo.en})` : 'Voivodeship absent from 2023–2025 NIW lists',
+          paidOutside2025 ? h('span', {}, ' · ', h('a', { href: '#reconciliation' }, 'Paid in 2025 while absent from final Nov 2026 NIW list')) : '',
+          ' · ',
+          h('a', { href: `${registryBase}?krs=${krs}` }, 'Inspect Poland OPP registry record')));
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compactDigits = raw.replace(/\D+/g, '');
+      const isDigitsOnly = raw.length > 0 && /^[\d\s-]+$/.test(raw) && compactDigits.length >= 1 && compactDigits.length <= 10;
+      const paddedKrs = isDigitsOnly ? compactDigits.padStart(10, '0') : '';
+      const q = foldPolish(raw);
+      const vVal = voivSelect.value;
+      const rVal = reconSelect.value;
+      const onlyTax = taxCheck.checked;
+      try {
+        if (!raw && !vVal && !rVal && !onlyTax) {
+          throw new Error('Enter an organization name, KRS number, or select a filter.');
+        }
+        if (raw && !isDigitsOnly && q.length < 2) {
+          throw new Error('Enter at least two characters or a KRS number.');
+        }
+        submit.disabled = true;
+        status.textContent = 'Checking the 2022–2025 1.5% PIT disbursement index.';
+        snapshot ??= load().catch(err => { snapshot = undefined; throw err; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        const matches = rows.filter(row => {
+          const [krs, name, voivCode, eligMask, , g22, g23, g24, g25, , , , t25] = row;
+          if (vVal && voivCode !== vVal) return false;
+          if (rVal === 'all4' && !(g22 > 0 && g23 > 0 && g24 > 0 && g25 > 0)) return false;
+          if (rVal === 'outside2025' && !(g25 > 0 && !(eligMask & 4))) return false;
+          if (onlyTax && t25 === null) return false;
+          if (!raw) return true;
+          if (isDigitsOnly) return krs === paddedKrs;
+          return foldPolish(name).includes(q);
+        });
+        displayed = matches.slice(0, limit);
+        status.textContent = matches.length
+          ? `${matches.length.toLocaleString('en-US')} ${matches.length === 1 ? 'recipient' : 'recipients'} matched (sorted by 4-year total). Showing ${displayed.length}.`
+          : 'No matching recipient in the 2022–2025 1.5% PIT index.';
+        results.append(...displayed.map(card));
+        jsonBtn.disabled = csvBtn.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The 1.5% PIT search failed.';
+      } finally {
+        if (ticket === sequence) submit.disabled = false;
+      }
+    }
+
+    form.addEventListener('submit', event => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      voivSelect.value = reconSelect.value = '';
+      taxCheck.checked = false;
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher, license } = manifest;
+    jsonBtn.addEventListener('click', () => {
+      if (!displayed.length) return;
+      download('poland-pit-1-5-percent-recipients.json', JSON.stringify({
+        format, capturedOn, publisher, license,
+        displayedCount: displayed.length,
+        recipients: displayed.map(toObject),
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!displayed.length) return;
+      const rows = displayed.map(r => {
+        const obj = toObject(r);
+        return { ...obj, name: financialCsvName(obj.name), capturedOn, publisher, license };
+      });
+      download('poland-pit-1-5-percent-recipients.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const initial = new URLSearchParams(location.search).get('krs') ?? /^#q=([0-9]{1,10})$/.exec(location.hash)?.[1];
+    if (initial) {
+      input.value = initial.padStart(10, '0');
+      void runSearch();
+    }
+  }
+</script>
