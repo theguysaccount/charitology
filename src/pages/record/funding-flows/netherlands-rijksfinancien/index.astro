@@ -1,0 +1,361 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/netherlands-rijksfinancien/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Netherlands central-government nonprofit subsidies (2020–2024)';
+const asset = '/data/funding-flows/netherlands-rijksfinancien/';
+const registryRoute = '/record/charity-index/netherlands/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eurK = (value: number) => {
+  const sign = value < 0 ? '-' : '';
+  return `${sign}EUR ${Math.abs(value).toLocaleString('en-US')}k`;
+};
+const eurM = (value: number) => `EUR ${(value / 1000).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}M`;
+const sources = [
+  { title: 'Open data — Financiële Instrumenten 2017–2024', publisher: manifest.publisher, url: manifest.catalogue },
+  { title: 'Rijksfinanciën open-data copyright (CC0 1.0)', publisher: manifest.publisher, url: manifest.licenseNoteUrl },
+  { title: 'Open data — Algemeen Nut Beogende Instellingen (ANBI)', publisher: 'Belastingdienst', url: 'https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/themaoverstijgend/brochures_en_publicaties/open_data_anbi' },
+  { title: 'Creative Commons CC0 1.0 Public Domain Dedication', publisher: 'Creative Commons', url: manifest.license },
+];
+const formNames: Record<string, string> = {
+  S: 'Stichting',
+  V: 'Vereniging',
+  K: 'Kerkgenootschap',
+  M: 'Mixed',
+};
+const basisLabels: Record<string, string> = {
+  C: 'Unique name+city ANBI candidate',
+  N: 'Unique name-only ANBI candidate',
+  A: 'Ambiguous ANBI name collision',
+  U: 'Unmatched (no public KvK↔RSIN crosswalk)',
+};
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Netherlands"
+  summary="Search 17,868 Dutch foundations, associations and religious bodies across EUR 15.54 billion in executed central-government subsidies (2020–2024), and inspect the KvK-to-RSIN identifier gap."
+  filePath="src/pages/record/funding-flows/netherlands-rijksfinancien/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Netherlands central subsidies'}]}
+  sources={sources}>
+  <p>Between 2020 and 2024, the Dutch Ministry of Finance’s <em>Financiële Instrumenten</em> dataset recorded <strong>{count(manifest.counts.includedSubsidyRows2020to2024)} executed central-government subsidy rows</strong> (<code>Subsidies (regelingen)</code>) to Dutch nonprofit legal forms (<code>Stichting</code>, <code>Vereniging</code> and <code>Kerkgenootschap</code>) totaling <strong>{eurK(manifest.counts.netEurThousands)} net</strong> (<strong>{eurK(manifest.counts.positiveEurThousands)}</strong> positive outlays and <strong>{eurK(manifest.counts.negativeEurThousands)}</strong> across {count(manifest.counts.negativeAdjustmentRows)} negative adjustments/recoveries; all amounts are published in thousands of EUR). Grouping by eight-digit <code>KvK-nummer</code> resolves <strong>{count(manifest.counts.distinctKvkRecipients)} distinct recipients</strong> (EUR {count(manifest.counts.kvkRecipientsNetEurThousands)}k net), plus {count(manifest.counts.blankKvkRows)} rows without a KvK number ({eurK(manifest.counts.blankKvkNetEurThousands)} net, including {count(manifest.counts.anonymizedRows)} GDPR-anonymized rows).</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search the Netherlands Belastingdienst ANBI register ({count(manifest.anbiSnapshot.distinctOrganizations)} RSINs)</a>.</p>
+
+  <section class="charity-financial-search" id="q=41160054" data-nl-subsidies
+    data-file={url(asset + manifest.asset.path)} data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="nl-subsidies-heading">
+    <h2 id="nl-subsidies-heading">Search subsidy recipients</h2>
+    <p id="nl-subsidies-hint">Enter part of a recipient’s name, an exact eight-digit <code>KvK-nummer</code> (for example <code>41160054</code> for Stichting Cordaid or <code>40409352</code> for Het Nederlandse Rode Kruis) or a nine-digit candidate <code>RSIN</code> (for example <code>002872237</code> for Stichting Oxfam Novib). Search loads {(manifest.asset.bytes / 1_000_000).toFixed(2)} MB of compressed public records locally in your browser.</p>
+    <form aria-describedby="nl-subsidies-hint">
+      <label for="nl-sub-query">Recipient name, 8-digit KvK or 9-digit candidate RSIN</label>
+      <div class="finance-actions">
+        <input id="nl-sub-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <label for="nl-sub-form">Legal form</label>
+        <select id="nl-sub-form" disabled>
+          <option value="">All nonprofit forms</option>
+          <option value="S">Stichting ({count(manifest.counts.byLegalForm.Stichting)})</option>
+          <option value="V">Vereniging ({count(manifest.counts.byLegalForm.Vereniging)})</option>
+          <option value="K">Kerkgenootschap ({count(manifest.counts.byLegalForm.Kerkgenootschap)})</option>
+          <option value="M">Mixed across years ({count(manifest.counts.byLegalForm.Mixed)})</option>
+        </select>
+        <label for="nl-sub-chapter">Budget chapter</label>
+        <select id="nl-sub-chapter" disabled>
+          <option value="">All 16 chapters</option>
+          {manifest.chapters.map(ch => (
+            <option value={ch.chapter}>{ch.chapter} — {ch.canonicalName}</option>
+          ))}
+        </select>
+        <label for="nl-sub-anbi">ANBI candidate match</label>
+        <select id="nl-sub-anbi" disabled>
+          <option value="">All match states</option>
+          <option value="C">Unique name + city candidate ({count(manifest.counts.anbiCandidateMatches.uniqueNameAndCity)})</option>
+          <option value="N">Unique name-only candidate ({count(manifest.counts.anbiCandidateMatches.uniqueNameOnly)})</option>
+          <option value="A">Ambiguous name collision ({count(manifest.counts.anbiCandidateMatches.ambiguousNameCollision)})</option>
+          <option value="U">Unmatched — no public crosswalk ({count(manifest.counts.anbiCandidateMatches.unmatchedNoPublicCrosswalk)})</option>
+        </select>
+        <button class="btn" type="submit" disabled>Search subsidies</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the 2020–2024 subsidy index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed recipients as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed recipients as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="sluice" aria-label="Netherlands central-government subsidy results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'chapters-2020-2024.csv')} download>budget chapter summary CSV</a> or the original Rijksfinanciën CSV linked below.</p></noscript>
+  </section>
+
+  <h2 id="crosswalk">The KvK-to-RSIN identifier gap</h2>
+  <p>This pairing exposes a structural transparency limit in Dutch open data. Belastingdienst publishes the ANBI charity register by nine-digit <strong>RSIN</strong> (without KvK numbers), while the Ministry of Finance publishes national subsidy recipients by eight-digit <strong>KvK-nummer</strong> (without RSINs)—and the Dutch Chamber of Commerce (KVK) does not publish a free bulk <code>KvK ↔ RSIN</code> crosswalk. Furthermore, ministry exports frequently abbreviate or truncate recipient names at 40 characters.</p>
+  <p>Rather than guessing across incompatible identifiers, this edition marks every recipient by exact match basis against the <time datetime={manifest.anbiSnapshot.sourceCreatedOn}>{manifest.anbiSnapshot.sourceCreatedOn}</time> ANBI XML: <strong>{count(manifest.counts.anbiCandidateMatches.uniqueNameAndCity)}</strong> unique normalized name-and-city candidates and <strong>{count(manifest.counts.anbiCandidateMatches.uniqueNameOnly)}</strong> unique normalized name-only candidates (together representing <strong>{eurM(manifest.counts.anbiCandidateMatches.uniqueCandidateNetEurThousands)}</strong>, or 51.9% of KvK-identified subsidy net outlays), <strong>{count(manifest.counts.anbiCandidateMatches.ambiguousNameCollision)}</strong> ambiguous multi-RSIN name collisions ({eurM(manifest.counts.anbiCandidateMatches.ambiguousNetEurThousands)}), and <strong>{count(manifest.counts.anbiCandidateMatches.unmatchedNoPublicCrosswalk)}</strong> unmatched recipients ({eurM(manifest.counts.anbiCandidateMatches.unmatchedNetEurThousands)}), including major charities such as <em>Het Nederlandse Rode Kruis</em> (<code>40409352</code>) whose ANBI register uses separate chapter/variant legal names. All candidate links stay explicitly labeled as unverified name matches, never statutory ID joins.</p>
+
+  <h2 id="chapters">Subsidies by national budget chapter (2020–2024)</h2>
+  <p>Several Dutch ministries changed names across cabinets during 2020–2024—most notably Chapter <code>XVII</code> (international trade and development cooperation), which appears under three spellings (<em>Buitenlandse Handel en Ontwikkelingssamenwerking</em>, <em>Buitenlandse Handel en OS</em> and <em>Buitenlandse handel en ontwikkelingshulp</em>) totaling <strong>{eurK(manifest.chapters[1].netEurThousands)}</strong>. Grouping by canonical budget chapter code (<code>Begrotingshoofdstuk</code>) keeps every source ministry name intact while enabling continuous five-year totals.</p>
+  <div class="table-wrap" role="region" aria-label="Netherlands nonprofit subsidies by budget chapter" tabindex="0">
+    <table class="data nl-table">
+      <caption>Executed central-government nonprofit subsidies by budget chapter (2020–2024, EUR thousands)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Chapter</th>
+          <th scope="col">Ministry / fund</th>
+          <th scope="col">Rows</th>
+          <th scope="col">Distinct KvKs</th>
+          <th scope="col">Positive</th>
+          <th scope="col">Negative adj.</th>
+          <th scope="col">Net (EUR ×1,000)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.chapters.map(ch => (
+          <tr data-chapter={ch.chapter}>
+            <td><code>{ch.chapter}</code></td>
+            <th scope="row"><span lang="nl">{ch.canonicalName}</span></th>
+            <td>{count(ch.rows)}</td>
+            <td>{count(ch.distinctKvks)}</td>
+            <td>{eurK(ch.positiveEurThousands)}</td>
+            <td>{eurK(ch.negativeEurThousands)}</td>
+            <td>{eurK(ch.netEurThousands)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="top-recipients">Largest nonprofit subsidy recipients (2020–2024)</h2>
+  <p>The 15 largest KvK-identified nonprofit subsidy recipients show why Dutch <code>Stichting</code> and <code>Vereniging</code> legal forms span far beyond traditional fundraising charities—ranging from research institutes (<em>Stichting Wageningen Research</em>), public-health screening bodies and energy/housing funds to major humanitarian NGOs (<em>Stichting Cordaid</em>, <em>Het Nederlandse Rode Kruis</em>, <em>SNV</em> and <em>Stichting Oxfam Novib</em>).</p>
+  <div class="table-wrap" role="region" aria-label="Top 15 Dutch nonprofit subsidy recipients 2020-2024" tabindex="0">
+    <table class="data nl-table">
+      <caption>Top 15 KvK-identified nonprofit subsidy recipients (2020–2024, EUR thousands)</caption>
+      <thead>
+        <tr>
+          <th scope="col">KvK</th>
+          <th scope="col">Recipient</th>
+          <th scope="col">Form</th>
+          <th scope="col">Main ch.</th>
+          <th scope="col">2024</th>
+          <th scope="col">2020–2024 net</th>
+          <th scope="col">ANBI candidate</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topRecipients.map(item => (
+          <tr data-kvk={item.kvk}>
+            <td><code>{item.kvk}</code></td>
+            <th scope="row"><span lang="nl">{item.name}</span></th>
+            <td>{formNames[item.legalForm] ?? item.legalForm}</td>
+            <td><code>{item.primaryChapter}</code></td>
+            <td>{item.k2024 === null ? '—' : eurK(item.k2024)}</td>
+            <td>{eurK(item.netEurThousands)}</td>
+            <td>
+              {item.candidateRsin
+                ? <a href={url(`${registryRoute}?rsin=${item.candidateRsin}`)}><code>{item.candidateRsin}</code> ({item.anbiMatchBasis})</a>
+                : basisLabels[item.anbiMatchBasis]}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="coverage">Yearly totals, excluded instruments and downloads</h2>
+  <div class="table-wrap" role="region" aria-label="Yearly nonprofit subsidy coverage 2020-2024" tabindex="0">
+    <table class="data nl-table">
+      <caption>Yearly nonprofit subsidies in Rijksfinanciën (2020–2024, EUR thousands)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Budget year</th>
+          <th scope="col">Rows</th>
+          <th scope="col">Distinct KvKs</th>
+          <th scope="col">Blank KvK (anon.)</th>
+          <th scope="col">Negative rows</th>
+          <th scope="col">Net (EUR ×1,000)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.byYear.map(row => (
+          <tr data-year={row.year}>
+            <th scope="row">{row.year}</th>
+            <td>{count(row.rows)}</td>
+            <td>{count(row.distinctKvks)}</td>
+            <td>{count(row.blankKvkRows)} ({count(row.anonymizedRows)})</td>
+            <td>{count(row.negativeRows)} ({eurK(row.negativeEurThousands)})</td>
+            <td>{eurK(row.netEurThousands)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Scope boundaries kept visible:</strong> The source CSV covers 2017–2024 ({count(manifest.counts.totalCsvRows2017to2024)} rows), but recipient-level <code>Rechtsvorm</code> and <code>KVKnummer</code> fields begin in 2020 ({count(manifest.counts.pre2020RowsWithoutRechtsvorm)} earlier aggregate rows in 2017–2019 are excluded). Fourteen condo-association rows (<code>Vereniging van Eigenaars</code>) are excluded from nonprofit totals. Crucially, non-subsidy budget instruments paid to Dutch foundations and associations are kept strictly separate so statutory public-institution block grants do not inflate charitable subsidies—most notably <strong><code>Bekostiging</code> ({count(manifest.excludedNonprofitInstruments[0].rows)} rows, {eurK(manifest.excludedNonprofitInstruments[0].netEurThousands)})</strong>, which funds schools, universities and hospitals, plus <code>Bijdrage aan ZBOs en RWTs</code> ({eurK(manifest.excludedNonprofitInstruments[1].netEurThousands)}) and <code>Bijdrage aan (inter-)nationale organisaties</code> ({eurK(manifest.excludedNonprofitInstruments[2].netEurThousands)}).</p>
+  <p>Source anomalies preserved in <code>anomalies.json</code> include unpadded 5–7 digit KvK strings zero-padded to 8 digits, exact 40-character name truncations, multi-spelling KvKs, one KvK recorded under both <code>Stichting</code> and <code>Vereniging</code> across years, all {count(manifest.counts.blankKvkRows)} blank-KvK rows and the 25 largest negative subsidy adjustments. Central-government executed outlays measure national budget disbursements; onward sub-grants, municipal subsidies and end-program outcomes require separate local records.</p>
+  <p>Source: {manifest.publisher}, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, dedicated to the public domain under <a href={manifest.license}>CC0 1.0</a>.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.asset.path)} download>Download recipient index (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'chapters-2020-2024.csv')} download>Download all 16 budget chapters (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download anomalies and collision log (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .nl-table { min-inline-size: 42rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+  import { financialCsvName, normalizeFinancialName } from '../../../../lib/client/financial-directory';
+
+  type Row = [
+    string, string, 'S' | 'V' | 'K' | 'M', string | null, string, string,
+    number | null, number | null, number | null, number | null, number | null,
+    number, number, 'C' | 'N' | 'A' | 'U', string | null,
+  ];
+  type Manifest = typeof import('../../../../../public/data/funding-flows/netherlands-rijksfinancien/manifest.json');
+
+  const formLabels: Record<'S' | 'V' | 'K' | 'M', string> = {
+    S: 'Stichting',
+    V: 'Vereniging',
+    K: 'Kerkgenootschap',
+    M: 'Mixed across years',
+  };
+  const basisText: Record<'C' | 'N' | 'A' | 'U', string> = {
+    C: 'ANBI candidate (unique name + city — not statutory ID join)',
+    N: 'ANBI candidate (unique name only — not statutory ID join)',
+    A: 'Ambiguous ANBI name collision (>1 RSIN)',
+    U: 'Unmatched (no public KvK↔RSIN crosswalk)',
+  };
+  const fmtEurK = (value: number | null) => {
+    if (value === null) return '—';
+    const sign = value < 0 ? '-' : '';
+    return `${sign}EUR ${Math.abs(value).toLocaleString('en-US')}k`;
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-nl-subsidies]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const registryBase = root.dataset.registry!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#nl-sub-query', form);
+    const formSelect = $<HTMLSelectElement>('#nl-sub-form', form);
+    const chSelect = $<HTMLSelectElement>('#nl-sub-chapter', form);
+    const anbiSelect = $<HTMLSelectElement>('#nl-sub-anbi', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    let snapshot: Promise<Row[]> | undefined;
+    let displayed: Row[] = [];
+    let sequence = 0;
+    input.disabled = formSelect.disabled = chSelect.disabled = anbiSelect.disabled = submit.disabled = clear.disabled = false;
+
+    async function load() {
+      const rows = await loadVerifiedJson(root.dataset.file!, manifest.asset);
+      if (!Array.isArray(rows) || rows.length !== manifest.asset.rows) throw new Error('The subsidy index has an unexpected row count.');
+      return rows as Row[];
+    }
+
+    function reset() {
+      displayed = [];
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function card(row: Row) {
+      const [kvk, name, legalForm, city, primaryChapter, chapters, k20, k21, k22, k23, k24, netK, rowCount, basis, candRsin] = row;
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, `KvK ${kvk}`), ' ', h('span', { lang: 'nl' }, name)),
+        h('p', {},
+          `Net 2020–2024: ${fmtEurK(netK)} · 2024: ${fmtEurK(k24)} · 2023: ${fmtEurK(k23)} · 2022: ${fmtEurK(k22)} · 2021: ${fmtEurK(k21)} · 2020: ${fmtEurK(k20)}`),
+        h('p', { class: 'note' },
+          `${formLabels[legalForm]}${city ? ` · ${city}` : ''} · Primary chapter ${primaryChapter} (all: ${chapters.replace(/\|/g, ', ')}) · ${rowCount} source ${rowCount === 1 ? 'row' : 'rows'}`),
+        h('p', { class: 'note' },
+          candRsin
+            ? h('span', {}, `${basisText[basis]}: `, h('a', { href: `${registryBase}?rsin=${candRsin}` }, `Inspect RSIN ${candRsin}`))
+            : basisText[basis]));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compact = raw.replace(/\s+/g, '');
+      const nameQuery = normalizeFinancialName(raw);
+      const formVal = formSelect.value;
+      const chVal = chSelect.value;
+      const anbiVal = anbiSelect.value;
+      const isKvk = /^[0-9]{8}$/.test(compact);
+      const isRsin = /^[0-9]{9}$/.test(compact);
+      try {
+        if (!raw && !formVal && !chVal && !anbiVal) throw new Error('Enter a name, 8-digit KvK, 9-digit candidate RSIN, or choose a filter.');
+        if (raw && !isKvk && !isRsin && nameQuery.length < 2) throw new Error('Enter at least two characters or an exact 8-digit KvK / 9-digit RSIN.');
+        submit.disabled = true;
+        status.textContent = 'Checking the 2020–2024 Rijksfinanciën nonprofit subsidy index.';
+        snapshot ??= load().catch(error => { snapshot = undefined; throw error; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        const found = rows.filter(row => {
+          if (formVal && row[2] !== formVal) return false;
+          if (chVal && !row[5].split('|').includes(chVal)) return false;
+          if (anbiVal && row[13] !== anbiVal) return false;
+          if (!raw) return true;
+          if (isKvk) return row[0] === compact;
+          if (isRsin) return row[14] === compact;
+          return normalizeFinancialName(row[1]).includes(nameQuery);
+        });
+        displayed = found.slice(0, 60);
+        status.textContent = found.length
+          ? `${found.length.toLocaleString('en-US')} ${found.length === 1 ? 'recipient' : 'recipients'}. Showing ${displayed.length}.`
+          : 'No matching nonprofit subsidy recipients in this edition.';
+        results.append(...displayed.map(card));
+        json.disabled = csv.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The subsidy search failed.';
+      } finally {
+        if (ticket === sequence) submit.disabled = false;
+      }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      input.value = formSelect.value = chSelect.value = anbiSelect.value = '';
+      submit.disabled = false;
+      status.textContent = 'Search cleared.';
+      if (/^#q=[0-9]{8,9}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#nl-subsidies-heading');
+      }
+      input.focus();
+    });
+
+    const exported = () => displayed.map(row => Object.fromEntries(manifest.fields.map((field, idx) => [field, row[idx]])));
+    json.addEventListener('click', () => {
+      if (displayed.length) download('netherlands-rijksfinancien-subsidies-search.json',
+        JSON.stringify({ capturedOn: manifest.capturedOn, currency: manifest.currency, amountUnit: manifest.amountUnit, publisher: manifest.publisher, license: manifest.license, source: manifest.source, recipients: exported() }, null, 2) + '\n',
+        'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!displayed.length) return;
+      const rows = exported().map(row => ({
+        ...row,
+        name: financialCsvName(String(row.name ?? '')),
+        city: row.city ? financialCsvName(String(row.city)) : '',
+        currency: manifest.currency,
+        amountUnit: manifest.amountUnit,
+        capturedOn: manifest.capturedOn,
+        publisher: manifest.publisher,
+        license: manifest.license,
+      }));
+      download('netherlands-rijksfinancien-subsidies-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const linkedId = /^#q=([0-9]{8,9})$/.exec(location.hash)?.[1] ?? new URLSearchParams(location.search).get('kvk') ?? new URLSearchParams(location.search).get('rsin');
+    if (linkedId && /^[0-9]{8,9}$/.test(linkedId)) {
+      input.value = linkedId;
+      form.requestSubmit();
+    }
+  }
+</script>

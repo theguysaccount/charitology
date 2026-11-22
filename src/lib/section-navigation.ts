@@ -212,6 +212,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Registry coverage', 'permit'],
     ['finance', 'Read financial summaries', 'coins'],
   ],
+  '/record/charity-index/netherlands/': [
+    ['nl-search-heading', 'Search ANBI organizations', 'lens'],
+    ['funding', 'Follow central-government subsidies', 'sluice'],
+    ['coverage', 'Coverage, revocations and statutory disclosure URLs', 'archive'],
+  ],
   '/record/charity-index/new-zealand/': [
     ['nz-search-heading', 'Look up a charity', 'lens'],
     ['coverage', 'Coverage and original records', 'permit'],
@@ -463,6 +468,13 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['annual-accounts', 'Four years of accounts', 'table'],
     ['geography-and-need', 'Planned work and independent counts', 'pin'],
     ['downloads', 'Download the linked records', 'download'],
+  ],
+  '/record/funding-flows/netherlands-rijksfinancien/': [
+    ['nl-subsidies-heading', 'Search subsidy recipients', 'lens'],
+    ['crosswalk', 'The KvK-to-RSIN identifier gap', 'compare'],
+    ['chapters', 'Subsidies by national budget chapter (2020–2024)', 'table'],
+    ['top-recipients', 'Largest nonprofit subsidy recipients (2020–2024)', 'coins'],
+    ['coverage', 'Yearly totals, excluded instruments and downloads', 'archive'],
   ],
   '/record/funding-flows/norway-momskompensasjon/': [
     ['norway-moms-heading', 'Search grant recipients', 'lens'],

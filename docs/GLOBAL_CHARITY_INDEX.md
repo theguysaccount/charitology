@@ -685,3 +685,23 @@ node scripts/check-norway-charity-index.mjs
 ```
 
 Next, monitor Brønnøysundregistrene’s Regnskapsregisteret API for `IDEELL` nonprofit chart-of-accounts support, qualify Lottstift’s Norsk Tipping gaming-surplus disbursements (`Utbetaling-speleoverskotet`) for cross-scheme comparison by organisasjonsnummer, and trace onward distributions from selected central umbrellas (`Sentralledd`) where public annual reports disclose chapter-level transfers.
+
+## Netherlands ANBI public benefit register and central-government subsidies
+
+The [Netherlands ANBI lookup](https://charitology.com/record/charity-index/netherlands/) indexes all **54,361 distinct nine-digit RSIN organizations** from **54,487 official decrees** in the Dutch Tax and Customs Administration (Belastingdienst) `anbi.xml` bulk archive dated November 16, 2026 (version `26320`, captured November 22, 2026 under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)). Every retained RSIN passes the Dutch 11-proef check digit. The edition distinguishes **45,723 active ANBI organizations** (including **8,275 active Cultural ANBIs**) from **8,638 revoked or ended organizations**, surfaces **121 multi-decree RSINs** and **8,709 retroactive revocations** where `eindDatum` precedes `intrekkingsDatum`, retains **54,002 validated HTTP(S) statutory disclosure URLs**, and preserves the **5 statutory public-body umbrella decrees** without an RSIN in `manifest.json`. Because Dutch ANBI law decentralizes annual financial reporting to each charity’s own website, no centralized balance-sheet table is claimed.
+
+The paired [Netherlands central-government nonprofit subsidies edition](https://charitology.com/record/funding-flows/netherlands-rijksfinancien/) extracts **52,256 executed `Subsidies (regelingen)` rows** from the Ministry of Finance’s *Financiële Instrumenten 2017–2024* open-data CSV (CC0 1.0) across **2020–2024**—the five fiscal years in which recipient `Rechtsvorm` and `KVKnummer` are published—for Dutch nonprofit legal forms (`Stichting`, `Vereniging`, `Vereniging met volledige rechtsbevoegdheid` and `Kerkgenootschap`, excluding 14 `Vereniging van Eigenaars` condo-association rows and keeping statutory `Bekostiging` school/university/hospital block funding of EUR 70,881,359k strictly separate). Total executed subsidies reach **EUR 15,540,383k net** (+EUR 15,558,167k positive outlays and -EUR 17,784k across 118 negative adjustments/recoveries), reconciling exactly between **17,868 KvK-identified recipients** (EUR 15,515,722k net) and **58 blank-KvK rows** (EUR 24,661k net, including 30 GDPR-anonymized rows). Grouping by canonical `Begrotingshoofdstuk` consolidates cabinet renamings (such as Chapter `XVII` international development across three source spellings totaling EUR 2,904,265k).
+
+Because Belastingdienst publishes ANBIs by nine-digit **RSIN** and Rijksfinanciën publishes subsidies by eight-digit **KvK-nummer** with no free bulk `KvK ↔ RSIN` crosswalk from KVK, cross-register matches are strictly labeled by conservative normalized-name basis (`46` unique name+city candidates and `3,207` unique name-only candidates totaling EUR 8,057,505k, `63` ambiguous multi-RSIN collisions totaling EUR 70,943k, and `14,552` unmatched recipients totaling EUR 7,387,274k—including *Het Nederlandse Rode Kruis*, KvK `40409352`, which is never guessed).
+
+Rebuild offline from the two exact CC0 captures pinned in [`src/data/netherlands-index-sources.tsv`](../src/data/netherlands-index-sources.tsv):
+
+```sh
+python3 scripts/build-netherlands-charity-index.py --source-dir /path/to/captured-inputs --out-root /path/to/rebuild
+diff -r public/data/charity-registry/netherlands /path/to/rebuild/charity-registry/netherlands
+diff -r public/data/funding-flows/netherlands-rijksfinancien /path/to/rebuild/funding-flows/netherlands-rijksfinancien
+npm run build
+node scripts/check-netherlands-charity-index.mjs
+```
+
+Next, qualify a public Dutch municipal subsidy register that exposes both awarded (`verleend`) and final settled (`vastgesteld`) amounts (such as Amsterdam or Utrecht) to trace post-audit adjustments, and link Dutch Ministry of Foreign Affairs (Chapter `XVII`) IATI activities to ANBI annual financial disclosures published on statutory `webSite` URLs.
