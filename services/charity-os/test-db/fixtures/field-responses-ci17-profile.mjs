@@ -46,8 +46,8 @@ export function checkedFieldCi17Inputs(value) {
 }
 function commonRole(row) {
   must(row.database === "charitology_os_ci" && row.port === 5432 && typeof row.address === "string" && isIP(row.address) !== 0);
-  must(Number.isInteger(row.version_num) && row.version_num === 170011);
-  must(typeof row.version === "string" && /^17\.11(?:\s|$)/.test(row.version) && row.version.length <= 200 && row.rolcanlogin === true && row.memberships === 0);
+  must(Number.isInteger(row.version_num) && row.version_num >= 170000 && row.version_num < 180000);
+  must(typeof row.version === "string" && new RegExp("^17\\." + (row.version_num - 170000) + "(?:\\s|$)").test(row.version) && row.version.length <= 200 && row.rolcanlogin === true && row.memberships === 0);
   for (const key of ["rolsuper", "rolcreatedb", "rolcreaterole", "rolinherit", "rolreplication", "rolbypassrls"]) must(typeof row[key] === "boolean");
   for (const [key, value] of Object.entries(TIMEOUTS)) must(row[key] === value, "FIELD_CI17_TIMEOUTS");
 }
@@ -193,6 +193,6 @@ export async function createFieldCi17Profile() {
     return Object.freeze({ profile: "github-field-pg17-v1", sourceCommit: source.commit, sourceTree: source.tree, sourceFiles: source.files.length, sourceSha256: source.sha256, runId: input.runId, runAttempt: input.runAttempt, actualServerVersion: identity.version, actualServerVersionNum: identity.version_num, nodeVersion: process.versions.node, pgVersion: pgPackage.version, timeoutsVerified: true, cleanupVerified: true, ownedSchemas: records.length, testAssertionsNotInferredFromCleanup: true });
   };
   const abandon = async () => { if (!finished) { try { await bootstrap.end(); } catch { driverFailed = true; } finished = true; } };
-  const profile = Object.freeze({ ownerUrl: checkedFieldCi17Url(URLS.owner, "owner"), runtimeUrl: checkedFieldCi17Url(URLS.runtime, "runtime"), schemaPrefix: "os_field_ci_", checkUrl: text => must([URLS.owner + "?sslmode=disable", URLS.runtime + "?sslmode=disable"].includes(text)), watch, assertTarget, assertRole, beforeSchema, cleanup, cleanupCount: () => records.length, cleanupsAfter: n => records.slice(n), finish, abandon });
+  const profile = Object.freeze({ expectedServerVersionNum: identity.version_num, ownerUrl: checkedFieldCi17Url(URLS.owner, "owner"), runtimeUrl: checkedFieldCi17Url(URLS.runtime, "runtime"), schemaPrefix: "os_field_ci_", checkUrl: text => must([URLS.owner + "?sslmode=disable", URLS.runtime + "?sslmode=disable"].includes(text)), watch, assertTarget, assertRole, beforeSchema, cleanup, cleanupCount: () => records.length, cleanupsAfter: n => records.slice(n), finish, abandon });
   admitted.add(profile); return profile;
 }

@@ -1,4 +1,4 @@
-/** Explicit recurrence closed GitHub PostgreSQL17.11 entry. Import is inert; only this zero-argument
+/** Explicit recurrence closed GitHub PostgreSQL17 entry. Import is inert; only this zero-argument
  * function may mint its dedicated profile and open owned resources later. */
 import assert from "node:assert/strict";
 import { createHash, randomBytes } from "node:crypto";
@@ -57,11 +57,11 @@ export async function runRecurrenceCi17(){
  const retain=async(name,value)=>{assert(output&&/^[a-z0-9-]+\.json$/.test(name)&&!names.has(name));const encoded=Buffer.from(JSON.stringify(value)+"\n","utf8"),bytes=encoded.length;assert(bytes<=MAX);artifactBytes+=bytes;assert(artifactBytes<=TOTAL);names.add(name);const ref=await saveOutputArtifact(output,name,encoded);artifacts.push(ref);return ref;};
  try{
   profile=await createRecurrenceCi17Profile();
-  assert.equal(profile.expectedServerVersionNum,170011);
+  assert(Number.isInteger(profile.expectedServerVersionNum)&&profile.expectedServerVersionNum>=170000&&profile.expectedServerVersionNum<180000);
   assert.equal(RECURRENCE_CASE_NAMES.length,18);assert.equal(new Set(RECURRENCE_CASE_NAMES).size,18);
   output=await createOutputDirectory(profile);emit({format:"recurrence-business-ci17-evidence-directory",directory:output.directory,savedFileMode:"0600",directoryMode:"0700",outsideQualifiedCheckout:true});
   fixture=await openRecurrenceFixture(profile);caps=requireRecurrenceFixture(fixture);
-  caseWork=runRecurrenceCases({...caps,modules:caps.modules,sql,absentGolden,catalogVectors,expectedServerVersionNum:170011,
+  caseWork=runRecurrenceCases({...caps,modules:caps.modules,sql,absentGolden,catalogVectors,expectedServerVersionNum:profile.expectedServerVersionNum,
    onCase:async value=>{assert(value.number===cases.length+1&&value.name===RECURRENCE_CASE_NAMES[value.number-1]);cases.push(value);const ref=await retain("case-"+String(value.number).padStart(2,"0")+".json",value);emit({format:"recurrence-business-ci17-case",number:value.number,name:value.name,status:value.status,code:safe(value.code),artifact:ref});},
    onArtifact:async(name,value)=>{const ref=await retain(name,value);emit({format:"recurrence-business-ci17-artifact-digest",...ref,bodyRetainedInLog:false});}
   });caps.track(caseWork);result=await caseWork;

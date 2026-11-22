@@ -35,7 +35,7 @@ export const FIELD_CASE_NAMES=Object.freeze([
  'FD14 settled case work and bounded side effects',
 ]);
 export async function runFieldCases({db,owner,modules:M,sql,healthy,onCase,onArtifact,providerCalls,expectedServerVersionNum,expectedRuntimeRole}){
- assert.equal(expectedServerVersionNum,170011);assert.equal(expectedRuntimeRole,"os_test_app");
+ assert(Number.isInteger(expectedServerVersionNum)&&expectedServerVersionNum>=170000&&expectedServerVersionNum<180000);assert.equal(expectedRuntimeRole,"os_test_app");
   const results=[],calls=[],sessions=new Map(),actors=new Map(),active=new Set();let serial=0,artifactBytes=0,denied=0,otherAuth=0;
  const key=()=>`field_command_${String(++serial).padStart(8,'0')}`;
  const track=p=>{active.add(p);void p.then(()=>active.delete(p),()=>active.delete(p));return p;};

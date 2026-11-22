@@ -1,4 +1,4 @@
-/** Explicit reminder closed GitHub PostgreSQL17.11 entry. Import is inert; only this zero-argument
+/** Explicit reminder closed GitHub PostgreSQL17 entry. Import is inert; only this zero-argument
  * function may mint its dedicated profile and open owned resources later. */
 import assert from "node:assert/strict";
 import { createHash, randomBytes } from "node:crypto";
@@ -56,7 +56,7 @@ export async function runReminderCi17(){
  const retain=async(name,value)=>{assert(output&&/^[a-z0-9-]+\.json$/.test(name)&&!names.has(name));const encoded=Buffer.from(JSON.stringify(value)+"\n","utf8"),bytes=encoded.length;assert(bytes<=MAX);artifactBytes+=bytes;assert(artifactBytes<=TOTAL);names.add(name);const ref=await saveOutputArtifact(output,name,encoded);artifacts.push(ref);return ref;};
  try{
   profile=await createReminderCi17Profile();
-  assert.equal(profile.expectedServerVersionNum,170011);
+  assert(Number.isInteger(profile.expectedServerVersionNum)&&profile.expectedServerVersionNum>=170000&&profile.expectedServerVersionNum<180000);
   assert.equal(REMINDER_CASE_NAMES.length,10);assert.equal(new Set(REMINDER_CASE_NAMES).size,10);
   assert.equal(REMINDER_CAPACITY_WORKER_NAMES.length,10);assert.equal(new Set(REMINDER_CAPACITY_WORKER_NAMES).size,10);assert.equal(new Set([...REMINDER_CASE_NAMES,...REMINDER_CAPACITY_WORKER_NAMES]).size,20);
   output=await createOutputDirectory(profile);emit({format:"reminder-business-ci17-evidence-directory",directory:output.directory,savedFileMode:"0600",directoryMode:"0700",outsideQualifiedCheckout:true});
