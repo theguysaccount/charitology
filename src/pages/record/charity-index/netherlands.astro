@@ -24,17 +24,19 @@ const sources = [
   <section class="charity-financial-search" data-netherlands-registry data-base={url(dataPath)}
     data-grants={url(grantsPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="nl-search-heading">
     <h2 id="nl-search-heading">Search ANBI organizations</h2>
-    <p id="nl-search-hint">Enter the beginning of a legal name or an exact nine-digit fiscal number (RSIN, for example <code>808298276</code> for Stichting Cordaid or <code>002872237</code> for Stichting Oxfam Novib). Search loads only the matching shard locally in your browser.</p>
+    <p id="nl-search-hint">Enter the beginning of a charity’s name (including working names without <code>Stichting</code> / <code>Vereniging</code>, e.g., <code>cordaid</code> or <code>oxfam novib</code>) or an exact nine-digit fiscal number (RSIN, e.g., <code>808298276</code> or <code>002872237</code>). Search runs locally in your browser.</p>
     <form aria-describedby="nl-search-hint">
       <label for="nl-query">Organization name or nine-digit RSIN</label>
       <div class="finance-actions">
         <input type="search" id="nl-query" maxlength="160" autocomplete="off" disabled />
-        <label for="nl-status">ANBI status</label>
-        <select id="nl-status" disabled>
-          <option value="">All statuses ({count(manifest.counts.distinctOrganizations)})</option>
-          <option value="A">Active ANBI ({count(manifest.counts.activeOrganizations)})</option>
-          <option value="R">Revoked or ended ({count(manifest.counts.revokedOrEndedOrganizations)})</option>
-        </select>
+        <span class="inline-field">
+          <label for="nl-status">ANBI status</label>
+          <select id="nl-status" disabled>
+            <option value="">All statuses ({count(manifest.counts.distinctOrganizations)})</option>
+            <option value="A">Active ANBI ({count(manifest.counts.activeOrganizations)})</option>
+            <option value="R">Revoked or ended ({count(manifest.counts.revokedOrEndedOrganizations)})</option>
+          </select>
+        </span>
         <label class="inline-check"><input type="checkbox" id="nl-cultural-only" disabled /> Active Cultural ANBI only</label>
         <label class="inline-check"><input type="checkbox" id="nl-subsidy-only" disabled /> Has 2020–2024 subsidy name candidate</label>
         <button type="submit" class="btn" disabled>Search ANBIs</button>
@@ -60,22 +62,6 @@ const sources = [
   <p>Published by {manifest.publisher} under <a href={manifest.license}>CC0 1.0 Public Domain</a>. The <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>source manifest</a> pins the archive hash, XML hash, statutory umbrella list and all shard fingerprints. <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
 </Entry>
 
-<style>
-  .inline-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: 0.92rem;
-    margin: 0;
-  }
-  .inline-check input[type="checkbox"] {
-    flex: 0 0 auto;
-    width: auto;
-    padding: 0;
-    margin: 0;
-  }
-</style>
-
 <script>
   import { $, h } from '../../../lib/client/dom';
   import { download, toCsv } from '../../../lib/client/files';
@@ -94,7 +80,8 @@ const sources = [
   };
   type Result = { total: number; organizations: Organization[] };
 
-  const isRsin = (value: string) => /^[0-9]{9}$/.test(value.replace(/\s+/g, ''));
+  const stripDigits = (value: string) => value.replace(/[\s.-]+/g, '');
+  const isRsin = (value: string) => /^[0-9]{9}$/.test(stripDigits(value));
   const bucketFor = (norm: string) => {
     const first = norm[0] ?? '';
     if (first >= 'a' && first <= 'z') return first;
@@ -160,7 +147,7 @@ const sources = [
     }
 
     async function search(value: string): Promise<Result> {
-      const cleaned = value.replace(/\s+/g, '');
+      const cleaned = stripDigits(value);
       const selectedStatus = statusFilter.value;
       const onlyCultural = culturalOnly.checked;
       const onlySubsidy = subsidyOnly.checked;
@@ -179,13 +166,26 @@ const sources = [
 
       const query = normalizeFinancialName(value);
       if (query.length < 2) throw new Error('Enter at least two characters of a legal name or an exact nine-digit RSIN.');
+      const queries = [query];
+      const hasLegalPrefix = query.startsWith('stichting ') || query.startsWith('vereniging ');
+      if (!hasLegalPrefix) {
+        queries.push(`stichting ${query}`, `vereniging ${query}`);
+      }
+      const buckets = [...new Set(queries.map(bucketFor))];
       const organizations: Organization[] = [];
+      const seen = new Set<string>();
       let total = 0;
-      for (const row of await loadNames(bucketFor(query))) {
-        if (!matchesFilters(row)) continue;
-        if (!normalizeFinancialName(row[1]).startsWith(query)) continue;
-        total++;
-        if (organizations.length < limit) organizations.push(row);
+      for (const bucket of buckets) {
+        for (const row of await loadNames(bucket)) {
+          if (seen.has(row[0]) || !matchesFilters(row)) continue;
+          const normName = normalizeFinancialName(row[1]);
+          const normAlias = row[2] ? normalizeFinancialName(row[2]) : '';
+          const hit = queries.some(q => normName.startsWith(q)) || (normAlias !== '' && normAlias.startsWith(query));
+          if (!hit) continue;
+          seen.add(row[0]);
+          total++;
+          if (organizations.length < limit) organizations.push(row);
+        }
       }
       return { total, organizations };
     }

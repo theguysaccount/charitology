@@ -2,6 +2,7 @@
 import Entry from '../../../../layouts/Entry.astro';
 import { url } from '../../../../lib/site';
 import manifest from '../../../../../public/data/funding-flows/poland-pit-1-5-percent/manifest.json';
+import registryManifest from '../../../../../public/data/charity-registry/poland/manifest.json';
 import reconciliation from '../../../../../public/data/funding-flows/poland-pit-1-5-percent/reconciliation.json';
 import '../../../../styles/charity-financial-search.css';
 
@@ -30,7 +31,7 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].gr
   crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Poland 1.5% PIT designations'}]}
   sources={sources}>
   <p>Across the first four years of Poland’s <strong>1.5% PIT</strong> tax-designation system (tax years <strong>2022–2025</strong>, disbursed in <strong>2023–2026</strong> after Poland raised the statutory rate from 1% to 1.5%), individual taxpayers directed <strong>{pln(manifest.counts.total4yrGrosze)}</strong> across <strong>{count(manifest.counts.distinctFundedRecipients)} distinct KRS organizations</strong> (<strong>{count(manifest.counts.fundedAllFourYears)}</strong> funded in all four years). Annual disbursements grew <strong>+{growthPct}%</strong> in nominal terms, from {pln(y2022.totalGrosze)} ({count(y2022.fundedOrgCount)} OPPs) for 2022 to <strong>{pln(y2025.totalGrosze)}</strong> ({count(y2025.fundedOrgCount)} OPPs) for 2025 (paid in 2026, published September 30, 2026 under <a href={manifest.license}>CC0 1.0</a>).</p>
-  <p><a class="identity-link" href={url(registryRoute)}>Search Poland’s full 2023–2025 OPP eligibility register ({count(10484)} distinct KRS organizations)</a>.</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search Poland’s full 2023–2025 OPP eligibility register ({count(registryManifest.counts.includedOrganizations)} distinct KRS organizations)</a>.</p>
 
   <section class="charity-financial-search" data-pl-pit
     data-file={url(asset + manifest.asset.path)} data-registry={url(registryRoute)}
@@ -73,7 +74,7 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].gr
   </section>
 
   <h2 id="intermediaries">Concentration and the sub-account (<em>cel szczegółowy</em>) intermediary model</h2>
-  <p>In 2025 (paid 2026), the <strong>top 10 OPPs received {y2025.top10SharePct}%</strong> of the national pool and the <strong>top 100 OPPs received {y2025.top100SharePct}%</strong>, leaving {(100 - y2025.top100SharePct).toFixed(2)}% divided across the remaining {count(y2025.fundedOrgCount - 100)} funded organizations. Headline concentration must be interpreted through Poland’s statutory <strong><em>cel szczegółowy</em> (specific purpose)</strong> line on PIT returns: several of the largest recipients—such as <em>Fundacja Dzieciom “Zdążyć z Pomocą”</em> (<code>0000037904</code>, {y2025.taxpayerSheetOrgCount ? '2.51M' : ''} taxpayers), <em>Fundacja Siepomaga</em> (<code>0000396361</code>) and <em>Fundacja Avalon</em> (<code>0000270809</code>)—operate as sub-account fundraising intermediaries where individual taxpayers earmark funds for tens of thousands of named children, patients or disability beneficiaries. Public Ministry of Finance workbooks report organization-level KRS totals only; sub-account allocations, administrative fees and final beneficiary spending require separate annual OPP reports.</p>
+  <p>In 2025 (paid 2026), the <strong>top 10 OPPs received {y2025.top10SharePct}%</strong> of the national pool and the <strong>top 100 OPPs received {y2025.top100SharePct}%</strong>, leaving {(100 - y2025.top100SharePct).toFixed(2)}% divided across the remaining {count(y2025.fundedOrgCount - 100)} funded organizations. Headline concentration must be interpreted through Poland’s statutory <strong><em>cel szczegółowy</em> (specific purpose)</strong> line on PIT returns: several of the largest recipients—such as <em>Fundacja Dzieciom “Zdążyć z Pomocą”</em> (<code>0000037904</code>, {((manifest.topRecipients2025[0].taxpayers2025TenthsK ?? 0) / 10_000).toFixed(2)}M taxpayers), <em>Fundacja Siepomaga</em> (<code>0000396361</code>) and <em>Fundacja Avalon</em> (<code>0000270809</code>)—operate as sub-account fundraising intermediaries where individual taxpayers earmark funds for tens of thousands of named children, patients or disability beneficiaries. Public Ministry of Finance workbooks report organization-level KRS totals only; sub-account allocations, administrative fees and final beneficiary spending require separate annual OPP reports.</p>
 
   <div class="table-wrap" role="region" aria-label="Top 15 recipients of Poland 1.5% PIT for tax year 2025" tabindex="0">
     <table class="data pl-table">
@@ -92,8 +93,8 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].gr
       <tbody>
         {manifest.topRecipients2025.map(item => (
           <tr data-krs={item.krs}>
-            <td><a href={url(`${registryRoute}?krs=${item.krs}`)}><code>{item.krs}</code></a></td>
-            <th scope="row">{item.name}</th>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-pl={item.krs}><code>{item.krs}</code></button></td>
+            <th scope="row"><span lang="pl">{item.name}</span> · <a href={url(`${registryRoute}?krs=${item.krs}`)}>registry</a></th>
             <td>{pln(item.grosze2025)}</td>
             <td>{item.share2025Pct.toFixed(2)}%</td>
             <td>{item.taxpayers2025TenthsK !== null ? `${(item.taxpayers2025TenthsK / 10).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}k` : '<0.1k'}</td>
@@ -180,29 +181,6 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].gr
 
 <style>
   .pl-table { min-inline-size: 44rem; }
-  .inline-field {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-wrap: nowrap;
-  }
-  .inline-field label {
-    margin: 0;
-    white-space: nowrap;
-  }
-  .inline-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: 0.92rem;
-    margin: 0;
-  }
-  .inline-check input[type="checkbox"] {
-    flex: 0 0 auto;
-    width: auto;
-    padding: 0;
-    margin: 0;
-  }
 </style>
 
 <script>
@@ -289,7 +267,7 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].gr
         : (g25 > 0 ? '<0.1k taxpayers threshold in 2025' : 'No 2025 transfer');
       const paidOutside2025 = g25 > 0 && !(eligMask & 4);
       return h('li', { class: 'card' },
-        h('h3', {}, h('span', { class: 'identity-code' }, krs), ' ', name),
+        h('h3', {}, h('span', { class: 'identity-code' }, krs), ' ', h('span', { lang: 'pl' }, name)),
         h('p', {}, `4-year total (2022–2025): ${fmtPln(total4yr)} · ${taxText}`),
         h('p', { class: 'note' }, `By tax year: 2022 ${fmtPln(g22)} · 2023 ${fmtPln(g23)} · 2024 ${fmtPln(g24)} · 2025 ${fmtPln(g25)}`),
         h('p', { class: 'note' },
@@ -354,6 +332,9 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].gr
       voivSelect.value = reconSelect.value = '';
       taxCheck.checked = false;
       status.textContent = 'Search cleared.';
+      if (/^#q=[0-9]{1,10}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#pl-pit-heading');
+      }
       input.focus();
     });
 
@@ -375,10 +356,23 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].gr
       download('poland-pit-1-5-percent-recipients.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
     });
 
-    const initial = new URLSearchParams(location.search).get('krs') ?? /^#q=([0-9]{1,10})$/.exec(location.hash)?.[1];
-    if (initial) {
-      input.value = initial.padStart(10, '0');
-      void runSearch();
+    const triggerId = (id: string | null) => {
+      if (id && /^[0-9]{1,10}$/.test(id)) {
+        input.value = id.padStart(10, '0');
+        voivSelect.value = reconSelect.value = '';
+        taxCheck.checked = false;
+        void runSearch();
+      }
+    };
+    const initial = new URLSearchParams(location.search).get('krs') ?? /^#q=([0-9]{1,10})$/.exec(location.hash)?.[1] ?? null;
+    triggerId(initial);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{1,10})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-pl]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupPl ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     }
   }
 </script>

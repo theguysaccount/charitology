@@ -30,7 +30,7 @@ const selfAnomaly = anomalies.selfDonorFilingAnomalies[0];
   <p>Across 15 disclosure years (2012–2026), Israel’s Registrar of Associations published <strong>{count(manifest.counts.totalDisclosureRows)} quarterly foreign-state donation disclosures</strong> totaling <strong>{ils(manifest.counts.netIls)} net</strong> ({ils(manifest.counts.positiveIls)} positive and {ils(manifest.counts.negativeIls)} across {count(manifest.counts.negativeAdjustmentRows)} negative adjustments) across <strong>{count(manifest.counts.distinctRecipients)} distinct recipient IDs</strong> and {count(manifest.counts.distinctCurrencies)} currency labels. Matching by exact nine-digit registration ID joins <strong>{count(manifest.counts.matchedInRegistry)} recipients</strong> directly to the merged Amutot/PBC registry ({count(manifest.counts.absentFromRegistry)} IDs are absent, including two production software test records documented below). Statutory disclosures flag <strong>{count(manifest.counts.majorityForeignStateFundedRows)} rows</strong> where foreign state entities provided the majority of the recipient’s funding.</p>
   <p><a class="identity-link" href={url(registryRoute)}>Search Israel’s full Amutot and Public Benefit Company register ({count(manifest.registrySnapshot.includedOrganizations)} organizations)</a>.</p>
 
-  <section class="charity-financial-search" id="q=580185700" data-il-fsd
+  <section class="charity-financial-search" data-il-fsd
     data-file={url(asset + manifest.asset.path)} data-registry={url(registryRoute)}
     data-manifest={JSON.stringify(manifest)} aria-labelledby="il-fsd-heading">
     <h2 id="il-fsd-heading">Search disclosed recipients</h2>
@@ -89,8 +89,8 @@ const selfAnomaly = anomalies.selfDonorFilingAnomalies[0];
       <tbody>
         {manifest.topRecipients.map(item => (
           <tr data-recipient={item.id}>
-            <td><a href={url(`${registryRoute}?id=${item.id}`)}><code>{item.id}</code></a></td>
-            <th scope="row"><bdi lang="he" dir="rtl">{item.heName}</bdi>{item.enName ? <> (<bdi dir="ltr">{item.enName}</bdi>)</> : ''}</th>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-il={item.id}><code>{item.id}</code></button></td>
+            <th scope="row"><bdi lang="he" dir="rtl">{item.heName}</bdi>{item.enName ? <> (<bdi dir="ltr">{item.enName}</bdi>)</> : ''} · <a href={url(`${registryRoute}?id=${item.id}`)}>registry</a></th>
             <td>{item.minYear}–{item.maxYear}</td>
             <td>{count(item.rows)}</td>
             <td>{count(item.majorityRows)}</td>
@@ -163,29 +163,6 @@ const selfAnomaly = anomalies.selfDonorFilingAnomalies[0];
 
 <style>
   .il-table { min-inline-size: 40rem; }
-  .inline-field {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-wrap: nowrap;
-  }
-  .inline-field label {
-    margin: 0;
-    white-space: nowrap;
-  }
-  .inline-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: 0.92rem;
-    margin: 0;
-  }
-  .inline-check input[type="checkbox"] {
-    flex: 0 0 auto;
-    width: auto;
-    padding: 0;
-    margin: 0;
-  }
 </style>
 
 <script>
@@ -262,11 +239,11 @@ const selfAnomaly = anomalies.selfDonorFilingAnomalies[0];
       const ticket = ++sequence;
       reset();
       const raw = input.value.trim();
-      const compact = raw.replace(/\s+/g, '');
+      const compact = raw.replace(/[\s-]+/g, '');
       const q = norm(raw);
       const tVal = typeSelect.value;
       const onlyMaj = majCheck.checked;
-      const isId = /^[0-9]{9}$/.test(compact);
+      const isId = /^[0-9]{9,10}$/.test(compact);
       try {
         if (!raw && !tVal && !onlyMaj) throw new Error('Enter a name, donor string, 9-digit ID, or choose a filter.');
         if (raw && !isId && q.length < 2) throw new Error('Enter at least two characters or an exact nine-digit ID.');
@@ -336,10 +313,23 @@ const selfAnomaly = anomalies.selfDonorFilingAnomalies[0];
       download('israel-foreign-state-donations-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
     });
 
-    const linkedId = /^#q=([0-9]{9})$/.exec(location.hash)?.[1] ?? new URLSearchParams(location.search).get('id');
-    if (linkedId && /^[0-9]{9}$/.test(linkedId)) {
-      input.value = linkedId;
-      form.requestSubmit();
+    const triggerId = (id: string | null) => {
+      if (id && /^[0-9]{9,10}$/.test(id)) {
+        input.value = id;
+        typeSelect.value = '';
+        majCheck.checked = false;
+        form.requestSubmit();
+      }
+    };
+    const linkedId = /^#q=([0-9]{9,10})$/.exec(location.hash)?.[1] ?? new URLSearchParams(location.search).get('id');
+    triggerId(linkedId);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{9,10})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-il]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupIl ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     }
   }
 </script>

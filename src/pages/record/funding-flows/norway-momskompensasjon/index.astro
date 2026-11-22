@@ -26,29 +26,33 @@ const discrepancy = manifest.reconciliation2025.discrepancies[0];
   <p>Across 2023, 2024 and 2025, Norway’s Gaming and Foundation Authority (Lotteri- og stiftelsestilsynet) published <strong>{count(manifest.counts.totalOrganizationYearRows)} organization-year grant rows</strong> totaling <strong>{nok(manifest.counts.totalAwardedAndDisbursedNOK)}</strong> in VAT compensation (Momskompensasjon for frivillige organisasjoner). The edition resolves <strong>{count(manifest.counts.distinctValidOrgnrs)} distinct nine-digit organization numbers</strong>, including <strong>{count(manifest.counts.presentInAllThreeYears)}</strong> that appear in all three grant years. Matching by exact ID against the <time datetime={manifest.registrySnapshot.sourceLastModified}>{manifest.registrySnapshot.sourceLastModified}</time> Frivillighetsregisteret export links <strong>{count(manifest.counts.inFrivillighetsregisteret)}</strong> recipients directly to current voluntary-register entries.</p>
   <p><a class="identity-link" href={url(registryRoute)}>Search Norway’s full Frivillighetsregisteret ({count(manifest.registrySnapshot.includedOrganizations)} organizations)</a>.</p>
 
-  <section class="charity-financial-search" id="q=864139442" data-norway-moms
+  <section class="charity-financial-search" data-norway-moms
     data-file={url(asset + manifest.asset.path)} data-registry={url(registryRoute)}
     data-manifest={JSON.stringify(manifest)} aria-labelledby="norway-moms-heading">
     <h2 id="norway-moms-heading">Search grant recipients</h2>
-    <p id="norway-moms-hint">Enter part of an organization’s name, an exact nine-digit recipient number or a central umbrella number (for example <code>864139442</code> for Norges Røde Kors and its local chapters). Search loads {(manifest.asset.bytes / 1_000_000).toFixed(2)} MB of compressed public records locally in your browser.</p>
+    <p id="norway-moms-hint">Enter part of an organization’s name (e.g., <code>rode kors</code> or <code>røde kors</code>), an exact nine-digit recipient number or a central umbrella number (for example <code>864139442</code> for Norges Røde Kors and its local chapters). Search loads {(manifest.asset.bytes / 1_000_000).toFixed(2)} MB of compressed public records locally in your browser.</p>
     <form aria-describedby="norway-moms-hint">
       <label for="moms-query">Recipient name, recipient org.nr. or umbrella org.nr.</label>
       <div class="finance-actions">
         <input id="moms-query" type="search" maxlength="160" autocomplete="off" disabled />
-        <label for="moms-role">2025 role</label>
-        <select id="moms-role" disabled>
-          <option value="">All roles</option>
-          <option value="S">Sentralledd (central umbrella)</option>
-          <option value="U">Underledd (local chapter)</option>
-          <option value="E">Enkeltstående (standalone)</option>
-        </select>
-        <label for="moms-reg">Register match</label>
-        <select id="moms-reg" disabled>
-          <option value="">All statuses</option>
-          <option value="F">In Frivillighetsregisteret</option>
-          <option value="E">In Enhetsregisteret only</option>
-          <option value="N">Absent from current Brreg snapshot</option>
-        </select>
+        <span class="inline-field">
+          <label for="moms-role">2025 role</label>
+          <select id="moms-role" disabled>
+            <option value="">All roles</option>
+            <option value="S">Sentralledd (central umbrella)</option>
+            <option value="U">Underledd (local chapter)</option>
+            <option value="E">Enkeltstående (standalone)</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="moms-reg">Register match</label>
+          <select id="moms-reg" disabled>
+            <option value="">All statuses</option>
+            <option value="F">In Frivillighetsregisteret</option>
+            <option value="E">In Enhetsregisteret only</option>
+            <option value="N">Absent from current Brreg snapshot</option>
+          </select>
+        </span>
         <button class="btn" type="submit" disabled>Search grants</button>
         <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
       </div>
@@ -111,8 +115,8 @@ const discrepancy = manifest.reconciliation2025.discrepancies[0];
       <tbody>
         {manifest.topUmbrellas2025.map(item => (
           <tr data-umbrella={item.orgnr}>
-            <td><a href={url(`${registryRoute}?orgnr=${item.orgnr}`)}><code>{item.orgnr}</code></a></td>
-            <th scope="row"><span lang="nb">{item.name}</span></th>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-norway={item.orgnr}><code>{item.orgnr}</code></button></td>
+            <th scope="row"><span lang="nb">{item.name}</span> · <a href={url(`${registryRoute}?orgnr=${item.orgnr}`)}>registry</a></th>
             <td>{count(item.memberOrganizations)}</td>
             <td>{nok(item.tranche1NOK)}</td>
             <td>{nok(item.supplementaryNOK)}</td>
@@ -190,6 +194,8 @@ const discrepancy = manifest.reconciliation2025.discrepancies[0];
     U: 'Underledd (local chapter)',
     E: 'Enkeltstående (standalone)',
   };
+  const foldNorwegian = (value: string) =>
+    normalizeFinancialName(value.replace(/[øØ]/g, 'o').replace(/[æÆ]/g, 'ae'));
   const fmtNok = (value: number | null) => value === null ? 'not in year file' : `NOK ${value.toLocaleString('en-US')}`;
 
   for (const root of document.querySelectorAll<HTMLElement>('[data-norway-moms]')) {
@@ -236,7 +242,7 @@ const discrepancy = manifest.reconciliation2025.discrepancies[0];
         h('p', { class: 'note' },
           regStatus === 'F'
             ? h('a', { href: `${registryBase}?orgnr=${orgnr}` }, 'Inspect Frivillighetsregisteret entry')
-            : h('a', { href: `https://virksomhet.brreg.no/nb/oppslag/enheter/${orgnr}` }, 'Check live Brønnøysund lookup'),
+            : h('a', { href: `https://virksomhet.brreg.no/nb/oppslag/enheter/${orgnr}`, rel: 'noopener noreferrer' }, 'Check live Brønnøysund lookup'),
           umbrella2025 && h('span', {}, ' · ', h('a', { href: `${registryBase}?orgnr=${umbrella2025}` }, `Inspect umbrella ${umbrella2025}`))));
     }
 
@@ -245,8 +251,8 @@ const discrepancy = manifest.reconciliation2025.discrepancies[0];
       const ticket = ++sequence;
       reset();
       const raw = input.value.trim();
-      const compact = raw.replace(/\s+/g, '');
-      const nameQuery = normalizeFinancialName(raw);
+      const compact = raw.replace(/[\s-]+/g, '');
+      const nameQuery = foldNorwegian(raw);
       const roleVal = roleSelect.value;
       const regVal = regSelect.value;
       try {
@@ -262,7 +268,7 @@ const discrepancy = manifest.reconciliation2025.discrepancies[0];
           if (regVal && row[2] !== regVal) return false;
           if (!raw) return true;
           if (/^[0-9]{9}$/.test(compact)) return row[0] === compact || row[4] === compact;
-          return normalizeFinancialName(row[1]).includes(nameQuery);
+          return foldNorwegian(row[1]).includes(nameQuery);
         });
         displayed = found.slice(0, 60);
         status.textContent = found.length
@@ -308,10 +314,22 @@ const discrepancy = manifest.reconciliation2025.discrepancies[0];
       download('norway-momskompensasjon-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
     });
 
+    const triggerId = (id: string | null) => {
+      if (id && /^[0-9]{9}$/.test(id)) {
+        input.value = id;
+        roleSelect.value = regSelect.value = '';
+        form.requestSubmit();
+      }
+    };
     const linkedId = /^#q=([0-9]{9})$/.exec(location.hash)?.[1] ?? new URLSearchParams(location.search).get('orgnr');
-    if (linkedId && /^[0-9]{9}$/.test(linkedId)) {
-      input.value = linkedId;
-      form.requestSubmit();
+    triggerId(linkedId);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{9})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-norway]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupNorway ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     }
   }
 </script>

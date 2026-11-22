@@ -84,32 +84,6 @@ const sectorEntries = Object.entries(manifest.sectors).sort((a, b) => b[1].count
   <p><strong>Source quirks kept visible:</strong> The Ministry of Justice CSV/API export replaces quotation marks and commas with tilde characters (<code>~</code>, such as <code>(ע~ר)</code>). <strong>{count(manifest.counts.nonStandardLegacyCheckDigitIds)}</strong> legacy identifiers (including Ottoman-era associations) do not follow Israel’s modern nine-digit Luhn check digit and are retained verbatim. Street names, apartment numbers and postal codes are omitted from this public index, retaining city only. Data from {manifest.publisher} via <a href={manifest.catalogue}>data.gov.il</a> under the <a href={manifest.license}>Israel Government Open Data License</a>. <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> · <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
 </Entry>
 
-<style>
-  .inline-field {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-wrap: nowrap;
-  }
-  .inline-field label {
-    margin: 0;
-    white-space: nowrap;
-  }
-  .inline-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: 0.92rem;
-    margin: 0;
-  }
-  .inline-check input[type="checkbox"] {
-    flex: 0 0 auto;
-    width: auto;
-    padding: 0;
-    margin: 0;
-  }
-</style>
-
 <script>
   import { $, h } from '../../../lib/client/dom';
   import { download, toCsv } from '../../../lib/client/files';
@@ -154,7 +128,8 @@ const sectorEntries = Object.entries(manifest.sectors).sort((a, b) => b[1].count
   };
 
   const hasHebrew = (value: string) => /[\u05d0-\u05ea]/.test(value);
-  const isOrgId = (value: string) => /^[0-9]{9,10}$/.test(value.replace(/\s+/g, ''));
+  const stripDigits = (value: string) => value.replace(/[\s-]+/g, '');
+  const isOrgId = (value: string) => /^[0-9]{9,10}$/.test(stripDigits(value));
   const fmtIls = (v: number | null) => v === null ? 'not reported' : `ILS ${v.toLocaleString('en-US')}`;
   const statusLabels: Record<'A' | 'P' | 'L' | 'D', string> = {
     A: 'Active / Registered',
@@ -230,7 +205,7 @@ const sectorEntries = Object.entries(manifest.sectors).sort((a, b) => b[1].count
     }
 
     async function search(value: string): Promise<Result> {
-      const cleaned = value.replace(/\s+/g, '');
+      const cleaned = stripDigits(value);
       const tVal = typeFilter.value;
       const sVal = statusFilter.value;
       const secVal = sectorFilter.value;

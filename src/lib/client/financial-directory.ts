@@ -2,18 +2,29 @@ import { loadVerifiedJson, type VerifiedJsonAsset } from './verified-json';
 
 export type FinancialShard = VerifiedJsonAsset & { path: string; rows: number };
 
+const MAX_CACHED_SHARDS = 6;
+
 export function financialShardLoader<Row>(base: string, assets: Record<string, FinancialShard>) {
-  let cached: { key: string; rows: Promise<Row[]> } | undefined;
+  const cache = new Map<string, Promise<Row[]>>();
   return (key: string) => {
     const asset = Object.hasOwn(assets, key) ? assets[key] : undefined;
     if (!asset) return Promise.resolve([] as Row[]);
-    if (cached?.key === key) return cached.rows;
+    const existing = cache.get(key);
+    if (existing) {
+      cache.delete(key);
+      cache.set(key, existing);
+      return existing;
+    }
     const rows = loadVerifiedJson(base + asset.path, asset).then(value => {
       if (!Array.isArray(value) || value.length !== asset.rows) throw new Error('The snapshot has an unexpected row count.');
       return value as Row[];
     });
-    cached = { key, rows };
-    void rows.catch(() => { if (cached?.rows === rows) cached = undefined; });
+    cache.set(key, rows);
+    if (cache.size > MAX_CACHED_SHARDS) {
+      const oldest = cache.keys().next().value;
+      if (oldest !== undefined) cache.delete(oldest);
+    }
+    void rows.catch(() => { if (cache.get(key) === rows) cache.delete(key); });
     return rows;
   };
 }
