@@ -38,7 +38,7 @@ export const RECURRENCE_CASE_NAMES=Object.freeze([
  'RR18 final RLS ACL provider and settled-work readback'
 ]);
 export async function runRecurrenceCases({db,owner,modules:M,sql,healthy,onCase,onArtifact,providerCalls,trace,absentGolden,catalogVectors,expectedServerVersionNum}){
- assert([180006,170011].includes(expectedServerVersionNum));assert.equal(RECURRENCE_CASE_NAMES.length,18);assert.equal(new Set(RECURRENCE_CASE_NAMES).size,18);
+ assert(expectedServerVersionNum===180006||(Number.isInteger(expectedServerVersionNum)&&expectedServerVersionNum>=170000&&expectedServerVersionNum<180000));assert.equal(RECURRENCE_CASE_NAMES.length,18);assert.equal(new Set(RECURRENCE_CASE_NAMES).size,18);
  const results=[],calls=[],sessions=new Map(),actors=new Map(),generationTenants=new Set(),active=new Set();let serial=0,artifactBytes=0,denied=0,otherAuth=0,rr17Phase=null;
  const key=()=>`rr_command_${String(++serial).padStart(12,'0')}`,track=p=>{active.add(p);void p.then(()=>active.delete(p),()=>active.delete(p));return p;},userFor=org=>{const v=actors.get(org);assert(opaque(v));return v;};
  const read=(org,fn,user=userFor(org))=>db.tx(user,org,fn,{readOnly:true,lock:true}),edit=(org,fn,user=userFor(org))=>db.tx(user,org,fn,{lock:true});

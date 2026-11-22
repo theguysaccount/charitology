@@ -13,7 +13,7 @@ export function createReminderTestContext(fixture,options){
  assert.equal(arguments.length,2);const caps=requireReminderFixture(fixture);assert(!fixtures.has(fixture),'One test context per owned fixture');
  assert(options&&!isProxy(options)&&Object.getPrototypeOf(options)===Object.prototype&&Reflect.ownKeys(options).length===1);const descriptor=Object.getOwnPropertyDescriptor(options,'onArtifact');assert(descriptor?.enumerable&&Object.hasOwn(descriptor,'value')&&typeof descriptor.value==='function');const onArtifact=descriptor.value;
  const {db,owner,modules:M,healthy,upgrade,identity,authAcl,authCatalog,readAuthFacts,trace,providerCalls,track}=caps;
- assert([170011,180006].includes(identity.version_num));
+ assert(identity.version_num===180006||(Number.isInteger(identity.version_num)&&identity.version_num>=170000&&identity.version_num<180000));
  const issuedTenants=new WeakSet(),sessions=new Map(),calls=[],observations=[],active=new Set();let serial=0,faultPhase=null,refusedProviderCalls=0;
  const key=()=>`reminder_pg_command_${String(++serial).padStart(12,'0')}`;
  const work=p=>{assert(p instanceof Promise);active.add(p);track(p);void p.then(()=>active.delete(p),()=>active.delete(p));return p;};

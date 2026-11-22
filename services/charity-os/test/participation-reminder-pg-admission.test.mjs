@@ -58,7 +58,8 @@ test('minimum owner and runtime role grammar pins server identity privileges mem
  }
 });
 test('PG18 data cannot qualify the separate fixed PG17 CI service',()=>{
- for(const change of [{version:'18.6',version_num:180006},{role:'os_reminder_ci_owner'},{port:65204},{directory:'relative'},{system:'unknown'},{started:''}])assert.throws(()=>checkedReminderCi17Bootstrap({...boot(),...change}));
+ assert.equal(checkedReminderCi17Bootstrap({...boot(),version:'17.12 (fictional grammar row)',version_num:170012}).version_num,170012);
+ for(const change of [{version:'18.6',version_num:180006},{version:'17.11',version_num:170012},{role:'os_reminder_ci_owner'},{port:65204},{directory:'relative'},{system:'unknown'},{started:''}])assert.throws(()=>checkedReminderCi17Bootstrap({...boot(),...change}));
 });
 
 test('a caller-shaped fixture or context cannot reach helper callbacks or SQL',()=>{

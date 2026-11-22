@@ -67,7 +67,8 @@ test("ordinary unit factory refuses the absent FIELD marker before source or dri
 });
 
 test("bootstrap selectors refuse wrong database, PG version, role and identity shape", () => {
-  for (const change of [{ database: "production" }, { role: "os_field_ci_owner" }, { port: 65182 }, { address: null }, { address: "database.invalid" }, { version_num: 180006, version: "18.6" }, { version_num: 160010, version: "16.10" }, { version_num: 170012, version: "17.12" }, { version_num: 170011, version: "17.110" }, { version_num: "170011" }, { rolsuper: false }, { rolbypassrls: false }, { rolcanlogin: false }, { memberships: 1 }, { directory: "relative" }, { system: "unknown" }, { started: "" }, { extra: true }])
+  assert.equal(checkedFieldCi17Bootstrap({ ...bootstrap(), version_num: 170012, version: "17.12 (fictional unit row)" }).version_num, 170012);
+  for (const change of [{ database: "production" }, { role: "os_field_ci_owner" }, { port: 65182 }, { address: null }, { address: "database.invalid" }, { version_num: 180006, version: "18.6" }, { version_num: 160010, version: "16.10" }, { version_num: 170012, version: "17.11" }, { version_num: 170011, version: "17.110" }, { version_num: "170011" }, { rolsuper: false }, { rolbypassrls: false }, { rolcanlogin: false }, { memberships: 1 }, { directory: "relative" }, { system: "unknown" }, { started: "" }, { extra: true }])
     assert.throws(() => checkedFieldCi17Bootstrap({ ...bootstrap(), ...change }));
 });
 

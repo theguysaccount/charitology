@@ -72,7 +72,7 @@ export async function openFieldCi17Fixture(profile){
   const definitions={user:[["id","text"],["email","text"],["emailVerified","boolean"]],session:[["id","text"],["userId","text"],["expiresAt","timestamp with time zone"]]};
   assert.equal(authCatalog.length,2);assert(authCatalog.every(table=>table.columns.length===3&&table.columns.every((column,index)=>column.name===definitions[table.name][index][0]&&column.type===definitions[table.name][index][1]&&column.notNull===true&&column.number===index+1)));
   const identity=(await db.pool.query("SELECT current_database() AS database,current_user AS role,host(inet_server_addr()) AS address,inet_server_port() AS port,current_setting('server_version_num')::int AS version_num,current_schema() AS schema")).rows[0];
-  assert.equal(identity.database,"charitology_os_ci");assert.equal(identity.role,runtimeRole);assert.equal(identity.port,5432);assert.equal(identity.version_num,170011);assert.equal(identity.schema,schema);
+  assert.equal(identity.database,"charitology_os_ci");assert.equal(identity.role,runtimeRole);assert.equal(identity.port,5432);assert.equal(identity.version_num,profile.expectedServerVersionNum);assert.equal(identity.schema,schema);
   const tableOwner=(await ownerClient.query("SELECT relowner::regrole::text AS owner FROM pg_class WHERE oid='os_reports'::regclass")).rows[0];assert.equal(tableOwner.owner,"os_field_ci_owner");assert.notEqual(tableOwner.owner,runtimeRole);
   globalThis.fetch=()=>{providerCalls++;throw refused("FIELD_CI17_PROVIDER_REFUSED");};
   const handle=Object.freeze({format:"field-ci17-business-fixture",version:1});

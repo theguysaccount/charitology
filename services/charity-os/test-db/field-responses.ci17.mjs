@@ -1,4 +1,4 @@
-/** Explicit FIELD-only PG17.11 entry. Never included in legacy *.test.mjs. */
+/** Explicit FIELD-only PG17 entry. Never included in legacy *.test.mjs. */
 import assert from "node:assert/strict";
 import { before, after, test } from "node:test";
 import { createHash } from "node:crypto";
@@ -25,7 +25,7 @@ try{
  // cases. JSON case records, not fabricated TAP subtest counts, distinguish them.
  test("FIELD actual fourteen-case handler and SQL journey",async()=>{
   try{
-   caseWork=runFieldCases({...caps,modules,sql,expectedServerVersionNum:170011,expectedRuntimeRole:"os_test_app",
+   caseWork=runFieldCases({...caps,modules,sql,expectedServerVersionNum:profile.expectedServerVersionNum,expectedRuntimeRole:"os_test_app",
     onCase:async value=>{assert(value.number===completed.length+1&&value.name===FIELD_CASE_NAMES[value.number-1]);completed.push(value);const {number,name,status,code,diagnostic,lastCalls}=value;emit({format:"field-business-ci17-case",number,name,status,...(code?{code}:{}),...(diagnostic?{diagnostic}:{}),...(lastCalls?{lastCalls}:{})});},
     onArtifact:async(name,value)=>{const text=JSON.stringify(value);assert(/^[a-z0-9-]+\.json$/.test(name)&&Buffer.byteLength(text)<=2097152);const ref={name,bytes:Buffer.byteLength(text),sha256:createHash("sha256").update(text).digest("hex")};assert(!artifacts.some(x=>x.name===name));artifacts.push(ref);emit({format:"field-business-ci17-artifact-digest",...ref,bodyRetainedInCiLog:false});},
    });caps.track(caseWork);result=await caseWork;

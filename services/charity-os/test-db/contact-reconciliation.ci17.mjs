@@ -1,4 +1,4 @@
-/** Explicit CRM-only PG17.11 entry. Not included by legacy *.test.mjs. */
+/** Explicit CRM-only PG17 entry. Not included by legacy *.test.mjs. */
 import assert from "node:assert/strict";
 import { before, after, test } from "node:test";
 import { createHash } from "node:crypto";
@@ -34,7 +34,7 @@ try {
   // numbered JSON records distinguish cases; no TAP subtest count is invented.
   test("CRM actual sixteen-case handler and SQL journey", async () => {
     try {
-      caseWork = runCrmCases({ ...caps, modules, sql, absentGolden, catalogVectors, resourceCatalogVectors, expectedServerVersionNum: 170011,
+      caseWork = runCrmCases({ ...caps, modules, sql, absentGolden, catalogVectors, resourceCatalogVectors, expectedServerVersionNum: profile.expectedServerVersionNum,
         onCase: async value => {
           assert(value.number === completed.length + 1 && value.name === CRM_CASE_NAMES[value.number - 1]); completed.push(value);
           const { number, name, status, code, diagnostic, lastCalls } = value;

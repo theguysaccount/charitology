@@ -91,15 +91,15 @@ jobs:
         env:
           GROUP_TEST_PROFILE: github-group-pg17-v1
         run: node --test --test-concurrency=1 test-db/participation-groups.ci17.mjs
-      - name: Exercise aggregate FIELD imports using the closed PG17.11 CI profile
+      - name: Exercise aggregate FIELD imports using the closed PG17 CI profile
         env:
           FIELD_TEST_PROFILE: github-field-pg17-v1
         run: node --test --test-concurrency=1 test-db/field-responses.ci17.mjs
-      - name: Exercise contact reconciliation using the closed PG17.11 CI profile
+      - name: Exercise contact reconciliation using the closed PG17 CI profile
         env:
           CRM_TEST_PROFILE: github-crm-pg17-v1
         run: node --test --test-concurrency=1 test-db/contact-reconciliation.ci17.mjs
-      - name: Exercise finite occurrence drafts using the closed PG17.11 CI profile
+      - name: Exercise finite occurrence drafts using the closed PG17 CI profile
         env:
           RECURRENCE_TEST_PROFILE: github-recurrence-pg17-v1
           RECURRENCE_RESULTS_ROOT: ${{ runner.temp }}
@@ -108,7 +108,7 @@ jobs:
           import { runRecurrenceCi17 } from './test-db/participation-recurrence.ci17.mjs';
           await runRecurrenceCi17();
           JS
-      - name: Exercise participant reminder commands, capacity and worker using the closed PG17.11 profile
+      - name: Exercise participant reminder commands, capacity and worker using the closed PG17 profile
         env:
           REMINDER_TEST_PROFILE: github-reminder-pg17-v1
           REMINDER_RESULTS_ROOT: ${{ runner.temp }}
