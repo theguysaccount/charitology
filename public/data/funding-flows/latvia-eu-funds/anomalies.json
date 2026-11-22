@@ -1,0 +1,36 @@
+{
+  "capturedOn": "2026-11-22",
+  "sloAbsentFromEnterpriseRegister": [
+    {
+      "regcode": "90002493065",
+      "name": "RĪGAS SVĒTĀS TERĒZES ROMAS KATOĻU DRAUDZE",
+      "vidOrgType": "Reliģiska organizācija",
+      "sloStatus": "Atņemts",
+      "sloSince": "2010-10-13",
+      "sloUntil": "2016-04-26",
+      "decisionCount": 2
+    }
+  ],
+  "nonprofitLeadBySloStatus": {
+    "nonSloNonprofit": {
+      "projects": 117,
+      "orgs": 61,
+      "totalCents": 15462646805,
+      "euCents": 11668648996
+    },
+    "revokedOrLiquidatedSlo": {
+      "projects": 22,
+      "orgs": 11,
+      "totalCents": 872310090,
+      "euCents": 700296530
+    },
+    "activeSlo": {
+      "projects": 153,
+      "orgs": 74,
+      "totalCents": 7012413195,
+      "euCents": 5639801424
+    }
+  },
+  "doubleCountingGuard": "Cooperation-partner participations (260 nonprofit rows across 79 projects) are stored in partners.json.gz and never added to lead-beneficiary EUR totals (EUR 233,473,700.90 across 292 nonprofit-led projects) because CFLA publishes project budgets at the lead-beneficiary level rather than per partner.",
+  "implementationRegionNote": "Multi-region projects appear once per listed implementation region in regional project counts; summing regional project totals double-counts multi-region projects, so national totals come strictly from the 292 distinct projects."
+}

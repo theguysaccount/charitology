@@ -153,6 +153,8 @@ export const symbols = {
   borderGate: 'M4 20V8l8-4 8 4v12M8 20v-8h8v8M2 20h20M10 12v8m4-8v8',
   poppy: 'M12 13v8m0-5c-3 0-5-1.5-6-3.5 3 0 5 1.5 6 3.5Zm0-3c-4 0-7-2.5-7-5.5 0-2 2-3.5 4.5-2.5C10 4 11 3 12 3s2 1 2.5 2c2.5-1 4.5.5 4.5 2.5 0 3-3 5.5-7 5.5Zm0-3.5h.01',
   taxSlice: 'M12 3a9 9 0 1 0 9 9h-9V3Zm3-1a8 8 0 0 1 7 7h-7V2Z',
+  amber: 'M12 2 19 8v8l-7 6-7-6V8l7-6Zm0 0v20M5 8h14M5 16h14',
+  cohesion: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4 1.2 2.5L16 10l-2 1.8.5 2.7L12 13.2l-2.5 1.3.5-2.7L8 10l2.8-.5L12 7Z',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

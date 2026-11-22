@@ -1,0 +1,381 @@
+{
+  "format": "charitology.latvia-eu-funds.v1",
+  "capturedOn": "2026-11-22",
+  "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA) via data.gov.lv",
+  "catalogues": {
+    "eu1420": "https://data.gov.lv/dati/lv/dataset/es-lidzfinansetie-projekti",
+    "eu2127": "https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-fondu-21-27-perioda-lidzfinansetie-projekti",
+    "rrf": "https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-atveselosanas-fonda-lidzfinansetie-projekti"
+  },
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "licenseName": "CC0 1.0 Universal (Public Domain Dedication)",
+  "sources": {
+    "cfla1420Projects": {
+      "filename": "cfla-eu1420-projects.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/es-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/4ce3df9e-b3c4-4373-af8c-afb1dc6a9a61/resource/9c2d6bf2-41a4-4a58-a5ba-3a4ad6d7e79f/download/es_fondu_projektu_saraksts.csv",
+      "bytes": 13194521,
+      "sha256": "f4dddbf313ef89441f43cd79fbadc2e700ff6e58835a7f67e9b1b307a5d06927"
+    },
+    "cfla1420Partners": {
+      "filename": "cfla-eu1420-partners.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/es-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/4ce3df9e-b3c4-4373-af8c-afb1dc6a9a61/resource/12f8a44f-e1a9-4f7e-8a32-7f472ac28de8/download/es_fondu_projektu_sadarbibas_partneri.csv",
+      "bytes": 837922,
+      "sha256": "afa8f168c86c58100c6058b89006aa38828a04b3729008b1acb4f889c4970b55"
+    },
+    "cfla1420Locations": {
+      "filename": "cfla-eu1420-locations.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/es-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/4ce3df9e-b3c4-4373-af8c-afb1dc6a9a61/resource/35da9d99-7750-4be8-85d9-4aaa920d4583/download/es_fondu_projektu_istenosanas_vietas.csv",
+      "bytes": 600185,
+      "sha256": "6539123c4eb6383c7a8c5980a666b93bc0a3d382b8b981ab4bd4427f4c91be5f"
+    },
+    "cfla2127Projects": {
+      "filename": "cfla-eu2127-projects.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-fondu-21-27-perioda-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/bfa55ed7-f58c-48c4-bf8e-cb7ff4f12b05/resource/80aca232-54ad-4a9e-b1e3-c06623c1020b/download/es_fondu_projektu_saraksts.csv",
+      "bytes": 24595391,
+      "sha256": "bdcfaa5b8da4ad77662df2d02d9bc0366d6939fd847561643ef36faa6f6d9e12"
+    },
+    "cfla2127Partners": {
+      "filename": "cfla-eu2127-partners.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-fondu-21-27-perioda-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/bfa55ed7-f58c-48c4-bf8e-cb7ff4f12b05/resource/5d9b36b2-6ff4-44b7-8bb3-d99d8043a271/download/es_fondu_projektu_sadarbibas_partneri.csv",
+      "bytes": 163323,
+      "sha256": "bc82f56959fa5de4fa7e2f42295ae87d64c64bfbafacbd93232e6acc43e6b94e"
+    },
+    "cfla2127Locations": {
+      "filename": "cfla-eu2127-locations.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-fondu-21-27-perioda-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/bfa55ed7-f58c-48c4-bf8e-cb7ff4f12b05/resource/27733f45-ef48-41bf-9a9c-cc818ed9f32f/download/es_fondu_projektu_istenosanas_vietas.csv",
+      "bytes": 577529,
+      "sha256": "7b4776ef73f12298153c8cea1d6a2e9601fe6af95efdd7d25e040c0badca6547"
+    },
+    "cflaRrfProjects": {
+      "filename": "cfla-rrf-projects.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-atveselosanas-fonda-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/588f2204-ad9a-4576-bdf0-23cf5ca0bed0/resource/bfcae357-328c-423f-9835-215e7fd3db4e/download/es_fondu_projektu_saraksts.csv",
+      "bytes": 2985032,
+      "sha256": "a8d998cecc24ec1689895c683e35256bc91c82a025402e8894bbf61a7fbd08d8"
+    },
+    "cflaRrfPartners": {
+      "filename": "cfla-rrf-partners.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-atveselosanas-fonda-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/588f2204-ad9a-4576-bdf0-23cf5ca0bed0/resource/ad29f6bb-4183-4dd3-9b81-eb62c8959c92/download/es_fondu_projektu_sadarbibas_partneri.csv",
+      "bytes": 123788,
+      "sha256": "ae34ecf17befd21a90af180653c1e4a25cec846cdc6011768ebadafae29156b9"
+    },
+    "cflaRrfLocations": {
+      "filename": "cfla-rrf-locations.csv",
+      "publisher": "Centrālā finanšu un līgumu aģentūra (CFLA)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-atveselosanas-fonda-lidzfinansetie-projekti",
+      "url": "https://data.gov.lv/dati/dataset/588f2204-ad9a-4576-bdf0-23cf5ca0bed0/resource/fec77132-7058-4e28-b4fc-0772454b8041/download/es_fondu_projektu_istenosanas_vietas.csv",
+      "bytes": 122852,
+      "sha256": "61bb2932350f0cbba8ea662f5edd00023f4be1840b41a798da95613eb477a32f"
+    }
+  },
+  "counts": {
+    "allCflaProjectsScanned": 5491,
+    "nonprofitLeadProjects": 292,
+    "distinctLeadNonprofits": 146,
+    "completedLeadProjects": 206,
+    "activeContractLeadProjects": 86,
+    "totalLeadCents": 23347370090,
+    "euCofinancingCents": 18008746950,
+    "nationalPublicCents": 2191836834,
+    "nationalPrivateCents": 3018895878,
+    "nonprofitPartnerParticipations": 260,
+    "distinctPartnerNonprofits": 191
+  },
+  "byProgram": [
+    {
+      "programCode": "EU1420",
+      "programLabel": "EU Funds 2014–2020",
+      "leadProjects": 131,
+      "leadOrganizations": 79,
+      "totalCents": 6726186794,
+      "euCents": 4976289941,
+      "natPubCents": 506098556,
+      "natPrivCents": 1115907869,
+      "partnerParticipations": 142,
+      "partnerOrganizations": 117,
+      "projectsWithNonprofitPartners": 38
+    },
+    {
+      "programCode": "EU2127",
+      "programLabel": "EU Funds 2021–2027",
+      "leadProjects": 125,
+      "leadOrganizations": 95,
+      "totalCents": 12160972614,
+      "euCents": 9162547801,
+      "natPubCents": 1352400757,
+      "natPrivCents": 1646024056,
+      "partnerParticipations": 66,
+      "partnerOrganizations": 54,
+      "projectsWithNonprofitPartners": 24
+    },
+    {
+      "programCode": "RRF",
+      "programLabel": "Recovery & Resilience Facility (2021–2026)",
+      "leadProjects": 36,
+      "leadOrganizations": 33,
+      "totalCents": 4460210682,
+      "euCents": 3869909208,
+      "natPubCents": 333337521,
+      "natPrivCents": 256963953,
+      "partnerParticipations": 52,
+      "partnerOrganizations": 46,
+      "projectsWithNonprofitPartners": 17
+    }
+  ],
+  "bySloStatus": {
+    "nonSloNonprofit": {
+      "projects": 117,
+      "orgs": 61,
+      "totalCents": 15462646805,
+      "euCents": 11668648996
+    },
+    "revokedOrLiquidatedSlo": {
+      "projects": 22,
+      "orgs": 11,
+      "totalCents": 872310090,
+      "euCents": 700296530
+    },
+    "activeSlo": {
+      "projects": 153,
+      "orgs": 74,
+      "totalCents": 7012413195,
+      "euCents": 5639801424
+    }
+  },
+  "byImplementationRegion": [
+    {
+      "region": "Rīga",
+      "projects": 130,
+      "sumOfLeadProjectTotalsCents": 3316135951
+    },
+    {
+      "region": "Visa Latvija",
+      "projects": 94,
+      "sumOfLeadProjectTotalsCents": 17707737136
+    },
+    {
+      "region": "Kurzeme",
+      "projects": 46,
+      "sumOfLeadProjectTotalsCents": 1445303603
+    },
+    {
+      "region": "Vidzeme",
+      "projects": 37,
+      "sumOfLeadProjectTotalsCents": 1080397845
+    },
+    {
+      "region": "Latgale",
+      "projects": 25,
+      "sumOfLeadProjectTotalsCents": 223552182
+    },
+    {
+      "region": "Zemgale",
+      "projects": 23,
+      "sumOfLeadProjectTotalsCents": 316649487
+    },
+    {
+      "region": "Pierīga",
+      "projects": 13,
+      "sumOfLeadProjectTotalsCents": 212453418
+    }
+  ],
+  "topLeadRecipients": [
+    {
+      "regcode": "40008314266",
+      "name": "\"Augstākās izglītības un zinātnes informācijas tehnoloģijas koplietošanas pakalpojumu centrs\"",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 3,
+      "totalCents": 4275610768,
+      "euCents": 3666288109
+    },
+    {
+      "regcode": "40008004918",
+      "name": "Latvijas Darba devēju konfederācija",
+      "form": "BDR",
+      "sloStatus": "A",
+      "projects": 3,
+      "totalCents": 1762831099,
+      "euCents": 1498406403
+    },
+    {
+      "regcode": "40008301168",
+      "name": "Biedrība \"Latvijas Digitālais akselerators\"",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 3,
+      "totalCents": 1467505172,
+      "euCents": 1247190383
+    },
+    {
+      "regcode": "40008121251",
+      "name": "\"Latvijas Informācijas tehnoloģiju klasteris\"",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 5,
+      "totalCents": 1412300101,
+      "euCents": 1187105205
+    },
+    {
+      "regcode": "40008038242",
+      "name": "\"Latvijas Informācijas un komunikācijas tehnoloģijas asociācija\"",
+      "form": "BDR",
+      "sloStatus": "A",
+      "projects": 5,
+      "totalCents": 706782913,
+      "euCents": 428682923
+    },
+    {
+      "regcode": "40008001803",
+      "name": "\"Latvijas Samariešu apvienība\"",
+      "form": "BDR",
+      "sloStatus": "A",
+      "projects": 3,
+      "totalCents": 690981844,
+      "euCents": 568929817
+    },
+    {
+      "regcode": "40008010789",
+      "name": "Latvijas Elektrotehnikas un elektronikas rūpniecības asociācija",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 5,
+      "totalCents": 587523214,
+      "euCents": 367994552
+    },
+    {
+      "regcode": "40008010454",
+      "name": "\"Latvijas Ķīmijas un farmācijas uzņēmēju asociācija\"",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 5,
+      "totalCents": 575352066,
+      "euCents": 348120969
+    },
+    {
+      "regcode": "40008017857",
+      "name": "\"Mašīnbūves un metālapstrādes rūpniecības asociācija\"",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 5,
+      "totalCents": 542425721,
+      "euCents": 346920740
+    },
+    {
+      "regcode": "40008259890",
+      "name": "\"Aprūpes atbalsts RŪRE\"",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 2,
+      "totalCents": 540535422,
+      "euCents": 459455109
+    },
+    {
+      "regcode": "50008036101",
+      "name": "Latvijas Logu un durvju ražotāju asociācija",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 4,
+      "totalCents": 528915604,
+      "euCents": 292430936
+    },
+    {
+      "regcode": "40008056587",
+      "name": "Latvijas Pārtikas uzņēmumu federācija",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 5,
+      "totalCents": 490967825,
+      "euCents": 313968657
+    },
+    {
+      "regcode": "40008020749",
+      "name": "Latvijas Viesnīcu un restorānu asociācija",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 4,
+      "totalCents": 475987750,
+      "euCents": 289016965
+    },
+    {
+      "regcode": "40008109954",
+      "name": "\"Zaļās mājas\"",
+      "form": "BDR",
+      "sloStatus": "A",
+      "projects": 4,
+      "totalCents": 452691415,
+      "euCents": 263528585
+    },
+    {
+      "regcode": "40008207193",
+      "name": "\"Latvijas Drošības un aizsardzības industriju federācija\"",
+      "form": "BDR",
+      "sloStatus": null,
+      "projects": 4,
+      "totalCents": 430452335,
+      "euCents": 325031526
+    }
+  ],
+  "projectFields": [
+    "projectNo",
+    "program",
+    "fund",
+    "status",
+    "regcode",
+    "orgName",
+    "form",
+    "sloStatus",
+    "title",
+    "signedDate",
+    "startDate",
+    "endDate",
+    "totalCents",
+    "euCents",
+    "natPubCents",
+    "natPrivCents",
+    "implRegions",
+    "nonprofitPartnerCount"
+  ],
+  "partnerFields": [
+    "projectNo",
+    "program",
+    "partnerRegcode",
+    "partnerName",
+    "partnerSloStatus",
+    "leadRegcode",
+    "leadName",
+    "projectTitle",
+    "projectTotalCents"
+  ],
+  "projectsAsset": {
+    "path": "projects.json.gz",
+    "rows": 292,
+    "bytes": 19127,
+    "decodedBytes": 84082,
+    "sha256": "4eeefe9c91328572ef8557579b98273c8a02b4ad5c0b3a560341f03c82850d20",
+    "decodedSha256": "37f5a01d403abc78f105b5a2419c4cc6c4522e678b6301cf19d3c6015746b207"
+  },
+  "partnersAsset": {
+    "path": "partners.json.gz",
+    "rows": 260,
+    "bytes": 9677,
+    "decodedBytes": 65233,
+    "sha256": "8f58f1bd5257444aae9c38d6415d7697fea71497ee1b1719f41f1b23e528817a",
+    "decodedSha256": "81b350afb5ab2b98962a6f414a4b4cacc5f23d2fdcd0dc1a93986cf174219aa0"
+  }
+}
