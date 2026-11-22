@@ -14,6 +14,7 @@ import usaShort from '../../../../public/data/charity-financials/us-990-ez/manif
 import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/manifest.json';
 import registry from '../../../../public/data/irs-registry/manifest.json';
 import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
+import israel from '../../../../public/data/charity-registry/israel/manifest.json';
 import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
 import netherlands from '../../../../public/data/charity-registry/netherlands/manifest.json';
 import norway from '../../../../public/data/charity-registry/norway/manifest.json';
@@ -64,6 +65,14 @@ const panels = [
     history: `${number(france.counts.multiPeriodCandidateSirens)} candidate identifiers have filings for more than one fiscal closing date.`,
     boundary: 'Originals and corrected versions remain searchable. The capture covers published filing notices. It cannot measure the size of the association sector.',
     manifest: '/data/charity-financials/fr-dila/manifest.json',
+  },
+  {
+    id: 'israel', name: 'Israel', source: 'Ministry of Justice Amutot, Public Benefit Companies and Proper Management', route: '/record/charity-index/israel/',
+    label: 'Search Israeli nonprofits and Proper Management', date: israel.capturedOn,
+    coverage: `${number(israel.counts.includedOrganizations)} merged registered associations and public benefit companies (${number(israel.counts.byStatus.active)} active, ${number(israel.counts.withReportedRevenue)} with reported annual revenue, ${number(israel.counts.withProperManagement2026Or2027)} with signed 2026–2027 Proper Management).`,
+    history: 'A paired funding-flows edition covers 15 years (2012–2026) of statutory quarterly foreign-state donation disclosures across 516 recipients totaling ILS 7.53 billion net.',
+    boundary: 'Unreported expense cells default to 0 in the source export and stay shown as not reported. Two production software test IDs inside the live foreign-state donations table remain flagged in anomalies.json.',
+    manifest: '/data/charity-registry/israel/manifest.json',
   },
   {
     id: 'japan', name: 'Japan', source: 'Cabinet Office NPO Portal', route: '/record/charity-index/japan/',
@@ -142,6 +151,7 @@ const sources = [
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
   { title: 'French association accounts dataset', publisher: france.source.publisher, url: france.source.dataset },
+  { title: 'Registry of Associations and Public Benefit Companies (moj-amutot)', publisher: israel.publisher, url: israel.catalogue },
   { title: 'Open data — Algemeen Nut Beogende Instellingen (ANBI)', publisher: netherlands.publisher, url: netherlands.catalogue },
   { title: 'Frivillighetsregisteret dataset listing', publisher: norway.publisher, url: norway.catalogue },
   { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
@@ -201,6 +211,7 @@ const sources = [
   <p><a class="identity-link" href={url('/record/funding-flows/chile-residential-payments/')}>Compare Chile’s residence awards with the public budget ledger</a>. Search by institutional tax ID, inspect recorded payment dates and compare reported service counts with separate survey estimates for 16 regions.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/chile-coanil-agreements/')}>Trace COANIL’s agreements, accounts and reported payments</a>. The case retains the institutional ID and both sources where payment reports differ.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/france-emmaus-solidarite/')}>Follow regional grants to Emmaüs Solidarité in France</a>. The case connects one French association’s register and four filings to five regional decisions and payment rows. The winter plans and independently counted need retain their own dates and boundaries.</p>
+  <p><a class="identity-link" href={url('/record/funding-flows/israel-foreign-state-donations/')}>Search Israel’s 2012–2026 foreign-state entity donation disclosures</a>. Follow 516 recipients across 13,436 quarterly disclosures totaling ILS 7.53 billion net, joined by exact nine-digit ID to the Amutot/PBC registry with published source anomalies kept transparent.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/netherlands-rijksfinancien/')}>Search Netherlands central-government nonprofit subsidies (2020–2024)</a>. Follow 17,868 KvK-identified foundations, associations and religious bodies across 16 budget chapters totaling EUR 15,540,383k net, with conservative ANBI name-candidate links kept distinct from statutory ID joins.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/norway-momskompensasjon/')}>Search Norway’s 2023–2025 VAT compensation grants (Momskompensasjon)</a>. Follow 28,011 distinct voluntary organizations, 264 central umbrella intermediaries and a krone-level reconciliation between 2025 approvals and two-tranche payouts.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/taiwan-new-resident-fund/')}>Compare Taiwan New Resident Development Fund reports</a>. Use the project ID to follow recurring approvals and see where the reports differ on execution figures or dates.</p>

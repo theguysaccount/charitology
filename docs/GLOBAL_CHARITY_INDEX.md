@@ -705,3 +705,21 @@ node scripts/check-netherlands-charity-index.mjs
 ```
 
 Next, qualify a public Dutch municipal subsidy register that exposes both awarded (`verleend`) and final settled (`vastgesteld`) amounts (such as Amsterdam or Utrecht) to trace post-audit adjustments, and link Dutch Ministry of Foreign Affairs (Chapter `XVII`) IATI activities to ANBI annual financial disclosures published on statutory `webSite` URLs.
+
+## Israel registered associations, Proper Management and foreign-state donations
+
+The [Israel nonprofit registry lookup](https://charitology.com/record/charity-index/israel/) merges four official CKAN API resources published by Israel’s Ministry of Justice (Registrar of Associations / *Rasham HaAmutot*) via [`data.gov.il`](https://data.gov.il/dataset/moj-amutot) (captured November 22, 2026 under the [Israel Government Open Data License](https://data.gov.il/terms)): **76,150 Registered Associations (*Amutot*)** and **1,500 Public Benefit Companies (*Chalotz* / חל״צ)** (`1,447` overlap by exact ID; `53` exist only in the PBC table), producing **76,203 distinct organizations** (**40,343** active/registered, **35,186** dissolved/struck off, **546** in liquidation/receivership, **128** pending registration). An accompanying **7,619-entry English-name index** (`en.json.gz`, 145 KB) supports fast English lookup alongside 22 Hebrew-letter shards and ID lookup shards. Across latest filing years through FY 2025, **31,375 organizations** report annual revenue totaling **ILS 167,507,337,883** (cross-sectional snapshot across differing filing periods); only **7,634** report nonzero expenses (`0` defaults in the source export stay shown as not reported). Exact ID joins across **340,410 Proper Management (*Nihul Takin*) records** show **32,144** organizations ever approved and **23,296** holding signed 2026–2027 approval. Street addresses and apartment numbers are omitted (city only); **123** legacy non-Luhn IDs (including **110** 10-digit legacy IDs) and MoJ’s legacy `~` punctuation encoding are preserved transparently.
+
+The paired [Israel foreign state entity donations edition](https://charitology.com/record/funding-flows/israel-foreign-state-donations/) covers **13,436 quarterly disclosures across 2012–2026** totaling **ILS 7,525,406,162 net** (`516` distinct recipient IDs across `18` raw currency labels; **3,021** majority-foreign-funded rows; **512** matched by exact nine-digit ID to the merged registry). Four notable anomalies inside the live government dataset are documented verbatim in `anomalies.json` without silent deletion: **two leaked production software test IDs** (`580666667`, `טסט עליה לאויר חדשה`, ILS 385,652 across 12 rows; and `580666683`, `עמותה טסט צרוף קבלה 1`, ILS 1,501 across 5 rows), a **2022 self-donor filing entry** (`_id=3495`, `580185700`, ILS 195,438,888 naming the recipient foundation itself as donor), **2 negative adjustment rows** (`-ILS 58,241`) plus `209` zero-ILS rows, and unnormalized donor/currency spellings (`פאונד אנגלי` vs. `לירה שטרלינג`; `USAID` / `USA STATE DEPARTMENT` / `AMERICAN EMBBASY` / `שגרירות ארה~ב`).
+
+Rebuild offline from the four exact CKAN snapshots pinned in [`src/data/israel-index-sources.tsv`](../src/data/israel-index-sources.tsv):
+
+```sh
+python3 scripts/build-israel-charity-index.py --source-dir /path/to/captured-inputs --out-root /path/to/rebuild
+diff -r public/data/charity-registry/israel /path/to/rebuild/charity-registry/israel
+diff -r public/data/funding-flows/israel-foreign-state-donations /path/to/rebuild/funding-flows/israel-foreign-state-donations
+npm run build
+node scripts/check-israel-charity-index.mjs
+```
+
+Next, qualify Israel Ministry of Finance domestic government-support grants (*Tmichot*, `budgetkey` / `data.gov.il`) and Israel Tax Authority Section 46 tax-deductible charity lists by exact nine-digit ID so domestic state grants, foreign-state donations and tax-deductible status can be compared without double counting.

@@ -212,6 +212,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Registry coverage', 'permit'],
     ['finance', 'Read financial summaries', 'coins'],
   ],
+  '/record/charity-index/israel/': [
+    ['il-search-heading', 'Search Israeli nonprofits', 'lens'],
+    ['funding', 'Follow cross-border foreign-state donations', 'borderGate'],
+    ['coverage', 'Financial reporting, Proper Management and source quirks', 'archive'],
+  ],
   '/record/charity-index/netherlands/': [
     ['nl-search-heading', 'Search ANBI organizations', 'lens'],
     ['funding', 'Follow central-government subsidies', 'sluice'],
@@ -468,6 +473,13 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['annual-accounts', 'Four years of accounts', 'table'],
     ['geography-and-need', 'Planned work and independent counts', 'pin'],
     ['downloads', 'Download the linked records', 'download'],
+  ],
+  '/record/funding-flows/israel-foreign-state-donations/': [
+    ['il-fsd-heading', 'Search disclosed recipients', 'lens'],
+    ['anomalies', 'Published data anomalies kept transparent', 'alert'],
+    ['recipients', 'Largest disclosed recipients (2012–2026)', 'coins'],
+    ['donors', 'Top raw donor strings and yearly totals', 'table'],
+    ['downloads', 'Downloads and provenance', 'download'],
   ],
   '/record/funding-flows/netherlands-rijksfinancien/': [
     ['nl-subsidies-heading', 'Search subsidy recipients', 'lens'],

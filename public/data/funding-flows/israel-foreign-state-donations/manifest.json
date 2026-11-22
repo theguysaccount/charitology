@@ -1,0 +1,575 @@
+{
+  "format": "charitology-israel-foreign-state-donations-v1",
+  "capturedOn": "2026-11-22",
+  "currency": "ILS",
+  "publisher": "Israel Ministry of Justice — Registrar of Associations (רשם העמותות)",
+  "catalogue": "https://data.gov.il/dataset/moj-amutot",
+  "license": "https://data.gov.il/terms",
+  "source": {
+    "resourceId": "35cb40b5-3f13-4bca-9ce2-488085913107",
+    "title": "Donations from Foreign State Entities (תרומות מישות מדינית זרה)",
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=35cb40b5-3f13-4bca-9ce2-488085913107",
+    "bytes": 539030,
+    "sha256": "87adf14af5daff30bb6cd80d12aae51b9d1cf125e27c27e2018cc58f9f984dff"
+  },
+  "registrySnapshot": {
+    "capturedOn": "2026-11-22",
+    "amutotSha256": "548f7036ae2dd0d4041f37da42361bb03044fc615d77152be3a081abba04b031",
+    "pbcSha256": "aa62fc2ba2b00ac28537e00de6bd010b1e7fe08ac1fd56395557aabf5e123e53",
+    "includedOrganizations": 76203
+  },
+  "fields": [
+    "id",
+    "heName",
+    "enName",
+    "type",
+    "inRegistry",
+    "sectorCode",
+    "pmLatestApproved",
+    "totalIls",
+    "rows",
+    "majorityRows",
+    "minYear",
+    "maxYear",
+    "topDonor",
+    "currencies",
+    "byYear"
+  ],
+  "counts": {
+    "totalDisclosureRows": 13436,
+    "distinctRecipients": 516,
+    "matchedInRegistry": 512,
+    "absentFromRegistry": 4,
+    "suspectedProductionTestIds": 2,
+    "suspectedProductionTestTotalIls": 387153,
+    "majorityForeignStateFundedRows": 3021,
+    "zeroIlsRows": 209,
+    "negativeAdjustmentRows": 2,
+    "positiveIls": 7525464403,
+    "negativeIls": -58241,
+    "netIls": 7525406162,
+    "distinctCurrencies": 18
+  },
+  "byYear": [
+    {
+      "year": 2012,
+      "rows": 447,
+      "distinctOrgs": 66,
+      "majorityRows": 0,
+      "positiveIls": 82576179,
+      "negativeIls": 0,
+      "netIls": 82576179
+    },
+    {
+      "year": 2013,
+      "rows": 517,
+      "distinctOrgs": 71,
+      "majorityRows": 0,
+      "positiveIls": 96826153,
+      "negativeIls": 0,
+      "netIls": 96826153
+    },
+    {
+      "year": 2014,
+      "rows": 668,
+      "distinctOrgs": 89,
+      "majorityRows": 0,
+      "positiveIls": 120585276,
+      "negativeIls": 0,
+      "netIls": 120585276
+    },
+    {
+      "year": 2015,
+      "rows": 1110,
+      "distinctOrgs": 159,
+      "majorityRows": 0,
+      "positiveIls": 492499976,
+      "negativeIls": 0,
+      "netIls": 492499976
+    },
+    {
+      "year": 2016,
+      "rows": 1153,
+      "distinctOrgs": 171,
+      "majorityRows": 0,
+      "positiveIls": 420617641,
+      "negativeIls": 0,
+      "netIls": 420617641
+    },
+    {
+      "year": 2017,
+      "rows": 1200,
+      "distinctOrgs": 210,
+      "majorityRows": 307,
+      "positiveIls": 742113296,
+      "negativeIls": 0,
+      "netIls": 742113296
+    },
+    {
+      "year": 2018,
+      "rows": 972,
+      "distinctOrgs": 173,
+      "majorityRows": 292,
+      "positiveIls": 504281415,
+      "negativeIls": 0,
+      "netIls": 504281415
+    },
+    {
+      "year": 2019,
+      "rows": 968,
+      "distinctOrgs": 182,
+      "majorityRows": 284,
+      "positiveIls": 600530574,
+      "negativeIls": 0,
+      "netIls": 600530574
+    },
+    {
+      "year": 2020,
+      "rows": 963,
+      "distinctOrgs": 209,
+      "majorityRows": 420,
+      "positiveIls": 630778403,
+      "negativeIls": 0,
+      "netIls": 630778403
+    },
+    {
+      "year": 2021,
+      "rows": 1100,
+      "distinctOrgs": 203,
+      "majorityRows": 503,
+      "positiveIls": 643569782,
+      "negativeIls": 0,
+      "netIls": 643569782
+    },
+    {
+      "year": 2022,
+      "rows": 1094,
+      "distinctOrgs": 203,
+      "majorityRows": 376,
+      "positiveIls": 651202042,
+      "negativeIls": -47300,
+      "netIls": 651154742
+    },
+    {
+      "year": 2023,
+      "rows": 1027,
+      "distinctOrgs": 203,
+      "majorityRows": 300,
+      "positiveIls": 722495206,
+      "negativeIls": 0,
+      "netIls": 722495206
+    },
+    {
+      "year": 2024,
+      "rows": 1012,
+      "distinctOrgs": 178,
+      "majorityRows": 325,
+      "positiveIls": 757370359,
+      "negativeIls": -10941,
+      "netIls": 757359418
+    },
+    {
+      "year": 2025,
+      "rows": 813,
+      "distinctOrgs": 150,
+      "majorityRows": 214,
+      "positiveIls": 773350148,
+      "negativeIls": 0,
+      "netIls": 773350148
+    },
+    {
+      "year": 2026,
+      "rows": 392,
+      "distinctOrgs": 81,
+      "majorityRows": 0,
+      "positiveIls": 286667953,
+      "negativeIls": 0,
+      "netIls": 286667953
+    }
+  ],
+  "topRecipients": [
+    {
+      "id": "580185700",
+      "heName": "הקרן לרווחת נפגעי השואה (ע~ר)",
+      "enName": "The Foundation for the Welfare of Holocaust Victims (R.A.)",
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "WEL",
+      "pmLatestApproved": 2026,
+      "totalIls": 5043142896,
+      "rows": 73,
+      "majorityRows": 12,
+      "minYear": 2015,
+      "maxYear": 2026,
+      "topDonor": "ממשלת גרמניה"
+    },
+    {
+      "id": "580210375",
+      "heName": "מכון הערבה ללימודי הסביבה (ע~ר)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "EDU",
+      "pmLatestApproved": 2027,
+      "totalIls": 94248491,
+      "rows": 64,
+      "majorityRows": 47,
+      "minYear": 2014,
+      "maxYear": 2025,
+      "topDonor": "AMERICAN EMBBASY"
+    },
+    {
+      "id": "580146256",
+      "heName": "בצלם - מרכז המידע הישראלי לזכויות האדם בשטחים (ע~ר)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "ADV",
+      "pmLatestApproved": 2026,
+      "totalIls": 82191087,
+      "rows": 422,
+      "majorityRows": 199,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "UNDP"
+    },
+    {
+      "id": "580022507",
+      "heName": "עמותת ידידי המרכז הרפואי ע~ש אדית וולפסון (ע~ר) (.SOCIETY OF FRIENDS OF THE EDITH WOLFSON MEDICAL CENTER (R.A",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "HLT",
+      "pmLatestApproved": 2027,
+      "totalIls": 81553087,
+      "rows": 23,
+      "majorityRows": 0,
+      "minYear": 2022,
+      "maxYear": 2026,
+      "topDonor": "USA STATE DEPARTMENT"
+    },
+    {
+      "id": "514326107",
+      "heName": "קומט- מי בע~מ (חל~צ)",
+      "enName": "COMET-ME LTD (CC)",
+      "type": "P",
+      "inRegistry": true,
+      "sectorCode": "WEL",
+      "pmLatestApproved": 2020,
+      "totalIls": 77248521,
+      "rows": 74,
+      "majorityRows": 46,
+      "minYear": 2016,
+      "maxYear": 2026,
+      "topDonor": "משרד החוץ הגרמני"
+    },
+    {
+      "id": "580442622",
+      "heName": "יש דין - ארגון מתנדבים לזכויות האדם (ע~ר)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "COM",
+      "pmLatestApproved": 2027,
+      "totalIls": 74421757,
+      "rows": 269,
+      "majorityRows": 129,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "Norwegian Refugee Council - NRC"
+    },
+    {
+      "id": "513564724",
+      "heName": "שוברים שתיקה בע~מ (חל~צ)",
+      "enName": "BREAKING THE SILENCE LTD (PBC)",
+      "type": "P",
+      "inRegistry": true,
+      "sectorCode": "COM",
+      "pmLatestApproved": 2026,
+      "totalIls": 64956882,
+      "rows": 337,
+      "majorityRows": 54,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "UNDP"
+    },
+    {
+      "id": "580288157",
+      "heName": "מרכז פרס לשלום ולחדשנות (ע~ר)",
+      "enName": "Peres Center for Peace and Innovation (R.A.)",
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "EDU",
+      "pmLatestApproved": 2026,
+      "totalIls": 63563795,
+      "rows": 384,
+      "majorityRows": 0,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "US Disbursing Officer- American Embassy"
+    },
+    {
+      "id": "580438174",
+      "heName": "גישה- מרכז לשמירה על הזכות לנוע (ע~ר)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "ADV",
+      "pmLatestApproved": 2027,
+      "totalIls": 62042297,
+      "rows": 381,
+      "majorityRows": 230,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "NDC - NGO Development Center"
+    },
+    {
+      "id": "580163517",
+      "heName": "המוקד להגנת הפרט מיסודה של ד~ר לוטה זלצברגר (ע~ר)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "WEL",
+      "pmLatestApproved": 2026,
+      "totalIls": 59228165,
+      "rows": 321,
+      "majorityRows": 235,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "Norwegian Refugee Council"
+    },
+    {
+      "id": "580075166",
+      "heName": "אגודת אלמקאסד האיסלאמית לצדקה בירושלים  (ע~ר)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "HLT",
+      "pmLatestApproved": 2026,
+      "totalIls": 56614958,
+      "rows": 12,
+      "majorityRows": 0,
+      "minYear": 2018,
+      "maxYear": 2024,
+      "topDonor": "איחוד האמירויות הערביות"
+    },
+    {
+      "id": "580142214",
+      "heName": "רופאים לזכויות אדם - ישראל  (ע~ר)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "HLT",
+      "pmLatestApproved": 2027,
+      "totalIls": 45674862,
+      "rows": 207,
+      "majorityRows": 0,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "bread for the world"
+    },
+    {
+      "id": "511047425",
+      "heName": "קרן תוכנויות לגיל הרך והמשפחה בחברה הערבית בע~מ (חל~צ)",
+      "enName": null,
+      "type": "P",
+      "inRegistry": true,
+      "sectorCode": "EDU",
+      "pmLatestApproved": 2026,
+      "totalIls": 44545568,
+      "rows": 252,
+      "majorityRows": 162,
+      "minYear": 2012,
+      "maxYear": 2025,
+      "topDonor": "SWISS FRIEDS OF KIRJATH JEARUM"
+    },
+    {
+      "id": "580342087",
+      "heName": "במקום - תכנון וזכויות אדם  (ע~ר)  بمكوم - تخطيط وحقوق الإنسان  (ج.م.)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "COM",
+      "pmLatestApproved": 2026,
+      "totalIls": 42971354,
+      "rows": 235,
+      "majorityRows": 149,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "האיחוד האירופי"
+    },
+    {
+      "id": "580418085",
+      "heName": "מפגש - חינוך וטכנולוגיה למען המזרח התיכון (ע~ר)",
+      "enName": null,
+      "type": "A",
+      "inRegistry": true,
+      "sectorCode": "COM",
+      "pmLatestApproved": 2027,
+      "totalIls": 41405934,
+      "rows": 118,
+      "majorityRows": 0,
+      "minYear": 2012,
+      "maxYear": 2026,
+      "topDonor": "USAID"
+    }
+  ],
+  "topDonorsRaw": [
+    {
+      "donorRaw": "ממשלת גרמניה",
+      "totalIls": 4337029292,
+      "rows": 62
+    },
+    {
+      "donorRaw": "ועידת התביעות",
+      "totalIls": 349417731,
+      "rows": 17
+    },
+    {
+      "donorRaw": "הקרן לרווחת נפגעי השואה",
+      "totalIls": 195438888,
+      "rows": 1
+    },
+    {
+      "donorRaw": "גרמניה",
+      "totalIls": 159425229,
+      "rows": 32
+    },
+    {
+      "donorRaw": "USAID",
+      "totalIls": 98354530,
+      "rows": 368
+    },
+    {
+      "donorRaw": "האיחוד האירופי",
+      "totalIls": 84890438,
+      "rows": 241
+    },
+    {
+      "donorRaw": "USA STATE DEPARTMENT",
+      "totalIls": 76436937,
+      "rows": 2
+    },
+    {
+      "donorRaw": "AMERICAN EMBBASY",
+      "totalIls": 56359359,
+      "rows": 1
+    },
+    {
+      "donorRaw": "UNDP",
+      "totalIls": 47126691,
+      "rows": 169
+    },
+    {
+      "donorRaw": "שגרירות ארה~ב",
+      "totalIls": 44462523,
+      "rows": 226
+    },
+    {
+      "donorRaw": "משרד החוץ הגרמני",
+      "totalIls": 32794078,
+      "rows": 48
+    },
+    {
+      "donorRaw": "British Embassy",
+      "totalIls": 32063248,
+      "rows": 44
+    },
+    {
+      "donorRaw": "Bread for the World",
+      "totalIls": 30188586,
+      "rows": 163
+    },
+    {
+      "donorRaw": "איחוד האמירויות הערביות",
+      "totalIls": 27562645,
+      "rows": 1
+    },
+    {
+      "donorRaw": "The European Commission",
+      "totalIls": 27220012,
+      "rows": 64
+    }
+  ],
+  "topCurrencies": [
+    {
+      "currencyRaw": "שקל חדש",
+      "rows": 5532,
+      "netIls": 5891531734
+    },
+    {
+      "currencyRaw": "אירו",
+      "rows": 3803,
+      "netIls": 731909678
+    },
+    {
+      "currencyRaw": "דולר ארה~ב",
+      "rows": 3444,
+      "netIls": 741288541
+    },
+    {
+      "currencyRaw": "פרנק שויצרי",
+      "rows": 209,
+      "netIls": 28273285
+    },
+    {
+      "currencyRaw": "אחר",
+      "rows": 140,
+      "netIls": 31330406
+    },
+    {
+      "currencyRaw": "פאונד אנגלי",
+      "rows": 91,
+      "netIls": 45892073
+    },
+    {
+      "currencyRaw": "לירה שטרלינג",
+      "rows": 62,
+      "netIls": 5730216
+    },
+    {
+      "currencyRaw": "כתר נורבגי",
+      "rows": 37,
+      "netIls": 14491346
+    },
+    {
+      "currencyRaw": "כתר דני",
+      "rows": 28,
+      "netIls": 20712648
+    },
+    {
+      "currencyRaw": "דולר אוסטרלי",
+      "rows": 26,
+      "netIls": 3026547
+    },
+    {
+      "currencyRaw": "דולר קנדי",
+      "rows": 22,
+      "netIls": 3909245
+    },
+    {
+      "currencyRaw": "כתר שוודי",
+      "rows": 20,
+      "netIls": 5595819
+    }
+  ],
+  "asset": {
+    "path": "recipients.json.gz",
+    "rows": 516,
+    "bytes": 40285,
+    "decodedBytes": 133204,
+    "sha256": "94ca3363b264b2b37dd573c0942852567716e95f03410ba5e2ccf0f38973dce3",
+    "decodedSha256": "30a129c3e0c6c9bdb34c349b3516b56f5bd06cb7badfe2ca2a6e080bc5514d5b"
+  },
+  "anomalies": {
+    "path": "anomalies.json",
+    "bytes": 2325,
+    "sha256": "08bd0707d892910313816a3f8b9862a7b8b00e77f6fec7358c6809b74682a0fc"
+  },
+  "yearlyCsv": {
+    "path": "yearly-2012-2026.csv",
+    "rows": 15,
+    "bytes": 665,
+    "sha256": "b2fb56ca0dc5d40b19c7664933e3c9eeb8321b772a5f823de472f6f46a424c10"
+  }
+}
