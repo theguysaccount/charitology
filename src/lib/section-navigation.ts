@@ -231,6 +231,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Follow VAT compensation grants', 'tranche'],
     ['coverage', 'Coverage and original records', 'archive'],
   ],
+  '/record/charity-index/poland/': [
+    ['pl-search-heading', 'Search Polish public benefit organizations', 'lens'],
+    ['funding', 'Follow four years of 1.5% PIT tax designations', 'taxSlice'],
+    ['coverage', 'Scope, identifier rules and privacy projection', 'archive'],
+  ],
   '/record/charity-index/taiwan/': [
     ['taiwan-search-heading', 'Search institutional registrations', 'lens'],
     ['funding', 'Follow New Resident Development Fund grants', 'grantSchedule'],
@@ -493,6 +498,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['reconciliation', 'Compare 2025 approvals and payouts', 'compare'],
     ['umbrellas', 'Follow central umbrella intermediaries', 'network'],
     ['coverage', 'Coverage, anomalies and downloads', 'archive'],
+  ],
+  '/record/funding-flows/poland-pit-1-5-percent/': [
+    ['pl-pit-heading', 'Search 1.5% PIT recipients (2022–2025)', 'lens'],
+    ['intermediaries', 'Concentration and the sub-account intermediary model', 'network'],
+    ['reconciliation', 'Cross-register reconciliation and reporting thresholds', 'compare'],
+    ['downloads', 'Downloads and provenance', 'download'],
   ],
   '/record/funding-flows/us-schedule-i/': [
     ['us-grants-heading', 'Find grants by EIN', 'lens'],

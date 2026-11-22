@@ -151,6 +151,8 @@ export const symbols = {
   sluice: 'M4 4v16M20 4v16M4 9h16M4 15h16M9 9v6m6-6v6M2 20h20',
   oliveBranch: 'M5 19c4-6 8-10 14-14M10 14c-3-.5-5-2.5-5-5 2.5 0 4.5 2 5 5Zm4-4c0-3 2-5 5-5 0 2.5-2 4.5-5 5Zm-1 3c3 0 5 1.5 5 4-2.5 0-4.5-1.5-5-4Z',
   borderGate: 'M4 20V8l8-4 8 4v12M8 20v-8h8v8M2 20h20M10 12v8m4-8v8',
+  poppy: 'M12 13v8m0-5c-3 0-5-1.5-6-3.5 3 0 5 1.5 6 3.5Zm0-3c-4 0-7-2.5-7-5.5 0-2 2-3.5 4.5-2.5C10 4 11 3 12 3s2 1 2.5 2c2.5-1 4.5.5 4.5 2.5 0 3-3 5.5-7 5.5Zm0-3.5h.01',
+  taxSlice: 'M12 3a9 9 0 1 0 9 9h-9V3Zm3-1a8 8 0 0 1 7 7h-7V2Z',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

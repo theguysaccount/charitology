@@ -723,3 +723,21 @@ node scripts/check-israel-charity-index.mjs
 ```
 
 Next, qualify Israel Ministry of Finance domestic government-support grants (*Tmichot*, `budgetkey` / `data.gov.il`) and Israel Tax Authority Section 46 tax-deductible charity lists by exact nine-digit ID so domestic state grants, foreign-state donations and tax-deductible status can be compared without double counting.
+
+## Poland public benefit organizations (OPP) and 1.5% PIT designations
+
+The [Poland OPP registry lookup](https://charitology.com/record/charity-index/poland/) combines three consecutive statutory eligibility registers published by the National Freedom Institute (NIW-CRSO) for tax years **2023, 2024 and 2025** (latest list updated November 16, 2026, captured November 22, 2026 via [`dane.gov.pl`](https://dane.gov.pl/pl/dataset/20137) under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)) with four years of Ministry of Finance 1.5% personal income tax (PIT) disbursements (**tax years 2022–2025**, paid **2023–2026**, [`dane.gov.pl/pl/dataset/171`](https://dane.gov.pl/pl/dataset/171)). Across all 11 official CC0 workbooks, **10,484 distinct 10-digit KRS organizations** appear: **9,591** eligible in the latest 2025/2026 NIW list (**8,339** eligible in all three years; **379** newly added for 2025), **10,020** with weighted mod-11 validated 10-digit NIP tax identifiers (`0` invalid checksums), and **893** appearing only in earlier 2022–2024 lists or disbursements. NIW’s unpadded integer KRS codes are canonicalized to 10 digits with leading zeros to match Ministry of Finance and KRS court identifiers; one voivodeship spelling typo (`MAŁOPOLSKA` -> `MAŁOPOLSKIE` in 2024 and 2025) is normalized and logged. Street addresses and postal codes are excluded (voivodeship and city only).
+
+The paired [Poland 1.5% PIT tax-designation edition](https://charitology.com/record/funding-flows/poland-pit-1-5-percent/) covers the complete first four years of the 1.5% rate (**PLN 8,316,801,006.68** across **10,395** distinct funded OPPs, including **7,645** funded in all four years). Annual transfers grew **+70.4%** nominally from **PLN 1,530,430,295.58** (`9,009` OPPs) for 2022 to **PLN 2,607,398,866.61** (`9,450` OPPs) for 2025 (paid in 2026). Cross-register exact-KRS reconciliation shows **167** eligible OPPs received **PLN 0** in 2025 (`143` in 2024; `149` in 2023), while **26** OPPs received 2025 disbursements totaling **PLN 307,417.10** despite absence from the final November 16, 2026 NIW list (all 26 appeared on the 2023 or 2024 NIW eligibility registers; `40` in 2024 totaling PLN 514,854.10; `39` in 2023 totaling PLN 503,581.00; all preserved in `reconciliation.json`). The Ministry of Finance taxpayer-count workbooks report counts rounded to `0.1k` (100 taxpayers) and therefore omit **3,689** smaller funded OPPs in 2025 below that threshold (`5,761` disclosed OPPs sum to **17,180.0k** designations; zero KRS appear in any taxpayer sheet without appearing in the amounts sheet). Top-10 concentration (**45.69%** in 2025; top-100 **73.03%**) reflects Poland’s statutory sub-account (*cel szczegółowy*) intermediary foundations—such as *Fundacja Dzieciom “Zdążyć z Pomocą”* (`0000037904`, PLN 406.58M across 2.51M taxpayers) and *Fundacja Siepomaga* (`0000396361`, PLN 254.65M)—whose KRS totals aggregate individual patient/disability sub-accounts.
+
+Rebuild offline from the 11 exact CC0 captures pinned in [`src/data/poland-index-sources.tsv`](../src/data/poland-index-sources.tsv):
+
+```sh
+python3 scripts/build-poland-charity-index.py --source-dir /path/to/captured-inputs --out-root /path/to/rebuild
+diff -r public/data/charity-registry/poland /path/to/rebuild/charity-registry/poland
+diff -r public/data/funding-flows/poland-pit-1-5-percent /path/to/rebuild/funding-flows/poland-pit-1-5-percent
+npm run build
+node scripts/check-poland-charity-index.mjs
+```
+
+Next, qualify NIW-CRSO’s OPP annual financial & substantive reports repository (`sprawozdaniaopp.niw.gov.pl`) by exact 10-digit KRS so administrative overhead, sub-account onward distributions and non-PIT grant revenue can be compared alongside 1.5% PIT inflows.

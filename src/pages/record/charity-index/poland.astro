@@ -1,0 +1,298 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/poland/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Poland public benefit organizations (OPP)';
+const dataPath = '/data/charity-registry/poland/';
+const flowPath = '/record/funding-flows/poland-pit-1-5-percent/';
+const count = (value: number) => value.toLocaleString('en-US');
+const plnB = (grosze: number) =>
+  `PLN ${(grosze / 100_000_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}B`;
+const sources = [
+  { title: 'Wykaz OPP uprawnionych do 1,5% PIT za 2025 r. (w 2026 r.)', publisher: 'NIW-CRSO (dane.gov.pl)', url: manifest.catalogues.niw2025 },
+  { title: 'Wykaz OPP uprawnionych do 1,5% PIT za 2024 r. (w 2025 r.)', publisher: 'NIW-CRSO (dane.gov.pl)', url: manifest.catalogues.niw2024 },
+  { title: 'Wykaz OPP uprawnionych do 1,5% PIT za 2023 r. (w 2024 r.)', publisher: 'NIW-CRSO (dane.gov.pl)', url: manifest.catalogues.niw2023 },
+  { title: 'Wykaz OPP, które otrzymały 1,5% PIT (2022–2025)', publisher: 'Ministerstwo Finansów (dane.gov.pl)', url: manifest.catalogues.mfPit15 },
+  { title: 'CC0 1.0 Universal Public Domain Dedication', publisher: 'Creative Commons', url: manifest.license },
+];
+const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].orgs - a[1].orgs);
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index · Poland"
+  summary="Search 10,484 Polish Public Benefit Organizations (OPP) by name, 10-digit KRS or NIP across 2023–2025 statutory eligibility registers and 2022–2025 1.5% PIT tax designations."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Poland'}]}
+  filePath="src/pages/record/charity-index/poland.astro" sources={sources}>
+  <p>This edition combines three statutory National Freedom Institute (NIW-CRSO) eligible Public Benefit Organization (<em>Organizacja Pożytku Publicznego</em>, OPP) registers for tax years <strong>2023, 2024 and 2025</strong> (latest list updated November 16, 2026; captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>) with four years of Ministry of Finance 1.5% PIT disbursements (tax years 2022–2025, paid 2023–2026) under <a href={manifest.license}>CC0 1.0</a>. Together they identify <strong>{count(manifest.counts.includedOrganizations)} distinct 10-digit KRS organizations</strong>: <strong>{count(manifest.counts.eligible2025)}</strong> eligible in the latest 2025/2026 NIW register (<strong>{count(manifest.counts.eligibleAllThreeYears)}</strong> eligible in all three years; <strong>{count(manifest.counts.eligible2025OnlyNew)}</strong> newly added for 2025) and <strong>{count(manifest.counts.notEligibleInFinal2025List)}</strong> appearing in earlier 2022–2024 lists or payouts only. Every non-blank 10-digit tax identifier (<strong>{count(manifest.counts.withValidatedNip)}</strong> NIPs) passes Poland’s official weighted mod-11 checksum.</p>
+
+  <section class="charity-financial-search" data-poland-registry data-base={url(dataPath)}
+    data-flow={url(flowPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="pl-search-heading">
+    <h2 id="pl-search-heading">Search Polish public benefit organizations</h2>
+    <p id="pl-search-hint">Enter a Polish organization name (diacritic-insensitive, e.g., <code>siepomaga</code> or <code>wielka orkiestra</code>), a KRS number (e.g., <code>0000037904</code> or <code>37904</code>), a 10-digit NIP or a city. Search loads {(manifest.asset.bytes / 1_000).toFixed(0)} KB of compressed public records locally in your browser.</p>
+    <form aria-describedby="pl-search-hint">
+      <label for="pl-query">Organization name, KRS, NIP or city</label>
+      <div class="finance-actions">
+        <input type="search" id="pl-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="pl-voiv">Voivodeship</label>
+          <select id="pl-voiv" disabled>
+            <option value="">All 16 voivodeships</option>
+            {voivEntries.map(([code, info]) => (
+              <option value={code}>{info.pl} / {info.en} ({count(info.orgs)})</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="pl-elig">Eligibility</label>
+          <select id="pl-elig" disabled>
+            <option value="">All cohorts</option>
+            <option value="elig2025">Eligible 2025/2026 ({count(manifest.counts.eligible2025)})</option>
+            <option value="all3">Eligible all 3 years 2023–2025 ({count(manifest.counts.eligibleAllThreeYears)})</option>
+            <option value="new2025">Newly eligible 2025 ({count(manifest.counts.eligible2025OnlyNew)})</option>
+            <option value="historical">Not in final Nov 2026 list ({count(manifest.counts.notEligibleInFinal2025List)})</option>
+          </select>
+        </span>
+        <label class="inline-check"><input type="checkbox" id="pl-zero-only" disabled /> Eligible 2025 with PLN 0 in 2025</label>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you are ready to load the Poland OPP register.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="poppy" aria-label="Poland OPP registry results" data-results></ol>
+    <noscript><p>Without JavaScript, download the official CC0 Excel workbooks from <a href={manifest.catalogues.niw2025}>dane.gov.pl (NIW-CRSO dataset 20137)</a>.</p></noscript>
+  </section>
+
+  <h2 id="funding">Follow four years of 1.5% PIT tax designations</h2>
+  <p>Since tax year 2022, Polish personal income taxpayers can direct <strong>1.5%</strong> of their income tax due (raised from 1%) to any eligible OPP by entering its 10-digit KRS number on their annual return. <a class="identity-link" href={url(flowPath)}>Inspect PLN {plnB(manifest.counts.total4yrPit15Grosze).replace('PLN ', '')} in 2022–2025 disbursements across {count(manifest.counts.fundedAnyYear2022to2025)} funded OPPs, disclosed taxpayer counts and cross-register reconciliation</a>.</p>
+
+  <h2 id="coverage">Scope, identifier rules and privacy projection</h2>
+  <p><strong>OPP status vs. all Polish nonprofits:</strong> Public Benefit Organization (OPP) status is a statutory subset of Polish associations, foundations and church/public-benefit entities registered in the National Court Register (<em>Krajowy Rejestr Sądowy</em>, KRS) that meet governance and annual reporting requirements to receive 1.5% PIT designations. This edition covers OPP-eligible and 1.5%-funded KRS entities rather than every registered association or foundation in Poland.</p>
+  <p><strong>Identifier normalization &amp; source quirks:</strong> NIW-CRSO Excel workbooks store KRS numbers as unpadded integers (e.g., <code>37904</code>), whereas the Ministry of Finance and KRS court registry use 10-digit strings (<code>0000037904</code>). Every KRS is canonicalized to 10 digits with leading zeros before exact-ID joining. One source spelling variant (<code>MAŁOPOLSKA</code> in row 7554/7706 of the 2024 and 2025 NIW workbooks) is normalized to <code>MAŁOPOLSKIE</code> and preserved in the manifest. Street names and postal codes are omitted; voivodeship and city (<em>miejscowość</em>) only are retained. All 11 source files are published under <a href={manifest.license}>CC0 1.0</a> via <code>dane.gov.pl</code>. <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> · <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
+</Entry>
+
+<style>
+  .inline-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+  }
+  .inline-field label {
+    margin: 0;
+    white-space: nowrap;
+  }
+  .inline-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    margin: 0;
+  }
+  .inline-check input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName } from '../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../lib/client/verified-json';
+
+  type OrgRow = [
+    string, string | null, string, string | null, string | null,
+    number, number, number | null, number | null, number | null,
+  ];
+  type Manifest = typeof import('../../../../public/data/charity-registry/poland/manifest.json');
+
+  const foldPolish = (value: string) =>
+    value
+      .replace(/[łŁ]/g, 'l')
+      .normalize('NFKD')
+      .toLowerCase()
+      .replace(/\p{M}/gu, '')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .trim();
+
+  const fmtPln = (grosze: number) =>
+    `PLN ${(grosze / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const eligYears = (mask: number) => {
+    const yrs: string[] = [];
+    if (mask & 1) yrs.push('2023');
+    if (mask & 2) yrs.push('2024');
+    if (mask & 4) yrs.push('2025');
+    return yrs.length ? yrs.join(', ') : 'none in 2023–2025 NIW snapshots';
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-poland-registry]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const flowBase = root.dataset.flow!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#pl-query', form);
+    const voivSelect = $<HTMLSelectElement>('#pl-voiv', form);
+    const eligSelect = $<HTMLSelectElement>('#pl-elig', form);
+    const zeroCheck = $<HTMLInputElement>('#pl-zero-only', form);
+    const submit = $<HTMLButtonElement>('button[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+
+    let snapshot: Promise<OrgRow[]> | undefined;
+    let displayed: OrgRow[] = [];
+    let sequence = 0;
+    const limit = 40;
+    input.disabled = voivSelect.disabled = eligSelect.disabled = zeroCheck.disabled = submit.disabled = clear.disabled = false;
+
+    const load = () =>
+      loadVerifiedJson(base + manifest.asset.path, manifest.asset).then(rows => {
+        if (!Array.isArray(rows) || rows.length !== manifest.asset.rows) {
+          throw new Error('The Poland OPP register has an unexpected row count.');
+        }
+        return rows as OrgRow[];
+      });
+
+    const reset = () => {
+      displayed = [];
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    const toObject = ([krs, nip, name, voivCode, city, eligMask, total4yrGrosze, latestYr, latestGrosze, latestTaxpayersTenthsK]: OrgRow) => ({
+      krs,
+      nip: nip ?? '',
+      name,
+      voivodeship: voivCode ? (manifest.voivodeships[voivCode as keyof typeof manifest.voivodeships]?.pl ?? voivCode) : '',
+      city: city ?? '',
+      eligibleYears2023to2025: eligYears(eligMask),
+      total4yrPln: (total4yrGrosze / 100).toFixed(2),
+      latestPayoutTaxYear: latestYr ?? '',
+      latestPln: latestGrosze !== null ? (latestGrosze / 100).toFixed(2) : '',
+      latestTaxpayersThousands: latestTaxpayersTenthsK !== null ? (latestTaxpayersTenthsK / 10).toFixed(1) : '',
+    });
+
+    function card(row: OrgRow) {
+      const [krs, nip, name, voivCode, city, eligMask, total4yr, latestYr, latestGrosze, latestTax] = row;
+      const voivInfo = voivCode ? manifest.voivodeships[voivCode as keyof typeof manifest.voivodeships] : undefined;
+      const loc = [city, voivInfo ? `${voivInfo.pl} (${voivInfo.en})` : null].filter(Boolean).join(' · ') || 'Location not in 2023–2025 NIW lists';
+      const avgNote = latestGrosze && latestTax
+        ? ` (${(latestTax / 10).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}k taxpayers, ~PLN ${((latestGrosze / 100) / (latestTax * 100)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/taxpayer)`
+        : (latestGrosze ? ' (<0.1k taxpayers threshold)' : '');
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, krs), ' ', name),
+        h('p', {}, `${loc}${nip ? ` · NIP ${nip}` : ' · NIP blank in NIW'}`),
+        h('p', { class: 'note' },
+          `NIW 1.5% eligibility: ${eligYears(eligMask)} · 2022–2025 1.5% PIT total: ${fmtPln(total4yr)}`,
+          latestYr && latestGrosze !== null ? ` · Latest (${latestYr} paid ${latestYr + 1}): ${fmtPln(latestGrosze)}${avgNote}` : ' · PLN 0 across 2022–2025'),
+        h('p', { class: 'note' },
+          total4yr > 0
+            ? h('a', { href: `${flowBase}#q=${krs}` }, 'Inspect 2022–2025 1.5% PIT yearly flows')
+            : 'No 1.5% PIT transfer in 2022–2025',
+          ' · ',
+          h('a', { href: 'https://wyszukiwarka-krs.ms.gov.pl/', rel: 'noopener noreferrer' }, 'Check Polish KRS court register')));
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compactDigits = raw.replace(/\D+/g, '');
+      const isDigitsOnly = raw.length > 0 && /^[\d\s-]+$/.test(raw) && compactDigits.length >= 1 && compactDigits.length <= 10;
+      const paddedKrs = isDigitsOnly ? compactDigits.padStart(10, '0') : '';
+      const q = foldPolish(raw);
+      const vVal = voivSelect.value;
+      const eVal = eligSelect.value;
+      const onlyZero2025 = zeroCheck.checked;
+      try {
+        if (!raw && !vVal && !eVal && !onlyZero2025) {
+          throw new Error('Enter a name, KRS, NIP, city, or select a filter.');
+        }
+        if (raw && !isDigitsOnly && q.length < 2) {
+          throw new Error('Enter at least two characters or a KRS/NIP number.');
+        }
+        submit.disabled = true;
+        status.textContent = 'Checking the Poland OPP register.';
+        snapshot ??= load().catch(err => { snapshot = undefined; throw err; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        const matches = rows.filter(row => {
+          const [krs, nip, name, voivCode, city, eligMask, , latestYr] = row;
+          if (vVal && voivCode !== vVal) return false;
+          if (eVal === 'elig2025' && !(eligMask & 4)) return false;
+          if (eVal === 'all3' && eligMask !== 7) return false;
+          if (eVal === 'new2025' && eligMask !== 4) return false;
+          if (eVal === 'historical' && (eligMask & 4)) return false;
+          if (onlyZero2025 && !((eligMask & 4) && latestYr !== 2025)) return false;
+          if (!raw) return true;
+          if (isDigitsOnly) {
+            return krs === paddedKrs || (nip !== null && nip === compactDigits);
+          }
+          return foldPolish(name).includes(q) || (city !== null && foldPolish(city).includes(q));
+        });
+        matches.sort((a, b) => b[6] - a[6] || a[0].localeCompare(b[0]));
+        displayed = matches.slice(0, limit);
+        status.textContent = matches.length
+          ? `${matches.length.toLocaleString('en-US')} ${matches.length === 1 ? 'match' : 'matches'} (sorted by 4-year 1.5% PIT total). Showing ${displayed.length}.`
+          : 'No matching Polish OPP in this snapshot. Try a Polish name (diacritics optional), a KRS number or a city.';
+        results.append(...displayed.map(card));
+        jsonBtn.disabled = csvBtn.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The Poland OPP search failed.';
+      } finally {
+        if (ticket === sequence) submit.disabled = false;
+      }
+    }
+
+    form.addEventListener('submit', event => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      voivSelect.value = eligSelect.value = '';
+      zeroCheck.checked = false;
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher, license } = manifest;
+    jsonBtn.addEventListener('click', () => {
+      if (!displayed.length) return;
+      download('poland-opp-organizations.json', JSON.stringify({
+        format, capturedOn, publisher, license,
+        displayedCount: displayed.length,
+        organizations: displayed.map(toObject),
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!displayed.length) return;
+      const rows = displayed.map(r => {
+        const obj = toObject(r);
+        return {
+          ...obj,
+          name: financialCsvName(obj.name),
+          city: obj.city ? financialCsvName(obj.city) : '',
+          capturedOn, publisher, license,
+        };
+      });
+      download('poland-opp-organizations.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const initial = new URLSearchParams(location.search).get('krs') ?? /^#q=([0-9]{1,10})$/.exec(location.hash)?.[1];
+    if (initial) {
+      input.value = initial.padStart(10, '0');
+      void runSearch();
+    }
+  }
+</script>
