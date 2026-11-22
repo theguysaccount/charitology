@@ -1,0 +1,79 @@
+{
+  "format": "charitology-israel-foreign-state-donations-anomalies-v1",
+  "capturedOn": "2026-11-22",
+  "unmatchedRecipientIdsCount": 4,
+  "suspectedProductionTestRecipientsCount": 2,
+  "suspectedProductionTestTotalIls": 387153,
+  "unmatchedRecipients": [
+    {
+      "id": "580324580",
+      "name": "מורשתנו - הצהרה דמוקרטית (ע~ר)",
+      "totalIls": 3142154,
+      "rows": 50,
+      "suspectedProductionTestRecord": false
+    },
+    {
+      "id": "580666667",
+      "name": "טסט עליה לאויר חדשה (ע~ר)",
+      "totalIls": 385652,
+      "rows": 12,
+      "suspectedProductionTestRecord": true
+    },
+    {
+      "id": "513811422",
+      "name": "סונדוק אלאסראא ללאגאתיה ואלתנמיה בע~מ (חל~צ)",
+      "totalIls": 364500,
+      "rows": 1,
+      "suspectedProductionTestRecord": false
+    },
+    {
+      "id": "580666683",
+      "name": "עמותה טסט צרוף קבלה 1 (ע~ר)",
+      "totalIls": 1501,
+      "rows": 5,
+      "suspectedProductionTestRecord": true
+    }
+  ],
+  "selfDonorFilingAnomaliesCount": 1,
+  "selfDonorFilingAnomalies": [
+    {
+      "recordId": 3495,
+      "orgId": "580185700",
+      "orgName": "הקרן לרווחת נפגעי השואה (ע~ר)",
+      "year": 2022,
+      "quarter": "שלישי",
+      "donor": "הקרן לרווחת נפגעי השואה",
+      "currency": "שקל חדש",
+      "ils": 195438888,
+      "note": "Published record names the recipient foundation itself in the foreign-state donor field."
+    }
+  ],
+  "negativeAdjustmentRowsCount": 2,
+  "negativeAdjustmentTotalIls": -58241,
+  "negativeAdjustmentRows": [
+    {
+      "recordId": 10921,
+      "orgId": "580679371",
+      "orgName": "זולת - לשוויון וזכויות-אדם (ע~ר)",
+      "year": 2024,
+      "donor": "Heinriech boell stiftung",
+      "currency": "שקל חדש",
+      "ils": -10941
+    },
+    {
+      "recordId": 12519,
+      "orgId": "513797902",
+      "orgName": "לוחמים לשלום בע~מ (חל~צ)",
+      "year": 2022,
+      "donor": "Agiamondo",
+      "currency": "שקל חדש",
+      "ils": -47300
+    }
+  ],
+  "zeroIlsRowsCount": 209,
+  "gbpCurrencySynonymRows": {
+    "פאונד אנגלי": 91,
+    "לירה שטרלינג": 62
+  },
+  "nonStandardLegacyCheckDigitIdsInRegistry": 123
+}

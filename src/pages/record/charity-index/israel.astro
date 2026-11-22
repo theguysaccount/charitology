@@ -1,0 +1,348 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/israel/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Israel registered associations and public benefit companies';
+const dataPath = '/data/charity-registry/israel/';
+const fsdPath = '/record/funding-flows/israel-foreign-state-donations/';
+const count = (value: number) => value.toLocaleString('en-US');
+const ilsB = (value: number) => `ILS ${(value / 1_000_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}B`;
+const sources = [
+  { title: 'Registry of Associations and Public Benefit Companies (moj-amutot)', publisher: manifest.publisher, url: manifest.catalogue },
+  { title: 'Registered Associations CKAN API (be5b7935)', publisher: manifest.publisher, url: manifest.sources.amutot.url },
+  { title: 'Public Benefit Companies CKAN API (85e40960)', publisher: manifest.publisher, url: manifest.sources.pbc.url },
+  { title: 'Proper Management Certificates CKAN API (cb12ac14)', publisher: manifest.publisher, url: manifest.sources.properManagement.url },
+  { title: 'Israel Government Open Data Terms (data.gov.il)', publisher: 'National Digital Agency (Israel)', url: manifest.license },
+];
+const sectorEntries = Object.entries(manifest.sectors).sort((a, b) => b[1].count - a[1].count);
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index · Israel"
+  summary="Search 76,203 Israeli registered associations (Amutot) and public benefit companies by Hebrew name, English name or nine-digit ID. Inspect reported revenue, Proper Management certificates and foreign-state donation links."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Israel'}]}
+  filePath="src/pages/record/charity-index/israel.astro" sources={sources}>
+  <p>This edition merges Israel’s Ministry of Justice (Registrar of Associations) open-data tables captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>: <strong>{count(manifest.counts.amutotSourceRows)} Amutot records</strong> and <strong>{count(manifest.counts.pbcSourceRows)} Public Benefit Company (Chalotz / חל״צ) records</strong> ({count(manifest.counts.pbcOverlapWithAmutot)} overlap by exact ID; {count(manifest.counts.pbcOnlyAdded)} appear only in the PBC table), yielding <strong>{count(manifest.counts.includedOrganizations)} distinct organizations</strong> (<strong>{count(manifest.counts.byStatus.active)}</strong> active or registered; <strong>{count(manifest.counts.byStatus.dissolvedOrStruckOff)}</strong> dissolved or struck off). Exact nine-digit joins attach <strong>{count(manifest.counts.properManagementSourceRows)} multi-year Proper Management certificate rows</strong> (<strong>{count(manifest.counts.withProperManagement2026Or2027)}</strong> organizations with signed 2026–2027 approval) and flag <strong>{count(manifest.counts.matchedForeignStateDonations2012to2026)}</strong> organizations appearing in 2012–2026 foreign-state donation disclosures.</p>
+
+  <section class="charity-financial-search" data-israel-registry data-base={url(dataPath)}
+    data-fsd={url(fsdPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="il-search-heading">
+    <h2 id="il-search-heading">Search Israeli nonprofits</h2>
+    <p id="il-search-hint">Enter a Hebrew name prefix (e.g., <code>הקרן לרווחת</code>), an English name (searches all {count(manifest.counts.withEnglishName)} published English names, e.g., <code>hadassah</code> or <code>peres</code>), or an exact nine-digit registration ID (e.g., <code>580185700</code>). Search runs locally in your browser.</p>
+    <form aria-describedby="il-search-hint">
+      <label for="il-query">Hebrew name, English name or nine-digit ID</label>
+      <div class="finance-actions">
+        <input type="search" id="il-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="il-type">Legal form</label>
+          <select id="il-type" disabled>
+            <option value="">All forms</option>
+            <option value="A">Amuta / Association ({count(manifest.counts.byType.Amuta)})</option>
+            <option value="P">Public Benefit Company / PBC ({count(manifest.counts.byType.PublicBenefitCompany)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="il-status">Status</label>
+          <select id="il-status" disabled>
+            <option value="">All statuses</option>
+            <option value="A">Active / Registered ({count(manifest.counts.byStatus.active)})</option>
+            <option value="L">In liquidation / receivership ({count(manifest.counts.byStatus.inLiquidation)})</option>
+            <option value="P">Pending registration ({count(manifest.counts.byStatus.pendingRegistration)})</option>
+            <option value="D">Dissolved / Struck off ({count(manifest.counts.byStatus.dissolvedOrStruckOff)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="il-sector">Sector</label>
+          <select id="il-sector" disabled>
+            <option value="">All sectors</option>
+            {sectorEntries.map(([code, info]) => (
+              <option value={code}>{info.en} ({count(info.count)})</option>
+            ))}
+          </select>
+        </span>
+        <label class="inline-check"><input type="checkbox" id="il-pm-only" disabled /> Signed 2026–2027 Proper Management</label>
+        <label class="inline-check"><input type="checkbox" id="il-fsd-only" disabled /> Has foreign-state donation disclosure</label>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you’re ready to load a registry shard.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="oliveBranch" aria-label="Israel nonprofit registry results" data-results></ol>
+    <noscript><p>Without JavaScript, browse the <a href={manifest.catalogue}>official Israel Ministry of Justice dataset on data.gov.il</a>.</p></noscript>
+  </section>
+
+  <h2 id="funding">Follow cross-border foreign-state donations</h2>
+  <p>Under Israeli statutory disclosure law, nonprofits receiving donations from foreign state entities report each contribution quarterly. <a class="identity-link" href={url(fsdPath)}>Search 15 years (2012–2026) of cross-border foreign-state donation disclosures across 516 recipients totaling ILS 7.53 billion</a>. Both datasets share Israel’s exact nine-digit registration ID.</p>
+
+  <h2 id="coverage">Financial reporting, Proper Management and source quirks</h2>
+  <p><strong>Latest reported finances:</strong> <strong>{count(manifest.counts.withReportedRevenue)}</strong> organizations report a latest annual revenue figure (<code>מחזור כספי</code>) totaling <strong>{ilsB(manifest.counts.reportedRevenueSumIls)}</strong> across varying latest filing years (through FY 2025; organizations file in different periods, so totals are a cross-sectional snapshot rather than a single fiscal year). Only <strong>{count(manifest.counts.withNonzeroReportedExpense)}</strong> organizations report a nonzero total expense field (<code>סך הוצאות</code>); the remaining rows default to <code>0</code> in the Ministry of Justice export and are therefore displayed as <em>not reported</em> rather than zero expenses.</p>
+  <p><strong>Proper Management (<em>Nihul Takin</em>):</strong> A Certificate of Proper Management confirms that the Registrar reviewed annual filings and governance compliance for a given year and is generally required to receive public grants or Section 46 tax-deductible donor status. Across {count(manifest.counts.properManagementSourceRows)} multi-year rows, <strong>{count(manifest.counts.withProperManagementApprovedEver)}</strong> distinct organizations have ever held signed approval and <strong>{count(manifest.counts.withProperManagement2026Or2027)}</strong> hold signed approval for 2026 or 2027.</p>
+  <p><strong>Source quirks kept visible:</strong> The Ministry of Justice CSV/API export replaces quotation marks and commas with tilde characters (<code>~</code>, such as <code>(ע~ר)</code>). <strong>{count(manifest.counts.nonStandardLegacyCheckDigitIds)}</strong> legacy identifiers (including Ottoman-era associations) do not follow Israel’s modern nine-digit Luhn check digit and are retained verbatim. Street names, apartment numbers and postal codes are omitted from this public index, retaining city only. Data from {manifest.publisher} via <a href={manifest.catalogue}>data.gov.il</a> under the <a href={manifest.license}>Israel Government Open Data License</a>. <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> · <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
+</Entry>
+
+<style>
+  .inline-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+  }
+  .inline-field label {
+    margin: 0;
+    white-space: nowrap;
+  }
+  .inline-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    margin: 0;
+  }
+  .inline-check input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName, financialShardLoader, type FinancialShard } from '../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../lib/client/verified-json';
+
+  type Organization = [
+    string, 'A' | 'P', string, string | null, 'A' | 'P' | 'L' | 'D', string,
+    string | null, string | null, string | null, number | null, number | null,
+    number | null, number | null, number | null, number | null, string | null, boolean,
+  ];
+  type DirectoryEntry = [string, string];
+  type EnglishEntry = [string, string, string];
+  type Manifest = {
+    format: string; capturedOn: string; publisher: string; catalogue: string; license: string;
+    sources: Record<string, { url: string; sha256: string; bytes: number }>;
+    sectors: Record<string, { en: string; he: string; count: number }>;
+    englishIndex: FinancialShard;
+    names: Record<string, FinancialShard>;
+    ids: Record<string, FinancialShard>;
+  };
+  type Result = { total: number; organizations: Organization[] };
+
+  const FINAL_TO_BASE: Record<string, string> = { 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ' };
+  const BASE_HEBREW = 'אבגדהוזחטיכלמנסעפצקרשת';
+  const HEBREW_BUCKET: Record<string, string> = Object.fromEntries(
+    [...BASE_HEBREW].map((ch, idx) => [ch, `he-${String(idx + 1).padStart(2, '0')}`]),
+  );
+
+  const normalizeText = (value: string) =>
+    value.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+
+  const bucketForHebrew = (name: string) => {
+    const norm = normalizeText(name);
+    for (const ch of norm) {
+      const base = FINAL_TO_BASE[ch] ?? ch;
+      if (HEBREW_BUCKET[base]) return HEBREW_BUCKET[base];
+      if (ch >= '0' && ch <= '9') return '0-9';
+      return 'latin-other';
+    }
+    return 'latin-other';
+  };
+
+  const hasHebrew = (value: string) => /[\u05d0-\u05ea]/.test(value);
+  const isOrgId = (value: string) => /^[0-9]{9,10}$/.test(value.replace(/\s+/g, ''));
+  const fmtIls = (v: number | null) => v === null ? 'not reported' : `ILS ${v.toLocaleString('en-US')}`;
+  const statusLabels: Record<'A' | 'P' | 'L' | 'D', string> = {
+    A: 'Active / Registered',
+    P: 'Pending registration',
+    L: 'In liquidation / receivership',
+    D: 'Dissolved / Struck off',
+  };
+  const limit = 30;
+
+  const toObject = ([id, type, heName, enName, statusCode, statusHe, sectorCode, city, regDate, finYear, revenueIls, expenseIls, staff, volunteers, pmLatestApproved, pmLatestStatus, hasFsd]: Organization) => ({
+    id, type, heName, enName, statusCode, statusHe, sectorCode, city, regDate, finYear, revenueIls, expenseIls, staff, volunteers, pmLatestApproved, pmLatestStatus, hasFsd,
+  });
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-israel-registry]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const fsdBase = root.dataset.fsd!;
+    const loadNames = financialShardLoader<Organization>(base, manifest.names);
+    const loadIds = financialShardLoader<DirectoryEntry>(base, manifest.ids);
+    let englishPromise: Promise<EnglishEntry[]> | undefined;
+    const loadEnglish = () => {
+      englishPromise ??= loadVerifiedJson(base + manifest.englishIndex.path, manifest.englishIndex)
+        .then(rows => rows as EnglishEntry[])
+        .catch(err => { englishPromise = undefined; throw err; });
+      return englishPromise;
+    };
+
+    const formEl = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#il-query', formEl);
+    const typeFilter = $<HTMLSelectElement>('#il-type', formEl);
+    const statusFilter = $<HTMLSelectElement>('#il-status', formEl);
+    const sectorFilter = $<HTMLSelectElement>('#il-sector', formEl);
+    const pmOnly = $<HTMLInputElement>('#il-pm-only', formEl);
+    const fsdOnly = $<HTMLInputElement>('#il-fsd-only', formEl);
+    const submit = $<HTMLButtonElement>('button[type=submit]', formEl);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const statusEl = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    let found: Result | undefined;
+    let sequence = 0;
+    input.disabled = typeFilter.disabled = statusFilter.disabled = sectorFilter.disabled = pmOnly.disabled = fsdOnly.disabled = submit.disabled = clear.disabled = false;
+
+    function reset() {
+      found = undefined;
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function card(row: Organization) {
+      const [id, type, heName, enName, statusCode, statusHe, sectorCode, city, regDate, finYear, revenueIls, expenseIls, staff, volunteers, pmLatestApproved, pmLatestStatus, hasFsd] = row;
+      const sectorEn = sectorCode ? (manifest.sectors[sectorCode]?.en ?? sectorCode) : 'Sector unspecified';
+      const typeLabel = type === 'P' ? 'Public Benefit Company (חל״צ)' : 'Amuta (Association)';
+      const pmText = pmLatestApproved ? `Proper Management approved through ${pmLatestApproved}` : (pmLatestStatus ? `Latest Proper Management: ${pmLatestStatus}` : 'No Proper Management record');
+      return h('li', { class: 'card' },
+        h('h3', {},
+          h('span', { class: 'identity-code' }, id), ' ',
+          heName ? h('bdi', { lang: 'he', dir: 'rtl' }, heName) : h('bdi', { dir: 'ltr' }, enName ?? ''),
+          heName && enName && h('span', {}, ' (', h('bdi', { dir: 'ltr' }, enName), ')')),
+        h('p', {},
+          `${typeLabel} · ${statusLabels[statusCode]} (`, h('bdi', { lang: 'he', dir: 'rtl' }, statusHe), `) · ${sectorEn}`,
+          city ? h('span', {}, ' · ', h('bdi', { lang: 'he', dir: 'rtl' }, city)) : ''),
+        h('p', { class: 'note' },
+          `Registered ${regDate ?? 'unknown'} · Latest financial year ${finYear ?? 'n/a'}: revenue ${fmtIls(revenueIls)}, expenses ${fmtIls(expenseIls)}` +
+          `${staff !== null || volunteers !== null ? ` · staff ${staff ?? 'n/a'}, volunteers ${volunteers ?? 'n/a'}` : ''}`),
+        h('p', { class: 'note' },
+          pmText, ' · ',
+          h('a', { href: `https://www.guidestar.org.il/organization/${id}`, rel: 'noopener noreferrer' }, 'Inspect on GuideStar Israel'),
+          hasFsd
+            ? h('span', {}, ' · ', h('a', { href: `${fsdBase}#q=${id}` }, 'Inspect 2012–2026 foreign-state donations'))
+            : ' · No foreign-state donation disclosure'));
+    }
+
+    async function search(value: string): Promise<Result> {
+      const cleaned = value.replace(/\s+/g, '');
+      const tVal = typeFilter.value;
+      const sVal = statusFilter.value;
+      const secVal = sectorFilter.value;
+      const onlyPm = pmOnly.checked;
+      const onlyFsd = fsdOnly.checked;
+      const matchesFilters = (row: Organization) =>
+        (!tVal || row[1] === tVal)
+        && (!sVal || row[4] === sVal)
+        && (!secVal || row[6] === secVal)
+        && (!onlyPm || (row[14] !== null && row[14] >= 2026))
+        && (!onlyFsd || row[16]);
+
+      if (isOrgId(cleaned)) {
+        const entry = (await loadIds(cleaned.slice(0, 2))).find(([id]) => id === cleaned);
+        if (!entry) return { total: 0, organizations: [] };
+        const org = (await loadNames(entry[1])).find(([id]) => id === cleaned);
+        if (!org) throw new Error('The organization ID could not be matched to the shard.');
+        return matchesFilters(org) ? { total: 1, organizations: [org] } : { total: 0, organizations: [] };
+      }
+
+      const query = normalizeText(value);
+      if (query.length < 2) throw new Error('Enter at least two characters (Hebrew or English) or an exact nine-digit ID.');
+
+      if (!hasHebrew(query) && /[a-z]/.test(query)) {
+        // Search official English name index first (substring match across all 7,600+ English names)
+        const enRows = await loadEnglish();
+        const candidateEntries = enRows.filter(([, , enName]) => normalizeText(enName).includes(query));
+        const byBucket = new Map<string, Set<string>>();
+        for (const [id, bucket] of candidateEntries) {
+          let set = byBucket.get(bucket);
+          if (!set) { set = new Set(); byBucket.set(bucket, set); }
+          set.add(id);
+        }
+        const organizations: Organization[] = [];
+        let total = 0;
+        for (const [bucket, idSet] of byBucket.entries()) {
+          for (const row of await loadNames(bucket)) {
+            if (!idSet.has(row[0]) || !matchesFilters(row)) continue;
+            total++;
+            if (organizations.length < limit) organizations.push(row);
+          }
+        }
+        return { total, organizations };
+      }
+
+      const bucket = bucketForHebrew(query);
+      const organizations: Organization[] = [];
+      let total = 0;
+      for (const row of await loadNames(bucket)) {
+        if (!matchesFilters(row)) continue;
+        if (!normalizeText(row[2]).startsWith(query)) continue;
+        total++;
+        if (organizations.length < limit) organizations.push(row);
+      }
+      return { total, organizations };
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      statusEl.textContent = 'Checking the Israel Ministry of Justice nonprofit snapshot.';
+      try {
+        const matches = await search(input.value);
+        if (ticket !== sequence) return;
+        found = matches;
+        statusEl.textContent = matches.total
+          ? `${matches.total.toLocaleString('en-US')} ${matches.total === 1 ? 'match' : 'matches'}. Showing ${matches.organizations.length}.`
+          : 'No matching organization in this snapshot. Try a Hebrew name prefix, an English name or an exact nine-digit ID.';
+        results.append(...matches.organizations.map(card));
+        json.disabled = csv.disabled = !matches.organizations.length;
+      } catch (error) {
+        if (ticket === sequence) statusEl.textContent = error instanceof Error ? error.message : 'The organization search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    formEl.addEventListener('submit', event => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      typeFilter.value = statusFilter.value = sectorFilter.value = '';
+      pmOnly.checked = fsdOnly.checked = false;
+      statusEl.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher, catalogue, license, sources } = manifest;
+    json.addEventListener('click', () => {
+      if (!found) return;
+      download('israel-nonprofit-organizations.json', JSON.stringify({
+        format, capturedOn, publisher, catalogue, license, sources,
+        total: found.total, organizations: found.organizations.map(toObject),
+      }, null, 2) + '\n', 'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!found) return;
+      const rows = found.organizations.map(row => ({
+        ...toObject(row),
+        heName: financialCsvName(row[2]),
+        enName: row[3] ? financialCsvName(row[3]) : '',
+        city: row[7] ? financialCsvName(row[7]) : '',
+        capturedOn, publisher, catalogue, license,
+      }));
+      download('israel-nonprofit-organizations.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const initial = new URLSearchParams(location.search).get('id') ?? /^#q=([0-9]{9,10})$/.exec(location.hash)?.[1];
+    if (initial && isOrgId(initial)) {
+      input.value = initial;
+      void runSearch();
+    }
+  }
+</script>

@@ -1,0 +1,345 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/israel-foreign-state-donations/manifest.json';
+import anomalies from '../../../../../public/data/funding-flows/israel-foreign-state-donations/anomalies.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Israel foreign state entity donations (2012–2026)';
+const asset = '/data/funding-flows/israel-foreign-state-donations/';
+const registryRoute = '/record/charity-index/israel/';
+const count = (value: number) => value.toLocaleString('en-US');
+const ils = (value: number) => {
+  const sign = value < 0 ? '-' : '';
+  return `${sign}ILS ${Math.abs(value).toLocaleString('en-US')}`;
+};
+const sources = [
+  { title: 'Foreign State Entity Donations CKAN API (35cb40b5)', publisher: manifest.publisher, url: manifest.source.url },
+  { title: 'Registry of Associations and Public Benefit Companies (moj-amutot)', publisher: manifest.publisher, url: manifest.catalogue },
+  { title: 'Israel Government Open Data Terms (data.gov.il)', publisher: 'National Digital Agency (Israel)', url: manifest.license },
+];
+const testIds = anomalies.unmatchedRecipients.filter(u => u.suspectedProductionTestRecord);
+const selfAnomaly = anomalies.selfDonorFilingAnomalies[0];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Israel"
+  summary="Search 516 Israeli nonprofits across 13,436 quarterly foreign-state donation disclosures (2012–2026, ILS 7.53B net). Inspect exact registry joins, original currencies and published source anomalies."
+  filePath="src/pages/record/funding-flows/israel-foreign-state-donations/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Israel foreign-state donations'}]}
+  sources={sources}>
+  <p>Across 15 disclosure years (2012–2026), Israel’s Registrar of Associations published <strong>{count(manifest.counts.totalDisclosureRows)} quarterly foreign-state donation disclosures</strong> totaling <strong>{ils(manifest.counts.netIls)} net</strong> ({ils(manifest.counts.positiveIls)} positive and {ils(manifest.counts.negativeIls)} across {count(manifest.counts.negativeAdjustmentRows)} negative adjustments) across <strong>{count(manifest.counts.distinctRecipients)} distinct recipient IDs</strong> and {count(manifest.counts.distinctCurrencies)} currency labels. Matching by exact nine-digit registration ID joins <strong>{count(manifest.counts.matchedInRegistry)} recipients</strong> directly to the merged Amutot/PBC registry ({count(manifest.counts.absentFromRegistry)} IDs are absent, including two production software test records documented below). Statutory disclosures flag <strong>{count(manifest.counts.majorityForeignStateFundedRows)} rows</strong> where foreign state entities provided the majority of the recipient’s funding.</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search Israel’s full Amutot and Public Benefit Company register ({count(manifest.registrySnapshot.includedOrganizations)} organizations)</a>.</p>
+
+  <section class="charity-financial-search" id="q=580185700" data-il-fsd
+    data-file={url(asset + manifest.asset.path)} data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="il-fsd-heading">
+    <h2 id="il-fsd-heading">Search disclosed recipients</h2>
+    <p id="il-fsd-hint">Enter a Hebrew name, English name, foreign donor name (e.g., <code>USAID</code> or <code>גרמניה</code>) or exact nine-digit ID (e.g., <code>580185700</code> for the Foundation for the Benefit of Holocaust Victims in Israel). Search loads {(manifest.asset.bytes / 1_000).toFixed(1)} KB of compressed public records locally in your browser.</p>
+    <form aria-describedby="il-fsd-hint">
+      <label for="il-fsd-query">Recipient name (Hebrew/English), donor string or 9-digit ID</label>
+      <div class="finance-actions">
+        <input id="il-fsd-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="il-fsd-type">Entity type</label>
+          <select id="il-fsd-type" disabled>
+            <option value="">All types</option>
+            <option value="A">Amuta (Association)</option>
+            <option value="P">Public Benefit Company (חל״צ)</option>
+            <option value="U">Absent from current registry ({count(manifest.counts.absentFromRegistry)})</option>
+          </select>
+        </span>
+        <label class="inline-check"><input type="checkbox" id="il-fsd-majority" disabled /> Has majority-funding flag</label>
+        <button class="btn" type="submit" disabled>Search disclosures</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the 2012–2026 disclosure index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed recipients as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed recipients as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="borderGate" aria-label="Israel foreign-state donation results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'yearly-2012-2026.csv')} download>yearly 2012–2026 summary CSV</a> or inspect the CKAN API directly.</p></noscript>
+  </section>
+
+  <h2 id="anomalies">Published data anomalies kept transparent</h2>
+  <p>Three verifiable anomalies appear inside the official Ministry of Justice open-data table and are preserved verbatim in <a href={url(asset + 'anomalies.json')} download><code>anomalies.json</code></a> rather than silently deleted:</p>
+  <ul>
+    <li><strong>Two production software test IDs inside the live government dataset:</strong> <code>{testIds[0].id}</code> (<span lang="he">{testIds[0].name}</span> — “Test go-live new”, {count(testIds[0].rows)} rows, {ils(testIds[0].totalIls)}) and <code>{testIds[1].id}</code> (<span lang="he">{testIds[1].name}</span> — “Test association attach receipt 1”, {count(testIds[1].rows)} rows, {ils(testIds[1].totalIls)}), totaling {ils(anomalies.suspectedProductionTestTotalIls)}. Neither ID exists in the Amutot or PBC registries.</li>
+    <li><strong>Self-donor filing entry ({ils(selfAnomaly.ils)}):</strong> In {selfAnomaly.year} (record <code>_id={selfAnomaly.recordId}</code>), <code>{selfAnomaly.orgId}</code> (<span lang="he">{selfAnomaly.orgName}</span>) lists its own name (<span lang="he">{selfAnomaly.donor}</span>) in the foreign-state donor column.</li>
+    <li><strong>Unnormalized donor and currency strings:</strong> Free-text foreign donor names split single governments across multiple spellings (e.g., <span lang="he">ממשלת גרמניה</span> vs. <span lang="he">גרמניה</span>; <code>USAID</code>, <code>USA STATE DEPARTMENT</code>, misspelled <code>AMERICAN EMBBASY</code> and <span lang="he">שגרירות ארה~ב</span>). British pounds split across two Hebrew currency labels (<span lang="he">פאונד אנגלי</span>, {count(anomalies.gbpCurrencySynonymRows['פאונד אנגלי'])} rows, and <span lang="he">לירה שטרלינג</span>, {count(anomalies.gbpCurrencySynonymRows['לירה שטרלינג'])} rows). Two negative rows ({ils(anomalies.negativeAdjustmentTotalIls)}) and {count(anomalies.zeroIlsRowsCount)} zero-ILS rows also remain visible.</li>
+  </ul>
+
+  <h2 id="recipients">Largest disclosed recipients (2012–2026)</h2>
+  <p>Disclosed inflows are highly concentrated: the single largest recipient—the Foundation for the Benefit of Holocaust Victims in Israel (<code>580185700</code>, {ils(manifest.topRecipients[0].totalIls)})—accounts for <strong>67.0%</strong> of the 15-year total, driven by German government and Claims Conference survivor-welfare allocations. Statutory disclosure records cross-border receipts from foreign state entities only; domestic private donations, Israeli government grants and program outcomes remain separate.</p>
+  <div class="table-wrap" role="region" aria-label="Top 15 recipients of foreign state entity donations in Israel" tabindex="0">
+    <table class="data il-table">
+      <caption>Top 15 disclosed recipients (2012–2026, ILS)</caption>
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Recipient</th>
+          <th scope="col">Years</th>
+          <th scope="col">Rows</th>
+          <th scope="col">Majority flag</th>
+          <th scope="col">Total ILS</th>
+          <th scope="col">Top raw donor string</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topRecipients.map(item => (
+          <tr data-recipient={item.id}>
+            <td><a href={url(`${registryRoute}?id=${item.id}`)}><code>{item.id}</code></a></td>
+            <th scope="row"><bdi lang="he" dir="rtl">{item.heName}</bdi>{item.enName ? <> (<bdi dir="ltr">{item.enName}</bdi>)</> : ''}</th>
+            <td>{item.minYear}–{item.maxYear}</td>
+            <td>{count(item.rows)}</td>
+            <td>{count(item.majorityRows)}</td>
+            <td>{ils(item.totalIls)}</td>
+            <td><bdi lang="he" dir="auto">{item.topDonor ?? '—'}</bdi></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="donors">Top raw donor strings and yearly totals</h2>
+  <div class="table-wrap" role="region" aria-label="Top 15 raw foreign donor strings 2012-2026" tabindex="0">
+    <table class="data il-table">
+      <caption>Top 15 unnormalized foreign-state donor strings as published (2012–2026)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Published donor string</th>
+          <th scope="col">Rows</th>
+          <th scope="col">Total ILS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topDonorsRaw.map(d => (
+          <tr>
+            <th scope="row"><span lang="he" dir="auto">{d.donorRaw}</span></th>
+            <td>{count(d.rows)}</td>
+            <td>{ils(d.totalIls)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Yearly foreign state donations totals 2012-2026" tabindex="0">
+    <table class="data il-table">
+      <caption>Yearly disclosed foreign-state donations (2012–2026, ILS)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          <th scope="col">Rows</th>
+          <th scope="col">Distinct orgs</th>
+          <th scope="col">Majority-funded rows</th>
+          <th scope="col">Net ILS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.byYear.map(y => (
+          <tr data-year={y.year}>
+            <th scope="row">{y.year}</th>
+            <td>{count(y.rows)}</td>
+            <td>{count(y.distinctOrgs)}</td>
+            <td>{count(y.majorityRows)}</td>
+            <td>{ils(y.netIls)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads and provenance</h2>
+  <p>Source: {manifest.publisher} via <a href={manifest.catalogue}>data.gov.il</a>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, under the <a href={manifest.license}>Israel Government Open Data License</a>. Note that 2026 is a partial year reflecting disclosures posted up to capture.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.asset.path)} download>Download all 516 recipients (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'yearly-2012-2026.csv')} download>Download yearly 2012–2026 totals (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download anomalies and test-ID log (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .il-table { min-inline-size: 40rem; }
+  .inline-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+  }
+  .inline-field label {
+    margin: 0;
+    white-space: nowrap;
+  }
+  .inline-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    margin: 0;
+  }
+  .inline-check input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+  import { financialCsvName } from '../../../../lib/client/financial-directory';
+
+  type Row = [
+    string, string, string | null, 'A' | 'P' | 'U', boolean, string | null,
+    number | null, number, number, number, number | null, number | null,
+    string | null, string, Record<string, number>,
+  ];
+  type Manifest = typeof import('../../../../../public/data/funding-flows/israel-foreign-state-donations/manifest.json');
+
+  const norm = (value: string) =>
+    value.normalize('NFKD').toLowerCase().replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const fmtIls = (v: number) => `${v < 0 ? '-' : ''}ILS ${Math.abs(v).toLocaleString('en-US')}`;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-il-fsd]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const registryBase = root.dataset.registry!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#il-fsd-query', form);
+    const typeSelect = $<HTMLSelectElement>('#il-fsd-type', form);
+    const majCheck = $<HTMLInputElement>('#il-fsd-majority', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    let snapshot: Promise<Row[]> | undefined;
+    let displayed: Row[] = [];
+    let sequence = 0;
+    input.disabled = typeSelect.disabled = majCheck.disabled = submit.disabled = clear.disabled = false;
+
+    async function load() {
+      const rows = await loadVerifiedJson(root.dataset.file!, manifest.asset);
+      if (!Array.isArray(rows) || rows.length !== manifest.asset.rows) throw new Error('The disclosure index has an unexpected row count.');
+      return rows as Row[];
+    }
+
+    function reset() {
+      displayed = [];
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function card(row: Row) {
+      const [id, heName, enName, type, inReg, , pmYear, totalIls, rowCount, majRows, minYr, maxYr, topDonor, currencies] = row;
+      const typeLabel = type === 'A' ? 'Amuta' : type === 'P' ? 'Public Benefit Company (חל״צ)' : 'Absent from current registry';
+      return h('li', { class: 'card' },
+        h('h3', {},
+          h('span', { class: 'identity-code' }, id), ' ',
+          h('bdi', { lang: 'he', dir: 'rtl' }, heName),
+          enName && h('span', {}, ' (', h('bdi', { dir: 'ltr' }, enName), ')')),
+        h('p', {}, `Total 2012–2026: ${fmtIls(totalIls)} across ${rowCount} ${rowCount === 1 ? 'row' : 'rows'} (${minYr ?? '?'}–${maxYr ?? '?'})${majRows ? ` · ${majRows} majority-funded ${majRows === 1 ? 'row' : 'rows'}` : ''}`),
+        h('p', { class: 'note' },
+          `${typeLabel}${pmYear ? ` · Proper Management through ${pmYear}` : ''} · Top raw donor: `,
+          h('bdi', { dir: 'auto' }, topDonor ?? 'n/a'),
+          ` · Currencies: ${currencies.replace(/\|/g, ', ')}`),
+        h('p', { class: 'note' },
+          inReg
+            ? h('a', { href: `${registryBase}?id=${id}` }, 'Inspect Israel registry record')
+            : h('a', { href: '#anomalies' }, 'Absent from current Amutot/PBC registry (see anomalies below)'),
+          id === '580185700' ? h('span', {}, ' · ', h('a', { href: '#anomalies' }, 'Includes 1 self-donor anomaly row')) : '',
+          ' · ',
+          h('a', { href: `https://www.guidestar.org.il/organization/${id}`, rel: 'noopener noreferrer' }, 'Check GuideStar Israel')));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compact = raw.replace(/\s+/g, '');
+      const q = norm(raw);
+      const tVal = typeSelect.value;
+      const onlyMaj = majCheck.checked;
+      const isId = /^[0-9]{9}$/.test(compact);
+      try {
+        if (!raw && !tVal && !onlyMaj) throw new Error('Enter a name, donor string, 9-digit ID, or choose a filter.');
+        if (raw && !isId && q.length < 2) throw new Error('Enter at least two characters or an exact nine-digit ID.');
+        submit.disabled = true;
+        status.textContent = 'Checking the 2012–2026 foreign-state donation index.';
+        snapshot ??= load().catch(err => { snapshot = undefined; throw err; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        const found = rows.filter(row => {
+          if (tVal && row[3] !== tVal) return false;
+          if (onlyMaj && row[9] === 0) return false;
+          if (!raw) return true;
+          if (isId) return row[0] === compact;
+          return norm(row[1]).includes(q)
+            || (row[2] !== null && norm(row[2]).includes(q))
+            || (row[12] !== null && norm(row[12]).includes(q));
+        });
+        displayed = found.slice(0, 60);
+        status.textContent = found.length
+          ? `${found.length.toLocaleString('en-US')} ${found.length === 1 ? 'recipient' : 'recipients'}. Showing ${displayed.length}.`
+          : 'No matching recipients in this edition.';
+        results.append(...displayed.map(card));
+        json.disabled = csv.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      input.value = typeSelect.value = '';
+      majCheck.checked = false;
+      submit.disabled = false;
+      status.textContent = 'Search cleared.';
+      if (/^#q=[0-9]{9}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#il-fsd-heading');
+      }
+      input.focus();
+    });
+
+    const exported = () => displayed.map(row => Object.fromEntries(manifest.fields.map((field, idx) => [field, row[idx]])));
+    json.addEventListener('click', () => {
+      if (displayed.length) download('israel-foreign-state-donations-search.json',
+        JSON.stringify({ capturedOn: manifest.capturedOn, currency: manifest.currency, publisher: manifest.publisher, license: manifest.license, source: manifest.source, recipients: exported() }, null, 2) + '\n',
+        'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!displayed.length) return;
+      const rows = exported().map(row => ({
+        id: row.id,
+        heName: financialCsvName(String(row.heName ?? '')),
+        enName: row.enName ? financialCsvName(String(row.enName)) : '',
+        type: row.type,
+        inRegistry: row.inRegistry,
+        pmLatestApproved: row.pmLatestApproved ?? '',
+        totalIls: row.totalIls,
+        rows: row.rows,
+        majorityRows: row.majorityRows,
+        minYear: row.minYear ?? '',
+        maxYear: row.maxYear ?? '',
+        topDonor: row.topDonor ? financialCsvName(String(row.topDonor)) : '',
+        currencies: row.currencies,
+        currency: manifest.currency,
+        capturedOn: manifest.capturedOn,
+      }));
+      download('israel-foreign-state-donations-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const linkedId = /^#q=([0-9]{9})$/.exec(location.hash)?.[1] ?? new URLSearchParams(location.search).get('id');
+    if (linkedId && /^[0-9]{9}$/.test(linkedId)) {
+      input.value = linkedId;
+      form.requestSubmit();
+    }
+  }
+</script>

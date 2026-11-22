@@ -1,0 +1,565 @@
+{
+  "format": "charitology-israel-moj-v1",
+  "capturedOn": "2026-11-22",
+  "publisher": "Israel Ministry of Justice — Registrar of Associations (רשם העמותות)",
+  "catalogue": "https://data.gov.il/dataset/moj-amutot",
+  "license": "https://data.gov.il/terms",
+  "sources": {
+    "amutot": {
+      "resourceId": "be5b7935-3922-45d4-9638-08871b17ec95",
+      "title": "Registered Associations (עמותות רשומות)",
+      "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=be5b7935-3922-45d4-9638-08871b17ec95",
+      "bytes": 13678071,
+      "sha256": "548f7036ae2dd0d4041f37da42361bb03044fc615d77152be3a081abba04b031"
+    },
+    "pbc": {
+      "resourceId": "85e40960-5426-4f4c-874f-2d1ec1b94609",
+      "title": "Public Benefit Companies (חברות רשומות לתועלת הציבור)",
+      "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=85e40960-5426-4f4c-874f-2d1ec1b94609",
+      "bytes": 139734,
+      "sha256": "aa62fc2ba2b00ac28537e00de6bd010b1e7fe08ac1fd56395557aabf5e123e53"
+    },
+    "properManagement": {
+      "resourceId": "cb12ac14-7429-4268-bc03-460f48157858",
+      "title": "Certificates of Proper Management (אישור ניהול תקין)",
+      "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=cb12ac14-7429-4268-bc03-460f48157858",
+      "bytes": 7686676,
+      "sha256": "b6b11978f662cc29b596c32efd13ef3f29782d32e538e89f2f75a828cc247df5"
+    }
+  },
+  "fields": [
+    "id",
+    "type",
+    "heName",
+    "enName",
+    "statusCode",
+    "statusHe",
+    "sectorCode",
+    "city",
+    "regDate",
+    "finYear",
+    "revenueIls",
+    "expenseIls",
+    "staff",
+    "volunteers",
+    "pmLatestApproved",
+    "pmLatestStatus",
+    "hasFsd"
+  ],
+  "sectors": {
+    "REL": {
+      "en": "Religion",
+      "he": "דת",
+      "count": 17982
+    },
+    "EDU": {
+      "en": "Education & vocational training",
+      "he": "חינוך, השכלה והכשרה מקצועית",
+      "count": 16571
+    },
+    "WEL": {
+      "en": "Social welfare services",
+      "he": "שירותי רווחה",
+      "count": 15516
+    },
+    "COM": {
+      "en": "Community & society",
+      "he": "קהילה וחברה",
+      "count": 5775
+    },
+    "SPO": {
+      "en": "Sports",
+      "he": "ספורט",
+      "count": 4544
+    },
+    "CUL": {
+      "en": "Culture or arts",
+      "he": "תרבות או אמנות",
+      "count": 4060
+    },
+    "HLT": {
+      "en": "Health or lifesaving",
+      "he": "בריאות או הצלת חיים",
+      "count": 2994
+    },
+    "HER": {
+      "en": "Heritage or commemoration",
+      "he": "מורשת או הנצחה",
+      "count": 1788
+    },
+    "HOU": {
+      "en": "Housing & urban development",
+      "he": "שיכון ופיתוח עירוני",
+      "count": 1767
+    },
+    "SCI": {
+      "en": "Research, science & technology",
+      "he": "מחקר, מדע וטכנולוגיה",
+      "count": 1509
+    },
+    "ADV": {
+      "en": "Advocacy, social & political change",
+      "he": "ארגוני סנגור, שינוי חברתי ופוליטי",
+      "count": 1219
+    },
+    "ENV": {
+      "en": "Environment & animals",
+      "he": "סביבה ובעלי חיים",
+      "count": 936
+    },
+    "PRO": {
+      "en": "Professional associations",
+      "he": "איגודים מקצועיים",
+      "count": 638
+    },
+    "INT": {
+      "en": "International relations",
+      "he": "קשרים בינלאומיים",
+      "count": 524
+    },
+    "PHI": {
+      "en": "Volunteering & philanthropic funds",
+      "he": "התנדבות וקרנות פילנטרופיות",
+      "count": 244
+    }
+  },
+  "counts": {
+    "amutotSourceRows": 76150,
+    "pbcSourceRows": 1500,
+    "pbcOverlapWithAmutot": 1447,
+    "pbcOnlyAdded": 53,
+    "includedOrganizations": 76203,
+    "byType": {
+      "Amuta": 74703,
+      "PublicBenefitCompany": 1500
+    },
+    "byStatus": {
+      "active": 40343,
+      "pendingRegistration": 128,
+      "inLiquidation": 546,
+      "dissolvedOrStruckOff": 35186
+    },
+    "withEnglishName": 7619,
+    "withReportedRevenue": 31375,
+    "reportedRevenueSumIls": 167507337883,
+    "withNonzeroReportedExpense": 7634,
+    "reportedNonzeroExpenseSumIls": 4903827772,
+    "properManagementSourceRows": 340410,
+    "withProperManagementApprovedEver": 32144,
+    "withProperManagement2026Or2027": 23296,
+    "nonStandardLegacyCheckDigitIds": 123,
+    "matchedForeignStateDonations2012to2026": 512
+  },
+  "englishIndex": {
+    "path": "en.json.gz",
+    "rows": 7619,
+    "bytes": 148629,
+    "decodedBytes": 464254,
+    "sha256": "32956c189402309f422bb60645530dd7ed0a4cb556d369ccd39456a55cae056d",
+    "decodedSha256": "ca3332a8183fb1ced21a36b6f33114199b7f51756db8a0c6d654d948f8e14447"
+  },
+  "names": {
+    "0-9": {
+      "path": "names/0-9.json.gz",
+      "rows": 34,
+      "bytes": 2123,
+      "decodedBytes": 6363,
+      "sha256": "96f1b268895db3a5a1f5f93af9762f60242934d29e67556d08145022ca2bca15",
+      "decodedSha256": "af7b8087f91eb3a40ae9818d2de807118d05badab80184a8e4c57c60889dbc86"
+    },
+    "he-01": {
+      "path": "names/he-01.json.gz",
+      "rows": 9538,
+      "bytes": 338405,
+      "decodedBytes": 1705494,
+      "sha256": "58577f27f248920d4fbb68e506c298241f9e692da1a93437ff369363fbdebb48",
+      "decodedSha256": "e8df19e92f57ded2d75233ddcd154cce3ca7014407f863cfb232bac3b82ab330"
+    },
+    "he-02": {
+      "path": "names/he-02.json.gz",
+      "rows": 8314,
+      "bytes": 278138,
+      "decodedBytes": 1510312,
+      "sha256": "453057fc817d2b171b689faa34af98d17c213b26726a332c04b0d1ec21c28e6c",
+      "decodedSha256": "c7e38b73462d7b1766877232222cb878100c6239c020a4c68820c5de4cfafa2e"
+    },
+    "he-03": {
+      "path": "names/he-03.json.gz",
+      "rows": 1526,
+      "bytes": 55383,
+      "decodedBytes": 267292,
+      "sha256": "a0e64d8cd2265800df8229f5cffa8d36f176c022ed52c321937630f6269106f5",
+      "decodedSha256": "168a2f74f719bc581cbad103febebf32672e1b49b5f6ad545c84e2dbc600b87f"
+    },
+    "he-04": {
+      "path": "names/he-04.json.gz",
+      "rows": 1103,
+      "bytes": 39917,
+      "decodedBytes": 189233,
+      "sha256": "c313424befb029aeb44b74fcf75c885c575074c1f303cf418227fb440f44435e",
+      "decodedSha256": "e98ab90d95242f7f0cb9526f280aaa5c87e1eb06be38c59e29097395b96ea9c6"
+    },
+    "he-05": {
+      "path": "names/he-05.json.gz",
+      "rows": 8882,
+      "bytes": 340842,
+      "decodedBytes": 1708916,
+      "sha256": "2dfbf8b97d6348a9ebf91cb1ae197198b93ac9aeeadcb6423afbe4a4b522e451",
+      "decodedSha256": "ef2a9427f2479f2cc5524477e5e7743abbf391601014414ccd3a7bac43827c31"
+    },
+    "he-06": {
+      "path": "names/he-06.json.gz",
+      "rows": 787,
+      "bytes": 29713,
+      "decodedBytes": 139117,
+      "sha256": "bee61d3fcfe6e750a0d4f4ff8cc64093280b7d4135dc88b303ee2c43f61f4457",
+      "decodedSha256": "2b85f11be47a4b97c9d2a3db4083d4746353d76988cf026de89efc9a274fefde"
+    },
+    "he-07": {
+      "path": "names/he-07.json.gz",
+      "rows": 688,
+      "bytes": 22957,
+      "decodedBytes": 114942,
+      "sha256": "284a32fc12122c5895c131c2ebf751e3b8bd1b74b15cea66be8e83a2be4bddc3",
+      "decodedSha256": "15a1f84b39929d31f5089452dba6270f2803a0a95e7746f6c9836e731ef6a2dd"
+    },
+    "he-08": {
+      "path": "names/he-08.json.gz",
+      "rows": 2707,
+      "bytes": 91034,
+      "decodedBytes": 462326,
+      "sha256": "50481d19581cd001e6647a9a270b12312d84afb3369ddbb4ed3f3318e8129364",
+      "decodedSha256": "7fbfe2a00868a6cd9aac5d13bfb01749d546e4663b7d39e734b4bd32fc900fee"
+    },
+    "he-09": {
+      "path": "names/he-09.json.gz",
+      "rows": 394,
+      "bytes": 14812,
+      "decodedBytes": 65973,
+      "sha256": "5da801bcf643761b7dec552c64bb7fd8035f0255c08d794b4e614c8fb5230606",
+      "decodedSha256": "b7843ce230dc556df41ce0983df2caad9215e2f13c7ce9da5207e1caab9fd70a"
+    },
+    "he-10": {
+      "path": "names/he-10.json.gz",
+      "rows": 3432,
+      "bytes": 118256,
+      "decodedBytes": 600304,
+      "sha256": "571dd2df9cd7036ea9c74b49b1ed4cfcd25c3fbe777bb5f6622117dfef31cad5",
+      "decodedSha256": "f6b5f31bbc1460569dcca1bff9b72dfebcce40844b4727cdf409bff45f0e824d"
+    },
+    "he-11": {
+      "path": "names/he-11.json.gz",
+      "rows": 1459,
+      "bytes": 50979,
+      "decodedBytes": 252844,
+      "sha256": "0542a21f290ba0c8b9650096887acb518c25f5d704e5537cf7c380cf8d737091",
+      "decodedSha256": "5be1952366c0782e4ab830a30e0921d85213e4e2e20acc2e7ace484d4eb16f54"
+    },
+    "he-12": {
+      "path": "names/he-12.json.gz",
+      "rows": 1845,
+      "bytes": 65527,
+      "decodedBytes": 317050,
+      "sha256": "27be8014329e46d1d1c8a41da681426b64810dcb91ea1b89067749587eb7f6c2",
+      "decodedSha256": "801cc1f17793dca37fa5b1352abd6abba7d6c55f83d9ddc7660d1ab30539f517"
+    },
+    "he-13": {
+      "path": "names/he-13.json.gz",
+      "rows": 10959,
+      "bytes": 383002,
+      "decodedBytes": 1946463,
+      "sha256": "655e3c63c5e414cefd8fd21a2e7c48123ed75c460114129d7858e4e28aa7e1f9",
+      "decodedSha256": "7cc5a9ae5f10d8813545d0a1aff30d5779202f5b8d17dff4ee620f2f4abe39ff"
+    },
+    "he-14": {
+      "path": "names/he-14.json.gz",
+      "rows": 2224,
+      "bytes": 74449,
+      "decodedBytes": 372737,
+      "sha256": "bafbbe0a89517eb889a2086dcf9cb1ba1ed7d4adf1babf4e1435def5e09bd8c3",
+      "decodedSha256": "a30b089b2028b6120ee7d3d28feb852297b72c4e4ffc500860858bbc1ebb11be"
+    },
+    "he-15": {
+      "path": "names/he-15.json.gz",
+      "rows": 911,
+      "bytes": 36788,
+      "decodedBytes": 162441,
+      "sha256": "70d0ddbd4ab865d2293a40d53e14e0cb17680ebd66a23b035ba01cb09254604e",
+      "decodedSha256": "edcacf010e5ea0b9e9ca02286f242c5312c083c56673ff7135ab039380107bb8"
+    },
+    "he-16": {
+      "path": "names/he-16.json.gz",
+      "rows": 8669,
+      "bytes": 312455,
+      "decodedBytes": 1597121,
+      "sha256": "94518a7082e22845b78d356cb2d1af7e90415a1d1ad921024fac21f3e7fef352",
+      "decodedSha256": "b906981c3690ab6bbe7929e527dfbbdb33bb36d31ab15c25f703827c59edab6d"
+    },
+    "he-17": {
+      "path": "names/he-17.json.gz",
+      "rows": 1226,
+      "bytes": 45291,
+      "decodedBytes": 212098,
+      "sha256": "efd2333c7f508ddb8ad72e7fe879ba95fc6a6311884edf4a485b8cda80eb2e85",
+      "decodedSha256": "cb36faea1449920a0ba819b8c83bf19ceb624e330c6b35d95c1ed757f0a83f6e"
+    },
+    "he-18": {
+      "path": "names/he-18.json.gz",
+      "rows": 777,
+      "bytes": 26239,
+      "decodedBytes": 130523,
+      "sha256": "38cb1e83ff1c1bf1d0bd9e97947805f5dfd7a3e5400ea1f4bb5778263a43c173",
+      "decodedSha256": "43b9b9125c61fc79be09835c2fb69b35dbe4b8c78f48b89ed669d0ae12f8e159"
+    },
+    "he-19": {
+      "path": "names/he-19.json.gz",
+      "rows": 4889,
+      "bytes": 177798,
+      "decodedBytes": 888727,
+      "sha256": "2590ae2f8f0ca5421744ef04d63223c5b53872e92c8dab7482082454fcc16488",
+      "decodedSha256": "d065668749a03d862338469388ecc6c5b27379548aa8496c4faaddda46fa3599"
+    },
+    "he-20": {
+      "path": "names/he-20.json.gz",
+      "rows": 1084,
+      "bytes": 39400,
+      "decodedBytes": 186123,
+      "sha256": "8f0bbc6aa8d365cef60d3f341f4c527a11db02483ea8dc9909b9b554a30ae1c6",
+      "decodedSha256": "3aa1dca3b5148cd5a99d6cfda0f24582851313c84b4e4ddc652121c6937ee0a1"
+    },
+    "he-21": {
+      "path": "names/he-21.json.gz",
+      "rows": 2194,
+      "bytes": 75904,
+      "decodedBytes": 372659,
+      "sha256": "7a2ab9c6917bfe928f4faa68b9662f60dab313cf44ff17fe607b348ec5cded8d",
+      "decodedSha256": "10d9bd80a662f98729f82fa362279be3d3219a1f60a38e8a26c97368fc6ec592"
+    },
+    "he-22": {
+      "path": "names/he-22.json.gz",
+      "rows": 2546,
+      "bytes": 86379,
+      "decodedBytes": 438534,
+      "sha256": "dcfb5eaba1088a5cc059f02162445e8a6126ed55e48150a4168bb7ef6824e382",
+      "decodedSha256": "414d0d8d67d3909259cf31aaaa529a76ff045dfb59589677b1eceb64b6b7e719"
+    },
+    "latin-other": {
+      "path": "names/latin-other.json.gz",
+      "rows": 15,
+      "bytes": 1250,
+      "decodedBytes": 2882,
+      "sha256": "6c269ec6be46acf2e77f0505d1a08e7c022bff2d4dbd8897c09595f8d56c7bd0",
+      "decodedSha256": "88768c08185ec737f513670beaa716e958686832d671316fc1eeda49ed201435"
+    }
+  },
+  "ids": {
+    "10": {
+      "path": "ids/10.json.gz",
+      "rows": 14,
+      "bytes": 145,
+      "decodedBytes": 321,
+      "sha256": "9574f83ba8619ca16b705ebb2d1e25a7a17b3ab5f6bc7cd122d23435b597f8d9",
+      "decodedSha256": "93cc331d97b5589936251fde88f1d55c67ba0982f156933787a530e5592f09f1"
+    },
+    "11": {
+      "path": "ids/11.json.gz",
+      "rows": 21,
+      "bytes": 184,
+      "decodedBytes": 484,
+      "sha256": "a3410ba5fa47565fa6879a3984afb95209a7c25a5ae143052500b171beab6337",
+      "decodedSha256": "4e77adbe11d3c6823587d4579bbbcd9a9ad4d173a1194688ed91fdd6b0a44704"
+    },
+    "12": {
+      "path": "ids/12.json.gz",
+      "rows": 15,
+      "bytes": 151,
+      "decodedBytes": 345,
+      "sha256": "1dade1465dbe166f84987f60929e3ae5a94cae22685bd8a74ee9250f8a04ab82",
+      "decodedSha256": "1a43f2eb62d62a17c615cba2a1255c813818fc2a561b396d8b6ed7a85ea39cf5"
+    },
+    "13": {
+      "path": "ids/13.json.gz",
+      "rows": 10,
+      "bytes": 116,
+      "decodedBytes": 231,
+      "sha256": "b715518befbdce0f827cbbd533779151b39fd7e8fba3126181f1eb07ef0ad873",
+      "decodedSha256": "2fd15af8682e2da4c646808e4758ae3c8bce9ee011264d90ef130f13c04c8c0c"
+    },
+    "14": {
+      "path": "ids/14.json.gz",
+      "rows": 5,
+      "bytes": 84,
+      "decodedBytes": 116,
+      "sha256": "1f580e31fb3bc5b254d947a57bddf298b562978243f20962144bdcb5267a3399",
+      "decodedSha256": "ff4b20919b1ffb026f2fa9fef23798e45934bc72bb73258156975c6a2ab8eeb5"
+    },
+    "15": {
+      "path": "ids/15.json.gz",
+      "rows": 10,
+      "bytes": 118,
+      "decodedBytes": 231,
+      "sha256": "ba49e77fced90a7c812bee3a3ebec66c9299d335d31ba7df2dfc160dfb9c0d82",
+      "decodedSha256": "a5f008b254e7a7f647e1f89e6b7b9248331aa9e224c2f1993aec282faf7ca644"
+    },
+    "16": {
+      "path": "ids/16.json.gz",
+      "rows": 10,
+      "bytes": 119,
+      "decodedBytes": 231,
+      "sha256": "00f06d99fe6e7541c72f719a90c90de0abce70cc5355dc8c267916786da5b856",
+      "decodedSha256": "cada8fceaa31005bb6f9c0d07d6aa48a243fc90de102c5d4c7d7857408812643"
+    },
+    "17": {
+      "path": "ids/17.json.gz",
+      "rows": 14,
+      "bytes": 142,
+      "decodedBytes": 323,
+      "sha256": "ee6c032a7014073db8ea26fa4658ce0ee3ea84885eca67cb7914146435a98235",
+      "decodedSha256": "624a3653575e8d65a5bd140fe6291a9f3250bf3e06a9d7d8aecf2d58b02cbfc3"
+    },
+    "18": {
+      "path": "ids/18.json.gz",
+      "rows": 5,
+      "bytes": 85,
+      "decodedBytes": 116,
+      "sha256": "45b0a0172fb6307ca0a444c0fa5a6d91d9d4abb037532ed344077b2068f39917",
+      "decodedSha256": "926c523a40546c95718d3b94d1511b7f8b76e5253fd93633f66b3dc5f1051cb9"
+    },
+    "19": {
+      "path": "ids/19.json.gz",
+      "rows": 9,
+      "bytes": 109,
+      "decodedBytes": 208,
+      "sha256": "7e5bfb59a8b631472723c6cddc1f27cfced3813ddeedd87e9733a7b53f37eb19",
+      "decodedSha256": "eb7a8418c745d029a03cb6d2d8a52970f47d7cc3be98cb40978140703e75f791"
+    },
+    "20": {
+      "path": "ids/20.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "2a6b2a25cdaf499507f6429c3c3bb332cae4da8de07e0e25733c81837148329b",
+      "decodedSha256": "3efa8696438a658b6d105104de353dc38cb1a73320fa01d4aa10d167ef8514cd"
+    },
+    "21": {
+      "path": "ids/21.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "d9757d08f22857f880d67064895caca0e33c08bd5ee226339bf899594ef6b58b",
+      "decodedSha256": "d6f53c2a792393676927e92f05de9e70193be9d2b3b76dcb0abe84a50a0faaa9"
+    },
+    "22": {
+      "path": "ids/22.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "b4c5b70a285b8c28ad5c48b1402b5db3d1cf156ac0dfe38519f6b1c644a62322",
+      "decodedSha256": "e3aa7668f50a5a0b7684561f7964f1ce0e9887f6223bbd894c39146cad5f288e"
+    },
+    "30": {
+      "path": "ids/30.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "af10f710963ad6c7059e0e62ea32875488fa45be2eeb39d3fd615079ad036562",
+      "decodedSha256": "9af0f3507329c1427aeaf84262d0e8622f71cf657d6ebe9148b92d3ef34fffbe"
+    },
+    "40": {
+      "path": "ids/40.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "388f23b45f20e49fa9bf2d04114f87bb1b64d8ff93c36b7a1e48fdbfb9b822d1",
+      "decodedSha256": "f614db7221a9c9a0b7af2dc5a385d9f6b2921c733c2c65d8353066b54c056374"
+    },
+    "43": {
+      "path": "ids/43.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "6c9f162b58169e211460c0f8ccc6824193785de5bd3ac467231d44d4b683a40c",
+      "decodedSha256": "e3338b4dbc41fd308baee4338aab14a5e1529648091757c350790c640a85c335"
+    },
+    "51": {
+      "path": "ids/51.json.gz",
+      "rows": 1896,
+      "bytes": 9451,
+      "decodedBytes": 41725,
+      "sha256": "7dcdc00a9d6341a9a346c1d70dd6a3368ae41bcd3080868202d3e6ce3cd13971",
+      "decodedSha256": "7cacdd5b37eaca273221495905e34e3301b1a9cfeb44c18ac3643e5e189d5944"
+    },
+    "52": {
+      "path": "ids/52.json.gz",
+      "rows": 58,
+      "bytes": 298,
+      "decodedBytes": 1277,
+      "sha256": "62288d8467310fd8700032e85d08afd654331b842cd057bcb8e7bafb4887135f",
+      "decodedSha256": "31ba496446f90692456f42247744b424f0a577506e886e7da85bba2d51a54adf"
+    },
+    "56": {
+      "path": "ids/56.json.gz",
+      "rows": 48,
+      "bytes": 300,
+      "decodedBytes": 1063,
+      "sha256": "19a4303de0a78d8929d1eeac38e3a7a8a0c722cb53122139dab69461c82f8186",
+      "decodedSha256": "8f7cde5fc07c1ac2ec765155b0751c962f9deaa6dfafd0c776b219ab49ba6d41"
+    },
+    "58": {
+      "path": "ids/58.json.gz",
+      "rows": 74076,
+      "bytes": 282511,
+      "decodedBytes": 1629677,
+      "sha256": "f52fffdc4d53f390c6e766cb18e63b422c43ea6a6eef765ea87131228c006cb1",
+      "decodedSha256": "c3a5f0a7a068ea0a85ec013a09ac82e31fca6930028ab6c3056d3b5e1659d3d4"
+    },
+    "63": {
+      "path": "ids/63.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "7dfc474296cb5664817e979ad497077ac1343a59726bfaef7fca0c8fc0ad6355",
+      "decodedSha256": "d6e9a96552679e8263f915d2a3139ba823f50b579ae7a07cb6fd544efee181d2"
+    },
+    "70": {
+      "path": "ids/70.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "559830de3c0b28ab90f54b8878ee0c5d214418e4394baf4a28aafb82e1ff4a36",
+      "decodedSha256": "1787dab66e99521725f42e18830f98408069d812e29b0ac70ce4b397e3b24806"
+    },
+    "71": {
+      "path": "ids/71.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "9bde1f124455d20807304717053a18d09b469d3b24360e655f7c93100bbd35f0",
+      "decodedSha256": "7f846c212819eee18d2f3acde3247c6f4411874f1008d60a31a3c587fc4b8d3b"
+    },
+    "80": {
+      "path": "ids/80.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "ca7fe2c16f702c7db2fa5f235ee98ec00c74945144767b470e02e53adf9f02d6",
+      "decodedSha256": "c47e4e9fd4fd690ffec6256c1f4fcfaabe6778b2e14f5564e9335b7bb1ca181d"
+    },
+    "81": {
+      "path": "ids/81.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "887edc32269771df036a10490ab537d5b8fea2520a11eb98c884e728d452a707",
+      "decodedSha256": "25afbe2429f72cabcba3056566b6e417f3a0e7a3e66c5899dcedd703f02b8068"
+    },
+    "82": {
+      "path": "ids/82.json.gz",
+      "rows": 1,
+      "bytes": 43,
+      "decodedBytes": 23,
+      "sha256": "0402e95efb3f19ff97ae058c2b0a9f439061ad6d6dc9976a383eb6972fea2b50",
+      "decodedSha256": "8222b559f492d5767122a170782168b4c999fc2d36bba1b33efcba96b403e3dc"
+    }
+  }
+}
