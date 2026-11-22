@@ -44,7 +44,7 @@ export const sections: Section[] = [
   { path: '/record/', symbol: 'archive', tone: 'blue', entries: {
     'case-studies': 'folder', 'cause-atlas': 'atlas', 'charitology-100': 'badge', 'charity-index': 'fileSearch',
     'charity-index/coverage': 'checks', 'charity-index/brazil': 'bridge', 'charity-index/japan': 'flag', 'charity-index/new-zealand': 'fern',
-    'charity-index/taiwan': 'orchid',
+    'charity-index/norway': 'fjord', 'charity-index/taiwan': 'orchid',
     'charity-financials': 'coins', 'charity-financials/canada': 'maple', 'charity-financials/united-states': 'columns',
     'charity-financials/united-states/990-ez': 'notes', 'charity-financials/united-states/990-pf': 'building',
     'charity-financials/england-wales': 'shield', 'charity-financials/scotland': 'thistle', 'charity-financials/kenya': 'chart', 'charity-financials/mexico': 'agave',
@@ -76,6 +76,7 @@ export const sections: Section[] = [
     'funding-flows/chile-residential-payments': 'bankOrder',
     'funding-flows/chile-coanil-agreements': 'agreement',
     'funding-flows/france-emmaus-solidarite': 'winterCoat',
+    'funding-flows/norway-momskompensasjon': 'tranche',
     'funding-flows/yes-i-do-alliance': 'network', 'gap-map': 'map', 'interventions': 'target',
     'journal': 'notes', 'lexicon': 'bars', 'methodology': 'checks', 'myths': 'eye', 'newsletter': 'mail', 'newsletter/edition-1': 'story',
     'open-datasets': 'table', 'podcast': 'headphones', 'podcast-and-newsletter': 'signal',

@@ -216,6 +216,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['nz-search-heading', 'Look up a charity', 'lens'],
     ['coverage', 'Coverage and original records', 'permit'],
   ],
+  '/record/charity-index/norway/': [
+    ['norway-search-heading', 'Search voluntary organizations', 'lens'],
+    ['funding', 'Follow VAT compensation grants', 'tranche'],
+    ['coverage', 'Coverage and original records', 'archive'],
+  ],
   '/record/charity-index/taiwan/': [
     ['taiwan-search-heading', 'Search institutional registrations', 'lens'],
     ['funding', 'Follow New Resident Development Fund grants', 'grantSchedule'],
@@ -458,6 +463,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['annual-accounts', 'Four years of accounts', 'table'],
     ['geography-and-need', 'Planned work and independent counts', 'pin'],
     ['downloads', 'Download the linked records', 'download'],
+  ],
+  '/record/funding-flows/norway-momskompensasjon/': [
+    ['norway-moms-heading', 'Search grant recipients', 'lens'],
+    ['reconciliation', 'Compare 2025 approvals and payouts', 'compare'],
+    ['umbrellas', 'Follow central umbrella intermediaries', 'network'],
+    ['coverage', 'Coverage, anomalies and downloads', 'archive'],
   ],
   '/record/funding-flows/us-schedule-i/': [
     ['us-grants-heading', 'Find grants by EIN', 'lens'],

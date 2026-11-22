@@ -665,3 +665,23 @@ node scripts/build-france-dila.mjs --check
 ```
 
 To extend the edition, check the [DILA dataset discussion](https://www.data.gouv.fr/datasets/comptes-associations) for publisher correction notices. Qualify an official registry join where needed, preserve distinct filing periods and revisions, and prioritize disbursement references and amount-level transcription for independently reproducible cases. The original Île-de-France 2019–23 payment annex lacks an organization or dossier ID, so its names are insufficient to extend an exact transaction match.
+
+## Norway voluntary organizations and VAT compensation grants
+
+The [Norwegian registry lookup](https://charitology.com/record/charity-index/norway/) indexes all **72,968 voluntary organizations** in Brønnøysundregistrene’s Frivillighetsregisteret out of 1,181,933 legal entities in the bulk Enhetsregisteret export dated November 21, 2026 (captured November 22, 2026 under [NLOD 2.0](https://data.norge.no/nlod/en/2.0)). Every retained nine-digit organisasjonsnummer passes Norway’s Modulus-11 check digit. The edition records legal form (`71,153 FLI`, `1,327 STI`, `488 AS`), institutional sector, NACE code, municipality, foundation-register overlap (`1,327`), VAT-register membership (`2,884`), active liquidation (`7`) and bankruptcy (`22`), while omitting contact emails, phone numbers, street addresses and personal fields.
+
+The paired [VAT compensation grants edition](https://charitology.com/record/funding-flows/norway-momskompensasjon/) joins Lotteri- og stiftelsestilsynet’s published Momskompensasjon workbooks for **2023, 2024 and 2025** (**73,550** organization-year rows totaling **NOK 8,028,365,241** across **28,011** distinct valid nine-digit organization numbers, including **20,782** present in all three years) by exact organisasjonsnummer. Of the 28,011 recipients, **27,439** match the November 21, 2026 Frivillighetsregisteret snapshot, **96** appear in Enhetsregisteret outside Frivillighetsregisteret and **476** are absent from the current export. In 2025, **264 central umbrella organizations** (`Sentralledd`) applied on behalf of **22,427 local chapters** (`Underledd`). Across the two sheets of the 2025 workbook, **2,962 of 2,963** non-empty applications reconcile to the exact krone between *Alle søknader* (approved) and *Alle organisasjoner* (tranche 1 + supplementary payout = total disbursed); one applicant (`985514607`, NORDLIA SKISENTER, row 1149 vs. row 7659) differs by NOK 9,921 (`120,577` approved vs. `110,656` disbursed with `0` supplementary payout), with the reason unknown from the workbook alone.
+
+When Brønnøysundregistrene’s public financial-accounts API (`data.brreg.no/regnskapsregisteret/regnskap/864139442`) was queried on November 22, 2026, it returned HTTP 500 with an unsupported nonprofit chart-of-accounts error (`IDEELL`). Audited annual accounts therefore remain separate from this grant-flow edition.
+
+Rebuild offline from the four exact NLOD 2.0 captures pinned in [`src/data/norway-index-sources.tsv`](../src/data/norway-index-sources.tsv):
+
+```sh
+python3 scripts/build-norway-charity-index.py /path/to/captured-inputs /path/to/rebuild
+diff -r public/data/charity-registry/norway /path/to/rebuild/charity-registry/norway
+diff -r public/data/funding-flows/norway-momskompensasjon /path/to/rebuild/funding-flows/norway-momskompensasjon
+npm run build
+node scripts/check-norway-charity-index.mjs
+```
+
+Next, monitor Brønnøysundregistrene’s Regnskapsregisteret API for `IDEELL` nonprofit chart-of-accounts support, qualify Lottstift’s Norsk Tipping gaming-surplus disbursements (`Utbetaling-speleoverskotet`) for cross-scheme comparison by organisasjonsnummer, and trace onward distributions from selected central umbrellas (`Sentralledd`) where public annual reports disclose chapter-level transfers.
