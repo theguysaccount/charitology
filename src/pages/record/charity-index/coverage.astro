@@ -15,6 +15,7 @@ import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/
 import registry from '../../../../public/data/irs-registry/manifest.json';
 import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
 import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
+import norway from '../../../../public/data/charity-registry/norway/manifest.json';
 import taiwan from '../../../../public/data/charity-registry/taiwan/manifest.json';
 import brazil from '../../../../public/data/charity-registry/brazil-osc/manifest.json';
 import mexico from '../../../../public/data/charity-financials/mx/manifest.json';
@@ -94,6 +95,14 @@ const panels = [
     manifest: '/data/charity-registry/new-zealand/manifest.json',
   },
   {
+    id: 'norway', name: 'Norway', source: 'Brønnøysundregistrene Frivillighetsregisteret and Lottstift Momskompensasjon', route: '/record/charity-index/norway/',
+    label: 'Search Norwegian voluntary organizations', date: norway.capturedOn,
+    coverage: `${number(norway.counts.includedOrganizations)} voluntary organizations with validated nine-digit organization numbers, including ${number(norway.counts.matchedMomskompensasjon2023to2025)} matched to 2023–2025 VAT compensation grants.`,
+    history: 'A paired funding-flows edition spans three grant years (2023–2025), two 2025 disbursement tranches and 264 central umbrella intermediaries.',
+    boundary: 'Public annual accounts in Regnskapsregisteret return an unsupported chart-of-accounts error (IDEELL) for nonprofits, so grant disclosures stay separate from audited accounts.',
+    manifest: '/data/charity-registry/norway/manifest.json',
+  },
+  {
     id: 'scotland', name: 'Scotland', source: 'Scottish Charity Regulator register and annual returns', route: '/record/charity-financials/scotland/',
     label: 'Search Scottish registrations and returns', date: scotland.date,
     coverage: `${number(scotland.identities)} searchable registration numbers, including ${number(scotland.withReturns)} with an included return.`,
@@ -124,6 +133,7 @@ const sources = [
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
   { title: 'French association accounts dataset', publisher: france.source.publisher, url: france.source.dataset },
+  { title: 'Frivillighetsregisteret dataset listing', publisher: norway.publisher, url: norway.catalogue },
   { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
@@ -181,6 +191,7 @@ const sources = [
   <p><a class="identity-link" href={url('/record/funding-flows/chile-residential-payments/')}>Compare Chile’s residence awards with the public budget ledger</a>. Search by institutional tax ID, inspect recorded payment dates and compare reported service counts with separate survey estimates for 16 regions.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/chile-coanil-agreements/')}>Trace COANIL’s agreements, accounts and reported payments</a>. The case retains the institutional ID and both sources where payment reports differ.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/france-emmaus-solidarite/')}>Follow regional grants to Emmaüs Solidarité in France</a>. The case connects one French association’s register and four filings to five regional decisions and payment rows. The winter plans and independently counted need retain their own dates and boundaries.</p>
+  <p><a class="identity-link" href={url('/record/funding-flows/norway-momskompensasjon/')}>Search Norway’s 2023–2025 VAT compensation grants (Momskompensasjon)</a>. Follow 28,011 distinct voluntary organizations, 264 central umbrella intermediaries and a krone-level reconciliation between 2025 approvals and two-tranche payouts.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/taiwan-new-resident-fund/')}>Compare Taiwan New Resident Development Fund reports</a>. Use the project ID to follow recurring approvals and see where the reports differ on execution figures or dates.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/heal-nepal/')}>Compare Heal Nepal funding in the UK and Nepal</a>. The case keeps pounds and rupees in their original records and shows where a single disbursement may correspond to two receipts.</p>
   <p><a href={url('/record/funding-flows/kenya-nutrition/')}>Follow nutrition funding from the UK to western Kenya</a>. The case links a UK charity registration to two reporting activities and a grant manager’s exact project reference. County food poverty comes from a separate survey.</p>

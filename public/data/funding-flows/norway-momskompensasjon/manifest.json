@@ -1,0 +1,397 @@
+{
+  "format": "charitology-norway-momskompensasjon-v1",
+  "capturedOn": "2026-11-22",
+  "currency": "NOK",
+  "publisher": "Lotteri- og stiftelsestilsynet",
+  "license": "https://data.norge.no/nlod/en/2.0",
+  "sources": {
+    "2023": {
+      "publisher": "Lotteri- og stiftelsestilsynet",
+      "catalogue": "https://lottstift.no/nb/om-oss/apne-data/",
+      "url": "https://lottstift.no/app/uploads/2023/12/Oversikt-over-mottakere-og-tildelt-belop-2023.xlsx",
+      "bytes": 1580329,
+      "sha256": "eed22d5b2386f0ba4e339e2a47f9bce908247ec0cc8d7f008b4128db238755be"
+    },
+    "2024": {
+      "publisher": "Lotteri- og stiftelsestilsynet",
+      "catalogue": "https://lottstift.no/nb/om-oss/apne-data/",
+      "url": "https://lottstift.no/app/uploads/2026/06/Oversikt-over-tildelinger-momskompensasjon-2024.xlsx",
+      "bytes": 1299787,
+      "sha256": "eff005abc6230e79da010dff3900afa84b9310e321b7cafadb5892fb2e918543"
+    },
+    "2025": {
+      "publisher": "Lotteri- og stiftelsestilsynet",
+      "catalogue": "https://lottstift.no/for-frivilligheten/nokkeltal-momskompensasjon-pa-varer-og-tenester/",
+      "url": "https://lottstift.no/app/uploads/2026/01/Oversikt-utbetalinger-momskompensasjon-2025-1-1.xlsx",
+      "bytes": 2022639,
+      "sha256": "2289609a3b9bce8ebf55bdeca2ec669fac3d58d3e6a70e2f27d5855d409b1b02"
+    }
+  },
+  "registrySnapshot": {
+    "capturedOn": "2026-11-22",
+    "sourceLastModified": "2026-11-21",
+    "sourceSha256": "a81e11dbdd8bbbbce67066ff96f3fa34ffdc217065c25c2dd89aad63f34c3bd8",
+    "includedOrganizations": 72968
+  },
+  "fields": [
+    "orgnr",
+    "name",
+    "registryStatus",
+    "role2025",
+    "umbrellaOrgnr2025",
+    "icnpo2025",
+    "nok2023",
+    "nok2024",
+    "nok2025Tranche1",
+    "nok2025Supplement",
+    "nok2025Total",
+    "sourceRowCount"
+  ],
+  "counts": {
+    "totalOrganizationYearRows": 73550,
+    "distinctValidOrgnrs": 28011,
+    "presentInAllThreeYears": 20782,
+    "inFrivillighetsregisteret": 27439,
+    "inEnhetsregisteretOnly": 96,
+    "absentFromBrreg": 476,
+    "totalAwardedAndDisbursedNOK": 8028365241,
+    "umbrellas2025Count": 264
+  },
+  "byYear": [
+    {
+      "year": 2023,
+      "inputRows": 23817,
+      "validOrgnrRows": 23791,
+      "blankOrgnrRows": 26,
+      "distinctOrgnrs": 23762,
+      "duplicateOrgnrs": 29,
+      "byRole": {
+        "Enkeltstående": 2179,
+        "Sentralledd": 253,
+        "Underledd": 21385
+      },
+      "blankAmountRows": 283,
+      "zeroAmountRows": 453,
+      "positiveAmountRows": 23081,
+      "totalAwardedNOK": 2450807991,
+      "inFrivillighetsregisteret": 23268,
+      "inEnhetsregisteretOnly": 60,
+      "absentFromBrreg": 434
+    },
+    {
+      "year": 2024,
+      "inputRows": 24343,
+      "validOrgnrRows": 24343,
+      "blankOrgnrRows": 0,
+      "distinctOrgnrs": 24343,
+      "duplicateOrgnrs": 0,
+      "blankAmountRows": 0,
+      "zeroAmountRows": 0,
+      "positiveAmountRows": 24343,
+      "totalAwardedNOK": 2707252900,
+      "inFrivillighetsregisteret": 24067,
+      "inEnhetsregisteretOnly": 10,
+      "absentFromBrreg": 266
+    },
+    {
+      "year": 2025,
+      "inputRows": 25390,
+      "validOrgnrRows": 25383,
+      "blankOrgnrRows": 7,
+      "distinctOrgnrs": 25359,
+      "duplicateOrgnrs": 24,
+      "byRole": {
+        "Enkeltstående": 2699,
+        "Sentralledd": 264,
+        "Underledd": 22427
+      },
+      "byDecision": {
+        "Avvist": 25,
+        "Godkjent": 25085,
+        "Ikke godkjent": 280
+      },
+      "tranche1NOK": 2634154760,
+      "supplementaryNOK": 236149590,
+      "totalDisbursedNOK": 2870304350,
+      "zeroDisbursedRows": 450,
+      "positiveDisbursedRows": 24940,
+      "inFrivillighetsregisteret": 25176,
+      "inEnhetsregisteretOnly": 49,
+      "absentFromBrreg": 134
+    }
+  ],
+  "reconciliation2025": {
+    "sheet1InputRows": 2988,
+    "sheet1BlankSpacerRows": 25,
+    "sheet1Applications": 2963,
+    "sheet1ByType": {
+      "Enkeltståande": 2699,
+      "Sentralledd": 264
+    },
+    "sheet1ByModel": {
+      "Dokumentert": 693,
+      "Forenkla": 2270
+    },
+    "sheet1ByDecision": {
+      "Avvist": 23,
+      "Godkjent": 2714,
+      "Ikkje godkjent": 226
+    },
+    "sheet1ApprovedNOK": 2870314271,
+    "sheet2Tranche1NOK": 2634154760,
+    "sheet2SupplementaryNOK": 236149590,
+    "sheet2TotalDisbursedNOK": 2870304350,
+    "exactKroneMatches": 2962,
+    "discrepancyCount": 1,
+    "discrepancies": [
+      {
+        "orgnr": "985514607",
+        "name": "NORDLIA SKISENTER",
+        "applicationType": "Enkeltståande",
+        "applicationModel": "Dokumentert",
+        "decision": "Godkjent",
+        "sheet1ExcelRow": 1149,
+        "sheet1ApprovedNOK": 120577,
+        "sheet2MatchedRows": 1,
+        "sheet2ExcelRows": [
+          7659
+        ],
+        "sheet2Tranche1NOK": 110656,
+        "sheet2SupplementaryNOK": 0,
+        "sheet2TotalDisbursedNOK": 110656,
+        "differenceNOK": -9921
+      }
+    ]
+  },
+  "topUmbrellas2025": [
+    {
+      "orgnr": "947975072",
+      "name": "NORGES IDRETTSFORBUND OG OLYMPISKE OG PARALYMPISKE KOMITÉ",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 2,
+      "memberOrganizations": 6238,
+      "sheet2MemberRows": 6238,
+      "approvedNOK": 1020575328,
+      "tranche1NOK": 936605927,
+      "supplementaryNOK": 83969401,
+      "totalDisbursedNOK": 1020575328,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "864139442",
+      "name": "NORGES RØDE KORS",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 3,
+      "memberOrganizations": 352,
+      "sheet2MemberRows": 352,
+      "approvedNOK": 117022302,
+      "tranche1NOK": 107394113,
+      "supplementaryNOK": 9628189,
+      "totalDisbursedNOK": 117022302,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "971160047",
+      "name": "NORGES MUSIKKORPS FORBUND",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 4,
+      "memberOrganizations": 1381,
+      "sheet2MemberRows": 1381,
+      "approvedNOK": 73962267,
+      "tranche1NOK": 67876908,
+      "supplementaryNOK": 6085359,
+      "totalDisbursedNOK": 73962267,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "944384448",
+      "name": "STIFTELSEN KIRKENS BYMISJON",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 6,
+      "memberOrganizations": 3,
+      "sheet2MemberRows": 3,
+      "approvedNOK": 56644667,
+      "tranche1NOK": 51984140,
+      "supplementaryNOK": 4660527,
+      "totalDisbursedNOK": 56644667,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "938498318",
+      "name": "FRELSESARMEEN",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 8,
+      "memberOrganizations": 2,
+      "sheet2MemberRows": 2,
+      "approvedNOK": 37566952,
+      "tranche1NOK": 34476073,
+      "supplementaryNOK": 3090879,
+      "totalDisbursedNOK": 37566952,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "828408712",
+      "name": "BCC-FORBUNDET",
+      "applicationModel": "Dokumentert",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 9,
+      "memberOrganizations": 6,
+      "sheet2MemberRows": 6,
+      "approvedNOK": 36275339,
+      "tranche1NOK": 33290730,
+      "supplementaryNOK": 2984609,
+      "totalDisbursedNOK": 36275339,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "979226462",
+      "name": "NORSK JAZZFORUM",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 10,
+      "memberOrganizations": 204,
+      "sheet2MemberRows": 204,
+      "approvedNOK": 24131054,
+      "tranche1NOK": 22145635,
+      "supplementaryNOK": 1985419,
+      "totalDisbursedNOK": 24131054,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "938679177",
+      "name": "NORSK LUTHERSK MISJONSSAMBAND",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 11,
+      "memberOrganizations": 84,
+      "sheet2MemberRows": 84,
+      "approvedNOK": 23859492,
+      "tranche1NOK": 21896416,
+      "supplementaryNOK": 1963076,
+      "totalDisbursedNOK": 23859492,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "956792150",
+      "name": "NORGES JEGER- OG FISKERFORBUND",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 12,
+      "memberOrganizations": 379,
+      "sheet2MemberRows": 379,
+      "approvedNOK": 23788666,
+      "tranche1NOK": 21831417,
+      "supplementaryNOK": 1957249,
+      "totalDisbursedNOK": 23788666,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "969033917",
+      "name": "NORGES KORFORBUND",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 14,
+      "memberOrganizations": 928,
+      "sheet2MemberRows": 928,
+      "approvedNOK": 23031839,
+      "tranche1NOK": 21136859,
+      "supplementaryNOK": 1894980,
+      "totalDisbursedNOK": 23031839,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "979469241",
+      "name": "DEN NORSKE TURISTFORENING",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 15,
+      "memberOrganizations": 96,
+      "sheet2MemberRows": 96,
+      "approvedNOK": 23003732,
+      "tranche1NOK": 21111065,
+      "supplementaryNOK": 1892667,
+      "totalDisbursedNOK": 23003732,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "941296459",
+      "name": "REDD BARNA",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 16,
+      "memberOrganizations": 13,
+      "sheet2MemberRows": 13,
+      "approvedNOK": 22123724,
+      "tranche1NOK": 20303461,
+      "supplementaryNOK": 1820263,
+      "totalDisbursedNOK": 22123724,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "871033552",
+      "name": "NORSK FOLKEHJELP",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 18,
+      "memberOrganizations": 84,
+      "sheet2MemberRows": 84,
+      "approvedNOK": 20843700,
+      "tranche1NOK": 19128753,
+      "supplementaryNOK": 1714947,
+      "totalDisbursedNOK": 20843700,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "943942102",
+      "name": "DET FRIVILLIGE SKYTTERVESEN",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 19,
+      "memberOrganizations": 527,
+      "sheet2MemberRows": 527,
+      "approvedNOK": 20126614,
+      "tranche1NOK": 18470666,
+      "supplementaryNOK": 1655948,
+      "totalDisbursedNOK": 20126614,
+      "inFrivillighetsregisteret": true
+    },
+    {
+      "orgnr": "970168001",
+      "name": "NORSKE KVINNERS SANITETSFORENING",
+      "applicationModel": "Forenkla",
+      "decision": "Godkjent",
+      "sheet1ExcelRow": 20,
+      "memberOrganizations": 520,
+      "sheet2MemberRows": 520,
+      "approvedNOK": 19580107,
+      "tranche1NOK": 17969124,
+      "supplementaryNOK": 1610983,
+      "totalDisbursedNOK": 19580107,
+      "inFrivillighetsregisteret": true
+    }
+  ],
+  "asset": {
+    "path": "recipients.json.gz",
+    "rows": 28011,
+    "bytes": 831254,
+    "decodedBytes": 2676891,
+    "sha256": "77b11ad1fd9457993d3929b002a11c2f26a3ace84994904acc64a029a51920b1",
+    "decodedSha256": "81e40f5426b3723ffee62225e401386f9a00ed71b1612f7f126e7580890814cf"
+  },
+  "anomalies": {
+    "path": "anomalies.json",
+    "bytes": 41794,
+    "sha256": "7ec8364af962a916a3e69c4fb952a062d7255979d283d3ccf558ae680a5dbbcc"
+  },
+  "umbrellasCsv": {
+    "path": "umbrellas-2025.csv",
+    "rows": 264,
+    "bytes": 26127,
+    "sha256": "2c775e37cda48f31cd3472b43e0a41b5f04ca559ea5a384d2b87dd9c6591264a"
+  }
+}

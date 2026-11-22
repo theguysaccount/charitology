@@ -1,0 +1,317 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/norway-momskompensasjon/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Norway VAT compensation grants (2023–2025)';
+const asset = '/data/funding-flows/norway-momskompensasjon/';
+const registryRoute = '/record/charity-index/norway/';
+const count = (value: number) => value.toLocaleString('en-US');
+const nok = (value: number) => `NOK ${value.toLocaleString('en-US')}`;
+const sources = [
+  { title: 'Lottstift open data portal (2023 and 2024 Momskompensasjon workbooks)', publisher: manifest.publisher, url: manifest.sources['2024'].catalogue },
+  { title: 'Momskompensasjon 2025 disbursement figures and workbook', publisher: manifest.publisher, url: manifest.sources['2025'].catalogue },
+  { title: 'Frivillighetsregisteret dataset listing', publisher: 'Brønnøysundregistrene', url: 'https://data.norge.no/datasets/4f87729a-1ef3-4f79-9866-832df00dc075' },
+  { title: 'Norwegian Licence for Open Government Data (NLOD) 2.0', publisher: 'Norwegian Digitalisation Agency', url: manifest.license },
+];
+const discrepancy = manifest.reconciliation2025.discrepancies[0];
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Norway"
+  summary="Search 28,011 Norwegian voluntary organizations across three years of VAT compensation grants. Compare umbrella intermediaries, two-tranche 2025 disbursements and register status."
+  filePath="src/pages/record/funding-flows/norway-momskompensasjon/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Norway VAT compensation'}]}
+  sources={sources}>
+  <p>Across 2023, 2024 and 2025, Norway’s Gaming and Foundation Authority (Lotteri- og stiftelsestilsynet) published <strong>{count(manifest.counts.totalOrganizationYearRows)} organization-year grant rows</strong> totaling <strong>{nok(manifest.counts.totalAwardedAndDisbursedNOK)}</strong> in VAT compensation (Momskompensasjon for frivillige organisasjoner). The edition resolves <strong>{count(manifest.counts.distinctValidOrgnrs)} distinct nine-digit organization numbers</strong>, including <strong>{count(manifest.counts.presentInAllThreeYears)}</strong> that appear in all three grant years. Matching by exact ID against the <time datetime={manifest.registrySnapshot.sourceLastModified}>{manifest.registrySnapshot.sourceLastModified}</time> Frivillighetsregisteret export links <strong>{count(manifest.counts.inFrivillighetsregisteret)}</strong> recipients directly to current voluntary-register entries.</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search Norway’s full Frivillighetsregisteret ({count(manifest.registrySnapshot.includedOrganizations)} organizations)</a>.</p>
+
+  <section class="charity-financial-search" id="q=864139442" data-norway-moms
+    data-file={url(asset + manifest.asset.path)} data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="norway-moms-heading">
+    <h2 id="norway-moms-heading">Search grant recipients</h2>
+    <p id="norway-moms-hint">Enter part of an organization’s name, an exact nine-digit recipient number or a central umbrella number (for example <code>864139442</code> for Norges Røde Kors and its local chapters). Search loads {(manifest.asset.bytes / 1_000_000).toFixed(2)} MB of compressed public records locally in your browser.</p>
+    <form aria-describedby="norway-moms-hint">
+      <label for="moms-query">Recipient name, recipient org.nr. or umbrella org.nr.</label>
+      <div class="finance-actions">
+        <input id="moms-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <label for="moms-role">2025 role</label>
+        <select id="moms-role" disabled>
+          <option value="">All roles</option>
+          <option value="S">Sentralledd (central umbrella)</option>
+          <option value="U">Underledd (local chapter)</option>
+          <option value="E">Enkeltstående (standalone)</option>
+        </select>
+        <label for="moms-reg">Register match</label>
+        <select id="moms-reg" disabled>
+          <option value="">All statuses</option>
+          <option value="F">In Frivillighetsregisteret</option>
+          <option value="E">In Enhetsregisteret only</option>
+          <option value="N">Absent from current Brreg snapshot</option>
+        </select>
+        <button class="btn" type="submit" disabled>Search grants</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the 2023–2025 grant index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed recipients as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed recipients as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="tranche" aria-label="Norway VAT compensation grant results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'umbrellas-2025.csv')} download>2025 umbrella summary CSV</a> or the original workbooks linked below.</p></noscript>
+  </section>
+
+  <h2 id="reconciliation">Compare 2025 approvals and payouts</h2>
+  <p>The 2025 workbook publishes two sheets: <em>Alle søknader</em> ({count(manifest.reconciliation2025.sheet1Applications)} non-empty applicant summaries after excluding {count(manifest.reconciliation2025.sheet1BlankSpacerRows)} blank spacer rows) and <em>Alle organisasjoner</em> ({count(manifest.byYear[2].inputRows)} individual organization rows with initial payout tranche 1, supplementary tranche <code>Tilleggsutbetaling</code> and total disbursed NOK). Every single row in <em>Alle organisasjoner</em> satisfies <code>tranche 1 + supplementary = total disbursed</code> exactly.</p>
+  <div class="table-wrap" role="region" aria-label="2025 application approval versus disbursement reconciliation" tabindex="0">
+    <table class="data recon-table">
+      <caption>2025 two-sheet reconciliation (Alle søknader vs. Alle organisasjoner)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Check</th>
+          <th scope="col">Sheet 1 (Alle søknader)</th>
+          <th scope="col">Sheet 2 (Alle organisasjoner)</th>
+          <th scope="col">Difference</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Total NOK</th>
+          <td>{nok(manifest.reconciliation2025.sheet1ApprovedNOK)} approved</td>
+          <td>{nok(manifest.reconciliation2025.sheet2Tranche1NOK)} tranche 1 + {nok(manifest.reconciliation2025.sheet2SupplementaryNOK)} supplementary = {nok(manifest.reconciliation2025.sheet2TotalDisbursedNOK)}</td>
+          <td>{nok(manifest.reconciliation2025.sheet2TotalDisbursedNOK - manifest.reconciliation2025.sheet1ApprovedNOK)}</td>
+        </tr>
+        <tr>
+          <th scope="row">Applicant-level match</th>
+          <td>{count(manifest.reconciliation2025.exactKroneMatches)} of {count(manifest.reconciliation2025.sheet1Applications)} match exactly</td>
+          <td>1 applicant differs: <code>{discrepancy.orgnr}</code> {discrepancy.name} (row {discrepancy.sheet1ExcelRow} vs. row {discrepancy.sheet2ExcelRows[0]})</td>
+          <td>{nok(discrepancy.differenceNOK)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>For <strong>{discrepancy.name}</strong> (<code>{discrepancy.orgnr}</code>), <em>Alle søknader</em> row {discrepancy.sheet1ExcelRow} records {nok(discrepancy.sheet1ApprovedNOK)} approved under the documented model, while <em>Alle organisasjoner</em> row {discrepancy.sheet2ExcelRows[0]} records {nok(discrepancy.sheet2Tranche1NOK)} in tranche 1 and {nok(discrepancy.sheet2SupplementaryNOK)} in supplementary payout ({nok(discrepancy.sheet2TotalDisbursedNOK)} total). The reason for the {nok(Math.abs(discrepancy.differenceNOK))} gap is unknown from the published workbook alone.</p>
+
+  <h2 id="umbrellas">Follow central umbrella intermediaries</h2>
+  <p>In 2025, <strong>{count(manifest.counts.umbrellas2025Count)} central umbrella organizations</strong> (<code>Sentralledd</code>) applied on behalf of <strong>{count(manifest.byYear[2].byRole.Underledd)} local chapters</strong> (<code>Underledd</code>), while {count(manifest.byYear[2].byRole.Enkeltstående)} organizations applied independently. The table lists the 15 largest 2025 umbrellas by total disbursed NOK. A central umbrella payout establishes what Lottstift disbursed under that application; onward timing, internal redistributions and end-program outcomes require separate local records.</p>
+  <div class="table-wrap" role="region" aria-label="Largest 2025 central umbrella organizations" tabindex="0">
+    <table class="data umbrella-table">
+      <caption>Top 15 central umbrella intermediaries (Sentralledd) in 2025</caption>
+      <thead>
+        <tr>
+          <th scope="col">Org.nr.</th>
+          <th scope="col">Central organization</th>
+          <th scope="col">Covered orgs</th>
+          <th scope="col">Tranche 1</th>
+          <th scope="col">Supplementary</th>
+          <th scope="col">Total disbursed</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topUmbrellas2025.map(item => (
+          <tr data-umbrella={item.orgnr}>
+            <td><a href={url(`${registryRoute}?orgnr=${item.orgnr}`)}><code>{item.orgnr}</code></a></td>
+            <th scope="row"><span lang="nb">{item.name}</span></th>
+            <td>{count(item.memberOrganizations)}</td>
+            <td>{nok(item.tranche1NOK)}</td>
+            <td>{nok(item.supplementaryNOK)}</td>
+            <td>{nok(item.totalDisbursedNOK)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="coverage">Coverage, anomalies and downloads</h2>
+  <div class="table-wrap" role="region" aria-label="Yearly Momskompensasjon coverage and register matching" tabindex="0">
+    <table class="data coverage-table">
+      <caption>Yearly workbook coverage and exact match against Frivillighetsregisteret ({manifest.registrySnapshot.sourceLastModified})</caption>
+      <thead>
+        <tr>
+          <th scope="col">Grant year</th>
+          <th scope="col">Data rows</th>
+          <th scope="col">Distinct 9-digit IDs</th>
+          <th scope="col">Blank-ID rows</th>
+          <th scope="col">Total NOK</th>
+          <th scope="col">In Frivillighetsreg.</th>
+          <th scope="col">Enhetsreg. only / absent</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.byYear.map(row => (
+          <tr data-grant-year={row.year}>
+            <th scope="row">{row.year}</th>
+            <td>{count(row.inputRows)}</td>
+            <td>{count(row.distinctOrgnrs)}</td>
+            <td>{count(row.blankOrgnrRows)}</td>
+            <td>{nok('totalDisbursedNOK' in row ? row.totalDisbursedNOK : row.totalAwardedNOK)}</td>
+            <td>{count(row.inFrivillighetsregisteret)}</td>
+            <td>{count(row.inEnhetsregisteretOnly)} / {count(row.absentFromBrreg)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p>Three data-quality boundaries remain visible in the published records. First, 2023 contains <strong>{count(manifest.byYear[0].blankOrgnrRows)}</strong> rows and 2025 contains <strong>{count(manifest.byYear[2].blankOrgnrRows)}</strong> rows for unregistered local sub-clubs without a nine-digit identifier (all with NOK 0 awarded). Second, <strong>{count(manifest.byYear[0].duplicateOrgnrs)}</strong> organizations in 2023 and <strong>{count(manifest.byYear[2].duplicateOrgnrs)}</strong> in 2025 appear on more than one row—typically because a local chapter applied both independently (refused) and through a central umbrella (approved). Third, <strong>{count(manifest.counts.inEnhetsregisteretOnly)}</strong> grant recipients remain in Enhetsregisteret outside Frivillighetsregisteret and <strong>{count(manifest.counts.absentFromBrreg)}</strong> are absent from the <time datetime={manifest.registrySnapshot.sourceLastModified}>{manifest.registrySnapshot.sourceLastModified}</time> Brreg export, which can reflect later deregistration or dissolution.</p>
+  <p>The 2024 workbook lists positive awards only and omits umbrella-applicant columns and rejected applications, whereas 2023 and 2025 retain blank, zero and refused rows. VAT compensation reimburses eligible operating VAT rather than measuring total organizational revenue or impact.</p>
+  <p>Source: {manifest.publisher}, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, adapted under <a href={manifest.license}>NLOD 2.0</a>.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.asset.path)} download>Download recipient index (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'umbrellas-2025.csv')} download>Download all 264 2025 umbrellas (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download exact discrepancies and blank-ID log (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .recon-table, .umbrella-table, .coverage-table { min-inline-size: 40rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+  import { financialCsvName, normalizeFinancialName } from '../../../../lib/client/financial-directory';
+
+  type Row = [
+    string, string, 'F' | 'E' | 'N', 'E' | 'S' | 'U' | null, string | null, string | null,
+    number | null, number | null, number | null, number | null, number | null, number,
+  ];
+  type Manifest = typeof import('../../../../../public/data/funding-flows/norway-momskompensasjon/manifest.json');
+
+  const regLabels: Record<'F' | 'E' | 'N', string> = {
+    F: 'In Frivillighetsregisteret',
+    E: 'In Enhetsregisteret only (not Frivillighetsregisteret)',
+    N: 'Absent from current Brreg snapshot',
+  };
+  const roleLabels: Record<string, string> = {
+    S: 'Sentralledd (central umbrella)',
+    U: 'Underledd (local chapter)',
+    E: 'Enkeltstående (standalone)',
+  };
+  const fmtNok = (value: number | null) => value === null ? 'not in year file' : `NOK ${value.toLocaleString('en-US')}`;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-norway-moms]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const registryBase = root.dataset.registry!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#moms-query', form);
+    const roleSelect = $<HTMLSelectElement>('#moms-role', form);
+    const regSelect = $<HTMLSelectElement>('#moms-reg', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csv = $<HTMLButtonElement>('[data-csv]', root);
+    const json = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    let snapshot: Promise<Row[]> | undefined;
+    let displayed: Row[] = [];
+    let sequence = 0;
+    input.disabled = roleSelect.disabled = regSelect.disabled = submit.disabled = clear.disabled = false;
+
+    async function load() {
+      const rows = await loadVerifiedJson(root.dataset.file!, manifest.asset);
+      if (!Array.isArray(rows) || rows.length !== manifest.asset.rows) throw new Error('The grant index has an unexpected row count.');
+      return rows as Row[];
+    }
+
+    function reset() {
+      displayed = [];
+      results.replaceChildren();
+      json.disabled = csv.disabled = true;
+    }
+
+    function card(row: Row) {
+      const [orgnr, name, regStatus, role2025, umbrella2025, icnpo2025, n23, n24, n25t1, n25supp, n25tot, rowCount] = row;
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, orgnr), ' ', h('span', { lang: 'nb' }, name)),
+        h('p', {},
+          `2025: ${fmtNok(n25tot)}${n25t1 !== null && n25supp !== null ? ` (tranche 1 ${fmtNok(n25t1)} + supplementary ${fmtNok(n25supp)})` : ''} · 2024: ${fmtNok(n24)} · 2023: ${fmtNok(n23)}`),
+        h('p', { class: 'note' },
+          `${role2025 ? roleLabels[role2025] : 'Not in 2025 file'}` +
+          (umbrella2025 ? ` via umbrella ${umbrella2025}` : '') +
+          (icnpo2025 ? ` · ICNPO ${icnpo2025}` : '') +
+          ` · ${regLabels[regStatus]} · ${rowCount} source ${rowCount === 1 ? 'row' : 'rows'}`),
+        h('p', { class: 'note' },
+          regStatus === 'F'
+            ? h('a', { href: `${registryBase}?orgnr=${orgnr}` }, 'Inspect Frivillighetsregisteret entry')
+            : h('a', { href: `https://virksomhet.brreg.no/nb/oppslag/enheter/${orgnr}` }, 'Check live Brønnøysund lookup'),
+          umbrella2025 && h('span', {}, ' · ', h('a', { href: `${registryBase}?orgnr=${umbrella2025}` }, `Inspect umbrella ${umbrella2025}`))));
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compact = raw.replace(/\s+/g, '');
+      const nameQuery = normalizeFinancialName(raw);
+      const roleVal = roleSelect.value;
+      const regVal = regSelect.value;
+      try {
+        if (!raw && !roleVal && !regVal) throw new Error('Enter a name, nine-digit organization number, or choose a filter.');
+        if (raw && !/^[0-9]{9}$/.test(compact) && nameQuery.length < 2) throw new Error('Enter at least two characters or an exact nine-digit organization number.');
+        submit.disabled = true;
+        status.textContent = 'Checking the 2023–2025 Momskompensasjon index.';
+        snapshot ??= load().catch(error => { snapshot = undefined; throw error; });
+        const rows = await snapshot;
+        if (ticket !== sequence) return;
+        const found = rows.filter(row => {
+          if (roleVal && row[3] !== roleVal) return false;
+          if (regVal && row[2] !== regVal) return false;
+          if (!raw) return true;
+          if (/^[0-9]{9}$/.test(compact)) return row[0] === compact || row[4] === compact;
+          return normalizeFinancialName(row[1]).includes(nameQuery);
+        });
+        displayed = found.slice(0, 60);
+        status.textContent = found.length
+          ? `${found.length.toLocaleString('en-US')} ${found.length === 1 ? 'organization' : 'organizations'}. Showing ${displayed.length}.`
+          : 'No matching grant recipients in this edition.';
+        results.append(...displayed.map(card));
+        json.disabled = csv.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The grant search failed.';
+      } finally {
+        if (ticket === sequence) submit.disabled = false;
+      }
+    });
+
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      input.value = roleSelect.value = regSelect.value = '';
+      submit.disabled = false;
+      status.textContent = 'Search cleared.';
+      if (/^#q=[0-9]{9}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#norway-moms-heading');
+      }
+      input.focus();
+    });
+
+    const exported = () => displayed.map(row => Object.fromEntries(manifest.fields.map((field, idx) => [field, row[idx]])));
+    json.addEventListener('click', () => {
+      if (displayed.length) download('norway-momskompensasjon-search.json',
+        JSON.stringify({ capturedOn: manifest.capturedOn, currency: manifest.currency, publisher: manifest.publisher, license: manifest.license, sources: manifest.sources, recipients: exported() }, null, 2) + '\n',
+        'application/json');
+    });
+    csv.addEventListener('click', () => {
+      if (!displayed.length) return;
+      const rows = exported().map(row => ({
+        ...row,
+        name: financialCsvName(String(row.name ?? '')),
+        currency: manifest.currency,
+        capturedOn: manifest.capturedOn,
+        publisher: manifest.publisher,
+        license: manifest.license,
+      }));
+      download('norway-momskompensasjon-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const linkedId = /^#q=([0-9]{9})$/.exec(location.hash)?.[1] ?? new URLSearchParams(location.search).get('orgnr');
+    if (linkedId && /^[0-9]{9}$/.test(linkedId)) {
+      input.value = linkedId;
+      form.requestSubmit();
+    }
+  }
+</script>

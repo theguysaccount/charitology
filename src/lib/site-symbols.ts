@@ -145,6 +145,8 @@ export const symbols = {
   grantSchedule: 'M4 3h12l4 4v14H4zM16 3v5h4M7 10h10m-10 4h3m4 0h3m-10 4h3m4 0h3',
   winterCoat: 'M9 3h6l1 3 4 2 2 10-4 1-1-6v8H7v-8l-1 6-4-1L4 8l4-2 1-3Zm0 0 3 5 3-5m-3 5v13m-3-6h1m4 0h1',
   filingStack: 'M6 2h10l4 4v7M16 2v5h4M6 2v17h6M3 6v16h9M9 7h4m-4 4h7m-7 4h2m6-2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2 5 3 3',
+  fjord: 'M2 17l5-9 4 6 4-8 7 11M2 20c3-1.5 5 1.5 8 0s5 1.5 8 0 2.5-.8 4 0',
+  tranche: 'M3 6h10m-3-3 3 3-3 3M3 14h10m-3-3 3 3-3 3M16 4h5v16h-5M3 20h10',
 } as const;
 
 export type SymbolName = keyof typeof symbols;
