@@ -2,7 +2,7 @@
 title: "Global Charity Index"
 group: "Flagship references"
 order: 2
-summary: "Search dated organization identities, Australian financial filings and an editorial collection of draft depth hypotheses, sources and research dossiers."
+summary: "Search dated charity registries and financial filings across 16 jurisdictions, plus an editorial collection of draft depth hypotheses, sources and research dossiers."
 status: live
 statusNote: "1,975,975 IRS identities from the 2026-10-13 extract, searchable locally by name prefix or EIN, plus 16 editorial draft classifications. US registry coverage is not a worldwide census or a charity rating."
 conditions: ["overhead-myth", "symptom-trap"]

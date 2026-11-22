@@ -24,18 +24,20 @@ const sources = [
   <section class="charity-financial-search" data-norway-registry data-base={url(dataPath)}
     data-moms={url(momsPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="norway-search-heading">
     <h2 id="norway-search-heading">Search voluntary organizations</h2>
-    <p id="norway-search-hint">Enter the beginning of a published name or an exact nine-digit organization number (organisasjonsnummer). Search loads only the matching shard and runs locally in your browser.</p>
+    <p id="norway-search-hint">Enter the beginning of a published name (e.g., <code>norges rode kors</code> or <code>norges røde kors</code>) or an exact nine-digit organization number (<code>organisasjonsnummer</code>). Search loads only the matching shard and runs locally in your browser.</p>
     <form aria-describedby="norway-search-hint">
       <label for="norway-query">Organization name or nine-digit number</label>
       <div class="finance-actions">
         <input type="search" id="norway-query" maxlength="160" autocomplete="off" disabled />
-        <label for="norway-form">Legal form</label>
-        <select id="norway-form" disabled>
-          <option value="">All forms</option>
-          <option value="FLI">FLI — Association or club ({count(manifest.counts.byForm.FLI)})</option>
-          <option value="STI">STI — Foundation ({count(manifest.counts.byForm.STI)})</option>
-          <option value="AS">AS — Limited company ({count(manifest.counts.byForm.AS)})</option>
-        </select>
+        <span class="inline-field">
+          <label for="norway-form">Legal form</label>
+          <select id="norway-form" disabled>
+            <option value="">All forms</option>
+            <option value="FLI">FLI — Association or club ({count(manifest.counts.byForm.FLI)})</option>
+            <option value="STI">STI — Foundation ({count(manifest.counts.byForm.STI)})</option>
+            <option value="AS">AS — Limited company ({count(manifest.counts.byForm.AS)})</option>
+          </select>
+        </span>
         <label class="inline-check"><input type="checkbox" id="norway-moms-only" disabled /> Only 2023–2025 grant recipients</label>
         <button type="submit" class="btn" disabled>Search organizations</button>
         <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
@@ -60,20 +62,13 @@ const sources = [
   <p>Contains data under the <a href={manifest.license}>Norwegian Licence for Open Government Data (NLOD) 2.0</a> made available by {manifest.publisher}. The <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>source manifest</a> pins the original file hash, shard fingerprints and exact counts. <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
 </Entry>
 
-<style>
-  .inline-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: 0.92rem;
-    margin: 0;
-  }
-</style>
-
 <script>
   import { $, h } from '../../../lib/client/dom';
   import { download, toCsv } from '../../../lib/client/files';
   import { financialCsvName, financialShardLoader, normalizeFinancialName, type FinancialShard } from '../../../lib/client/financial-directory';
+
+  const foldNorwegian = (value: string) =>
+    normalizeFinancialName(value.replace(/[øØ]/g, 'o').replace(/[æÆ]/g, 'ae'));
 
   type Organization = [
     string, string, string, string | null, string | null,
@@ -93,7 +88,8 @@ const sources = [
     AS: 'Limited company (AS)',
   };
 
-  const isOrgnr = (value: string) => /^[0-9]{9}$/.test(value.replace(/\s+/g, ''));
+  const stripDigits = (value: string) => value.replace(/[\s-]+/g, '');
+  const isOrgnr = (value: string) => /^[0-9]{9}$/.test(stripDigits(value));
   const bucketFor = (norm: string) => {
     const first = norm[0] ?? '';
     if (first >= 'a' && first <= 'z') return first;
@@ -149,14 +145,14 @@ const sources = [
         h('p', { class: 'note' },
           `Frivillighetsregisteret since ${regDate ?? 'date unknown'} · Sector ${sector ?? 'n/a'} · NACE ${nace ?? 'n/a'} · ${flagSummary(flags)}`),
         h('p', { class: 'note' },
-          h('a', { href: `https://virksomhet.brreg.no/nb/oppslag/enheter/${orgnr}` }, 'Inspect live Brønnøysund record'),
+          h('a', { href: `https://virksomhet.brreg.no/nb/oppslag/enheter/${orgnr}`, rel: 'noopener noreferrer' }, 'Inspect live Brønnøysund record'),
           hasMoms
             ? h('span', {}, ' · ', h('a', { href: `${momsBase}#q=${orgnr}` }, 'Inspect 2023–2025 VAT compensation grants'))
             : ' · No 2023–2025 Momskompensasjon row matched'));
     }
 
     async function search(value: string): Promise<Result> {
-      const cleaned = value.replace(/\s+/g, '');
+      const cleaned = stripDigits(value);
       const selectedForm = formFilter.value;
       const onlyGrants = momsOnly.checked;
       const matchesFilters = (row: Organization) =>
@@ -170,15 +166,22 @@ const sources = [
         return matchesFilters(org) ? { total: 1, organizations: [org] } : { total: 0, organizations: [] };
       }
 
-      const query = normalizeFinancialName(value);
+      const rawNorm = normalizeFinancialName(value);
+      const query = foldNorwegian(value);
       if (query.length < 2) throw new Error('Enter at least two characters of a name or an exact nine-digit organization number.');
+      const buckets = new Set<string>([bucketFor(rawNorm), bucketFor(query)]);
+      if (query[0] === 'o' || query[0] === 'a') buckets.add('other');
       const organizations: Organization[] = [];
+      const seen = new Set<string>();
       let total = 0;
-      for (const row of await loadNames(bucketFor(query))) {
-        if (!matchesFilters(row)) continue;
-        if (!normalizeFinancialName(row[1]).startsWith(query)) continue;
-        total++;
-        if (organizations.length < limit) organizations.push(row);
+      for (const bucket of buckets) {
+        for (const row of await loadNames(bucket)) {
+          if (seen.has(row[0]) || !matchesFilters(row)) continue;
+          if (!foldNorwegian(row[1]).startsWith(query)) continue;
+          seen.add(row[0]);
+          total++;
+          if (organizations.length < limit) organizations.push(row);
+        }
       }
       return { total, organizations };
     }

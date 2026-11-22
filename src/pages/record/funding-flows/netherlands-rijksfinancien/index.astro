@@ -41,7 +41,7 @@ const basisLabels: Record<string, string> = {
   <p>Between 2020 and 2024, the Dutch Ministry of Finance’s <em>Financiële Instrumenten</em> dataset recorded <strong>{count(manifest.counts.includedSubsidyRows2020to2024)} executed central-government subsidy rows</strong> (<code>Subsidies (regelingen)</code>) to Dutch nonprofit legal forms (<code>Stichting</code>, <code>Vereniging</code> and <code>Kerkgenootschap</code>) totaling <strong>{eurK(manifest.counts.netEurThousands)} net</strong> (<strong>{eurK(manifest.counts.positiveEurThousands)}</strong> positive outlays and <strong>{eurK(manifest.counts.negativeEurThousands)}</strong> across {count(manifest.counts.negativeAdjustmentRows)} negative adjustments/recoveries; all amounts are published in thousands of EUR). Grouping by eight-digit <code>KvK-nummer</code> resolves <strong>{count(manifest.counts.distinctKvkRecipients)} distinct recipients</strong> (EUR {count(manifest.counts.kvkRecipientsNetEurThousands)}k net), plus {count(manifest.counts.blankKvkRows)} rows without a KvK number ({eurK(manifest.counts.blankKvkNetEurThousands)} net, including {count(manifest.counts.anonymizedRows)} GDPR-anonymized rows).</p>
   <p><a class="identity-link" href={url(registryRoute)}>Search the Netherlands Belastingdienst ANBI register ({count(manifest.anbiSnapshot.distinctOrganizations)} RSINs)</a>.</p>
 
-  <section class="charity-financial-search" id="q=41160054" data-nl-subsidies
+  <section class="charity-financial-search" data-nl-subsidies
     data-file={url(asset + manifest.asset.path)} data-registry={url(registryRoute)}
     data-manifest={JSON.stringify(manifest)} aria-labelledby="nl-subsidies-heading">
     <h2 id="nl-subsidies-heading">Search subsidy recipients</h2>
@@ -50,29 +50,35 @@ const basisLabels: Record<string, string> = {
       <label for="nl-sub-query">Recipient name, 8-digit KvK or 9-digit candidate RSIN</label>
       <div class="finance-actions">
         <input id="nl-sub-query" type="search" maxlength="160" autocomplete="off" disabled />
-        <label for="nl-sub-form">Legal form</label>
-        <select id="nl-sub-form" disabled>
-          <option value="">All nonprofit forms</option>
-          <option value="S">Stichting ({count(manifest.counts.byLegalForm.Stichting)})</option>
-          <option value="V">Vereniging ({count(manifest.counts.byLegalForm.Vereniging)})</option>
-          <option value="K">Kerkgenootschap ({count(manifest.counts.byLegalForm.Kerkgenootschap)})</option>
-          <option value="M">Mixed across years ({count(manifest.counts.byLegalForm.Mixed)})</option>
-        </select>
-        <label for="nl-sub-chapter">Budget chapter</label>
-        <select id="nl-sub-chapter" disabled>
-          <option value="">All 16 chapters</option>
-          {manifest.chapters.map(ch => (
-            <option value={ch.chapter}>{ch.chapter} — {ch.canonicalName}</option>
-          ))}
-        </select>
-        <label for="nl-sub-anbi">ANBI candidate match</label>
-        <select id="nl-sub-anbi" disabled>
-          <option value="">All match states</option>
-          <option value="C">Unique name + city candidate ({count(manifest.counts.anbiCandidateMatches.uniqueNameAndCity)})</option>
-          <option value="N">Unique name-only candidate ({count(manifest.counts.anbiCandidateMatches.uniqueNameOnly)})</option>
-          <option value="A">Ambiguous name collision ({count(manifest.counts.anbiCandidateMatches.ambiguousNameCollision)})</option>
-          <option value="U">Unmatched — no public crosswalk ({count(manifest.counts.anbiCandidateMatches.unmatchedNoPublicCrosswalk)})</option>
-        </select>
+        <span class="inline-field">
+          <label for="nl-sub-form">Legal form</label>
+          <select id="nl-sub-form" disabled>
+            <option value="">All nonprofit forms</option>
+            <option value="S">Stichting ({count(manifest.counts.byLegalForm.Stichting)})</option>
+            <option value="V">Vereniging ({count(manifest.counts.byLegalForm.Vereniging)})</option>
+            <option value="K">Kerkgenootschap ({count(manifest.counts.byLegalForm.Kerkgenootschap)})</option>
+            <option value="M">Mixed across years ({count(manifest.counts.byLegalForm.Mixed)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="nl-sub-chapter">Budget chapter</label>
+          <select id="nl-sub-chapter" disabled>
+            <option value="">All 16 chapters</option>
+            {manifest.chapters.map(ch => (
+              <option value={ch.chapter}>{ch.chapter} — {ch.canonicalName}</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="nl-sub-anbi">ANBI candidate match</label>
+          <select id="nl-sub-anbi" disabled>
+            <option value="">All match states</option>
+            <option value="C">Unique name + city candidate ({count(manifest.counts.anbiCandidateMatches.uniqueNameAndCity)})</option>
+            <option value="N">Unique name-only candidate ({count(manifest.counts.anbiCandidateMatches.uniqueNameOnly)})</option>
+            <option value="A">Ambiguous name collision ({count(manifest.counts.anbiCandidateMatches.ambiguousNameCollision)})</option>
+            <option value="U">Unmatched — no public crosswalk ({count(manifest.counts.anbiCandidateMatches.unmatchedNoPublicCrosswalk)})</option>
+          </select>
+        </span>
         <button class="btn" type="submit" disabled>Search subsidies</button>
         <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
       </div>
@@ -141,7 +147,7 @@ const basisLabels: Record<string, string> = {
       <tbody>
         {manifest.topRecipients.map(item => (
           <tr data-kvk={item.kvk}>
-            <td><code>{item.kvk}</code></td>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-nl={item.kvk}><code>{item.kvk}</code></button></td>
             <th scope="row"><span lang="nl">{item.name}</span></th>
             <td>{formNames[item.legalForm] ?? item.legalForm}</td>
             <td><code>{item.primaryChapter}</code></td>
@@ -282,7 +288,7 @@ const basisLabels: Record<string, string> = {
       const ticket = ++sequence;
       reset();
       const raw = input.value.trim();
-      const compact = raw.replace(/\s+/g, '');
+      const compact = raw.replace(/[\s.-]+/g, '');
       const nameQuery = normalizeFinancialName(raw);
       const formVal = formSelect.value;
       const chVal = chSelect.value;
@@ -352,10 +358,22 @@ const basisLabels: Record<string, string> = {
       download('netherlands-rijksfinancien-subsidies-search.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
     });
 
+    const triggerId = (id: string | null) => {
+      if (id && /^[0-9]{8,9}$/.test(id)) {
+        input.value = id;
+        formSelect.value = chSelect.value = anbiSelect.value = '';
+        form.requestSubmit();
+      }
+    };
     const linkedId = /^#q=([0-9]{8,9})$/.exec(location.hash)?.[1] ?? new URLSearchParams(location.search).get('kvk') ?? new URLSearchParams(location.search).get('rsin');
-    if (linkedId && /^[0-9]{8,9}$/.test(linkedId)) {
-      input.value = linkedId;
-      form.requestSubmit();
+    triggerId(linkedId);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{8,9})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-nl]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupNl ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     }
   }
 </script>

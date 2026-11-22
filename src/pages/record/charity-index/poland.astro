@@ -75,32 +75,6 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].or
   <p><strong>Identifier normalization &amp; source quirks:</strong> NIW-CRSO Excel workbooks store KRS numbers as unpadded integers (e.g., <code>37904</code>), whereas the Ministry of Finance and KRS court registry use 10-digit strings (<code>0000037904</code>). Every KRS is canonicalized to 10 digits with leading zeros before exact-ID joining. One source spelling variant (<code>MAŁOPOLSKA</code> in row 7554/7706 of the 2024 and 2025 NIW workbooks) is normalized to <code>MAŁOPOLSKIE</code> and preserved in the manifest. Street names and postal codes are omitted; voivodeship and city (<em>miejscowość</em>) only are retained. All 11 source files are published under <a href={manifest.license}>CC0 1.0</a> via <code>dane.gov.pl</code>. <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> · <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
 </Entry>
 
-<style>
-  .inline-field {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-wrap: nowrap;
-  }
-  .inline-field label {
-    margin: 0;
-    white-space: nowrap;
-  }
-  .inline-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-size: 0.92rem;
-    margin: 0;
-  }
-  .inline-check input[type="checkbox"] {
-    flex: 0 0 auto;
-    width: auto;
-    padding: 0;
-    margin: 0;
-  }
-</style>
-
 <script>
   import { $, h } from '../../../lib/client/dom';
   import { download, toCsv } from '../../../lib/client/files';
@@ -190,7 +164,7 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].or
         ? ` (${(latestTax / 10).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}k taxpayers, ~PLN ${((latestGrosze / 100) / (latestTax * 100)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/taxpayer)`
         : (latestGrosze ? ' (<0.1k taxpayers threshold)' : '');
       return h('li', { class: 'card' },
-        h('h3', {}, h('span', { class: 'identity-code' }, krs), ' ', name),
+        h('h3', {}, h('span', { class: 'identity-code' }, krs), ' ', h('span', { lang: 'pl' }, name)),
         h('p', {}, `${loc}${nip ? ` · NIP ${nip}` : ' · NIP blank in NIW'}`),
         h('p', { class: 'note' },
           `NIW 1.5% eligibility: ${eligYears(eligMask)} · 2022–2025 1.5% PIT total: ${fmtPln(total4yr)}`,
