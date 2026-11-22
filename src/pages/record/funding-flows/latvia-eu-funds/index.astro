@@ -1,0 +1,412 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/latvia-eu-funds/manifest.json';
+import registryManifest from '../../../../../public/data/charity-registry/latvia/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Latvia EU Cohesion and Recovery Fund projects for nonprofits (2014–2027)';
+const asset = '/data/funding-flows/latvia-eu-funds/';
+const registryRoute = '/record/charity-index/latvia/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eur = (cents: number) =>
+  `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const eurM = (cents: number) =>
+  `EUR ${(cents / 100_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}M`;
+const pct = (part: number, whole: number) => `${((part * 100) / whole).toFixed(1)}%`;
+const sources = [
+  { title: 'ES fondu 2021–2027 perioda līdzfinansētie projekti', publisher: 'CFLA (data.gov.lv)', url: manifest.catalogues.eu2127 },
+  { title: 'ES fondu 2014–2020 perioda līdzfinansētie projekti', publisher: 'CFLA (data.gov.lv)', url: manifest.catalogues.eu1420 },
+  { title: 'ES Atveseļošanas fonda līdzfinansētie projekti (RRF)', publisher: 'CFLA (data.gov.lv)', url: manifest.catalogues.rrf },
+  { title: 'CC0 1.0 Universal Public Domain Dedication', publisher: 'Creative Commons', url: manifest.license },
+];
+const activeSlo = manifest.bySloStatus.activeSlo;
+const nonSlo = manifest.bySloStatus.nonSloNonprofit;
+const revokedSlo = manifest.bySloStatus.revokedOrLiquidatedSlo;
+const sloLabel = (code: string | null) =>
+  code === 'A' ? 'Active SLO' : (code === 'R' ? 'Revoked SLO' : (code === 'L' ? 'Liquidated SLO' : 'Non-SLO'));
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Latvia"
+  summary="Search 292 nonprofit-led EU Cohesion and Recovery Fund projects in Latvia (EUR 233.47M total; EUR 180.09M EU co-financing) and 260 nonprofit cooperation-partner roles with exact implementation regions and SLO charity splits."
+  filePath="src/pages/record/funding-flows/latvia-eu-funds/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Latvia EU funds'}]}
+  sources={sources}>
+  <p>Scanning all <strong>{count(manifest.counts.allCflaProjectsScanned)} EU-funded projects</strong> published by Latvia’s Central Finance and Contracting Agency (CFLA) across three frameworks—<strong>EU Funds 2014–2020</strong>, <strong>EU Funds 2021–2027</strong> and the <strong>EU Recovery &amp; Resilience Facility (RRF)</strong>—and joining by exact 11-digit registration code to Latvia’s nonprofit register identifies <strong>{count(manifest.counts.nonprofitLeadProjects)} nonprofit-led projects</strong> across <strong>{count(manifest.counts.distinctLeadNonprofits)} distinct lead organizations</strong> ({count(manifest.counts.completedLeadProjects)} completed, {count(manifest.counts.activeContractLeadProjects)} active contracts). Total contracted project value reaches <strong>{eur(manifest.counts.totalLeadCents)}</strong>, composed of <strong>{eur(manifest.counts.euCofinancingCents)}</strong> EU co-financing, {eur(manifest.counts.nationalPublicCents)} national public co-financing, {eur(manifest.counts.nationalPrivateCents)} private co-financing and {eur(manifest.counts.totalLeadCents - manifest.counts.euCofinancingCents - manifest.counts.nationalPublicCents - manifest.counts.nationalPrivateCents)} in ineligible/auxiliary project costs. Separately, <strong>{count(manifest.counts.distinctPartnerNonprofits)} nonprofits</strong> hold <strong>{count(manifest.counts.nonprofitPartnerParticipations)} cooperation-partner roles</strong>—kept strictly separate from lead-beneficiary budgets to avoid double counting.</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search Latvia’s full nonprofit &amp; Public Benefit (SLO) register ({count(registryManifest.counts.includedOrganizations)} organizations)</a>.</p>
+
+  <section class="charity-financial-search" data-lv-eu
+    data-projects={url(asset + manifest.projectsAsset.path)}
+    data-partners={url(asset + manifest.partnersAsset.path)}
+    data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="lv-eu-heading">
+    <h2 id="lv-eu-heading">Search nonprofit EU projects &amp; partners</h2>
+    <p id="lv-eu-hint">Enter a project title, organization name (diacritics optional, e.g., <code>samariešu</code> or <code>digitālais</code>), project number or exact 11-digit registration code (e.g., <code>40008001803</code>). Search loads {(manifest.projectsAsset.bytes / 1_000).toFixed(1)} KB of compressed CFLA records locally in your browser.</p>
+    <form aria-describedby="lv-eu-hint">
+      <label for="lv-eu-query">Organization name, project title, project number or 11-digit reg. code</label>
+      <div class="finance-actions">
+        <input id="lv-eu-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="lv-eu-role">Role</label>
+          <select id="lv-eu-role" disabled>
+            <option value="lead">Lead beneficiary projects ({count(manifest.counts.nonprofitLeadProjects)})</option>
+            <option value="partner">Cooperation-partner roles ({count(manifest.counts.nonprofitPartnerParticipations)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="lv-eu-prog">Framework</label>
+          <select id="lv-eu-prog" disabled>
+            <option value="">All 3 frameworks</option>
+            {manifest.byProgram.map(p => (
+              <option value={p.programCode}>{p.programLabel}</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="lv-eu-slo">SLO status</label>
+          <select id="lv-eu-slo" disabled>
+            <option value="">All nonprofits</option>
+            <option value="A">Active SLO ({count(activeSlo.projects)} lead projects)</option>
+            <option value="R">Revoked/liquidated SLO ({count(revokedSlo.projects)} lead projects)</option>
+            <option value="N">Non-SLO nonprofit ({count(nonSlo.projects)} lead projects)</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="lv-eu-region">Implementation region</label>
+          <select id="lv-eu-region" disabled>
+            <option value="">All regions</option>
+            {manifest.byImplementationRegion.map(r => (
+              <option value={r.region}>{r.region} ({count(r.projects)})</option>
+            ))}
+          </select>
+        </span>
+        <button class="btn" type="submit" disabled>Search EU projects</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the Latvia CFLA nonprofit project index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed rows as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed rows as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="cohesion" aria-label="Latvia EU project results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'programs-summary.csv')} download>framework &amp; fund summary CSV</a> or inspect CFLA datasets on <a href={manifest.catalogues.eu2127}>data.gov.lv</a>.</p></noscript>
+  </section>
+
+  <h2 id="slo-split">Active SLO charities vs. industry &amp; cluster associations</h2>
+  <p>Joining CFLA project beneficiaries to VID’s Public Benefit (SLO) register reveals why raw legal-form filters overstate charitable EU funding. Although every lead beneficiary below is registered as a Latvian nonprofit (predominantly <code>Biedrība</code>), <strong>{count(nonSlo.orgs)} non-SLO nonprofits</strong>—largely higher-education IT consortia, employers’ confederations and digital/industry clusters—account for <strong>{eurM(nonSlo.totalCents)} ({pct(nonSlo.totalCents, manifest.counts.totalLeadCents)})</strong> across {count(nonSlo.projects)} projects. By contrast, <strong>{count(activeSlo.orgs)} active SLO charities</strong> (such as <em>Latvijas Samariešu apvienība</em> and social-care providers) lead <strong>{count(activeSlo.projects)} projects totaling {eurM(activeSlo.totalCents)} ({pct(activeSlo.totalCents, manifest.counts.totalLeadCents)})</strong>, while {count(revokedSlo.orgs)} organizations with revoked or liquidated SLO status led {count(revokedSlo.projects)} projects totaling {eurM(revokedSlo.totalCents)} ({pct(revokedSlo.totalCents, manifest.counts.totalLeadCents)}).</p>
+
+  <div class="table-wrap" role="region" aria-label="Top 15 nonprofit lead recipients of Latvia EU Cohesion and Recovery funds" tabindex="0">
+    <table class="data lv-table">
+      <caption>Top 15 nonprofit lead beneficiaries across EU 2014–2020, EU 2021–2027 and RRF</caption>
+      <thead>
+        <tr>
+          <th scope="col">Reg. code</th>
+          <th scope="col">Organization</th>
+          <th scope="col">SLO status</th>
+          <th scope="col">Projects</th>
+          <th scope="col">EU co-financing</th>
+          <th scope="col">Total project value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topLeadRecipients.map(item => (
+          <tr data-regcode={item.regcode}>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-lv={item.regcode}><code>{item.regcode}</code></button></td>
+            <th scope="row"><span lang="lv">{item.name}</span> · <a href={url(`${registryRoute}?regcode=${item.regcode}`)}>registry</a></th>
+            <td>{sloLabel(item.sloStatus)}</td>
+            <td>{count(item.projects)}</td>
+            <td>{eur(item.euCents)}</td>
+            <td>{eur(item.totalCents)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="regions">Frameworks and implementation regions</h2>
+  <div class="table-wrap" role="region" aria-label="Latvia nonprofit EU projects by framework" tabindex="0">
+    <table class="data lv-table">
+      <caption>Nonprofit-led projects and separate cooperation-partner roles by EU framework</caption>
+      <thead>
+        <tr>
+          <th scope="col">Framework</th>
+          <th scope="col">Lead projects</th>
+          <th scope="col">Lead orgs</th>
+          <th scope="col">EU co-financing</th>
+          <th scope="col">Total value</th>
+          <th scope="col">Partner roles (separate)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.byProgram.map(p => (
+          <tr data-program={p.programCode}>
+            <th scope="row">{p.programLabel}</th>
+            <td>{count(p.leadProjects)}</td>
+            <td>{count(p.leadOrganizations)}</td>
+            <td>{eur(p.euCents)}</td>
+            <td>{eur(p.totalCents)}</td>
+            <td>{count(p.partnerParticipations)} roles ({count(p.partnerOrganizations)} orgs)</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Latvia nonprofit EU projects by CFLA implementation region" tabindex="0">
+    <table class="data lv-table">
+      <caption>Implementation regions recorded in CFLA locations files (multi-region projects count once per listed region — do not sum across rows)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Implementation region</th>
+          <th scope="col">Lead projects operating in region</th>
+          <th scope="col">Combined value of listed projects (overlapping)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.byImplementationRegion.map(r => (
+          <tr data-region={r.region}>
+            <th scope="row"><span lang="lv">{r.region}</span></th>
+            <td>{count(r.projects)}</td>
+            <td>{eurM(r.sumOfLeadProjectTotalsCents)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads and provenance</h2>
+  <p>Source: Centrālā finanšu un līgumu aģentūra (CFLA) via <code>data.gov.lv</code>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, under <a href={manifest.license}>CC0 1.0 Universal</a>. Contracted project totals measure approved/executed project budgets at the lead-beneficiary level; partner sub-allocations and beneficiary outcomes require separate project audit reports.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.projectsAsset.path)} download>Download all {count(manifest.counts.nonprofitLeadProjects)} nonprofit-led EU projects (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.partnersAsset.path)} download>Download all {count(manifest.counts.nonprofitPartnerParticipations)} nonprofit partner roles (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'programs-summary.csv')} download>Download framework &amp; fund summary (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download anomalies and double-counting notes (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .lv-table { min-inline-size: 42rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName, normalizeFinancialName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+
+  type ProjectRow = [
+    string, string, string, string, string, string, string, 'A' | 'R' | 'L' | null,
+    string, string | null, string | null, string | null,
+    number, number, number, number, string, number,
+  ];
+  type PartnerRow = [
+    string, string, string, string, 'A' | 'R' | 'L' | null,
+    string, string, string, number,
+  ];
+  type Manifest = typeof import('../../../../../public/data/funding-flows/latvia-eu-funds/manifest.json');
+
+  const stripDigits = (value: string) => value.replace(/[\s.-]+/g, '');
+  const fmtEur = (cents: number) =>
+    `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const sloText = (s: 'A' | 'R' | 'L' | null) =>
+    s === 'A' ? 'Active SLO' : (s === 'R' ? 'Revoked SLO' : (s === 'L' ? 'Liquidated SLO' : 'Non-SLO'));
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-lv-eu]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const registryBase = root.dataset.registry!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#lv-eu-query', form);
+    const roleSelect = $<HTMLSelectElement>('#lv-eu-role', form);
+    const progSelect = $<HTMLSelectElement>('#lv-eu-prog', form);
+    const sloSelect = $<HTMLSelectElement>('#lv-eu-slo', form);
+    const regionSelect = $<HTMLSelectElement>('#lv-eu-region', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+
+    let projPromise: Promise<ProjectRow[]> | undefined;
+    let partPromise: Promise<PartnerRow[]> | undefined;
+    let displayedMode: 'lead' | 'partner' = 'lead';
+    let displayedLeads: ProjectRow[] = [];
+    let displayedPartners: PartnerRow[] = [];
+    let sequence = 0;
+    const limit = 50;
+    input.disabled = roleSelect.disabled = progSelect.disabled = sloSelect.disabled = regionSelect.disabled = submit.disabled = clear.disabled = false;
+
+    const loadProjects = () => {
+      projPromise ??= loadVerifiedJson(root.dataset.projects!, manifest.projectsAsset)
+        .then(rows => rows as ProjectRow[])
+        .catch(err => { projPromise = undefined; throw err; });
+      return projPromise;
+    };
+    const loadPartners = () => {
+      partPromise ??= loadVerifiedJson(root.dataset.partners!, manifest.partnersAsset)
+        .then(rows => rows as PartnerRow[])
+        .catch(err => { partPromise = undefined; throw err; });
+      return partPromise;
+    };
+
+    const reset = () => {
+      displayedLeads = [];
+      displayedPartners = [];
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    function leadCard(row: ProjectRow) {
+      const [pnum, prog, fund, pstatus, regcode, orgName, formCode, sloSt, title, , startD, endD, tot, eu, pub, priv, regions, npPartners] = row;
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, pnum), ' ', h('span', { lang: 'lv' }, title)),
+        h('p', {},
+          h('span', { class: 'identity-code' }, regcode), ' ', h('span', { lang: 'lv' }, orgName),
+          ` · ${formCode} · ${sloText(sloSt)} · ${prog} (${fund}) · ${pstatus}`),
+        h('p', { class: 'note' },
+          `Total: ${fmtEur(tot)} (EU ${fmtEur(eu)} · National public ${fmtEur(pub)} · Private ${fmtEur(priv)}) · ${startD ?? '?'}–${endD ?? '?'}`),
+        h('p', { class: 'note' },
+          `Implementation regions: ${regions ? regions.replace(/\|/g, ', ') : 'unspecified'}${npPartners ? ` · ${npPartners} nonprofit ${npPartners === 1 ? 'partner' : 'partners'}` : ''} · `,
+          h('a', { href: `${registryBase}?regcode=${regcode}` }, 'Inspect Latvia registry record')));
+    }
+
+    function partnerCard(row: PartnerRow) {
+      const [pnum, prog, pReg, pName, pSlo, lReg, lName, title, tot] = row;
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, pReg), ' ', h('span', { lang: 'lv' }, pName), ` (${sloText(pSlo)})`),
+        h('p', {}, `Partner on ${prog} project `, h('span', { class: 'identity-code' }, pnum), ': ', h('span', { lang: 'lv' }, title)),
+        h('p', { class: 'note' },
+          `Lead beneficiary: ${lName} (${lReg || 'n/a'}) · Overall project budget: ${fmtEur(tot)} (partner share not separately disclosed in CFLA) · `,
+          h('a', { href: `${registryBase}?regcode=${pReg}` }, 'Inspect partner registry record')));
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compact = stripDigits(raw);
+      const isId = /^[0-9]{11}$/.test(compact);
+      const q = normalizeFinancialName(raw);
+      const mode = roleSelect.value === 'partner' ? 'partner' : 'lead';
+      const pVal = progSelect.value;
+      const sVal = sloSelect.value;
+      const rVal = regionSelect.value;
+      try {
+        if (raw && !isId && q.length < 2) throw new Error('Enter at least two characters or an exact 11-digit registration code.');
+        submit.disabled = true;
+        status.textContent = mode === 'lead'
+          ? 'Checking Latvia CFLA nonprofit-led EU projects.'
+          : 'Checking Latvia CFLA nonprofit cooperation-partner roles.';
+        if (mode === 'lead') {
+          const rows = await loadProjects();
+          if (ticket !== sequence) return;
+          const matches = rows.filter(row => {
+            if (pVal && row[1] !== pVal) return false;
+            if (sVal === 'A' && row[7] !== 'A') return false;
+            if (sVal === 'R' && row[7] !== 'R' && row[7] !== 'L') return false;
+            if (sVal === 'N' && row[7] !== null) return false;
+            if (rVal && !row[16].split('|').includes(rVal)) return false;
+            if (!raw) return true;
+            if (isId) return row[4] === compact;
+            return normalizeFinancialName(row[5]).includes(q)
+              || normalizeFinancialName(row[8]).includes(q)
+              || row[0].toLowerCase().includes(raw.toLowerCase());
+          });
+          displayedMode = 'lead';
+          displayedLeads = matches.slice(0, limit);
+          status.textContent = matches.length
+            ? `${matches.length.toLocaleString('en-US')} nonprofit-led ${matches.length === 1 ? 'project' : 'projects'} matched. Showing ${displayedLeads.length}.`
+            : 'No matching nonprofit-led EU projects. Try switching Role to Cooperation-partner roles.';
+          results.append(...displayedLeads.map(leadCard));
+          jsonBtn.disabled = csvBtn.disabled = displayedLeads.length === 0;
+        } else {
+          const rows = await loadPartners();
+          if (ticket !== sequence) return;
+          const matches = rows.filter(row => {
+            if (pVal && row[1] !== pVal) return false;
+            if (sVal === 'A' && row[4] !== 'A') return false;
+            if (sVal === 'R' && row[4] !== 'R' && row[4] !== 'L') return false;
+            if (sVal === 'N' && row[4] !== null) return false;
+            if (!raw) return true;
+            if (isId) return row[2] === compact || row[5] === compact;
+            return normalizeFinancialName(row[3]).includes(q)
+              || normalizeFinancialName(row[6]).includes(q)
+              || normalizeFinancialName(row[7]).includes(q)
+              || row[0].toLowerCase().includes(raw.toLowerCase());
+          });
+          displayedMode = 'partner';
+          displayedPartners = matches.slice(0, limit);
+          status.textContent = matches.length
+            ? `${matches.length.toLocaleString('en-US')} nonprofit partner ${matches.length === 1 ? 'role' : 'roles'} matched. Showing ${displayedPartners.length}.`
+            : 'No matching nonprofit partner roles in this snapshot.';
+          results.append(...displayedPartners.map(partnerCard));
+          jsonBtn.disabled = csvBtn.disabled = displayedPartners.length === 0;
+        }
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The EU project search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    form.addEventListener('submit', event => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      roleSelect.value = 'lead';
+      progSelect.value = sloSelect.value = regionSelect.value = '';
+      status.textContent = 'Search cleared.';
+      if (/^#q=[0-9]{11}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#lv-eu-heading');
+      }
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher, license } = manifest;
+    const leadObj = (r: ProjectRow) => ({
+      projectNo: r[0], program: r[1], fund: r[2], status: r[3], regcode: r[4], orgName: r[5],
+      form: r[6], sloStatus: r[7] ?? '', title: r[8], signedDate: r[9] ?? '', startDate: r[10] ?? '', endDate: r[11] ?? '',
+      totalEur: (r[12] / 100).toFixed(2), euEur: (r[13] / 100).toFixed(2), natPubEur: (r[14] / 100).toFixed(2), natPrivEur: (r[15] / 100).toFixed(2),
+      implRegions: r[16], nonprofitPartnerCount: r[17],
+    });
+    const partObj = (r: PartnerRow) => ({
+      projectNo: r[0], program: r[1], partnerRegcode: r[2], partnerName: r[3], partnerSloStatus: r[4] ?? '',
+      leadRegcode: r[5], leadName: r[6], projectTitle: r[7], overallProjectBudgetEur: (r[8] / 100).toFixed(2),
+    });
+
+    jsonBtn.addEventListener('click', () => {
+      const payload = displayedMode === 'lead'
+        ? { format, capturedOn, publisher, license, mode: 'lead', projects: displayedLeads.map(leadObj) }
+        : { format, capturedOn, publisher, license, mode: 'partner', partnerRoles: displayedPartners.map(partObj) };
+      download(`latvia-eu-funds-${displayedMode}.json`, JSON.stringify(payload, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      const rows = displayedMode === 'lead'
+        ? displayedLeads.map(r => { const o = leadObj(r); return { ...o, orgName: financialCsvName(o.orgName), title: financialCsvName(o.title), capturedOn, publisher, license }; })
+        : displayedPartners.map(r => { const o = partObj(r); return { ...o, partnerName: financialCsvName(o.partnerName), leadName: financialCsvName(o.leadName), projectTitle: financialCsvName(o.projectTitle), capturedOn, publisher, license }; });
+      if (rows.length) download(`latvia-eu-funds-${displayedMode}.csv`, '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const triggerId = async (id: string | null) => {
+      if (!id || !/^[0-9]{11}$/.test(id)) return;
+      input.value = id;
+      progSelect.value = sloSelect.value = regionSelect.value = '';
+      // Auto-select partner mode if this regcode has 0 lead projects but has partner roles
+      const leads = await loadProjects();
+      roleSelect.value = leads.some(r => r[4] === id) ? 'lead' : 'partner';
+      void runSearch();
+    };
+    const initial = new URLSearchParams(location.search).get('regcode') ?? /^#q=([0-9]{11})$/.exec(location.hash)?.[1] ?? null;
+    void triggerId(initial);
+    window.addEventListener('hashchange', () => void triggerId(/^#q=([0-9]{11})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-lv]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupLv ?? '';
+        void triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+</script>

@@ -1,0 +1,609 @@
+{
+  "format": "charitology.latvia-nonprofit-registry.v1",
+  "capturedOn": "2026-11-22",
+  "publisher": "Uzņēmumu reģistrs & Valsts ieņēmumu dienests (Latvia) via data.gov.lv",
+  "catalogues": {
+    "urRegister": "https://data.gov.lv/dati/lv/dataset/uz",
+    "urAreas": "https://data.gov.lv/dati/lv/dataset/biedribu-un-nodibinajumu-darbibas-jomas",
+    "vidSlo": "https://data.gov.lv/dati/lv/dataset/sabiedriska-labuma-organizacijas"
+  },
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "licenseName": "CC0 1.0 Universal (Public Domain Dedication)",
+  "sources": {
+    "urRegister": {
+      "filename": "ur-register.csv",
+      "publisher": "Uzņēmumu reģistrs (Enterprise Register of Latvia)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/uz",
+      "url": "https://data.gov.lv/dati/dataset/4de9697f-850b-45ec-8bba-61fa09ce932f/resource/25e80bf3-f107-4ab4-89ef-251b5b9374e9/download/register.csv",
+      "bytes": 129092124,
+      "sha256": "abafbcd11e3f8ccb22e68ffdda380e37b1b69ee225d0751d31663ba5240e53ba"
+    },
+    "urAreas": {
+      "filename": "ur-areas-of-activity.csv",
+      "publisher": "Uzņēmumu reģistrs (Enterprise Register of Latvia)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/biedribu-un-nodibinajumu-darbibas-jomas",
+      "url": "https://data.gov.lv/dati/dataset/49a0f06b-2d2b-4368-8ed5-676a05244f6a/resource/263f7def-5df6-45ed-a747-81e1d48a48c4/download/areas_of_activity_of_associations_foundations.csv",
+      "bytes": 2462661,
+      "sha256": "ec4ce5cd8e66d2693ce3b913feed805793810d9d370265f55d6895fe8af59a69"
+    },
+    "vidSlo": {
+      "filename": "vid-slo-register.csv",
+      "publisher": "Valsts ieņēmumu dienests (State Revenue Service of Latvia)",
+      "datasetUrl": "https://data.gov.lv/dati/lv/dataset/sabiedriska-labuma-organizacijas",
+      "url": "https://data.gov.lv/dati/dataset/694111ef-a1ae-4838-b0b0-75e70d4faf81/resource/476c04af-877c-4136-adc1-a42841650e45/download/pdb_sloregistrs_odata.csv",
+      "bytes": 3006084,
+      "sha256": "bda922fd6eab4908f3c19471d88f4254634716010d92bb994fa83cdea91484a6"
+    }
+  },
+  "counts": {
+    "urTotalEntitiesScanned": 490599,
+    "includedOrganizations": 34057,
+    "byStatus": {
+      "active": 29191,
+      "liquidated": 4782,
+      "reorganized": 83,
+      "absentFromUr": 1
+    },
+    "byForm": {
+      "ARA": 14,
+      "ARB": 232,
+      "ARV": 129,
+      "BAZ": 12,
+      "BDR": 30322,
+      "DIE": 2,
+      "DRZ": 1032,
+      "KAT": 295,
+      "KLO": 3,
+      "MIS": 4,
+      "NOD": 1983,
+      "REL": 1,
+      "ROI": 21,
+      "RON": 1,
+      "SAV": 6
+    },
+    "withUrAreaOfActivity": 22728,
+    "housingManagementAssociations": 4897,
+    "vidSloSourceRows": 12227,
+    "vidSloDistinctOrganizations": 4173,
+    "vidSloByStatus": {
+      "activeSlo": 1689,
+      "revokedSlo": 2403,
+      "liquidatedSlo": 81
+    },
+    "withEuFundsLeadProject": 146,
+    "withEuFundsPartnerRole": 191
+  },
+  "topUrAreas": [
+    {
+      "area": "Mājokļu apsaimniekošana",
+      "count": 4897
+    },
+    {
+      "area": "Sports un sporta atbalsts",
+      "count": 4056
+    },
+    {
+      "area": "Citur neklasificēta darbības joma",
+      "count": 3539
+    },
+    {
+      "area": "Kultūra un māksla",
+      "count": 2746
+    },
+    {
+      "area": "Izglītība",
+      "count": 1908
+    },
+    {
+      "area": "Teritorijas, kopienas un apkaimes attīstība",
+      "count": 1245
+    },
+    {
+      "area": "Tematiska interešu kopa, interešu klubs",
+      "count": 1147
+    },
+    {
+      "area": "Labdarība",
+      "count": 1094
+    },
+    {
+      "area": "Darbs ar jaunatni",
+      "count": 1081
+    },
+    {
+      "area": "Profesionālā biedrība vai nodibinājums",
+      "count": 988
+    },
+    {
+      "area": "Sociālā aizsardzība un sociālā labklājība",
+      "count": 838
+    },
+    {
+      "area": "Demokrātija un pilsoniskā sabiedrība",
+      "count": 603
+    }
+  ],
+  "topSloFields": [
+    {
+      "field": "Labdarība",
+      "count": 592
+    },
+    {
+      "field": "Sporta atbalstīšana",
+      "count": 534
+    },
+    {
+      "field": "Pilsoniskas sabiedrības attīstība",
+      "count": 531
+    },
+    {
+      "field": "Kultūras veicināšana",
+      "count": 415
+    },
+    {
+      "field": "Sabiedrības, it īpaši trūcīgo un sociāli mazaizsargāto personu grupu, sociālās labklājības celšana",
+      "count": 327
+    },
+    {
+      "field": "Izglītības veicināšana",
+      "count": 264
+    },
+    {
+      "field": "Veselības veicināšana",
+      "count": 133
+    },
+    {
+      "field": "Cilvēktiesību un indivīda tiesību aizsardzība",
+      "count": 110
+    },
+    {
+      "field": "Vides aizsardzība",
+      "count": 80
+    },
+    {
+      "field": "Palīdzības sniegšana katastrofu gadījumos un ārkārtas situācijās",
+      "count": 59
+    },
+    {
+      "field": "Zinātnes veicināšana",
+      "count": 52
+    },
+    {
+      "field": "Slimību profilakse",
+      "count": 26
+    }
+  ],
+  "forms": {
+    "BDR": {
+      "lv": "Biedrība",
+      "en": "Association",
+      "count": 30322
+    },
+    "NOD": {
+      "lv": "Nodibinājums",
+      "en": "Foundation",
+      "count": 1983
+    },
+    "ARB": {
+      "lv": "Arodbiedrība",
+      "en": "Trade union",
+      "count": 232
+    },
+    "ARV": {
+      "lv": "Arodbiedrības patstāvīgā vienība",
+      "en": "Trade union independent unit",
+      "count": 129
+    },
+    "ARA": {
+      "lv": "Arodbiedrību apvienība",
+      "en": "Trade union federation",
+      "count": 14
+    },
+    "DRZ": {
+      "lv": "Draudze",
+      "en": "Religious parish",
+      "count": 1032
+    },
+    "KAT": {
+      "lv": "Katoļu baznīcas publisko tiesību juridiskā persona",
+      "en": "Catholic public-law entity",
+      "count": 295
+    },
+    "ROI": {
+      "lv": "Reliģiskās organizācijas iestāde",
+      "en": "Religious institution",
+      "count": 21
+    },
+    "BAZ": {
+      "lv": "Baznīca",
+      "en": "Church",
+      "count": 12
+    },
+    "SAV": {
+      "lv": "Reliģisko organizāciju savienība",
+      "en": "Union of religious organizations",
+      "count": 6
+    },
+    "MIS": {
+      "lv": "Misija",
+      "en": "Mission",
+      "count": 4
+    },
+    "KLO": {
+      "lv": "Klosteris",
+      "en": "Monastery",
+      "count": 3
+    },
+    "DIE": {
+      "lv": "Diecēze",
+      "en": "Diocese",
+      "count": 2
+    },
+    "RON": {
+      "lv": "Reliģiskās organizācijas nodaļa",
+      "en": "Religious organization branch",
+      "count": 1
+    },
+    "REL": {
+      "lv": "Reliģiska organizācija (VID SLO)",
+      "en": "Religious organization (VID SLO only)",
+      "count": 1
+    }
+  },
+  "fields": [
+    "regcode",
+    "name",
+    "form",
+    "status",
+    "registered",
+    "terminated",
+    "sloStatus",
+    "sloSince",
+    "sloUntil",
+    "sloFields",
+    "primaryUrArea",
+    "euLeadProjects",
+    "euLeadTotalCents",
+    "euPartnerRoles"
+  ],
+  "names": {
+    "0-9": {
+      "path": "names/0-9.json.gz",
+      "rows": 130,
+      "bytes": 3750,
+      "decodedBytes": 14919,
+      "sha256": "526a7cc22d65136dd2821f8ad6d310733e651958fe931fba1a2c3e249c5f7382",
+      "decodedSha256": "fe227b215654b511652f2bf1e4a1c207aef51867dc7d8eaa08378c989b2a260f"
+    },
+    "a": {
+      "path": "names/a.json.gz",
+      "rows": 1702,
+      "bytes": 44255,
+      "decodedBytes": 219344,
+      "sha256": "b093c03264a7a69ee2b7fccc4b92208a380e1f044a640b7663877a9b739be78b",
+      "decodedSha256": "b4eb7524234bc0032d0e1ab2cf989916bb30bb2398899142311467fa159a8a8c"
+    },
+    "b": {
+      "path": "names/b.json.gz",
+      "rows": 4914,
+      "bytes": 122280,
+      "decodedBytes": 651627,
+      "sha256": "e76b1319846bede3e18252bf616ac5826de6dbe3588af1c8b34aa64021f5a423",
+      "decodedSha256": "9fb001558688a0d7ba23da895aa56395311a8df1348fec78442f8a271cdc8401"
+    },
+    "c": {
+      "path": "names/c.json.gz",
+      "rows": 624,
+      "bytes": 16548,
+      "decodedBytes": 79880,
+      "sha256": "b220503290b58206cb1697095ef1119680b5c9e523890c2004b8ff625a50adfe",
+      "decodedSha256": "3edaa8247ac906bd5760a65d22baccb4207a9acc2547aef540d8488f40fc3307"
+    },
+    "d": {
+      "path": "names/d.json.gz",
+      "rows": 2974,
+      "bytes": 63671,
+      "decodedBytes": 412980,
+      "sha256": "1d3b7c313ed18780b020c2cf0146f6008e71f70d908a0420097ecfd2c85431ca",
+      "decodedSha256": "b2ec4a5cd97c596894d309cd2264220e5edf37e55d166eb8cfa1bc3c65ee879c"
+    },
+    "e": {
+      "path": "names/e.json.gz",
+      "rows": 722,
+      "bytes": 19249,
+      "decodedBytes": 90925,
+      "sha256": "51b15c03b4eaf14ff640ab48ef7712562c230cf3258c58c50e1bf9a03803ac03",
+      "decodedSha256": "c5a4cf99f3216594e34884b4389000971e9f1e26bdc4de84fc74c4dd74d491a3"
+    },
+    "f": {
+      "path": "names/f.json.gz",
+      "rows": 741,
+      "bytes": 20236,
+      "decodedBytes": 94030,
+      "sha256": "ef189562f924d41178a10acc0fcaca588740d76b6e9fe2a73260db0dbf310c33",
+      "decodedSha256": "944cb92b47cbd77ada3ef27a33b0fc0270c056e996192c6d022074cc49dd9106"
+    },
+    "g": {
+      "path": "names/g.json.gz",
+      "rows": 754,
+      "bytes": 19065,
+      "decodedBytes": 97940,
+      "sha256": "294628ffb51a00331e1ad9b4475d6c58671566288090129616d784a66a164aaf",
+      "decodedSha256": "40048612d89dd09325512976a2ac4b28bea9e9d7f7f56940ff74008c27f2dd69"
+    },
+    "h": {
+      "path": "names/h.json.gz",
+      "rows": 312,
+      "bytes": 8440,
+      "decodedBytes": 37748,
+      "sha256": "2043a25d27f32844b5430ed323c5b98a68257ed464fdf5f98d70e0f611d19ca3",
+      "decodedSha256": "e1949b189ff1e1bac006b8954b9a92c74756377df3142f0a47de20208c9ffb3a"
+    },
+    "i": {
+      "path": "names/i.json.gz",
+      "rows": 873,
+      "bytes": 23500,
+      "decodedBytes": 115479,
+      "sha256": "4265ac676e802385aab21313bc13e6e936ea11b766d9031731251e947f058528",
+      "decodedSha256": "cbd33e6cee09267cf3cab9453c73ae732566b18a09903b90e99334cd8436c2c9"
+    },
+    "j": {
+      "path": "names/j.json.gz",
+      "rows": 1074,
+      "bytes": 28414,
+      "decodedBytes": 141978,
+      "sha256": "dd1310c7a0184332c5394a437a3f7f48f91f703523cf8fe294eba8b853507e68",
+      "decodedSha256": "35a70b8fe49d9b1fb93768c7c36bf75e8c58c94563ecd672ffc4b41496b855c1"
+    },
+    "k": {
+      "path": "names/k.json.gz",
+      "rows": 1536,
+      "bytes": 38834,
+      "decodedBytes": 196693,
+      "sha256": "629d3b2e1681e42dff58ce615be3c9a3927efe770591ca6696f1d6ac313ed390",
+      "decodedSha256": "8cb853305686416683dc544ca301f4f26e1dc7dbea8413fd8c33b0156b9e7715"
+    },
+    "l": {
+      "path": "names/l.json.gz",
+      "rows": 4676,
+      "bytes": 121284,
+      "decodedBytes": 661277,
+      "sha256": "79718f7a5ed65c76997628334dea29e3b80147deede7e056644e56165fd9329e",
+      "decodedSha256": "31503464bed4a43bae3417430db0f623801e944027da16b6d50a40de82db80e5"
+    },
+    "m": {
+      "path": "names/m.json.gz",
+      "rows": 2497,
+      "bytes": 56585,
+      "decodedBytes": 324598,
+      "sha256": "55a3e016a3fac10f09622f5b675bbe51295469e5775d8f5e09d1f2608b6c6ed7",
+      "decodedSha256": "0e3c9882f4c6ec2f587b9913135e635af50bd9bd2eb20a880514cea64d82981e"
+    },
+    "n": {
+      "path": "names/n.json.gz",
+      "rows": 1104,
+      "bytes": 30931,
+      "decodedBytes": 152521,
+      "sha256": "2b5d280dbbe688914f40002b55c41730e522fd0efbef89a1fa22dbdce2cb147a",
+      "decodedSha256": "09ddeba93e70cd922612eff5954470c931bd0fd0af57187b77ffb4ec3637e07d"
+    },
+    "o": {
+      "path": "names/o.json.gz",
+      "rows": 356,
+      "bytes": 9490,
+      "decodedBytes": 44784,
+      "sha256": "16b01072ec0f55acf5c7aa45ce8f019fa957d7d4f844b78a7b14183746a8f8e0",
+      "decodedSha256": "fe3370883d40b45d23abe1d0d02a17a835bc3d1bb0a9ec1b681fe143f857069b"
+    },
+    "p": {
+      "path": "names/p.json.gz",
+      "rows": 1308,
+      "bytes": 33994,
+      "decodedBytes": 169230,
+      "sha256": "4c22f3ab91b8fc45d847ba45c9aed3426d8806b2a25dc2df95ec735cbd6807f8",
+      "decodedSha256": "847e9e20d8ec3740390bd70be2286a66111cbb2a4eb5e37750938ae24ec01880"
+    },
+    "q": {
+      "path": "names/q.json.gz",
+      "rows": 12,
+      "bytes": 492,
+      "decodedBytes": 1328,
+      "sha256": "c514e0da9c7df34e567a49e26aa507a32f29f90289f29058cecad15941499c2d",
+      "decodedSha256": "bd650e6ae3897c873b882977f5715824bee46d8e77eba149e55af0a06b65e67b"
+    },
+    "r": {
+      "path": "names/r.json.gz",
+      "rows": 1472,
+      "bytes": 38296,
+      "decodedBytes": 191745,
+      "sha256": "d37554d2ccf800f6e7a8b4ff19c58e483462ef3a9df23fcc32497f79d4b1e43b",
+      "decodedSha256": "5bc55ad656052a161836a26ea6e72638eee9b204dff7923dea4ca56c6ed55a4d"
+    },
+    "s": {
+      "path": "names/s.json.gz",
+      "rows": 3022,
+      "bytes": 75318,
+      "decodedBytes": 389619,
+      "sha256": "28639888ea58cf3b28351731587ad33343e20451c884edd044fca0d9b8f5a441",
+      "decodedSha256": "b5bfffe233ab2b0e2db02c3d385df3dc3c1915bac04014c8f584473436a57fe1"
+    },
+    "t": {
+      "path": "names/t.json.gz",
+      "rows": 907,
+      "bytes": 23466,
+      "decodedBytes": 114125,
+      "sha256": "b28e5c5d329a3fe3642e074b8fee412bbf772c5d959392b72270e86a46fa6306",
+      "decodedSha256": "4dae05c70dcf9adb65d851efce18d7007db31ab7991256fe8c90576a6ea582d1"
+    },
+    "u": {
+      "path": "names/u.json.gz",
+      "rows": 263,
+      "bytes": 7158,
+      "decodedBytes": 33268,
+      "sha256": "c09a68bd3bf1d962f3c93078217a87712f3ae73cf9153922f420c0b78b017bb8",
+      "decodedSha256": "b10e76b6d9975f574f7ce697e6fbdbaf34a7eb911ffb0ca0feb7068370c76aeb"
+    },
+    "v": {
+      "path": "names/v.json.gz",
+      "rows": 1393,
+      "bytes": 35928,
+      "decodedBytes": 181790,
+      "sha256": "5db2a87e11e50d9e49bf5b257f4ebea8978a57119bb9964434123180552294fd",
+      "decodedSha256": "3a48286f9c8dc3aabcd43335c6af8ab33c5b9a72b68a8590c3f6b6070e3d2455"
+    },
+    "w": {
+      "path": "names/w.json.gz",
+      "rows": 115,
+      "bytes": 3244,
+      "decodedBytes": 13450,
+      "sha256": "593d0b8ed138a034b3136b3f9173e246a5a47c66bbe910fff35e2738734389d8",
+      "decodedSha256": "651dbfc525462e26a7b522280f0106d37b96fcab7529fd2fd766fe0a019c97c9"
+    },
+    "x": {
+      "path": "names/x.json.gz",
+      "rows": 11,
+      "bytes": 455,
+      "decodedBytes": 1169,
+      "sha256": "793ff45dd096d8b5b6ac3bdaa27e27675fc45a4e6804546f7397884e8bb5a89a",
+      "decodedSha256": "449a6b9a6216ece6f8f0ea974b53065a604addacae0bf0f9818cec9494a910ff"
+    },
+    "y": {
+      "path": "names/y.json.gz",
+      "rows": 34,
+      "bytes": 1214,
+      "decodedBytes": 4002,
+      "sha256": "1d346b365bc2b77fc3e6351ea07d254106e5fef1ec6fb5b8af27d46d56b7b1c9",
+      "decodedSha256": "c4c7fc600c80d5e88f9e2f925311e70e6dc986a820b2ad98796fa173b1019b74"
+    },
+    "z": {
+      "path": "names/z.json.gz",
+      "rows": 531,
+      "bytes": 13553,
+      "decodedBytes": 66852,
+      "sha256": "72eb7121c19b8859956e7fcd6a4fabb617383057c8871a45b855d6ec43cf8bab",
+      "decodedSha256": "46a9bb470dd862b56beb96123698e9871b410016612b8863e658eadfcaf098f6"
+    }
+  },
+  "ids": {
+    "40": {
+      "path": "ids/40.json.gz",
+      "rows": 29780,
+      "bytes": 112267,
+      "decodedBytes": 595837,
+      "sha256": "897733159b8c7af527c8f1fd0649df9d68b652fa9443fc17913dba7db68f0709",
+      "decodedSha256": "dc3fa29315da3e0fcc4f3b3c5e7d1cd92abb8b5c549793bcb5b52bed2f70c38f"
+    },
+    "41": {
+      "path": "ids/41.json.gz",
+      "rows": 16,
+      "bytes": 119,
+      "decodedBytes": 321,
+      "sha256": "ad486f20410f541b97854288a9c302ab8942111d522113f428f98c699b5dac4f",
+      "decodedSha256": "b64d277c0b9cfac5cf876a77ee94e0898b789042b35c9ea50e6acbd69fdd6b1d"
+    },
+    "42": {
+      "path": "ids/42.json.gz",
+      "rows": 15,
+      "bytes": 127,
+      "decodedBytes": 301,
+      "sha256": "e255124e8f9a9ca43c4d0d3eea981bc7b7cc68e6596e6ffe147595e80ce0be77",
+      "decodedSha256": "bc92dfc6511fcf511c174da5288fa2595f35bf69a606dedf16beda2de5bdc987"
+    },
+    "43": {
+      "path": "ids/43.json.gz",
+      "rows": 1,
+      "bytes": 41,
+      "decodedBytes": 21,
+      "sha256": "cbe50ea1890cbfc8b0d34b2e6a6012bcd7d32c59314439f267e1a2cb1e377dae",
+      "decodedSha256": "f242227a538222071bf4c7afba4b1baf8b7423e2b4184cf2861bb6b5ad48c4f0"
+    },
+    "44": {
+      "path": "ids/44.json.gz",
+      "rows": 22,
+      "bytes": 154,
+      "decodedBytes": 441,
+      "sha256": "115bd98b24928229955bea1fde84d638e7bf13a3ed4974ef6ae8d3d2e1db24a2",
+      "decodedSha256": "2d26405177cf6b34614b3967c6ccfe3ebf127457d2cd35df3388dfd9be193d70"
+    },
+    "45": {
+      "path": "ids/45.json.gz",
+      "rows": 1,
+      "bytes": 41,
+      "decodedBytes": 21,
+      "sha256": "70e11fe7061ea9ce1f890f68881bfe1cd333102d925d8f2f3c2b7afd6e8d3a0e",
+      "decodedSha256": "4ed7964891287e6914ac705059cb5ea593d6c8a5829820e51026320c5dfed9c6"
+    },
+    "48": {
+      "path": "ids/48.json.gz",
+      "rows": 2,
+      "bytes": 52,
+      "decodedBytes": 41,
+      "sha256": "7bb9b6f24da97692367b27be5d989fbee4ad7ed3ec5b2767559ba5bda40dc5d0",
+      "decodedSha256": "411faf73916265c415b01ff031f4f1fd4156a3bcd58de08c8e71e62e8d633b18"
+    },
+    "50": {
+      "path": "ids/50.json.gz",
+      "rows": 2975,
+      "bytes": 11425,
+      "decodedBytes": 59525,
+      "sha256": "0265f7ed338387cda48ac2b41ac090b77e976c4da5afae2045bcb781e8a210e5",
+      "decodedSha256": "20d9c8eafd03f4ae0393bf47b8efeacca887320f76b1e5eb8cde97306865b14e"
+    },
+    "52": {
+      "path": "ids/52.json.gz",
+      "rows": 4,
+      "bytes": 69,
+      "decodedBytes": 81,
+      "sha256": "b42f0edb3bafefab493fe138e78e85d8a2aa2c70fa2492633143083ff4a99bdb",
+      "decodedSha256": "fab44a79b1adbed2ccc65db6b8c3790c4aebd9d77285a9f03e6ce732486857b9"
+    },
+    "53": {
+      "path": "ids/53.json.gz",
+      "rows": 2,
+      "bytes": 48,
+      "decodedBytes": 41,
+      "sha256": "7865f748931b60b8cd51c3b9a4a82bc81edcee7a9c3ef0736c0474273257bb45",
+      "decodedSha256": "cae846a68571f546b72a8e1f9fa56aa2c5e9d391f3345ff060369ebdaa033614"
+    },
+    "54": {
+      "path": "ids/54.json.gz",
+      "rows": 1,
+      "bytes": 41,
+      "decodedBytes": 21,
+      "sha256": "81861d7e8bfc6be6fe01c067388f54963084d082afdf8cc02e75da82fd771f50",
+      "decodedSha256": "cc41ddffd10d27f3357d0e03e1b180a4815ff6811ec04288ada051554dcf75bf"
+    },
+    "58": {
+      "path": "ids/58.json.gz",
+      "rows": 1,
+      "bytes": 41,
+      "decodedBytes": 21,
+      "sha256": "3eaa540ca71636b04c443bf7194841809fd2e362c0184b5b9ddf6e36f9376c73",
+      "decodedSha256": "a5b964ca58d74099fd56f60b06e64e9b931a31b3c404445f33027414dff43626"
+    },
+    "60": {
+      "path": "ids/60.json.gz",
+      "rows": 1,
+      "bytes": 41,
+      "decodedBytes": 21,
+      "sha256": "97d5dcbcbb7e83bfa2c1f32f51a24948d7d684d32de50c73c35383af89e7aba7",
+      "decodedSha256": "0dca4786637c8e88cdbfefb731a944e84e2427eadab0cfa565e9595588c919cb"
+    },
+    "90": {
+      "path": "ids/90.json.gz",
+      "rows": 863,
+      "bytes": 3933,
+      "decodedBytes": 17261,
+      "sha256": "b7ef7c5e8e0385c55bb2ca5668af7fe72aafe292def3850a8e4fbdfcd587b8cd",
+      "decodedSha256": "0c7aa8211804e3fd95553ffc5513d20ac8108ee91777efc0a9a139edefe7a62c"
+    },
+    "99": {
+      "path": "ids/99.json.gz",
+      "rows": 373,
+      "bytes": 1357,
+      "decodedBytes": 7461,
+      "sha256": "19213bbd98842eb1a5a549070aa9c029c60af640831ed1c23ea35afb31101e78",
+      "decodedSha256": "3c8188db381fc1b20753fdaa28bfa9ec74b9b6409fe222217fe8f306b39789cb"
+    }
+  }
+}

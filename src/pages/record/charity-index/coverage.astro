@@ -15,6 +15,7 @@ import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/
 import registry from '../../../../public/data/irs-registry/manifest.json';
 import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
 import israel from '../../../../public/data/charity-registry/israel/manifest.json';
+import latvia from '../../../../public/data/charity-registry/latvia/manifest.json';
 import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
 import netherlands from '../../../../public/data/charity-registry/netherlands/manifest.json';
 import norway from '../../../../public/data/charity-registry/norway/manifest.json';
@@ -90,6 +91,14 @@ const panels = [
     boundary: 'The regulator’s live register supplies organization names and references.',
   },
   {
+    id: 'latvia', name: 'Latvia', source: 'Enterprise Register (UR), VID Public Benefit (SLO) and CFLA EU Funds', route: '/record/charity-index/latvia/',
+    label: 'Search Latvian nonprofits and SLO status', date: latvia.capturedOn,
+    coverage: `${number(latvia.counts.includedOrganizations)} associations, foundations, trade unions and religious organizations (${number(latvia.counts.byStatus.active)} active, ${number(latvia.counts.vidSloByStatus.activeSlo)} active SLO, ${number(latvia.counts.vidSloByStatus.revokedSlo)} revoked SLO).`,
+    history: 'A paired funding-flows edition covers 292 nonprofit-led EU Cohesion & Recovery projects (2014–2027) totaling EUR 233.47M plus 260 separate nonprofit cooperation-partner roles with exact implementation regions.',
+    boundary: 'Associations include 4,897 housing-management bodies and industry clusters (which account for 66.2% of nonprofit-led EU funds); Active SLO status separates tax-deductible charities.',
+    manifest: '/data/charity-registry/latvia/manifest.json',
+  },
+  {
     id: 'mexico', name: 'Mexico', source: 'SAT financial reports and authorization directories', route: '/record/charity-financials/mexico/',
     label: 'Search Mexico’s charity financial reports', date: mexico.capturedOn,
     coverage: `${number(mexico.coverage.identities)} exact institutional RFCs across three financial reports and two directories.`,
@@ -162,6 +171,8 @@ const sources = [
   { title: 'French association accounts dataset', publisher: france.source.publisher, url: france.source.dataset },
   { title: 'Registry of Associations and Public Benefit Companies (moj-amutot)', publisher: israel.publisher, url: israel.catalogue },
   { title: 'Foreign State Entity Donations CKAN API (35cb40b5)', publisher: israel.publisher, url: 'https://data.gov.il/dataset/moj-amutot' },
+  { title: 'Uzņēmumu reģistrs & VID Sabiedriskā labuma organizācijas (SLO)', publisher: latvia.publisher, url: latvia.catalogues.vidSlo },
+  { title: 'CFLA EU Funds 2014–2027 & Recovery Facility Projects', publisher: 'Centrālā finanšu un līgumu aģentūra (data.gov.lv)', url: 'https://data.gov.lv/dati/lv/dataset/eiropas-savienibas-fondu-21-27-perioda-lidzfinansetie-projekti' },
   { title: 'Open data — Algemeen Nut Beogende Instellingen (ANBI)', publisher: netherlands.publisher, url: netherlands.catalogue },
   { title: 'Open data — Financiële Instrumenten 2017–2024', publisher: 'Ministerie van Financiën (Rijksfinanciën)', url: 'https://www.rijksfinancien.nl/financiele-instrumenten' },
   { title: 'Frivillighetsregisteret dataset listing', publisher: norway.publisher, url: norway.catalogue },
@@ -226,6 +237,7 @@ const sources = [
   <p><a class="identity-link" href={url('/record/funding-flows/chile-coanil-agreements/')}>Trace COANIL’s agreements, accounts and reported payments</a>. The case retains the institutional ID and both sources where payment reports differ.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/france-emmaus-solidarite/')}>Follow regional grants to Emmaüs Solidarité in France</a>. The case connects one French association’s register and four filings to five regional decisions and payment rows. The winter plans and independently counted need retain their own dates and boundaries.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/israel-foreign-state-donations/')}>Search Israel’s 2012–2026 foreign-state entity donation disclosures</a>. Follow 516 recipients across 13,436 quarterly disclosures totaling ILS 7.53 billion net, joined by exact nine-digit ID to the Amutot/PBC registry with published source anomalies kept transparent.</p>
+  <p><a class="identity-link" href={url('/record/funding-flows/latvia-eu-funds/')}>Search Latvia’s EU Cohesion &amp; Recovery Fund projects for nonprofits (2014–2027)</a>. Follow 292 nonprofit-led projects totaling EUR 233.47M and 260 separate cooperation-partner roles with exact implementation regions and Active SLO vs. industry-association splits.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/netherlands-rijksfinancien/')}>Search Netherlands central-government nonprofit subsidies (2020–2024)</a>. Follow 17,868 KvK-identified foundations, associations and religious bodies across 16 budget chapters totaling EUR 15,540,383k net, with conservative ANBI name-candidate links kept distinct from statutory ID joins.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/norway-momskompensasjon/')}>Search Norway’s 2023–2025 VAT compensation grants (Momskompensasjon)</a>. Follow 28,011 distinct voluntary organizations, 264 central umbrella intermediaries and a krone-level reconciliation between 2025 approvals and two-tranche payouts.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Search Poland’s 2022–2025 1.5% personal income tax designations</a>. Follow 10,395 funded public benefit organizations totaling PLN 8.32 billion, inspect disclosed taxpayer counts and sub-account concentration, and reconcile NIW eligibility lists against Ministry of Finance disbursements.</p>

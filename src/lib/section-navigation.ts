@@ -217,6 +217,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Follow cross-border foreign-state donations', 'borderGate'],
     ['coverage', 'Financial reporting, Proper Management and source quirks', 'archive'],
   ],
+  '/record/charity-index/latvia/': [
+    ['lv-search-heading', 'Search Latvian nonprofits', 'lens'],
+    ['funding', 'Follow EU Cohesion & Recovery projects', 'cohesion'],
+    ['coverage', 'SLO revocations, housing associations and privacy boundaries', 'archive'],
+  ],
   '/record/charity-index/netherlands/': [
     ['nl-search-heading', 'Search ANBI organizations', 'lens'],
     ['funding', 'Follow central-government subsidies', 'sluice'],
@@ -484,6 +489,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['anomalies', 'Published data anomalies kept transparent', 'alert'],
     ['recipients', 'Largest disclosed recipients (2012–2026)', 'coins'],
     ['donors', 'Top raw donor strings and yearly totals', 'table'],
+    ['downloads', 'Downloads and provenance', 'download'],
+  ],
+  '/record/funding-flows/latvia-eu-funds/': [
+    ['lv-eu-heading', 'Search nonprofit EU projects & partners', 'lens'],
+    ['slo-split', 'Active SLO charities vs. industry & cluster associations', 'compare'],
+    ['regions', 'Frameworks and implementation regions', 'map'],
     ['downloads', 'Downloads and provenance', 'download'],
   ],
   '/record/funding-flows/netherlands-rijksfinancien/': [

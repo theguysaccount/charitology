@@ -741,3 +741,21 @@ node scripts/check-poland-charity-index.mjs
 ```
 
 Next, qualify NIW-CRSO’s OPP annual financial & substantive reports repository (`sprawozdaniaopp.niw.gov.pl`) by exact 10-digit KRS so administrative overhead, sub-account onward distributions and non-PIT grant revenue can be compared alongside 1.5% PIT inflows.
+
+## Latvia nonprofits, Public Benefit Organizations (SLO) and EU Cohesion/Recovery funds
+
+The [Latvia nonprofit registry lookup](https://charitology.com/record/charity-index/latvia/) unites three official [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) tables published via [`data.gov.lv`](https://data.gov.lv/dati/lv/dataset/uz) (captured November 22, 2026) by exact 11-digit registration code (`regcode`): all **34,056** associations, foundations, trade unions and religious organizations extracted from the **490,599-entity Enterprise Register (UR)** (`30,322` `BDR`, `1,983` `NOD`, `375` trade unions, `1,376` religious organizations), **22,728** organizations classified in UR’s statutory areas-of-activity table (exposing **4,897 housing-management associations**, *Mājokļu apsaimniekošana*, as the largest single association category), and **4,173 distinct organizations** across 12,227 decision rows in the State Revenue Service (VID) **Public Benefit Organization (SLO)** register (**1,689** active SLOs, **2,403** revoked SLOs, **81** liquidated SLOs—including 1 historic parish `90002493065` absent from the current UR export, yielding **34,057** total indexed entities). Street addresses, postal codes and emails are omitted.
+
+The paired [Latvia EU Cohesion & Recovery Fund edition](https://charitology.com/record/funding-flows/latvia-eu-funds/) scans all **5,491** projects published by Latvia’s Central Finance and Contracting Agency (CFLA, CC0 1.0) across **EU Funds 2014–2020**, **EU Funds 2021–2027** and the **Recovery & Resilience Facility (RRF)** and joins by exact 11-digit `regcode` to identify **292 nonprofit-led projects** across **146 lead organizations** totaling **EUR 233,473,700.90** (**EUR 180,087,469.50** EU co-financing, `EUR 21,918,368.34` national public, `EUR 30,188,958.78` private, plus `EUR 1,278,904.28` in ineligible/auxiliary costs), alongside **260 nonprofit cooperation-partner roles** across 191 partner organizations kept strictly separate from lead project budgets to prevent double counting. Separating Active SLO charities (`74` orgs, `153` projects, **EUR 70.12M** / `30.0%`) from non-SLO industry/IT/employers’ associations (`61` orgs, `117` projects, **EUR 154.63M** / `66.2%`) and revoked/liquidated SLOs (`11` orgs, `22` projects, **EUR 8.72M** / `3.7%`) shows how different organizational populations share Latvia’s `Biedrība` legal wrapper. Separate CFLA implementation-location tables distinguish operational regions (`Rīga`, `Visa Latvija`, `Kurzeme`, `Vidzeme`, `Latgale`, `Zemgale`, `Pierīga`) from registration headquarters.
+
+Rebuild offline from the 12 exact CC0 captures pinned in [`src/data/latvia-index-sources.tsv`](../src/data/latvia-index-sources.tsv):
+
+```sh
+python3 scripts/build-latvia-charity-index.py --source-dir /path/to/captured-inputs --out-root /path/to/rebuild
+diff -r public/data/charity-registry/latvia /path/to/rebuild/charity-registry/latvia
+diff -r public/data/funding-flows/latvia-eu-funds /path/to/rebuild/funding-flows/latvia-eu-funds
+npm run build
+node scripts/check-latvia-charity-index.mjs
+```
+
+Next, qualify Latvia’s Ministry of Finance *de minimis* public-aid export (`deminimis.fm.gov.lv`) and Health Inspectorate nonprofit support disclosures (`pazinojumi-par-sniegto-atbalstu`) by exact 11-digit `regcode` to compare domestic state aid, EU cohesion grants and private healthcare support without double counting.
