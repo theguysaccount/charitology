@@ -1,0 +1,365 @@
+{
+  "format": "charitology-netherlands-anbi-v1",
+  "capturedOn": "2026-11-22",
+  "sourceCreatedOn": "2026-11-16",
+  "sourceVersion": "26320",
+  "publisher": "Belastingdienst",
+  "catalogue": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/themaoverstijgend/brochures_en_publicaties/open_data_anbi",
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "source": {
+    "url": "https://download.belastingdienst.nl/data/anbi/anbi.zip",
+    "bytes": 2614816,
+    "sha256": "2f298ec9f4d3fbcd17598a052e72c550802ffa1e0c09cb5c6af015fb83113670",
+    "xmlBytes": 18042972,
+    "xmlSha256": "a5d913a293feb8824fdf64dc003ef5c606ea265dc8cbf798f507c0863966fec1"
+  },
+  "fields": [
+    "rsin",
+    "name",
+    "alias",
+    "city",
+    "status",
+    "cultural",
+    "startDate",
+    "endDate",
+    "revokedDate",
+    "website",
+    "decreeCount",
+    "subsidyMatch"
+  ],
+  "counts": {
+    "totalDecrees": 54487,
+    "statutoryPublicBodyDecrees": 5,
+    "distinctOrganizations": 54361,
+    "activeOrganizations": 45723,
+    "revokedOrEndedOrganizations": 8638,
+    "activeDecrees": 45753,
+    "revokedOrEndedDecrees": 8734,
+    "retroactiveEndBeforeRevocationDecrees": 8709,
+    "multiDecreeOrganizations": 121,
+    "culturalActiveOrganizations": 8275,
+    "culturalRevokedOrEndedOrganizations": 1231,
+    "culturalEverDecrees": 9544,
+    "culturalActiveDecrees": 8275,
+    "culturalRevokedDecrees": 1269,
+    "withSafeWebsiteUrl": 54002,
+    "websitePrefixedHttps": 27,
+    "websiteBlankOrInvalid": 359,
+    "withDistinctAlias": 10210,
+    "repeatedNormalizedNames": 374,
+    "candidateSubsidyMatches2020to2024": 3238
+  },
+  "statutoryUmbrellas": [
+    {
+      "dossierNummer": "1",
+      "name": "Staat der Nederlanden",
+      "alias": "Nederlandse staat",
+      "place": null,
+      "startDate": "2008-01-01"
+    },
+    {
+      "dossierNummer": "2",
+      "name": "Provincie",
+      "alias": "alle provincies van NL",
+      "place": null,
+      "startDate": "2008-01-01"
+    },
+    {
+      "dossierNummer": "3",
+      "name": "Gemeente",
+      "alias": "alle gemeenten van NL",
+      "place": null,
+      "startDate": "2008-01-01"
+    },
+    {
+      "dossierNummer": "4",
+      "name": "Waterschap",
+      "alias": "alle waterschappen van NL",
+      "place": null,
+      "startDate": "2008-01-01"
+    },
+    {
+      "dossierNummer": "5",
+      "name": "Buitenlandse wettelijke ANBI",
+      "alias": "alle buitenlandse wettelijke ANBI's",
+      "place": "EU en EER",
+      "startDate": "2008-01-01"
+    }
+  ],
+  "names": {
+    "0-9": {
+      "path": "names/0-9.json.gz",
+      "rows": 8,
+      "bytes": 520,
+      "decodedBytes": 1111,
+      "sha256": "88ac3189a2b5e3790aeae7a1f4fb7596738fee4219f7dc5cdc770f6b0da53a36",
+      "decodedSha256": "75533e23f8adabcf53dcc66ea991ca9150036ac43cf3a1d16cf166e4cb4a58c4"
+    },
+    "a": {
+      "path": "names/a.json.gz",
+      "rows": 524,
+      "bytes": 22048,
+      "decodedBytes": 94791,
+      "sha256": "6e5fb3437c5550f173b3229fe665a9406eded68786e11735dfe1b2bb9d58bcc2",
+      "decodedSha256": "09d7fc3f41669374ff552ebd4350828f7cf2fc72d9d1a71f20a2de4684316ec6"
+    },
+    "b": {
+      "path": "names/b.json.gz",
+      "rows": 387,
+      "bytes": 15652,
+      "decodedBytes": 58068,
+      "sha256": "6fc91dc5d049c2f43b1b5adaa1a861d9542d08304e10503283d38a163d89b7ca",
+      "decodedSha256": "8d5303dbb7f5ac211eb8b2a3fc35546ccd8a771aadf55bec5a9369cc1ef0765b"
+    },
+    "c": {
+      "path": "names/c.json.gz",
+      "rows": 750,
+      "bytes": 26504,
+      "decodedBytes": 117855,
+      "sha256": "55f700e3cf35da4b8e02ec2f3b22113b260293bd515c9a8e3d33e49b43ef53d6",
+      "decodedSha256": "b24601952659a9a2e49a06e30f146991dd14a5c29532ee395820f85fb3aaa40d"
+    },
+    "d": {
+      "path": "names/d.json.gz",
+      "rows": 2276,
+      "bytes": 76698,
+      "decodedBytes": 402958,
+      "sha256": "5762cb497c759dc6ce53dee0a65056be9e3ba51a646dd19eb6b3374e657c07ba",
+      "decodedSha256": "5099e6c0e67e27604a90741a02353eec5b4c0677f70766676a5fa46253829557"
+    },
+    "e": {
+      "path": "names/e.json.gz",
+      "rows": 558,
+      "bytes": 21384,
+      "decodedBytes": 85168,
+      "sha256": "25975a50369423a6874ee88b9bb79d4553c0ecb53bbd52d7526b587902b62245",
+      "decodedSha256": "d726d9af95abd0892919d0cf7129de2e3b3dee9dcc255ebae26e38dee6e9ecb2"
+    },
+    "f": {
+      "path": "names/f.json.gz",
+      "rows": 177,
+      "bytes": 8407,
+      "decodedBytes": 26313,
+      "sha256": "7e3e184f678f544e659183526b4bdb48f3b2026ead53ac888bc2a8aadeaecdd1",
+      "decodedSha256": "ce7ac50aa24699d245a196cecec01febf8dfb143807dc91000816b072ca611d1"
+    },
+    "g": {
+      "path": "names/g.json.gz",
+      "rows": 724,
+      "bytes": 25666,
+      "decodedBytes": 120285,
+      "sha256": "a2ed60807334136593c991bea4f9ad32b078ecbbc1c224e6b44433adaebcb5ae",
+      "decodedSha256": "8deafc142d4ae1f8892af0991af754daa50b918789716f1ccac73e948f06d414"
+    },
+    "h": {
+      "path": "names/h.json.gz",
+      "rows": 1028,
+      "bytes": 36545,
+      "decodedBytes": 164908,
+      "sha256": "628fc0bb1f9459b7bd6d23be9b44826eea6a00e1c97bb7aabdb85fc97c2902bd",
+      "decodedSha256": "76f1e12bc63ecd61808660b52f22e120cde8c5be16bc3d43b0aa58ca8640c4a1"
+    },
+    "i": {
+      "path": "names/i.json.gz",
+      "rows": 375,
+      "bytes": 16392,
+      "decodedBytes": 66846,
+      "sha256": "4031703faad3cb044695e573c8ca40074fccf508cd51f56b8e53ae8ba8c2c13c",
+      "decodedSha256": "d3a6349f9e7b97d7bf2f115b1708895490457e491fda4db5929ffff70a63b5bb"
+    },
+    "j": {
+      "path": "names/j.json.gz",
+      "rows": 477,
+      "bytes": 14553,
+      "decodedBytes": 71034,
+      "sha256": "83851834e408757640d25bf945ec6cf3f59323b520911c4dfdae913dfd5a18de",
+      "decodedSha256": "a9f8d79a3cba3d1418a96b4d7d14bfd164600b99fcc459014d402063bf25e406"
+    },
+    "k": {
+      "path": "names/k.json.gz",
+      "rows": 598,
+      "bytes": 24739,
+      "decodedBytes": 97033,
+      "sha256": "29ddb6f45551cf99f090e0fc44c3c54d68e2c6140d841b3e84d86eb3359ac939",
+      "decodedSha256": "ec9b2e57bd26053d99ed3f92df4cd2d001bb704cf8e3196d5a1db26a447fb071"
+    },
+    "l": {
+      "path": "names/l.json.gz",
+      "rows": 275,
+      "bytes": 12256,
+      "decodedBytes": 44297,
+      "sha256": "2decb1969a6e11a0b7f2711900a0cdc30ad0244db359a3e6e84d81303a80359b",
+      "decodedSha256": "3cce9762f0b668457d2beb8cd5be71c2fe0839e52e5292ede16834a55931013f"
+    },
+    "m": {
+      "path": "names/m.json.gz",
+      "rows": 284,
+      "bytes": 11893,
+      "decodedBytes": 40859,
+      "sha256": "9151818d7a237aaa1a98cf664c57d24d78959d62643bb7e0a88a0c5f5390d2d4",
+      "decodedSha256": "c32701c70c8e5f3c6a560e5f0c433764405cef0ebec6cf271c6b879e99f25b4a"
+    },
+    "n": {
+      "path": "names/n.json.gz",
+      "rows": 633,
+      "bytes": 21742,
+      "decodedBytes": 100997,
+      "sha256": "67994847364f4b36513da269847c91bd18c6d17601eef5806fe15e614591ff0d",
+      "decodedSha256": "dbebe43d227ef4406da740e2b73c64efedda3cbb3febcf704ab80f558d9f0d34"
+    },
+    "o": {
+      "path": "names/o.json.gz",
+      "rows": 270,
+      "bytes": 10581,
+      "decodedBytes": 42630,
+      "sha256": "31ea09968f99a452290433439a53cf64e6b0dc1221044aac65719b176f43b48f",
+      "decodedSha256": "6ddde8dcae32059d658ac42f1295c314677dc50d4312b59b1b42a76bcc02c687"
+    },
+    "p": {
+      "path": "names/p.json.gz",
+      "rows": 2044,
+      "bytes": 63124,
+      "decodedBytes": 317767,
+      "sha256": "bb92fc95a9a178a8e7a7d5974b099607b8f7bda41d67c3391b4e43afa91859c7",
+      "decodedSha256": "753ebe8f38d9e1b783b47bad5b60445c046ac1ac79ba185752df5e13660f68d4"
+    },
+    "q": {
+      "path": "names/q.json.gz",
+      "rows": 5,
+      "bytes": 428,
+      "decodedBytes": 789,
+      "sha256": "42a7aae98acf3845d17c64dc829ab063ae0862bad7f0dc0a2ce660b17512e57d",
+      "decodedSha256": "16192c6a1c7ac842e8a9a62637647b0303c30cef76730e23accd9d9aefa1fcde"
+    },
+    "r": {
+      "path": "names/r.json.gz",
+      "rows": 486,
+      "bytes": 18266,
+      "decodedBytes": 74528,
+      "sha256": "530e58a6915c12d1d24e068c96afe7efc8f33e343e5f81ce8e5602fab76a73d4",
+      "decodedSha256": "0343dbf0ff8ed7ea0e07ab57b40b955f2cb38c53e97086832c6474b4997d1968"
+    },
+    "s": {
+      "path": "names/s.json.gz",
+      "rows": 39838,
+      "bytes": 1470689,
+      "decodedBytes": 5864310,
+      "sha256": "257625f0252030a4f4f694d821b0a218b6ed5026f7c0e696f2c47d1c24798ea1",
+      "decodedSha256": "22e73cea4570b530b13695377ae4e99a69d9611c77503e6d9b6c9e2bbdc04337"
+    },
+    "t": {
+      "path": "names/t.json.gz",
+      "rows": 254,
+      "bytes": 10877,
+      "decodedBytes": 38677,
+      "sha256": "5a6e69bcc122a8f5c5cc8ebe8bde569100e97ca0d4b9cb271926144c4915e599",
+      "decodedSha256": "73c68bb448245bc54e3287fbe77cf5ce69d1e6af485a4e67f899670ee872469b"
+    },
+    "u": {
+      "path": "names/u.json.gz",
+      "rows": 57,
+      "bytes": 2990,
+      "decodedBytes": 8919,
+      "sha256": "336ae2070734a2b1bc0b9497b85509a420cf89426d7bd8aa6b94906bac546150",
+      "decodedSha256": "759e1ac0d2c4387b90858378aa248492bf8b9115078eaf5c8928feba28511d27"
+    },
+    "v": {
+      "path": "names/v.json.gz",
+      "rows": 1983,
+      "bytes": 81126,
+      "decodedBytes": 320133,
+      "sha256": "dc463772937f80ea1ee498f365ebb9b383ee8717c4cc818e14d356a27018d4d9",
+      "decodedSha256": "ae20fda416b78f9649135c740518822cbaf047b96c2fde7531adc74828eb1a3a"
+    },
+    "w": {
+      "path": "names/w.json.gz",
+      "rows": 257,
+      "bytes": 9970,
+      "decodedBytes": 36196,
+      "sha256": "e03263e870d950ce99dcc9dd4bd775be83438080beefceaf0ef8fc32e67929bc",
+      "decodedSha256": "789acb323980ae9477a0565974874a441a5dfb21531ab704fb0c70d2086c3e15"
+    },
+    "x": {
+      "path": "names/x.json.gz",
+      "rows": 1,
+      "bytes": 117,
+      "decodedBytes": 124,
+      "sha256": "d4d9de871bd5865c7231fda315b42f3edd7dabcdc53e3b1207e0570dcca77dda",
+      "decodedSha256": "e34fb545fd524151fc1e415e1620effbffbffd1fa8805b55b7870743b6ebd5b0"
+    },
+    "y": {
+      "path": "names/y.json.gz",
+      "rows": 11,
+      "bytes": 680,
+      "decodedBytes": 1525,
+      "sha256": "e31e89887433d25ea81fed6b43e05075c309332891507b96069f434165bea603",
+      "decodedSha256": "3bb9db2c16672994f754fca779f4c5016fdd8859352d650cf51a4be5d65068f9"
+    },
+    "z": {
+      "path": "names/z.json.gz",
+      "rows": 81,
+      "bytes": 3679,
+      "decodedBytes": 11951,
+      "sha256": "7d537e9be8f1306d866cfed0cc8a139a35931fca50c33d1feac78f9593808d47",
+      "decodedSha256": "e429267bac283ec67946fbae16b0bef6c0e1b6ca418c3883e4c004fd28fb9570"
+    }
+  },
+  "ids": {
+    "00": {
+      "path": "ids/00.json.gz",
+      "rows": 5343,
+      "bytes": 23151,
+      "decodedBytes": 96175,
+      "sha256": "864ad06c6abbcc2609472d4797d3c58dab0a0d4dec7374965e6e4c5a0b9c33e2",
+      "decodedSha256": "b4152b724abc0bf8b8ffe1993c89917370c7c18f19cb621cc1e47c2cf0aa4664"
+    },
+    "80": {
+      "path": "ids/80.json.gz",
+      "rows": 7676,
+      "bytes": 33148,
+      "decodedBytes": 138171,
+      "sha256": "d53487b986e7f1cf3cec9f8d0041dd7cb220d684fd20aa6369f2ab41795ed5b5",
+      "decodedSha256": "1b8313d1d87e67373865beca0bc95ec1dacec271139af1062b5ed50094574b50"
+    },
+    "81": {
+      "path": "ids/81.json.gz",
+      "rows": 12266,
+      "bytes": 50220,
+      "decodedBytes": 220795,
+      "sha256": "de85dc0bbcac63f5ecbc6084f74cdc0f801a042c87b412e0544d4bf5380084b2",
+      "decodedSha256": "ba33f0276ff6bf8571ec0ae47f9386672c4a92db4f31af2686e46613ab7b6637"
+    },
+    "82": {
+      "path": "ids/82.json.gz",
+      "rows": 7445,
+      "bytes": 29626,
+      "decodedBytes": 134013,
+      "sha256": "7e001ebfa24c0a3e4999f94ef4e3b2aeb127f5a23d59112ece3efdeb858baef4",
+      "decodedSha256": "be07aab3d764f2f7c1fc0511157dc50dcc6b2f6dd31620697afe40a87dc10668"
+    },
+    "85": {
+      "path": "ids/85.json.gz",
+      "rows": 12408,
+      "bytes": 48793,
+      "decodedBytes": 223347,
+      "sha256": "9dc5fa4c15cad7655d3e37f04869ee046fcfb355d5f0242b043e7bb827245c0c",
+      "decodedSha256": "d4455fba6b85e4d44ea0123335269f85c9cca3cce6e8741f2b61a6ea12c1ed88"
+    },
+    "86": {
+      "path": "ids/86.json.gz",
+      "rows": 9203,
+      "bytes": 37024,
+      "decodedBytes": 165659,
+      "sha256": "32fa3415abcfa55ce2274796eb9197c9f13de454afa0a5d5d5b01db1ea78789d",
+      "decodedSha256": "f590e57b5d96947be410ace13f1dd6a91ebe80a62f5a8dac1746ab6dd6f3e5ec"
+    },
+    "87": {
+      "path": "ids/87.json.gz",
+      "rows": 20,
+      "bytes": 132,
+      "decodedBytes": 361,
+      "sha256": "ea78c04f06c7460208c1dfb0bcd69e95116348ab4cda2fea9980fb403b590c74",
+      "decodedSha256": "44a6e8fbb44df720527f6a7df29e54faf74ef16668df8fc6e9728b9019e21c79"
+    }
+  }
+}

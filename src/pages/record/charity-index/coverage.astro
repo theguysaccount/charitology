@@ -15,6 +15,7 @@ import usaFoundation from '../../../../public/data/charity-financials/us-990-pf/
 import registry from '../../../../public/data/irs-registry/manifest.json';
 import japan from '../../../../public/data/charity-registry/japan-npo/manifest.json';
 import newZealand from '../../../../public/data/charity-registry/new-zealand/manifest.json';
+import netherlands from '../../../../public/data/charity-registry/netherlands/manifest.json';
 import norway from '../../../../public/data/charity-registry/norway/manifest.json';
 import taiwan from '../../../../public/data/charity-registry/taiwan/manifest.json';
 import brazil from '../../../../public/data/charity-registry/brazil-osc/manifest.json';
@@ -87,6 +88,14 @@ const panels = [
     manifest: '/data/charity-financials/mx/manifest.json',
   },
   {
+    id: 'netherlands', name: 'Netherlands', source: 'Belastingdienst ANBI register and Rijksfinanciën subsidies', route: '/record/charity-index/netherlands/',
+    label: 'Search Dutch ANBI public benefit organizations', date: netherlands.capturedOn,
+    coverage: `${number(netherlands.counts.distinctOrganizations)} distinct nine-digit RSIN organizations (${number(netherlands.counts.activeOrganizations)} active, ${number(netherlands.counts.revokedOrEndedOrganizations)} revoked or ended, ${number(netherlands.counts.culturalActiveOrganizations)} active Cultural ANBIs).`,
+    history: 'A paired funding-flows edition covers 17,868 nonprofit recipients across five budget years (2020–2024) of central-government subsidies totaling EUR 15,540,383k net.',
+    boundary: 'Belastingdienst uses RSIN while Rijksfinanciën uses KvK-nummer with no free public crosswalk, so subsidy links stay labeled as unverified name candidates and statutory Bekostiging block funding (EUR 70.88B) stays separate.',
+    manifest: '/data/charity-registry/netherlands/manifest.json',
+  },
+  {
     id: 'new-zealand', name: 'New Zealand', source: 'Charities Services register and Tier 3 filings', route: '/record/charity-index/new-zealand/',
     label: 'Search New Zealand charities and Tier 3 filings', date: newZealand.capturedAt.slice(0, 10),
     coverage: `${number(newZealand.registry.included)} searchable organization entries, including deregistered and removed entries.`,
@@ -133,6 +142,7 @@ const sources = [
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
   { title: 'French association accounts dataset', publisher: france.source.publisher, url: france.source.dataset },
+  { title: 'Open data — Algemeen Nut Beogende Instellingen (ANBI)', publisher: netherlands.publisher, url: netherlands.catalogue },
   { title: 'Frivillighetsregisteret dataset listing', publisher: norway.publisher, url: norway.catalogue },
   { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
@@ -191,6 +201,7 @@ const sources = [
   <p><a class="identity-link" href={url('/record/funding-flows/chile-residential-payments/')}>Compare Chile’s residence awards with the public budget ledger</a>. Search by institutional tax ID, inspect recorded payment dates and compare reported service counts with separate survey estimates for 16 regions.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/chile-coanil-agreements/')}>Trace COANIL’s agreements, accounts and reported payments</a>. The case retains the institutional ID and both sources where payment reports differ.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/france-emmaus-solidarite/')}>Follow regional grants to Emmaüs Solidarité in France</a>. The case connects one French association’s register and four filings to five regional decisions and payment rows. The winter plans and independently counted need retain their own dates and boundaries.</p>
+  <p><a class="identity-link" href={url('/record/funding-flows/netherlands-rijksfinancien/')}>Search Netherlands central-government nonprofit subsidies (2020–2024)</a>. Follow 17,868 KvK-identified foundations, associations and religious bodies across 16 budget chapters totaling EUR 15,540,383k net, with conservative ANBI name-candidate links kept distinct from statutory ID joins.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/norway-momskompensasjon/')}>Search Norway’s 2023–2025 VAT compensation grants (Momskompensasjon)</a>. Follow 28,011 distinct voluntary organizations, 264 central umbrella intermediaries and a krone-level reconciliation between 2025 approvals and two-tranche payouts.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/taiwan-new-resident-fund/')}>Compare Taiwan New Resident Development Fund reports</a>. Use the project ID to follow recurring approvals and see where the reports differ on execution figures or dates.</p>
   <p><a class="identity-link" href={url('/record/funding-flows/heal-nepal/')}>Compare Heal Nepal funding in the UK and Nepal</a>. The case keeps pounds and rupees in their original records and shows where a single disbursement may correspond to two receipts.</p>

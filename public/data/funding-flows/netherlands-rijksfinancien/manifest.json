@@ -1,0 +1,659 @@
+{
+  "format": "charitology-netherlands-rijksfinancien-v1",
+  "capturedOn": "2026-11-22",
+  "currency": "EUR",
+  "amountUnit": "EUR_thousands",
+  "publisher": "Ministerie van Financiën (Rijksfinanciën)",
+  "catalogue": "https://www.rijksfinancien.nl/open-data/Financi%C3%ABle%20Instrumenten",
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "licenseNoteUrl": "https://www.rijksfinancien.nl/copyright",
+  "source": {
+    "url": "https://www.rijksfinancien.nl/sites/default/files/bestanden/open_data/Financiele_instrumenten_2017-2024.csv",
+    "bytes": 70532379,
+    "sha256": "93b169982e6fef13476a633d6009bfc0d45ec3ccb2ea4e0df06606f6c9350aae"
+  },
+  "anbiSnapshot": {
+    "capturedOn": "2026-11-22",
+    "sourceCreatedOn": "2026-11-16",
+    "sourceVersion": "26320",
+    "sourceSha256": "2f298ec9f4d3fbcd17598a052e72c550802ffa1e0c09cb5c6af015fb83113670",
+    "distinctOrganizations": 54361
+  },
+  "fields": [
+    "kvk",
+    "name",
+    "legalForm",
+    "city",
+    "primaryChapter",
+    "chapters",
+    "k2020",
+    "k2021",
+    "k2022",
+    "k2023",
+    "k2024",
+    "netK",
+    "rowCount",
+    "anbiMatchBasis",
+    "candidateRsin"
+  ],
+  "counts": {
+    "totalCsvRows2017to2024": 277664,
+    "pre2020RowsWithoutRechtsvorm": 2889,
+    "includedSubsidyRows2020to2024": 52256,
+    "distinctKvkRecipients": 17868,
+    "presentInAllFiveYears": 1196,
+    "blankKvkRows": 58,
+    "anonymizedRows": 30,
+    "positiveEurThousands": 15558167,
+    "negativeEurThousands": -17784,
+    "netEurThousands": 15540383,
+    "kvkRecipientsNetEurThousands": 15515722,
+    "blankKvkNetEurThousands": 24661,
+    "negativeAdjustmentRows": 118,
+    "activeBudgetChapters": 16,
+    "byLegalForm": {
+      "Stichting": 9985,
+      "Vereniging": 7809,
+      "Kerkgenootschap": 73,
+      "Mixed": 1
+    },
+    "anbiCandidateMatches": {
+      "uniqueNameAndCity": 46,
+      "uniqueNameOnly": 3207,
+      "ambiguousNameCollision": 63,
+      "unmatchedNoPublicCrosswalk": 14552,
+      "uniqueCandidateRsinsLinked": 3238,
+      "uniqueCandidateNetEurThousands": 8057505,
+      "ambiguousNetEurThousands": 70943,
+      "unmatchedNetEurThousands": 7387274
+    }
+  },
+  "byYear": [
+    {
+      "year": 2020,
+      "rows": 15174,
+      "kvkRows": 15173,
+      "blankKvkRows": 1,
+      "anonymizedRows": 1,
+      "distinctKvks": 11637,
+      "positiveRows": 15170,
+      "negativeRows": 4,
+      "positiveEurThousands": 2429477,
+      "negativeEurThousands": -71,
+      "netEurThousands": 2429406
+    },
+    {
+      "year": 2021,
+      "rows": 9811,
+      "kvkRows": 9811,
+      "blankKvkRows": 0,
+      "anonymizedRows": 0,
+      "distinctKvks": 8138,
+      "positiveRows": 9801,
+      "negativeRows": 10,
+      "positiveEurThousands": 2720310,
+      "negativeEurThousands": -178,
+      "netEurThousands": 2720132
+    },
+    {
+      "year": 2022,
+      "rows": 6174,
+      "kvkRows": 6174,
+      "blankKvkRows": 0,
+      "anonymizedRows": 0,
+      "distinctKvks": 3823,
+      "positiveRows": 6173,
+      "negativeRows": 1,
+      "positiveEurThousands": 2130994,
+      "negativeEurThousands": -23,
+      "netEurThousands": 2130971
+    },
+    {
+      "year": 2023,
+      "rows": 10549,
+      "kvkRows": 10546,
+      "blankKvkRows": 3,
+      "anonymizedRows": 3,
+      "distinctKvks": 6925,
+      "positiveRows": 10458,
+      "negativeRows": 91,
+      "positiveEurThousands": 4034978,
+      "negativeEurThousands": -17231,
+      "netEurThousands": 4017747
+    },
+    {
+      "year": 2024,
+      "rows": 10548,
+      "kvkRows": 10494,
+      "blankKvkRows": 54,
+      "anonymizedRows": 26,
+      "distinctKvks": 6435,
+      "positiveRows": 10536,
+      "negativeRows": 12,
+      "positiveEurThousands": 4242408,
+      "negativeEurThousands": -281,
+      "netEurThousands": 4242127
+    }
+  ],
+  "chapters": [
+    {
+      "chapter": "XVI",
+      "canonicalName": "Volksgezondheid, Welzijn en Sport",
+      "sourceNames": [
+        "Volksgezondheid, Welzijn en Sport"
+      ],
+      "rows": 18533,
+      "distinctKvks": 6397,
+      "blankKvkRows": 3,
+      "positiveEurThousands": 7202462,
+      "negativeEurThousands": -12211,
+      "netEurThousands": 7190251
+    },
+    {
+      "chapter": "XVII",
+      "canonicalName": "Buitenlandse Handel en Ontwikkelingssamenwerking / Ontwikkelingshulp",
+      "sourceNames": [
+        "Buitenlandse Handel en OS",
+        "Buitenlandse Handel en Ontwikkelingssamenwerking",
+        "Buitenlandse handel en ontwikkelingshulp"
+      ],
+      "rows": 1232,
+      "distinctKvks": 275,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 2904546,
+      "negativeEurThousands": -281,
+      "netEurThousands": 2904265
+    },
+    {
+      "chapter": "VIII",
+      "canonicalName": "Onderwijs, Cultuur en Wetenschap",
+      "sourceNames": [
+        "Onderwijs, Cultuur en Wetenschap"
+      ],
+      "rows": 6841,
+      "distinctKvks": 1907,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 1433765,
+      "negativeEurThousands": -138,
+      "netEurThousands": 1433627
+    },
+    {
+      "chapter": "XIII",
+      "canonicalName": "Economische Zaken en Klimaat",
+      "sourceNames": [
+        "Economische Zaken en Klimaat"
+      ],
+      "rows": 21524,
+      "distinctKvks": 12544,
+      "blankKvkRows": 21,
+      "positiveEurThousands": 1130016,
+      "negativeEurThousands": -3421,
+      "netEurThousands": 1126595
+    },
+    {
+      "chapter": "XIV",
+      "canonicalName": "Landbouw, Natuur en Voedselkwaliteit",
+      "sourceNames": [
+        "Landbouw, Natuur en Voedselkwaliteit"
+      ],
+      "rows": 1142,
+      "distinctKvks": 319,
+      "blankKvkRows": 32,
+      "positiveEurThousands": 851981,
+      "negativeEurThousands": -491,
+      "netEurThousands": 851490
+    },
+    {
+      "chapter": "VII",
+      "canonicalName": "Binnenlandse Zaken en Koninkrijksrelaties",
+      "sourceNames": [
+        "Binnenlandse Zaken",
+        "Binnenlandse Zaken en Koninkrijksrelaties"
+      ],
+      "rows": 802,
+      "distinctKvks": 255,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 705720,
+      "negativeEurThousands": 0,
+      "netEurThousands": 705720
+    },
+    {
+      "chapter": "VI",
+      "canonicalName": "Justitie en Veiligheid",
+      "sourceNames": [
+        "Justitie en Veiligheid"
+      ],
+      "rows": 765,
+      "distinctKvks": 259,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 577459,
+      "negativeEurThousands": -815,
+      "netEurThousands": 576644
+    },
+    {
+      "chapter": "XV",
+      "canonicalName": "Sociale Zaken en Werkgelegenheid",
+      "sourceNames": [
+        "Sociale Zaken en Werkgelegenheid"
+      ],
+      "rows": 561,
+      "distinctKvks": 393,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 350222,
+      "negativeEurThousands": -414,
+      "netEurThousands": 349808
+    },
+    {
+      "chapter": "XII",
+      "canonicalName": "Infrastructuur en Waterstaat",
+      "sourceNames": [
+        "Infrastructuur en Waterstaat"
+      ],
+      "rows": 455,
+      "distinctKvks": 220,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 149815,
+      "negativeEurThousands": 0,
+      "netEurThousands": 149815
+    },
+    {
+      "chapter": "V",
+      "canonicalName": "Buitenlandse Zaken",
+      "sourceNames": [
+        "Buitenlandse Zaken"
+      ],
+      "rows": 322,
+      "distinctKvks": 84,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 117514,
+      "negativeEurThousands": -13,
+      "netEurThousands": 117501
+    },
+    {
+      "chapter": "IV",
+      "canonicalName": "Koninkrijksrelaties",
+      "sourceNames": [
+        "Koninkrijksrelaties"
+      ],
+      "rows": 22,
+      "distinctKvks": 10,
+      "blankKvkRows": 2,
+      "positiveEurThousands": 62884,
+      "negativeEurThousands": 0,
+      "netEurThousands": 62884
+    },
+    {
+      "chapter": "X",
+      "canonicalName": "Defensie",
+      "sourceNames": [
+        "Defensie"
+      ],
+      "rows": 29,
+      "distinctKvks": 9,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 45528,
+      "negativeEurThousands": 0,
+      "netEurThousands": 45528
+    },
+    {
+      "chapter": "J",
+      "canonicalName": "Deltafonds",
+      "sourceNames": [
+        "Deltafonds"
+      ],
+      "rows": 19,
+      "distinctKvks": 4,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 22409,
+      "negativeEurThousands": 0,
+      "netEurThousands": 22409
+    },
+    {
+      "chapter": "IX",
+      "canonicalName": "Financiën",
+      "sourceNames": [
+        "Financiën"
+      ],
+      "rows": 1,
+      "distinctKvks": 1,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 2000,
+      "negativeEurThousands": 0,
+      "netEurThousands": 2000
+    },
+    {
+      "chapter": "A",
+      "canonicalName": "Mobiliteitsfonds",
+      "sourceNames": [
+        "Mobiliteitsfonds"
+      ],
+      "rows": 6,
+      "distinctKvks": 3,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 1080,
+      "negativeEurThousands": 0,
+      "netEurThousands": 1080
+    },
+    {
+      "chapter": "F",
+      "canonicalName": "Diergezondheidsfonds",
+      "sourceNames": [
+        "Diergezondheidsfonds"
+      ],
+      "rows": 2,
+      "distinctKvks": 1,
+      "blankKvkRows": 0,
+      "positiveEurThousands": 766,
+      "negativeEurThousands": 0,
+      "netEurThousands": 766
+    }
+  ],
+  "topRecipients": [
+    {
+      "kvk": "09098104",
+      "name": "Stichting Wageningen Research",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XIV",
+      "k2020": 119370,
+      "k2021": 122398,
+      "k2022": 115354,
+      "k2023": 158101,
+      "k2024": 155905,
+      "netEurThousands": 671128,
+      "rowCount": 157,
+      "anbiMatchBasis": "N",
+      "candidateRsin": "806511618"
+    },
+    {
+      "kvk": "41265977",
+      "name": "SNPG",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVI",
+      "k2020": 127866,
+      "k2021": 190763,
+      "k2022": 111839,
+      "k2023": 72614,
+      "k2024": 72049,
+      "netEurThousands": 575131,
+      "rowCount": 8,
+      "anbiMatchBasis": "U",
+      "candidateRsin": null
+    },
+    {
+      "kvk": "59456302",
+      "name": "Stichting Voorbereiding PALLAS-reactor",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVI",
+      "k2020": null,
+      "k2021": 40000,
+      "k2022": 60000,
+      "k2023": 148700,
+      "k2024": 277906,
+      "netEurThousands": 526606,
+      "rowCount": 5,
+      "anbiMatchBasis": "U",
+      "candidateRsin": null
+    },
+    {
+      "kvk": "80204716",
+      "name": "Stichting Bevolkingsonderzoek Nederland",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVI",
+      "k2020": null,
+      "k2021": null,
+      "k2022": 138342,
+      "k2023": 144666,
+      "k2024": 150390,
+      "netEurThousands": 433398,
+      "rowCount": 3,
+      "anbiMatchBasis": "N",
+      "candidateRsin": "861587741"
+    },
+    {
+      "kvk": "41160054",
+      "name": "Stichting Cordaid",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVII",
+      "k2020": 54918,
+      "k2021": 53554,
+      "k2022": 81628,
+      "k2023": 103227,
+      "k2024": 119756,
+      "netEurThousands": 413083,
+      "rowCount": 36,
+      "anbiMatchBasis": "N",
+      "candidateRsin": "808298276"
+    },
+    {
+      "kvk": "40409352",
+      "name": "Het Nederlandse Rode Kruis",
+      "legalForm": "V",
+      "city": "'S-GRAVENHAGE",
+      "primaryChapter": "XVII",
+      "k2020": 73696,
+      "k2021": 46773,
+      "k2022": 57854,
+      "k2023": 97241,
+      "k2024": 91376,
+      "netEurThousands": 366940,
+      "rowCount": 36,
+      "anbiMatchBasis": "U",
+      "candidateRsin": null
+    },
+    {
+      "kvk": "59439122",
+      "name": "Stichting Nationaal Warmtefonds",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "VII",
+      "k2020": 67020,
+      "k2021": 27400,
+      "k2022": 85600,
+      "k2023": 129390,
+      "k2024": 62,
+      "netEurThousands": 309472,
+      "rowCount": 6,
+      "anbiMatchBasis": "U",
+      "candidateRsin": null
+    },
+    {
+      "kvk": "41184548",
+      "name": "Stichting Projectenbureau Publieke Gezondheid en Veiligheid Nederland",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVI",
+      "k2020": 3038,
+      "k2021": 13980,
+      "k2022": 661,
+      "k2023": 119401,
+      "k2024": 123975,
+      "netEurThousands": 261055,
+      "rowCount": 37,
+      "anbiMatchBasis": "U",
+      "candidateRsin": null
+    },
+    {
+      "kvk": "09059703",
+      "name": "NOC * NSF",
+      "legalForm": "V",
+      "city": null,
+      "primaryChapter": "XVI",
+      "k2020": 42421,
+      "k2021": 60303,
+      "k2022": null,
+      "k2023": 72304,
+      "k2024": 71886,
+      "netEurThousands": 246914,
+      "rowCount": 13,
+      "anbiMatchBasis": "N",
+      "candidateRsin": "006861763"
+    },
+    {
+      "kvk": "40409418",
+      "name": "Vereniging van Nederlandse Gemeenten",
+      "legalForm": "V",
+      "city": "'s-Gravenhage",
+      "primaryChapter": "VII",
+      "k2020": 34956,
+      "k2021": 47888,
+      "k2022": 33019,
+      "k2023": 49332,
+      "k2024": 36871,
+      "netEurThousands": 202066,
+      "rowCount": 140,
+      "anbiMatchBasis": "U",
+      "candidateRsin": null
+    },
+    {
+      "kvk": "30284694",
+      "name": "IKNL",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVI",
+      "k2020": 36300,
+      "k2021": 36959,
+      "k2022": 38185,
+      "k2023": 40113,
+      "k2024": 41467,
+      "netEurThousands": 193024,
+      "rowCount": 5,
+      "anbiMatchBasis": "N",
+      "candidateRsin": "822165776"
+    },
+    {
+      "kvk": "88251187",
+      "name": "Stichting NXTGEN HIGHTECH",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XIII",
+      "k2020": null,
+      "k2021": null,
+      "k2022": null,
+      "k2023": 124141,
+      "k2024": 36000,
+      "netEurThousands": 160141,
+      "rowCount": 2,
+      "anbiMatchBasis": "U",
+      "candidateRsin": null
+    },
+    {
+      "kvk": "41152786",
+      "name": "Stg. SNV Nederlandse Ontwikkelings- organisatie",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVII",
+      "k2020": 34261,
+      "k2021": 43910,
+      "k2022": null,
+      "k2023": 37778,
+      "k2024": 33994,
+      "netEurThousands": 149943,
+      "rowCount": 28,
+      "anbiMatchBasis": "N",
+      "candidateRsin": "007397100"
+    },
+    {
+      "kvk": "27108436",
+      "name": "Stichting Oxfam Novib",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVII",
+      "k2020": 35450,
+      "k2021": 13950,
+      "k2022": 41404,
+      "k2023": 29689,
+      "k2024": 28231,
+      "netEurThousands": 148724,
+      "rowCount": 43,
+      "anbiMatchBasis": "N",
+      "candidateRsin": "002872237"
+    },
+    {
+      "kvk": "72271175",
+      "name": "Stichting SBOH Maatschappij en",
+      "legalForm": "S",
+      "city": null,
+      "primaryChapter": "XVI",
+      "k2020": null,
+      "k2021": 29120,
+      "k2022": null,
+      "k2023": 44987,
+      "k2024": 52391,
+      "netEurThousands": 126498,
+      "rowCount": 9,
+      "anbiMatchBasis": "U",
+      "candidateRsin": null
+    }
+  ],
+  "excludedNonprofitInstruments": [
+    {
+      "instrument": "Bekostiging",
+      "rows": 7139,
+      "netEurThousands": 70881359
+    },
+    {
+      "instrument": "Bijdrage aan ZBOs en RWTs",
+      "rows": 405,
+      "netEurThousands": 2394315
+    },
+    {
+      "instrument": "Bijdrage aan (inter-)nationale organisaties",
+      "rows": 538,
+      "netEurThousands": 965834
+    },
+    {
+      "instrument": "Leningen",
+      "rows": 20,
+      "netEurThousands": 370396
+    },
+    {
+      "instrument": "Bijdrage aan medeoverheden",
+      "rows": 151,
+      "netEurThousands": 109613
+    },
+    {
+      "instrument": "(blank instrument)",
+      "rows": 93,
+      "netEurThousands": 6662
+    },
+    {
+      "instrument": "Bijdrage aan agentschappen",
+      "rows": 5,
+      "netEurThousands": 2787
+    },
+    {
+      "instrument": "Bijdrage aan (andere) begrotingshoofdstukken",
+      "rows": 1,
+      "netEurThousands": 90
+    },
+    {
+      "instrument": "Garanties",
+      "rows": 1,
+      "netEurThousands": 36
+    }
+  ],
+  "asset": {
+    "path": "recipients.json.gz",
+    "rows": 17868,
+    "bytes": 437783,
+    "decodedBytes": 1858156,
+    "sha256": "87f4a2d7c05a3a1d0a001c668c4d8b45bd2ed98805031d5c8a314b34b78cc81f",
+    "decodedSha256": "5946e12db2b9cb6ad683560f344ffb57f8b48fa215f0dcd8ec771564379ebe27"
+  },
+  "anomalies": {
+    "path": "anomalies.json",
+    "bytes": 39045,
+    "sha256": "16ea726199d5d70538e1f0c3c98e39a8ba04e4b8664dd2721a91147811c97e53"
+  },
+  "chaptersCsv": {
+    "path": "chapters-2020-2024.csv",
+    "rows": 16,
+    "bytes": 1570,
+    "sha256": "4c9d12c651e5265fd0e6e4d5269bbac061e0e8bfecd94fbb20c2b790f9f2d901"
+  }
+}

@@ -147,6 +147,8 @@ export const symbols = {
   filingStack: 'M6 2h10l4 4v7M16 2v5h4M6 2v17h6M3 6v16h9M9 7h4m-4 4h7m-7 4h2m6-2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2 5 3 3',
   fjord: 'M2 17l5-9 4 6 4-8 7 11M2 20c3-1.5 5 1.5 8 0s5 1.5 8 0 2.5-.8 4 0',
   tranche: 'M3 6h10m-3-3 3 3-3 3M3 14h10m-3-3 3 3-3 3M16 4h5v16h-5M3 20h10',
+  tulip: 'M12 14v7m0-4c-3 0-5-1.5-6-4 3 0 5 1.5 6 4Zm0 0c3 0 5-1.5 6-4-3 0-5 1.5-6 4Zm0-3c-3.5 0-6-2.5-6-6.5L9.5 7 12 3l2.5 4L18 4.5C18 8.5 15.5 11 12 11Z',
+  sluice: 'M4 4v16M20 4v16M4 9h16M4 15h16M9 9v6m6-6v6M2 20h20',
 } as const;
 
 export type SymbolName = keyof typeof symbols;
