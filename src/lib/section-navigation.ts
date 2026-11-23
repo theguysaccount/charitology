@@ -252,6 +252,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Follow four years of 1.5% PIT tax designations', 'taxSlice'],
     ['coverage', 'Scope, identifier rules and privacy projection', 'archive'],
   ],
+  '/record/charity-index/slovakia/': [
+    ['sk-search-heading', 'Search Slovak 2%/3% recipient organizations', 'lens'],
+    ['top-2025', 'Top 20 recipients in 2025', 'coins'],
+    ['funding', 'Inspect the 10-year 2%/3% tax-assignment funding flow', 'taxAssign'],
+    ['coverage', 'Scope, encoding recovery and boundaries', 'archive'],
+  ],
   '/record/charity-index/taiwan/': [
     ['taiwan-search-heading', 'Search institutional registrations', 'lens'],
     ['funding', 'Follow New Resident Development Fund grants', 'grantSchedule'],
@@ -533,10 +539,23 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['umbrellas', 'Follow central umbrella intermediaries', 'network'],
     ['coverage', 'Coverage, anomalies and downloads', 'archive'],
   ],
+  '/record/funding-flows/ocha-fts-global-clusters/': [
+    ['fts-search-heading', 'Search humanitarian funding gaps by country, year & sector', 'lens'],
+    ['sector-gaps', '2025 funding gaps by sector: WASH, Nutrition and Refugees starved', 'compare'],
+    ['crisis-disparities', '2025 funding disparities across major crisis plans', 'globe'],
+    ['yearly-trend', 'Global humanitarian funding trend (2019–2026)', 'chart'],
+    ['downloads', 'Downloads, methodology and limits', 'download'],
+  ],
   '/record/funding-flows/poland-pit-1-5-percent/': [
     ['pl-pit-heading', 'Search 1.5% PIT recipients (2022–2025)', 'lens'],
     ['intermediaries', 'Concentration and the sub-account intermediary model', 'network'],
     ['reconciliation', 'Cross-register reconciliation and reporting thresholds', 'compare'],
+    ['downloads', 'Downloads and provenance', 'download'],
+  ],
+  '/record/funding-flows/slovakia-pit-2-percent/': [
+    ['sk-pit-heading', 'Search 10-year Slovak tax-assignment payouts', 'lens'],
+    ['corporate-foundations', 'Why corporate foundations lead Slovakia’s tax-assignment top ten', 'compare'],
+    ['decade-trend', 'Ten-year disbursement trajectory (2016–2025)', 'chart'],
     ['downloads', 'Downloads and provenance', 'download'],
   ],
   '/record/funding-flows/us-schedule-i/': [

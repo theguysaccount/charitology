@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (19 jurisdictions) and
+// Single source of truth for the Global Charity Index (20 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -20,6 +20,7 @@ import newZealand from '../../public/data/charity-registry/new-zealand/manifest.
 import netherlands from '../../public/data/charity-registry/netherlands/manifest.json';
 import norway from '../../public/data/charity-registry/norway/manifest.json';
 import poland from '../../public/data/charity-registry/poland/manifest.json';
+import slovakia from '../../public/data/charity-registry/slovakia/manifest.json';
 import taiwan from '../../public/data/charity-registry/taiwan/manifest.json';
 import brazil from '../../public/data/charity-registry/brazil-osc/manifest.json';
 import mexico from '../../public/data/charity-financials/mx/manifest.json';
@@ -314,6 +315,22 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     manifest: '/data/charity-financials/scotland/manifest.json',
   },
   {
+    id: 'slovakia',
+    name: 'Slovakia',
+    source: 'Finančná správa SR §50 2%/3% Tax-Assignment Overviews (2016–2025)',
+    route: '/record/charity-index/slovakia/',
+    label: 'Search Slovak 2%/3% tax-assignment recipients',
+    date: slovakia.capturedOn,
+    recordCount: slovakia.counts.includedOrganizations,
+    recordUnit: 'tax-assignment recipients',
+    coverage: `${number(slovakia.counts.includedOrganizations)} distinct 8-digit IČO organizations that received §50 income-tax shares across 2016–2025 (${number(slovakia.counts.active2025Organizations)} in 2025; ${number(slovakia.counts.presentAll10Years)} present all 10 years).`,
+    history: 'A paired funding-flows edition covers ten full years (2016–2025) of statutory EUR disbursements totaling EUR 782.06 million (EUR 107.04M in 2025), including full cp852 recovery of the 2022 official CSV.',
+    boundary: 'Covers organizations receiving positive §50 individual (2%/3%) and corporate (1%/2%) tax assignments; EUR 0 Notary Chamber registrants are excluded. Because Slovakia allows corporate tax assignment, named foundations (dominated by corporate foundations) receive 30.9% of 2025 payouts.',
+    manifest: '/data/charity-registry/slovakia/manifest.json',
+    fundingFlowRoute: '/record/funding-flows/slovakia-pit-2-percent/',
+    fundingFlowLabel: '2%/3% tax assignments (2016–2025)',
+  },
+  {
     id: 'taiwan',
     name: 'Taiwan',
     source: 'Ministry of Finance institutional registrations',
@@ -404,6 +421,7 @@ export const COVERAGE_SOURCES = [
   { title: 'Momskompensasjon open data workbooks (2023–2025)', publisher: 'Lotteri- og stiftelsestilsynet', url: 'https://lottstift.no/nb/om-oss/apne-data/' },
   { title: 'Wykaz OPP uprawnionych do 1,5% PIT za 2025 r.', publisher: 'NIW-CRSO (dane.gov.pl)', url: poland.catalogues.niw2025 },
   { title: 'Wykaz OPP, które otrzymały część należnego PIT (dataset 171)', publisher: 'Ministerstwo Finansów (dane.gov.pl)', url: poland.catalogues.mfPit15 },
+  { title: 'Ročný prehľad prijímateľov podielu zaplatenej dane (2016–2025 CSVs)', publisher: slovakia.publisher, url: slovakia.catalogues.financnaSprava },
   { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
@@ -451,7 +469,9 @@ export const FUNDING_FLOW_GROUPS: readonly FundingFlowCatalogGroup[] = [
       { slug: 'latvia-eu-funds', title: 'EU Cohesion & Recovery Fund projects (2014–2027)', scope: 'Latvia', summary: 'Search 292 nonprofit-led EU projects (EUR 233.47M total) and 260 separate partner roles with implementation regions and Active SLO vs. industry-cluster splits.', manifest: '/data/funding-flows/latvia-eu-funds/manifest.json' },
       { slug: 'netherlands-rijksfinancien', title: 'Central-government nonprofit subsidies (2020–2024)', scope: 'Netherlands', summary: 'Search 17,868 Dutch foundations, associations and religious bodies across 16 budget chapters (EUR 15.54B net) and inspect the KvK-to-RSIN identifier gap.', manifest: '/data/funding-flows/netherlands-rijksfinancien/manifest.json' },
       { slug: 'norway-momskompensasjon', title: 'VAT compensation grants (2023–2025)', scope: 'Norway', summary: 'Search 28,011 Norwegian voluntary organizations across three grant years, 264 central umbrella intermediaries and two-tranche 2025 payouts.', manifest: '/data/funding-flows/norway-momskompensasjon/manifest.json' },
+      { slug: 'ocha-fts-global-clusters', title: 'Global humanitarian funding gaps (2019–2026)', scope: '58 crisis country codes', summary: 'Compare 3,958 UN OCHA FTS plan-cluster rows across 313 response plans ($269.49B required vs. $147.20B funded) and track the global funding drop to 41.0% in 2025.', manifest: '/data/funding-flows/ocha-fts-global-clusters/manifest.json' },
       { slug: 'poland-pit-1-5-percent', title: '1.5% personal income tax designations (2022–2025)', scope: 'Poland', summary: 'Search 10,395 Polish public benefit organizations totaling PLN 8.32B, inspect disclosed taxpayer counts and reconcile NIW eligibility lists against payouts.', manifest: '/data/funding-flows/poland-pit-1-5-percent/manifest.json' },
+      { slug: 'slovakia-pit-2-percent', title: '2%/3% income-tax assignments (2016–2025)', scope: 'Slovakia', summary: 'Search EUR 782.06M in statutory individual and corporate income-tax assignments across 26,357 Slovak recipients and inspect corporate foundation concentration (30.9% in 2025).', manifest: '/data/funding-flows/slovakia-pit-2-percent/manifest.json' },
       { slug: 'taiwan-new-resident-fund', title: 'New Resident Development Fund', scope: 'Taiwan', summary: 'Search institutional grant reports. Follow the same project ID across approvals, execution figures and disbursement fields.' },
       { slug: 'us-schedule-i', title: 'Schedule I grants', scope: 'United States', summary: 'Trace grants and noncash assistance between filer and recipient EINs in one IRS archive.', manifest: '/data/funding-flows/us-schedule-i/manifest.json' },
     ],

@@ -1,0 +1,18 @@
+{
+  "capturedOn": "2026-11-22",
+  "counts": {
+    "hxlTagRowsSkipped": 0,
+    "included2019to2026Rows": 3958,
+    "pre2019RowsExcluded": 4104,
+    "rowsWithoutPositiveRequirement": 670,
+    "totalCsvRows": 8062,
+    "unspecifiedOrSharedClusterRows": 626
+  },
+  "format": "charitology-ocha-fts-clusters-anomalies-v1",
+  "notes": [
+    "OCHA FTS reports cluster-level requirements and reported funding in nominal USD without inflation adjustment; 'reported funding' reflects donor/agency reports to FTS rather than audited cash spent or verified beneficiary receipt.",
+    "Rows with cluster='Not specified' or 'Multiple clusters/sectors (shared)' carry plan funding that donors did not earmark to a single cluster. Those dollars are retained in plan and yearly totals while kept separate from named-sector coverage ratios.",
+    "Normalized sector groupings map English, French and Spanish OCHA cluster labels (e.g., Health / Santé / Salud) for side-by-side filtering while preserving every row's exact original OCHA cluster string.",
+    "2026 figures are partial year-to-date captures as of 2026-11-22 and must not be read as full-year final funding."
+  ]
+}

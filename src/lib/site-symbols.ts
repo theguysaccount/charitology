@@ -159,6 +159,9 @@ export const symbols = {
   euGrant: 'M3 7h18v10H3V7Zm4 5h4m4 0h2m-5-9v4m0 10v4',
   lindenLeaf: 'M12 3c-5 2-8 6-8 10 0 3 2.5 5 6 5 1 0 1.6-.2 2-.6.4.4 1 .6 2 .6 3.5 0 6-2 6-5 0-4-3-8-8-10Zm0 0v18m0-9-4-2m4 4 4-2',
   endowmentVault: 'M3 9h18L12 3 3 9Zm2 0v9m4-9v9m6-9v9m4-9v9M2 20h20',
+  tatraPeak: 'M2 19 8.5 7l4 6.5L15.5 9 22 19H2Zm6.5-12 1.8 3m5.2-1 1.5 2.5',
+  taxAssign: 'M4 5h16v14H4V5Zm4 4h8m-8 4h5m1 2 2 2 3-4',
+  aidGap: 'M3 20h18M5 17V9h4v8m6 0V5h4v12M11 12h2m0-4h2m-2 8h2',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

@@ -1,0 +1,356 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/ocha-fts-global-clusters/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Global humanitarian funding gaps by country and cluster (OCHA FTS 2019–2026)';
+const asset = '/data/funding-flows/ocha-fts-global-clusters/';
+const count = (value: number) => value.toLocaleString('en-US');
+const usdB = (n: number) =>
+  `$${(n / 1_000_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}B`;
+const usdM = (n: number) =>
+  `$${(n / 1_000_000).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}M`;
+
+const sources = [
+  { title: 'Global - Requirements and Funding Data (fts_requirements_funding_cluster_global.csv, CC BY 3.0 IGO)', publisher: manifest.publisher, url: manifest.catalogue },
+];
+
+const yearlyEntries = manifest.yearsCovered.map((y) => (manifest.yearly as Record<string, any>)[String(y)]);
+const sectors = manifest.sectorsAll2019to2026.map((s) => s.sector);
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Global Humanitarian Need & Funding"
+  summary="Compare 3,958 UN OCHA FTS plan-cluster rows across 313 humanitarian response plans and 58 country codes (2019–2026), totaling $269.49B in appeals vs. $147.20B reported funded — and track the global funding collapse from 64.6% (2022) to 41.0% (2025)."
+  filePath="src/pages/record/funding-flows/ocha-fts-global-clusters/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Global humanitarian funding gaps'}]}
+  sources={sources}>
+  <p>This multi-country edition indexes <strong>{count(manifest.counts.rows)} UN OCHA Financial Tracking Service (FTS) plan-cluster records</strong> across <strong>{count(manifest.counts.distinctPlans)} humanitarian response plans</strong> and <strong>{count(manifest.counts.distinctCountryCodes)} country codes</strong> from <strong>2019 through 2026</strong> (captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, licensed <strong>CC BY 3.0 IGO</strong> via HDX). Across the eight-year window, humanitarian plans requested <strong>{usdB(manifest.counts.totalRequirementsUsd)}</strong> and received <strong>{usdB(manifest.counts.totalReportedFundingUsd)}</strong> in reported funding (<strong>{manifest.counts.overallCoveragePct}%</strong> overall). Annual global coverage fell from <strong>64.6%</strong> in 2022 to <strong>41.0%</strong> in 2025 ({usdB(manifest.yearly['2025'].fundUsd)} against {usdB(manifest.yearly['2025'].reqUsd)}), with 2026 year-to-date standing at <strong>44.4%</strong> ({usdB(manifest.yearly['2026'].fundUsd)} against {usdB(manifest.yearly['2026'].reqUsd)}).</p>
+  <p>This explorer expands the <a href={url('/record/gap-map/')}>Gap Map</a> beyond its single audited Afghanistan 2024 Education case while keeping that append-only observation edition intact. Reported OCHA FTS funding measures donor and agency reports to FTS, not audited cash spent or independent verification of people reached.</p>
+
+  <section class="charity-financial-search" data-ocha-fts
+    data-clusters={url(asset + manifest.artifacts.clusters.path)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="fts-search-heading">
+    <h2 id="fts-search-heading">Search humanitarian funding gaps by country, year &amp; sector</h2>
+    <p id="fts-search-hint">Filter by year, country ISO-3 code (e.g., <code>SDN</code>, <code>COD</code>, <code>YEM</code>, <code>AFG</code>, <code>UKR</code>, <code>PSE</code>, <code>SOM</code>), normalized sector or funding threshold, or search by plan or cluster name. Loads {(manifest.artifacts.clusters.bytes / 1_000).toFixed(1)} KB of compressed OCHA FTS rows locally in your browser.</p>
+    <form aria-describedby="fts-search-hint">
+      <label for="fts-query">Country code, plan title or original cluster name</label>
+      <div class="finance-actions">
+        <input id="fts-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="fts-year">Year</label>
+          <select id="fts-year" disabled>
+            <option value="">All years (2019–2026)</option>
+            {[...manifest.yearsCovered].reverse().map((y) => (
+              <option value={String(y)} selected={y === 2025}>{y} ({count((manifest.yearly as Record<string, any>)[String(y)].rows)} rows)</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="fts-sector">Normalized sector</label>
+          <select id="fts-sector" disabled>
+            <option value="">All sectors</option>
+            {sectors.map((s) => (
+              <option value={s}>{s}</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="fts-cov">Coverage filter</label>
+          <select id="fts-cov" disabled>
+            <option value="">Any coverage</option>
+            <option value="under25">Severely underfunded (&lt; 25%)</option>
+            <option value="under50">Under half funded (&lt; 50%)</option>
+            <option value="over50">50%+ funded</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="fts-sort">Sort by</label>
+          <select id="fts-sort" disabled>
+            <option value="gap">Largest unfunded gap ($)</option>
+            <option value="req">Largest requirement ($)</option>
+            <option value="lowpct">Lowest % funded</option>
+          </select>
+        </span>
+        <button class="btn" type="submit" disabled>Search gaps</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the 2019–2026 OCHA FTS cluster index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed rows as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed rows as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="aidGap" aria-label="OCHA FTS humanitarian cluster results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'yearly-summary.csv')} download>yearly summary CSV</a> or inspect OCHA FTS on <a href={manifest.catalogue}>HDX</a>.</p></noscript>
+  </section>
+
+  <h2 id="sector-gaps">2025 funding gaps by sector: WASH, Nutrition and Refugees starved</h2>
+  <p>Grouping multilingual OCHA cluster labels (English, French and Spanish) into normalized sectors while keeping unearmarked/shared plan funding strictly separate exposes severe sectoral disparities in 2025. While Multi-Purpose Cash (49.5%), Protection (48.3%) and Health (47.6%) approached half coverage, <strong>Refugee &amp; Migration Response (18.8%)</strong>, <strong>WASH (25.3%, $2.46B gap)</strong>, <strong>Nutrition (26.3%, $2.02B gap)</strong>, <strong>Shelter &amp; Camp Coordination (27.7%, $2.30B gap)</strong> and <strong>Food Security &amp; Agriculture (33.3%, $8.13B gap)</strong> faced steep shortfalls.</p>
+  <div class="table-wrap" role="region" aria-label="2025 OCHA FTS humanitarian requirements and funding by normalized sector" tabindex="0">
+    <table class="data fts-table">
+      <caption>2025 global humanitarian requirements, reported funding and unfunded gaps by normalized sector (USD)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Normalized sector</th>
+          <th scope="col">Plans</th>
+          <th scope="col">Requirements</th>
+          <th scope="col">Reported funding</th>
+          <th scope="col">Unfunded gap</th>
+          <th scope="col">% Funded</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.sectors2025.map((s) => (
+          <tr>
+            <th scope="row">{s.sector}</th>
+            <td>{count(s.plans)}</td>
+            <td>{s.reqUsd > 0 ? usdB(s.reqUsd) : '—'}</td>
+            <td>{usdB(s.fundUsd)}</td>
+            <td>{s.gapUsd !== null ? usdB(s.gapUsd) : '—'}</td>
+            <td>{s.coveragePct !== null ? `${s.coveragePct.toFixed(1)}%` : 'Unallocated'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="crisis-disparities">2025 funding disparities across major crisis plans</h2>
+  <p>High-visibility appeals in 2025 — such as OPT (67.3%) and Ukraine (63.2%) — achieved more than double the funding coverage of protracted crises in DR Congo (26.9%), Yemen (28.4%), Somalia (29.3%) and Chad (31.5%). Click any country code below to inspect every cluster in that 2025 plan.</p>
+  <div class="table-wrap" role="region" aria-label="Top 20 humanitarian response plans in 2025 by requirements" tabindex="0">
+    <table class="data fts-table">
+      <caption>Top 20 OCHA humanitarian response plans in 2025 by requirements (USD)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Country</th>
+          <th scope="col">Response Plan</th>
+          <th scope="col">Requirements</th>
+          <th scope="col">Reported funding</th>
+          <th scope="col">Unfunded gap</th>
+          <th scope="col">% Funded</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topPlans2025.map((p) => (
+          <tr>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-fts={p.countryCode}><code>{p.countryCode}</code></button></td>
+            <th scope="row">{p.planName}</th>
+            <td>{usdM(p.reqUsd)}</td>
+            <td>{usdM(p.fundUsd)}</td>
+            <td>{usdM(p.gapUsd)}</td>
+            <td>{p.coveragePct.toFixed(1)}%</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="yearly-trend">Global humanitarian funding trend (2019–2026)</h2>
+  <div class="table-wrap" role="region" aria-label="Global OCHA FTS annual totals 2019-2026" tabindex="0">
+    <table class="data fts-table">
+      <caption>Annual OCHA FTS plan requirements, reported funding and global coverage (2019–2026; 2026 is YTD as of 2026-11-22)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          <th scope="col">Plans</th>
+          <th scope="col">Countries</th>
+          <th scope="col">Requirements</th>
+          <th scope="col">Reported funding</th>
+          <th scope="col">Unfunded gap</th>
+          <th scope="col">% Funded</th>
+        </tr>
+      </thead>
+      <tbody>
+        {yearlyEntries.map((row) => (
+          <tr>
+            <th scope="row">{row.year}{row.year === 2026 ? ' (YTD)' : ''}</th>
+            <td>{count(row.plans)}</td>
+            <td>{count(row.countryCodes)}</td>
+            <td>{usdB(row.reqUsd)}</td>
+            <td>{usdB(row.fundUsd)}</td>
+            <td>{usdB(row.gapUsd)}</td>
+            <td>{row.coveragePct !== null ? `${row.coveragePct.toFixed(1)}%` : '—'}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads, methodology and limits</h2>
+  <p>Source: UN OCHA Financial Tracking Service (FTS), <em>Global - Requirements and Funding Data</em> (<code>fts_requirements_funding_cluster_global.csv</code>, licensed <strong>CC BY 3.0 IGO</strong> via HDX, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>). Every record preserves its exact original OCHA cluster string alongside our normalized sector grouping. Unearmarked/shared plan funding rows (<code>Not specified</code> / <code>Multiple clusters/sectors (shared)</code>) stay in plan and yearly totals without inflating any named sector’s coverage. Requirements reflect humanitarian appeal budgets, not independently measured total human need.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.artifacts.clusters.path)} download>Download all {count(manifest.counts.rows)} plan-cluster rows (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'yearly-summary.csv')} download>Download 2019–2026 yearly summary (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download methodology &amp; scope notes (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .fts-table { min-inline-size: 42rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName, normalizeFinancialName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+
+  type ClusterRow = {
+    y: number;
+    cc: string;
+    pid: string;
+    pcode: string;
+    plan: string;
+    clCode: string;
+    cluster: string;
+    sector: string;
+    req: number | null;
+    fund: number | null;
+    gap: number | null;
+    pct: number | null;
+    srcPct: number | null;
+  };
+  type Manifest = typeof import('../../../../../public/data/funding-flows/ocha-fts-global-clusters/manifest.json');
+
+  const fmtUsd = (n: number | null) =>
+    n === null ? 'n/r' : `$${n.toLocaleString('en-US')}`;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-ocha-fts]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#fts-query', form);
+    const yearSelect = $<HTMLSelectElement>('#fts-year', form);
+    const sectorSelect = $<HTMLSelectElement>('#fts-sector', form);
+    const covSelect = $<HTMLSelectElement>('#fts-cov', form);
+    const sortSelect = $<HTMLSelectElement>('#fts-sort', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+
+    let dataPromise: Promise<ClusterRow[]> | undefined;
+    let displayed: ClusterRow[] = [];
+    let sequence = 0;
+    const limit = 60;
+    input.disabled = yearSelect.disabled = sectorSelect.disabled = covSelect.disabled = sortSelect.disabled = submit.disabled = clear.disabled = false;
+
+    const loadClusters = () => {
+      dataPromise ??= loadVerifiedJson(root.dataset.clusters!, manifest.artifacts.clusters)
+        .then((rows) => rows as ClusterRow[])
+        .catch((err) => { dataPromise = undefined; throw err; });
+      return dataPromise;
+    };
+
+    const reset = () => {
+      displayed = [];
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    function card(r: ClusterRow) {
+      const pctText = r.pct !== null ? `${r.pct.toFixed(1)}% funded` : 'No requirement specified';
+      return h('li', { class: 'card' },
+        h('h3', {},
+          h('span', { class: 'identity-code' }, `${r.cc} · ${r.y}`), ' ',
+          r.cluster),
+        h('p', {}, `${r.plan} · Sector: ${r.sector}`),
+        h('p', { class: 'note' },
+          `Required: ${fmtUsd(r.req)} · Reported funded: ${fmtUsd(r.fund)} · Unfunded gap: `,
+          h('strong', {}, fmtUsd(r.gap)), ` · ${pctText}`),
+      );
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const q = normalizeFinancialName(raw);
+      const yVal = yearSelect.value ? Number(yearSelect.value) : null;
+      const sVal = sectorSelect.value;
+      const cVal = covSelect.value;
+      const sortBy = sortSelect.value;
+      try {
+        submit.disabled = true;
+        status.textContent = 'Checking 2019–2026 OCHA FTS humanitarian plan-cluster records.';
+        const rows = await loadClusters();
+        if (ticket !== sequence) return;
+        const matches = rows.filter((r) => {
+          if (yVal !== null && r.y !== yVal) return false;
+          if (sVal && r.sector !== sVal) return false;
+          if (cVal === 'under25' && !(r.pct !== null && r.pct < 25)) return false;
+          if (cVal === 'under50' && !(r.pct !== null && r.pct < 50)) return false;
+          if (cVal === 'over50' && !(r.pct !== null && r.pct >= 50)) return false;
+          if (!raw) return true;
+          if (r.cc.toLowerCase() === raw.toLowerCase()) return true;
+          return normalizeFinancialName(r.plan).includes(q)
+            || normalizeFinancialName(r.cluster).includes(q)
+            || normalizeFinancialName(r.sector).includes(q)
+            || r.pcode.toLowerCase().includes(raw.toLowerCase());
+        });
+        if (sortBy === 'gap') {
+          matches.sort((a, b) => (b.gap ?? -1) - (a.gap ?? -1));
+        } else if (sortBy === 'req') {
+          matches.sort((a, b) => (b.req ?? -1) - (a.req ?? -1));
+        } else if (sortBy === 'lowpct') {
+          matches.sort((a, b) => (a.pct ?? 9999) - (b.pct ?? 9999) || (b.req ?? 0) - (a.req ?? 0));
+        }
+        displayed = matches.slice(0, limit);
+        status.textContent = matches.length
+          ? `${matches.length.toLocaleString('en-US')} plan-cluster ${matches.length === 1 ? 'row' : 'rows'} matched. Showing ${displayed.length}.`
+          : 'No matching OCHA FTS plan-cluster rows for these filters.';
+        results.append(...displayed.map(card));
+        jsonBtn.disabled = csvBtn.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The cluster search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    form.addEventListener('submit', (event) => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      yearSelect.value = '2025';
+      sectorSelect.value = covSelect.value = '';
+      sortSelect.value = 'gap';
+      status.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher, license } = manifest;
+    jsonBtn.addEventListener('click', () => {
+      download('ocha-fts-global-clusters.json', JSON.stringify({
+        format, capturedOn, publisher, license, rows: displayed,
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      const rows = displayed.map((r) => ({
+        year: r.y, countryCode: r.cc, planCode: r.pcode,
+        planName: financialCsvName(r.plan),
+        clusterName: financialCsvName(r.cluster),
+        normalizedSector: r.sector,
+        requirementsUsd: r.req ?? '',
+        reportedFundingUsd: r.fund ?? '',
+        unfundedGapUsd: r.gap ?? '',
+        percentFunded: r.pct ?? '',
+        capturedOn, publisher,
+      }));
+      if (rows.length) download('ocha-fts-global-clusters.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-fts]')) {
+      btn.addEventListener('click', () => {
+        input.value = btn.dataset.lookupFts ?? '';
+        yearSelect.value = '2025';
+        sectorSelect.value = covSelect.value = '';
+        sortSelect.value = 'gap';
+        void runSearch();
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+</script>

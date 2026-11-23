@@ -1,0 +1,318 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/slovakia-pit-2-percent/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Slovakia 2%/3% income-tax assignment disbursements (2016–2025)';
+const asset = '/data/funding-flows/slovakia-pit-2-percent/';
+const registryRoute = '/record/charity-index/slovakia/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eurM = (cents: number) =>
+  `EUR ${(cents / 100_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}M`;
+const eur = (cents: number) =>
+  `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const pct = (part: number, whole: number) => `${((part * 100) / whole).toFixed(1)}%`;
+
+const sources = [
+  { title: 'Ročný prehľad prijímateľov podielu zaplatenej dane (2016–2025 CSV annual overviews)', publisher: manifest.publisher, url: manifest.catalogue },
+];
+
+const yearlyEntries = manifest.counts.yearsCovered.map((y) => (manifest.yearly as Record<string, any>)[String(y)]);
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Slovakia"
+  summary="Search EUR 782.06M in statutory 2%/3% individual and 1%/2% corporate income-tax assignments across 26,357 Slovak organizations (2016–2025) and inspect why corporate foundations take 30.9% of 2025 disbursements."
+  filePath="src/pages/record/funding-flows/slovakia-pit-2-percent/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Slovakia 2% tax assignments'}]}
+  sources={sources}>
+  <p>Under §50 of Slovakia’s Income Tax Act (Act No. 595/2003 Coll.), both individuals (2%, or 3% with verified volunteer hours) and corporations (1%, or 2% if making an additional charitable donation) can redirect a statutory slice of paid income tax to registered public-benefit recipients. Across ten complete annual overviews (<strong>2016–2025</strong>, <strong>{count(manifest.counts.rawAnnualRowsScanned)} annual rows</strong>), Finančná správa SR disbursed <strong>{eur(manifest.counts.total10YearEurCents)}</strong> across <strong>{count(manifest.counts.distinctOrganizations10y)} distinct organizations</strong>, rising from {eurM(manifest.yearly['2016'].totalCents)} in 2016 to <strong>{eurM(manifest.counts.total2025EurCents)} across {count(manifest.counts.active2025Organizations)} organizations in 2025</strong>.</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search Slovakia’s full 26,357-organization 2%/3% recipient index</a>.</p>
+
+  <section class="charity-financial-search" data-sk-pit
+    data-payouts={url(asset + manifest.artifacts.payouts.path)}
+    data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="sk-pit-heading">
+    <h2 id="sk-pit-heading">Search 10-year Slovak tax-assignment payouts</h2>
+    <p id="sk-pit-hint">Enter an organization name, municipality or 8-digit <em>IČO</em> (e.g., <code>42349826</code>, <code>pontis</code>, <code>plamienok</code>, <code>kosice</code> or <code>cerveny kriz</code>). Loads {(manifest.artifacts.payouts.bytes / 1_000_000).toFixed(2)} MB of compressed 10-year records locally in your browser.</p>
+    <form aria-describedby="sk-pit-hint">
+      <label for="sk-pit-query">Organization name, municipality or 8-digit IČO</label>
+      <div class="finance-actions">
+        <input id="sk-pit-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="sk-pit-hint-sel">Name category</label>
+          <select id="sk-pit-hint-sel" disabled>
+            <option value="">All categories ({count(manifest.counts.distinctOrganizations10y)})</option>
+            <option value="foundation_named">Named Nadácia / Foundation ({count(manifest.counts.byNameHint.foundation_named)})</option>
+            <option value="nonprofit_service_named">Named n.o. ({count(manifest.counts.byNameHint.nonprofit_service_named)})</option>
+            <option value="non_investment_fund_named">Named n.f. ({count(manifest.counts.byNameHint.non_investment_fund_named)})</option>
+            <option value="education_or_pta_named">School / University / PTA ({count(manifest.counts.byNameHint.education_or_pta_named)})</option>
+            <option value="volunteer_fire_named">Volunteer fire brigade ({count(manifest.counts.byNameHint.volunteer_fire_named)})</option>
+            <option value="red_cross">Slovak Red Cross ({count(manifest.counts.byNameHint.red_cross)})</option>
+            <option value="other_eligible">Other eligible orgs ({count(manifest.counts.byNameHint.other_eligible)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="sk-pit-sort">Sort by</label>
+          <select id="sk-pit-sort" disabled>
+            <option value="y25">2025 payout (highest)</option>
+            <option value="tot">10-year cumulative (highest)</option>
+          </select>
+        </span>
+        <button class="btn" type="submit" disabled>Search payouts</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load Slovakia’s 2016–2025 tax-assignment ledger.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed rows as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed rows as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="taxAssign" aria-label="Slovakia tax-assignment results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'yearly-summary.csv')} download>yearly summary CSV</a> or inspect original files on <a href={manifest.catalogue}>financnasprava.sk</a>.</p></noscript>
+  </section>
+
+  <h2 id="corporate-foundations">Why corporate foundations lead Slovakia’s tax-assignment top ten</h2>
+  <p>Comparing Slovakia alongside <a href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Poland’s 1.5% PIT</a> shows how statutory tax design reshapes charitable funding flows. Poland restricts tax assignment to individuals, producing massive concentration in personal medical sub-account intermediaries (45.7% in the top 10). Slovakia uniquely includes <strong>corporate income-tax assignment</strong>, enabling major industrial, energy and banking groups to channel 1%–2% of corporate tax directly into affiliated corporate foundations. In 2025, 416 entities named <em>Nadácia</em> (1.6% of the 10-year universe) received <strong>{eurM(manifest.counts.byNameHint2025Cents.foundation_named)} ({manifest.counts.namedFoundationShare2025Pct}%)</strong> of all disbursements, and the top 10 recipients took <strong>{manifest.counts.top10Share2025Pct}%</strong> (top 50: <strong>{manifest.counts.top50Share2025Pct}%</strong>).</p>
+
+  <h2 id="decade-trend">Ten-year disbursement trajectory (2016–2025)</h2>
+  <div class="table-wrap" role="region" aria-label="Slovakia 2%/3% tax assignment yearly totals 2016-2025" tabindex="0">
+    <table class="data sk-table">
+      <caption>Annual §50 tax-assignment disbursements, recipients and foundation share (2016–2025, EUR)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          <th scope="col">Recipients</th>
+          <th scope="col">Total disbursed</th>
+          <th scope="col">Top 10 share</th>
+          <th scope="col">Named foundations</th>
+          <th scope="col">Foundation share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {yearlyEntries.map((row) => (
+          <tr>
+            <th scope="row">{row.year}</th>
+            <td>{count(row.distinctOrganizations)}</td>
+            <td>{eurM(row.totalCents)}</td>
+            <td>{pct(row.top10Cents, row.totalCents)}</td>
+            <td>{count(row.namedFoundationOrgs)} ({eurM(row.namedFoundationCents)})</td>
+            <td>{pct(row.namedFoundationCents, row.totalCents)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Top 20 cumulative Slovak tax-assignment recipients 2016-2025" tabindex="0">
+    <table class="data sk-table">
+      <caption>Top 20 cumulative beneficiaries across 2016–2025 (EUR)</caption>
+      <thead>
+        <tr>
+          <th scope="col">IČO</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Years</th>
+          <th scope="col">2025 payout</th>
+          <th scope="col">10-year total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topRecipients10y.map((item) => (
+          <tr>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-sk-pit={item.ico}><code>{item.ico}</code></button></td>
+            <th scope="row"><span lang="sk">{item.name}</span> · <a href={url(`${registryRoute}?ico=${item.ico}`)}>registry</a></th>
+            <td>{item.yearsCount}</td>
+            <td>{item.y2025Cents !== null ? eur(item.y2025Cents) : '—'}</td>
+            <td>{eur(item.total10yCents)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads and provenance</h2>
+  <p>Source: Ten official annual CSV exports from Finančné riaditeľstvo SR (<code>2016</code>–<code>2025</code>, pinned by SHA-256 in <code>src/data/slovakia-index-sources.tsv</code>). The 2020 dip (EUR 51.27M) reflects COVID-19 tax-filing deadline deferrals pushed into 2021 (EUR 83.72M). Sixty same-year duplicate <em>IČO</em> rows (1 in 2016, 56 in 2018, 3 in 2020) are summed cleanly per IČO and documented in <code>anomalies.json</code> alongside the 2022 <code>cp852</code> encoding recovery.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.artifacts.payouts.path)} download>Download all {count(manifest.counts.distinctOrganizations10y)} 10-year recipient records (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'yearly-summary.csv')} download>Download 2016–2025 yearly summary (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download encoding &amp; duplicate notes (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .sk-table { min-inline-size: 40rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName, normalizeFinancialName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+
+  type PayoutRow = {
+    ico: string;
+    name: string;
+    muni: string;
+    hint: string;
+    yrs: number;
+    first: number;
+    last: number;
+    tot: number;
+    y25: number | null;
+    y24: number | null;
+    y23: number | null;
+    y22: number | null;
+    y21: number | null;
+    y20: number | null;
+    y19: number | null;
+    y18: number | null;
+    y17: number | null;
+    y16: number | null;
+  };
+  type Manifest = typeof import('../../../../../public/data/funding-flows/slovakia-pit-2-percent/manifest.json');
+
+  const stripDigits = (value: string) => value.replace(/[\s.-]+/g, '');
+  const padIco = (value: string) => stripDigits(value).padStart(8, '0');
+  const fmtEur = (cents: number | null) =>
+    cents === null ? '—' : `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-sk-pit]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const registryBase = root.dataset.registry!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#sk-pit-query', form);
+    const hintSelect = $<HTMLSelectElement>('#sk-pit-hint-sel', form);
+    const sortSelect = $<HTMLSelectElement>('#sk-pit-sort', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+
+    let dataPromise: Promise<PayoutRow[]> | undefined;
+    let displayed: PayoutRow[] = [];
+    let sequence = 0;
+    const limit = 50;
+    input.disabled = hintSelect.disabled = sortSelect.disabled = submit.disabled = clear.disabled = false;
+
+    const loadPayouts = () => {
+      dataPromise ??= loadVerifiedJson(root.dataset.payouts!, manifest.artifacts.payouts)
+        .then((rows) => rows as PayoutRow[])
+        .catch((err) => { dataPromise = undefined; throw err; });
+      return dataPromise;
+    };
+
+    const reset = () => {
+      displayed = [];
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    function card(p: PayoutRow) {
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, p.ico), ' ', h('span', { lang: 'sk' }, p.name)),
+        h('p', {}, `${p.muni || 'Unspecified municipality'} · ${p.yrs} ${p.yrs === 1 ? 'year' : 'years'} (${p.first}–${p.last})`),
+        h('p', { class: 'note' },
+          `2025: ${fmtEur(p.y25)} · 2024: ${fmtEur(p.y24)} · 2023: ${fmtEur(p.y23)} · 10-year total: `,
+          h('strong', {}, fmtEur(p.tot))),
+        h('p', { class: 'note' },
+          `Earlier years — 2022: ${fmtEur(p.y22)} · 2021: ${fmtEur(p.y21)} · 2020: ${fmtEur(p.y20)} · `,
+          h('a', { href: `${registryBase}?ico=${p.ico}` }, 'Open Slovakia registry record')),
+      );
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compact = stripDigits(raw);
+      const isId = /^[0-9]{6,8}$/.test(compact);
+      const padded = isId ? padIco(compact) : '';
+      const q = normalizeFinancialName(raw);
+      const hVal = hintSelect.value;
+      const sortBy = sortSelect.value;
+      try {
+        if (raw && !isId && q.length < 2) throw new Error('Enter at least two characters or an exact 8-digit IČO.');
+        submit.disabled = true;
+        status.textContent = 'Checking Slovakia 2016–2025 §50 disbursements.';
+        const rows = await loadPayouts();
+        if (ticket !== sequence) return;
+        const matches = rows.filter((p) => {
+          if (hVal && p.hint !== hVal) return false;
+          if (!raw) return true;
+          if (isId) return p.ico === padded;
+          return normalizeFinancialName(p.name).includes(q)
+            || normalizeFinancialName(p.muni).includes(q);
+        });
+        if (sortBy === 'tot') {
+          matches.sort((a, b) => b.tot - a.tot || a.ico.localeCompare(b.ico));
+        }
+        displayed = matches.slice(0, limit);
+        status.textContent = matches.length
+          ? `${matches.length.toLocaleString('en-US')} Slovak ${matches.length === 1 ? 'recipient' : 'recipients'} matched. Showing ${displayed.length}.`
+          : 'No matching Slovak recipient in this 2016–2025 snapshot.';
+        results.append(...displayed.map(card));
+        jsonBtn.disabled = csvBtn.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The payout search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    form.addEventListener('submit', (event) => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      hintSelect.value = '';
+      sortSelect.value = 'y25';
+      status.textContent = 'Search cleared.';
+      if (/^#q=[0-9]{6,8}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#sk-pit-heading');
+      }
+      input.focus();
+    });
+
+    const { format, capturedOn, asOf, publisher } = manifest;
+    const toObj = (p: PayoutRow) => ({
+      ico: p.ico, name: p.name, municipality: p.muni, nameHint: p.hint,
+      yearsCount: p.yrs, firstYear: p.first, lastYear: p.last,
+      eur2025: p.y25 === null ? '' : (p.y25 / 100).toFixed(2),
+      eur2024: p.y24 === null ? '' : (p.y24 / 100).toFixed(2),
+      eur2023: p.y23 === null ? '' : (p.y23 / 100).toFixed(2),
+      eur10yTotal: (p.tot / 100).toFixed(2),
+    });
+
+    jsonBtn.addEventListener('click', () => {
+      download('slovakia-pit-2-percent.json', JSON.stringify({
+        format, capturedOn, asOf, publisher, recipients: displayed.map(toObj),
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      const rows = displayed.map((p) => {
+        const o = toObj(p);
+        return { ...o, name: financialCsvName(o.name), capturedOn, asOf, publisher };
+      });
+      if (rows.length) download('slovakia-pit-2-percent.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const triggerId = (id: string | null) => {
+      if (!id || !/^[0-9]{6,8}$/.test(stripDigits(id))) return;
+      input.value = padIco(id);
+      hintSelect.value = '';
+      void runSearch();
+    };
+    const initial = new URLSearchParams(location.search).get('ico') ?? /^#q=([0-9]{6,8})$/.exec(location.hash)?.[1] ?? null;
+    triggerId(initial);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{6,8})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-sk-pit]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupSkPit ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+</script>
