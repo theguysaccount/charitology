@@ -92,7 +92,7 @@ export async function decodeGzip(bytes, max) {
 // User input is never used as a URL, origin, arbitrary path or regular expression.
 export function createRegistry({ base, fetcher = fetch, decode = decodeGzip, digest = async bytes => new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), cacheSize = 2 } = {}) {
   if (typeof base !== 'string' || !base) throw new Error('Registry asset base is required.');
-  const root = new URL(base, globalThis.location?.href ?? 'https://charitology.org/');
+  const root = new URL(base, globalThis.location?.href ?? 'https://charitology.com/');
   if (!/^https?:$/.test(root.protocol) || root.search || root.hash || root.username || root.password) throw new Error('Invalid registry asset base.');
   if (!root.pathname.endsWith('/')) root.pathname += '/';
   let manifestPromise; const cache = new Map();

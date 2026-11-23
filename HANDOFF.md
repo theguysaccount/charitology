@@ -2,7 +2,13 @@
 
 Read this first, then `STYLE.md`. The full original brief is preserved; do not replace it with a list of what is already built.
 
-The [Global Charity Index release plan](docs/GLOBAL_CHARITY_INDEX.md) records the Australian financial edition, reproducibility commands and the next jurisdiction, funding flow and funding-versus-need milestones.
+The [Global Charity Index release plan](docs/GLOBAL_CHARITY_INDEX.md) records all 17 published jurisdictions (`2,795,063` dated registry records across 5 continents), 37 funding-flow searches and case studies, reproducibility commands, and the next jurisdiction, funding-flow and funding-versus-need milestones.
+
+## November 22, 2026 baseline
+
+- **Global Charity Index expanded to 17 jurisdictions (`PR #141`–`PR #146`):** Added Norway (Brønnøysund + Momskompensasjon), Netherlands (Belastingdienst ANBI + Rijksfinanciën subsidies), Israel (Amutot/PBC + 2012–2026 foreign-state donations), Poland (NIW-CRSO OPP + 2022–2025 1.5% PIT designations), Latvia (Enterprise Register + VID SLO + CFLA EU Cohesion & Recovery projects), and cross-jurisdiction search/UI upgrades (`PR #145`).
+- **Stage 1 Site Cohesion & Media Completion:** Unified all 17 jurisdictions and 37 funding-flow entries in `src/lib/global-index-catalog.ts`, wired them into `/tools/charity-lookup/`, `/record/open-datasets/`, and `/api/v1/{charity-index,funding-flows}.json` (`42` API v1 endpoints), completed all 10 chapters of the *Principles* computer-narrated podcast (`principles-7.mp3`–`principles-10.mp3`), and updated live non-archived public links to `https://charitology.com`.
+- **Open human/operating gates unchanged:** Edition 0 human source review (`Issue #1`), Chrome Web Store & Firefox AMO extension submission (`Issue #2`), Charity OS Phase 0 pilot recruitment (3 consenting organizations), `OS-FIN-01` / `VERIFY-OS-01` / `OPERATE-01`, owner-deferred `SW-AI-01`, and the nine partner-operated institutional programs remain explicitly open.
 
 ## Public navigation and themes
 

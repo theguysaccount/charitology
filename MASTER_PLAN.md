@@ -1,14 +1,18 @@
 # Charitology master plan
 
-All 66 original items are preserved in [the original brief](docs/ORIGINAL_BRIEF.md) and mapped in [the public roadmap](https://charitology.org/roadmap/).
+All 66 original items are preserved in [the original brief](docs/ORIGINAL_BRIEF.md) and mapped in [the public roadmap](https://charitology.com/roadmap/).
+
+## Global Charity Index & Site Cohesion (November 22, 2026 update)
+
+The [Global Charity Index](https://charitology.com/record/charity-index/coverage/) now covers **17 jurisdictions** (`2,795,063` dated registry records across Australia, Brazil, Canada, England & Wales, France, Israel, Japan, Kenya, Latvia, Mexico, Netherlands, New Zealand, Norway, Poland, Scotland, Taiwan, and the United States) paired with **37 funding-flow searches and case studies** ([browse all funding flows](https://charitology.com/record/funding-flows/)). All 17 jurisdictions are wired into [Charity Lookup](https://charitology.com/tools/charity-lookup/), [Open Datasets](https://charitology.com/record/open-datasets/), and the [Public API v1](https://charitology.com/api/v1/index.json) (`42` static JSON endpoints including `charity-index.json` and `funding-flows.json`). The computer-narrated [Principles podcast](https://charitology.com/record/podcast-and-newsletter/) now covers all **10 chapters**. Independent human source review (`Issue #1`), Chrome/Firefox store publication (`Issue #2`), real Charity OS organizational pilots, and the nine partner-operated institutional programs remain open human/operating gates.
 
 ## Shared OS and original-program workspaces
 
-All nine formerly partner-only programs now have distinct local workflows and exports, with institutional-readiness records kept separate from software availability. The [Charity OS research and plan](https://charitology.org/for-charities/os-plan/) compares ten existing systems, records twenty public user discussions and proposes a six-phase shared build. The shared foundation is implemented at [os.charitology.org](https://os.charitology.org), with 26 typed back-office modules, accounts, roles, approvals, files, reports and recovery. Pilot outcomes and the later public-participation/specialist gates remain open. See [the full plan](docs/CHARITY_OS_PLAN.md).
+All nine formerly partner-only programs now have distinct local workflows and exports, with institutional-readiness records kept separate from software availability. The [Charity OS research and plan](https://charitology.com/for-charities/os-plan/) compares ten existing systems, records twenty public user discussions and proposes a six-phase shared build. The shared foundation is implemented at [os.charitology.org](https://os.charitology.org), with 26 typed back-office modules, accounts, roles, approvals, files, reports and recovery. Pilot outcomes and the later public-participation/specialist gates remain open. See [the full plan](docs/CHARITY_OS_PLAN.md).
 
 ## Available now and institutional work
 
-The [Teach and learn hub](https://charitology.org/learn/) adds an inspectable fictional lesson, editable downloads, a sample university seminar and club/school starter materials. [Education adoption planning](docs/EDUCATION_ADOPTION_PLAN.md) distinguishes educator review, student-led recognition, faculty-owned course approval and adult-led school enrichment. Outreach drafts are private and unsent; materials do not establish accreditation, adoption or learning effects. Existing course criteria and learner storage are preserved.
+The [Teach and learn hub](https://charitology.com/learn/) adds an inspectable fictional lesson, editable downloads, a sample university seminar and club/school starter materials. [Education adoption planning](docs/EDUCATION_ADOPTION_PLAN.md) distinguishes educator review, student-led recognition, faculty-owned course approval and adult-led school enrichment. Outreach drafts are private and unsent; materials do not establish accreditation, adoption or learning effects. Existing course criteria and learner storage are preserved.
 
 The 31 previously seeded or designed items now have usable browser implementations or substantial published editions. See [the implementation and validation record](docs/IMPLEMENTATION_NOTES.md).
 

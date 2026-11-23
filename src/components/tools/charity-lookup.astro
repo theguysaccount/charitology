@@ -10,6 +10,10 @@ import { url } from '../../lib/site';
 import RegistrySearch from '../RegistrySearch.astro';
 import SiteSymbol from '../SiteSymbol.astro';
 import { checklistSymbols, ecosystemSymbols } from '../../lib/list-identities';
+import {
+  GLOBAL_CHARITY_INDEX_PANELS,
+  GLOBAL_CHARITY_INDEX_TOTAL_RECORDS,
+} from '../../lib/global-index-catalog';
 
 const causeName = new Map(causesData.causes.map((c) => [c.id, c.name]));
 const index = (await getCollection('charities'))
@@ -108,6 +112,56 @@ const count = index.length;
   </div>
 
   <RegistrySearch id="lookup" />
+
+  <div class="result cl-global" aria-labelledby="cl-global-title">
+    <div class="cl-global-head">
+      <h3 id="cl-global-title">Search across all {GLOBAL_CHARITY_INDEX_PANELS.length} jurisdictions</h3>
+      <span class="note">{GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated registry records across {GLOBAL_CHARITY_INDEX_PANELS.length} official scopes</span>
+    </div>
+    <p class="note">
+      Beyond the U.S. IRS snapshot above, Charitology hosts local searchable registries, financial filings and funding flows across {GLOBAL_CHARITY_INDEX_PANELS.length} jurisdictions. Each registry keeps its own legal definitions, currency and capture date.
+      <a href={url('/record/charity-index/coverage/')}>Read full coverage &amp; boundaries</a> · <a href={url('/record/funding-flows/')}>Browse all 37 funding-flow searches &amp; cases</a>.
+    </p>
+    <div class="cl-jurisdiction-filter-row">
+      <label for="cl-jurisdiction-filter" class="cl-label">Filter jurisdictions</label>
+      <input
+        type="search"
+        id="cl-jurisdiction-filter"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Filter by country, regulator, or ID type (e.g., Latvia, ANBI, T3010, OPP)…"
+      />
+    </div>
+    <p id="cl-jurisdiction-status" class="note" role="status" aria-live="polite">
+      Showing all {GLOBAL_CHARITY_INDEX_PANELS.length} jurisdictions.
+    </p>
+    <ul class="cl-jurisdictions" id="cl-jurisdictions" role="list">
+      {
+        GLOBAL_CHARITY_INDEX_PANELS.map((panel) => (
+          <li
+            class="card cl-jur-card"
+            data-site-tone={panel.tone}
+            data-jur-search={`${panel.name} ${panel.source} ${panel.recordUnit} ${panel.fundingFlowLabel ?? ''}`.toLowerCase()}
+          >
+            <div class="cl-jur-top">
+              <strong class="identity-label">
+                <SiteSymbol name={panel.symbol} size="inline" />
+                {panel.name}
+              </strong>
+              <span class="chip">{panel.recordCount.toLocaleString('en-US')} {panel.recordUnit}</span>
+            </div>
+            <p class="note cl-jur-source">{panel.source}</p>
+            <div class="cl-jur-links">
+              <a class="btn btn-ghost btn-small" href={url(panel.route)}>{panel.label}</a>
+              {panel.fundingFlowRoute && panel.fundingFlowLabel && (
+                <a class="note" href={url(panel.fundingFlowRoute)}>{panel.fundingFlowLabel}</a>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 
   <div class="result">
     <h3>Look it up in the open registries</h3>
@@ -253,6 +307,59 @@ const count = index.length;
     break-inside: avoid;
     margin-bottom: 0.35rem;
   }
+  .cl-global-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem 1rem;
+  }
+  .cl-global-head h3 {
+    margin: 0;
+  }
+  .cl-jurisdiction-filter-row {
+    margin: 0.85rem 0 0.4rem;
+    max-width: 30rem;
+  }
+  .cl-jurisdiction-filter-row input {
+    width: 100%;
+  }
+  .cl-jurisdictions {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17.5rem), 1fr));
+  }
+  .cl-jur-card {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.9rem 1rem;
+  }
+  .cl-jur-card[hidden] {
+    display: none;
+  }
+  .cl-jur-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem 0.5rem;
+  }
+  .cl-jur-source {
+    margin: 0;
+  }
+  .cl-jur-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem 0.85rem;
+    margin-top: auto;
+    padding-top: 0.2rem;
+  }
 </style>
 
 <script>
@@ -379,4 +486,22 @@ const count = index.length;
   const incoming = (new URLSearchParams(location.search).get('q') ?? readHash('q') ?? '').trim().slice(0, 160);
   if (incoming) input.value = incoming;
   update(input.value);
+
+  const jurFilter = document.querySelector<HTMLInputElement>('#cl-jurisdiction-filter');
+  const jurStatus = document.querySelector<HTMLElement>('#cl-jurisdiction-status');
+  const jurItems = Array.from(document.querySelectorAll<HTMLLIElement>('#cl-jurisdictions > li'));
+  if (jurFilter && jurStatus && jurItems.length) {
+    jurFilter.addEventListener('input', () => {
+      const needle = jurFilter.value.trim().toLowerCase();
+      let shown = 0;
+      for (const item of jurItems) {
+        const match = !needle || (item.dataset.jurSearch ?? '').includes(needle);
+        item.hidden = !match;
+        if (match) shown++;
+      }
+      jurStatus.textContent = needle
+        ? `Showing ${shown} of ${jurItems.length} jurisdictions matching “${jurFilter.value.trim()}”.`
+        : `Showing all ${jurItems.length} jurisdictions.`;
+    });
+  }
 </script>

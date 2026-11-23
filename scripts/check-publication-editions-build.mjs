@@ -198,7 +198,7 @@ check(
   },
 );
 check(
-  "API discovery has exactly the actual 40 source-declared datasets with complete bounded wrappers",
+  "API discovery has exactly the actual 42 source-declared datasets with complete bounded wrappers",
   () => {
     const ast = ts.createSourceFile(
       "api.ts",
@@ -226,8 +226,8 @@ check(
       };
       return { name: field("name"), description: field("description") };
     });
-    assert.equal(expected.length, 40);
-    assert.equal(new Set(expected.map((e) => e.name)).size, 40);
+    assert.equal(expected.length, 42);
+    assert.equal(new Set(expected.map((e) => e.name)).size, 42);
     const funding = loadHumanitarianFunding();
     const observations = validateObservationFiles(readObservationWorkingFiles(root));
     const planCluster = planClusterObservationProjection(observations, observations.registry.current.id);

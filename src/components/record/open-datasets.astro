@@ -1,5 +1,11 @@
 ---
 import { availableEndpoints } from '../../lib/api';
+import {
+  GLOBAL_CHARITY_INDEX_PANELS,
+  GLOBAL_CHARITY_INDEX_TOTAL_RECORDS,
+  US_ADDITIONAL_EDITIONS,
+  US_IRS_REGISTRY_SUMMARY,
+} from '../../lib/global-index-catalog';
 import { url } from '../../lib/site';
 import ecosystem from '../../data/ecosystem.json';
 
@@ -12,7 +18,7 @@ const externalProjects = [
 ---
 
 <section class="ds">
-  <h2 id="charitology-datasets">Charitology datasets</h2>
+  <h2 id="charitology-datasets">Charitology API datasets</h2>
   <div class="table-wrap">
     <table class="data">
       <thead><tr><th>Dataset</th><th>What it holds</th></tr></thead>
@@ -24,6 +30,66 @@ const externalProjects = [
                 <a class="identity-link" href={url(`/api/v1/${e.name}.json`)}><code>{e.name}.json</code></a>
               </td>
               <td>{e.description}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="global-index-manifests">Global Charity Index &amp; Funding Flows manifests ({GLOBAL_CHARITY_INDEX_PANELS.length} jurisdictions)</h2>
+  <p class="note">
+    {GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated registry records across {GLOBAL_CHARITY_INDEX_PANELS.length} official scopes, plus U.S. Form 990-EZ/990-PF extracts and 37 funding-flow lookups and cases. Each manifest pins source URLs, SHA-256 hashes, field schemas, shard paths and coverage limits.
+    <a href={url('/api/v1/charity-index.json')}>Machine-readable index catalog (JSON)</a> · <a href={url('/api/v1/funding-flows.json')}>Funding-flows catalog (JSON)</a>.
+  </p>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Jurisdiction</th>
+          <th>Dated scope</th>
+          <th>Captured</th>
+          <th>Manifest &amp; lookup</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          GLOBAL_CHARITY_INDEX_PANELS.map((panel) => (
+            <tr>
+              <td>
+                <a class="identity-link" href={url(panel.route)}>{panel.name}</a>
+              </td>
+              <td>{panel.recordCount.toLocaleString('en-US')} {panel.recordUnit} · {panel.source}</td>
+              <td>{panel.date ?? 'Dated in page'}</td>
+              <td>
+                {panel.manifest ? (
+                  <a href={url(panel.manifest)}><code>manifest.json</code></a>
+                ) : (
+                  <a href={url(panel.route)}>Edition page</a>
+                )}
+                {panel.fundingFlowRoute && panel.fundingFlowLabel && (
+                  <>
+                    {' · '}
+                    <a href={url(panel.fundingFlowRoute)}>{panel.fundingFlowLabel}</a>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))
+        }
+        <tr>
+          <td><a class="identity-link" href={url(US_IRS_REGISTRY_SUMMARY.route)}>United States (IRS EO BMF)</a></td>
+          <td>{US_IRS_REGISTRY_SUMMARY.recordCount.toLocaleString('en-US')} IRS tax-exempt identities</td>
+          <td>{US_IRS_REGISTRY_SUMMARY.dataDate}</td>
+          <td><a href={url(US_IRS_REGISTRY_SUMMARY.manifest)}><code>manifest.json</code></a></td>
+        </tr>
+        {
+          US_ADDITIONAL_EDITIONS.map((ed) => (
+            <tr>
+              <td><a class="identity-link" href={url(ed.route)}>United States (Form {ed.form})</a></td>
+              <td>{ed.organizations.toLocaleString('en-US')} EINs · {ed.includedPeriods.toLocaleString('en-US')} filing periods</td>
+              <td>2022–2024</td>
+              <td><a href={url(ed.manifest)}><code>manifest.json</code></a></td>
             </tr>
           ))
         }

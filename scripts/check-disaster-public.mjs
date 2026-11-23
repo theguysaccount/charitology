@@ -168,7 +168,7 @@ try {
   await check("all36 old endpoint fields stay exact except two closed source-specific properties", () => {
     const before = declarations(baseline), after = declarations(source);
     assert.equal(before.size, 36);
-    assert.equal(after.size, 40);
+    assert.equal(after.size, 42);
     const exceptions = new Map([
       ["countries", ["capturedAt",
         "async () => (await observations()).projection.capturedAt",
@@ -246,18 +246,18 @@ try {
       guardOffline();
       try {
         const available = await current.availableEndpoints();
-        assert.equal(available.length, 36);
+        assert.equal(available.length, 38);
         assert.ok(!available.some((e) => e.name === "humanitarian-plan-cluster"));
         const education = current.ENDPOINTS.find((e) => e.name === "humanitarian-plan-cluster");
         assert.ok(education);
         assert.equal(await education.available(), false);
         const paths = await names.getStaticPaths();
-        assert.equal(paths.length, 36);
+        assert.equal(paths.length, 38);
         assert.ok(!paths.some((p) => p.params.name === "humanitarian-plan-cluster"));
         const body = await (
           await index.GET({ site: new URL("https://example.org/") })
         ).json();
-        assert.equal(body.endpoints.length, 36);
+        assert.equal(body.endpoints.length, 38);
         assert.ok(!body.endpoints.some((e) => e.name === "humanitarian-plan-cluster"));
         await assert.rejects(
           () => current.buildEndpoint("humanitarian-plan-cluster"),
@@ -342,7 +342,7 @@ try {
       guardOffline();
       try {
         const endpoints = await current.availableEndpoints();
-        assert.equal(endpoints.length, 38);
+        assert.equal(endpoints.length, 40);
         assert.ok(!endpoints.some((e) => e.name === "humanitarian-plan-cluster"));
         assert.equal(await current.ENDPOINTS.find((e) => e.name === "humanitarian-plan-cluster").available(), false);
         await assert.rejects(() => current.buildEndpoint("humanitarian-plan-cluster"), /no committed/);

@@ -41,7 +41,7 @@ else {
         assert.deepEqual(v.data, expected);
         assert.match(v.license, /External originals remain with their publishers/);
         assert.match(v.license, /no independently verified current needs/);
-    } const names = json("/api/v1/index.json").endpoints.map(e => e.name); assert.equal(names.length, 38 + Number(loadHumanitarianFunding() !== null) + Number(education !== null)); assert.equal(names.filter(n => n === "humanitarian-plan-cluster").length, Number(education !== null)); for (const n of ["disaster-incidents", "disaster-incident-coverage"])
+    } const names = json("/api/v1/index.json").endpoints.map(e => e.name); assert.equal(names.length, 40 + Number(loadHumanitarianFunding() !== null) + Number(education !== null)); assert.equal(names.filter(n => n === "humanitarian-plan-cluster").length, Number(education !== null)); for (const n of ["disaster-incidents", "disaster-incident-coverage"])
         assert.equal(names.filter(x => x === n).length, 1); });
     check("Complete public history JSON matches exact admitted bytes and excludes private originals", () => { assert.deepEqual(bytes("/disasters/history.json"), Buffer.from(data.history)); const h = json("/disasters/history.json"); assert.equal(h.format, "charitology-disaster-history"); assert.deepEqual(h.registry, data.registry); assert.ok(h.files.every(f => !f.file.path.startsWith("exports/") && !f.file.path.startsWith("originals/"))); assert.deepEqual(h.files.map(f => f.file.path), h.files.map(f => f.file.path).sort()); });
     for (const e of data.editions) {

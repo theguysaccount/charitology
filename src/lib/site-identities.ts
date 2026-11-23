@@ -89,6 +89,7 @@ export const sections: Section[] = [
     'open-datasets': 'table', 'podcast': 'headphones', 'podcast-and-newsletter': 'signal',
     'podcast/principles-1': 'network', 'podcast/principles-2': 'layers', 'podcast/principles-3': 'fileSearch',
     'podcast/principles-4': 'compare', 'podcast/principles-5': 'scale', 'podcast/principles-6': 'speech',
+    'podcast/principles-7': 'compass', 'podcast/principles-8': 'clock', 'podcast/principles-9': 'break', 'podcast/principles-10': 'badge',
     'principles': 'layers', 'principles/read': 'book', 'progress-report': 'steps', 'state-of-charity': 'chart', 'traditions': 'history',
   } },
   { path: '/for-charities/', symbol: 'hands', tone: 'green', entries: {

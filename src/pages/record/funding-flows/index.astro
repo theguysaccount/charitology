@@ -4,60 +4,7 @@ import ReviewNote from '../../../components/ReviewNote.astro';
 import Crumbs from '../../../components/Crumbs.astro';
 import SiteSymbol from '../../../components/SiteSymbol.astro';
 import { url } from '../../../lib/site';
-import type { SymbolName } from '../../../lib/site-identities';
-
-const groups: {
-  id: string;
-  title: string;
-  symbol: SymbolName;
-  items: readonly { slug: string; title: string; scope: string; summary: string }[];
-}[] = [
-  {
-    id: 'lookups', title: 'Search original records', symbol: 'fileSearch', items: [
-      { slug: 'brazil-transferegov', title: 'Federal transfers', scope: 'Brazil', summary: 'Find agreements and the bank orders that made federal money available.' },
-      { slug: 'brazil-planned-geography', title: 'Planned work by municipality', scope: 'Brazil', summary: 'Look up where civil society agreements planned work and see where the source leaves locations unknown.' },
-      { slug: 'brazil-project-execution', title: 'Infrastructure projects and progress', scope: 'Brazil', summary: 'Link public works to budget commitments. Compare where work was planned, where projects are registered and what physical progress was reported.' },
-      { slug: 'brazil-project-contracts', title: 'Infrastructure contract records', scope: 'Brazil', summary: 'Match project and procurement references to reported contract dates and amounts. See where portal references overlap.' },
-      { slug: 'brazil-works-measurements', title: 'Works monitoring and measured amounts', scope: 'Brazil', summary: 'Find reported measurement periods and accumulated work-item figures connected to the original proposal.' },
-      { slug: 'brazil-infrastructure-account-movements', title: 'Infrastructure account movements', scope: 'Brazil', summary: 'Find institutional payments and transfers to agreement holders. See how far onward amounts can be reconciled.' },
-      { slug: 'brazil-infrastructure-invoice-items', title: 'Infrastructure invoice items', scope: 'Brazil', summary: 'Trace institutional payments to expense documents. Compare gross item amounts and reported payments for the same documents.' },
-      { slug: 'brazil-infrastructure-procurement-payments', title: 'Infrastructure procurements and payments', scope: 'Brazil', summary: 'Follow expense documents to the original procurements and inspect payments with a verified contract reference.' },
-      { slug: 'brazil-infrastructure-work-lots', title: 'Infrastructure contract lots and start authorizations', scope: 'Brazil', summary: 'Connect reported contracts to work packages, planned subgoals and start authorization records.' },
-      { slug: 'brazil-infrastructure-procurement-lots', title: 'Infrastructure payments and works lots', scope: 'Brazil', summary: 'Follow paid procurements to recorded work packages. Read the exact links and the Joaçaba clinic case.' },
-      { slug: 'canada-qualified-donees', title: 'Reported gifts', scope: 'Canada', summary: 'Look up a filer or recipient and open the corresponding CRA worksheet entries.' },
-      { slug: 'canada-grant-geography', title: 'Grant activities by country', scope: 'Canada', summary: 'See the countries named in charity grant reporting and the amounts left unallocated.' },
-      { slug: 'chile-residential-payments', title: 'Residential care awards and payments', scope: 'Chile', summary: 'Find all 19 recipients by tax ID. Compare the award round with the ledger, and see reported service counts and surveyed need across 16 regions.' },
-      { slug: 'ile-de-france-paid-grants', title: 'Regional grant payments', scope: 'Île-de-France, France', summary: 'Find reported payments by association name or official organization identifier.' },
-      { slug: 'israel-foreign-state-donations', title: 'Foreign state entity donations (2012–2026)', scope: 'Israel', summary: 'Search 516 Israeli nonprofits across 13,436 quarterly cross-border disclosures (ILS 7.53B net), joined by exact ID with source anomalies kept visible.' },
-      { slug: 'latvia-eu-funds', title: 'EU Cohesion & Recovery Fund projects (2014–2027)', scope: 'Latvia', summary: 'Search 292 nonprofit-led EU projects (EUR 233.47M total) and 260 separate partner roles with implementation regions and Active SLO vs. industry-cluster splits.' },
-      { slug: 'netherlands-rijksfinancien', title: 'Central-government nonprofit subsidies (2020–2024)', scope: 'Netherlands', summary: 'Search 17,868 Dutch foundations, associations and religious bodies across 16 budget chapters (EUR 15.54B net) and inspect the KvK-to-RSIN identifier gap.' },
-      { slug: 'norway-momskompensasjon', title: 'VAT compensation grants (2023–2025)', scope: 'Norway', summary: 'Search 28,011 Norwegian voluntary organizations across three grant years, 264 central umbrella intermediaries and two-tranche 2025 payouts.' },
-      { slug: 'poland-pit-1-5-percent', title: '1.5% personal income tax designations (2022–2025)', scope: 'Poland', summary: 'Search 10,395 Polish public benefit organizations totaling PLN 8.32B, inspect disclosed taxpayer counts and reconcile NIW eligibility lists against payouts.' },
-      { slug: 'taiwan-new-resident-fund', title: 'New Resident Development Fund', scope: 'Taiwan', summary: 'Search institutional grant reports. Follow the same project ID across approvals, execution figures and disbursement fields.' },
-      { slug: 'us-schedule-i', title: 'Schedule I grants', scope: 'United States', summary: 'Trace grants and noncash assistance between filer and recipient EINs in one IRS archive.' },
-    ],
-  },
-  {
-    id: 'cases', title: 'Follow a funding case', symbol: 'split', items: [
-      { slug: 'chile-coanil-agreements', title: 'COANIL residence agreements', scope: 'Chile', summary: 'Trace ten awards through a signed agreement, a later amendment and a separate grant. Compare government and recipient payment reports.' },
-      { slug: 'france-emmaus-solidarite', title: 'Regional grants to Emmaüs Solidarité', scope: 'Île-de-France, France', summary: 'Match five regional decisions to reported payments. Read four annual filings and independent one-night counts during planned winter work.' },
-      { slug: 'brazil-cisterns', title: 'Rainwater systems in Pará', scope: 'Brazil', summary: 'Connect a federal agreement, account payments and tender locations. Read the separate census baseline.' },
-      { slug: 'brazil-infrastructure-procurement-lots/joacaba-outpatient', title: 'Outpatient and hearing-care records in Joaçaba', scope: 'Brazil', summary: 'Read approved procedure counts for the clinic and see which hearing-care codes match its signed service annex.' },
-      { slug: 'brazil-solidarity-kitchens', title: 'Solidarity kitchens', scope: 'Brazil', summary: 'Follow a federal call from selection to bank orders and see what published plans cover.' },
-      { slug: 'brazil-solidarity-kitchens/account-payments', title: 'Solidarity kitchens account payments', scope: 'Brazil', summary: 'Follow movements from agreement accounts and see which onward amounts are missing.' },
-      { slug: 'chile-residential-care', title: 'Donations and residential care funding', scope: 'Chile', summary: 'Follow a foundation from reported donations and municipal records to residence awards and audited accounts.' },
-      { slug: 'greater-manchester-home-from-hospital', title: 'Home-from-hospital support', scope: 'England', summary: 'Read local awards and delivery periods alongside the NHS discharge figures for the same area.' },
-      { slug: 'hokkaido-child-support', title: 'Child-support awards in Hokkaido', scope: 'Japan', summary: 'Connect two award years to organization identifiers and read the separate food affordability survey.' },
-      { slug: 'iberia-hrsa', title: 'Federal grants to an Iberia health center', scope: 'United States', summary: 'Match federal awards to annual audit schedules and read independent health insurance estimates.' },
-      { slug: 'heal-nepal', title: 'Heal Nepal funding and receipts', scope: 'United Kingdom and Nepal', summary: 'Compare three publisher records and see where two currencies or different funding periods leave the connection unresolved.' },
-      { slug: 'kenya-nutrition', title: 'Nutrition funding from the UK to western Kenya', scope: 'United Kingdom and Kenya', summary: 'Compare paired reports from the grant manager, UK charity and Kenyan implementer. Read separate county food poverty estimates.' },
-      { slug: 'ripple-effect-kenya-accounts', title: 'Ripple Effect’s annual accounts in Kenya', scope: 'United Kingdom and Kenya', summary: 'Read parent grants, subsidiary receivables, reported expenses and the discrepancies visible in the same published accounts.' },
-      { slug: 'taiwan-municipal-assistance', title: 'Municipal assistance for new residents', scope: 'Taiwan', summary: 'Trace municipal grants through the audit and compare 2023 disclosures with separately surveyed barriers to getting services.' },
-      { slug: 'western-cape-transfers', title: 'Western Cape nonprofit transfers', scope: 'South Africa', summary: 'Compare the province’s transfer and spending figures across two fiscal years, with the original annexes and a home-care project example.' },
-      { slug: 'yes-i-do-alliance', title: 'Yes I Do Alliance', scope: 'Multiple countries', summary: 'Compare the funder’s reported disbursements with the receipts and activities partners published.' },
-    ],
-  },
-];
+import { FUNDING_FLOW_GROUPS as groups } from '../../../lib/global-index-catalog';
 ---
 
 <Base title="Funding flows" description="Follow reported awards, transfers and spending through original records and published case studies.">
