@@ -1,0 +1,328 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/slovakia/manifest.json';
+import flowManifest from '../../../../public/data/funding-flows/slovakia-pit-2-percent/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Slovakia 2%/3% income-tax assignment recipients (2016–2025)';
+const dataPath = '/data/charity-registry/slovakia/';
+const flowPath = '/record/funding-flows/slovakia-pit-2-percent/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eurM = (cents: number) =>
+  `EUR ${(cents / 100_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}M`;
+const eur = (cents: number) =>
+  `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const sources = [
+  { title: 'Ročný prehľad prijímateľov podielu zaplatenej dane (2016–2025 CSV annual overviews under §50 Act No. 595/2003 Coll.)', publisher: manifest.publisher, url: manifest.catalogues.financnaSprava },
+  { title: 'Notary Chamber Central Register of Eligible Beneficiaries (NCRpo)', publisher: 'Notárska komora SR', url: manifest.catalogues.notarRegister },
+  { title: 'Register of Non-Governmental Nonprofit Organizations (RMNO)', publisher: 'Ministry of the Interior of the Slovak Republic', url: manifest.catalogues.rmnoRegister },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index · Slovakia"
+  summary="Search 26,357 Slovak charities, civic associations, foundations and public-benefit nonprofits that received §50 income-tax assignments across 10 consecutive years (2016–2025), totaling EUR 782.06M in statutory EUR disbursements."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Slovakia'}]}
+  filePath="src/pages/record/charity-index/slovakia.astro" sources={sources}>
+  <p>This edition combines ten consecutive official annual disbursement CSVs published by the Financial Directorate of the Slovak Republic (<em>Finančná správa SR</em>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, covering tax-assignment payouts through <time datetime={manifest.asOf}>{manifest.asOf}</time> under §50 of Act No. 595/2003 Coll.). Across <strong>2016–2025</strong>, <strong>{count(manifest.counts.includedOrganizations)} distinct 8-digit <em>IČO</em> organizations</strong> received statutory 2%/3% individual and 1%/2% corporate income-tax shares totaling <strong>{eurM(manifest.counts.total10YearEurCents)}</strong> — growing from {count(manifest.yearly['2016'].distinctOrganizations)} organizations ({eurM(manifest.yearly['2016'].totalCents)}) in 2016 to <strong>{count(manifest.counts.active2025Organizations)} organizations ({eurM(manifest.counts.total2025EurCents)}) in 2025</strong> (+82.5% over the decade; {count(manifest.counts.presentAll10Years)} organizations received payouts in all ten years).</p>
+  <p>Unlike <a href={url('/record/charity-index/poland/')}>Poland’s</a> individual-only 1.5% PIT mechanism (where medical sub-account intermediaries lead 45.7%), Slovakia allows <strong>both individuals and corporations</strong> to assign income-tax shares. As a result, entities named <em>Nadácia</em> (foundations — heavily represented by corporate foundations) account for <strong>{flowManifest.counts.namedFoundationShare2025Pct}% ({eurM(manifest.counts.byNameHint2025Cents.foundation_named)})</strong> of all 2025 payouts despite representing just {count(manifest.counts.byNameHint.foundation_named)} organizations.</p>
+
+  <section class="charity-financial-search" data-slovakia-registry data-base={url(dataPath)}
+    data-flow={url(flowPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="sk-search-heading">
+    <h2 id="sk-search-heading">Search Slovak 2%/3% recipient organizations</h2>
+    <p id="sk-search-hint">Enter the beginning of an organization’s name (Slovak diacritics optional, with or without <code>Nadácia</code> / <code>OZ</code>, e.g., <code>cerveny kriz</code>, <code>pontis</code>, <code>plamienok</code>, <code>kia slovakia</code> or <code>appa</code>) or an exact 8-digit <em>IČO</em> (e.g., <code>00177466</code> or <code>31784828</code>). Search runs locally in your browser.</p>
+    <form aria-describedby="sk-search-hint">
+      <label for="sk-query">Organization name or 8-digit IČO</label>
+      <div class="finance-actions">
+        <input type="search" id="sk-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="sk-hint">Name category (token hint)</label>
+          <select id="sk-hint" disabled>
+            <option value="">All categories ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="foundation_named">Named Nadácia / Foundation ({count(manifest.counts.byNameHint.foundation_named)})</option>
+            <option value="nonprofit_service_named">Named n.o. / Nonprofit service ({count(manifest.counts.byNameHint.nonprofit_service_named)})</option>
+            <option value="non_investment_fund_named">Named n.f. / Non-investment fund ({count(manifest.counts.byNameHint.non_investment_fund_named)})</option>
+            <option value="education_or_pta_named">School / University / PTA named ({count(manifest.counts.byNameHint.education_or_pta_named)})</option>
+            <option value="volunteer_fire_named">Volunteer fire brigade named ({count(manifest.counts.byNameHint.volunteer_fire_named)})</option>
+            <option value="red_cross">Slovak Red Cross units ({count(manifest.counts.byNameHint.red_cross)})</option>
+            <option value="other_eligible">Other eligible civic/charity orgs ({count(manifest.counts.byNameHint.other_eligible)})</option>
+          </select>
+        </span>
+        <label class="inline-check"><input type="checkbox" id="sk-active-2025" disabled /> Received payout in 2025 ({count(manifest.counts.active2025Organizations)})</label>
+        <label class="inline-check"><input type="checkbox" id="sk-all-10y" disabled /> Present all 10 years ({count(manifest.counts.presentAll10Years)})</label>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you are ready to load a Slovakia registry shard.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="tatraPeak" aria-label="Slovakia nonprofit registry results" data-results></ol>
+    <noscript><p>Without JavaScript, download the annual overview CSVs directly from <a href={manifest.catalogues.financnaSprava}>Finančná správa SR</a>.</p></noscript>
+  </section>
+
+  <h2 id="top-2025">Top 20 recipients in 2025</h2>
+  <p>Eight of Slovakia’s top ten recipients in 2025 are corporate or bank-affiliated foundations, alongside two independent frontline care charities (<em>Asociácia pomoci postihnutým - APPA</em> and pediatric hospice <em>PLAMIENOK n.o.</em>). Click any 8-digit <em>IČO</em> to inspect its full 10-year EUR trajectory above.</p>
+  <div class="table-wrap" role="region" aria-label="Top 20 Slovak 2%/3% tax-assignment recipients in 2025" tabindex="0">
+    <table class="data sk-table">
+      <caption>Top 20 beneficiaries of §50 income-tax assignments in 2025 (EUR)</caption>
+      <thead>
+        <tr>
+          <th scope="col">IČO</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Municipality</th>
+          <th scope="col">Years (16–25)</th>
+          <th scope="col">2025 payout</th>
+          <th scope="col">10-year total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {flowManifest.topRecipients2025.map((item) => (
+          <tr>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-sk={item.ico}><code>{item.ico}</code></button></td>
+            <th scope="row"><span lang="sk">{item.name}</span></th>
+            <td>{item.muni || '—'}</td>
+            <td>{item.yearsCount}</td>
+            <td>{eur(item.y2025Cents)}</td>
+            <td>{eur(item.total10yCents)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="funding">Inspect the 10-year 2%/3% tax-assignment funding flow</h2>
+  <p>Explore the complete decade of statutory tax-share disbursements across all 26,357 recipients, compare corporate foundation concentration against independent associations, and inspect the 2020 COVID drop and post-2021 expansion. <a class="identity-link" href={url(flowPath)}>Open Slovakia’s 2016–2025 2%/3% tax-assignment explorer (EUR 782.06M)</a>.</p>
+
+  <h2 id="coverage">Scope, encoding recovery and boundaries</h2>
+  <p><strong>What is included vs. excluded:</strong> Finančná správa SR’s §50(12) overviews cover every organization that <em>actually received</em> a positive 2%/3% individual or 1%/2% corporate income-tax share in 2016–2025. Eligible nonprofits registered in the Notary Chamber list that received EUR 0 in a given year, and Slovak civic associations that never registered for tax assignments, are outside this payout-derived registry. Finančná správa SR does not split individual vs. corporate donor shares per recipient.</p>
+  <p><strong>Transparent name-token hints &amp; 2022 cp852 recovery:</strong> Because the annual Finančná správa CSVs omit a statutory legal-form code column, category filters use transparent Slovak name-token hints (for example, <em>Nadácia</em>, <em>n.o.</em>, <em>n.f.</em>) and are explicitly labeled as name hints rather than an external RPO legal-form join. The 2022 official CSV was issued in DOS Central European <code>cp852</code> encoding (unlike <code>cp1250</code> in the other nine years); decoding 2022 explicitly as <code>cp852</code> recovers all 15,620 rows with intact Slovak diacritics. Street addresses and postcodes are stripped at build time. <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> · <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
+</Entry>
+
+<style>
+  .sk-table { min-inline-size: 40rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName, financialShardLoader, normalizeFinancialName, type FinancialShard } from '../../../lib/client/financial-directory';
+
+  type OrgRow = {
+    ico: string;
+    name: string;
+    muni: string;
+    firstYear: number;
+    lastYear: number;
+    yearsCount: number;
+    totalCents: number;
+    y2025Cents: number | null;
+    y2024Cents: number | null;
+    y2023Cents: number | null;
+    yearly: Record<string, number>;
+    nameHint: string;
+  };
+  type Manifest = {
+    format: string;
+    capturedOn: string;
+    publisher: string;
+    shards: {
+      names: Record<string, FinancialShard>;
+      ids: Record<string, FinancialShard>;
+    };
+  };
+  type Result = { total: number; organizations: OrgRow[] };
+
+  const stripDigits = (value: string) => value.replace(/[\s.-]+/g, '');
+  const isIco = (value: string) => /^[0-9]{6,8}$/.test(stripDigits(value));
+  const padIco = (value: string) => stripDigits(value).padStart(8, '0');
+  const bucketFor = (norm: string) => {
+    const first = norm[0] ?? '';
+    return first >= 'a' && first <= 'z' ? first : '0-9';
+  };
+  const hintLabels: Record<string, string> = {
+    foundation_named: 'Named Nadácia (Foundation)',
+    nonprofit_service_named: 'Named n.o. (Nonprofit service)',
+    non_investment_fund_named: 'Named n.f. (Non-investment fund)',
+    education_or_pta_named: 'School / University / PTA named',
+    volunteer_fire_named: 'Volunteer fire brigade named',
+    red_cross: 'Slovak Red Cross',
+    other_eligible: 'Eligible §50 recipient',
+  };
+  const fmtEur = (cents: number) =>
+    `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const limit = 30;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-slovakia-registry]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const flowBase = root.dataset.flow!;
+    const loadNames = financialShardLoader<OrgRow>(base, manifest.shards.names);
+    const loadIds = financialShardLoader<OrgRow>(base, manifest.shards.ids);
+
+    const formEl = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#sk-query', formEl);
+    const hintFilter = $<HTMLSelectElement>('#sk-hint', formEl);
+    const active2025 = $<HTMLInputElement>('#sk-active-2025', formEl);
+    const all10y = $<HTMLInputElement>('#sk-all-10y', formEl);
+    const submit = $<HTMLButtonElement>('button[type=submit]', formEl);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const statusEl = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+
+    let found: Result | undefined;
+    let sequence = 0;
+    input.disabled = hintFilter.disabled = active2025.disabled = all10y.disabled = submit.disabled = clear.disabled = false;
+
+    const reset = () => {
+      found = undefined;
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    function card(row: OrgRow) {
+      const yearsOrdered = Object.keys(row.yearly).sort((a, b) => Number(b) - Number(a));
+      const yearSummary = yearsOrdered.map((y) => `${y}: ${fmtEur(row.yearly[y])}`).join(' · ');
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, row.ico), ' ', h('span', { lang: 'sk' }, row.name)),
+        h('p', {}, `${hintLabels[row.nameHint] ?? row.nameHint}${row.muni ? ` · ${row.muni}` : ''} · ${row.yearsCount} ${row.yearsCount === 1 ? 'year' : 'years'} (${row.firstYear}–${row.lastYear})`),
+        h('p', { class: 'note' },
+          `10-year cumulative (2016–2025): `, h('strong', {}, fmtEur(row.totalCents)),
+          row.y2025Cents !== null ? ` · 2025: ${fmtEur(row.y2025Cents)}` : ' · No 2025 payout listed'),
+        h('p', { class: 'note' }, yearSummary),
+        h('p', { class: 'note' },
+          h('a', { href: `${flowBase}#q=${row.ico}` }, 'Inspect in 2%/3% tax-assignment explorer'),
+          ' · ',
+          h('a', { href: 'https://www.notar.sk/prijimatelia/', rel: 'noopener noreferrer' }, 'Check live Notary Chamber list')),
+      );
+    }
+
+    async function search(value: string): Promise<Result> {
+      const hVal = hintFilter.value;
+      const only25 = active2025.checked;
+      const only10 = all10y.checked;
+      const matchesFilters = (row: OrgRow) =>
+        (!hVal || row.nameHint === hVal)
+        && (!only25 || row.y2025Cents !== null)
+        && (!only10 || row.yearsCount === 10);
+
+      if (isIco(value)) {
+        const ico = padIco(value);
+        const pfx = ico[0];
+        if (!manifest.shards.ids[pfx]) return { total: 0, organizations: [] };
+        const org = (await loadIds(pfx)).find((o) => o.ico === ico);
+        if (!org) return { total: 0, organizations: [] };
+        return matchesFilters(org) ? { total: 1, organizations: [org] } : { total: 0, organizations: [] };
+      }
+
+      const query = normalizeFinancialName(value);
+      if (query.length < 2) throw new Error('Enter at least two characters of a name or an exact 8-digit IČO.');
+      const queries = [query];
+      const hasPrefix =
+        query.startsWith('nadacia ') ||
+        query.startsWith('obcianske zdruzenie ') ||
+        query.startsWith('oz ') ||
+        query.startsWith('slovensky ');
+      if (!hasPrefix) {
+        queries.push(`nadacia ${query}`, `obcianske zdruzenie ${query}`, `oz ${query}`, `slovensky ${query}`);
+      }
+      const buckets = [...new Set(queries.map(bucketFor))].filter((b) => Boolean(manifest.shards.names[b]));
+      const organizations: OrgRow[] = [];
+      const seen = new Set<string>();
+      let total = 0;
+      for (const bucket of buckets) {
+        for (const row of await loadNames(bucket)) {
+          if (seen.has(row.ico) || !matchesFilters(row)) continue;
+          const normName = normalizeFinancialName(row.name);
+          if (!queries.some((q) => normName.startsWith(q)) && !normName.includes(query)) continue;
+          seen.add(row.ico);
+          total++;
+          if (organizations.length < limit) organizations.push(row);
+        }
+      }
+      return { total, organizations };
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      statusEl.textContent = 'Checking the Slovakia 2016–2025 tax-assignment snapshot.';
+      try {
+        const matches = await search(input.value);
+        if (ticket !== sequence) return;
+        found = matches;
+        statusEl.textContent = matches.total
+          ? `${matches.total.toLocaleString('en-US')} ${matches.total === 1 ? 'match' : 'matches'}. Showing ${matches.organizations.length}.`
+          : 'No matching Slovak recipient in this 2016–2025 snapshot. Try a Slovak name (diacritics optional) or an exact 8-digit IČO.';
+        results.append(...matches.organizations.map(card));
+        jsonBtn.disabled = csvBtn.disabled = !matches.organizations.length;
+      } catch (error) {
+        if (ticket === sequence) statusEl.textContent = error instanceof Error ? error.message : 'The organization search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    formEl.addEventListener('submit', (event) => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      hintFilter.value = '';
+      active2025.checked = all10y.checked = false;
+      statusEl.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher } = manifest;
+    jsonBtn.addEventListener('click', () => {
+      if (!found) return;
+      download('slovakia-tax-assignment-organizations.json', JSON.stringify({
+        format, capturedOn, publisher,
+        total: found.total, organizations: found.organizations,
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!found) return;
+      const rows = found.organizations.map((o) => ({
+        ico: o.ico,
+        name: financialCsvName(o.name),
+        municipality: o.muni,
+        nameCategoryHint: o.nameHint,
+        yearsCount: o.yearsCount,
+        firstYear: o.firstYear,
+        lastYear: o.lastYear,
+        eur2025: o.y2025Cents === null ? '' : (o.y2025Cents / 100).toFixed(2),
+        eur2024: o.y2024Cents === null ? '' : (o.y2024Cents / 100).toFixed(2),
+        eur2023: o.y2023Cents === null ? '' : (o.y2023Cents / 100).toFixed(2),
+        eur10yTotal: (o.totalCents / 100).toFixed(2),
+        capturedOn,
+        publisher,
+      }));
+      download('slovakia-tax-assignment-organizations.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const triggerId = (id: string | null) => {
+      if (!id || !isIco(id)) return;
+      input.value = padIco(id);
+      hintFilter.value = '';
+      active2025.checked = all10y.checked = false;
+      void runSearch();
+    };
+    const initial = new URLSearchParams(location.search).get('ico') ?? /^#q=([0-9]{6,8})$/.exec(location.hash)?.[1] ?? null;
+    triggerId(initial);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{6,8})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-sk]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupSk ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+</script>

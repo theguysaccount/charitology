@@ -787,3 +787,25 @@ python3 scripts/build-czechia-charity-index.py /path/to/captured-inputs public/d
 node scripts/check-czechia-charity-index.mjs
 npm run check:references
 ```
+
+## Slovakia 2%/3% income-tax assignment recipients and 10-year disbursements (Jurisdiction #20)
+
+The [Slovakia 2%/3% recipient index](https://charitology.com/record/charity-index/slovakia/) and paired [Slovakia 2%/3% tax-assignment funding flow](https://charitology.com/record/funding-flows/slovakia-pit-2-percent/) combine ten consecutive official annual disbursement CSVs published by the Financial Directorate of the Slovak Republic (*Finančné riaditeľstvo SR* / `financnasprava.sk`, `2016`–`2025`, under §50 Act No. 595/2003 Coll., all 10 files SHA-256 pinned in `src/data/slovakia-index-sources.tsv`). Decoding 2022 explicitly as DOS Central European `cp852` (while the other nine years use `cp1250`) recovers all **148,996 annual rows** across **26,357 distinct 8-digit `IČO` organizations** (**17,457** active in 2025; **5,338** funded every year across the decade), totaling **EUR 782,063,657.20** cumulatively and **EUR 107,043,910.00** in 2025 (+82.5% since 2016). Because Slovakia uniquely permits corporate income-tax assignment (1%–2%) alongside individual assignment (2%–3%), **416** entities named *Nadácia* (dominated by corporate foundations) account for **30.87%** (`EUR 33.05M`) of 2025 disbursements. Street addresses and postcodes are omitted; 60 same-year duplicate `IČO` rows are aggregated cleanly and documented in `anomalies.json`.
+
+Rebuild offline from the ten SHA-256-pinned inputs listed in `src/data/slovakia-index-sources.tsv`:
+
+```sh
+python3 scripts/build-slovakia-charity-index.py /path/to/captured-inputs public/data
+node scripts/check-slovakia-charity-index.mjs
+npm run check:references
+```
+
+## Global humanitarian funding gaps by country and cluster (OCHA FTS 2019–2026)
+
+The [Global humanitarian funding gaps explorer](https://charitology.com/record/funding-flows/ocha-fts-global-clusters/) (linked directly from `/record/gap-map/`) indexes **3,958** UN OCHA Financial Tracking Service (FTS) plan-cluster records across **313** humanitarian response plans and **58** country codes (`2019`–`2026`, CC BY 3.0 IGO via HDX, SHA-256 pinned in `src/data/ocha-fts-clusters-sources.tsv`), totaling **\$269.49 billion** in requirements vs. **\$147.20 billion** reported funded (`54.62%` overall; dropping from `64.6%` in 2022 to `41.0%` in 2025 and `44.4%` in 2026 YTD). Every row retains its exact original OCHA cluster string alongside a transparent normalized sector grouping while keeping unearmarked/shared plan funding strictly separate from named-sector denominators.
+
+```sh
+python3 scripts/build-ocha-fts-clusters.py /path/to/captured-inputs public/data
+node scripts/check-ocha-fts-clusters.mjs
+npm run check:references
+```

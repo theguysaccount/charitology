@@ -1,0 +1,456 @@
+{
+  "asOf": "2025-12-31",
+  "capturedOn": "2026-11-22",
+  "catalogues": {
+    "financnaSprava": "https://www.financnasprava.sk/sk/elektronicke-sluzby/verejne-sluzby/zoznamy/zoznam-prijimatelov-dane",
+    "notarRegister": "https://www.notar.sk/prijimatelia/",
+    "rmnoRegister": "https://ives.minv.sk/rmno/"
+  },
+  "counts": {
+    "active2025Organizations": 17457,
+    "byNameHint": {
+      "education_or_pta_named": 909,
+      "foundation_named": 416,
+      "non_investment_fund_named": 363,
+      "nonprofit_service_named": 1139,
+      "other_eligible": 23419,
+      "red_cross": 37,
+      "volunteer_fire_named": 74
+    },
+    "byNameHint10yCents": {
+      "education_or_pta_named": 1897050564,
+      "foundation_named": 23423738173,
+      "non_investment_fund_named": 1357478762,
+      "nonprofit_service_named": 4772185753,
+      "other_eligible": 46562230501,
+      "red_cross": 128024345,
+      "volunteer_fire_named": 65657622
+    },
+    "byNameHint2025Cents": {
+      "education_or_pta_named": 223876351,
+      "foundation_named": 3304573931,
+      "non_investment_fund_named": 126846435,
+      "nonprofit_service_named": 623470731,
+      "other_eligible": 6400006290,
+      "red_cross": 16004199,
+      "volunteer_fire_named": 9613063
+    },
+    "duplicateInYearRowsAggregated": 60,
+    "includedOrganizations": 26357,
+    "presentAll10Years": 5338,
+    "rawAnnualRowsScanned": 148996,
+    "total10YearEurCents": 78206365720,
+    "total2025EurCents": 10704391000,
+    "yearsCovered": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "currency": "EUR",
+  "format": "charitology-slovakia-registry-v1",
+  "jurisdiction": "SK",
+  "privacyBoundary": "Street addresses and postcodes from Finančná správa SR annual overview CSVs are omitted; only organization name, 8-digit IČO, municipality (Obec) and statutory EUR tax-share disbursements are retained.",
+  "publisher": "Financial Directorate of the Slovak Republic (Finančné riaditeľstvo SR / Finančná správa)",
+  "shards": {
+    "ids": {
+      "0": {
+        "bytes": 31836,
+        "decodedBytes": 138855,
+        "decodedSha256": "399ea3a30f9957e55a500314bf0d5e7c38f0d8add188a423c17978cdaf6d1c76",
+        "path": "ids/0.json.gz",
+        "rows": 375,
+        "sha256": "2b84288faa9a3520efc179200a0be62e6eebac9b4f645259d27e8a97433bcf65"
+      },
+      "1": {
+        "bytes": 33605,
+        "decodedBytes": 146586,
+        "decodedSha256": "473d5bbbf6a047f68fd3963365206ebaff2d603ea68467b6eb7fd15e351f73da",
+        "path": "ids/1.json.gz",
+        "rows": 413,
+        "sha256": "1d3e95c4ab27b0ca2d976cc22e1db11c5b94bb0469e698dd656d7224705b4ccc"
+      },
+      "2": {
+        "bytes": 1318,
+        "decodedBytes": 4295,
+        "decodedSha256": "4bc7ca6fe9f207e6400eb53b429e4dfec1ddbdb54b961cae65ae7315802d2d55",
+        "path": "ids/2.json.gz",
+        "rows": 12,
+        "sha256": "8e6cabd8b1537530b0dae98adfec94483624257e7218917ef8d584c9bbe786b3"
+      },
+      "3": {
+        "bytes": 553937,
+        "decodedBytes": 2454889,
+        "decodedSha256": "a206707ad490f0aee7d9775b40b2d74787e46c999547d3538d68df0eae760db5",
+        "path": "ids/3.json.gz",
+        "rows": 6803,
+        "sha256": "eac64f294d2ef6669c8572a689eac874eb1cb66f654297e539ed998fc568e23b"
+      },
+      "4": {
+        "bytes": 641016,
+        "decodedBytes": 2894713,
+        "decodedSha256": "f133de2cb28e481f27cd37e48260a3950fe86e124640209ca28c50a260b5feed",
+        "path": "ids/4.json.gz",
+        "rows": 8495,
+        "sha256": "c4ad26ee797462739972f2a43a70fe1c19c0b0234a8fec5004479b1a5dc6803c"
+      },
+      "5": {
+        "bytes": 601421,
+        "decodedBytes": 3001697,
+        "decodedSha256": "7bd7f9d281f64f7925ff7999d98991165fc76fc6f7920a2861c0f69df8d8238d",
+        "path": "ids/5.json.gz",
+        "rows": 10259,
+        "sha256": "d2e68ef7f6e0b1b4b3402e3454cfeb8de7e197c207f3e622e28f7240af2f65d8"
+      }
+    },
+    "names": {
+      "0-9": {
+        "bytes": 8369,
+        "decodedBytes": 35857,
+        "decodedSha256": "4f92f9a4a9f2ca60e6a0ebd6eb3abaaf60d3d0087b6a468f7043f22b83e23ed5",
+        "path": "names/0-9.json.gz",
+        "rows": 114,
+        "sha256": "a63ca84f2255c178143c93687a4a0287c94ea3b01736ba50626127856015fe11"
+      },
+      "a": {
+        "bytes": 74861,
+        "decodedBytes": 350124,
+        "decodedSha256": "e3bb961be24177e36f19988921c0a449bebd5e6f89178f00cddc90d0fe91391b",
+        "path": "names/a.json.gz",
+        "rows": 1100,
+        "sha256": "1672f11e9ea1c3d6fcb7758effe8fd8cab375a6723a138a6b0a6330ea47af9a0"
+      },
+      "b": {
+        "bytes": 57234,
+        "decodedBytes": 262263,
+        "decodedSha256": "52189e879d6043ec61b9337fe666f69b684e34543a03f48b47b0098c96397702",
+        "path": "names/b.json.gz",
+        "rows": 836,
+        "sha256": "35c6c11d6a163b709b1c04067fd23b38fd54d3127390b8b24c3997f2ea5a0f7b"
+      },
+      "c": {
+        "bytes": 57761,
+        "decodedBytes": 265020,
+        "decodedSha256": "d400c818a7ad4c024c50688f047364875693408f2213d76feb3552660cc3b608",
+        "path": "names/c.json.gz",
+        "rows": 832,
+        "sha256": "c3d4610c97ced9590ce4991f991f2ec833769a04d2b04866e7ba9319de87ab77"
+      },
+      "d": {
+        "bytes": 75964,
+        "decodedBytes": 350590,
+        "decodedSha256": "4022f472723fd5c91b2c02f55e9e82fc1c679d54f02720331a41b784ae92ed03",
+        "path": "names/d.json.gz",
+        "rows": 1093,
+        "sha256": "154b96618731f82b8de34a1bb58c73291533668c6c3014791d1e6f41c9ad6d59"
+      },
+      "e": {
+        "bytes": 27110,
+        "decodedBytes": 127339,
+        "decodedSha256": "e53f902c3f5e4af499087d74743bca865480d464d3ceb77a5a92d343f1feb813",
+        "path": "names/e.json.gz",
+        "rows": 418,
+        "sha256": "211cb1fb525b7cb39d9bab5fdbbe2b0cde3b59f858da26689187fc0159714bc6"
+      },
+      "f": {
+        "bytes": 69715,
+        "decodedBytes": 320266,
+        "decodedSha256": "326522e6aa2439288b35e2cc47cae4034463ff1fd5057c5e558b9e7013014895",
+        "path": "names/f.json.gz",
+        "rows": 1000,
+        "sha256": "6edd35c4a5c28460f7d479b765735c68eda0dc426654769ac94e89a00f33d3a4"
+      },
+      "g": {
+        "bytes": 20711,
+        "decodedBytes": 94042,
+        "decodedSha256": "a703085d05b02d6abcfa1214a89768586aad4db68ee653fabae9c6cf20c07301",
+        "path": "names/g.json.gz",
+        "rows": 303,
+        "sha256": "33a9e0b941ddc02666e70bc4bb3f18e0bd09baaeef34fa83ba1b00501fcb6e6e"
+      },
+      "h": {
+        "bytes": 52336,
+        "decodedBytes": 237785,
+        "decodedSha256": "c45b12c24260aa61d9835129b5e2c9a6efe55bcdee0f641216d01d0ae706a261",
+        "path": "names/h.json.gz",
+        "rows": 751,
+        "sha256": "0441b375fa247208422976567f5a2446e8f02526311518075a53ba26437f06cc"
+      },
+      "i": {
+        "bytes": 24915,
+        "decodedBytes": 113999,
+        "decodedSha256": "8537d53c7ed7beb8721f141ebd59dc6b6a8a708a0b623ced9c14bc32c2b722f6",
+        "path": "names/i.json.gz",
+        "rows": 350,
+        "sha256": "d45ff79d2a6c96aa0b95d68c88738755fc6edfa0b6e003a5e1e634150ceb91fc"
+      },
+      "j": {
+        "bytes": 25377,
+        "decodedBytes": 113256,
+        "decodedSha256": "5cd8a9196d3f435624cb57e4e430c342a199ddedf4ad2c10e576ee8eb14c43a4",
+        "path": "names/j.json.gz",
+        "rows": 358,
+        "sha256": "c8d1779620ee630c8250c27127062771f099dbdf3b99d13f318463e44950ed9c"
+      },
+      "k": {
+        "bytes": 124407,
+        "decodedBytes": 555850,
+        "decodedSha256": "366888354645039ea32f81b6411c9f85647168f4b9890d3b3b7bcbf8b06b35d1",
+        "path": "names/k.json.gz",
+        "rows": 1667,
+        "sha256": "99c0cb6f241b4c75c6cd210f9edd00813f6240c03fa47678c18e10951966b607"
+      },
+      "l": {
+        "bytes": 46713,
+        "decodedBytes": 211710,
+        "decodedSha256": "2a6fce92286e44b24f09b2a47a0344b771dee70bdf91a83bc8f11c0ea4cb176e",
+        "path": "names/l.json.gz",
+        "rows": 670,
+        "sha256": "be93ac74c309504f191dc381989fe9768c0ac8eab88a13a4fffb4ce1304bf839"
+      },
+      "m": {
+        "bytes": 91157,
+        "decodedBytes": 420477,
+        "decodedSha256": "fb2211445b351094cf03f0dbef7500ea67f8db30173906b7ef1045c4ef9016af",
+        "path": "names/m.json.gz",
+        "rows": 1327,
+        "sha256": "cd20d2da5827d3ef88a3c57d0a45fe4e3de7273035bbff34ed05ca931c64e83a"
+      },
+      "n": {
+        "bytes": 82078,
+        "decodedBytes": 375733,
+        "decodedSha256": "6e709f36b56843811386ffc4a2a1e36a6862522c71e9211cf1309cc0536f7fc9",
+        "path": "names/n.json.gz",
+        "rows": 1136,
+        "sha256": "e0c9b31d7b09deb1794dfc85d8f0d095faa80f8ca56d40d68e2416e7d82b09d9"
+      },
+      "o": {
+        "bytes": 244791,
+        "decodedBytes": 1133248,
+        "decodedSha256": "68655759695b74a7424c364e6c83e4feb6fb3e6f71e529405ca9418028c80c71",
+        "path": "names/o.json.gz",
+        "rows": 3384,
+        "sha256": "9d0ec562482790bfbbf4fb49413e711f5e26d942948e45af0deac649779fcada"
+      },
+      "p": {
+        "bytes": 107266,
+        "decodedBytes": 500596,
+        "decodedSha256": "2b37a0df394f44c79b4b7a53f0027383a7c514d9210c56e1b70e87f782f427d2",
+        "path": "names/p.json.gz",
+        "rows": 1600,
+        "sha256": "eb69faee76b7f0793d177351845514267902e497fe78a1a7915026f7404eb21c"
+      },
+      "q": {
+        "bytes": 1410,
+        "decodedBytes": 5067,
+        "decodedSha256": "aa9adc2257f41af0962fe132c48de5b9c722256fd1a819fcd2fc90c3b94547cf",
+        "path": "names/q.json.gz",
+        "rows": 17,
+        "sha256": "b5412aaa0fb9ad6d2459e82ba7ca554423e68588a677cca7ce3a1bd7c6f14285"
+      },
+      "r": {
+        "bytes": 99872,
+        "decodedBytes": 457282,
+        "decodedSha256": "ac3a0c0f36f4e237498b50452fc88ae5dd63a0054fe01c6c7eb8f5368455fe76",
+        "path": "names/r.json.gz",
+        "rows": 1288,
+        "sha256": "0cba2fe8465083f00d92699caa6815660d8b85048a861c715b30883b188dc01f"
+      },
+      "s": {
+        "bytes": 289020,
+        "decodedBytes": 1335085,
+        "decodedSha256": "16841ff0ea1bc7a026b3304a3c3f2f111e67566249dd9c361003d3bed32041fa",
+        "path": "names/s.json.gz",
+        "rows": 4014,
+        "sha256": "a08b0f912c032eb21f6f5849c720eb105a80ed54b35978a697191b3ec4836ed3"
+      },
+      "t": {
+        "bytes": 102029,
+        "decodedBytes": 468503,
+        "decodedSha256": "ad169049c0e8ed1b0213b6ae0e2a20390532138583f77cfbaf75e2f75af84c97",
+        "path": "names/t.json.gz",
+        "rows": 1415,
+        "sha256": "d4848e08137eef409acc6ab392ca4e8581c6df9409e09a54e937a69f00b6475f"
+      },
+      "u": {
+        "bytes": 17692,
+        "decodedBytes": 77101,
+        "decodedSha256": "713eced61eb5117f8988e9c48d3f9d319f333c82d0b6ad40941a7358ad05f169",
+        "path": "names/u.json.gz",
+        "rows": 237,
+        "sha256": "95cbb7ec1a5f7d28427a8d567ce225da621162e01abd596a9896ff2f0513320d"
+      },
+      "v": {
+        "bytes": 45358,
+        "decodedBytes": 206534,
+        "decodedSha256": "f3f9151ffa659cc5b049def81c336e7d4605fe7d32d49ea400e3a7b9340829ba",
+        "path": "names/v.json.gz",
+        "rows": 649,
+        "sha256": "88d3c13543cffb00c0d605d60905855f8127ad701af7e457ca8db3a8080da478"
+      },
+      "w": {
+        "bytes": 5447,
+        "decodedBytes": 23728,
+        "decodedSha256": "3755078ff5724b888908b0019feaf2e3579d1c478a40c285a414ff47bc6b5d9d",
+        "path": "names/w.json.gz",
+        "rows": 79,
+        "sha256": "bfbb9afbb3c007ca3312a429108983f9e557d28f49a68381532d804ddf7e66f1"
+      },
+      "x": {
+        "bytes": 1219,
+        "decodedBytes": 3900,
+        "decodedSha256": "37fda1539d1541b0fd7856c29380ee209ffaeb1409ad52678280809f6c63cceb",
+        "path": "names/x.json.gz",
+        "rows": 13,
+        "sha256": "8dd944c50e8b3e9c91aca6a24d9f8b3de253034f378d2e18f2b059d406d1077d"
+      },
+      "y": {
+        "bytes": 3718,
+        "decodedBytes": 14665,
+        "decodedSha256": "bac98e177ec4f02d1495ccc0045d095724a1e92b1fb6a8020458dbcdfa06ef80",
+        "path": "names/y.json.gz",
+        "rows": 47,
+        "sha256": "fd893c30e82e949418495e83b04be50a15fcc6ce51cccff3cc75080c96599a85"
+      },
+      "z": {
+        "bytes": 130036,
+        "decodedBytes": 581057,
+        "decodedSha256": "35cb3f50ced54b1fc10e607182755e80b70901ebb94ecfc3ac8b6bc260f53da2",
+        "path": "names/z.json.gz",
+        "rows": 1659,
+        "sha256": "75e200348f291eb6207cdf33c62234b7f83f89d9efd48d941cf76c1e13f29dc2"
+      }
+    }
+  },
+  "sourcesCount": 10,
+  "sourcesPinnedIn": "src/data/slovakia-index-sources.tsv",
+  "yearly": {
+    "2016": {
+      "distinctOrganizations": 11862,
+      "duplicateRowsAggregated": 1,
+      "encoding": "cp1250",
+      "namedFoundationCents": 1953674828,
+      "namedFoundationOrgs": 265,
+      "rawRows": 11863,
+      "top10Cents": 1215229132,
+      "top50Cents": 2174466847,
+      "totalCents": 5865821094,
+      "year": 2016
+    },
+    "2017": {
+      "distinctOrganizations": 12560,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 1891289007,
+      "namedFoundationOrgs": 270,
+      "rawRows": 12560,
+      "top10Cents": 1094364189,
+      "top50Cents": 2172245802,
+      "totalCents": 6052015920,
+      "year": 2017
+    },
+    "2018": {
+      "distinctOrganizations": 13412,
+      "duplicateRowsAggregated": 56,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2160950117,
+      "namedFoundationOrgs": 275,
+      "rawRows": 13468,
+      "top10Cents": 1293376598,
+      "top50Cents": 2509465822,
+      "totalCents": 6552014568,
+      "year": 2018
+    },
+    "2019": {
+      "distinctOrganizations": 14062,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2102896584,
+      "namedFoundationOrgs": 265,
+      "rawRows": 14062,
+      "top10Cents": 1273934042,
+      "top50Cents": 2453551698,
+      "totalCents": 6994595483,
+      "year": 2019
+    },
+    "2020": {
+      "distinctOrganizations": 14434,
+      "duplicateRowsAggregated": 3,
+      "encoding": "cp1250",
+      "namedFoundationCents": 1562722518,
+      "namedFoundationOrgs": 265,
+      "rawRows": 14437,
+      "top10Cents": 942493041,
+      "top50Cents": 1779271691,
+      "totalCents": 5126789358,
+      "year": 2020
+    },
+    "2021": {
+      "distinctOrganizations": 16158,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2293121326,
+      "namedFoundationOrgs": 285,
+      "rawRows": 16158,
+      "top10Cents": 1562591737,
+      "top50Cents": 2815293462,
+      "totalCents": 8372390997,
+      "year": 2021
+    },
+    "2022": {
+      "distinctOrganizations": 15620,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp852",
+      "namedFoundationCents": 2470570784,
+      "namedFoundationOrgs": 283,
+      "rawRows": 15620,
+      "top10Cents": 1464802071,
+      "top50Cents": 2922148928,
+      "totalCents": 8524994778,
+      "year": 2022
+    },
+    "2023": {
+      "distinctOrganizations": 16639,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2747481834,
+      "namedFoundationOrgs": 296,
+      "rawRows": 16639,
+      "top10Cents": 1597454156,
+      "top50Cents": 3225381807,
+      "totalCents": 9778444051,
+      "year": 2023
+    },
+    "2024": {
+      "distinctOrganizations": 16732,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2930858557,
+      "namedFoundationOrgs": 272,
+      "rawRows": 16732,
+      "top10Cents": 1700876868,
+      "top50Cents": 3443505668,
+      "totalCents": 10234908471,
+      "year": 2024
+    },
+    "2025": {
+      "distinctOrganizations": 17457,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 3304573931,
+      "namedFoundationOrgs": 278,
+      "rawRows": 17457,
+      "top10Cents": 2033440478,
+      "top50Cents": 3888937815,
+      "totalCents": 10704391000,
+      "year": 2025
+    }
+  }
+}

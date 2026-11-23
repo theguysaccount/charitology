@@ -1,0 +1,654 @@
+{
+  "artifacts": {
+    "anomalies": "anomalies.json",
+    "payouts": {
+      "bytes": 1670752,
+      "decodedBytes": 7267569,
+      "decodedSha256": "f55622aad92ad4f453dc18897aa757ef4dbf87ed06703936007fae83513e4312",
+      "path": "payouts.json.gz",
+      "rows": 26357,
+      "sha256": "de2ebc414859a0814f33a348a2f71a56da80078c89148f4d088fe1c9b00120f4"
+    },
+    "yearlySummaryCsv": "yearly-summary.csv"
+  },
+  "asOf": "2025-12-31",
+  "capturedOn": "2026-11-22",
+  "catalogue": "https://www.financnasprava.sk/sk/elektronicke-sluzby/verejne-sluzby/zoznamy/zoznam-prijimatelov-dane",
+  "counts": {
+    "active2025Organizations": 17457,
+    "byNameHint": {
+      "education_or_pta_named": 909,
+      "foundation_named": 416,
+      "non_investment_fund_named": 363,
+      "nonprofit_service_named": 1139,
+      "other_eligible": 23419,
+      "red_cross": 37,
+      "volunteer_fire_named": 74
+    },
+    "byNameHint10yCents": {
+      "education_or_pta_named": 1897050564,
+      "foundation_named": 23423738173,
+      "non_investment_fund_named": 1357478762,
+      "nonprofit_service_named": 4772185753,
+      "other_eligible": 46562230501,
+      "red_cross": 128024345,
+      "volunteer_fire_named": 65657622
+    },
+    "byNameHint2025Cents": {
+      "education_or_pta_named": 223876351,
+      "foundation_named": 3304573931,
+      "non_investment_fund_named": 126846435,
+      "nonprofit_service_named": 623470731,
+      "other_eligible": 6400006290,
+      "red_cross": 16004199,
+      "volunteer_fire_named": 9613063
+    },
+    "distinctOrganizations10y": 26357,
+    "namedFoundationShare2025Pct": 30.87,
+    "presentAll10Years": 5338,
+    "rawAnnualRowsScanned": 148996,
+    "top10Share2025Pct": 19.0,
+    "top50Share2025Pct": 36.33,
+    "total10YearEurCents": 78206365720,
+    "total2025EurCents": 10704391000,
+    "yearsCovered": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "currency": "EUR",
+  "format": "charitology-slovakia-pit-2-percent-v1",
+  "jurisdiction": "SK",
+  "publisher": "Financial Directorate of the Slovak Republic (Finančné riaditeľstvo SR / Finančná správa)",
+  "topCities2025": [
+    {
+      "cents": 4672915021,
+      "city": "Bratislava",
+      "orgs": 3270
+    },
+    {
+      "cents": 464705206,
+      "city": "Teplička nad Váhom",
+      "orgs": 13
+    },
+    {
+      "cents": 383647372,
+      "city": "Košice",
+      "orgs": 915
+    },
+    {
+      "cents": 248669950,
+      "city": "Žilina",
+      "orgs": 400
+    },
+    {
+      "cents": 211159453,
+      "city": "Banská Bystrica",
+      "orgs": 470
+    },
+    {
+      "cents": 178814634,
+      "city": "Trnava",
+      "orgs": 331
+    },
+    {
+      "cents": 162277650,
+      "city": "Prešov",
+      "orgs": 335
+    },
+    {
+      "cents": 137919587,
+      "city": "Nitra",
+      "orgs": 318
+    },
+    {
+      "cents": 118920084,
+      "city": "Poprad",
+      "orgs": 169
+    },
+    {
+      "cents": 115995592,
+      "city": "Dubnica nad Váhom",
+      "orgs": 73
+    },
+    {
+      "cents": 112169086,
+      "city": "Piešťany",
+      "orgs": 122
+    },
+    {
+      "cents": 108444800,
+      "city": "Trenčín",
+      "orgs": 264
+    },
+    {
+      "cents": 107849130,
+      "city": "Dunajská Streda",
+      "orgs": 94
+    },
+    {
+      "cents": 99720134,
+      "city": "Brezno",
+      "orgs": 88
+    },
+    {
+      "cents": 94810812,
+      "city": "Martin",
+      "orgs": 238
+    }
+  ],
+  "topRecipients10y": [
+    {
+      "ico": "31784828",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia Pontis",
+      "nameHint": "foundation_named",
+      "total10yCents": 2289235378,
+      "y2025Cents": 206704050,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42349826",
+      "muni": "Teplička nad Váhom",
+      "name": "Nadácia Kia Slovakia",
+      "nameHint": "foundation_named",
+      "total10yCents": 1588308456,
+      "y2025Cents": 461137434,
+      "yearsCount": 9
+    },
+    {
+      "ico": "42412871",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia EPH",
+      "nameHint": "foundation_named",
+      "total10yCents": 1464431249,
+      "y2025Cents": 170244331,
+      "yearsCount": 10
+    },
+    {
+      "ico": "31818625",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia SPP",
+      "nameHint": "foundation_named",
+      "total10yCents": 1348343579,
+      "y2025Cents": 232947754,
+      "yearsCount": 10
+    },
+    {
+      "ico": "30856868",
+      "muni": "Bratislava - mestská časť Nové Mesto",
+      "name": "Nadácia Slovenskej sporiteľne",
+      "nameHint": "foundation_named",
+      "total10yCents": 1342563207,
+      "y2025Cents": 153794618,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42173809",
+      "muni": "Bratislava - mestská časť Rača",
+      "name": "Asociácia pomoci postihnutým - APPA",
+      "nameHint": "other_eligible",
+      "total10yCents": 1240303501,
+      "y2025Cents": 190614425,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42137527",
+      "muni": "Bratislava - m. č. Devínska Nová Ves",
+      "name": "NADÁCIA VOLKSWAGEN SLOVAKIA",
+      "nameHint": "foundation_named",
+      "total10yCents": 1199488683,
+      "y2025Cents": 192734450,
+      "yearsCount": 10
+    },
+    {
+      "ico": "36077259",
+      "muni": "Bratislava - mestská časť Petržalka",
+      "name": "PLAMIENOK n.o.",
+      "nameHint": "nonprofit_service_named",
+      "total10yCents": 1012428881,
+      "y2025Cents": 143610466,
+      "yearsCount": 10
+    },
+    {
+      "ico": "30856043",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia VÚB",
+      "nameHint": "foundation_named",
+      "total10yCents": 922433620,
+      "y2025Cents": 139989242,
+      "yearsCount": 10
+    },
+    {
+      "ico": "30857571",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "Nadácia Tatra Banky",
+      "nameHint": "foundation_named",
+      "total10yCents": 919779123,
+      "y2025Cents": 141663708,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42400970",
+      "muni": "Piešťany",
+      "name": "Nadácia ADELI",
+      "nameHint": "foundation_named",
+      "total10yCents": 806857043,
+      "y2025Cents": 51844252,
+      "yearsCount": 10
+    },
+    {
+      "ico": "35549891",
+      "muni": "Košice - mestská časť Šaca",
+      "name": "Nadácia U.S.Steel Košice",
+      "nameHint": "foundation_named",
+      "total10yCents": 636847081,
+      "y2025Cents": 403394,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42364248",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "Nadácia ZSE",
+      "nameHint": "foundation_named",
+      "total10yCents": 565323537,
+      "y2025Cents": 85907198,
+      "yearsCount": 10
+    },
+    {
+      "ico": "31782876",
+      "muni": "Dunajská Streda",
+      "name": "Nadácia CEF",
+      "nameHint": "foundation_named",
+      "total10yCents": 515544199,
+      "y2025Cents": 54511597,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42134064",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "Nadácia Allianz",
+      "nameHint": "foundation_named",
+      "total10yCents": 486451816,
+      "y2025Cents": 78677638,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42129559",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia Orange",
+      "nameHint": "foundation_named",
+      "total10yCents": 484516087,
+      "y2025Cents": 54467555,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42182743",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "ČSOB nadácia",
+      "nameHint": "foundation_named",
+      "total10yCents": 456047709,
+      "y2025Cents": 61350463,
+      "yearsCount": 10
+    },
+    {
+      "ico": "37887319",
+      "muni": "Poprad",
+      "name": "DOBRÝ ANJEL, n.o.",
+      "nameHint": "nonprofit_service_named",
+      "total10yCents": 434246921,
+      "y2025Cents": 51509515,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42262801",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "Nadácia Centra pre filantropiu",
+      "nameHint": "foundation_named",
+      "total10yCents": 430983399,
+      "y2025Cents": 60503932,
+      "yearsCount": 10
+    },
+    {
+      "ico": "37889346",
+      "muni": "Banská Bystrica",
+      "name": "SVETIELKO NÁDEJE",
+      "nameHint": "other_eligible",
+      "total10yCents": 415715075,
+      "y2025Cents": 57256450,
+      "yearsCount": 10
+    }
+  ],
+  "topRecipients2025": [
+    {
+      "ico": "42349826",
+      "muni": "Teplička nad Váhom",
+      "name": "Nadácia Kia Slovakia",
+      "nameHint": "foundation_named",
+      "total10yCents": 1588308456,
+      "y2024Cents": 271744220,
+      "y2025Cents": 461137434,
+      "yearsCount": 9
+    },
+    {
+      "ico": "31818625",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia SPP",
+      "nameHint": "foundation_named",
+      "total10yCents": 1348343579,
+      "y2024Cents": 104573117,
+      "y2025Cents": 232947754,
+      "yearsCount": 10
+    },
+    {
+      "ico": "31784828",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia Pontis",
+      "nameHint": "foundation_named",
+      "total10yCents": 2289235378,
+      "y2024Cents": 204272412,
+      "y2025Cents": 206704050,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42137527",
+      "muni": "Bratislava - m. č. Devínska Nová Ves",
+      "name": "NADÁCIA VOLKSWAGEN SLOVAKIA",
+      "nameHint": "foundation_named",
+      "total10yCents": 1199488683,
+      "y2024Cents": 133266718,
+      "y2025Cents": 192734450,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42173809",
+      "muni": "Bratislava - mestská časť Rača",
+      "name": "Asociácia pomoci postihnutým - APPA",
+      "nameHint": "other_eligible",
+      "total10yCents": 1240303501,
+      "y2024Cents": 185795483,
+      "y2025Cents": 190614425,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42412871",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia EPH",
+      "nameHint": "foundation_named",
+      "total10yCents": 1464431249,
+      "y2024Cents": 136401831,
+      "y2025Cents": 170244331,
+      "yearsCount": 10
+    },
+    {
+      "ico": "30856868",
+      "muni": "Bratislava - mestská časť Nové Mesto",
+      "name": "Nadácia Slovenskej sporiteľne",
+      "nameHint": "foundation_named",
+      "total10yCents": 1342563207,
+      "y2024Cents": 178409681,
+      "y2025Cents": 153794618,
+      "yearsCount": 10
+    },
+    {
+      "ico": "36077259",
+      "muni": "Bratislava - mestská časť Petržalka",
+      "name": "PLAMIENOK n.o.",
+      "nameHint": "nonprofit_service_named",
+      "total10yCents": 1012428881,
+      "y2024Cents": 141143550,
+      "y2025Cents": 143610466,
+      "yearsCount": 10
+    },
+    {
+      "ico": "30857571",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "Nadácia Tatra Banky",
+      "nameHint": "foundation_named",
+      "total10yCents": 919779123,
+      "y2024Cents": 130286799,
+      "y2025Cents": 141663708,
+      "yearsCount": 10
+    },
+    {
+      "ico": "30856043",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia VÚB",
+      "nameHint": "foundation_named",
+      "total10yCents": 922433620,
+      "y2024Cents": 162980950,
+      "y2025Cents": 139989242,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42184126",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia Tesco",
+      "nameHint": "foundation_named",
+      "total10yCents": 318521195,
+      "y2024Cents": 2739130,
+      "y2025Cents": 102810043,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42364248",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "Nadácia ZSE",
+      "nameHint": "foundation_named",
+      "total10yCents": 565323537,
+      "y2024Cents": 113526758,
+      "y2025Cents": 85907198,
+      "yearsCount": 10
+    },
+    {
+      "ico": "55144284",
+      "muni": "Dubnica nad Váhom",
+      "name": "MSM ľuďom o.z.",
+      "nameHint": "other_eligible",
+      "total10yCents": 112455457,
+      "y2024Cents": 27708467,
+      "y2025Cents": 84746990,
+      "yearsCount": 2
+    },
+    {
+      "ico": "42134064",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "Nadácia Allianz",
+      "nameHint": "foundation_named",
+      "total10yCents": 486451816,
+      "y2024Cents": 77352565,
+      "y2025Cents": 78677638,
+      "yearsCount": 10
+    },
+    {
+      "ico": "31812490",
+      "muni": "Bratislava - mestská časť Petržalka",
+      "name": "Nadácia Penta",
+      "nameHint": "foundation_named",
+      "total10yCents": 386842776,
+      "y2024Cents": 59082441,
+      "y2025Cents": 70950523,
+      "yearsCount": 10
+    },
+    {
+      "ico": "55856713",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia Slovenských elektrární",
+      "nameHint": "foundation_named",
+      "total10yCents": 70552138,
+      "y2024Cents": null,
+      "y2025Cents": 70552138,
+      "yearsCount": 1
+    },
+    {
+      "ico": "45027200",
+      "muni": "Brezno",
+      "name": "Útulok Tuláčik",
+      "nameHint": "other_eligible",
+      "total10yCents": 206130108,
+      "y2024Cents": 47205319,
+      "y2025Cents": 62559564,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42182743",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "ČSOB nadácia",
+      "nameHint": "foundation_named",
+      "total10yCents": 456047709,
+      "y2024Cents": 63074427,
+      "y2025Cents": 61350463,
+      "yearsCount": 10
+    },
+    {
+      "ico": "42262801",
+      "muni": "Bratislava - mestská časť Staré Mesto",
+      "name": "Nadácia Centra pre filantropiu",
+      "nameHint": "foundation_named",
+      "total10yCents": 430983399,
+      "y2024Cents": 49069750,
+      "y2025Cents": 60503932,
+      "yearsCount": 10
+    },
+    {
+      "ico": "53397444",
+      "muni": "Bratislava - mestská časť Ružinov",
+      "name": "Nadácia Lidl Slovenská republika",
+      "nameHint": "foundation_named",
+      "total10yCents": 185989610,
+      "y2024Cents": 69417549,
+      "y2025Cents": 58156516,
+      "yearsCount": 3
+    }
+  ],
+  "yearly": {
+    "2016": {
+      "distinctOrganizations": 11862,
+      "duplicateRowsAggregated": 1,
+      "encoding": "cp1250",
+      "namedFoundationCents": 1953674828,
+      "namedFoundationOrgs": 265,
+      "rawRows": 11863,
+      "top10Cents": 1215229132,
+      "top50Cents": 2174466847,
+      "totalCents": 5865821094,
+      "year": 2016
+    },
+    "2017": {
+      "distinctOrganizations": 12560,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 1891289007,
+      "namedFoundationOrgs": 270,
+      "rawRows": 12560,
+      "top10Cents": 1094364189,
+      "top50Cents": 2172245802,
+      "totalCents": 6052015920,
+      "year": 2017
+    },
+    "2018": {
+      "distinctOrganizations": 13412,
+      "duplicateRowsAggregated": 56,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2160950117,
+      "namedFoundationOrgs": 275,
+      "rawRows": 13468,
+      "top10Cents": 1293376598,
+      "top50Cents": 2509465822,
+      "totalCents": 6552014568,
+      "year": 2018
+    },
+    "2019": {
+      "distinctOrganizations": 14062,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2102896584,
+      "namedFoundationOrgs": 265,
+      "rawRows": 14062,
+      "top10Cents": 1273934042,
+      "top50Cents": 2453551698,
+      "totalCents": 6994595483,
+      "year": 2019
+    },
+    "2020": {
+      "distinctOrganizations": 14434,
+      "duplicateRowsAggregated": 3,
+      "encoding": "cp1250",
+      "namedFoundationCents": 1562722518,
+      "namedFoundationOrgs": 265,
+      "rawRows": 14437,
+      "top10Cents": 942493041,
+      "top50Cents": 1779271691,
+      "totalCents": 5126789358,
+      "year": 2020
+    },
+    "2021": {
+      "distinctOrganizations": 16158,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2293121326,
+      "namedFoundationOrgs": 285,
+      "rawRows": 16158,
+      "top10Cents": 1562591737,
+      "top50Cents": 2815293462,
+      "totalCents": 8372390997,
+      "year": 2021
+    },
+    "2022": {
+      "distinctOrganizations": 15620,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp852",
+      "namedFoundationCents": 2470570784,
+      "namedFoundationOrgs": 283,
+      "rawRows": 15620,
+      "top10Cents": 1464802071,
+      "top50Cents": 2922148928,
+      "totalCents": 8524994778,
+      "year": 2022
+    },
+    "2023": {
+      "distinctOrganizations": 16639,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2747481834,
+      "namedFoundationOrgs": 296,
+      "rawRows": 16639,
+      "top10Cents": 1597454156,
+      "top50Cents": 3225381807,
+      "totalCents": 9778444051,
+      "year": 2023
+    },
+    "2024": {
+      "distinctOrganizations": 16732,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 2930858557,
+      "namedFoundationOrgs": 272,
+      "rawRows": 16732,
+      "top10Cents": 1700876868,
+      "top50Cents": 3443505668,
+      "totalCents": 10234908471,
+      "year": 2024
+    },
+    "2025": {
+      "distinctOrganizations": 17457,
+      "duplicateRowsAggregated": 0,
+      "encoding": "cp1250",
+      "namedFoundationCents": 3304573931,
+      "namedFoundationOrgs": 278,
+      "rawRows": 17457,
+      "top10Cents": 2033440478,
+      "top50Cents": 3888937815,
+      "totalCents": 10704391000,
+      "year": 2025
+    }
+  }
+}
