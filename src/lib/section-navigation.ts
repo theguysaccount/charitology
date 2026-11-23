@@ -212,6 +212,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Registry coverage', 'permit'],
     ['finance', 'Read financial summaries', 'coins'],
   ],
+  '/record/charity-index/czechia/': [
+    ['cz-search-heading', 'Search Czech nonprofits', 'lens'],
+    ['endowments', 'Largest statutory foundation endowments', 'coins'],
+    ['funding', 'Follow EU Cohesion Policy 2021–2027 grants', 'endowmentVault'],
+    ['coverage', 'Scope, privacy and register boundaries', 'archive'],
+  ],
   '/record/charity-index/estonia/': [
     ['ee-search-heading', 'Search Estonian nonprofits', 'lens'],
     ['funding', 'Follow EU Cohesion, Recovery & EEA/Norway grants', 'euGrant'],
@@ -481,6 +487,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
   '/record/funding-flows/ile-de-france-paid-grants/': [
     ['idf-search-heading', 'Find paid grants', 'lens'],
     ['coverage', 'Coverage and original data', 'archive'],
+  ],
+  '/record/funding-flows/czechia-eu-funds/': [
+    ['cz-eu-heading', 'Search Czech nonprofit EU Cohesion projects', 'lens'],
+    ['capital-vs-grants', 'The Czech paradox: endowed foundations vs. frontline delivery nonprofits', 'compare'],
+    ['funds', 'Funding instruments and disbursement progress', 'chart'],
+    ['downloads', 'Downloads, deduplication and provenance', 'download'],
   ],
   '/record/funding-flows/estonia-eu-funds/': [
     ['ee-eu-heading', 'Search nonprofit EU & EEA/Norway projects', 'lens'],

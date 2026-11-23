@@ -2,9 +2,9 @@
 title: Charity Lookup
 group: For donors
 order: 3
-summary: Search a dated U.S. IRS snapshot by primary name or EIN, switch across all 18 Global Charity Index jurisdictions, read draft depth hypotheses, and deliberately open external filing registries.
+summary: Search a dated U.S. IRS snapshot by primary name or EIN, switch across all 19 Global Charity Index jurisdictions, read draft depth hypotheses, and deliberately open external filing registries.
 status: live
-statusNote: "Local search of 1,975,975 IRS EO BMF identities (2026-10-13), 16 editorial draft profiles, and direct access to all 18 Global Charity Index jurisdictions (2,819,218 dated registry records). No charity ratings, live tax-status guarantee or worldwide census."
+statusNote: "Local search of 1,975,975 IRS EO BMF identities (2026-10-13), 16 editorial draft profiles, and direct access to all 19 Global Charity Index jurisdictions (2,954,750 dated registry records). No charity ratings, live tax-status guarantee or worldwide census."
 conditions: [overhead-myth, missing-feedback-loop]
 help:
   - Add a charity to the Charity Index with a pull request to src/content/charities/ that cites the sources for its depth hypothesis.

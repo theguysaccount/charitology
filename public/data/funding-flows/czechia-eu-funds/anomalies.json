@@ -1,0 +1,30 @@
+{
+  "asOf": "2026-11-01",
+  "capturedOn": "2026-11-22",
+  "excludedPublicRegisterForms": {
+    "note": "Housing unit-owners associations (SVJ / Společenství vlastníků jednotek), commercial companies (s.r.o., a.s., v.o.s., k.s.), cooperatives (družstvo), state enterprises, trade unions (odborová organizace), and church legal entities registered under the Ministry of Culture are outside this 6-form Ministry of Justice civil-society scope."
+  },
+  "format": "charitology-czechia-eu-funds-anomalies-v1",
+  "multiProcurementRowExpansion": {
+    "collapsedProcurementRows": 8194,
+    "note": "DotaceEU Seznam operací repeats operation-level CZK totals on each public procurement sub-row (column AJ). Deduplicating by unique registration number (column H) prevents double-counting project budgets.",
+    "operationsWithMultipleProcurementRows": 1934,
+    "rawExcelRows": 50195,
+    "uniqueOperations": 42001
+  },
+  "unmatchedNonprofitLabeledOperations": {
+    "count": 1,
+    "note": "Operations labeled with one of the 6 Czech nonprofit legal forms in DotaceEU whose beneficiary IČO is blank or absent from the 2026 Czech Public Register dumps (for example, cross-border Interreg foreign beneficiaries).",
+    "records": [
+      {
+        "beneficiaryName": "Fundacja Historia kołem się toczy",
+        "costHaler": 18634852,
+        "euHaler": 14907881,
+        "euLegalForm": "Nadace",
+        "programme": "Program Interreg Česko - Polsko",
+        "projectId": "CZ.11.02.01/00/24_014/0000213",
+        "rawIco": ""
+      }
+    ]
+  }
+}

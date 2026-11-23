@@ -773,3 +773,17 @@ python3 scripts/build-estonia-charity-index.py /path/to/captured-inputs public/d
 node scripts/check-estonia-charity-index.mjs
 npm run check:references
 ```
+
+## Czechia nonprofit public registers, foundation endowments and EU Cohesion Policy 2021–2027 grants (Jurisdiction #19)
+
+The [Czechia nonprofit registry edition](https://charitology.com/record/charity-index/czechia/) combines all **42 regional-court 2026 open-data XML dumps** published by the Czech Ministry of Justice (`dataor.justice.cz`) across Czechia’s six civil-society legal forms: **101,988** associations (`Spolek`), **25,054** branch associations (`Pobočný spolek`), **3,445** endowment funds (`Nadační fond`), **2,390** public benefit companies (`Obecně prospěšná společnost` / `o.p.s.`), **2,024** institutes (`Ústav`) and **631** foundations (`Nadace`) — **135,532** unique 8-digit `IČO` identifiers (`126,730` active, `5,935` in liquidation, `50` in insolvency, `2,817` erased entries retained in the 2026 dumps), while excluding unit-owners housing associations (`SVJ`), commercial companies, trade unions and Ministry of Culture church entities at the register level. Across the statutory registers, **3,982** nonprofits declare CZK registered capital totaling **CZK 17,325,924,140.39** (`CZK 16.74B` held by `611` endowed foundations). All personal board-member names, birthdates and street-level addresses are stripped at build time.
+
+The paired [Czechia EU Cohesion Policy 2021–2027 edition](https://charitology.com/record/funding-flows/czechia-eu-funds/) deduplicates **50,195** raw rows in the Ministry for Regional Development’s November 1, 2026 *Seznam operací 2021–2027* (`dotaceeu.cz`) by unique registration number (collapsing **8,194** repeated public-procurement sub-rows into **42,001** unique operations) and joins by exact 8-digit `IČO`, identifying **3,906** nonprofit operations across **1,669** Czech nonprofits totaling **CZK 23,827,667,932.19** in project costs (**CZK 17,850,508,862.14** EU Union support / **CZK 11,885,456,116.25** charged in payment claims). While endowed foundations hold **98.4%** of declared statutory capital, they account for just **0.6%** of EU Cohesion funding; legacy `o.p.s.` entities (`1.8%` of nonprofits) deliver **26.1%** (`CZK 6.23B`) and associations deliver **56.9%** (`CZK 13.55B`), led by ESF+ (`69.6%`).
+
+Rebuild offline from the 43 SHA-256-pinned inputs listed in `src/data/czechia-index-sources.tsv`:
+
+```sh
+python3 scripts/build-czechia-charity-index.py /path/to/captured-inputs public/data
+node scripts/check-czechia-charity-index.mjs
+npm run check:references
+```

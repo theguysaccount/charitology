@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (17 jurisdictions) and
+// Single source of truth for the Global Charity Index (19 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -12,6 +12,7 @@ import usaShort from '../../public/data/charity-financials/us-990-ez/manifest.js
 import usaFoundation from '../../public/data/charity-financials/us-990-pf/manifest.json';
 import registry from '../../public/data/irs-registry/manifest.json';
 import japan from '../../public/data/charity-registry/japan-npo/manifest.json';
+import czechia from '../../public/data/charity-registry/czechia/manifest.json';
 import estonia from '../../public/data/charity-registry/estonia/manifest.json';
 import israel from '../../public/data/charity-registry/israel/manifest.json';
 import latvia from '../../public/data/charity-registry/latvia/manifest.json';
@@ -95,6 +96,22 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     manifest: '/data/charity-financials/ca/manifest.json',
     fundingFlowRoute: '/record/funding-flows/canada-qualified-donees/',
     fundingFlowLabel: 'Qualified donee gifts (CRA)',
+  },
+  {
+    id: 'czechia',
+    name: 'Czechia',
+    source: 'Ministry of Justice Public Registers (Veřejný rejstřík) and DotaceEU 2021–2027',
+    route: '/record/charity-index/czechia/',
+    label: 'Search Czech nonprofits, foundation endowments and EU grants',
+    date: czechia.capturedOn,
+    recordCount: czechia.counts.includedOrganizations,
+    recordUnit: 'nonprofits',
+    coverage: `${number(czechia.counts.includedOrganizations)} nonprofits across 6 civil-society legal forms (${number(czechia.counts.byForm.spolek)} associations, ${number(czechia.counts.byForm.pobspolek)} branches, ${number(czechia.counts.byForm.nadf)} endowment funds, ${number(czechia.counts.byForm.ops)} o.p.s., ${number(czechia.counts.byForm.ustav)} institutes, ${number(czechia.counts.byForm.nad)} foundations; ${number(czechia.counts.withRegisteredCapital)} with CZK 17.33B in statutory capital).`,
+    history: 'A paired funding-flows edition covers 3,906 deduplicated EU Cohesion Policy 2021–2027 nonprofit operations totaling CZK 23.83 billion (CZK 17.85B EU support / CZK 11.89B paid).',
+    boundary: 'Unit-owners housing associations (SVJ), trade unions and Ministry of Culture church entities sit outside this 6-form Ministry of Justice civil-society scope. Endowed foundations hold 98.4% of declared statutory capital yet account for 0.6% of EU Cohesion funding, while legacy public benefit companies (o.p.s.) deliver 26.1%.',
+    manifest: '/data/charity-registry/czechia/manifest.json',
+    fundingFlowRoute: '/record/funding-flows/czechia-eu-funds/',
+    fundingFlowLabel: 'EU Cohesion Policy 2021–2027 grants',
   },
   {
     id: 'england-wales',
@@ -369,6 +386,8 @@ export const US_IRS_REGISTRY_SUMMARY = {
 export const COVERAGE_SOURCES = [
   { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
+  { title: 'Public Registers Open Data (Veřejný rejstřík — 42 court dumps, 2026 actual)', publisher: 'Ministry of Justice of the Czech Republic (Ministerstvo spravedlnosti ČR)', url: czechia.catalogues.justiceVr },
+  { title: 'Seznam operací (List of Operations) 2021–2027', publisher: 'Ministry for Regional Development of the Czech Republic (DotaceEU)', url: czechia.catalogues.dotaceEu },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
   { title: 'e-Business Register Open Data (RIK) & 2023–2025 annual report XBRL elements', publisher: 'Centre of Registers and Information Systems (RIK)', url: estonia.catalogues.rik },
@@ -425,6 +444,7 @@ export const FUNDING_FLOW_GROUPS: readonly FundingFlowCatalogGroup[] = [
       { slug: 'canada-qualified-donees', title: 'Reported gifts', scope: 'Canada', summary: 'Look up a filer or recipient and open the corresponding CRA worksheet entries.', manifest: '/data/funding-flows/ca-qualified-donees/manifest.json' },
       { slug: 'canada-grant-geography', title: 'Grant activities by country', scope: 'Canada', summary: 'See the countries named in charity grant reporting and the amounts left unallocated.', dataJson: '/record/funding-flows/canada-grant-geography/data.json' },
       { slug: 'chile-residential-payments', title: 'Residential care awards and payments', scope: 'Chile', summary: 'Find all 19 recipients by tax ID. Compare the award round with the ledger, and see reported service counts and surveyed need across 16 regions.' },
+      { slug: 'czechia-eu-funds', title: 'EU Cohesion Policy 2021–2027 nonprofit grants', scope: 'Czechia', summary: 'Search 3,906 deduplicated Czech nonprofit EU operations (CZK 23.83B cost / CZK 17.85B EU support) and compare statutory foundation endowments against frontline ESF+ delivery.', manifest: '/data/funding-flows/czechia-eu-funds/manifest.json' },
       { slug: 'estonia-eu-funds', title: 'EU Structural Funds, Recovery & EEA/Norway grants (2014–2027)', scope: 'Estonia', summary: 'Search 1,566 nonprofit-form EU/EEA projects (EUR 2.62B budget / EUR 1.48B paid) and inspect why state/hospital foundations absorb 80.3% vs. 1.3% for active TMNSN associations.', manifest: '/data/funding-flows/estonia-eu-funds/manifest.json' },
       { slug: 'ile-de-france-paid-grants', title: 'Regional grant payments', scope: 'Île-de-France, France', summary: 'Find reported payments by association name or official organization identifier.', manifest: '/data/funding-flows/ile-de-france/manifest.json' },
       { slug: 'israel-foreign-state-donations', title: 'Foreign state entity donations (2012–2026)', scope: 'Israel', summary: 'Search 516 Israeli nonprofits across 13,436 quarterly cross-border disclosures (ILS 7.53B net), joined by exact ID with source anomalies kept visible.', manifest: '/data/funding-flows/israel-foreign-state-donations/manifest.json' },
