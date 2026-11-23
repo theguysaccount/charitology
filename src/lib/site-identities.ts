@@ -126,7 +126,7 @@ export const sections: Section[] = [
     'the-profession-question': 'badge', 'the-question-of-questions': 'target', 'the-replication-rate': 'flaskCheck',
     'the-status-flip': 'star', 'when-charity-harms': 'alert',
   } },
-  { path: '/disasters/', symbol: 'alert', tone: 'wine', entries: { 'incidents': 'pin', 'editions': 'archive', 'sources': 'document' } },
+  { path: '/disasters/', symbol: 'alert', tone: 'wine', entries: { 'incidents': 'pin', 'editions': 'archive', 'sources': 'document', '2024-2026-emergencies': 'clock' } },
   { path: '/observations/', symbol: 'eye', tone: 'teal', entries: { 'editions': 'archive', 'sources': 'document', 'files': 'download' } },
   { path: '/research-ledger/', symbol: 'notes', tone: 'blue', entries: { 'editions': 'archive', 'sources': 'document' } },
   { path: '/forecasts/', symbol: 'forecast', tone: 'violet', entries: {

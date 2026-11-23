@@ -169,6 +169,16 @@ const voivEntries = Object.entries(manifest.voivodeships).sort((a, b) => b[1].gr
     </table>
   </div>
 
+  <h2 id="visegrad-compare">Compare Visegrád tax-assignment models</h2>
+  <p>
+    Poland, Slovakia, and Hungary operate three neighboring statutory percentage-designation systems with sharply different recipient outcomes:
+  </p>
+  <ul>
+    <li><strong>Poland (this page — 1.5% individual PIT):</strong> Individual sub-accounts (<em>cel szczegółowy</em>) drive Top-10 concentration to <code>45.69%</code> of 2025 payouts (<code>PLN 2.61B</code> across <code>9,450</code> funded OPPs), while taxpayer counts omit OPPs below 100 donors.</li>
+    <li><strong><a href={url('/record/funding-flows/slovakia-pit-2-percent/')}>Slovakia (2%/3% individual + 1%/2% corporate PIT)</a>:</strong> Because Slovakia permits corporate income-tax assignment, <code>416</code> foundations named <em>Nadácia</em> (8 of the Top 10 are corporate foundations) absorb <code>30.87%</code> of 2025 payouts (<code>EUR 107.04M</code> across <code>17,457</code> recipients).</li>
+    <li><strong><a href={url('/record/funding-flows/hungary-szja-1-percent/')}>Hungary (1% civil + 1% church/national-budget SZJA)</a>:</strong> NAV discloses exact donor counts down to single-donor organizations; Top-10 civil concentration is lower (<code>15.04%</code> of <code>HUF 21.40B</code> in 2026), led by independent journalism foundations alongside ambulance and pediatric hospital foundations, while the separate second 1% routes <code>HUF 23.95B</code> to <code>186</code> churches and priority budget lines.</li>
+  </ul>
+
   <h2 id="downloads">Downloads and provenance</h2>
   <p>Source: Ministerstwo Finansów (dataset 171) and NIW-CRSO (datasets 3564, 4628, 20137) via <code>dane.gov.pl</code>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>, under <a href={manifest.license}>CC0 1.0 Universal</a>. Registered voivodeship reflects each organization’s headquarters in NIW records, not where services or sub-account beneficiaries live.</p>
   <p>

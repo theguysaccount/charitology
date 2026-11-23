@@ -535,10 +535,16 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['geography-and-need', 'Planned work and independent counts', 'pin'],
     ['downloads', 'Download the linked records', 'download'],
   ],
+  '/disasters/2024-2026-emergencies/': [
+    ['fema-explorer', 'Filter captured 2023–2026 major disasters', 'lens'],
+    ['three-phase-pattern', 'Why early weeks and year-two recovery look completely different', 'clock'],
+    ['boundaries-downloads', 'Boundaries, missingness and downloads', 'download'],
+  ],
   '/record/funding-flows/hungary-szja-1-percent/': [
     ['hu-flow-heading', 'Explore Hungary’s Top-250 civil and 186 technical-number 1% recipients', 'lens'],
     ['media-vs-care', 'Independent media and emergency hospitals lead civil 1% designations', 'compare'],
     ['three-year-trend', 'Three-year civil 1% trajectory (2024–2026) and the second 1%', 'chart'],
+    ['visegrad-compare', 'Compare Visegrád tax-assignment models', 'globe'],
     ['downloads', 'Downloads, privacy boundaries and provenance', 'download'],
   ],
   '/record/funding-flows/israel-foreign-state-donations/': [
@@ -578,12 +584,14 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['pl-pit-heading', 'Search 1.5% PIT recipients (2022–2025)', 'lens'],
     ['intermediaries', 'Concentration and the sub-account intermediary model', 'network'],
     ['reconciliation', 'Cross-register reconciliation and reporting thresholds', 'compare'],
+    ['visegrad-compare', 'Compare Visegrád tax-assignment models', 'globe'],
     ['downloads', 'Downloads and provenance', 'download'],
   ],
   '/record/funding-flows/slovakia-pit-2-percent/': [
     ['sk-pit-heading', 'Search 10-year Slovak tax-assignment payouts', 'lens'],
     ['corporate-foundations', 'Why corporate foundations lead Slovakia’s tax-assignment top ten', 'compare'],
     ['decade-trend', 'Ten-year disbursement trajectory (2016–2025)', 'chart'],
+    ['visegrad-compare', 'Compare Visegrád tax-assignment models', 'globe'],
     ['downloads', 'Downloads and provenance', 'download'],
   ],
   '/record/funding-flows/sweden-90-konto/': [
