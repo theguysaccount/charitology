@@ -1,0 +1,406 @@
+{
+  "capturedOn": "2026-11-22",
+  "catalogues": {
+    "emtaTmnsn": "https://andmed.eesti.ee/et/datasets/tulumaksusoodustusega-uhingute-nimekiri",
+    "rik": "https://avaandmed.ariregister.rik.ee/en/downloading-open-data",
+    "rtk": "https://rtk.ee/toetusfondid-ja-programmid/euroopa-liidu-valisvahendid/toetatud-projektid"
+  },
+  "counts": {
+    "auditedReportsByYear": {
+      "2023": 620,
+      "2024": 477,
+      "2025": 450
+    },
+    "byForm": {
+      "AU": 161,
+      "MTU": 23210,
+      "SA": 784
+    },
+    "byStatus": {
+      "absent_from_rik": 13,
+      "active": 23635,
+      "bankrupt": 9,
+      "liquidation": 498
+    },
+    "byTmnsn": {
+      "active": 2974,
+      "none": 21177,
+      "removed2025": 4
+    },
+    "emtaActiveAbsentFromRik": 13,
+    "financialReportsByYear": {
+      "2023": 17393,
+      "2024": 18202,
+      "2025": 17868
+    },
+    "includedOrganizations": 24155,
+    "religiousOrganizationsTaggedBySubform": 609,
+    "rikApartmentAssociationsExcluded": 25709,
+    "rikTotalEntitiesScanned": 381753,
+    "topCounties": {
+      "Harju maakond": 10551,
+      "Hiiu maakond": 327,
+      "Ida-Viru maakond": 1765,
+      "Järva maakond": 559,
+      "Jõgeva maakond": 531,
+      "Lääne maakond": 554,
+      "Lääne-Viru maakond": 999,
+      "Pärnu maakond": 1555,
+      "Põlva maakond": 465,
+      "Rapla maakond": 635,
+      "Saare maakond": 1005,
+      "Tartu maakond": 2947,
+      "Valga maakond": 582,
+      "Viljandi maakond": 812,
+      "Võru maakond": 778
+    },
+    "total2024ReportedAssetsEUR": 2261572954,
+    "total2024ReportedRevenueEUR": 2035460661,
+    "total2025ReportedAssetsEUR": 2331873189,
+    "total2025ReportedRevenueEUR": 2097480269,
+    "with2024FinancialReport": 18202,
+    "with2025FinancialReport": 17868,
+    "withEuEeaProjects": 697,
+    "withFinancialReports2023to2025": 19238
+  },
+  "currency": "EUR",
+  "format": "charitology-estonia-registry-v1",
+  "jurisdiction": "Estonia",
+  "publisher": "Centre of Registers and Information Systems (RIK) and Estonian Tax and Customs Board (EMTA)",
+  "shards": {
+    "ids": {
+      "10": {
+        "bytes": 424,
+        "decodedBytes": 813,
+        "decodedSha256": "bd11e581dcdd4a1bb5d97dd0a85c5868912ad984b2817f8235a35d38d4f42cf7",
+        "path": "ids/10.json.gz",
+        "rows": 1,
+        "sha256": "8d827851d0da80d5a6aeeaa663fa4a4896e5e624b558112efa76d5279e91dfab"
+      },
+      "80": {
+        "bytes": 1841664,
+        "decodedBytes": 15248806,
+        "decodedSha256": "6a259d7a50e90dc79a14d4efc4c7bd43e60913b3b4a285ea9958c02a4ab2ad75",
+        "path": "ids/80.json.gz",
+        "rows": 23369,
+        "sha256": "b688f06e8256bae3f164929f4e156ee8cff912917b68a6f4b2abaee50047ee5e"
+      },
+      "90": {
+        "bytes": 89425,
+        "decodedBytes": 579742,
+        "decodedSha256": "9b3ed5718c328b3be2a28994807f4f835cde80fbc08cfefc0c16800ccf2fdc14",
+        "path": "ids/90.json.gz",
+        "rows": 785,
+        "sha256": "70b50b60383bea6159b46ed9ce8f35db7db0579985f5dfd8f2097da426a9629b"
+      }
+    },
+    "names": {
+      "0-9": {
+        "bytes": 2547,
+        "decodedBytes": 15848,
+        "decodedSha256": "28ad3e91ce1b234eadc083f6e7d0f32e212acb219c444bb39a8fdecc3f29e9b7",
+        "path": "names/0-9.json.gz",
+        "rows": 24,
+        "sha256": "52a109558eb55aa3c7690a7087b4e1137128c6888aac94c74f09e61e609a82df"
+      },
+      "a": {
+        "bytes": 71068,
+        "decodedBytes": 593769,
+        "decodedSha256": "3979da099bd4694f0c815a55161e426d4910bf00896675c7319565abeeab90e1",
+        "path": "names/a.json.gz",
+        "rows": 884,
+        "sha256": "2d72343eb348b3a74c8592f61f326451908c43525531e5a2a4d114250ffebf26"
+      },
+      "b": {
+        "bytes": 9252,
+        "decodedBytes": 72327,
+        "decodedSha256": "da56d8887196886ed81ecd66237cb333600e4c962a8a604925640af30bced694",
+        "path": "names/b.json.gz",
+        "rows": 128,
+        "sha256": "39113e7dd95c18b5c0fc0a07b23a94a9183cd5e4c51fc9c55e8337a972ec823c"
+      },
+      "c": {
+        "bytes": 5513,
+        "decodedBytes": 43615,
+        "decodedSha256": "416dad180d808d1e6b3bd4656f0a127913e5edc37a67cdb786b83b7e51e5f1d7",
+        "path": "names/c.json.gz",
+        "rows": 85,
+        "sha256": "7bb43291385a491b901c08e32186f0f959744d6c157c4eec9c4461eb4b12e0ac"
+      },
+      "d": {
+        "bytes": 6896,
+        "decodedBytes": 50182,
+        "decodedSha256": "ef30248564f1be0113cb9e5ac3a673cadbee4013685a97034674f46550011cba",
+        "path": "names/d.json.gz",
+        "rows": 83,
+        "sha256": "dda1620a0610a4fc8bb4ed4f90d34321d99b8b35a61a9b2320a56459e3df942f"
+      },
+      "e": {
+        "bytes": 199163,
+        "decodedBytes": 1474403,
+        "decodedSha256": "f2f867321861e4bcc4d2b169c8493bec56f4965148a2eb111302d7f66ed70260",
+        "path": "names/e.json.gz",
+        "rows": 2062,
+        "sha256": "bd73db93bb8019e2b8a02c2048552c60edfbda018c921e0a78652b0e8f220624"
+      },
+      "f": {
+        "bytes": 6496,
+        "decodedBytes": 49219,
+        "decodedSha256": "bba446eb0a0bb8c26bc0afe4e9a1ce9a5dc52524a2075a17001f5e28648ae3f9",
+        "path": "names/f.json.gz",
+        "rows": 88,
+        "sha256": "bc31e085e36d080a3bd70e00e95e852e81fa5bf0e280c802b254b81788a2a3a1"
+      },
+      "g": {
+        "bytes": 13986,
+        "decodedBytes": 132033,
+        "decodedSha256": "984c615cccc3933fcc5fb054b68c62d5511ddd9aa1d8cb763f0f189dad3bc79f",
+        "path": "names/g.json.gz",
+        "rows": 231,
+        "sha256": "e291d88f7549002c567bd5a1d44282271b86ed29b26b292c64b6ba8e4d36047f"
+      },
+      "h": {
+        "bytes": 31346,
+        "decodedBytes": 236198,
+        "decodedSha256": "0ce23610366584dfb5ae816d286457567a53d38d604d13debd73ccb756421e92",
+        "path": "names/h.json.gz",
+        "rows": 363,
+        "sha256": "96fafa7bd3533b64f8675dc0d9ff53a21e8980526b90b6cfa49116db3b4c7ad0"
+      },
+      "i": {
+        "bytes": 16590,
+        "decodedBytes": 125924,
+        "decodedSha256": "267011ae1a7235ecdf97570cef4ae711a66f4cf3e238a441c0b3a49fe7f35459",
+        "path": "names/i.json.gz",
+        "rows": 194,
+        "sha256": "49492aedfd99de29f6bd2954bc33eb59dc44a7131c515301c9cd0de282cc14a6"
+      },
+      "j": {
+        "bytes": 29267,
+        "decodedBytes": 221374,
+        "decodedSha256": "152eeedd5f8cf2b8b91bc3d7ed0bf42e93c6a8180dcf2c73fa341a6381d0b2ee",
+        "path": "names/j.json.gz",
+        "rows": 324,
+        "sha256": "fddcc67355cbfde82079193cdf0446edbe9d41a354a47f3dd8e04dc4b750631d"
+      },
+      "k": {
+        "bytes": 88078,
+        "decodedBytes": 701385,
+        "decodedSha256": "4acba973914855d952bf4be245d784d37864373e9f9b323aec83bb2b84f09640",
+        "path": "names/k.json.gz",
+        "rows": 1074,
+        "sha256": "937b2180e00372be6593a38e9016bafcd397fd1a99fdf084656f570a4c95a5e3"
+      },
+      "l": {
+        "bytes": 45069,
+        "decodedBytes": 351233,
+        "decodedSha256": "75135ca80f3beb63588c2d48f3814a262d6ce5d1691f030b54b6170c233e48cb",
+        "path": "names/l.json.gz",
+        "rows": 541,
+        "sha256": "4892a270eb2694d3779b6d364bba08aefa41c2d415937cf855f7795ce031e6f4"
+      },
+      "m": {
+        "bytes": 997744,
+        "decodedBytes": 8234060,
+        "decodedSha256": "6daa6e4762b05f5a38119190504fc609b22e662fd51929970d896f10578427aa",
+        "path": "names/m.json.gz",
+        "rows": 12824,
+        "sha256": "9817f57d16f32d71bc67a66b00695191517585e4537e51866f990d2b6b52a953"
+      },
+      "n": {
+        "bytes": 24996,
+        "decodedBytes": 194179,
+        "decodedSha256": "727ceaeed124d7340017eb1b3d6c8e105f8a0f66deef9783fccede6e771f7dd4",
+        "path": "names/n.json.gz",
+        "rows": 302,
+        "sha256": "67f891910c2d29de447f8d5dc340c4c858f38cb7d0fcec8bb38864315701d323"
+      },
+      "o": {
+        "bytes": 12680,
+        "decodedBytes": 98211,
+        "decodedSha256": "edb228830d082b446049324a78b4073637d6353b0ee4c54cf821a4838d11dd90",
+        "path": "names/o.json.gz",
+        "rows": 159,
+        "sha256": "7b8dde04c0fdcd4388b44466d4c55e80c748f5dc05899145ae69c993fd9e2b9b"
+      },
+      "p": {
+        "bytes": 55868,
+        "decodedBytes": 433528,
+        "decodedSha256": "82be9583bfdddb86c7169843d502e36cc37405e1b8323780f44ed8c3bbf2b30b",
+        "path": "names/p.json.gz",
+        "rows": 658,
+        "sha256": "b7bc0e40bd70f6b3b8ed6730844539c99883feecf3d32e2cf0aeb8c6bee9d6a5"
+      },
+      "q": {
+        "bytes": 709,
+        "decodedBytes": 3136,
+        "decodedSha256": "e153e059a71672d459f93cbc65415ad27e976034f74f5f30d6753d7d6f637827",
+        "path": "names/q.json.gz",
+        "rows": 5,
+        "sha256": "a221ff333107158fa53cb24dd1fd6919a8065aaf3ee4ea19f0336b5d8c69d8d5"
+      },
+      "r": {
+        "bytes": 46026,
+        "decodedBytes": 353785,
+        "decodedSha256": "3121d9acb5bb2a0a7a56ade00ada2a7c507d545478a157f851b557b8ccea82a4",
+        "path": "names/r.json.gz",
+        "rows": 537,
+        "sha256": "8eb3ca7c23a66f489bb9cf5bd8cc2ee79d0979f66acf2e03cdff141376681af6"
+      },
+      "s": {
+        "bytes": 159787,
+        "decodedBytes": 1159764,
+        "decodedSha256": "dd5d897bf527c97f110f3f3c375185318ff7d4a42a0f2f625d090723d75d701a",
+        "path": "names/s.json.gz",
+        "rows": 1670,
+        "sha256": "0ad9245746daf19d1ad67ffbf52f012fed603d553a98e598840947070fe81ec9"
+      },
+      "t": {
+        "bytes": 83665,
+        "decodedBytes": 640500,
+        "decodedSha256": "9f1291fb095f34397260287723659242e5cfaaa6dee62473215f9a10f9c9eb90",
+        "path": "names/t.json.gz",
+        "rows": 951,
+        "sha256": "0a892e43aed54920bb4948f83d7a94708597b50697c3b936dec0d2c701832082"
+      },
+      "u": {
+        "bytes": 18079,
+        "decodedBytes": 139779,
+        "decodedSha256": "b75a6f78999847709d639a284ad8e9d6ba9fd36eccbe700bd66866c39a9788c8",
+        "path": "names/u.json.gz",
+        "rows": 206,
+        "sha256": "0edab87495ab7bcb36ff6ebe05d3f1ae98f1f959d6d575b9019b05409ebb62cb"
+      },
+      "v": {
+        "bytes": 60283,
+        "decodedBytes": 469080,
+        "decodedSha256": "3117b6df20db5c34a1959c006d33c597874caa4cb22e68b863ef901c152b96de",
+        "path": "names/v.json.gz",
+        "rows": 695,
+        "sha256": "54d79096f8bb222983e97bb8f287523ee1e71554f61dbd8d945a47f4ea00206c"
+      },
+      "w": {
+        "bytes": 2930,
+        "decodedBytes": 20363,
+        "decodedSha256": "e5d07e5c78ab29a2fddba7ff7e69801be341fb078660b70b9e8c6351e640e658",
+        "path": "names/w.json.gz",
+        "rows": 41,
+        "sha256": "1afe99478a49b25167a56e7f47da01a8b2e884869c31fde47ff917f0f5da4a73"
+      },
+      "x": {
+        "bytes": 643,
+        "decodedBytes": 2036,
+        "decodedSha256": "58c80f61043d8e0d3ee1056e26d1a1240b3f9864462dcd3a9e4d9520d280e6d9",
+        "path": "names/x.json.gz",
+        "rows": 3,
+        "sha256": "2b6df69479d804be45689cd86564295c21b999241e8b79b70d675af1156badad"
+      },
+      "y": {
+        "bytes": 994,
+        "decodedBytes": 5120,
+        "decodedSha256": "0f293a0d3ec0c2be74f9e409ae43d8ef14ac51280f48ec5e758a88655dade1d4",
+        "path": "names/y.json.gz",
+        "rows": 11,
+        "sha256": "a663ce65e4e4b33b73de3954d801e900a5d26c3bf6b0add2df5929dc3d738dfe"
+      },
+      "z": {
+        "bytes": 1564,
+        "decodedBytes": 8358,
+        "decodedSha256": "65669655de79495b8e2c4ea60eb1a982442a58b0b15bdf61d3d78c48df0f5ab9",
+        "path": "names/z.json.gz",
+        "rows": 12,
+        "sha256": "eb62400b1a247a6155d40f49d39f5b1e1d41fafd537ebe5111833248c96def74"
+      }
+    }
+  },
+  "sources": [
+    {
+      "bytes": "18708394",
+      "captured_on": "2026-11-22",
+      "dataset_title": "e-Business Register basic entity requisites (lihtandmed CSV)",
+      "license": "Estonian Open Data (CC BY-SA 3.0 / Public Information Act)",
+      "local_filename": "rik-lihtandmed.csv.zip",
+      "publisher": "Centre of Registers and Information Systems (RIK)",
+      "sha256": "5672ca914ace30154d0503468ceee9190c4614560191ce5900c7fb3d55220453",
+      "source_id": "rik-lihtandmed",
+      "source_url": "https://avaandmed.ariregister.rik.ee/sites/default/files/avaandmed/ettevotja_rekvisiidid__lihtandmed.csv.zip"
+    },
+    {
+      "bytes": "20820793",
+      "captured_on": "2026-11-22",
+      "dataset_title": "e-Business Register annual financial reports metadata through 2026-10-31",
+      "license": "Estonian Open Data (CC BY-SA 3.0 / Public Information Act)",
+      "local_filename": "rik-aruannete-yldandmed.zip",
+      "publisher": "Centre of Registers and Information Systems (RIK)",
+      "sha256": "75e453763b7d415aca46662021bbd2ca5a540e2474f4e608f4013648d5a5b2aa",
+      "source_id": "rik-aruannete-yldandmed",
+      "source_url": "https://avaandmed.ariregister.rik.ee/sites/default/files/1.aruannete_yldandmed_kuni_31102026_1.zip"
+    },
+    {
+      "bytes": "22709432",
+      "captured_on": "2026-11-22",
+      "dataset_title": "e-Business Register 2023 annual financial report XBRL line items through 2026-10-31",
+      "license": "Estonian Open Data (CC BY-SA 3.0 / Public Information Act)",
+      "local_filename": "rik-elemendid-2023.zip",
+      "publisher": "Centre of Registers and Information Systems (RIK)",
+      "sha256": "1f812cec02c081b9f57b0755af7fd33642d933eb7caafdb4d64d925c15b4854f",
+      "source_id": "rik-elemendid-2023",
+      "source_url": "https://avaandmed.ariregister.rik.ee/sites/default/files/4.2023_aruannete_elemendid_kuni_31102026_0.zip"
+    },
+    {
+      "bytes": "23708371",
+      "captured_on": "2026-11-22",
+      "dataset_title": "e-Business Register 2024 annual financial report XBRL line items through 2026-10-31",
+      "license": "Estonian Open Data (CC BY-SA 3.0 / Public Information Act)",
+      "local_filename": "rik-elemendid-2024.zip",
+      "publisher": "Centre of Registers and Information Systems (RIK)",
+      "sha256": "1cd37dbcd03ef39e17e3d416c55ac057f1e438182c8a5ea186bd1aa086ae0293",
+      "source_id": "rik-elemendid-2024",
+      "source_url": "https://avaandmed.ariregister.rik.ee/sites/default/files/4.2024_aruannete_elemendid_kuni_31102026_0.zip"
+    },
+    {
+      "bytes": "22975534",
+      "captured_on": "2026-11-22",
+      "dataset_title": "e-Business Register 2025 annual financial report XBRL line items through 2026-10-31",
+      "license": "Estonian Open Data (CC BY-SA 3.0 / Public Information Act)",
+      "local_filename": "rik-elemendid-2025.zip",
+      "publisher": "Centre of Registers and Information Systems (RIK)",
+      "sha256": "1fb22c4c24ad5047ec60b62acbaba032328a33375d7bc959816eea60543484f1",
+      "source_id": "rik-elemendid-2025",
+      "source_url": "https://avaandmed.ariregister.rik.ee/sites/default/files/4.2025_aruannete_elemendid_kuni_31102026_0.zip"
+    },
+    {
+      "bytes": "930216",
+      "captured_on": "2026-11-22",
+      "dataset_title": "List of associations, foundations and religious associations benefiting from income tax incentives (as of 2026-11-01)",
+      "license": "CC0 1.0 (andmed.eesti.ee)",
+      "local_filename": "emta-tmnsn-active.pdf",
+      "publisher": "Estonian Tax and Customs Board (EMTA)",
+      "sha256": "22734d3846be7f4d19559eca5fc826660ee0f05640c5e295590ff639216e0408",
+      "source_id": "emta-tmnsn-active",
+      "source_url": "https://ncfailid.emta.ee/s/69dm4GRbczHFbWQ/download"
+    },
+    {
+      "bytes": "61079",
+      "captured_on": "2026-11-22",
+      "dataset_title": "Associations, foundations and religious associations removed from the income tax incentive list in 2025",
+      "license": "CC0 1.0 (andmed.eesti.ee)",
+      "local_filename": "emta-tmnsn-removed.pdf",
+      "publisher": "Estonian Tax and Customs Board (EMTA)",
+      "sha256": "1c9cb5a2867257c1a7faef323b6d0511715eadca9438a04f3589d0d3e9d254f1",
+      "source_id": "emta-tmnsn-removed",
+      "source_url": "https://ncfailid.emta.ee/s/TYSQ6NM2Jy9wi6K/download"
+    },
+    {
+      "bytes": "14645660",
+      "captured_on": "2026-11-22",
+      "dataset_title": "EU Structural Funds, Just Transition Fund, RRF and EEA/Norway funded projects archive (as of 2026-08-31)",
+      "license": "Estonian Open Data (Public Information Act / andmed.eesti.ee)",
+      "local_filename": "rtk-toetatud-projektid.zip",
+      "publisher": "State Shared Service Centre of Estonia (RTK)",
+      "sha256": "cb6601c14589bebdbb995dc32c25bb5d6c4b12067af1b63b80e69fa660664846",
+      "source_id": "rtk-toetatud-projektid",
+      "source_url": "https://pilv.rtk.ee/s/Mig46PpedQosEam/download"
+    }
+  ]
+}

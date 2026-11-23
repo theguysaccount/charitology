@@ -276,14 +276,14 @@ export const ENDPOINTS: Endpoint[] = [
   {
     name: "charity-index",
     description:
-      "Catalog of all 17 Global Charity Index jurisdictions and U.S. Form 990 editions, with dated record counts, coverage boundaries and manifest paths. Not a worldwide census or a charity rating.",
+      "Catalog of all 18 Global Charity Index jurisdictions and U.S. Form 990 editions, with dated record counts, coverage boundaries and manifest paths. Not a worldwide census or a charity rating.",
     build: async () => buildCharityIndexApiPayload(),
     preserveShape: true,
   },
   {
     name: "funding-flows",
     description:
-      "Catalog of all 37 published funding-flow searches and case studies, with scope, routes and linked manifest or JSON export paths.",
+      "Catalog of all 38 published funding-flow searches and case studies, with scope, routes and linked manifest or JSON export paths.",
     build: async () => buildFundingFlowsApiPayload(),
     preserveShape: true,
   },

@@ -1,0 +1,353 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/estonia/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Estonia nonprofits, tax-incentive charities (TMNSN) and annual filings';
+const dataPath = '/data/charity-registry/estonia/';
+const flowPath = '/record/funding-flows/estonia-eu-funds/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eurM = (amount: number) =>
+  `EUR ${(amount / 1_000_000).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}M`;
+const sources = [
+  { title: 'e-Business Register Open Data (lihtandmed & 2023–2025 annual report XBRL elements)', publisher: 'Centre of Registers and Information Systems (RIK)', url: manifest.catalogues.rik },
+  { title: 'List of associations benefiting from income tax incentives (TMNSN)', publisher: 'Estonian Tax and Customs Board (EMTA, CC0 1.0)', url: manifest.catalogues.emtaTmnsn },
+  { title: 'EU Structural Funds, JTF, RRF & EEA/Norway Funded Projects', publisher: 'State Shared Service Centre of Estonia (RTK)', url: manifest.catalogues.rtk },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index · Estonia"
+  summary="Search 24,155 Estonian nonprofit associations (MTÜ), foundations (SA) and trade unions by name or 8-digit registry code, with EMTA income-tax-incentive status, 2023–2025 XBRL annual financial statements in EUR and EU/EEA grant links."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Estonia'}]}
+  filePath="src/pages/record/charity-index/estonia.astro" sources={sources}>
+  <p>This edition joins three official Estonian open-data sources captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time> by exact 8-digit registry code (<em>registrikood</em>): the Centre of Registers and Information Systems (RIK) e-Business Register (scanning {count(manifest.counts.rikTotalEntitiesScanned)} legal entities to extract all <strong>{count(manifest.counts.includedOrganizations - manifest.counts.emtaActiveAbsentFromRik)} nonprofit associations, foundations and trade unions</strong> while excluding {count(manifest.counts.rikApartmentAssociationsExcluded)} statutory apartment associations), RIK’s 2023–2025 annual report XBRL tables (<strong>{count(manifest.counts.withFinancialReports2023to2025)} nonprofits</strong> with structured EUR financial filings, reporting <strong>{eurM(manifest.counts.total2025ReportedRevenueEUR)}</strong> in 2025 revenue and <strong>{eurM(manifest.counts.total2025ReportedAssetsEUR)}</strong> in 2025 assets across {count(manifest.counts.with2025FinancialReport)} 2025 filers), and the Estonian Tax and Customs Board (EMTA) income-tax-incentive charity list (<em>Tulumaksusoodustusega ühingute nimekiri</em>, TMNSN, as of 2026-11-01: <strong>{count(manifest.counts.byTmnsn.active)} active charities</strong>, including <strong>{count(manifest.counts.emtaActiveAbsentFromRik)}</strong> absent from the Nov 22 RIK extract, plus <strong>{count(manifest.counts.byTmnsn.removed2025)}</strong> removed in 2025).</p>
+
+  <section class="charity-financial-search" data-estonia-registry data-base={url(dataPath)}
+    data-flow={url(flowPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="ee-search-heading">
+    <h2 id="ee-search-heading">Search Estonian nonprofits</h2>
+    <p id="ee-search-hint">Enter the beginning of an organization’s name (Estonian diacritics optional, with or without <code>MTÜ</code> / <code>Mittetulundusühing</code> / <code>Sihtasutus</code>, e.g., <code>eesti punane rist</code>, <code>mondo</code>, <code>eesti pagulasabi</code> or <code>hille tanavsuu</code>) or an exact 8-digit registry code (e.g., <code>80064706</code>). Search runs locally in your browser.</p>
+    <form aria-describedby="ee-search-hint">
+      <label for="ee-query">Organization name or 8-digit registry code</label>
+      <div class="finance-actions">
+        <input type="search" id="ee-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="ee-form">Legal form</label>
+          <select id="ee-form" disabled>
+            <option value="">All forms ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="MTU">MTÜ / Nonprofit Association ({count(manifest.counts.byForm.MTU)})</option>
+            <option value="SA">SA / Foundation ({count(manifest.counts.byForm.SA)})</option>
+            <option value="AU">AÜ / Trade Union ({count(manifest.counts.byForm.AU)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="ee-status">Registry status</label>
+          <select id="ee-status" disabled>
+            <option value="">All statuses</option>
+            <option value="active">Active ({count(manifest.counts.byStatus.active)})</option>
+            <option value="liquidation">In liquidation ({count(manifest.counts.byStatus.liquidation)})</option>
+            <option value="bankrupt">Bankrupt ({count(manifest.counts.byStatus.bankrupt)})</option>
+            <option value="absent_from_rik">EMTA TMNSN only / absent from RIK ({count(manifest.counts.byStatus.absent_from_rik)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="ee-tmnsn">Tax-incentive (TMNSN)</label>
+          <select id="ee-tmnsn" disabled>
+            <option value="">All tax states</option>
+            <option value="active">Active TMNSN charity ({count(manifest.counts.byTmnsn.active)})</option>
+            <option value="removed_2025">Removed in 2025 ({count(manifest.counts.byTmnsn.removed2025)})</option>
+            <option value="none">Not on TMNSN list ({count(manifest.counts.byTmnsn.none)})</option>
+          </select>
+        </span>
+        <label class="inline-check"><input type="checkbox" id="ee-fin-only" disabled /> Has 2023–2025 annual filing</label>
+        <label class="inline-check"><input type="checkbox" id="ee-eu-only" disabled /> Has EU/EEA grant project</label>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you are ready to load an Estonia registry shard.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="balticPine" aria-label="Estonia nonprofit registry results" data-results></ol>
+    <noscript><p>Without JavaScript, download the open-data archives directly from <a href={manifest.catalogues.rik}>RIK e-Business Register</a> and <a href={manifest.catalogues.emtaTmnsn}>EMTA TMNSN (andmed.eesti.ee)</a>.</p></noscript>
+  </section>
+
+  <h2 id="funding">Follow EU Cohesion, Recovery &amp; EEA/Norway grants</h2>
+  <p>Estonia’s State Shared Service Centre (RTK) publishes project-level EU Structural Funds (2014–2020 and 2021–2027), Just Transition Fund (JTF), Recovery &amp; Resilience Facility (RRF), REACT-EU and EEA/Norway grants with exact 8-digit registry codes and net paid amounts. <a class="identity-link" href={url(flowPath)}>Inspect 1,566 nonprofit EU/EEA projects totaling EUR 2.62 billion across {count(manifest.counts.withEuEeaProjects)} nonprofits — and see why state innovation agencies and public hospitals using the foundation form absorb 80.3%</a>.</p>
+
+  <h2 id="coverage">Housing associations, XBRL filings and cross-register boundaries</h2>
+  <p><strong>Separate statutory form for apartment associations:</strong> Unlike Latvia (where 4,897 housing-management bodies are registered as ordinary associations), Estonia registers apartment associations under their own legal form (<em>Korteriühistu</em>, {count(manifest.counts.rikApartmentAssociationsExcluded)} entities), which are excluded cleanly from this nonprofit count. Religious congregations, churches and monasteries ({count(manifest.counts.religiousOrganizationsTaggedBySubform)} entities) are registered as subtypes of <code>Mittetulundusühing</code> and stay labeled by their official RIK subform.</p>
+  <p><strong>Annual financial statements (2023–2025):</strong> RIK publishes structured XBRL annual report line items through October 31, 2026 covering <strong>{count(manifest.counts.financialReportsByYear['2023'])}</strong> nonprofits in 2023, <strong>{count(manifest.counts.financialReportsByYear['2024'])}</strong> in 2024 and <strong>{count(manifest.counts.financialReportsByYear['2025'])}</strong> in 2025 ({count(manifest.counts.auditedReportsByYear['2025'])} audited in 2025). Where an entity filed both standalone and consolidated statements for the same year, the standalone report is preferred and consolidation is flagged explicitly. Unreported XBRL elements remain <code>null</code> (shown as not reported) rather than zero.</p>
+  <p><strong>Cross-register timing gap:</strong> Thirteen organizations on EMTA’s November 1, 2026 active TMNSN list did not appear in RIK’s November 22, 2026 active/liquidating/bankrupt export (typically due to recent strike-off or dissolution); all 13 stay visible under status <code>absent_from_rik</code>. Street addresses and personal board member records are omitted from this public edition. <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> · <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
+</Entry>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName, financialShardLoader, normalizeFinancialName, type FinancialShard } from '../../../lib/client/financial-directory';
+
+  type FinRow = {
+    y: number;
+    rev: number | null;
+    biz: number | null;
+    surplus: number | null;
+    assets: number | null;
+    netAssets: number | null;
+    cash: number | null;
+    labor: number | null;
+    fte: number | null;
+    audited: boolean;
+    cons: boolean;
+    opinion?: string;
+    filed?: string;
+  };
+  type OrgRow = {
+    reg: string;
+    name: string;
+    form: 'MTU' | 'SA' | 'AU';
+    subform: string;
+    status: 'active' | 'liquidation' | 'bankrupt' | 'absent_from_rik';
+    regDate: string | null;
+    county: string;
+    tmnsn: 'active' | 'removed_2025' | 'none';
+    tmnsnSince: string | null;
+    tmnsnRemoved: string | null;
+    fin: FinRow[];
+    euCount: number;
+    euBudgetCents: number;
+    euGrantCents: number;
+    euPaidCents: number;
+  };
+  type Manifest = {
+    format: string;
+    capturedOn: string;
+    publisher: string;
+    shards: {
+      names: Record<string, FinancialShard>;
+      ids: Record<string, FinancialShard>;
+    };
+  };
+  type Result = { total: number; organizations: OrgRow[] };
+
+  const stripDigits = (value: string) => value.replace(/[\s.-]+/g, '');
+  const isRegcode = (value: string) => /^[0-9]{8}$/.test(stripDigits(value));
+  const bucketFor = (norm: string) => {
+    const first = norm[0] ?? '';
+    return first >= 'a' && first <= 'z' ? first : '0-9';
+  };
+  const formLabels: Record<OrgRow['form'], string> = {
+    MTU: 'MTÜ (Nonprofit Association)',
+    SA: 'SA (Foundation)',
+    AU: 'AÜ (Trade Union)',
+  };
+  const statusLabels: Record<OrgRow['status'], string> = {
+    active: 'Active',
+    liquidation: 'In liquidation',
+    bankrupt: 'Bankrupt',
+    absent_from_rik: 'EMTA TMNSN only (absent from RIK)',
+  };
+  const fmtEurInt = (v: number | null) =>
+    v === null ? 'n/r' : `EUR ${v.toLocaleString('en-US')}`;
+  const fmtEurCents = (cents: number) =>
+    `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const limit = 30;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-estonia-registry]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const flowBase = root.dataset.flow!;
+    const loadNames = financialShardLoader<OrgRow>(base, manifest.shards.names);
+    const loadIds = financialShardLoader<OrgRow>(base, manifest.shards.ids);
+
+    const formEl = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#ee-query', formEl);
+    const formFilter = $<HTMLSelectElement>('#ee-form', formEl);
+    const statusFilter = $<HTMLSelectElement>('#ee-status', formEl);
+    const tmnsnFilter = $<HTMLSelectElement>('#ee-tmnsn', formEl);
+    const finOnly = $<HTMLInputElement>('#ee-fin-only', formEl);
+    const euOnly = $<HTMLInputElement>('#ee-eu-only', formEl);
+    const submit = $<HTMLButtonElement>('button[type=submit]', formEl);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const statusEl = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+
+    let found: Result | undefined;
+    let sequence = 0;
+    input.disabled = formFilter.disabled = statusFilter.disabled = tmnsnFilter.disabled = finOnly.disabled = euOnly.disabled = submit.disabled = clear.disabled = false;
+
+    const reset = () => {
+      found = undefined;
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    function card(row: OrgRow) {
+      const tmnsnText = row.tmnsn === 'active'
+        ? `Active Tax-Incentive Charity (TMNSN since ${row.tmnsnSince ?? 'unknown'})`
+        : row.tmnsn === 'removed_2025'
+          ? `Removed from TMNSN on ${row.tmnsnRemoved ?? '2025'} (listed since ${row.tmnsnSince ?? 'unknown'})`
+          : 'Not on EMTA Tax-Incentive (TMNSN) list';
+      const euText = row.euCount > 0
+        ? `${row.euCount} EU/EEA ${row.euCount === 1 ? 'project' : 'projects'} (${fmtEurCents(row.euBudgetCents)} budget · ${fmtEurCents(row.euPaidCents)} paid)`
+        : 'No RTK EU/EEA project match';
+
+      const finLines = row.fin.map((f) =>
+        h('li', {},
+          h('strong', {}, `${f.y}`),
+          `: Revenue ${fmtEurInt(f.rev)} · Surplus/deficit ${fmtEurInt(f.surplus)} · Assets ${fmtEurInt(f.assets)} · Net assets ${fmtEurInt(f.netAssets)}`,
+          f.fte !== null ? ` · FTE ${f.fte}` : '',
+          f.audited ? ` · Audited${f.opinion ? ` (${f.opinion})` : ''}` : '',
+          f.cons ? ' · Consolidated' : '',
+        ),
+      );
+
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, row.reg), ' ', h('span', { lang: 'et' }, row.name)),
+        h('p', {}, `${formLabels[row.form]}${row.subform && row.subform !== 'tavaline mittetulundusühing' ? ` (${row.subform})` : ''} · ${statusLabels[row.status]}${row.county ? ` · ${row.county}` : ''}`),
+        h('p', { class: 'note' }, `Registered ${row.regDate ?? 'unknown'} · ${tmnsnText}`),
+        finLines.length
+          ? h('ul', { class: 'note', style: 'margin:0.35rem 0;padding-left:1.1rem' }, ...finLines)
+          : h('p', { class: 'note' }, 'No structured 2023–2025 XBRL financial filing in RIK extract.'),
+        h('p', { class: 'note' },
+          row.euCount > 0
+            ? h('a', { href: `${flowBase}#q=${row.reg}` }, `Inspect EU/EEA grants: ${euText}`)
+            : euText,
+          ' · ',
+          h('a', { href: `https://ariregister.rik.ee/eng/company/${row.reg}`, rel: 'noopener noreferrer' }, 'Check live e-Business Register (RIK)')),
+      );
+    }
+
+    async function search(value: string): Promise<Result> {
+      const cleaned = stripDigits(value);
+      const fVal = formFilter.value;
+      const sVal = statusFilter.value;
+      const tVal = tmnsnFilter.value;
+      const onlyFin = finOnly.checked;
+      const onlyEu = euOnly.checked;
+      const matchesFilters = (row: OrgRow) =>
+        (!fVal || row.form === fVal)
+        && (!sVal || row.status === sVal)
+        && (!tVal || row.tmnsn === tVal)
+        && (!onlyFin || row.fin.length > 0)
+        && (!onlyEu || row.euCount > 0);
+
+      if (isRegcode(cleaned)) {
+        const pfx = cleaned.slice(0, 2);
+        if (!manifest.shards.ids[pfx]) return { total: 0, organizations: [] };
+        const org = (await loadIds(pfx)).find((o) => o.reg === cleaned);
+        if (!org) return { total: 0, organizations: [] };
+        return matchesFilters(org) ? { total: 1, organizations: [org] } : { total: 0, organizations: [] };
+      }
+
+      const query = normalizeFinancialName(value);
+      if (query.length < 2) throw new Error('Enter at least two characters of a name or an exact 8-digit registry code.');
+      const queries = [query];
+      const hasPrefix =
+        query.startsWith('mtu ') ||
+        query.startsWith('mittetulundusuhing ') ||
+        query.startsWith('sihtasutus ') ||
+        query.startsWith('sa ');
+      if (!hasPrefix) {
+        queries.push(`mtu ${query}`, `mittetulundusuhing ${query}`, `sihtasutus ${query}`, `sa ${query}`);
+      }
+      const buckets = [...new Set(queries.map(bucketFor))].filter((b) => Boolean(manifest.shards.names[b]));
+      const organizations: OrgRow[] = [];
+      const seen = new Set<string>();
+      let total = 0;
+      for (const bucket of buckets) {
+        for (const row of await loadNames(bucket)) {
+          if (seen.has(row.reg) || !matchesFilters(row)) continue;
+          const normName = normalizeFinancialName(row.name);
+          if (!queries.some((q) => normName.startsWith(q)) && !normName.includes(query)) continue;
+          seen.add(row.reg);
+          total++;
+          if (organizations.length < limit) organizations.push(row);
+        }
+      }
+      return { total, organizations };
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      statusEl.textContent = 'Checking the Estonia nonprofit, TMNSN & financial filing snapshot.';
+      try {
+        const matches = await search(input.value);
+        if (ticket !== sequence) return;
+        found = matches;
+        statusEl.textContent = matches.total
+          ? `${matches.total.toLocaleString('en-US')} ${matches.total === 1 ? 'match' : 'matches'}. Showing ${matches.organizations.length}.`
+          : 'No matching Estonian nonprofit in this snapshot. Try an Estonian name (diacritics optional) or an exact 8-digit registry code.';
+        results.append(...matches.organizations.map(card));
+        jsonBtn.disabled = csvBtn.disabled = !matches.organizations.length;
+      } catch (error) {
+        if (ticket === sequence) statusEl.textContent = error instanceof Error ? error.message : 'The organization search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    formEl.addEventListener('submit', (event) => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      formFilter.value = statusFilter.value = tmnsnFilter.value = '';
+      finOnly.checked = euOnly.checked = false;
+      statusEl.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher } = manifest;
+    jsonBtn.addEventListener('click', () => {
+      if (!found) return;
+      download('estonia-nonprofit-organizations.json', JSON.stringify({
+        format, capturedOn, publisher,
+        total: found.total, organizations: found.organizations,
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!found) return;
+      const rows = found.organizations.map((o) => {
+        const latest = o.fin[0];
+        return {
+          regcode: o.reg,
+          name: financialCsvName(o.name),
+          form: o.form,
+          subform: o.subform,
+          status: o.status,
+          regDate: o.regDate ?? '',
+          county: o.county,
+          tmnsn: o.tmnsn,
+          tmnsnSince: o.tmnsnSince ?? '',
+          tmnsnRemoved: o.tmnsnRemoved ?? '',
+          latestYear: latest?.y ?? '',
+          latestRevenueEur: latest?.rev ?? '',
+          latestSurplusEur: latest?.surplus ?? '',
+          latestAssetsEur: latest?.assets ?? '',
+          latestNetAssetsEur: latest?.netAssets ?? '',
+          latestAudited: latest ? String(latest.audited) : '',
+          euProjects: o.euCount,
+          euBudgetEur: (o.euBudgetCents / 100).toFixed(2),
+          euPaidEur: (o.euPaidCents / 100).toFixed(2),
+          capturedOn,
+          publisher,
+        };
+      });
+      download('estonia-nonprofit-organizations.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const triggerId = (id: string | null) => {
+      if (!id || !isRegcode(id)) return;
+      input.value = stripDigits(id);
+      void runSearch();
+    };
+    const initial = new URLSearchParams(location.search).get('regcode') ?? /^#q=([0-9]{8})$/.exec(location.hash)?.[1] ?? null;
+    triggerId(initial);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{8})$/.exec(location.hash)?.[1] ?? null));
+  }
+</script>

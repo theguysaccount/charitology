@@ -212,6 +212,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Registry coverage', 'permit'],
     ['finance', 'Read financial summaries', 'coins'],
   ],
+  '/record/charity-index/estonia/': [
+    ['ee-search-heading', 'Search Estonian nonprofits', 'lens'],
+    ['funding', 'Follow EU Cohesion, Recovery & EEA/Norway grants', 'euGrant'],
+    ['coverage', 'Housing associations, XBRL filings and cross-register boundaries', 'archive'],
+  ],
   '/record/charity-index/israel/': [
     ['il-search-heading', 'Search Israeli nonprofits', 'lens'],
     ['funding', 'Follow cross-border foreign-state donations', 'borderGate'],
@@ -476,6 +481,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
   '/record/funding-flows/ile-de-france-paid-grants/': [
     ['idf-search-heading', 'Find paid grants', 'lens'],
     ['coverage', 'Coverage and original data', 'archive'],
+  ],
+  '/record/funding-flows/estonia-eu-funds/': [
+    ['ee-eu-heading', 'Search nonprofit EU & EEA/Norway projects', 'lens'],
+    ['foundation-split', 'State foundations vs. tax-incentive charities', 'compare'],
+    ['funds', 'Funds, periods and disbursement progress', 'table'],
+    ['downloads', 'Downloads and provenance', 'download'],
   ],
   '/record/funding-flows/france-emmaus-solidarite/': [
     ['identity', 'Association and filing history', 'chain'],
