@@ -1,0 +1,387 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/hungary-szja-1-percent/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Hungary 1%+1% SZJA income-tax allocations (2024–2026)';
+const asset = '/data/funding-flows/hungary-szja-1-percent/';
+const registryRoute = '/record/charity-index/hungary/';
+const count = (value: number) => value.toLocaleString('en-US');
+const hufB = (huf: number) => `HUF ${(huf / 1_000_000_000).toFixed(2)}B`;
+const hufM = (huf: number) => `HUF ${(huf / 1_000_000).toFixed(2)}M`;
+
+const sources = [
+  {
+    title: 'Szja 1%-os felajánlásban részesült civil és technikai számos kedvezményezettek (2024–2026 official XLSX)',
+    publisher: manifest.publisher,
+    url: manifest.catalogue,
+  },
+];
+
+const yearlyEntries = manifest.counts.yearsCovered.map((y) => (manifest.yearly as Record<string, any>)[String(y)]);
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Funding flows · Hungary"
+  summary="Explore HUF 45.35 billion in 2026 Hungarian 1%+1% personal income-tax allocations — HUF 21.40B across 31,299 civil organizations (58.97B over 2024–2026) and HUF 23.95B across 186 churches and national priority lines, with exact donor headcounts."
+  filePath="src/pages/record/funding-flows/hungary-szja-1-percent/index.astro"
+  crumbs={[{ label: 'The Record', href: '/record/' }, { label: 'Funding flows', href: '/record/funding-flows/' }, { label: 'Hungary 1%+1% SZJA' }]}
+  sources={sources}
+>
+  <p>
+    In <strong>2026</strong>, Hungarian taxpayers directed <strong>{hufB(manifest.counts.combined2026Huf)}</strong> through <strong>{count(manifest.counts.combined2026Designations)}</strong>
+    individual 1% designations: <strong>{hufB(manifest.counts.total2026CivilHuf)}</strong> to <strong>{count(manifest.counts.active2026CivilOrganizations)} civil organizations</strong>
+    ({count(manifest.counts.total2026CivilDonors)} taxpayers, averaging HUF {count(manifest.yearly['2026'].avgHufPerDonor)} per designation) and
+    <strong>{hufB(manifest.counts.technicalNumber2026Huf)}</strong> to <strong>{count(manifest.counts.technicalNumber2026Count)} technical-number recipients</strong>
+    ({count(manifest.counts.technicalNumber2026Donors)} taxpayers across 185 religious communities and the National Talent Program).
+  </p>
+  <p>
+    <a class="identity-link" href={url(registryRoute)}>Search all 34,109 Hungarian civil 1% recipients across 2024–2026</a>.
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-hu-szja
+    data-url={url(asset + manifest.artifacts.recipients.path)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="hu-flow-heading"
+  >
+    <h2 id="hu-flow-heading">Explore Hungary’s Top-250 civil and 186 technical-number 1% recipients</h2>
+    <p id="hu-flow-hint">
+      Switch between Hungary’s <strong>Top-250 civil recipients</strong> (2024–2026 HUF and donor headcounts) and all <strong>186 technical-number recipients</strong>
+      (churches and the National Talent Program), or filter by name, municipality, or tax/technical code locally in your browser.
+    </p>
+    <form aria-describedby="hu-flow-hint">
+      <label for="hu-flow-query">Organization name, municipality or code</label>
+      <div class="finance-actions">
+        <input id="hu-flow-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="hu-flow-track">1% allocation track</label>
+          <select id="hu-flow-track" disabled>
+            <option value="civil">Civil organizations — Top 250 by 2026 HUF (250)</option>
+            <option value="tech">Technical-number 1% — Churches &amp; National Talent Program (186)</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="hu-flow-sort">Sort by</label>
+          <select id="hu-flow-sort" disabled>
+            <option value="huf">2026 HUF amount (highest)</option>
+            <option value="donors">2026 taxpayer count (highest)</option>
+            <option value="avg">Average HUF per donor (highest)</option>
+          </select>
+        </span>
+        <button class="btn" type="submit" disabled>Filter recipients</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Click “Filter recipients” or switch tracks to explore Hungary’s 2026 1%+1% allocations.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed rows as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed rows as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="onePercent" aria-label="Hungary 1%+1% SZJA recipients" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the <a href={url(asset + manifest.artifacts.yearlyCsv.path)} download>2024–2026 civil yearly CSV</a> or{' '}
+        <a href={url(asset + manifest.artifacts.techCsv.path)} download>2026 technical-number CSV</a>.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="media-vs-care">Independent media and emergency hospitals lead civil 1% designations</h2>
+  <p>
+    Comparing Hungary alongside <a href={url('/record/funding-flows/poland-pit-1-5-percent/')}>Poland’s 1.5% PIT</a> and{' '}
+    <a href={url('/record/funding-flows/slovakia-pit-2-percent/')}>Slovakia’s 2%/3% PIT</a> highlights how different civil ecosystems mobilize tax designations.
+    Poland’s top 10 recipients take 45.7% via medical sub-account intermediaries; Slovakia’s top 10 are dominated by corporate foundations (30.9% of payouts).
+    Hungary’s civil 1% is notably less concentrated — the top 10 civil recipients take <strong>{manifest.counts.top10Share2026Pct}%</strong> (top 50:
+    <strong>{manifest.counts.top50Share2026Pct}%</strong>) — and its <strong>#1 and #2 recipients in 2026 are independent public-interest newsrooms</strong>
+    (<em>Partizán</em> at HUF 576.94M from 42,854 donors and <em>Telex</em> at HUF 543.32M from 35,319 donors), followed directly by national ambulance and
+    children’s hospital foundations (<em>Országos Mentőszolgálat</em>, <em>Heim Pál</em>, <em>Bethesda</em>, <em>Daganatos.hu</em>, <em>Bátor Tábor</em>).
+  </p>
+
+  <h2 id="three-year-trend">Three-year civil 1% trajectory (2024–2026) and the second 1%</h2>
+  <div class="table-wrap" role="region" aria-label="Hungary civil 1% SZJA yearly summary 2024-2026" tabindex="0">
+    <table class="data hu-flow-table">
+      <caption>Hungary civil 1% SZJA allocations across 2024–2026 (HUF and exact donor counts)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          <th scope="col">Civil recipients</th>
+          <th scope="col">Total disbursed</th>
+          <th scope="col">Taxpayer designations</th>
+          <th scope="col">Average HUF / donor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          yearlyEntries.map((row) => (
+            <tr>
+              <th scope="row">{row.year}</th>
+              <td>{count(row.distinctOrganizations)}</td>
+              <td>{hufB(row.totalHuf)} ({count(row.totalHuf)} HUF)</td>
+              <td>{count(row.totalDonors)}</td>
+              <td>HUF {count(row.avgHufPerDonor)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Top 10 technical-number 1% SZJA recipients in 2026" tabindex="0">
+    <table class="data hu-flow-table">
+      <caption>Top 10 technical-number (second 1%) recipients in 2026 — churches and National Talent Program (HUF)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Tech code</th>
+          <th scope="col">Recipient</th>
+          <th scope="col">Category</th>
+          <th scope="col">2026 amount</th>
+          <th scope="col">2026 donors</th>
+          <th scope="col">Avg HUF / donor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.top10Tech2026.map((t) => (
+            <tr>
+              <td><code>{t.techCode}</code></td>
+              <th scope="row"><span lang="hu">{t.name}</span></th>
+              <td>{t.category === 'priority_budget' ? 'National priority budget line' : 'Religious community'}</td>
+              <td>{hufM(t.huf2026)}</td>
+              <td>{count(t.donors2026)}</td>
+              <td>HUF {count(t.avgHufPerDonor)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads, privacy boundaries and provenance</h2>
+  <p>
+    Every figure is parsed directly from NAV’s official 2024–2026 XLSX announcements (SHA-256 pinned in <code>src/data/hungary-index-sources.tsv</code>).
+    Street-level addresses are stripped at build time so only municipalities are published. Note that 1% SZJA allocations reflect personal income-tax shares
+    assigned by individual filers — not full organizational budgets, government grants, or outcomes.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(asset + manifest.artifacts.yearlyCsv.path)} download>Download 2024–2026 civil summary (CSV)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(asset + manifest.artifacts.techCsv.path)} download>Download all 186 technical-number recipients (CSV)</a>.
+  </p>
+</Entry>
+
+<style>
+  .hu-flow-table {
+    min-inline-size: 42rem;
+    margin-bottom: 1.5rem;
+  }
+  [data-hu-szja] .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    flex-wrap: wrap;
+  }
+  [data-hu-szja] select {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName, normalizeFinancialName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../../lib/client/verified-json';
+
+  type CivilRow = {
+    tax8: string;
+    taxFull: string;
+    name: string;
+    norm: string;
+    muni: string;
+    total3yHuf: number;
+    y2026Huf: number;
+    y2026Donors: number;
+    y2025Huf: number | null;
+    y2024Huf: number | null;
+  };
+  type TechRow = {
+    techCode: string;
+    category: string;
+    name: string;
+    muni: string;
+    huf2026: number;
+    donors2026: number;
+    avgHufPerDonor: number;
+  };
+  type Payload = { topCivil250: CivilRow[]; technicalNumbers2026: TechRow[] };
+  type FlowManifest = {
+    publisher: string;
+    asOf: string;
+    artifacts: { recipients: VerifiedJsonAsset & { path: string } };
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-hu-szja]')) {
+    const manifest: FlowManifest = JSON.parse(root.dataset.manifest!);
+    const dataUrl = root.dataset.url!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#hu-flow-query', root) as HTMLInputElement;
+    const trackSel = $('#hu-flow-track', root) as HTMLSelectElement;
+    const sortSel = $('#hu-flow-sort', root) as HTMLSelectElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, trackSel, sortSel, submitBtn, clearBtn]) el.disabled = false;
+
+    let cache: Promise<Payload> | null = null;
+    let shown: Array<Record<string, unknown>> = [];
+
+    const loadData = () => {
+      if (!cache) {
+        cache = loadVerifiedJson(dataUrl, manifest.artifacts.recipients) as Promise<Payload>;
+      }
+      return cache;
+    };
+
+    const run = async () => {
+      const rawQ = queryEl.value.trim();
+      const normQ = normalizeFinancialName(rawQ);
+      const track = trackSel.value;
+      const sort = sortSel.value;
+      statusEl.textContent = 'Loading Hungary 1%+1% SZJA dataset…';
+      try {
+        const data = await loadData();
+        listEl.replaceChildren();
+        if (track === 'civil') {
+          let rows = data.topCivil250.filter((r) => {
+            if (!rawQ) return true;
+            return (
+              r.norm.includes(normQ) ||
+              normalizeFinancialName(r.muni).includes(normQ) ||
+              r.tax8.includes(rawQ.replace(/\D+/g, '') || '___')
+            );
+          });
+          rows = [...rows].sort((a, b) => {
+            if (sort === 'donors') return b.y2026Donors - a.y2026Donors;
+            if (sort === 'avg') return Math.round(b.y2026Huf / b.y2026Donors) - Math.round(a.y2026Huf / a.y2026Donors);
+            return b.y2026Huf - a.y2026Huf;
+          });
+          const sliced = rows.slice(0, 50);
+          shown = sliced.map((r) => ({
+            track: 'civil',
+            tax_id: r.taxFull,
+            name: financialCsvName(r.name),
+            municipality: r.muni,
+            huf_2026: r.y2026Huf,
+            donors_2026: r.y2026Donors,
+            avg_huf_2026: Math.round(r.y2026Huf / r.y2026Donors),
+            total_3y_huf: r.total3yHuf,
+          }));
+          statusEl.textContent =
+            rows.length > sliced.length
+              ? `Showing the first ${sliced.length} of ${rows.length} matching Top-250 civil recipients.`
+              : `Showing ${rows.length} matching Top-250 civil recipient${rows.length === 1 ? '' : 's'}.`;
+          for (const r of sliced) {
+            const avg = Math.round(r.y2026Huf / r.y2026Donors);
+            listEl.append(
+              h(
+                'li',
+                {},
+                h('strong', { lang: 'hu' }, r.name),
+                ' ',
+                h('code', {}, r.taxFull),
+                h(
+                  'div',
+                  { class: 'note' },
+                  `${r.muni || 'Hungary'} · 2026: HUF ${r.y2026Huf.toLocaleString('en-US')} (${r.y2026Donors.toLocaleString('en-US')} donors, avg HUF ${avg.toLocaleString('en-US')}) · 3y total: HUF ${r.total3yHuf.toLocaleString('en-US')}`,
+                ),
+              ),
+            );
+          }
+        } else {
+          let rows = data.technicalNumbers2026.filter((r) => {
+            if (!rawQ) return true;
+            return (
+              normalizeFinancialName(r.name).includes(normQ) ||
+              normalizeFinancialName(r.muni).includes(normQ) ||
+              r.techCode.includes(rawQ.replace(/\D+/g, '') || '___')
+            );
+          });
+          rows = [...rows].sort((a, b) => {
+            if (sort === 'donors') return b.donors2026 - a.donors2026;
+            if (sort === 'avg') return b.avgHufPerDonor - a.avgHufPerDonor;
+            return b.huf2026 - a.huf2026;
+          });
+          const sliced = rows.slice(0, 60);
+          shown = sliced.map((r) => ({
+            track: 'technical-number',
+            tech_code: r.techCode,
+            category: r.category,
+            name: financialCsvName(r.name),
+            municipality: r.muni,
+            huf_2026: r.huf2026,
+            donors_2026: r.donors2026,
+            avg_huf_2026: r.avgHufPerDonor,
+          }));
+          statusEl.textContent =
+            rows.length > sliced.length
+              ? `Showing the first ${sliced.length} of ${rows.length} matching technical-number recipients.`
+              : `Showing ${rows.length} matching technical-number recipient${rows.length === 1 ? '' : 's'}.`;
+          for (const r of sliced) {
+            listEl.append(
+              h(
+                'li',
+                {},
+                h('strong', { lang: 'hu' }, r.name),
+                ' ',
+                h('code', {}, `Tech #${r.techCode}`),
+                h(
+                  'div',
+                  { class: 'note' },
+                  `${r.category === 'priority_budget' ? 'National priority budget line' : 'Religious community'} · 2026: HUF ${r.huf2026.toLocaleString('en-US')} (${r.donors2026.toLocaleString('en-US')} donors, avg HUF ${r.avgHufPerDonor.toLocaleString('en-US')})`,
+                ),
+              ),
+            );
+          }
+        }
+        jsonBtn.disabled = shown.length === 0;
+        csvBtn.disabled = shown.length === 0;
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Hungary 1% SZJA data.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void run();
+    });
+    for (const sel of [trackSel, sortSel]) sel.addEventListener('change', () => void run());
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      trackSel.value = 'civil';
+      sortSel.value = 'huf';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Filter cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-hungary-szja-1pct.json',
+        JSON.stringify({ source: manifest.publisher, asOf: manifest.asOf, rows: shown }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download('charitology-hungary-szja-1pct.csv', '\uFEFF' + toCsv(shown), 'text/csv;charset=utf-8');
+    });
+  }
+</script>

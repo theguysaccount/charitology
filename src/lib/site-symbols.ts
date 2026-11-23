@@ -165,6 +165,9 @@ export const symbols = {
   danishCrown: 'M4 17h16l1-9-4.5 3.5L12 5l-4.5 6.5L3 8l1 9Zm0 3h16',
   nordicStar: 'M12 2v20M2 12h20m-14.5-7.5 9 15m0-15-9 15',
   auditSeal: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-3.5 9.5 2.5 2.5 5-5.5',
+  danubeArch: 'M3 16h18M5 16v-4a7 7 0 0 1 14 0v4M8 16v-3a4 4 0 0 1 8 0v3M3 20c3-1.5 5 1.5 9 0s6 1.5 9 0',
+  onePercent: 'M4 5h16v14H4V5Zm4 10 8-6m-7.5 0h.01M15.5 15h.01',
+  bauhinia: 'M12 12c0-4 2.5-7 0-9-2.5 2 0 5 0 9Zm0 0c4 0 7-2.5 9 0-2 2.5-5 0-9 0Zm0 0c2.5 3.2 5.5 5 3.5 7.5-2.5.5-3-3.5-3.5-7.5Zm0 0c-2.5 3.2-5.5 5-3.5 7.5 2.5.5 3-3.5 3.5-7.5Zm0 0c-4 0-7-2.5-9 0 2 2.5 5 0 9 0Z',
 } as const;
 
 export type SymbolName = keyof typeof symbols;
