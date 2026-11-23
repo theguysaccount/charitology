@@ -809,3 +809,22 @@ python3 scripts/build-ocha-fts-clusters.py /path/to/captured-inputs public/data
 node scripts/check-ocha-fts-clusters.mjs
 npm run check:references
 ```
+
+## Denmark tax-approved charities (Skattestyrelsen § 8 A, § 12 stk. 3 & BAL — Jurisdiction #21)
+
+The [Denmark approved charity index](https://charitology.com/record/charity-index/denmark/) indexes the official Skattestyrelsen list published in *Den juridiske vejledning 2026-2*, section `C.A.4.3.5.9 Liste over godkendte foreninger` (`pubDate 2026-07-31`, captured November 23, 2026, SHA-256 pinned in `src/data/denmark-index-sources.tsv`). Every one of the **1,471** organizations carries a unique 8-digit Danish *CVR* number: **1,078** approved for tax-deductible gifts under `LL § 8 A` (`1,052` full year, `26` partial-year `*`), **502** approved for ongoing gift commitments under `LL § 12, stk. 3` (`494` full year, `8` partial-year `*`), and **410** explicitly listed for inheritance/estate-tax exemption under `BAL § 3, stk. 2`, with **2** ceased entries (`OPHØRT:`) preserved verbatim.
+
+```sh
+python3 scripts/build-denmark-charity-index.py --input-dir /path/to/captured-inputs --out-dir public/data/charity-registry/denmark
+node scripts/check-denmark-charity-index.mjs
+```
+
+## Sweden 90-konto fundraising charities & 2025 audited giving (Jurisdiction #22)
+
+The [Sweden 90-konto registry](https://charitology.com/record/charity-index/sweden/) and paired [Sweden audited 90-konto giving explorer](https://charitology.com/record/funding-flows/sweden-90-konto/) account for 100% of the **741** organizations published by *Svensk Insamlingskontroll* (`487` active 90-konto holders with 100% verified Swedish *organisationsnummer*, `36` revoked/*Indragna*, and `218` voluntarily closed/*Avslutade*, captured November 23, 2026 and SHA-256 pinned in `src/data/sweden-index-sources.tsv`). Among active holders, **456** publish multi-year audited SEK accounts totaling **SEK 29.28B** in 2025 revenue (**99.31%** of the official SEK 29.48B yearbook aggregate across 481 audited charities) and **SEK 36.42B** in equity (**99.38%** of yearbook equity). The paired funding-flows explorer parses official `2023–2025` audited sector totals (`SEK 23,090M` in 2025 gifts and grants) and joins **110/110** Top-110 charities (`SEK 21,040M` = `91.1%` of sector collections) against Sweden’s Top-100 private individual donor list (`SEK 10,400M`). All telephone numbers, emails and street addresses are stripped at build time; 17 cards carrying repeated year header columns are reconciled to the rightmost complete value and logged in `anomalies.json`.
+
+```sh
+python3 scripts/build-sweden-charity-index.py --input-dir /path/to/captured-inputs --reg-out-dir public/data/charity-registry/sweden --flow-out-dir public/data/funding-flows/sweden-90-konto
+node scripts/check-sweden-charity-index.mjs
+npm run check:references
+```

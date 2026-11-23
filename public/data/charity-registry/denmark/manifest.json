@@ -1,0 +1,87 @@
+{
+  "format": "charitology-denmark-registry-v1",
+  "jurisdiction": "Denmark",
+  "publisher": "Skattestyrelsen (Danish Tax Agency)",
+  "editionTitle": "Den juridiske vejledning 2026-2 · C.A.4.3.5.9 Liste over godkendte foreninger",
+  "asOf": "2026-07-31",
+  "approvalCalendarYear": 2025,
+  "capturedOn": "2026-11-23",
+  "catalogues": {
+    "skatApprovedList": "https://info.skat.dk/data.aspx?oid=2061734",
+    "cvrRegister": "https://datacvr.virk.dk/",
+    "indsamlingsnaevnet": "https://www.civilstyrelsen.dk/sagsomraader/indsamlingsnaevnet"
+  },
+  "sourceCapture": {
+    "filename": "skat-ca4359-2026-2.html",
+    "bytes": 2326237,
+    "sha256": "fb75201e619798e4688981703ad8a87150ab623c70c943e03d9e3976ff63bca2",
+    "url": "https://info.skat.dk/data.aspx?oid=2061734"
+  },
+  "deductionThresholdsDkk": {
+    "ll8aCap2025": 19000,
+    "ll8aCap2026": 20000
+  },
+  "counts": {
+    "includedOrganizations": 1471,
+    "uniqueCvrs": 1471,
+    "ll8aTotal": 1078,
+    "ll8aFullYear": 1052,
+    "ll8aPartialYear": 26,
+    "ll12Total": 502,
+    "ll12FullYear": 494,
+    "ll12PartialYear": 8,
+    "balListedTotal": 410,
+    "ceased2025": 2,
+    "byCombination": {
+      "bal": 393,
+      "s8a": 562,
+      "s8a+bal": 14,
+      "s8a+s12": 499,
+      "s8a+s12+bal": 3
+    }
+  },
+  "artifacts": {
+    "organizations": {
+      "path": "organizations.json.gz",
+      "bytes": 47909,
+      "sha256": "ac7876b2911b9a66456da9d614e49f4f318302f64a0431e368b560b0bc771c6f",
+      "decodedBytes": 325470,
+      "decodedSha256": "3abd47b561fff2dfd48902333033b6b59e9616005a3aef45bceb3c944fdd7dc9",
+      "rows": 1471
+    },
+    "csv": {
+      "path": "denmark-approved-charities.csv",
+      "bytes": 144005,
+      "sha256": "37b2ef125a7f85c7f22d1e2f978ce00e4aa7cd9535ff0400eeb3e8c231407910",
+      "rows": 1471
+    }
+  },
+  "notableEntries": {
+    "ceased2025": [
+      {
+        "cvr": "43190199",
+        "name": "Åbenkirke København",
+        "rawName": "OPHØRT: Åbenkirke København"
+      },
+      {
+        "cvr": "47387868",
+        "name": "Kristent Centrum S/I",
+        "rawName": "OPHØRT: Kristent Centrum S/I"
+      }
+    ],
+    "allThreeStatutes": [
+      {
+        "cvr": "75318219",
+        "name": "Givskud Zoo ZOOTOPIA S/I (Løveparken)"
+      },
+      {
+        "cvr": "67050010",
+        "name": "Rødding Frimenighed"
+      },
+      {
+        "cvr": "22934511",
+        "name": "Ryslinge Frimenighed"
+      }
+    ]
+  }
+}

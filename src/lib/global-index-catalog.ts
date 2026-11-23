@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (20 jurisdictions) and
+// Single source of truth for the Global Charity Index (22 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -13,6 +13,7 @@ import usaFoundation from '../../public/data/charity-financials/us-990-pf/manife
 import registry from '../../public/data/irs-registry/manifest.json';
 import japan from '../../public/data/charity-registry/japan-npo/manifest.json';
 import czechia from '../../public/data/charity-registry/czechia/manifest.json';
+import denmark from '../../public/data/charity-registry/denmark/manifest.json';
 import estonia from '../../public/data/charity-registry/estonia/manifest.json';
 import israel from '../../public/data/charity-registry/israel/manifest.json';
 import latvia from '../../public/data/charity-registry/latvia/manifest.json';
@@ -21,6 +22,7 @@ import netherlands from '../../public/data/charity-registry/netherlands/manifest
 import norway from '../../public/data/charity-registry/norway/manifest.json';
 import poland from '../../public/data/charity-registry/poland/manifest.json';
 import slovakia from '../../public/data/charity-registry/slovakia/manifest.json';
+import sweden from '../../public/data/charity-registry/sweden/manifest.json';
 import taiwan from '../../public/data/charity-registry/taiwan/manifest.json';
 import brazil from '../../public/data/charity-registry/brazil-osc/manifest.json';
 import mexico from '../../public/data/charity-financials/mx/manifest.json';
@@ -113,6 +115,20 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     manifest: '/data/charity-registry/czechia/manifest.json',
     fundingFlowRoute: '/record/funding-flows/czechia-eu-funds/',
     fundingFlowLabel: 'EU Cohesion Policy 2021–2027 grants',
+  },
+  {
+    id: 'denmark',
+    name: 'Denmark',
+    source: 'Skattestyrelsen Den juridiske vejledning 2026-2 (C.A.4.3.5.9)',
+    route: '/record/charity-index/denmark/',
+    label: 'Search Danish tax-approved charities',
+    date: denmark.capturedOn,
+    recordCount: denmark.counts.includedOrganizations,
+    recordUnit: 'tax-approved charities',
+    coverage: `${number(denmark.counts.includedOrganizations)} Danish charities, foundations and institutions with 100% unique 8-digit CVR numbers (${number(denmark.counts.ll8aTotal)} LL § 8 A gift-deductible, ${number(denmark.counts.ll12Total)} LL § 12 stk. 3 recurring gifts, ${number(denmark.counts.balListedTotal)} BAL § 3 stk. 2 estate-tax exempt).`,
+    history: `Covers the ${denmark.approvalCalendarYear} statutory approval year (LL § 8 A deduction cap DKK 19,000 in 2025 / DKK 20,000 in 2026), keeping ${number(denmark.counts.ll8aPartialYear)} partial-year § 8 A flags and ${number(denmark.counts.ceased2025)} OPHØRT ceased notices intact.`,
+    boundary: 'Covers organizations approved by Skattestyrelsen for donor gift deductions or inheritance-tax exemption; unapproved clubs and separate LL § 8 H research entities sit outside this extract. Organization-level financial statements are not published in Skattestyrelsen’s list.',
+    manifest: '/data/charity-registry/denmark/manifest.json',
   },
   {
     id: 'england-wales',
@@ -331,6 +347,22 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     fundingFlowLabel: '2%/3% tax assignments (2016–2025)',
   },
   {
+    id: 'sweden',
+    name: 'Sweden',
+    source: 'Svensk Insamlingskontroll (90-konto registry & 2025 audited statistics)',
+    route: '/record/charity-index/sweden/',
+    label: 'Search Swedish 90-konto charities and audited accounts',
+    date: sweden.capturedOn,
+    recordCount: sweden.counts.includedOrganizations,
+    recordUnit: '90-konto profiles',
+    coverage: `${number(sweden.counts.includedOrganizations)} fundraising charity profiles overseen by Svensk Insamlingskontroll (${number(sweden.counts.byStatus.active)} active with 100% Swedish Org nr, ${number(sweden.counts.byStatus.withdrawn)} revoked/Indragna, ${number(sweden.counts.byStatus.finished)} closed/Avslutade; ${number(sweden.counts.activeWith2025Revenue)} active cards carry audited 2025 SEK revenue totaling SEK 29.28B).`,
+    history: 'A paired funding-flows edition covers audited 2023–2025 sector totals (SEK 23,090M gifts & grants in 2025 across 481 charities) and matches 110/110 Top-110 charities against Sweden’s Top-100 private individual donor list.',
+    boundary: 'Covers charities overseen under the 90-konto fundraising standard rather than all Swedish associations. Revoked and closed accounts stay strictly separate from active holders; 3-year administrative ratios measure accounting cost shares rather than program effectiveness.',
+    manifest: '/data/charity-registry/sweden/manifest.json',
+    fundingFlowRoute: '/record/funding-flows/sweden-90-konto/',
+    fundingFlowLabel: 'Audited 90-konto giving (2023–2025)',
+  },
+  {
     id: 'taiwan',
     name: 'Taiwan',
     source: 'Ministry of Finance institutional registrations',
@@ -405,6 +437,7 @@ export const COVERAGE_SOURCES = [
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
   { title: 'Public Registers Open Data (Veřejný rejstřík — 42 court dumps, 2026 actual)', publisher: 'Ministry of Justice of the Czech Republic (Ministerstvo spravedlnosti ČR)', url: czechia.catalogues.justiceVr },
   { title: 'Seznam operací (List of Operations) 2021–2027', publisher: 'Ministry for Regional Development of the Czech Republic (DotaceEU)', url: czechia.catalogues.dotaceEu },
+  { title: 'Den juridiske vejledning 2026-2 — C.A.4.3.5.9 Liste over godkendte foreninger', publisher: denmark.publisher, url: denmark.catalogues.skatApprovedList },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
   { title: 'e-Business Register Open Data (RIK) & 2023–2025 annual report XBRL elements', publisher: 'Centre of Registers and Information Systems (RIK)', url: estonia.catalogues.rik },
@@ -422,6 +455,7 @@ export const COVERAGE_SOURCES = [
   { title: 'Wykaz OPP uprawnionych do 1,5% PIT za 2025 r.', publisher: 'NIW-CRSO (dane.gov.pl)', url: poland.catalogues.niw2025 },
   { title: 'Wykaz OPP, które otrzymały część należnego PIT (dataset 171)', publisher: 'Ministerstwo Finansów (dane.gov.pl)', url: poland.catalogues.mfPit15 },
   { title: 'Ročný prehľad prijímateľov podielu zaplatenej dane (2016–2025 CSVs)', publisher: slovakia.publisher, url: slovakia.catalogues.financnaSprava },
+  { title: '90-konto public directory & 2025 audited fundraising statistics', publisher: sweden.publisher, url: sweden.catalogues.directory },
   { title: 'Taiwan nonprofit institution and organization dataset', publisher: taiwan.publisher, url: taiwan.catalogue },
   { title: 'National NPO Portal bulk downloads', publisher: japan.publisher, url: japan.portal + 'download/all' },
   { title: 'Annual extract of tax-exempt organization financial data', publisher: 'Internal Revenue Service', url: usa.sourcePage },
@@ -472,6 +506,7 @@ export const FUNDING_FLOW_GROUPS: readonly FundingFlowCatalogGroup[] = [
       { slug: 'ocha-fts-global-clusters', title: 'Global humanitarian funding gaps (2019–2026)', scope: '58 crisis country codes', summary: 'Compare 3,958 UN OCHA FTS plan-cluster rows across 313 response plans ($269.49B required vs. $147.20B funded) and track the global funding drop to 41.0% in 2025.', manifest: '/data/funding-flows/ocha-fts-global-clusters/manifest.json' },
       { slug: 'poland-pit-1-5-percent', title: '1.5% personal income tax designations (2022–2025)', scope: 'Poland', summary: 'Search 10,395 Polish public benefit organizations totaling PLN 8.32B, inspect disclosed taxpayer counts and reconcile NIW eligibility lists against payouts.', manifest: '/data/funding-flows/poland-pit-1-5-percent/manifest.json' },
       { slug: 'slovakia-pit-2-percent', title: '2%/3% income-tax assignments (2016–2025)', scope: 'Slovakia', summary: 'Search EUR 782.06M in statutory individual and corporate income-tax assignments across 26,357 Slovak recipients and inspect corporate foundation concentration (30.9% in 2025).', manifest: '/data/funding-flows/slovakia-pit-2-percent/manifest.json' },
+      { slug: 'sweden-90-konto', title: 'Audited 90-konto giving & private-gift shares (2023–2025)', scope: 'Sweden', summary: 'Compare all Top-110 Swedish 90-konto charities (SEK 21,040M = 91.1% of collections) against Top-100 private individual donations alongside audited 2023–2025 sector totals.', manifest: '/data/funding-flows/sweden-90-konto/manifest.json' },
       { slug: 'taiwan-new-resident-fund', title: 'New Resident Development Fund', scope: 'Taiwan', summary: 'Search institutional grant reports. Follow the same project ID across approvals, execution figures and disbursement fields.' },
       { slug: 'us-schedule-i', title: 'Schedule I grants', scope: 'United States', summary: 'Trace grants and noncash assistance between filer and recipient EINs in one IRS archive.', manifest: '/data/funding-flows/us-schedule-i/manifest.json' },
     ],
