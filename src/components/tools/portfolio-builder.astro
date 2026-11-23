@@ -4,6 +4,7 @@
 import SiteSymbol from '../SiteSymbol.astro';
 import { lensSymbols } from '../../lib/list-identities';
 import frameworksData from '../../data/frameworks.json';
+import { GLOBAL_CHARITY_INDEX_PANELS, GLOBAL_CHARITY_INDEX_TOTAL_RECORDS } from '../../lib/global-index-catalog';
 import { url } from '../../lib/site';
 const frameworks = frameworksData.frameworks;
 ---
@@ -77,6 +78,16 @@ const frameworks = frameworksData.frameworks;
       <a class="btn" href={url('/tools/one-click-split/')} id="pb-split">Use in One-Click Split</a>
       <button class="btn btn-ghost" type="button" id="pb-csv">Download CSV</button>
       <button class="btn btn-ghost" type="button" id="pb-share">Copy share link</button>
+    </div>
+    <div class="callout pb-evidence" data-pb-evidence-links>
+      <p>
+        <strong>Check real funding gaps and primary registries before allocating.</strong> Compare multi-country humanitarian shortfalls across
+        313 UN OCHA response plans in the <a href={url('/record/funding-flows/ocha-fts-global-clusters/')}>Global Humanitarian Funding Gaps Explorer</a>,
+        or verify specific organizations across Charitology’s{' '}
+        <a href={url('/record/charity-index/coverage/')}>
+          {GLOBAL_CHARITY_INDEX_PANELS.length}-jurisdiction Global Charity Index ({GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated records)
+        </a>.
+      </p>
     </div>
   </div>
 </section>
