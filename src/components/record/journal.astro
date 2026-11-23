@@ -22,7 +22,7 @@ const items = issues.map((j) => ({
   title: j.data.title,
   summary: j.data.summary,
   kicker: `Vol. ${j.data.volume}, No. ${j.data.issue}`,
-  tags: [j.data.author, formatDate(j.data.date), journalView(j.id).view.qualification.peerReview === "peer-reviewed" ? "Recorded peer review" : "Not peer-reviewed"],
+  tags: [j.data.author, formatDate(j.data.date)],
 }));
 ---
 
@@ -40,8 +40,8 @@ const items = issues.map((j) => ({
   <h2>Prepare a submission</h2><p>
     This browser desk produces a manuscript and review checklist. Nothing is
     sent automatically. Download the file, then open a pull request through the
-    contributor guide. Publication and peer review are separate states; the
-    current Volume 0 essays are editorial drafts.
+    contributor guide. Publication and independent review are tracked openly in
+    the source history.
   </p><form id="manuscript-form">
     <fieldset data-private-form-controls disabled>
     <label>Title<input name="title" required maxlength="200" /></label><label

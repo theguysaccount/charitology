@@ -11,7 +11,7 @@ const {title,description,eyebrow='Teach and learn',filePath,active='home',source
 const pages=[['home','Start here','/learn/'],['teach','50-minute lesson','/learn/teach/'],['universities','Universities','/learn/universities/'],['clubs','Clubs and groups','/learn/clubs/'],['schools','Schools','/learn/schools/']];
 ---
 <Base title={title} description={description}>
-  <header class="page-head education-head"><div class="wrap"><Crumbs items={active==='home'?[{label:'Teach and learn'}]:[{label:'Teach and learn',href:'/learn/'},{label:pages.find(p=>p[0]===active)?.[1]??title}]} /><p class="eyebrow">{eyebrow} · teaching draft 0.1</p><h1>{title}</h1><p class="lede">{description}</p><div class="education-actions"><slot name="actions" /></div></div></header>
+  <header class="page-head education-head"><div class="wrap"><Crumbs items={active==='home'?[{label:'Teach and learn'}]:[{label:'Teach and learn',href:'/learn/'},{label:pages.find(p=>p[0]===active)?.[1]??title}]} /><p class="eyebrow">{eyebrow}</p><h1>{title}</h1><p class="lede">{description}</p><div class="education-actions"><slot name="actions" /></div></div></header>
   <div class="wrap education-body">
     <nav class="education-nav" aria-label="Teaching resources">{pages.map(([id,label,path])=><a href={url(path)} aria-current={active===id?'page':undefined}>{label}</a>)}</nav>
     <div class="education-content"><PageSections /><slot /></div>

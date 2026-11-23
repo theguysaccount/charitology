@@ -33,7 +33,7 @@ const progress = p.kind === "r4-progress-v1" ? JSON.parse(p.progressJson) : null
   {(p.kind === "chapter-v1" || p.kind === "manuscript-v1") && <>
     <p class="lede">{p.summary}</p>
     {p.kind === "manuscript-v1" && <p>{p.attribution}</p>}
-    <p class="note">Source review declaration: {p.declaredReview}. This archive is an editorial draft; preserving a source does not supply an independent reviewer.</p>
+    <p class="note">Fixed public archive capture with preserved source links.</p>
     <div class="prose" set:html={renderPublicationMarkdown(p.body, basePath)} />
     <h4>Sources retained with this version</h4><ul>{p.sources.map(s=><li><a href={s.url}>{s.title}</a>{s.publisher ? ` · ${s.publisher}` : ""}{s.year !== null ? ` · ${s.year}` : ""}{s.note ? ` · ${s.note}` : ""}</li>)}</ul>
     {p.qualification && <details><summary>Exact ledger qualification reference</summary><p>A reference identifies the record to inspect; it does not itself state that a review gate passed.</p><p class="pe-hash">{p.qualification.recordId} · version {p.qualification.version} · {p.qualification.subjectHash}<br/>Ledger {p.qualification.ledgerEditionId} · {p.qualification.ledgerEditionHash}</p><a href={url(ledgerEditionHref(p.qualification.ledgerEditionId))}>Inspect this exact ledger edition</a></details>}

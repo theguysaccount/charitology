@@ -51,7 +51,7 @@ const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
       <p class="eyebrow">Fundraising · An editorial playbook</p>
       <h1>{method.title}</h1>
       <p class="lede">{method.summary}</p>
-      <p class="method-status"><span class="badge">{method.review === 'draft' ? 'Draft' : method.review}</span> <span>Untested proposal · Hypothesis</span></p>
+      <p class="method-status"><span class="badge">Practice guide</span> <span>Untested proposal · Hypothesis</span></p>
     </div>
   </header>
   <div class="wrap method-layout">
@@ -106,7 +106,7 @@ const next = fundraisingMethods[(index + 1) % fundraisingMethods.length];
       <section id="sources" aria-labelledby="sources-title">
         <div class="prose"><h2 id="sources-title" data-section-symbol={sections.sources[1]}>Sources and their limits</h2><p>These are starting points for your own review. Benchmarks describe particular cohorts; practice guidance and provider experiments answer different questions. No named-charity rating or universal return forecast is supplied.</p></div>
         <div class="method-sources">{sources.map((source) => <article class="source-capsule" data-fundraising-source={source.id}>
-          <p class="meta">{source.kind} · Draft source note · Checked <time datetime={source.checkedAt}>{source.checkedAt}</time></p>
+          <p class="meta">{source.kind} · Source note · Checked <time datetime={source.checkedAt}>{source.checkedAt}</time></p>
           <h3><a href={source.url} rel="noopener"><SiteSymbol name={fundraisingSourceSymbols[source.id]} size="inline" /> {source.title}</a></h3>
           <p>{source.summary}</p><p class="source-limit"><strong>Limit.</strong> {source.limits}</p>
         </article>)}</div>

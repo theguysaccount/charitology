@@ -20,7 +20,7 @@ const { results, showMethodLinks = false } = Astro.props;
     {results.map((result) => {
       const method = fundraisingMethods.find((item) => item.id === result.methodId);
       return <article class="result-card" id={`result-${result.id}`} aria-labelledby={`result-${result.id}-title`}>
-        <p class="result-labels"><span class="badge">Editorial {result.review}</span> <span>{result.design}</span></p>
+        <p class="result-labels"><span class="badge">Practice evidence</span> <span>{result.design}</span></p>
         <h3 id={`result-${result.id}-title`}><SiteSymbol name={pageIdentity(`/for-charities/fundraising/${result.methodId}/`).symbol} size="inline" /> {result.title}</h3>
         <p>{result.context}</p>
         <p><strong>Comparison.</strong> {result.comparison}</p>

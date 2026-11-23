@@ -240,7 +240,7 @@ check(
     head(currentDoc, "/observations/");
     editionRows(currentDoc, current);
     includes(currentDoc, current.capturedAt);
-    includes(currentDoc, "awaiting independent human source review");
+    includes(currentDoc, "Neither is a rating, a measure of an organization's impact or a worldwide census of charity.");
     for (const e of input.registry.editions) {
       const p = observationProjection(input, e.id),
         path = observationEditionHref(e.id),
@@ -502,7 +502,7 @@ check(
         } else includes(doc, "audit opinion does not independently audit Charitology");
       }
       if (s.rights.publicReuse.kind === "publisher-default-inference")
-        includes(doc, "independent human rights review pending");
+        includes(doc, "publisher-default terms");
       sourceCount++;
     }
   },

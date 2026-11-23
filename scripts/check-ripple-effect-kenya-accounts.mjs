@@ -85,7 +85,7 @@ for (const entity of data.entities) {
   assert.ok(section, entity.id);
   assert.equal(findNodes(section, node => node.tagName === 'tr').length, rows.filter(row => row.entity === entity.id).length + 1);
 }
-for (const text of ['GBP 40,045', 'GBP 2,123', 'GBP 2,213', 'GBP 5,448', '218/051/2017-034', '218/051/2017-033', 'Draft, Edition 0.']) assert.ok(html.includes(text), text);
+for (const text of ['GBP 40,045', 'GBP 2,123', 'GBP 2,213', 'GBP 5,448', '218/051/2017-034', '218/051/2017-033', 'Open to public review.']) assert.ok(html.includes(text), text);
 assert.ok(html.includes(`href="${base}/record/charity-financials/england-wales/?registration=299717"`));
 for (const index of ['record/funding-flows', 'record/funding-flows/kenya-nutrition', 'record/charity-financials/kenya', 'record/charity-index/coverage']) {
   assert.ok(readFileSync(`dist/${index}/index.html`, 'utf8').includes(`href="${base}${route}`), index);

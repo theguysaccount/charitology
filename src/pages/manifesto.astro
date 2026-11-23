@@ -9,16 +9,17 @@ import { url } from '../lib/site';
 const entry = await getEntry('journal', 'ten-dollars');
 if (!entry) throw new Error('The manifesto (src/content/journal/ten-dollars.md) is missing.');
 const { Content } = await render(entry);
+const poemHtml = entry.rendered?.html?.replace(/<p>\s*<em>\s*Editorial note:[\s\S]*?<\/em>\s*<\/p>\s*/i, '');
 ---
 
 <Base title="Ten Dollars: the manifesto" description={entry.data.summary}>
   <article class="manifesto">
     <div class="narrow">
       <Crumbs items={[{ label: 'Manifesto' }]} />
-      <span class="eyebrow">Journal of Charitology · Vol. {entry.data.volume}, No. {entry.data.issue}</span>
+      <span class="eyebrow">Journal of Charitology · Founding Manifesto</span>
       <h1>Ten Dollars</h1>
       <div class="poem">
-        <Content />
+        {poemHtml ? <Fragment set:html={poemHtml} /> : <Content />}
       </div>
       <ReviewNote filePath={entry.filePath} review={entry.data.review} title={entry.data.title}/>
       <div class="sign">

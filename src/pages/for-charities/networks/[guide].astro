@@ -13,7 +13,7 @@ const entries = entriesForGuide(guide);
 const title = `${entries.length} ${guide.title.charAt(0).toLowerCase()}${guide.title.slice(1)}`;
 ---
 <Base title={title} description={guide.description}>
-  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'For charities',href:'/for-charities/'},{label:'Networks',href:'/for-charities/networks/'},{label:guide.label}]} /><p class="eyebrow">An annotated guide · editorial draft</p><h1>{title}</h1><p class="lede">{guide.description}</p><p class="list-notice">A selected starting list in alphabetical order, not a ranking. No listed organization is presented as a Charitology partner.</p></div></header>
+  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'For charities',href:'/for-charities/'},{label:'Networks',href:'/for-charities/networks/'},{label:guide.label}]} /><p class="eyebrow">An annotated guide</p><h1>{title}</h1><p class="lede">{guide.description}</p><p class="list-notice">A selected starting list in alphabetical order, not a ranking. No listed organization is presented as a Charitology partner.</p></div></header>
   <div class="wrap guide-layout">
     <nav class="guide-contents" aria-label="Organizations in this guide"><p class="eyebrow">In this guide</p><ol>{entries.map(entry => <li><a href={`#${entry.id}`}><SiteSymbol name={networkSymbols[entry.id]} size="inline" /> {entry.name}</a></li>)}</ol><a href={url('/for-charities/networks/#directory')}>Browse all networks →</a></nav>
     <div>

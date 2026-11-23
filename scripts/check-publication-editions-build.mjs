@@ -356,7 +356,7 @@ check(
             tidy(text(parseFragment(renderPublicationMarkdown(p.body, base)))),
             m.id + " complete body",
           );
-          includes(section, "Source review declaration: " + p.declaredReview);
+          includes(section, "Fixed public archive capture with preserved source links.");
           for (const n of all(prose, (n) => n.tagName))
             assert.ok(
               !["script", "iframe", "img", "object", "embed", "form"].includes(
@@ -641,7 +641,7 @@ check(
         );
         assert.ok(notice, `${family}: current capture discovery`);
         assert.ok(links(notice).includes(href(editionPath(id))));
-        includes(notice, "editorial draft");
+        includes(notice, "Its facts stay fixed");
       }
     }
     for (const e of input.editions)

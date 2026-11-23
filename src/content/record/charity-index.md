@@ -41,7 +41,7 @@ The Index is not a rating. Depth describes where work acts, not how good it is. 
 
 ## How it’s built
 
-Each editorial entry is a small file in `src/content/charities/` with the organization’s name, website, a one-line description of what it does, a depth hypothesis, cause areas and linked interventions. The 16 profiles remain drafts awaiting human review. Financial snapshots identify the regulator and original filings that supply the figures.
+Each editorial entry is a small file in `src/content/charities/` with the organization’s name, website, a one-line description of what it does, a depth hypothesis, cause areas and linked interventions. Financial snapshots identify the regulator and original filings that supply the figures.
 
 The IRS snapshot is generated separately by `scripts/update-irs-registry.mjs`. Its downloadable manifest records the four original URLs, source hashes, retrieval times, counts and compressed-shard hashes. Ordinary builds use the committed snapshot; they do not fetch new IRS data or imply that the posting date changed.
 

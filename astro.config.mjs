@@ -30,6 +30,11 @@ function rehypePublicMarkdown() {
       child.type === 'element' || (child.type === 'text' && child.value.trim()));
     /** @param {any} node */
     const walk = (node) => {
+      if (Array.isArray(node.children)) {
+        node.children = node.children.filter(
+          (child) => !(child.type === 'element' && child.tagName === 'p' && /^\s*Editorial note:/i.test(text(child)))
+        );
+      }
       if (embeddedPlan && node.type === 'element' && /^h[1-5]$/.test(node.tagName)) {
         node.tagName = `h${Number(node.tagName[1]) + 1}`;
       }

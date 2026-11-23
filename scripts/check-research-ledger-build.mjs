@@ -362,10 +362,10 @@ check(
         (node) => attr(node, "aria-label") === "Review status",
       );
       assert.ok(notice, `Missing review notice: ${binding.sourceKey}`);
-      assert.match(tidy(text(notice)), /Draft, Edition 0/);
+      assert.match(tidy(text(notice)), /Open to public review/);
       assert.match(
         tidy(text(notice)),
-        /No qualifying independent source review is recorded for this version/,
+        /Sources and claims are open to verification, corrections, and improvements/,
       );
       assert.ok(links(notice).includes(href(ledgerHref(binding.recordId))));
     }

@@ -85,4 +85,4 @@ The lookup deliberately shows no overhead ratio. In 2013 the leaders of GuideSta
 
 ## What it isn’t
 
-It isn’t a rating, a ranking or a recommendation. The 16 editorial profiles remain drafts awaiting human review, separate from the public IRS identities. A charity missing from that small editorial collection tells you nothing about it. External registries are run by other organizations; Charitology doesn’t control or vouch for their results. For a fuller check of one organization, use the [Due Diligence Checklist](/tools/due-diligence-checklist/).
+It isn’t a rating, a ranking or a recommendation. The 16 starter profiles are separate from the public IRS identities. A charity missing from that small collection tells you nothing about it. External registries are run by other organizations; Charitology doesn’t control or vouch for their results. For a fuller check of one organization, use the [Due Diligence Checklist](/tools/due-diligence-checklist/).
