@@ -1,4 +1,5 @@
 import {PARTICIPATION_REMINDERS_ENABLED,ownParticipationReminderRoutes,participationReminderRoutes,isParticipationReminderPath} from './participation-reminder-routes.mjs';
+import { sendPilotFeedback } from "./pilot-feedback.mjs";
 import {participationRecurrenceRoutes} from './participation-recurrence-routes.mjs';
 import {RecurringOccurrenceError} from './participation-recurrence-values.mjs';
 import {RecurringOccurrencePacketError} from './participation-recurrence-packets.mjs';
@@ -558,7 +559,9 @@ export function createHandler({
             ? await readBackupBody(request)
           : await body(
               request,
-              path.startsWith("/api/participant/") ||
+              path === "/api/pilot-feedback"
+                ? 4096
+                : path.startsWith("/api/participant/") ||
                 /^\/api\/orgs\/[A-Za-z0-9_-]{1,100}\/grant-reports(?:\/|$)/.test(
                   path,
                 )
@@ -642,6 +645,10 @@ export function createHandler({
       }
       if (path === "/api/invitations/accept" && method === "POST")
         return okay(await acceptInvite({ db, session, input }));
+      if (path === "/api/pilot-feedback" && method === "POST")
+        return okay(
+          await sendPilotFeedback({ db, send, settings, session, input }),
+        );
       if (path === "/api/orgs" && method === "POST") {
         const name = clean(input.name, 180);
         if (!name) fail(422, "name", "Enter an organization name.");
