@@ -828,3 +828,23 @@ python3 scripts/build-sweden-charity-index.py --input-dir /path/to/captured-inpu
 node scripts/check-sweden-charity-index.mjs
 npm run check:references
 ```
+
+## Hungary 1%+1% SZJA personal income tax recipients (2024–2026 — Jurisdiction #23)
+
+The [Hungary 1% SZJA charity index](https://charitology.com/record/charity-index/hungary/) and paired [Hungary 1%+1% SZJA funding-flows explorer](https://charitology.com/record/funding-flows/hungary-szja-1-percent/) join four official XLSX disbursement announcements published by Hungary’s National Tax and Customs Administration (*Nemzeti Adó- és Vámhivatal* / NAV, `nav.gov.hu`, captured November 23, 2026 and SHA-256 pinned in `src/data/hungary-index-sources.tsv`). Across 2024–2026, **34,109 distinct 8-digit tax IDs** received civil 1% personal income tax designations (**31,299** in 2026; **27,050** funded in all three years), totaling **HUF 58,968,699,914** across **5,400,131** taxpayer designations (**HUF 21.40B** from **1,802,747** taxpayers in 2026, averaging `HUF 11,872` per donor). Unlike Poland’s 1.5% PIT (which omits taxpayer counts below 100 donors), NAV discloses exact taxpayer counts down to single-donor organizations; top 2026 recipients are led by independent journalism foundations (*Partizán* `19286031`, HUF 576.94M / 42,854 donors; *Telex* `19347215`, HUF 543.32M / 35,319 donors) alongside national ambulance and pediatric hospital foundations. Separately, all **186** second-1% technical-number recipients in 2026 totaled **HUF 23,947,458,210** from **2,500,923** taxpayers (led by the Hungarian Catholic Church, Reformed Church and National Talent Program). Street addresses are stripped at build time (municipality only).
+
+```sh
+python3 scripts/build-hungary-charity-index.py --input-dir /path/to/captured-inputs --reg-out-dir public/data/charity-registry/hungary --flow-out-dir public/data/funding-flows/hungary-szja-1-percent
+node scripts/check-hungary-charity-index.mjs
+npm run check:references
+```
+
+## Hong Kong Section 88 tax-exempt charities (Inland Revenue Department — Jurisdiction #24)
+
+The [Hong Kong Section 88 charity index](https://charitology.com/record/charity-index/hong-kong/) parses the official bilingual CSV published by the Hong Kong Special Administrative Region Inland Revenue Department (`https://www.ird.gov.hk/charity/csv/s88list.csv`, as at `2026-10-31`, captured November 23, 2026 and SHA-256 pinned in `src/data/hong-kong-index-sources.tsv`). Collapsing **17,614** raw IRD rows by exact `(English name, Traditional Chinese name)` cleanly separates **11,138 distinct parent charitable institutions and trusts** (**9,754** bilingual EN+ZH, **1,345** English-only, **39** Chinese-only; effective dates from `1949-03-11` to `2026-10-07`) from **6,475** separately listed subsidiary schools, kindergartens and clinics operated across **955** parent networks (led by *Tung Wah Group of Hospitals* with 388 subsidiary rows, *Po Leung Kuk* with 315, and *Caritas - Hong Kong* with 247). Subsidiary counts remain searchable inside parent cards without double-counting them as independent charities; the IRD CSV publishes tax-exemption status and effective dates without centralized annual financial filings.
+
+```sh
+python3 scripts/build-hong-kong-charity-index.py --input-dir /path/to/captured-inputs --out-dir public/data/charity-registry/hong-kong
+node scripts/check-hong-kong-charity-index.mjs
+npm run check:references
+```

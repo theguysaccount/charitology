@@ -228,6 +228,17 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Follow EU Cohesion, Recovery & EEA/Norway grants', 'euGrant'],
     ['coverage', 'Housing associations, XBRL filings and cross-register boundaries', 'archive'],
   ],
+  '/record/charity-index/hong-kong/': [
+    ['hk-search-heading', 'Search Hong Kong Section 88 charities', 'lens'],
+    ['networks', 'Largest Section 88 parent charity networks by subsidiary count', 'network'],
+    ['coverage', 'Parent-subsidiary deduplication, effective dates and boundaries', 'archive'],
+  ],
+  '/record/charity-index/hungary/': [
+    ['hu-search-heading', 'Search Hungarian 1% SZJA civil organizations', 'lens'],
+    ['top-2026', 'Top 20 civil recipients in 2026', 'coins'],
+    ['funding', 'Follow Hungary’s 1%+1% SZJA civil and church allocations', 'onePercent'],
+    ['coverage', 'Scope, privacy projection and Visegrád comparison', 'archive'],
+  ],
   '/record/charity-index/israel/': [
     ['il-search-heading', 'Search Israeli nonprofits', 'lens'],
     ['funding', 'Follow cross-border foreign-state donations', 'borderGate'],
@@ -523,6 +534,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['annual-accounts', 'Four years of accounts', 'table'],
     ['geography-and-need', 'Planned work and independent counts', 'pin'],
     ['downloads', 'Download the linked records', 'download'],
+  ],
+  '/record/funding-flows/hungary-szja-1-percent/': [
+    ['hu-flow-heading', 'Explore Hungary’s Top-250 civil and 186 technical-number 1% recipients', 'lens'],
+    ['media-vs-care', 'Independent media and emergency hospitals lead civil 1% designations', 'compare'],
+    ['three-year-trend', 'Three-year civil 1% trajectory (2024–2026) and the second 1%', 'chart'],
+    ['downloads', 'Downloads, privacy boundaries and provenance', 'download'],
   ],
   '/record/funding-flows/israel-foreign-state-donations/': [
     ['il-fsd-heading', 'Search disclosed recipients', 'lens'],

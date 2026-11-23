@@ -1,0 +1,320 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/hong-kong/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Hong Kong Section 88 tax-exempt charities (Inland Revenue Department)';
+const dataPath = '/data/charity-registry/hong-kong/';
+const count = (value: number) => value.toLocaleString('en-US');
+
+const sources = [
+  {
+    title: 'List of Charitable Institutions and Trusts of a Public Character Exempt from Tax under Section 88 (CSV, as at 31 October 2026)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.irdIndex,
+  },
+  {
+    title: 'GovHK Open Data — Approved Charitable Fund-Raising Activities',
+    publisher: 'Office of the Government Chief Information Officer / SWD / HAD / FEHD',
+    url: manifest.catalogues.govHkFundraising,
+  },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Global Charity Index · Hong Kong"
+  summary="Search 11,138 distinct Hong Kong Section 88 tax-exempt charitable institutions and trusts (collapsed cleanly from 17,614 IRD rows including 6,475 subsidiary schools, clinics and centres, 1949–2026) in English and Traditional Chinese."
+  crumbs={[{ label: 'The Record', href: '/record/' }, { label: 'Global Charity Index', href: '/record/charity-index/' }, { label: 'Hong Kong' }]}
+  filePath="src/pages/record/charity-index/hong-kong.astro"
+  sources={sources}
+>
+  <p>
+    This edition indexes the official register of charitable institutions and trusts exempt from tax under <strong>Section 88 of Hong Kong’s Inland Revenue Ordinance</strong>,
+    published by the Inland Revenue Department (as at <time datetime={manifest.asOf}>{manifest.asOf}</time>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>).
+    Collapsing IRD’s {count(manifest.counts.sourceRows)}-row machine-readable CSV cleanly by parent charity preserves <strong>{count(manifest.counts.includedOrganizations)} distinct
+    parent charitable institutions</strong> — spanning exemptions effective from <strong>{manifest.counts.earliestEffectiveDate}</strong> through
+    <strong>{manifest.counts.latestEffectiveDate}</strong> — alongside all <strong>{count(manifest.counts.subsidiaryRows)}</strong> subsidiary operating bodies
+    (such as kindergartens, schools, social service centres, and temples) without double-counting subsidiaries as separate charities.
+  </p>
+  <p>
+    <strong>{count(manifest.counts.bilingualOrganizations)}</strong> of the {count(manifest.counts.includedOrganizations)} parent charities carry both English and
+    Traditional Chinese names ({count(manifest.counts.englishOnlyOrganizations)} English-only; {count(manifest.counts.chineseOnlyOrganizations)} Chinese-only),
+    and <strong>{count(manifest.counts.organizationsWithSubsidiaries)}</strong> operate listed subsidiary bodies.
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-hong-kong-registry
+    data-base={url(dataPath)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="hk-search-heading"
+  >
+    <h2 id="hk-search-heading">Search Hong Kong Section 88 charities</h2>
+    <p id="hk-search-hint">
+      Search by English name, Traditional Chinese name, alias, or subsidiary name (e.g., <code>oxfam</code>, <code>po leung kuk</code>, <code>tung wah</code>,
+      <code>zubin</code>, <code>樂施會</code> or <code>保良局</code>). Filter by exemption decade or parent networks locally in your browser.
+    </p>
+    <form aria-describedby="hk-search-hint">
+      <label for="hk-query">Charity name (English or Chinese), alias or subsidiary</label>
+      <div class="finance-actions">
+        <input type="search" id="hk-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="hk-decade">Effective decade</label>
+          <select id="hk-decade" disabled>
+            <option value="">All decades ({count(manifest.counts.includedOrganizations)})</option>
+            {
+              Object.entries(manifest.counts.byDecade)
+                .reverse()
+                .map(([dec, n]) => (
+                  <option value={dec}>
+                    {dec} ({count(n)})
+                  </option>
+                ))
+            }
+          </select>
+        </span>
+        <label class="inline-check">
+          <input type="checkbox" id="hk-has-subs" disabled /> Has subsidiary bodies ({count(manifest.counts.organizationsWithSubsidiaries)})
+        </label>
+        <button type="submit" class="btn" disabled>Search charities</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you are ready to load Hong Kong’s Section 88 snapshot ({(manifest.artifacts.charities.bytes / 1024).toFixed(0)} KB compressed).</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="bauhinia" aria-label="Hong Kong Section 88 charity results" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the <a href={url(dataPath + manifest.artifacts.csv.path)} download>Hong Kong Section 88 CSV ({count(manifest.counts.includedOrganizations)} rows)</a>
+        or consult <a href={manifest.catalogues.irdIndex}>ird.gov.hk</a> directly.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="networks">Largest Section 88 parent charity networks by subsidiary count</h2>
+  <p>
+    Hong Kong’s largest historic charitable organizations (such as <em>Tung Wah Group of Hospitals</em>, <em>Po Leung Kuk</em>, and major religious school-sponsoring
+    bodies) operate hundreds of individual schools, kindergartens, clinics, and elderly homes under one Section 88 tax-exempt parent. Collapsing IRD’s 17,614 rows
+    into 11,138 parent entities exposes this exact operational structure cleanly.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Top 15 Hong Kong Section 88 charities by subsidiary count" tabindex="0">
+    <table class="data hk-table">
+      <caption>Top 15 Hong Kong Section 88 charities by number of listed subsidiary operating bodies</caption>
+      <thead>
+        <tr>
+          <th scope="col">English name</th>
+          <th scope="col">Chinese name</th>
+          <th scope="col">Exempt since</th>
+          <th scope="col">Subsidiary bodies</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.topParentNetworks.map((item) => (
+            <tr>
+              <th scope="row">{item.en || '—'}</th>
+              <td><span lang="zh-Hant">{item.zh || '—'}</span></td>
+              <td>{item.effectiveDate}</td>
+              <td>{count(item.subsidiaryCount)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="coverage">Parent-subsidiary deduplication, effective dates and boundaries</h2>
+  <p>
+    <strong>What is included vs. excluded:</strong> IRD’s Section 88 list covers charitable institutions and trusts recognized as tax-exempt in Hong Kong as at
+    <time datetime={manifest.asOf}>{manifest.asOf}</time>. Unlike the U.S. Form 990 or UK Charity Commission registers, Hong Kong does not maintain a unified
+    public bulk financial-filings database for Section 88 charities, and IRD’s CSV does not include Company Registry numbers or annual revenue. For active public
+    street/flag-day fundraising permits, consult GovHK’s separate <a href={manifest.catalogues.govHkFundraising}>Approved Charitable Fund-Raising Activities</a> feed.
+  </p>
+  <p>
+    <strong>Deduplication note:</strong> Where a parent charity appears on multiple rows for individual kindergartens, schools, or service centres, Charitology
+    retains one parent record with the earliest listed effective date and attaches its subsidiary names (up to 25 previewed in search; full counts preserved).{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(dataPath + manifest.artifacts.csv.path)} download>Download full CSV ({count(manifest.counts.includedOrganizations)} rows)</a> ·{' '}
+    <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.
+  </p>
+</Entry>
+
+<style>
+  .hk-table {
+    min-inline-size: 42rem;
+  }
+  [data-hong-kong-registry] .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    flex-wrap: wrap;
+  }
+  [data-hong-kong-registry] select {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName, normalizeFinancialName } from '../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../lib/client/verified-json';
+
+  type HkRow = {
+    en: string;
+    zh: string;
+    norm: string;
+    aliasesEn: string[];
+    aliasesZh: string[];
+    effectiveDate: string;
+    subsidiaryCount: number;
+    subsidiaries: string[];
+  };
+  type HkManifest = {
+    publisher: string;
+    asOf: string;
+    artifacts: { charities: VerifiedJsonAsset & { path: string; rows: number } };
+  };
+
+  const limit = 35;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-hong-kong-registry]')) {
+    const manifest: HkManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#hk-query', root) as HTMLInputElement;
+    const decSel = $('#hk-decade', root) as HTMLSelectElement;
+    const subsChk = $('#hk-has-subs', root) as HTMLInputElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, decSel, subsChk, submitBtn, clearBtn]) el.disabled = false;
+
+    let cache: Promise<HkRow[]> | null = null;
+    let shown: HkRow[] = [];
+
+    const loadAll = () => {
+      if (!cache) {
+        const asset = manifest.artifacts.charities;
+        cache = loadVerifiedJson(base + asset.path, asset).then((data) => {
+          if (!Array.isArray(data) || data.length !== asset.rows) {
+            throw new Error('Unexpected Hong Kong Section 88 row count.');
+          }
+          return data as HkRow[];
+        });
+      }
+      return cache;
+    };
+
+    const render = (rows: HkRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q
+          ? `No Hong Kong Section 88 charities matched “${q}” under the selected filters.`
+          : 'No charities matched the selected filters.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total.toLocaleString('en-US')} matching charities.`
+          : `Showing ${total.toLocaleString('en-US')} matching charit${total === 1 ? 'y' : 'ies'}.`;
+
+      for (const r of rows) {
+        const aliases = [...r.aliasesEn, ...r.aliasesZh];
+        listEl.append(
+          h(
+            'li',
+            {},
+            r.en ? h('strong', {}, r.en) : null,
+            r.en && r.zh ? ' · ' : null,
+            r.zh ? h('strong', { lang: 'zh-Hant' }, r.zh) : null,
+            h(
+              'div',
+              { class: 'note' },
+              `Section 88 exempt since ${r.effectiveDate}` +
+                (r.subsidiaryCount > 0 ? ` · ${r.subsidiaryCount} listed subsidiary bod${r.subsidiaryCount === 1 ? 'y' : 'ies'}` : ''),
+            ),
+            aliases.length ? h('div', { class: 'note' }, `Aliases: ${aliases.join('; ')}`) : null,
+            r.subsidiaries.length
+              ? h('div', { class: 'note' }, `Subsidiaries: ${r.subsidiaries.slice(0, 4).join(' · ')}${r.subsidiaryCount > 4 ? ` (+${r.subsidiaryCount - 4} more)` : ''}`)
+              : null,
+          ),
+        );
+      }
+    };
+
+    const runSearch = async () => {
+      const rawQ = queryEl.value.trim();
+      const lowerQ = rawQ.toLowerCase();
+      const normQ = normalizeFinancialName(rawQ);
+      const dec = decSel.value;
+      const needSubs = subsChk.checked;
+      statusEl.textContent = 'Loading Hong Kong Section 88 snapshot…';
+      try {
+        const all = await loadAll();
+        const filtered = all.filter((r) => {
+          if (dec && `${Math.floor(Number(r.effectiveDate.slice(0, 4)) / 10) * 10}s` !== dec) return false;
+          if (needSubs && r.subsidiaryCount === 0) return false;
+          if (!rawQ) return true;
+          if (normQ && r.norm.includes(normQ)) return true;
+          if (r.en.toLowerCase().includes(lowerQ) || r.zh.includes(rawQ)) return true;
+          if (r.aliasesEn.some((a) => a.toLowerCase().includes(lowerQ)) || r.aliasesZh.some((a) => a.includes(rawQ))) return true;
+          if (r.subsidiaries.some((s) => s.toLowerCase().includes(lowerQ) || s.includes(rawQ))) return true;
+          return false;
+        });
+        render(filtered.slice(0, limit), filtered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Hong Kong registry snapshot.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch();
+    });
+    for (const el of [decSel, subsChk]) el.addEventListener('change', () => void runSearch());
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      decSel.value = '';
+      subsChk.checked = false;
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Search cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-hong-kong-s88.json',
+        JSON.stringify({ source: manifest.publisher, asOf: manifest.asOf, rows: shown }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          english_name: financialCsvName(r.en),
+          chinese_name: financialCsvName(r.zh),
+          effective_date: r.effectiveDate,
+          subsidiary_count: r.subsidiaryCount,
+        })),
+      );
+      download('charitology-hong-kong-s88.csv', '\uFEFF' + csvText, 'text/csv;charset=utf-8');
+    });
+  }
+</script>

@@ -1,0 +1,148 @@
+{
+  "format": "charitology-hong-kong-registry-v1",
+  "jurisdiction": "Hong Kong",
+  "publisher": "Inland Revenue Department, Government of the Hong Kong Special Administrative Region",
+  "asOf": "2026-10-31",
+  "capturedOn": "2026-11-23",
+  "catalogues": {
+    "irdIndex": "https://www.ird.gov.hk/eng/tax/ach_index.htm",
+    "irdCsv": "https://www.ird.gov.hk/charity/csv/s88list.csv",
+    "govHkFundraising": "https://fundraising.one.gov.hk/fundraise_query/webservice/psi/json"
+  },
+  "sourceCapture": {
+    "filename": "s88list.csv",
+    "bytes": 2607610,
+    "sha256": "b1481c920b9b3accc6c89c5ac6d2d19c3426bc41d7db473b8fb6dde268288aa3",
+    "url": "https://www.ird.gov.hk/charity/csv/s88list.csv"
+  },
+  "counts": {
+    "sourceRows": 17614,
+    "subsidiaryRows": 6475,
+    "includedOrganizations": 11138,
+    "bilingualOrganizations": 9754,
+    "englishOnlyOrganizations": 1345,
+    "chineseOnlyOrganizations": 39,
+    "organizationsWithSubsidiaries": 955,
+    "earliestEffectiveDate": "1949-03-11",
+    "latestEffectiveDate": "2026-10-07",
+    "byDecade": {
+      "1940s": 11,
+      "1950s": 113,
+      "1960s": 136,
+      "1970s": 339,
+      "1980s": 564,
+      "1990s": 1128,
+      "2000s": 2447,
+      "2010s": 3378,
+      "2020s": 3022
+    }
+  },
+  "topParentNetworks": [
+    {
+      "en": "Tung Wah Group of Hospitals",
+      "zh": "東華三院",
+      "effectiveDate": "1955-06-01",
+      "subsidiaryCount": 388
+    },
+    {
+      "en": "Po Leung Kuk",
+      "zh": "保良局",
+      "effectiveDate": "1958-02-14",
+      "subsidiaryCount": 315
+    },
+    {
+      "en": "Caritas - Hong Kong",
+      "zh": "香港明愛",
+      "effectiveDate": "1981-11-12",
+      "subsidiaryCount": 247
+    },
+    {
+      "en": "Catholic Diocese of Hong Kong,The",
+      "zh": "天主教香港教區",
+      "effectiveDate": "1951-01-02",
+      "subsidiaryCount": 208
+    },
+    {
+      "en": "Lutheran Church - Hong Kong Synod Limited, The",
+      "zh": "香港路德會有限公司",
+      "effectiveDate": "1978-03-09",
+      "subsidiaryCount": 169
+    },
+    {
+      "en": "Salvation Army, The",
+      "zh": "救世軍",
+      "effectiveDate": "1952-02-02",
+      "subsidiaryCount": 153
+    },
+    {
+      "en": "Evangelical Lutheran Church of Hong Kong, The",
+      "zh": "基督教香港信義會",
+      "effectiveDate": "1960-05-09",
+      "subsidiaryCount": 149
+    },
+    {
+      "en": "Yan Oi Tong Limited",
+      "zh": "仁愛堂有限公司",
+      "effectiveDate": "1977-10-12",
+      "subsidiaryCount": 138
+    },
+    {
+      "en": "St. James' Settlement",
+      "zh": "聖雅各福群會",
+      "effectiveDate": "1981-06-23",
+      "subsidiaryCount": 126
+    },
+    {
+      "en": "Pok Oi Hospital",
+      "zh": "博愛醫院",
+      "effectiveDate": "1966-02-25",
+      "subsidiaryCount": 122
+    },
+    {
+      "en": "Yan Chai Hospital",
+      "zh": "仁濟醫院",
+      "effectiveDate": "1970-12-22",
+      "subsidiaryCount": 117
+    },
+    {
+      "en": "Hong Kong Sheng Kung Hui Welfare Council Limited",
+      "zh": "香港聖公會福利協會有限公司",
+      "effectiveDate": "2013-09-04",
+      "subsidiaryCount": 112
+    },
+    {
+      "en": "Christian & Missionary Alliance Church Union Hong Kong Limited",
+      "zh": "基督教宣道會香港區聯會有限公司",
+      "effectiveDate": "1971-05-13",
+      "subsidiaryCount": 111
+    },
+    {
+      "en": "Hong Kong Young Women's Christian Association",
+      "zh": "香港基督教女青年會",
+      "effectiveDate": "1950-06-20",
+      "subsidiaryCount": 91
+    },
+    {
+      "en": "Christian Family Service Centre",
+      "zh": "基督教家庭服務中心",
+      "effectiveDate": "1970-05-15",
+      "subsidiaryCount": 86
+    }
+  ],
+  "artifacts": {
+    "charities": {
+      "path": "charities.json.gz",
+      "bytes": 505728,
+      "sha256": "460eb0db1d87880e0c26da9e0127c0e52c845ba8908c491122f0b3c40f585025",
+      "decodedBytes": 2917031,
+      "decodedSha256": "f46baaa987abec00a11ccdef773d685dde9961539a0e69fd8062976217f8cd94",
+      "rows": 11138
+    },
+    "csv": {
+      "path": "hong-kong-section-88-charities.csv",
+      "bytes": 992674,
+      "sha256": "e785c37b60b2925ba0e46ec497605b5661e034cdd95c1b36737569f5666a34f2",
+      "rows": 11138
+    }
+  }
+}
