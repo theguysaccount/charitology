@@ -9,6 +9,7 @@ import { createHandler } from "../lib/handler.mjs";
 import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
 import { volunteerProfileConfiguration } from "../lib/volunteer-profile-routes.mjs";
 import { membershipRenewalConfiguration } from "../lib/membership-renewal-storage.mjs";
+import { handlePilotFeedbackRequest } from "../api/pilot-feedback.mjs";
 const settings = readSettings(),
   db = database(settings.databaseUrl),
   send = mailer(settings),
@@ -41,7 +42,16 @@ const server = createServer(async (req, res) => {
           ? { body: req, duplex: "half" }
           : {}),
       });
-      const response = await handle(request);
+      const response =
+        url.pathname === "/api/pilot-feedback"
+          ? await handlePilotFeedbackRequest({
+              request,
+              settings,
+              db,
+              auth,
+              send,
+            })
+          : await handle(request);
       const bytes = Buffer.from(await response.arrayBuffer());
       const headers = Object.fromEntries(response.headers);
       delete headers["set-cookie"];

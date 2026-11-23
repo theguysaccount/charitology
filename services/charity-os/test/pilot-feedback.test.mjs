@@ -5,7 +5,9 @@ import {
   validatePilotFeedback,
   buildPilotFeedbackRelayPayload,
   sendPilotFeedback,
-} from "../lib/pilot-feedback.mjs";
+  handlePilotFeedbackRequest,
+} from "../api/pilot-feedback.mjs";
+import { csrf } from "../lib/security.mjs";
 import { validateOsMail } from "../../newsletter/lib/os-mail.mjs";
 
 test("validatePilotFeedback enforces category, message length, and allowlisted fields", () => {
@@ -129,4 +131,72 @@ test("sendPilotFeedback enforces per-user rate limit and invokes mail relay with
   assert.equal(sent.length, 1);
   assert.ok(/^pilot-feedback-[A-Za-z0-9_-]{8,80}$/.test(sent[0].key));
   assert.equal(sent[0].payload.purpose, "reminder");
+});
+
+test("handlePilotFeedbackRequest enforces POST, origin, session, and CSRF before relaying", async () => {
+  const settings = {
+    origin: "https://os.charitology.org",
+    secret: "a-very-long-test-secret-at-least-32-characters",
+  };
+  const db = { limit: async () => {} };
+  const sent = [];
+  const send = async (payload, key) => {
+    sent.push({ payload, key });
+    return { accepted: true };
+  };
+  const session = {
+    session: { id: "sess_1" },
+    user: { id: "user_1", email: "pilot@example.org" },
+  };
+  const auth = { api: { getSession: async () => session } };
+
+  const getRes = await handlePilotFeedbackRequest({
+    request: new Request("https://os.charitology.org/api/pilot-feedback", { method: "GET" }),
+    settings,
+    db,
+    auth,
+    send,
+  });
+  assert.equal(getRes.status, 405);
+
+  const unauthRes = await handlePilotFeedbackRequest({
+    request: new Request("https://os.charitology.org/api/pilot-feedback", {
+      method: "POST",
+      headers: { origin: settings.origin, "content-type": "application/json" },
+      body: JSON.stringify({ category: "bug", message: "A test feedback note." }),
+    }),
+    settings,
+    db,
+    auth: { api: { getSession: async () => null } },
+    send,
+  });
+  assert.equal(unauthRes.status, 401);
+
+  const okRes = await handlePilotFeedbackRequest({
+    request: new Request("https://os.charitology.org/api/pilot-feedback", {
+      method: "POST",
+      headers: {
+        origin: settings.origin,
+        "content-type": "application/json",
+        "x-csrf-token": csrf(session.session.id, settings.secret),
+      },
+      body: JSON.stringify({
+        category: "confusing",
+        message: "The starter tracks made it much clearer where to start.",
+        screen: "home",
+        viewport: "1280x800",
+        theme: "light",
+        allowReply: false,
+      }),
+    }),
+    settings,
+    db,
+    auth,
+    send,
+  });
+  assert.equal(okRes.status, 200);
+  const body = await okRes.json();
+  assert.equal(body.ok, true);
+  assert.equal(body.delivered, true);
+  assert.equal(sent.length, 1);
 });

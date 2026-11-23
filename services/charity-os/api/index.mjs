@@ -6,14 +6,15 @@ import { createHandler } from "../lib/handler.mjs";
 import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
 import { volunteerProfileConfiguration } from "../lib/volunteer-profile-routes.mjs";
 import { membershipRenewalConfiguration } from "../lib/membership-renewal-storage.mjs";
-let handler;
+import { handlePilotFeedbackRequest } from "./pilot-feedback.mjs";
+let runtime;
 function route(request) {
-  if (!handler) {
+  if (!runtime) {
     const settings = readSettings(),
       db = database(settings.databaseUrl),
       send = mailer(settings),
       auth = authentication({ settings, db, send });
-    handler = createHandler({ settings, db, send, auth,
+    const handler = createHandler({ settings, db, send, auth,
       volunteerSubstitutionRuntime:createHostedVolunteerSubstitutionRuntime({
         db,enabled:process.env.OS_VOLUNTEER_SUBSTITUTIONS_ENABLED==="1",
       }),
@@ -22,8 +23,18 @@ function route(request) {
       membershipRenewalConfig:membershipRenewalConfiguration(),
       membershipAssistedEnabled:process.env.OS_MEMBERSHIP_ASSISTANCE_ENABLED==="1",
       membershipAssistedRetained:process.env.OS_MEMBERSHIP_ASSISTANCE_STORAGE_SCHEMA==="charitology_membership_assistance" });
+    runtime = { settings, db, send, auth, handler };
   }
-  return handler(request);
+  if (new URL(request.url).pathname === "/api/pilot-feedback") {
+    return handlePilotFeedbackRequest({
+      request,
+      settings: runtime.settings,
+      db: runtime.db,
+      auth: runtime.auth,
+      send: runtime.send,
+    });
+  }
+  return runtime.handler(request);
 }
 export const GET = route;
 export const POST = route;

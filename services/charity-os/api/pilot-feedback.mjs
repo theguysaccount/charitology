@@ -1,4 +1,14 @@
-import { clean, fail, hash, id } from "./security.mjs";
+import {
+  body,
+  checkCsrf,
+  checkOrigin,
+  clean,
+  fail,
+  hash,
+  HttpError,
+  id,
+  json,
+} from "../lib/security.mjs";
 
 export const PILOT_FEEDBACK_RECIPIENT = "hello@charitology.org";
 
@@ -121,4 +131,42 @@ export async function sendPilotFeedback({ db, send, settings, session, input }) 
     category: feedback.category,
     recipient: payload.to,
   };
+}
+
+export async function handlePilotFeedbackRequest({
+  request,
+  settings,
+  db,
+  auth,
+  send,
+}) {
+  try {
+    if (request.method !== "POST") {
+      fail(405, "method", "Method not allowed.");
+    }
+    checkOrigin(request, settings.origin);
+    const session = await auth.api.getSession({ headers: request.headers });
+    if (!session) fail(401, "session", "Sign in to continue.");
+    checkCsrf(request, session, settings);
+    const input = await body(request, 4096);
+    const result = await sendPilotFeedback({
+      db,
+      send,
+      settings,
+      session,
+      input,
+    });
+    return json({ ok: true, ...result });
+  } catch (error) {
+    if (error instanceof HttpError) {
+      return json(
+        { ok: false, code: error.code, message: error.message },
+        error.status,
+      );
+    }
+    return json(
+      { ok: false, code: "request_failed", message: "The request could not be completed." },
+      500,
+    );
+  }
 }
