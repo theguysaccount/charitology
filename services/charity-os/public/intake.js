@@ -560,7 +560,8 @@ async function boot() {
     throw new Error(
       "Use the original form or private receipt link without query parameters.",
     );
-  if (location.pathname.replace(/\/$/, "") === "/p/receipt") {
+  const cleanPath = location.pathname.replace(/\/$/, "");
+  if (cleanPath === "/p/receipt") {
     $("#intake-loading").hidden = true;
     $("#intake-receipt").hidden = false;
     if (location.hash) {
@@ -572,10 +573,12 @@ async function boot() {
     }
     return;
   }
+  if (!cleanPath.startsWith("/p/"))
+    throw new Error(
+      "Use the complete form link supplied by the organization, or open your saved private receipt link.",
+    );
   const match = scopePattern.exec(
-    decodeURIComponent(
-      location.pathname.split("/").filter(Boolean).at(-1) || "",
-    ),
+    decodeURIComponent(cleanPath.slice(3)),
   );
   if (!match)
     throw new Error("Use the complete form link supplied by the organization.");
