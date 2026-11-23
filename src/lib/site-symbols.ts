@@ -162,6 +162,9 @@ export const symbols = {
   tatraPeak: 'M2 19 8.5 7l4 6.5L15.5 9 22 19H2Zm6.5-12 1.8 3m5.2-1 1.5 2.5',
   taxAssign: 'M4 5h16v14H4V5Zm4 4h8m-8 4h5m1 2 2 2 3-4',
   aidGap: 'M3 20h18M5 17V9h4v8m6 0V5h4v12M11 12h2m0-4h2m-2 8h2',
+  danishCrown: 'M4 17h16l1-9-4.5 3.5L12 5l-4.5 6.5L3 8l1 9Zm0 3h16',
+  nordicStar: 'M12 2v20M2 12h20m-14.5-7.5 9 15m0-15-9 15',
+  auditSeal: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-3.5 9.5 2.5 2.5 5-5.5',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

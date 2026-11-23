@@ -1,0 +1,162 @@
+{
+  "duplicateYearColumns": {
+    "count": 17,
+    "note": "Svensk Insamlingskontroll's live directory emits repeated year header columns with space-truncated left values on 17 directory cards; Charitology retains the rightmost complete figure per year.",
+    "organizations": [
+      {
+        "slug": "aldrig-ensam",
+        "name": "Aldrig Ensam",
+        "orgNr": "802520-0091",
+        "status": "active",
+        "latestRevenueTkr": 2728
+      },
+      {
+        "slug": "blascancerforbundet",
+        "name": "Blåscancerförbundet",
+        "orgNr": "802530-1022",
+        "status": "active",
+        "latestRevenueTkr": 310
+      },
+      {
+        "slug": "fredrika-bremer-forbundet",
+        "name": "Fredrika Bremer-förbundet",
+        "orgNr": "802000-4316",
+        "status": "active",
+        "latestRevenueTkr": 3531
+      },
+      {
+        "slug": "friskis-svettis-riks",
+        "name": "Friskis & Svettis Riks",
+        "orgNr": "843001-3501",
+        "status": "active",
+        "latestRevenueTkr": 61665
+      },
+      {
+        "slug": "ilco-tarm-uro-och-stomiforbundet",
+        "name": "ILCO Tarm- uro- och stomiförbundet",
+        "orgNr": "838200-9648",
+        "status": "active",
+        "latestRevenueTkr": 5081
+      },
+      {
+        "slug": "insamlingsstiftelsen-brandforsk",
+        "name": "Insamlingsstiftelsen Brandforsk",
+        "orgNr": "802481-0589",
+        "status": "active",
+        "latestRevenueTkr": 7026
+      },
+      {
+        "slug": "insamlingsstiftelsen-havsmiljofonden",
+        "name": "Insamlingsstiftelsen Havsmiljöfonden",
+        "orgNr": "802482-5344",
+        "status": "active",
+        "latestRevenueTkr": 79
+      },
+      {
+        "slug": "insamlingsstiftelsen-kolmarden-foundation",
+        "name": "Insamlingsstiftelsen Kolmården Foundation",
+        "orgNr": "802481-2094",
+        "status": "active",
+        "latestRevenueTkr": 1623
+      },
+      {
+        "slug": "insamlingsstiftelsen-ostersjokontraktet",
+        "name": "Insamlingsstiftelsen Östersjökontraktet",
+        "orgNr": "802482-5328",
+        "status": "active",
+        "latestRevenueTkr": 149
+      },
+      {
+        "slug": "insamlingsstiftelsen-sverige-ukraina",
+        "name": "Insamlingsstiftelsen Sverige-Ukraina",
+        "orgNr": "802482-2572",
+        "status": "active",
+        "latestRevenueTkr": 3494
+      },
+      {
+        "slug": "malarens-vattenvardsforbund",
+        "name": "Mälarens Vattenvårdsförbund",
+        "orgNr": "878002-4090",
+        "status": "active",
+        "latestRevenueTkr": 4492
+      },
+      {
+        "slug": "riksforbundet-sveriges-4h",
+        "name": "Riksförbundet Sveriges 4H",
+        "orgNr": "802000-0371",
+        "status": "active",
+        "latestRevenueTkr": 17139
+      },
+      {
+        "slug": "sfl-international",
+        "name": "SFL International",
+        "orgNr": "802546-9514",
+        "status": "active",
+        "latestRevenueTkr": 1104
+      },
+      {
+        "slug": "sipri-stiftelsen-stockholms-internationella-fredsforskningsinstitut",
+        "name": "SIPRI, Stiftelsen Stockholms Internationella Fredsforskningsinstitut",
+        "orgNr": "802006-2660",
+        "status": "active",
+        "latestRevenueTkr": 111996
+      },
+      {
+        "slug": "stiftelsen-inventum",
+        "name": "Stiftelsen Inventum",
+        "orgNr": null,
+        "status": "finished",
+        "latestRevenueTkr": 83
+      },
+      {
+        "slug": "stoppa-glioblastom",
+        "name": "Stoppa Glioblastom",
+        "orgNr": "802551-1430",
+        "status": "active",
+        "latestRevenueTkr": 89
+      },
+      {
+        "slug": "vara-barns-klimat",
+        "name": "Våra barns klimat",
+        "orgNr": "802502-1992",
+        "status": "active",
+        "latestRevenueTkr": 2071
+      }
+    ]
+  },
+  "duplicateTitleAcrossStatuses": [
+    {
+      "title": "Stiftelsen Trygga Barnen",
+      "entries": [
+        {
+          "slug": "5296",
+          "status": "active",
+          "orgNr": "802426-4619"
+        },
+        {
+          "slug": "stiftelsen-trygga-barnen",
+          "status": "finished",
+          "orgNr": null
+        }
+      ]
+    }
+  ],
+  "nonStandardOrgNr": [
+    {
+      "slug": "insamlingsstiftelsen-als-fonden",
+      "name": "Insamlingsstiftelsen ALS-fonden",
+      "publishedOrgNr": "80482-6334",
+      "note": "Preserved verbatim from Svensk Insamlingskontroll's directory without silently inserting digits."
+    }
+  ],
+  "cardSumVsYearbookReconciliation2025": {
+    "activeCardsWith2025Revenue": 456,
+    "auditedOrganizationsInYearbook": 481,
+    "activeCardsRevenue2025Mkr": 29279.4,
+    "yearbookTotalRevenue2025Mkr": 29482,
+    "revenueCoveragePct": 99.31,
+    "activeCardsEquity2025Mkr": 36424.3,
+    "yearbookTotalEquity2025Mkr": 36651,
+    "equityCoveragePct": 99.38
+  }
+}

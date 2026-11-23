@@ -1,0 +1,398 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/sweden-90-konto/manifest.json';
+import anomalies from '../../../../../public/data/funding-flows/sweden-90-konto/anomalies.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Sweden 90-konto audited giving & private-vs-institutional funding (2023–2025)';
+const asset = '/data/funding-flows/sweden-90-konto/';
+const registryRoute = '/record/charity-index/sweden/';
+const count = (value: number) => value.toLocaleString('en-US');
+
+const sources = [
+  {
+    title: 'Insamlingsåret 2025 i text och siffror med flerårsöversikter (Audited 90-konto Yearbook)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.yearbook2025,
+  },
+  {
+    title: 'De största organisationerna under 2025 — Topp-110 Insamlade Gåvor och Bidrag (Mkr)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.top110Pdf,
+  },
+  {
+    title: 'De största organisationerna under 2025 — Topp-100 Gåvor från privatpersoner (Mkr)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.top100PrivatePdf,
+  },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Funding flows · Sweden"
+  summary="Inspect SEK 23,090M in audited 2025 gifts and grants across 481 Swedish 90-konto charities, comparing all Top-110 charities (91.1% of sector giving) against Top-100 private individual donations to expose donor-funded vs. grant-driven funding models."
+  filePath="src/pages/record/funding-flows/sweden-90-konto/index.astro"
+  crumbs={[{ label: 'The Record', href: '/record/' }, { label: 'Funding flows', href: '/record/funding-flows/' }, { label: 'Sweden 90-konto giving' }]}
+  sources={sources}
+>
+  <p>
+    In <strong>2025</strong>, Sweden’s <strong>{count(manifest.counts.auditedOrganizations2025)} audited 90-konto charities</strong> collected
+    <strong>SEK {count(manifest.counts.collectedGiftsAndGrants2025Mkr)} million</strong> (SEK 23.09B) in gifts and grants — and
+    <strong>SEK {count(manifest.counts.totalRevenue2025Mkr)} million</strong> (SEK 29.48B) in total revenue including earned and financial income.
+    Private individuals contributed <strong>SEK {count(manifest.counts.privateIndividuals2025Mkr)}M (47.6%)</strong> of collected gifts and grants,
+    public authorities provided <strong>SEK {count(manifest.counts.publicAuthorities2025Mkr)}M (30.7%)</strong>, foundations and associations contributed
+    <strong>SEK {count(manifest.counts.foundationsAndOrgs2025Mkr)}M (14.2%)</strong>, and corporate partners gave
+    <strong>SEK {count(manifest.counts.corporations2025Mkr)}M (7.5%, up +7.4% year-over-year)</strong>.
+  </p>
+  <p>
+    <a class="identity-link" href={url(registryRoute)}>Search all 741 active, revoked and closed Swedish 90-konto profiles</a>.
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-se-90konto
+    data-top-url={url(asset + manifest.artifacts.topOrganizations2025.path)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="se-flow-heading"
+  >
+    <h2 id="se-flow-heading">Compare Sweden’s Top-110 charities by total gifts vs. private donations</h2>
+    <p id="se-flow-hint">
+      All <strong>{manifest.counts.top110Rows} largest Swedish charities</strong> (representing <strong>SEK {count(manifest.counts.top110SumMkr)}M = {manifest.counts.top110ShareOfSectorGiftsPct}%</strong>
+      of all 90-konto collections) are matched <strong>110/110</strong> to their official active <em>Org nr</em> and paired with Sweden’s Top-100 private-donor list
+      (<strong>{manifest.counts.top110WithPrivateRankMatch}</strong> organizations appear in both lists). Filter by name, Org nr, or funding mix locally in your browser.
+    </p>
+    <form aria-describedby="se-flow-hint">
+      <label for="se-flow-query">Charity name or Swedish Org nr</label>
+      <div class="finance-actions">
+        <input id="se-flow-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="se-flow-mix">Funding mix filter</label>
+          <select id="se-flow-mix" disabled>
+            <option value="">All Top-110 organizations (110)</option>
+            <option value="donor-led">Individual-donor led (≥70% private gifts)</option>
+            <option value="institutional-led">Public/institutional led (&lt;40% private or not in Top-100 private)</option>
+            <option value="in-both">Present in both Top-110 total &amp; Top-100 private ({manifest.counts.top110WithPrivateRankMatch})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="se-flow-sort">Sort by</label>
+          <select id="se-flow-sort" disabled>
+            <option value="total">2025 total gifts &amp; grants (highest)</option>
+            <option value="private">2025 private individual gifts (highest)</option>
+            <option value="privShare">Private-gift share % (highest)</option>
+          </select>
+        </span>
+        <button class="btn" type="submit" disabled>Filter Top-110</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Click “Filter Top-110” or choose a funding mix to explore all 110 matched charities.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed rows as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed rows as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="auditSeal" aria-label="Sweden Top-110 90-konto charities" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the <a href={url(asset + manifest.artifacts.sectorSeriesCsv.path)} download>2023–2025 audited sector CSV</a> or inspect the
+        official PDFs on <a href={manifest.catalogues.statistics}>insamlingskontroll.se/statistik</a>.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="private-vs-public">Individual donor reliance vs. government and institutional funding</h2>
+  <p>
+    Pairing Svensk Insamlingskontroll’s Top-110 total collections table with its Top-100 private individual gifts table reveals a sharp structural split inside Sweden’s
+    largest charities. Disease research and medical humanitarian charities rely overwhelmingly on direct gifts from individuals — <em>Hjärt-Lungfonden</em>
+    (551 / 593 Mkr = <strong>92.9%</strong>), <em>Läkare Utan Gränser</em> (716 / 814 Mkr = <strong>88.0%</strong>), and <em>Cancerfonden</em>
+    (892 / 1,023 Mkr = <strong>87.2%</strong>). By contrast, Sweden’s largest total collector, <em>Rädda Barnen</em> (1,519 Mkr total vs. 360 Mkr private =
+    <strong>23.7%</strong> private), along with <em>Röda Korset</em> (<strong>35.4%</strong>) and <em>Fryshuset</em> (not in Top-100 private), operate predominantly on
+    public-authority and institutional grant channels.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Top 20 Swedish 90-konto charities in 2025 total gifts vs private donations" tabindex="0">
+    <table class="data se-flow-table">
+      <caption>Top 20 Swedish 90-konto charities in 2025: total gifts &amp; grants vs. private individual donations (SEK million)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Rank</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Org nr</th>
+          <th scope="col">Total gifts &amp; grants</th>
+          <th scope="col">Private gifts</th>
+          <th scope="col">Private share</th>
+          <th scope="col">3y purpose / admin</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.top20Merged.map((row) => (
+            <tr>
+              <td>#{row.rankTotal}</td>
+              <th scope="row">
+                <span lang="sv">{row.reportName}</span>
+              </th>
+              <td>
+                <code>{row.orgNr}</code>
+              </td>
+              <td>{count(row.giftsAndGrants2025Mkr)} Mkr</td>
+              <td>{row.privateGifts2025Mkr !== null ? `${count(row.privateGifts2025Mkr)} Mkr` : 'Outside Top-100'}</td>
+              <td>{row.privateSharePct !== null ? `${row.privateSharePct.toFixed(1)}%` : '—'}</td>
+              <td>
+                {row.purposePct3y !== null ? `${row.purposePct3y}%` : '—'} / {row.adminPct3y !== null ? `${row.adminPct3y}%` : '—'}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="sector-trend">Audited sector totals across 481 organizations (2023–2025)</h2>
+  <p>
+    Every figure below is parsed directly from the audited tabular summary on pages 2–3 of Svensk Insamlingskontroll’s 2025 yearbook. Notice that public-authority grants
+    fell 3.2% in 2025 (from SEK 7,325M to SEK 7,092M) while corporate partnerships rose 7.4% (from SEK 1,605M to SEK 1,724M) and audited purpose spending rose to
+    <strong>SEK 27,027M (91.7% of total revenue)</strong>.
+  </p>
+  <div class="table-wrap" role="region" aria-label="Sweden 90-konto audited sector totals 2023-2025" tabindex="0">
+    <table class="data se-flow-table">
+      <caption>Svensk Insamlingskontroll audited sector revenue, sources and cost shares (2023–2025, SEK million)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          <th scope="col">Audited orgs</th>
+          <th scope="col">Private gifts</th>
+          <th scope="col">Public authorities</th>
+          <th scope="col">Foundations &amp; orgs</th>
+          <th scope="col">Corporations</th>
+          <th scope="col">Total gifts &amp; grants</th>
+          <th scope="col">Total revenue</th>
+          <th scope="col">Purpose share</th>
+          <th scope="col">Fundraising + admin</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.yearly.map((y) => (
+            <tr>
+              <th scope="row">{y.year}</th>
+              <td>{count(y.auditedOrganizations)}</td>
+              <td>{count(y.privateIndividualsMkr)}</td>
+              <td>{count(y.publicAuthoritiesMkr)}</td>
+              <td>{count(y.foundationsAndOrgsMkr)}</td>
+              <td>{count(y.corporationsMkr)}</td>
+              <td>{count(y.collectedGiftsAndGrantsMkr)}</td>
+              <td>{count(y.totalRevenueMkr)}</td>
+              <td>{y.purposeSharePct.toFixed(1)}%</td>
+              <td>{y.combinedFundraisingAdminPct.toFixed(1)}%</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads, reconciliation and overhead boundaries</h2>
+  <p>
+    <strong>Directory-to-yearbook reconciliation:</strong> Summing audited 2025 revenue across the {count(anomalies.cardSumVsYearbookReconciliation2025.activeCardsWith2025Revenue)} active
+    directory cards with 2025 entries yields <strong>SEK {count(anomalies.cardSumVsYearbookReconciliation2025.activeCardsRevenue2025Mkr)}M</strong>
+    (<strong>{anomalies.cardSumVsYearbookReconciliation2025.revenueCoveragePct}%</strong> of the SEK {count(anomalies.cardSumVsYearbookReconciliation2025.yearbookTotalRevenue2025Mkr)}M
+    yearbook total across {count(anomalies.cardSumVsYearbookReconciliation2025.auditedOrganizationsInYearbook)} organizations) and
+    <strong>SEK {count(anomalies.cardSumVsYearbookReconciliation2025.activeCardsEquity2025Mkr)}M</strong> in equity
+    (<strong>{anomalies.cardSumVsYearbookReconciliation2025.equityCoveragePct}%</strong> of yearbook equity). The 0.7% residual reflects non-calendar or newly admitted organizations
+    included in the yearbook aggregate whose individual directory cards had not yet posted 2025 rows.
+  </p>
+  <p>
+    <strong>Overhead boundary:</strong> Sweden’s 90-konto standard caps fundraising and administrative costs at 25% of total revenue (the 2025 sector average is 11.9%).
+    While this ceiling guards against abusive fundraising schemes, administrative ratios do not measure charitable effectiveness or cost per outcome — see{' '}
+    <a href={url('/diagnosis/overhead-myth/')}>the Overhead Myth</a>.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(asset + manifest.artifacts.sectorSeriesCsv.path)} download>Download 2023–2025 sector CSV</a> ·{' '}
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download data anomalies report (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .se-flow-table {
+    min-inline-size: 46rem;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../../lib/client/verified-json';
+
+  type TopRow = {
+    rankTotal: number;
+    rankPrivate: number | null;
+    reportName: string;
+    matchedSlug: string | null;
+    matchedName: string | null;
+    orgNr: string | null;
+    legalForm: string | null;
+    giftsAndGrants2025Mkr: number;
+    privateGifts2025Mkr: number | null;
+    privateSharePct: number | null;
+    totalRevenue2025Tkr: number | null;
+    purposePct3y: number | null;
+    adminPct3y: number | null;
+  };
+  type FlowManifest = {
+    publisher: string;
+    capturedOn: string;
+    artifacts: {
+      topOrganizations2025: VerifiedJsonAsset & { path: string };
+    };
+  };
+
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/å/g, 'a')
+      .replace(/ä/g, 'a')
+      .replace(/ö/g, 'o')
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-se-90konto]')) {
+    const manifest: FlowManifest = JSON.parse(root.dataset.manifest!);
+    const topUrl = root.dataset.topUrl!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#se-flow-query', root) as HTMLInputElement;
+    const mixSel = $('#se-flow-mix', root) as HTMLSelectElement;
+    const sortSel = $('#se-flow-sort', root) as HTMLSelectElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, mixSel, sortSel, submitBtn, clearBtn]) el.disabled = false;
+
+    let cache: Promise<TopRow[]> | null = null;
+    let shown: TopRow[] = [];
+
+    const loadRows = () => {
+      if (!cache) {
+        cache = loadVerifiedJson(topUrl, manifest.artifacts.topOrganizations2025).then((d) => {
+          const obj = d as { top110Total?: TopRow[] };
+          if (!Array.isArray(obj.top110Total)) throw new Error('Unexpected Sweden Top-110 payload.');
+          return obj.top110Total;
+        });
+      }
+      return cache;
+    };
+
+    const render = (rows: TopRow[]) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = 'No Top-110 Swedish 90-konto charities matched those filters.';
+        return;
+      }
+      statusEl.textContent = `Showing ${rows.length} of 110 audited Swedish charities (2025).`;
+      for (const r of rows) {
+        const privDesc =
+          r.privateGifts2025Mkr !== null
+            ? `Private gifts: SEK ${r.privateGifts2025Mkr.toLocaleString('en-US')}M (${r.privateSharePct?.toFixed(1)}% of collections; Top-100 rank #${r.rankPrivate})`
+            : 'Private gifts: outside Top-100 private donor list (<11 Mkr)';
+        const ratios =
+          r.purposePct3y !== null || r.adminPct3y !== null
+            ? `3y purpose: ${r.purposePct3y ?? '—'}% · 3y admin: ${r.adminPct3y ?? '—'}%`
+            : null;
+        listEl.append(
+          h(
+            'li',
+            {},
+            h('strong', { lang: 'sv' }, `#${r.rankTotal} ${r.reportName}`),
+            r.orgNr ? [' ', h('code', {}, `Org nr ${r.orgNr}`)] : null,
+            h('div', { class: 'note' }, `2025 total gifts & grants: SEK ${r.giftsAndGrants2025Mkr.toLocaleString('en-US')}M · ${privDesc}`),
+            ratios ? h('div', { class: 'note' }, `${r.legalForm ?? ''} · ${ratios}`) : null,
+          ),
+        );
+      }
+    };
+
+    const run = async () => {
+      const rawQ = queryEl.value.trim();
+      const normQ = normalize(rawQ);
+      const digits = rawQ.replace(/[^0-9]/g, '');
+      const mix = mixSel.value;
+      const sort = sortSel.value;
+      statusEl.textContent = 'Loading Sweden 2025 Top-110 / Top-100 dataset…';
+      try {
+        const all = await loadRows();
+        let filtered = all.filter((r) => {
+          if (mix === 'donor-led' && (r.privateSharePct === null || r.privateSharePct < 70)) return false;
+          if (mix === 'institutional-led' && r.privateSharePct !== null && r.privateSharePct >= 40) return false;
+          if (mix === 'in-both' && r.privateGifts2025Mkr === null) return false;
+          if (!rawQ) return true;
+          if (digits.length >= 4 && (r.orgNr ?? '').replace(/[^0-9]/g, '').includes(digits)) return true;
+          return (
+            normalize(r.reportName).includes(normQ) ||
+            (r.matchedName ? normalize(r.matchedName).includes(normQ) : false)
+          );
+        });
+        filtered = [...filtered].sort((a, b) => {
+          if (sort === 'private') return (b.privateGifts2025Mkr ?? -1) - (a.privateGifts2025Mkr ?? -1);
+          if (sort === 'privShare') return (b.privateSharePct ?? -1) - (a.privateSharePct ?? -1);
+          return a.rankTotal - b.rankTotal;
+        });
+        render(filtered);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Sweden Top-110 data.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void run();
+    });
+    for (const sel of [mixSel, sortSel]) sel.addEventListener('change', () => void run());
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      mixSel.value = '';
+      sortSel.value = 'total';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Filter cleared.';
+      queryEl.focus();
+    });
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-sweden-90-konto-top110-2025.json',
+        JSON.stringify({ source: manifest.publisher, capturedOn: manifest.capturedOn, rows: shown }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          rank_total: r.rankTotal,
+          rank_private: r.rankPrivate ?? '',
+          report_name: financialCsvName(r.reportName),
+          org_nr: r.orgNr ?? '',
+          legal_form: r.legalForm ?? '',
+          gifts_grants_2025_mkr: r.giftsAndGrants2025Mkr,
+          private_gifts_2025_mkr: r.privateGifts2025Mkr ?? '',
+          private_share_pct: r.privateSharePct ?? '',
+          purpose_pct_3y: r.purposePct3y ?? '',
+          admin_pct_3y: r.adminPct3y ?? '',
+        })),
+      );
+      download('charitology-sweden-90-konto-top110-2025.csv', '\uFEFF' + csvText, 'text/csv;charset=utf-8');
+    });
+  }
+</script>

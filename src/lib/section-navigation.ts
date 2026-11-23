@@ -218,6 +218,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['funding', 'Follow EU Cohesion Policy 2021–2027 grants', 'endowmentVault'],
     ['coverage', 'Scope, privacy and register boundaries', 'archive'],
   ],
+  '/record/charity-index/denmark/': [
+    ['dk-search-heading', 'Search Danish tax-approved charities', 'lens'],
+    ['statutes', 'Approval statutes and deduction thresholds', 'scale'],
+    ['coverage', 'Scope, partial-year status and boundaries', 'archive'],
+  ],
   '/record/charity-index/estonia/': [
     ['ee-search-heading', 'Search Estonian nonprofits', 'lens'],
     ['funding', 'Follow EU Cohesion, Recovery & EEA/Norway grants', 'euGrant'],
@@ -257,6 +262,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['top-2025', 'Top 20 recipients in 2025', 'coins'],
     ['funding', 'Inspect the 10-year 2%/3% tax-assignment funding flow', 'taxAssign'],
     ['coverage', 'Scope, encoding recovery and boundaries', 'archive'],
+  ],
+  '/record/charity-index/sweden/': [
+    ['se-search-heading', 'Search Swedish 90-konto organizations', 'lens'],
+    ['top-2025', 'Largest active 90-konto organizations by 2025 revenue', 'coins'],
+    ['funding', 'Follow audited 90-konto giving and private-gift shares', 'auditSeal'],
+    ['coverage', 'Active, revoked and closed accounts, anomalies and privacy', 'archive'],
   ],
   '/record/charity-index/taiwan/': [
     ['taiwan-search-heading', 'Search institutional registrations', 'lens'],
@@ -557,6 +568,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['corporate-foundations', 'Why corporate foundations lead Slovakia’s tax-assignment top ten', 'compare'],
     ['decade-trend', 'Ten-year disbursement trajectory (2016–2025)', 'chart'],
     ['downloads', 'Downloads and provenance', 'download'],
+  ],
+  '/record/funding-flows/sweden-90-konto/': [
+    ['se-flow-heading', 'Compare Sweden’s Top-110 charities by total gifts vs. private donations', 'lens'],
+    ['private-vs-public', 'Individual donor reliance vs. government and institutional funding', 'compare'],
+    ['sector-trend', 'Audited sector totals across 481 organizations (2023–2025)', 'chart'],
+    ['downloads', 'Downloads, reconciliation and overhead boundaries', 'download'],
   ],
   '/record/funding-flows/us-schedule-i/': [
     ['us-grants-heading', 'Find grants by EIN', 'lens'],

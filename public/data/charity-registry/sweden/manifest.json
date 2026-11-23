@@ -1,0 +1,355 @@
+{
+  "format": "charitology-sweden-registry-v1",
+  "jurisdiction": "Sweden",
+  "publisher": "Svensk Insamlingskontroll",
+  "asOf": "2026-11-23",
+  "financialReportingYear": 2025,
+  "capturedOn": "2026-11-23",
+  "catalogues": {
+    "directory": "https://www.insamlingskontroll.se/90-konto-organisationer/",
+    "statistics": "https://www.insamlingskontroll.se/statistik/",
+    "wpApi": "https://www.insamlingskontroll.se/wp-json/wp/v2/organizations"
+  },
+  "counts": {
+    "includedOrganizations": 741,
+    "byStatus": {
+      "active": 487,
+      "withdrawn": 36,
+      "finished": 218
+    },
+    "byLegalForm": {
+      "Ideell förening": 424,
+      "Insamlingsstiftelse": 170,
+      "Stiftelse": 137,
+      "Trossamfund": 10
+    },
+    "activeWithOrgNr": 487,
+    "activeWithKeyFigures": 456,
+    "activeWith2025Revenue": 456,
+    "activeSumRevenue2025Tkr": 29279441,
+    "activeSumEquity2025Tkr": 36424291,
+    "duplicateYearHeaderCards": 17,
+    "topPurposesActive": [
+      {
+        "name": "Information- och Opinionsbildning",
+        "count": 223
+      },
+      {
+        "name": "Hjälpverksamhet",
+        "count": 200
+      },
+      {
+        "name": "Utbildning",
+        "count": 198
+      },
+      {
+        "name": "Socialt arbete/Social verksamhet",
+        "count": 179
+      },
+      {
+        "name": "Demokrati och mänskliga rättigheter",
+        "count": 146
+      },
+      {
+        "name": "Forskning",
+        "count": 111
+      },
+      {
+        "name": "Hälsovård",
+        "count": 95
+      },
+      {
+        "name": "Övriga sjukdomar/övrig sjukvård",
+        "count": 89
+      },
+      {
+        "name": "Funktionsnedsättning",
+        "count": 85
+      },
+      {
+        "name": "Samhällsuppbyggnad",
+        "count": 83
+      },
+      {
+        "name": "Miljö/Natur",
+        "count": 63
+      },
+      {
+        "name": "HIV/AIDS",
+        "count": 59
+      }
+    ],
+    "regionsActive": [
+      {
+        "name": "Sverige",
+        "count": 414
+      },
+      {
+        "name": "Afrika",
+        "count": 131
+      },
+      {
+        "name": "Asien",
+        "count": 115
+      },
+      {
+        "name": "Europa",
+        "count": 97
+      },
+      {
+        "name": "Globalt",
+        "count": 67
+      },
+      {
+        "name": "Sydamerika",
+        "count": 65
+      },
+      {
+        "name": "Nordamerika",
+        "count": 27
+      },
+      {
+        "name": "Oceanien",
+        "count": 18
+      }
+    ]
+  },
+  "artifacts": {
+    "organizations": {
+      "path": "organizations.json.gz",
+      "bytes": 72723,
+      "sha256": "959fba5ca28c99f849d9c6ff69e7f8a5c58c1e4997bab65c4faf8642ca4f72a6",
+      "decodedBytes": 550741,
+      "decodedSha256": "212d2feb9edc343ae5ff9a1b0ddd382ddb5ec9fa317ce004c26a268f15286f81",
+      "rows": 741
+    },
+    "csv": {
+      "path": "sweden-90-konto-organizations.csv",
+      "bytes": 219661,
+      "sha256": "fe838e18f949fd78c1eeb37e0c055576982779edd5bd77cf7c1b54282d36c27d",
+      "rows": 741
+    }
+  },
+  "topActiveBy2025Revenue": [
+    {
+      "slug": "trossamfundet-svenska-kyrkan",
+      "name": "Act Svenska kyrkan, Trossamfundet Svenska kyrkan",
+      "orgNr": "252002-6135",
+      "legalForm": "Trossamfund",
+      "since": 1944,
+      "revenue2025Tkr": 3527645,
+      "equity2025Tkr": 12044143,
+      "purposePct3y": 100,
+      "adminPct3y": 5
+    },
+    {
+      "slug": "ersta-diakonisallskap",
+      "name": "Ersta Diakonisällskap",
+      "orgNr": "802000-6717",
+      "legalForm": "Ideell förening",
+      "since": 2005,
+      "revenue2025Tkr": 2055802,
+      "equity2025Tkr": 1121344,
+      "purposePct3y": 89,
+      "adminPct3y": 7
+    },
+    {
+      "slug": "radda-barnens-riksforbund",
+      "name": "Rädda Barnens Riksförbund",
+      "orgNr": "802002-8638",
+      "legalForm": "Ideell förening",
+      "since": 1944,
+      "revenue2025Tkr": 1623126,
+      "equity2025Tkr": 479916,
+      "purposePct3y": 92,
+      "adminPct3y": 11
+    },
+    {
+      "slug": "cancerfonden-riksforeningen-mot-cancer",
+      "name": "Cancerfonden – Riksföreningen mot cancer",
+      "orgNr": "802005-3370",
+      "legalForm": "Ideell förening",
+      "since": 1951,
+      "revenue2025Tkr": 1034929,
+      "equity2025Tkr": 1261123,
+      "purposePct3y": 111,
+      "adminPct3y": 16
+    },
+    {
+      "slug": "svenska-roda-korset",
+      "name": "Svenska Röda Korset",
+      "orgNr": "802002-8711",
+      "legalForm": "Ideell förening",
+      "since": 1946,
+      "revenue2025Tkr": 900261,
+      "equity2025Tkr": 1166865,
+      "purposePct3y": 94,
+      "adminPct3y": 16
+    },
+    {
+      "slug": "unicef-sverige",
+      "name": "UNICEF Sverige",
+      "orgNr": "802401-4386",
+      "legalForm": "Ideell förening",
+      "since": 1993,
+      "revenue2025Tkr": 847086,
+      "equity2025Tkr": 126144,
+      "purposePct3y": 84,
+      "adminPct3y": 15
+    },
+    {
+      "slug": "lakare-utan-granser",
+      "name": "Läkare utan Gränser",
+      "orgNr": "802017-2360",
+      "legalForm": "Ideell förening",
+      "since": 1994,
+      "revenue2025Tkr": 838278,
+      "equity2025Tkr": 632,
+      "purposePct3y": 86,
+      "adminPct3y": 14
+    },
+    {
+      "slug": "hjart-lungfonden-svenska-nationalforeningen-mot-hjart-och-lungsjukdomar",
+      "name": "Hjärt-Lungfonden, Svenska Nationalföreningen mot Hjärt- och Lungsjukdomar",
+      "orgNr": "802006-0763",
+      "legalForm": "Ideell förening",
+      "since": 1991,
+      "revenue2025Tkr": 595293,
+      "equity2025Tkr": 1547433,
+      "purposePct3y": 117,
+      "adminPct3y": 17
+    },
+    {
+      "slug": "stiftelsen-fryshuset",
+      "name": "Stiftelsen Fryshuset",
+      "orgNr": "802011-1582",
+      "legalForm": "Stiftelse",
+      "since": 2012,
+      "revenue2025Tkr": 566981,
+      "equity2025Tkr": 33606,
+      "purposePct3y": 89,
+      "adminPct3y": 10
+    },
+    {
+      "slug": "stockholms-stadsmission",
+      "name": "Stockholms Stadsmission",
+      "orgNr": "802003-1954",
+      "legalForm": "Ideell förening",
+      "since": 1945,
+      "revenue2025Tkr": 556708,
+      "equity2025Tkr": 460041,
+      "purposePct3y": 89,
+      "adminPct3y": 17
+    },
+    {
+      "slug": "lakarmissionen-stiftelse-for-filantropisk-verksamhet",
+      "name": "Läkarmissionen – stiftelse för filantropisk verksamhet",
+      "orgNr": "802005-9989",
+      "legalForm": "Stiftelse",
+      "since": 1966,
+      "revenue2025Tkr": 515779,
+      "equity2025Tkr": 49399,
+      "purposePct3y": 89,
+      "adminPct3y": 11
+    },
+    {
+      "slug": "stiftelsen-varldsnaturfonden-wwf",
+      "name": "Stiftelsen Världsnaturfonden WWF",
+      "orgNr": "802005-9823",
+      "legalForm": "Stiftelse",
+      "since": 1992,
+      "revenue2025Tkr": 510367,
+      "equity2025Tkr": 393526,
+      "purposePct3y": 99,
+      "adminPct3y": 13
+    },
+    {
+      "slug": "barncancerfonden",
+      "name": "Barncancerfonden",
+      "orgNr": "802010-6566",
+      "legalForm": "Ideell förening",
+      "since": 1982,
+      "revenue2025Tkr": 490404,
+      "equity2025Tkr": 740875,
+      "purposePct3y": 92,
+      "adminPct3y": 18
+    },
+    {
+      "slug": "fralsningsarmen",
+      "name": "Frälsningsarmén",
+      "orgNr": "802006-1688",
+      "legalForm": "Trossamfund",
+      "since": 1944,
+      "revenue2025Tkr": 459575,
+      "equity2025Tkr": 580883,
+      "purposePct3y": 92,
+      "adminPct3y": 16
+    },
+    {
+      "slug": "plan-international-sverige-insamlingsstiftelse",
+      "name": "Plan International Sverige Insamlingsstiftelse",
+      "orgNr": "802404-9150",
+      "legalForm": "Insamlingsstiftelse",
+      "since": 1998,
+      "revenue2025Tkr": 436419,
+      "equity2025Tkr": 31573,
+      "purposePct3y": 85,
+      "adminPct3y": 15
+    },
+    {
+      "slug": "sverige-for-unhcr-insamlingsstiftelse",
+      "name": "Sverige för UNHCR Insamlingsstiftelse",
+      "orgNr": "802426-1250",
+      "legalForm": "Insamlingsstiftelse",
+      "since": 2009,
+      "revenue2025Tkr": 426936,
+      "equity2025Tkr": 25547,
+      "purposePct3y": 84,
+      "adminPct3y": 15
+    },
+    {
+      "slug": "diakonia",
+      "name": "Diakonia",
+      "orgNr": "802017-3517",
+      "legalForm": "Ideell förening",
+      "since": 1967,
+      "revenue2025Tkr": 418757,
+      "equity2025Tkr": 161749,
+      "purposePct3y": 91,
+      "adminPct3y": 8
+    },
+    {
+      "slug": "insamlingsstiftelsen-hjarnfonden",
+      "name": "Insamlingsstiftelsen Hjärnfonden",
+      "orgNr": "802017-8664",
+      "legalForm": "Insamlingsstiftelse",
+      "since": 1993,
+      "revenue2025Tkr": 399009,
+      "equity2025Tkr": 259218,
+      "purposePct3y": 83,
+      "adminPct3y": 14
+    },
+    {
+      "slug": "foreningen-blomsterfonden",
+      "name": "Föreningen Blomsterfonden",
+      "orgNr": "802005-1465",
+      "legalForm": "Ideell förening",
+      "since": 1965,
+      "revenue2025Tkr": 398496,
+      "equity2025Tkr": 412345,
+      "purposePct3y": 93,
+      "adminPct3y": 6
+    },
+    {
+      "slug": "trossamfundet-romersk-katolska-kyrkan",
+      "name": "Trossamfundet Romersk-Katolska Kyrkan",
+      "orgNr": "252002-6531",
+      "legalForm": "Trossamfund",
+      "since": 2015,
+      "revenue2025Tkr": 373739,
+      "equity2025Tkr": 390790,
+      "purposePct3y": 89,
+      "adminPct3y": 7
+    }
+  ]
+}

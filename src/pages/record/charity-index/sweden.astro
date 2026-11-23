@@ -1,0 +1,455 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/sweden/manifest.json';
+import flowManifest from '../../../../public/data/funding-flows/sweden-90-konto/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Sweden 90-konto fundraising charities & audited accounts (Svensk Insamlingskontroll)';
+const dataPath = '/data/charity-registry/sweden/';
+const flowPath = '/record/funding-flows/sweden-90-konto/';
+const count = (value: number) => value.toLocaleString('en-US');
+const sekM = (tkr: number) =>
+  `SEK ${(tkr / 1000).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}M`;
+
+const sources = [
+  {
+    title: '90-konto public directory (active, withdrawn and closed organizations + audited Nyckeltal)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.directory,
+  },
+  {
+    title: 'Statistik över insamlingsåret 2025 (Audited 90-konto fundraising statistics)',
+    publisher: manifest.publisher,
+    url: manifest.catalogues.statistics,
+  },
+];
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Global Charity Index · Sweden"
+  summary="Search all 741 Swedish 90-konto fundraising charity profiles overseen by Svensk Insamlingskontroll — 487 active organizations (100% with Swedish Org nr and 456 with multi-year audited SEK accounts), 36 revoked (Indragna) and 218 voluntarily closed (Avslutade)."
+  crumbs={[{ label: 'The Record', href: '/record/' }, { label: 'Global Charity Index', href: '/record/charity-index/' }, { label: 'Sweden' }]}
+  filePath="src/pages/record/charity-index/sweden.astro"
+  sources={sources}
+>
+  <p>
+    Sweden’s independent charitable oversight body, <strong>Svensk Insamlingskontroll</strong>, grants and annually audits the <em>90-konto</em>
+    (90-account) fundraising designation. This snapshot (captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>) accounts for
+    100% of the <strong>{count(manifest.counts.includedOrganizations)}</strong> organizations in Svensk Insamlingskontroll’s public directory:
+    <strong>{count(manifest.counts.byStatus.active)} active 90-konto holders</strong> (every active profile carrying a verified Swedish
+    <em>organisationsnummer</em>, legal form, and 90-konto accounts), <strong>{count(manifest.counts.byStatus.withdrawn)} revoked</strong>
+    (<em>Indragna</em>) accounts, and <strong>{count(manifest.counts.byStatus.finished)} voluntarily closed</strong> (<em>Avslutade</em>) accounts.
+  </p>
+  <p>
+    Among active organizations, <strong>{count(manifest.counts.activeWith2025Revenue)}</strong> publish audited <strong>2025</strong> revenue and equity figures
+    directly in their directory cards totaling <strong>SEK {(manifest.counts.activeSumRevenue2025Tkr / 1_000_000).toFixed(2)} billion</strong> in revenue
+    (reconciling <strong>99.31%</strong> of the SEK {(flowManifest.counts.totalRevenue2025Mkr / 1000).toFixed(2)}B sector total reported in Svensk Insamlingskontroll’s
+    2025 yearbook across {count(flowManifest.counts.auditedOrganizations2025)} audited charities) and
+    <strong>SEK {(manifest.counts.activeSumEquity2025Tkr / 1_000_000).toFixed(2)} billion</strong> in equity.
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-sweden-registry
+    data-base={url(dataPath)}
+    data-flow={url(flowPath)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="se-search-heading"
+  >
+    <h2 id="se-search-heading">Search Swedish 90-konto organizations</h2>
+    <p id="se-search-hint">
+      Search by organization name (Swedish diacritics optional, e.g., <code>cancerfonden</code>, <code>radda barnen</code>, <code>lakare utan granser</code>,
+      <code>barncancerfonden</code> or <code>nordisk hjalp</code>), Swedish <em>Org nr</em> (e.g., <code>802005-3370</code>), or 90-konto number.
+      Filter by active, revoked (<em>Indragna</em>), or closed (<em>Avslutade</em>) status locally in your browser.
+    </p>
+    <form aria-describedby="se-search-hint">
+      <label for="se-query">Organization name, Org nr or 90-konto</label>
+      <div class="finance-actions">
+        <input type="search" id="se-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="se-status">90-konto status</label>
+          <select id="se-status" disabled>
+            <option value="">All statuses ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="active">Active 90-konto ({count(manifest.counts.byStatus.active)})</option>
+            <option value="withdrawn">Revoked / Indragna ({count(manifest.counts.byStatus.withdrawn)})</option>
+            <option value="finished">Closed / Avslutade ({count(manifest.counts.byStatus.finished)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="se-form">Legal form</label>
+          <select id="se-form" disabled>
+            <option value="">All legal forms</option>
+            {
+              Object.entries(manifest.counts.byLegalForm).map(([form, n]) => (
+                <option value={form}>
+                  {form} ({count(n)})
+                </option>
+              ))
+            }
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="se-region">Operating region (active)</label>
+          <select id="se-region" disabled>
+            <option value="">All operating regions</option>
+            {
+              manifest.counts.regionsActive.map((rg) => (
+                <option value={rg.name}>
+                  {rg.name} ({count(rg.count)})
+                </option>
+              ))
+            }
+          </select>
+        </span>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you are ready to load Sweden’s 90-konto registry ({(manifest.artifacts.organizations.bytes / 1024).toFixed(1)} KB compressed).</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="nordicStar" aria-label="Sweden 90-konto organization results" data-results></ol>
+    <noscript>
+      <p>
+        Without JavaScript, download the <a href={url(dataPath + manifest.artifacts.csv.path)} download>Sweden 90-konto CSV ({count(manifest.counts.includedOrganizations)} rows)</a>
+        or inspect <a href={manifest.catalogues.directory}>Svensk Insamlingskontroll</a> directly.
+      </p>
+    </noscript>
+  </section>
+
+  <h2 id="top-2025">Largest active 90-konto organizations by 2025 revenue</h2>
+  <p>
+    Figures below reflect audited 2025 total revenue (<em>Totala intäkter</em>, including gifts, grants, sales and financial returns) and year-end equity
+    (<em>Eget kapital</em>) published on Svensk Insamlingskontroll’s active directory cards, alongside 3-year average purpose and admin ratios. Remember that
+    administrative ratios measure accounting cost shares rather than program effectiveness (see <a href={url('/diagnosis/overhead-myth/')}>the Overhead Myth</a>).
+  </p>
+  <div class="table-wrap" role="region" aria-label="Top 20 active Swedish 90-konto organizations by 2025 total revenue" tabindex="0">
+    <table class="data se-table">
+      <caption>Top 20 active Swedish 90-konto organizations by audited 2025 total revenue (SEK)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Org nr</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Legal form</th>
+          <th scope="col">90-konto since</th>
+          <th scope="col">2025 revenue</th>
+          <th scope="col">2025 equity</th>
+          <th scope="col">3y purpose / admin</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          manifest.topActiveBy2025Revenue.map((item) => (
+            <tr>
+              <td>
+                <button type="button" class="inline-lookup-btn" data-lookup-se={item.orgNr}>
+                  <code>{item.orgNr}</code>
+                </button>
+              </td>
+              <th scope="row">
+                <span lang="sv">{item.name}</span>
+              </th>
+              <td>{item.legalForm}</td>
+              <td>{item.since ?? '—'}</td>
+              <td>{sekM(item.revenue2025Tkr)}</td>
+              <td>{item.equity2025Tkr !== null ? sekM(item.equity2025Tkr) : '—'}</td>
+              <td>
+                {item.purposePct3y !== null ? `${item.purposePct3y}%` : '—'} / {item.adminPct3y !== null ? `${item.adminPct3y}%` : '—'}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="funding">Follow audited 90-konto giving and private-gift shares</h2>
+  <p>
+    Compare all <strong>110 largest Swedish 90-konto charities</strong> by total collected gifts and grants (SEK {count(flowManifest.counts.top110SumMkr)}M = {flowManifest.counts.top110ShareOfSectorGiftsPct}%
+    of all Swedish 90-konto collections) side by side with Sweden’s <strong>Top-100 private individual donor list</strong> (SEK {count(flowManifest.counts.top100PrivateSumMkr)}M),
+    showing which charities depend on individual givers versus government and institutional grants.{' '}
+    <a class="identity-link" href={url(flowPath)}>Open Sweden’s 2025 audited 90-konto giving explorer</a>.
+  </p>
+
+  <h2 id="coverage">Active, revoked and closed accounts, anomalies and privacy</h2>
+  <p>
+    <strong>What is included vs. excluded:</strong> Sweden does not maintain a single universal public registry of all ~200,000 non-profit associations
+    (<em>ideella föreningar</em>). Svensk Insamlingskontroll’s 90-konto directory covers specifically charities that apply for and submit to annual
+    fundraising oversight (requiring at least 75% of total revenue toward charitable purpose and at most 25% for fundraising and administration).
+    Revoked (<em>Indragna</em>, {count(manifest.counts.byStatus.withdrawn)}) and voluntarily closed (<em>Avslutade</em>, {count(manifest.counts.byStatus.finished)})
+    profiles are kept strictly separated from active holders ({count(manifest.counts.byStatus.active)}) so donors can verify whether an organization lost or surrendered
+    its 90-konto designation.
+  </p>
+  <p>
+    <strong>Source-data hygiene &amp; privacy projection:</strong> On {count(manifest.counts.duplicateYearHeaderCards)} directory cards, Svensk Insamlingskontroll’s
+    CMS outputs repeated year columns where earlier cells truncate thousands at whitespace; Charitology retains the rightmost complete audited column per year
+    and logs all {count(manifest.counts.duplicateYearHeaderCards)} affected organizations transparently in the funding-flow anomalies file. Telephone numbers, personal emails
+    and street addresses are stripped at build time.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(dataPath + manifest.artifacts.csv.path)} download>Download full CSV ({count(manifest.counts.includedOrganizations)} rows)</a> ·{' '}
+    <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.
+  </p>
+</Entry>
+
+<style>
+  .se-table {
+    min-inline-size: 46rem;
+  }
+  [data-sweden-registry] .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    flex-wrap: wrap;
+  }
+  [data-sweden-registry] select {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName } from '../../../lib/client/financial-directory';
+  import { loadVerifiedJson, type VerifiedJsonAsset } from '../../../lib/client/verified-json';
+
+  type SeYear = { year: number; revenueTkr: number | null; equityTkr: number | null };
+  type SeFin = {
+    years: SeYear[];
+    latestYear: number | null;
+    latestRevenueTkr: number | null;
+    latestEquityTkr: number | null;
+    adminPct3y: number | null;
+    purposePct3y: number | null;
+  };
+  type SeRow = {
+    slug: string;
+    profileUrl: string;
+    name: string;
+    norm: string;
+    status: 'active' | 'withdrawn' | 'finished';
+    legalForm: string;
+    orgNr: string | null;
+    since: number | null;
+    bg: string[];
+    pg: string[];
+    swish: string[];
+    purposes: string[];
+    areas: string[];
+    regions: string[];
+    swedenCounties: string[];
+    financials: SeFin | null;
+  };
+  type SeManifest = {
+    format: string;
+    capturedOn: string;
+    publisher: string;
+    artifacts: {
+      organizations: VerifiedJsonAsset & { path: string; rows: number };
+    };
+  };
+
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/å/g, 'a')
+      .replace(/ä/g, 'a')
+      .replace(/ö/g, 'o')
+      .normalize('NFKD')
+      .replace(/\p{M}/gu, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const statusLabels: Record<SeRow['status'], string> = {
+    active: 'Active 90-konto',
+    withdrawn: 'Revoked (Indraget 90-konto)',
+    finished: 'Closed (Avslutat 90-konto)',
+  };
+
+  const fmtTkr = (tkr: number) => `SEK ${tkr.toLocaleString('en-US')}k`;
+  const limit = 35;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-sweden-registry]')) {
+    const manifest: SeManifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const form = $('form', root) as HTMLFormElement;
+    const queryEl = $('#se-query', root) as HTMLInputElement;
+    const statusSel = $('#se-status', root) as HTMLSelectElement;
+    const formSel = $('#se-form', root) as HTMLSelectElement;
+    const regionSel = $('#se-region', root) as HTMLSelectElement;
+    const statusEl = $('[data-status]', root);
+    const listEl = $('[data-results]', root);
+    const clearBtn = $('[data-clear]', root) as HTMLButtonElement;
+    const jsonBtn = $('[data-json]', root) as HTMLButtonElement;
+    const csvBtn = $('[data-csv]', root) as HTMLButtonElement;
+    const submitBtn = $('button[type="submit"]', root) as HTMLButtonElement;
+
+    for (const el of [queryEl, statusSel, formSel, regionSel, submitBtn, clearBtn]) el.disabled = false;
+
+    let cache: Promise<SeRow[]> | null = null;
+    let shown: SeRow[] = [];
+
+    const loadAll = () => {
+      if (!cache) {
+        const asset = manifest.artifacts.organizations;
+        cache = loadVerifiedJson(base + asset.path, asset).then((data) => {
+          if (!Array.isArray(data) || data.length !== asset.rows) {
+            throw new Error('Unexpected Sweden organization count.');
+          }
+          return data as SeRow[];
+        });
+      }
+      return cache;
+    };
+
+    const render = (rows: SeRow[], total: number, q: string) => {
+      shown = rows;
+      listEl.replaceChildren();
+      jsonBtn.disabled = rows.length === 0;
+      csvBtn.disabled = rows.length === 0;
+      if (!rows.length) {
+        statusEl.textContent = q
+          ? `No Swedish 90-konto profiles matched “${q}” under the selected filters.`
+          : 'No organizations matched the selected filters.';
+        return;
+      }
+      statusEl.textContent =
+        total > rows.length
+          ? `Showing the first ${rows.length} of ${total.toLocaleString('en-US')} matching organizations.`
+          : `Showing ${total.toLocaleString('en-US')} matching organization${total === 1 ? '' : 's'}.`;
+
+      for (const r of rows) {
+        const metaParts = [statusLabels[r.status], r.legalForm];
+        if (r.since) metaParts.push(`90-konto since ${r.since}`);
+        const accts: string[] = [];
+        if (r.bg.length) accts.push(`BG ${r.bg.join(', ')}`);
+        if (r.pg.length) accts.push(`PG ${r.pg.join(', ')}`);
+        if (r.swish.length) accts.push(`Swish ${r.swish.join(', ')}`);
+
+        const finParts: string[] = [];
+        if (r.financials) {
+          if (r.financials.latestYear && r.financials.latestRevenueTkr !== null) {
+            finParts.push(`${r.financials.latestYear} revenue: ${fmtTkr(r.financials.latestRevenueTkr)}`);
+          }
+          if (r.financials.latestYear && r.financials.latestEquityTkr !== null) {
+            finParts.push(`equity: ${fmtTkr(r.financials.latestEquityTkr)}`);
+          }
+          if (r.financials.purposePct3y !== null) finParts.push(`3y purpose: ${r.financials.purposePct3y}%`);
+          if (r.financials.adminPct3y !== null) finParts.push(`3y admin: ${r.financials.adminPct3y}%`);
+        }
+
+        const li = h(
+          'li',
+          {},
+          h('strong', { lang: 'sv' }, r.name),
+          r.orgNr ? [' ', h('code', {}, `Org nr ${r.orgNr}`)] : null,
+          h('div', { class: 'note' }, metaParts.join(' · ')),
+          accts.length ? h('div', { class: 'note' }, accts.join(' · ')) : null,
+          finParts.length ? h('div', { class: 'note' }, finParts.join(' · ')) : null,
+          r.purposes.length || r.regions.length
+            ? h('div', { class: 'note' }, [...r.purposes.slice(0, 4), ...r.regions.slice(0, 3)].join(' · '))
+            : null,
+          h(
+            'div',
+            { class: 'note' },
+            h('a', { href: r.profileUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Official Svensk Insamlingskontroll profile'),
+          ),
+        );
+        listEl.append(li);
+      }
+    };
+
+    const runSearch = async () => {
+      const rawQ = queryEl.value.trim();
+      const digits = rawQ.replace(/[^0-9]/g, '');
+      const normQ = normalize(rawQ);
+      const st = statusSel.value;
+      const lf = formSel.value;
+      const rg = regionSel.value;
+      statusEl.textContent = 'Loading Sweden 90-konto registry snapshot…';
+      try {
+        const all = await loadAll();
+        const filtered = all.filter((r) => {
+          if (st && r.status !== st) return false;
+          if (lf && r.legalForm !== lf) return false;
+          if (rg && !r.regions.includes(rg)) return false;
+          if (!rawQ) return true;
+          if (digits.length >= 4) {
+            const hayDigits = [r.orgNr ?? '', ...r.bg, ...r.pg, ...r.swish].join(' ').replace(/[^0-9]/g, '');
+            if (hayDigits.includes(digits)) return true;
+          }
+          return (
+            r.norm.includes(normQ) ||
+            r.name.toLowerCase().includes(rawQ.toLowerCase()) ||
+            r.purposes.some((p) => normalize(p).includes(normQ))
+          );
+        });
+        render(filtered.slice(0, limit), filtered.length, rawQ);
+      } catch (err) {
+        statusEl.textContent = err instanceof Error ? err.message : 'Could not load Sweden registry snapshot.';
+      }
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch();
+    });
+    for (const sel of [statusSel, formSel, regionSel]) {
+      sel.addEventListener('change', () => void runSearch());
+    }
+    clearBtn.addEventListener('click', () => {
+      queryEl.value = '';
+      statusSel.value = '';
+      formSel.value = '';
+      regionSel.value = '';
+      shown = [];
+      listEl.replaceChildren();
+      jsonBtn.disabled = true;
+      csvBtn.disabled = true;
+      statusEl.textContent = 'Search cleared.';
+      queryEl.focus();
+    });
+
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-se]')) {
+      btn.addEventListener('click', () => {
+        queryEl.value = btn.dataset.lookupSe ?? '';
+        statusSel.value = 'active';
+        formSel.value = '';
+        regionSel.value = '';
+        void runSearch();
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    jsonBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      download(
+        'charitology-sweden-90-konto.json',
+        JSON.stringify({ source: manifest.publisher, capturedOn: manifest.capturedOn, rows: shown }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!shown.length) return;
+      const csvText = toCsv(
+        shown.map((r) => ({
+          slug: r.slug,
+          name: financialCsvName(r.name),
+          status: r.status,
+          legal_form: r.legalForm,
+          org_nr: r.orgNr ?? '',
+          since: r.since ?? '',
+          latest_year: r.financials?.latestYear ?? '',
+          latest_revenue_tkr: r.financials?.latestRevenueTkr ?? '',
+          latest_equity_tkr: r.financials?.latestEquityTkr ?? '',
+          purpose_pct_3y: r.financials?.purposePct3y ?? '',
+          admin_pct_3y: r.financials?.adminPct3y ?? '',
+        })),
+      );
+      download('charitology-sweden-90-konto.csv', '\uFEFF' + csvText, 'text/csv;charset=utf-8');
+    });
+  }
+</script>
