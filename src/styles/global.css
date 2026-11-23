@@ -931,16 +931,18 @@ a.list-row:hover h3 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font: 650 0.92rem/1 var(--font-sans);
+  font: 650 0.92rem/1.25 var(--font-sans);
   padding: 0.78rem 1.15rem;
   min-height: 44px;
   border-radius: 999px;
   border: 1px solid var(--ink);
   background: var(--ink);
   color: var(--bg);
+  text-align: center;
   text-decoration: none;
+  white-space: normal;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
 }
 
 .btn:hover {

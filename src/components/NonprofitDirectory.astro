@@ -49,11 +49,11 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
     <label>{kind === 'tools' ? 'Cost model' : 'Type of benefit'}
       <select name="cost"><option value="">All types</option>{costs.map((value) => <option>{value}</option>)}</select>
     </label>
-    <button type="reset" class="directory-reset">Reset filters</button>
+    <button type="reset" class="btn btn-ghost directory-reset">Reset filters</button>
   </form>
   <noscript><p>Use the listing index or read the full directory below.</p></noscript>
   <details class="listing-index" data-listing-index>
-    <summary><SiteSymbol name="compass" size="inline" /> Jump to a listing</summary>
+    <summary><span class="listing-index-label"><SiteSymbol name="compass" size="inline" /> Jump to a listing</span></summary>
     <nav aria-label={`Browse nonprofit ${kind} by name`}>
       <ul role="list">
         {entries.map((entry) => <li data-listing-shortcut={entry.id}>
@@ -71,7 +71,7 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
     {entries.map((entry) => (
       <article id={entry.id} class="directory-card" tabindex="-1" aria-labelledby={`listing-${entry.id}`} data-listing data-category={entry.category} data-cost={entry.costType} data-search={`${entry.name} ${entry.category} ${entry.summary} ${entry.cost} ${entry.delivery} ${entry.fit} ${entry.eligibility} ${entry.limits}`.toLowerCase()}>
         <div class="directory-card-top"><span class="identity-label"><SiteSymbol name={listingSymbols[entry.id] ?? 'external'} /><span class="directory-category">{entry.category}</span></span><span class="directory-cost-type">{entry.costType}</span></div>
-        <h2 id={`listing-${entry.id}`}>{entry.name} <a class="listing-permalink" href={`#${entry.id}`} aria-label={`Link to ${entry.name}`}><SiteSymbol name="chain" size="inline" /></a></h2>
+        <h2 id={`listing-${entry.id}`}><a class="directory-title-link" href={entry.url} rel="noopener">{entry.name}</a> <a class="listing-permalink" href={`#${entry.id}`} aria-label={`Link to ${entry.name}`}><SiteSymbol name="chain" size="inline" /></a></h2>
         <p class="directory-summary">{entry.summary}</p>
         <p class="directory-offer">{entry.cost}</p>
         <dl>
@@ -79,12 +79,12 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
           <dt data-site-symbol={kind === 'tools' ? 'checks' : 'wallet'}>{kind === 'tools' ? 'Before choosing it' : 'Limits and costs'}</dt><dd>{entry.limits}</dd>
         </dl>
         <div class="directory-card-bottom">
-          <a class="directory-provider" href={entry.url} rel="noopener">{kind === 'tools' ? 'Explore the tool' : 'Check offer and apply'} <span aria-hidden="true">↗</span></a>
-          <details class="directory-sources"><summary>Provider sources <span>({entry.sources.length})</span></summary><ul>{entry.sources.map((source) => <li><a href={source.url} data-source-symbol={sourceSymbol(source.url)} rel="noopener">{source.label}</a></li>)}</ul></details>
+          <a class="btn directory-provider" href={entry.url} rel="noopener">{kind === 'tools' ? 'Explore the tool' : 'Check offer and apply'} <span aria-hidden="true">↗</span></a>
+          <details class="directory-sources"><summary><span>Provider sources <span class="directory-source-count">({entry.sources.length})</span></span></summary><div class="directory-sources-body"><ul>{entry.sources.map((source) => <li><a href={source.url} data-source-symbol={sourceSymbol(source.url)} rel="noopener">{source.label}</a></li>)}</ul></div></details>
           <p class="directory-checked">Source checked {entry.checked === null ? 'Unknown' : checked(entry.checked)} · {entry.review === 'reviewed' ? 'Editorially reviewed' : 'Editorial review pending'}</p>
-          <a class="directory-copy" href={`https://os.charitology.org/#directory/${kind}/${entry.id}/${captureId}/${entryHashes[entry.id]}`}>Review in Charity OS</a>
+          <a class="btn btn-ghost directory-copy" href={`https://os.charitology.org/#directory/${kind}/${entry.id}/${captureId}/${entryHashes[entry.id]}`}>Review in Charity OS</a>
           <p class="directory-checked">Inspect this frozen listing, choose an organization, then preview a Resource copy. Eligibility and organization review stay unknown until your team records them.</p>
-          <details class="directory-sources"><summary>Frozen directory source</summary><p>Captured {capturedAt}. This preserves the listing; it does not establish current availability.</p><p><a href={url(`/data/directory-resources/captures/${captureId}/entries/${kind}/${entry.id}.json`)}>Exact source entry</a> · <a href={url(`/data/directory-resources/captures/${captureId}/capture.json`)}>Capture record</a></p><p style="overflow-wrap:anywhere">Entry SHA-256: {entryHashes[entry.id]}</p></details>
+          <details class="directory-sources"><summary><span>Frozen directory source</span></summary><div class="directory-sources-body"><p>Captured {capturedAt}. This preserves the listing; it does not establish current availability.</p><p><a href={url(`/data/directory-resources/captures/${captureId}/entries/${kind}/${entry.id}.json`)}>Exact source entry</a> · <a href={url(`/data/directory-resources/captures/${captureId}/capture.json`)}>Capture record</a></p><p style="overflow-wrap:anywhere">Entry SHA-256: {entryHashes[entry.id]}</p></div></details>
         </div>
       </article>
     ))}
@@ -158,37 +158,60 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
   .directory-filters { display: grid; grid-template-columns: 2fr 1fr 1fr auto; align-items: end; gap: 1rem; border-block: 1px solid var(--rule); padding: 1.5rem 0; }
   .directory-filters label { display: grid; gap: .45rem; font: 600 .78rem/1.3 var(--font-sans); letter-spacing: .03em; }
   .directory-filters input, .directory-filters select { width: 100%; min-width: 0; height: 2.8rem; font: 400 .95rem var(--font-sans); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: .6rem .7rem; }
-  .directory-reset { min-height: 2.8rem; font: 500 .85rem var(--font-sans); color: var(--accent); border: 1px solid var(--rule); border-radius: 3px; background: transparent; padding: .6rem .9rem; cursor: pointer; }
+  .directory-reset { min-height: 2.8rem; border-radius: var(--radius-sm); padding: .6rem 1rem; }
   .listing-index {
     margin-block-start: 1rem;
-    padding: 0.55rem 0.85rem;
+    padding: 0;
     border: 1px solid var(--rule);
     border-inline-start: 3px solid var(--site-tone);
     border-radius: var(--radius);
     background: var(--surface);
     font: 580 0.87rem/1.4 var(--font-sans);
+    overflow: hidden;
   }
   .listing-index summary {
-    min-block-size: 2.75rem;
-    padding-block: 0.55rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    width: 100%;
+    min-block-size: 2.85rem;
+    padding: 0.7rem 1rem;
     font-weight: 730;
     cursor: pointer;
+    list-style: none;
+    transition: background-color 0.15s;
   }
+  .listing-index summary::-webkit-details-marker { display: none; }
+  .listing-index summary::after {
+    content: "▾";
+    font-size: 0.9rem;
+    color: var(--ink-3);
+    transition: transform 0.15s;
+  }
+  .listing-index[open] summary::after { transform: rotate(180deg); }
+  .listing-index summary:hover { background: var(--bg-2); }
+  .listing-index-label { display: inline-flex; align-items: center; gap: 0.45rem; }
   .listing-index summary :global(.site-symbol) { vertical-align: middle; }
+  .listing-index nav {
+    padding: 0.45rem 0.85rem 0.75rem;
+    border-top: 1px solid var(--rule);
+  }
   .listing-index ul {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-    gap: 0.2rem 0.55rem;
+    gap: 0.25rem 0.55rem;
     list-style: none;
     padding: 0;
-    margin: 0 0 0.4rem;
+    margin: 0;
   }
   .listing-index a {
     display: flex;
     align-items: center;
     gap: 0.45rem;
+    width: 100%;
     min-block-size: 2.75rem;
-    padding: 0.35rem;
+    padding: 0.4rem 0.55rem;
     border-radius: var(--radius-sm);
     color: var(--ink);
     text-decoration: none;
@@ -200,26 +223,38 @@ const checked = (value: string) => new Date(`${value}T12:00:00Z`).toLocaleDateSt
   .directory-results-line p { margin: 0; }
   .directory-count { color: var(--ink); font-weight: 600; }
   .directory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
-  .directory-card { border: 1px solid var(--rule); padding: 1.5rem; display: flex; flex-direction: column; background: var(--surface); scroll-margin-top: 0.4rem; }
+  .directory-card { border: 1px solid var(--rule); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; background: var(--surface); scroll-margin-top: 0.4rem; }
   .directory-card[hidden], .directory-empty[hidden] { display: none; }
   .directory-card-top { display: flex; justify-content: space-between; gap: .6rem; align-items: baseline; font: .7rem/1.4 var(--font-sans); }
   .directory-category { color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; }
   .directory-cost-type { color: var(--accent); text-align: right; }
-  .directory-card h2 { font-size: 1.75rem; line-height: 1.15; margin: .85rem 0 .65rem; letter-spacing: -.025em; }
-  .listing-permalink { display: inline-flex; vertical-align: middle; padding: 0.38rem; border-radius: var(--radius-sm); }
+  .directory-card h2 { display: flex; align-items: center; justify-content: space-between; gap: .5rem; font-size: 1.75rem; line-height: 1.15; margin: .85rem 0 .65rem; letter-spacing: -.025em; }
+  .directory-title-link { color: inherit; text-decoration: none; }
+  .directory-title-link:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .14em; }
+  .listing-permalink { display: inline-flex; flex: none; align-items: center; justify-content: center; min-width: 2.75rem; min-height: 2.75rem; border: 1px solid var(--rule); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink-2); text-decoration: none; transition: border-color 0.15s, background-color 0.15s, color 0.15s; }
+  .listing-permalink:hover { border-color: var(--ink-3); background: var(--bg-2); color: var(--ink); }
   .directory-card:target { border-color: var(--site-tone); }
   .directory-summary { margin: 0 0 .8rem; font-size: 1rem; line-height: 1.55; }
   .directory-offer { padding: .8rem 1rem; margin: 0 0 1rem; border-left: 2px solid var(--accent); background: var(--accent-wash); font-size: .95rem; line-height: 1.5; }
   .directory-card dl { margin: 0 0 1rem; }
   .directory-card dt { font: 600 .72rem/1.5 var(--font-sans); color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; margin: .65rem 0 .2rem; }
   .directory-card dd { margin: 0; font-size: .9rem; line-height: 1.55; }
-  .directory-card-bottom { margin-top: auto; padding-top: .8rem; border-top: 1px solid var(--rule); }
-  .directory-copy { display: inline-block; margin-top: .8rem; font: 600 .85rem/1.5 var(--font-sans); }
-  .directory-provider { font: 600 .85rem/1.5 var(--font-sans); }
-  .directory-sources { margin-top: .7rem; font: .77rem/1.55 var(--font-sans); }
-  .directory-sources summary { color: var(--ink-3); cursor: pointer; }
-  .directory-sources ul { margin: .5rem 0; padding-left: 1.2rem; }
-  .directory-checked { margin: .8rem 0 0; color: var(--ink-3); font: .66rem/1.5 var(--font-sans); }
+  .directory-card-bottom { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--rule); display: flex; flex-direction: column; gap: .7rem; }
+  .directory-provider, .directory-copy { display: flex; width: 100%; justify-content: center; align-items: center; min-height: 2.85rem; padding: .7rem 1.1rem; border-radius: var(--radius-sm); font: 650 .9rem/1.3 var(--font-sans); text-align: center; text-decoration: none; }
+  .directory-copy { margin-top: .25rem; border-color: var(--ink-3); background: var(--bg); color: var(--ink); }
+  .directory-copy:hover { border-color: var(--ink); background: var(--bg-2); color: var(--ink); }
+  .directory-sources { margin: 0; border: 1px solid var(--rule); border-radius: var(--radius-sm); background: var(--bg); font: .8rem/1.5 var(--font-sans); overflow: hidden; }
+  .directory-sources summary { display: flex; align-items: center; justify-content: space-between; gap: .6rem; width: 100%; min-height: 2.75rem; padding: .6rem .9rem; color: var(--ink); font-weight: 600; cursor: pointer; list-style: none; transition: background-color 0.15s; }
+  .directory-sources summary::-webkit-details-marker { display: none; }
+  .directory-sources summary::after { content: "▾"; font-size: .85rem; color: var(--ink-3); transition: transform 0.15s; }
+  .directory-sources[open] summary::after { transform: rotate(180deg); }
+  .directory-sources summary:hover { background: var(--bg-2); }
+  .directory-source-count { color: var(--ink-3); font-weight: 500; }
+  .directory-sources-body { padding: .65rem .9rem .8rem; border-top: 1px solid var(--rule); background: var(--surface); }
+  .directory-sources-body p { margin: 0 0 .5rem; }
+  .directory-sources-body p:last-child { margin-bottom: 0; }
+  .directory-sources ul { margin: 0; padding-left: 1.2rem; display: grid; gap: .35rem; }
+  .directory-checked { margin: 0; color: var(--ink-3); font: .72rem/1.5 var(--font-sans); }
   .directory-empty { padding: 1.5rem; border: 1px dashed var(--rule); }
   @media print { .listing-index { display: none; } }
   @media (max-width: 900px) { .directory-filters { grid-template-columns: 1fr 1fr; } .directory-search { grid-column: 1 / -1; } .directory-reset { grid-column: 1 / -1; justify-self: start; } }
