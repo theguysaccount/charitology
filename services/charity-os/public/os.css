@@ -2249,3 +2249,106 @@ textarea[aria-invalid="true"] {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
 }
+
+.site-link-button {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  color: var(--ink);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  line-height: 1.2;
+}
+.site-link-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.site-link-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.starter-panel {
+  border-left: 3px solid var(--accent);
+}
+.starter-scope {
+  margin-top: 0.25rem;
+}
+.starter-tracks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+.starter-track {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 0.9rem;
+  background: var(--bg);
+  min-width: 0;
+}
+.starter-track h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+}
+.starter-track p {
+  margin: 0 0 0.7rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+.starter-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.starter-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 500 0.8rem var(--sans);
+  text-decoration: none;
+}
+.starter-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.pilot-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font: 400 0.88rem var(--sans);
+  cursor: pointer;
+}
+.pilot-checkbox input {
+  margin-top: 0.2rem;
+  width: auto;
+}
+.pilot-context-note {
+  margin-top: 0.75rem;
+  overflow-wrap: anywhere;
+}
+.pilot-fallback-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+@media (max-width: 760px) {
+  .starter-tracks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pilot-feedback-dialog .dialog-actions {
+    flex-wrap: wrap;
+  }
+  .pilot-feedback-dialog .dialog-actions .button {
+    flex: 1 1 110px;
+    white-space: nowrap;
+  }
+}

@@ -204,6 +204,8 @@ export async function inspectIncubatorSource(org,metadata,bytes,{signal}={}) {
   check();incubatorNativeUploads.delete(bytes);return result;
 }
 export const api = {
+  pilotFeedback: (body, options) =>
+    request("/api/pilot-feedback", { ...options, method: "POST", body }),
   inspectIncubatorSource,
   incubatorBindings:(org,cursor,options)=>incubatorPage(org,'bindings',cursor,options),
   incubatorBinding:(org,id,options)=>request(incubatorPath(org,`bindings/${part(id)}`),options),

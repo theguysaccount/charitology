@@ -32,6 +32,13 @@
         <span><strong>Charity OS</strong><small>by Charitology</small></span>
       </a>
       <div class="masthead-right">
+        <button
+          class="site-link site-link-button"
+          id="pilot-feedback-trigger"
+          type="button"
+        >
+          Pilot feedback
+        </button>
         <a class="site-link" href="/participant">Your requests</a>
         <a class="site-link" href="https://charitology.com/"
           >The public Record <span aria-hidden="true">↗</span></a
@@ -214,6 +221,96 @@
           ><button id="editor-save" class="button primary" type="submit">
             Save record
           </button>
+        </div>
+      </form>
+    </dialog>
+    <dialog
+      id="pilot-feedback-dialog"
+      class="editor-dialog pilot-feedback-dialog"
+      aria-labelledby="pilot-feedback-title"
+    >
+      <form id="pilot-feedback-form">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow">Help shape Charity OS</span>
+            <h2 id="pilot-feedback-title">Send pilot feedback</h2>
+          </div>
+          <button
+            id="pilot-feedback-close"
+            class="icon-button"
+            type="button"
+            aria-label="Close feedback form"
+          >
+            ×
+          </button>
+        </div>
+        <p class="fine">
+          Tell us what felt confusing, broke, or is missing for your team.
+          Please do not include private beneficiary or donor records.
+        </p>
+        <div class="form-grid">
+          <div class="field full-width">
+            <label for="pilot-feedback-category">What kind of note is this?</label>
+            <select id="pilot-feedback-category" name="category" required>
+              <option value="confusing">Confusing or hard to use</option>
+              <option value="missing_workflow">Missing workflow</option>
+              <option value="bug">Something broke</option>
+              <option value="works_well">Works well</option>
+            </select>
+          </div>
+          <div class="field full-width">
+            <label for="pilot-feedback-message">What were you trying to do?</label>
+            <textarea
+              id="pilot-feedback-message"
+              name="message"
+              rows="4"
+              minlength="10"
+              maxlength="650"
+              placeholder="Example: I wanted to record a grant installment and wasn't sure which module to open first."
+              required
+            ></textarea>
+          </div>
+          <label
+            id="pilot-feedback-reply-wrap"
+            class="pilot-checkbox full-width"
+            hidden
+          >
+            <input id="pilot-feedback-reply" type="checkbox" />
+            <span id="pilot-feedback-reply-label"
+              >You may email me back about this note</span
+            >
+          </label>
+        </div>
+        <p id="pilot-feedback-context" class="fine pilot-context-note"></p>
+        <p id="pilot-feedback-signed-out-note" class="fine" hidden>
+          Not signed in yet — submitting opens a pre-filled email, or sign in to
+          send directly from this workspace.
+        </p>
+        <p id="pilot-feedback-status" class="form-status" role="alert"></p>
+        <div class="dialog-actions">
+          <button id="pilot-feedback-cancel" class="button" type="button">
+            Cancel
+          </button>
+          <button
+            id="pilot-feedback-submit"
+            class="button primary"
+            type="submit"
+          >
+            Send pilot feedback
+          </button>
+        </div>
+        <div class="pilot-fallback-links fine">
+          <span>Prefer another channel?</span>
+          <a id="pilot-feedback-mailto" href="mailto:hello@charitology.org"
+            >Email hello@charitology.org</a
+          >
+          <a
+            id="pilot-feedback-github"
+            href="https://github.com/theguysaccount/charitology/issues/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Open public GitHub issue ↗</a
+          >
         </div>
       </form>
     </dialog>

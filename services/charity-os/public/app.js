@@ -22,6 +22,10 @@ import { createParticipationRecurrenceWorkspace, canUseParticipationRecurrence }
 import { createResourceReservationsWorkspace } from "./resource-reservations.js";
 import { resourceReservationsAPI } from "./resource-reservations-api.js";
 import { mountFeedbackIntakeDraft } from "./feedback-intake-draft.js";
+import {
+  renderPilotStarterPanel,
+  wirePilotFeedbackDialog,
+} from "./pilot-feedback.js";
 import { LEARNING_ROLES, learningRecordFragment, learningRecordMatches, resolveLearningRecordRoute, checkedLearningReport } from "./learning-model.js";
 import {
   createDirectoryResourceWorkspace,
@@ -1422,16 +1426,25 @@ async function renderHome(epoch) {
             ),
       )
     : null;
+  const starter =
+    total === 0
+      ? renderPilotStarterPanel({
+          modules,
+          onOpenFeedback: (category) => pilotFeedback.open(category),
+        })
+      : null;
   setContent(
     heading(
       "Workspace overview",
       activeOrg().name,
       "Connect the promise, the work, the evidence and the next decision.",
       [
+        button("Pilot feedback", () => pilotFeedback.open(), "subtle"),
         button("Refresh", () => route(), "subtle"),
         button("New record", () => openModuleChooser(), "primary"),
       ],
     ),
+    starter,
     metrics,
     node("div", { class: "split-layout" }, next, activity),
     node(
@@ -6002,4 +6015,26 @@ if (
     state.invitation = sessionStorage.getItem("charity-os.invitation");
   } catch {}
 }
+const pilotFeedback = wirePilotFeedbackDialog({
+  dialog: $("#pilot-feedback-dialog"),
+  trigger: $("#pilot-feedback-trigger"),
+  api,
+  getContext: () => {
+    const rawHash = location.hash.replace(/^#/, "");
+    const parts = rawHash.split("/").filter(Boolean);
+    const safeScreen = !state.session?.user
+      ? "auth"
+      : parts[0] === "module" && parts[1]
+        ? `module/${parts[1]}`
+        : parts[0] || state.route || "home";
+    return {
+      screen: safeScreen,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      theme: document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+    };
+  },
+  isSignedIn: () => Boolean(state.session?.user),
+  getUserEmail: () => state.session?.user?.email || "",
+  toast,
+});
 boot();

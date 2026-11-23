@@ -24,6 +24,10 @@ test('Charity OS HTML shells retain skip links, focusable main landmarks and can
   assert.ok(!mcpHtml.includes('href="https://charitology.org'), 'mcp.html retains legacy charitology.org link');
   assert.ok(mcpHtml.includes('https://os.charitology.org/mcp'), 'mcp.html must keep os.charitology.org MCP endpoint');
   assert.ok(mcpHtml.includes('href="https://charitology.com/api/v1/index.json"'), 'mcp.html missing canonical API link');
+
+  const indexHtml = read('index.html');
+  assert.ok(indexHtml.includes('id="pilot-feedback-trigger"'), 'index.html missing masthead Pilot feedback trigger');
+  assert.ok(indexHtml.includes('id="pilot-feedback-dialog"'), 'index.html missing accessible Pilot feedback dialog');
 });
 
 test('Charity OS narrow-screen CSS keeps header .site-link controls accessible without display:none', () => {
