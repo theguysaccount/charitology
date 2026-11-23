@@ -190,6 +190,7 @@ const sources = [
 <script>
   import { $, h } from '../../lib/client/dom';
   import { download, toCsv } from '../../lib/client/files';
+  import { financialCsvName } from '../../lib/client/financial-directory';
 
   type DisasterRow = {
     disasterNumber: number;
@@ -322,8 +323,8 @@ const sources = [
       const rows = filtered.map((d) => ({
         fema_id: d.femaId,
         cohort: d.cohort,
-        common_title: d.commonTitle,
-        incident_type: d.incidentType,
+        common_title: financialCsvName(d.commonTitle),
+        incident_type: financialCsvName(d.incidentType),
         state_code: d.stateCode,
         declaration_date: d.declarationDate ?? '',
         closeout_date: d.closeoutDate ?? '',
@@ -334,7 +335,7 @@ const sources = [
         hmgp_obligated_usd: d.financialsUsd.hmgpObligatedUsd ?? '',
         fema_page_url: d.femaDisasterPageUrl ?? '',
       }));
-      download('charitology-openfema-2023-2026-disasters.csv', toCsv(rows), 'text/csv;charset=utf-8');
+      download('charitology-openfema-2023-2026-disasters.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
     });
 
     jsonBtn?.addEventListener('click', () => {

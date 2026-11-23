@@ -2003,11 +2003,26 @@ textarea[aria-invalid="true"] {
 }
 
 .grant-report-workspace,
+.grant-report-workspace .field,
+.grant-report-workspace .snapshot,
 .grant-report-document,
 .grant-report-stage,
 .grant-report-reader {
   min-width: 0;
   overflow-wrap: anywhere;
+}
+.grant-report-workspace select,
+.grant-report-workspace .button {
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.grant-report-workspace .code,
+.grant-report-document .code,
+.grant-report-document a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .grant-report-authoring,
 .grant-report-saved,
@@ -2081,7 +2096,8 @@ textarea[aria-invalid="true"] {
 }
 .grant-report-document summary {
   cursor: pointer;
-  padding: 0.5rem 0;
+  min-height: 44px;
+  padding: 0.65rem 0;
 }
 .grant-report-document pre {
   max-width: 100%;
@@ -2113,17 +2129,33 @@ textarea[aria-invalid="true"] {
   .grant-report-controls {
     align-items: stretch;
     flex-direction: column;
+    gap: 0.6rem;
   }
-  .grant-report-controls .button {
+  .grant-report-controls .button,
+  .grant-report-authoring > .button,
+  .grant-report-saved > .button,
+  .grant-report-list .snapshot .button {
     width: 100%;
+  }
+  .grant-report-financial,
+  .grant-report-row {
+    padding: 0.8rem;
   }
 }
 @media print {
+  :root,
+  :root[data-theme="dark"],
   body.grant-report-printing {
+    color-scheme: light;
+    --ink: #111;
     --muted: #333;
     --rule: #888;
     --surface: #fff;
     --bg: #fff;
+    --bg2: #fff;
+    --accent: #111;
+    color: #111;
+    background: #fff;
   }
   body.grant-report-printing > :not(.grant-report-print-surface) {
     display: none !important;
@@ -2142,8 +2174,25 @@ textarea[aria-invalid="true"] {
   .grant-report-print-surface .grant-report-source-raw {
     display: none !important;
   }
+  .grant-report-print-surface h3,
+  .grant-report-print-surface h4,
+  .grant-report-print-surface h5 {
+    break-after: avoid;
+  }
+  .grant-report-print-surface .grant-report-boundary,
+  .grant-report-print-surface .grant-report-gaps,
+  .grant-report-print-surface .grant-report-missingness {
+    background: #fff;
+    break-inside: avoid;
+  }
   .grant-report-print-surface .grant-report-finances {
     display: block;
+  }
+  .grant-report-print-surface .grant-report-financial + .grant-report-financial {
+    margin-top: 1rem;
+  }
+  .grant-report-print-surface .grant-report-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .grant-report-print-surface .grant-report-row,
   .grant-report-print-surface .grant-report-facts > div {
@@ -2151,6 +2200,15 @@ textarea[aria-invalid="true"] {
   }
   .grant-report-print-surface .grant-report-trace > :not(summary) {
     display: block;
+  }
+  .grant-report-print-surface .code,
+  .grant-report-print-surface a {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .grant-report-print-surface pre {
+    max-height: none;
+    overflow: visible;
   }
 }
 .participation-delivery-counts > div,

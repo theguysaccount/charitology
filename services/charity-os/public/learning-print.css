@@ -2,7 +2,9 @@
 body {
   font: 12pt/1.5 system-ui;
   color: #111;
+  background: #fff;
   margin: 18mm;
+  overflow-wrap: anywhere;
 }
 pre {
   white-space: pre-wrap;
@@ -11,6 +13,7 @@ pre {
 }
 details { display: block; }
 summary, dt { font-weight: 700; }
+dt { break-after: avoid; }
 dd { margin: 0 0 8pt; }
-h2, h3 { break-after: avoid; }
-a { color: inherit; }
+h2, h3, h4 { break-after: avoid; }
+a { color: inherit; word-break: break-word; }
