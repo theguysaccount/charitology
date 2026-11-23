@@ -773,7 +773,7 @@ const missingViews=Object.fromEntries(countries.countries.map(c=>[c.id,Object.fr
       const c = selected()[0];
       const brief = [
         `# Research brief: ${c.name}`,
-        "Statistical snapshot; not locally coauthored, not reviewed, not a donation recommendation.",
+        "Statistical snapshot from official public data; not locally coauthored, not a donation recommendation.",
         `Retrieved ${data.retrieved}. Fixed edition ${root!.dataset.edition}; hash ${root!.dataset.editionHash}.`,
         ...indicators.map((i) => {
           const v = c.values[i.id],

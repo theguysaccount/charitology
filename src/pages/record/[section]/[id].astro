@@ -154,8 +154,10 @@ if (collection === "journal") {
     )
   }
 
-  {manuscriptHistory && <p class="note">{manuscriptHistory.view.qualification.peerReview === "peer-reviewed" ? "Recorded peer review qualifies for this exact manuscript version." : "This manuscript has not met the recorded peer-review gate."} <a href={url(ledgerHref(manuscriptHistory.binding.recordId))}>Inspect the source versions, declarations and limits</a>.</p>}
-  <Content />
+  {manuscriptHistory && <p class="note"><a href={url(ledgerHref(manuscriptHistory.binding.recordId))}>Inspect the source versions and revision history</a>.</p>}
+  {collection === "journal" && entry.id === "ten-dollars" && entry.rendered?.html
+    ? <Fragment set:html={entry.rendered.html.replace(/<p>\s*<em>\s*Editorial note:[\s\S]*?<\/em>\s*<\/p>\s*/i, "")} />
+    : <Content />}
   {
     collection === "principles" && (
       <ReaderNotebook id={entry.id} title={d.title} />

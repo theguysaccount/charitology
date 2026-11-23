@@ -69,7 +69,7 @@ function checkResults(page, results) {
     const cards = shelf.filter(node => attr(node, 'id') === `result-${result.id}`);
     assert.equal(cards.length, 1);
     const card = cards[0];
-    assert.match(text(card), /Editorial draft.*Randomized field experiment/);
+    assert.match(text(card), /Practice evidence.*Randomized field experiment/);
     for (const field of ['title', 'context', 'comparison', 'window', 'finding', 'costs', 'limits']) assert.ok(text(card).includes(result[field]));
     const caption = nodes(card).find(node => node.tagName === 'caption');
     assert.equal(text(caption), result.measurement.caption);

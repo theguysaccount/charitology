@@ -102,7 +102,7 @@ assert.ok(html.includes(`href="${base}/record/charity-financials/england-wales/?
 assert.ok(html.includes('Annex Table B1'));
 assert.ok(html.includes('GBP 0.11'));
 assert.ok(html.includes('Kenya code conflicts with its income reference.'));
-assert.ok(html.includes('Draft, Edition 0.'));
+assert.ok(html.includes('Open to public review.'));
 for (const link of ['data.json', 'counterparts.csv', 'expenditure.csv']) assert.ok(html.includes(`href="${base}${route}${link}"`));
 for (const index of ['record/funding-flows', 'record/charity-financials/kenya', 'record/charity-index/coverage', 'record/gap-map']) {
   assert.ok(readFileSync(`dist/${index}/index.html`, 'utf8').includes(`href="${base}${route}`), index);

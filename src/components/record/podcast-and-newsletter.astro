@@ -13,8 +13,7 @@ import { url, absolute } from "../../lib/site";
     {podcast.episodes.length} complete readings covering all ten chapters of the open textbook, about {
       Math.round(podcast.episodes.reduce((n, e) => n + e.seconds, 0) / 60)
     } minutes in total. The audio uses computer narration from the standard macOS
-    Samantha voice, without voice cloning. These are textbook readings, not interviews;
-    the text remains an editorial draft.
+    Samantha voice, without voice cloning. These are textbook readings, not interviews.
   </p><p>
     <a class="btn" href={url("/podcast.xml")}>Subscribe to the podcast RSS</a>
   </p><ol class="episodes">

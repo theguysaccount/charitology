@@ -293,7 +293,7 @@ import { url } from "../../lib/site";
         const heading = document.createElement("h3");
         heading.textContent = row.title;
         const p = document.createElement("p");
-        p.textContent = `${row.subject} · ${row.depth} · Editorial draft; not reviewed`;
+        p.textContent = `${row.subject} · ${row.depth}`;
         const edit = document.createElement("button");
         edit.type = "button";
         edit.className = "btn btn-small btn-ghost";
@@ -521,7 +521,7 @@ import { url } from "../../lib/site";
             if (!rows || !session || disposed) return;
             download(
               "charitology-nomination-packets.md",
-              "# Nomination packets\n\nEditorial drafts, not rankings, recommendations or approved reviews.\n\n" +
+              "# Nomination packets\n\nOpen nominations, not rankings, recommendations or endorsements.\n\n" +
                 `Persistence: ${session.snapshot().persistence}. Unfinished forms are excluded.\n\n` +
                 rows
                   .map((row) =>

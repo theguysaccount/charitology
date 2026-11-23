@@ -28,7 +28,7 @@ const serialized = learningMountJson(props);
       <summary>{unit.chapter}. {entry.data.title}</summary>
       <p>{unit.takeaway}</p><p><a href={url(`/record/principles/${entry.id}/`)}>Open the current chapter page</a></p>
       <div class="prose"><Content /><SourceList sources={entry.data.sources ?? []} heading={`Sources for current chapter ${unit.chapter}`} /></div>
-      <p class="note">Edition 0 draft reading. Sources and framing remain open to correction and independent human review.</p>
+      <p class="note">Open reading. Sources and framing remain open to correction and public feedback.</p>
     </details>)}
   </section>}
   <noscript><p>The private editor needs JavaScript. Current readings and published program descriptions remain available.</p></noscript>

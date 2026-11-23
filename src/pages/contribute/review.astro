@@ -37,8 +37,8 @@ const count = groups.reduce((total, group) => total + group.entries.length, 0);
 const outline = [{ slug: 'review-instructions', text: 'What a review needs', symbol: 'checks' } as const, ...groups];
 const request = `${SITE.repo}/issues/new?${new URLSearchParams({title:'Source review: ', labels:'review', body:'Page:\n\nI would like to review this draft.\n\nSources checked:\n\nClaims needing correction:\n\nAI assistance, if any:\n'})}`;
 ---
-<Base title="Review a draft" description="Pick one Charitology draft, check its sources and contribute a public review.">
-  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'Contribute',href:'/contribute/'},{label:'Review a draft'}]} /><span class="eyebrow">An open call for reviewers</span><h1>One page. Every source.</h1><p class="lede">{count} content entries are waiting for a second human contributor to check their sources and framing. Pick a subject you know, and help make it dependable.</p><div class="btn-row review-actions"><a class="btn" href={request}>Choose a page in an issue</a><a class="btn btn-ghost" href={`${SITE.repo}/blob/main/STYLE.md`}>Read the standard</a></div></div></header>
+<Base title="Review a page" description="Pick one Charitology page, check its sources and contribute a public review.">
+  <header class="page-head"><div class="wrap"><Crumbs items={[{label:'Contribute',href:'/contribute/'},{label:'Review a page'}]} /><span class="eyebrow">An open call for reviewers</span><h1>One page. Every source.</h1><p class="lede">{count} content entries are open for a contributor to check their sources and framing. Pick a subject you know, and help make it even stronger.</p><div class="btn-row review-actions"><a class="btn" href={request}>Choose a page in an issue</a><a class="btn btn-ghost" href={`${SITE.repo}/blob/main/STYLE.md`}>Read the standard</a></div></div></header>
   <section class="wrap section-tight">
     <PageSections sections={outline} />
     <section class="prose">
@@ -54,7 +54,7 @@ const request = `${SITE.repo}/issues/new?${new URLSearchParams({title:'Source re
     <div class="review-groups">
       {groups.map(({ collection, slug, text, symbol, entries }) => (
         <section>
-          <h2 data-section-symbol={symbol} id={slug}>{text} <span class="note">{entries.length} drafts</span></h2>
+          <h2 data-section-symbol={symbol} id={slug}>{text} <span class="note">{entries.length} entries</span></h2>
           <ul>
             {entries.map((entry) => (
               <li>

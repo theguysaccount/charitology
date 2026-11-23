@@ -21,7 +21,7 @@ const contents = [
 const sources = core.sourcePins.map((p: {id: string}) => input.sources.find(s=>s.id===p.id)!);
 ---
 <article class="publication-editions" data-publication-edition={core.id}>
-  <p class="eyebrow">{PUBLICATION_FAMILIES[core.family]} · fixed capture {core.sequence} · editorial draft</p>
+  <p class="eyebrow">{PUBLICATION_FAMILIES[core.family]} · fixed capture {core.sequence}</p>
   <PageSections sections={contents} label="In this capture" />
   <h2>About this capture</h2>
   <p class="pe-note">{core.provenance === "new-source-capture" ? "This is a new capture of explicitly committed sources, not a claim about exact bytes served on an earlier date." : core.provenance === "preserved-artifact" ? "This preserves an existing artifact. Its declared publication date and its later registry capture time are different facts." : "This is an explicitly labeled reconstruction; it does not establish exact historical served bytes."} Freezing content does not establish independent review, a staffed institution or a research result.</p>
