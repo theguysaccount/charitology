@@ -1,0 +1,26 @@
+{
+  "format": "charitology-croatia-anomalies-v1",
+  "capturedOn": "2026-11-23",
+  "duplicateOibs": [
+    {
+      "oib": "44698834525",
+      "records": [
+        {
+          "reg": "17000433",
+          "name": "UDRUGA MALIH DIONIČARA \"LAURUS\" SPLIT",
+          "status": "erased",
+          "form": "association"
+        },
+        {
+          "reg": "17000455",
+          "name": "Nova udruga malih dioničara \"Laurus hoteli\" Split",
+          "status": "erased",
+          "form": "association"
+        }
+      ]
+    }
+  ],
+  "blankOibCount": 3213,
+  "invalidOibCount": 0,
+  "note": "Blank OIBs occur primarily on historic erased associations predating Croatia's 2009 OIB rollout. Duplicate OIB entries are preserved verbatim rather than silently merged."
+}

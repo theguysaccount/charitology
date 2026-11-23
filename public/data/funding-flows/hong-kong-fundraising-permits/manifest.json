@@ -1,0 +1,662 @@
+{
+  "format": "charitology-hk-fundraising-permits-v1",
+  "jurisdiction": "Hong Kong",
+  "publisher": "Office of the Government Chief Information Officer (GovHK) — SWD & HAD Approved Charitable Fund-Raising Activities",
+  "capturedOn": "2026-11-23",
+  "catalogue": "https://fundraising.one.gov.hk/fundraise_query/webservice/psi/json",
+  "sourceCapture": {
+    "filename": "govhk-fundraising-permits-complete.json",
+    "pagesFetched": 41,
+    "bytes": 2373448,
+    "sha256": "b5a062e8f99ed30e509a005444fe3db53c2f22c91f2afa90a7944a32760492ac"
+  },
+  "counts": {
+    "totalPermits": 401,
+    "distinctOrganizations": 76,
+    "totalScheduledDays": 12008,
+    "earliestScheduledDate": "2025-12-01",
+    "latestScheduledDate": "2027-10-31",
+    "s88MatchedPermits": 339,
+    "s88MatchedSharePct": 84.54,
+    "s88UnmatchedPermits": 62,
+    "s88UnmatchedOrganizations": 21,
+    "byMatchBasis": {
+      "both_en_and_zh": 333,
+      "en_only": 6,
+      "unmatched_s88": 62
+    },
+    "byDepartment": {
+      "Office of the Licensing Authority, Home Affairs Department": 10,
+      "Social Welfare Department": 391
+    },
+    "byPermitType": {
+      "Lottery Licence": 10,
+      "Public Subscription Permit": 391
+    },
+    "byDistrict": {
+      "HK Island": 74,
+      "Kowloon": 117,
+      "New Territories and Islands": 200,
+      "Territory-Wide": 10
+    }
+  },
+  "top20Organizations": [
+    {
+      "orgEn": "The Hospital Authority Charitable Foundation",
+      "orgZh": "醫院管理局慈善基金",
+      "permits": 36,
+      "scheduleDays": 62,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1996-05-28",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Prince of Wales Hospital Charitable Foundation",
+      "orgZh": "威爾斯親王醫院慈善信託基金",
+      "permits": 28,
+      "scheduleDays": 28,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2007-01-31",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "The Community Chest of Hong Kong",
+      "orgZh": "香港公益金",
+      "permits": 26,
+      "scheduleDays": 26,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1968-11-20",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Yan Chai Hospital",
+      "orgZh": "仁濟醫院",
+      "permits": 22,
+      "scheduleDays": 378,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1970-12-22",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Ocean Park Corporation",
+      "orgZh": "海洋公園公司",
+      "permits": 16,
+      "scheduleDays": 16,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1987-06-04",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island"
+      ]
+    },
+    {
+      "orgEn": "West Kowloon Cultural District Foundation Limited",
+      "orgZh": "西九文化區基金會有限公司",
+      "permits": 16,
+      "scheduleDays": 16,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2019-01-30",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon"
+      ]
+    },
+    {
+      "orgEn": "The Princess Margaret Hospital Charitable Trust",
+      "orgZh": "瑪嘉烈醫院慈善基金",
+      "permits": 14,
+      "scheduleDays": 838,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1995-08-08",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Alice Ho Miu Ling Nethersole Hospital",
+      "orgZh": "雅麗氏何妙齡那打素醫院",
+      "permits": 14,
+      "scheduleDays": 14,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "The Nature Conservancy Hong Kong Foundation Limited",
+      "orgZh": "大自然保護協會香港基金會有限公司",
+      "permits": 13,
+      "scheduleDays": 1548,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2017-08-10",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Airport Authority",
+      "orgZh": "機場管理局",
+      "permits": 12,
+      "scheduleDays": 12,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Suicide Prevention Services Limited",
+      "orgZh": "生命熱線有限公司",
+      "permits": 12,
+      "scheduleDays": 12,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2011-08-04",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "The Office of the United Nations High Commissioner for Refugees",
+      "orgZh": "聯合國難民事務高級專員署",
+      "permits": 10,
+      "scheduleDays": 1206,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2002-11-29",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "The Fred Hollows Foundation (HK) Limited",
+      "orgZh": "護瞳行動(香港)有限公司",
+      "permits": 10,
+      "scheduleDays": 925,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2014-12-31",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Tung Wah Group of Hospitals",
+      "orgZh": "東華三院",
+      "permits": 9,
+      "scheduleDays": 9,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1955-06-01",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon"
+      ]
+    },
+    {
+      "orgEn": "Greenpeace East Asia",
+      "orgZh": "綠色和平",
+      "permits": 8,
+      "scheduleDays": 960,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1999-10-28",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Save the Children Hong Kong Limited",
+      "orgZh": "香港救助兒童會有限公司",
+      "permits": 8,
+      "scheduleDays": 916,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2009-03-17",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Medecins Sans Frontieres (HK) Limited",
+      "orgZh": "無國界醫生組織(香港)有限公司",
+      "permits": 8,
+      "scheduleDays": 910,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1994-04-26",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "World Wide Fund for Nature Hong Kong",
+      "orgZh": "世界自然(香港)基金會",
+      "permits": 8,
+      "scheduleDays": 880,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "1981-12-18",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Plan International Hong Kong Limited",
+      "orgZh": "國際培幼會有限公司",
+      "permits": 8,
+      "scheduleDays": 672,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2009-01-14",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island",
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Care for the Elderly Association Limited",
+      "orgZh": "敬老護老愛心會有限公司",
+      "permits": 8,
+      "scheduleDays": 93,
+      "s88Basis": "both_en_and_zh",
+      "s88EffectiveDate": "2007-03-13",
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon",
+        "New Territories and Islands"
+      ]
+    }
+  ],
+  "unmatchedOrganizations": [
+    {
+      "orgEn": "Alice Ho Miu Ling Nethersole Hospital",
+      "orgZh": "雅麗氏何妙齡那打素醫院",
+      "permits": 14,
+      "scheduleDays": 14,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Airport Authority",
+      "orgZh": "機場管理局",
+      "permits": 12,
+      "scheduleDays": 12,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Caritas Medical Centre",
+      "orgZh": "明愛醫院",
+      "permits": 6,
+      "scheduleDays": 6,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon"
+      ]
+    },
+    {
+      "orgEn": "Tseung Kwan O Hospital",
+      "orgZh": "將軍澳醫院",
+      "permits": 5,
+      "scheduleDays": 5,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Hong Kong Buddhist Hospital",
+      "orgZh": "香港佛教醫院",
+      "permits": 3,
+      "scheduleDays": 3,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon"
+      ]
+    },
+    {
+      "orgEn": "Queen Mary Hospital",
+      "orgZh": "瑪麗醫院",
+      "permits": 3,
+      "scheduleDays": 3,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island"
+      ]
+    },
+    {
+      "orgEn": "Tai Po Hospital",
+      "orgZh": "大埔醫院",
+      "permits": 3,
+      "scheduleDays": 3,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "United Christian Hospital",
+      "orgZh": "基督教聯合醫院",
+      "permits": 2,
+      "scheduleDays": 3,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon"
+      ]
+    },
+    {
+      "orgEn": "Tuen Mun Hospital",
+      "orgZh": "屯門醫院",
+      "permits": 2,
+      "scheduleDays": 2,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Our Lady of Maryknoll Hospital",
+      "orgZh": "聖母醫院",
+      "permits": 1,
+      "scheduleDays": 163,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "Kowloon"
+      ]
+    },
+    {
+      "orgEn": "Bradbury Hospice",
+      "orgZh": "白普理寧養中心",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Castle Peak Hospital",
+      "orgZh": "青山醫院",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Cheshire Home, Shatin",
+      "orgZh": "沙田慈氏護養院",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "DIOCESAN SCHOOL OLD BOYS’ ASSOCIATION LIMITED",
+      "orgZh": "",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Office of the Licensing Authority, Home Affairs Department"
+      ],
+      "districts": [
+        "Territory-Wide"
+      ]
+    },
+    {
+      "orgEn": "Grantham Hospital",
+      "orgZh": "葛量洪醫院",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island"
+      ]
+    },
+    {
+      "orgEn": "Haven of Hope Hospital",
+      "orgZh": "靈實醫院",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Ruttonjee Hospital",
+      "orgZh": "律敦治醫院",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island"
+      ]
+    },
+    {
+      "orgEn": "Shatin Hospital",
+      "orgZh": "沙田醫院",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "St. John Hospital",
+      "orgZh": "長洲醫院",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Tai Po Baptist Church Social Service",
+      "orgZh": "大埔浸信會社會服務處",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "New Territories and Islands"
+      ]
+    },
+    {
+      "orgEn": "Tang Shiu Kin Hospital",
+      "orgZh": "鄧肇堅醫院",
+      "permits": 1,
+      "scheduleDays": 1,
+      "s88Basis": "unmatched_s88",
+      "s88EffectiveDate": null,
+      "departments": [
+        "Social Welfare Department"
+      ],
+      "districts": [
+        "HK Island"
+      ]
+    }
+  ],
+  "artifacts": {
+    "permits": {
+      "path": "permits.json.gz",
+      "bytes": 16223,
+      "sha256": "ce19178b9517ddaf866433d0eb11e2c80a323319f306d40c79e278cba1581345",
+      "decodedBytes": 243743,
+      "decodedSha256": "35ab8ee2ee34895a43d40c8859750d9e94e95d79efc6eff88a5f97925c9286a4",
+      "rows": 401
+    },
+    "csv": {
+      "path": "hong-kong-fundraising-permits.csv",
+      "bytes": 93680,
+      "sha256": "276162df8229bbb46064ec508f696dd551533d32429105b3c07b176bd83a7f25",
+      "rows": 401
+    }
+  }
+}

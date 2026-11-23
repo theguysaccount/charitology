@@ -212,6 +212,11 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['coverage', 'Registry coverage', 'permit'],
     ['finance', 'Read financial summaries', 'coins'],
   ],
+  '/record/charity-index/croatia/': [
+    ['hr-search-heading', 'Search Croatian associations and foundations', 'lens'],
+    ['domains', 'Statutory activity domains across Croatian associations', 'layers'],
+    ['coverage', 'Scope, ISO-7064 OIB validation, anomalies and privacy boundaries', 'archive'],
+  ],
   '/record/charity-index/czechia/': [
     ['cz-search-heading', 'Search Czech nonprofits', 'lens'],
     ['endowments', 'Largest statutory foundation endowments', 'coins'],
@@ -539,6 +544,12 @@ export const sectionNavigation: Record<string, readonly Destination[]> = {
     ['fema-explorer', 'Filter captured 2023–2026 major disasters', 'lens'],
     ['three-phase-pattern', 'Why early weeks and year-two recovery look completely different', 'clock'],
     ['boundaries-downloads', 'Boundaries, missingness and downloads', 'download'],
+  ],
+  '/record/funding-flows/hong-kong-fundraising-permits/': [
+    ['hk-permits-heading', 'Search approved fundraising permits (EN & 中文)', 'lens'],
+    ['s88-reconciliation', 'Conservative Section 88 cross-match', 'compare'],
+    ['top-permit-holders', 'Most active permit holders & district coverage', 'table'],
+    ['downloads', 'Downloads, privacy boundaries and provenance', 'download'],
   ],
   '/record/funding-flows/hungary-szja-1-percent/': [
     ['hu-flow-heading', 'Explore Hungary’s Top-250 civil and 186 technical-number 1% recipients', 'lens'],

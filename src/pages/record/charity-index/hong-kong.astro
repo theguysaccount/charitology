@@ -42,6 +42,8 @@ const sources = [
     <strong>{count(manifest.counts.bilingualOrganizations)}</strong> of the {count(manifest.counts.includedOrganizations)} parent charities carry both English and
     Traditional Chinese names ({count(manifest.counts.englishOnlyOrganizations)} English-only; {count(manifest.counts.chineseOnlyOrganizations)} Chinese-only),
     and <strong>{count(manifest.counts.organizationsWithSubsidiaries)}</strong> operate listed subsidiary bodies.
+    To check active government-approved street, flag-day and lottery fundraising authorizations cross-matched against this Section 88 list, open{' '}
+    <a class="identity-link" href={url('/record/funding-flows/hong-kong-fundraising-permits/')}>Hong Kong approved charitable fund-raising permits (GovHK, 401 active permits)</a>.
   </p>
 
   <section
@@ -133,7 +135,9 @@ const sources = [
     <strong>What is included vs. excluded:</strong> IRD’s Section 88 list covers charitable institutions and trusts recognized as tax-exempt in Hong Kong as at
     <time datetime={manifest.asOf}>{manifest.asOf}</time>. Unlike the U.S. Form 990 or UK Charity Commission registers, Hong Kong does not maintain a unified
     public bulk financial-filings database for Section 88 charities, and IRD’s CSV does not include Company Registry numbers or annual revenue. For active public
-    street/flag-day fundraising permits, consult GovHK’s separate <a href={manifest.catalogues.govHkFundraising}>Approved Charitable Fund-Raising Activities</a> feed.
+    street/flag-day and lottery fundraising permits cross-matched against this register, search Charitology’s{' '}
+    <a href={url('/record/funding-flows/hong-kong-fundraising-permits/')}>Hong Kong approved charitable fund-raising permits explorer</a>{' '}
+    (sourced from GovHK’s <a href={manifest.catalogues.govHkFundraising}>Approved Charitable Fund-Raising Activities</a> feed).
   </p>
   <p>
     <strong>Deduplication note:</strong> Where a parent charity appears on multiple rows for individual kindergartens, schools, or service centres, Charitology

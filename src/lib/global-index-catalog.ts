@@ -1,4 +1,4 @@
-// Single source of truth for the Global Charity Index (24 jurisdictions) and
+// Single source of truth for the Global Charity Index (25 jurisdictions) and
 // published Funding Flows lookups and case studies. Powers /record/charity-index/coverage/,
 // /record/funding-flows/, /tools/charity-lookup/, /record/open-datasets/, and
 // /api/v1/charity-index.json + /api/v1/funding-flows.json.
@@ -12,10 +12,12 @@ import usaShort from '../../public/data/charity-financials/us-990-ez/manifest.js
 import usaFoundation from '../../public/data/charity-financials/us-990-pf/manifest.json';
 import registry from '../../public/data/irs-registry/manifest.json';
 import japan from '../../public/data/charity-registry/japan-npo/manifest.json';
+import croatia from '../../public/data/charity-registry/croatia/manifest.json';
 import czechia from '../../public/data/charity-registry/czechia/manifest.json';
 import denmark from '../../public/data/charity-registry/denmark/manifest.json';
 import estonia from '../../public/data/charity-registry/estonia/manifest.json';
 import hongKong from '../../public/data/charity-registry/hong-kong/manifest.json';
+import hkPermits from '../../public/data/funding-flows/hong-kong-fundraising-permits/manifest.json';
 import hungary from '../../public/data/charity-registry/hungary/manifest.json';
 import israel from '../../public/data/charity-registry/israel/manifest.json';
 import latvia from '../../public/data/charity-registry/latvia/manifest.json';
@@ -101,6 +103,20 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     manifest: '/data/charity-financials/ca/manifest.json',
     fundingFlowRoute: '/record/funding-flows/canada-qualified-donees/',
     fundingFlowLabel: 'Qualified donee gifts (CRA)',
+  },
+  {
+    id: 'croatia',
+    name: 'Croatia',
+    source: 'Ministry of Justice Register of Associations (Registar udruga) & Register of Foundations (Registar zaklada)',
+    route: '/record/charity-index/croatia/',
+    label: 'Search Croatian associations and foundations',
+    date: croatia.capturedOn,
+    recordCount: croatia.counts.includedOrganizations,
+    recordUnit: 'nonprofits',
+    coverage: `${number(croatia.counts.includedOrganizations)} Croatian associations (${number(croatia.counts.byForm.association)}) and foundations (${number(croatia.counts.byForm.foundation)}) across active (${number(croatia.counts.byStatus.active)}), erased (${number(croatia.counts.byStatus.erased)}) and ceased (${number(croatia.counts.byStatus.ceased)}) statuses, with ${number(croatia.counts.validatedOibs)} ISO-7064 validated 11-digit OIBs.`,
+    history: `Joins ${number(croatia.counts.activityDomainRowsJoined)} statutory activity-domain classifications across ${number(croatia.counts.associationsWithActivityDomains)} associations (register snapshot as of ${croatia.asOf}).`,
+    boundary: 'Email addresses and street addresses are stripped (county/city only) and the separate officeholder personal-names extract is excluded. Blank legacy OIBs (3,213 historic erased associations) and one source duplicate OIB remain verbatim in anomalies.json.',
+    manifest: '/data/charity-registry/croatia/manifest.json',
   },
   {
     id: 'czechia',
@@ -193,6 +209,8 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     history: `Effective dates span ${hongKong.counts.earliestEffectiveDate} through ${hongKong.counts.latestEffectiveDate} (${number(hongKong.counts.byDecade['2020s'])} approved in the 2020s; ${number(hongKong.counts.byDecade['2010s'])} in the 2010s).`,
     boundary: 'Collapsing 17,614 raw IRD rows by parent English and Chinese names keeps subsidiary bodies visible inside parent counts without double-counting them as independent charities. Hong Kong IRD publishes tax-exemption status and effective dates without centralized annual financial statements.',
     manifest: '/data/charity-registry/hong-kong/manifest.json',
+    fundingFlowRoute: '/record/funding-flows/hong-kong-fundraising-permits/',
+    fundingFlowLabel: 'Approved fundraising permits (GovHK)',
   },
   {
     id: 'hungary',
@@ -467,6 +485,7 @@ export const US_IRS_REGISTRY_SUMMARY = {
 export const COVERAGE_SOURCES = [
   { title: 'Download charity register data', publisher: 'Australian Charities and Not-for-profits Commission', url: 'https://www.acnc.gov.au/charity/about-charity-register/download-charity-register-data' },
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
+  { title: 'Registar udruga Republike Hrvatske & Registar zaklada Republike Hrvatske (Otvorena dozvola RH)', publisher: croatia.publisher, url: croatia.catalogues.associations },
   { title: 'Public Registers Open Data (Veřejný rejstřík — 42 court dumps, 2026 actual)', publisher: 'Ministry of Justice of the Czech Republic (Ministerstvo spravedlnosti ČR)', url: czechia.catalogues.justiceVr },
   { title: 'Seznam operací (List of Operations) 2021–2027', publisher: 'Ministry for Regional Development of the Czech Republic (DotaceEU)', url: czechia.catalogues.dotaceEu },
   { title: 'Den juridiske vejledning 2026-2 — C.A.4.3.5.9 Liste over godkendte foreninger', publisher: denmark.publisher, url: denmark.catalogues.skatApprovedList },
@@ -477,6 +496,7 @@ export const COVERAGE_SOURCES = [
   { title: 'EU Structural Funds, JTF, RRF & EEA/Norway Funded Projects', publisher: 'State Shared Service Centre of Estonia (RTK)', url: estonia.catalogues.rtk },
   { title: 'French association accounts dataset', publisher: france.source.publisher, url: france.source.dataset },
   { title: 'List of charitable institutions and trusts of a public character exempt from tax under Section 88 (CSV)', publisher: hongKong.publisher, url: hongKong.catalogues.irdCsv },
+  { title: 'Approved Charitable Fund-Raising Activities (SWD Public Subscription Permits & HAD Lottery Licences PSI JSON)', publisher: hkPermits.publisher, url: hkPermits.catalogue },
   { title: 'SZJA 1+1% recipient disbursement announcements (2024–2026 civil & 2026 technical-number workbooks)', publisher: hungary.publisher, url: hungary.catalogues.navSzjaPortal },
   { title: 'Registry of Associations and Public Benefit Companies (moj-amutot)', publisher: israel.publisher, url: israel.catalogue },
   { title: 'Foreign State Entity Donations CKAN API (35cb40b5)', publisher: israel.publisher, url: 'https://data.gov.il/dataset/moj-amutot' },
@@ -532,6 +552,7 @@ export const FUNDING_FLOW_GROUPS: readonly FundingFlowCatalogGroup[] = [
       { slug: 'chile-residential-payments', title: 'Residential care awards and payments', scope: 'Chile', summary: 'Find all 19 recipients by tax ID. Compare the award round with the ledger, and see reported service counts and surveyed need across 16 regions.' },
       { slug: 'czechia-eu-funds', title: 'EU Cohesion Policy 2021–2027 nonprofit grants', scope: 'Czechia', summary: 'Search 3,906 deduplicated Czech nonprofit EU operations (CZK 23.83B cost / CZK 17.85B EU support) and compare statutory foundation endowments against frontline ESF+ delivery.', manifest: '/data/funding-flows/czechia-eu-funds/manifest.json' },
       { slug: 'estonia-eu-funds', title: 'EU Structural Funds, Recovery & EEA/Norway grants (2014–2027)', scope: 'Estonia', summary: 'Search 1,566 nonprofit-form EU/EEA projects (EUR 2.62B budget / EUR 1.48B paid) and inspect why state/hospital foundations absorb 80.3% vs. 1.3% for active TMNSN associations.', manifest: '/data/funding-flows/estonia-eu-funds/manifest.json' },
+      { slug: 'hong-kong-fundraising-permits', title: 'Approved charitable fund-raising permits (GovHK SWD & HAD)', scope: 'Hong Kong', summary: 'Search 401 active Hong Kong government-approved street fundraising permits (391 SWD Public Subscription Permits + 10 HAD Lottery Licences across 76 organizations), conservatively cross-matched by bilingual name to IRD Section 88 charities.', manifest: '/data/funding-flows/hong-kong-fundraising-permits/manifest.json' },
       { slug: 'hungary-szja-1-percent', title: '1%+1% personal income tax (SZJA) designations (2024–2026)', scope: 'Hungary', summary: 'Compare HUF 58.97B across 34,109 civil 1% recipients (with exact taxpayer counts for every charity) alongside all 186 second-1% church and national-budget technical-number recipients (HUF 23.95B in 2026).', manifest: '/data/funding-flows/hungary-szja-1-percent/manifest.json' },
       { slug: 'ile-de-france-paid-grants', title: 'Regional grant payments', scope: 'Île-de-France, France', summary: 'Find reported payments by association name or official organization identifier.', manifest: '/data/funding-flows/ile-de-france/manifest.json' },
       { slug: 'israel-foreign-state-donations', title: 'Foreign state entity donations (2012–2026)', scope: 'Israel', summary: 'Search 516 Israeli nonprofits across 13,436 quarterly cross-border disclosures (ILS 7.53B net), joined by exact ID with source anomalies kept visible.', manifest: '/data/funding-flows/israel-foreign-state-donations/manifest.json' },
