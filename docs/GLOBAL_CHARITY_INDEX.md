@@ -848,3 +848,23 @@ python3 scripts/build-hong-kong-charity-index.py --input-dir /path/to/captured-i
 node scripts/check-hong-kong-charity-index.mjs
 npm run check:references
 ```
+
+### Hong Kong approved charitable fund-raising permits (GovHK SWD & HAD)
+
+The paired [Hong Kong fundraising permits explorer](https://charitology.com/record/funding-flows/hong-kong-fundraising-permits/) captures all **401** active government-approved public charitable fundraising permits across **41** pages of the GovHK Public Sector Information JSON endpoint (`https://fundraising.one.gov.hk/fundraise_query/webservice/psi/json`, captured November 23, 2026 and SHA-256 pinned in `src/data/hong-kong-permits-sources.tsv`): **391** Social Welfare Department *Public Subscription Permits* and **10** Home Affairs Department *Lottery Licences* across **76** distinct organizations spanning **12,008** scheduled fundraising days (`2025-12-01` through `2027-10-31`). Every `enquiryContact` telephone number is stripped at build time. Conservative normalized English and Traditional Chinese name matching links **339/401** (`84.54%`) permits to IRD Section 88 parent charities (preserving each matched parent’s `effectiveDate`), while leaving **62/401** permits across **21** organizations (predominantly statutory Hospital Authority public hospitals and hospices) explicitly unmatched rather than guessed.
+
+```sh
+python3 scripts/build-hong-kong-fundraising-permits.py --permits-json /path/to/govhk-fundraising-permits-complete.json --s88-gz public/data/charity-registry/hong-kong/charities.json.gz --out-dir public/data/funding-flows/hong-kong-fundraising-permits
+node scripts/check-hong-kong-fundraising-permits.mjs
+npm run check:references
+```
+
+## Croatia nonprofit associations & foundations (Registar udruga i zaklada — Jurisdiction #25)
+
+The [Croatia nonprofit registry](https://charitology.com/record/charity-index/croatia/) joins three official open-data JSON extracts published by Croatia’s Ministry of Justice, Public Administration and Digital Transformation on `data.gov.hr` under *Otvorena dozvola RH* (updated `2026-11-22`, captured November 23, 2026 and SHA-256 pinned in `src/data/croatia-index-sources.tsv`): **71,415** associations (*Registar udruga Republike Hrvatske*), **400,634** statutory activity-domain rows joined 100% by `UDR_ID` across **71,392** associations, and **444** foundations (*Registar zaklada Republike Hrvatske*) — **71,859** organizations total (**43,271** active/*Aktivan*, **26,791** erased/*Brisan*, **1,797** ceased/*Prestanak djelovanja*). Every one of the **68,646** non-blank 11-digit Croatian OIB numbers passes ISO 7064 Mod 11,10 checksum validation (`0` invalid); **3,213** blank legacy OIBs (historic erased associations predating Croatia’s 2009 OIB rollout) and **1** source duplicate OIB (`44698834525`, two erased Split associations) are preserved verbatim in `anomalies.json`. All email addresses (`MAIL`) and street-level registered addresses are stripped (retaining county for associations and city for foundations), and the separate officeholder personal-names extract is never ingested.
+
+```sh
+python3 scripts/build-croatia-charity-index.py --input-dir /path/to/captured-inputs --out-dir public/data/charity-registry/croatia
+node scripts/check-croatia-charity-index.mjs
+npm run check:references
+```

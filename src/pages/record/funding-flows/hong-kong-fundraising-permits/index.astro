@@ -1,0 +1,348 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/hong-kong-fundraising-permits/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Hong Kong approved charitable fund-raising permits (GovHK)';
+const asset = '/data/funding-flows/hong-kong-fundraising-permits/';
+const registryRoute = '/record/charity-index/hong-kong/';
+const count = (v: number) => v.toLocaleString('en-US');
+const pct = (part: number, whole: number) => `${((part * 100) / whole).toFixed(1)}%`;
+
+const sources = [
+  {
+    title: 'Approved Charitable Fund-Raising Activities (PSI JSON — SWD Public Subscription Permits & HAD Lottery Licences)',
+    publisher: manifest.publisher,
+    url: manifest.catalogue,
+  },
+  {
+    title: 'Section 88 List of Charitable Institutions and Trusts (CSV, as at 2026-10-31)',
+    publisher: 'Inland Revenue Department, HKSAR',
+    url: 'https://www.ird.gov.hk/charity/csv/s88list.csv',
+  },
+];
+
+const districtEntries = Object.entries(manifest.counts.byDistrict).sort((a, b) => b[1] - a[1]);
+---
+
+<Entry
+  title={title}
+  eyebrow="The Record · Funding flows · Hong Kong"
+  summary="Search 401 active Hong Kong government-approved public fundraising permits (391 SWD Public Subscription Permits and 10 HAD Lottery Licences) across 76 organizations, conservatively cross-matched by bilingual name to IRD Section 88 charities."
+  filePath="src/pages/record/funding-flows/hong-kong-fundraising-permits/index.astro"
+  crumbs={[
+    { label: 'The Record', href: '/record/' },
+    { label: 'Funding flows', href: '/record/funding-flows/' },
+    { label: 'Hong Kong fundraising permits' },
+  ]}
+  sources={sources}
+>
+  <p>
+    Before soliciting cash donations in public places or selling charitable lottery tickets in Hong Kong, organizations
+    must obtain statutory authorization from either the <strong>Social Welfare Department (SWD)</strong> (<em>Public Subscription Permits</em>)
+    or the <strong>Office of the Licensing Authority, Home Affairs Department (HAD)</strong> (<em>Lottery Licences</em>).
+    This SHA-256-pinned snapshot captured on <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time> covers all{' '}
+    <strong>{count(manifest.counts.totalPermits)} active charitable permits</strong> ({count(manifest.counts.byPermitType['Public Subscription Permit'])} SWD Public Subscription Permits
+    and {count(manifest.counts.byPermitType['Lottery Licence'])} HAD Lottery Licences) across <strong>{count(manifest.counts.distinctOrganizations)} distinct organizations</strong>,
+    spanning <strong>{count(manifest.counts.totalScheduledDays)} scheduled fundraising days</strong> from{' '}
+    <code>{manifest.counts.earliestScheduledDate}</code> through <code>{manifest.counts.latestScheduledDate}</code>.
+  </p>
+  <p>
+    <a class="identity-link" href={url(registryRoute)}>Search all 11,138 Hong Kong Section 88 tax-exempt charities (EN &amp; 中文)</a>.
+  </p>
+
+  <section
+    class="charity-financial-search"
+    data-hk-permits
+    data-file={url(asset + manifest.artifacts.permits.path)}
+    data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)}
+    aria-labelledby="hk-permits-heading"
+  >
+    <h2 id="hk-permits-heading">Search approved fundraising permits (EN &amp; 中文)</h2>
+    <p id="hk-permits-hint">
+      Search by English name, Traditional Chinese name, or permit number (e.g., <code>Hospital Authority</code>,
+      <code>公益金</code>, <code>Yan Chai</code>, or <code>2026/106/1</code>). Loads{' '}
+      {(manifest.artifacts.permits.bytes / 1_000).toFixed(1)} KB of compressed GovHK permit records locally in your browser.
+    </p>
+    <form aria-describedby="hk-permits-hint">
+      <label for="hk-permits-query">Organization name (EN / 中文) or permit number</label>
+      <div class="finance-actions">
+        <input id="hk-permits-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="hk-permits-type">Permit type</label>
+          <select id="hk-permits-type" disabled>
+            <option value="">All permit types ({count(manifest.counts.totalPermits)})</option>
+            <option value="Public Subscription Permit">SWD Public Subscription Permit ({count(manifest.counts.byPermitType['Public Subscription Permit'])})</option>
+            <option value="Lottery Licence">HAD Lottery Licence ({count(manifest.counts.byPermitType['Lottery Licence'])})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="hk-permits-district">District</label>
+          <select id="hk-permits-district" disabled>
+            <option value="">All districts</option>
+            {districtEntries.map(([dist, n]) => <option value={dist}>{dist} ({count(n)})</option>)}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="hk-permits-s88">Section 88 link</label>
+          <select id="hk-permits-s88" disabled>
+            <option value="">All permits</option>
+            <option value="matched">Matched to IRD Section 88 ({count(manifest.counts.s88MatchedPermits)})</option>
+            <option value="unmatched">No direct Section 88 parent match ({count(manifest.counts.s88UnmatchedPermits)})</option>
+          </select>
+        </span>
+        <button type="submit" class="btn" disabled>Search</button>
+        <button type="button" class="btn btn-ghost" data-hk-permits-clear disabled>Clear</button>
+        <button type="button" class="btn btn-ghost btn-small" data-hk-permits-json disabled>Export JSON</button>
+        <button type="button" class="btn btn-ghost btn-small" data-hk-permits-csv disabled>Export CSV</button>
+      </div>
+    </form>
+    <p class="note" role="status" aria-live="polite" data-hk-permits-status>Loading permit index…</p>
+    <div data-hk-permits-results></div>
+  </section>
+
+  <h2 id="s88-reconciliation">Conservative Section 88 cross-match: why public hospitals sit outside IRD’s list</h2>
+  <p>
+    Because GovHK fundraising permits do not publish a statutory charity registration ID alongside organization names,
+    this edition joins permits to the <a href={url(registryRoute)}>IRD Section 88 register</a> using conservative
+    normalized English and Traditional Chinese name matching — never guessing or coercing near-matches:
+  </p>
+  <ul>
+    <li><strong>Matched to an IRD Section 88 parent ({count(manifest.counts.s88MatchedPermits)} permits · {manifest.counts.s88MatchedSharePct}%):</strong> <code>{count(manifest.counts.byMatchBasis.both_en_and_zh)}</code> permits match on <em>both</em> English and Traditional Chinese legal names, plus <code>{count(manifest.counts.byMatchBasis.en_only)}</code> English-only matches.</li>
+    <li><strong>Unmatched to a standalone Section 88 parent ({count(manifest.counts.s88UnmatchedPermits)} permits · {pct(manifest.counts.s88UnmatchedPermits, manifest.counts.totalPermits)} across {count(manifest.counts.s88UnmatchedOrganizations)} organizations):</strong> Dominated by statutory public hospitals and hospices under the Hospital Authority (e.g., <em>Tseung Kwan O Hospital</em>, <em>United Christian Hospital</em>, <em>Tuen Mun Hospital</em>, <em>Bradbury Hospice</em>) and school alumni groups authorized separately for charitable fundraising rather than listed as independent Section 88 parent names.</li>
+  </ul>
+
+  <h2 id="top-permit-holders">Most active permit holders &amp; district coverage</h2>
+  <div class="table-wrap">
+    <table class="hk-permits-table">
+      <caption>Top 20 organizations by active GovHK charitable fundraising permits (captured {manifest.capturedOn})</caption>
+      <thead>
+        <tr>
+          <th scope="col">Organization (EN &amp; 中文)</th>
+          <th scope="col">Permits</th>
+          <th scope="col">Scheduled days</th>
+          <th scope="col">Section 88 candidate link</th>
+          <th scope="col">Districts</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.top20Organizations.map((org) => (
+          <tr>
+            <th scope="row">
+              {org.orgEn}
+              {org.orgZh && (<><br /><span lang="zh-Hant" class="note">{org.orgZh}</span></>)}
+            </th>
+            <td>{count(org.permits)}</td>
+            <td>{count(org.scheduleDays)}</td>
+            <td>
+              {org.s88Basis === 'unmatched_s88'
+                ? 'Unmatched (statutory/other)'
+                : `Matched (${org.s88Basis === 'both_en_and_zh' ? 'EN+中文' : 'EN'}; eff. ${org.s88EffectiveDate})`}
+            </td>
+            <td>{org.districts.join(', ')}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads, privacy boundaries and provenance</h2>
+  <p>
+    Source: GovHK Public Sector Information API (<code>fundraising.one.gov.hk</code>, 41 pages captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>,
+    SHA-256 pinned in <code>src/data/hong-kong-permits-sources.tsv</code>). Every <code>enquiryContact</code> telephone number
+    is stripped at build time. Public fundraising permits authorize solicitation at specified times and locations — they do not
+    report how much money was raised or spent; post-event audited income/expenditure statements for Public Subscription Permits
+    are published separately by individual charities.{' '}
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download SHA-256 manifest (JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.artifacts.permits.path)} download>Download all {count(manifest.counts.totalPermits)} permits (compressed JSON)</a> ·{' '}
+    <a class="identity-link" data-source-symbol="table" href={url(asset + manifest.artifacts.csv.path)} download>Download permits summary (CSV)</a>.
+  </p>
+</Entry>
+
+<style>
+  .hk-permits-table {
+    min-inline-size: 46rem;
+  }
+  [data-hk-permits] .inline-field {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    flex-wrap: wrap;
+  }
+  [data-hk-permits] select,
+  [data-hk-permits] input {
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+
+  type PermitRow = {
+    permitNo: string;
+    orgEn: string;
+    orgZh: string;
+    norm: string;
+    dept: string;
+    permitType: string;
+    activity: string;
+    district: string;
+    location: string;
+    scheduleDays: number;
+    firstDate: string | null;
+    lastDate: string | null;
+    s88Basis: string;
+    s88EffectiveDate: string | null;
+    s88MatchedEn: string | null;
+  };
+
+  const root = $<HTMLElement>('[data-hk-permits]');
+  if (root) {
+    const fileUrl = root.dataset.file || '';
+    const registryUrl = root.dataset.registry || '/record/charity-index/hong-kong/';
+    const manifest = JSON.parse(root.dataset.manifest || '{}');
+    const form = $<HTMLFormElement>('form', root);
+    const queryEl = $<HTMLInputElement>('#hk-permits-query', root);
+    const typeEl = $<HTMLSelectElement>('#hk-permits-type', root);
+    const districtEl = $<HTMLSelectElement>('#hk-permits-district', root);
+    const s88El = $<HTMLSelectElement>('#hk-permits-s88', root);
+    const submitBtn = $<HTMLButtonElement>('button[type="submit"]', root);
+    const clearBtn = $<HTMLButtonElement>('[data-hk-permits-clear]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-hk-permits-json]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-hk-permits-csv]', root);
+    const statusEl = $<HTMLElement>('[data-hk-permits-status]', root);
+    const resultsEl = $<HTMLElement>('[data-hk-permits-results]', root);
+
+    let allRows: PermitRow[] = [];
+    let currentMatches: PermitRow[] = [];
+
+    function render(matches: PermitRow[]) {
+      currentMatches = matches;
+      if (!resultsEl || !statusEl) return;
+      const shown = matches.slice(0, 60);
+      statusEl.textContent = matches.length
+        ? `Showing ${shown.length} of ${matches.length.toLocaleString('en-US')} matching permits (out of ${allRows.length.toLocaleString('en-US')} active permits).`
+        : 'No matching permits found. Try an English or Traditional Chinese organization name or permit number.';
+      if (!shown.length) {
+        resultsEl.replaceChildren();
+        return;
+      }
+      resultsEl.replaceChildren(
+        h(
+          'ul',
+          { class: 'finance-results', role: 'list' },
+          ...shown.map((r) =>
+            h(
+              'li',
+              { class: 'card' },
+              h(
+                'p',
+                { class: 'eyebrow' },
+                `${r.permitType} · `,
+                h('code', {}, r.permitNo || 'No permit #'),
+                ` · ${r.district}`,
+              ),
+              h(
+                'h3',
+                {},
+                r.orgEn,
+                r.orgZh ? ' · ' : '',
+                r.orgZh ? h('span', { lang: 'zh-Hant' }, r.orgZh) : '',
+              ),
+              h(
+                'p',
+                {},
+                `${r.activity} (${r.dept}). ${r.scheduleDays} scheduled day${r.scheduleDays === 1 ? '' : 's'}${r.firstDate ? ` (${r.firstDate} to ${r.lastDate})` : ''}.`,
+              ),
+              r.location ? h('p', { class: 'note' }, `Venue / area: ${r.location}`) : '',
+              h(
+                'p',
+                { class: 'note' },
+                r.s88Basis === 'unmatched_s88'
+                  ? 'IRD Section 88 link: No direct parent name match (statutory hospital/public body or unlinked name).'
+                  : `IRD Section 88 candidate match (${r.s88Basis === 'both_en_and_zh' ? 'EN + 中文' : 'EN'}; exempt since ${r.s88EffectiveDate}) · `,
+                r.s88Basis !== 'unmatched_s88'
+                  ? h('a', { href: registryUrl }, 'Open Section 88 register')
+                  : '',
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    function applyFilter() {
+      const q = (queryEl?.value || '').trim().toLowerCase();
+      const pType = typeEl?.value || '';
+      const dist = districtEl?.value || '';
+      const s88 = s88El?.value || '';
+      const matches = allRows.filter((r) => {
+        if (pType && r.permitType !== pType) return false;
+        if (dist && r.district !== dist) return false;
+        if (s88 === 'matched' && r.s88Basis === 'unmatched_s88') return false;
+        if (s88 === 'unmatched' && r.s88Basis !== 'unmatched_s88') return false;
+        if (q && !r.norm.includes(q) && !r.location.toLowerCase().includes(q)) return false;
+        return true;
+      });
+      render(matches);
+    }
+
+    loadVerifiedJson(fileUrl, manifest.artifacts.permits)
+      .then((data) => {
+        allRows = data as PermitRow[];
+        for (const el of [queryEl, typeEl, districtEl, s88El, submitBtn, clearBtn, jsonBtn, csvBtn]) {
+          if (el) el.disabled = false;
+        }
+        applyFilter();
+      })
+      .catch((err) => {
+        if (statusEl) statusEl.textContent = err instanceof Error ? err.message : 'Could not load GovHK permit snapshot.';
+      });
+
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      applyFilter();
+    });
+    typeEl?.addEventListener('change', applyFilter);
+    districtEl?.addEventListener('change', applyFilter);
+    s88El?.addEventListener('change', applyFilter);
+    clearBtn?.addEventListener('click', () => {
+      if (queryEl) queryEl.value = '';
+      if (typeEl) typeEl.value = '';
+      if (districtEl) districtEl.value = '';
+      if (s88El) s88El.value = '';
+      applyFilter();
+    });
+    jsonBtn?.addEventListener('click', () => {
+      if (!currentMatches.length) return;
+      download(
+        'hong-kong-fundraising-permits.json',
+        JSON.stringify({ source: manifest.publisher, capturedOn: manifest.capturedOn, rows: currentMatches }, null, 2),
+        'application/json;charset=utf-8',
+      );
+    });
+    csvBtn?.addEventListener('click', () => {
+      if (!currentMatches.length) return;
+      const rows = currentMatches.map((r) => ({
+        permit_number: r.permitNo,
+        org_en: financialCsvName(r.orgEn),
+        org_zh: financialCsvName(r.orgZh),
+        department: r.dept,
+        permit_type: r.permitType,
+        activity: financialCsvName(r.activity),
+        district: r.district,
+        schedule_days: r.scheduleDays,
+        first_date: r.firstDate ?? '',
+        last_date: r.lastDate ?? '',
+        s88_match_basis: r.s88Basis,
+        s88_effective_date: r.s88EffectiveDate ?? '',
+      }));
+      download('hong-kong-fundraising-permits.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+  }
+</script>
