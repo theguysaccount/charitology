@@ -6,6 +6,7 @@ import SiteSymbol from '../SiteSymbol.astro';
 import { diligenceGroupSymbols, diligenceItemSymbols } from '../../lib/list-identities';
 import data from '../../data/due-diligence.json';
 import ecosystem from '../../data/ecosystem.json';
+import { GLOBAL_CHARITY_INDEX_PANELS, GLOBAL_CHARITY_INDEX_TOTAL_RECORDS } from '../../lib/global-index-catalog';
 import { STATUSES } from '../../lib/client/diligence';
 import { url } from '../../lib/site';
 
@@ -63,6 +64,34 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
     Links to ProPublica and WHOFUNDS include the organization’s name, so clicking one sends the name to that site. Nothing else
     leaves your browser.
   </p>
+  <details class="dd-registries" data-dd-global-registries>
+    <summary>
+      Verify directly in Charitology’s {GLOBAL_CHARITY_INDEX_PANELS.length}-jurisdiction Global Charity Index ({GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated records)
+    </summary>
+    <p class="note">
+      Search primary government registries and funding-flow records locally in your browser without sending the organization’s name to third-party sites. Use{' '}
+      <a href={url('/tools/charity-lookup/')}>Charity Lookup</a> for U.S. IRS search and international switching, or open a country registry directly:
+    </p>
+    <ul class="dd-registry-grid" role="list">
+      {
+        GLOBAL_CHARITY_INDEX_PANELS.map((item) => (
+          <li>
+            <a class="dd-registry-link" href={url(item.route)}>
+              <strong>{item.name}</strong>
+              <span class="dd-registry-meta">
+                {item.recordCount.toLocaleString('en-US')} {item.recordUnit} · {item.source}
+              </span>
+            </a>
+            {item.fundingFlowRoute && (
+              <a class="dd-registry-flow" href={url(item.fundingFlowRoute)}>
+                {item.fundingFlowLabel ?? 'Paired funding flows'} →
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </details>
   <div class="callout dd-storage" id="dd-storage" hidden>
     <p>
       <strong>The current answers are not confirmed saved.</strong> Review the local-copy controls for the reason and a complete library backup.
@@ -225,6 +254,56 @@ const flagCount = groups.filter((g) => g.flag).reduce((n, g) => n + g.items.leng
   }
   .dd-privacy {
     margin: 0 0 1rem;
+  }
+  .dd-registries {
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius, 6px);
+    background: var(--surface, transparent);
+  }
+  .dd-registries summary {
+    cursor: pointer;
+    font-weight: 560;
+    color: var(--ink);
+  }
+  .dd-registries > .note {
+    margin: 0.65rem 0 0.75rem;
+  }
+  .dd-registry-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 0.55rem;
+  }
+  .dd-registry-grid li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius, 6px);
+  }
+  .dd-registry-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .dd-registry-link:hover strong,
+  .dd-registry-link:focus-visible strong {
+    text-decoration: underline;
+  }
+  .dd-registry-meta {
+    font-size: 0.8rem;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .dd-registry-flow {
+    font-size: 0.8rem;
   }
   .dd-storage {
     margin-bottom: 1rem;

@@ -4,6 +4,7 @@
 // score: the trade-offs are the reader's to weigh.
 import { getCollection } from 'astro:content';
 import causesData from '../../data/causes.json';
+import { GLOBAL_CHARITY_INDEX_PANELS, GLOBAL_CHARITY_INDEX_TOTAL_RECORDS } from '../../lib/global-index-catalog';
 import { url } from '../../lib/site';
 import OrganizationComparison from '../OrganizationComparison.astro';
 
@@ -99,6 +100,41 @@ const slots = [
 </section>
 <OrganizationComparison />
 
+<section class="tool ct-registries" aria-labelledby="ct-registries-title" data-ct-global-registries>
+  <div class="tool-head">
+    <h2 id="ct-registries-title">Compare primary national registry filings</h2>
+    <span class="note">
+      {GLOBAL_CHARITY_INDEX_PANELS.length} live jurisdictions · {GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated records
+    </span>
+  </div>
+  <p class="note">
+    The audited organization panels above cover selected consolidated reporting groups. To inspect primary statutory filings, tax status,
+    or grant flows for specific organizations across countries, open a national registry below or start from{' '}
+    <a href={url('/tools/charity-lookup/')}>Charity Lookup</a> and{' '}
+    <a href={url('/record/charity-index/coverage/')}>Global Charity Index coverage</a>. National registry extracts use each authority’s own
+    definitions and reporting dates and cannot be summed into a cross-country score.
+  </p>
+  <ul class="ct-registry-grid" role="list">
+    {
+      GLOBAL_CHARITY_INDEX_PANELS.map((item) => (
+        <li>
+          <a class="ct-registry-link" href={url(item.route)}>
+            <strong>{item.name}</strong>
+            <span class="ct-registry-meta">
+              {item.recordCount.toLocaleString('en-US')} {item.recordUnit} · {item.source}
+            </span>
+          </a>
+          {item.fundingFlowRoute && (
+            <a class="ct-registry-flow" href={url(item.fundingFlowRoute)}>
+              {item.fundingFlowLabel ?? 'Paired funding flows'} →
+            </a>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
 <style>
   .ct-picks {
     display: grid;
@@ -115,6 +151,44 @@ const slots = [
   }
   .ct-few {
     margin-top: 1rem;
+  }
+  .ct-registries {
+    margin-top: 2rem;
+  }
+  .ct-registry-grid {
+    list-style: none;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 0.6rem;
+  }
+  .ct-registry-grid li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius, 6px);
+  }
+  .ct-registry-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .ct-registry-link:hover strong,
+  .ct-registry-link:focus-visible strong {
+    text-decoration: underline;
+  }
+  .ct-registry-meta {
+    font-size: 0.8rem;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .ct-registry-flow {
+    font-size: 0.8rem;
   }
   .ct-summary {
     max-width: 72ch;
