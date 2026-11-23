@@ -1,14 +1,14 @@
 # Before You Give: store publication kit
 
-Updated November 22, 2026 for candidate 0.1.3 (`https://charitology.com`) with AI assistance. This is submission material, not a claim that either store has accepted or listed the extension.
+Updated November 22, 2026 for candidate 0.2.0 (`https://charitology.com`) with AI assistance. This is submission material, not a claim that either store has accepted or listed the extension.
 
 ## Packages
 
 Run `npm ci`, then `npm run extension:zip` and `npm run check:extension`.
 
-- Chrome Web Store: `public/downloads/charitology-chrome.zip` (`30,902` bytes, SHA-256 `aa506c4570d7310f46692536a7252837cff99471550c2ffa3198c732decfdb3b`). The Chrome manifest omits Firefox-specific settings.
-- Firefox Add-ons: `public/downloads/charitology-firefox.zip` (`31,207` bytes, SHA-256 `3fccfcb1daafc463856b6986b16c2a9f030659f1f322d7ee93e77fcf7cc93391`). Firefox 140 or later; the manifest declares no data collection.
-- Developer install: `public/downloads/charitology-extension.zip` (`31,207` bytes, SHA-256 `3fccfcb1daafc463856b6986b16c2a9f030659f1f322d7ee93e77fcf7cc93391`).
+- Chrome Web Store: `public/downloads/charitology-chrome.zip` (`31,268` bytes, SHA-256 `4113d2ff78ae8319284be6f4ee8bfcfc08c736b7df9f80d3e44303f7d474d634`). The Chrome manifest omits Firefox-specific settings.
+- Firefox Add-ons: `public/downloads/charitology-firefox.zip` (`31,573` bytes, SHA-256 `7db85b893b935d2b884b79a90843aa1d5d4a938771365abdc2fce9fcbcb9fe64`). Firefox 140 or later; the manifest declares no data collection.
+- Developer install: `public/downloads/charitology-extension.zip` (`31,573` bytes, SHA-256 `7db85b893b935d2b884b79a90843aa1d5d4a938771365abdc2fce9fcbcb9fe64`).
 
 The [compatibility record](EXTENSION_COMPATIBILITY.md), `scripts/lib/extension-release-baselines.json` and generated `public/downloads/extension-release.json` contain exact current source/package hashes and test limits (`installedBrowserAcceptance: "unverified"`). Python 3 standard-library ZIP checks are included.
 

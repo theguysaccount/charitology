@@ -25,7 +25,7 @@ ${text(45, 177, 15, 'Symptom or source?')}
 ${text(45, 202, 15, 'What happens if I don’t give?')}
 ${text(45, 227, 15, 'How do we know it works?')}
 ${text(28, 253, 11, '10 QUESTIONS · BROWSER EXTENSION', 'letter-spacing=".4" class="muted"')}
-${text(412, 253, 11, 'charitology.org', 'text-anchor="end" class="red"')}
+${text(412, 253, 11, 'charitology.com', 'text-anchor="end" class="red"')}
 `);
 
 const centerX = 1085, centerY = 253;
@@ -54,7 +54,7 @@ ${text(99, 380, 25, 'What happens if I don’t give?')}
 ${text(99, 424, 25, 'How do we know it works?')}
 <path d="M68 465H772" stroke="${line}"/>
 ${text(68, 503, 16, '10 QUESTIONS · YOUR OWN JUDGMENT', 'letter-spacing="1.2" class="muted"')}
-${text(centerX, 503, 23, 'charitology.org', 'text-anchor="middle" class="red"')}
+${text(centerX, 503, 23, 'charitology.com', 'text-anchor="middle" class="red"')}
 `);
 
 await mkdir(output, { recursive: true });
