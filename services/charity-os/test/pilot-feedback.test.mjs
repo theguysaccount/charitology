@@ -6,7 +6,7 @@ import {
   buildPilotFeedbackRelayPayload,
   sendPilotFeedback,
   handlePilotFeedbackRequest,
-} from "../api/pilot-feedback.mjs";
+} from "../api/_pilot-feedback.mjs";
 import { csrf } from "../lib/security.mjs";
 import { validateOsMail } from "../../newsletter/lib/os-mail.mjs";
 

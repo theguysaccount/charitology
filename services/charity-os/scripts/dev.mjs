@@ -9,7 +9,7 @@ import { createHandler } from "../lib/handler.mjs";
 import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
 import { volunteerProfileConfiguration } from "../lib/volunteer-profile-routes.mjs";
 import { membershipRenewalConfiguration } from "../lib/membership-renewal-storage.mjs";
-import { handlePilotFeedbackRequest } from "../api/pilot-feedback.mjs";
+import { handlePilotFeedbackRequest } from "../api/_pilot-feedback.mjs";
 const settings = readSettings(),
   db = database(settings.databaseUrl),
   send = mailer(settings),
