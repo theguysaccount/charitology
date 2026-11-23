@@ -157,6 +157,8 @@ export const symbols = {
   cohesion: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4 1.2 2.5L16 10l-2 1.8.5 2.7L12 13.2l-2.5 1.3.5-2.7L8 10l2.8-.5L12 7Z',
   balticPine: 'M12 3 7 10h3l-4 6h4v5h4v-5h4l-4-6h3L12 3Z',
   euGrant: 'M3 7h18v10H3V7Zm4 5h4m4 0h2m-5-9v4m0 10v4',
+  lindenLeaf: 'M12 3c-5 2-8 6-8 10 0 3 2.5 5 6 5 1 0 1.6-.2 2-.6.4.4 1 .6 2 .6 3.5 0 6-2 6-5 0-4-3-8-8-10Zm0 0v18m0-9-4-2m4 4 4-2',
+  endowmentVault: 'M3 9h18L12 3 3 9Zm2 0v9m4-9v9m6-9v9m4-9v9M2 20h20',
 } as const;
 
 export type SymbolName = keyof typeof symbols;

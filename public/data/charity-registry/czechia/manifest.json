@@ -1,0 +1,470 @@
+{
+  "asOf": "2026-11-22",
+  "capturedOn": "2026-11-22",
+  "catalogues": {
+    "dotaceEu": "https://www.dotaceeu.cz/cs/statistiky-a-analyzy/seznam-operaci-(prijemcu)",
+    "justiceVr": "https://dataor.justice.cz/",
+    "liveLookup": "https://or.justice.cz/ias/ui/rejstrik"
+  },
+  "counts": {
+    "byCourt": {
+      "KSBR": 22436,
+      "KSCB": 8676,
+      "KSHK": 11063,
+      "KSOS": 16399,
+      "KSPL": 9648,
+      "KSUL": 12155,
+      "MSPH": 55155
+    },
+    "byForm": {
+      "nad": 631,
+      "nadf": 3445,
+      "ops": 2390,
+      "pobspolek": 25054,
+      "spolek": 101988,
+      "ustav": 2024
+    },
+    "byStatus": {
+      "active": 126730,
+      "deleted": 2817,
+      "insolvency": 50,
+      "liquidation": 5935
+    },
+    "duplicateIcoCount": 0,
+    "euProjectsMatched": 3906,
+    "euTotalCostHaler": 2382766793219,
+    "includedOrganizations": 135532,
+    "missingIcoCount": 0,
+    "nonCzkCapitalCount": 119,
+    "rawSubjectsScanned": 135532,
+    "registeredCapitalHalerByForm": {
+      "nad": 1674449136082,
+      "nadf": 30135689586,
+      "ustav": 28007588371
+    },
+    "totalRegisteredCapitalHaler": 1732592414039,
+    "vrFilesScanned": 42,
+    "withEuProjects2021to2027": 1669,
+    "withRegisteredCapital": 3982,
+    "withRegisteredCapitalByForm": {
+      "nad": 611,
+      "nadf": 1434,
+      "ustav": 1937
+    }
+  },
+  "currency": "CZK",
+  "format": "charitology-czechia-registry-v1",
+  "jurisdiction": "CZ",
+  "privacyBoundary": "Personal board member names, dates of birth, street addresses and postcodes are omitted; only municipality (obec), district (okres) and registering court are retained.",
+  "publisher": "Ministry of Justice of the Czech Republic (Ministerstvo spravedlnosti ČR) & Ministry for Regional Development (DotaceEU)",
+  "shards": {
+    "ids": {
+      "0": {
+        "bytes": 1085784,
+        "decodedBytes": 9360682,
+        "decodedSha256": "78fae02d5597c8e35ad206fb2c7a588a222f71c91186cc9cf99a58651e873775",
+        "path": "ids/0.json.gz",
+        "rows": 34507,
+        "sha256": "94a42d131ea2faaa1413d116c4581ac6a4e40f07c83095ebb5e41e9316a00ee9"
+      },
+      "1": {
+        "bytes": 322223,
+        "decodedBytes": 2832920,
+        "decodedSha256": "bc25829acfeae7e1673de4b874f9cdbe31a7183c94341a2cb987968e348b2bc8",
+        "path": "ids/1.json.gz",
+        "rows": 10534,
+        "sha256": "8b31681484a92ae29343f0bfd4e6a3ad3aa45432daea4104e75f9f9c9cd949bd"
+      },
+      "2": {
+        "bytes": 1428694,
+        "decodedBytes": 12669702,
+        "decodedSha256": "2781c593d071e8e3cf0eaac496af10972433d0bab3a2761a90f58dd2e7a401cd",
+        "path": "ids/2.json.gz",
+        "rows": 47145,
+        "sha256": "47ab0066c9252a5e3d7e3b346bdca612756188439d4d860d0aa5a10f9812c3c3"
+      },
+      "3": {
+        "bytes": 18356,
+        "decodedBytes": 152424,
+        "decodedSha256": "f497a62b481967b2eff85083e7b832fe887a7dbf856ec28b1ef2173d6ae64ef1",
+        "path": "ids/3.json.gz",
+        "rows": 580,
+        "sha256": "7a00bd1c47bfc3f58b16173e6ed57e994d17108e036020eb372b1157ad1257a6"
+      },
+      "4": {
+        "bytes": 289266,
+        "decodedBytes": 3281535,
+        "decodedSha256": "b740ed967d20fe22120e7ec89182f9d7fd53fe963d4cee4c2948abbded8ed4c1",
+        "path": "ids/4.json.gz",
+        "rows": 11870,
+        "sha256": "965a43e42ddad77bccd2382c91070fc0bb6ff377cd760c6e636ffbcb8f912de2"
+      },
+      "6": {
+        "bytes": 532981,
+        "decodedBytes": 6129852,
+        "decodedSha256": "15ccd0e013e890f98dd1b0a47418768b46a2c0a371c88452316afd69cbc3a524",
+        "path": "ids/6.json.gz",
+        "rows": 21648,
+        "sha256": "25e6e14608c4428d61b44d6cadb8560c6385812bc6f978121cee489c4f8cb5ab"
+      },
+      "7": {
+        "bytes": 265994,
+        "decodedBytes": 2652898,
+        "decodedSha256": "b4fc2626895881bb90b40c76c7151157ee90093d2a841cc0f448718a2b8f4b63",
+        "path": "ids/7.json.gz",
+        "rows": 9181,
+        "sha256": "1003103c79fdef61ac5eb3b9672fc7a00aa7b1d85fe837186f652e7fbba204d3"
+      },
+      "8": {
+        "bytes": 2610,
+        "decodedBytes": 19550,
+        "decodedSha256": "67697c03bca60f95607af3ea1c89647002d63f6c4659deb288dd0b598a124a54",
+        "path": "ids/8.json.gz",
+        "rows": 67,
+        "sha256": "2ae08233725d88d307bd486f8372d7f74812f8dc7f8f5440329cf10343bbac12"
+      }
+    },
+    "names": {
+      "0-9": {
+        "bytes": 19314,
+        "decodedBytes": 164307,
+        "decodedSha256": "45084fd67f51bdc08e7bc0357689c9ca5698baf934defd443f7485518ce26913",
+        "path": "names/0-9.json.gz",
+        "rows": 616,
+        "sha256": "d732d10cfe3ee12bcf7fb6ec24c600d16cb3d77b6a412c2cebf8c7d35f5a1ff6"
+      },
+      "a": {
+        "bytes": 190849,
+        "decodedBytes": 1688220,
+        "decodedSha256": "c7a82b3edf23738dfe8c5f298d5c9e7e88d44560214e38da0f31e0875c839418",
+        "path": "names/a.json.gz",
+        "rows": 6214,
+        "sha256": "62323ed365b8f6a0299ebfa21aea8464032d066882a870db6c1dfde5e125cbb0"
+      },
+      "b": {
+        "bytes": 97897,
+        "decodedBytes": 863291,
+        "decodedSha256": "d23bcdae2da61d2bb5e247d2cca09000b4b32146ed3b08d0691ca6f9a4cac2f5",
+        "path": "names/b.json.gz",
+        "rows": 3278,
+        "sha256": "630c2f5967681bf93155b3b383356223280a17e49ef0f02bd91f8cf18253fb2d"
+      },
+      "c": {
+        "bytes": 305767,
+        "decodedBytes": 3080569,
+        "decodedSha256": "d5201c69c6c4c61ee8fdb46b32207f0ce56707f33f8b16558fcaf37cae945a41",
+        "path": "names/c.json.gz",
+        "rows": 10805,
+        "sha256": "e610f31d946e38b2ab8685d7a8c780b7b6635ae9ba02accacdcf99091c3763c9"
+      },
+      "d": {
+        "bytes": 115216,
+        "decodedBytes": 1003624,
+        "decodedSha256": "c59f4547c4d0266bc59d42f8882402038f87da297efe125e511660d7754baab5",
+        "path": "names/d.json.gz",
+        "rows": 3783,
+        "sha256": "2aa8c5d149e7be8f0da425814002ad5c3387af0af87b9ebe194d460aee841e86"
+      },
+      "e": {
+        "bytes": 61830,
+        "decodedBytes": 527069,
+        "decodedSha256": "e0e1027c915146e67e3358fbeac46e5cb04fdf795e8646fc65f052683097e072",
+        "path": "names/e.json.gz",
+        "rows": 1985,
+        "sha256": "b6a358a635eafd99bef2fed3507ae1159ff34dda84ecfb76bf63755000d72b16"
+      },
+      "f": {
+        "bytes": 103864,
+        "decodedBytes": 954917,
+        "decodedSha256": "0ee1f4ac0590f7c40f4b61066ffd03c90d97991eaaeb2dfd23da6d6aaa036a17",
+        "path": "names/f.json.gz",
+        "rows": 3633,
+        "sha256": "3822a80576c46a0abc1641e6c346460e7a63551ef05cc09383aafd929857e802"
+      },
+      "g": {
+        "bytes": 34798,
+        "decodedBytes": 304345,
+        "decodedSha256": "77feb217fe2cdff13fb6a3e6a6a7a2133655466dc1e8ab8a13d516f257849ab3",
+        "path": "names/g.json.gz",
+        "rows": 1157,
+        "sha256": "cb3dd79e6af70044f611f03fcb4afee8cc4301224f80a6168acf58113e73ef27"
+      },
+      "h": {
+        "bytes": 99836,
+        "decodedBytes": 879676,
+        "decodedSha256": "7853a6585b369b9bf7dfdc002cfb27b634ce742a730a468a0dd87731dcdd97ca",
+        "path": "names/h.json.gz",
+        "rows": 3329,
+        "sha256": "4522be75e5203e03e683a63a564d1b36e8b6cba0942d52f43af27810bf21c3f1"
+      },
+      "i": {
+        "bytes": 47756,
+        "decodedBytes": 402120,
+        "decodedSha256": "9bf9b47e34ae010332190b08cae77f19340c99cf142738d5a613d17499393605",
+        "path": "names/i.json.gz",
+        "rows": 1470,
+        "sha256": "02b5823064956d555930a7e3d52e5750b37f1c937e75a6ac1521dd6fbffa8356"
+      },
+      "j": {
+        "bytes": 101699,
+        "decodedBytes": 983646,
+        "decodedSha256": "5c8c9059e8be10e341dd4f91cb34f250582b87562c03188a06f2ac9e61cbddf1",
+        "path": "names/j.json.gz",
+        "rows": 3623,
+        "sha256": "cebc907d91c5d52c96f4c5c70dfb0252c7df0daa0400f54cfd612d7f19bbe6ed"
+      },
+      "k": {
+        "bytes": 246797,
+        "decodedBytes": 2213303,
+        "decodedSha256": "ed8ac3827266449f36567cefab1f9dd3273f71f118df587176e84e2020ab762c",
+        "path": "names/k.json.gz",
+        "rows": 8143,
+        "sha256": "abd4e7e7fc0ad6da72486cb7116e8b6a9343edd9fab7a76206c7d0dea0e2c8d0"
+      },
+      "l": {
+        "bytes": 76078,
+        "decodedBytes": 652917,
+        "decodedSha256": "1b75cfc563799ac9605f2f30f4415fd22303e48df9e678a7902d9d8c024b99a0",
+        "path": "names/l.json.gz",
+        "rows": 2454,
+        "sha256": "f94a72bdb9d595b4c3122c2ba6d05daa1df5d27c5c93122935673422f347b5c2"
+      },
+      "m": {
+        "bytes": 297067,
+        "decodedBytes": 2857829,
+        "decodedSha256": "dc3748b9f6117db018834a40517ac22558eb705069ddb5e5cb0adffb7a99225f",
+        "path": "names/m.json.gz",
+        "rows": 10549,
+        "sha256": "97312bb5b723752764ab4bb055a1deb3b1e2ac4c32be4a20b117c073b2d4a8ec"
+      },
+      "n": {
+        "bytes": 164242,
+        "decodedBytes": 1371195,
+        "decodedSha256": "7ec1afa306ba2163c22b879aa0cea568c0a51d5fc9658941b1d0c8d6b40d7c2d",
+        "path": "names/n.json.gz",
+        "rows": 5113,
+        "sha256": "103276932ebb1d0f85f081474d05b11d15292552f2c74b2d33043d4c58f923e1"
+      },
+      "o": {
+        "bytes": 171564,
+        "decodedBytes": 1646258,
+        "decodedSha256": "40a398aceb75250a4a35324d4e36cb671282d7771b92c3a6802877d78e0a14d7",
+        "path": "names/o.json.gz",
+        "rows": 5950,
+        "sha256": "b793e85ff8bbc7db2c98942c51ebb2ca4f617d91aa19945260578bd549c16abf"
+      },
+      "p": {
+        "bytes": 178693,
+        "decodedBytes": 1555975,
+        "decodedSha256": "f7e79a362b1051e091c251548e1a57738d1a3c2f12963da0efe44352dc43e5e3",
+        "path": "names/p.json.gz",
+        "rows": 5817,
+        "sha256": "9d383e5340e2f6ce49e2910a730ca3f9c1cf2d86b8bf2e70bf8b6f5e495459de"
+      },
+      "q": {
+        "bytes": 2813,
+        "decodedBytes": 19734,
+        "decodedSha256": "8ae1d064ef52083fcacbfa362fe9a2dc65d33ec98a3b397e9f7ca0cf9b5f4d76",
+        "path": "names/q.json.gz",
+        "rows": 77,
+        "sha256": "39c2ee8b83cf6dad85d5b1253cf76cc17d9b5224643b89f81fb27495a0be850c"
+      },
+      "r": {
+        "bytes": 111538,
+        "decodedBytes": 982092,
+        "decodedSha256": "2fa1396440d119649c89fe45c7de0f8525a3327faf91cef1e41a2488b35d9ce3",
+        "path": "names/r.json.gz",
+        "rows": 3668,
+        "sha256": "dd6b337b6ab47aa721a4eb589490e4ae78dad6d377e2f78007a13f948167a13d"
+      },
+      "s": {
+        "bytes": 977201,
+        "decodedBytes": 9882741,
+        "decodedSha256": "d6d0a9c4a1f357ed3c6314aaa5080bb0f49094cd44dbf89c0a263253464ae12d",
+        "path": "names/s.json.gz",
+        "rows": 35377,
+        "sha256": "a02106208f971014355e0abd85d0ef526b805bd4edf0613b57fb50990db9627a"
+      },
+      "t": {
+        "bytes": 207342,
+        "decodedBytes": 2159482,
+        "decodedSha256": "bb4dcd99f413e6e298f0f0d1f998e1bd1ab226bce09085616760a1d11795f0b1",
+        "path": "names/t.json.gz",
+        "rows": 8056,
+        "sha256": "8f0028ad69d4bce607ab0660339cbd6d2c162d29701dc234e9ec869b8595502e"
+      },
+      "u": {
+        "bytes": 40846,
+        "decodedBytes": 352789,
+        "decodedSha256": "bf588326ea08ed3755f972a0aa2bcd17f821540f59de9e73df20baac656282cd",
+        "path": "names/u.json.gz",
+        "rows": 1289,
+        "sha256": "7a5dac6331192a8cb18008918603a1c4dec8a7ca6f49f341fba0aa29d84c77c2"
+      },
+      "v": {
+        "bytes": 95116,
+        "decodedBytes": 819838,
+        "decodedSha256": "e91034ab4884a3c012f51b78a9d636cf78d8af0c7c5390de84b2e3fc6402ed89",
+        "path": "names/v.json.gz",
+        "rows": 3056,
+        "sha256": "42a0d66614800e09930b99741663310c4188ddae933e9a4a21bb7491b096a39e"
+      },
+      "w": {
+        "bytes": 16908,
+        "decodedBytes": 139066,
+        "decodedSha256": "625b6ae656aa02a4f54466c71a55feb8bff546cdd1488d212ae3d8a90d56238f",
+        "path": "names/w.json.gz",
+        "rows": 529,
+        "sha256": "b19a79e7ffdda3d25a104cc06ebe64501e72307ce36576ef03dc23aff3a2625a"
+      },
+      "x": {
+        "bytes": 2783,
+        "decodedBytes": 19164,
+        "decodedSha256": "925ad8706c04e95b61c955fcf093ff5511643520542d15034ac728c9f1e75ea6",
+        "path": "names/x.json.gz",
+        "rows": 73,
+        "sha256": "671a2e7e5eb3b23e892ca9dcd20ea27f55c814990d8837dd91c4efda46d80bc0"
+      },
+      "y": {
+        "bytes": 8040,
+        "decodedBytes": 67747,
+        "decodedSha256": "b2f211668d22394c35096cca01a6735d89e9e5335660973e719c44f94b0dd1b6",
+        "path": "names/y.json.gz",
+        "rows": 258,
+        "sha256": "23c7838fb97cb4a56e569470872b0efadbcecd0568a8741240f2976983368058"
+      },
+      "z": {
+        "bytes": 146316,
+        "decodedBytes": 1507687,
+        "decodedSha256": "4a7ff46ae08452f2a4f77f1698a286e69c5e2feade1914bdaae5e15c5b09ae04",
+        "path": "names/z.json.gz",
+        "rows": 5230,
+        "sha256": "1393e9f44d5f810f60047207d04f5854b70ca6fb9dd5b9421480081fc9a0147f"
+      }
+    }
+  },
+  "sourcesCount": 43,
+  "sourcesPinnedIn": "src/data/czechia-index-sources.tsv",
+  "topEndowedFoundations": [
+    {
+      "capHaler": 202265923500,
+      "form": "nad",
+      "ico": "14100550",
+      "muni": "Praha",
+      "name": "Nadace rodiny Holečkových",
+      "status": "active"
+    },
+    {
+      "capHaler": 173400000000,
+      "form": "nad",
+      "ico": "26506980",
+      "muni": "Praha 4",
+      "name": "Nadace České spořitelny",
+      "status": "active"
+    },
+    {
+      "capHaler": 166167264513,
+      "form": "nad",
+      "ico": "14224429",
+      "muni": "Třinec",
+      "name": "Nadace 3WFoundation",
+      "status": "active"
+    },
+    {
+      "capHaler": 140070230000,
+      "form": "nad",
+      "ico": "10660941",
+      "muni": "Praha",
+      "name": "Nadace rodiny Vlčkových",
+      "status": "active"
+    },
+    {
+      "capHaler": 133362628000,
+      "form": "nad",
+      "ico": "24264504",
+      "muni": "Beroun",
+      "name": "Nadace PROSPORT",
+      "status": "active"
+    },
+    {
+      "capHaler": 102877995910,
+      "form": "nad",
+      "ico": "09745670",
+      "muni": "Praha",
+      "name": "Nadace Arietinum",
+      "status": "active"
+    },
+    {
+      "capHaler": 89693273470,
+      "form": "nad",
+      "ico": "03137660",
+      "muni": "Praha",
+      "name": "Nadace The Pudil Family Foundation",
+      "status": "active"
+    },
+    {
+      "capHaler": 42444360000,
+      "form": "nad",
+      "ico": "11889225",
+      "muni": "Praha",
+      "name": "Nadace sv. Ludmily",
+      "status": "active"
+    },
+    {
+      "capHaler": 30725064900,
+      "form": "nad",
+      "ico": "00216194",
+      "muni": "Praha",
+      "name": "Nadace\"Nadání Josefa, Marie a Zdeňky Hlávkových\"",
+      "status": "active"
+    },
+    {
+      "capHaler": 27307300000,
+      "form": "nad",
+      "ico": "00406066",
+      "muni": "Praha",
+      "name": "Výbor dobré vůle-Nadace Olgy Havlové",
+      "status": "active"
+    },
+    {
+      "capHaler": 22688680000,
+      "form": "nad",
+      "ico": "61381390",
+      "muni": "Praha",
+      "name": "Nadace Český hudební fond",
+      "status": "active"
+    },
+    {
+      "capHaler": 20211653000,
+      "form": "nad",
+      "ico": "49370499",
+      "muni": "Praha 1",
+      "name": "Museum Kampa - Nadace Jana a Medy Mládkových",
+      "status": "active"
+    },
+    {
+      "capHaler": 20000000000,
+      "form": "nad",
+      "ico": "08753598",
+      "muni": "Praha",
+      "name": "Nadace Experientia",
+      "status": "active"
+    },
+    {
+      "capHaler": 19200000000,
+      "form": "nad",
+      "ico": "44965338",
+      "muni": "Brno",
+      "name": "Nadace Leoše Janáčka",
+      "status": "active"
+    },
+    {
+      "capHaler": 17140928376,
+      "form": "nad",
+      "ico": "45773521",
+      "muni": "Brno",
+      "name": "Nadace Partnerství (v mezinárodním styku \"Czech Environmental Partnership Foundation - CEPF)",
+      "status": "active"
+    }
+  ]
+}

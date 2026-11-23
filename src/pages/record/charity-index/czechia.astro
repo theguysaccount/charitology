@@ -1,0 +1,362 @@
+---
+import Entry from '../../../layouts/Entry.astro';
+import { url } from '../../../lib/site';
+import manifest from '../../../../public/data/charity-registry/czechia/manifest.json';
+import '../../../styles/charity-financial-search.css';
+
+const title = 'Czechia nonprofit public registers, foundation endowments and EU funds';
+const dataPath = '/data/charity-registry/czechia/';
+const flowPath = '/record/funding-flows/czechia-eu-funds/';
+const count = (value: number) => value.toLocaleString('en-US');
+const czkB = (haler: number) =>
+  `CZK ${(haler / 100_000_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}B`;
+const czkM = (haler: number) =>
+  `CZK ${(haler / 100_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}M`;
+
+const sources = [
+  { title: 'Public Registers Open Data (Veřejný rejstřík — 42 court dumps across 6 nonprofit legal forms, 2026 actual)', publisher: 'Ministry of Justice of the Czech Republic (Ministerstvo spravedlnosti ČR)', url: manifest.catalogues.justiceVr },
+  { title: 'Seznam operací (List of Operations) 2021–2027 (generated 2026-11-01)', publisher: 'Ministry for Regional Development of the Czech Republic (DotaceEU)', url: manifest.catalogues.dotaceEu },
+];
+---
+
+<Entry title={title} eyebrow="The Record · Global Charity Index · Czechia"
+  summary="Search 135,532 Czech nonprofits across six statutory legal forms (associations, branch associations, foundations, endowment funds, institutes and public benefit companies) by name or 8-digit IČO, with CZK foundation endowment capital and EU Cohesion Policy 2021–2027 grant links."
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Global Charity Index',href:'/record/charity-index/'},{label:'Czechia'}]}
+  filePath="src/pages/record/charity-index/czechia.astro" sources={sources}>
+  <p>This edition combines all <strong>42 regional-court open-data XML extracts</strong> published by the Czech Ministry of Justice (<em>Veřejný rejstřík</em>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>) across Czechia’s six civil-society legal forms: <strong>{count(manifest.counts.byForm.spolek)}</strong> associations (<em>Spolek</em>), <strong>{count(manifest.counts.byForm.pobspolek)}</strong> branch associations (<em>Pobočný spolek</em>), <strong>{count(manifest.counts.byForm.nadf)}</strong> endowment funds (<em>Nadační fond</em>), <strong>{count(manifest.counts.byForm.ops)}</strong> public benefit companies (<em>Obecně prospěšná společnost / o.p.s.</em>), <strong>{count(manifest.counts.byForm.ustav)}</strong> institutes (<em>Ústav</em>) and <strong>{count(manifest.counts.byForm.nad)}</strong> foundations (<em>Nadace</em>) — <strong>{count(manifest.counts.includedOrganizations)}</strong> unique 8-digit <em>IČO</em> identifiers in total ({count(manifest.counts.byStatus.active)} active, {count(manifest.counts.byStatus.liquidation)} in liquidation, {count(manifest.counts.byStatus.insolvency)} in insolvency and {count(manifest.counts.byStatus.deleted)} erased entries preserved in the 2026 extracts). Housing unit-owners associations (<em>SVJ</em>) and commercial companies are excluded cleanly at the register level.</p>
+  <p>Across the statutory registers, <strong>{count(manifest.counts.withRegisteredCapital)} organizations</strong> declare registered CZK endowment or foundation capital totaling <strong>{czkB(manifest.counts.totalRegisteredCapitalHaler)}</strong> — led by {count(manifest.counts.withRegisteredCapitalByForm.nad)} endowed foundations holding <strong>{czkB(manifest.counts.registeredCapitalHalerByForm.nad)}</strong> (96.6% of all declared nonprofit capital). Joining exact 8-digit <em>IČO</em> codes to the Ministry for Regional Development’s November 1, 2026 EU Cohesion Policy list links <strong>{count(manifest.counts.euProjectsMatched)} projects</strong> across <strong>{count(manifest.counts.withEuProjects2021to2027)} Czech nonprofits</strong> totaling <strong>{czkB(manifest.counts.euTotalCostHaler)}</strong>.</p>
+
+  <section class="charity-financial-search" data-czechia-registry data-base={url(dataPath)}
+    data-flow={url(flowPath)} data-manifest={JSON.stringify(manifest)} aria-labelledby="cz-search-heading">
+    <h2 id="cz-search-heading">Search Czech nonprofits</h2>
+    <p id="cz-search-hint">Enter the start of an organization’s name (Czech diacritics optional, with or without <code>Spolek</code> / <code>Nadace</code> / <code>Nadační fond</code> / <code>Ústav</code>, e.g., <code>clovek v tisni</code>, <code>armada spasy</code>, <code>nadace ceske sporitelny</code> or <code>potravinovych bank</code>) or an exact 8-digit <em>IČO</em> (e.g., <code>25755277</code> or <code>03641392</code>). Search runs locally in your browser.</p>
+    <form aria-describedby="cz-search-hint">
+      <label for="cz-query">Organization name or 8-digit IČO</label>
+      <div class="finance-actions">
+        <input type="search" id="cz-query" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="cz-form">Legal form</label>
+          <select id="cz-form" disabled>
+            <option value="">All 6 forms ({count(manifest.counts.includedOrganizations)})</option>
+            <option value="spolek">Spolek / Association ({count(manifest.counts.byForm.spolek)})</option>
+            <option value="pobspolek">Pobočný spolek / Branch ({count(manifest.counts.byForm.pobspolek)})</option>
+            <option value="nadf">Nadační fond / Endowment Fund ({count(manifest.counts.byForm.nadf)})</option>
+            <option value="ops">o.p.s. / Public Benefit Co. ({count(manifest.counts.byForm.ops)})</option>
+            <option value="ustav">Ústav / Institute ({count(manifest.counts.byForm.ustav)})</option>
+            <option value="nad">Nadace / Foundation ({count(manifest.counts.byForm.nad)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="cz-status">Registry status</label>
+          <select id="cz-status" disabled>
+            <option value="">All statuses</option>
+            <option value="active">Active ({count(manifest.counts.byStatus.active)})</option>
+            <option value="liquidation">In liquidation ({count(manifest.counts.byStatus.liquidation)})</option>
+            <option value="insolvency">Insolvency / bankruptcy ({count(manifest.counts.byStatus.insolvency)})</option>
+            <option value="deleted">Erased in 2026 extract ({count(manifest.counts.byStatus.deleted)})</option>
+          </select>
+        </span>
+        <label class="inline-check"><input type="checkbox" id="cz-cap-only" disabled /> Has registered CZK capital</label>
+        <label class="inline-check"><input type="checkbox" id="cz-eu-only" disabled /> Has EU 2021–2027 project</label>
+        <button type="submit" class="btn" disabled>Search organizations</button>
+        <button type="button" class="btn btn-ghost" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p role="status" data-status>Search when you are ready to load a Czechia registry shard.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed results as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed results as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="lindenLeaf" aria-label="Czechia nonprofit registry results" data-results></ol>
+    <noscript><p>Without JavaScript, download the Ministry of Justice public register dumps directly from <a href={manifest.catalogues.justiceVr}>dataor.justice.cz</a>.</p></noscript>
+  </section>
+
+  <h2 id="endowments">Largest statutory foundation endowments</h2>
+  <p>Under the Czech Civil Code (§335), every <em>Nadace</em> (foundation) must register a minimum statutory endowment (<em>nadační kapitál</em>) of CZK 500,000 in the public court register, whereas <em>Nadační fond</em> (endowment funds) and <em>Ústav</em> (institutes) optionally register contributed capital. These figures represent registered statutory capital in CZK, not annual grant payout or total balance-sheet assets.</p>
+  <div class="table-wrap" role="region" aria-label="Top 15 endowed Czech foundations by statutory CZK capital" tabindex="0">
+    <table class="data cz-table">
+      <caption>Top 15 Czech nonprofits by registered CZK statutory capital in the 2026 Ministry of Justice extracts</caption>
+      <thead>
+        <tr>
+          <th scope="col">IČO</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Form</th>
+          <th scope="col">Municipality</th>
+          <th scope="col">Registered capital</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topEndowedFoundations.map((item) => (
+          <tr>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-cz={item.ico}><code>{item.ico}</code></button></td>
+            <th scope="row"><span lang="cs">{item.name}</span></th>
+            <td>{item.form}</td>
+            <td>{item.muni || '—'}</td>
+            <td>{czkM(item.capHaler)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="funding">Follow EU Cohesion Policy 2021–2027 grants</h2>
+  <p>While endowed foundations hold 98.4% of Czechia’s statutory registered nonprofit capital, they account for only 0.6% of nonprofit EU Cohesion Policy 2021–2027 funding. Legacy public benefit companies (<em>o.p.s.</em> — just 1.8% of registered nonprofits) deliver 26.1% (CZK 6.23B) and associations (<em>Spolek</em>) deliver 56.9% (CZK 13.55B), led by ESF+ social-inclusion, humanitarian and employment projects. <a class="identity-link" href={url(flowPath)}>Inspect all 3,906 Czech nonprofit EU projects totaling CZK 23.83 billion</a>.</p>
+
+  <h2 id="coverage">Scope, privacy and register boundaries</h2>
+  <p><strong>What is excluded:</strong> Unit-owners housing associations (<em>SVJ</em>), commercial companies (<em>s.r.o.</em>, <em>a.s.</em>, <em>v.o.s.</em>, <em>k.s.</em>), cooperatives, trade unions (<em>odborová organizace</em>), public universities, municipal <em>příspěvkové organizace</em> and church legal entities registered separately under the Ministry of Culture (492 EU operations in 2021–2027) sit outside these six Ministry of Justice civil-society registers. Registered capital declared in non-CZK units ({count(manifest.counts.nonCzkCapitalCount)} records) is kept out of CZK totals rather than converted with synthetic FX rates.</p>
+  <p><strong>Privacy boundary:</strong> The raw Ministry of Justice XML files include board members’ names, birthdates and street addresses. All personal board data, dates of birth, street addresses and postcodes are stripped at build time; only municipality (<em>obec</em>), district (<em>okres</em>) and registering court are published. <a class="identity-link" data-source-symbol="document" href={url(dataPath + 'manifest.json')} download>Download source manifest (JSON)</a> · <a href={url('/record/charity-index/coverage/')}>Read the Index coverage</a>.</p>
+</Entry>
+
+<style>
+  .cz-table { min-inline-size: 38rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../lib/client/dom';
+  import { download, toCsv } from '../../../lib/client/files';
+  import { financialCsvName, financialShardLoader, normalizeFinancialName, type FinancialShard } from '../../../lib/client/financial-directory';
+
+  type OrgRow = {
+    ico: string;
+    name: string;
+    form: 'spolek' | 'pobspolek' | 'nad' | 'nadf' | 'ustav' | 'ops';
+    status: 'active' | 'liquidation' | 'insolvency' | 'deleted';
+    court: string;
+    regDate: string | null;
+    delDate: string | null;
+    muni: string;
+    district: string;
+    capHaler: number | null;
+    euCount: number;
+    euCostHaler: number;
+    euSupportHaler: number;
+    euPaidHaler: number;
+  };
+  type Manifest = {
+    format: string;
+    capturedOn: string;
+    publisher: string;
+    shards: {
+      names: Record<string, FinancialShard>;
+      ids: Record<string, FinancialShard>;
+    };
+  };
+  type Result = { total: number; organizations: OrgRow[] };
+
+  const stripDigits = (value: string) => value.replace(/[\s.-]+/g, '');
+  const isIco = (value: string) => /^[0-9]{7,8}$/.test(stripDigits(value));
+  const padIco = (value: string) => stripDigits(value).padStart(8, '0');
+  const bucketFor = (norm: string) => {
+    const first = norm[0] ?? '';
+    return first >= 'a' && first <= 'z' ? first : '0-9';
+  };
+  const formLabels: Record<OrgRow['form'], string> = {
+    spolek: 'Spolek (Association)',
+    pobspolek: 'Pobočný spolek (Branch Association)',
+    nad: 'Nadace (Foundation)',
+    nadf: 'Nadační fond (Endowment Fund)',
+    ustav: 'Ústav (Institute)',
+    ops: 'o.p.s. (Public Benefit Company)',
+  };
+  const statusLabels: Record<OrgRow['status'], string> = {
+    active: 'Active',
+    liquidation: 'In liquidation',
+    insolvency: 'Insolvency / bankruptcy',
+    deleted: 'Erased in 2026 extract',
+  };
+  const courtLabels: Record<string, string> = {
+    MSPH: 'Městský soud v Praze',
+    KSBR: 'Krajský soud v Brně',
+    KSCB: 'Krajský soud v Českých Budějovicích',
+    KSHK: 'Krajský soud v Hradci Králové',
+    KSOS: 'Krajský soud v Ostravě',
+    KSPL: 'Krajský soud v Plzni',
+    KSUL: 'Krajský soud v Ústí nad Labem',
+  };
+  const fmtCzk = (haler: number) =>
+    `CZK ${(haler / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const limit = 30;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-czechia-registry]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const base = root.dataset.base!;
+    const flowBase = root.dataset.flow!;
+    const loadNames = financialShardLoader<OrgRow>(base, manifest.shards.names);
+    const loadIds = financialShardLoader<OrgRow>(base, manifest.shards.ids);
+
+    const formEl = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#cz-query', formEl);
+    const formFilter = $<HTMLSelectElement>('#cz-form', formEl);
+    const statusFilter = $<HTMLSelectElement>('#cz-status', formEl);
+    const capOnly = $<HTMLInputElement>('#cz-cap-only', formEl);
+    const euOnly = $<HTMLInputElement>('#cz-eu-only', formEl);
+    const submit = $<HTMLButtonElement>('button[type=submit]', formEl);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const statusEl = $('[data-status]', root);
+    const results = $('[data-results]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+
+    let found: Result | undefined;
+    let sequence = 0;
+    input.disabled = formFilter.disabled = statusFilter.disabled = capOnly.disabled = euOnly.disabled = submit.disabled = clear.disabled = false;
+
+    const reset = () => {
+      found = undefined;
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    function card(row: OrgRow) {
+      const place = [row.muni, row.district && row.district !== row.muni ? row.district : ''].filter(Boolean).join(', ');
+      const capLine = row.capHaler !== null
+        ? `Registered statutory capital: ${fmtCzk(row.capHaler)}`
+        : 'No registered CZK capital field in 2026 court extract.';
+      const euText = row.euCount > 0
+        ? `${row.euCount} EU 2021–2027 ${row.euCount === 1 ? 'project' : 'projects'} (${fmtCzk(row.euCostHaler)} cost · ${fmtCzk(row.euSupportHaler)} EU support)`
+        : 'No DotaceEU 2021–2027 project match';
+
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, row.ico), ' ', h('span', { lang: 'cs' }, row.name)),
+        h('p', {}, `${formLabels[row.form]} · ${statusLabels[row.status]}${place ? ` · ${place}` : ''}`),
+        h('p', { class: 'note' },
+          `Registered ${row.regDate ?? 'unknown'}${row.delDate ? ` · Erased ${row.delDate}` : ''} · Court: ${courtLabels[row.court] ?? row.court}`),
+        h('p', { class: 'note' }, capLine),
+        h('p', { class: 'note' },
+          row.euCount > 0
+            ? h('a', { href: `${flowBase}#q=${row.ico}` }, `Inspect EU grants: ${euText}`)
+            : euText,
+          ' · ',
+          h('a', { href: `https://or.justice.cz/ias/ui/rejstrik-$firma?ico=${row.ico}`, rel: 'noopener noreferrer' }, 'Check live Public Register (justice.cz)')),
+      );
+    }
+
+    async function search(value: string): Promise<Result> {
+      const fVal = formFilter.value;
+      const sVal = statusFilter.value;
+      const onlyCap = capOnly.checked;
+      const onlyEu = euOnly.checked;
+      const matchesFilters = (row: OrgRow) =>
+        (!fVal || row.form === fVal)
+        && (!sVal || row.status === sVal)
+        && (!onlyCap || row.capHaler !== null)
+        && (!onlyEu || row.euCount > 0);
+
+      if (isIco(value)) {
+        const ico = padIco(value);
+        const pfx = ico[0];
+        if (!manifest.shards.ids[pfx]) return { total: 0, organizations: [] };
+        const org = (await loadIds(pfx)).find((o) => o.ico === ico);
+        if (!org) return { total: 0, organizations: [] };
+        return matchesFilters(org) ? { total: 1, organizations: [org] } : { total: 0, organizations: [] };
+      }
+
+      const query = normalizeFinancialName(value);
+      if (query.length < 2) throw new Error('Enter at least two characters of a name or an exact 8-digit IČO.');
+      const queries = [query];
+      const hasPrefix =
+        query.startsWith('spolek ') ||
+        query.startsWith('nadace ') ||
+        query.startsWith('nadacni fond ') ||
+        query.startsWith('ustav ');
+      if (!hasPrefix) {
+        queries.push(`spolek ${query}`, `nadace ${query}`, `nadacni fond ${query}`, `ustav ${query}`);
+      }
+      const buckets = [...new Set(queries.map(bucketFor))].filter((b) => Boolean(manifest.shards.names[b]));
+      const organizations: OrgRow[] = [];
+      const seen = new Set<string>();
+      let total = 0;
+      for (const bucket of buckets) {
+        for (const row of await loadNames(bucket)) {
+          if (seen.has(row.ico) || !matchesFilters(row)) continue;
+          const normName = normalizeFinancialName(row.name);
+          if (!queries.some((q) => normName.startsWith(q)) && !normName.includes(query)) continue;
+          seen.add(row.ico);
+          total++;
+          if (organizations.length < limit) organizations.push(row);
+        }
+      }
+      return { total, organizations };
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      submit.disabled = true;
+      statusEl.textContent = 'Checking the Czechia nonprofit Public Register snapshot.';
+      try {
+        const matches = await search(input.value);
+        if (ticket !== sequence) return;
+        found = matches;
+        statusEl.textContent = matches.total
+          ? `${matches.total.toLocaleString('en-US')} ${matches.total === 1 ? 'match' : 'matches'}. Showing ${matches.organizations.length}.`
+          : 'No matching Czech nonprofit in this snapshot. Try a Czech name (diacritics optional) or an exact 8-digit IČO.';
+        results.append(...matches.organizations.map(card));
+        jsonBtn.disabled = csvBtn.disabled = !matches.organizations.length;
+      } catch (error) {
+        if (ticket === sequence) statusEl.textContent = error instanceof Error ? error.message : 'The organization search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    formEl.addEventListener('submit', (event) => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      formFilter.value = statusFilter.value = '';
+      capOnly.checked = euOnly.checked = false;
+      statusEl.textContent = 'Search cleared.';
+      input.focus();
+    });
+
+    const { format, capturedOn, publisher } = manifest;
+    jsonBtn.addEventListener('click', () => {
+      if (!found) return;
+      download('czechia-nonprofit-organizations.json', JSON.stringify({
+        format, capturedOn, publisher,
+        total: found.total, organizations: found.organizations,
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      if (!found) return;
+      const rows = found.organizations.map((o) => ({
+        ico: o.ico,
+        name: financialCsvName(o.name),
+        form: o.form,
+        status: o.status,
+        court: o.court,
+        regDate: o.regDate ?? '',
+        delDate: o.delDate ?? '',
+        municipality: o.muni,
+        district: o.district,
+        registeredCapitalCzk: o.capHaler === null ? '' : (o.capHaler / 100).toFixed(2),
+        euProjects2021to2027: o.euCount,
+        euCostCzk: (o.euCostHaler / 100).toFixed(2),
+        euSupportCzk: (o.euSupportHaler / 100).toFixed(2),
+        euPaidEligibleCzk: (o.euPaidHaler / 100).toFixed(2),
+        capturedOn,
+        publisher,
+      }));
+      download('czechia-nonprofit-organizations.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const triggerId = (id: string | null) => {
+      if (!id || !isIco(id)) return;
+      input.value = padIco(id);
+      formFilter.value = statusFilter.value = '';
+      capOnly.checked = euOnly.checked = false;
+      void runSearch();
+    };
+    const initial = new URLSearchParams(location.search).get('ico') ?? /^#q=([0-9]{7,8})$/.exec(location.hash)?.[1] ?? null;
+    triggerId(initial);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{7,8})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-cz]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupCz ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+</script>

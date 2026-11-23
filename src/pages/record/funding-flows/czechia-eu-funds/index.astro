@@ -1,0 +1,378 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/czechia-eu-funds/manifest.json';
+import registryManifest from '../../../../../public/data/charity-registry/czechia/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Czechia EU Cohesion Policy 2021–2027 grants for nonprofits';
+const asset = '/data/funding-flows/czechia-eu-funds/';
+const registryRoute = '/record/charity-index/czechia/';
+const count = (value: number) => value.toLocaleString('en-US');
+const czkB = (haler: number) =>
+  `CZK ${(haler / 100_000_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}B`;
+const czkM = (haler: number) =>
+  `CZK ${(haler / 100_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}M`;
+const pct = (part: number, whole: number) => `${((part * 100) / whole).toFixed(1)}%`;
+
+const sources = [
+  { title: 'Seznam operací (List of Operations) 2021–2027 (generated 2026-11-01)', publisher: manifest.publisher, url: manifest.catalogue },
+  { title: 'Public Registers Open Data (Veřejný rejstřík — 42 court dumps across 6 nonprofit forms)', publisher: 'Ministry of Justice of the Czech Republic (Ministerstvo spravedlnosti ČR)', url: registryManifest.catalogues.justiceVr },
+];
+
+const formOrder = ['spolek', 'ops', 'ustav', 'pobspolek', 'nadf', 'nad'] as const;
+const fundEntries = Object.entries(manifest.counts.byFund).sort((a, b) => b[1].costHaler - a[1].costHaler);
+const singleRegions = Object.entries(manifest.counts.byRegion)
+  .filter(([name]) => !name.includes(';') && name !== 'Unspecified')
+  .sort((a, b) => b[1].costHaler - a[1].costHaler);
+
+const totalCapHaler = registryManifest.counts.totalRegisteredCapitalHaler;
+const capByForm = registryManifest.counts.registeredCapitalHalerByForm as Record<string, number>;
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Czechia"
+  summary="Search 3,906 Czech nonprofit EU Cohesion Policy 2021–2027 operations totaling CZK 23.83B (CZK 17.85B EU support / CZK 11.89B paid) and inspect why legacy public benefit companies (o.p.s.) deliver 26.1% while endowed foundations hold 98.4% of statutory capital yet take 0.6% of EU grants."
+  filePath="src/pages/record/funding-flows/czechia-eu-funds/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Czechia EU funds'}]}
+  sources={sources}>
+  <p>Deduplicating all <strong>{count(manifest.counts.rawExcelRowsScanned)} raw rows</strong> in the Czech Ministry for Regional Development’s November 1, 2026 <em>Seznam operací 2021–2027</em> (collapsing {count(manifest.counts.duplicateProcurementRowsCollapsed)} repeated public-procurement sub-rows across {count(manifest.counts.multiProcurementOperationsDeduplicated)} operations into <strong>{count(manifest.counts.uniqueOperationsTotal)} unique EU projects</strong>) and joining by exact 8-digit <em>IČO</em> to the Ministry of Justice’s six nonprofit registers identifies <strong>{count(manifest.counts.nonprofitProjects)} nonprofit operations</strong> across <strong>{count(manifest.counts.distinctNonprofitRecipients)} distinct Czech nonprofits</strong>. Total project costs reach <strong>{czkB(manifest.counts.totalCostHaler)}</strong>, including <strong>{czkB(manifest.counts.totalEuSupportHaler)}</strong> in EU Union support, <strong>{czkB(manifest.counts.totalNatPublicHaler)}</strong> in Czech public co-financing, <strong>{czkB(manifest.counts.totalPrivateHaler)}</strong> in private co-financing, and <strong>{czkB(manifest.counts.totalPaidEligibleHaler)}</strong> already charged in payment applications.</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search Czechia’s full 6-form nonprofit Public Register &amp; foundation endowments ({count(registryManifest.counts.includedOrganizations)} organizations)</a>.</p>
+
+  <section class="charity-financial-search" data-cz-eu
+    data-projects={url(asset + manifest.artifacts.projects.path)}
+    data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="cz-eu-heading">
+    <h2 id="cz-eu-heading">Search Czech nonprofit EU Cohesion projects</h2>
+    <p id="cz-eu-hint">Enter an organization name, project title, operation number or exact 8-digit <em>IČO</em> (e.g., <code>25755277</code>, <code>clovek v tisni</code>, <code>armada spasy</code> or <code>potravinovych bank</code>). Search loads {(manifest.artifacts.projects.bytes / 1_000).toFixed(1)} KB of compressed DotaceEU records locally in your browser.</p>
+    <form aria-describedby="cz-eu-hint">
+      <label for="cz-eu-query">Organization name, project title, operation ID or 8-digit IČO</label>
+      <div class="finance-actions">
+        <input id="cz-eu-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="cz-eu-fund">EU Fund</label>
+          <select id="cz-eu-fund" disabled>
+            <option value="">All 6 funds ({count(manifest.counts.nonprofitProjects)})</option>
+            {fundEntries.map(([code, info]) => (
+              <option value={code}>{code} ({count(info.projects)})</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="cz-eu-form">Legal form</label>
+          <select id="cz-eu-form" disabled>
+            <option value="">All 6 forms</option>
+            {formOrder.map((code) => (
+              <option value={code}>{manifest.counts.byForm[code].label} ({count(manifest.counts.byForm[code].projects)})</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="cz-eu-region">NUTS 3 Region</label>
+          <select id="cz-eu-region" disabled>
+            <option value="">All regions</option>
+            {singleRegions.map(([regName, info]) => (
+              <option value={regName}>{regName} ({count(info.projects)})</option>
+            ))}
+          </select>
+        </span>
+        <button class="btn" type="submit" disabled>Search EU projects</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the Czechia DotaceEU nonprofit project index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed rows as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed rows as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="endowmentVault" aria-label="Czechia EU Cohesion project results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'funds-summary.csv')} download>EU fund summary CSV</a> or inspect official files at <a href={manifest.catalogue}>dotaceeu.cz</a>.</p></noscript>
+  </section>
+
+  <h2 id="capital-vs-grants">The Czech paradox: endowed foundations vs. frontline delivery nonprofits</h2>
+  <p>Cross-joining Czechia’s statutory court registers with DotaceEU reveals the exact inverse of <a href={url('/record/funding-flows/estonia-eu-funds/')}>Estonia</a> and <a href={url('/record/funding-flows/latvia-eu-funds/')}>Latvia</a>. In Czechia, foundations (<em>Nadace</em>) and endowment funds (<em>Nadační fond</em>) hold <strong>{czkB((capByForm.nad ?? 0) + (capByForm.nadf ?? 0))} ({pct((capByForm.nad ?? 0) + (capByForm.nadf ?? 0), totalCapHaler)})</strong> of all registered statutory nonprofit capital, yet represent only <strong>{pct(manifest.counts.byForm.nad.costHaler + manifest.counts.byForm.nadf.costHaler, manifest.counts.totalCostHaler)}</strong> ({czkM(manifest.counts.byForm.nad.costHaler + manifest.counts.byForm.nadf.costHaler)} across 25 projects) of nonprofit EU Cohesion funding. By contrast, legacy public benefit companies (<em>o.p.s.</em> — closed to new registrations since the 2014 Civil Code and just <strong>1.8%</strong> of registered nonprofits) deliver <strong>{pct(manifest.counts.byForm.ops.costHaler, manifest.counts.totalCostHaler)} ({czkB(manifest.counts.byForm.ops.costHaler)})</strong> across 1,009 operations, while associations (<em>Spolek</em>) deliver <strong>{pct(manifest.counts.byForm.spolek.costHaler, manifest.counts.totalCostHaler)} ({czkB(manifest.counts.byForm.spolek.costHaler)})</strong> — heavily concentrated in <strong>ESF+ ({pct(manifest.counts.byFund['ESF+'].costHaler, manifest.counts.totalCostHaler)})</strong> for social inclusion, employment, food banks and integration.</p>
+
+  <div class="table-wrap" role="region" aria-label="Czechia nonprofit EU grants and statutory capital by legal form" tabindex="0">
+    <table class="data cz-table">
+      <caption>Statutory nonprofit universe, declared CZK capital and EU 2021–2027 grants by legal form</caption>
+      <thead>
+        <tr>
+          <th scope="col">Legal form</th>
+          <th scope="col">Registered orgs</th>
+          <th scope="col">Declared CZK capital</th>
+          <th scope="col">EU recipients</th>
+          <th scope="col">EU projects</th>
+          <th scope="col">EU total cost</th>
+          <th scope="col">EU share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {formOrder.map((code) => {
+          const f = manifest.counts.byForm[code];
+          const orgCount = (registryManifest.counts.byForm as Record<string, number>)[code] ?? 0;
+          const cap = capByForm[code] ?? 0;
+          return (
+            <tr>
+              <th scope="row">{f.label}</th>
+              <td>{count(orgCount)}</td>
+              <td>{cap > 0 ? czkM(cap) : '—'}</td>
+              <td>{count(f.distinctOrgs)}</td>
+              <td>{count(f.projects)}</td>
+              <td>{czkM(f.costHaler)}</td>
+              <td>{pct(f.costHaler, manifest.counts.totalCostHaler)}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Top 20 Czech nonprofit EU Cohesion recipients" tabindex="0">
+    <table class="data cz-table">
+      <caption>Top 20 Czech nonprofit beneficiaries in DotaceEU 2021–2027 (as of 2026-11-01)</caption>
+      <thead>
+        <tr>
+          <th scope="col">IČO</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Form</th>
+          <th scope="col">Projects</th>
+          <th scope="col">EU support</th>
+          <th scope="col">Total cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.counts.topRecipients.map((item) => (
+          <tr data-ico={item.ico}>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-cz-eu={item.ico}><code>{item.ico}</code></button></td>
+            <th scope="row"><span lang="cs">{item.name}</span> · <a href={url(`${registryRoute}?ico=${item.ico}`)}>registry</a></th>
+            <td>{item.form}</td>
+            <td>{count(item.projects)}</td>
+            <td>{czkM(item.euHaler)}</td>
+            <td>{czkM(item.costHaler)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="funds">Funding instruments and disbursement progress</h2>
+  <div class="table-wrap" role="region" aria-label="Czechia nonprofit EU grants by fund" tabindex="0">
+    <table class="data cz-table">
+      <caption>Nonprofit 2021–2027 operations by EU fund (deduplicated by registration number)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Fund</th>
+          <th scope="col">Recipients</th>
+          <th scope="col">Projects</th>
+          <th scope="col">Total cost</th>
+          <th scope="col">EU Union support</th>
+          <th scope="col">Paid in claims</th>
+        </tr>
+      </thead>
+      <tbody>
+        {fundEntries.map(([code, info]) => (
+          <tr>
+            <th scope="row">{code} — {info.fundName}</th>
+            <td>{count(info.distinctOrgs)}</td>
+            <td>{count(info.projects)}</td>
+            <td>{czkM(info.costHaler)}</td>
+            <td>{czkM(info.euHaler)}</td>
+            <td>{czkM(info.paidEligibleHaler)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads, deduplication and provenance</h2>
+  <p>Source: Ministry for Regional Development of the Czech Republic (<em>Ministerstvo pro místní rozvoj ČR</em>) <code>2026_11_Seznam-operaci_List-of-Operations_21.xlsx</code> (generated <time datetime={manifest.asOf}>{manifest.asOf}</time>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>). Because the raw spreadsheet outputs one row per public procurement contract while repeating project-level CZK totals, the deterministic builder deduplicates by unique operation registration number (collapsing {count(manifest.counts.duplicateProcurementRowsCollapsed)} repeated procurement rows) before summing. One operation labeled with a Czech nonprofit legal form lacked a Czech <em>IČO</em> (a cross-border Polish foundation) and is documented in <code>anomalies.json</code>.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.artifacts.projects.path)} download>Download all {count(manifest.counts.nonprofitProjects)} nonprofit EU projects (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'funds-summary.csv')} download>Download EU fund summary (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download deduplication &amp; anomalies notes (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .cz-table { min-inline-size: 42rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName, normalizeFinancialName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+
+  type ProjectRow = {
+    id: string;
+    ico: string;
+    orgName: string;
+    form: string;
+    orgStatus: string;
+    title: string;
+    progCode: string;
+    prog: string;
+    fund: string;
+    region: string;
+    statusCode: string;
+    status: string;
+    signed: string | null;
+    start: string | null;
+    end: string | null;
+    interv: string;
+    costHaler: number;
+    eligibleHaler: number;
+    euHaler: number;
+    natPubHaler: number;
+    privHaler: number;
+    paidEligibleHaler: number;
+    paidEuHaler: number;
+  };
+  type Manifest = typeof import('../../../../../public/data/funding-flows/czechia-eu-funds/manifest.json');
+
+  const stripDigits = (value: string) => value.replace(/[\s.-]+/g, '');
+  const padIco = (value: string) => stripDigits(value).padStart(8, '0');
+  const fmtCzk = (haler: number) =>
+    `CZK ${(haler / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-cz-eu]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const registryBase = root.dataset.registry!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#cz-eu-query', form);
+    const fundSelect = $<HTMLSelectElement>('#cz-eu-fund', form);
+    const formSelect = $<HTMLSelectElement>('#cz-eu-form', form);
+    const regionSelect = $<HTMLSelectElement>('#cz-eu-region', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+
+    let projPromise: Promise<ProjectRow[]> | undefined;
+    let displayed: ProjectRow[] = [];
+    let sequence = 0;
+    const limit = 50;
+    input.disabled = fundSelect.disabled = formSelect.disabled = regionSelect.disabled = submit.disabled = clear.disabled = false;
+
+    const loadProjects = () => {
+      projPromise ??= loadVerifiedJson(root.dataset.projects!, manifest.artifacts.projects)
+        .then((rows) => rows as ProjectRow[])
+        .catch((err) => { projPromise = undefined; throw err; });
+      return projPromise;
+    };
+
+    const reset = () => {
+      displayed = [];
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    function card(p: ProjectRow) {
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, p.id), ' ', h('span', { lang: 'cs' }, p.title)),
+        h('p', {},
+          h('span', { class: 'identity-code' }, p.ico), ' ', h('span', { lang: 'cs' }, p.orgName),
+          ` · ${p.form} · ${p.fund} · ${p.status}`),
+        h('p', { class: 'note' },
+          `Total cost: ${fmtCzk(p.costHaler)} · EU support: ${fmtCzk(p.euHaler)} · Paid in claims: ${fmtCzk(p.paidEligibleHaler)} · ${p.start ?? '?'}–${p.end ?? '?'}`),
+        h('p', { class: 'note' },
+          `Programme: ${p.prog} · Region: ${p.region || 'unspecified'} · `,
+          h('a', { href: `${registryBase}?ico=${p.ico}` }, 'Inspect Czechia registry record')),
+      );
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compact = stripDigits(raw);
+      const isId = /^[0-9]{7,8}$/.test(compact);
+      const paddedId = isId ? padIco(compact) : '';
+      const q = normalizeFinancialName(raw);
+      const fndVal = fundSelect.value;
+      const fmVal = formSelect.value;
+      const regVal = regionSelect.value;
+      try {
+        if (raw && !isId && q.length < 2) throw new Error('Enter at least two characters or an exact 8-digit IČO.');
+        submit.disabled = true;
+        status.textContent = 'Checking Czechia DotaceEU 2021–2027 nonprofit projects.';
+        const rows = await loadProjects();
+        if (ticket !== sequence) return;
+        const matches = rows.filter((p) => {
+          if (fndVal && p.fund !== fndVal) return false;
+          if (fmVal && p.form !== fmVal) return false;
+          if (regVal && !p.region.split(';').map((s) => s.trim()).includes(regVal)) return false;
+          if (!raw) return true;
+          if (isId) return p.ico === paddedId;
+          return normalizeFinancialName(p.orgName).includes(q)
+            || normalizeFinancialName(p.title).includes(q)
+            || p.id.toLowerCase().includes(raw.toLowerCase());
+        });
+        displayed = matches.slice(0, limit);
+        status.textContent = matches.length
+          ? `${matches.length.toLocaleString('en-US')} nonprofit EU ${matches.length === 1 ? 'project' : 'projects'} matched. Showing ${displayed.length}.`
+          : 'No matching nonprofit EU projects in this snapshot.';
+        results.append(...displayed.map(card));
+        jsonBtn.disabled = csvBtn.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The EU project search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    form.addEventListener('submit', (event) => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      fundSelect.value = formSelect.value = regionSelect.value = '';
+      status.textContent = 'Search cleared.';
+      if (/^#q=[0-9]{7,8}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#cz-eu-heading');
+      }
+      input.focus();
+    });
+
+    const { format, capturedOn, asOf, publisher } = manifest;
+    const toObj = (p: ProjectRow) => ({
+      operationId: p.id, fund: p.fund, programme: p.prog, status: p.status,
+      ico: p.ico, orgName: p.orgName, form: p.form, title: p.title,
+      region: p.region, startDate: p.start ?? '', endDate: p.end ?? '',
+      totalCostCzk: (p.costHaler / 100).toFixed(2),
+      euSupportCzk: (p.euHaler / 100).toFixed(2),
+      paidEligibleCzk: (p.paidEligibleHaler / 100).toFixed(2),
+    });
+
+    jsonBtn.addEventListener('click', () => {
+      download('czechia-eu-funds-projects.json', JSON.stringify({
+        format, capturedOn, asOf, publisher, projects: displayed.map(toObj),
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      const rows = displayed.map((p) => {
+        const o = toObj(p);
+        return { ...o, orgName: financialCsvName(o.orgName), title: financialCsvName(o.title), capturedOn, asOf, publisher };
+      });
+      if (rows.length) download('czechia-eu-funds-projects.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const triggerId = (id: string | null) => {
+      if (!id || !/^[0-9]{7,8}$/.test(stripDigits(id))) return;
+      input.value = padIco(id);
+      fundSelect.value = formSelect.value = regionSelect.value = '';
+      void runSearch();
+    };
+    const initial = new URLSearchParams(location.search).get('ico') ?? /^#q=([0-9]{7,8})$/.exec(location.hash)?.[1] ?? null;
+    triggerId(initial);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{7,8})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-cz-eu]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupCzEu ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+</script>

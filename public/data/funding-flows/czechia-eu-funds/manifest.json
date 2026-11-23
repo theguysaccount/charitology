@@ -1,0 +1,1577 @@
+{
+  "artifacts": {
+    "anomalies": "anomalies.json",
+    "fundsSummaryCsv": "funds-summary.csv",
+    "projects": {
+      "bytes": 401090,
+      "decodedBytes": 2921535,
+      "decodedSha256": "e9da9d0b2dbc4b73748967017236175a8203232717ffbecceacdcbecb827c8c5",
+      "path": "projects.json.gz",
+      "rows": 3906,
+      "sha256": "4994c80c0f10b9531e93a5105e924c167eb0c558d25c401433e2d0aaee57347a"
+    }
+  },
+  "asOf": "2026-11-01",
+  "capturedOn": "2026-11-22",
+  "catalogue": "https://www.dotaceeu.cz/cs/statistiky-a-analyzy/seznam-operaci-(prijemcu)",
+  "counts": {
+    "byForm": {
+      "nad": {
+        "costHaler": 4272831891,
+        "distinctOrgs": 2,
+        "eligibleHaler": 2272831892,
+        "euHaler": 1800103978,
+        "label": "Nadace (Foundation)",
+        "natPubHaler": 101598909,
+        "paidEligibleHaler": 1716543174,
+        "paidEuHaler": 1373234540,
+        "privHaler": 371129005,
+        "projects": 3
+      },
+      "nadf": {
+        "costHaler": 10095405173,
+        "distinctOrgs": 11,
+        "eligibleHaler": 9084852904,
+        "euHaler": 7064335623,
+        "label": "Nadační fond (Endowment Fund)",
+        "natPubHaler": 1549837563,
+        "paidEligibleHaler": 3537971900,
+        "paidEuHaler": 2782648786,
+        "privHaler": 470679718,
+        "projects": 22
+      },
+      "ops": {
+        "costHaler": 622970513165,
+        "distinctOrgs": 303,
+        "eligibleHaler": 618916288569,
+        "euHaler": 470609860713,
+        "label": "Obecně prospěšná společnost (Public Benefit Company)",
+        "natPubHaler": 124756576251,
+        "paidEligibleHaler": 327994539809,
+        "paidEuHaler": 247237551553,
+        "privHaler": 23549851605,
+        "projects": 1009
+      },
+      "pobspolek": {
+        "costHaler": 80439444281,
+        "distinctOrgs": 103,
+        "eligibleHaler": 79114471731,
+        "euHaler": 59289524415,
+        "label": "Pobočný spolek (Branch Association)",
+        "natPubHaler": 7914152230,
+        "paidEligibleHaler": 30530423079,
+        "paidEuHaler": 22056668635,
+        "privHaler": 11910795086,
+        "projects": 171
+      },
+      "spolek": {
+        "costHaler": 1355430253274,
+        "distinctOrgs": 1068,
+        "eligibleHaler": 1345875012059,
+        "euHaler": 1009470687449,
+        "label": "Spolek (Association)",
+        "natPubHaler": 239629086938,
+        "paidEligibleHaler": 676163223726,
+        "paidEuHaler": 503211364192,
+        "privHaler": 96775237672,
+        "projects": 2310
+      },
+      "ustav": {
+        "costHaler": 309558345435,
+        "distinctOrgs": 182,
+        "eligibleHaler": 308153983846,
+        "euHaler": 236816374036,
+        "label": "Ústav (Institute)",
+        "natPubHaler": 58693066482,
+        "paidEligibleHaler": 148602909937,
+        "paidEuHaler": 112703476868,
+        "privHaler": 12644543328,
+        "projects": 391
+      }
+    },
+    "byFund": {
+      "AMIF": {
+        "costHaler": 77560176975,
+        "distinctOrgs": 21,
+        "euHaler": 68575446824,
+        "fundName": "Azylový, migrační a integrační fond (AMIF)",
+        "paidEligibleHaler": 36265813532,
+        "projects": 44
+      },
+      "CF": {
+        "costHaler": 229983195760,
+        "distinctOrgs": 220,
+        "euHaler": 159091617616,
+        "fundName": "Fond soudržnosti (FS)",
+        "paidEligibleHaler": 128216653932,
+        "projects": 491
+      },
+      "EMFAF": {
+        "costHaler": 11796315865,
+        "distinctOrgs": 61,
+        "euHaler": 4450001341,
+        "fundName": "Evropský námořní, rybářský a akvakulturní fond (ENRAF)",
+        "paidEligibleHaler": 6184983343,
+        "projects": 91
+      },
+      "ERDF": {
+        "costHaler": 334793396914,
+        "distinctOrgs": 194,
+        "euHaler": 234394377844,
+        "fundName": "Evropský fond regionálního rozvoje (EFRR)",
+        "paidEligibleHaler": 171208880748,
+        "projects": 275
+      },
+      "ESF+": {
+        "costHaler": 1658799722666,
+        "distinctOrgs": 1378,
+        "euHaler": 1260065627553,
+        "fundName": "Evropský sociální fond plus(ESF+)",
+        "paidEligibleHaler": 822265495697,
+        "projects": 2921
+      },
+      "JTF": {
+        "costHaler": 69833985039,
+        "distinctOrgs": 70,
+        "euHaler": 58473815036,
+        "fundName": "Fond pro spravedlivou transformaci (FST)",
+        "paidEligibleHaler": 24403784373,
+        "projects": 84
+      }
+    },
+    "byProgram": {
+      "01": {
+        "costHaler": 82881143611,
+        "distinctOrgs": 31,
+        "euHaler": 48533728272,
+        "paidEligibleHaler": 32557089222,
+        "programCode": "01",
+        "programName": "Operační program Technologie a aplikace pro konkurenceschopnost",
+        "projects": 61
+      },
+      "02": {
+        "costHaler": 300553422141,
+        "distinctOrgs": 539,
+        "euHaler": 225269468553,
+        "paidEligibleHaler": 177258191630,
+        "programCode": "02",
+        "programName": "Operační program Jan Amos Komenský",
+        "projects": 780
+      },
+      "03": {
+        "costHaler": 1429975240671,
+        "distinctOrgs": 1002,
+        "euHaler": 1084532091689,
+        "paidEligibleHaler": 677861030349,
+        "programCode": "03",
+        "programName": "Operační program Zaměstnanost plus",
+        "projects": 2146
+      },
+      "05": {
+        "costHaler": 65259274581,
+        "distinctOrgs": 48,
+        "euHaler": 53637181012,
+        "paidEligibleHaler": 25683440173,
+        "programCode": "05",
+        "programName": "Operační program Životní prostředí 2021—2027",
+        "projects": 58
+      },
+      "06": {
+        "costHaler": 168150754501,
+        "distinctOrgs": 137,
+        "euHaler": 126329134475,
+        "paidEligibleHaler": 100872336748,
+        "programCode": "06",
+        "programName": "Integrovaný regionální operační program",
+        "projects": 187
+      },
+      "07": {
+        "costHaler": 175682085023,
+        "distinctOrgs": 185,
+        "euHaler": 114390503169,
+        "paidEligibleHaler": 107458942255,
+        "programCode": "07",
+        "programName": "Operační program Technická pomoc 2021 - 2027",
+        "projects": 445
+      },
+      "08": {
+        "costHaler": 11796315865,
+        "distinctOrgs": 61,
+        "euHaler": 4450001341,
+        "paidEligibleHaler": 6184983343,
+        "programCode": "08",
+        "programName": "Operační program Rybářství 2021–2027",
+        "projects": 91
+      },
+      "10": {
+        "costHaler": 69833985039,
+        "distinctOrgs": 70,
+        "euHaler": 58473815036,
+        "paidEligibleHaler": 24403784373,
+        "programCode": "10",
+        "programName": "Operační program Spravedlivá transformace 2021–2027",
+        "projects": 84
+      },
+      "11": {
+        "costHaler": 1074394812,
+        "distinctOrgs": 10,
+        "euHaler": 859515843,
+        "paidEligibleHaler": 0,
+        "programCode": "11",
+        "programName": "Program Interreg Česko - Polsko",
+        "projects": 10
+      },
+      "12": {
+        "costHaler": 77560176975,
+        "distinctOrgs": 21,
+        "euHaler": 68575446824,
+        "paidEligibleHaler": 36265813532,
+        "programCode": "12",
+        "programName": "Operační program Azylového, migračního a integračního fondu",
+        "projects": 44
+      }
+    },
+    "byRegion": {
+      "Hlavní město Praha": {
+        "costHaler": 154692948414,
+        "distinctOrgs": 182,
+        "euHaler": 117069221087,
+        "projects": 303
+      },
+      "Hlavní město Praha; Jihomoravský kraj": {
+        "costHaler": 4656794893,
+        "distinctOrgs": 5,
+        "euHaler": 4064505667,
+        "projects": 6
+      },
+      "Hlavní město Praha; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 69723055776,
+        "distinctOrgs": 1,
+        "euHaler": 48283216125,
+        "projects": 1
+      },
+      "Hlavní město Praha; Jihočeský kraj": {
+        "costHaler": 100508400,
+        "distinctOrgs": 1,
+        "euHaler": 77125121,
+        "projects": 1
+      },
+      "Hlavní město Praha; Jihočeský kraj; Karlovarský kraj; Královéhradecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 482440000,
+        "distinctOrgs": 1,
+        "euHaler": 370200334,
+        "projects": 1
+      },
+      "Hlavní město Praha; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 1244073630,
+        "distinctOrgs": 1,
+        "euHaler": 1181869948,
+        "projects": 1
+      },
+      "Hlavní město Praha; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 1062706600,
+        "distinctOrgs": 2,
+        "euHaler": 815467910,
+        "projects": 2
+      },
+      "Hlavní město Praha; Jihočeský kraj; Ústecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 532404125,
+        "distinctOrgs": 1,
+        "euHaler": 408540305,
+        "projects": 1
+      },
+      "Hlavní město Praha; Karlovarský kraj": {
+        "costHaler": 498348368,
+        "distinctOrgs": 1,
+        "euHaler": 382407620,
+        "projects": 1
+      },
+      "Hlavní město Praha; Karlovarský kraj; Pardubický kraj; Olomoucký kraj": {
+        "costHaler": 999999875,
+        "distinctOrgs": 1,
+        "euHaler": 949999881,
+        "projects": 1
+      },
+      "Hlavní město Praha; Královéhradecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 239905540,
+        "distinctOrgs": 1,
+        "euHaler": 227910263,
+        "projects": 1
+      },
+      "Hlavní město Praha; Královéhradecký kraj; Jihomoravský kraj; Olomoucký kraj": {
+        "costHaler": 1249420320,
+        "distinctOrgs": 1,
+        "euHaler": 1186949305,
+        "projects": 1
+      },
+      "Hlavní město Praha; Královéhradecký kraj; Olomoucký kraj": {
+        "costHaler": 349426000,
+        "distinctOrgs": 1,
+        "euHaler": 331954700,
+        "projects": 1
+      },
+      "Hlavní město Praha; Královéhradecký kraj; Pardubický kraj; Jihomoravský kraj": {
+        "costHaler": 750979000,
+        "distinctOrgs": 1,
+        "euHaler": 576263736,
+        "projects": 1
+      },
+      "Hlavní město Praha; Královéhradecký kraj; Zlínský kraj": {
+        "costHaler": 635802600,
+        "distinctOrgs": 1,
+        "euHaler": 487883125,
+        "projects": 1
+      },
+      "Hlavní město Praha; Moravskoslezský kraj": {
+        "costHaler": 1310151200,
+        "distinctOrgs": 3,
+        "euHaler": 1027959516,
+        "projects": 3
+      },
+      "Hlavní město Praha; Pardubický kraj": {
+        "costHaler": 1249901798,
+        "distinctOrgs": 1,
+        "euHaler": 1187406708,
+        "projects": 1
+      },
+      "Hlavní město Praha; Pardubický kraj; Kraj Vysočina": {
+        "costHaler": 967597120,
+        "distinctOrgs": 1,
+        "euHaler": 742485650,
+        "projects": 1
+      },
+      "Hlavní město Praha; Pardubický kraj; Zlínský kraj": {
+        "costHaler": 144875200,
+        "distinctOrgs": 1,
+        "euHaler": 111169986,
+        "projects": 1
+      },
+      "Hlavní město Praha; Plzeňský kraj": {
+        "costHaler": 969075375,
+        "distinctOrgs": 1,
+        "euHaler": 743619989,
+        "projects": 1
+      },
+      "Hlavní město Praha; Plzeňský kraj; Jihomoravský kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 244200000,
+        "distinctOrgs": 1,
+        "euHaler": 187386871,
+        "projects": 1
+      },
+      "Hlavní město Praha; Plzeňský kraj; Karlovarský kraj; Liberecký kraj": {
+        "costHaler": 799437145,
+        "distinctOrgs": 1,
+        "euHaler": 613448093,
+        "projects": 1
+      },
+      "Hlavní město Praha; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Královéhradecký kraj; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 126441000,
+        "distinctOrgs": 1,
+        "euHaler": 120118950,
+        "projects": 1
+      },
+      "Hlavní město Praha; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Olomoucký kraj": {
+        "costHaler": 1799844603,
+        "distinctOrgs": 1,
+        "euHaler": 1619860143,
+        "projects": 1
+      },
+      "Hlavní město Praha; Plzeňský kraj; Královéhradecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 2210689366,
+        "distinctOrgs": 1,
+        "euHaler": 1658017025,
+        "projects": 2
+      },
+      "Hlavní město Praha; Plzeňský kraj; Liberecký kraj; Kraj Vysočina; Jihomoravský kraj": {
+        "costHaler": 349831440,
+        "distinctOrgs": 1,
+        "euHaler": 332339867,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj": {
+        "costHaler": 25532553881,
+        "distinctOrgs": 31,
+        "euHaler": 19705475537,
+        "projects": 41
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 1951508855,
+        "distinctOrgs": 2,
+        "euHaler": 1671286612,
+        "projects": 2
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj": {
+        "costHaler": 37911200,
+        "distinctOrgs": 1,
+        "euHaler": 29091160,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 998749250,
+        "distinctOrgs": 1,
+        "euHaler": 766390237,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Karlovarský kraj; Královéhradecký kraj; Moravskoslezský kraj": {
+        "costHaler": 1182705563,
+        "distinctOrgs": 1,
+        "euHaler": 1064435007,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina": {
+        "costHaler": 449896980,
+        "distinctOrgs": 1,
+        "euHaler": 345228448,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Pardubický kraj; Moravskoslezský kraj": {
+        "costHaler": 1439606000,
+        "distinctOrgs": 1,
+        "euHaler": 1104681664,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj": {
+        "costHaler": 1253504740,
+        "distinctOrgs": 1,
+        "euHaler": 961876863,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 261200800,
+        "distinctOrgs": 1,
+        "euHaler": 200432433,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 1360291000,
+        "distinctOrgs": 1,
+        "euHaler": 1043819300,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj": {
+        "costHaler": 281606976,
+        "distinctOrgs": 1,
+        "euHaler": 216091113,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 884800000,
+        "distinctOrgs": 1,
+        "euHaler": 678951280,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina": {
+        "costHaler": 370340600,
+        "distinctOrgs": 1,
+        "euHaler": 284180859,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 254701496511,
+        "distinctOrgs": 194,
+        "euHaler": 200414820988,
+        "projects": 291
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 456376760,
+        "distinctOrgs": 1,
+        "euHaler": 350200706,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Královéhradecký kraj": {
+        "costHaler": 987696750,
+        "distinctOrgs": 1,
+        "euHaler": 757909101,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Královéhradecký kraj; Kraj Vysočina; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 195137200,
+        "distinctOrgs": 1,
+        "euHaler": 149738532,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 211705400,
+        "distinctOrgs": 1,
+        "euHaler": 162452139,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Liberecký kraj; Královéhradecký kraj": {
+        "costHaler": 991297440,
+        "distinctOrgs": 1,
+        "euHaler": 760672091,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Liberecký kraj; Královéhradecký kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 322339623,
+        "distinctOrgs": 1,
+        "euHaler": 247347310,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Pardubický kraj": {
+        "costHaler": 821325065,
+        "distinctOrgs": 1,
+        "euHaler": 630243789,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Ústecký kraj; Kraj Vysočina": {
+        "costHaler": 470209600,
+        "distinctOrgs": 1,
+        "euHaler": 360815337,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Ústecký kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 470836800,
+        "distinctOrgs": 1,
+        "euHaler": 361296618,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Ústecký kraj; Liberecký kraj; Kraj Vysočina; Jihomoravský kraj": {
+        "costHaler": 739143104,
+        "distinctOrgs": 1,
+        "euHaler": 567181461,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 473443936,
+        "distinctOrgs": 1,
+        "euHaler": 363297205,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Ústecký kraj; Liberecký kraj; Pardubický kraj; Jihomoravský kraj; Zlínský kraj": {
+        "costHaler": 147840000,
+        "distinctOrgs": 1,
+        "euHaler": 113445024,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Ústecký kraj; Pardubický kraj; Olomoucký kraj; Zlínský kraj": {
+        "costHaler": 229622400,
+        "distinctOrgs": 1,
+        "euHaler": 176200749,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Jihočeský kraj; Ústecký kraj; Pardubický kraj; Kraj Vysočina": {
+        "costHaler": 444400600,
+        "distinctOrgs": 1,
+        "euHaler": 341010800,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 1464807456,
+        "distinctOrgs": 2,
+        "euHaler": 1124020001,
+        "projects": 2
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Liberecký kraj": {
+        "costHaler": 475593750,
+        "distinctOrgs": 1,
+        "euHaler": 364946864,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Moravskoslezský kraj": {
+        "costHaler": 4247085798,
+        "distinctOrgs": 1,
+        "euHaler": 3302814600,
+        "projects": 6
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Ústecký kraj; Kraj Vysočina; Moravskoslezský kraj": {
+        "costHaler": 908708646,
+        "distinctOrgs": 1,
+        "euHaler": 697297580,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Ústecký kraj; Královéhradecký kraj; Pardubický kraj; Jihomoravský kraj": {
+        "costHaler": 1408323360,
+        "distinctOrgs": 1,
+        "euHaler": 1337907192,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj": {
+        "costHaler": 352438665,
+        "distinctOrgs": 1,
+        "euHaler": 270443810,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Kraj Vysočina; Moravskoslezský kraj": {
+        "costHaler": 788314515,
+        "distinctOrgs": 1,
+        "euHaler": 604913144,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Kraj Vysočina; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 229157040,
+        "distinctOrgs": 1,
+        "euHaler": 217699188,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina": {
+        "costHaler": 1116630707,
+        "distinctOrgs": 1,
+        "euHaler": 856846573,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina": {
+        "costHaler": 296115792,
+        "distinctOrgs": 1,
+        "euHaler": 227224453,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Liberecký kraj": {
+        "costHaler": 1044241800,
+        "distinctOrgs": 2,
+        "euHaler": 864554183,
+        "projects": 2
+      },
+      "Hlavní město Praha; Středočeský kraj; Moravskoslezský kraj": {
+        "costHaler": 4686931488,
+        "distinctOrgs": 1,
+        "euHaler": 3596516877,
+        "projects": 2
+      },
+      "Hlavní město Praha; Středočeský kraj; Pardubický kraj": {
+        "costHaler": 987251328,
+        "distinctOrgs": 1,
+        "euHaler": 757567306,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj": {
+        "costHaler": 1146029950,
+        "distinctOrgs": 2,
+        "euHaler": 879406082,
+        "projects": 2
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 149977800,
+        "distinctOrgs": 1,
+        "euHaler": 142478911,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Karlovarský kraj": {
+        "costHaler": 415998016,
+        "distinctOrgs": 1,
+        "euHaler": 319216078,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Karlovarský kraj; Liberecký kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 499870000,
+        "distinctOrgs": 1,
+        "euHaler": 383575245,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 393831200,
+        "distinctOrgs": 1,
+        "euHaler": 302206372,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Královéhradecký kraj; Pardubický kraj; Jihomoravský kraj; Zlínský kraj": {
+        "costHaler": 1105162500,
+        "distinctOrgs": 1,
+        "euHaler": 994646250,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj": {
+        "costHaler": 937283760,
+        "distinctOrgs": 1,
+        "euHaler": 719224693,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 386617392,
+        "distinctOrgs": 1,
+        "euHaler": 296670856,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Olomoucký kraj": {
+        "costHaler": 989207600,
+        "distinctOrgs": 1,
+        "euHaler": 759068452,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Jihomoravský kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 168000000,
+        "distinctOrgs": 1,
+        "euHaler": 128914800,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Ústecký kraj": {
+        "costHaler": 349722800,
+        "distinctOrgs": 1,
+        "euHaler": 332236659,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Ústecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 860531250,
+        "distinctOrgs": 1,
+        "euHaler": 660328655,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Plzeňský kraj; Ústecký kraj; Královéhradecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 848204000,
+        "distinctOrgs": 1,
+        "euHaler": 650869339,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Ústecký kraj": {
+        "costHaler": 3550511195,
+        "distinctOrgs": 3,
+        "euHaler": 3033367298,
+        "projects": 4
+      },
+      "Hlavní město Praha; Středočeský kraj; Ústecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 1459296000,
+        "distinctOrgs": 1,
+        "euHaler": 1386331200,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Ústecký kraj; Královéhradecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 499898000,
+        "distinctOrgs": 1,
+        "euHaler": 374923500,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Ústecký kraj; Liberecký kraj": {
+        "costHaler": 1599925800,
+        "distinctOrgs": 1,
+        "euHaler": 1227703063,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj": {
+        "costHaler": 411845840,
+        "distinctOrgs": 1,
+        "euHaler": 316029906,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Ústecký kraj; Moravskoslezský kraj": {
+        "costHaler": 1428739200,
+        "distinctOrgs": 1,
+        "euHaler": 1357302240,
+        "projects": 1
+      },
+      "Hlavní město Praha; Středočeský kraj; Ústecký kraj; Pardubický kraj": {
+        "costHaler": 599595000,
+        "distinctOrgs": 1,
+        "euHaler": 449696250,
+        "projects": 1
+      },
+      "Hlavní město Praha; Ústecký kraj": {
+        "costHaler": 1741890800,
+        "distinctOrgs": 3,
+        "euHaler": 1336639906,
+        "projects": 3
+      },
+      "Hlavní město Praha; Ústecký kraj; Jihomoravský kraj": {
+        "costHaler": 218682800,
+        "distinctOrgs": 1,
+        "euHaler": 207748660,
+        "projects": 1
+      },
+      "Hlavní město Praha; Ústecký kraj; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 982993312,
+        "distinctOrgs": 1,
+        "euHaler": 754299918,
+        "projects": 1
+      },
+      "Hlavní město Praha; Ústecký kraj; Královéhradecký kraj; Kraj Vysočina; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 1570406000,
+        "distinctOrgs": 1,
+        "euHaler": 1205051044,
+        "projects": 1
+      },
+      "Jihomoravský kraj": {
+        "costHaler": 210557091606,
+        "distinctOrgs": 175,
+        "euHaler": 156073873360,
+        "projects": 375
+      },
+      "Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 448477400,
+        "distinctOrgs": 1,
+        "euHaler": 344139134,
+        "projects": 1
+      },
+      "Jihomoravský kraj; Olomoucký kraj": {
+        "costHaler": 5413166061,
+        "distinctOrgs": 7,
+        "euHaler": 4153792975,
+        "projects": 10
+      },
+      "Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 461707230,
+        "distinctOrgs": 1,
+        "euHaler": 354291043,
+        "projects": 1
+      },
+      "Jihomoravský kraj; Olomoucký kraj; Zlínský kraj": {
+        "costHaler": 439734500,
+        "distinctOrgs": 1,
+        "euHaler": 337430269,
+        "projects": 1
+      },
+      "Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 4718517294,
+        "distinctOrgs": 7,
+        "euHaler": 3620754249,
+        "projects": 7
+      },
+      "Jihomoravský kraj; Zlínský kraj": {
+        "costHaler": 867406624,
+        "distinctOrgs": 2,
+        "euHaler": 665202258,
+        "projects": 2
+      },
+      "Jihočeský kraj": {
+        "costHaler": 110861421055,
+        "distinctOrgs": 97,
+        "euHaler": 80944082081,
+        "projects": 216
+      },
+      "Jihočeský kraj; Jihomoravský kraj": {
+        "costHaler": 999219508,
+        "distinctOrgs": 1,
+        "euHaler": 766751090,
+        "projects": 1
+      },
+      "Jihočeský kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 1496130048,
+        "distinctOrgs": 1,
+        "euHaler": 1148055392,
+        "projects": 1
+      },
+      "Jihočeský kraj; Karlovarský kraj; Jihomoravský kraj": {
+        "costHaler": 879279313,
+        "distinctOrgs": 1,
+        "euHaler": 674714981,
+        "projects": 1
+      },
+      "Jihočeský kraj; Karlovarský kraj; Ústecký kraj; Královéhradecký kraj": {
+        "costHaler": 633528000,
+        "distinctOrgs": 1,
+        "euHaler": 486137710,
+        "projects": 1
+      },
+      "Jihočeský kraj; Kraj Vysočina": {
+        "costHaler": 2188251130,
+        "distinctOrgs": 1,
+        "euHaler": 1679154504,
+        "projects": 3
+      },
+      "Jihočeský kraj; Kraj Vysočina; Jihomoravský kraj": {
+        "costHaler": 437150000,
+        "distinctOrgs": 1,
+        "euHaler": 335447053,
+        "projects": 1
+      },
+      "Jihočeský kraj; Kraj Vysočina; Olomoucký kraj": {
+        "costHaler": 888253660,
+        "distinctOrgs": 1,
+        "euHaler": 681601447,
+        "projects": 1
+      },
+      "Jihočeský kraj; Moravskoslezský kraj": {
+        "costHaler": 2960434400,
+        "distinctOrgs": 1,
+        "euHaler": 1523108160,
+        "projects": 2
+      },
+      "Jihočeský kraj; Plzeňský kraj": {
+        "costHaler": 58054400,
+        "distinctOrgs": 1,
+        "euHaler": 44548044,
+        "projects": 1
+      },
+      "Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 1010985219,
+        "distinctOrgs": 1,
+        "euHaler": 775779508,
+        "projects": 1
+      },
+      "Jihočeský kraj; Plzeňský kraj; Kraj Vysočina": {
+        "costHaler": 927837882,
+        "distinctOrgs": 1,
+        "euHaler": 711976399,
+        "projects": 2
+      },
+      "Jihočeský kraj; Plzeňský kraj; Ústecký kraj; Liberecký kraj; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 302624000,
+        "distinctOrgs": 1,
+        "euHaler": 232218526,
+        "projects": 1
+      },
+      "Jihočeský kraj; Plzeňský kraj; Ústecký kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 673472000,
+        "distinctOrgs": 1,
+        "euHaler": 516788740,
+        "projects": 1
+      },
+      "Karlovarský kraj": {
+        "costHaler": 59643278912,
+        "distinctOrgs": 59,
+        "euHaler": 43997482888,
+        "projects": 100
+      },
+      "Karlovarský kraj; Liberecký kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 1221025792,
+        "distinctOrgs": 1,
+        "euHaler": 1037871923,
+        "projects": 1
+      },
+      "Karlovarský kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 1451119237,
+        "distinctOrgs": 1,
+        "euHaler": 1233451352,
+        "projects": 1
+      },
+      "Karlovarský kraj; Ústecký kraj": {
+        "costHaler": 1954726451,
+        "distinctOrgs": 4,
+        "euHaler": 1521360380,
+        "projects": 4
+      },
+      "Karlovarský kraj; Ústecký kraj; Jihomoravský kraj": {
+        "costHaler": 348615680,
+        "distinctOrgs": 1,
+        "euHaler": 331184896,
+        "projects": 1
+      },
+      "Kraj Vysočina": {
+        "costHaler": 57757521109,
+        "distinctOrgs": 69,
+        "euHaler": 42466206929,
+        "projects": 148
+      },
+      "Kraj Vysočina; Jihomoravský kraj": {
+        "costHaler": 3332254273,
+        "distinctOrgs": 4,
+        "euHaler": 2557005319,
+        "projects": 6
+      },
+      "Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 370340600,
+        "distinctOrgs": 1,
+        "euHaler": 284180859,
+        "projects": 1
+      },
+      "Královéhradecký kraj": {
+        "costHaler": 78431649878,
+        "distinctOrgs": 78,
+        "euHaler": 59688261379,
+        "projects": 180
+      },
+      "Královéhradecký kraj; Jeleniogórski": {
+        "costHaler": 62957452,
+        "distinctOrgs": 1,
+        "euHaler": 50365961,
+        "projects": 1
+      },
+      "Královéhradecký kraj; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 871441125,
+        "distinctOrgs": 1,
+        "euHaler": 668700347,
+        "projects": 1
+      },
+      "Královéhradecký kraj; Pardubický kraj": {
+        "costHaler": 5455619788,
+        "distinctOrgs": 4,
+        "euHaler": 4186369845,
+        "projects": 7
+      },
+      "Královéhradecký kraj; Pardubický kraj; Jihomoravský kraj": {
+        "costHaler": 1028307800,
+        "distinctOrgs": 1,
+        "euHaler": 976892410,
+        "projects": 2
+      },
+      "Královéhradecký kraj; Wałbrzyski": {
+        "costHaler": 137936117,
+        "distinctOrgs": 3,
+        "euHaler": 110348891,
+        "projects": 3
+      },
+      "Liberecký kraj": {
+        "costHaler": 135536503707,
+        "distinctOrgs": 66,
+        "euHaler": 94792245018,
+        "projects": 157
+      },
+      "Liberecký kraj; Jeleniogórski": {
+        "costHaler": 136538752,
+        "distinctOrgs": 1,
+        "euHaler": 109231000,
+        "projects": 1
+      },
+      "Liberecký kraj; Jihomoravský kraj": {
+        "costHaler": 999678625,
+        "distinctOrgs": 1,
+        "euHaler": 949694693,
+        "projects": 1
+      },
+      "Liberecký kraj; Královéhradecký kraj": {
+        "costHaler": 2299998750,
+        "distinctOrgs": 1,
+        "euHaler": 1764904041,
+        "projects": 2
+      },
+      "Liberecký kraj; Královéhradecký kraj; Pardubický kraj": {
+        "costHaler": 2907299500,
+        "distinctOrgs": 1,
+        "euHaler": 1816873175,
+        "projects": 1
+      },
+      "Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Jihomoravský kraj; Olomoucký kraj; Moravskoslezský kraj; Jeleniogórski; Wałbrzyski; Nyski": {
+        "costHaler": 82968559,
+        "distinctOrgs": 1,
+        "euHaler": 66374847,
+        "projects": 1
+      },
+      "Liberecký kraj; Královéhradecký kraj; Wałbrzyski": {
+        "costHaler": 169404672,
+        "distinctOrgs": 1,
+        "euHaler": 135523737,
+        "projects": 1
+      },
+      "Liberecký kraj; Královéhradecký kraj; Zlínský kraj": {
+        "costHaler": 1272112128,
+        "distinctOrgs": 1,
+        "euHaler": 976155241,
+        "projects": 1
+      },
+      "Liberecký kraj; Pardubický kraj": {
+        "costHaler": 2810789350,
+        "distinctOrgs": 1,
+        "euHaler": 1756743344,
+        "projects": 1
+      },
+      "Liberecký kraj; Zlínský kraj": {
+        "costHaler": 2297039360,
+        "distinctOrgs": 1,
+        "euHaler": 1762633153,
+        "projects": 1
+      },
+      "Moravskoslezský kraj": {
+        "costHaler": 199927278346,
+        "distinctOrgs": 183,
+        "euHaler": 153259128789,
+        "projects": 372
+      },
+      "Moravskoslezský kraj; Bielski; Rybnicki": {
+        "costHaler": 267125000,
+        "distinctOrgs": 1,
+        "euHaler": 213700000,
+        "projects": 1
+      },
+      "Moravskoslezský kraj; Rybnicki": {
+        "costHaler": 195851024,
+        "distinctOrgs": 1,
+        "euHaler": 156680819,
+        "projects": 1
+      },
+      "Olomoucký kraj": {
+        "costHaler": 120366078365,
+        "distinctOrgs": 109,
+        "euHaler": 90875777943,
+        "projects": 236
+      },
+      "Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 5303095031,
+        "distinctOrgs": 6,
+        "euHaler": 4069329973,
+        "projects": 11
+      },
+      "Olomoucký kraj; Nyski; Opolski": {
+        "costHaler": 21613236,
+        "distinctOrgs": 1,
+        "euHaler": 17290588,
+        "projects": 1
+      },
+      "Olomoucký kraj; Zlínský kraj": {
+        "costHaler": 3605774285,
+        "distinctOrgs": 3,
+        "euHaler": 2766890897,
+        "projects": 4
+      },
+      "Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 2805932892,
+        "distinctOrgs": 2,
+        "euHaler": 2153132604,
+        "projects": 3
+      },
+      "Pardubický kraj": {
+        "costHaler": 91471082910,
+        "distinctOrgs": 63,
+        "euHaler": 67393562108,
+        "projects": 158
+      },
+      "Pardubický kraj; Jihomoravský kraj; Zlínský kraj": {
+        "costHaler": 999707520,
+        "distinctOrgs": 1,
+        "euHaler": 767125565,
+        "projects": 1
+      },
+      "Pardubický kraj; Olomoucký kraj; Moravskoslezský kraj": {
+        "costHaler": 573389400,
+        "distinctOrgs": 1,
+        "euHaler": 439990356,
+        "projects": 1
+      },
+      "Pardubický kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 606382048,
+        "distinctOrgs": 1,
+        "euHaler": 465307264,
+        "projects": 2
+      },
+      "Plzeňský kraj": {
+        "costHaler": 91687895661,
+        "distinctOrgs": 66,
+        "euHaler": 65023185458,
+        "projects": 167
+      },
+      "Plzeňský kraj; Jihomoravský kraj": {
+        "costHaler": 678375550,
+        "distinctOrgs": 2,
+        "euHaler": 520551478,
+        "projects": 2
+      },
+      "Plzeňský kraj; Karlovarský kraj": {
+        "costHaler": 3665962272,
+        "distinctOrgs": 2,
+        "euHaler": 2692134428,
+        "projects": 6
+      },
+      "Plzeňský kraj; Karlovarský kraj; Ústecký kraj": {
+        "costHaler": 915107800,
+        "distinctOrgs": 1,
+        "euHaler": 702207971,
+        "projects": 1
+      },
+      "Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj": {
+        "costHaler": 899200000,
+        "distinctOrgs": 1,
+        "euHaler": 690001120,
+        "projects": 1
+      },
+      "Plzeňský kraj; Olomoucký kraj; Zlínský kraj": {
+        "costHaler": 4112395200,
+        "distinctOrgs": 1,
+        "euHaler": 3701155680,
+        "projects": 1
+      },
+      "Středočeský kraj": {
+        "costHaler": 204711348052,
+        "distinctOrgs": 185,
+        "euHaler": 150464158911,
+        "projects": 406
+      },
+      "Středočeský kraj; Jihomoravský kraj": {
+        "costHaler": 591766500,
+        "distinctOrgs": 1,
+        "euHaler": 454092024,
+        "projects": 1
+      },
+      "Středočeský kraj; Jihočeský kraj": {
+        "costHaler": 1033166280,
+        "distinctOrgs": 3,
+        "euHaler": 835854140,
+        "projects": 3
+      },
+      "Středočeský kraj; Jihočeský kraj; Kraj Vysočina": {
+        "costHaler": 1374996616,
+        "distinctOrgs": 2,
+        "euHaler": 1055103653,
+        "projects": 2
+      },
+      "Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj": {
+        "costHaler": 976066854,
+        "distinctOrgs": 1,
+        "euHaler": 749069114,
+        "projects": 1
+      },
+      "Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Karlovarský kraj; Ústecký kraj; Liberecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 1538386490,
+        "distinctOrgs": 4,
+        "euHaler": 668521651,
+        "projects": 4
+      },
+      "Středočeský kraj; Jihočeský kraj; Plzeňský kraj; Kraj Vysočina": {
+        "costHaler": 1777695265,
+        "distinctOrgs": 1,
+        "euHaler": 1364114461,
+        "projects": 2
+      },
+      "Středočeský kraj; Kraj Vysočina": {
+        "costHaler": 34905000,
+        "distinctOrgs": 1,
+        "euHaler": 26784351,
+        "projects": 1
+      },
+      "Středočeský kraj; Liberecký kraj": {
+        "costHaler": 3815304100,
+        "distinctOrgs": 1,
+        "euHaler": 2750017285,
+        "projects": 1
+      },
+      "Středočeský kraj; Liberecký kraj; Královéhradecký kraj": {
+        "costHaler": 1147510560,
+        "distinctOrgs": 1,
+        "euHaler": 880542229,
+        "projects": 2
+      },
+      "Středočeský kraj; Olomoucký kraj": {
+        "costHaler": 2446044440,
+        "distinctOrgs": 2,
+        "euHaler": 1904187979,
+        "projects": 2
+      },
+      "Středočeský kraj; Pardubický kraj": {
+        "costHaler": 3422445125,
+        "distinctOrgs": 4,
+        "euHaler": 2653105467,
+        "projects": 5
+      },
+      "Středočeský kraj; Pardubický kraj; Moravskoslezský kraj": {
+        "costHaler": 231516320,
+        "distinctOrgs": 1,
+        "euHaler": 219940504,
+        "projects": 1
+      },
+      "Středočeský kraj; Plzeňský kraj; Liberecký kraj; Moravskoslezský kraj": {
+        "costHaler": 795931250,
+        "distinctOrgs": 1,
+        "euHaler": 610757845,
+        "projects": 1
+      },
+      "Středočeský kraj; Plzeňský kraj; Ústecký kraj": {
+        "costHaler": 83200000,
+        "distinctOrgs": 1,
+        "euHaler": 63843520,
+        "projects": 1
+      },
+      "Středočeský kraj; Ústecký kraj": {
+        "costHaler": 3990172168,
+        "distinctOrgs": 5,
+        "euHaler": 3061858613,
+        "projects": 6
+      },
+      "Středočeský kraj; Ústecký kraj; Jihomoravský kraj": {
+        "costHaler": 934190000,
+        "distinctOrgs": 1,
+        "euHaler": 716850697,
+        "projects": 1
+      },
+      "Středočeský kraj; Ústecký kraj; Královéhradecký kraj; Kraj Vysočina; Jihomoravský kraj; Moravskoslezský kraj": {
+        "costHaler": 995472000,
+        "distinctOrgs": 1,
+        "euHaler": 945698400,
+        "projects": 1
+      },
+      "Zlínský kraj": {
+        "costHaler": 66312474215,
+        "distinctOrgs": 71,
+        "euHaler": 47850993988,
+        "projects": 148
+      },
+      "Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 1321735312,
+        "distinctOrgs": 1,
+        "euHaler": 1014233593,
+        "projects": 1
+      },
+      "Ústecký kraj": {
+        "costHaler": 255247704761,
+        "distinctOrgs": 134,
+        "euHaler": 193665357871,
+        "projects": 337
+      },
+      "Ústecký kraj; Královéhradecký kraj": {
+        "costHaler": 954547500,
+        "distinctOrgs": 1,
+        "euHaler": 906820125,
+        "projects": 1
+      },
+      "Ústecký kraj; Královéhradecký kraj; Pardubický kraj; Kraj Vysočina; Jihomoravský kraj; Olomoucký kraj; Zlínský kraj; Moravskoslezský kraj": {
+        "costHaler": 1147937232,
+        "distinctOrgs": 1,
+        "euHaler": 880869635,
+        "projects": 1
+      },
+      "Ústecký kraj; Liberecký kraj": {
+        "costHaler": 6014495060,
+        "distinctOrgs": 6,
+        "euHaler": 4615222787,
+        "projects": 7
+      },
+      "Ústecký kraj; Moravskoslezský kraj": {
+        "costHaler": 585441250,
+        "distinctOrgs": 1,
+        "euHaler": 449238343,
+        "projects": 1
+      }
+    },
+    "distinctNonprofitRecipients": 1669,
+    "duplicateProcurementRowsCollapsed": 8194,
+    "multiProcurementOperationsDeduplicated": 1934,
+    "nonprofitProjects": 3906,
+    "rawExcelRowsScanned": 50195,
+    "topRecipients": [
+      {
+        "capHaler": 5000000,
+        "costHaler": 69723055776,
+        "euHaler": 48283216125,
+        "form": "ustav",
+        "ico": "11883383",
+        "muni": "Praha",
+        "name": "International Neurodegenerative Disorders Research Center, zapsaný ústav",
+        "paidEligibleHaler": 31127830215,
+        "projects": 1,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 61613666023,
+        "euHaler": 47510026566,
+        "form": "ops",
+        "ico": "25755277",
+        "muni": "Praha 2",
+        "name": "Člověk v tísni, o.p.s.",
+        "paidEligibleHaler": 28452552466,
+        "projects": 76,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 46615272181,
+        "euHaler": 27164924265,
+        "form": "spolek",
+        "ico": "72070382",
+        "muni": "Pardubice",
+        "name": "NANOPROGRESS, z.s.",
+        "paidEligibleHaler": 17156953457,
+        "projects": 14,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 27962264800,
+        "euHaler": 20056695910,
+        "form": "ops",
+        "ico": "26537036",
+        "muni": "Praha",
+        "name": "Romodrom, o.p.s.",
+        "paidEligibleHaler": 13789008016,
+        "projects": 24,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 22366372797,
+        "euHaler": 16763557779,
+        "form": "ops",
+        "ico": "26594633",
+        "muni": "Kolín",
+        "name": "Prostor plus o.p.s.",
+        "paidEligibleHaler": 11367525187,
+        "projects": 24,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 20384620725,
+        "euHaler": 15897822624,
+        "form": "spolek",
+        "ico": "71251847",
+        "muni": "Praha",
+        "name": "Česká federace potravinových bank, z.s.",
+        "paidEligibleHaler": 7783015984,
+        "projects": 3,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 20004142345,
+        "euHaler": 17927907878,
+        "form": "ops",
+        "ico": "24228320",
+        "muni": "Praha",
+        "name": "Integrační centrum Praha o.p.s.",
+        "paidEligibleHaler": 11040328808,
+        "projects": 5,
+        "status": "active"
+      },
+      {
+        "capHaler": 100000,
+        "costHaler": 18472037623,
+        "euHaler": 14707173231,
+        "form": "ustav",
+        "ico": "60446871",
+        "muni": "Praha",
+        "name": "RUBIKON Centrum, z.ú.",
+        "paidEligibleHaler": 10501790905,
+        "projects": 20,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 15782147257,
+        "euHaler": 12308536512,
+        "form": "spolek",
+        "ico": "40613411",
+        "muni": "Praha",
+        "name": "Armáda spásy v České republice, z. s.",
+        "paidEligibleHaler": 6417516885,
+        "projects": 16,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 15736605837,
+        "euHaler": 12181813401,
+        "form": "ops",
+        "ico": "60557621",
+        "muni": "Brno",
+        "name": "Společnost Podané ruce o.p.s.",
+        "paidEligibleHaler": 10495744263,
+        "projects": 19,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 15427837596,
+        "euHaler": 11995803680,
+        "form": "ops",
+        "ico": "27000222",
+        "muni": "Patokryje",
+        "name": "K srdci klíč, o.p.s.",
+        "paidEligibleHaler": 8574309961,
+        "projects": 12,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 15237253200,
+        "euHaler": 11133933277,
+        "form": "ops",
+        "ico": "25768867",
+        "muni": "Praha",
+        "name": "Nová škola, o.p.s.",
+        "paidEligibleHaler": 5865787522,
+        "projects": 16,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 14953330272,
+        "euHaler": 9869341433,
+        "form": "spolek",
+        "ico": "65341511",
+        "muni": "Brno",
+        "name": "IQ Roma servis, z.s.",
+        "paidEligibleHaler": 8755016354,
+        "projects": 17,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 14923582534,
+        "euHaler": 12315587489,
+        "form": "spolek",
+        "ico": "07864507",
+        "muni": "Ostrava",
+        "name": "Moravskoslezský pakt zaměstnanosti, z.s.",
+        "paidEligibleHaler": 7502164325,
+        "projects": 4,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 12505282622,
+        "euHaler": 7676388656,
+        "form": "spolek",
+        "ico": "27031641",
+        "muni": "Liberec",
+        "name": "CLUTEX - Klastr Technické textilie,z.s.",
+        "paidEligibleHaler": 5740057485,
+        "projects": 10,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 12148440964,
+        "euHaler": 8503908674,
+        "form": "ustav",
+        "ico": "65053079",
+        "muni": "České Budějovice",
+        "name": "Arpida, centrum pro rehabilitaci osob se zdravotním postižením, z.ú.",
+        "paidEligibleHaler": 9088157434,
+        "projects": 2,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 11217741065,
+        "euHaler": 8912600312,
+        "form": "ops",
+        "ico": "26202841",
+        "muni": "Praha 8",
+        "name": "VOLONTÉ CZECH, o.p.s.",
+        "paidEligibleHaler": 6148650733,
+        "projects": 18,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 11135291660,
+        "euHaler": 9464997911,
+        "form": "pobspolek",
+        "ico": "44224907",
+        "muni": "Roudnice nad Labem",
+        "name": "Tělocvičná jednota Sokol Roudnice nad Labem",
+        "paidEligibleHaler": 0,
+        "projects": 1,
+        "status": "active"
+      },
+      {
+        "capHaler": 100000,
+        "costHaler": 11055812149,
+        "euHaler": 9950230934,
+        "form": "ustav",
+        "ico": "17456517",
+        "muni": "Brno",
+        "name": "Centrum pro cizince Jihomoravského kraje, z. ú.",
+        "paidEligibleHaler": 5682991362,
+        "projects": 5,
+        "status": "active"
+      },
+      {
+        "capHaler": null,
+        "costHaler": 10272000000,
+        "euHaler": 7190400000,
+        "form": "spolek",
+        "ico": "26676826",
+        "muni": "Brno",
+        "name": "ParaCENTRUM Fenix, z. s.",
+        "paidEligibleHaler": 4387000000,
+        "projects": 1,
+        "status": "active"
+      }
+    ],
+    "totalCostHaler": 2382766793219,
+    "totalEligibleHaler": 2363417441001,
+    "totalEuSupportHaler": 1785050886214,
+    "totalNatPublicHaler": 432644318373,
+    "totalPaidEligibleHaler": 1188545611625,
+    "totalPaidEuHaler": 889364944574,
+    "totalPrivateHaler": 145722236414,
+    "uniqueOperationsTotal": 42001
+  },
+  "currency": "CZK",
+  "format": "charitology-czechia-eu-funds-v1",
+  "jurisdiction": "CZ",
+  "publisher": "Ministry for Regional Development of the Czech Republic (Ministerstvo pro místní rozvoj ČR / DotaceEU)",
+  "source": {
+    "bytes": 17803557,
+    "file": "2026_11_Seznam-operaci_2021_2027.xlsx",
+    "generatedAt": "2026-11-01 04:08:42",
+    "sha256": "cde8412503aece10104ca34f72f5db84b358e971f5d2dc89a90c17b52efed5da",
+    "url": "https://www.dotaceeu.cz/getmedia/56000692-e5fa-4105-80b9-9c716911ee88/2026_11_Seznam-operaci_List-of-Operations_21.xlsx.aspx?ext=.xlsx"
+  }
+}
