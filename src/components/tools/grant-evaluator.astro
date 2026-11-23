@@ -3,6 +3,7 @@
 // scored 0 to 4 or left unknown. Unknowns stay unknown: the weighted result is a
 // missing-data range. Rubric, math and memo in src/lib/client/rubric.ts.
 import { DEFAULT_WEIGHT, DIMENSIONS, MAX_WEIGHT, UNKNOWN_GUIDE } from '../../lib/client/rubric';
+import { GLOBAL_CHARITY_INDEX_PANELS, GLOBAL_CHARITY_INDEX_TOTAL_RECORDS } from '../../lib/global-index-catalog';
 import { depthSymbols } from '../../lib/list-identities';
 import { url } from '../../lib/site';
 
@@ -144,6 +145,13 @@ const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
         consider flexible, multi-year support, and hold it accountable for results rather than line items. See
         <a href={url('/diagnosis/restriction-reflex/')}>the Restriction Reflex</a>. When restriction helps is still an open question:
         <a href={url('/open-problems/the-optimal-restriction/')}>Open Problem 8, the Optimal Restriction</a>.
+      </p>
+      <p data-ge-evidence-links>
+        <strong>Verify applicant filings &amp; reporting capacity:</strong> Check statutory registration and public funding across Charitology’s{' '}
+        <a href={url('/record/charity-index/coverage/')}>
+          {GLOBAL_CHARITY_INDEX_PANELS.length}-jurisdiction Global Charity Index ({GLOBAL_CHARITY_INDEX_TOTAL_RECORDS.toLocaleString('en-US')} dated records)
+        </a>, run a structured check in the <a href={url('/tools/due-diligence-checklist/')}>Due Diligence Checklist</a>, or pair grantees with{' '}
+        <a href={url('/tools/charity-os/')}>Charity OS</a> for frozen, two-person-approved funder grant reports.
       </p>
     </div>
   </div>
