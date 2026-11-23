@@ -138,6 +138,7 @@ export function extensionFixture({
     "checklist",
     "count",
     "q",
+    "coverage",
     "method",
     "lookup",
     "lookup-status",

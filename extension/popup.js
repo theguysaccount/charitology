@@ -15,6 +15,8 @@ input.addEventListener("input", () => {
   document.getElementById("lookup-manual").hidden = true;
 });
 document.getElementById("method").href = `${SITE}/method/#checklist`;
+const coverageLink = document.getElementById("coverage");
+if (coverageLink) coverageLink.href = `${SITE}/record/charity-index/coverage/`;
 
 function renderChecklist(items) {
   for (const item of items) {
