@@ -6,7 +6,7 @@ import { createHandler } from "../lib/handler.mjs";
 import { createHostedVolunteerSubstitutionRuntime } from "../lib/volunteer-substitution-runtime.mjs";
 import { volunteerProfileConfiguration } from "../lib/volunteer-profile-routes.mjs";
 import { membershipRenewalConfiguration } from "../lib/membership-renewal-storage.mjs";
-import { handlePilotFeedbackRequest } from "./pilot-feedback.mjs";
+import { handlePilotFeedbackRequest } from "./_pilot-feedback.mjs";
 let runtime;
 function route(request) {
   if (!runtime) {
