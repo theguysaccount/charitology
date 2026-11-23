@@ -142,14 +142,14 @@ export function prepareCharityStartPlan(raw) {
     'Marks are your own reports. An unchecked step is not marked complete; it is not evidence of failure. Completion has not been independently verified.', '',
     ...job.steps.map((step, index) => `- [${completed[index] ? 'x' : ' '}] ${completed[index] ? 'Marked complete' : 'Not marked complete'}: ${step}`), '',
     '## Questions at the next review', '', ...job.questions.map(question => `- ${question}`), '',
-    '## Read and use', '', ...job.links.map(link => `- [${link.label}](https://charitology.org${link.path})`), '',
+    '## Read and use', '', ...job.links.map(link => `- [${link.label}](https://charitology.com${link.path})`), '',
     '## Optional manual shared workspace', '',
     ...job.os.map(module => `- [${module.label}](https://os.charitology.org/#module/${module.id})`), '',
     'These links require sign-in and organization choice. They navigate only; no field, task, message or record is transferred by this plan.', '',
     '## Scope and assumptions', '', job.limit, '',
     'This is a proposed workflow, not measured evidence of savings, fundraising success or charitable impact. Study the signals, channels, work, outcomes and feedback around the job. Relief, repair, prevention, structure and source describe where work acts; every level may be needed. No charity is rated or ranked.', '',
     'The plan stays on the current page until you choose a download. It sends no email, creates no account and supplies no approval, consent or institutional partnership. Use roles and nonpersonal examples; keep private staff, donor and participant records out of this file.', '',
-    `[Starting guide and corrections](https://charitology.org/for-charities/start/#${job.id})`, '',
+    `[Starting guide and corrections](https://charitology.com/for-charities/start/#${job.id})`, '',
     'Review here means your inspection of this local plan, not independent source or professional review.', ''
   ];
   const markdown = lines.join('\n');

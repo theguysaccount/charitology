@@ -1,5 +1,6 @@
 // Generate a disclosed computer-narrated reading season from the actual open textbook.
 // macOS say + an explicit FFMPEG executable; no cloud audio service or cloned voice.
+import { existsSync } from "node:fs";
 import {
   readFile,
   writeFile,
@@ -12,28 +13,47 @@ import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 const root = new URL("../", import.meta.url);
+const force = process.argv.includes("--force");
 const chapters = [
-  "02-the-charity-system",
-  "03-depth-from-relief-to-source",
-  "04-evidence-and-its-grades",
-  "05-counterfactuals-and-neglect",
-  "06-comparing-the-incomparable",
-  "08-feedback-and-voice",
+  { id: "02-the-charity-system", date: "2026-10-25", domain: "charitology dot org" },
+  { id: "03-depth-from-relief-to-source", date: "2026-10-25", domain: "charitology dot org" },
+  { id: "04-evidence-and-its-grades", date: "2026-10-25", domain: "charitology dot org" },
+  { id: "05-counterfactuals-and-neglect", date: "2026-10-25", domain: "charitology dot org" },
+  { id: "06-comparing-the-incomparable", date: "2026-10-25", domain: "charitology dot org" },
+  { id: "08-feedback-and-voice", date: "2026-10-25", domain: "charitology dot org" },
+  { id: "01-what-charitology-is", date: "2026-11-22", domain: "charitology dot com" },
+  { id: "07-time", date: "2026-11-22", domain: "charitology dot com" },
+  { id: "09-failure-and-learning", date: "2026-11-22", domain: "charitology dot com" },
+  { id: "10-becoming-a-charitologist", date: "2026-11-22", domain: "charitology dot com" },
 ];
 const folder = new URL("public/audio/", root);
 await mkdir(folder, { recursive: true });
+const existingJson = existsSync(new URL("src/data/podcast.json", root))
+  ? JSON.parse(await readFile(new URL("src/data/podcast.json", root), "utf8"))
+  : { episodes: [] };
+const existingById = new Map(
+  (existingJson.episodes ?? []).map((e) => [e.id, e]),
+);
 const temporary = await mkdtemp(join(tmpdir(), "charitology-podcast-"));
 const episodes = [];
 try {
   for (let n = 0; n < chapters.length; n++) {
-    const id = chapters[n];
+    const { id, date, domain } = chapters[n];
+    const episodeId = `principles-${n + 1}`;
+    const filename = `${episodeId}.mp3`;
+    const output = new URL(filename, folder);
+    if (!force && existingById.has(episodeId) && existsSync(output)) {
+      episodes.push(existingById.get(episodeId));
+      console.log(`${filename}: preserved existing (${existingById.get(episodeId).seconds}s)`);
+      continue;
+    }
     const raw = await readFile(
       new URL(`src/content/principles/${id}.md`, root),
       "utf8",
     );
     const [, front, body] = raw.split(/^---\s*$/m);
     const title = front.match(/^title: (.+)$/m)[1].replace(/^"|"$/g, "");
-    const intro = `Charitology, the science of doing the most good. Principles, episode ${n + 1}: ${title}. This is a computer narrated reading of our open textbook, using the system's standard voice. It is an editorial draft, not a guest interview or a peer reviewed paper. Source links and the full transcript are on charitology dot org. `;
+    const intro = `Charitology, the science of doing the most good. Principles, episode ${n + 1}: ${title}. This is a computer narrated reading of our open textbook, using the system's standard voice. It is an editorial draft, not a guest interview or a peer reviewed paper. Source links and the full transcript are on ${domain}. `;
     const ending =
       " End of the reading. Every level of the depth scale is needed. Questions and corrections are welcome on the public repository. The transcript and original sources are linked on the episode page.";
     const speech =
@@ -59,9 +79,7 @@ try {
       "-o",
       audioPath,
     ]);
-    const filename = `principles-${n + 1}.mp3`;
-    const output = new URL(filename, folder);
-    const stderr = execFileSync(
+    execFileSync(
       process.env.FFMPEG || "ffmpeg",
       [
         "-hide_banner",
@@ -101,10 +119,10 @@ try {
     if (!match) throw Error("Missing duration");
     const seconds = +match[1] * 3600 + +match[2] * 60 + +match[3];
     episodes.push({
-      id: `principles-${n + 1}`,
+      id: episodeId,
       number: n + 1,
       title,
-      date: "2026-10-25",
+      date,
       chapter: id,
       audio: `/audio/${filename}`,
       seconds,
@@ -121,7 +139,7 @@ try {
     JSON.stringify(
       {
         title: "Charitology: Principles read aloud",
-        date: "2026-10-25",
+        date: "2026-11-22",
         episodes,
       },
       null,

@@ -6,6 +6,7 @@ import { loadObservations, observationEditionHref } from "../../lib/observations
 import { url } from "../../lib/site";
 import { financialScopesForProfile } from "../../lib/observation-view";
 import ObservationRefs from "../ObservationRefs.astro";
+import { GLOBAL_CHARITY_INDEX_PANELS } from "../../lib/global-index-catalog";
 const original = await buildReferenceLibrary("charity-index");
 const { projection } = loadObservations();
 const library = {...original,entries:original.entries.map(entry=>{
@@ -20,24 +21,10 @@ const library = {...original,entries:original.entries.map(entry=>{
 <details><summary>Explicit parent identity mappings for the selected financial panels</summary>{projection.entities.filter(e=>e.entityKind==="legal-organization"&&e.identifiers.some(i=>i.kind==="ein")).map(e=><section><h3>{e.label}</h3><p>{e.identifiers.filter(i=>i.kind==="ein").map(i=>`Parent legal-entity EIN ${i.value}`).join("; ")}. Financial values belong to the separately labeled consolidated scope, not this EIN alone.</p><ObservationRefs projection={projection} refs={e.identifiers.filter(i=>i.kind==="ein").flatMap(i=>i.sourceRefs)}/></section>)}</details>
 
 <p><a class="identity-link" href={url('/record/funding-flows/')}>Browse funding flows</a>. Find searches and case studies by place and type of record.</p>
-<p><a class="identity-link" href={url('/record/charity-index/coverage/')}>See Charity Index coverage across all 17 jurisdictions</a>:
-  <a href={url('/record/charity-financials/')}>Australia</a> ·
-  <a href={url('/record/charity-index/brazil/')}>Brazil</a> ·
-  <a href={url('/record/charity-financials/canada/')}>Canada</a> ·
-  <a href={url('/record/charity-financials/england-wales/')}>England &amp; Wales</a> ·
-  <a href={url('/record/charity-financials/france/')}>France</a> ·
-  <a href={url('/record/charity-index/israel/')}>Israel</a> ·
-  <a href={url('/record/charity-index/japan/')}>Japan</a> ·
-  <a href={url('/record/charity-financials/kenya/')}>Kenya</a> ·
-  <a href={url('/record/charity-index/latvia/')}>Latvia</a> ·
-  <a href={url('/record/charity-financials/mexico/')}>Mexico</a> ·
-  <a href={url('/record/charity-index/netherlands/')}>Netherlands</a> ·
-  <a href={url('/record/charity-index/new-zealand/')}>New Zealand</a> ·
-  <a href={url('/record/charity-index/norway/')}>Norway</a> ·
-  <a href={url('/record/charity-index/poland/')}>Poland</a> ·
-  <a href={url('/record/charity-financials/scotland/')}>Scotland</a> ·
-  <a href={url('/record/charity-index/taiwan/')}>Taiwan</a> ·
-  <a href={url('/record/charity-financials/united-states/')}>United States</a>.
+<p><a class="identity-link" href={url('/record/charity-index/coverage/')}>See Charity Index coverage across all {GLOBAL_CHARITY_INDEX_PANELS.length} jurisdictions</a>:
+  {GLOBAL_CHARITY_INDEX_PANELS.map((panel, index) => (
+    <>{index > 0 ? ' · ' : ''}<a href={url(panel.route)}>{panel.name}</a></>
+  ))}.
 </p>
 <RegistrySearch id="index" />
 <p><a href={url('/record/funding-flows/iberia-hrsa/')}>Trace federal awards to three years of an Iberia health center’s audited grant spending</a>. The case connects published grant numbers and the federal recipient identifier.</p>

@@ -17,6 +17,10 @@ import nonprofitBenefits from "../data/nonprofit-benefits.json";
 import osProviders from "../data/os-providers.json";
 import osUserNeeds from "../data/os-user-needs.json";
 import { FUNDING_LICENSE_SUMMARY } from "./humanitarian-funding/source.mjs";
+import {
+  buildCharityIndexApiPayload,
+  buildFundingFlowsApiPayload,
+} from "./global-index-catalog";
 
 async function researchLedger() {
   const { loadResearchLedger } = await import("./research-ledger");
@@ -268,6 +272,20 @@ export const ENDPOINTS: Endpoint[] = [
     description:
       "The Charity Index: organizations with depth classifications (hypotheses, not ratings).",
     build: entries("charities"),
+  },
+  {
+    name: "charity-index",
+    description:
+      "Catalog of all 17 Global Charity Index jurisdictions and U.S. Form 990 editions, with dated record counts, coverage boundaries and manifest paths. Not a worldwide census or a charity rating.",
+    build: async () => buildCharityIndexApiPayload(),
+    preserveShape: true,
+  },
+  {
+    name: "funding-flows",
+    description:
+      "Catalog of all 37 published funding-flow searches and case studies, with scope, routes and linked manifest or JSON export paths.",
+    build: async () => buildFundingFlowsApiPayload(),
+    preserveShape: true,
   },
   {
     name: "encyclopedia",

@@ -593,11 +593,11 @@ Use paper and fictional examples. No donation, payment, account, public post or 
 
 const attribution = `## Attribution and reuse
 
-Credit: [Charitology (charitology.org)](https://charitology.org/). Original editorial content and authored data are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). You may share and adapt them with attribution and a note of changes. Cited sources retain their own rights.
+Credit: [Charitology (charitology.com)](https://charitology.com/). Original editorial content and authored data are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). You may share and adapt them with attribution and a note of changes. Cited sources retain their own rights.
 
-Teaching hub: https://charitology.org/learn/
-Existing ten-unit course: https://charitology.org/programs/principles-course/
-Textbook: https://charitology.org/record/principles/
+Teaching hub: https://charitology.com/learn/
+Existing ten-unit course: https://charitology.com/programs/principles-course/
+Textbook: https://charitology.com/record/principles/
 
 The chapter links are reading routes. This pack does not claim an independent review of every chapter’s external citations. Educators should read the selected chapter and check cited originals before teaching its empirical examples.`;
 
@@ -714,7 +714,7 @@ Eight proposed 90-minute meetings cover all ten existing chapters. This adaptati
 
 Reusable 90-minute structure: 10 minutes retrieval and questions; 15 guided reading; 20 individual or pair work; 20 discussion; 15 revision; 10 exit reflection. An educator can redistribute time for access needs.
 
-${seminarSessions.map(session => `### ${session.number}. ${session.title}\n\nReading: ${session.chapters.map(number => `[${number}. ${chapters[number - 1][0]}](https://charitology.org/record/principles/${chapters[number - 1][1]}/)`).join(' and ')}.\n\nExercise: ${session.exercise}\n\nOutput: ${session.output}`).join('\n\n')}
+${seminarSessions.map(session => `### ${session.number}. ${session.title}\n\nReading: ${session.chapters.map(number => `[${number}. ${chapters[number - 1][0]}](https://charitology.com/record/principles/${chapters[number - 1][1]}/)`).join(' and ')}.\n\nExercise: ${session.exercise}\n\nOutput: ${session.output}`).join('\n\n')}
 
 ### Sample reading and exercise for session 3
 
@@ -769,7 +769,7 @@ Fill in only agreed organizational information:
 
 ${clubHandover.map(item => `- ${item} ____________________`).join('\n')}
 
-[Review this four-meeting starter in the chapter workspace](https://charitology.org/programs/university-chapters/#pw-four-starter), or use its longer six-session fictional example. Review and apply are separate actions; either kit replaces the local workspace only after its discard checks. The existing stored format is unchanged, and neither kit establishes a recognized chapter.`;
+[Review this four-meeting starter in the chapter workspace](https://charitology.com/programs/university-chapters/#pw-four-starter), or use its longer six-session fictional example. Review and apply are separate actions; either kit replaces the local workspace only after its discard checks. The existing stored format is unchanged, and neither kit establishes a recognized chapter.`;
 
 const osMarkdown = `## Optional fictional Charity OS demonstration
 
@@ -779,7 +779,7 @@ The complete activity works on paper. An educator may instead show paper record 
 - Evidence and outcomes: mark 12/30 before and 21/30 later as fictional observations. A stored observation is not a causal conclusion or independently approved finding.
 - Evaluation and learning: retain the comparison question, proposed method and unresolved counterfactual. A report or approval does not manufacture evidence or settle values.
 
-Use the ordinary permissions of the existing demonstration setup; no automatic import is implied. Continue on paper if it is unavailable. Service scope: https://charitology.org/for-charities/os-plan/`;
+Use the ordinary permissions of the existing demonstration setup; no automatic import is implied. Continue on paper if it is unavailable. Service scope: https://charitology.com/for-charities/os-plan/`;
 
 const startMarkdown = `## Choose a starting point
 

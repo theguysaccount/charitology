@@ -174,12 +174,12 @@ for (const indicator of countries.indicators) {
   );
 }
 const podcast = read("src/data/podcast.json");
-assert.equal(podcast.episodes.length, 6);
+assert.equal(podcast.episodes.length, 10);
 for (const episode of podcast.episodes) {
   const file = new URL("public" + episode.audio, root);
   assert.equal(statSync(file).size, episode.bytes);
-  assert.ok(episode.seconds > 300);
-  assert.ok(episode.transcript.length > 4000);
+  assert.ok(episode.seconds > (episode.chapter === "01-what-charitology-is" ? 150 : 250));
+  assert.ok(episode.transcript.length > (episode.chapter === "01-what-charitology-is" ? 2500 : 4000));
   const bytes = readFileSync(file);
   assert.equal(bytes.subarray(0, 3).toString(), "ID3");
   assert.ok(
@@ -192,9 +192,9 @@ for (const feed of ["podcast.xml", "newsletter.xml"]) {
   assert.match(xml, /<item>/);
 }
 const rss = readFileSync(new URL("dist/podcast.xml", root), "utf8");
-assert.equal((rss.match(/<enclosure /g) || []).length, 6);
+assert.equal((rss.match(/<enclosure /g) || []).length, 10);
 console.log(
-  "✓ Completion models: unknown vs0, integer cents, invalid imports and nomination disclosures. Country snapshot:217economies/1,050observations. Podcast:6actualMP3s and feeds.",
+  "✓ Completion models: unknown vs0, integer cents, invalid imports and nomination disclosures. Country snapshot:217economies/1,050observations. Podcast:10actualMP3s and feeds.",
 );
 
 for (const value of [
