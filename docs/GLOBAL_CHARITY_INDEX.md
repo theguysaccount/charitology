@@ -759,3 +759,17 @@ node scripts/check-latvia-charity-index.mjs
 ```
 
 Next, qualify Latvia’s Ministry of Finance *de minimis* public-aid export (`deminimis.fm.gov.lv`) and Health Inspectorate nonprofit support disclosures (`pazinojumi-par-sniegto-atbalstu`) by exact 11-digit `regcode` to compare domestic state aid, EU cohesion grants and private healthcare support without double counting.
+
+## Estonia nonprofits, TMNSN tax-incentive charities, 2023–2025 XBRL filings and EU/EEA grants (Jurisdiction #18)
+
+The [Estonia nonprofit registry edition](https://charitology.com/record/charity-index/estonia/) joins three official Estonian open-data sources captured on November 22, 2026 by exact 8-digit registry code (`registrikood`): RIK e-Business Register (`lihtandmed`, extracting **24,142** `Mittetulundusühing`, `Sihtasutus` and `Ametiühing` entities while excluding **25,709** statutory `Korteriühistu` apartment associations), RIK’s 2023–2025 annual financial report XBRL tables (**19,238** nonprofits with structured EUR Revenue, Business Income, Surplus/Deficit, Assets, Net Assets, Cash, Labor Expense, FTE and Audit fields), and EMTA’s CC0 1.0 November 1, 2026 income-tax-incentive charity list (`TMNSN`, **2,974** active charities including **13** absent from the Nov 22 active RIK export plus **4** removed in 2025), totaling **24,155** searchable organizations.
+
+The paired [Estonia EU/EEA funds edition](https://charitology.com/record/funding-flows/estonia-eu-funds/) joins RTK’s August 31, 2026 Structural Assistance Register across `2014–2020`, `2020–2026` (RRF) and `2021–2027` (`ERDF`, `ESF`, `JTF`, `CF`, `REACT-EU`, `RRF`, `NORRA/EMP`), identifying **1,566** nonprofit-form projects across **697** distinct organizations totaling **EUR 2,622,261,929.19** in project budgets (**EUR 1,805,847,759.83** EU/EEA grants, **EUR 1,477,497,655.39** disbursed net of clawbacks). Joining EMTA TMNSN status shows that non-TMNSN state development agencies and public hospitals structured as `Sihtasutus` foundations absorb **80.3%** (`EUR 2.11B`), compared with **1.3%** (`EUR 34.30M`) led by active tax-incentive `MTÜ` charities.
+
+Rebuild offline from the eight SHA-256-pinned inputs listed in `src/data/estonia-index-sources.tsv`:
+
+```sh
+python3 scripts/build-estonia-charity-index.py /path/to/captured-inputs public/data
+node scripts/check-estonia-charity-index.mjs
+npm run check:references
+```

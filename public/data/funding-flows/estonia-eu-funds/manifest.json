@@ -1,0 +1,484 @@
+{
+  "artifacts": {
+    "anomaliesJson": "anomalies.json",
+    "programsSummaryCsv": "programs-summary.csv",
+    "projects": {
+      "bytes": 117580,
+      "decodedBytes": 787090,
+      "decodedSha256": "b246ad298b871ee8d9f543556ddf9483c5d04e4c7897b1174d20f5f45da004e1",
+      "path": "projects.json.gz",
+      "rows": 1566,
+      "sha256": "d6bb3f64b0303c104868feaa1ba1f41a54ce27009de13a2ea26ac25f25b2f768"
+    }
+  },
+  "asOf": "2026-08-31",
+  "capturedOn": "2026-11-22",
+  "catalogue": "https://rtk.ee/toetusfondid-ja-programmid/euroopa-liidu-valisvahendid/toetatud-projektid",
+  "counts": {
+    "activeProjects": 316,
+    "allRtkRowsScanned": 23352,
+    "byFund": {
+      "CF": {
+        "budgetCents": 6966316744,
+        "grantCents": 5707872731,
+        "paidCents": 3871937254,
+        "projects": 127
+      },
+      "ERDF": {
+        "budgetCents": 201010638330,
+        "grantCents": 124969426404,
+        "paidCents": 108993941667,
+        "projects": 698
+      },
+      "ESF": {
+        "budgetCents": 12825281966,
+        "grantCents": 9415840146,
+        "paidCents": 7069454668,
+        "projects": 316
+      },
+      "JTF": {
+        "budgetCents": 5917122067,
+        "grantCents": 5201798506,
+        "paidCents": 4278239247,
+        "projects": 287
+      },
+      "NORRA/EMP": {
+        "budgetCents": 672730219,
+        "grantCents": 572738150,
+        "paidCents": 632727284,
+        "projects": 47
+      },
+      "REACT-EU": {
+        "budgetCents": 4927106570,
+        "grantCents": 4816079444,
+        "paidCents": 4908974838,
+        "projects": 73
+      },
+      "RRF": {
+        "budgetCents": 29906997023,
+        "grantCents": 29901020602,
+        "paidCents": 17994490581,
+        "projects": 18
+      }
+    },
+    "byPeriod": {
+      "2014-2020": {
+        "budgetCents": 74013564106,
+        "grantCents": 60388536667,
+        "paidCents": 72453522260,
+        "projects": 915
+      },
+      "2020-2026": {
+        "budgetCents": 29906997023,
+        "grantCents": 29901020602,
+        "paidCents": 17994490581,
+        "projects": 18
+      },
+      "2021-2027": {
+        "budgetCents": 158305631790,
+        "grantCents": 90295218714,
+        "paidCents": 57301752698,
+        "projects": 633
+      }
+    },
+    "byRegion": {
+      "Harju maakond": {
+        "budgetCents": 2671835994,
+        "grantCents": 1832916961,
+        "paidCents": 2537989219,
+        "projects": 123
+      },
+      "Hiiu maakond": {
+        "budgetCents": 1382281384,
+        "grantCents": 1347412913,
+        "paidCents": 1370520427,
+        "projects": 19
+      },
+      "Ida-Viru maakond": {
+        "budgetCents": 6230827069,
+        "grantCents": 4689886421,
+        "paidCents": 5834406961,
+        "projects": 42
+      },
+      "Järva maakond": {
+        "budgetCents": 425905259,
+        "grantCents": 356845431,
+        "paidCents": 415511125,
+        "projects": 9
+      },
+      "Jõgeva maakond": {
+        "budgetCents": 390122990,
+        "grantCents": 328482870,
+        "paidCents": 374347895,
+        "projects": 19
+      },
+      "Lääne maakond": {
+        "budgetCents": 812369532,
+        "grantCents": 621704483,
+        "paidCents": 808404442,
+        "projects": 23
+      },
+      "Lääne-Viru maakond": {
+        "budgetCents": 361856627,
+        "grantCents": 292904451,
+        "paidCents": 336426163,
+        "projects": 22
+      },
+      "Pärnu maakond": {
+        "budgetCents": 1651028474,
+        "grantCents": 1220275272,
+        "paidCents": 1592426116,
+        "projects": 52
+      },
+      "Põlva maakond": {
+        "budgetCents": 235201504,
+        "grantCents": 185075911,
+        "paidCents": 225731432,
+        "projects": 16
+      },
+      "Rapla maakond": {
+        "budgetCents": 265136350,
+        "grantCents": 209756189,
+        "paidCents": 247307576,
+        "projects": 17
+      },
+      "Saare maakond": {
+        "budgetCents": 1363275581,
+        "grantCents": 1134608467,
+        "paidCents": 1319749713,
+        "projects": 76
+      },
+      "Tartu maakond": {
+        "budgetCents": 1233321625,
+        "grantCents": 907054542,
+        "paidCents": 1189635892,
+        "projects": 56
+      },
+      "Unspecified": {
+        "budgetCents": 158305631790,
+        "grantCents": 90295218714,
+        "paidCents": 57301752698,
+        "projects": 633
+      },
+      "Valga maakond": {
+        "budgetCents": 451857152,
+        "grantCents": 351796729,
+        "paidCents": 427880753,
+        "projects": 16
+      },
+      "Viljandi maakond": {
+        "budgetCents": 611515265,
+        "grantCents": 517356411,
+        "paidCents": 577401292,
+        "projects": 19
+      },
+      "Võru maakond": {
+        "budgetCents": 417287080,
+        "grantCents": 349131259,
+        "paidCents": 397438238,
+        "projects": 22
+      },
+      "Üleriiklikud/maakondade vahelised projektid": {
+        "budgetCents": 85416739243,
+        "grantCents": 75944348959,
+        "paidCents": 72792835597,
+        "projects": 402
+      }
+    },
+    "bySector": {
+      "Energeetika": {
+        "budgetCents": 9359330064,
+        "grantCents": 9090477840,
+        "paidCents": 2287559559,
+        "projects": 9
+      },
+      "Haridus": {
+        "budgetCents": 3350703001,
+        "grantCents": 2464623852,
+        "paidCents": 2036457234,
+        "projects": 160
+      },
+      "Infoühiskond": {
+        "budgetCents": 5096859620,
+        "grantCents": 4313745969,
+        "paidCents": 4972310815,
+        "projects": 62
+      },
+      "Keskkond": {
+        "budgetCents": 9823210503,
+        "grantCents": 9319504379,
+        "paidCents": 6787411748,
+        "projects": 131
+      },
+      "Kultuur ja sport": {
+        "budgetCents": 713064812,
+        "grantCents": 474642915,
+        "paidCents": 377923640,
+        "projects": 17
+      },
+      "Lõimumine": {
+        "budgetCents": 4762261188,
+        "grantCents": 3484793413,
+        "paidCents": 2544852589,
+        "projects": 6
+      },
+      "Muu": {
+        "budgetCents": 13972467906,
+        "grantCents": 13949110471,
+        "paidCents": 11179577811,
+        "projects": 33
+      },
+      "Regionaalareng": {
+        "budgetCents": 18531984821,
+        "grantCents": 14207852441,
+        "paidCents": 11724879808,
+        "projects": 453
+      },
+      "Riigivalitsemine": {
+        "budgetCents": 398193119,
+        "grantCents": 337517950,
+        "paidCents": 388398729,
+        "projects": 57
+      },
+      "Sotsiaalkaitse ja tervis": {
+        "budgetCents": 34592229446,
+        "grantCents": 25623025390,
+        "paidCents": 24989099008,
+        "projects": 252
+      },
+      "Teadus- ja arendustegevus ning ettevõtlus": {
+        "budgetCents": 157717292130,
+        "grantCents": 94004956264,
+        "paidCents": 76559582442,
+        "projects": 373
+      },
+      "Tehniline abi": {
+        "budgetCents": 3838583909,
+        "grantCents": 3262796322,
+        "paidCents": 3838358116,
+        "projects": 9
+      },
+      "Õigusriik": {
+        "budgetCents": 70012400,
+        "grantCents": 51728777,
+        "paidCents": 63354040,
+        "projects": 4
+      }
+    },
+    "byTmnsnAndForm": {
+      "active|MTU": {
+        "budgetCents": 3429708265,
+        "distinctOrgs": 129,
+        "grantCents": 2507534972,
+        "paidCents": 2646005601,
+        "projects": 246
+      },
+      "active|SA": {
+        "budgetCents": 30421064580,
+        "distinctOrgs": 30,
+        "grantCents": 22644264174,
+        "paidCents": 15995214364,
+        "projects": 76
+      },
+      "none|AU": {
+        "budgetCents": 28430340,
+        "distinctOrgs": 2,
+        "grantCents": 22932789,
+        "paidCents": 28430328,
+        "projects": 2
+      },
+      "none|MTU": {
+        "budgetCents": 17707750413,
+        "distinctOrgs": 422,
+        "grantCents": 12870374519,
+        "paidCents": 11444346903,
+        "projects": 713
+      },
+      "none|SA": {
+        "budgetCents": 210639239321,
+        "distinctOrgs": 114,
+        "grantCents": 142539669529,
+        "paidCents": 117635768343,
+        "projects": 529
+      }
+    },
+    "completedProjects": 1250,
+    "distinctNonprofitRecipients": 697,
+    "nonprofitProjects": 1566,
+    "totalBudgetCents": 262226192919,
+    "totalGrantCents": 180584775983,
+    "totalPaidCents": 147749765539,
+    "totalPaidExternalCents": 109968199586
+  },
+  "currency": "EUR",
+  "format": "charitology-estonia-eu-funds-v1",
+  "jurisdiction": "Estonia",
+  "publisher": "State Shared Service Centre of Estonia (RTK — Riigi Tugiteenuste Keskus)",
+  "topRecipients": [
+    {
+      "budgetCents": 141402771888,
+      "county": "Harju maakond",
+      "form": "SA",
+      "grantCents": 86531947952,
+      "name": "Ettevõtluse ja Innovatsiooni Sihtasutus",
+      "paidCents": 65253587047,
+      "projects": 69,
+      "reg": "90006012",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 24888983943,
+      "county": "Tartu maakond",
+      "form": "SA",
+      "grantCents": 18543047740,
+      "name": "Sihtasutus Eesti Teadusagentuur",
+      "paidCents": 12581122419,
+      "projects": 10,
+      "reg": "90000759",
+      "tmnsn": "active"
+    },
+    {
+      "budgetCents": 8153048187,
+      "county": "Harju maakond",
+      "form": "SA",
+      "grantCents": 7675798046,
+      "name": "Sihtasutus Keskkonnainvesteeringute Keskus",
+      "paidCents": 5115735267,
+      "projects": 13,
+      "reg": "90005946",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 7779995339,
+      "county": "Viljandi maakond",
+      "form": "SA",
+      "grantCents": 7688500841,
+      "name": "Sihtasutus Viljandi Haigla",
+      "paidCents": 7733180456,
+      "projects": 10,
+      "reg": "90004585",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 6927100212,
+      "county": "Harju maakond",
+      "form": "SA",
+      "grantCents": 5895760486,
+      "name": "sihtasutus Põhja-Eesti Regionaalhaigla",
+      "paidCents": 6692049680,
+      "projects": 8,
+      "reg": "90006399",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 6325548283,
+      "county": "Tartu maakond",
+      "form": "SA",
+      "grantCents": 3240569352,
+      "name": "sihtasutus Tartu Ülikooli Kliinikum",
+      "paidCents": 6324228283,
+      "projects": 6,
+      "reg": "90001478",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 4318375248,
+      "county": "Harju maakond",
+      "form": "SA",
+      "grantCents": 3679255727,
+      "name": "Eesti Lairiba Arenduse Sihtasutus",
+      "paidCents": 4293587926,
+      "projects": 40,
+      "reg": "90010094",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 4159148916,
+      "county": "Saare maakond",
+      "form": "SA",
+      "grantCents": 3239052838,
+      "name": "Kuressaare Haigla Sihtasutus",
+      "paidCents": 1187317895,
+      "projects": 7,
+      "reg": "90004059",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 4030417491,
+      "county": "Ida-Viru maakond",
+      "form": "SA",
+      "grantCents": 2976136100,
+      "name": "Integratsiooni Sihtasutus",
+      "paidCents": 2277523891,
+      "projects": 6,
+      "reg": "90000788",
+      "tmnsn": "active"
+    },
+    {
+      "budgetCents": 3837188975,
+      "county": "Ida-Viru maakond",
+      "form": "SA",
+      "grantCents": 2972483075,
+      "name": "Sihtasutus NARVA HAIGLA",
+      "paidCents": 434220496,
+      "projects": 3,
+      "reg": "90003217",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 3784926066,
+      "county": "Ida-Viru maakond",
+      "form": "SA",
+      "grantCents": 2700479537,
+      "name": "Sihtasutus Ida-Viru Keskhaigla",
+      "paidCents": 3536878404,
+      "projects": 3,
+      "reg": "90003433",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 2977145800,
+      "county": "Ida-Viru maakond",
+      "form": "SA",
+      "grantCents": 2890573928,
+      "name": "Sihtasutus Ida-Viru Investeeringute Agentuur",
+      "paidCents": 2725139524,
+      "projects": 7,
+      "reg": "90003841",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 2577516532,
+      "county": "Võru maakond",
+      "form": "SA",
+      "grantCents": 1885010508,
+      "name": "Sihtasutus Võrumaa Arenduskeskus",
+      "paidCents": 1202633187,
+      "projects": 26,
+      "reg": "90013972",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 2380212432,
+      "county": "Järva maakond",
+      "form": "MTU",
+      "grantCents": 1787530325,
+      "name": "MTÜ MAAKONDLIKUD ARENDUSKESKUSED",
+      "paidCents": 1612137829,
+      "projects": 3,
+      "reg": "80424926",
+      "tmnsn": "none"
+    },
+    {
+      "budgetCents": 2308878192,
+      "county": "Harju maakond",
+      "form": "SA",
+      "grantCents": 1699607228,
+      "name": "Sihtasutus Kutsekoda",
+      "paidCents": 1343966402,
+      "projects": 3,
+      "reg": "90006414",
+      "tmnsn": "none"
+    }
+  ]
+}

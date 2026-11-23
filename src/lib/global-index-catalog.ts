@@ -12,6 +12,7 @@ import usaShort from '../../public/data/charity-financials/us-990-ez/manifest.js
 import usaFoundation from '../../public/data/charity-financials/us-990-pf/manifest.json';
 import registry from '../../public/data/irs-registry/manifest.json';
 import japan from '../../public/data/charity-registry/japan-npo/manifest.json';
+import estonia from '../../public/data/charity-registry/estonia/manifest.json';
 import israel from '../../public/data/charity-registry/israel/manifest.json';
 import latvia from '../../public/data/charity-registry/latvia/manifest.json';
 import newZealand from '../../public/data/charity-registry/new-zealand/manifest.json';
@@ -110,6 +111,22 @@ const RAW_PANELS: JurisdictionPanelBase[] = [
     manifest: '/data/charity-financials/ew/manifest.json',
     fundingFlowRoute: '/record/funding-flows/greater-manchester-home-from-hospital/',
     fundingFlowLabel: 'Greater Manchester case',
+  },
+  {
+    id: 'estonia',
+    name: 'Estonia',
+    source: 'e-Business Register (RIK), EMTA Tax-Incentive (TMNSN) and RTK EU/EEA Funds',
+    route: '/record/charity-index/estonia/',
+    label: 'Search Estonian nonprofits, TMNSN and annual filings',
+    date: estonia.capturedOn,
+    recordCount: estonia.counts.includedOrganizations,
+    recordUnit: 'nonprofits',
+    coverage: `${number(estonia.counts.includedOrganizations)} nonprofit associations, foundations and trade unions (${number(estonia.counts.byTmnsn.active)} active EMTA TMNSN charities; ${number(estonia.counts.withFinancialReports2023to2025)} with 2023–2025 XBRL EUR financial filings).`,
+    history: 'A paired funding-flows edition covers 1,566 nonprofit-form EU Cohesion, JTF, RRF and EEA/Norway projects (2014–2027) totaling EUR 2.62 billion (EUR 1.81B grant / EUR 1.48B paid).',
+    boundary: 'Apartment associations (25,709 Korteriühistu) are cleanly excluded by separate legal form. State innovation agencies and public hospitals using the Sihtasutus foundation form account for 80.3% of nonprofit EU/EEA project budgets vs. 1.3% for active TMNSN associations.',
+    manifest: '/data/charity-registry/estonia/manifest.json',
+    fundingFlowRoute: '/record/funding-flows/estonia-eu-funds/',
+    fundingFlowLabel: 'EU/EEA & Recovery projects',
   },
   {
     id: 'france',
@@ -354,6 +371,9 @@ export const COVERAGE_SOURCES = [
   { title: '2024 List of charities', publisher: canada.publisher, url: canada.editions['2024'].catalogue },
   { title: 'Full register download', publisher: 'Charity Commission for England and Wales', url: 'https://register-of-charities.charitycommission.gov.uk/en/register/full-register-download' },
   { title: 'Scottish register and annual return downloads', publisher: scotland.sources.register.publisher, url: scotland.catalogue },
+  { title: 'e-Business Register Open Data (RIK) & 2023–2025 annual report XBRL elements', publisher: 'Centre of Registers and Information Systems (RIK)', url: estonia.catalogues.rik },
+  { title: 'List of associations benefiting from income tax incentives (TMNSN)', publisher: 'Estonian Tax and Customs Board (EMTA)', url: estonia.catalogues.emtaTmnsn },
+  { title: 'EU Structural Funds, JTF, RRF & EEA/Norway Funded Projects', publisher: 'State Shared Service Centre of Estonia (RTK)', url: estonia.catalogues.rtk },
   { title: 'French association accounts dataset', publisher: france.source.publisher, url: france.source.dataset },
   { title: 'Registry of Associations and Public Benefit Companies (moj-amutot)', publisher: israel.publisher, url: israel.catalogue },
   { title: 'Foreign State Entity Donations CKAN API (35cb40b5)', publisher: israel.publisher, url: 'https://data.gov.il/dataset/moj-amutot' },
@@ -405,6 +425,7 @@ export const FUNDING_FLOW_GROUPS: readonly FundingFlowCatalogGroup[] = [
       { slug: 'canada-qualified-donees', title: 'Reported gifts', scope: 'Canada', summary: 'Look up a filer or recipient and open the corresponding CRA worksheet entries.', manifest: '/data/funding-flows/ca-qualified-donees/manifest.json' },
       { slug: 'canada-grant-geography', title: 'Grant activities by country', scope: 'Canada', summary: 'See the countries named in charity grant reporting and the amounts left unallocated.', dataJson: '/record/funding-flows/canada-grant-geography/data.json' },
       { slug: 'chile-residential-payments', title: 'Residential care awards and payments', scope: 'Chile', summary: 'Find all 19 recipients by tax ID. Compare the award round with the ledger, and see reported service counts and surveyed need across 16 regions.' },
+      { slug: 'estonia-eu-funds', title: 'EU Structural Funds, Recovery & EEA/Norway grants (2014–2027)', scope: 'Estonia', summary: 'Search 1,566 nonprofit-form EU/EEA projects (EUR 2.62B budget / EUR 1.48B paid) and inspect why state/hospital foundations absorb 80.3% vs. 1.3% for active TMNSN associations.', manifest: '/data/funding-flows/estonia-eu-funds/manifest.json' },
       { slug: 'ile-de-france-paid-grants', title: 'Regional grant payments', scope: 'Île-de-France, France', summary: 'Find reported payments by association name or official organization identifier.', manifest: '/data/funding-flows/ile-de-france/manifest.json' },
       { slug: 'israel-foreign-state-donations', title: 'Foreign state entity donations (2012–2026)', scope: 'Israel', summary: 'Search 516 Israeli nonprofits across 13,436 quarterly cross-border disclosures (ILS 7.53B net), joined by exact ID with source anomalies kept visible.', manifest: '/data/funding-flows/israel-foreign-state-donations/manifest.json' },
       { slug: 'latvia-eu-funds', title: 'EU Cohesion & Recovery Fund projects (2014–2027)', scope: 'Latvia', summary: 'Search 292 nonprofit-led EU projects (EUR 233.47M total) and 260 separate partner roles with implementation regions and Active SLO vs. industry-cluster splits.', manifest: '/data/funding-flows/latvia-eu-funds/manifest.json' },

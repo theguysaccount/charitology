@@ -1,0 +1,402 @@
+---
+import Entry from '../../../../layouts/Entry.astro';
+import { url } from '../../../../lib/site';
+import manifest from '../../../../../public/data/funding-flows/estonia-eu-funds/manifest.json';
+import registryManifest from '../../../../../public/data/charity-registry/estonia/manifest.json';
+import '../../../../styles/charity-financial-search.css';
+
+const title = 'Estonia EU Structural Funds, Recovery & EEA/Norway grants for nonprofits (2014–2027)';
+const asset = '/data/funding-flows/estonia-eu-funds/';
+const registryRoute = '/record/charity-index/estonia/';
+const count = (value: number) => value.toLocaleString('en-US');
+const eur = (cents: number) =>
+  `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const eurM = (cents: number) =>
+  `EUR ${(cents / 100_000_000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}M`;
+const pct = (part: number, whole: number) => `${((part * 100) / whole).toFixed(1)}%`;
+
+const sources = [
+  { title: 'Toetatud projektid (2014–2027 EU Cohesion, JTF, RRF & EEA/Norway grants as of 2026-08-31)', publisher: manifest.publisher, url: manifest.catalogue },
+  { title: 'e-Business Register Open Data (RIK)', publisher: 'Centre of Registers and Information Systems (RIK)', url: registryManifest.catalogues.rik },
+  { title: 'List of associations benefiting from income tax incentives (TMNSN)', publisher: 'Estonian Tax and Customs Board (EMTA, CC0 1.0)', url: registryManifest.catalogues.emtaTmnsn },
+];
+
+const split = manifest.counts.byTmnsnAndForm;
+const nonTmnsnSa = split['none|SA'];
+const tmnsnSa = split['active|SA'];
+const nonTmnsnMtu = split['none|MTU'];
+const tmnsnMtu = split['active|MTU'];
+const nonTmnsnAu = split['none|AU'];
+
+const fundEntries = Object.entries(manifest.counts.byFund).sort((a, b) => b[1].budgetCents - a[1].budgetCents);
+const regionEntries = Object.entries(manifest.counts.byRegion).sort((a, b) => b[1].budgetCents - a[1].budgetCents);
+const periodEntries = Object.entries(manifest.counts.byPeriod).sort((a, b) => a[0].localeCompare(b[0]));
+
+const tmnsnLabel = (code: string) =>
+  code === 'active' ? 'Active TMNSN' : code === 'removed_2025' ? 'Removed 2025' : 'Non-TMNSN';
+---
+
+<Entry title={title} eyebrow="The Record · Funding flows · Estonia"
+  summary="Search 1,566 nonprofit-form EU Cohesion, Just Transition, Recovery (RRF) and EEA/Norway projects in Estonia totaling EUR 2.62B (EUR 1.81B grant / EUR 1.48B paid) and inspect why state/hospital foundations absorb 80.3% while tax-incentive MTÜ charities receive 1.3%."
+  filePath="src/pages/record/funding-flows/estonia-eu-funds/index.astro"
+  crumbs={[{label:'The Record',href:'/record/'},{label:'Funding flows',href:'/record/funding-flows/'},{label:'Estonia EU funds'}]}
+  sources={sources}>
+  <p>Scanning all <strong>{count(manifest.counts.allRtkRowsScanned)} supported projects</strong> in Estonia’s State Shared Service Centre (RTK) Structural Assistance Register (as of <time datetime={manifest.asOf}>{manifest.asOf}</time>, covering EU 2014–2020, EU 2021–2027, Recovery &amp; Resilience Facility 2020–2026, Just Transition Fund, REACT-EU and EEA/Norway grants) and joining by exact 8-digit registry code to RIK’s nonprofit universe identifies <strong>{count(manifest.counts.nonprofitProjects)} projects</strong> across <strong>{count(manifest.counts.distinctNonprofitRecipients)} distinct nonprofits</strong> ({count(manifest.counts.completedProjects)} completed, {count(manifest.counts.activeProjects)} active). Combined project budgets total <strong>{eur(manifest.counts.totalBudgetCents)}</strong>, including <strong>{eur(manifest.counts.totalGrantCents)}</strong> in EU/EEA external grants and <strong>{eur(manifest.counts.totalPaidCents)}</strong> actually disbursed to date (net of irregularity clawbacks).</p>
+  <p><a class="identity-link" href={url(registryRoute)}>Search Estonia’s full nonprofit, TMNSN &amp; 2023–2025 financial register ({count(registryManifest.counts.includedOrganizations)} organizations)</a>.</p>
+
+  <section class="charity-financial-search" data-ee-eu
+    data-projects={url(asset + manifest.artifacts.projects.path)}
+    data-registry={url(registryRoute)}
+    data-manifest={JSON.stringify(manifest)} aria-labelledby="ee-eu-heading">
+    <h2 id="ee-eu-heading">Search nonprofit EU &amp; EEA/Norway projects</h2>
+    <p id="ee-eu-hint">Enter an organization name, project title, project number or exact 8-digit registry code (e.g., <code>90000759</code>, <code>80064706</code>, <code>teadusagentuur</code> or <code>haigla</code>). Search loads {(manifest.artifacts.projects.bytes / 1_000).toFixed(1)} KB of compressed RTK records locally in your browser.</p>
+    <form aria-describedby="ee-eu-hint">
+      <label for="ee-eu-query">Organization name, project title, project number or 8-digit reg. code</label>
+      <div class="finance-actions">
+        <input id="ee-eu-query" type="search" maxlength="160" autocomplete="off" disabled />
+        <span class="inline-field">
+          <label for="ee-eu-period">Period</label>
+          <select id="ee-eu-period" disabled>
+            <option value="">All periods ({count(manifest.counts.nonprofitProjects)})</option>
+            {periodEntries.map(([p, info]) => (
+              <option value={p}>{p} ({count(info.projects)})</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="ee-eu-fund">Fund</label>
+          <select id="ee-eu-fund" disabled>
+            <option value="">All 7 funds</option>
+            {fundEntries.map(([f, info]) => (
+              <option value={f}>{f} ({count(info.projects)})</option>
+            ))}
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="ee-eu-tmnsn">Tax-incentive (TMNSN)</label>
+          <select id="ee-eu-tmnsn" disabled>
+            <option value="">All nonprofits</option>
+            <option value="active">Active TMNSN charity ({count(tmnsnSa.projects + tmnsnMtu.projects)})</option>
+            <option value="none">Non-TMNSN nonprofit ({count(nonTmnsnSa.projects + nonTmnsnMtu.projects + nonTmnsnAu.projects)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="ee-eu-form">Legal form</label>
+          <select id="ee-eu-form" disabled>
+            <option value="">All forms</option>
+            <option value="SA">SA / Foundation ({count(nonTmnsnSa.projects + tmnsnSa.projects)})</option>
+            <option value="MTU">MTÜ / Association ({count(nonTmnsnMtu.projects + tmnsnMtu.projects)})</option>
+            <option value="AU">AÜ / Trade Union ({count(nonTmnsnAu.projects)})</option>
+          </select>
+        </span>
+        <span class="inline-field">
+          <label for="ee-eu-region">Region</label>
+          <select id="ee-eu-region" disabled>
+            <option value="">All regions</option>
+            {regionEntries.slice(0, 18).map(([r, info]) => (
+              <option value={r}>{r} ({count(info.projects)})</option>
+            ))}
+          </select>
+        </span>
+        <button class="btn" type="submit" disabled>Search EU/EEA projects</button>
+        <button class="btn btn-ghost" type="button" data-clear disabled>Clear</button>
+      </div>
+    </form>
+    <p data-status role="status">Search when you are ready to load the Estonia RTK nonprofit project index.</p>
+    <div class="finance-actions">
+      <button type="button" class="btn btn-ghost btn-small" data-json disabled>Export displayed rows as JSON</button>
+      <button type="button" class="btn btn-ghost btn-small" data-csv disabled>Export displayed rows as CSV</button>
+    </div>
+    <ol class="finance-results" data-site-symbol="euGrant" aria-label="Estonia EU/EEA project results" data-results></ol>
+    <noscript><p>Without JavaScript, download the <a href={url(asset + 'programs-summary.csv')} download>fund summary CSV</a> or inspect RTK datasets at <a href={manifest.catalogue}>rtk.ee</a>.</p></noscript>
+  </section>
+
+  <h2 id="foundation-split">State foundations vs. tax-incentive charities</h2>
+  <p>Joining RTK project records to EMTA’s income-tax-incentive charity list (TMNSN) exposes an even sharper structural gap than in <a href={url('/record/funding-flows/latvia-eu-funds/')}>Latvia</a>. In Estonia, major state development agencies (such as <em>Ettevõtluse ja Innovatsiooni Sihtasutus</em> / Enterprise Estonia and <em>Keskkonnainvesteeringute Keskus</em>) and public regional hospitals (North Estonia Medical Centre, Tartu University Hospital, Viljandi, Kuressaare, Narva and Ida-Viru hospitals) are legally incorporated as <strong><code>Sihtasutus</code> (foundations)</strong>. As a result, <strong>{count(nonTmnsnSa.distinctOrgs)} non-TMNSN foundations</strong> account for <strong>{eurM(nonTmnsnSa.budgetCents)} ({pct(nonTmnsnSa.budgetCents, manifest.counts.totalBudgetCents)})</strong> across {count(nonTmnsnSa.projects)} projects, while <strong>{count(tmnsnSa.distinctOrgs)} active TMNSN foundations</strong> (led by the Estonian Research Council and Integration Foundation) account for <strong>{eurM(tmnsnSa.budgetCents)} ({pct(tmnsnSa.budgetCents, manifest.counts.totalBudgetCents)})</strong>. By contrast, <strong>{count(tmnsnMtu.distinctOrgs)} active tax-incentive grassroots associations (<code>MTÜ</code>)</strong> lead <strong>{count(tmnsnMtu.projects)} projects totaling {eurM(tmnsnMtu.budgetCents)} ({pct(tmnsnMtu.budgetCents, manifest.counts.totalBudgetCents)})</strong>.</p>
+
+  <div class="table-wrap" role="region" aria-label="Estonia nonprofit EU/EEA grants by TMNSN status and legal form" tabindex="0">
+    <table class="data ee-table">
+      <caption>Nonprofit EU/EEA grant distribution by legal form and EMTA tax-incentive (TMNSN) status</caption>
+      <thead>
+        <tr>
+          <th scope="col">Segment</th>
+          <th scope="col">Recipients</th>
+          <th scope="col">Projects</th>
+          <th scope="col">Total budget</th>
+          <th scope="col">Share</th>
+          <th scope="col">EU/EEA grant</th>
+          <th scope="col">Disbursed (net)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {[
+          { label: 'Non-TMNSN Foundation (SA — state agencies, hospitals, regional bodies)', row: nonTmnsnSa },
+          { label: 'Active TMNSN Foundation (SA — research, integration & public charities)', row: tmnsnSa },
+          { label: 'Non-TMNSN Association (MTÜ — regional & sector bodies)', row: nonTmnsnMtu },
+          { label: 'Active TMNSN Association (MTÜ — tax-deductible charities)', row: tmnsnMtu },
+          { label: 'Non-TMNSN Trade Union (AÜ)', row: nonTmnsnAu },
+        ].map(({ label, row }) => (
+          <tr>
+            <th scope="row">{label}</th>
+            <td>{count(row.distinctOrgs)}</td>
+            <td>{count(row.projects)}</td>
+            <td>{eurM(row.budgetCents)}</td>
+            <td>{pct(row.budgetCents, manifest.counts.totalBudgetCents)}</td>
+            <td>{eurM(row.grantCents)}</td>
+            <td>{eurM(row.paidCents)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" role="region" aria-label="Top 15 nonprofit-form recipients of Estonia EU/EEA grants" tabindex="0">
+    <table class="data ee-table">
+      <caption>Top 15 nonprofit-form beneficiaries across EU Cohesion, JTF, RRF &amp; EEA/Norway grants (2014–2027)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Reg. code</th>
+          <th scope="col">Organization</th>
+          <th scope="col">Form / TMNSN</th>
+          <th scope="col">Projects</th>
+          <th scope="col">EU/EEA grant</th>
+          <th scope="col">Total budget</th>
+        </tr>
+      </thead>
+      <tbody>
+        {manifest.topRecipients.map((item) => (
+          <tr data-regcode={item.reg}>
+            <td><button type="button" class="inline-lookup-btn" data-lookup-ee={item.reg}><code>{item.reg}</code></button></td>
+            <th scope="row"><span lang="et">{item.name}</span> · <a href={url(`${registryRoute}?regcode=${item.reg}`)}>registry</a></th>
+            <td>{item.form} · {tmnsnLabel(item.tmnsn)}</td>
+            <td>{count(item.projects)}</td>
+            <td>{eurM(item.grantCents)}</td>
+            <td>{eurM(item.budgetCents)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="funds">Funds, periods and disbursement progress</h2>
+  <div class="table-wrap" role="region" aria-label="Estonia nonprofit EU/EEA grants by fund" tabindex="0">
+    <table class="data ee-table">
+      <caption>Nonprofit-form projects by funding instrument (as of 2026-08-31)</caption>
+      <thead>
+        <tr>
+          <th scope="col">Fund</th>
+          <th scope="col">Projects</th>
+          <th scope="col">Total budget</th>
+          <th scope="col">EU/EEA grant</th>
+          <th scope="col">Disbursed (net of clawbacks)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {fundEntries.map(([fund, info]) => (
+          <tr>
+            <th scope="row">{fund}</th>
+            <td>{count(info.projects)}</td>
+            <td>{eurM(info.budgetCents)}</td>
+            <td>{eurM(info.grantCents)}</td>
+            <td>{eurM(info.paidCents)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="downloads">Downloads and provenance</h2>
+  <p>Source: Riigi Tugiteenuste Keskus (RTK) Structural Assistance Register export as of <time datetime={manifest.asOf}>{manifest.asOf}</time>, captured <time datetime={manifest.capturedOn}>{manifest.capturedOn}</time>. Per RTK’s query parameters, disbursed totals include payments on partially or fully unpaid cost documents and deduct irregularity clawbacks recorded during the period. Separate 8-digit codes starting in 8 or 9 that do not match active RIK nonprofits (763 codes across 818 rows — predominantly apartment associations receiving renovation grants or previously dissolved bodies) are excluded and documented in <code>anomalies.json</code>.</p>
+  <p>
+    <a class="identity-link" data-source-symbol="document" href={url(asset + 'manifest.json')} download>Download source and coverage manifest (JSON)</a> ·
+    <a class="identity-link" data-source-symbol="download" href={url(asset + manifest.artifacts.projects.path)} download>Download all {count(manifest.counts.nonprofitProjects)} nonprofit EU/EEA projects (compressed JSON)</a> ·
+    <a class="identity-link" data-source-symbol="table" href={url(asset + 'programs-summary.csv')} download>Download fund summary (CSV)</a> ·
+    <a class="identity-link" data-source-symbol="alert" href={url(asset + 'anomalies.json')} download>Download anomalies and excluded-codes notes (JSON)</a>.
+  </p>
+</Entry>
+
+<style>
+  .ee-table { min-inline-size: 42rem; }
+</style>
+
+<script>
+  import { $, h } from '../../../../lib/client/dom';
+  import { download, toCsv } from '../../../../lib/client/files';
+  import { financialCsvName, normalizeFinancialName } from '../../../../lib/client/financial-directory';
+  import { loadVerifiedJson } from '../../../../lib/client/verified-json';
+
+  type ProjectRow = {
+    num: string;
+    title: string;
+    reg: string;
+    org: string;
+    form: 'MTU' | 'SA' | 'AU';
+    tmnsn: 'active' | 'removed_2025' | 'none';
+    period: string;
+    fund: string;
+    measure: string;
+    region: string;
+    sector: string;
+    status: string;
+    start: string | null;
+    end: string | null;
+    budgetCents: number;
+    grantCents: number;
+    paidCents: number;
+    paidExtCents: number;
+  };
+  type Manifest = typeof import('../../../../../public/data/funding-flows/estonia-eu-funds/manifest.json');
+
+  const stripDigits = (value: string) => value.replace(/[\s.-]+/g, '');
+  const fmtEur = (cents: number) =>
+    `EUR ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const tmnsnText = (s: ProjectRow['tmnsn']) =>
+    s === 'active' ? 'Active TMNSN' : s === 'removed_2025' ? 'Removed 2025' : 'Non-TMNSN';
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-ee-eu]')) {
+    const manifest: Manifest = JSON.parse(root.dataset.manifest!);
+    const registryBase = root.dataset.registry!;
+    const form = $<HTMLFormElement>('form', root);
+    const input = $<HTMLInputElement>('#ee-eu-query', form);
+    const periodSelect = $<HTMLSelectElement>('#ee-eu-period', form);
+    const fundSelect = $<HTMLSelectElement>('#ee-eu-fund', form);
+    const tmnsnSelect = $<HTMLSelectElement>('#ee-eu-tmnsn', form);
+    const formSelect = $<HTMLSelectElement>('#ee-eu-form', form);
+    const regionSelect = $<HTMLSelectElement>('#ee-eu-region', form);
+    const submit = $<HTMLButtonElement>('[type=submit]', form);
+    const clear = $<HTMLButtonElement>('[data-clear]', root);
+    const csvBtn = $<HTMLButtonElement>('[data-csv]', root);
+    const jsonBtn = $<HTMLButtonElement>('[data-json]', root);
+    const status = $('[data-status]', root);
+    const results = $('[data-results]', root);
+
+    let projPromise: Promise<ProjectRow[]> | undefined;
+    let displayed: ProjectRow[] = [];
+    let sequence = 0;
+    const limit = 50;
+    input.disabled = periodSelect.disabled = fundSelect.disabled = tmnsnSelect.disabled = formSelect.disabled = regionSelect.disabled = submit.disabled = clear.disabled = false;
+
+    const loadProjects = () => {
+      projPromise ??= loadVerifiedJson(root.dataset.projects!, manifest.artifacts.projects)
+        .then((rows) => rows as ProjectRow[])
+        .catch((err) => { projPromise = undefined; throw err; });
+      return projPromise;
+    };
+
+    const reset = () => {
+      displayed = [];
+      results.replaceChildren();
+      jsonBtn.disabled = csvBtn.disabled = true;
+    };
+
+    function card(p: ProjectRow) {
+      return h('li', { class: 'card' },
+        h('h3', {}, h('span', { class: 'identity-code' }, p.num), ' ', h('span', { lang: 'et' }, p.title)),
+        h('p', {},
+          h('span', { class: 'identity-code' }, p.reg), ' ', h('span', { lang: 'et' }, p.org),
+          ` · ${p.form} · ${tmnsnText(p.tmnsn)} · ${p.period} (${p.fund}) · ${p.status}`),
+        h('p', { class: 'note' },
+          `Budget: ${fmtEur(p.budgetCents)} · EU/EEA grant: ${fmtEur(p.grantCents)} · Disbursed (net): ${fmtEur(p.paidCents)} · ${p.start ?? '?'}–${p.end ?? '?'}`),
+        h('p', { class: 'note' },
+          `Region: ${p.region || 'unspecified'}${p.sector ? ` · Sector: ${p.sector}` : ''} · `,
+          h('a', { href: `${registryBase}?regcode=${p.reg}` }, 'Inspect Estonia registry & financials')),
+      );
+    }
+
+    async function runSearch() {
+      const ticket = ++sequence;
+      reset();
+      const raw = input.value.trim();
+      const compact = stripDigits(raw);
+      const isId = /^[0-9]{8}$/.test(compact);
+      const q = normalizeFinancialName(raw);
+      const perVal = periodSelect.value;
+      const fndVal = fundSelect.value;
+      const tmVal = tmnsnSelect.value;
+      const fmVal = formSelect.value;
+      const regVal = regionSelect.value;
+      try {
+        if (raw && !isId && q.length < 2) throw new Error('Enter at least two characters or an exact 8-digit registry code.');
+        submit.disabled = true;
+        status.textContent = 'Checking Estonia RTK nonprofit EU/EEA projects.';
+        const rows = await loadProjects();
+        if (ticket !== sequence) return;
+        const matches = rows.filter((p) => {
+          if (perVal && p.period !== perVal) return false;
+          if (fndVal && p.fund !== fndVal) return false;
+          if (tmVal && p.tmnsn !== tmVal) return false;
+          if (fmVal && p.form !== fmVal) return false;
+          if (regVal && p.region !== regVal) return false;
+          if (!raw) return true;
+          if (isId) return p.reg === compact;
+          return normalizeFinancialName(p.org).includes(q)
+            || normalizeFinancialName(p.title).includes(q)
+            || p.num.toLowerCase().includes(raw.toLowerCase());
+        });
+        displayed = matches.slice(0, limit);
+        status.textContent = matches.length
+          ? `${matches.length.toLocaleString('en-US')} nonprofit EU/EEA ${matches.length === 1 ? 'project' : 'projects'} matched. Showing ${displayed.length}.`
+          : 'No matching nonprofit EU/EEA projects in this snapshot.';
+        results.append(...displayed.map(card));
+        jsonBtn.disabled = csvBtn.disabled = displayed.length === 0;
+      } catch (error) {
+        if (ticket === sequence) status.textContent = error instanceof Error ? error.message : 'The EU/EEA project search failed.';
+      } finally { if (ticket === sequence) submit.disabled = false; }
+    }
+
+    form.addEventListener('submit', (event) => { event.preventDefault(); void runSearch(); });
+    clear.addEventListener('click', () => {
+      sequence++;
+      reset();
+      submit.disabled = false;
+      input.value = '';
+      periodSelect.value = fundSelect.value = tmnsnSelect.value = formSelect.value = regionSelect.value = '';
+      status.textContent = 'Search cleared.';
+      if (/^#q=[0-9]{8}$/.test(location.hash)) {
+        history.replaceState(history.state, '', location.pathname + location.search + '#ee-eu-heading');
+      }
+      input.focus();
+    });
+
+    const { format, capturedOn, asOf, publisher } = manifest;
+    const toObj = (p: ProjectRow) => ({
+      projectNo: p.num, period: p.period, fund: p.fund, status: p.status,
+      regcode: p.reg, orgName: p.org, form: p.form, tmnsn: p.tmnsn,
+      title: p.title, region: p.region, sector: p.sector,
+      startDate: p.start ?? '', endDate: p.end ?? '',
+      budgetEur: (p.budgetCents / 100).toFixed(2),
+      grantEur: (p.grantCents / 100).toFixed(2),
+      paidEur: (p.paidCents / 100).toFixed(2),
+    });
+
+    jsonBtn.addEventListener('click', () => {
+      download('estonia-eu-funds-projects.json', JSON.stringify({
+        format, capturedOn, asOf, publisher, projects: displayed.map(toObj),
+      }, null, 2) + '\n', 'application/json');
+    });
+    csvBtn.addEventListener('click', () => {
+      const rows = displayed.map((p) => {
+        const o = toObj(p);
+        return { ...o, orgName: financialCsvName(o.orgName), title: financialCsvName(o.title), capturedOn, asOf, publisher };
+      });
+      if (rows.length) download('estonia-eu-funds-projects.csv', '\uFEFF' + toCsv(rows), 'text/csv;charset=utf-8');
+    });
+
+    const triggerId = (id: string | null) => {
+      if (!id || !/^[0-9]{8}$/.test(id)) return;
+      input.value = id;
+      periodSelect.value = fundSelect.value = tmnsnSelect.value = formSelect.value = regionSelect.value = '';
+      void runSearch();
+    };
+    const initial = new URLSearchParams(location.search).get('regcode') ?? /^#q=([0-9]{8})$/.exec(location.hash)?.[1] ?? null;
+    triggerId(initial);
+    window.addEventListener('hashchange', () => triggerId(/^#q=([0-9]{8})$/.exec(location.hash)?.[1] ?? null));
+    for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lookup-ee]')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.lookupEe ?? '';
+        triggerId(id);
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
+</script>

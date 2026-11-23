@@ -155,6 +155,8 @@ export const symbols = {
   taxSlice: 'M12 3a9 9 0 1 0 9 9h-9V3Zm3-1a8 8 0 0 1 7 7h-7V2Z',
   amber: 'M12 2 19 8v8l-7 6-7-6V8l7-6Zm0 0v20M5 8h14M5 16h14',
   cohesion: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4 1.2 2.5L16 10l-2 1.8.5 2.7L12 13.2l-2.5 1.3.5-2.7L8 10l2.8-.5L12 7Z',
+  balticPine: 'M12 3 7 10h3l-4 6h4v5h4v-5h4l-4-6h3L12 3Z',
+  euGrant: 'M3 7h18v10H3V7Zm4 5h4m4 0h2m-5-9v4m0 10v4',
 } as const;
 
 export type SymbolName = keyof typeof symbols;
