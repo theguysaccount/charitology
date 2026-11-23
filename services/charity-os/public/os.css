@@ -1268,8 +1268,11 @@ pre {
 }
 @media (max-width: 760px) {
   .masthead {
-    height: 70px;
-    padding: 0 1rem;
+    min-height: 70px;
+    height: auto;
+    flex-wrap: wrap;
+    padding: 0.6rem 1rem;
+    row-gap: 0.45rem;
   }
   .brand img {
     width: 36px;
@@ -1279,10 +1282,14 @@ pre {
     font-size: 1.25rem;
   }
   .site-link {
-    display: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    font-size: 0.78rem;
   }
   .masthead-right {
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
   }
   .auth-layout {
     display: flex;
