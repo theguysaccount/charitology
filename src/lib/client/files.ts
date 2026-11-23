@@ -37,7 +37,7 @@ export async function copy(text: string): Promise<boolean> {
 /** Quote a value for CSV. */
 export function csvCell(v: unknown): string {
   const s = v == null ? '' : String(v);
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 export function toCsv(rows: Record<string, unknown>[], columns?: string[]): string {

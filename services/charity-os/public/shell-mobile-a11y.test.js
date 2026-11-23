@@ -67,3 +67,36 @@ test('Charity OS narrow-screen CSS keeps header, dialog, and footer controls acc
     'Footer and ruled links must provide >=36px touch targets'
   );
 });
+
+test('Charity OS grant-report CSS prevents narrow-screen overflow and resets dark-mode print tokens', () => {
+  const css = read('os.css');
+  assert.ok(
+    /\.grant-report-workspace\s+\.snapshot[\s\S]*?min-width\s*:\s*0/i.test(css),
+    'Grant report snapshot cards must set min-width: 0 to prevent SHA-256 overflow in grid stacks'
+  );
+  assert.ok(
+    /\.grant-report-document\s+\.code[\s\S]*?word-break\s*:\s*break-word/i.test(css),
+    'Grant report code strings (SHA-256 hashes, trace paths) must wrap cleanly on 320px screens'
+  );
+  assert.ok(
+    /\.grant-report-document\s+summary\s*\{[^}]*min-height\s*:\s*44px/i.test(css),
+    'Grant report collapsible summary triggers must provide >=44px touch targets'
+  );
+  const printBlock = css.match(/@media\s+print\s*\{\s*:root,\s*:root\[data-theme="dark"\],\s*body\.grant-report-printing\s*\{([\s\S]*?)\n\}/);
+  assert.ok(printBlock, 'Expected grant-report @media print root + dark-theme reset block in os.css');
+  assert.ok(
+    /color-scheme\s*:\s*light/i.test(printBlock[1]) &&
+    /--ink\s*:\s*#111/i.test(printBlock[1]) &&
+    /--bg2\s*:\s*#fff/i.test(printBlock[1]) &&
+    /--accent\s*:\s*#111/i.test(printBlock[1]),
+    'Grant report print block must reset color-scheme, --ink, --bg2, and --accent on :root[data-theme="dark"] so dark mode never prints dark page margins or invisible text'
+  );
+  assert.ok(
+    /\.grant-report-print-surface\s+\.grant-report-financial\s*\+\s*\.grant-report-financial\s*\{[^}]*margin-top/i.test(css),
+    'Stacked financial sections in print must retain vertical separation'
+  );
+  assert.ok(
+    /\.grant-report-print-surface\s+h3,\s*\.grant-report-print-surface\s+h4,\s*\.grant-report-print-surface\s+h5\s*\{[^}]*break-after\s*:\s*avoid/i.test(css),
+    'Grant report print headings must prevent orphaned headers across page breaks'
+  );
+});
